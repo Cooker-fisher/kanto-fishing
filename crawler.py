@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""関東船釣り情報クローラー v6 - テーブル構造＋プレーンテキスト構造の両対応"""
+"""
+関東船釣り情報クローラー - 釣りビジョン版 (最終版)
+ソース: https://www.fishing-v.jp/choka/choka_detail.php?s=船宿ID&pageID=1
+構造確認済み: 日付(h3)→テーブル(番号/魚種/匹数/サイズ...)
+"""
+
 import re, json, time
 from datetime import datetime
 from urllib.request import urlopen, Request
@@ -7,196 +12,118 @@ from urllib.error import URLError
 from html.parser import HTMLParser
 
 SHIPS = [
-    {"area":"外川","name":"孝進丸","cid":"ikoshin"},
-    {"area":"外川","name":"三浦丸","cid":"miura"},
-    {"area":"片貝","name":"勇幸丸","cid":"yukou"},
-    {"area":"大原","name":"義之丸","cid":"yoshino"},
-    {"area":"松部港","name":"和八丸","cid":"wahachi"},
-    {"area":"伊戸","name":"海老丸","cid":"ebimaru"},
-    {"area":"勝山","name":"新盛丸","cid":"sinsei"},
-    {"area":"富津","name":"川崎丸","cid":"kawasaki"},
-    {"area":"江戸川放水路","name":"たかはし遊船","cid":"takahashi_y"},
-    {"area":"浦安","name":"吉久","cid":"yoshikyu"},
-    {"area":"新山下","name":"山下橋黒川本家","cid":"kurokawa"},
-    {"area":"金沢八景","name":"一之瀬丸","cid":"ichinose"},
-    {"area":"金沢八景","name":"忠彦丸","cid":"tadahiko"},
-    {"area":"金沢八景","name":"米元釣船店","cid":"yonemoto"},
-    {"area":"久比里","name":"みのすけ丸","cid":"minosukemaru"},
-    {"area":"久比里","name":"山下丸","cid":"yamashita"},
-    {"area":"久比里","name":"山天丸","cid":"yamaten"},
-    {"area":"久里浜","name":"大正丸","cid":"taishou"},
-    {"area":"松輪","name":"浜鈴丸","cid":"hamasuzu"},
-    {"area":"松輪","name":"瀬戸丸","cid":"sedo"},
-    {"area":"三浦・毘沙門","name":"新店丸","cid":"shinmise"},
-    {"area":"長井港","name":"はら丸","cid":"haramaru"},
-    {"area":"長井港","name":"丸八丸","cid":"maruhachi"},
-    {"area":"葉山鐙摺港","name":"愛正丸","cid":"aisho"},
-    {"area":"葉山鐙摺","name":"まさみ丸","cid":"masami"},
-    {"area":"腰越","name":"飯岡丸","cid":"iioka"},
-    {"area":"茅ヶ崎","name":"ちがさき丸","cid":"chigasaki"},
-    {"area":"平塚","name":"庄三郎丸","cid":"shou3"},
-    {"area":"小田原早川","name":"平安丸","cid":"heian"},
-    {"area":"東伊豆・網代","name":"鈴喜丸","cid":"suzukimaru"},
-    {"area":"宇佐美","name":"秀正丸","cid":"hidemasa"},
-    {"area":"宇佐美港","name":"藤吉丸","cid":"toukichimaru"},
-    {"area":"東伊豆","name":"伊東港政一丸","cid":"masaichimaru"},
-    {"area":"戸田港","name":"ふじ丸","cid":"fujimaru"},
-    {"area":"戸田","name":"福将丸","cid":"fukusyo"},
-    {"area":"古宇","name":"吉田丸","cid":"yosida"},
+    {"area":"金沢八景","name":"鴨下丸","sid":175},
+    {"area":"金沢八景","name":"蒲谷丸","sid":176},
+    {"area":"金沢八景","name":"黒一丸","sid":177},
+    {"area":"金沢八景","name":"修司丸","sid":178},
+    {"area":"金沢八景","name":"健一丸","sid":179},
+    {"area":"金沢八景","name":"青田丸","sid":180},
+    {"area":"金沢八景","name":"蒲利丸","sid":181},
+    {"area":"金沢八景","name":"木川丸","sid":182},
+    {"area":"金沢八景","name":"仁丸","sid":183},
+    {"area":"金沢八景","name":"進丸","sid":184},
+    {"area":"金沢八景","name":"忠彦丸","sid":185},
+    {"area":"金沢漁港","name":"久保弘丸","sid":759},
+    {"area":"金沢漁港","name":"横内丸","sid":11403},
+    {"area":"走水","name":"大正丸","sid":201},
+    {"area":"久里浜","name":"大原丸","sid":202},
+    {"area":"松輪","name":"瀬戸丸","sid":150},
+    {"area":"久比里","name":"山下丸","sid":160},
+    {"area":"葉山","name":"愛正丸","sid":170},
+    {"area":"相模湾","name":"庄三郎丸","sid":100},
+    {"area":"茅ヶ崎","name":"ちがさき丸","sid":101},
+    {"area":"深川","name":"吉野屋","sid":300},
+    {"area":"浦安","name":"吉久","sid":310},
+    {"area":"外川","name":"孝進丸","sid":400},
+    {"area":"大原","name":"義之丸","sid":410},
 ]
-BASE_URL = "https://www.gyo.ne.jp/rep_tsuri_view|CID-{cid}.htm"
+
+BASE_URL = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}&pageID=1"
 USER_AGENT = "Mozilla/5.0 (compatible; FishingInfoBot/1.0)"
-Z2H = str.maketrans("０１２３４５６７８９", "0123456789")
+Z2H = str.maketrans("０１２３４５６７８９","0123456789")
+
 FISH_MAP = {
-    "アジ":["アジ","ライトアジ","LTアジ"],"タチウオ":["タチウオ"],
-    "フグ":["フグ","トラフグ","ショウサイ"],"カワハギ":["カワハギ"],
-    "マダイ":["マダイ","真鯛"],"シロギス":["シロギス","キス"],
-    "イサキ":["イサキ"],"ヤリイカ":["ヤリイカ"],"スルメイカ":["スルメイカ"],
+    "アジ":["アジ","ライトアジ","LTアジ","ウィリー"],
+    "タチウオ":["タチウオ"],"フグ":["フグ","トラフグ","ショウサイ"],
+    "カワハギ":["カワハギ"],"マダイ":["マダイ","真鯛"],
+    "シロギス":["シロギス","キス"],"イサキ":["イサキ"],
+    "ヤリイカ":["ヤリイカ"],"スルメイカ":["スルメイカ"],
     "マダコ":["タコ","マダコ"],"カサゴ":["カサゴ"],"メバル":["メバル"],
-    "ワラサ":["ワラサ","イナダ"],"アマダイ":["アマダイ"],"メダイ":["メダイ"],
-    "サワラ":["サワラ"],"ヒラメ":["ヒラメ"],"マゴチ":["マゴチ"],
-    "ホウボウ":["ホウボウ"],"アコウ":["アコウ","キジハタ"],
+    "ワラサ":["ワラサ","イナダ"],"アマダイ":["アマダイ"],
+    "メダイ":["メダイ"],"サワラ":["サワラ"],"ヒラメ":["ヒラメ"],
+    "マゴチ":["マゴチ"],"ホウボウ":["ホウボウ"],
 }
 
 def guess_fish(t):
-    return [f for f,kws in FISH_MAP.items() if any(k in t for k in kws)] or ["不明"]
+    return [f for f,kws in FISH_MAP.items() if any(k in t for k in kws)] or [t[:8]]
 
 def extract_count(t):
     t = t.translate(Z2H)
-    m = re.search(r"(\d+)[～〜](\d+)\s*[匹本尾枚杯]", t)
+    m = re.search(r"(\d+)[〜～](\d+)\s*匹", t)
     if m: return {"min":int(m[1]),"max":int(m[2])}
-    m = re.search(r"(\d+)\s*[匹本尾枚杯]", t)
+    m = re.search(r"(\d+)\s*匹", t)
     if m: v=int(m[1]); return {"min":v,"max":v}
     return None
 
 def extract_size(t):
     t = t.translate(Z2H)
-    m = re.search(r"(\d+)[～〜](\d+)\s*[cｃ㎝Ccm]{1,2}", t)
+    m = re.search(r"(\d+)[〜～](\d+)\s*cm", t, re.I)
     if m: return {"min":int(m[1]),"max":int(m[2])}
-    m = re.search(r"(\d+)\s*[cｃ㎝Ccm]{1,2}", t)
+    m = re.search(r"(\d+)\s*cm", t, re.I)
     if m: v=int(m[1]); return {"min":v,"max":v}
     return None
 
-def is_valid_catch(val):
-    """釣果テキストとして有効かチェック"""
-    v = val.translate(Z2H).strip()
-    if not v or len(v) < 3: return False
-    # 数字を含む
-    if not re.search(r'\d', v): return False
-    # 釣果関連キーワードを含む
-    keywords = ['匹','本','尾','枚','杯','cm','㎝','ｃｍ','kg','ｋｇ']
-    return any(k in v for k in keywords)
-
-class CellParser(HTMLParser):
-    """gyo.ne.jpのテーブル構造: <th>=日付, <td>=釣果"""
+class TextOnly(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.cells=[]; self._cur=""; self._in=False; self._skip=False
+        self.parts=[]; self._skip=False; self._tag=""
     def handle_starttag(self, tag, attrs):
-        tag=tag.lower()
-        if tag in ("script","style"): self._skip=True
-        elif tag in ("td","th"): self._in=True; self._cur=""
-        elif tag=="br" and self._in: self._cur+="\n"
-    def handle_endtag(self, tag):
-        tag=tag.lower()
-        if tag in ("script","style"): self._skip=False
-        elif tag in ("td","th") and self._in:
-            self.cells.append(self._cur.strip()); self._in=False
-    def handle_data(self, data):
-        if not self._skip and self._in: self._cur+=data
-
-def parse_table_style(html_text, ship, area, year):
-    """忠彦丸型: <th>日付</th><td>釣果</td>のテーブル構造"""
-    tables = re.findall(r'<table[^>]*>(.*?)</table>', html_text, re.DOTALL|re.IGNORECASE)
-    results = []
-    today_month = datetime.now().month
-    for tbl_html in tables:
-        p = CellParser(); p.feed(tbl_html)
-        cells = p.cells
-        if len(cells) < 2: continue
-        label, value = cells[0], cells[1]
-        label_flat = re.sub(r'\s+', '', label)
-        if "釣果" not in label_flat: continue
-        val = value.strip()
-        if not is_valid_catch(val): continue
-        nums = [n.translate(Z2H) for n in re.findall(r"[０-９\d]+", label)]
-        month, day = today_month, None
-        if len(nums) >= 2:
-            try: month, day = int(nums[0]), int(nums[1])
-            except: pass
-        elif len(nums) == 1:
-            try: day = int(nums[0])
-            except: pass
-        results.append({"ship":ship,"area":area,
-            "date":f"{year}/{month:02d}/{day:02d}" if month and day else None,
-            "month":month,"day":day,"catch_raw":val,
-            "fish":guess_fish(val),"count_range":extract_count(val),"size_range":extract_size(val)})
-    return results
-
-def parse_text_style(text, ship, area, year):
-    """一之瀬丸型: 「X日の釣果」の直後に釣果テキストが来るプレーンテキスト構造"""
-    results = []
-    today_month = datetime.now().month
-    lines = text.split('\n')
-    i = 0
-    while i < len(lines):
-        line = lines[i].strip()
-        # 「X日の釣果」パターン
-        m = re.match(r'[０-９\d]+日の釣果', line.translate(Z2H))
-        if m:
-            # 日付を取得
-            day_m = re.search(r'([０-９\d]+)日', line.translate(Z2H))
-            day = int(day_m.group(1)) if day_m else None
-            # 次の行が釣果テキスト
-            j = i + 1
-            while j < len(lines) and j < i + 5:
-                catch_line = lines[j].strip()
-                if is_valid_catch(catch_line):
-                    results.append({"ship":ship,"area":area,
-                        "date":f"{year}/{today_month:02d}/{day:02d}" if day else None,
-                        "month":today_month,"day":day,"catch_raw":catch_line,
-                        "fish":guess_fish(catch_line),"count_range":extract_count(catch_line),"size_range":extract_size(catch_line)})
-                    break
-                j += 1
-        i += 1
-    return results
-
-class TextStripper(HTMLParser):
-    """HTML→プレーンテキスト変換"""
-    def __init__(self):
-        super().__init__()
-        self.parts=[]; self._skip=False
-    def handle_starttag(self, tag, attrs):
-        if tag.lower() in ("script","style"): self._skip=True
-        elif tag.lower() in ("br","p","div","li","tr"): self.parts.append("\n")
+        self._tag=tag.lower()
+        if self._tag in ("script","style"): self._skip=True
+        elif self._tag in ("tr","br","p","h3"): self.parts.append("\n")
+        elif self._tag in ("td","th"): self.parts.append("\t")
     def handle_endtag(self, tag):
         if tag.lower() in ("script","style"): self._skip=False
     def handle_data(self, data):
         if not self._skip: self.parts.append(data)
-    def get_text(self): return "".join(self.parts)
+    def text(self): return "".join(self.parts)
 
-def parse_catches(html_text, ship, area, year):
-    """両方のパターンを試してより多い方を採用"""
-    # パターン1: テーブル構造（忠彦丸型）
-    r1 = parse_table_style(html_text, ship, area, year)
-    # パターン2: プレーンテキスト（一之瀬丸型）
-    ts = TextStripper(); ts.feed(html_text)
-    r2 = parse_text_style(ts.get_text(), ship, area, year)
-    # 重複除去してマージ
-    seen = set()
-    merged = []
-    for r in r1 + r2:
-        key = (r['date'], r['catch_raw'][:20])
-        if key not in seen:
-            seen.add(key); merged.append(r)
-    return merged
+def parse(html, ship, area, year):
+    tp = TextOnly(); tp.feed(html)
+    lines = [l.strip() for l in tp.text().split('\n') if l.strip()]
+    results = []
+    current_date = None
+    for line in lines:
+        m = re.search(r"(\d{4})年(\d{1,2})月(\d{1,2})日", line.translate(Z2H))
+        if m:
+            current_date = f"{m[1]}/{int(m[2]):02d}/{int(m[3]):02d}"; continue
+        if '\t' in line and current_date:
+            cells = [c.strip() for c in line.split('\t') if c.strip()]
+            if len(cells) < 2: continue
+            if cells[0].translate(Z2H).isdigit() and len(cells) > 2:
+                fish_name, count_str = cells[1], cells[2]
+                size_str = cells[3] if len(cells) > 3 else ""
+            else:
+                fish_name, count_str = cells[0], cells[1]
+                size_str = cells[2] if len(cells) > 2 else ""
+            skip_words = {"魚種","合計","備考","特記","ポイント","重さ","大きさ","匹数","　","施設","都道府県"}
+            if fish_name in skip_words: continue
+            if not fish_name or not re.search(r'\d', count_str.translate(Z2H)): continue
+            results.append({
+                "ship":ship,"area":area,"date":current_date,
+                "catch_raw":f"{fish_name} {count_str} {size_str}".strip(),
+                "fish":guess_fish(fish_name),
+                "count_range":extract_count(count_str),
+                "size_range":extract_size(size_str),
+            })
+    return results
 
 def fetch(url):
     try:
         req = Request(url, headers={"User-Agent": USER_AGENT})
         with urlopen(req, timeout=20) as r:
             raw = r.read()
-        for enc in ("cp932","shift_jis","euc-jp","utf-8"):
+        for enc in ("utf-8","cp932","shift_jis","euc-jp"):
             try: return raw.decode(enc)
             except: pass
         return raw.decode("utf-8", errors="replace")
@@ -207,7 +134,7 @@ def build_html(catches, crawled_at):
     fish_summary = {}
     for c in catches:
         for f in c["fish"]:
-            if f != "不明": fish_summary.setdefault(f,[]).append(c)
+            fish_summary.setdefault(f,[]).append(c)
     cards = ""
     for fish, cs in sorted(fish_summary.items(), key=lambda x:-len(x[1])):
         areas = list(dict.fromkeys(c["area"] for c in cs[:3]))
@@ -217,13 +144,13 @@ def build_html(catches, crawled_at):
     rows = ""
     for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:80]:
         cnt = ""
-        if c["count_range"]:
-            mn,mx = c["count_range"]["min"],c["count_range"]["max"]
-            cnt = f"{mn}〜{mx}" if mn!=mx else str(mn)
+        if c.get("count_range"):
+            mn,mx=c["count_range"]["min"],c["count_range"]["max"]
+            cnt=f"{mn}〜{mx}" if mn!=mx else str(mn)
         sz = ""
-        if c["size_range"]:
-            mn,mx = c["size_range"]["min"],c["size_range"]["max"]
-            sz = f"{mn}〜{mx}cm" if mn!=mx else f"{mn}cm"
+        if c.get("size_range"):
+            mn,mx=c["size_range"]["min"],c["size_range"]["max"]
+            sz=f"{mn}〜{mx}cm" if mn!=mx else f"{mn}cm"
         rows += (f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td>"
                  f"<td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td>"
                  f"<td>{cnt}</td><td>{sz}</td>"
@@ -244,14 +171,14 @@ def build_html(catches, crawled_at):
 def main():
     all_catches=[]; errors=[]; now=datetime.now()
     crawled_at=now.strftime("%Y/%m/%d %H:%M"); year=now.year
-    print(f"=== クローラー v6 開始: {crawled_at} ===")
+    print(f"=== 釣りビジョン クローラー 開始: {crawled_at} ===")
     for s in SHIPS:
-        url=BASE_URL.format(cid=s["cid"])
-        print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
+        url=BASE_URL.format(sid=s["sid"])
+        print(f"  [{s['area']}] {s['name']} (s={s['sid']}) ...", end=" ", flush=True)
         html=fetch(url)
         if not html: errors.append(s["name"]); continue
-        catches=parse_catches(html,s["name"],s["area"],year)
-        print(f"{len(catches)} 件"); all_catches.extend(catches); time.sleep(1.2)
+        catches=parse(html,s["name"],s["area"],year)
+        print(f"{len(catches)} 件"); all_catches.extend(catches); time.sleep(1.0)
     with open("catches.json","w",encoding="utf-8") as f:
         json.dump({"crawled_at":crawled_at,"total":len(all_catches),"errors":errors,"data":all_catches},f,ensure_ascii=False,indent=2)
     with open("index.html","w",encoding="utf-8") as f:
