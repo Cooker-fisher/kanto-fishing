@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v3
-対象: gyo.ne.jp（関東沖釣り情報）
-構造: 各釣果が独立した<table>で、1セル目=縦書き「月/日/釣/果」、2セル目=釣果テキスト
+関東船釣り情報クローラー v4
+修正: <th>タグ対応（gyo.ne.jpは日付を<th>、釣果を<td>に格納）
 """
-
 import re, json, time
 from datetime import datetime
 from urllib.request import urlopen, Request
@@ -49,11 +47,9 @@ SHIPS = [
     {"area": "戸田",        "name": "福将丸",        "cid": "fukusyo"},
     {"area": "古宇",        "name": "吉田丸",        "cid": "yosida"},
 ]
-
 BASE_URL = "https://www.gyo.ne.jp/rep_tsuri_view|CID-{cid}.htm"
 USER_AGENT = "Mozilla/5.0 (compatible; FishingInfoBot/1.0)"
 Z2H = str.maketrans("０１２３４５６７８９", "0123456789")
-
 FISH_MAP = {
     "アジ":["アジ","ライトアジ","LTアジ"],"タチウオ":["タチウオ"],
     "フグ":["フグ","トラフグ","ショウサイ"],"カワハギ":["カワハギ"],
@@ -84,19 +80,28 @@ def extract_size(t):
     return None
 
 class CellParser(HTMLParser):
+    """
+    gyo.ne.jpの実際の構造:
+    <table><tbody><tr>
+      <th>３|月|１０|日|釣|果</th>  ← 日付ラベルは<th>タグ
+      <td>タチウオ 80cm 0～1本</td>  ← 釣果テキストは<td>タグ
+    </tr></tbody></table>
+    """
     def __init__(self):
         super().__init__()
-        self.cells=[]; self._cur=""; self._in=False; self._skip=False
+        self.cells = []; self._cur = ""; self._in = False; self._skip = False
     def handle_starttag(self, tag, attrs):
-        if tag in ("script","style"): self._skip=True
-        elif tag=="td": self._in=True; self._cur=""
-        elif tag=="br" and self._in: self._cur+="\n"
+        tag = tag.lower()
+        if tag in ("script","style"): self._skip = True
+        elif tag in ("td","th"): self._in = True; self._cur = ""  # th も処理
+        elif tag == "br" and self._in: self._cur += "\n"
     def handle_endtag(self, tag):
-        if tag in ("script","style"): self._skip=False
-        elif tag=="td" and self._in:
-            self.cells.append(self._cur.strip()); self._in=False
+        tag = tag.lower()
+        if tag in ("script","style"): self._skip = False
+        elif tag in ("td","th") and self._in:
+            self.cells.append(self._cur.strip()); self._in = False
     def handle_data(self, data):
-        if not self._skip and self._in: self._cur+=data
+        if not self._skip and self._in: self._cur += data
 
 def parse_catches(html_text, ship, area, year):
     tables = re.findall(r'<table[^>]*>(.*?)</table>', html_text, re.DOTALL|re.IGNORECASE)
@@ -107,13 +112,17 @@ def parse_catches(html_text, ship, area, year):
         cells = p.cells
         if len(cells) < 2: continue
         label = cells[0]; value = cells[1]
-        label_flat = label.replace("\n","").replace(" ","").replace("\u3000","")
+        # ラベルの全空白除去で「釣果」を検出
+        label_flat = re.sub(r'\s+', '', label)
         if "釣果" not in label_flat: continue
         val = value.strip()
-        if not val or val in ("～㎝\u3000～匹","～cm\u3000～匹","～cm ～匹"): continue
-        if re.match(r"^[～〜\-\s]*$", val): continue
-        nums_raw = re.findall(r"[０-９\d]+", label)
-        nums = [n.translate(Z2H) for n in nums_raw]
+        if not val: continue
+        # 空の釣果をスキップ
+        val_normalized = re.sub(r'[～〜]', '~', val.translate(Z2H))
+        if re.match(r'^[~\s,cm㎝匹本尾枚]+$', val_normalized): continue
+        # 数字を含まない場合もスキップ
+        if not re.search(r'\d', val.translate(Z2H)): continue
+        nums = [n.translate(Z2H) for n in re.findall(r"[０-９\d]+", label)]
         month, day = today_month, None
         if len(nums) >= 2:
             try: month, day = int(nums[0]), int(nums[1])
@@ -131,7 +140,7 @@ def parse_catches(html_text, ship, area, year):
 
 def fetch(url):
     try:
-        req = Request(url, headers={"User-Agent":USER_AGENT})
+        req = Request(url, headers={"User-Agent": USER_AGENT})
         with urlopen(req, timeout=20) as r:
             raw = r.read()
             for enc in ("shift_jis","euc-jp","utf-8"):
@@ -153,7 +162,7 @@ def build_html(catches, crawled_at):
                   f'<div class="fk">{len(cs)}件</div>'
                   f'<div class="fa">{" / ".join(areas)}</div></div>')
     rows = ""
-    for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:50]:
+    for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:60]:
         cnt = ""
         if c["count_range"]:
             mn,mx = c["count_range"]["min"],c["count_range"]["max"]
@@ -165,35 +174,24 @@ def build_html(catches, crawled_at):
         rows += (f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td>"
                  f"<td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td>"
                  f"<td>{cnt}</td><td>{sz}</td>"
-                 f"<td class='raw'>{c['catch_raw'][:40]}</td></tr>")
+                 f"<td style='color:#7a9bb5;font-size:11px'>{c['catch_raw'][:40]}</td></tr>")
+    css = """*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:22px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}.wrap{max-width:1200px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:8px}.fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.fc:hover{border-color:#4db8ff}.fn{font-size:16px;font-weight:bold;color:#fff}.fk{font-size:12px;color:#4db8ff;margin-top:4px}.fa{font-size:11px;color:#7a9bb5;margin-top:2px}.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:left;border-bottom:1px solid #1a4060;white-space:nowrap}td{padding:7px 6px;border-bottom:1px solid #0d2137;vertical-align:top}tr:hover td{background:#0d2137}.note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}"""
     return f"""<!DOCTYPE html>
-<html lang=\"ja\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">
-<title>関東船釣り釣果情報 | 今日何が釣れてる？</title>
-<style>
-*{{box-sizing:border-box;margin:0;padding:0}}body{{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}}
-header{{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}}header h1{{font-size:22px;color:#4db8ff}}
-header p{{font-size:12px;color:#7a9bb5;margin-top:4px}}.wrap{{max-width:1200px;margin:0 auto;padding:20px 16px}}
-h2{{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:8px}}
-.fc{{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}}
-.fc:hover{{border-color:#4db8ff}}.fn{{font-size:16px;font-weight:bold;color:#fff}}
-.fk{{font-size:12px;color:#4db8ff;margin-top:4px}}.fa{{font-size:11px;color:#7a9bb5;margin-top:2px}}
-.tbl-wrap{{overflow-x:auto}}table{{width:100%;border-collapse:collapse;font-size:12px}}
-th{{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:left;border-bottom:1px solid #1a4060;white-space:nowrap}}
-td{{padding:7px 6px;border-bottom:1px solid #0d2137;vertical-align:top}}td.raw{{color:#7a9bb5;font-size:11px}}
-tr:hover td{{background:#0d2137}}.note{{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}}
-</style></head><body>
-<header><h1>🎣 関東船釣り釣果情報</h1><p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計 ／ 毎日16:30自動更新</p></header>
-<div class=\"wrap\"><h2>🐟 釣れている魚</h2><div class=\"grid\">{cards}</div>
-<h2>📋 最新の釣果</h2><div class=\"tbl-wrap\">
-<table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th><th>詳細</th></tr>{rows}</table>
-</div><p class=\"note\">最終更新: {crawled_at} ／ 総件数: {len(catches)} 件 ／ 対象: {len(SHIPS)} 船宿</p></div>
-</body></html>"""
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>関東船釣り釣果情報 | 今日何が釣れてる？</title><style>{css}</style></head>
+<body><header><h1>🎣 関東船釣り釣果情報</h1>
+<p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計 ／ 毎日16:30自動更新</p></header>
+<div class="wrap"><h2>🐟 釣れている魚</h2><div class="grid">{cards}</div>
+<h2>📋 最新の釣果</h2><div class="tw"><table>
+<tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th><th>詳細</th></tr>
+{rows}</table></div>
+<p class="note">最終更新: {crawled_at} ／ {len(catches)}件 ／ {len(SHIPS)}船宿</p>
+</div></body></html>"""
 
 def main():
     all_catches=[]; errors=[]; now=datetime.now()
     crawled_at=now.strftime("%Y/%m/%d %H:%M"); year=now.year
-    print(f"=== クローラー v3 開始: {crawled_at} === 対象: {len(SHIPS)} 船宿")
+    print(f"=== クローラー v4 開始: {crawled_at} ===")
     for s in SHIPS:
         url=BASE_URL.format(cid=s["cid"])
         print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
