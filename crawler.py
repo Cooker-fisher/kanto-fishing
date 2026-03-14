@@ -106,7 +106,7 @@ def parse(html, ship, area, year):
             else:
                 fish_name, count_str = cells[0], cells[1]
                 size_str = cells[2] if len(cells) > 2 else ""
-            skip_words = {"魚種","合計","備考","特記","ポイント","重さ","大きさ","匹数","　","施設","都道府県"}
+            skip_words = {"魚種","合計","備考","特記","ポイント","重さ","大きさ","匹数","　","施設","都道府県","電話番号","FAX","住所","定休日","料金","アクセス","乗船"}
             if fish_name in skip_words: continue
             if not fish_name or not re.search(r'\d', count_str.translate(Z2H)): continue
             results.append({
