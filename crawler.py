@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""関東船釣り情報クローラー v5 - cp932対応・<th>タグ対応"""
+"""関東船釣り情報クローラー v6 - テーブル構造＋プレーンテキスト構造の両対応"""
 import re, json, time
 from datetime import datetime
 from urllib.request import urlopen, Request
@@ -7,42 +7,42 @@ from urllib.error import URLError
 from html.parser import HTMLParser
 
 SHIPS = [
-    {"area": "外川",        "name": "孝進丸",       "cid": "ikoshin"},
-    {"area": "外川",        "name": "三浦丸",        "cid": "miura"},
-    {"area": "片貝",        "name": "勇幸丸",        "cid": "yukou"},
-    {"area": "大原",        "name": "義之丸",        "cid": "yoshino"},
-    {"area": "松部港",      "name": "和八丸",        "cid": "wahachi"},
-    {"area": "伊戸",        "name": "海老丸",        "cid": "ebimaru"},
-    {"area": "勝山",        "name": "新盛丸",        "cid": "sinsei"},
-    {"area": "富津",        "name": "川崎丸",        "cid": "kawasaki"},
-    {"area": "江戸川放水路","name": "たかはし遊船",  "cid": "takahashi_y"},
-    {"area": "浦安",        "name": "吉久",          "cid": "yoshikyu"},
-    {"area": "新山下",      "name": "山下橋黒川本家","cid": "kurokawa"},
-    {"area": "金沢八景",    "name": "一之瀬丸",      "cid": "ichinose"},
-    {"area": "金沢八景",    "name": "忠彦丸",        "cid": "tadahiko"},
-    {"area": "金沢八景",    "name": "米元釣船店",    "cid": "yonemoto"},
-    {"area": "久比里",      "name": "みのすけ丸",    "cid": "minosukemaru"},
-    {"area": "久比里",      "name": "山下丸",        "cid": "yamashita"},
-    {"area": "久比里",      "name": "山天丸",        "cid": "yamaten"},
-    {"area": "久里浜",      "name": "大正丸",        "cid": "taishou"},
-    {"area": "松輪",        "name": "浜鈴丸",        "cid": "hamasuzu"},
-    {"area": "松輪",        "name": "瀬戸丸",        "cid": "sedo"},
-    {"area": "三浦・毘沙門","name": "新店丸",        "cid": "shinmise"},
-    {"area": "長井港",      "name": "はら丸",        "cid": "haramaru"},
-    {"area": "長井港",      "name": "丸八丸",        "cid": "maruhachi"},
-    {"area": "葉山鐙摺港",  "name": "愛正丸",        "cid": "aisho"},
-    {"area": "葉山鐙摺",    "name": "まさみ丸",      "cid": "masami"},
-    {"area": "腰越",        "name": "飯岡丸",        "cid": "iioka"},
-    {"area": "茅ヶ崎",      "name": "ちがさき丸",    "cid": "chigasaki"},
-    {"area": "平塚",        "name": "庄三郎丸",      "cid": "shou3"},
-    {"area": "小田原早川",  "name": "平安丸",        "cid": "heian"},
-    {"area": "東伊豆・網代","name": "鈴喜丸",        "cid": "suzukimaru"},
-    {"area": "宇佐美",      "name": "秀正丸",        "cid": "hidemasa"},
-    {"area": "宇佐美港",    "name": "藤吉丸",        "cid": "toukichimaru"},
-    {"area": "東伊豆",      "name": "伊東港政一丸",  "cid": "masaichimaru"},
-    {"area": "戸田港",      "name": "ふじ丸",        "cid": "fujimaru"},
-    {"area": "戸田",        "name": "福将丸",        "cid": "fukusyo"},
-    {"area": "古宇",        "name": "吉田丸",        "cid": "yosida"},
+    {"area":"外川","name":"孝進丸","cid":"ikoshin"},
+    {"area":"外川","name":"三浦丸","cid":"miura"},
+    {"area":"片貝","name":"勇幸丸","cid":"yukou"},
+    {"area":"大原","name":"義之丸","cid":"yoshino"},
+    {"area":"松部港","name":"和八丸","cid":"wahachi"},
+    {"area":"伊戸","name":"海老丸","cid":"ebimaru"},
+    {"area":"勝山","name":"新盛丸","cid":"sinsei"},
+    {"area":"富津","name":"川崎丸","cid":"kawasaki"},
+    {"area":"江戸川放水路","name":"たかはし遊船","cid":"takahashi_y"},
+    {"area":"浦安","name":"吉久","cid":"yoshikyu"},
+    {"area":"新山下","name":"山下橋黒川本家","cid":"kurokawa"},
+    {"area":"金沢八景","name":"一之瀬丸","cid":"ichinose"},
+    {"area":"金沢八景","name":"忠彦丸","cid":"tadahiko"},
+    {"area":"金沢八景","name":"米元釣船店","cid":"yonemoto"},
+    {"area":"久比里","name":"みのすけ丸","cid":"minosukemaru"},
+    {"area":"久比里","name":"山下丸","cid":"yamashita"},
+    {"area":"久比里","name":"山天丸","cid":"yamaten"},
+    {"area":"久里浜","name":"大正丸","cid":"taishou"},
+    {"area":"松輪","name":"浜鈴丸","cid":"hamasuzu"},
+    {"area":"松輪","name":"瀬戸丸","cid":"sedo"},
+    {"area":"三浦・毘沙門","name":"新店丸","cid":"shinmise"},
+    {"area":"長井港","name":"はら丸","cid":"haramaru"},
+    {"area":"長井港","name":"丸八丸","cid":"maruhachi"},
+    {"area":"葉山鐙摺港","name":"愛正丸","cid":"aisho"},
+    {"area":"葉山鐙摺","name":"まさみ丸","cid":"masami"},
+    {"area":"腰越","name":"飯岡丸","cid":"iioka"},
+    {"area":"茅ヶ崎","name":"ちがさき丸","cid":"chigasaki"},
+    {"area":"平塚","name":"庄三郎丸","cid":"shou3"},
+    {"area":"小田原早川","name":"平安丸","cid":"heian"},
+    {"area":"東伊豆・網代","name":"鈴喜丸","cid":"suzukimaru"},
+    {"area":"宇佐美","name":"秀正丸","cid":"hidemasa"},
+    {"area":"宇佐美港","name":"藤吉丸","cid":"toukichimaru"},
+    {"area":"東伊豆","name":"伊東港政一丸","cid":"masaichimaru"},
+    {"area":"戸田港","name":"ふじ丸","cid":"fujimaru"},
+    {"area":"戸田","name":"福将丸","cid":"fukusyo"},
+    {"area":"古宇","name":"吉田丸","cid":"yosida"},
 ]
 BASE_URL = "https://www.gyo.ne.jp/rep_tsuri_view|CID-{cid}.htm"
 USER_AGENT = "Mozilla/5.0 (compatible; FishingInfoBot/1.0)"
@@ -55,6 +55,7 @@ FISH_MAP = {
     "マダコ":["タコ","マダコ"],"カサゴ":["カサゴ"],"メバル":["メバル"],
     "ワラサ":["ワラサ","イナダ"],"アマダイ":["アマダイ"],"メダイ":["メダイ"],
     "サワラ":["サワラ"],"ヒラメ":["ヒラメ"],"マゴチ":["マゴチ"],
+    "ホウボウ":["ホウボウ"],"アコウ":["アコウ","キジハタ"],
 }
 
 def guess_fish(t):
@@ -62,9 +63,9 @@ def guess_fish(t):
 
 def extract_count(t):
     t = t.translate(Z2H)
-    m = re.search(r"(\d+)[～〜](\d+)\s*[匹本尾枚]", t)
+    m = re.search(r"(\d+)[～〜](\d+)\s*[匹本尾枚杯]", t)
     if m: return {"min":int(m[1]),"max":int(m[2])}
-    m = re.search(r"(\d+)\s*[匹本尾枚]", t)
+    m = re.search(r"(\d+)\s*[匹本尾枚杯]", t)
     if m: v=int(m[1]); return {"min":v,"max":v}
     return None
 
@@ -76,8 +77,18 @@ def extract_size(t):
     if m: v=int(m[1]); return {"min":v,"max":v}
     return None
 
+def is_valid_catch(val):
+    """釣果テキストとして有効かチェック"""
+    v = val.translate(Z2H).strip()
+    if not v or len(v) < 3: return False
+    # 数字を含む
+    if not re.search(r'\d', v): return False
+    # 釣果関連キーワードを含む
+    keywords = ['匹','本','尾','枚','杯','cm','㎝','ｃｍ','kg','ｋｇ']
+    return any(k in v for k in keywords)
+
 class CellParser(HTMLParser):
-    """gyo.ne.jp構造: <th>=日付ラベル、<td>=釣果テキスト"""
+    """gyo.ne.jpのテーブル構造: <th>=日付, <td>=釣果"""
     def __init__(self):
         super().__init__()
         self.cells=[]; self._cur=""; self._in=False; self._skip=False
@@ -94,7 +105,8 @@ class CellParser(HTMLParser):
     def handle_data(self, data):
         if not self._skip and self._in: self._cur+=data
 
-def parse_catches(html_text, ship, area, year):
+def parse_table_style(html_text, ship, area, year):
+    """忠彦丸型: <th>日付</th><td>釣果</td>のテーブル構造"""
     tables = re.findall(r'<table[^>]*>(.*?)</table>', html_text, re.DOTALL|re.IGNORECASE)
     results = []
     today_month = datetime.now().month
@@ -102,12 +114,11 @@ def parse_catches(html_text, ship, area, year):
         p = CellParser(); p.feed(tbl_html)
         cells = p.cells
         if len(cells) < 2: continue
-        label = cells[0]; value = cells[1]
+        label, value = cells[0], cells[1]
         label_flat = re.sub(r'\s+', '', label)
         if "釣果" not in label_flat: continue
         val = value.strip()
-        if not val: continue
-        if not re.search(r'\d', val.translate(Z2H)): continue
+        if not is_valid_catch(val): continue
         nums = [n.translate(Z2H) for n in re.findall(r"[０-９\d]+", label)]
         month, day = today_month, None
         if len(nums) >= 2:
@@ -116,21 +127,76 @@ def parse_catches(html_text, ship, area, year):
         elif len(nums) == 1:
             try: day = int(nums[0])
             except: pass
-        results.append({
-            "ship":ship,"area":area,
+        results.append({"ship":ship,"area":area,
             "date":f"{year}/{month:02d}/{day:02d}" if month and day else None,
             "month":month,"day":day,"catch_raw":val,
-            "fish":guess_fish(val),"count_range":extract_count(val),"size_range":extract_size(val),
-        })
+            "fish":guess_fish(val),"count_range":extract_count(val),"size_range":extract_size(val)})
     return results
+
+def parse_text_style(text, ship, area, year):
+    """一之瀬丸型: 「X日の釣果」の直後に釣果テキストが来るプレーンテキスト構造"""
+    results = []
+    today_month = datetime.now().month
+    lines = text.split('\n')
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        # 「X日の釣果」パターン
+        m = re.match(r'[０-９\d]+日の釣果', line.translate(Z2H))
+        if m:
+            # 日付を取得
+            day_m = re.search(r'([０-９\d]+)日', line.translate(Z2H))
+            day = int(day_m.group(1)) if day_m else None
+            # 次の行が釣果テキスト
+            j = i + 1
+            while j < len(lines) and j < i + 5:
+                catch_line = lines[j].strip()
+                if is_valid_catch(catch_line):
+                    results.append({"ship":ship,"area":area,
+                        "date":f"{year}/{today_month:02d}/{day:02d}" if day else None,
+                        "month":today_month,"day":day,"catch_raw":catch_line,
+                        "fish":guess_fish(catch_line),"count_range":extract_count(catch_line),"size_range":extract_size(catch_line)})
+                    break
+                j += 1
+        i += 1
+    return results
+
+class TextStripper(HTMLParser):
+    """HTML→プレーンテキスト変換"""
+    def __init__(self):
+        super().__init__()
+        self.parts=[]; self._skip=False
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() in ("script","style"): self._skip=True
+        elif tag.lower() in ("br","p","div","li","tr"): self.parts.append("\n")
+    def handle_endtag(self, tag):
+        if tag.lower() in ("script","style"): self._skip=False
+    def handle_data(self, data):
+        if not self._skip: self.parts.append(data)
+    def get_text(self): return "".join(self.parts)
+
+def parse_catches(html_text, ship, area, year):
+    """両方のパターンを試してより多い方を採用"""
+    # パターン1: テーブル構造（忠彦丸型）
+    r1 = parse_table_style(html_text, ship, area, year)
+    # パターン2: プレーンテキスト（一之瀬丸型）
+    ts = TextStripper(); ts.feed(html_text)
+    r2 = parse_text_style(ts.get_text(), ship, area, year)
+    # 重複除去してマージ
+    seen = set()
+    merged = []
+    for r in r1 + r2:
+        key = (r['date'], r['catch_raw'][:20])
+        if key not in seen:
+            seen.add(key); merged.append(r)
+    return merged
 
 def fetch(url):
     try:
         req = Request(url, headers={"User-Agent": USER_AGENT})
         with urlopen(req, timeout=20) as r:
             raw = r.read()
-        # cp932を最初に試す（gyo.ne.jpはWindows版Shift-JIS）
-        for enc in ("cp932", "shift_jis", "euc-jp", "utf-8"):
+        for enc in ("cp932","shift_jis","euc-jp","utf-8"):
             try: return raw.decode(enc)
             except: pass
         return raw.decode("utf-8", errors="replace")
@@ -149,7 +215,7 @@ def build_html(catches, crawled_at):
                   f'<div class="fk">{len(cs)}件</div>'
                   f'<div class="fa">{" / ".join(areas)}</div></div>')
     rows = ""
-    for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:60]:
+    for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:80]:
         cnt = ""
         if c["count_range"]:
             mn,mx = c["count_range"]["min"],c["count_range"]["max"]
@@ -178,7 +244,7 @@ def build_html(catches, crawled_at):
 def main():
     all_catches=[]; errors=[]; now=datetime.now()
     crawled_at=now.strftime("%Y/%m/%d %H:%M"); year=now.year
-    print(f"=== クローラー v5 開始: {crawled_at} ===")
+    print(f"=== クローラー v6 開始: {crawled_at} ===")
     for s in SHIPS:
         url=BASE_URL.format(cid=s["cid"])
         print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
