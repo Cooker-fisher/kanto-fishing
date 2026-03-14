@@ -6,6 +6,7 @@ from urllib.error import URLError
 from html.parser import HTMLParser
 
 SHIPS = [
+    # 金沢漁港・金沢八景
     {"area":"金沢八景","name":"鴨下丸","sid":175},
     {"area":"金沢八景","name":"蒲谷丸","sid":176},
     {"area":"金沢八景","name":"黒一丸","sid":177},
@@ -17,18 +18,73 @@ SHIPS = [
     {"area":"金沢八景","name":"仁丸","sid":183},
     {"area":"金沢八景","name":"進丸","sid":184},
     {"area":"金沢八景","name":"忠彦丸","sid":185},
+    {"area":"金沢八景","name":"一之瀬丸","sid":186},
+    {"area":"金沢八景","name":"新修丸","sid":187},
+    {"area":"金沢八景","name":"米元釣船店","sid":188},
+    {"area":"金沢八景","name":"荒川屋","sid":189},
+    {"area":"金沢八景","name":"弁天屋","sid":190},
+    {"area":"金沢八景","name":"太田屋","sid":191},
+    {"area":"金沢八景","name":"野毛屋釣船店","sid":192},
+    {"area":"金沢八景","name":"黒川丸","sid":260},
+    {"area":"金沢八景","name":"小柴丸","sid":1750},
+    {"area":"金沢八景","name":"新健丸","sid":11301},
     {"area":"金沢漁港","name":"久保弘丸","sid":759},
     {"area":"金沢漁港","name":"横内丸","sid":11403},
-    {"area":"走水","name":"大正丸","sid":201},
-    {"area":"久里浜","name":"大原丸","sid":202},
-    {"area":"松輪","name":"瀬戸丸","sid":150},
-    {"area":"久比里","name":"山下丸","sid":160},
-    {"area":"葉山","name":"愛正丸","sid":170},
-    {"area":"茅ヶ崎","name":"ちがさき丸","sid":101},
-    {"area":"深川","name":"吉野屋","sid":300},
-    {"area":"浦安","name":"吉久","sid":310},
-    {"area":"外川","name":"孝進丸","sid":400},
-    {"area":"大原","name":"義之丸","sid":410},
+    # 横浜港・本牧
+    {"area":"横浜本牧","name":"長崎屋","sid":256},
+    {"area":"横浜港","name":"渡辺釣船店","sid":172},
+    {"area":"横浜港","name":"黒川本家","sid":173},
+    {"area":"横浜港","name":"アイランドクルーズ","sid":10055},
+    {"area":"横浜港","name":"打木屋釣船店","sid":11294},
+    # 走水
+    {"area":"走水","name":"吉明丸","sid":197},
+    {"area":"走水","name":"健洋丸","sid":198},
+    {"area":"走水","name":"高司丸","sid":199},
+    {"area":"走水","name":"海福丸","sid":200},
+    # 久里浜
+    {"area":"久里浜","name":"ムツ六釣船店","sid":212},
+    {"area":"久里浜","name":"久里浜黒川本家","sid":213},
+    # 久比里
+    {"area":"久比里","name":"山下丸","sid":209},
+    {"area":"久比里","name":"巳之助丸","sid":210},
+    {"area":"久比里","name":"山天丸","sid":211},
+    # 松輪
+    {"area":"松輪","name":"喜平治丸","sid":215},
+    {"area":"松輪","name":"一義丸","sid":216},
+    {"area":"松輪","name":"成銀丸","sid":217},
+    # 長井
+    {"area":"長井","name":"はら丸","sid":218},
+    {"area":"長井","name":"栃木丸","sid":219},
+    {"area":"長井","name":"徳丸","sid":220},
+    {"area":"長井","name":"儀兵衛丸","sid":221},
+    {"area":"長井","name":"丸伊丸","sid":223},
+    {"area":"長井","name":"春盛丸","sid":204},
+    {"area":"長井","name":"光三丸","sid":205},
+    {"area":"長井","name":"長助丸","sid":207},
+    {"area":"長井","name":"青木丸","sid":208},
+    # 葉山
+    {"area":"葉山","name":"たいぞう丸","sid":229},
+    {"area":"葉山","name":"与兵衛丸","sid":231},
+    {"area":"葉山","name":"愛正丸","sid":232},
+    {"area":"葉山","name":"まさみ丸","sid":233},
+    # 茅ヶ崎
+    {"area":"茅ヶ崎","name":"まごうの丸","sid":240},
+    {"area":"茅ヶ崎","name":"沖右ヱ門丸","sid":241},
+    # 平塚
+    {"area":"平塚","name":"庄三郎丸","sid":244},
+    # 東京・深川
+    {"area":"深川","name":"吉野屋","sid":161},
+    {"area":"深川","name":"冨士見","sid":11201},
+    {"area":"深川","name":"船宿さわ浦","sid":12074},
+    # 東京・羽田
+    {"area":"羽田","name":"かみや","sid":164},
+    {"area":"羽田","name":"かめだや","sid":165},
+    {"area":"羽田","name":"えさ政釣船店","sid":166},
+    # 千葉・浦安
+    {"area":"浦安","name":"吉久","sid":147},
+    {"area":"浦安","name":"岩田屋本店","sid":1691},
+    # 茨城・鹿島
+    {"area":"鹿島","name":"幸栄丸","sid":496},
 ]
 
 BASE = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}&pageID=1"
@@ -45,6 +101,8 @@ FISH_MAP = {
     "マダコ":["タコ","マダコ"],"カサゴ":["カサゴ"],"メバル":["メバル"],
     "ワラサ":["ワラサ","イナダ","ブリ"],"アマダイ":["アマダイ"],
     "ヒラメ":["ヒラメ"],"マゴチ":["マゴチ"],"五目":["五目"],
+    "イシモチ":["イシモチ"],"サワラ":["サワラ"],
+    "アカムツ":["アカムツ","ノドグロ"],"キンメ":["キンメ"],
 }
 
 def guess_fish(t):
@@ -122,20 +180,20 @@ def build_html(data, ts, n):
                   for f,cs in sorted(fs.items(),key=lambda x:-len(x[1])))
     def rng(r,u): return f'{r["min"]}~{r["max"]}{u}' if r and r["min"]!=r["max"] else (f'{r["min"]}{u}' if r else "")
     rows="".join(f"<tr><td>{c['date']}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{rng(c.get('count_range'),'')}</td><td>{rng(c.get('size_range'),'cm')}</td></tr>"
-                 for c in sorted(data,key=lambda x:x["date"],reverse=True)[:100])
+                 for c in sorted(data,key=lambda x:x["date"],reverse=True)[:200])
     css="*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}h1{font-size:22px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}.w{max-width:1200px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}.fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px;text-align:center}.fn{font-size:15px;font-weight:bold}.fk{font-size:12px;color:#4db8ff}.fa{font-size:11px;color:#7a9bb5}.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:left;border-bottom:1px solid #1a4060}td{padding:6px;border-bottom:1px solid #0d2137}tr:hover td{background:#0d2137}.note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}"
     return f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>関東船釣り釣果情報</title><style>{css}</style></head><body><header><h1>🎣 関東船釣り釣果情報</h1><p>今日何が釣れてる？関東エリアの船宿釣果 毎日16:30自動更新</p></header><div class="w"><h2>🐟 釣れている魚</h2><div class="g">{cards}</div><h2>📋 最新釣果</h2><div class="tw"><table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>{rows}</table></div><p class="note">更新:{ts} / {len(data)}件 / {n}船宿</p></div></body></html>'
 
 def main():
     all,errs=[],[]
     ts=datetime.now().strftime("%Y/%m/%d %H:%M")
-    print(f"=== 開始:{ts} ===")
+    print(f"=== 開始:{ts} / {len(SHIPS)}船宿 ===")
     for s in SHIPS:
         print(f"  [{s['area']}]{s['name']}(s={s['sid']})...",end=" ",flush=True)
         r=crawl(s)
         if r is None: errs.append(s["name"]); print("ERROR")
         else: print(f"{len(r)}件"); all.extend(r)
-        time.sleep(1)
+        time.sleep(0.8)
     json.dump({"crawled_at":ts,"total":len(all),"errors":errs,"data":all},
               open("catches.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
     open("index.html","w",encoding="utf-8").write(build_html(all,ts,len(SHIPS)))
