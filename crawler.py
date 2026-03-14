@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v2
+関東船釣り情報クローラー v3
 対象: gyo.ne.jp（関東沖釣り情報）
-実行: python3 crawler.py
-出力: catches.json / index.html
+構造: 各釣果が独立した<table>で、1セル目=縦書き「月/日/釣/果」、2セル目=釣果テキスト
 """
 
 import re, json, time
@@ -53,45 +52,20 @@ SHIPS = [
 
 BASE_URL = "https://www.gyo.ne.jp/rep_tsuri_view|CID-{cid}.htm"
 USER_AGENT = "Mozilla/5.0 (compatible; FishingInfoBot/1.0)"
-
-FISH_MAP = {
-    "アジ":      ["アジ", "ライトアジ", "LTアジ"],
-    "タチウオ":  ["タチウオ"],
-    "フグ":      ["フグ", "トラフグ", "ショウサイ"],
-    "カワハギ":  ["カワハギ"],
-    "マダイ":    ["マダイ", "真鯛"],
-    "シロギス":  ["シロギス", "キス"],
-    "イサキ":    ["イサキ"],
-    "ヤリイカ":  ["ヤリイカ"],
-    "スルメイカ":["スルメイカ"],
-    "マダコ":    ["タコ", "マダコ"],
-    "カサゴ":    ["カサゴ"],
-    "メバル":    ["メバル"],
-    "ワラサ":    ["ワラサ", "イナダ"],
-    "アマダイ":  ["アマダイ"],
-    "メダイ":    ["メダイ"],
-    "サワラ":    ["サワラ"],
-    "ヒラメ":    ["ヒラメ"],
-    "マゴチ":    ["マゴチ"],
-}
-
 Z2H = str.maketrans("０１２３４５６７８９", "0123456789")
 
-class TxtParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.parts = []; self._skip = False
-    def handle_starttag(self, tag, attrs):
-        if tag in ("script","style"): self._skip = True
-        if tag in ("td","th","div","tr","p","br","li"): self.parts.append("\n")
-    def handle_endtag(self, tag):
-        if tag in ("script","style"): self._skip = False
-    def handle_data(self, data):
-        if not self._skip: self.parts.append(data)
-    def text(self): return "".join(self.parts)
+FISH_MAP = {
+    "アジ":["アジ","ライトアジ","LTアジ"],"タチウオ":["タチウオ"],
+    "フグ":["フグ","トラフグ","ショウサイ"],"カワハギ":["カワハギ"],
+    "マダイ":["マダイ","真鯛"],"シロギス":["シロギス","キス"],
+    "イサキ":["イサキ"],"ヤリイカ":["ヤリイカ"],"スルメイカ":["スルメイカ"],
+    "マダコ":["タコ","マダコ"],"カサゴ":["カサゴ"],"メバル":["メバル"],
+    "ワラサ":["ワラサ","イナダ"],"アマダイ":["アマダイ"],"メダイ":["メダイ"],
+    "サワラ":["サワラ"],"ヒラメ":["ヒラメ"],"マゴチ":["マゴチ"],
+}
 
 def guess_fish(t):
-    return [f for f, kws in FISH_MAP.items() if any(k in t for k in kws)] or ["不明"]
+    return [f for f,kws in FISH_MAP.items() if any(k in t for k in kws)] or ["不明"]
 
 def extract_count(t):
     t = t.translate(Z2H)
@@ -109,41 +83,56 @@ def extract_size(t):
     if m: v=int(m[1]); return {"min":v,"max":v}
     return None
 
-def is_empty(t):
-    return re.match(r"^[~～〜\-\s]*c[m]?[~～〜\s]*[匹本尾枚]$", t.translate(Z2H), re.I) is not None \
-        or t.strip() in ("", "～㎝　～匹", "～cm　～匹")
+class CellParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.cells=[]; self._cur=""; self._in=False; self._skip=False
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script","style"): self._skip=True
+        elif tag=="td": self._in=True; self._cur=""
+        elif tag=="br" and self._in: self._cur+="\n"
+    def handle_endtag(self, tag):
+        if tag in ("script","style"): self._skip=False
+        elif tag=="td" and self._in:
+            self.cells.append(self._cur.strip()); self._in=False
+    def handle_data(self, data):
+        if not self._skip and self._in: self._cur+=data
 
-def parse(text, ship, area, year):
-    lines = text.split("\n")
+def parse_catches(html_text, ship, area, year):
+    tables = re.findall(r'<table[^>]*>(.*?)</table>', html_text, re.DOTALL|re.IGNORECASE)
     results = []
-    month, day = datetime.now().month, None
-    for i, raw in enumerate(lines):
-        line = raw.strip()
-        if re.match(r"^[０-９\d]+$", line) and line:
-            try:
-                n = int(line.translate(Z2H))
-                nxt = lines[i+1].strip() if i+1 < len(lines) else ""
-                if nxt == "月": month = n
-                elif nxt == "日": day = n
+    today_month = datetime.now().month
+    for tbl_html in tables:
+        p = CellParser(); p.feed(tbl_html)
+        cells = p.cells
+        if len(cells) < 2: continue
+        label = cells[0]; value = cells[1]
+        label_flat = label.replace("\n","").replace(" ","").replace("\u3000","")
+        if "釣果" not in label_flat: continue
+        val = value.strip()
+        if not val or val in ("～㎝\u3000～匹","～cm\u3000～匹","～cm ～匹"): continue
+        if re.match(r"^[～〜\-\s]*$", val): continue
+        nums_raw = re.findall(r"[０-９\d]+", label)
+        nums = [n.translate(Z2H) for n in nums_raw]
+        month, day = today_month, None
+        if len(nums) >= 2:
+            try: month, day = int(nums[0]), int(nums[1])
             except: pass
-        if "\t" in raw:
-            label, *rest = raw.split("\t", 1)
-            val = rest[0].strip() if rest else ""
-            if label.strip() == "果" and val and not is_empty(val):
-                results.append({
-                    "ship": ship, "area": area,
-                    "date": f"{year}/{month:02d}/{day:02d}" if month and day else None,
-                    "month": month, "day": day,
-                    "catch_raw": val,
-                    "fish": guess_fish(val),
-                    "count_range": extract_count(val),
-                    "size_range":  extract_size(val),
-                })
+        elif len(nums) == 1:
+            try: day = int(nums[0])
+            except: pass
+        results.append({
+            "ship":ship,"area":area,
+            "date":f"{year}/{month:02d}/{day:02d}" if month and day else None,
+            "month":month,"day":day,"catch_raw":val,
+            "fish":guess_fish(val),"count_range":extract_count(val),"size_range":extract_size(val),
+        })
     return results
 
 def fetch(url):
     try:
-        with urlopen(Request(url, headers={"User-Agent": USER_AGENT}), timeout=20) as r:
+        req = Request(url, headers={"User-Agent":USER_AGENT})
+        with urlopen(req, timeout=20) as r:
             raw = r.read()
             for enc in ("shift_jis","euc-jp","utf-8"):
                 try: return raw.decode(enc)
@@ -156,103 +145,67 @@ def build_html(catches, crawled_at):
     fish_summary = {}
     for c in catches:
         for f in c["fish"]:
-            if f != "不明":
-                fish_summary.setdefault(f, []).append(c)
-
+            if f != "不明": fish_summary.setdefault(f,[]).append(c)
     cards = ""
-    for fish, cs in sorted(fish_summary.items(), key=lambda x: -len(x[1])):
+    for fish, cs in sorted(fish_summary.items(), key=lambda x:-len(x[1])):
         areas = list(dict.fromkeys(c["area"] for c in cs[:3]))
-        cards += f'<div class="fc"><div class="fn">{fish}</div><div class="fk">{len(cs)}件</div><div class="fa">{" / ".join(areas)}</div></div>'
-
+        cards += (f'<div class="fc"><div class="fn">{fish}</div>'
+                  f'<div class="fk">{len(cs)}件</div>'
+                  f'<div class="fa">{" / ".join(areas)}</div></div>')
     rows = ""
-    for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:30]:
+    for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:50]:
         cnt = ""
         if c["count_range"]:
-            mn,mx = c["count_range"]["min"], c["count_range"]["max"]
+            mn,mx = c["count_range"]["min"],c["count_range"]["max"]
             cnt = f"{mn}〜{mx}" if mn!=mx else str(mn)
         sz = ""
         if c["size_range"]:
-            mn,mx = c["size_range"]["min"], c["size_range"]["max"]
+            mn,mx = c["size_range"]["min"],c["size_range"]["max"]
             sz = f"{mn}〜{mx}cm" if mn!=mx else f"{mn}cm"
-        fish_str = "・".join(c["fish"])
-        rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz}</td></tr>"
-
+        rows += (f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td>"
+                 f"<td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td>"
+                 f"<td>{cnt}</td><td>{sz}</td>"
+                 f"<td class='raw'>{c['catch_raw'][:40]}</td></tr>")
     return f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang=\"ja\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">
 <title>関東船釣り釣果情報 | 今日何が釣れてる？</title>
 <style>
-*{{box-sizing:border-box;margin:0;padding:0}}
-body{{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}}
-header{{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}}
-header h1{{font-size:22px;color:#4db8ff}}
-header p{{font-size:12px;color:#7a9bb5;margin-top:4px}}
-.wrap{{max-width:1100px;margin:0 auto;padding:20px 16px}}
+*{{box-sizing:border-box;margin:0;padding:0}}body{{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}}
+header{{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}}header h1{{font-size:22px;color:#4db8ff}}
+header p{{font-size:12px;color:#7a9bb5;margin-top:4px}}.wrap{{max-width:1200px;margin:0 auto;padding:20px 16px}}
 h2{{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:8px}}
 .fc{{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}}
-.fc:hover{{border-color:#4db8ff}}
-.fn{{font-size:16px;font-weight:bold;color:#fff}}
-.fk{{font-size:12px;color:#4db8ff;margin-top:4px}}
-.fa{{font-size:11px;color:#7a9bb5;margin-top:2px}}
-table{{width:100%;border-collapse:collapse;font-size:13px}}
-th{{background:#0d2137;color:#4db8ff;padding:8px;text-align:left;border-bottom:1px solid #1a4060}}
-td{{padding:8px;border-bottom:1px solid #0d2137}}
-tr:hover td{{background:#0d2137}}
-.note{{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}}
-</style>
-</head>
-<body>
-<header>
-  <h1>🎣 関東船釣り釣果情報</h1>
-  <p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計</p>
-</header>
-<div class="wrap">
-  <h2>🐟 釣れている魚</h2>
-  <div class="grid">{cards}</div>
-  <h2>📋 最新の釣果</h2>
-  <table>
-    <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>
-    {rows}
-  </table>
-  <p class="note">最終更新: {crawled_at} ／ 総件数: {len(catches)} 件</p>
-</div>
-</body>
-</html>"""
+.fc:hover{{border-color:#4db8ff}}.fn{{font-size:16px;font-weight:bold;color:#fff}}
+.fk{{font-size:12px;color:#4db8ff;margin-top:4px}}.fa{{font-size:11px;color:#7a9bb5;margin-top:2px}}
+.tbl-wrap{{overflow-x:auto}}table{{width:100%;border-collapse:collapse;font-size:12px}}
+th{{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:left;border-bottom:1px solid #1a4060;white-space:nowrap}}
+td{{padding:7px 6px;border-bottom:1px solid #0d2137;vertical-align:top}}td.raw{{color:#7a9bb5;font-size:11px}}
+tr:hover td{{background:#0d2137}}.note{{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}}
+</style></head><body>
+<header><h1>🎣 関東船釣り釣果情報</h1><p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計 ／ 毎日16:30自動更新</p></header>
+<div class=\"wrap\"><h2>🐟 釣れている魚</h2><div class=\"grid\">{cards}</div>
+<h2>📋 最新の釣果</h2><div class=\"tbl-wrap\">
+<table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th><th>詳細</th></tr>{rows}</table>
+</div><p class=\"note\">最終更新: {crawled_at} ／ 総件数: {len(catches)} 件 ／ 対象: {len(SHIPS)} 船宿</p></div>
+</body></html>"""
 
 def main():
-    all_catches = []
-    errors = []
-    now = datetime.now()
-    crawled_at = now.strftime("%Y/%m/%d %H:%M")
-    year = now.year
-
-    print(f"=== 関東船釣りクローラー 開始: {crawled_at} ===")
-    print(f"対象: {len(SHIPS)} 船宿\n")
-
+    all_catches=[]; errors=[]; now=datetime.now()
+    crawled_at=now.strftime("%Y/%m/%d %H:%M"); year=now.year
+    print(f"=== クローラー v3 開始: {crawled_at} === 対象: {len(SHIPS)} 船宿")
     for s in SHIPS:
-        url = BASE_URL.format(cid=s["cid"])
+        url=BASE_URL.format(cid=s["cid"])
         print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
-        html = fetch(url)
-        if not html:
-            errors.append(s["name"]); continue
-        p = TxtParser(); p.feed(html)
-        catches = parse(p.text(), s["name"], s["area"], year)
-        print(f"{len(catches)} 件")
-        all_catches.extend(catches)
-        time.sleep(1.2)
-
+        html=fetch(url)
+        if not html: errors.append(s["name"]); continue
+        catches=parse_catches(html,s["name"],s["area"],year)
+        print(f"{len(catches)} 件"); all_catches.extend(catches); time.sleep(1.2)
     with open("catches.json","w",encoding="utf-8") as f:
-        json.dump({"crawled_at":crawled_at,"total":len(all_catches),"errors":errors,"data":all_catches}, f, ensure_ascii=False, indent=2)
-
+        json.dump({"crawled_at":crawled_at,"total":len(all_catches),"errors":errors,"data":all_catches},f,ensure_ascii=False,indent=2)
     with open("index.html","w",encoding="utf-8") as f:
-        f.write(build_html(all_catches, crawled_at))
+        f.write(build_html(all_catches,crawled_at))
+    print(f"=== 完了: {len(all_catches)}件 エラー:{errors or 'なし'} ===")
 
-    print(f"\n=== 完了 ===")
-    print(f"釣果: {len(all_catches)} 件 ／ エラー: {errors or 'なし'}")
-    print(f"出力: catches.json / index.html")
-
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
