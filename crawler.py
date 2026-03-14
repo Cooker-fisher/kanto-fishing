@@ -2,7 +2,7 @@
 """
 関東船釣り情報クローラー - 釣りビジョン版 (最終版)
 ソース: https://www.fishing-v.jp/choka/choka_detail.php?s=船宿ID&pageID=1
-構造確認済み: 日付(h3)→テーブル(番号/魚種/匹数/サイズ...)
+構造確認済み: 日付(li)→テーブル(番号/魚種/匹数/サイズ...)
 """
 
 import re, json, time
@@ -80,7 +80,7 @@ class TextOnly(HTMLParser):
     def handle_starttag(self, tag, attrs):
         self._tag=tag.lower()
         if self._tag in ("script","style"): self._skip=True
-        elif self._tag in ("tr","br","p","h3"): self.parts.append("\n")
+        elif self._tag in ("tr","br","p","h3","li"): self.parts.append("\n")
         elif self._tag in ("td","th"): self.parts.append("\t")
     def handle_endtag(self, tag):
         if tag.lower() in ("script","style"): self._skip=False
