@@ -236,16 +236,121 @@ def crawl(ship):
             for r in p.records]
 
 def build_html(data, ts, n):
-    fs={}
+    import json as _json
+    from datetime import datetime, timedelta
+    fs = {}
     for c in data:
-        for f in c["fish"]: fs.setdefault(f,[]).append(c)
-    cards="".join(f'<div class="fc"><div class="fn">{f}</div><div class="fk">{len(cs)}件</div><div class="fa">{"/".join(list(dict.fromkeys(c["area"] for c in cs[:3])))}</div></div>'
-                  for f,cs in sorted(fs.items(),key=lambda x:-len(x[1])))
-    def rng(r,u): return f'{r["min"]}~{r["max"]}{u}' if r and r["min"]!=r["max"] else (f'{r["min"]}{u}' if r else "")
-    rows="".join(f"<tr><td>{c['date']}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{rng(c.get('count_range'),'')}</td><td>{rng(c.get('size_range'),'cm')}</td></tr>"
-                 for c in sorted(data,key=lambda x:x["date"],reverse=True)[:200])
-    css="*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}h1{font-size:22px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}.w{max-width:1200px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}.fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px;text-align:center}.fn{font-size:15px;font-weight:bold}.fk{font-size:12px;color:#4db8ff}.fa{font-size:11px;color:#7a9bb5}.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:left;border-bottom:1px solid #1a4060}td{padding:6px;border-bottom:1px solid #0d2137}tr:hover td{background:#0d2137}.note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}"
-    return f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>関東船釣り釣果情報</title><style>{css}</style></head><body><header><h1>🎣 関東船釣り釣果情報</h1><p>今日何が釣れてる？関東エリアの船宿釣果 毎日16:30自動更新</p></header><div class="w"><h2>🐟 釣れている魚</h2><div class="g">{cards}</div><h2>📋 最新釣果</h2><div class="tw"><table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>{rows}</table></div><p class="note">更新:{ts} / {len(data)}件 / {n}船宿</p></div></body></html>'
+        for f in c["fish"]:
+            fs.setdefault(f, []).append(c)
+
+    cards = ""
+    for f, cs in sorted(fs.items(), key=lambda x: -len(x[1])):
+        areas = list(dict.fromkeys(c["area"] for c in cs[:3]))
+        recent = sum(1 for c in cs if c.get("date") and c["date"] >= (datetime.now()-timedelta(days=7)).strftime("%Y/%m/%d"))
+        badge = f'<span class="nb">{recent}件/週</span>' if recent > 0 else ""
+        cards += f'<div class="fc" onclick="showRank({_json.dumps(f)})" title="{f}のランキング"><div class="fn">{f}</div><div class="fk">{len(cs)}件 {badge}</div><div class="fa">{"/".join(areas)}</div></div>'
+
+    def rng(r, u): return f'{r["min"]}~{r["max"]}{u}' if r and r["min"] != r["max"] else (f'{r["min"]}{u}' if r else "")
+
+    rows = "".join(
+        f"<tr><td>{c['date']}</td><td>{c['area']}</td><td>{c['ship']}</td>"
+        f"<td>{'・'.join(c['fish'])}</td><td>{rng(c.get('count_range'),'')}</td>"
+        f"<td>{rng(c.get('size_range'),'cm')}</td></tr>"
+        for c in sorted(data, key=lambda x: x["date"], reverse=True)[:200]
+    )
+
+    rank_data = {}
+    for f, cs in fs.items():
+        ships = {}
+        for c in cs:
+            key = c["ship"]
+            mx = (c.get("count_range") or {}).get("max", 0)
+            if key not in ships or ships[key]["max"] < mx:
+                ships[key] = {"ship": c["ship"], "area": c["area"], "max": mx, "date": c.get("date", "")}
+        rank_data[f] = sorted(ships.values(), key=lambda x: -x["max"])[:10]
+
+    rank_json = _json.dumps(rank_data, ensure_ascii=False)
+
+    css = ("*{box-sizing:border-box;margin:0;padding:0}"
+           "body{font-family:sans-serif;background:#0a1628;color:#e0e8f0}"
+           "header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}"
+           "h1{font-size:22px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}"
+           ".w{max-width:1200px;margin:0 auto;padding:20px 16px}"
+           "h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}"
+           ".g{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}"
+           ".fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:border-color .2s,transform .15s}"
+           ".fc:hover{border-color:#4db8ff;transform:translateY(-2px)}"
+           ".fn{font-size:15px;font-weight:bold}.fk{font-size:12px;color:#4db8ff;margin-top:3px}"
+           ".fa{font-size:11px;color:#7a9bb5;margin-top:2px}"
+           ".nb{background:#1a4060;border-radius:4px;padding:1px 5px;font-size:10px;color:#7dd3fc}"
+           ".tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12px}"
+           "th{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:left;border-bottom:1px solid #1a4060}"
+           "td{padding:7px 6px;border-bottom:1px solid #0d2137}tr:hover td{background:#0d2137}"
+           ".note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}"
+           ".overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center}"
+           ".overlay.open{display:flex}"
+           ".modal{background:#0d2137;border:1px solid #1a6ea8;border-radius:12px;padding:24px;width:92%;max-width:520px;max-height:85vh;overflow-y:auto;position:relative}"
+           ".modal h3{font-size:18px;color:#4db8ff;margin-bottom:4px}"
+           ".modal-sub{font-size:12px;color:#7a9bb5;margin-bottom:16px}"
+           ".close-btn{position:absolute;top:12px;right:16px;background:none;border:none;color:#7a9bb5;font-size:22px;cursor:pointer;line-height:1}"
+           ".close-btn:hover{color:#fff}"
+           ".rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #0a1628}"
+           ".rrow:last-child{border-bottom:none}"
+           ".rnum{font-size:20px;font-weight:bold;color:#334155;width:32px;text-align:center;flex-shrink:0}"
+           ".rnum.g1{color:#f59e0b}.rnum.g2{color:#94a3b8}.rnum.g3{color:#b45309}"
+           ".rinfo{flex:1;min-width:0}.rship{font-size:15px;font-weight:bold;color:#fff}"
+           ".rarea{font-size:11px;color:#7a9bb5;margin-top:2px}"
+           ".rbar-wrap{width:110px;flex-shrink:0;text-align:right}"
+           ".rcnt{font-size:16px;font-weight:bold;color:#4db8ff}"
+           ".runit{font-size:11px;color:#7a9bb5}"
+           ".rbar-bg{background:#0a1628;border-radius:4px;height:5px;margin-top:5px}"
+           ".rbar{height:5px;background:linear-gradient(90deg,#1a6ea8,#4db8ff);border-radius:4px}")
+
+    js = f"""const RANK={rank_json};
+const MEDALS=['g1','g2','g3'];
+function showRank(fish){{
+  const rows=RANK[fish]||[];
+  const max=rows[0]?rows[0].max:1;
+  let html='';
+  rows.forEach(function(r,i){{
+    const pct=max>0?Math.round(r.max/max*100):0;
+    const mc=MEDALS[i]||'';
+    html+='<div class="rrow"><div class="rnum '+mc+'">'+(i+1)+'</div>'
+      +'<div class="rinfo"><div class="rship">'+r.ship+'</div>'
+      +'<div class="rarea">'+r.area+' · '+r.date+'</div></div>'
+      +'<div class="rbar-wrap"><div class="rcnt">'+r.max+'<span class="runit"> 匹</span></div>'
+      +'<div class="rbar-bg"><div class="rbar" style="width:'+pct+'%"></div></div>'
+      +'</div></div>';
+  }});
+  document.getElementById('rank-title').textContent=fish+' 釣果ランキング TOP'+rows.length;
+  document.getElementById('rank-sub').textContent='船宿別の最高釣果（直近データ）';
+  document.getElementById('rank-body').innerHTML=html||'<p style="color:#7a9bb5;padding:16px 0">データがありません</p>';
+  document.getElementById('overlay').classList.add('open');
+}}
+function closeModal(){{document.getElementById('overlay').classList.remove('open');}}
+document.addEventListener('keydown',function(e){{if(e.key==='Escape')closeModal();}});"""
+
+    return (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
+            f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<title>関東船釣り釣果情報 | 今日何が釣れてる？</title>'
+            f'<style>{css}</style></head><body>'
+            f'<header><h1>🎣 関東船釣り釣果情報</h1>'
+            f'<p>今日何が釣れてる？関東エリアの船宿釣果 毎日16:30自動更新 · 魚種をタップでランキング</p></header>'
+            f'<div class="w">'
+            f'<h2>🐟 釣れている魚 <span style="font-size:11px;font-weight:normal;color:#7a9bb5">↓ タップでランキング表示</span></h2>'
+            f'<div class="g">{cards}</div>'
+            f'<h2>📋 最新釣果</h2>'
+            f'<div class="tw"><table>'
+            f'<tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>'
+            f'{rows}</table></div>'
+            f'<p class="note">最終更新: {ts} · {len(data)}件 · {n}船宿</p>'
+            f'</div>'
+            f'<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">'
+            f'<div class="modal"><button class="close-btn" onclick="closeModal()">×</button>'
+            f'<h3 id="rank-title"></h3><div class="modal-sub" id="rank-sub"></div>'
+            f'<div id="rank-body"></div></div></div>'
+            f'<script>{js}</script></body></html>')
+
 
 def main():
     all,errs=[],[]
