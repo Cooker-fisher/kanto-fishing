@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import re, json, time
+import re, json, time, os
 from datetime import datetime
 from urllib.request import urlopen, Request
 from urllib.error import URLError
@@ -309,6 +309,119 @@ def calc_targets(data):
     targets.sort(key=lambda x: -x["score"])
     return targets[:5]
 
+def build_fish_pages(data):
+    """魚種別の個別HTMLページを fish/ ディレクトリに生成する"""
+    from datetime import datetime, timedelta
+    os.makedirs("fish", exist_ok=True)
+    now = datetime.now()
+    week_ago  = (now - timedelta(days=7)).strftime("%Y/%m/%d")
+    month_ago = (now - timedelta(days=30)).strftime("%Y/%m/%d")
+    ts = now.strftime("%Y/%m/%d %H:%M")
+
+    # 魚種ごとにレコードを集約
+    fs = {}
+    for c in data:
+        for f in c["fish"]:
+            fs.setdefault(f, []).append(c)
+
+    css = ("*{box-sizing:border-box;margin:0;padding:0}"
+           "body{font-family:sans-serif;background:#0a1628;color:#e0e8f0}"
+           "header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}"
+           "h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}"
+           ".w{max-width:900px;margin:0 auto;padding:20px 16px}"
+           "h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}"
+           ".stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}"
+           ".stat{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:14px 20px;flex:1;min-width:130px;text-align:center}"
+           ".stat-num{font-size:28px;font-weight:bold;color:#4db8ff}"
+           ".stat-label{font-size:11px;color:#7a9bb5;margin-top:4px}"
+           ".rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #0a1628}"
+           ".rrow:last-child{border-bottom:none}"
+           ".rnum{font-size:18px;font-weight:bold;color:#334155;width:28px;text-align:center;flex-shrink:0}"
+           ".rnum.g1{color:#f59e0b}.rnum.g2{color:#94a3b8}.rnum.g3{color:#b45309}"
+           ".rinfo{flex:1;min-width:0}.rship{font-size:14px;font-weight:bold;color:#fff}"
+           ".rarea{font-size:11px;color:#7a9bb5;margin-top:2px}"
+           ".rbar-wrap{width:130px;flex-shrink:0;text-align:right}"
+           ".rcnt{font-size:15px;font-weight:bold;color:#4db8ff}"
+           ".runit{font-size:11px;color:#7a9bb5}"
+           ".rbar-bg{background:#0a1628;border-radius:4px;height:6px;margin-top:5px}"
+           ".rbar{height:6px;background:linear-gradient(90deg,#1a6ea8,#4db8ff);border-radius:4px}"
+           ".area-list{display:flex;flex-wrap:wrap;gap:8px}"
+           ".area-tag{background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 14px;font-size:13px}"
+           ".area-tag span{color:#4db8ff;font-weight:bold;margin-left:6px}"
+           ".back{display:inline-block;margin-top:28px;color:#4db8ff;font-size:13px;text-decoration:none;border:1px solid #1a4060;border-radius:6px;padding:8px 18px}"
+           ".back:hover{border-color:#4db8ff;background:#0d2137}"
+           ".note{font-size:11px;color:#7a9bb5;margin-top:20px}")
+
+    for fish, catches in fs.items():
+        if len(catches) < 5:
+            continue
+
+        cnt7  = sum(1 for c in catches if c.get("date") and c["date"] >= week_ago)
+        cnt30 = sum(1 for c in catches if c.get("date") and c["date"] >= month_ago)
+
+        # 船宿別ランキング（最高釣果）
+        ships = {}
+        for c in catches:
+            key = c["ship"]
+            mx = (c.get("count_range") or {}).get("max", 0)
+            if key not in ships or ships[key]["max"] < mx:
+                ships[key] = {"ship": c["ship"], "area": c["area"], "max": mx, "date": c.get("date", "")}
+        ranking = sorted(ships.values(), key=lambda x: -x["max"])[:10]
+        top_max = ranking[0]["max"] if ranking else 1
+
+        rank_html = ""
+        medals = ["g1", "g2", "g3"]
+        for i, r in enumerate(ranking):
+            pct = round(r["max"] / top_max * 100) if top_max > 0 else 0
+            mc = medals[i] if i < len(medals) else ""
+            rank_html += (f'<div class="rrow">'
+                          f'<div class="rnum {mc}">{i+1}</div>'
+                          f'<div class="rinfo"><div class="rship">{r["ship"]}</div>'
+                          f'<div class="rarea">{r["area"]} · {r["date"]}</div></div>'
+                          f'<div class="rbar-wrap">'
+                          f'<div class="rcnt">{r["max"]}<span class="runit"> 匹</span></div>'
+                          f'<div class="rbar-bg"><div class="rbar" style="width:{pct}%"></div></div>'
+                          f'</div></div>')
+
+        # エリア別件数
+        area_cnt = {}
+        for c in catches:
+            area_cnt[c["area"]] = area_cnt.get(c["area"], 0) + 1
+        area_html = "".join(
+            f'<div class="area-tag">{a}<span>{n}件</span></div>'
+            for a, n in sorted(area_cnt.items(), key=lambda x: -x[1])
+        )
+
+        html = (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
+                f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+                f'<title>{fish}の釣果情報 | 関東船釣り予想</title>'
+                f'<meta name="description" content="関東エリアの{fish}最新釣果。船宿別ランキング、週間件数、エリア情報を毎日更新。">'
+                f'<style>{css}</style></head><body>'
+                f'<header><h1>🎣 {fish}の釣果情報</h1>'
+                f'<p>関東エリアの船宿釣果 毎日自動更新</p></header>'
+                f'<div class="w">'
+                f'<h2>📊 直近の釣果件数</h2>'
+                f'<div class="stats">'
+                f'<div class="stat"><div class="stat-num">{cnt7}</div><div class="stat-label">直近7日</div></div>'
+                f'<div class="stat"><div class="stat-num">{cnt30}</div><div class="stat-label">直近30日</div></div>'
+                f'<div class="stat"><div class="stat-num">{len(catches)}</div><div class="stat-label">累計件数</div></div>'
+                f'</div>'
+                f'<h2>🏆 船宿別釣果ランキング（最高釣果 TOP{len(ranking)}）</h2>'
+                f'{rank_html}'
+                f'<h2>📍 エリア別内訳</h2>'
+                f'<div class="area-list">{area_html}</div>'
+                f'<a class="back" href="../index.html">← 関東船釣りトップへ戻る</a>'
+                f'<p class="note">最終更新: {ts} · 総件数: {len(catches)}件</p>'
+                f'</div></body></html>')
+
+        fname = f"fish/{fish}.html"
+        with open(fname, "w", encoding="utf-8") as fh:
+            fh.write(html)
+        print(f"  生成: {fname} ({len(catches)}件)")
+
+    print(f"=== 魚種ページ生成完了 ===")
+
+
 def build_html(data, ts, n):
     import json as _json
     from datetime import datetime, timedelta
@@ -322,7 +435,13 @@ def build_html(data, ts, n):
         areas = list(dict.fromkeys(c["area"] for c in cs[:3]))
         recent = sum(1 for c in cs if c.get("date") and c["date"] >= (datetime.now()-timedelta(days=7)).strftime("%Y/%m/%d"))
         badge = f'<span class="nb">{recent}件/週</span>' if recent > 0 else ""
-        cards += f'<div class="fc" onclick="showRank(\'{f}\')" title="{f}のランキング"><div class="fn">{f}</div><div class="fk">{len(cs)}件 {badge}</div><div class="fa">{"/".join(areas)}</div></div>'
+        link = (f'<a class="fc-link" href="fish/{f}.html" onclick="event.stopPropagation()" title="{f}の詳細ページ">詳細→</a>'
+                if len(cs) >= 5 else "")
+        cards += (f'<div class="fc" onclick="showRank(\'{f}\')" title="{f}のランキング">'
+                  f'<div class="fn">{f}</div>'
+                  f'<div class="fk">{len(cs)}件 {badge}</div>'
+                  f'<div class="fa">{"/".join(areas)}</div>'
+                  f'{link}</div>')
 
     def rng(r, u): return f'{r["min"]}~{r["max"]}{u}' if r and r["min"] != r["max"] else (f'{r["min"]}{u}' if r else "")
 
@@ -367,6 +486,8 @@ def build_html(data, ts, n):
            ".fc:hover{border-color:#4db8ff;transform:translateY(-2px)}"
            ".fn{font-size:15px;font-weight:bold}.fk{font-size:12px;color:#4db8ff;margin-top:3px}"
            ".fa{font-size:11px;color:#7a9bb5;margin-top:2px}"
+           ".fc-link{display:inline-block;font-size:10px;color:#4db8ff;text-decoration:none;margin-top:5px;border:1px solid #1a4060;border-radius:3px;padding:1px 6px}"
+           ".fc-link:hover{background:#1a4060}"
            ".nb{background:#1a4060;border-radius:4px;padding:1px 5px;font-size:10px;color:#7dd3fc}"
            ".tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12px}"
            "th{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:left;border-bottom:1px solid #1a4060}"
@@ -451,6 +572,7 @@ def main():
     json.dump({"crawled_at":ts,"total":len(all),"errors":errs,"data":all},
               open("catches.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
     open("index.html","w",encoding="utf-8").write(build_html(all,ts,len(SHIPS)))
+    build_fish_pages(all)
     print(f"=== 完了:{len(all)}件 エラー:{errs or 'なし'} ===")
 
 if __name__=="__main__":
