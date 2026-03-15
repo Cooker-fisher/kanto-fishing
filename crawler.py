@@ -235,6 +235,80 @@ def crawl(ship):
              "catch_raw":f"{r['fish']} {r['cnt']} {r['sz']}".strip()}
             for r in p.records]
 
+def build_target_section(targets):
+    """狙い目セクションのHTMLを生成"""
+    from datetime import datetime
+    now = datetime.now()
+    week_label = f"{now.month}月第{(now.day-1)//7+1}週"
+    stars = ["★★★★★","★★★★☆","★★★☆☆","★★☆☆☆","★☆☆☆☆"]
+    medals = ["🥇","🥈","🥉","4","5"]
+    rows = ""
+    for i, t in enumerate(targets):
+        star = stars[i] if i < len(stars) else "★☆☆☆☆"
+        medal = medals[i] if i < len(medals) else str(i+1)
+        rows += (f'<div class="tr-row">'
+                 f'<span class="tr-medal">{medal}</span>'
+                 f'<span class="tr-star">{star}</span>'
+                 f'<span class="tr-fish">{t["fish"]}</span>'
+                 f'<span class="tr-comment">{t["comment"]}</span>'
+                 f'<span class="tr-hot">直近{t["hot"]}件</span>'
+                 f'</div>')
+    return (f'<div class="target-section">'
+            f'<div class="target-header">'
+            f'<span class="target-title">🎯 今週末の狙い目</span>'
+            f'<span class="target-week">{week_label} · 過去データ×直近釣果から算出</span>'
+            f'</div>'
+            f'{rows}'
+            f'</div>')
+
+def calc_targets(data):
+    """今週末の狙い目を計算して返す"""
+    from datetime import datetime, timedelta
+    import json as _j
+    now = datetime.now()
+    this_m = now.month - 1  # 0-indexed
+    next_m = (this_m + 1) % 12
+    prev_m = (this_m - 1) % 12
+    week_ago = (now - timedelta(days=7)).strftime("%Y/%m/%d")
+
+    month_fish = {}
+    recent7 = {}
+    for c in data:
+        if not c.get("date"): continue
+        m = int(c["date"].split("/")[1]) - 1
+        for f in c["fish"]:
+            if f not in month_fish: month_fish[f] = [0]*12
+            month_fish[f][m] += 1
+        if c["date"] >= week_ago:
+            for f in c["fish"]: recent7[f] = recent7.get(f,0)+1
+
+    targets = []
+    for fish, counts in month_fish.items():
+        this_mon = counts[this_m]
+        next_mon = counts[next_m]
+        prev_mon = counts[prev_m]
+        hot = recent7.get(fish, 0)
+        trend = round(this_mon/prev_mon, 1) if prev_mon > 0 else (2.0 if this_mon > 0 else 0)
+        score = this_mon*2 + next_mon*1.5 + hot*3 + trend*5
+        if score <= 0: continue
+        # コメント生成
+        if trend >= 10:
+            comment = f"急上昇中！先月比{trend}倍"
+        elif next_mon > this_mon:
+            comment = "これから本格シーズン入り"
+        elif trend >= 3 and hot > 5:
+            comment = "今まさに乗り頃"
+        elif hot >= 10:
+            comment = "安定して好調"
+        elif trend < 1:
+            comment = "そろそろ終盤"
+        else:
+            comment = f"今月{this_mon}件の実績"
+        targets.append({"fish":fish,"score":score,"hot":hot,"trend":trend,"comment":comment})
+
+    targets.sort(key=lambda x: -x["score"])
+    return targets[:5]
+
 def build_html(data, ts, n):
     import json as _json
     from datetime import datetime, timedelta
@@ -278,6 +352,17 @@ def build_html(data, ts, n):
            ".w{max-width:1200px;margin:0 auto;padding:20px 16px}"
            "h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}"
            ".g{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}"
+           ".target-section{background:#0d2137;border:1px solid #1a6ea8;border-radius:10px;padding:16px 20px;margin-bottom:24px}"
+           ".target-header{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}"
+           ".target-title{font-size:16px;font-weight:bold;color:#4db8ff}"
+           ".target-week{font-size:11px;color:#7a9bb5}"
+           ".tr-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #0a1628;flex-wrap:wrap}"
+           ".tr-row:last-child{border-bottom:none}"
+           ".tr-medal{font-size:18px;width:28px;flex-shrink:0}"
+           ".tr-star{font-size:12px;color:#f59e0b;width:80px;flex-shrink:0;letter-spacing:-1px}"
+           ".tr-fish{font-size:15px;font-weight:bold;color:#fff;width:80px;flex-shrink:0}"
+           ".tr-comment{font-size:12px;color:#7dd3fc;flex:1}"
+           ".tr-hot{font-size:11px;color:#7a9bb5;flex-shrink:0}"
            ".fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:border-color .2s,transform .15s}"
            ".fc:hover{border-color:#4db8ff;transform:translateY(-2px)}"
            ".fn{font-size:15px;font-weight:bold}.fk{font-size:12px;color:#4db8ff;margin-top:3px}"
@@ -337,6 +422,7 @@ document.addEventListener('keydown',function(e){{if(e.key==='Escape')closeModal(
             f'<header><h1>🎣 関東船釣り釣果情報</h1>'
             f'<p>今日何が釣れてる？関東エリアの船宿釣果 毎日16:30自動更新 · 魚種をタップでランキング</p></header>'
             f'<div class="w">'
+            f'{build_target_section(calc_targets(data))}'
             f'<h2>🐟 釣れている魚 <span style="font-size:11px;font-weight:normal;color:#7a9bb5">↓ タップでランキング表示</span></h2>'
             f'<div class="g">{cards}</div>'
             f'<h2>📋 最新釣果</h2>'
