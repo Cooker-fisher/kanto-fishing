@@ -248,7 +248,7 @@ def build_html(data, ts, n):
         areas = list(dict.fromkeys(c["area"] for c in cs[:3]))
         recent = sum(1 for c in cs if c.get("date") and c["date"] >= (datetime.now()-timedelta(days=7)).strftime("%Y/%m/%d"))
         badge = f'<span class="nb">{recent}件/週</span>' if recent > 0 else ""
-        cards += f'<div class="fc" onclick="showRank({_json.dumps(f)})" title="{f}のランキング"><div class="fn">{f}</div><div class="fk">{len(cs)}件 {badge}</div><div class="fa">{"/".join(areas)}</div></div>'
+        cards += f'<div class="fc" onclick="showRank(\'{f}\')" title="{f}のランキング"><div class="fn">{f}</div><div class="fk">{len(cs)}件 {badge}</div><div class="fa">{"/".join(areas)}</div></div>'
 
     def rng(r, u): return f'{r["min"]}~{r["max"]}{u}' if r and r["min"] != r["max"] else (f'{r["min"]}{u}' if r else "")
 
