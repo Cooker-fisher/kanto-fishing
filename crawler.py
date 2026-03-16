@@ -168,6 +168,25 @@ FISH_MAP = {
     "アカムツ":["アカムツ","ノドグロ"],"キンメ":["キンメ"],
 }
 
+FISH_MASTER = {
+  "アジ":      {"season":[1,2,3,4,5,6,7,8,9,10,11,12],"peak_num":[6,7,8,9],"peak_size":[10,11,12],"axis":"数◎","comment":"東京湾の王様。通年釣れるが夏は数釣り、秋冬は金アジで脂乗り最高"},
+  "マダイ":    {"season":[4,5,6,9,10,11],"peak_num":[5,6],"peak_size":[4,5,10,11],"axis":"型◎","comment":"春の乗っ込みと秋の荒食い。4〜6月は大型の数釣りも期待できる"},
+  "ヒラメ":    {"season":[9,10,11,12,1,2],"peak_num":[7,8],"peak_size":[11,12,1],"axis":"型◎","comment":"冬が旬で座布団級も。秋口から数が出始め、冬は食味も最高"},
+  "タチウオ":  {"season":[7,8,9,10,11],"peak_num":[8,9],"peak_size":[11,12,1],"axis":"数＆型","comment":"夏は浅場で数爆釣、晩秋〜冬は深場でドラゴン級の型狙い"},
+  "シロギス":  {"season":[5,6,7,8,9,10],"peak_num":[7,8],"peak_size":[9,10],"axis":"数◎","comment":"夏は数釣り天国。秋の落ちギスは良型揃い。入門魚の定番"},
+  "カワハギ":  {"season":[9,10,11,12],"peak_num":[10,11],"peak_size":[11,12],"axis":"肝◎","comment":"秋〜冬が本番。肝がパンパンの12月前後が最高。久比里がメッカ"},
+  "イサキ":    {"season":[6,7,8],"peak_num":[6,7],"peak_size":[6],"axis":"数◎","comment":"梅雨イサキが最高。脂乗りと数釣りが同時に楽しめる夏の風物詩"},
+  "ヤリイカ":  {"season":[12,1,2,3],"peak_num":[1,2],"peak_size":[1,2],"axis":"数◎","comment":"真冬が最盛期。パラソル級の大型も。3月で終盤を迎える"},
+  "マルイカ":  {"season":[5,6,7],"peak_num":[6],"peak_size":[6,7],"axis":"数◎","comment":"初夏の短期集中シーズン。6月が最盛期で数釣りが楽しめる"},
+  "スルメイカ":{"season":[7,8,9],"peak_num":[7,8],"peak_size":[8],"axis":"数◎","comment":"夏の夜焚き釣りで爆釣も。秋に南下して終了"},
+  "アマダイ":  {"season":[11,12,1,2],"peak_num":[12,1],"peak_size":[12,1],"axis":"型◎","comment":"冬の高級魚。数より型狙い。大型は60cm超えも。干物も絶品"},
+  "フグ":      {"season":[3,4,5,6,7],"peak_num":[5,6],"peak_size":[4,5],"axis":"数◎","comment":"春の白子入りが特に人気。5〜6月は白子たっぷりの旬の時期"},
+  "カサゴ":    {"season":[2,3,4,5,6,7,8,9,10,11],"peak_num":[4,5,6],"peak_size":[2,3],"axis":"数◎","comment":"通年釣れる根魚の定番。冬は自主規制の船宿も。春が最盛期"},
+  "サワラ":    {"season":[10,11,12],"peak_num":[11],"peak_size":[11,12],"axis":"型◎","comment":"秋の一発大物。ルアー系で人気急上昇中。70cm超えザラ"},
+  "マハタ":    {"season":[3,4,5,6,7,8,9],"peak_num":[7,8],"peak_size":[9,10],"axis":"型◎","comment":"高級根魚。春から夏が狙い目。型はキロオーバーが基準"},
+  "イシモチ":  {"season":[4,5,6,7,8],"peak_num":[4,5,6],"peak_size":[5,6],"axis":"数◎","comment":"東京湾の春の定番。数が出やすく入門にも最適"},
+}
+
 def guess_fish(t):
     return [f for f,kws in FISH_MAP.items() if any(k in t for k in kws)] or [t[:10]]
 
@@ -318,6 +337,29 @@ def build_fish_pages(data):
     month_ago = (now - timedelta(days=30)).strftime("%Y/%m/%d")
     ts = now.strftime("%Y/%m/%d %H:%M")
 
+    # history.json から昨年同週データを読み込む
+    history_weekly = {}
+    if os.path.exists("history.json"):
+        with open("history.json", encoding="utf-8") as hf:
+            history_weekly = json.load(hf).get("weekly", {})
+    iso = now.isocalendar()
+    cur_week_key  = f"{iso[0]}/W{iso[1]:02d}"
+    prev_week_key = f"{iso[0]-1}/W{iso[1]:02d}"
+    cur_week_data  = history_weekly.get(cur_week_key,  {})
+    prev_week_data = history_weekly.get(prev_week_key, {})
+
+    def yoy_diff_html(cur, prev, unit=""):
+        """増減率バッジを返す。prevが0またはNoneなら '－' を返す"""
+        if not prev:
+            return '<span class="yoy-na">－</span>'
+        pct = (cur - prev) / prev * 100
+        if pct > 0:
+            return f'<span class="yoy-up">+{pct:.0f}%&nbsp;▲</span>'
+        elif pct < 0:
+            return f'<span class="yoy-dn">{pct:.0f}%&nbsp;▼</span>'
+        else:
+            return '<span class="yoy-eq">±0%</span>'
+
     # 魚種ごとにレコードを集約
     fs = {}
     for c in data:
@@ -350,7 +392,30 @@ def build_fish_pages(data):
            ".area-tag span{color:#4db8ff;font-weight:bold;margin-left:6px}"
            ".back{display:inline-block;margin-top:28px;color:#4db8ff;font-size:13px;text-decoration:none;border:1px solid #1a4060;border-radius:6px;padding:8px 18px}"
            ".back:hover{border-color:#4db8ff;background:#0d2137}"
-           ".note{font-size:11px;color:#7a9bb5;margin-top:20px}")
+           ".note{font-size:11px;color:#7a9bb5;margin-top:20px}"
+           ".season-section{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:16px;margin:0 0 20px}"
+           ".season-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}"
+           ".season-title{font-size:13px;color:#7a9bb5;font-weight:bold}"
+           ".axis-badge{background:#1a6ea8;color:#e0e8f0;font-size:12px;font-weight:bold;padding:4px 12px;border-radius:20px}"
+           ".season-bar{display:flex;gap:2px;margin-bottom:8px}"
+           ".sb-cell{flex:1;border-radius:4px;padding:5px 1px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}"
+           ".sb-month{font-size:9px;color:#e0e8f0;opacity:.8}"
+           ".sb-label{font-size:9px;color:#fff;font-weight:bold;margin-top:2px;min-height:11px}"
+           ".season-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}"
+           ".leg{font-size:10px;color:#7a9bb5;display:flex;align-items:center;gap:4px}"
+           ".leg-dot{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0}"
+           ".season-comment{font-size:13px;color:#7dd3fc;line-height:1.7;padding-top:10px;border-top:1px solid #1a4060;margin-top:4px}"
+           ".yoy-section{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:4px 16px;margin-bottom:8px}"
+           ".yoy-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #0a1628}"
+           ".yoy-row:last-child{border-bottom:none}"
+           ".yoy-label{font-size:12px;color:#7a9bb5;width:72px;flex-shrink:0}"
+           ".yoy-cur{font-size:20px;font-weight:bold;color:#4db8ff;min-width:56px;text-align:right}"
+           ".yoy-unit{font-size:11px;color:#7a9bb5;margin-right:4px}"
+           ".yoy-arrow{font-size:11px;color:#334155;margin:0 6px}"
+           ".yoy-prev{font-size:12px;color:#7a9bb5;min-width:56px;text-align:right}"
+           ".yoy-diff{font-size:13px;font-weight:bold;min-width:72px;text-align:right;flex-shrink:0}"
+           ".yoy-up{color:#4ade80}.yoy-dn{color:#f87171}.yoy-eq{color:#fbbf24}.yoy-na{color:#4b5563}"
+           ".yoy-week{font-size:11px;color:#7a9bb5;margin-bottom:10px}")
 
     for fish, catches in fs.items():
         if len(catches) < 5:
@@ -392,6 +457,90 @@ def build_fish_pages(data):
             for a, n in sorted(area_cnt.items(), key=lambda x: -x[1])
         )
 
+        # 昨年同週比較セクション
+        yoy_html = ""
+        cur_fish  = cur_week_data.get(fish)
+        # historyに当週データがない場合、直近7日の catches から即時集計
+        if not cur_fish:
+            week_catches = [c for c in catches if c.get("date") and c["date"] >= week_ago]
+            if week_catches:
+                maxes = [c["count_range"]["max"] for c in week_catches
+                         if c.get("count_range") and c["count_range"].get("max")]
+                cur_fish = {
+                    "ships": len(week_catches),
+                    "max":   max(maxes) if maxes else 0,
+                    "avg":   round(sum(maxes) / len(maxes), 1) if maxes else 0,
+                }
+        prev_fish = prev_week_data.get(fish)
+        if cur_fish or prev_fish:
+            def _val(d, key):
+                return d[key] if d and key in d else None
+            c_ships = _val(cur_fish, "ships")
+            c_avg   = _val(cur_fish, "avg")
+            c_max   = _val(cur_fish, "max")
+            p_ships = _val(prev_fish, "ships")
+            p_avg   = _val(prev_fish, "avg")
+            p_max   = _val(prev_fish, "max")
+
+            def row(label, c_v, p_v, unit):
+                if c_v is None:
+                    return ""
+                cur_str  = f'{c_v:.0f}' if isinstance(c_v, float) else str(c_v)
+                prev_str = (f'{p_v:.0f}' if isinstance(p_v, float) else str(p_v)) if p_v is not None else "－"
+                diff     = yoy_diff_html(c_v, p_v)
+                return (f'<div class="yoy-row">'
+                        f'<span class="yoy-label">{label}</span>'
+                        f'<span class="yoy-cur">{cur_str}</span><span class="yoy-unit">{unit}</span>'
+                        f'<span class="yoy-arrow">vs</span>'
+                        f'<span class="yoy-prev">昨年&nbsp;{prev_str}<span class="yoy-unit">{unit}</span></span>'
+                        f'<span class="yoy-diff">{diff}</span>'
+                        f'</div>')
+
+            rows = (row("出船数",   c_ships, p_ships, "隻") +
+                    row("平均匹数", c_avg,   p_avg,   "匹") +
+                    row("Max匹数",  c_max,   p_max,   "匹"))
+            if rows:
+                yoy_html = (f'<h2>📅 昨年同週比較（{cur_week_key} vs {prev_week_key}）</h2>'
+                            f'<div class="yoy-section">{rows}</div>')
+
+        # シーズンバー（FISH_MASTERに登録されている魚種のみ）
+        season_html = ""
+        if fish in FISH_MASTER:
+            md = FISH_MASTER[fish]
+            s_set  = set(md.get("season", []))
+            pn_set = set(md.get("peak_num", []))
+            ps_set = set(md.get("peak_size", []))
+            axis    = md.get("axis", "")
+            comment = md.get("comment", "")
+            cells = ""
+            for m in range(1, 13):
+                if m in ps_set:
+                    bg = "#fbbf24"; lbl = "型"
+                elif m in pn_set:
+                    bg = "#f59e0b"; lbl = "数"
+                elif m in s_set:
+                    bg = "#1a4060"; lbl = "○"
+                else:
+                    bg = "#071020"; lbl = ""
+                cells += (f'<div class="sb-cell" style="background:{bg}">'
+                          f'<div class="sb-month">{m}</div>'
+                          f'<div class="sb-label">{lbl}</div>'
+                          f'</div>')
+            axis_badge = f'<span class="axis-badge">{axis}</span>' if axis else ""
+            season_html = (
+                f'<div class="season-section">'
+                f'<div class="season-header">{axis_badge}'
+                f'<span class="season-title">年間シーズンカレンダー</span></div>'
+                f'<div class="season-bar">{cells}</div>'
+                f'<div class="season-legend">'
+                f'<span class="leg"><span class="leg-dot" style="background:#1a4060"></span>出船期間</span>'
+                f'<span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>数狙いピーク</span>'
+                f'<span class="leg"><span class="leg-dot" style="background:#fbbf24"></span>型狙いピーク</span>'
+                f'</div>'
+                f'<div class="season-comment">{comment}</div>'
+                f'</div>'
+            )
+
         html = (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
                 f'<meta name="viewport" content="width=device-width,initial-scale=1">'
                 f'<title>{fish}の釣果情報 | 関東船釣り予想</title>'
@@ -400,12 +549,14 @@ def build_fish_pages(data):
                 f'<header><h1>🎣 {fish}の釣果情報</h1>'
                 f'<p>関東エリアの船宿釣果 毎日自動更新</p></header>'
                 f'<div class="w">'
+                f'{season_html}'
                 f'<h2>📊 直近の釣果件数</h2>'
                 f'<div class="stats">'
                 f'<div class="stat"><div class="stat-num">{cnt7}</div><div class="stat-label">直近7日</div></div>'
                 f'<div class="stat"><div class="stat-num">{cnt30}</div><div class="stat-label">直近30日</div></div>'
                 f'<div class="stat"><div class="stat-num">{len(catches)}</div><div class="stat-label">累計件数</div></div>'
                 f'</div>'
+                f'{yoy_html}'
                 f'<h2>🏆 船宿別釣果ランキング（最高釣果 TOP{len(ranking)}）</h2>'
                 f'{rank_html}'
                 f'<h2>📍 エリア別内訳</h2>'
@@ -420,6 +571,102 @@ def build_fish_pages(data):
         print(f"  生成: {fname} ({len(catches)}件)")
 
     print(f"=== 魚種ページ生成完了 ===")
+
+
+def build_calendar_page():
+    """釣りものカレンダーページ（calendar.html）を生成する"""
+    from datetime import datetime
+    now = datetime.now()
+    cur_m = now.month
+    ts = now.strftime("%Y/%m/%d %H:%M")
+
+    CALENDAR_FISH = ["アジ","マダイ","ヒラメ","タチウオ","シロギス","カワハギ",
+                     "イサキ","ヤリイカ","マルイカ","スルメイカ","アマダイ","フグ","カサゴ","サワラ"]
+
+    # ヘッダー行
+    head_cells = ""
+    for m in range(1, 13):
+        cur_cls = " cal-cur-h" if m == cur_m else ""
+        head_cells += f'<th class="cal-mh{cur_cls}">{m}月</th>'
+    head_html = f'<tr><th class="cal-fish-h">魚種 / 軸</th>{head_cells}</tr>'
+
+    # データ行
+    rows_html = ""
+    for fish in CALENDAR_FISH:
+        md = FISH_MASTER.get(fish, {})
+        s_set  = set(md.get("season", []))
+        pn_set = set(md.get("peak_num", []))
+        ps_set = set(md.get("peak_size", []))
+        axis   = md.get("axis", "")
+        axis_badge = f'<span class="axis-badge">{axis}</span>' if axis else ""
+        fish_link  = f'<a href="fish/{fish}.html" class="fish-link">{fish}</a>'
+        cells = ""
+        for m in range(1, 13):
+            cur_cls = " cal-cur" if m == cur_m else ""
+            if m in ps_set:
+                bg = "#fbbf24"; lbl = "型▲"
+            elif m in pn_set:
+                bg = "#f59e0b"; lbl = "数◎"
+            elif m in s_set:
+                bg = "#1a4060"; lbl = "○"
+            else:
+                bg = ""; lbl = ""
+            style = f"background:{bg}" if bg else ""
+            cells += f'<td class="cal-cell{cur_cls}" style="{style}">{lbl}</td>'
+        rows_html += f'<tr><td class="cal-fish-td">{fish_link} {axis_badge}</td>{cells}</tr>'
+
+    css = ("*{box-sizing:border-box;margin:0;padding:0}"
+           "body{font-family:sans-serif;background:#0a1628;color:#e0e8f0}"
+           "header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}"
+           "h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}"
+           ".nav{background:#071020;padding:8px 24px;border-bottom:1px solid #1a4060;display:flex;gap:16px}"
+           ".nav a{color:#7a9bb5;font-size:13px;text-decoration:none}.nav a:hover{color:#4db8ff}"
+           ".nav a.active{color:#4db8ff;font-weight:bold}"
+           ".w{max-width:1100px;margin:0 auto;padding:20px 16px}"
+           "h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}"
+           ".legend{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 16px;padding:12px 16px;background:#0d2137;border-radius:8px;border:1px solid #1a4060}"
+           ".leg{font-size:11px;display:flex;align-items:center;gap:6px;color:#7a9bb5}"
+           ".leg-dot{width:14px;height:14px;border-radius:3px;display:inline-block;flex-shrink:0}"
+           ".cal-wrap{overflow-x:auto}"
+           "table{border-collapse:collapse;width:100%;min-width:680px}"
+           ".cal-fish-h{text-align:left;padding:8px 12px;background:#0d2137;color:#4db8ff;font-size:12px;white-space:nowrap;position:sticky;left:0;z-index:2}"
+           ".cal-mh{min-width:52px;text-align:center;padding:8px 4px;background:#0d2137;color:#7a9bb5;font-size:12px;border-left:1px solid #1a4060}"
+           ".cal-cur-h{color:#f59e0b !important;background:#1a3050 !important;font-weight:bold}"
+           ".cal-fish-td{padding:8px 12px;border-bottom:1px solid #071020;background:#071830;position:sticky;left:0;z-index:1;white-space:nowrap}"
+           ".cal-cell{text-align:center;padding:8px 2px;border-left:1px solid #071020;border-bottom:1px solid #071020;font-size:10px;color:#fff;min-width:52px}"
+           ".cal-cur{outline:2px solid rgba(245,158,11,.45);outline-offset:-2px}"
+           ".fish-link{color:#e0e8f0;text-decoration:none;font-size:13px;font-weight:bold;margin-right:4px}"
+           ".fish-link:hover{color:#4db8ff}"
+           ".axis-badge{background:#1a6ea8;color:#e0e8f0;font-size:10px;font-weight:bold;padding:2px 7px;border-radius:10px}"
+           ".note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:12px}"
+           ".back{display:inline-block;margin-top:20px;color:#4db8ff;font-size:13px;text-decoration:none;border:1px solid #1a4060;border-radius:6px;padding:8px 18px}"
+           ".back:hover{border-color:#4db8ff;background:#0d2137}")
+
+    html = (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
+            f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<title>釣りものカレンダー | 関東船釣り予想</title>'
+            f'<meta name="description" content="関東エリアの魚種別シーズンカレンダー。月別の出船・数ピーク・型ピークを一覧表示。">'
+            f'<style>{css}</style></head><body>'
+            f'<header><h1>🎣 釣りものカレンダー</h1>'
+            f'<p>関東エリア 魚種別シーズン早見表 · 毎日自動更新</p></header>'
+            f'<nav class="nav"><a href="index.html">🏠 トップ</a>'
+            f'<a href="calendar.html" class="active">📅 カレンダー</a></nav>'
+            f'<div class="w">'
+            f'<h2>📅 魚種別シーズンカレンダー</h2>'
+            f'<div class="legend">'
+            f'<span class="leg"><span class="leg-dot" style="background:#1a4060"></span>出船あり</span>'
+            f'<span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>数狙いピーク（数◎）</span>'
+            f'<span class="leg"><span class="leg-dot" style="background:#fbbf24"></span>型狙いピーク（型▲）</span>'
+            f'<span class="leg"><span class="leg-dot" style="outline:2px solid rgba(245,158,11,.45);background:transparent"></span>今月（{cur_m}月）</span>'
+            f'</div>'
+            f'<div class="cal-wrap"><table>{head_html}{rows_html}</table></div>'
+            f'<a class="back" href="index.html">← 関東船釣りトップへ戻る</a>'
+            f'<p class="note">最終更新: {ts}</p>'
+            f'</div></body></html>')
+
+    with open("calendar.html", "w", encoding="utf-8") as fh:
+        fh.write(html)
+    print("  生成: calendar.html")
 
 
 def build_html(data, ts, n):
@@ -510,7 +757,10 @@ def build_html(data, ts, n):
            ".rcnt{font-size:16px;font-weight:bold;color:#4db8ff}"
            ".runit{font-size:11px;color:#7a9bb5}"
            ".rbar-bg{background:#0a1628;border-radius:4px;height:5px;margin-top:5px}"
-           ".rbar{height:5px;background:linear-gradient(90deg,#1a6ea8,#4db8ff);border-radius:4px}")
+           ".rbar{height:5px;background:linear-gradient(90deg,#1a6ea8,#4db8ff);border-radius:4px}"
+           ".nav{background:#071020;padding:8px 24px;border-bottom:1px solid #1a4060;display:flex;gap:16px}"
+           ".nav a{color:#7a9bb5;font-size:13px;text-decoration:none}.nav a:hover{color:#4db8ff}"
+           ".nav a.active{color:#4db8ff;font-weight:bold}")
 
     js = f"""const RANK={rank_json};
 const MEDALS=['g1','g2','g3'];
@@ -542,6 +792,8 @@ document.addEventListener('keydown',function(e){{if(e.key==='Escape')closeModal(
             f'<style>{css}</style></head><body>'
             f'<header><h1>🎣 関東船釣り釣果情報</h1>'
             f'<p>今日何が釣れてる？関東エリアの船宿釣果 毎日16:30自動更新 · 魚種をタップでランキング</p></header>'
+            f'<nav class="nav"><a href="index.html" class="active">🏠 トップ</a>'
+            f'<a href="calendar.html">📅 カレンダー</a></nav>'
             f'<div class="w">'
             f'{build_target_section(calc_targets(data))}'
             f'<h2>🐟 釣れている魚 <span style="font-size:11px;font-weight:normal;color:#7a9bb5">↓ タップでランキング表示</span></h2>'
@@ -573,6 +825,7 @@ def main():
               open("catches.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
     open("index.html","w",encoding="utf-8").write(build_html(all,ts,len(SHIPS)))
     build_fish_pages(all)
+    build_calendar_page()
     print(f"=== 完了:{len(all)}件 エラー:{errs or 'なし'} ===")
 
 if __name__=="__main__":
