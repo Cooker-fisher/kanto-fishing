@@ -1,0 +1,221 @@
+# 船釣り予想 (funatsuri-yoso.com) プロジェクト
+
+## プロジェクト概要
+
+**サイト名**: 関東船釣り釣果情報「船釣り予想」  
+**URL**: https://funatsuri-yoso.com  
+**旧URL**: https://cooker-fisher.github.io/kanto-fishing/  
+**コンセプト**: 「来週末、何を狙えば一番釣れるか」がわかるサイト  
+**GitHubリポジトリ**: https://github.com/Cooker-fisher/kanto-fishing
+
+### 競合との差別化
+- 釣りビジョン = 個別船宿の詳細記録
+- 船釣り.jp (funaduri.jp) = 船宿・口コミのデータベース＋年間傾向グラフ
+- **funatsuri-yoso.com = 横断集計＋予測で意思決定を助ける（ここが独自価値）**
+
+---
+
+## インフラ・デプロイ
+
+| 項目 | 内容 |
+|------|------|
+| ホスティング | GitHub Pages |
+| 独自ドメイン | funatsuri-yoso.com（お名前.comで取得・初年度0円） |
+| DNS | お名前.com（01〜04.dnsv.jp）→ AレコードはGitHub Pages IP |
+| HTTPS | Enforce HTTPS（DNS反映後に有効化予定） |
+| 自動更新 | GitHub Actions（毎日16:30 JST / cron: '30 7 * * *'） |
+| 手動実行 | GitHub ActionsタブのRun workflowボタン（workflow_dispatch設定済み） |
+
+---
+
+## ファイル構成
+
+```
+kanto-fishing/
+├── crawler.py          # メインクローラー・HTML生成
+├── catches.json        # 最新釣果データ（毎日上書き）
+├── history.json        # 週次・月次集計データ（蓄積）※作成中
+├── history_crawl.py    # 過去データ一括取得スクリプト（全ページ遡り）
+├── index.html          # トップページ（自動生成）
+├── calendar.html       # 釣りものカレンダーページ（自動生成）
+├── fish/               # 魚種別ページ（自動生成）
+│   ├── アジ.html
+│   ├── マダイ.html
+│   └── ...（5件以上の魚種のみ生成）
+├── CNAME               # funatsuri-yoso.com
+└── .github/workflows/
+    └── crawl.yml       # GitHub Actions定義
+```
+
+---
+
+## データソース・クロール仕様
+
+**データソース**: 釣りビジョン (fishing-v.jp)  
+**URL形式**: `https://www.fishing-v.jp/choka/choka_detail.php?s={sid}&pageID={page}`
+
+| 項目 | 内容 |
+|------|------|
+| pageID=1 | 最新データ（通常クロール） |
+| pageID増加 | 過去に遡る |
+| 1船宿あたり | 約77ページ・768件のデータが存在 |
+| pageID=5 | 約2ヶ月前 |
+| pageID=20 | 約8ヶ月前（2025年7月） |
+| pageID=77 | 約2年前（2024年8月） |
+| 全取得時間 | 120船宿 × 全ページ ≒ 80〜120分 |
+
+**クロール対象**: 神奈川・東京・千葉・茨城の約120船宿  
+**対応エリア**: 金沢八景・横浜・走水・久里浜・久比里・松輪・長井・葉山・茅ヶ崎・平塚・深川・羽田・浦安・鹿島・外川・飯岡・片貝・大原・御宿・勝浦・勝山・保田・金谷・富津
+
+---
+
+## crawler.pyの主要関数
+
+| 関数 | 役割 |
+|------|------|
+| `crawl(ship)` | 1船宿のpageID=1を取得 |
+| `build_html(data, ts, n)` | index.htmlを生成 |
+| `build_fish_pages(data)` | fish/*.htmlを生成（5件以上の魚種のみ） |
+| `build_calendar_page(data)` | calendar.htmlを生成 |
+| `calc_targets(data)` | 今週末の狙い目TOP5を計算 |
+| `build_target_section(targets)` | 狙い目セクションのHTMLを生成 |
+| `main()` | 全体の実行フロー |
+
+---
+
+## データ構造
+
+### catches.json
+```json
+{
+  "crawled_at": "2026/03/15 16:30",
+  "total": 493,
+  "errors": [],
+  "data": [
+    {
+      "ship": "忠彦丸",
+      "area": "金沢八景",
+      "date": "2026/03/15",
+      "fish": ["アジ"],
+      "count_range": {"min": 39, "max": 74},
+      "size_range": {"min": 17, "max": 28},
+      "catch_raw": "午前ライトアジ 39〜74匹 17〜28cm"
+    }
+  ]
+}
+```
+
+### history.json（週次・月次集計）
+```json
+{
+  "weekly": {
+    "2026/W11": {
+      "アジ": {"ships": 53, "avg": 32.4, "max": 116, "size_avg": 24.5}
+    }
+  },
+  "monthly": {
+    "2026/03": {
+      "アジ": {"ships": 103, "avg": 28.1, "max": 116, "size_avg": 23.8}
+    }
+  }
+}
+```
+
+---
+
+## FISH_MASTER（魚種マスターデータ）
+
+crawler.py内に定義済み。各魚種の以下の情報を持つ：
+- `season`: 出船期間の月リスト
+- `peak_num`: 数狙いピーク月
+- `peak_size`: 型狙いピーク月
+- `axis`: 狙いの軸（「数◎」「型◎」「数＆型」など）
+- `comment`: 説明文
+
+---
+
+## 実装済み機能
+
+1. ✅ 釣果自動収集（釣りビジョンHTMLパース・毎日更新）
+2. ✅ 魚種カードをタップでランキング表示（船宿別TOP10・バーグラフ）
+3. ✅ 今週末の狙い目セクション（スコア計算・コメント自動生成）
+4. ✅ 魚種別ページ（fish/*.html・SEOタイトル・metadescription）
+5. ✅ 年間シーズンバー（数狙い・型狙いピーク色分け）
+6. ✅ 釣りものカレンダー（calendar.html・14魚種×12ヶ月）
+7. ✅ GitHub Actions手動実行ボタン（workflow_dispatch）
+
+---
+
+## 今後の実装予定
+
+### 優先度高
+- [ ] history_crawl.pyで過去2年分のデータ一括取得
+- [ ] 魚種別ページに「今週vs昨年同週比較」表示
+  - 出船数比較・平均匹数比較・Max匹数比較
+- [ ] Enforce HTTPS有効化（DNS反映確認後）
+- [ ] Google AdSense申請
+
+### 優先度中
+- [ ] X（Twitter）自動投稿（毎日16:30に狙い目を投稿）
+  - X APIキー取得済み（アカウントロック解除待ち）
+  - `tweet_poster.py` の作成
+  - GitHub Secrets: X_API_KEY / X_API_SECRET / X_ACCESS_TOKEN / X_ACCESS_SECRET
+- [ ] じゃらんアフィリエイト設置（ランキングの船宿横に予約リンク）
+
+### 優先度低
+- [ ] 魚種別ページのデザイン改善
+- [ ] 関西・九州など全国展開（釣りビジョンは全国対応済み）
+
+---
+
+## 比較データの設計方針
+
+「出船件数が多いか少ないか」の判断は絶対数ではなく**相対比較**が必要：
+- アジは通年コンスタントに出るため、単純な件数では判断できない
+- 同じ週・同じ魚種の**昨年比・過去平均**と比較することで意味が生まれる
+- 船釣り.jpは「過去5年平均を100%とした相対値」で表示している
+
+### 表示イメージ
+```
+アジ  今週53隻（昨年同週45隻 → 平年比+18% 🔥）
+      今週平均32匹（昨年同週28匹 → +14%）
+      今週Max116匹（昨年同週98匹 → +18%）
+```
+
+---
+
+## 開発環境（ローカル）
+
+| ツール | バージョン |
+|--------|----------|
+| OS | Windows 11 |
+| Git | 2.53.0 |
+| Python | 3.14.3 |
+| Node.js | 25.8.1 |
+| VS Code | 最新版 |
+| Claude Code | v2.1.76 |
+
+### ローカル確認手順
+```powershell
+cd $env:USERPROFILE\Desktop\kanto-fishing
+python crawler.py          # データ取得・HTML生成
+python -m http.server 8000 # ローカルサーバー起動
+# → http://localhost:8000 で確認
+```
+
+### Gitプッシュ手順
+```powershell
+git add -A
+git commit -m "変更内容"
+git push
+```
+
+---
+
+## 注意事項
+
+- crawler.pyは**標準ライブラリのみ**（外部依存なし）
+- history_crawl.pyも同様に標準ライブラリのみで動作する
+- 釣りビジョンへのリクエストは0.8秒待機（サーバー負荷対策）
+- GitHub ActionsのタイムゾーンはUTC（16:30 JSTは07:30 UTC）
+- fish/*.htmlのファイル名は日本語（URLエンコードされる）
