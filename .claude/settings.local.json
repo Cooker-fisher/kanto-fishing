@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python3:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(Copy-Item \"$env:USERPROFILE\\\\Downloads\\\\crawler.py\" \"$env:USERPROFILE\\\\Desktop\\\\kanto-fishing\\\\crawler.py\" 2>&1)"
     ]
   }
 }

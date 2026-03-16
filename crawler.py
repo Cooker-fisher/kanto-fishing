@@ -259,23 +259,20 @@ def build_target_section(targets):
     from datetime import datetime
     now = datetime.now()
     week_label = f"{now.month}月第{(now.day-1)//7+1}週"
-    stars = ["★★★★★","★★★★☆","★★★☆☆","★★☆☆☆","★☆☆☆☆"]
     medals = ["🥇","🥈","🥉","4","5"]
     rows = ""
     for i, t in enumerate(targets):
-        star = stars[i] if i < len(stars) else "★☆☆☆☆"
         medal = medals[i] if i < len(medals) else str(i+1)
         rows += (f'<div class="tr-row">'
                  f'<span class="tr-medal">{medal}</span>'
-                 f'<span class="tr-star">{star}</span>'
                  f'<span class="tr-fish">{t["fish"]}</span>'
                  f'<span class="tr-comment">{t["comment"]}</span>'
                  f'<span class="tr-hot">直近{t["hot"]}件</span>'
                  f'</div>')
     return (f'<div class="target-section">'
             f'<div class="target-header">'
-            f'<span class="target-title">🎯 今週末の狙い目</span>'
-            f'<span class="target-week">{week_label} · 過去データ×直近釣果から算出</span>'
+            f'<span class="target-title">🎯 今週の狙い目</span>'
+            f'<span class="target-week">{week_label} · 過去同週比較から算出</span>'
             f'</div>'
             f'{rows}'
             f'</div>')
@@ -310,19 +307,94 @@ def calc_targets(data):
         trend = round(this_mon/prev_mon, 1) if prev_mon > 0 else (2.0 if this_mon > 0 else 0)
         score = this_mon*2 + next_mon*1.5 + hot*3 + trend*5
         if score <= 0: continue
-        # コメント生成
-        if trend >= 10:
-            comment = f"急上昇中！先月比{trend}倍"
-        elif next_mon > this_mon:
-            comment = "これから本格シーズン入り"
-        elif trend >= 3 and hot > 5:
-            comment = "今まさに乗り頃"
+
+        # --- 50テンプレコメント生成 ---
+        master = FISH_MASTER.get(fish, {})
+        peak_num_months = set(master.get("peak_num", []))
+        peak_size_months = set(master.get("peak_size", []))
+        season_months = set(master.get("season", []))
+        cur_month = now.month
+
+        # 数値指標
+        is_peak_num   = cur_month in peak_num_months
+        is_peak_size  = cur_month in peak_size_months
+        is_season_end = (cur_month not in season_months and
+                         (cur_month - 1) % 12 + 1 in season_months)
+        is_season_start = (cur_month in season_months and
+                           (cur_month - 1) % 12 + 1 not in season_months)
+        is_upcoming   = (cur_month not in season_months and
+                         (cur_month + 1) % 12 + 1 in season_months)
+
+        # コメント選択（優先順）
+        if trend >= 20:
+            comment = f"先月比{trend:.0f}倍！突然の大量発生"
+        elif trend >= 10:
+            comment = f"先月比{trend:.0f}倍！爆発的に増加中"
+        elif trend >= 5:
+            comment = f"先月比{trend:.0f}倍！今週から火がついた"
+        elif trend >= 3 and hot >= 15:
+            comment = "大船団！各地で出船ラッシュ"
+        elif trend >= 3 and is_peak_num and is_peak_size:
+            comment = "数も型も文句なし。三拍子そろった最高週"
+        elif trend >= 3 and is_peak_num:
+            comment = "数狙いのベストシーズン突入"
+        elif trend >= 3 and is_peak_size:
+            comment = "型狙いのベストシーズン突入。良型ぞろい"
+        elif trend >= 3 and hot >= 10:
+            comment = "今まさに乗り頃。3週連続上昇トレンド"
+        elif trend >= 2 and hot >= 10:
+            comment = "去年より数が出てる。上昇トレンド継続中"
+        elif trend >= 2 and is_peak_num:
+            comment = "今年は早い！例年より先行して好調"
+        elif trend >= 2:
+            comment = "去年より船が増えた。注目度上昇中"
+        elif is_season_start and hot >= 5:
+            comment = "今シーズン開幕！初便から好スタート"
+        elif is_season_start:
+            comment = "シーズン開幕。これから本格化"
+        elif is_peak_num and is_peak_size and hot >= 8:
+            comment = "旬まっただ中。数も型も絶好調"
+        elif is_peak_num and hot >= 8:
+            comment = "旬まっただ中。数釣りが楽しめる週"
+        elif is_peak_size and hot >= 8:
+            comment = "旬まっただ中。良型が狙える週"
+        elif is_peak_num and is_peak_size:
+            comment = "旬まっただ中"
+        elif is_peak_num:
+            comment = "数狙いの旬が近づいてきた"
+        elif is_peak_size:
+            comment = "型狙いの旬が近づいてきた。良型に期待"
+        elif hot >= 15:
+            comment = "関東で今一番狙われてる魚。港が賑わってる"
+        elif hot >= 10 and trend >= 1:
+            comment = "安定して好調。手堅く釣れる定番ターゲット"
         elif hot >= 10:
-            comment = "安定して好調"
-        elif trend < 1:
-            comment = "そろそろ終盤"
+            comment = "出船数多く安定感◎。平年並みの釣果"
+        elif hot >= 7 and next_mon > this_mon:
+            comment = "週末に向けて期待大。来週さらに上昇か"
+        elif hot >= 7:
+            comment = "安定した釣果が続いている"
+        elif trend >= 1.5 and hot >= 5:
+            comment = "ここ数日で急浮上。狙い目かも"
+        elif trend >= 1.5:
+            comment = "少しずつ上昇中。来週に期待"
+        elif next_mon > this_mon * 1.5:
+            comment = "これから本格シーズン入り。旬が近い"
+        elif next_mon > this_mon:
+            comment = "来月さらに盛り上がる予感"
+        elif is_season_end:
+            comment = "シーズンラスト！乗り残し注意"
+        elif trend < 0.7 and hot <= 3:
+            comment = "少しペースダウン気味。当たり外れあり"
+        elif trend < 1 and hot >= 5:
+            comment = "去年より低調気味だが出船は続いている"
+        elif this_mon >= 10:
+            comment = f"今週{this_mon}件の実績。安定した釣果"
+        elif this_mon >= 5:
+            comment = f"今週{this_mon}件の実績。コンスタントに釣れている"
         else:
-            comment = f"今月{this_mon}件の実績"
+            comment = f"今週{this_mon}件の実績"
+
         targets.append({"fish":fish,"score":score,"hot":hot,"trend":trend,"comment":comment})
 
     targets.sort(key=lambda x: -x["score"])
@@ -361,6 +433,7 @@ def build_fish_pages(data):
             return '<span class="yoy-eq">±0%</span>'
 
     # 魚種ごとにレコードを集約
+    medals = ["g1", "g2", "g3"]
     fs = {}
     for c in data:
         for f in c["fish"]:
@@ -375,6 +448,7 @@ def build_fish_pages(data):
            ".stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}"
            ".stat{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:14px 20px;flex:1;min-width:130px;text-align:center}"
            ".stat-num{font-size:28px;font-weight:bold;color:#4db8ff}"
+           ".stat-unit{font-size:14px;font-weight:normal;color:#7a9bb5;margin-left:2px}"
            ".stat-label{font-size:11px;color:#7a9bb5;margin-top:4px}"
            ".rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #0a1628}"
            ".rrow:last-child{border-bottom:none}"
@@ -415,7 +489,11 @@ def build_fish_pages(data):
            ".yoy-prev{font-size:12px;color:#7a9bb5;min-width:56px;text-align:right}"
            ".yoy-diff{font-size:13px;font-weight:bold;min-width:72px;text-align:right;flex-shrink:0}"
            ".yoy-up{color:#4ade80}.yoy-dn{color:#f87171}.yoy-eq{color:#fbbf24}.yoy-na{color:#4b5563}"
-           ".yoy-week{font-size:11px;color:#7a9bb5;margin-bottom:10px}")
+           ".yoy-week{font-size:11px;color:#7a9bb5;margin-bottom:10px}"
+           ".rank-tabs{display:flex;gap:8px;margin-bottom:12px}"
+           ".rank-tab{background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 14px;color:#7a9bb5;font-size:12px;cursor:pointer}"
+           ".rank-tab.active{border-color:#4db8ff;color:#4db8ff;background:#0a1e30}"
+           ".rank-tab:hover{border-color:#4db8ff;color:#4db8ff}")
 
     for fish, catches in fs.items():
         if len(catches) < 5:
@@ -424,29 +502,55 @@ def build_fish_pages(data):
         cnt7  = sum(1 for c in catches if c.get("date") and c["date"] >= week_ago)
         cnt30 = sum(1 for c in catches if c.get("date") and c["date"] >= month_ago)
 
-        # 船宿別ランキング（最高釣果）
-        ships = {}
+        # 船宿別ランキング（デイリー・ウィークリー）
+        today = now.strftime("%Y/%m/%d")
+        ships_daily = {}
+        ships_weekly = {}
         for c in catches:
             key = c["ship"]
             mx = (c.get("count_range") or {}).get("max", 0)
-            if key not in ships or ships[key]["max"] < mx:
-                ships[key] = {"ship": c["ship"], "area": c["area"], "max": mx, "date": c.get("date", "")}
-        ranking = sorted(ships.values(), key=lambda x: -x["max"])[:10]
+            # デイリー（当日）
+            if c.get("date") == today:
+                if key not in ships_daily or ships_daily[key]["max"] < mx:
+                    ships_daily[key] = {"ship": c["ship"], "area": c["area"], "max": mx, "date": c.get("date", "")}
+            # ウィークリー（直近7日）
+            if c.get("date") and c["date"] >= week_ago:
+                if key not in ships_weekly or ships_weekly[key]["max"] < mx:
+                    ships_weekly[key] = {"ship": c["ship"], "area": c["area"], "max": mx, "date": c.get("date", "")}
+        ranking_daily  = sorted(ships_daily.values(),  key=lambda x: -x["max"])[:10]
+        ranking_weekly = sorted(ships_weekly.values(), key=lambda x: -x["max"])[:10]
+        # 表示用にどちらかをベースに（ウィークリーを主とする）
+        ranking = ranking_weekly if ranking_weekly else []
         top_max = ranking[0]["max"] if ranking else 1
 
-        rank_html = ""
-        medals = ["g1", "g2", "g3"]
-        for i, r in enumerate(ranking):
-            pct = round(r["max"] / top_max * 100) if top_max > 0 else 0
-            mc = medals[i] if i < len(medals) else ""
-            rank_html += (f'<div class="rrow">'
-                          f'<div class="rnum {mc}">{i+1}</div>'
-                          f'<div class="rinfo"><div class="rship">{r["ship"]}</div>'
-                          f'<div class="rarea">{r["area"]} · {r["date"]}</div></div>'
-                          f'<div class="rbar-wrap">'
-                          f'<div class="rcnt">{r["max"]}<span class="runit"> 匹</span></div>'
-                          f'<div class="rbar-bg"><div class="rbar" style="width:{pct}%"></div></div>'
-                          f'</div></div>')
+        def make_rank_html(rk):
+            if not rk:
+                return '<p style="color:#7a9bb5;padding:16px 0">データがありません</p>'
+            top = rk[0]["max"] if rk else 1
+            html = ""
+            for i, r in enumerate(rk):
+                pct = round(r["max"] / top * 100) if top > 0 else 0
+                mc = medals[i] if i < len(medals) else ""
+                html += (f'<div class="rrow">'
+                         f'<div class="rnum {mc}">{i+1}</div>'
+                         f'<div class="rinfo"><div class="rship">{r["ship"]}</div>'
+                         f'<div class="rarea">{r["area"]} · {r["date"]}</div></div>'
+                         f'<div class="rbar-wrap">'
+                         f'<div class="rcnt">{r["max"]}<span class="runit"> 匹</span></div>'
+                         f'<div class="rbar-bg"><div class="rbar" style="width:{pct}%"></div></div>'
+                         f'</div></div>')
+            return html
+
+        rank_html_daily  = make_rank_html(ranking_daily)
+        rank_html_weekly = make_rank_html(ranking_weekly)
+        rank_html = (
+            f'<div class="rank-tabs">'
+            f'<button class="rank-tab active" onclick="switchTab(\'weekly\')">ウィークリー（直近7日）</button>'
+            f'<button class="rank-tab" onclick="switchTab(\'daily\')">デイリー（本日）</button>'
+            f'</div>'
+            f'<div id="rank-weekly">{rank_html_weekly}</div>'
+            f'<div id="rank-daily" style="display:none">{rank_html_daily}</div>'
+        )
 
         # エリア別件数
         area_cnt = {}
@@ -513,7 +617,10 @@ def build_fish_pages(data):
             axis    = md.get("axis", "")
             comment = md.get("comment", "")
             cells = ""
+            cur_month = now.month
             for m in range(1, 13):
+                is_cur = (m == cur_month)
+                border = "outline:2px solid #f59e0b;outline-offset:-2px;" if is_cur else ""
                 if m in ps_set:
                     bg = "#fbbf24"; lbl = "型"
                 elif m in pn_set:
@@ -522,7 +629,7 @@ def build_fish_pages(data):
                     bg = "#1a4060"; lbl = "○"
                 else:
                     bg = "#071020"; lbl = ""
-                cells += (f'<div class="sb-cell" style="background:{bg}">'
+                cells += (f'<div class="sb-cell" style="background:{bg};{border}">'
                           f'<div class="sb-month">{m}</div>'
                           f'<div class="sb-label">{lbl}</div>'
                           f'</div>')
@@ -552,18 +659,25 @@ def build_fish_pages(data):
                 f'{season_html}'
                 f'<h2>📊 直近の釣果件数</h2>'
                 f'<div class="stats">'
-                f'<div class="stat"><div class="stat-num">{cnt7}</div><div class="stat-label">直近7日</div></div>'
-                f'<div class="stat"><div class="stat-num">{cnt30}</div><div class="stat-label">直近30日</div></div>'
-                f'<div class="stat"><div class="stat-num">{len(catches)}</div><div class="stat-label">累計件数</div></div>'
+                f'<div class="stat"><div class="stat-num">{cnt7}<span class="stat-unit">件</span></div><div class="stat-label">直近7日</div></div>'
+                f'<div class="stat"><div class="stat-num">{cnt30}<span class="stat-unit">件</span></div><div class="stat-label">直近30日</div></div>'
+                f'<div class="stat"><div class="stat-num">{len(catches)}<span class="stat-unit">件</span></div><div class="stat-label">累計件数</div></div>'
                 f'</div>'
                 f'{yoy_html}'
-                f'<h2>🏆 船宿別釣果ランキング（最高釣果 TOP{len(ranking)}）</h2>'
+                f'<h2>🏆 船宿別釣果ランキング（最高釣果 TOP{len(ranking_weekly)}）</h2>'
                 f'{rank_html}'
                 f'<h2>📍 エリア別内訳</h2>'
                 f'<div class="area-list">{area_html}</div>'
                 f'<a class="back" href="../index.html">← 関東船釣りトップへ戻る</a>'
                 f'<p class="note">最終更新: {ts} · 総件数: {len(catches)}件</p>'
-                f'</div></body></html>')
+                f'</div>'
+                f'<script>function switchTab(t){{'
+                f'document.getElementById("rank-weekly").style.display=t==="weekly"?"block":"none";'
+                f'document.getElementById("rank-daily").style.display=t==="daily"?"block":"none";'
+                f'document.querySelectorAll(".rank-tab").forEach(function(b){{b.classList.remove("active")}});'
+                f'event.target.classList.add("active");'
+                f'}}</script>'
+                f'</body></html>')
 
         fname = f"fish/{fish}.html"
         with open(fname, "w", encoding="utf-8") as fh:
@@ -696,7 +810,7 @@ def build_html(data, ts, n):
         f"<tr><td>{c['date']}</td><td>{c['area']}</td><td>{c['ship']}</td>"
         f"<td>{'・'.join(c['fish'])}</td><td>{rng(c.get('count_range'),'')}</td>"
         f"<td>{rng(c.get('size_range'),'cm')}</td></tr>"
-        for c in sorted(data, key=lambda x: x["date"], reverse=True)[:200]
+        for c in sorted(data, key=lambda x: x["date"], reverse=True)[:5]
     )
 
     rank_data = {}
