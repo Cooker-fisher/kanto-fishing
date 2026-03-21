@@ -281,6 +281,55 @@ def current_iso_week():
     now = datetime.now()
     return now.year, now.isocalendar()[1]
 
+def update_history(catches, history):
+    """今週・今月のcatchesデータをhistory.jsonに反映する"""
+    target_weeks = set()
+    for c in catches:
+        if c.get("date"):
+            try:
+                dt = datetime.strptime(c["date"], "%Y/%m/%d")
+                iso = dt.isocalendar()
+                target_weeks.add(f"{iso[0]}/W{iso[1]:02d}")
+            except: pass
+    if not target_weeks:
+        return history
+    temp_w = {}
+    temp_m = {}
+    for c in catches:
+        if not c.get("date"): continue
+        try: dt = datetime.strptime(c["date"], "%Y/%m/%d")
+        except: continue
+        iso = dt.isocalendar()
+        wk = f"{iso[0]}/W{iso[1]:02d}"
+        mo = c["date"][:7]
+        if wk not in target_weeks: continue
+        cr = c.get("count_range") or {}
+        sr = c.get("size_range") or {}
+        avg = (cr.get("min", 0) + cr.get("max", 0)) // 2 if cr else 0
+        mx  = cr.get("max", 0)
+        sz  = sr.get("max", 0)
+        for fish in c.get("fish", []):
+            for store, key in [(temp_w, wk), (temp_m, mo)]:
+                if key not in store: store[key] = {}
+                if fish not in store[key]: store[key][fish] = {"ships": 0, "sum": 0, "cnt": 0, "max": 0, "szs": []}
+                d = store[key][fish]
+                d["ships"] += 1; d["sum"] += avg; d["cnt"] += 1
+                if mx > d["max"]: d["max"] = mx
+                if sz > 0: d["szs"].append(sz)
+    for store, hist_key in [(temp_w, "weekly"), (temp_m, "monthly")]:
+        for key, fish_data in store.items():
+            history[hist_key][key] = {}
+            for fish, d in fish_data.items():
+                history[hist_key][key][fish] = {
+                    "ships": d["ships"],
+                    "avg":   round(d["sum"] / d["cnt"], 1) if d["cnt"] > 0 else 0,
+                    "max":   d["max"],
+                    "size_avg": round(sum(d["szs"]) / len(d["szs"]), 1) if d["szs"] else 0,
+                }
+    with open("history.json", "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=2)
+    return history
+
 def get_yoy_data(history, fish, year, week_num):
     this_key = f"{year}/W{week_num:02d}"
     last_key = f"{year-1}/W{week_num:02d}"
@@ -924,6 +973,7 @@ def main():
         all_catches.extend(catches)
         time.sleep(0.8)
     history = load_history()
+    history = update_history(all_catches, history)
     with open("catches.json", "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
     with open("index.html", "w", encoding="utf-8") as f:
