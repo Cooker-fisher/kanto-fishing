@@ -1,23 +1,11 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5
-変更点:
-  - 今週の狙い目カードに魚種別ページリンク追加 (#1)
-  - 釣れている魚グリッドに魚種別ページリンク追加 (#2)
-  - 週番号をISO週(isocalendar)に統一 (#3)
-  - 最新釣果20件＋エリアフィルター (#4)
-  - 好調度コメントに件数・数値を組み込む (#5)
-  - 魚種別ページに船宿ランキング追加 (#6)
-  - 今週イチ押し1枚大きく表示 (#7)
-  - 最高釣果行ハイライト (#8)
-  - シーズンバーを見やすく改善 (#9)
-  - エリア別ページ新設 (#10)
-  - ナビにエリアページ追加 (#11)
-  - 狙い目とグリッドの役割分離 (#12)
-  - 魚種↔エリア相互リンク (#13)
-  - ヘッダーにサイト説明追加 (#14)
-  - 今週の釣り物予報一言追加 (#16)
-  - 出船数(混雑度)表示 (#18)
+関東船釣り情報クローラー v5.1
+変更点(v5.1):
+- parse_catches_from_tables を廃止
+- parse_catches_from_html に置き換え
+  → choka_box 単位で li.date から正しい出船日を取得
+  → 全釣果に「今日の日付」が入る問題を修正
 """
 import re, json, time, os
 from datetime import datetime
@@ -56,48 +44,47 @@ SHIPS = [
 
 # エリアの地域グループ定義
 AREA_GROUPS = {
-    "千葉・外房":   ["外川", "片貝", "大原", "勝浦松部港"],
-    "千葉・内房":   ["勝山", "富津"],
+    "千葉・外房":     ["外川", "片貝", "大原", "勝浦松部港"],
+    "千葉・内房":     ["勝山", "富津"],
     "千葉・東京湾奥": ["江戸川放水路", "浦安"],
     "神奈川・東京湾": ["金沢八景", "金沢漁港", "久比里", "久里浜"],
     "神奈川・相模湾": ["松輪", "長井", "葉山鐙摺", "腰越", "茅ヶ崎", "平塚", "小田原早川"],
-    "静岡":         ["宇佐美", "戸田"],
+    "静岡":           ["宇佐美", "戸田"],
 }
 
-BASE_URL   = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}"
+BASE_URL = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 FISH_MAP = {
-    "アジ":       ["アジ", "LTアジ", "ライトアジ"],
-    "タチウオ":   ["タチウオ"],
-    "フグ":       ["フグ", "トラフグ", "ショウサイフグ"],
-    "カワハギ":   ["カワハギ"],
-    "マダイ":     ["マダイ", "真鯛"],
-    "シロギス":   ["シロギス", "キス"],
-    "イサキ":     ["イサキ"],
-    "ヤリイカ":   ["ヤリイカ"],
+    "アジ":     ["アジ", "LTアジ", "ライトアジ"],
+    "タチウオ": ["タチウオ"],
+    "フグ":     ["フグ", "トラフグ", "ショウサイフグ"],
+    "カワハギ": ["カワハギ"],
+    "マダイ":   ["マダイ", "真鯛"],
+    "シロギス": ["シロギス", "キス"],
+    "イサキ":   ["イサキ"],
+    "ヤリイカ": ["ヤリイカ"],
     "スルメイカ": ["スルメイカ"],
-    "マダコ":     ["タコ", "マダコ"],
-    "カサゴ":     ["カサゴ", "オニカサゴ"],
-    "メバル":     ["メバル"],
-    "ワラサ":     ["ワラサ", "イナダ", "ブリ"],
-    "アマダイ":   ["アマダイ"],
-    "メダイ":     ["メダイ"],
-    "サワラ":     ["サワラ"],
-    "ヒラメ":     ["ヒラメ"],
-    "マゴチ":     ["マゴチ"],
+    "マダコ":   ["タコ", "マダコ"],
+    "カサゴ":   ["カサゴ", "オニカサゴ"],
+    "メバル":   ["メバル"],
+    "ワラサ":   ["ワラサ", "イナダ", "ブリ"],
+    "アマダイ": ["アマダイ"],
+    "メダイ":   ["メダイ"],
+    "サワラ":   ["サワラ"],
+    "ヒラメ":   ["ヒラメ"],
+    "マゴチ":   ["マゴチ"],
     "キンメダイ": ["キンメダイ", "キンメ"],
-    "クロムツ":   ["クロムツ", "ムツ"],
-    "マルイカ":   ["マルイカ"],
-    "カンパチ":   ["カンパチ"],
-    "マハタ":     ["マハタ"],
+    "クロムツ": ["クロムツ", "ムツ"],
+    "マルイカ": ["マルイカ"],
+    "カンパチ": ["カンパチ"],
+    "マハタ":   ["マハタ"],
 }
 
 Z2H = str.maketrans("０１２３４５６７８９．", "0123456789.")
 
-
 # ============================================================
-# HTMLパーサー
+# HTMLパーサー（テーブル抽出）
 # ============================================================
 class TableParser(HTMLParser):
     def __init__(self):
@@ -136,14 +123,14 @@ class TableParser(HTMLParser):
         if not self._skip and self._in_cell:
             self._current_cell.append(data)
 
-
 # ============================================================
 # パース補助
 # ============================================================
 def guess_fish(t):
     return [f for f, kws in FISH_MAP.items() if any(k in t for k in kws)] or ["不明"]
 
-def parse_num(s): return s.translate(Z2H)
+def parse_num(s):
+    return s.translate(Z2H)
 
 def extract_count(t):
     t = parse_num(t)
@@ -165,32 +152,100 @@ def extract_size(t):
     if m: v = int(m[1]); return {"min": v, "max": v, "unit": "cm"}
     return None
 
-def parse_catches_from_tables(tables, ship, area, year):
+def parse_jp_date(date_str, year):
+    """
+    '2026年1月7日(水)' → '2026/01/07'
+    '1月7日(水)' → '{year}/01/07'
+    """
+    m = re.search(r'(\d{4})年(\d{1,2})月(\d{1,2})日', date_str)
+    if m:
+        return f"{int(m[1])}/{int(m[2]):02d}/{int(m[3]):02d}"
+    m = re.search(r'(\d{1,2})月(\d{1,2})日', date_str)
+    if m:
+        return f"{year}/{int(m[1]):02d}/{int(m[2]):02d}"
+    return None
+
+# ============================================================
+# v5.1: choka_box単位でパース（日付バグ修正）
+# ============================================================
+def parse_catches_from_html(html, ship, area, year):
+    """
+    fishing-v.jpの生HTMLをchoka_box単位で処理。
+    li.date から出船日を取得し、同boxのテーブル行に紐づける。
+    """
     results = []
-    now = datetime.now()
+
+    # choka_box ブロックを切り出す
+    # 各 choka_box の開始位置を探し、次の choka_box 開始位置（またはHTML末尾）までを切り出す
+    box_starts = [m.start() for m in re.finditer(r'<div[^>]+class="[^"]*choka_box[^"]*"', html)]
+
+    # choka_box が見つからない場合はフォールバック: 旧方式（今日の日付）
+    if not box_starts:
+        boxes = []
+    else:
+        boxes = []
+        for i, start in enumerate(box_starts):
+            end = box_starts[i+1] if i+1 < len(box_starts) else len(html)
+            boxes.append(html[start:end])
+    if not boxes:
+        # フォールバック: TableParserで全テーブルを取得し今日の日付を使用
+        parser = TableParser()
+        parser.feed(html)
+        now = datetime.now()
+        fallback_date = f"{year}/{now.month:02d}/{now.day:02d}"
+        return _parse_tables(parser.tables, ship, area, fallback_date, now.month)
+
+    for box_html in boxes:
+        # li.date から日付を取得
+        date_m = re.search(r'<li[^>]+class="[^"]*date[^"]*"[^>]*>([^<]+)</li>', box_html)
+        if date_m:
+            date_str = date_m.group(1).strip()
+            date = parse_jp_date(date_str, year)
+            month = int(re.search(r'(\d{1,2})月', date_str).group(1)) if re.search(r'(\d{1,2})月', date_str) else datetime.now().month
+        else:
+            now = datetime.now()
+            date = f"{year}/{now.month:02d}/{now.day:02d}"
+            month = now.month
+
+        # box内のテーブルをパース
+        box_parser = TableParser()
+        box_parser.feed(box_html)
+        catches = _parse_tables(box_parser.tables, ship, area, date, month)
+        results.extend(catches)
+
+    return results
+
+
+def _parse_tables(tables, ship, area, date, month):
+    """テーブルリストから釣果を抽出（日付は呼び出し元から受け取る）"""
+    results = []
     for table in tables:
         if not table: continue
-        header = table[0]; header_str = " ".join(header)
-        if "魚種" not in header_str and "匹数" not in header_str: continue
-        fish_idx   = next((i for i,h in enumerate(header) if "魚種"  in h), 1)
-        count_idx  = next((i for i,h in enumerate(header) if "匹数"  in h), 2)
+        header = table[0]
+        header_str = " ".join(header)
+        if "魚種" not in header_str and "匹数" not in header_str:
+            continue
+        fish_idx   = next((i for i,h in enumerate(header) if "魚種" in h), 1)
+        count_idx  = next((i for i,h in enumerate(header) if "匹数" in h), 2)
         size_idx   = next((i for i,h in enumerate(header) if "大きさ" in h), 3)
-        weight_idx = next((i for i,h in enumerate(header) if "重さ"  in h), 4)
+        weight_idx = next((i for i,h in enumerate(header) if "重さ" in h), 4)
+
         for row in table[1:]:
             if len(row) <= fish_idx: continue
             fish_name = row[fish_idx].strip()
-            if not fish_name or fish_name in ("魚種","-","－",""): continue
+            if not fish_name or fish_name in ("魚種", "-", "－", ""): continue
             count_str  = row[count_idx].strip()  if count_idx  < len(row) else ""
             size_str   = row[size_idx].strip()   if size_idx   < len(row) else ""
             weight_str = row[weight_idx].strip() if weight_idx < len(row) else ""
             results.append({
-                "ship": ship, "area": area,
-                "date": f"{year}/{now.month:02d}/{now.day:02d}",
-                "month": now.month, "day": now.day,
-                "catch_raw": f"{fish_name} {count_str} {size_str} {weight_str}".strip(),
-                "fish": guess_fish(fish_name),
+                "ship":        ship,
+                "area":        area,
+                "date":        date,
+                "month":       month,
+                "catch_raw":   f"{fish_name} {count_str} {size_str} {weight_str}".strip(),
+                "fish":        guess_fish(fish_name),
                 "count_range": extract_count(count_str),
-                "size_range": extract_size(weight_str) or extract_size(size_str),
+                "size_range":  extract_size(weight_str) or extract_size(size_str),
             })
     return results
 
@@ -206,7 +261,6 @@ def fetch(url):
     except URLError as e:
         print(f"ERROR: {e}"); return None
 
-
 # ============================================================
 # history.json (#3: ISO週に統一)
 # ============================================================
@@ -219,13 +273,12 @@ def load_history():
     return {"weekly": {}, "monthly": {}}
 
 def current_iso_week():
-    """ISO週番号を返す (Python isocalendar と同じ)"""
     now = datetime.now()
     return now.year, now.isocalendar()[1]
 
 def get_yoy_data(history, fish, year, week_num):
-    this_key  = f"{year}/W{week_num:02d}"
-    last_key  = f"{year-1}/W{week_num:02d}"
+    this_key = f"{year}/W{week_num:02d}"
+    last_key = f"{year-1}/W{week_num:02d}"
     this_data = history["weekly"].get(this_key, {}).get(fish)
     last_data = history["weekly"].get(last_key, {}).get(fish)
     return this_data, last_data
@@ -239,30 +292,28 @@ def yoy_badge(this_data, last_data):
     if pct >= 0: return f'<span class="yoy up">↑昨年比+{pct}%</span>'
     else:        return f'<span class="yoy down">↓昨年比{pct}%</span>'
 
-
 # ============================================================
 # シーズンデータ
 # ============================================================
 SEASON_DATA = {
-    "アジ":       [3,3,3,4,4,5,5,4,4,4,4,3],
-    "タチウオ":   [1,1,1,1,2,3,5,5,5,4,3,2],
-    "フグ":       [3,3,4,4,3,2,2,2,3,4,4,3],
-    "カワハギ":   [2,2,2,2,2,2,3,4,5,5,4,3],
-    "マダイ":     [2,2,3,5,5,4,3,3,3,4,4,3],
-    "シロギス":   [1,1,2,3,5,5,5,4,3,2,1,1],
-    "イサキ":     [1,1,2,3,4,5,5,4,3,2,1,1],
-    "ヤリイカ":   [4,4,3,2,2,2,2,2,2,3,4,5],
-    "スルメイカ": [1,1,1,2,3,4,5,5,4,3,2,1],
-    "マダコ":     [1,1,1,2,3,5,5,5,4,3,2,1],
-    "カサゴ":     [4,4,4,3,3,2,2,2,3,3,4,4],
-    "メバル":     [4,4,4,3,3,2,2,2,2,3,4,4],
-    "ワラサ":     [2,2,2,2,3,3,4,4,5,5,4,3],
-    "ヒラメ":     [4,4,3,3,3,3,3,3,4,5,5,4],
-    "アマダイ":   [3,3,3,3,3,3,3,3,4,4,4,4],
-    "マゴチ":     [1,1,1,2,4,5,5,5,4,2,1,1],
-    "キンメダイ": [4,4,4,3,3,3,3,3,3,4,4,4],
+    "アジ":     [3,3,3,4,4,5,5,4,4,4,4,3],
+    "タチウオ": [1,1,1,1,2,3,5,5,5,4,3,2],
+    "フグ":     [3,3,4,4,3,2,2,2,3,4,4,3],
+    "カワハギ": [2,2,2,2,2,2,3,4,5,5,4,3],
+    "マダイ":   [2,2,3,5,5,4,3,3,3,4,4,3],
+    "シロギス": [1,1,2,3,5,5,5,4,3,2,1,1],
+    "イサキ":   [1,1,2,3,4,5,5,4,3,2,1,1],
+    "ヤリイカ": [4,4,3,2,2,2,2,2,2,3,4,5],
+    "スルメイカ":[1,1,1,2,3,4,5,5,4,3,2,1],
+    "マダコ":   [1,1,1,2,3,5,5,5,4,3,2,1],
+    "カサゴ":   [4,4,4,3,3,2,2,2,3,3,4,4],
+    "メバル":   [4,4,4,3,3,2,2,2,2,3,4,4],
+    "ワラサ":   [2,2,2,2,3,3,4,4,5,5,4,3],
+    "ヒラメ":   [4,4,3,3,3,3,3,3,4,5,5,4],
+    "アマダイ": [3,3,3,3,3,3,3,3,4,4,4,4],
+    "マゴチ":   [1,1,1,2,4,5,5,5,4,2,1,1],
+    "キンメダイ":[4,4,4,3,3,3,3,3,3,4,4,4],
 }
-
 SEASON_TYPE = {
     "アジ":     ["数","数","数","数","型","型","型","数","数","数","数","数"],
     "タチウオ": ["数","数","数","数","数","数","型","型","数","数","数","数"],
@@ -276,7 +327,6 @@ def get_season_score(fish, month):
     s = SEASON_DATA.get(fish, [])
     return s[month - 1] if s else 0
 
-# #9: シーズンバーを見やすく改善
 def build_season_bar(fish, current_month):
     scores = SEASON_DATA.get(fish, [3]*12)
     types  = SEASON_TYPE.get(fish, [""]*12)
@@ -292,12 +342,10 @@ def build_season_bar(fish, current_month):
         label = '<div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>'
     return f'<div class="season-bar">{cells}</div>{label}'
 
-
 # ============================================================
 # #5: 好調度コメント（件数・数値入り）
 # ============================================================
 def build_comment(fish, count, score, this_w, last_w):
-    """件数と昨年比を組み込んだコメントを生成"""
     base_comments = {
         5: ["爆釣モード！今すぐ行くべき", "今季最高潮。チャンスを逃すな"],
         4: ["かなり好調。おすすめの釣り物", "良型混じりで数も出ている"],
@@ -306,7 +354,6 @@ def build_comment(fish, count, score, this_w, last_w):
         1: ["端境期。好転待ちの状況", "オフシーズン。次の季節に期待"],
     }
     base = base_comments.get(score, base_comments[3])[hash(fish) % 2]
-    # 数値補足を追加
     suffix = f"（今週{count}件"
     if this_w and last_w:
         t_val = this_w.get("avg") or 0
@@ -318,12 +365,10 @@ def build_comment(fish, count, score, this_w, last_w):
     suffix += "）"
     return f"{base}{suffix}"
 
-
 # ============================================================
 # #16: 釣り物予報
 # ============================================================
 def build_forecast(targets):
-    """今週の釣り物予報を一行で生成"""
     if not targets: return ""
     top = targets[0]
     score = top["score"]
@@ -334,12 +379,10 @@ def build_forecast(targets):
         msg = f"今週は<strong>{fish}</strong>がコンスタント。外さない一手です。"
     else:
         msg = f"今週は全体的に渋め。<strong>{fish}</strong>中心に様子を見ましょう。"
-    # 混雑注意（出船数多い魚）
     high_ships = [t for t in targets if t.get("ships", 0) >= 10]
     if high_ships:
-        msg += f'　<span class="forecast-crowded">【混雑注意】{high_ships[0]["fish"]}は人気が高く船が混み合う可能性あり</span>'
+        msg += f' <span class="forecast-crowded">【混雑注意】{high_ships[0]["fish"]}は人気が高く船が混み合う可能性あり</span>'
     return f'<div class="forecast-bar">{msg}</div>'
-
 
 # ============================================================
 # CSS
@@ -425,15 +468,13 @@ footer a{color:#4db8ff;text-decoration:none}
 footer a:hover{text-decoration:underline}
 """
 
-
 # ============================================================
 # #7: 今週イチ押し + #1: リンク付きカード
 # ============================================================
 def calc_targets(data, history):
     now = datetime.now()
     cur_month = now.month
-    year, week_num = current_iso_week()  # #3: ISO週
-
+    year, week_num = current_iso_week()
     fish_counts = {}
     ship_counts_per_fish = {}
     for c in data:
@@ -441,53 +482,43 @@ def calc_targets(data, history):
             if f != "不明":
                 fish_counts[f] = fish_counts.get(f, 0) + 1
                 ship_counts_per_fish.setdefault(f, set()).add(c["ship"])
-
     targets = []
     for fish, cnt in sorted(fish_counts.items(), key=lambda x: -x[1])[:10]:
-        score = get_season_score(fish, cur_month)
+        score   = get_season_score(fish, cur_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         badge   = yoy_badge(this_w, last_w)
-        comment = build_comment(fish, cnt, score, this_w, last_w)  # #5
-        ships   = len(ship_counts_per_fish.get(fish, set()))  # #18
-        targets.append({
-            "fish": fish, "count": cnt, "score": score,
-            "comment": comment, "badge": badge, "ships": ships,
-        })
+        comment = build_comment(fish, cnt, score, this_w, last_w)
+        ships   = len(ship_counts_per_fish.get(fish, set()))
+        targets.append({"fish": fish, "count": cnt, "score": score, "comment": comment, "badge": badge, "ships": ships})
     return targets[:5]
 
 def build_target_section(targets):
     if not targets:
         return "<p style='color:#7a9bb5'>データ収集中です。しばらくお待ちください。</p>"
-
-    # #7: 1位を大きく、2〜5位は小さく
     top = targets[0]
     top_score_bar = "█" * top["score"] + "░" * (5 - top["score"])
     top_html = f"""
-<a class="target-top" href="fish/{top['fish']}.html">
-  <div style="flex:1">
-    <div class="tt-badge">
-      <span class="tt-label">今週イチ押し</span>
-      {top['badge']}
-    </div>
-    <div class="tt-fish">{top['fish']}</div>
-    <div class="tt-score">{top_score_bar}</div>
-    <div class="tt-comment">{top['comment']}</div>
-    <div style="font-size:11px;color:#7a9bb5;margin-top:6px">出船数: 約{top['ships']}隻 ／ 直近釣果: {top['count']}件</div>
-  </div>
-</a>"""
-
+    <a class="target-top" href="fish/{top['fish']}.html">
+      <div style="flex:1">
+        <div class="tt-badge">
+          <span class="tt-label">今週イチ押し</span> {top['badge']}
+        </div>
+        <div class="tt-fish">{top['fish']}</div>
+        <div class="tt-score">{top_score_bar}</div>
+        <div class="tt-comment">{top['comment']}</div>
+        <div style="font-size:11px;color:#7a9bb5;margin-top:6px">出船数: 約{top['ships']}隻 ／ 直近釣果: {top['count']}件</div>
+      </div>
+    </a>"""
     rest_html = ""
     for t in targets[1:]:
         rest_html += f"""
-<a class="target-card" href="fish/{t['fish']}.html">
-  <div class="tc-fish">{t['fish']}{t['badge']}</div>
-  <div class="tc-bar">{"█"*t["score"]}{"░"*(5-t["score"])}</div>
-  <div class="tc-comment">{t['comment']}</div>
-  <div class="tc-count">出船約{t['ships']}隻 ／ {t['count']}件</div>
-</a>"""
-
+    <a class="target-card" href="fish/{t['fish']}.html">
+      <div class="tc-fish">{t['fish']}{t['badge']}</div>
+      <div class="tc-bar">{"█"*t["score"]}{"░"*(5-t["score"])}</div>
+      <div class="tc-comment">{t['comment']}</div>
+      <div class="tc-count">出船約{t['ships']}隻 ／ {t['count']}件</div>
+    </a>"""
     return top_html + f'<div class="target-grid">{rest_html}</div>'
-
 
 # ============================================================
 # #4: 釣果テーブル用HTML（エリアフィルター + 最高釣果ハイライト）
@@ -497,14 +528,11 @@ def build_catch_table(catches):
     filter_btns = '<button class="filter-btn active" onclick="filterArea(this,\'all\')">すべて</button>'
     for a in areas:
         filter_btns += f'<button class="filter-btn" onclick="filterArea(this,\'{a}\')">{a}</button>'
-
     rows = ""
-    # #8: 最高釣果の件を特定
     max_count = 0
     for c in catches[:20]:
         if c["count_range"]: max_count = max(max_count, c["count_range"]["max"])
-
-    for c in catches[:20]:  # #4: 20件
+    for c in catches[:20]:
         cnt = ""
         is_top = False
         if c["count_range"]:
@@ -517,84 +545,69 @@ def build_catch_table(catches):
             sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
         hl = ' class="highlight"' if is_top else ""
         rows += f'<tr{hl} data-area="{c["area"]}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{"・".join(c["fish"])}</td><td>{cnt}</td><td>{sz}</td></tr>'
-
     return f"""
-<div class="filter-bar">{filter_btns}</div>
-<table id="catch-table">
-  <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>
-  {rows}
-</table>"""
-
+    <div class="filter-bar">{filter_btns}</div>
+    <table id="catch-table">
+      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>
+      {rows}
+    </table>"""
 
 # ============================================================
-# index.html 生成 (#2: グリッドカードにリンク, #11: ナビ, #14: サイト説明)
+# index.html 生成
 # ============================================================
 def build_html(catches, crawled_at, history):
     now = datetime.now()
     current_month = now.month
-
     fish_summary = {}
     for c in catches:
         for f in c["fish"]:
             if f != "不明":
                 fish_summary.setdefault(f, []).append(c)
-
-    # エリアリスト（#11用）
     areas = sorted(set(c["area"] for c in catches))
-
     cards = ""
     for fish, cs in sorted(fish_summary.items(), key=lambda x: -len(x[1])):
-        areas_list = list(dict.fromkeys(c["area"] for c in cs[:3]))
-        season_bar = build_season_bar(fish, current_month)
-        fish_id    = re.sub(r'[^\w]', '_', fish)
+        areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))
+        season_bar  = build_season_bar(fish, current_month)
+        fish_id     = re.sub(r'[^\w]', '_', fish)
         ship_counts = {}
         for c in cs: ship_counts[c["ship"]] = ship_counts.get(c["ship"], 0) + 1
-
         daily_rows = ""
         for c in sorted(cs, key=lambda x: x["date"] or "", reverse=True)[:5]:
             cnt = f"{c['count_range']['min']}〜{c['count_range']['max']}" if c["count_range"] and c["count_range"]["min"] != c["count_range"]["max"] else (str(c["count_range"]["min"]) if c["count_range"] else "")
-            sz = ""
+            sz  = ""
             if c["size_range"]:
                 mn,mx,unit = c["size_range"]["min"],c["size_range"]["max"],c["size_range"].get("unit","cm")
                 sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
             daily_rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz}</td></tr>"
-
         weekly_rows = ""
         for sn, cnt in sorted(ship_counts.items(), key=lambda x:-x[1])[:10]:
             pct = int(cnt / len(cs) * 100) if cs else 0
             weekly_rows += f'<tr><td>{sn}</td><td>{cnt}件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:{pct}%"></div></div></td></tr>'
-
-        # #18: 出船数バッジ
-        ship_num = len(ship_counts)
+        ship_num   = len(ship_counts)
         ships_html = f'<span class="ships-badge">約{ship_num}隻</span>'
-
         cards += f"""
-<div class="fc">
-  <div class="fc-summary">
-    <div class="fn">{fish}{ships_html}</div>
-    <div class="fk">{len(cs)}件</div>
-    <div class="fa">{" / ".join(areas_list)}</div>
-    {season_bar}
-  </div>
-  <a class="fc-link" href="fish/{fish}.html">詳細・船宿ランキング →</a>
-  <div class="fc-detail" style="display:none" id="detail-{fish_id}">
-    <div class="tab-wrap">
-      <button class="tab-btn active" onclick="switchTab(event,'daily-{fish_id}','weekly-{fish_id}')">デイリー</button>
-      <button class="tab-btn" onclick="switchTab(event,'weekly-{fish_id}','daily-{fish_id}')">ウィークリー</button>
-    </div>
-    <div id="daily-{fish_id}"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr>{daily_rows or '<tr><td colspan=5 style="color:#7a9bb5">データなし</td></tr>'}</table></div>
-    <div id="weekly-{fish_id}" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr>{weekly_rows or '<tr><td colspan=3 style="color:#7a9bb5">データなし</td></tr>'}</table></div>
-  </div>
-</div>"""
-
-    targets     = calc_targets(catches, history)
-    target_html = build_target_section(targets)
-    forecast    = build_forecast(targets)  # #16
-    catch_table = build_catch_table(catches)
-
-    # #11: エリアナビ
-    area_nav = " ".join(f'<a href="area/{a}.html">{a}</a>' for a in sorted(set(c["area"] for c in catches)))
-
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">{fish}{ships_html}</div>
+        <div class="fk">{len(cs)}件</div>
+        <div class="fa">{" / ".join(areas_list)}</div>
+        {season_bar}
+      </div>
+      <a class="fc-link" href="fish/{fish}.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-{fish_id}">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-{fish_id}','weekly-{fish_id}')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-{fish_id}','daily-{fish_id}')">ウィークリー</button>
+        </div>
+        <div id="daily-{fish_id}"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr>{daily_rows or '<tr><td colspan=5 style="color:#7a9bb5">データなし</td></tr>'}</table></div>
+        <div id="weekly-{fish_id}" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr>{weekly_rows or '<tr><td colspan=3 style="color:#7a9bb5">データなし</td></tr>'}</table></div>
+      </div>
+    </div>"""
+    targets      = calc_targets(catches, history)
+    target_html  = build_target_section(targets)
+    forecast     = build_forecast(targets)
+    catch_table  = build_catch_table(catches)
+    area_nav     = " ".join(f'<a href="area/{a}.html">{a}</a>' for a in sorted(set(c["area"] for c in catches)))
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -613,8 +626,7 @@ def build_html(catches, crawled_at, history):
   <a href="index.html">🏠 トップ</a>
   <a href="calendar.html">📅 釣りものカレンダー</a>
   <span style="color:#1a4060">|</span>
-  <span style="color:#7a9bb5;font-size:12px">エリアから探す：</span>
-  {area_nav}
+  <span style="color:#7a9bb5;font-size:12px">エリアから探す：</span> {area_nav}
 </nav>
 <div class="wrap">
   <h2>🎯 今週の狙い目</h2>
@@ -658,46 +670,37 @@ document.querySelectorAll('.fc').forEach(el => {{
 </body>
 </html>"""
 
-
 # ============================================================
-# #6: 魚種別ページ（船宿ランキング追加）#13: エリアリンク
+# #6: 魚種別ページ
 # ============================================================
 def build_fish_pages(data, history):
     os.makedirs("fish", exist_ok=True)
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
-
     fish_summary = {}
     for c in data:
         for f in c["fish"]:
-            if f != "不明":
-                fish_summary.setdefault(f, []).append(c)
-
+            if f != "不明": fish_summary.setdefault(f, []).append(c)
     for fish, catches in fish_summary.items():
         if len(catches) < 3: continue
-
         season_bar_html = build_season_bar(fish, current_month)
         score   = get_season_score(fish, current_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         comment = build_comment(fish, len(catches), score, this_w, last_w)
-
-        # 釣果テーブル
         rows = ""
         max_cnt = 0
         for c in catches:
             if c["count_range"]: max_cnt = max(max_cnt, c["count_range"]["max"])
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]:
             cnt = f"{c['count_range']['min']}〜{c['count_range']['max']}" if c["count_range"] and c["count_range"]["min"] != c["count_range"]["max"] else (str(c["count_range"]["min"]) if c["count_range"] else "")
-            sz = ""
+            sz  = ""
             if c["size_range"]:
                 mn,mx,unit = c["size_range"]["min"],c["size_range"]["max"],c["size_range"].get("unit","cm")
                 sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
             is_top = c["count_range"] and c["count_range"]["max"] == max_cnt and max_cnt > 0
             hl = ' class="highlight"' if is_top else ""
             rows += f"<tr{hl}><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz}</td></tr>"
-
-        # #6: 船宿ランキング
         ship_counts = {}
         ship_max    = {}
         for c in catches:
@@ -706,7 +709,7 @@ def build_fish_pages(data, history):
                 ship_max[c["ship"]] = max(ship_max.get(c["ship"], 0), c["count_range"]["max"])
         rank_rows = ""
         for i, (sn, cnt) in enumerate(sorted(ship_counts.items(), key=lambda x:-x[1])[:10], 1):
-            mx = ship_max.get(sn, 0)
+            mx   = ship_max.get(sn, 0)
             area = next((c["area"] for c in catches if c["ship"] == sn), "")
             pct  = int(cnt / len(catches) * 100) if catches else 0
             rank_rows += f"""<tr>
@@ -716,33 +719,27 @@ def build_fish_pages(data, history):
   <td style="color:#e85d04">最高{mx}匹</td>
   <td><div class="bar-wrap"><div class="bar-fill" style="width:{pct}%"></div></div></td>
 </tr>"""
-
-        # #13: このエリアで釣れている他の魚へのリンク
         areas_this = list(dict.fromkeys(c["area"] for c in catches))
         area_links = " / ".join(f'<a href="../area/{a}.html" style="color:#4db8ff;font-size:12px">{a}</a>' for a in areas_this[:5])
-
-        # 昨年比テーブル
         yoy_html = ""
         if this_w and last_w:
             def fmt(v, unit=""): return f"{v}{unit}" if v else "-"
             def diff_cell(t_val, l_val):
                 if not t_val or not l_val: return "<td>-</td>"
                 pct = round((t_val - l_val) / l_val * 100)
-                cls = "up" if pct >= 0 else "down"
+                cls  = "up" if pct >= 0 else "down"
                 sign = "+" if pct >= 0 else ""
                 return f'<td class="{cls}">{sign}{pct}%</td>'
             yoy_html = f"""
-<h2>📊 昨年同週との比較（第{week_num}週）</h2>
-<table class="yoy-table">
-  <tr><th></th><th>今週 ({year}/W{week_num:02d})</th><th>昨年同週 ({year-1}/W{week_num:02d})</th><th>昨年比</th></tr>
-  <tr><td>平均釣果</td><td>{fmt(this_w.get("avg"),"匹")}</td><td>{fmt(last_w.get("avg"),"匹")}</td>{diff_cell(this_w.get("avg"),last_w.get("avg"))}</tr>
-  <tr><td>最高釣果</td><td>{fmt(this_w.get("max"),"匹")}</td><td>{fmt(last_w.get("max"),"匹")}</td>{diff_cell(this_w.get("max"),last_w.get("max"))}</tr>
-  <tr><td>平均サイズ</td><td>{fmt(this_w.get("size_avg"),"cm")}</td><td>{fmt(last_w.get("size_avg"),"cm")}</td>{diff_cell(this_w.get("size_avg"),last_w.get("size_avg"))}</tr>
-  <tr><td>出船数</td><td>{fmt(this_w.get("ships"),"隻")}</td><td>{fmt(last_w.get("ships"),"隻")}</td>{diff_cell(this_w.get("ships"),last_w.get("ships"))}</tr>
-</table>"""
-
+  <h2>📊 昨年同週との比較（第{week_num}週）</h2>
+  <table class="yoy-table">
+    <tr><th></th><th>今週 ({year}/W{week_num:02d})</th><th>昨年同週 ({year-1}/W{week_num:02d})</th><th>昨年比</th></tr>
+    <tr><td>平均釣果</td><td>{fmt(this_w.get("avg"),"匹")}</td><td>{fmt(last_w.get("avg"),"匹")}</td>{diff_cell(this_w.get("avg"),last_w.get("avg"))}</tr>
+    <tr><td>最高釣果</td><td>{fmt(this_w.get("max"),"匹")}</td><td>{fmt(last_w.get("max"),"匹")}</td>{diff_cell(this_w.get("max"),last_w.get("max"))}</tr>
+    <tr><td>平均サイズ</td><td>{fmt(this_w.get("size_avg"),"cm")}</td><td>{fmt(last_w.get("size_avg"),"cm")}</td>{diff_cell(this_w.get("size_avg"),last_w.get("size_avg"))}</tr>
+    <tr><td>出船数</td><td>{fmt(this_w.get("ships"),"隻")}</td><td>{fmt(last_w.get("ships"),"隻")}</td>{diff_cell(this_w.get("ships"),last_w.get("ships"))}</tr>
+  </table>"""
         fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
-
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -770,67 +767,50 @@ def build_fish_pages(data, history):
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
 </footer>
 </body></html>"""
-
         with open(f"fish/{fish}.html", "w", encoding="utf-8") as f:
             f.write(html)
 
-
 # ============================================================
-# #10: エリア別ページ新設
+# #10: エリア別ページ
 # ============================================================
 def build_area_pages(data, history):
     os.makedirs("area", exist_ok=True)
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
-
-    # エリア別に集計
     area_summary = {}
     for c in data:
-        a = c["area"]
-        area_summary.setdefault(a, []).append(c)
-
+        area_summary.setdefault(c["area"], []).append(c)
     for area, catches in area_summary.items():
         if len(catches) < 2: continue
-
-        # 魚種別集計
         fish_counts = {}
         ship_counts = {}
         for c in catches:
             for f in c["fish"]:
-                if f != "不明":
-                    fish_counts[f] = fish_counts.get(f, 0) + 1
+                if f != "不明": fish_counts[f] = fish_counts.get(f, 0) + 1
             ship_counts[c["ship"]] = ship_counts.get(c["ship"], 0) + 1
-
-        # TOP魚種3つ
-        top_fish = sorted(fish_counts.items(), key=lambda x:-x[1])[:5]
+        top_fish   = sorted(fish_counts.items(), key=lambda x:-x[1])[:5]
         fish_cards = ""
         for fish, cnt in top_fish:
             score = get_season_score(fish, current_month)
             score_bar = "█" * score + "░" * (5 - score)
             fish_cards += f"""
-<a href="../fish/{fish}.html" style="background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-decoration:none;color:inherit;display:block;transition:border-color .2s">
-  <div style="font-size:16px;font-weight:bold;color:#fff;margin-bottom:4px">{fish}</div>
-  <div style="font-size:13px;color:#e85d04;letter-spacing:2px;margin-bottom:4px">{score_bar}</div>
-  <div style="font-size:12px;color:#7a9bb5">今週{cnt}件</div>
-</a>"""
-
-        # 船宿ランキング
+    <a href="../fish/{fish}.html" style="background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-decoration:none;color:inherit;display:block;transition:border-color .2s">
+      <div style="font-size:16px;font-weight:bold;color:#fff;margin-bottom:4px">{fish}</div>
+      <div style="font-size:13px;color:#e85d04;letter-spacing:2px;margin-bottom:4px">{score_bar}</div>
+      <div style="font-size:12px;color:#7a9bb5">今週{cnt}件</div>
+    </a>"""
         ship_rows = ""
         for i, (sn, cnt) in enumerate(sorted(ship_counts.items(), key=lambda x:-x[1])[:8], 1):
-            # その船宿の主力魚種
             ship_fish = {}
             for c in catches:
                 if c["ship"] == sn:
                     for f in c["fish"]:
-                        if f != "不明":
-                            ship_fish[f] = ship_fish.get(f, 0) + 1
-            top_f = sorted(ship_fish.items(), key=lambda x:-x[1])[:2]
+                        if f != "不明": ship_fish[f] = ship_fish.get(f, 0) + 1
+            top_f    = sorted(ship_fish.items(), key=lambda x:-x[1])[:2]
             fish_str = "・".join(f for f,_ in top_f)
-            pct = int(cnt / len(catches) * 100) if catches else 0
+            pct      = int(cnt / len(catches) * 100) if catches else 0
             ship_rows += f'<tr><td style="color:#4db8ff;font-weight:bold">{i}</td><td><strong>{sn}</strong><br><span style="font-size:11px;color:#7a9bb5">{fish_str}</span></td><td style="color:#4dcc88">{cnt}件</td><td><div style="background:#081020;border-radius:2px;height:8px;width:80px"><div style="background:#1a6ea8;height:8px;border-radius:2px;width:{pct}%"></div></div></td></tr>'
-
-        # 最新釣果テーブル
         rows = ""
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:15]:
             cnt_str = f"{c['count_range']['min']}〜{c['count_range']['max']}" if c["count_range"] and c["count_range"]["min"] != c["count_range"]["max"] else (str(c["count_range"]["min"]) if c["count_range"] else "")
@@ -839,12 +819,8 @@ def build_area_pages(data, history):
                 mn,mx,unit = c["size_range"]["min"],c["size_range"]["max"],c["size_range"].get("unit","cm")
                 sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
             rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz}</td></tr>"
-
-        # 地域グループ
-        group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
-
+        group   = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
         area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:8px}.fish-grid a:hover{border-color:#4db8ff!important}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
-
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -870,10 +846,8 @@ def build_area_pages(data, history):
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
 </footer>
 </body></html>"""
-
         with open(f"area/{area}.html", "w", encoding="utf-8") as f:
             f.write(html)
-
 
 # ============================================================
 # calendar.html
@@ -888,13 +862,12 @@ def build_calendar_page():
         types = SEASON_TYPE.get(fish, [""]*12)
         cells = ""
         for i, (sc, tp) in enumerate(zip(scores, types)):
-            m = i + 1
+            m      = i + 1
             is_now = "cur-month" if m == current_month else ""
-            cls = ("peak-count" if tp == "数" else "peak-size") if sc >= 4 else ("mid" if sc == 3 else "low")
-            label = "◎" if sc >= 4 else ("○" if sc == 3 else "-")
+            cls    = ("peak-count" if tp == "数" else "peak-size") if sc >= 4 else ("mid" if sc == 3 else "low")
+            label  = "◎" if sc >= 4 else ("○" if sc == 3 else "-")
             cells += f'<td class="{cls} {is_now}">{label}</td>'
         rows += f"<tr><td class='fish-name'><a href='fish/{fish}.html'>{fish}</a></td>{cells}</tr>"
-
     return f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -919,7 +892,6 @@ def build_calendar_page():
 </footer>
 </body></html>"""
 
-
 # ============================================================
 # メイン
 # ============================================================
@@ -929,38 +901,28 @@ def main():
     now = datetime.now()
     crawled_at = now.strftime("%Y/%m/%d %H:%M")
     year = now.year
-
-    print(f"=== 関東船釣りクローラー v5 開始: {crawled_at} ===")
+    print(f"=== 関東船釣りクローラー v5.1 開始: {crawled_at} ===")
     print(f"対象: {len(SHIPS)} 船宿\n")
-
     for s in SHIPS:
         url = BASE_URL.format(sid=s["sid"])
         print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
         html = fetch(url)
         if not html:
             errors.append(s["name"]); print("エラー"); continue
-        parser = TableParser()
-        parser.feed(html)
-        catches = parse_catches_from_tables(parser.tables, s["name"], s["area"], year)
+        # v5.1: parse_catches_from_html で正しい日付を取得
+        catches = parse_catches_from_html(html, s["name"], s["area"], year)
         print(f"{len(catches)} 件")
         all_catches.extend(catches)
         time.sleep(0.8)
-
     history = load_history()
-
     with open("catches.json", "w", encoding="utf-8") as f:
-        json.dump({"crawled_at": crawled_at, "total": len(all_catches),
-                   "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
-
+        json.dump({"crawled_at": crawled_at, "total": len(all_catches), "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(build_html(all_catches, crawled_at, history))
-
     build_fish_pages(all_catches, history)
-    build_area_pages(all_catches, history)  # #10: エリアページ新設
-
+    build_area_pages(all_catches, history)
     with open("calendar.html", "w", encoding="utf-8") as f:
         f.write(build_calendar_page())
-
     print(f"\n=== 完了 ===")
     print(f"釣果: {len(all_catches)} 件 ／ エラー: {errors or 'なし'}")
     print(f"出力: catches.json / index.html / fish/*.html / area/*.html / calendar.html")

@@ -5,387 +5,516 @@
   <title>関東船釣り釣果情報 | 今日何が釣れてる？</title>
   <meta name="description" content="関東エリア（神奈川・千葉）の船宿釣果をリアルタイム集計。今週の狙い目魚種、釣れている船宿ランキングを毎日更新。">
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}
-    header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}
-    header h1{font-size:22px;color:#4db8ff}
-    header p{font-size:12px;color:#7a9bb5;margin-top:4px}
-    nav{background:#081020;padding:8px 24px;display:flex;gap:16px;flex-wrap:wrap}
-    nav a{color:#7a9bb5;text-decoration:none;font-size:13px}
-    nav a:hover{color:#4db8ff}
-    .wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
-    h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-    .fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;cursor:pointer;transition:border-color .2s}
-    .fc:hover{border-color:#4db8ff}
-    .fc-summary{text-align:center}
-    .fn{font-size:16px;font-weight:bold;color:#fff}
-    .fk{font-size:12px;color:#4db8ff;margin-top:4px}
-    .fa{font-size:11px;color:#7a9bb5;margin-top:2px}
-    .fc-detail{margin-top:12px;border-top:1px solid #1a4060;padding-top:10px}
-    .season-bar{display:flex;gap:2px;margin-top:8px;justify-content:center}
-    .sb-cell{width:18px;height:14px;border-radius:2px;font-size:8px;color:#fff;display:flex;align-items:center;justify-content:center}
-    .sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}
-    .sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}
-    .sb-cell.now{outline:2px solid #fff;outline-offset:1px}
-    .sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}
-    .leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}
-    .tab-wrap{display:flex;gap:4px;margin-bottom:8px}
-    .tab-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px}
-    .tab-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
-    .rank-table{width:100%;border-collapse:collapse;font-size:12px}
-    .rank-table th{background:#081020;color:#4db8ff;padding:5px;text-align:left}
-    .rank-table td{padding:5px;border-bottom:1px solid #081020}
-    .bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}
-    .bar-fill{background:#1a6ea8;height:8px;border-radius:2px}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left;border-bottom:1px solid #1a4060}
-    td{padding:8px;border-bottom:1px solid #0d2137}
-    tr:hover td{background:#0d2137}
-    .note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}
-    .target-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-    .target-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:14px}
-    .tc-fish{font-size:18px;font-weight:bold;color:#fff;margin-bottom:4px}
-    .tc-bar{font-size:16px;color:#e85d04;letter-spacing:2px;margin-bottom:6px}
-    .tc-comment{font-size:12px;color:#c8d8e8;line-height:1.5;margin-bottom:6px}
-    .tc-count{font-size:11px;color:#7a9bb5}
-    footer{background:#081020;border-top:1px solid #1a3050;padding:20px 24px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}
-    footer a{color:#4db8ff;text-decoration:none}
-    footer a:hover{text-decoration:underline}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}
+header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}
+header h1{font-size:22px;color:#4db8ff}
+header p{font-size:12px;color:#7a9bb5;margin-top:4px}
+header .site-desc{font-size:11px;color:#5a7a95;margin-top:6px;padding-top:6px;border-top:1px solid #1a3050;line-height:1.6}
+nav{background:#081020;padding:8px 24px;display:flex;gap:16px;flex-wrap:wrap}
+nav a{color:#7a9bb5;text-decoration:none;font-size:13px}
+nav a:hover{color:#4db8ff}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
+h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}
+.forecast-bar{background:#0d2137;border-left:4px solid #e85d04;padding:10px 14px;border-radius:4px;font-size:13px;color:#c8d8e8;margin-bottom:16px;line-height:1.7}
+.forecast-crowded{color:#f9c74f;font-size:12px}
+.target-top{background:#0d2137;border:2px solid #4db8ff;border-radius:12px;padding:20px;margin-bottom:16px;display:flex;align-items:flex-start;gap:20px;cursor:pointer;transition:border-color .2s;text-decoration:none;color:inherit}
+.target-top:hover{border-color:#80d8ff}
+.target-top .tt-fish{font-size:28px;font-weight:bold;color:#fff;margin-bottom:6px}
+.target-top .tt-badge{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.target-top .tt-score{font-size:20px;color:#e85d04;letter-spacing:3px}
+.target-top .tt-comment{font-size:13px;color:#c8d8e8;line-height:1.6}
+.target-top .tt-label{font-size:10px;background:#1a3050;color:#7a9bb5;padding:2px 8px;border-radius:10px}
+.target-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.target-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;cursor:pointer;transition:border-color .2s;text-decoration:none;color:inherit;display:block}
+.target-card:hover{border-color:#4db8ff}
+.tc-fish{font-size:16px;font-weight:bold;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tc-bar{font-size:14px;color:#e85d04;letter-spacing:2px;margin-bottom:4px}
+.tc-comment{font-size:11px;color:#c8d8e8;line-height:1.5;margin-bottom:4px}
+.tc-count{font-size:10px;color:#7a9bb5}
+.yoy{font-size:11px;font-weight:bold;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.yoy.up{background:#0d3320;color:#4dcc88}
+.yoy.down{background:#330d0d;color:#cc4d4d}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;transition:border-color .2s}
+.fc:hover{border-color:#4db8ff}
+.fc-summary{text-align:center}
+.fn{font-size:15px;font-weight:bold;color:#fff}
+.fk{font-size:12px;color:#4db8ff;margin-top:4px}
+.fa{font-size:11px;color:#7a9bb5;margin-top:2px}
+.fc-link{display:block;font-size:11px;color:#4db8ff;text-align:center;margin-top:8px;text-decoration:none}
+.fc-link:hover{text-decoration:underline}
+.fc-detail{margin-top:10px;border-top:1px solid #1a4060;padding-top:10px}
+.season-bar{display:flex;gap:2px;margin-top:8px;justify-content:center;flex-wrap:wrap}
+.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}
+.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}
+.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}
+.sb-cell.now{outline:2px solid #fff;outline-offset:1px}
+.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}
+.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}
+.tab-wrap{display:flex;gap:4px;margin-bottom:8px}
+.tab-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px}
+.tab-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
+.rank-table{width:100%;border-collapse:collapse;font-size:12px}
+.rank-table th{background:#081020;color:#4db8ff;padding:5px;text-align:left}
+.rank-table td{padding:5px;border-bottom:1px solid #081020}
+.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}
+.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}
+.ships-badge{font-size:10px;background:#1a3050;color:#7a9bb5;padding:1px 6px;border-radius:8px;margin-left:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left;border-bottom:1px solid #1a4060}
+td{padding:8px;border-bottom:1px solid #0d2137}
+tr:hover td{background:#0d2137}
+tr.highlight td{background:#1a2d10;color:#7ddd6f}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filter-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s}
+.filter-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
+.note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}
+.yoy-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.yoy-table th{background:#081020;color:#4db8ff;padding:5px;text-align:left}
+.yoy-table td{padding:5px;border-bottom:1px solid #081020}
+.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}
+.area-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.area-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:14px;text-decoration:none;color:inherit;display:block;transition:border-color .2s}
+.area-card:hover{border-color:#4db8ff}
+.area-name{font-size:15px;font-weight:bold;color:#4db8ff;margin-bottom:6px}
+.area-fish{font-size:12px;color:#c8d8e8;line-height:1.8}
+.area-ships{font-size:11px;color:#7a9bb5;margin-top:4px}
+footer{background:#081020;border-top:1px solid #1a3050;padding:20px 24px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}
+footer a{color:#4db8ff;text-decoration:none}
+footer a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
-  <header>
-    <h1>🎣 関東船釣り釣果情報</h1>
-    <p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計</p>
-  </header>
-  <nav><a href="index.html">🏠 トップ</a><a href="calendar.html">📅 釣りものカレンダー</a></nav>
-  <div class="wrap">
-    <h2>🎯 今週の狙い目</h2><div class="target-grid">
-    <div class="target-card">
+<header>
+  <h1>🎣 関東船釣り釣果情報</h1>
+  <p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計</p>
+  <p class="site-desc">神奈川・千葉・静岡の船宿26軒の釣果を毎日自動収集。魚種・エリア・船宿を横断比較して「今週どこへ行くか」の意思決定をサポートします。</p>
+</header>
+<nav>
+  <a href="index.html">🏠 トップ</a>
+  <a href="calendar.html">📅 釣りものカレンダー</a>
+  <span style="color:#1a4060">|</span>
+  <span style="color:#7a9bb5;font-size:12px">エリアから探す：</span> <a href="area/久比里.html">久比里</a> <a href="area/大原.html">大原</a> <a href="area/宇佐美.html">宇佐美</a> <a href="area/小田原早川.html">小田原早川</a> <a href="area/松輪.html">松輪</a> <a href="area/浦安.html">浦安</a> <a href="area/片貝.html">片貝</a> <a href="area/茅ヶ崎.html">茅ヶ崎</a> <a href="area/葉山鐙摺.html">葉山鐙摺</a> <a href="area/金沢八景.html">金沢八景</a> <a href="area/金沢漁港.html">金沢漁港</a> <a href="area/長井.html">長井</a>
+</nav>
+<div class="wrap">
+  <h2>🎯 今週の狙い目</h2>
+  <div class="forecast-bar">今週は<strong>マダイ</strong>がコンスタント。外さない一手です。</div>
+  
+    <a class="target-top" href="fish/マダイ.html">
+      <div style="flex:1">
+        <div class="tt-badge">
+          <span class="tt-label">今週イチ押し</span> 
+        </div>
+        <div class="tt-fish">マダイ</div>
+        <div class="tt-score">███░░</div>
+        <div class="tt-comment">コンスタントに釣れている（今週40件）</div>
+        <div style="font-size:11px;color:#7a9bb5;margin-top:6px">出船数: 約9隻 ／ 直近釣果: 40件</div>
+      </div>
+    </a><div class="target-grid">
+    <a class="target-card" href="fish/アジ.html">
       <div class="tc-fish">アジ</div>
       <div class="tc-bar">███░░</div>
-      <div class="tc-comment">コンスタントに釣れています</div>
-      <div class="tc-count">直近釣果: 38件</div>
-    </div>
-    <div class="target-card">
-      <div class="tc-fish">マダイ</div>
-      <div class="tc-bar">███░░</div>
-      <div class="tc-comment">コンスタントに釣れています</div>
-      <div class="tc-count">直近釣果: 38件</div>
-    </div>
-    <div class="target-card">
+      <div class="tc-comment">コンスタントに釣れている（今週39件）</div>
+      <div class="tc-count">出船約7隻 ／ 39件</div>
+    </a>
+    <a class="target-card" href="fish/アマダイ.html">
       <div class="tc-fish">アマダイ</div>
       <div class="tc-bar">███░░</div>
-      <div class="tc-comment">安定した釣果が続いています</div>
-      <div class="tc-count">直近釣果: 16件</div>
-    </div>
-    <div class="target-card">
+      <div class="tc-comment">安定した釣果が続いている（今週17件）</div>
+      <div class="tc-count">出船約4隻 ／ 17件</div>
+    </a>
+    <a class="target-card" href="fish/フグ.html">
       <div class="tc-fish">フグ</div>
       <div class="tc-bar">████░</div>
-      <div class="tc-comment">良型混じりで数も出ています！</div>
-      <div class="tc-count">直近釣果: 15件</div>
-    </div>
-    <div class="target-card">
+      <div class="tc-comment">良型混じりで数も出ている（今週15件）</div>
+      <div class="tc-count">出船約3隻 ／ 15件</div>
+    </a>
+    <a class="target-card" href="fish/タチウオ.html">
       <div class="tc-fish">タチウオ</div>
       <div class="tc-bar">█░░░░</div>
-      <div class="tc-comment">オフシーズン入り。次の季節に期待</div>
-      <div class="tc-count">直近釣果: 14件</div>
+      <div class="tc-comment">オフシーズン。次の季節に期待（今週14件）</div>
+      <div class="tc-count">出船約3隻 ／ 14件</div>
+    </a></div>
+  <h2>🐟 釣れている魚</h2>
+  <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">タップで詳細表示 ／ 各カードの「詳細→」で船宿ランキングを確認</p>
+  <div class="grid">
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">マダイ<span class="ships-badge">約9隻</span></div>
+        <div class="fk">40件</div>
+        <div class="fa">金沢八景</div>
+        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell peak-size " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-count " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+      </div>
+      <a class="fc-link" href="fish/マダイ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-マダイ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-マダイ','weekly-マダイ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-マダイ','daily-マダイ')">ウィークリー</button>
+        </div>
+        <div id="daily-マダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>米元釣船店</td><td>0〜5</td><td>0.5〜1.8kg</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>2〜6</td><td>17〜42cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>1〜4</td><td>27〜43cm</td></tr><tr><td>2026/03/21</td><td>茅ヶ崎</td><td>ちがさき丸</td><td>0〜6</td><td>26〜41cm</td></tr><tr><td>2026/03/21</td><td>茅ヶ崎</td><td>ちがさき丸</td><td>0〜1</td><td>0.8〜1.0kg</td></tr></table></div>
+        <div id="weekly-マダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>ちがさき丸</td><td>10件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr><tr><td>山下丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12%"></div></div></td></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12%"></div></div></td></tr><tr><td>米元釣船店</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>瀬戸丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>平安丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>一之瀬丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr><tr><td>野毛屋</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr><tr><td>みのすけ丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">アジ<span class="ships-badge">約7隻</span></div>
+        <div class="fk">39件</div>
+        <div class="fa">金沢八景</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell peak-count " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+      </div>
+      <a class="fc-link" href="fish/アジ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-アジ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-アジ','weekly-アジ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-アジ','daily-アジ')">ウィークリー</button>
+        </div>
+        <div id="daily-アジ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>米元釣船店</td><td>29〜49</td><td>17〜26cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>みのすけ丸</td><td>25〜61</td><td>23〜36cm</td></tr><tr><td>2026/03/21</td><td>茅ヶ崎</td><td>ちがさき丸</td><td>19〜41</td><td>22〜36cm</td></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>8〜35</td><td>22〜33cm</td></tr><tr><td>2026/03/20</td><td>金沢八景</td><td>米元釣船店</td><td>2〜12</td><td>17〜25cm</td></tr></table></div>
+        <div id="weekly-アジ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>10件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr><tr><td>忠彦丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20%"></div></div></td></tr><tr><td>米元釣船店</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12%"></div></div></td></tr><tr><td>みのすけ丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12%"></div></div></td></tr><tr><td>野毛屋</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>ちがさき丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>平安丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">アマダイ<span class="ships-badge">約4隻</span></div>
+        <div class="fk">17件</div>
+        <div class="fa">久比里</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/アマダイ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-アマダイ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-アマダイ','weekly-アマダイ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-アマダイ','daily-アマダイ')">ウィークリー</button>
+        </div>
+        <div id="daily-アマダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>2〜6</td><td>17〜42cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>1〜4</td><td>27〜43cm</td></tr><tr><td>2026/03/21</td><td>茅ヶ崎</td><td>ちがさき丸</td><td>0〜6</td><td>26〜41cm</td></tr><tr><td>2026/03/20</td><td>久比里</td><td>山下丸</td><td>0〜7</td><td>23〜38cm</td></tr><tr><td>2026/03/20</td><td>久比里</td><td>山天丸</td><td>1〜4</td><td>5cm</td></tr></table></div>
+        <div id="weekly-アマダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山下丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:29%"></div></div></td></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:29%"></div></div></td></tr><tr><td>ちがさき丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:29%"></div></div></td></tr><tr><td>みのすけ丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">フグ<span class="ships-badge">約3隻</span></div>
+        <div class="fk">15件</div>
+        <div class="fa">浦安</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell peak-size " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/フグ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-フグ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-フグ','weekly-フグ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-フグ','daily-フグ')">ウィークリー</button>
+        </div>
+        <div id="daily-フグ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>42〜50cm</td></tr><tr><td>2026/03/20</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>5.0kg</td></tr><tr><td>2026/03/19</td><td>浦安</td><td>吉久</td><td>0〜2</td><td>4.8kg</td></tr><tr><td>2026/03/18</td><td>浦安</td><td>吉久</td><td>0〜2</td><td>36〜53cm</td></tr><tr><td>2026/03/17</td><td>金沢八景</td><td>野毛屋</td><td>0〜1</td><td>1.6〜2.7kg</td></tr></table></div>
+        <div id="weekly-フグ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>野毛屋</td><td>9件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:60%"></div></div></td></tr><tr><td>吉久</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr><tr><td>忠彦丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">タチウオ<span class="ships-badge">約3隻</span></div>
+        <div class="fk">14件</div>
+        <div class="fa">金沢八景</div>
+        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+      </div>
+      <a class="fc-link" href="fish/タチウオ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-タチウオ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-タチウオ','weekly-タチウオ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-タチウオ','daily-タチウオ')">ウィークリー</button>
+        </div>
+        <div id="daily-タチウオ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/20</td><td>金沢八景</td><td>米元釣船店</td><td>8〜45</td><td>65〜90cm</td></tr><tr><td>2026/03/15</td><td>金沢八景</td><td>米元釣船店</td><td>17〜42</td><td>65〜90cm</td></tr><tr><td>2026/03/02</td><td>金沢漁港</td><td>忠彦丸</td><td>8〜49</td><td>65〜90cm</td></tr><tr><td>2026/03/01</td><td>金沢漁港</td><td>忠彦丸</td><td>2〜13</td><td>75〜110cm</td></tr><tr><td>2026/02/28</td><td>金沢漁港</td><td>忠彦丸</td><td>1〜24</td><td>65〜110cm</td></tr></table></div>
+        <div id="weekly-タチウオ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:57%"></div></div></td></tr><tr><td>忠彦丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:28%"></div></div></td></tr><tr><td>米元釣船店</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">マルイカ<span class="ships-badge">約3隻</span></div>
+        <div class="fk">13件</div>
+        <div class="fa">久比里</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/マルイカ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-マルイカ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-マルイカ','weekly-マルイカ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-マルイカ','daily-マルイカ')">ウィークリー</button>
+        </div>
+        <div id="daily-マルイカ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>3〜12</td><td>15〜27cm</td></tr><tr><td>2026/03/20</td><td>久比里</td><td>山天丸</td><td>4〜37</td><td>15〜30cm</td></tr><tr><td>2026/03/20</td><td>長井</td><td>はら丸</td><td>3〜4</td><td>15〜40cm</td></tr><tr><td>2026/03/17</td><td>久比里</td><td>山天丸</td><td>1〜9</td><td>15〜27cm</td></tr><tr><td>2026/03/17</td><td>長井</td><td>はら丸</td><td>1〜4</td><td>15〜30cm</td></tr></table></div>
+        <div id="weekly-マルイカ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:38%"></div></div></td></tr><tr><td>瀬戸丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:30%"></div></div></td></tr><tr><td>はら丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:30%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">カワハギ<span class="ships-badge">約4隻</span></div>
+        <div class="fk">12件</div>
+        <div class="fa">金沢八景 / 久比里</div>
+        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/カワハギ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-カワハギ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-カワハギ','weekly-カワハギ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-カワハギ','daily-カワハギ')">ウィークリー</button>
+        </div>
+        <div id="daily-カワハギ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>1〜8</td><td>16〜26cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>みのすけ丸</td><td>0〜10</td><td>17〜29cm</td></tr><tr><td>2026/03/20</td><td>久比里</td><td>山下丸</td><td>0〜9</td><td>5cm</td></tr><tr><td>2026/03/20</td><td>久比里</td><td>山天丸</td><td>2〜5</td><td>17〜26cm</td></tr><tr><td>2026/03/20</td><td>久比里</td><td>みのすけ丸</td><td>0〜7</td><td>5cm</td></tr></table></div>
+        <div id="weekly-カワハギ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山下丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:41%"></div></div></td></tr><tr><td>みのすけ丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr><tr><td>一之瀬丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:16%"></div></div></td></tr><tr><td>山天丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:8%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">ヤリイカ<span class="ships-badge">約3隻</span></div>
+        <div class="fk">7件</div>
+        <div class="fa">金沢八景</div>
+        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell low " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+      </div>
+      <a class="fc-link" href="fish/ヤリイカ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-ヤリイカ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-ヤリイカ','weekly-ヤリイカ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-ヤリイカ','daily-ヤリイカ')">ウィークリー</button>
+        </div>
+        <div id="daily-ヤリイカ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>0〜6</td><td>25〜40cm</td></tr><tr><td>2026/03/20</td><td>小田原早川</td><td>平安丸</td><td>5〜10</td><td>25〜40cm</td></tr><tr><td>2026/03/16</td><td>小田原早川</td><td>平安丸</td><td>3〜10</td><td>22〜45cm</td></tr><tr><td>2026/03/08</td><td>長井</td><td>はら丸</td><td>5〜12</td><td>30〜45cm</td></tr><tr><td>2026/01/07</td><td>金沢八景</td><td>一之瀬丸</td><td>1〜7</td><td>30〜50cm</td></tr></table></div>
+        <div id="weekly-ヤリイカ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42%"></div></div></td></tr><tr><td>平安丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42%"></div></div></td></tr><tr><td>はら丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">キンメダイ<span class="ships-badge">約3隻</span></div>
+        <div class="fk">6件</div>
+        <div class="fa">片貝</div>
+        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/キンメダイ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-キンメダイ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-キンメダイ','weekly-キンメダイ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-キンメダイ','daily-キンメダイ')">ウィークリー</button>
+        </div>
+        <div id="daily-キンメダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/20</td><td>小田原早川</td><td>平安丸</td><td>0〜5</td><td>25〜30cm</td></tr><tr><td>2026/03/17</td><td>葉山鐙摺</td><td>愛正丸</td><td>1〜11</td><td>30〜42cm</td></tr><tr><td>2026/03/17</td><td>小田原早川</td><td>平安丸</td><td>1〜4</td><td>27〜40cm</td></tr><tr><td>2026/02/22</td><td>片貝</td><td>勇幸丸</td><td>1〜7</td><td>23〜35cm</td></tr><tr><td>2026/02/21</td><td>片貝</td><td>勇幸丸</td><td>0〜4</td><td>23〜35cm</td></tr></table></div>
+        <div id="weekly-キンメダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>勇幸丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50%"></div></div></td></tr><tr><td>平安丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr><tr><td>愛正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:16%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">ヒラメ<span class="ships-badge">約1隻</span></div>
+        <div class="fk">5件</div>
+        <div class="fa">大原</div>
+        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+      </div>
+      <a class="fc-link" href="fish/ヒラメ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-ヒラメ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-ヒラメ','weekly-ヒラメ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-ヒラメ','daily-ヒラメ')">ウィークリー</button>
+        </div>
+        <div id="daily-ヒラメ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2023/03/31</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>0.5〜2.8kg</td></tr><tr><td>2023/03/30</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>1.3〜3.1kg</td></tr><tr><td>2023/03/28</td><td>大原</td><td>義之丸</td><td>2</td><td>0.7〜5.5kg</td></tr><tr><td>2023/03/27</td><td>大原</td><td>義之丸</td><td>0〜2</td><td>1.3〜1.8kg</td></tr><tr><td>2023/03/26</td><td>大原</td><td>義之丸</td><td></td><td>0.5〜2.1kg</td></tr></table></div>
+        <div id="weekly-ヒラメ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>義之丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">サワラ<span class="ships-badge">約1隻</span></div>
+        <div class="fk">5件</div>
+        <div class="fa">浦安</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/サワラ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-サワラ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-サワラ','weekly-サワラ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-サワラ','daily-サワラ')">ウィークリー</button>
+        </div>
+        <div id="daily-サワラ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>3〜10</td><td>55〜91cm</td></tr><tr><td>2026/03/20</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>55〜76cm</td></tr><tr><td>2026/03/19</td><td>浦安</td><td>吉久</td><td>0〜4</td><td>78〜92cm</td></tr><tr><td>2026/03/18</td><td>浦安</td><td>吉久</td><td>1〜6</td><td>60〜97cm</td></tr><tr><td>2026/03/15</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>55〜79cm</td></tr></table></div>
+        <div id="weekly-サワラ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>吉久</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">スルメイカ<span class="ships-badge">約2隻</span></div>
+        <div class="fk">5件</div>
+        <div class="fa">長井</div>
+        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/スルメイカ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-スルメイカ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-スルメイカ','weekly-スルメイカ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-スルメイカ','daily-スルメイカ')">ウィークリー</button>
+        </div>
+        <div id="daily-スルメイカ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/20</td><td>長井</td><td>はら丸</td><td>3〜18</td><td>25〜40cm</td></tr><tr><td>2026/03/18</td><td>長井</td><td>はら丸</td><td>16〜25</td><td>25〜42cm</td></tr><tr><td>2026/03/18</td><td>小田原早川</td><td>平安丸</td><td>7〜11</td><td>25〜45cm</td></tr><tr><td>2026/03/17</td><td>長井</td><td>はら丸</td><td>4〜11</td><td>25〜40cm</td></tr><tr><td>2026/03/15</td><td>長井</td><td>はら丸</td><td>2〜5</td><td>30〜40cm</td></tr></table></div>
+        <div id="weekly-スルメイカ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>はら丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:80%"></div></div></td></tr><tr><td>平安丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">メダイ<span class="ships-badge">約2隻</span></div>
+        <div class="fk">4件</div>
+        <div class="fa">片貝</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/メダイ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-メダイ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-メダイ','weekly-メダイ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-メダイ','daily-メダイ')">ウィークリー</button>
+        </div>
+        <div id="daily-メダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/02/22</td><td>片貝</td><td>勇幸丸</td><td>1〜7</td><td>23〜35cm</td></tr><tr><td>2026/02/21</td><td>片貝</td><td>勇幸丸</td><td>0〜4</td><td>23〜35cm</td></tr><tr><td>2026/02/14</td><td>片貝</td><td>勇幸丸</td><td>4〜33</td><td>23〜40cm</td></tr><tr><td>2025/05/03</td><td>宇佐美</td><td>秀正丸</td><td>3</td><td></td></tr></table></div>
+        <div id="weekly-メダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>勇幸丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:75%"></div></div></td></tr><tr><td>秀正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">マハタ<span class="ships-badge">約1隻</span></div>
+        <div class="fk">4件</div>
+        <div class="fa">大原</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/マハタ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-マハタ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-マハタ','weekly-マハタ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-マハタ','daily-マハタ')">ウィークリー</button>
+        </div>
+        <div id="daily-マハタ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2023/03/31</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>0.4〜1.2kg</td></tr><tr><td>2023/03/30</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>0.4〜2.4kg</td></tr><tr><td>2023/03/27</td><td>大原</td><td>義之丸</td><td>0〜4</td><td>0.7〜1.4kg</td></tr><tr><td>2023/03/26</td><td>大原</td><td>義之丸</td><td></td><td>0.3〜3.7kg</td></tr></table></div>
+        <div id="weekly-マハタ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>義之丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">クロムツ<span class="ships-badge">約3隻</span></div>
+        <div class="fk">4件</div>
+        <div class="fa">葉山鐙摺 / 茅ヶ崎 / 小田原早川</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/クロムツ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-クロムツ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-クロムツ','weekly-クロムツ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-クロムツ','daily-クロムツ')">ウィークリー</button>
+        </div>
+        <div id="daily-クロムツ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/20</td><td>小田原早川</td><td>平安丸</td><td>1</td><td>7.7kg</td></tr><tr><td>2026/03/18</td><td>茅ヶ崎</td><td>ちがさき丸</td><td>1〜5</td><td>32〜60cm</td></tr><tr><td>2026/03/17</td><td>葉山鐙摺</td><td>愛正丸</td><td>2〜12</td><td>30〜50cm</td></tr><tr><td>2026/03/17</td><td>小田原早川</td><td>平安丸</td><td>2〜3</td><td>30〜55cm</td></tr></table></div>
+        <div id="weekly-クロムツ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>平安丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50%"></div></div></td></tr><tr><td>愛正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr><tr><td>ちがさき丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">イサキ<span class="ships-badge">約2隻</span></div>
+        <div class="fk">3件</div>
+        <div class="fa">片貝 / 宇佐美</div>
+        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/イサキ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-イサキ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-イサキ','weekly-イサキ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-イサキ','daily-イサキ')">ウィークリー</button>
+        </div>
+        <div id="daily-イサキ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/02/16</td><td>片貝</td><td>勇幸丸</td><td>0〜6</td><td>24〜37cm</td></tr><tr><td>2026/02/01</td><td>片貝</td><td>勇幸丸</td><td>1〜8</td><td>22〜37cm</td></tr><tr><td>2025/06/28</td><td>宇佐美</td><td>秀正丸</td><td>2〜30</td><td>23〜33cm</td></tr></table></div>
+        <div id="weekly-イサキ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>勇幸丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:66%"></div></div></td></tr><tr><td>秀正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">カサゴ<span class="ships-badge">約2隻</span></div>
+        <div class="fk">2件</div>
+        <div class="fa">浦安 / 金沢八景</div>
+        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/カサゴ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-カサゴ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-カサゴ','weekly-カサゴ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-カサゴ','daily-カサゴ')">ウィークリー</button>
+        </div>
+        <div id="daily-カサゴ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜3</td><td>32〜41cm</td></tr><tr><td>2026/01/04</td><td>金沢八景</td><td>一之瀬丸</td><td>0〜5</td><td>24〜44cm</td></tr></table></div>
+        <div id="weekly-カサゴ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>吉久</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50%"></div></div></td></tr><tr><td>一之瀬丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">マゴチ<span class="ships-badge">約1隻</span></div>
+        <div class="fk">2件</div>
+        <div class="fa">金沢八景</div>
+        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/マゴチ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-マゴチ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-マゴチ','weekly-マゴチ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-マゴチ','daily-マゴチ')">ウィークリー</button>
+        </div>
+        <div id="daily-マゴチ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/01/07</td><td>金沢八景</td><td>一之瀬丸</td><td>3〜10</td><td>38〜53cm</td></tr><tr><td>2026/01/05</td><td>金沢八景</td><td>一之瀬丸</td><td>1〜8</td><td>5cm</td></tr></table></div>
+        <div id="weekly-マゴチ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">ワラサ<span class="ships-badge">約1隻</span></div>
+        <div class="fk">1件</div>
+        <div class="fa">小田原早川</div>
+        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/ワラサ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-ワラサ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-ワラサ','weekly-ワラサ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-ワラサ','daily-ワラサ')">ウィークリー</button>
+        </div>
+        <div id="daily-ワラサ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/16</td><td>小田原早川</td><td>平安丸</td><td>2</td><td></td></tr></table></div>
+        <div id="weekly-ワラサ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>平安丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">カンパチ<span class="ships-badge">約1隻</span></div>
+        <div class="fk">1件</div>
+        <div class="fa">宇佐美</div>
+        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+      </div>
+      <a class="fc-link" href="fish/カンパチ.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-カンパチ">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-カンパチ','weekly-カンパチ')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-カンパチ','daily-カンパチ')">ウィークリー</button>
+        </div>
+        <div id="daily-カンパチ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2025/06/28</td><td>宇佐美</td><td>秀正丸</td><td></td><td>7.8kg</td></tr></table></div>
+        <div id="weekly-カンパチ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>秀正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
+      </div>
     </div></div>
-    <h2>🐟 釣れている魚</h2>
-    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">魚種をタップするとランキングを表示</p>
-    <div class="grid">
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">アジ</div><div class="fk">38件</div>
-            <div class="fa">金沢八景</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell peak-count " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-アジ','weekly-アジ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-アジ','daily-アジ')">ウィークリー</button>
-            </div>
-            <div id="daily-アジ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>20〜44</td><td></td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>18〜60</td><td>17〜27cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>20〜86</td><td></td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>2〜22</td><td>17〜27cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>9〜48</td><td></td></tr></table></div>
-            <div id="weekly-アジ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>10件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:26%"></div></div></td></tr><tr><td>忠彦丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:21%"></div></div></td></tr><tr><td>みのすけ丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:13%"></div></div></td></tr><tr><td>米元釣船店</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>野毛屋</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>ちがさき丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>平安丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">マダイ</div><div class="fk">38件</div>
-            <div class="fa">金沢八景</div><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell peak-size " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-count " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-マダイ','weekly-マダイ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-マダイ','daily-マダイ')">ウィークリー</button>
-            </div>
-            <div id="daily-マダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>6〜24</td><td>25〜42cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>0〜1</td><td>0.8〜1.0kg</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>0〜2</td><td>0.4〜1.0kg</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>米元釣船店</td><td>0〜3</td><td>0.5〜2.6kg</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>米元釣船店</td><td>0〜4</td><td>0.4〜0.8kg</td></tr></table></div>
-            <div id="weekly-マダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>ちがさき丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:21%"></div></div></td></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:13%"></div></div></td></tr><tr><td>米元釣船店</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>山下丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>瀬戸丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>平安丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:10%"></div></div></td></tr><tr><td>一之瀬丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr><tr><td>野毛屋</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr><tr><td>みのすけ丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">アマダイ</div><div class="fk">16件</div>
-            <div class="fa">久比里</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-アマダイ','weekly-アマダイ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-アマダイ','daily-アマダイ')">ウィークリー</button>
-            </div>
-            <div id="daily-アマダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>0〜7</td><td>23〜38cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>2〜5</td><td>20〜44cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>3〜4</td><td>20〜36cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>1〜4</td><td>20〜47cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>1〜4</td><td>5cm</td></tr></table></div>
-            <div id="weekly-アマダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:31%"></div></div></td></tr><tr><td>山下丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr><tr><td>ちがさき丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr><tr><td>みのすけ丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">フグ</div><div class="fk">15件</div>
-            <div class="fa">浦安</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell peak-size " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-フグ','weekly-フグ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-フグ','daily-フグ')">ウィークリー</button>
-            </div>
-            <div id="daily-フグ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>5.0kg</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜2</td><td>4.8kg</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜2</td><td>36〜53cm</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>46cm</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>28〜42cm</td></tr></table></div>
-            <div id="weekly-フグ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>野毛屋</td><td>9件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:60%"></div></div></td></tr><tr><td>吉久</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr><tr><td>忠彦丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">タチウオ</div><div class="fk">14件</div>
-            <div class="fa">金沢八景</div><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-タチウオ','weekly-タチウオ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-タチウオ','daily-タチウオ')">ウィークリー</button>
-            </div>
-            <div id="daily-タチウオ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>5〜38</td><td>70〜121cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>12〜21</td><td>70〜105cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>10〜53</td><td>70〜124cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>9〜30</td><td>70〜110cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>3〜29</td><td>70〜122cm</td></tr></table></div>
-            <div id="weekly-タチウオ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:57%"></div></div></td></tr><tr><td>忠彦丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:28%"></div></div></td></tr><tr><td>米元釣船店</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">マルイカ</div><div class="fk">13件</div>
-            <div class="fa">久比里</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-マルイカ','weekly-マルイカ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-マルイカ','daily-マルイカ')">ウィークリー</button>
-            </div>
-            <div id="daily-マルイカ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>4〜37</td><td>15〜30cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>1〜9</td><td>15〜27cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>10〜25</td><td>15〜27cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>0〜11</td><td>15〜27cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山天丸</td><td>4〜11</td><td>15〜25cm</td></tr></table></div>
-            <div id="weekly-マルイカ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:38%"></div></div></td></tr><tr><td>瀬戸丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:30%"></div></div></td></tr><tr><td>はら丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:30%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">カワハギ</div><div class="fk">12件</div>
-            <div class="fa">金沢八景 / 久比里</div><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-カワハギ','weekly-カワハギ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-カワハギ','daily-カワハギ')">ウィークリー</button>
-            </div>
-            <div id="daily-カワハギ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>3〜10</td><td></td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>2〜12</td><td>16〜28cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>0〜9</td><td>5cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>0〜7</td><td>17〜26cm</td></tr><tr><td>2026/03/21</td><td>久比里</td><td>山下丸</td><td>3〜12</td><td>18〜25cm</td></tr></table></div>
-            <div id="weekly-カワハギ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山下丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:41%"></div></div></td></tr><tr><td>みのすけ丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr><tr><td>一之瀬丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:16%"></div></div></td></tr><tr><td>山天丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:8%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">キンメダイ</div><div class="fk">7件</div>
-            <div class="fa">片貝</div><div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-キンメダイ','weekly-キンメダイ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-キンメダイ','daily-キンメダイ')">ウィークリー</button>
-            </div>
-            <div id="daily-キンメダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>1〜7</td><td>23〜35cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>0〜4</td><td>23〜35cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>4〜33</td><td>23〜40cm</td></tr><tr><td>2026/03/21</td><td>葉山鐙摺</td><td>愛正丸</td><td>1〜11</td><td>30〜42cm</td></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>0〜5</td><td>25〜30cm</td></tr></table></div>
-            <div id="weekly-キンメダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>勇幸丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42%"></div></div></td></tr><tr><td>平安丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42%"></div></div></td></tr><tr><td>愛正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">ヤリイカ</div><div class="fk">6件</div>
-            <div class="fa">金沢八景</div><div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell low " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-ヤリイカ','weekly-ヤリイカ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-ヤリイカ','daily-ヤリイカ')">ウィークリー</button>
-            </div>
-            <div id="daily-ヤリイカ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>1〜7</td><td>30〜50cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>1〜16</td><td>25〜50cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>0〜10</td><td></td></tr><tr><td>2026/03/21</td><td>長井</td><td>はら丸</td><td>5〜12</td><td>30〜45cm</td></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>5〜10</td><td>25〜40cm</td></tr></table></div>
-            <div id="weekly-ヤリイカ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50%"></div></div></td></tr><tr><td>平安丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr><tr><td>はら丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:16%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">ヒラメ</div><div class="fk">5件</div>
-            <div class="fa">大原</div><div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-ヒラメ','weekly-ヒラメ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-ヒラメ','daily-ヒラメ')">ウィークリー</button>
-            </div>
-            <div id="daily-ヒラメ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>0.5〜2.8kg</td></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>1.3〜3.1kg</td></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td>2</td><td>0.7〜5.5kg</td></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td>0〜2</td><td>1.3〜1.8kg</td></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td></td><td>0.5〜2.1kg</td></tr></table></div>
-            <div id="weekly-ヒラメ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>義之丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">サワラ</div><div class="fk">5件</div>
-            <div class="fa">浦安</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-サワラ','weekly-サワラ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-サワラ','daily-サワラ')">ウィークリー</button>
-            </div>
-            <div id="daily-サワラ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>55〜76cm</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜4</td><td>78〜92cm</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>1〜6</td><td>60〜97cm</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>0〜1</td><td>55〜79cm</td></tr><tr><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>1〜11</td><td>55〜100cm</td></tr></table></div>
-            <div id="weekly-サワラ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>吉久</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">スルメイカ</div><div class="fk">5件</div>
-            <div class="fa">長井</div><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-スルメイカ','weekly-スルメイカ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-スルメイカ','daily-スルメイカ')">ウィークリー</button>
-            </div>
-            <div id="daily-スルメイカ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>長井</td><td>はら丸</td><td>3〜18</td><td>25〜40cm</td></tr><tr><td>2026/03/21</td><td>長井</td><td>はら丸</td><td>16〜25</td><td>25〜42cm</td></tr><tr><td>2026/03/21</td><td>長井</td><td>はら丸</td><td>4〜11</td><td>25〜40cm</td></tr><tr><td>2026/03/21</td><td>長井</td><td>はら丸</td><td>2〜5</td><td>30〜40cm</td></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>7〜11</td><td>25〜45cm</td></tr></table></div>
-            <div id="weekly-スルメイカ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>はら丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:80%"></div></div></td></tr><tr><td>平安丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">クロムツ</div><div class="fk">5件</div>
-            <div class="fa">葉山鐙摺 / 茅ヶ崎 / 小田原早川</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-クロムツ','weekly-クロムツ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-クロムツ','daily-クロムツ')">ウィークリー</button>
-            </div>
-            <div id="daily-クロムツ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>葉山鐙摺</td><td>愛正丸</td><td>2〜12</td><td>30〜50cm</td></tr><tr><td>2026/03/21</td><td>茅ヶ崎</td><td>ちがさき丸</td><td>1〜5</td><td>32〜60cm</td></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>1</td><td>7.7kg</td></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>2〜3</td><td>30〜55cm</td></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>0〜4</td><td>28〜40cm</td></tr></table></div>
-            <div id="weekly-クロムツ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>平安丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:60%"></div></div></td></tr><tr><td>愛正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20%"></div></div></td></tr><tr><td>ちがさき丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">メダイ</div><div class="fk">4件</div>
-            <div class="fa">片貝</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-メダイ','weekly-メダイ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-メダイ','daily-メダイ')">ウィークリー</button>
-            </div>
-            <div id="daily-メダイ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>1〜7</td><td>23〜35cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>0〜4</td><td>23〜35cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>4〜33</td><td>23〜40cm</td></tr><tr><td>2026/03/21</td><td>宇佐美</td><td>秀正丸</td><td>3</td><td></td></tr></table></div>
-            <div id="weekly-メダイ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>勇幸丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:75%"></div></div></td></tr><tr><td>秀正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">マハタ</div><div class="fk">4件</div>
-            <div class="fa">大原</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-マハタ','weekly-マハタ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-マハタ','daily-マハタ')">ウィークリー</button>
-            </div>
-            <div id="daily-マハタ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>0.4〜1.2kg</td></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td>0〜3</td><td>0.4〜2.4kg</td></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td>0〜4</td><td>0.7〜1.4kg</td></tr><tr><td>2026/03/21</td><td>大原</td><td>義之丸</td><td></td><td>0.3〜3.7kg</td></tr></table></div>
-            <div id="weekly-マハタ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>義之丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">イサキ</div><div class="fk">3件</div>
-            <div class="fa">片貝 / 宇佐美</div><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-イサキ','weekly-イサキ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-イサキ','daily-イサキ')">ウィークリー</button>
-            </div>
-            <div id="daily-イサキ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>0〜6</td><td>24〜37cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>1〜8</td><td>22〜37cm</td></tr><tr><td>2026/03/21</td><td>宇佐美</td><td>秀正丸</td><td>2〜30</td><td>23〜33cm</td></tr></table></div>
-            <div id="weekly-イサキ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>勇幸丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:66%"></div></div></td></tr><tr><td>秀正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">マゴチ</div><div class="fk">2件</div>
-            <div class="fa">金沢八景</div><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-マゴチ','weekly-マゴチ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-マゴチ','daily-マゴチ')">ウィークリー</button>
-            </div>
-            <div id="daily-マゴチ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>3〜10</td><td>38〜53cm</td></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>1〜8</td><td>5cm</td></tr></table></div>
-            <div id="weekly-マゴチ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">カサゴ</div><div class="fk">1件</div>
-            <div class="fa">金沢八景</div><div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-カサゴ','weekly-カサゴ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-カサゴ','daily-カサゴ')">ウィークリー</button>
-            </div>
-            <div id="daily-カサゴ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>金沢八景</td><td>一之瀬丸</td><td>0〜5</td><td>24〜44cm</td></tr></table></div>
-            <div id="weekly-カサゴ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>一之瀬丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">ワラサ</div><div class="fk">1件</div>
-            <div class="fa">小田原早川</div><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-ワラサ','weekly-ワラサ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-ワラサ','daily-ワラサ')">ウィークリー</button>
-            </div>
-            <div id="daily-ワラサ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>小田原早川</td><td>平安丸</td><td>2</td><td></td></tr></table></div>
-            <div id="weekly-ワラサ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>平安丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
-          </div>
-        </div>
-        <div class="fc" onclick="toggleDetail(this)">
-          <div class="fc-summary">
-            <div class="fn">カンパチ</div><div class="fk">1件</div>
-            <div class="fa">宇佐美</div><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
-          </div>
-          <div class="fc-detail" style="display:none">
-            <div class="tab-wrap">
-              <button class="tab-btn active" onclick="switchTab(event,'daily-カンパチ','weekly-カンパチ')">デイリー</button>
-              <button class="tab-btn" onclick="switchTab(event,'weekly-カンパチ','daily-カンパチ')">ウィークリー</button>
-            </div>
-            <div id="daily-カンパチ"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>宇佐美</td><td>秀正丸</td><td></td><td>7.8kg</td></tr></table></div>
-            <div id="weekly-カンパチ" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>秀正丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
-          </div>
-        </div></div>
-    <h2>📋 最新の釣果</h2>
-    <table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>1〜7</td><td>23〜35cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>0〜4</td><td>23〜35cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>不明</td><td>6〜27</td><td>17〜36cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>イサキ</td><td>0〜6</td><td>24〜37cm</td></tr><tr><td>2026/03/21</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>4〜33</td><td>23〜40cm</td></tr></table>
-    <p class="note">最終更新: 2026/03/21 13:37 ／ 総件数: 196 件</p>
-  </div>
-  <footer>
-    <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
-    <p style="margin-top:8px">© 2024 船釣り予想. All rights reserved.</p>
-  </footer>
-  <script>
-    function toggleDetail(el){const d=el.querySelector('.fc-detail');if(d)d.style.display=d.style.display==='none'?'block':'none';}
-    function switchTab(e,showId,hideId){e.stopPropagation();document.getElementById(showId).style.display='block';document.getElementById(hideId).style.display='none';const w=e.target.closest('.tab-wrap');w.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');}
-  </script>
+  <h2>📋 最新の釣果</h2>
+  
+    <div class="filter-bar"><button class="filter-btn active" onclick="filterArea(this,'all')">すべて</button><button class="filter-btn" onclick="filterArea(this,'久比里')">久比里</button><button class="filter-btn" onclick="filterArea(this,'大原')">大原</button><button class="filter-btn" onclick="filterArea(this,'宇佐美')">宇佐美</button><button class="filter-btn" onclick="filterArea(this,'小田原早川')">小田原早川</button><button class="filter-btn" onclick="filterArea(this,'松輪')">松輪</button><button class="filter-btn" onclick="filterArea(this,'浦安')">浦安</button><button class="filter-btn" onclick="filterArea(this,'片貝')">片貝</button><button class="filter-btn" onclick="filterArea(this,'茅ヶ崎')">茅ヶ崎</button><button class="filter-btn" onclick="filterArea(this,'葉山鐙摺')">葉山鐙摺</button><button class="filter-btn" onclick="filterArea(this,'金沢八景')">金沢八景</button><button class="filter-btn" onclick="filterArea(this,'金沢漁港')">金沢漁港</button><button class="filter-btn" onclick="filterArea(this,'長井')">長井</button></div>
+    <table id="catch-table">
+      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>
+      <tr data-area="片貝"><td>2026/02/22</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>1〜7</td><td>23〜35cm</td></tr><tr data-area="片貝"><td>2026/02/21</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>0〜4</td><td>23〜35cm</td></tr><tr data-area="片貝"><td>2026/02/16</td><td>片貝</td><td>勇幸丸</td><td>不明</td><td>6〜27</td><td>17〜36cm</td></tr><tr data-area="片貝"><td>2026/02/16</td><td>片貝</td><td>勇幸丸</td><td>イサキ</td><td>0〜6</td><td>24〜37cm</td></tr><tr class="highlight" data-area="片貝"><td>2026/02/14</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>4〜33</td><td>23〜40cm</td></tr><tr data-area="片貝"><td>2026/02/01</td><td>片貝</td><td>勇幸丸</td><td>不明</td><td>1〜15</td><td>17〜37cm</td></tr><tr data-area="片貝"><td>2026/02/01</td><td>片貝</td><td>勇幸丸</td><td>イサキ</td><td>1〜8</td><td>22〜37cm</td></tr><tr data-area="大原"><td>2023/03/31</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>0〜3</td><td>0.5〜2.8kg</td></tr><tr data-area="大原"><td>2023/03/31</td><td>大原</td><td>義之丸</td><td>マハタ</td><td>0〜3</td><td>0.4〜1.2kg</td></tr><tr data-area="大原"><td>2023/03/30</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>0〜3</td><td>1.3〜3.1kg</td></tr><tr data-area="大原"><td>2023/03/30</td><td>大原</td><td>義之丸</td><td>マハタ</td><td>0〜3</td><td>0.4〜2.4kg</td></tr><tr data-area="大原"><td>2023/03/28</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>2</td><td>0.7〜5.5kg</td></tr><tr data-area="大原"><td>2023/03/27</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>0〜2</td><td>1.3〜1.8kg</td></tr><tr data-area="大原"><td>2023/03/27</td><td>大原</td><td>義之丸</td><td>マハタ</td><td>0〜4</td><td>0.7〜1.4kg</td></tr><tr data-area="大原"><td>2023/03/26</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td></td><td>0.5〜2.1kg</td></tr><tr data-area="大原"><td>2023/03/26</td><td>大原</td><td>義之丸</td><td>マハタ</td><td></td><td>0.3〜3.7kg</td></tr><tr data-area="浦安"><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>フグ</td><td>0〜1</td><td>42〜50cm</td></tr><tr data-area="浦安"><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>サワラ</td><td>3〜10</td><td>55〜91cm</td></tr><tr data-area="浦安"><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>カサゴ</td><td>0〜3</td><td>32〜41cm</td></tr><tr data-area="浦安"><td>2026/03/20</td><td>浦安</td><td>吉久</td><td>フグ</td><td>0〜1</td><td>5.0kg</td></tr>
+    </table>
+  <p class="note">最終更新: 2026/03/21 21:40 ／ 総件数: 199 件</p>
+</div>
+<footer>
+  <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
+  <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
+</footer>
+<script>
+function filterArea(btn, area) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#catch-table tr[data-area]').forEach(tr => {
+    tr.style.display = (area === 'all' || tr.dataset.area === area) ? '' : 'none';
+  });
+}
+function switchTab(e, showId, hideId) {
+  e.stopPropagation();
+  document.getElementById(showId).style.display = 'block';
+  document.getElementById(hideId).style.display = 'none';
+  const w = e.target.closest('.tab-wrap');
+  w.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+}
+document.querySelectorAll('.fc').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target.classList.contains('fc-link') || e.target.closest('.fc-link')) return;
+    const d = this.querySelector('.fc-detail');
+    if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  });
+});
+</script>
 </body>
 </html>
