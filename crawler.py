@@ -799,6 +799,12 @@ footer a:hover{text-decoration:underline}
 .tc-fish-name{font-size:16px;font-weight:bold;color:#fff}
 .tc-stars{font-size:13px;color:#f9c74f}
 .tc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.fc-stats-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.fc-avg{font-size:11px;color:#c8d8e8}
+.fc-trend{font-size:11px;margin-top:4px;padding:2px 6px;border-radius:4px;display:inline-block}
+.trend-up{background:#0d3320;color:#4dcc88}
+.trend-down{background:#330d0d;color:#cc4d4d}
+.trend-flat{background:#1a2a3a;color:#7a9bb5}
 """
 
 # ============================================================
@@ -915,6 +921,7 @@ def build_html(catches, crawled_at, history):
     now = datetime.now()
     current_month = now.month
     fish_summary = {}
+    year, week_num = current_iso_week()
     for c in catches:
         for f in c["fish"]:
             if f != "不明":
@@ -923,7 +930,6 @@ def build_html(catches, crawled_at, history):
     cards = ""
     for fish, cs in sorted(fish_summary.items(), key=lambda x: -len(x[1])):
         areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))
-        season_bar  = build_season_bar(fish, current_month)
         fish_id     = re.sub(r'[^\w]', '_', fish)
         ship_counts = {}
         for c in cs: ship_counts[c["ship"]] = ship_counts.get(c["ship"], 0) + 1
@@ -941,13 +947,37 @@ def build_html(catches, crawled_at, history):
             weekly_rows += f'<tr><td>{sn}</td><td>{cnt}件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:{pct}%"></div></div></td></tr>'
         ship_num   = len(ship_counts)
         ships_html = f'<span class="ships-badge">約{ship_num}隻</span>'
+        # 昨年比 / 平均匹数 / 前週比トレンド
+        this_w, last_w = get_yoy_data(history, fish, year, week_num)
+        prev_w = get_prev_week_data(history, fish, year, week_num)
+        yoy_html = yoy_badge(this_w, last_w)
+        avg_html = ""
+        if this_w:
+            avg_val = this_w.get("avg") or 0
+            max_val = this_w.get("max") or 0
+            if avg_val:
+                avg_html = f'<span class="fc-avg">平均{avg_val:.0f}匹'
+                if max_val: avg_html += f'・最高{max_val}匹'
+                avg_html += '</span>'
+        trend_html = ""
+        if this_w and prev_w:
+            t_s = this_w.get("ships") or 0
+            p_s = prev_w.get("ships") or 0
+            if t_s and p_s and abs(t_s / p_s - 1) <= 1.5:
+                if t_s / p_s > 1.2:
+                    trend_html = '<div class="fc-trend trend-up">↑ 先週より上昇</div>'
+                elif t_s / p_s < 0.8:
+                    trend_html = '<div class="fc-trend trend-down">↓ 先週より減少</div>'
+                else:
+                    trend_html = '<div class="fc-trend trend-flat">→ 先週並み</div>'
+        stats_html = f'<div class="fc-stats-row">{yoy_html}{avg_html}</div>{trend_html}'
         cards += f"""
     <div class="fc">
       <div class="fc-summary">
         <div class="fn">{fish}{ships_html}</div>
         <div class="fk">{len(cs)}件</div>
         <div class="fa">{" / ".join(areas_list)}</div>
-        {season_bar}
+        {stats_html}
       </div>
       <a class="fc-link" href="fish/{fish}.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-{fish_id}">

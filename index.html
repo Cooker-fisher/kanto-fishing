@@ -98,6 +98,12 @@ footer a:hover{text-decoration:underline}
 .tc-fish-name{font-size:16px;font-weight:bold;color:#fff}
 .tc-stars{font-size:13px;color:#f9c74f}
 .tc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.fc-stats-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.fc-avg{font-size:11px;color:#c8d8e8}
+.fc-trend{font-size:11px;margin-top:4px;padding:2px 6px;border-radius:4px;display:inline-block}
+.trend-up{background:#0d3320;color:#4dcc88}
+.trend-down{background:#330d0d;color:#cc4d4d}
+.trend-flat{background:#1a2a3a;color:#7a9bb5}
 </style>
 </head>
 <body>
@@ -127,7 +133,7 @@ footer a:hover{text-decoration:underline}
           <span class="tt-stars">★★★★☆</span>
         </div>
         <div class="tt-tags"><span class="rtag rtag-up">🎣 旬</span><span class="rtag rtag-up">📈 昨年比UP</span></div>
-        <div class="tt-comment">好シーズン入りで昨年を大きく上回る絶好調（今週13件・昨年比+200%）</div>
+        <div class="tt-comment">今年は一段上の好調。予約を急ぎたい（今週13件・昨年比+200%）</div>
         <div class="tt-meta">出船: 約3隻 ／ 直近釣果: 13件</div>
       </div>
     </a><div class="target-grid">
@@ -155,7 +161,7 @@ footer a:hover{text-decoration:underline}
         <span class="tc-stars">★★★☆☆</span>
       </div>
       <div class="tc-tags"><span class="rtag rtag-down">📉 昨年比DOWN</span><span class="rtag rtag-up">🔥 釣果多数</span></div>
-      <div class="tc-comment">昨年より少ないが安定はしている（今週40件・昨年比-43%）</div>
+      <div class="tc-comment">やや低調気味だが十分狙える水準（今週40件・昨年比-43%）</div>
       <div class="tc-count">出船約9隻 ／ 40件</div>
     </a>
     <a class="target-card" href="fish/スルメイカ.html">
@@ -164,7 +170,7 @@ footer a:hover{text-decoration:underline}
         <span class="tc-stars">★★★☆☆</span>
       </div>
       <div class="tc-tags"><span class="rtag rtag-up">📈 昨年比UP</span></div>
-      <div class="tc-comment">シーズン外でも意外と釣果がある（今週5件・昨年比+92%）</div>
+      <div class="tc-comment">オフ中だが昨年よりは釣れている（今週5件・昨年比+92%）</div>
       <div class="tc-count">出船約2隻 ／ 5件</div>
     </a></div>
   <h2>🐟 釣れている魚</h2>
@@ -175,7 +181,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">マダイ<span class="ships-badge">約9隻</span></div>
         <div class="fk">40件</div>
         <div class="fa">金沢八景</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell peak-size " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-count " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"><span class="yoy down">↓昨年比-43%</span><span class="fc-avg">平均2匹・最高10匹</span></div>
       </div>
       <a class="fc-link" href="fish/マダイ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-マダイ">
@@ -192,7 +198,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">アジ<span class="ships-badge">約7隻</span></div>
         <div class="fk">39件</div>
         <div class="fa">金沢八景</div>
-        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell peak-count " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+29%</span><span class="fc-avg">平均34匹・最高112匹</span></div>
       </div>
       <a class="fc-link" href="fish/アジ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-アジ">
@@ -209,7 +215,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">アマダイ<span class="ships-badge">約4隻</span></div>
         <div class="fk">17件</div>
         <div class="fa">久比里</div>
-        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+48%</span><span class="fc-avg">平均3匹・最高10匹</span></div>
       </div>
       <a class="fc-link" href="fish/アマダイ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-アマダイ">
@@ -226,7 +232,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">フグ<span class="ships-badge">約3隻</span></div>
         <div class="fk">15件</div>
         <div class="fa">浦安</div>
-        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell peak-size " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="yoy down">↓昨年比-78%</span><span class="fc-avg">平均0匹・最高2匹</span></div><div class="fc-trend trend-up">↑ 先週より上昇</div>
       </div>
       <a class="fc-link" href="fish/フグ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-フグ">
@@ -243,7 +249,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">タチウオ<span class="ships-badge">約3隻</span></div>
         <div class="fk">14件</div>
         <div class="fa">金沢八景</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+199%</span><span class="fc-avg">平均26匹・最高45匹</span></div><div class="fc-trend trend-flat">→ 先週並み</div>
       </div>
       <a class="fc-link" href="fish/タチウオ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-タチウオ">
@@ -260,7 +266,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">マルイカ<span class="ships-badge">約3隻</span></div>
         <div class="fk">13件</div>
         <div class="fa">久比里</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell peak-count now" title="3月">3</div><div class="sb-cell peak-count " title="4月">4</div><div class="sb-cell peak-count " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell low " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+200%</span><span class="fc-avg">平均9匹・最高37匹</span></div>
       </div>
       <a class="fc-link" href="fish/マルイカ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-マルイカ">
@@ -277,7 +283,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">カワハギ<span class="ships-badge">約4隻</span></div>
         <div class="fk">12件</div>
         <div class="fa">金沢八景 / 久比里</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+0%</span><span class="fc-avg">平均4匹・最高12匹</span></div>
       </div>
       <a class="fc-link" href="fish/カワハギ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-カワハギ">
@@ -294,7 +300,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">ヤリイカ<span class="ships-badge">約3隻</span></div>
         <div class="fk">7件</div>
         <div class="fa">金沢八景</div>
-        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell low " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell low " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"><span class="yoy down">↓昨年比-33%</span><span class="fc-avg">平均5匹・最高10匹</span></div>
       </div>
       <a class="fc-link" href="fish/ヤリイカ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-ヤリイカ">
@@ -311,7 +317,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">キンメダイ<span class="ships-badge">約3隻</span></div>
         <div class="fk">6件</div>
         <div class="fa">片貝</div>
-        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="yoy down">↓昨年比-79%</span><span class="fc-avg">平均3匹・最高11匹</span></div>
       </div>
       <a class="fc-link" href="fish/キンメダイ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-キンメダイ">
@@ -328,7 +334,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">ヒラメ<span class="ships-badge">約1隻</span></div>
         <div class="fk">5件</div>
         <div class="fa">大原</div>
-        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"></div>
       </div>
       <a class="fc-link" href="fish/ヒラメ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-ヒラメ">
@@ -345,7 +351,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">サワラ<span class="ships-badge">約1隻</span></div>
         <div class="fk">5件</div>
         <div class="fa">浦安</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell peak-count " title="4月">4</div><div class="sb-cell peak-count " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"><span class="fc-avg">平均3匹・最高10匹</span></div>
       </div>
       <a class="fc-link" href="fish/サワラ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-サワラ">
@@ -362,7 +368,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">スルメイカ<span class="ships-badge">約2隻</span></div>
         <div class="fk">5件</div>
         <div class="fa">長井</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+92%</span><span class="fc-avg">平均12匹・最高25匹</span></div>
       </div>
       <a class="fc-link" href="fish/スルメイカ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-スルメイカ">
@@ -379,7 +385,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">メダイ<span class="ships-badge">約2隻</span></div>
         <div class="fk">4件</div>
         <div class="fa">片貝</div>
-        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell peak-size " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell low " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+        <div class="fc-stats-row"></div>
       </div>
       <a class="fc-link" href="fish/メダイ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-メダイ">
@@ -396,7 +402,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">マハタ<span class="ships-badge">約1隻</span></div>
         <div class="fk">4件</div>
         <div class="fa">大原</div>
-        <div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell mid " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+        <div class="fc-stats-row"></div>
       </div>
       <a class="fc-link" href="fish/マハタ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-マハタ">
@@ -413,7 +419,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">クロムツ<span class="ships-badge">約3隻</span></div>
         <div class="fk">4件</div>
         <div class="fa">葉山鐙摺 / 茅ヶ崎 / 小田原早川</div>
-        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell mid now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+7%</span><span class="fc-avg">平均3匹・最高12匹</span></div>
       </div>
       <a class="fc-link" href="fish/クロムツ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-クロムツ">
@@ -430,7 +436,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">イサキ<span class="ships-badge">約2隻</span></div>
         <div class="fk">3件</div>
         <div class="fa">片貝 / 宇佐美</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
+        <div class="fc-stats-row"></div>
       </div>
       <a class="fc-link" href="fish/イサキ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-イサキ">
@@ -447,7 +453,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">カサゴ<span class="ships-badge">約2隻</span></div>
         <div class="fk">2件</div>
         <div class="fa">浦安 / 金沢八景</div>
-        <div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size now" title="3月">3</div><div class="sb-cell mid " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="yoy down">↓昨年比-97%</span><span class="fc-avg">平均1匹・最高3匹</span></div>
       </div>
       <a class="fc-link" href="fish/カサゴ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-カサゴ">
@@ -464,7 +470,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">マゴチ<span class="ships-badge">約1隻</span></div>
         <div class="fk">2件</div>
         <div class="fa">金沢八景</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
+        <div class="fc-stats-row"></div>
       </div>
       <a class="fc-link" href="fish/マゴチ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-マゴチ">
@@ -481,7 +487,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">ワラサ<span class="ships-badge">約1隻</span></div>
         <div class="fk">1件</div>
         <div class="fa">小田原早川</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div>
+        <div class="fc-stats-row"><span class="fc-avg">平均2匹・最高2匹</span></div>
       </div>
       <a class="fc-link" href="fish/ワラサ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-ワラサ">
@@ -498,7 +504,7 @@ footer a:hover{text-decoration:underline}
         <div class="fn">カンパチ<span class="ships-badge">約1隻</span></div>
         <div class="fk">1件</div>
         <div class="fa">宇佐美</div>
-        <div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low now" title="3月">3</div><div class="sb-cell low " title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+        <div class="fc-stats-row"></div>
       </div>
       <a class="fc-link" href="fish/カンパチ.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-カンパチ">
@@ -517,7 +523,7 @@ footer a:hover{text-decoration:underline}
       <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>
       <tr data-area="片貝"><td>2026/02/22</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>1〜7</td><td>23〜35cm</td></tr><tr data-area="片貝"><td>2026/02/21</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>0〜4</td><td>23〜35cm</td></tr><tr data-area="片貝"><td>2026/02/16</td><td>片貝</td><td>勇幸丸</td><td>不明</td><td>6〜27</td><td>17〜36cm</td></tr><tr data-area="片貝"><td>2026/02/16</td><td>片貝</td><td>勇幸丸</td><td>イサキ</td><td>0〜6</td><td>24〜37cm</td></tr><tr class="highlight" data-area="片貝"><td>2026/02/14</td><td>片貝</td><td>勇幸丸</td><td>メダイ・キンメダイ</td><td>4〜33</td><td>23〜40cm</td></tr><tr data-area="片貝"><td>2026/02/01</td><td>片貝</td><td>勇幸丸</td><td>不明</td><td>1〜15</td><td>17〜37cm</td></tr><tr data-area="片貝"><td>2026/02/01</td><td>片貝</td><td>勇幸丸</td><td>イサキ</td><td>1〜8</td><td>22〜37cm</td></tr><tr data-area="大原"><td>2023/03/31</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>0〜3</td><td>0.5〜2.8kg</td></tr><tr data-area="大原"><td>2023/03/31</td><td>大原</td><td>義之丸</td><td>マハタ</td><td>0〜3</td><td>0.4〜1.2kg</td></tr><tr data-area="大原"><td>2023/03/30</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>0〜3</td><td>1.3〜3.1kg</td></tr><tr data-area="大原"><td>2023/03/30</td><td>大原</td><td>義之丸</td><td>マハタ</td><td>0〜3</td><td>0.4〜2.4kg</td></tr><tr data-area="大原"><td>2023/03/28</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>2</td><td>0.7〜5.5kg</td></tr><tr data-area="大原"><td>2023/03/27</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td>0〜2</td><td>1.3〜1.8kg</td></tr><tr data-area="大原"><td>2023/03/27</td><td>大原</td><td>義之丸</td><td>マハタ</td><td>0〜4</td><td>0.7〜1.4kg</td></tr><tr data-area="大原"><td>2023/03/26</td><td>大原</td><td>義之丸</td><td>ヒラメ</td><td></td><td>0.5〜2.1kg</td></tr><tr data-area="大原"><td>2023/03/26</td><td>大原</td><td>義之丸</td><td>マハタ</td><td></td><td>0.3〜3.7kg</td></tr><tr data-area="浦安"><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>フグ</td><td>0〜1</td><td>42〜50cm</td></tr><tr data-area="浦安"><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>サワラ</td><td>3〜10</td><td>55〜91cm</td></tr><tr data-area="浦安"><td>2026/03/21</td><td>浦安</td><td>吉久</td><td>カサゴ</td><td>0〜3</td><td>32〜41cm</td></tr><tr data-area="浦安"><td>2026/03/20</td><td>浦安</td><td>吉久</td><td>フグ</td><td>0〜1</td><td>5.0kg</td></tr>
     </table>
-  <p class="note">最終更新: 2026/03/21 22:47 ／ 総件数: 199 件</p>
+  <p class="note">最終更新: 2026/03/21 22:55 ／ 総件数: 199 件</p>
 </div>
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
