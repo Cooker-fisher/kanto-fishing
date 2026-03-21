@@ -22,6 +22,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          echo "--- before git add ---"
+          git status --short
           git add -A
-          git status --porcelain | grep -q . && git commit -m "update $(date +'%Y/%m/%d')" || echo "no changes"
+          echo "--- after git add ---"
+          git status --short
+          git commit -m "update $(date +'%Y/%m/%d')" || echo "nothing to commit"
           git push --force
