@@ -713,9 +713,16 @@ header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}
 header h1{font-size:22px;color:#4db8ff}
 header p{font-size:12px;color:#7a9bb5;margin-top:4px}
 header .site-desc{font-size:11px;color:#5a7a95;margin-top:6px;padding-top:6px;border-top:1px solid #1a3050;line-height:1.6}
-nav{background:#081020;padding:8px 24px;display:flex;gap:16px;flex-wrap:wrap}
+nav{background:#081020;padding:8px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 nav a{color:#7a9bb5;text-decoration:none;font-size:13px}
 nav a:hover{color:#4db8ff}
+.area-dropdown{position:relative}
+.area-btn{background:none;border:1px solid #1a4060;color:#7a9bb5;font-size:12px;padding:3px 10px;border-radius:12px;cursor:pointer;white-space:nowrap}
+.area-btn:hover{color:#4db8ff;border-color:#4db8ff}
+.area-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#0d2137;border:1px solid #1a6ea8;border-radius:8px;padding:10px 14px;z-index:100;min-width:220px;display:none;flex-wrap:wrap;gap:8px 14px}
+.area-menu.open{display:flex}
+.area-menu a{color:#7a9bb5;text-decoration:none;font-size:13px;white-space:nowrap}
+.area-menu a:hover{color:#4db8ff}
 .wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
 h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}
 .forecast-bar{background:#0d2137;border-left:4px solid #e85d04;padding:10px 14px;border-radius:4px;font-size:13px;color:#c8d8e8;margin-bottom:16px;line-height:1.7}
@@ -1013,8 +1020,12 @@ def build_html(catches, crawled_at, history):
   <a href="index.html">🏠 トップ</a>
   <a href="calendar.html">📅 釣りものカレンダー</a>
   <span style="color:#1a4060">|</span>
-  <span style="color:#7a9bb5;font-size:12px">エリアから探す：</span> {area_nav}
+  <div class="area-dropdown">
+    <button class="area-btn" onclick="var m=document.getElementById('areaMenu');m.classList.toggle('open')">エリアから探す ▼</button>
+    <div class="area-menu" id="areaMenu">{area_nav}</div>
+  </div>
 </nav>
+<script>document.addEventListener('click',function(e){{if(!e.target.closest('.area-dropdown'))document.getElementById('areaMenu').classList.remove('open')}});</script>
 <div class="wrap">
   <h2>🎯 今週の狙い目</h2>
   {forecast}
