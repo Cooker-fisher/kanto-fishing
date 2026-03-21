@@ -498,17 +498,41 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None):
     suffix += "）"
     return f"{base}{suffix}"
 
+def composite_to_stars(score):
+    """複合スコア(0-100) → ★1〜5"""
+    n = max(1, min(5, round(score / 20)))
+    return "★" * n + "☆" * (5 - n)
+
+def build_reason_tags(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month):
+    """おすすめ理由タグをリストで返す（最大3つ）"""
+    tags = []
+    season = get_season_score(fish, cur_month)
+    if season >= 4:
+        tags.append(("season", "🎣 旬"))
+    if this_w and last_w:
+        t_a = this_w.get("avg") or 0
+        l_a = last_w.get("avg") or 0
+        if l_a and t_a:
+            ratio = t_a / l_a
+            if ratio >= 1.2:
+                tags.append(("up", "📈 昨年比UP"))
+            elif ratio <= 0.7:
+                tags.append(("down", "📉 昨年比DOWN"))
+    if max_cnt > 0 and cnt / max_cnt >= 0.6:
+        tags.append(("hot", "🔥 釣果多数"))
+    return tags[:3]
+
 # ============================================================
 # #16: 釣り物予報
 # ============================================================
 def build_forecast(targets):
     if not targets: return ""
     top = targets[0]
-    score = top["score"]
-    fish  = top["fish"]
-    if score >= 4:
+    composite = top.get("composite", 50)
+    fish = top["fish"]
+    if composite >= 65:
         msg = f"今週の本命は<strong>{fish}</strong>。積極的に狙える状況です。"
-    elif score == 3:
+    elif composite >= 50:
         msg = f"今週は<strong>{fish}</strong>がコンスタント。外さない一手です。"
     else:
         msg = f"今週は全体的に渋め。<strong>{fish}</strong>中心に様子を見ましょう。"
@@ -599,6 +623,20 @@ tr.highlight td{background:#1a2d10;color:#7ddd6f}
 footer{background:#081020;border-top:1px solid #1a3050;padding:20px 24px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}
 footer a{color:#4db8ff;text-decoration:none}
 footer a:hover{text-decoration:underline}
+.tt-header{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.tt-name-row{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+.tt-fish{font-size:28px;font-weight:bold;color:#fff}
+.tt-stars{font-size:18px;color:#f9c74f;letter-spacing:2px}
+.tt-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tt-comment{font-size:13px;color:#c8d8e8;line-height:1.6}
+.tt-meta{font-size:11px;color:#7a9bb5;margin-top:8px}
+.rtag{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:bold}
+.rtag-up{background:#0d3320;color:#4dcc88;border:1px solid #1a5535}
+.rtag-down{background:#330d0d;color:#cc4d4d;border:1px solid #551a1a}
+.tc-name-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.tc-fish-name{font-size:16px;font-weight:bold;color:#fff}
+.tc-stars{font-size:13px;color:#f9c74f}
+.tc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
 """
 
 # ============================================================
@@ -625,34 +663,52 @@ def calc_targets(data, history):
         comment  = build_comment(fish, cnt, score, this_w, last_w, prev_w)
         ships    = len(ship_counts_per_fish.get(fish, set()))
         composite = calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month)
+        stars    = composite_to_stars(composite)
+        tags     = build_reason_tags(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month)
         targets.append({"fish": fish, "count": cnt, "score": score, "composite": composite,
-                        "comment": comment, "badge": badge, "ships": ships})
+                        "comment": comment, "badge": badge, "ships": ships,
+                        "stars": stars, "tags": tags})
     targets.sort(key=lambda x: -x["composite"])
     return targets[:5]
+
+def _render_tags(tags):
+    html = ""
+    for kind, label in tags:
+        cls = "rtag-up" if kind in ("up","up2","season","hot") else "rtag-down"
+        html += f'<span class="rtag {cls}">{label}</span>'
+    return html
 
 def build_target_section(targets):
     if not targets:
         return "<p style='color:#7a9bb5'>データ収集中です。しばらくお待ちください。</p>"
     top = targets[0]
-    top_score_bar = "█" * top["score"] + "░" * (5 - top["score"])
+    tags_html = _render_tags(top.get("tags", []))
     top_html = f"""
     <a class="target-top" href="fish/{top['fish']}.html">
       <div style="flex:1">
-        <div class="tt-badge">
-          <span class="tt-label">今週イチ押し</span> {top['badge']}
+        <div class="tt-header">
+          <span class="tt-label">今週イチ押し</span>
+          {top['badge']}
         </div>
-        <div class="tt-fish">{top['fish']}</div>
-        <div class="tt-score">{top_score_bar}</div>
+        <div class="tt-name-row">
+          <span class="tt-fish">{top['fish']}</span>
+          <span class="tt-stars">{top['stars']}</span>
+        </div>
+        <div class="tt-tags">{tags_html}</div>
         <div class="tt-comment">{top['comment']}</div>
-        <div style="font-size:11px;color:#7a9bb5;margin-top:6px">出船数: 約{top['ships']}隻 ／ 直近釣果: {top['count']}件</div>
+        <div class="tt-meta">出船: 約{top['ships']}隻 ／ 直近釣果: {top['count']}件</div>
       </div>
     </a>"""
     rest_html = ""
     for t in targets[1:]:
+        t_tags = _render_tags(t.get("tags", []))
         rest_html += f"""
     <a class="target-card" href="fish/{t['fish']}.html">
-      <div class="tc-fish">{t['fish']}{t['badge']}</div>
-      <div class="tc-bar">{"█"*t["score"]}{"░"*(5-t["score"])}</div>
+      <div class="tc-name-row">
+        <span class="tc-fish-name">{t['fish']}</span>
+        <span class="tc-stars">{t['stars']}</span>
+      </div>
+      <div class="tc-tags">{t_tags}</div>
       <div class="tc-comment">{t['comment']}</div>
       <div class="tc-count">出船約{t['ships']}隻 ／ {t['count']}件</div>
     </a>"""
