@@ -1,4 +1,4 @@
-name: crawl
+﻿name: crawl
 on:
   schedule:
     - cron: '30 7 * * *'
@@ -17,6 +17,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add catches.json index.html calendar.html fish/*.html
-          git diff --staged --quiet || git commit -m "update $(date +'%Y/%m/%d')"
-          git push
+          git add -A
+          git commit -m "update $(date +'%Y/%m/%d')" || echo "nothing to commit"
+          git push --force
