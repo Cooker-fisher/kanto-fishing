@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お問い合わせ | 関東船釣り釣果情報「船釣り予想」</title>
+  <meta name="description" content="船釣り予想（funatsuri-yoso.com）へのお問い合わせページです。">
+  <style>
+    :root {
+      --bg: #0a1628;
+      --surface: #0f2040;
+      --surface2: #162a4a;
+      --accent: #00b4d8;
+      --accent2: #0077b6;
+      --text: #e0eaf5;
+      --text-muted: #7a9bbf;
+      --border: #1e3a5f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 2px solid var(--accent2);
+      padding: 16px 0;
+    }
+    .header-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .site-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .site-name:hover { opacity: 0.8; }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+
+    h1 {
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 700;
+      color: var(--accent);
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+
+    .note {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .form-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    iframe {
+      width: 100%;
+      height: 680px;
+      border: none;
+      display: block;
+    }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span>🎣</span>
+    <a href="/" class="site-name">関東船釣り釣果情報「船釣り予想」</a>
+  </div>
+</header>
+
+<main>
+  <h1>お問い合わせ</h1>
+
+  <p class="note">
+    データの誤りや船宿情報の追加リクエストなど、お気軽にご連絡ください。内容を確認のうえ、順次対応いたします。
+  </p>
+
+  <div class="form-wrap">
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScI7fmffsCXefHamWgw4gIg7egw9az4ieEgg0kWcr2cfQoDhw/viewform?embedded=true"
+      title="お問い合わせフォーム">
+      読み込んでいます…
+    </iframe>
+  </div>
+</main>
+
+<footer>
+  <a href="/">トップページ</a> ｜ <a href="/privacy.html">プライバシーポリシー</a><br>
+  <span style="margin-top:8px; display:block;">© 2026 funatsuri-yoso.com</span>
+</footer>
+
+</body>
+</html>
