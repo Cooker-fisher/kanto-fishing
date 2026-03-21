@@ -337,6 +337,67 @@ def get_yoy_data(history, fish, year, week_num):
     last_data = history["weekly"].get(last_key, {}).get(fish)
     return this_data, last_data
 
+def get_prev_week_data(history, fish, year, week_num):
+    """先週（同年・1週前）のhistoryデータを取得"""
+    if week_num > 1:
+        prev_key = f"{year}/W{week_num-1:02d}"
+    else:
+        prev_key = f"{year-1}/W52"
+    return history["weekly"].get(prev_key, {}).get(fish)
+
+def calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month):
+    """
+    複合スコアを計算（0〜100点）
+    件数25% + 匹数20% + 昨年比20% + 先週比15% + シーズン15% + サイズ5%
+    データなしの場合は中立値（0.5）で計算
+    """
+    def safe_ratio(a, b, cap=2.0):
+        if a and b and b > 0:
+            return min(a / b, cap) / cap
+        return 0.5  # データなし → 中立
+
+    # 1. 件数スコア（今週の全魚種中での相対的な多さ）
+    count_s = (cnt / max_cnt) if max_cnt > 0 else 0.5
+
+    # 2. 平均匹数スコア（今週avg ÷ 昨年同週avg）
+    avg_s = safe_ratio(
+        this_w.get("avg") if this_w else None,
+        last_w.get("avg") if last_w else None,
+    )
+
+    # 3. 昨年比スコア（今週ships ÷ 昨年同週ships）
+    yoy_s = safe_ratio(
+        this_w.get("ships") if this_w else None,
+        last_w.get("ships") if last_w else None,
+    )
+
+    # 4. 先週比スコア（今週ships ÷ 先週ships、cap=1.5で過剰評価を抑制）
+    wow_s = safe_ratio(
+        this_w.get("ships") if this_w else None,
+        prev_w.get("ships") if prev_w else None,
+        cap=1.5,
+    )
+
+    # 5. シーズン係数（1〜5 → 0.2〜1.0 / データなし → 中立0.5）
+    season = get_season_score(fish, cur_month)
+    season_s = (season / 5.0) if season > 0 else 0.5
+
+    # 6. サイズスコア（今週size_avg ÷ 昨年同週size_avg）
+    size_s = safe_ratio(
+        this_w.get("size_avg") if this_w else None,
+        last_w.get("size_avg") if last_w else None,
+    )
+
+    weights = [
+        (count_s, 0.25),
+        (avg_s,   0.20),
+        (yoy_s,   0.20),
+        (wow_s,   0.15),
+        (season_s,0.15),
+        (size_s,  0.05),
+    ]
+    return round(sum(s * w for s, w in weights) * 100, 1)
+
 def yoy_badge(this_data, last_data):
     if not this_data or not last_data: return ""
     t_val = this_data.get("avg") or this_data.get("ships", 0)
@@ -399,7 +460,7 @@ def build_season_bar(fish, current_month):
 # ============================================================
 # #5: 好調度コメント（件数・数値入り）
 # ============================================================
-def build_comment(fish, count, score, this_w, last_w):
+def build_comment(fish, count, score, this_w, last_w, prev_w=None):
     base_comments = {
         5: ["爆釣モード！今すぐ行くべき", "今季最高潮。チャンスを逃すな"],
         4: ["かなり好調。おすすめの釣り物", "良型混じりで数も出ている"],
@@ -416,6 +477,14 @@ def build_comment(fish, count, score, this_w, last_w):
             pct = round((t_val - l_val) / l_val * 100)
             sign = "+" if pct >= 0 else ""
             suffix += f"・昨年比{sign}{pct}%"
+    if this_w and prev_w:
+        t_s = this_w.get("ships") or 0
+        p_s = prev_w.get("ships") or 0
+        if t_s and p_s:
+            pct2 = round((t_s - p_s) / p_s * 100)
+            if abs(pct2) <= 150:  # データ不足による爆発を抑制
+                sign2 = "+" if pct2 >= 0 else ""
+                suffix += f"・先週比{sign2}{pct2}%"
     suffix += "）"
     return f"{base}{suffix}"
 
@@ -536,14 +605,19 @@ def calc_targets(data, history):
             if f != "不明":
                 fish_counts[f] = fish_counts.get(f, 0) + 1
                 ship_counts_per_fish.setdefault(f, set()).add(c["ship"])
+    max_cnt = max(fish_counts.values()) if fish_counts else 1
     targets = []
-    for fish, cnt in sorted(fish_counts.items(), key=lambda x: -x[1])[:10]:
-        score   = get_season_score(fish, cur_month)
+    for fish, cnt in fish_counts.items():
+        score    = get_season_score(fish, cur_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
-        badge   = yoy_badge(this_w, last_w)
-        comment = build_comment(fish, cnt, score, this_w, last_w)
-        ships   = len(ship_counts_per_fish.get(fish, set()))
-        targets.append({"fish": fish, "count": cnt, "score": score, "comment": comment, "badge": badge, "ships": ships})
+        prev_w   = get_prev_week_data(history, fish, year, week_num)
+        badge    = yoy_badge(this_w, last_w)
+        comment  = build_comment(fish, cnt, score, this_w, last_w, prev_w)
+        ships    = len(ship_counts_per_fish.get(fish, set()))
+        composite = calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month)
+        targets.append({"fish": fish, "count": cnt, "score": score, "composite": composite,
+                        "comment": comment, "badge": badge, "ships": ships})
+    targets.sort(key=lambda x: -x["composite"])
     return targets[:5]
 
 def build_target_section(targets):
