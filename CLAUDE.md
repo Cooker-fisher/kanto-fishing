@@ -74,11 +74,17 @@ kanto-fishing/
 | 関数 | 役割 |
 |------|------|
 | `crawl(ship)` | 1船宿のpageID=1を取得 |
+| `update_history(catches, history)` | 当週・当月データをhistory.jsonに集計・書き込み |
 | `build_html(data, ts, n)` | index.htmlを生成 |
 | `build_fish_pages(data)` | fish/*.htmlを生成（5件以上の魚種のみ） |
 | `build_calendar_page(data)` | calendar.htmlを生成 |
-| `calc_targets(data)` | 今週末の狙い目TOP5を計算 |
-| `build_target_section(targets)` | 狙い目セクションのHTMLを生成 |
+| `calc_targets(data)` | 今週末の狙い目TOP5を複合スコアで計算 |
+| `calc_composite_score(...)` | 6要素複合スコア（0〜100）を算出 |
+| `build_reason_tags(...)` | おすすめ理由タグ（最大3個）を生成 |
+| `build_comment(...)` | 100パターンコメントを生成 |
+| `build_target_section(targets)` | 狙い目セクションのHTMLを生成（★評価＋タグ） |
+| `get_yoy_data(history, fish, year, week)` | 今週・昨年同週のhistoryデータを取得 |
+| `get_prev_week_data(history, fish, year, week)` | 前週のhistoryデータを取得 |
 | `main()` | 全体の実行フロー |
 
 ---
@@ -138,20 +144,23 @@ crawler.py内に定義済み。各魚種の以下の情報を持つ：
 
 1. ✅ 釣果自動収集（釣りビジョンHTMLパース・毎日更新）
 2. ✅ 魚種カードをタップでランキング表示（船宿別TOP10・バーグラフ）
-3. ✅ 今週末の狙い目セクション（スコア計算・コメント自動生成）
-4. ✅ 魚種別ページ（fish/*.html・SEOタイトル・metadescription）
-5. ✅ 年間シーズンバー（数狙い・型狙いピーク色分け）
-6. ✅ 釣りものカレンダー（calendar.html・14魚種×12ヶ月）
-7. ✅ GitHub Actions手動実行ボタン（workflow_dispatch）
+3. ✅ 今週末の狙い目セクション（★評価＋理由タグ＋100パターンコメント）
+4. ✅ 複合スコアリング（件数25%・匹数20%・昨年比20%・先週比15%・シーズン15%・サイズ5%）
+5. ✅ 魚種カードに昨年比バッジ・平均匹数・前週比トレンド表示（カレンダー廃止）
+6. ✅ 魚種別ページ（fish/*.html・SEOタイトル・metadescription）
+7. ✅ history.jsonへの自動集計（毎クロール時に当週・当月データ更新）
+8. ✅ SEASON_DATAに20魚種以上（マルイカ・クロムツ・サワラ・メダイ・マハタ・カンパチ追加済み）
+9. ✅ 釣りものカレンダー（calendar.html・14魚種×12ヶ月）
+10. ✅ GitHub Actions手動実行ボタン（workflow_dispatch）
+11. ✅ ナビゲーションの「エリアから探す」をドロップダウンメニュー化
 
 ---
 
 ## 今後の実装予定
 
 ### 優先度高
-- [ ] history_crawl.pyで過去2年分のデータ一括取得
-- [ ] 魚種別ページに「今週vs昨年同週比較」表示
-  - 出船数比較・平均匹数比較・Max匹数比較
+- [ ] history_crawl.pyで過去2年分のデータ一括取得（history.jsonを充実させる）
+- [ ] 魚種別ページに「今週vs昨年同週比較」テーブル表示（出船数・平均匹数・Max匹数）
 - [ ] Enforce HTTPS有効化（DNS反映確認後）
 - [ ] Google AdSense申請
 
@@ -161,8 +170,10 @@ crawler.py内に定義済み。各魚種の以下の情報を持つ：
   - `tweet_poster.py` の作成
   - GitHub Secrets: X_API_KEY / X_API_SECRET / X_ACCESS_TOKEN / X_ACCESS_SECRET
 - [ ] じゃらんアフィリエイト設置（ランキングの船宿横に予約リンク）
+- [ ] 地図でエリア選択UI
 
 ### 優先度低
+- [ ] crawl.yml Node.js 20→24 upgrade
 - [ ] 魚種別ページのデザイン改善
 - [ ] 関西・九州など全国展開（釣りビジョンは全国対応済み）
 
