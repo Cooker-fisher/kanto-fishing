@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.1
+関東船釣り情報クローラー v5.2
+変更点(v5.2):
+- Google AdSense コードを全ページの<head>に追加
 変更点(v5.1):
 - parse_catches_from_tables を廃止
 - parse_catches_from_html に置き換え
@@ -54,6 +56,9 @@ AREA_GROUPS = {
 
 BASE_URL = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# Google AdSense
+ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
 
 FISH_MAP = {
     "アジ":     ["アジ", "LTアジ", "ライトアジ"],
@@ -614,6 +619,7 @@ def build_html(catches, crawled_at, history):
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>関東船釣り釣果情報 | 今日何が釣れてる？</title>
   <meta name="description" content="関東エリア（神奈川・千葉）の船宿釣果をリアルタイム集計。今週の狙い目魚種、釣れている船宿ランキングを毎日更新。">
+  {ADSENSE_TAG}
   <style>{CSS}</style>
 </head>
 <body>
@@ -745,6 +751,7 @@ def build_fish_pages(data, history):
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{fish}の釣果情報 | 関東船釣り予想</title>
   <meta name="description" content="関東エリアの{fish}釣果情報。今週の釣れ具合・船宿ランキングをリアルタイム集計。">
+  {ADSENSE_TAG}
   <style>{fish_css}</style>
 </head><body>
 <header><h1>🎣 {fish}の釣果情報</h1></header>
@@ -826,6 +833,7 @@ def build_area_pages(data, history):
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{area}の釣果情報 | 関東船釣り予想</title>
   <meta name="description" content="{area}エリアの船釣り釣果情報。今週釣れている魚種・船宿ランキングを毎日更新。">
+  {ADSENSE_TAG}
   <style>{area_css}</style>
 </head><body>
 <header>
@@ -872,6 +880,7 @@ def build_calendar_page():
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>関東船釣り カレンダー | 月別釣りものガイド</title>
+  {ADSENSE_TAG}
   <style>*{{box-sizing:border-box;margin:0;padding:0}}body{{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}}header{{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}}header h1{{font-size:20px;color:#4db8ff}}nav{{background:#081020;padding:8px 24px}}nav a{{color:#7a9bb5;text-decoration:none;font-size:13px}}.wrap{{max-width:900px;margin:0 auto;padding:20px 16px;overflow-x:auto}}h2{{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}}table{{border-collapse:collapse;font-size:13px;width:100%}}th{{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:center;min-width:36px}}th.cur-month{{background:#1a6ea8;color:#fff}}td{{padding:6px;text-align:center;border-bottom:1px solid #081020}}td.fish-name{{text-align:left;font-weight:bold;min-width:90px}}td.fish-name a{{color:#e0e8f0;text-decoration:none}}td.fish-name a:hover{{color:#4db8ff}}td.peak-count{{background:#e85d04;color:#fff}}td.peak-size{{background:#7209b7;color:#fff}}td.mid{{background:#1a6ea8;color:#fff}}td.low{{background:#0d2137;color:#444}}td.cur-month{{outline:2px solid #fff;outline-offset:-2px}}.legend{{display:flex;gap:16px;margin:16px 0;font-size:12px}}.leg{{display:flex;align-items:center;gap:6px}}.leg-dot{{width:14px;height:14px;border-radius:2px}}footer{{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}}footer a{{color:#4db8ff;text-decoration:none}}</style>
 </head><body>
 <header><h1>📅 釣りものカレンダー</h1></header>
