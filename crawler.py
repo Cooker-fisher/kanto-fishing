@@ -10,7 +10,7 @@
   → 全釣果に「今日の日付」が入る問題を修正
 """
 import re, json, time, os
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from html.parser import HTMLParser
@@ -142,8 +142,9 @@ if os.path.exists(_ships_json):
     with open(_ships_json, encoding="utf-8") as _f:
         SHIPS = json.load(_f)
 
-BASE_URL = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}"
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+BASE_URL     = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}"
+GYO_BASE_URL = "https://www.gyo.ne.jp/rep_tsuri_view%7CCID-{cid}.htm"
+USER_AGENT   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 # Google AdSense
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
@@ -353,6 +354,123 @@ def fetch(url):
         return raw.decode("utf-8", errors="replace")
     except URLError as e:
         print(f"ERROR: {e}"); return None
+
+def fetch_gyo(url):
+    """gyo.ne.jp 専用 fetch: Shift-JIS を優先してデコード"""
+    try:
+        req = Request(url, headers={"User-Agent": USER_AGENT})
+        with urlopen(req, timeout=20) as r:
+            raw = r.read()
+        for enc in ("cp932", "shift_jis", "euc-jp", "utf-8"):
+            try: return raw.decode(enc)
+            except: pass
+        return raw.decode("utf-8", errors="replace")
+    except URLError as e:
+        print(f"ERROR: {e}"); return None
+
+# ============================================================
+# gyo.ne.jp 専用パーサー
+# ============================================================
+# gyo.ne.jp のテーブルヘッダ候補（複数表記に対応）
+_GYO_FISH_HDRS  = ("魚種", "釣り物", "種類")
+_GYO_COUNT_HDRS = ("匹数", "尾数", "数量", "釣果数")
+_GYO_SIZE_HDRS  = ("大きさ", "サイズ", "cm", "寸")
+
+def _parse_tables_gyo(tables, ship, area, date, month):
+    """gyo.ne.jp のテーブルリストから釣果を抽出する。"""
+    results = []
+    for table in tables:
+        if not table or len(table) < 2:
+            continue
+        header = table[0]
+        hstr   = " ".join(header)
+        has_fish  = any(k in hstr for k in _GYO_FISH_HDRS)
+        has_count = any(k in hstr for k in _GYO_COUNT_HDRS)
+        if not (has_fish or has_count):
+            continue
+        fish_idx  = next((i for i, h in enumerate(header) if any(k in h for k in _GYO_FISH_HDRS)),  0)
+        count_idx = next((i for i, h in enumerate(header) if any(k in h for k in _GYO_COUNT_HDRS)), 1)
+        size_idx  = next((i for i, h in enumerate(header) if any(k in h for k in _GYO_SIZE_HDRS)),  2)
+        for row in table[1:]:
+            if len(row) <= fish_idx:
+                continue
+            fish_name = row[fish_idx].strip()
+            if not fish_name or fish_name in ("魚種", "釣り物", "-", "－", ""):
+                continue
+            count_str = row[count_idx].strip() if count_idx < len(row) else ""
+            size_str  = row[size_idx].strip()  if size_idx  < len(row) else ""
+            results.append({
+                "ship":        ship,
+                "area":        area,
+                "date":        date,
+                "month":       month,
+                "catch_raw":   f"{fish_name} {count_str} {size_str}".strip(),
+                "fish":        guess_fish(fish_name),
+                "count_range": extract_count(count_str),
+                "size_range":  extract_size(size_str),
+            })
+    return results
+
+
+def parse_catches_gyo(html, ship, area, year):
+    """
+    gyo.ne.jp 専用パーサー。
+    日付が特定できない記録は全てスキップ（今日の日付のデフォルト使用禁止）。
+    直近60日以内の日付のみ有効とする。
+    """
+    results = []
+    now     = datetime.now()
+    cutoff  = now - timedelta(days=60)
+
+    def _valid_date(y, mo, d):
+        """(year, month, day) → (ok, date_str, month_int) or None"""
+        try:
+            dt = datetime(y, mo, d)
+        except ValueError:
+            return None
+        if dt < cutoff or dt > now:
+            return None
+        return f"{y}/{mo:02d}/{d:02d}", mo
+
+    date_positions = []  # (html_position, date_str, month_int)
+
+    # YYYY年M月D日 / YYYY/M/D / YYYY-M-D
+    for m in re.finditer(r'(\d{4})[年/\-](\d{1,2})[月/\-](\d{1,2})日?', html):
+        res = _valid_date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        if res:
+            date_positions.append((m.start(), res[0], res[1]))
+
+    # M月D日（年なし）→ 当年・前年の順で試す
+    for m in re.finditer(r'(\d{1,2})月(\d{1,2})日', html):
+        mo, d = int(m.group(1)), int(m.group(2))
+        for y in (year, year - 1):
+            res = _valid_date(y, mo, d)
+            if res:
+                date_positions.append((m.start(), res[0], res[1]))
+                break
+
+    if not date_positions:
+        return []  # 日付が1件も取れない場合は空を返す
+
+    # 位置順にソートし、同じ日付文字列の重複を除去（最初の出現位置を使用）
+    date_positions.sort(key=lambda x: x[0])
+    seen_dates   = set()
+    unique_dates = []
+    for pos, date_str, mo in date_positions:
+        if date_str not in seen_dates:
+            seen_dates.add(date_str)
+            unique_dates.append((pos, date_str, mo))
+
+    # 日付セクションごとにテーブルをパース
+    for i, (date_pos, date_str, month) in enumerate(unique_dates):
+        end_pos = unique_dates[i + 1][0] if i + 1 < len(unique_dates) else len(html)
+        section = html[date_pos:end_pos]
+        parser  = TableParser()
+        parser.feed(section)
+        catches = _parse_tables_gyo(parser.tables, ship, area, date_str, month)
+        results.extend(catches)
+
+    return results
 
 # ============================================================
 # history.json (#3: ISO週に統一)
@@ -1488,6 +1606,26 @@ def main():
         print(f"{len(catches)} 件")
         all_catches.extend(catches)
         time.sleep(0.8)
+
+    # --- gyo.ne.jp クロール ---
+    _gyo_json = os.path.join(os.path.dirname(__file__), "gyo_ships.json")
+    if os.path.exists(_gyo_json):
+        with open(_gyo_json, encoding="utf-8") as _f:
+            gyo_ships = json.load(_f)
+        print(f"\n--- gyo.ne.jp: {len(gyo_ships)} 船宿 ---")
+        for s in gyo_ships:
+            url = GYO_BASE_URL.format(cid=s["cid"])
+            print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
+            html = fetch_gyo(url)
+            if not html:
+                errors.append(s["name"]); print("エラー"); continue
+            catches = parse_catches_gyo(html, s["name"], s["area"], year)
+            print(f"{len(catches)} 件")
+            all_catches.extend(catches)
+            time.sleep(0.8)
+    else:
+        print("\n(gyo_ships.json なし → gyo.ne.jp スキップ。discover_gyo.py を実行してください)")
+
     history = load_history()
     history = update_history(all_catches, history)
     with open("catches.json", "w", encoding="utf-8") as f:

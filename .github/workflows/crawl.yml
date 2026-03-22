@@ -14,7 +14,9 @@ jobs:
           python-version: '3.11'
       - name: discover ships (月1日のみ)
         if: github.event.schedule == '0 7 1 * *' || github.event_name == 'workflow_dispatch'
-        run: python3 discover_ships.py
+        run: |
+          python3 discover_ships.py
+          python3 discover_gyo.py
       - name: run
         run: python3 crawler.py
       - name: push

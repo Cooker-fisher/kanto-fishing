@@ -3,7 +3,14 @@
     "allow": [
       "Bash(python3:*)",
       "Bash(python:*)",
-      "Bash(Copy-Item \"$env:USERPROFILE\\\\Downloads\\\\crawler.py\" \"$env:USERPROFILE\\\\Desktop\\\\kanto-fishing\\\\crawler.py\" 2>&1)"
+      "Bash(Copy-Item \"$env:USERPROFILE\\\\Downloads\\\\crawler.py\" \"$env:USERPROFILE\\\\Desktop\\\\kanto-fishing\\\\crawler.py\" 2>&1)",
+      "WebSearch",
+      "WebFetch(domain:www.gyo.ne.jp)",
+      "WebFetch(domain:www.marines-net.co.jp)",
+      "WebFetch(domain:funaduri.jp)",
+      "WebFetch(domain:tsurimaru.jp)",
+      "WebFetch(domain:www.chowari.jp)",
+      "WebFetch(domain:www.tsurisoku.com)"
     ]
   }
 }

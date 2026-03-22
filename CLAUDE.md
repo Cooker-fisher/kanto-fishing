@@ -239,3 +239,8 @@ git push
 - 釣りビジョンへのリクエストは0.8秒待機（サーバー負荷対策）
 - GitHub ActionsのタイムゾーンはUTC（16:30 JSTは07:30 UTC）
 - fish/*.htmlのファイル名は日本語（URLエンコードされる）
+
+---
+
+@.claude/memory/project_status.md
+@.claude/memory/feedback_crawler_editing.md
