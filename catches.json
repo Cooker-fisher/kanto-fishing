@@ -1,8 +1,27 @@
 {
-  "crawled_at": "2026/03/22 09:02",
-  "total": 803,
+  "crawled_at": "2026/03/22 08:01",
+  "total": 822,
   "errors": [],
   "data": [
+    {
+      "ship": "日正丸",
+      "area": "日立久慈港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～2 匹  0.3～0.6 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 0.3,
+        "max": 0.6,
+        "unit": "kg"
+      }
+    },
     {
       "ship": "日正丸",
       "area": "日立久慈港",
@@ -73,25 +92,6 @@
       "size_range": {
         "min": 3.3,
         "max": 3.3,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "日正丸",
-      "area": "日立久慈港",
-      "date": "2026/03/09",
-      "month": 3,
-      "catch_raw": "マダイ 0～4 匹  0.4～4.3 kg",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 4
-      },
-      "size_range": {
-        "min": 0.4,
-        "max": 4.3,
         "unit": "kg"
       }
     },
@@ -344,6 +344,25 @@
     {
       "ship": "弘漁丸",
       "area": "日立久慈港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～7 匹  0.3～2.6 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 7
+      },
+      "size_range": {
+        "min": 0.3,
+        "max": 2.6,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "弘漁丸",
+      "area": "日立久慈港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "マダイ 0～3 匹  0.3～0.9 kg",
@@ -418,21 +437,21 @@
       }
     },
     {
-      "ship": "弘漁丸",
+      "ship": "豊丸",
       "area": "日立久慈港",
-      "date": "2026/03/13",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "マダイ 0～3 匹  0.5～1.2 kg",
+      "catch_raw": "マダイ 船中 20匹  0.3～3.3 kg",
       "fish": [
         "マダイ"
       ],
       "count_range": {
-        "min": 0,
-        "max": 3
+        "min": 20,
+        "max": 20
       },
       "size_range": {
-        "min": 0.5,
-        "max": 1.2,
+        "min": 0.3,
+        "max": 3.3,
         "unit": "kg"
       }
     },
@@ -500,25 +519,6 @@
       "size_range": {
         "min": 2.5,
         "max": 2.5,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "豊丸",
-      "area": "日立久慈港",
-      "date": "2026/02/14",
-      "month": 2,
-      "catch_raw": "マダイ 2～7 匹  0.3～2.1 kg",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 7
-      },
-      "size_range": {
-        "min": 0.3,
-        "max": 2.1,
         "unit": "kg"
       }
     },
@@ -679,6 +679,75 @@
     {
       "ship": "仁徳丸",
       "area": "波崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "メヌケ 0～8 匹  1.5～5.4 kg",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 8
+      },
+      "size_range": {
+        "min": 1.5,
+        "max": 5.4,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "仁徳丸",
+      "area": "波崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アブラボウズ 0～2 匹  12～45 kg",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 12.0,
+        "max": 45.0,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "仁徳丸",
+      "area": "波崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "クロムツ 3～13 匹 25～40 cm",
+      "fish": [
+        "クロムツ"
+      ],
+      "count_range": {
+        "min": 3,
+        "max": 13
+      },
+      "size_range": {
+        "min": 25,
+        "max": 40,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "仁徳丸",
+      "area": "波崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アカムツ",
+      "fish": [
+        "クロムツ"
+      ],
+      "count_range": null,
+      "size_range": null
+    },
+    {
+      "ship": "仁徳丸",
+      "area": "波崎港",
       "date": "2026/03/20",
       "month": 3,
       "catch_raw": "メヌケ 0～4 匹  1.5～5.1 kg",
@@ -807,53 +876,94 @@
       }
     },
     {
-      "ship": "仁徳丸",
-      "area": "波崎港",
-      "date": "2026/02/22",
-      "month": 2,
-      "catch_raw": "メヌケ 0～8 匹  0.8～4.3 kg",
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～4 匹  0.7～2.9 kg",
       "fish": [
-        "不明"
+        "マダイ"
       ],
       "count_range": {
         "min": 0,
-        "max": 8
+        "max": 4
       },
       "size_range": {
-        "min": 0.8,
-        "max": 4.3,
+        "min": 0.7,
+        "max": 2.9,
         "unit": "kg"
       }
     },
     {
-      "ship": "仁徳丸",
-      "area": "波崎港",
-      "date": "2026/02/22",
-      "month": 2,
-      "catch_raw": "アラ 0～1 匹  2～3 kg",
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ 0～10 匹  0.7～5.2 kg",
       "fish": [
-        "不明"
+        "ヒラメ"
       ],
       "count_range": {
         "min": 0,
-        "max": 1
+        "max": 10
       },
       "size_range": {
-        "min": 2.0,
-        "max": 3.0,
+        "min": 0.7,
+        "max": 5.2,
         "unit": "kg"
       }
     },
     {
-      "ship": "仁徳丸",
-      "area": "波崎港",
-      "date": "2026/02/22",
-      "month": 2,
-      "catch_raw": "アカムツ",
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マハタ 0～2 匹  0.7～1.8 kg",
       "fish": [
-        "クロムツ"
+        "マハタ"
       ],
-      "count_range": null,
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 0.7,
+        "max": 1.8,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ 0～10 匹  0.6～3.8 kg",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 10
+      },
+      "size_range": {
+        "min": 0.6,
+        "max": 3.8,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "イナダ 1～6 匹",
+      "fish": [
+        "ワラサ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 6
+      },
       "size_range": null
     },
     {
@@ -959,6 +1069,40 @@
       "count_range": {
         "min": 0,
         "max": 6
+      },
+      "size_range": null
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "マダイ 0～3 匹  0.7～2.3 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3
+      },
+      "size_range": {
+        "min": 0.7,
+        "max": 2.3,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "ハナダイ 0～4 匹",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 4
       },
       "size_range": null
     },
@@ -1372,47 +1516,51 @@
       }
     },
     {
-      "ship": "幸栄丸",
+      "ship": "第三幸栄丸",
       "area": "鹿島港",
-      "date": "2026/03/17",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "マダイ 0～2 匹  0.8～2.8 kg",
+      "catch_raw": "マダイ 0～4 匹  0.7～2.9 kg",
       "fish": [
         "マダイ"
       ],
       "count_range": {
         "min": 0,
-        "max": 2
+        "max": 4
       },
       "size_range": {
-        "min": 0.8,
-        "max": 2.8,
+        "min": 0.7,
+        "max": 2.9,
         "unit": "kg"
       }
     },
     {
-      "ship": "幸栄丸",
+      "ship": "第三幸栄丸",
       "area": "鹿島港",
-      "date": "2026/03/17",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "ハナダイ 1～5 匹",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 5
-      },
-      "size_range": null
-    },
-    {
-      "ship": "幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "ヒラメ 0～2 匹  0.7～3 kg",
+      "catch_raw": "ヒラメ 0～10 匹  0.7～5.2 kg",
       "fish": [
         "ヒラメ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 10
+      },
+      "size_range": {
+        "min": 0.7,
+        "max": 5.2,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "第三幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マハタ 0～2 匹  0.7～1.8 kg",
+      "fish": [
+        "マハタ"
       ],
       "count_range": {
         "min": 0,
@@ -1420,47 +1568,43 @@
       },
       "size_range": {
         "min": 0.7,
-        "max": 3.0,
+        "max": 1.8,
         "unit": "kg"
       }
     },
     {
-      "ship": "幸栄丸",
+      "ship": "第三幸栄丸",
       "area": "鹿島港",
-      "date": "2026/03/17",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "ワラサ 10～25 匹  3.8～4.1 kg",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 10,
-        "max": 25
-      },
-      "size_range": {
-        "min": 3.8,
-        "max": 4.1,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "ヒラメ 0～3 匹  0.6～2.8 kg",
+      "catch_raw": "ヒラメ 0～10 匹  0.6～3.8 kg",
       "fish": [
         "ヒラメ"
       ],
       "count_range": {
         "min": 0,
-        "max": 3
+        "max": 10
       },
       "size_range": {
         "min": 0.6,
-        "max": 2.8,
+        "max": 3.8,
         "unit": "kg"
       }
+    },
+    {
+      "ship": "第三幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "イナダ 1～6 匹",
+      "fish": [
+        "ワラサ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 6
+      },
+      "size_range": null
     },
     {
       "ship": "第三幸栄丸",
@@ -1565,6 +1709,40 @@
       "count_range": {
         "min": 0,
         "max": 6
+      },
+      "size_range": null
+    },
+    {
+      "ship": "第三幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "マダイ 0～3 匹  0.7～2.3 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3
+      },
+      "size_range": {
+        "min": 0.7,
+        "max": 2.3,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "第三幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "ハナダイ 0～4 匹",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 4
       },
       "size_range": null
     },
@@ -1978,94 +2156,22 @@
       }
     },
     {
-      "ship": "第三幸栄丸",
+      "ship": "豊丸",
       "area": "鹿島港",
-      "date": "2026/03/17",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "マダイ 0～2 匹  0.8～2.8 kg",
+      "catch_raw": "フグ 5～9 匹 24～40 cm",
       "fish": [
-        "マダイ"
+        "フグ"
       ],
       "count_range": {
-        "min": 0,
-        "max": 2
+        "min": 5,
+        "max": 9
       },
       "size_range": {
-        "min": 0.8,
-        "max": 2.8,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "第三幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "ハナダイ 1～5 匹",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 5
-      },
-      "size_range": null
-    },
-    {
-      "ship": "第三幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "ヒラメ 0～2 匹  0.7～3 kg",
-      "fish": [
-        "ヒラメ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 2
-      },
-      "size_range": {
-        "min": 0.7,
-        "max": 3.0,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "第三幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "ワラサ 10～25 匹  3.8～4.1 kg",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 10,
-        "max": 25
-      },
-      "size_range": {
-        "min": 3.8,
-        "max": 4.1,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "第三幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "ヒラメ 0～3 匹  0.6～2.8 kg",
-      "fish": [
-        "ヒラメ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 3
-      },
-      "size_range": {
-        "min": 0.6,
-        "max": 2.8,
-        "unit": "kg"
+        "min": 24,
+        "max": 40,
+        "unit": "cm"
       }
     },
     {
@@ -2164,23 +2270,35 @@
       }
     },
     {
-      "ship": "豊丸",
-      "area": "鹿島港",
-      "date": "2026/02/14",
-      "month": 2,
-      "catch_raw": "ヤリイカ 0～11 匹 20～50 cm",
+      "ship": "ARCADIA SALTWATER SERVICE",
+      "area": "鹿島市新浜",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ   3.84  kg",
       "fish": [
-        "ヤリイカ"
+        "マダイ"
+      ],
+      "count_range": null,
+      "size_range": {
+        "min": 3.84,
+        "max": 3.84,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "ARCADIA SALTWATER SERVICE",
+      "area": "鹿島市新浜",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ 船中 3匹",
+      "fish": [
+        "ヒラメ"
       ],
       "count_range": {
-        "min": 0,
-        "max": 11
+        "min": 3,
+        "max": 3
       },
-      "size_range": {
-        "min": 20,
-        "max": 50,
-        "unit": "cm"
-      }
+      "size_range": null
     },
     {
       "ship": "ARCADIA SALTWATER SERVICE",
@@ -2297,22 +2415,6 @@
       }
     },
     {
-      "ship": "ARCADIA SALTWATER SERVICE",
-      "area": "鹿島市新浜",
-      "date": "2026/02/01",
-      "month": 2,
-      "catch_raw": "ワラサ   6.5  kg",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": null,
-      "size_range": {
-        "min": 6.5,
-        "max": 6.5,
-        "unit": "kg"
-      }
-    },
-    {
       "ship": "光佑丸",
       "area": "外川港",
       "date": "2026/03/21",
@@ -2404,6 +2506,25 @@
       "size_range": {
         "min": 0.8,
         "max": 1.8,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "大盛丸",
+      "area": "外川港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ 1～6 匹  0.7～2.2 kg",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 6
+      },
+      "size_range": {
+        "min": 0.7,
+        "max": 2.2,
         "unit": "kg"
       }
     },
@@ -2518,25 +2639,6 @@
       "size_range": {
         "min": 0.3,
         "max": 1.0,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "大盛丸",
-      "area": "外川港",
-      "date": "2026/03/03",
-      "month": 3,
-      "catch_raw": "ヒラメ 0～5 匹  0.4～1.1 kg",
-      "fish": [
-        "ヒラメ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 5
-      },
-      "size_range": {
-        "min": 0.4,
-        "max": 1.1,
         "unit": "kg"
       }
     },
@@ -2862,6 +2964,44 @@
     {
       "ship": "梅花丸",
       "area": "飯岡港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～15 匹  0.3～3 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 15
+      },
+      "size_range": {
+        "min": 0.3,
+        "max": 3.0,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "梅花丸",
+      "area": "飯岡港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～17 匹  0.4～2 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 17
+      },
+      "size_range": {
+        "min": 0.4,
+        "max": 2.0,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "梅花丸",
+      "area": "飯岡港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "マダイ 0～7 匹  0.4～2 kg",
@@ -2875,6 +3015,44 @@
       "size_range": {
         "min": 0.4,
         "max": 2.0,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "梅花丸",
+      "area": "飯岡港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "マダイ 0～9 匹  0.3～1 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 9
+      },
+      "size_range": {
+        "min": 0.3,
+        "max": 1.0,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "梅花丸",
+      "area": "飯岡港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "マダイ 0～7 匹  0.4～5.5 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 7
+      },
+      "size_range": {
+        "min": 0.4,
+        "max": 5.5,
         "unit": "kg"
       }
     },
@@ -2974,21 +3152,40 @@
       }
     },
     {
-      "ship": "梅花丸",
+      "ship": "太幸丸",
       "area": "飯岡港",
-      "date": "2026/03/11",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "マダイ 0～2 匹  0.6～3.3 kg",
+      "catch_raw": "マダイ 0～1 匹  0.3～0.8 kg",
       "fish": [
         "マダイ"
       ],
       "count_range": {
         "min": 0,
-        "max": 2
+        "max": 1
       },
       "size_range": {
-        "min": 0.6,
-        "max": 3.3,
+        "min": 0.3,
+        "max": 0.8,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "太幸丸",
+      "area": "飯岡港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ 0～4 匹  0.8～1.8 kg",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 4
+      },
+      "size_range": {
+        "min": 0.8,
+        "max": 1.8,
         "unit": "kg"
       }
     },
@@ -3104,21 +3301,40 @@
       }
     },
     {
-      "ship": "太幸丸",
+      "ship": "三次郎丸",
       "area": "飯岡港",
-      "date": "2026/03/11",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "ヒラメ 0～5 匹 船中 21匹  0.5～3 kg",
+      "catch_raw": "ヒラメ 0～4 匹  0.3～2.7 kg",
       "fish": [
         "ヒラメ"
       ],
       "count_range": {
         "min": 0,
-        "max": 5
+        "max": 4
       },
       "size_range": {
-        "min": 0.5,
-        "max": 3.0,
+        "min": 0.3,
+        "max": 2.7,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "三次郎丸",
+      "area": "飯岡港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～3 匹  0.3～0.7 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3
+      },
+      "size_range": {
+        "min": 0.3,
+        "max": 0.7,
         "unit": "kg"
       }
     },
@@ -3256,44 +3472,6 @@
       }
     },
     {
-      "ship": "三次郎丸",
-      "area": "飯岡港",
-      "date": "2026/03/09",
-      "month": 3,
-      "catch_raw": "アラ 0～2 匹  0.4～5.6 kg",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 2
-      },
-      "size_range": {
-        "min": 0.4,
-        "max": 5.6,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "三次郎丸",
-      "area": "飯岡港",
-      "date": "2026/03/09",
-      "month": 3,
-      "catch_raw": "オニカサゴ 0～2 匹  0.4～1.7 kg",
-      "fish": [
-        "カサゴ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 2
-      },
-      "size_range": {
-        "min": 0.4,
-        "max": 1.7,
-        "unit": "kg"
-      }
-    },
-    {
       "ship": "孝徳丸",
       "area": "片貝港",
       "date": "2026/03/21",
@@ -3410,6 +3588,26 @@
     {
       "ship": "勇幸丸",
       "area": "片貝",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "キンメダイ 6～28 匹 23～38 cm",
+      "fish": [
+        "メダイ",
+        "キンメダイ"
+      ],
+      "count_range": {
+        "min": 6,
+        "max": 28
+      },
+      "size_range": {
+        "min": 23,
+        "max": 38,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "勇幸丸",
+      "area": "片貝",
       "date": "2026/02/22",
       "month": 2,
       "catch_raw": "キンメダイ 1～7 匹 23～35 cm",
@@ -3502,44 +3700,6 @@
       "size_range": {
         "min": 23,
         "max": 40,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "勇幸丸",
-      "area": "片貝",
-      "date": "2026/02/01",
-      "month": 2,
-      "catch_raw": "ハナダイ 1～15 匹 17～37 cm",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 15
-      },
-      "size_range": {
-        "min": 17,
-        "max": 37,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "勇幸丸",
-      "area": "片貝",
-      "date": "2026/02/01",
-      "month": 2,
-      "catch_raw": "イサキ 1～8 匹 22～37 cm",
-      "fish": [
-        "イサキ"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 8
-      },
-      "size_range": {
-        "min": 22,
-        "max": 37,
         "unit": "cm"
       }
     },
@@ -3641,6 +3801,44 @@
     {
       "ship": "敷嶋丸",
       "area": "大原港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "キントキ 3～6 匹 30～40 cm",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 3,
+        "max": 6
+      },
+      "size_range": {
+        "min": 30,
+        "max": 40,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "敷嶋丸",
+      "area": "大原港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "フグ 0～2 匹 18～35 cm",
+      "fish": [
+        "フグ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 18,
+        "max": 35,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "敷嶋丸",
+      "area": "大原港",
       "date": "2026/03/20",
       "month": 3,
       "catch_raw": "フグ 0～4 匹 18～30 cm",
@@ -3710,25 +3908,6 @@
       },
       "size_range": {
         "min": 18,
-        "max": 40,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "敷嶋丸",
-      "area": "大原港",
-      "date": "2026/03/10",
-      "month": 3,
-      "catch_raw": "フグ 5～6 匹 28～40 cm",
-      "fish": [
-        "フグ"
-      ],
-      "count_range": {
-        "min": 5,
-        "max": 6
-      },
-      "size_range": {
-        "min": 28,
         "max": 40,
         "unit": "cm"
       }
@@ -4079,6 +4258,44 @@
     {
       "ship": "春栄丸",
       "area": "大原港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マハタ 0～4 匹  0.4～1.8 kg",
+      "fish": [
+        "マハタ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 4
+      },
+      "size_range": {
+        "min": 0.4,
+        "max": 1.8,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "春栄丸",
+      "area": "大原港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ 0～3 匹  0.7～2.5 kg",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3
+      },
+      "size_range": {
+        "min": 0.7,
+        "max": 2.5,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "春栄丸",
+      "area": "大原港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "マハタ 0～4 匹  0.4～2 kg",
@@ -4331,6 +4548,34 @@
     {
       "ship": "勇盛丸",
       "area": "大原港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マハタ",
+      "fish": [
+        "マハタ"
+      ],
+      "count_range": null,
+      "size_range": null
+    },
+    {
+      "ship": "勇盛丸",
+      "area": "大原港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ   2.27～2.8 kg",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": null,
+      "size_range": {
+        "min": 2.27,
+        "max": 2.8,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "勇盛丸",
+      "area": "大原港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "マハタ",
@@ -4409,34 +4654,6 @@
       "size_range": {
         "min": 1.52,
         "max": 1.65,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "勇盛丸",
-      "area": "大原港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "マハタ",
-      "fish": [
-        "マハタ"
-      ],
-      "count_range": null,
-      "size_range": null
-    },
-    {
-      "ship": "勇盛丸",
-      "area": "大原港",
-      "date": "2026/03/17",
-      "month": 3,
-      "catch_raw": "ヒラメ   1.55～4.26 kg",
-      "fish": [
-        "ヒラメ"
-      ],
-      "count_range": null,
-      "size_range": {
-        "min": 1.55,
-        "max": 4.26,
         "unit": "kg"
       }
     },
@@ -4608,6 +4825,25 @@
     {
       "ship": "第八鶴丸",
       "area": "天津港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヤリイカ 9～25 匹 20～40 cm",
+      "fish": [
+        "ヤリイカ"
+      ],
+      "count_range": {
+        "min": 9,
+        "max": 25
+      },
+      "size_range": {
+        "min": 20,
+        "max": 40,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "第八鶴丸",
+      "area": "天津港",
       "date": "2026/03/20",
       "month": 3,
       "catch_raw": "ヤリイカ 11～16 匹 20～40 cm",
@@ -4702,22 +4938,40 @@
       }
     },
     {
-      "ship": "第八鶴丸",
-      "area": "天津港",
-      "date": "2026/02/22",
-      "month": 2,
-      "catch_raw": "ヤリイカ・スルメイカ 8～22 匹 18～37 cm",
+      "ship": "不動丸",
+      "area": "勝浦川津港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヤリイカ 2～4 匹 25～40 cm",
       "fish": [
-        "ヤリイカ",
-        "スルメイカ"
+        "ヤリイカ"
       ],
       "count_range": {
-        "min": 8,
-        "max": 22
+        "min": 2,
+        "max": 4
       },
       "size_range": {
-        "min": 18,
-        "max": 37,
+        "min": 25,
+        "max": 40,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "不動丸",
+      "area": "勝浦川津港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "サバ 2～40 匹 28～40 cm",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 2,
+        "max": 40
+      },
+      "size_range": {
+        "min": 28,
+        "max": 40,
         "unit": "cm"
       }
     },
@@ -4833,25 +5087,6 @@
         "min": 25,
         "max": 35,
         "unit": "cm"
-      }
-    },
-    {
-      "ship": "不動丸",
-      "area": "勝浦川津港",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "マダイ 0～3 匹  1.5～2.3 kg",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 3
-      },
-      "size_range": {
-        "min": 1.5,
-        "max": 2.3,
-        "unit": "kg"
       }
     },
     {
@@ -5124,6 +5359,25 @@
     {
       "ship": "勘次郎丸",
       "area": "金谷港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アジ 18～77 匹 24～42 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 18,
+        "max": 77
+      },
+      "size_range": {
+        "min": 24,
+        "max": 42,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "勘次郎丸",
+      "area": "金谷港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "アジ 19～51 匹 24～35 cm",
@@ -5198,22 +5452,41 @@
       }
     },
     {
-      "ship": "勘次郎丸",
+      "ship": "光進丸",
       "area": "金谷港",
-      "date": "2026/03/11",
+      "date": "2026/03/21",
       "month": 3,
-      "catch_raw": "アジ 18～53 匹 24～40 cm",
+      "catch_raw": "アジ 3～52 匹 25～38 cm",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 18,
-        "max": 53
+        "min": 3,
+        "max": 52
       },
       "size_range": {
-        "min": 24,
-        "max": 40,
+        "min": 25,
+        "max": 38,
         "unit": "cm"
+      }
+    },
+    {
+      "ship": "光進丸",
+      "area": "金谷港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "トラフグ 0～2 匹  1.1～3.5 kg",
+      "fish": [
+        "フグ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 1.1,
+        "max": 3.5,
+        "unit": "kg"
       }
     },
     {
@@ -5369,44 +5642,6 @@
       }
     },
     {
-      "ship": "光進丸",
-      "area": "金谷港",
-      "date": "2026/03/14",
-      "month": 3,
-      "catch_raw": "アジ 7～52 匹 25～38 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 7,
-        "max": 52
-      },
-      "size_range": {
-        "min": 25,
-        "max": 38,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "光進丸",
-      "area": "金谷港",
-      "date": "2026/03/14",
-      "month": 3,
-      "catch_raw": "トラフグ 0～1 匹  2.2～3.2 kg",
-      "fish": [
-        "フグ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1
-      },
-      "size_range": {
-        "min": 2.2,
-        "max": 3.2,
-        "unit": "kg"
-      }
-    },
-    {
       "ship": "共栄丸",
       "area": "富浦港",
       "date": "2026/03/21",
@@ -5504,6 +5739,25 @@
     {
       "ship": "佐衛美丸",
       "area": "洲崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "イサキ 12～50 匹 25～34 cm",
+      "fish": [
+        "イサキ"
+      ],
+      "count_range": {
+        "min": 12,
+        "max": 50
+      },
+      "size_range": {
+        "min": 25,
+        "max": 34,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "佐衛美丸",
+      "area": "洲崎港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "イサキ 25～50 匹 25～34 cm",
@@ -5578,21 +5832,40 @@
       }
     },
     {
-      "ship": "佐衛美丸",
-      "area": "洲崎港",
-      "date": "2026/03/16",
+      "ship": "浜新丸",
+      "area": "富津港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "イサキ 14～41 匹 25～34 cm",
+      "catch_raw": "スズキ 4～6 匹 53～68 cm",
       "fish": [
-        "イサキ"
+        "不明"
       ],
       "count_range": {
-        "min": 14,
-        "max": 41
+        "min": 4,
+        "max": 6
       },
       "size_range": {
-        "min": 25,
-        "max": 34,
+        "min": 53,
+        "max": 68,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "浜新丸",
+      "area": "富津港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "タチウオ 1～7 匹 70～99 cm",
+      "fish": [
+        "タチウオ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 7
+      },
+      "size_range": {
+        "min": 70,
+        "max": 99,
         "unit": "cm"
       }
     },
@@ -5692,23 +5965,57 @@
       }
     },
     {
-      "ship": "浜新丸",
-      "area": "富津港",
-      "date": "2026/03/07",
+      "ship": "こなや丸",
+      "area": "長浦",
+      "date": "2026/03/21",
       "month": 3,
-      "catch_raw": "スズキ 2～5 匹 48～65 cm",
+      "catch_raw": "ショートアジ 8～48 匹 17～29 cm",
       "fish": [
-        "不明"
+        "アジ"
       ],
       "count_range": {
-        "min": 2,
-        "max": 5
+        "min": 8,
+        "max": 48
       },
       "size_range": {
-        "min": 48,
-        "max": 65,
+        "min": 17,
+        "max": 29,
         "unit": "cm"
       }
+    },
+    {
+      "ship": "こなや丸",
+      "area": "長浦",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "サゴシ・サワラ 1～8 匹 船中 126匹 45～90 cm",
+      "fish": [
+        "サワラ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 8
+      },
+      "size_range": {
+        "min": 45,
+        "max": 90,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "こなや丸",
+      "area": "長浦",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "マダイ 船中 3匹",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 3,
+        "max": 3
+      },
+      "size_range": null
     },
     {
       "ship": "こなや丸",
@@ -5923,82 +6230,6 @@
       "count_range": {
         "min": 23,
         "max": 61
-      },
-      "size_range": {
-        "min": 18,
-        "max": 31,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "こなや丸",
-      "area": "長浦",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "サワラ 0～2 匹 船中 6匹 44～82 cm",
-      "fish": [
-        "サワラ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 2
-      },
-      "size_range": {
-        "min": 44,
-        "max": 82,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "こなや丸",
-      "area": "長浦",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "ワラサ 船中 2匹  3.5～4.3 kg",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 2
-      },
-      "size_range": {
-        "min": 3.5,
-        "max": 4.3,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "こなや丸",
-      "area": "長浦",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "マダイ 船中 1匹  2.3  kg",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 1
-      },
-      "size_range": {
-        "min": 2.3,
-        "max": 2.3,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "こなや丸",
-      "area": "長浦",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "ショートアジ 20～67 匹 18～31 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 20,
-        "max": 67
       },
       "size_range": {
         "min": 18,
@@ -6233,6 +6464,63 @@
     {
       "ship": "吉野屋",
       "area": "浦安",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "トラフグ 0～2 匹  1.2～3.5 kg",
+      "fish": [
+        "フグ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 1.2,
+        "max": 3.5,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "吉野屋",
+      "area": "浦安",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アジ 10～68 匹 15～25 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 10,
+        "max": 68
+      },
+      "size_range": {
+        "min": 15,
+        "max": 25,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "吉野屋",
+      "area": "浦安",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "カサゴ 10～53 匹 10～25 cm",
+      "fish": [
+        "カサゴ"
+      ],
+      "count_range": {
+        "min": 10,
+        "max": 53
+      },
+      "size_range": {
+        "min": 10,
+        "max": 25,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "吉野屋",
+      "area": "浦安",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "トラフグ 0～1 匹  1.8～3.8 kg",
@@ -6455,82 +6743,6 @@
       "size_range": {
         "min": 12,
         "max": 23,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "吉野屋",
-      "area": "浦安",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "アジ 15～73 匹 15～25 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 15,
-        "max": 73
-      },
-      "size_range": {
-        "min": 15,
-        "max": 25,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "吉野屋",
-      "area": "浦安",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "トラフグ 0～1 匹  0.4～3.3 kg",
-      "fish": [
-        "フグ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1
-      },
-      "size_range": {
-        "min": 0.4,
-        "max": 3.3,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "吉野屋",
-      "area": "浦安",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "カワハギ 3～10 匹 14～25 cm",
-      "fish": [
-        "カワハギ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 10
-      },
-      "size_range": {
-        "min": 14,
-        "max": 25,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "吉野屋",
-      "area": "浦安",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "アジ 3～31 匹 23～35 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 31
-      },
-      "size_range": {
-        "min": 23,
-        "max": 35,
         "unit": "cm"
       }
     },
@@ -7031,6 +7243,44 @@
     {
       "ship": "かめだや",
       "area": "羽田",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "シロギス 35～139 匹 14～23 cm",
+      "fish": [
+        "シロギス"
+      ],
+      "count_range": {
+        "min": 35,
+        "max": 139
+      },
+      "size_range": {
+        "min": 14,
+        "max": 23,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "かめだや",
+      "area": "羽田",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "LTアジ 15～64 匹 16～29 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 15,
+        "max": 64
+      },
+      "size_range": {
+        "min": 16,
+        "max": 29,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "かめだや",
+      "area": "羽田",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "アジ 18～63 匹 16～27 cm",
@@ -7143,20 +7393,39 @@
       }
     },
     {
-      "ship": "かめだや",
-      "area": "羽田",
-      "date": "2026/03/12",
+      "ship": "船宿 まる八",
+      "area": "平和島",
+      "date": "2026/03/21",
       "month": 3,
-      "catch_raw": "LTアジ 40～116 匹 17～28 cm",
+      "catch_raw": "シロギス 3～35 匹 14～25 cm",
+      "fish": [
+        "シロギス"
+      ],
+      "count_range": {
+        "min": 3,
+        "max": 35
+      },
+      "size_range": {
+        "min": 14,
+        "max": 25,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "船宿 まる八",
+      "area": "平和島",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "アジ 10～48 匹 16～28 cm",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 40,
-        "max": 116
+        "min": 10,
+        "max": 48
       },
       "size_range": {
-        "min": 17,
+        "min": 16,
         "max": 28,
         "unit": "cm"
       }
@@ -7234,25 +7503,6 @@
       "size_range": {
         "min": 16,
         "max": 28,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "船宿 まる八",
-      "area": "平和島",
-      "date": "2026/03/14",
-      "month": 3,
-      "catch_raw": "アジ 10～71 匹 16～30 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 10,
-        "max": 71
-      },
-      "size_range": {
-        "min": 16,
-        "max": 30,
         "unit": "cm"
       }
     },
@@ -7487,6 +7737,59 @@
     {
       "ship": "三喜丸釣船店",
       "area": "小柴港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アジ 11～44 匹 16～27 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 11,
+        "max": 44
+      },
+      "size_range": {
+        "min": 16,
+        "max": 27,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "三喜丸釣船店",
+      "area": "小柴港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "モンゴウイカ 0～3 匹  0.7～2 kg",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3
+      },
+      "size_range": {
+        "min": 0.7,
+        "max": 2.0,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "三喜丸釣船店",
+      "area": "小柴港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "シリヤケイカ 0～2 匹",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": null
+    },
+    {
+      "ship": "三喜丸釣船店",
+      "area": "小柴港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "LTアジ 8～91 匹 16～27 cm",
@@ -7699,25 +8002,6 @@
         "max": 12
       },
       "size_range": null
-    },
-    {
-      "ship": "三喜丸釣船店",
-      "area": "小柴港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "モンゴウイカ 1～4 匹  0.7～1.5 kg",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 4
-      },
-      "size_range": {
-        "min": 0.7,
-        "max": 1.5,
-        "unit": "kg"
-      }
     },
     {
       "ship": "蒲谷丸",
@@ -8735,6 +9019,63 @@
     {
       "ship": "米元釣船店",
       "area": "金沢八景",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ショートタチウオ 6～31 匹 65～90 cm",
+      "fish": [
+        "タチウオ"
+      ],
+      "count_range": {
+        "min": 6,
+        "max": 31
+      },
+      "size_range": {
+        "min": 65,
+        "max": 90,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "米元釣船店",
+      "area": "金沢八景",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "LTアジ 3～16 匹 17～27 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 3,
+        "max": 16
+      },
+      "size_range": {
+        "min": 17,
+        "max": 27,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "米元釣船店",
+      "area": "金沢八景",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～2 匹  0.4～1.8 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 0.4,
+        "max": 1.8,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "米元釣船店",
+      "area": "金沢八景",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "マダイ 0～5 匹  0.5～1.8 kg",
@@ -8901,44 +9242,6 @@
         "min": 0.4,
         "max": 0.8,
         "unit": "kg"
-      }
-    },
-    {
-      "ship": "米元釣船店",
-      "area": "金沢八景",
-      "date": "2026/03/14",
-      "month": 3,
-      "catch_raw": "マダイ 1～5 匹  0.4～1 kg",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 5
-      },
-      "size_range": {
-        "min": 0.4,
-        "max": 1.0,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "米元釣船店",
-      "area": "金沢八景",
-      "date": "2026/03/14",
-      "month": 3,
-      "catch_raw": "ショートLTアジ 46～57 匹 17～26 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 46,
-        "max": 57
-      },
-      "size_range": {
-        "min": 17,
-        "max": 26,
-        "unit": "cm"
       }
     },
     {
@@ -10332,6 +10635,44 @@
     {
       "ship": "小柴丸",
       "area": "金沢八景",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "イシモチ 11～44 匹 18～30 cm",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 11,
+        "max": 44
+      },
+      "size_range": {
+        "min": 18,
+        "max": 30,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "小柴丸",
+      "area": "金沢八景",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アジ 11～24 匹 16～30 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 11,
+        "max": 24
+      },
+      "size_range": {
+        "min": 16,
+        "max": 30,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "小柴丸",
+      "area": "金沢八景",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "イシモチ 6～27 匹 18～30 cm",
@@ -10444,21 +10785,21 @@
       }
     },
     {
-      "ship": "小柴丸",
-      "area": "金沢八景",
-      "date": "2026/03/15",
+      "ship": "こうゆう丸",
+      "area": "新安浦港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "イシモチ 11～31 匹 20～32 cm",
+      "catch_raw": "ショートタチウオ 0～5 匹 85～125 cm",
       "fish": [
-        "不明"
+        "タチウオ"
       ],
       "count_range": {
-        "min": 11,
-        "max": 31
+        "min": 0,
+        "max": 5
       },
       "size_range": {
-        "min": 20,
-        "max": 32,
+        "min": 85,
+        "max": 125,
         "unit": "cm"
       }
     },
@@ -10550,25 +10891,6 @@
       "size_range": {
         "min": 85,
         "max": 117,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "こうゆう丸",
-      "area": "新安浦港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "ショートタチウオ 0～1 匹 船中 3匹 90～110 cm",
-      "fish": [
-        "タチウオ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1
-      },
-      "size_range": {
-        "min": 90,
-        "max": 110,
         "unit": "cm"
       }
     },
@@ -10784,6 +11106,25 @@
     {
       "ship": "鴨下丸kawana",
       "area": "磯子港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～5 匹  0.5～2.4 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 5
+      },
+      "size_range": {
+        "min": 0.5,
+        "max": 2.4,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "鴨下丸kawana",
+      "area": "磯子港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "マダイ 0～3 匹  0.4～1.2 kg",
@@ -10850,22 +11191,61 @@
       "size_range": null
     },
     {
-      "ship": "鴨下丸kawana",
-      "area": "磯子港",
-      "date": "2026/03/16",
+      "ship": "山下丸",
+      "area": "久比里港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "マダイ 1～8 匹  0.4～2 kg",
+      "catch_raw": "カワハギ 0～10 匹 17～26 cm",
       "fish": [
-        "マダイ"
+        "カワハギ"
       ],
       "count_range": {
-        "min": 1,
-        "max": 8
+        "min": 0,
+        "max": 10
       },
       "size_range": {
-        "min": 0.4,
-        "max": 2.0,
+        "min": 17,
+        "max": 26,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "山下丸",
+      "area": "久比里港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "イカ 3～7 匹  0.3～0.8 kg",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 3,
+        "max": 7
+      },
+      "size_range": {
+        "min": 0.3,
+        "max": 0.8,
         "unit": "kg"
+      }
+    },
+    {
+      "ship": "山下丸",
+      "area": "久比里港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アマダイ 4～5 匹 25～50 cm",
+      "fish": [
+        "マダイ",
+        "アマダイ"
+      ],
+      "count_range": {
+        "min": 4,
+        "max": 5
+      },
+      "size_range": {
+        "min": 25,
+        "max": 50,
+        "unit": "cm"
       }
     },
     {
@@ -11044,41 +11424,40 @@
       }
     },
     {
-      "ship": "山下丸",
+      "ship": "巳之助丸",
       "area": "久比里港",
-      "date": "2026/03/15",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "カワハギ 0～10 匹 16～28.5 cm",
+      "catch_raw": "カワハギ 0～7 匹 17～29 cm",
       "fish": [
         "カワハギ"
       ],
       "count_range": {
         "min": 0,
-        "max": 10
+        "max": 7
       },
       "size_range": {
-        "min": 5,
-        "max": 5,
+        "min": 17,
+        "max": 29,
         "unit": "cm"
       }
     },
     {
-      "ship": "山下丸",
+      "ship": "巳之助丸",
       "area": "久比里港",
-      "date": "2026/03/15",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "アマダイ 1～4 匹 20～47 cm",
+      "catch_raw": "アジ 7～47 匹 21～40 cm",
       "fish": [
-        "マダイ",
-        "アマダイ"
+        "アジ"
       ],
       "count_range": {
-        "min": 1,
-        "max": 4
+        "min": 7,
+        "max": 47
       },
       "size_range": {
-        "min": 20,
-        "max": 47,
+        "min": 21,
+        "max": 40,
         "unit": "cm"
       }
     },
@@ -11251,44 +11630,6 @@
       },
       "size_range": {
         "min": 27,
-        "max": 38,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "巳之助丸",
-      "area": "久比里港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "カワハギ 3～5 匹 17～28 cm",
-      "fish": [
-        "カワハギ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 5
-      },
-      "size_range": {
-        "min": 17,
-        "max": 28,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "巳之助丸",
-      "area": "久比里港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "アジ 10～40 匹 22～38 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 10,
-        "max": 40
-      },
-      "size_range": {
-        "min": 22,
         "max": 38,
         "unit": "cm"
       }
@@ -11951,6 +12292,25 @@
     {
       "ship": "大和丸",
       "area": "小網代港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マルイカ 20～81 匹 15～30 cm",
+      "fish": [
+        "マルイカ"
+      ],
+      "count_range": {
+        "min": 20,
+        "max": 81
+      },
+      "size_range": {
+        "min": 15,
+        "max": 30,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "大和丸",
+      "area": "小網代港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "マルイカ 1～23 匹 15～25 cm",
@@ -12021,25 +12381,6 @@
       "size_range": {
         "min": 15,
         "max": 25,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "大和丸",
-      "area": "小網代港",
-      "date": "2026/03/11",
-      "month": 3,
-      "catch_raw": "マルイカ 2～22 匹 15～26 cm",
-      "fish": [
-        "マルイカ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 22
-      },
-      "size_range": {
-        "min": 15,
-        "max": 26,
         "unit": "cm"
       }
     },
@@ -12448,6 +12789,44 @@
     {
       "ship": "はら丸",
       "area": "長井港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "ヤリイカ 9～18 匹 25～45 cm",
+      "fish": [
+        "ヤリイカ"
+      ],
+      "count_range": {
+        "min": 9,
+        "max": 18
+      },
+      "size_range": {
+        "min": 25,
+        "max": 45,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "はら丸",
+      "area": "長井港",
+      "date": "2026/03/21",
+      "month": 3,
+      "catch_raw": "マルイカ 0～5 匹 15～30 cm",
+      "fish": [
+        "マルイカ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 5
+      },
+      "size_range": {
+        "min": 15,
+        "max": 30,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "はら丸",
+      "area": "長井港",
       "date": "2026/03/20",
       "month": 3,
       "catch_raw": "スルメイカ 3～18 匹 25～40 cm",
@@ -12579,40 +12958,21 @@
       }
     },
     {
-      "ship": "はら丸",
-      "area": "長井港",
-      "date": "2026/03/08",
+      "ship": "栃木丸",
+      "area": "長井新宿港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "ヤリイカ 5～12 匹 30～45 cm",
+      "catch_raw": "ヤリイカ 0～2 匹 25～35 cm",
       "fish": [
         "ヤリイカ"
       ],
       "count_range": {
-        "min": 5,
-        "max": 12
+        "min": 0,
+        "max": 2
       },
       "size_range": {
-        "min": 30,
-        "max": 45,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "はら丸",
-      "area": "長井港",
-      "date": "2026/03/08",
-      "month": 3,
-      "catch_raw": "マルイカ 1～5 匹 13～28 cm",
-      "fish": [
-        "マルイカ"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 5
-      },
-      "size_range": {
-        "min": 13,
-        "max": 28,
+        "min": 25,
+        "max": 35,
         "unit": "cm"
       }
     },
@@ -12675,13 +13035,13 @@
       }
     },
     {
-      "ship": "栃木丸",
-      "area": "長井新宿港",
-      "date": "2026/03/17",
+      "ship": "儀兵衛丸",
+      "area": "長井港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "スルメイカ 1～8 匹 25～35 cm",
+      "catch_raw": "ヤリイカ 1～8 匹 25～45 cm",
       "fish": [
-        "スルメイカ"
+        "ヤリイカ"
       ],
       "count_range": {
         "min": 1,
@@ -12689,7 +13049,26 @@
       },
       "size_range": {
         "min": 25,
-        "max": 35,
+        "max": 45,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "儀兵衛丸",
+      "area": "長井港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "カワハギ 0～6 匹 19.5～24 cm",
+      "fish": [
+        "カワハギ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 6
+      },
+      "size_range": {
+        "min": 5,
+        "max": 24,
         "unit": "cm"
       }
     },
@@ -12842,63 +13221,6 @@
       "size_range": {
         "min": 17,
         "max": 21,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "儀兵衛丸",
-      "area": "長井港",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "ヤリイカ 0～4 匹 25～45 cm",
-      "fish": [
-        "ヤリイカ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 4
-      },
-      "size_range": {
-        "min": 25,
-        "max": 45,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "儀兵衛丸",
-      "area": "長井港",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "カワハギ 0～5 匹 16～24 cm",
-      "fish": [
-        "カワハギ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 5
-      },
-      "size_range": {
-        "min": 16,
-        "max": 24,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "儀兵衛丸",
-      "area": "長井港",
-      "date": "2026/03/15",
-      "month": 3,
-      "catch_raw": "カワハギ 0～2 匹 19.5～24 cm",
-      "fish": [
-        "カワハギ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 2
-      },
-      "size_range": {
-        "min": 5,
-        "max": 24,
         "unit": "cm"
       }
     },
@@ -13174,6 +13496,64 @@
     {
       "ship": "ちがさき丸",
       "area": "茅ヶ崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アマダイ・シロアマダイ 0～4 匹 22～41 cm",
+      "fish": [
+        "マダイ",
+        "アマダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 4
+      },
+      "size_range": {
+        "min": 22,
+        "max": 41,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "ちがさき丸",
+      "area": "茅ヶ崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "クロムツ 0～11 匹 25～47 cm",
+      "fish": [
+        "クロムツ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 11
+      },
+      "size_range": {
+        "min": 25,
+        "max": 47,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "ちがさき丸",
+      "area": "茅ヶ崎港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～2 匹  0.6～1.2 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2
+      },
+      "size_range": {
+        "min": 0.6,
+        "max": 1.2,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "ちがさき丸",
+      "area": "茅ヶ崎港",
       "date": "2026/03/21",
       "month": 3,
       "catch_raw": "アマダイ 0～6 匹 26～41 cm",
@@ -13423,56 +13803,91 @@
       }
     },
     {
-      "ship": "ちがさき丸",
-      "area": "茅ヶ崎港",
-      "date": "2026/03/15",
+      "ship": "庄治郎丸",
+      "area": "平塚港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "アマダイ 0～4 匹 26～38 cm",
+      "catch_raw": "アジ 5～17 匹 20～35 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 5,
+        "max": 17
+      },
+      "size_range": {
+        "min": 20,
+        "max": 35,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "庄治郎丸",
+      "area": "平塚港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "オオスジハタ   1.4  kg",
+      "fish": [
+        "不明"
+      ],
+      "count_range": null,
+      "size_range": {
+        "min": 1.4,
+        "max": 1.4,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "庄治郎丸",
+      "area": "平塚港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アマダイ 0～3 匹 20～30 cm",
       "fish": [
         "マダイ",
         "アマダイ"
       ],
       "count_range": {
         "min": 0,
-        "max": 4
+        "max": 3
       },
       "size_range": {
-        "min": 26,
-        "max": 38,
+        "min": 20,
+        "max": 30,
         "unit": "cm"
       }
     },
     {
-      "ship": "ちがさき丸",
-      "area": "茅ヶ崎港",
-      "date": "2026/03/15",
+      "ship": "庄治郎丸",
+      "area": "平塚港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "マダイ 0～1 匹  0.7  kg",
+      "catch_raw": "マルイカ 1～17 匹 20～35 cm",
       "fish": [
-        "マダイ"
+        "マルイカ"
       ],
       "count_range": {
-        "min": 0,
-        "max": 1
+        "min": 1,
+        "max": 17
       },
       "size_range": {
-        "min": 0.7,
-        "max": 0.7,
-        "unit": "kg"
+        "min": 20,
+        "max": 35,
+        "unit": "cm"
       }
     },
     {
-      "ship": "ちがさき丸",
-      "area": "茅ヶ崎港",
-      "date": "2026/03/15",
+      "ship": "庄治郎丸",
+      "area": "平塚港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "アジ 11～21 匹 25～38 cm",
+      "catch_raw": "アジ 30～66 匹 25～38 cm",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 11,
-        "max": 21
+        "min": 30,
+        "max": 66
       },
       "size_range": {
         "min": 25,
@@ -13481,21 +13896,21 @@
       }
     },
     {
-      "ship": "ちがさき丸",
-      "area": "茅ヶ崎港",
-      "date": "2026/03/15",
+      "ship": "庄治郎丸",
+      "area": "平塚港",
+      "date": "2026/03/22",
       "month": 3,
-      "catch_raw": "イカ 0～2 匹 23～41 cm",
+      "catch_raw": "クロムツ 7～8 匹 25～37 cm",
       "fish": [
-        "不明"
+        "クロムツ"
       ],
       "count_range": {
-        "min": 0,
-        "max": 2
+        "min": 7,
+        "max": 8
       },
       "size_range": {
-        "min": 23,
-        "max": 41,
+        "min": 25,
+        "max": 37,
         "unit": "cm"
       }
     },
@@ -14002,95 +14417,6 @@
       }
     },
     {
-      "ship": "庄治郎丸",
-      "area": "平塚港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "アジ 6～10 匹",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 6,
-        "max": 10
-      },
-      "size_range": null
-    },
-    {
-      "ship": "庄治郎丸",
-      "area": "平塚港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "マダイ 0～1 匹  0.9～1 kg",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1
-      },
-      "size_range": {
-        "min": 0.9,
-        "max": 1.0,
-        "unit": "kg"
-      }
-    },
-    {
-      "ship": "庄治郎丸",
-      "area": "平塚港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "アマダイ 0～4 匹 20～42 cm",
-      "fish": [
-        "マダイ",
-        "アマダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 4
-      },
-      "size_range": {
-        "min": 20,
-        "max": 42,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "庄治郎丸",
-      "area": "平塚港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "アジ 26～57 匹 23～32 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 26,
-        "max": 57
-      },
-      "size_range": {
-        "min": 23,
-        "max": 32,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "庄治郎丸",
-      "area": "平塚港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "ヒラメ   3  kg",
-      "fish": [
-        "ヒラメ"
-      ],
-      "count_range": null,
-      "size_range": {
-        "min": 3.0,
-        "max": 3.0,
-        "unit": "kg"
-      }
-    },
-    {
       "ship": "恒丸",
       "area": "大磯港",
       "date": "2026/03/21",
@@ -14143,6 +14469,25 @@
       },
       "size_range": {
         "min": 22,
+        "max": 36,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "とうふや丸",
+      "area": "大磯港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "アジ 30～77 匹 23～36 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 30,
+        "max": 77
+      },
+      "size_range": {
+        "min": 23,
         "max": 36,
         "unit": "cm"
       }
@@ -14270,25 +14615,6 @@
       }
     },
     {
-      "ship": "とうふや丸",
-      "area": "大磯港",
-      "date": "2026/03/06",
-      "month": 3,
-      "catch_raw": "アジ 35～53 匹 24～37 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 35,
-        "max": 53
-      },
-      "size_range": {
-        "min": 24,
-        "max": 37,
-        "unit": "cm"
-      }
-    },
-    {
       "ship": "小峯丸",
       "area": "寒川港",
       "date": "2026/03/20",
@@ -14399,6 +14725,78 @@
       "size_range": {
         "min": 35,
         "max": 68,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "平安丸",
+      "area": "小田原早川港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ビシアジ 38～54 匹 22～33 cm",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 38,
+        "max": 54
+      },
+      "size_range": {
+        "min": 22,
+        "max": 33,
+        "unit": "cm"
+      }
+    },
+    {
+      "ship": "平安丸",
+      "area": "小田原早川港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "ヒラメ 船中 1匹",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 1
+      },
+      "size_range": null
+    },
+    {
+      "ship": "平安丸",
+      "area": "小田原早川港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "マダイ 0～1 匹 船中 2匹  0.8～1.3 kg",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 1
+      },
+      "size_range": {
+        "min": 0.8,
+        "max": 1.3,
+        "unit": "kg"
+      }
+    },
+    {
+      "ship": "平安丸",
+      "area": "小田原早川港",
+      "date": "2026/03/22",
+      "month": 3,
+      "catch_raw": "クロムツ 1～3 匹 25～40 cm",
+      "fish": [
+        "クロムツ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 3
+      },
+      "size_range": {
+        "min": 25,
+        "max": 40,
         "unit": "cm"
       }
     },
@@ -14648,59 +15046,6 @@
         "max": 0.8,
         "unit": "kg"
       }
-    },
-    {
-      "ship": "平安丸",
-      "area": "小田原早川港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "ヤリイカ 3～10 匹 22～45 cm",
-      "fish": [
-        "ヤリイカ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 10
-      },
-      "size_range": {
-        "min": 22,
-        "max": 45,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "平安丸",
-      "area": "小田原早川港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "ビシアジ 32～65 匹 22～33 cm",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 32,
-        "max": 65
-      },
-      "size_range": {
-        "min": 22,
-        "max": 33,
-        "unit": "cm"
-      }
-    },
-    {
-      "ship": "平安丸",
-      "area": "小田原早川港",
-      "date": "2026/03/16",
-      "month": 3,
-      "catch_raw": "ワラサ 船中 2匹",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 2
-      },
-      "size_range": null
     },
     {
       "ship": "秀正丸",
