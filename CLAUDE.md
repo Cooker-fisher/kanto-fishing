@@ -22,7 +22,7 @@
 | ホスティング | GitHub Pages |
 | 独自ドメイン | funatsuri-yoso.com（お名前.comで取得・初年度0円） |
 | DNS | お名前.com（01〜04.dnsv.jp）→ AレコードはGitHub Pages IP |
-| HTTPS | Enforce HTTPS（DNS反映後に有効化予定） |
+| HTTPS | Enforce HTTPS 有効化済み |
 | 自動更新 | GitHub Actions（毎日16:30 JST / cron: '30 7 * * *'） |
 | 手動実行 | GitHub ActionsタブのRun workflowボタン（workflow_dispatch設定済み） |
 
@@ -33,18 +33,23 @@
 ```
 kanto-fishing/
 ├── crawler.py          # メインクローラー・HTML生成
+├── discover_ships.py   # 釣りビジョンから船宿SIDを自動収集（月1実行）
+├── ships.json          # 収集済み船宿一覧（discover_ships.py が生成）
 ├── catches.json        # 最新釣果データ（毎日上書き）
-├── history.json        # 週次・月次集計データ（蓄積）※作成中
+├── history.json        # 週次・月次集計データ（蓄積）
 ├── history_crawl.py    # 過去データ一括取得スクリプト（全ページ遡り）
 ├── index.html          # トップページ（自動生成）
 ├── calendar.html       # 釣りものカレンダーページ（自動生成）
-├── fish/               # 魚種別ページ（自動生成）
+├── fish/               # 魚種別ページ（自動生成・1件以上の魚種）
 │   ├── アジ.html
 │   ├── マダイ.html
-│   └── ...（5件以上の魚種のみ生成）
+│   └── ...
+├── area/               # エリア別ページ（自動生成）
 ├── CNAME               # funatsuri-yoso.com
+├── .claude/
+│   └── launch.json     # 開発サーバー設定（Static File Server / Crawler build）
 └── .github/workflows/
-    └── crawl.yml       # GitHub Actions定義
+    └── crawl.yml       # GitHub Actions定義（毎日+月1日に船宿発見）
 ```
 
 ---
@@ -64,8 +69,9 @@ kanto-fishing/
 | pageID=77 | 約2年前（2024年8月） |
 | 全取得時間 | 120船宿 × 全ページ ≒ 80〜120分 |
 
-**クロール対象**: 神奈川・東京・千葉・茨城の約120船宿  
-**対応エリア**: 金沢八景・横浜・走水・久里浜・久比里・松輪・長井・葉山・茅ヶ崎・平塚・深川・羽田・浦安・鹿島・外川・飯岡・片貝・大原・御宿・勝浦・勝山・保田・金谷・富津
+**クロール対象**: 神奈川・東京・千葉・茨城の約89船宿（ships.jsonから自動読み込み）
+**船宿自動発見**: discover_ships.py が月1回 fishing-v.jp をスクレイプして ships.json を更新
+**対応エリア**: 茨城（日立久慈港・波崎港・鹿島港）、千葉外房（外川・飯岡・片貝・大原・御宿・勝浦）、千葉内房（勝山・保田・金谷・富津）、千葉東京湾奥（浦安）、東京（羽田・平和島）、神奈川東京湾（金沢八景・久比里・久里浜）、神奈川相模湾（松輪・長井・葉山・茅ヶ崎・平塚）
 
 ---
 
@@ -76,7 +82,7 @@ kanto-fishing/
 | `crawl(ship)` | 1船宿のpageID=1を取得 |
 | `update_history(catches, history)` | 当週・当月データをhistory.jsonに集計・書き込み |
 | `build_html(data, ts, n)` | index.htmlを生成 |
-| `build_fish_pages(data)` | fish/*.htmlを生成（5件以上の魚種のみ） |
+| `build_fish_pages(data)` | fish/*.htmlを生成（1件以上の魚種） |
 | `build_calendar_page(data)` | calendar.htmlを生成 |
 | `calc_targets(data)` | 今週末の狙い目TOP5を複合スコアで計算 |
 | `calc_composite_score(...)` | 6要素複合スコア（0〜100）を算出 |
@@ -146,13 +152,17 @@ crawler.py内に定義済み。各魚種の以下の情報を持つ：
 2. ✅ 魚種カードをタップでランキング表示（船宿別TOP10・バーグラフ）
 3. ✅ 今週末の狙い目セクション（★評価＋理由タグ＋100パターンコメント）
 4. ✅ 複合スコアリング（件数25%・匹数20%・昨年比20%・先週比15%・シーズン15%・サイズ5%）
-5. ✅ 魚種カードに昨年比バッジ・平均匹数・前週比トレンド表示（カレンダー廃止）
-6. ✅ 魚種別ページ（fish/*.html・SEOタイトル・metadescription）
+5. ✅ 魚種カードに昨年比バッジ・平均匹数・前週比トレンド表示
+6. ✅ 魚種別ページ（fish/*.html・SEOタイトル・metadescription・1件以上で生成）
 7. ✅ history.jsonへの自動集計（毎クロール時に当週・当月データ更新）
 8. ✅ SEASON_DATAに20魚種以上（マルイカ・クロムツ・サワラ・メダイ・マハタ・カンパチ追加済み）
 9. ✅ 釣りものカレンダー（calendar.html・14魚種×12ヶ月）
 10. ✅ GitHub Actions手動実行ボタン（workflow_dispatch）
-11. ✅ ナビゲーションの「エリアから探す」をドロップダウンメニュー化
+11. ✅ ナビゲーションの「エリアから探す」をドロップダウンメニュー化（都道府県グループ別）
+12. ✅ 最新釣果エリアフィルターを都道府県グループ別 + 港ページへリンク化
+13. ✅ discover_ships.py による船宿SID自動収集（26→89船宿に拡大）
+14. ✅ ships.json 自動読み込み（crawler.py起動時に上書き）
+15. ✅ crawl.yml 月1日に discover_ships.py 実行（船宿リスト自動更新）
 
 ---
 
@@ -161,8 +171,7 @@ crawler.py内に定義済み。各魚種の以下の情報を持つ：
 ### 優先度高
 - [ ] history_crawl.pyで過去2年分のデータ一括取得（history.jsonを充実させる）
 - [ ] 魚種別ページに「今週vs昨年同週比較」テーブル表示（出船数・平均匹数・Max匹数）
-- [ ] Enforce HTTPS有効化（DNS反映確認後）
-- [ ] Google AdSense申請
+- [ ] Google AdSense審査結果確認・承認後の動作確認（申請済み 2026/03/21）
 
 ### 優先度中
 - [ ] X（Twitter）自動投稿（毎日16:30に狙い目を投稿）

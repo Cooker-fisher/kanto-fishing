@@ -16,43 +16,131 @@ from urllib.error import URLError
 from html.parser import HTMLParser
 
 SHIPS = [
-    {"area": "外川",         "name": "孝進丸",       "sid": 749},
-    {"area": "片貝",         "name": "勇幸丸",       "sid": 58},
-    {"area": "大原",         "name": "義之丸",       "sid": 61},
-    {"area": "勝浦松部港",   "name": "和八丸",       "sid": 1480},
-    {"area": "勝山",         "name": "新盛丸",       "sid": 121},
-    {"area": "富津",         "name": "川崎丸",       "sid": 141},
-    {"area": "江戸川放水路", "name": "たかはし遊船", "sid": 145},
-    {"area": "浦安",         "name": "吉久",         "sid": 147},
-    {"area": "金沢八景",     "name": "一之瀬丸",     "sid": 186},
-    {"area": "金沢漁港",     "name": "忠彦丸",       "sid": 185},
-    {"area": "金沢八景",     "name": "米元釣船店",   "sid": 188},
-    {"area": "金沢八景",     "name": "野毛屋",       "sid": 192},
-    {"area": "久比里",       "name": "山下丸",       "sid": 209},
-    {"area": "久比里",       "name": "山天丸",       "sid": 211},
-    {"area": "久比里",       "name": "みのすけ丸",   "sid": 210},
-    {"area": "久里浜",       "name": "大正丸",       "sid": 689},
-    {"area": "松輪",         "name": "瀬戸丸",       "sid": 659},
-    {"area": "長井",         "name": "はら丸",       "sid": 218},
-    {"area": "長井",         "name": "丸八丸",       "sid": 12224},
-    {"area": "葉山鐙摺",     "name": "愛正丸",       "sid": 232},
-    {"area": "腰越",         "name": "飯岡丸",       "sid": 235},
-    {"area": "茅ヶ崎",       "name": "ちがさき丸",   "sid": 795},
-    {"area": "平塚",         "name": "庄三郎丸",     "sid": 244},
-    {"area": "小田原早川",   "name": "平安丸",       "sid": 1700},
-    {"area": "宇佐美",       "name": "秀正丸",       "sid": 270},
-    {"area": "戸田",         "name": "福将丸",       "sid": 1875},
+    # ── 茨城 ──────────────────────────────────
+    {"area": "日立久慈港",         "name": "日正丸",              "sid": 11},
+    {"area": "日立久慈港",         "name": "大貫丸",              "sid": 12},
+    {"area": "日立久慈港",         "name": "宮田丸",              "sid": 13},
+    {"area": "日立久慈港",         "name": "弘漁丸",              "sid": 18},
+    {"area": "日立久慈港",         "name": "豊丸",                "sid": 1441},
+    {"area": "日立久慈港",         "name": "明進丸",              "sid": 11837},
+    {"area": "波崎港",             "name": "信栄丸",              "sid": 35},
+    {"area": "波崎港",             "name": "仁徳丸",              "sid": 36},
+    {"area": "鹿島港",             "name": "幸栄丸",              "sid": 496},
+    {"area": "鹿島港",             "name": "第三幸栄丸",          "sid": 27},
+    {"area": "鹿島港",             "name": "豊丸",                "sid": 1095},
+    {"area": "鹿島市新浜",         "name": "ARCADIA SALTWATER SERVICE", "sid": 12274},
+    # ── 千葉・外房 ────────────────────────────
+    {"area": "外川港",             "name": "光佑丸",              "sid": 45},
+    {"area": "外川港",             "name": "大盛丸",              "sid": 46},
+    {"area": "外川",               "name": "孝進丸",              "sid": 749},   # 不定期
+    {"area": "飯岡港",             "name": "幸丸",                "sid": 48},
+    {"area": "飯岡港",             "name": "梅花丸",              "sid": 52},
+    {"area": "飯岡港",             "name": "太幸丸",              "sid": 53},
+    {"area": "飯岡港",             "name": "三次郎丸",            "sid": 54},
+    {"area": "片貝港",             "name": "孝徳丸",              "sid": 1946},
+    {"area": "片貝",               "name": "勇幸丸",              "sid": 58},    # 不定期
+    {"area": "大原港",             "name": "第三松栄丸",          "sid": 63},
+    {"area": "大原港",             "name": "敷嶋丸",              "sid": 66},
+    {"area": "大原港",             "name": "つる丸",              "sid": 71},
+    {"area": "大原港",             "name": "明広丸",              "sid": 76},
+    {"area": "大原港",             "name": "春栄丸",              "sid": 754},
+    {"area": "大原港",             "name": "新幸丸",              "sid": 1394},
+    {"area": "大原港",             "name": "勇盛丸",              "sid": 5011},
+    {"area": "大原",               "name": "義之丸",              "sid": 61},    # 不定期
+    {"area": "天津港",             "name": "第八鶴丸",            "sid": 1412},
+    {"area": "勝浦川津港",         "name": "不動丸",              "sid": 796},
+    {"area": "勝浦松部港",         "name": "和八丸",              "sid": 1480},  # 不定期
+    # ── 千葉・内房 ────────────────────────────
+    {"area": "勝山港",             "name": "新盛丸",              "sid": 121},   # 不定期
+    {"area": "保田港",             "name": "村井丸",              "sid": 123},
+    {"area": "金谷港",             "name": "勘次郎丸",            "sid": 773},
+    {"area": "金谷港",             "name": "光進丸",              "sid": 127},
+    {"area": "富浦港",             "name": "共栄丸",              "sid": 797},
+    {"area": "洲崎港",             "name": "佐衛美丸",            "sid": 1464},
+    {"area": "富津港",             "name": "浜新丸",              "sid": 140},
+    {"area": "富津",               "name": "川崎丸",              "sid": 141},   # 不定期
+    {"area": "長浦",               "name": "こなや丸",            "sid": 142},
+    # ── 千葉・東京湾奥 ───────────────────────
+    {"area": "浦安",               "name": "吉久",                "sid": 147},
+    {"area": "浦安",               "name": "吉野屋",              "sid": 146},
+    {"area": "東葛西",             "name": "須原屋",              "sid": 171},
+    {"area": "江戸川放水路",       "name": "たかはし遊船",        "sid": 145},   # 不定期
+    {"area": "江戸川放水路･原木中山", "name": "林遊船",           "sid": 12260},
+    # ── 東京 ──────────────────────────────────
+    {"area": "羽田",               "name": "かめだや",            "sid": 165},
+    {"area": "平和島",             "name": "船宿 まる八",         "sid": 735},
+    {"area": "横浜港･新山下",      "name": "渡辺釣船店",          "sid": 172},
+    # ── 神奈川・東京湾 ───────────────────────
+    {"area": "小柴港",             "name": "三喜丸釣船店",        "sid": 174},
+    {"area": "金沢漁港",           "name": "蒲谷丸",              "sid": 176},
+    {"area": "金沢漁港",           "name": "忠彦丸",              "sid": 185},   # 不定期
+    {"area": "金沢八景",           "name": "一之瀬丸",            "sid": 186},   # 不定期
+    {"area": "金沢八景",           "name": "米元釣船店",          "sid": 188},
+    {"area": "金沢八景",           "name": "荒川屋",              "sid": 189},
+    {"area": "金沢八景",           "name": "弁天屋",              "sid": 190},
+    {"area": "金沢八景",           "name": "野毛屋",              "sid": 192},   # 不定期
+    {"area": "金沢八景",           "name": "小柴丸",              "sid": 1750},
+    {"area": "新安浦港",           "name": "こうゆう丸",          "sid": 193},
+    {"area": "横浜本牧港",         "name": "長崎屋",              "sid": 256},
+    {"area": "磯子港",             "name": "鴨下丸kawana",        "sid": 12245},
+    {"area": "久比里港",           "name": "山下丸",              "sid": 209},
+    {"area": "久比里港",           "name": "巳之助丸",            "sid": 210},
+    {"area": "久比里港",           "name": "山天丸",              "sid": 211},
+    {"area": "久里浜",             "name": "大正丸",              "sid": 689},   # 不定期
+    {"area": "鴨居大室港",         "name": "釣船 五郎丸",         "sid": 1817},
+    {"area": "鴨居大室港",         "name": "福よし丸",            "sid": 11282},
+    {"area": "小坪港",             "name": "太郎丸",              "sid": 253},
+    {"area": "小網代港",           "name": "大和丸",              "sid": 1778},
+    {"area": "小網代港",           "name": "翔太丸",              "sid": 1772},
+    # ── 神奈川・相模湾 ───────────────────────
+    {"area": "松輪江奈港",         "name": "あまさけや丸",        "sid": 1681},
+    {"area": "松輪",               "name": "瀬戸丸",              "sid": 659},   # 不定期
+    {"area": "長井港",             "name": "はら丸",              "sid": 218},
+    {"area": "長井新宿港",         "name": "栃木丸",              "sid": 219},
+    {"area": "長井港",             "name": "儀兵衛丸",            "sid": 221},
+    {"area": "長井漆山港",         "name": "春盛丸",              "sid": 204},
+    {"area": "長井",               "name": "丸八丸",              "sid": 12224}, # 不定期
+    {"area": "葉山あぶずり港",     "name": "たいぞう丸",          "sid": 229},
+    {"area": "葉山鐙摺",           "name": "愛正丸",              "sid": 232},   # 不定期
+    {"area": "腰越",               "name": "飯岡丸",              "sid": 235},   # 不定期
+    {"area": "茅ヶ崎港",           "name": "ちがさき丸",          "sid": 795},
+    {"area": "平塚港",             "name": "庄治郎丸",            "sid": 245},
+    {"area": "平塚",               "name": "庄三郎丸",            "sid": 244},   # 不定期
+    {"area": "大磯港",             "name": "恒丸",                "sid": 246},
+    {"area": "大磯港",             "name": "とうふや丸",          "sid": 1005},
+    {"area": "寒川港",             "name": "小峯丸",              "sid": 12198},
+    {"area": "小田原早川港",       "name": "平安丸",              "sid": 1700},
+    # ── 静岡 ──────────────────────────────────
+    {"area": "宇佐美",             "name": "秀正丸",              "sid": 270},
+    {"area": "戸田",               "name": "福将丸",              "sid": 1875},
 ]
 
-# エリアの地域グループ定義
+# エリアの地域グループ定義（area/*.html の見出しに使用）
 AREA_GROUPS = {
-    "千葉・外房":     ["外川", "片貝", "大原", "勝浦松部港"],
-    "千葉・内房":     ["勝山", "富津"],
-    "千葉・東京湾奥": ["江戸川放水路", "浦安"],
-    "神奈川・東京湾": ["金沢八景", "金沢漁港", "久比里", "久里浜"],
-    "神奈川・相模湾": ["松輪", "長井", "葉山鐙摺", "腰越", "茅ヶ崎", "平塚", "小田原早川"],
-    "静岡":           ["宇佐美", "戸田"],
+    "茨城":               ["日立久慈港", "波崎港", "鹿島港", "鹿島市新浜"],
+    "千葉・外房":         ["外川", "外川港", "飯岡港", "片貝", "片貝港",
+                           "大原", "大原港", "天津港", "御宿岩和田港",
+                           "勝浦川津港", "勝浦松部港"],
+    "千葉・内房":         ["勝山", "勝山港", "保田港", "金谷港", "富浦港",
+                           "洲崎港", "富津", "富津港", "長浦"],
+    "千葉・東京湾奥":     ["浦安", "東葛西", "江戸川放水路", "江戸川放水路･原木中山"],
+    "東京":               ["羽田", "平和島", "横浜港･新山下"],
+    "神奈川・東京湾":     ["小柴港", "金沢漁港", "金沢八景", "新安浦港",
+                           "横浜本牧港", "磯子港", "久比里", "久比里港",
+                           "久里浜", "鴨居大室港", "小坪港", "小網代港"],
+    "神奈川・相模湾":     ["松輪", "松輪江奈港", "長井", "長井港",
+                           "長井新宿港", "長井漆山港", "葉山鐙摺",
+                           "葉山あぶずり港", "腰越", "茅ヶ崎", "茅ヶ崎港",
+                           "平塚", "平塚港", "大磯港", "寒川港",
+                           "小田原早川", "小田原早川港"],
+    "静岡":               ["宇佐美", "戸田"],
 }
+
+# ships.json が存在すれば上書き（discover_ships.py が月1回更新）
+_ships_json = os.path.join(os.path.dirname(__file__), "ships.json")
+if os.path.exists(_ships_json):
+    with open(_ships_json, encoding="utf-8") as _f:
+        SHIPS = json.load(_f)
 
 BASE_URL = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -719,9 +807,13 @@ nav a:hover{color:#4db8ff}
 .area-dropdown{position:relative}
 .area-btn{background:none;border:1px solid #1a4060;color:#7a9bb5;font-size:12px;padding:3px 10px;border-radius:12px;cursor:pointer;white-space:nowrap}
 .area-btn:hover{color:#4db8ff;border-color:#4db8ff}
-.area-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#0d2137;border:1px solid #1a6ea8;border-radius:8px;padding:10px 14px;z-index:100;min-width:220px;display:none;flex-wrap:wrap;gap:8px 14px}
-.area-menu.open{display:flex}
-.area-menu a{color:#7a9bb5;text-decoration:none;font-size:13px;white-space:nowrap}
+.area-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#0d2137;border:1px solid #1a6ea8;border-radius:8px;padding:12px 16px;z-index:100;min-width:260px}
+.area-menu.open{display:block}
+.area-group{margin-bottom:10px}
+.area-group:last-child{margin-bottom:0}
+.area-group-label{font-size:10px;color:#4db8ff;font-weight:bold;letter-spacing:.5px;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid #1a3050}
+.area-group-links{display:flex;flex-wrap:wrap;gap:4px 10px}
+.area-menu a{color:#7a9bb5;text-decoration:none;font-size:12px;white-space:nowrap}
 .area-menu a:hover{color:#4db8ff}
 .wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
 h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}
@@ -778,7 +870,18 @@ tr.highlight td{background:#1a2d10;color:#7ddd6f}
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .filter-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s}
 .filter-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
+.filter-group{margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.filter-group-label{font-size:10px;color:#4db8ff;font-weight:bold;min-width:80px;flex-shrink:0}
+.filter-btn.all-btn{margin-bottom:6px}
+a.filter-btn{text-decoration:none;display:inline-block}
 .note{font-size:11px;color:#7a9bb5;text-align:right;margin-top:8px}
+.search-sort-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+#fish-search{background:#081020;border:1px solid #1a4060;color:#c8d8e8;padding:6px 12px;border-radius:16px;font-size:12px;flex:1;min-width:160px;outline:none}
+#fish-search::placeholder{color:#4a6a8a}
+.sort-btns{display:flex;gap:6px}
+.sort-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:4px 10px;border-radius:16px;cursor:pointer;font-size:11px;transition:all .2s}
+.sort-btn.active{background:#1a4060;color:#4db8ff;border-color:#4db8ff}
+.new-badge{display:inline-block;background:#e85d04;color:#fff;font-size:10px;font-weight:bold;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
 .yoy-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
 .yoy-table th{background:#081020;color:#4db8ff;padding:5px;text-align:left}
 .yoy-table td{padding:5px;border-bottom:1px solid #081020}
@@ -893,10 +996,24 @@ def build_target_section(targets):
 # #4: 釣果テーブル用HTML（エリアフィルター + 最高釣果ハイライト）
 # ============================================================
 def build_catch_table(catches):
-    areas = sorted(set(c["area"] for c in catches))
-    filter_btns = '<button class="filter-btn active" onclick="filterArea(this,\'all\')">すべて</button>'
-    for a in areas:
-        filter_btns += f'<button class="filter-btn" onclick="filterArea(this,\'{a}\')">{a}</button>'
+    active_areas = set(c["area"] for c in catches)
+    # 「すべて」だけフィルター、エリアボタンはページへ遷移
+    filter_btns = '<div class="filter-group"><button class="filter-btn active all-btn" onclick="filterArea(this,\'all\')">すべて</button></div>'
+    covered = set()
+    for group_label, group_areas in AREA_GROUPS.items():
+        links = [f'<a href="area/{a}.html" class="filter-btn">{a}</a>'
+                 for a in group_areas if a in active_areas]
+        covered.update(group_areas)
+        if links:
+            filter_btns += (f'<div class="filter-group">'
+                            f'<span class="filter-group-label">{group_label}</span>'
+                            f'{"".join(links)}</div>')
+    others = [f'<a href="area/{a}.html" class="filter-btn">{a}</a>'
+              for a in sorted(active_areas - covered)]
+    if others:
+        filter_btns += (f'<div class="filter-group">'
+                        f'<span class="filter-group-label">その他</span>'
+                        f'{"".join(others)}</div>')
     rows = ""
     max_count = 0
     for c in catches[:20]:
@@ -913,8 +1030,17 @@ def build_catch_table(catches):
             mn, mx, unit = c["size_range"]["min"], c["size_range"]["max"], c["size_range"].get("unit","cm")
             sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
         hl = ' class="highlight"' if is_top else ""
-        rows += f'<tr{hl} data-area="{c["area"]}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{"・".join(c["fish"])}</td><td>{cnt}</td><td>{sz}</td></tr>'
+        max_val = c["count_range"]["max"] if c["count_range"] else 0
+        fish_str = "・".join(c["fish"])
+        rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz}</td></tr>'
     return f"""
+    <div class="search-sort-bar">
+      <input id="fish-search" type="text" placeholder="🔍 魚種で絞り込む..." oninput="searchFish(this.value)">
+      <div class="sort-btns">
+        <button class="sort-btn active" onclick="sortTable('date',this)">新着順</button>
+        <button class="sort-btn" onclick="sortTable('count',this)">釣果数順</button>
+      </div>
+    </div>
     <div class="filter-bar">{filter_btns}</div>
     <table id="catch-table">
       <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>
@@ -1000,7 +1126,25 @@ def build_html(catches, crawled_at, history):
     target_html  = build_target_section(targets)
     forecast     = build_forecast(targets)
     catch_table  = build_catch_table(catches)
-    area_nav     = " ".join(f'<a href="area/{a}.html">{a}</a>' for a in sorted(set(c["area"] for c in catches)))
+    active_areas = set(c["area"] for c in catches)
+    area_nav_parts = []
+    covered = set()
+    for group_label, group_areas in AREA_GROUPS.items():
+        links = [f'<a href="area/{a}.html">{a}</a>' for a in group_areas if a in active_areas]
+        covered.update(group_areas)
+        if links:
+            area_nav_parts.append(
+                f'<div class="area-group"><div class="area-group-label">{group_label}</div>'
+                f'<div class="area-group-links">{"".join(links)}</div></div>'
+            )
+    # AREA_GROUPS未分類のエリアは「その他」にまとめる
+    others = [f'<a href="area/{a}.html">{a}</a>' for a in sorted(active_areas - covered)]
+    if others:
+        area_nav_parts.append(
+            f'<div class="area-group"><div class="area-group-label">その他</div>'
+            f'<div class="area-group-links">{"".join(others)}</div></div>'
+        )
+    area_nav = "".join(area_nav_parts)
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1014,7 +1158,7 @@ def build_html(catches, crawled_at, history):
 <header>
   <h1>🎣 関東船釣り釣果情報</h1>
   <p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計</p>
-  <p class="site-desc">神奈川・千葉・静岡の船宿26軒の釣果を毎日自動収集。魚種・エリア・船宿を横断比較して「今週どこへ行くか」の意思決定をサポートします。</p>
+  <p class="site-desc">神奈川・東京・千葉・茨城の船宿{len(SHIPS)}軒の釣果を毎日自動収集。魚種・エリア・船宿を横断比較して「今週どこへ行くか」の意思決定をサポートします。</p>
 </header>
 <nav>
   <a href="index.html">🏠 トップ</a>
@@ -1035,7 +1179,7 @@ def build_html(catches, crawled_at, history):
   <div class="grid">{cards}</div>
   <h2>📋 最新の釣果</h2>
   {catch_table}
-  <p class="note">最終更新: {crawled_at} ／ 総件数: {len(catches)} 件</p>
+  <p class="note">最終更新: {crawled_at}<span id="new-badge"></span> ／ 総件数: {len(catches)} 件</p>
 </div>
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
@@ -1049,6 +1193,34 @@ function filterArea(btn, area) {{
     tr.style.display = (area === 'all' || tr.dataset.area === area) ? '' : 'none';
   }});
 }}
+function searchFish(val) {{
+  const q = val.trim().toLowerCase();
+  document.querySelectorAll('#catch-table tr[data-area]').forEach(tr => {{
+    const fish = tr.cells[3] ? tr.cells[3].textContent.toLowerCase() : '';
+    tr.style.display = (!q || fish.includes(q)) ? '' : 'none';
+  }});
+}}
+function sortTable(key, btn) {{
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const tbody = document.getElementById('catch-table');
+  const rows = Array.from(tbody.querySelectorAll('tr[data-area]'));
+  rows.sort((a, b) => {{
+    if (key === 'count') return parseInt(b.dataset.count||0) - parseInt(a.dataset.count||0);
+    return (b.dataset.date||'').localeCompare(a.dataset.date||'');
+  }});
+  rows.forEach(r => tbody.appendChild(r));
+}}
+(function() {{
+  const updated = "{crawled_at}";
+  const m = updated.match(/(\d{{4}})\/(\d{{2}})\/(\d{{2}}) (\d{{2}}):(\d{{2}})/);
+  if (m) {{
+    const t = new Date(m[1],m[2]-1,m[3],m[4],m[5]);
+    if (Date.now() - t.getTime() < 86400000) {{
+      document.getElementById('new-badge').innerHTML = '<span class="new-badge">NEW</span>';
+    }}
+  }}
+}})();
 function switchTab(e, showId, hideId) {{
   e.stopPropagation();
   document.getElementById(showId).style.display = 'block';
@@ -1081,7 +1253,7 @@ def build_fish_pages(data, history):
         for f in c["fish"]:
             if f != "不明": fish_summary.setdefault(f, []).append(c)
     for fish, catches in fish_summary.items():
-        if len(catches) < 3: continue
+        if len(catches) < 1: continue
         season_bar_html = build_season_bar(fish, current_month)
         score   = get_season_score(fish, current_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
