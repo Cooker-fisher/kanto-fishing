@@ -1016,9 +1016,10 @@ def build_catch_table(catches):
                         f'{"".join(others)}</div>')
     rows = ""
     max_count = 0
-    for c in catches[:20]:
+    _top = sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]
+    for c in _top:
         if c["count_range"]: max_count = max(max_count, c["count_range"]["max"])
-    for c in catches[:20]:
+    for c in _top:
         cnt = ""
         is_top = False
         if c["count_range"]:
