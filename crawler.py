@@ -589,9 +589,8 @@ def update_history(catches, history):
         if c.get("anomaly"):
             continue
         cr = c.get("count_range") or {}
-        if cr.get("is_boat"):
-            continue  # 船中数は個人統計に含めない
         sr = c.get("size_cm") or {}
+        is_boat = cr.get("is_boat", False)
         avg = (cr.get("min", 0) + cr.get("max", 0)) // 2 if cr else 0
         mx  = cr.get("max", 0)
         sz  = sr.get("max", 0)
@@ -600,7 +599,9 @@ def update_history(catches, history):
                 if key not in store: store[key] = {}
                 if fish not in store[key]: store[key][fish] = {"ships": 0, "sum": 0, "cnt": 0, "max": 0, "szs": []}
                 d = store[key][fish]
-                d["ships"] += 1; d["sum"] += avg; d["cnt"] += 1
+                d["ships"] += 1
+                if not is_boat:  # 船中数は平均に含めない
+                    d["sum"] += avg; d["cnt"] += 1
                 if mx > d["max"]: d["max"] = mx
                 if sz > 0: d["szs"].append(sz)
     for store, hist_key in [(temp_w, "weekly"), (temp_m, "monthly")]:

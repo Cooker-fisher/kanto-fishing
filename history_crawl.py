@@ -17,10 +17,11 @@ def guess_fish(t):
 
 def to_range(t,unit):
     t=t.translate(Z2H)
+    is_boat=bool(re.search(r"船中|合計|全体",t))
     m=re.search(r"(\d+)\s*[~〜～]\s*(\d+)\s*"+unit,t)
-    if m: return {"min":int(m[1]),"max":int(m[2])}
+    if m: return {"min":int(m[1]),"max":int(m[2]),"is_boat":is_boat}
     m=re.search(r"(\d+)\s*"+unit,t)
-    if m: v=int(m[1]); return {"min":v,"max":v}
+    if m: v=int(m[1]); return {"min":v,"max":v,"is_boat":is_boat}
     return None
 
 class Parser(HTMLParser):
@@ -77,6 +78,7 @@ def crawl_ship(ship):
                 all_records.append({"date":r["date"],"ship":ship["name"],"area":ship["area"],
                     "fish":fish,"max":cr["max"] if cr else 0,
                     "avg":(cr["min"]+cr["max"])//2 if cr else 0,
+                    "is_boat":cr["is_boat"] if cr else False,
                     "size_max":sr["max"] if sr else 0})
         if "次</a>" not in html and ">次<" not in html: break
         page+=1; time.sleep(0.3)
@@ -94,7 +96,8 @@ def build_and_save(all_records):
         for store,key in[(weekly,wk),(monthly,mo)]:
             if key not in store: store[key]={}
             if fish not in store[key]: store[key][fish]={"ships":0,"sum":0,"max":0,"cnt":0,"szs":[]}
-            d=store[key][fish]; d["ships"]+=1; d["sum"]+=r["avg"]; d["cnt"]+=1
+            d=store[key][fish]; d["ships"]+=1
+            if not r.get("is_boat"): d["sum"]+=r["avg"]; d["cnt"]+=1  # 船中数は平均に含めない
             if r["max"]>d["max"]: d["max"]=r["max"]
             if r["size_max"]>0: d["szs"].append(r["size_max"])
     for store in[weekly,monthly]:
