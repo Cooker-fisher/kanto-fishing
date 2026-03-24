@@ -1213,17 +1213,23 @@ def fmt_count(c):
         return f"<span class='boat-catch' title='船全体の合計数'>船中{val}</span>"
     return val
 
-def fmt_size(c):
-    """サイズセル用文字列。cm と kg を両方表示。"""
-    parts = []
+def fmt_size_cm(c):
+    """大きさ(cm)セル用文字列。"""
     sr = c.get("size_cm")
-    if sr:
-        mn, mx = sr["min"], sr["max"]
-        parts.append(f"{mn}〜{mx}cm" if mn != mx else f"{mn}cm")
+    if not sr: return ""
+    mn, mx = sr["min"], sr["max"]
+    return f"{mn}〜{mx}cm" if mn != mx else f"{mn}cm"
+
+def fmt_size_kg(c):
+    """重量(kg)セル用文字列。"""
     wkg = c.get("weight_kg")
-    if wkg:
-        mn, mx = wkg["min"], wkg["max"]
-        parts.append(f"{mn}〜{mx}kg" if mn != mx else f"{mn}kg")
+    if not wkg: return ""
+    mn, mx = wkg["min"], wkg["max"]
+    return f"{mn}〜{mx}kg" if mn != mx else f"{mn}kg"
+
+def fmt_size(c):
+    """後方互換用。cm と kg を結合して返す。"""
+    parts = [s for s in [fmt_size_cm(c), fmt_size_kg(c)] if s]
     return " ".join(parts)
 
 # ============================================================
@@ -1256,11 +1262,12 @@ def build_catch_table(catches):
         cr = c.get("count_range")
         cnt = fmt_count(c)
         is_top = cr and not cr.get("is_boat") and cr["max"] == max_count and max_count > 0
-        sz = fmt_size(c)
+        sz_cm = fmt_size_cm(c)
+        sz_kg = fmt_size_kg(c)
         hl = ' class="highlight"' if is_top else ""
         max_val = cr["max"] if cr and not cr.get("is_boat") else 0
         fish_str = "・".join(c["fish"])
-        rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz}</td></tr>'
+        rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>'
     return f"""
     <div class="search-sort-bar">
       <input id="fish-search" type="text" placeholder="🔍 魚種で絞り込む..." oninput="searchFish(this.value)">
@@ -1271,7 +1278,7 @@ def build_catch_table(catches):
     </div>
     <div class="filter-bar">{filter_btns}</div>
     <table id="catch-table">
-      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>
+      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ</th><th>重量</th></tr>
       {rows}
     </table>"""
 
@@ -1297,8 +1304,8 @@ def build_html(catches, crawled_at, history):
         daily_rows = ""
         for c in sorted(cs, key=lambda x: x["date"] or "", reverse=True)[:5]:
             cnt = fmt_count(c)
-            sz  = fmt_size(c)
-            daily_rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz}</td></tr>"
+            sz_cm = fmt_size_cm(c); sz_kg = fmt_size_kg(c)
+            daily_rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
         weekly_rows = ""
         for sn, cnt in sorted(ship_counts.items(), key=lambda x:-x[1])[:10]:
             pct = int(cnt / len(cs) * 100) if cs else 0
@@ -1343,7 +1350,7 @@ def build_html(catches, crawled_at, history):
           <button class="tab-btn active" onclick="switchTab(event,'daily-{fish_id}','weekly-{fish_id}')">デイリー</button>
           <button class="tab-btn" onclick="switchTab(event,'weekly-{fish_id}','daily-{fish_id}')">ウィークリー</button>
         </div>
-        <div id="daily-{fish_id}"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr>{daily_rows or '<tr><td colspan=5 style="color:#7a9bb5">データなし</td></tr>'}</table></div>
+        <div id="daily-{fish_id}"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{daily_rows or '<tr><td colspan=6 style="color:#7a9bb5">データなし</td></tr>'}</table></div>
         <div id="weekly-{fish_id}" style="display:none"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr>{weekly_rows or '<tr><td colspan=3 style="color:#7a9bb5">データなし</td></tr>'}</table></div>
       </div>
     </div>"""
@@ -1491,11 +1498,11 @@ def build_fish_pages(data, history, crawled_at=""):
             if cr and not cr.get("is_boat"): max_cnt = max(max_cnt, cr["max"])
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]:
             cnt = fmt_count(c)
-            sz  = fmt_size(c)
+            sz_cm = fmt_size_cm(c); sz_kg = fmt_size_kg(c)
             cr  = c.get("count_range")
             is_top = cr and not cr.get("is_boat") and cr["max"] == max_cnt and max_cnt > 0
             hl = ' class="highlight"' if is_top else ""
-            rows += f"<tr{hl}><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz}</td></tr>"
+            rows += f"<tr{hl}><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
         ship_counts = {}
         ship_max    = {}
         for c in catches:
@@ -1557,7 +1564,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2>🏆 船宿ランキング（今週）</h2>
   <table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table>
   <h2>📋 最近の釣果 ({len(catches)}件)</h2>
-  <table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>サイズ</th></tr>{rows}</table>
+  <table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table>
 </div>
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
@@ -1612,8 +1619,8 @@ def build_area_pages(data, history, crawled_at=""):
         rows = ""
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:15]:
             cnt_str = fmt_count(c)
-            sz      = fmt_size(c)
-            rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz}</td></tr>"
+            sz_cm = fmt_size_cm(c); sz_kg = fmt_size_kg(c)
+            rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
         group   = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
         area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:8px}.fish-grid a:hover{border-color:#4db8ff!important}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
         html = f"""<!DOCTYPE html>
@@ -1635,7 +1642,7 @@ def build_area_pages(data, history, crawled_at=""):
   <h2>🏆 船宿ランキング（今週）</h2>
   <table><tr><th>#</th><th>船宿</th><th>釣果数</th><th>割合</th></tr>{ship_rows}</table>
   <h2>📋 最新の釣果</h2>
-  <table><tr><th>日付</th><th>船宿</th><th>魚種</th><th>数量</th><th>サイズ</th></tr>{rows}</table>
+  <table><tr><th>日付</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table>
 </div>
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
