@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.3
+関東船釣り情報クローラー v5.6
+変更点(v5.6):
+- サイズカラムを「大きさ(cm)」「重量(kg)」に分割
+- 不明・空欄行の薄表示（class="dim" opacity:0.45）
+- 全ページに「データについて」折りたたみフッター追加
 変更点(v5.3):
 - データ品質改善: 船中フラグ検出・kg/cm分離・異常値バリデーション・重複排除
 変更点(v5.2):
@@ -1435,7 +1439,7 @@ def build_html(catches, crawled_at, history):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.6</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -1590,7 +1594,7 @@ def build_fish_pages(data, history, crawled_at=""):
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.6</p>
 </footer>
 </body></html>"""
         with open(f"fish/{fish}.html", "w", encoding="utf-8") as f:
@@ -1672,7 +1676,7 @@ def build_area_pages(data, history, crawled_at=""):
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.6</p>
 </footer>
 </body></html>"""
         with open(f"area/{area}.html", "w", encoding="utf-8") as f:
@@ -1720,7 +1724,7 @@ def build_calendar_page(crawled_at=""):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.6</p>
 </footer>
 </body></html>"""
 
