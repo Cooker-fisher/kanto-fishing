@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36"
 Z2H=str.maketrans("０１２３４５６７８９","0123456789")
 BASE="https://www.fishing-v.jp/choka/choka_detail.php?s={sid}&pageID={page}"
+GYO_BASE="https://www.gyo.ne.jp/rep_tsuri_view%7CCID-{cid}.htm"
 FISH_MAP={"アジ":["アジ","ライトアジ","LTアジ","午前ライト","午後ライト","ウィリー"],"タチウオ":["タチウオ","ショートタチウオ"],"フグ":["フグ","トラフグ","ショウサイ"],"カワハギ":["カワハギ"],"マダイ":["マダイ","真鯛"],"シロギス":["シロギス","キス"],"イサキ":["イサキ"],"ヤリイカ":["ヤリイカ"],"スルメイカ":["スルメイカ"],"マダコ":["タコ","マダコ"],"カサゴ":["カサゴ"],"ワラサ":["ワラサ","イナダ","ブリ"],"アマダイ":["アマダイ"],"ヒラメ":["ヒラメ"],"マゴチ":["マゴチ"],"五目":["五目"],"イシモチ":["イシモチ"],"サワラ":["サワラ"],"マルイカ":["マルイカ"],"マハタ":["マハタ"]}
 
 def guess_fish(t):
@@ -113,21 +114,65 @@ def build_and_save(all_records):
     json.dump(history,open("history.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
     return history
 
+def crawl_gyo_ship(ship):
+    """gyo.ne.jp の1船宿分の釣果を全日付で取得してhistory形式に変換する"""
+    sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+    from crawler import fetch_gyo, parse_catches_gyo
+    now=datetime.now(); cutoff_year=now.year-2
+    cid=ship["cid"]
+
+    def _to_records(catches):
+        out=[]
+        for c in catches:
+            if not c.get("date"): continue
+            cr=c.get("count_range") or {}; sr=c.get("size_range") or {}
+            avg=(cr.get("min",0)+cr.get("max",0))//2 if cr else 0
+            mx=cr.get("max",0); sz=sr.get("max",0) if sr else 0
+            for fish in c.get("fish",[]):
+                out.append({"date":c["date"],"ship":ship["name"],"area":ship["area"],
+                            "fish":fish,"max":mx,"avg":avg,"size_max":sz})
+        return out
+
+    # 最新ページ取得
+    html=fetch_gyo(GYO_BASE.format(cid=cid))
+    if not html: return []
+    all_records=_to_records(parse_catches_gyo(html,ship["name"],ship["area"],now.year))
+
+    # 過去日付リンクを抽出（/rep_tsuri_history_view|CID-...|hdt-YYYY/MM/DD|dt-....htm）
+    hist_links=re.findall(r'href="(/rep_tsuri_history_view\|CID-[^"]+\.htm)"',html)
+    for href in hist_links:
+        m=re.search(r'hdt-(\d{4})',href)
+        if not m or int(m.group(1))<cutoff_year: continue
+        hist_year=int(m.group(1))
+        url="https://www.gyo.ne.jp"+href.replace("|","%7C")
+        hist_html=fetch_gyo(url)
+        if hist_html:
+            all_records.extend(_to_records(parse_catches_gyo(hist_html,ship["name"],ship["area"],hist_year)))
+        time.sleep(0.3)
+    return all_records
+
 def main():
     sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
     from crawler import SHIPS
-    print(f"=== 過去データ並列取得開始 / {len(SHIPS)}船宿 ===")
+    gyo_json=os.path.join(os.path.dirname(os.path.abspath(__file__)),"gyo_ships.json")
+    gyo_ships=[]
+    if os.path.exists(gyo_json):
+        with open(gyo_json,encoding="utf-8") as f: gyo_ships=json.load(f)
+    total=len(SHIPS)+len(gyo_ships)
+    print(f"=== 過去データ並列取得開始 / fishing-v.jp:{len(SHIPS)} + gyo:{len(gyo_ships)} = {total}船宿 ===")
     print(f"開始: {datetime.now().strftime('%H:%M:%S')} / 並列数:5")
     all_records=[]; done=0
     with ThreadPoolExecutor(max_workers=5) as ex:
-        futures={ex.submit(crawl_ship,ship):ship for ship in SHIPS}
+        futures={}
+        for ship in SHIPS: futures[ex.submit(crawl_ship,ship)]=ship
+        for ship in gyo_ships: futures[ex.submit(crawl_gyo_ship,ship)]=ship
         for f in as_completed(futures):
             ship=futures[f]; done+=1
             try:
                 recs=f.result(); all_records.extend(recs)
-                print(f"[{done:03d}/{len(SHIPS)}] {ship['area']} {ship['name']} {len(recs)}件")
+                print(f"[{done:03d}/{total}] {ship['area']} {ship['name']} {len(recs)}件")
             except Exception as e:
-                print(f"[{done:03d}/{len(SHIPS)}] {ship['name']} ERROR:{e}")
+                print(f"[{done:03d}/{total}] {ship['name']} ERROR:{e}")
             if done%20==0:
                 print(f">>> 中間保存... ({len(all_records)}件)")
                 build_and_save(all_records)

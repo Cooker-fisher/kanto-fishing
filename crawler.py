@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.2
+関東船釣り情報クローラー v5.3
+変更点(v5.3):
+- データ品質改善: 船中フラグ検出・kg/cm分離・異常値バリデーション・重複排除
 変更点(v5.2):
 - Google AdSense コードを全ページの<head>に追加
 変更点(v5.1):
@@ -175,6 +177,33 @@ FISH_MAP = {
     "マハタ":   ["マハタ"],
 }
 
+# 魚種別の正常値範囲（異常値検知用）
+FISH_VALID_RANGE = {
+    "アジ":       {"size_cm": (10, 55),   "count": (0, 400)},
+    "タチウオ":   {"size_cm": (50, 200),  "count": (0, 80)},
+    "フグ":       {"size_cm": (10, 60),   "count": (0, 150)},
+    "カワハギ":   {"size_cm": (10, 45),   "count": (0, 150)},
+    "マダイ":     {"size_cm": (10, 100),  "count": (0, 20),  "weight_kg": (0.1, 15.0)},
+    "シロギス":   {"size_cm": (10, 40),   "count": (0, 300)},
+    "イサキ":     {"size_cm": (20, 55),   "count": (0, 150)},
+    "ヤリイカ":   {"size_cm": (10, 65),   "count": (0, 150)},
+    "スルメイカ": {"size_cm": (10, 65),   "count": (0, 150)},
+    "マダコ":     {"weight_kg": (0.1, 15.0), "count": (0, 30)},
+    "カサゴ":     {"size_cm": (10, 55),   "count": (0, 80)},
+    "メバル":     {"size_cm": (10, 45),   "count": (0, 80)},
+    "ワラサ":     {"size_cm": (30, 110),  "count": (0, 20),  "weight_kg": (0.5, 15.0)},
+    "アマダイ":   {"size_cm": (20, 75),   "count": (0, 20),  "weight_kg": (0.1, 5.0)},
+    "メダイ":     {"size_cm": (30, 90),   "count": (0, 20),  "weight_kg": (0.3, 10.0)},
+    "サワラ":     {"size_cm": (40, 130),  "count": (0, 20),  "weight_kg": (0.5, 15.0)},
+    "ヒラメ":     {"size_cm": (30, 100),  "count": (0, 10),  "weight_kg": (0.3, 15.0)},
+    "マゴチ":     {"size_cm": (20, 80),   "count": (0, 20),  "weight_kg": (0.1, 5.0)},
+    "キンメダイ": {"size_cm": (20, 65),   "count": (0, 80),  "weight_kg": (0.1, 5.0)},
+    "クロムツ":   {"size_cm": (20, 65),   "count": (0, 80)},
+    "マルイカ":   {"size_cm": (5,  45),   "count": (0, 300)},
+    "カンパチ":   {"size_cm": (20, 110),  "count": (0, 20),  "weight_kg": (0.3, 20.0)},
+    "マハタ":     {"size_cm": (20, 90),   "count": (0, 15),  "weight_kg": (0.3, 15.0)},
+}
+
 Z2H = str.maketrans("０１２３４５６７８９．", "0123456789.")
 
 # ============================================================
@@ -228,22 +257,27 @@ def parse_num(s):
 
 def extract_count(t):
     t = parse_num(t)
+    is_boat = bool(re.search(r"船中|合計|全体", t))
     m = re.search(r"(\d+)[～〜~](\d+)\s*[匹本尾枚杯]", t)
-    if m: return {"min": int(m[1]), "max": int(m[2])}
+    if m: return {"min": int(m[1]), "max": int(m[2]), "is_boat": is_boat}
     m = re.search(r"(\d+)\s*[匹本尾枚杯]", t)
-    if m: v = int(m[1]); return {"min": v, "max": v}
+    if m: v = int(m[1]); return {"min": v, "max": v, "is_boat": is_boat}
     return None
 
-def extract_size(t):
+def extract_weight_kg(t):
     t = parse_num(t)
     m = re.search(r"(\d+\.?\d*)[～〜~](\d+\.?\d*)\s*kg", t, re.I)
-    if m: return {"min": float(m[1]), "max": float(m[2]), "unit": "kg"}
+    if m: return {"min": float(m[1]), "max": float(m[2])}
     m = re.search(r"(\d+\.?\d*)\s*kg", t, re.I)
-    if m: v = float(m[1]); return {"min": v, "max": v, "unit": "kg"}
+    if m: v = float(m[1]); return {"min": v, "max": v}
+    return None
+
+def extract_size_cm(t):
+    t = parse_num(t)
     m = re.search(r"(\d+)[～〜~](\d+)\s*cm", t, re.I)
-    if m: return {"min": int(m[1]), "max": int(m[2]), "unit": "cm"}
+    if m: return {"min": int(m[1]), "max": int(m[2])}
     m = re.search(r"(\d+)\s*cm", t, re.I)
-    if m: v = int(m[1]); return {"min": v, "max": v, "unit": "cm"}
+    if m: v = int(m[1]); return {"min": v, "max": v}
     return None
 
 def parse_jp_date(date_str, year):
@@ -339,7 +373,8 @@ def _parse_tables(tables, ship, area, date, month):
                 "catch_raw":   f"{fish_name} {count_str} {size_str} {weight_str}".strip(),
                 "fish":        guess_fish(fish_name),
                 "count_range": extract_count(count_str),
-                "size_range":  extract_size(weight_str) or extract_size(size_str),
+                "size_cm":     extract_size_cm(size_str),
+                "weight_kg":   extract_weight_kg(weight_str) or extract_weight_kg(size_str),
             })
     return results
 
@@ -407,7 +442,8 @@ def _parse_tables_gyo(tables, ship, area, date, month):
                 "catch_raw":   f"{fish_name} {count_str} {size_str}".strip(),
                 "fish":        guess_fish(fish_name),
                 "count_range": extract_count(count_str),
-                "size_range":  extract_size(size_str),
+                "size_cm":     extract_size_cm(size_str),
+                "weight_kg":   extract_weight_kg(size_str),
             })
     return results
 
@@ -487,6 +523,44 @@ def current_iso_week():
     now = datetime.now()
     return now.year, now.isocalendar()[1]
 
+def validate_catch(c):
+    """異常値チェック。正常はTrue、異常はFalse。"""
+    fish_list = c.get("fish", [])
+    if not fish_list or fish_list[0] == "不明":
+        return True
+    fish = fish_list[0]
+    rules = FISH_VALID_RANGE.get(fish)
+    if not rules:
+        return True
+    cr = c.get("count_range")
+    sr = c.get("size_cm")
+    wkg = c.get("weight_kg")
+    if cr:
+        lo, hi = rules.get("count", (1, 9999))
+        if cr["max"] > hi or cr["min"] < lo:
+            return False
+    if sr and "size_cm" in rules:
+        lo, hi = rules["size_cm"]
+        if sr["max"] < lo or sr["min"] > hi:
+            return False
+    if wkg and "weight_kg" in rules:
+        lo, hi = rules["weight_kg"]
+        if wkg["max"] < lo or wkg["min"] > hi:
+            return False
+    return True
+
+def dedup_catches(catches):
+    """同一船宿・日付・魚種・最高数が同じレコードを重複排除する。"""
+    seen = set()
+    result = []
+    for c in catches:
+        cr = c.get("count_range") or {}
+        key = (c["ship"], c.get("date") or "", ",".join(sorted(c.get("fish", []))), cr.get("max", 0))
+        if key not in seen:
+            seen.add(key)
+            result.append(c)
+    return result
+
 def update_history(catches, history):
     """今週・今月のcatchesデータをhistory.jsonに反映する"""
     target_weeks = set()
@@ -509,8 +583,12 @@ def update_history(catches, history):
         wk = f"{iso[0]}/W{iso[1]:02d}"
         mo = c["date"][:7]
         if wk not in target_weeks: continue
+        if c.get("anomaly"):
+            continue
         cr = c.get("count_range") or {}
-        sr = c.get("size_range") or {}
+        if cr.get("is_boat"):
+            continue  # 船中数は個人統計に含めない
+        sr = c.get("size_cm") or {}
         avg = (cr.get("min", 0) + cr.get("max", 0)) // 2 if cr else 0
         mx  = cr.get("max", 0)
         sz  = sr.get("max", 0)
@@ -985,6 +1063,7 @@ th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left;border-bottom:1p
 td{padding:8px;border-bottom:1px solid #0d2137}
 tr:hover td{background:#0d2137}
 tr.highlight td{background:#1a2d10;color:#7ddd6f}
+.boat-catch{color:#f0a040;font-size:11px}
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .filter-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s}
 .filter-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
@@ -1113,6 +1192,33 @@ def build_target_section(targets):
 # ============================================================
 # #4: 釣果テーブル用HTML（エリアフィルター + 最高釣果ハイライト）
 # ============================================================
+# 表示ヘルパー
+# ============================================================
+def fmt_count(c):
+    """数量セル用文字列。船中の場合は '船中X' と表示。"""
+    cr = c.get("count_range")
+    if not cr:
+        return ""
+    mn, mx = cr["min"], cr["max"]
+    val = f"{mn}〜{mx}" if mn != mx else str(mn)
+    if cr.get("is_boat"):
+        return f"<span class='boat-catch' title='船全体の合計数'>船中{val}</span>"
+    return val
+
+def fmt_size(c):
+    """サイズセル用文字列。cm と kg を両方表示。"""
+    parts = []
+    sr = c.get("size_cm")
+    if sr:
+        mn, mx = sr["min"], sr["max"]
+        parts.append(f"{mn}〜{mx}cm" if mn != mx else f"{mn}cm")
+    wkg = c.get("weight_kg")
+    if wkg:
+        mn, mx = wkg["min"], wkg["max"]
+        parts.append(f"{mn}〜{mx}kg" if mn != mx else f"{mn}kg")
+    return " ".join(parts)
+
+# ============================================================
 def build_catch_table(catches):
     active_areas = set(c["area"] for c in catches)
     # 「すべて」だけフィルター、エリアボタンはページへ遷移
@@ -1136,20 +1242,15 @@ def build_catch_table(catches):
     max_count = 0
     _top = sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]
     for c in _top:
-        if c["count_range"]: max_count = max(max_count, c["count_range"]["max"])
+        cr = c.get("count_range")
+        if cr and not cr.get("is_boat"): max_count = max(max_count, cr["max"])
     for c in _top:
-        cnt = ""
-        is_top = False
-        if c["count_range"]:
-            mn, mx = c["count_range"]["min"], c["count_range"]["max"]
-            cnt = f"{mn}〜{mx}" if mn != mx else str(mn)
-            if mx == max_count and max_count > 0: is_top = True
-        sz = ""
-        if c["size_range"]:
-            mn, mx, unit = c["size_range"]["min"], c["size_range"]["max"], c["size_range"].get("unit","cm")
-            sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
+        cr = c.get("count_range")
+        cnt = fmt_count(c)
+        is_top = cr and not cr.get("is_boat") and cr["max"] == max_count and max_count > 0
+        sz = fmt_size(c)
         hl = ' class="highlight"' if is_top else ""
-        max_val = c["count_range"]["max"] if c["count_range"] else 0
+        max_val = cr["max"] if cr and not cr.get("is_boat") else 0
         fish_str = "・".join(c["fish"])
         rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz}</td></tr>'
     return f"""
@@ -1187,11 +1288,8 @@ def build_html(catches, crawled_at, history):
         for c in cs: ship_counts[c["ship"]] = ship_counts.get(c["ship"], 0) + 1
         daily_rows = ""
         for c in sorted(cs, key=lambda x: x["date"] or "", reverse=True)[:5]:
-            cnt = f"{c['count_range']['min']}〜{c['count_range']['max']}" if c["count_range"] and c["count_range"]["min"] != c["count_range"]["max"] else (str(c["count_range"]["min"]) if c["count_range"] else "")
-            sz  = ""
-            if c["size_range"]:
-                mn,mx,unit = c["size_range"]["min"],c["size_range"]["max"],c["size_range"].get("unit","cm")
-                sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
+            cnt = fmt_count(c)
+            sz  = fmt_size(c)
             daily_rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz}</td></tr>"
         weekly_rows = ""
         for sn, cnt in sorted(ship_counts.items(), key=lambda x:-x[1])[:10]:
@@ -1380,22 +1478,22 @@ def build_fish_pages(data, history):
         rows = ""
         max_cnt = 0
         for c in catches:
-            if c["count_range"]: max_cnt = max(max_cnt, c["count_range"]["max"])
+            cr = c.get("count_range")
+            if cr and not cr.get("is_boat"): max_cnt = max(max_cnt, cr["max"])
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]:
-            cnt = f"{c['count_range']['min']}〜{c['count_range']['max']}" if c["count_range"] and c["count_range"]["min"] != c["count_range"]["max"] else (str(c["count_range"]["min"]) if c["count_range"] else "")
-            sz  = ""
-            if c["size_range"]:
-                mn,mx,unit = c["size_range"]["min"],c["size_range"]["max"],c["size_range"].get("unit","cm")
-                sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
-            is_top = c["count_range"] and c["count_range"]["max"] == max_cnt and max_cnt > 0
+            cnt = fmt_count(c)
+            sz  = fmt_size(c)
+            cr  = c.get("count_range")
+            is_top = cr and not cr.get("is_boat") and cr["max"] == max_cnt and max_cnt > 0
             hl = ' class="highlight"' if is_top else ""
             rows += f"<tr{hl}><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz}</td></tr>"
         ship_counts = {}
         ship_max    = {}
         for c in catches:
             ship_counts[c["ship"]] = ship_counts.get(c["ship"], 0) + 1
-            if c["count_range"]:
-                ship_max[c["ship"]] = max(ship_max.get(c["ship"], 0), c["count_range"]["max"])
+            cr = c.get("count_range")
+            if cr and not cr.get("is_boat"):
+                ship_max[c["ship"]] = max(ship_max.get(c["ship"], 0), cr["max"])
         rank_rows = ""
         for i, (sn, cnt) in enumerate(sorted(ship_counts.items(), key=lambda x:-x[1])[:10], 1):
             mx   = ship_max.get(sn, 0)
@@ -1503,11 +1601,8 @@ def build_area_pages(data, history):
             ship_rows += f'<tr><td style="color:#4db8ff;font-weight:bold">{i}</td><td><strong>{sn}</strong><br><span style="font-size:11px;color:#7a9bb5">{fish_str}</span></td><td style="color:#4dcc88">{cnt}件</td><td><div style="background:#081020;border-radius:2px;height:8px;width:80px"><div style="background:#1a6ea8;height:8px;border-radius:2px;width:{pct}%"></div></div></td></tr>'
         rows = ""
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:15]:
-            cnt_str = f"{c['count_range']['min']}〜{c['count_range']['max']}" if c["count_range"] and c["count_range"]["min"] != c["count_range"]["max"] else (str(c["count_range"]["min"]) if c["count_range"] else "")
-            sz = ""
-            if c["size_range"]:
-                mn,mx,unit = c["size_range"]["min"],c["size_range"]["max"],c["size_range"].get("unit","cm")
-                sz = f"{mn}〜{mx}{unit}" if mn != mx else f"{mn}{unit}"
+            cnt_str = fmt_count(c)
+            sz      = fmt_size(c)
             rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz}</td></tr>"
         group   = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
         area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:8px}.fish-grid a:hover{border-color:#4db8ff!important}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
@@ -1626,18 +1721,37 @@ def main():
     else:
         print("\n(gyo_ships.json なし → gyo.ne.jp スキップ。discover_gyo.py を実行してください)")
 
+    # 重複排除
+    before = len(all_catches)
+    all_catches = dedup_catches(all_catches)
+    dup_removed = before - len(all_catches)
+    if dup_removed:
+        print(f"重複排除: {dup_removed} 件削除")
+
+    # 異常値フラグ付け（データは保持、集計・表示からは除外）
+    for c in all_catches:
+        c["anomaly"] = not validate_catch(c)
+    anomaly_count = sum(1 for c in all_catches if c.get("anomaly"))
+    if anomaly_count:
+        print(f"異常値フラグ: {anomaly_count} 件（catches.jsonに保存、表示から除外）")
+
+    # 表示・集計用は正常値のみ
+    valid_catches = [c for c in all_catches if not c.get("anomaly")]
+
     history = load_history()
-    history = update_history(all_catches, history)
+    history = update_history(valid_catches, history)
     with open("catches.json", "w", encoding="utf-8") as f:
-        json.dump({"crawled_at": crawled_at, "total": len(all_catches), "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
+        json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
+                   "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(build_html(all_catches, crawled_at, history))
-    build_fish_pages(all_catches, history)
-    build_area_pages(all_catches, history)
+        f.write(build_html(valid_catches, crawled_at, history))
+    build_fish_pages(valid_catches, history)
+    build_area_pages(valid_catches, history)
     with open("calendar.html", "w", encoding="utf-8") as f:
         f.write(build_calendar_page())
     print(f"\n=== 完了 ===")
-    print(f"釣果: {len(all_catches)} 件 ／ エラー: {errors or 'なし'}")
+    print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
+    print(f"エラー: {errors or 'なし'}")
     print(f"出力: catches.json / index.html / fish/*.html / area/*.html / calendar.html")
 
 if __name__ == "__main__":
