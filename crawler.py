@@ -1401,6 +1401,7 @@ def build_html(catches, crawled_at, history):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -1460,7 +1461,7 @@ document.querySelectorAll('.fc').forEach(el => {{
 # ============================================================
 # #6: 魚種別ページ
 # ============================================================
-def build_fish_pages(data, history):
+def build_fish_pages(data, history, crawled_at=""):
     os.makedirs("fish", exist_ok=True)
     now = datetime.now()
     current_month = now.month
@@ -1553,6 +1554,7 @@ def build_fish_pages(data, history):
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
 </footer>
 </body></html>"""
         with open(f"fish/{fish}.html", "w", encoding="utf-8") as f:
@@ -1561,7 +1563,7 @@ def build_fish_pages(data, history):
 # ============================================================
 # #10: エリア別ページ
 # ============================================================
-def build_area_pages(data, history):
+def build_area_pages(data, history, crawled_at=""):
     os.makedirs("area", exist_ok=True)
     now = datetime.now()
     current_month = now.month
@@ -1630,6 +1632,7 @@ def build_area_pages(data, history):
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
 </footer>
 </body></html>"""
         with open(f"area/{area}.html", "w", encoding="utf-8") as f:
@@ -1638,7 +1641,7 @@ def build_area_pages(data, history):
 # ============================================================
 # calendar.html
 # ============================================================
-def build_calendar_page():
+def build_calendar_page(crawled_at=""):
     now = datetime.now()
     current_month = now.month
     months = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
@@ -1676,6 +1679,7 @@ def build_calendar_page():
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
 </footer>
 </body></html>"""
 
@@ -1745,10 +1749,10 @@ def main():
                    "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history))
-    build_fish_pages(valid_catches, history)
-    build_area_pages(valid_catches, history)
+    build_fish_pages(valid_catches, history, crawled_at)
+    build_area_pages(valid_catches, history, crawled_at)
     with open("calendar.html", "w", encoding="utf-8") as f:
-        f.write(build_calendar_page())
+        f.write(build_calendar_page(crawled_at))
     print(f"\n=== 完了 ===")
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
     print(f"エラー: {errors or 'なし'}")
