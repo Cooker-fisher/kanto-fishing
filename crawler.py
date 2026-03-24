@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.3
+関東船釣り情報クローラー v5.6
+変更点(v5.6):
+- SEO改善: fish・areaページのtitle/H1に検索キーワードと件数を明記
+- SEO改善: canonical / OGP / BreadcrumbList schema を全ページに追加
+- SEO改善: 内部リンク強化（fish→関連魚種 / area→近隣港）
+- SITE_URL定数を追加
 変更点(v5.3):
 - データ品質改善: 船中フラグ検出・kg/cm分離・異常値バリデーション・重複排除
 変更点(v5.2):
@@ -15,6 +20,7 @@ import re, json, time, os, csv
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
+from urllib.parse import quote
 from html.parser import HTMLParser
 
 SHIPS = [
@@ -147,6 +153,8 @@ if os.path.exists(_ships_json):
 BASE_URL     = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}"
 GYO_BASE_URL = "https://www.gyo.ne.jp/rep_tsuri_view%7CCID-{cid}.htm"
 USER_AGENT   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+SITE_URL = "https://funatsuri-yoso.com"
 
 # Google AdSense
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
@@ -1435,7 +1443,7 @@ def build_html(catches, crawled_at, history):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.6</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -1562,16 +1570,43 @@ def build_fish_pages(data, history, crawled_at=""):
     <tr><td>平均サイズ</td><td>{fmt(this_w.get("size_avg"),"cm")}</td><td>{fmt(last_w.get("size_avg"),"cm")}</td>{diff_cell(this_w.get("size_avg"),last_w.get("size_avg"))}</tr>
     <tr><td>出船数</td><td>{fmt(this_w.get("ships"),"隻")}</td><td>{fmt(last_w.get("ships"),"隻")}</td>{diff_cell(this_w.get("ships"),last_w.get("ships"))}</tr>
   </table>"""
+        fish_encoded = quote(fish, safe='')
+        fish_url = f"{SITE_URL}/fish/{fish_encoded}.html"
+        max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
+        fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
+        # 同エリアで釣れる関連魚種
+        _this_areas = set(c["area"] for c in catches)
+        _rel_counts: dict = {}
+        for _c in data:
+            if _c["area"] in _this_areas:
+                for _f in _c["fish"]:
+                    if _f != fish and _f != "不明":
+                        _rel_counts[_f] = _rel_counts.get(_f, 0) + 1
+        _rel_links = "".join(
+            '<a href="../fish/' + rf + '.html" style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;text-decoration:none;color:#4db8ff;font-size:13px;display:inline-block;margin:3px">' + rf + '</a>'
+            for rf, _ in sorted(_rel_counts.items(), key=lambda x: -x[1])[:6]
+        )
+        related_section_html = (
+            '<h2>🐟 同じエリアで釣れる魚</h2>'
+            '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">' + _rel_links + '</div>'
+        ) if _rel_links else ""
         fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.boat-catch{color:#f0a040;font-size:11px}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{fish}の釣果情報 | 関東船釣り予想</title>
-  <meta name="description" content="関東エリアの{fish}釣果情報。今週の釣れ具合・船宿ランキングをリアルタイム集計。">
+  <title>関東の{fish}釣果・船宿ランキング【今週{len(catches)}件】| 船釣り予想</title>
+  <meta name="description" content="{fish_desc}">
+  <link rel="canonical" href="{fish_url}">
+  <meta property="og:title" content="関東の{fish}釣果・船宿ランキング【今週{len(catches)}件】">
+  <meta property="og:description" content="{fish_desc}">
+  <meta property="og:url" content="{fish_url}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="船釣り予想">
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果情報","item":"{fish_url}"}}]}}</script>
   {ADSENSE_TAG}
   <style>{fish_css}</style>
 </head><body>
-<header><h1>🎣 {fish}の釣果情報</h1></header>
+<header><h1>🎣 関東の{fish}釣果・船宿ランキング</h1></header>
 <nav>
   <a href="../index.html">← トップへ戻る</a>
   <span style="color:#1a4060">|</span>
@@ -1585,12 +1620,13 @@ def build_fish_pages(data, history, crawled_at=""):
   <table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table>
   <h2>📋 最近の釣果 ({len(catches)}件)</h2>
   <table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table>
+  {related_section_html}
 </div>
 {DATA_NOTE_HTML}
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
 </footer>
 </body></html>"""
         with open(f"fish/{fish}.html", "w", encoding="utf-8") as f:
@@ -1646,17 +1682,39 @@ def build_area_pages(data, history, crawled_at=""):
             dim_attr = ' class="dim"' if is_dim else ""
             rows += f"<tr{dim_attr}><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
         group   = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
+        area_encoded = quote(area, safe='')
+        area_url = f"{SITE_URL}/area/{area_encoded}.html"
+        _top_fish_str = "・".join(f for f, _ in top_fish[:3])
+        _area_desc_fish = f"{_top_fish_str}など" if _top_fish_str else ""
+        area_desc = f"{area}（{group}）の船釣り釣果。今週{len(catches)}件。{_area_desc_fish}釣れている魚種と船宿ランキングを毎日更新。"
+        # 同グループの近隣港リンク
+        _group_areas = AREA_GROUPS.get(group, [])
+        _nearby_links = "".join(
+            '<a href="../area/' + a + '.html" style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;text-decoration:none;color:#4db8ff;font-size:13px;display:inline-block;margin:3px">' + a + '</a>'
+            for a in _group_areas if a != area and a in area_summary
+        )
+        nearby_section_html = (
+            '<h2>🗺️ 同エリアの港</h2>'
+            '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">' + _nearby_links + '</div>'
+        ) if _nearby_links else ""
         area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:8px}.fish-grid a:hover{border-color:#4db8ff!important}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.dim td{opacity:0.45}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{area}の釣果情報 | 関東船釣り予想</title>
-  <meta name="description" content="{area}エリアの船釣り釣果情報。今週釣れている魚種・船宿ランキングを毎日更新。">
+  <title>{area}の釣果速報・おすすめ船宿【今週{len(catches)}件】| 船釣り予想</title>
+  <meta name="description" content="{area_desc}">
+  <link rel="canonical" href="{area_url}">
+  <meta property="og:title" content="{area}の釣果速報・おすすめ船宿【今週{len(catches)}件】">
+  <meta property="og:description" content="{area_desc}">
+  <meta property="og:url" content="{area_url}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="船釣り予想">
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{group}","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":3,"name":"{area}の釣果","item":"{area_url}"}}]}}</script>
   {ADSENSE_TAG}
   <style>{area_css}</style>
 </head><body>
 <header>
-  <h1>🚢 {area}の釣果情報</h1>
+  <h1>🚢 {area}の釣果速報・おすすめ船宿</h1>
   <p>{group} ／ 今週の釣果: {len(catches)}件</p>
 </header>
 <nav><a href="../index.html">← トップへ戻る</a></nav>
@@ -1667,12 +1725,13 @@ def build_area_pages(data, history, crawled_at=""):
   <table><tr><th>#</th><th>船宿</th><th>釣果数</th><th>割合</th></tr>{ship_rows}</table>
   <h2>📋 最新の釣果</h2>
   <table><tr><th>日付</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table>
+  {nearby_section_html}
 </div>
 {DATA_NOTE_HTML}
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
 </footer>
 </body></html>"""
         with open(f"area/{area}.html", "w", encoding="utf-8") as f:
@@ -1720,7 +1779,7 @@ def build_calendar_page(crawled_at=""):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.3</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
 </footer>
 </body></html>"""
 
@@ -1793,7 +1852,7 @@ def main():
     now = datetime.now()
     crawled_at = now.strftime("%Y/%m/%d %H:%M")
     year = now.year
-    print(f"=== 関東船釣りクローラー v5.1 開始: {crawled_at} ===")
+    print(f"=== 関東船釣りクローラー v5.6 開始: {crawled_at} ===")
     print(f"対象: {len(SHIPS)} 船宿\n")
     for s in SHIPS:
         url = BASE_URL.format(sid=s["sid"])
