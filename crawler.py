@@ -11,7 +11,7 @@
   → choka_box 単位で li.date から正しい出船日を取得
   → 全釣果に「今日の日付」が入る問題を修正
 """
-import re, json, time, os
+import re, json, time, os, csv
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
@@ -357,6 +357,7 @@ def _parse_tables(tables, ship, area, date, month):
         count_idx  = next((i for i,h in enumerate(header) if "匹数" in h), 2)
         size_idx   = next((i for i,h in enumerate(header) if "大きさ" in h), 3)
         weight_idx = next((i for i,h in enumerate(header) if "重さ" in h), 4)
+        point_idx  = next((i for i,h in enumerate(header) if "ポイント" in h), None)
 
         for row in table[1:]:
             if len(row) <= fish_idx: continue
@@ -365,6 +366,7 @@ def _parse_tables(tables, ship, area, date, month):
             count_str  = row[count_idx].strip()  if count_idx  < len(row) else ""
             size_str   = row[size_idx].strip()   if size_idx   < len(row) else ""
             weight_str = row[weight_idx].strip() if weight_idx < len(row) else ""
+            point_str  = row[point_idx].strip()  if point_idx is not None and point_idx < len(row) else ""
             results.append({
                 "ship":        ship,
                 "area":        area,
@@ -375,6 +377,7 @@ def _parse_tables(tables, ship, area, date, month):
                 "count_range": extract_count(count_str),
                 "size_cm":     extract_size_cm(size_str),
                 "weight_kg":   extract_weight_kg(weight_str) or extract_weight_kg(size_str),
+                "point":       point_str or None,
             })
     return results
 
@@ -1686,6 +1689,66 @@ def build_calendar_page(crawled_at=""):
 # ============================================================
 # メイン
 # ============================================================
+CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max",
+              "size_min","size_max","kg_min","kg_max","is_boat","point"]
+
+def save_daily_csv(catches):
+    """当日の釣果をdata/YYYY-MM.csvに追記（重複スキップ）"""
+    os.makedirs("data", exist_ok=True)
+    today = datetime.now().strftime("%Y/%m/%d")
+    # 月ごとにファイル分割
+    ym = datetime.now().strftime("%Y-%m")
+    filepath = os.path.join("data", f"{ym}.csv")
+
+    # 既存レコードのキーセットを読み込んで重複チェック
+    existing_keys = set()
+    if os.path.exists(filepath):
+        with open(filepath, encoding="utf-8", newline="") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                key = (row["ship"], row["area"], row["date"], row["fish"])
+                existing_keys.add(key)
+
+    # 本日分のみ追記
+    new_rows = []
+    for c in catches:
+        if c.get("date") != today:
+            continue
+        for fish in (c["fish"] or ["不明"]):
+            key = (c["ship"], c["area"], c["date"], fish)
+            if key in existing_keys:
+                continue
+            cr = c.get("count_range") or {}
+            sc = c.get("size_cm")    or {}
+            wk = c.get("weight_kg") or {}
+            new_rows.append({
+                "ship":     c["ship"],
+                "area":     c["area"],
+                "date":     c["date"],
+                "fish":     fish,
+                "cnt_min":  cr.get("min", ""),
+                "cnt_max":  cr.get("max", ""),
+                "size_min": sc.get("min", ""),
+                "size_max": sc.get("max", ""),
+                "kg_min":   wk.get("min", ""),
+                "kg_max":   wk.get("max", ""),
+                "is_boat":  1 if cr.get("is_boat") else 0,
+                "point":    c.get("point") or "",
+            })
+
+    if not new_rows:
+        return 0
+
+    write_header = not os.path.exists(filepath)
+    with open(filepath, "a", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=CSV_HEADER)
+        if write_header:
+            writer.writeheader()
+        writer.writerows(new_rows)
+
+    return len(new_rows)
+
+
 def main():
     all_catches = []
     errors = []
@@ -1744,6 +1807,12 @@ def main():
 
     history = load_history()
     history = update_history(valid_catches, history)
+
+    # 日次CSV蓄積
+    csv_added = save_daily_csv(all_catches)
+    if csv_added:
+        print(f"CSV保存: {csv_added} 件追記 → data/{datetime.now().strftime('%Y-%m')}.csv")
+
     with open("catches.json", "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
                    "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
