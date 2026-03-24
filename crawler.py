@@ -151,6 +151,18 @@ USER_AGENT   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH
 # Google AdSense
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
 
+DATA_NOTE_HTML = """<div class="data-note">
+  <details>
+    <summary>データについて</summary>
+    <ul>
+      <li>釣果データは釣りビジョン（fishing-v.jp）から毎日自動収集しています</li>
+      <li>船宿ごとの表記ゆれや未記載項目があり、数値は参考値です</li>
+      <li>魚種・数量・サイズは独自ルールで正規化しています</li>
+      <li>「最終更新」は本サイトのデータ取得日時（日本時間16:30頃）を示します</li>
+    </ul>
+  </details>
+</div>"""
+
 FISH_MAP = {
     "アジ":     ["アジ", "LTアジ", "ライトアジ"],
     "タチウオ": ["タチウオ"],
@@ -1071,7 +1083,12 @@ th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left;border-bottom:1p
 td{padding:8px;border-bottom:1px solid #0d2137}
 tr:hover td{background:#0d2137}
 tr.highlight td{background:#1a2d10;color:#7ddd6f}
+tr.dim td{opacity:0.45}
 .boat-catch{color:#f0a040;font-size:11px}
+.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}
+.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}
+.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}
+.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .filter-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s}
 .filter-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
@@ -1262,9 +1279,10 @@ def build_catch_table(catches):
         cr = c.get("count_range")
         cnt = fmt_count(c)
         is_top = cr and not cr.get("is_boat") and cr["max"] == max_count and max_count > 0
+        is_dim = not cr or "不明" in c["fish"]
         sz_cm = fmt_size_cm(c)
         sz_kg = fmt_size_kg(c)
-        hl = ' class="highlight"' if is_top else ""
+        hl = ' class="highlight"' if is_top else (' class="dim"' if is_dim else "")
         max_val = cr["max"] if cr and not cr.get("is_boat") else 0
         fish_str = "・".join(c["fish"])
         rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>'
@@ -1278,7 +1296,7 @@ def build_catch_table(catches):
     </div>
     <div class="filter-bar">{filter_btns}</div>
     <table id="catch-table">
-      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ</th><th>重量</th></tr>
+      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th></tr>
       {rows}
     </table>"""
 
@@ -1413,6 +1431,7 @@ def build_html(catches, crawled_at, history):
   {catch_table}
   <p class="note">最終更新: {crawled_at}<span id="new-badge"></span> ／ 総件数: {len(catches)} 件</p>
 </div>
+{DATA_NOTE_HTML}
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
@@ -1501,7 +1520,8 @@ def build_fish_pages(data, history, crawled_at=""):
             sz_cm = fmt_size_cm(c); sz_kg = fmt_size_kg(c)
             cr  = c.get("count_range")
             is_top = cr and not cr.get("is_boat") and cr["max"] == max_cnt and max_cnt > 0
-            hl = ' class="highlight"' if is_top else ""
+            is_dim = not cr
+            hl = ' class="highlight"' if is_top else (' class="dim"' if is_dim else "")
             rows += f"<tr{hl}><td>{c['date'] or '-'}</td><td>{c['area']}</td><td>{c['ship']}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
         ship_counts = {}
         ship_max    = {}
@@ -1542,7 +1562,7 @@ def build_fish_pages(data, history, crawled_at=""):
     <tr><td>平均サイズ</td><td>{fmt(this_w.get("size_avg"),"cm")}</td><td>{fmt(last_w.get("size_avg"),"cm")}</td>{diff_cell(this_w.get("size_avg"),last_w.get("size_avg"))}</tr>
     <tr><td>出船数</td><td>{fmt(this_w.get("ships"),"隻")}</td><td>{fmt(last_w.get("ships"),"隻")}</td>{diff_cell(this_w.get("ships"),last_w.get("ships"))}</tr>
   </table>"""
-        fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.boat-catch{color:#f0a040;font-size:11px}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
+        fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.boat-catch{color:#f0a040;font-size:11px}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1566,6 +1586,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2>📋 最近の釣果 ({len(catches)}件)</h2>
   <table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table>
 </div>
+{DATA_NOTE_HTML}
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
@@ -1620,9 +1641,12 @@ def build_area_pages(data, history, crawled_at=""):
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:15]:
             cnt_str = fmt_count(c)
             sz_cm = fmt_size_cm(c); sz_kg = fmt_size_kg(c)
-            rows += f"<tr><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
+            cr = c.get("count_range")
+            is_dim = not cr or "不明" in c["fish"]
+            dim_attr = ' class="dim"' if is_dim else ""
+            rows += f"<tr{dim_attr}><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
         group   = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
-        area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:8px}.fish-grid a:hover{border-color:#4db8ff!important}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
+        area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:8px}.fish-grid a:hover{border-color:#4db8ff!important}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.dim td{opacity:0.45}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1644,6 +1668,7 @@ def build_area_pages(data, history, crawled_at=""):
   <h2>📋 最新の釣果</h2>
   <table><tr><th>日付</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table>
 </div>
+{DATA_NOTE_HTML}
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
@@ -1677,7 +1702,7 @@ def build_calendar_page(crawled_at=""):
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>関東船釣り カレンダー | 月別釣りものガイド</title>
   {ADSENSE_TAG}
-  <style>*{{box-sizing:border-box;margin:0;padding:0}}body{{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}}header{{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}}header h1{{font-size:20px;color:#4db8ff}}nav{{background:#081020;padding:8px 24px}}nav a{{color:#7a9bb5;text-decoration:none;font-size:13px}}.wrap{{max-width:900px;margin:0 auto;padding:20px 16px;overflow-x:auto}}h2{{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}}table{{border-collapse:collapse;font-size:13px;width:100%}}th{{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:center;min-width:36px}}th.cur-month{{background:#1a6ea8;color:#fff}}td{{padding:6px;text-align:center;border-bottom:1px solid #081020}}td.fish-name{{text-align:left;font-weight:bold;min-width:90px}}td.fish-name a{{color:#e0e8f0;text-decoration:none}}td.fish-name a:hover{{color:#4db8ff}}td.peak-count{{background:#e85d04;color:#fff}}td.peak-size{{background:#7209b7;color:#fff}}td.mid{{background:#1a6ea8;color:#fff}}td.low{{background:#0d2137;color:#444}}td.cur-month{{outline:2px solid #fff;outline-offset:-2px}}.legend{{display:flex;gap:16px;margin:16px 0;font-size:12px}}.leg{{display:flex;align-items:center;gap:6px}}.leg-dot{{width:14px;height:14px;border-radius:2px}}footer{{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}}footer a{{color:#4db8ff;text-decoration:none}}</style>
+  <style>*{{box-sizing:border-box;margin:0;padding:0}}body{{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}}header{{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}}header h1{{font-size:20px;color:#4db8ff}}nav{{background:#081020;padding:8px 24px}}nav a{{color:#7a9bb5;text-decoration:none;font-size:13px}}.wrap{{max-width:900px;margin:0 auto;padding:20px 16px;overflow-x:auto}}h2{{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}}table{{border-collapse:collapse;font-size:13px;width:100%}}th{{background:#0d2137;color:#4db8ff;padding:8px 6px;text-align:center;min-width:36px}}th.cur-month{{background:#1a6ea8;color:#fff}}td{{padding:6px;text-align:center;border-bottom:1px solid #081020}}td.fish-name{{text-align:left;font-weight:bold;min-width:90px}}td.fish-name a{{color:#e0e8f0;text-decoration:none}}td.fish-name a:hover{{color:#4db8ff}}td.peak-count{{background:#e85d04;color:#fff}}td.peak-size{{background:#7209b7;color:#fff}}td.mid{{background:#1a6ea8;color:#fff}}td.low{{background:#0d2137;color:#444}}td.cur-month{{outline:2px solid #fff;outline-offset:-2px}}.legend{{display:flex;gap:16px;margin:16px 0;font-size:12px}}.leg{{display:flex;align-items:center;gap:6px}}.leg-dot{{width:14px;height:14px;border-radius:2px}}footer{{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}}footer a{{color:#4db8ff;text-decoration:none}}.data-note{{max-width:900px;margin:20px auto 0;padding:0 16px}}.data-note details{{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}}.data-note summary{{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}}.data-note ul{{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}}</style>
 </head><body>
 <header><h1>📅 釣りものカレンダー</h1></header>
 <nav><a href="index.html">← トップへ戻る</a></nav>
@@ -1691,6 +1716,7 @@ def build_calendar_page(crawled_at=""):
   </div>
   <table><tr><th>魚種</th>{header_cells}</tr>{rows}</table>
 </div>
+{DATA_NOTE_HTML}
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
