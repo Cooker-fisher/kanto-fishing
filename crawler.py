@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.6
+関東船釣り情報クローラー v5.7
+変更点(v5.7):
+- point列を point_place / point_depth に分割（「水深」を区切りに前後を分割）
+- count_avg フィールドを追加（count_range の min/max 平均）
+- CSV_HEADER を更新（point→point_place/point_depth/cnt_avg）
 変更点(v5.6):
 - SEO改善: fish・areaページのtitle/H1に検索キーワードと件数を明記
 - SEO改善: canonical / OGP / BreadcrumbList schema を全ページに追加
@@ -300,6 +304,26 @@ def extract_size_cm(t):
     if m: v = int(m[1]); return {"min": v, "max": v}
     return None
 
+def parse_point(s):
+    """ポイント文字列を場所と水深に分割する。
+    '竹岡沖水深20～30m' → ('竹岡沖', '20～30m')
+    '水深15m'           → (None, '15m')
+    '竹岡沖'            → ('竹岡沖', None)
+    """
+    if not s:
+        return None, None
+    s = s.strip()
+    # 先頭が「水深」→ place なし
+    m = re.match(r'^水深(.+)', s)
+    if m:
+        return None, m.group(1).strip()
+    # 途中に「水深」→ place + depth
+    m = re.search(r'^(.+?)水深(.+)', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    # 「水深」なし → 全部 place
+    return s or None, None
+
 def parse_jp_date(date_str, year):
     """
     '2026年1月7日(水)' → '2026/01/07'
@@ -391,6 +415,7 @@ def _parse_tables(tables, ship, area, date, month):
             # fish_name に「船中」が含まれる場合も is_boat フラグを立てる
             if cr and re.search(r"船中|合計|全体", fish_name):
                 cr["is_boat"] = True
+            _pp, _pd = parse_point(point_str)
             results.append({
                 "ship":        ship,
                 "area":        area,
@@ -399,9 +424,11 @@ def _parse_tables(tables, ship, area, date, month):
                 "catch_raw":   f"{fish_name} {count_str} {size_str} {weight_str}".strip(),
                 "fish":        guess_fish(fish_name),
                 "count_range": cr,
+                "count_avg":   ((cr["min"] + cr["max"]) // 2) if cr else None,
                 "size_cm":     extract_size_cm(size_str),
                 "weight_kg":   extract_weight_kg(weight_str) or extract_weight_kg(size_str),
-                "point":       point_str or None,
+                "point_place": _pp,
+                "point_depth": _pd,
             })
     return results
 
@@ -414,7 +441,7 @@ def fetch(url):
             try: return raw.decode(enc)
             except: pass
         return raw.decode("utf-8", errors="replace")
-    except URLError as e:
+    except (URLError, TimeoutError, OSError) as e:
         print(f"ERROR: {e}"); return None
 
 def fetch_gyo(url):
@@ -427,7 +454,7 @@ def fetch_gyo(url):
             try: return raw.decode(enc)
             except: pass
         return raw.decode("utf-8", errors="replace")
-    except URLError as e:
+    except (URLError, TimeoutError, OSError) as e:
         print(f"ERROR: {e}"); return None
 
 # ============================================================
@@ -437,6 +464,91 @@ def fetch_gyo(url):
 _GYO_FISH_HDRS  = ("魚種", "釣り物", "種類")
 _GYO_COUNT_HDRS = ("匹数", "尾数", "数量", "釣果数")
 _GYO_SIZE_HDRS  = ("大きさ", "サイズ", "cm", "寸")
+
+def _parse_text_section_gyo(section_html, ship, area, date_str, month):
+    """
+    gyo.ne.jp のテキスト形式釣果セクションをパース。
+    word-break:break-all div の自由記述テキストから魚種・数量を抽出する。
+    """
+    # HTML タグ除去・正規化
+    text = re.sub(r'<[^>]+>', ' ', section_html)
+    text = re.sub(r'&[a-zA-Z]+;|&#\d+;', ' ', text)
+    text = re.sub(r'[\u3000\xa0\ufffd]+', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    if not text:
+        return []
+
+    results = []
+    # canonical → [読み方リスト] の逆引き辞書（長い名前を先にマッチ）
+    all_fish = {}  # fish_name → canonical
+    for canon, names in FISH_MAP.items():
+        for n in names:
+            all_fish[n] = canon
+    sorted_fish = sorted(all_fish.keys(), key=len, reverse=True)
+
+    found_canon = set()
+    for fish_name in sorted_fish:
+        if fish_name not in text:
+            continue
+        canon = all_fish[fish_name]
+        if canon in found_canon:
+            continue
+
+        # 数量パターン: 魚種[、,\s]+ N〜M 枚/匹/尾/本
+        p_range = rf'{re.escape(fish_name)}\s*[、,，\s]+\s*(\d+)\s*[〜~～]\s*(\d+)\s*[枚匹尾本]'
+        p_single = rf'{re.escape(fish_name)}\s*[、,，\s]+\s*(\d+)\s*[枚匹尾本]'
+
+        cr = None
+        for pat in [p_range, p_single]:
+            m = re.search(pat, text)
+            if m:
+                if len(m.groups()) == 2:
+                    mn, mx = int(m.group(1)), int(m.group(2))
+                else:
+                    mn = mx = int(m.group(1))
+                cr = {"min": mn, "max": mx}
+                break
+
+        if cr is None:
+            continue
+        found_canon.add(canon)
+
+        # サイズ（大きさ N〜M cm/kg/サイズ）
+        size_str = ""
+        sm = re.search(
+            rf'{re.escape(fish_name)}.{{0,80}}?(\d+(?:[.,、]\d+)?)\s*[〜~～]\s*(\d+(?:[.,、]\d+)?)\s*(cm|㎝|サイズ|kg|㎏|キロ)',
+            text, re.S)
+        if sm:
+            size_str = f"{sm.group(1)}〜{sm.group(2)}{sm.group(3)}"
+
+        # 水深（棚/水深 N m）
+        depth_str = None
+        dm = re.search(r'(?:棚|水深)\s*(\d+(?:[.,]\d+)?)\s*[mMｍM]', text)
+        if dm:
+            depth_str = f"{dm.group(1)}m"
+
+        # 釣り場（～沖・～漁場等）
+        place_str = None
+        pm = re.search(r'(?:^|[。。 　,])([^\s、。，。]{2,8}(?:沖|漁場|ポイント|前))', text)
+        if pm:
+            place_str = pm.group(1).strip()
+
+        results.append({
+            "ship":        ship,
+            "area":        area,
+            "date":        date_str,
+            "month":       month,
+            "catch_raw":   text[:200],
+            "fish":        [canon],
+            "count_range": cr,
+            "count_avg":   (cr["min"] + cr["max"]) // 2,
+            "size_cm":     extract_size_cm(size_str) if size_str else None,
+            "weight_kg":   extract_weight_kg(size_str) if size_str else None,
+            "point_place": place_str,
+            "point_depth": depth_str,
+        })
+    return results
+
 
 def _parse_tables_gyo(tables, ship, area, date, month):
     """gyo.ne.jp のテーブルリストから釣果を抽出する。"""
@@ -461,6 +573,9 @@ def _parse_tables_gyo(tables, ship, area, date, month):
                 continue
             count_str = row[count_idx].strip() if count_idx < len(row) else ""
             size_str  = row[size_idx].strip()  if size_idx  < len(row) else ""
+            cr_g = extract_count(count_str)
+            if cr_g is None:
+                continue  # 数量不明の行はスキップ（出船予定表等を除外）
             results.append({
                 "ship":        ship,
                 "area":        area,
@@ -468,9 +583,12 @@ def _parse_tables_gyo(tables, ship, area, date, month):
                 "month":       month,
                 "catch_raw":   f"{fish_name} {count_str} {size_str}".strip(),
                 "fish":        guess_fish(fish_name),
-                "count_range": extract_count(count_str),
+                "count_range": cr_g,
+                "count_avg":   ((cr_g["min"] + cr_g["max"]) // 2) if cr_g else None,
                 "size_cm":     extract_size_cm(size_str),
                 "weight_kg":   extract_weight_kg(size_str),
+                "point_place": None,
+                "point_depth": None,
             })
     return results
 
@@ -497,8 +615,8 @@ def parse_catches_gyo(html, ship, area, year):
 
     date_positions = []  # (html_position, date_str, month_int)
 
-    # YYYY年M月D日 / YYYY/M/D / YYYY-M-D
-    for m in re.finditer(r'(\d{4})[年/\-](\d{1,2})[月/\-](\d{1,2})日?', html):
+    # YYYY年M月D日 のみ（YYYY/M/D はナビURLと混同するため除外）
+    for m in re.finditer(r'(\d{4})年(\d{1,2})月(\d{1,2})日', html):
         res = _valid_date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
         if res:
             date_positions.append((m.start(), res[0], res[1]))
@@ -524,13 +642,17 @@ def parse_catches_gyo(html, ship, area, year):
             seen_dates.add(date_str)
             unique_dates.append((pos, date_str, mo))
 
-    # 日付セクションごとにテーブルをパース
+    # 日付セクションごとにパース（テーブル優先→テキスト形式フォールバック）
     for i, (date_pos, date_str, month) in enumerate(unique_dates):
         end_pos = unique_dates[i + 1][0] if i + 1 < len(unique_dates) else len(html)
         section = html[date_pos:end_pos]
+        # 1) テーブル形式を試みる
         parser  = TableParser()
         parser.feed(section)
         catches = _parse_tables_gyo(parser.tables, ship, area, date_str, month)
+        # 2) テーブルが取れなければテキスト形式を試みる
+        if not catches:
+            catches = _parse_text_section_gyo(section, ship, area, date_str, month)
         results.extend(catches)
 
     return results
@@ -1786,8 +1908,8 @@ def build_calendar_page(crawled_at=""):
 # ============================================================
 # メイン
 # ============================================================
-CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max",
-              "size_min","size_max","kg_min","kg_max","is_boat","point"]
+CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max","cnt_avg",
+              "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_depth"]
 
 def save_daily_csv(catches):
     """当日の釣果をdata/YYYY-MM.csvに追記（重複スキップ）"""
@@ -1819,18 +1941,20 @@ def save_daily_csv(catches):
             sc = c.get("size_cm")    or {}
             wk = c.get("weight_kg") or {}
             new_rows.append({
-                "ship":     c["ship"],
-                "area":     c["area"],
-                "date":     c["date"],
-                "fish":     fish,
-                "cnt_min":  cr.get("min", ""),
-                "cnt_max":  cr.get("max", ""),
-                "size_min": sc.get("min", ""),
-                "size_max": sc.get("max", ""),
-                "kg_min":   wk.get("min", ""),
-                "kg_max":   wk.get("max", ""),
-                "is_boat":  1 if cr.get("is_boat") else 0,
-                "point":    c.get("point") or "",
+                "ship":        c["ship"],
+                "area":        c["area"],
+                "date":        c["date"],
+                "fish":        fish,
+                "cnt_min":     cr.get("min", ""),
+                "cnt_max":     cr.get("max", ""),
+                "cnt_avg":     c["count_avg"] if c.get("count_avg") is not None else "",
+                "size_min":    sc.get("min", ""),
+                "size_max":    sc.get("max", ""),
+                "kg_min":      wk.get("min", ""),
+                "kg_max":      wk.get("max", ""),
+                "is_boat":     1 if cr.get("is_boat") else 0,
+                "point_place": c.get("point_place") or "",
+                "point_depth": c.get("point_depth") or "",
             })
 
     if not new_rows:
@@ -1852,38 +1976,29 @@ def main():
     now = datetime.now()
     crawled_at = now.strftime("%Y/%m/%d %H:%M")
     year = now.year
-    print(f"=== 関東船釣りクローラー v5.6 開始: {crawled_at} ===")
-    print(f"対象: {len(SHIPS)} 船宿\n")
-    for s in SHIPS:
-        url = BASE_URL.format(sid=s["sid"])
-        print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
-        html = fetch(url)
-        if not html:
-            errors.append(s["name"]); print("エラー"); continue
-        # v5.1: parse_catches_from_html で正しい日付を取得
-        catches = parse_catches_from_html(html, s["name"], s["area"], year)
-        print(f"{len(catches)} 件")
-        all_catches.extend(catches)
-        time.sleep(0.8)
+    fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
+    gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
+    print(f"=== 関東船釣りクローラー v5.7 開始: {crawled_at} ===")
+    print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
-    # --- gyo.ne.jp クロール ---
-    _gyo_json = os.path.join(os.path.dirname(__file__), "gyo_ships.json")
-    if os.path.exists(_gyo_json):
-        with open(_gyo_json, encoding="utf-8") as _f:
-            gyo_ships = json.load(_f)
-        print(f"\n--- gyo.ne.jp: {len(gyo_ships)} 船宿 ---")
-        for s in gyo_ships:
-            url = GYO_BASE_URL.format(cid=s["cid"])
-            print(f"  [{s['area']}] {s['name']} ...", end=" ", flush=True)
+    for s in SHIPS:
+        source = s.get("source", "fishing-v")
+        print(f"  [{s['area']}] {s['name']} ({source}) ...", end=" ", flush=True)
+        if source == "gyo":
+            url  = GYO_BASE_URL.format(cid=s["cid"])
             html = fetch_gyo(url)
             if not html:
                 errors.append(s["name"]); print("エラー"); continue
             catches = parse_catches_gyo(html, s["name"], s["area"], year)
-            print(f"{len(catches)} 件")
-            all_catches.extend(catches)
-            time.sleep(0.8)
-    else:
-        print("\n(gyo_ships.json なし → gyo.ne.jp スキップ。discover_gyo.py を実行してください)")
+        else:
+            url  = BASE_URL.format(sid=s["sid"])
+            html = fetch(url)
+            if not html:
+                errors.append(s["name"]); print("エラー"); continue
+            catches = parse_catches_from_html(html, s["name"], s["area"], year)
+        print(f"{len(catches)} 件")
+        all_catches.extend(catches)
+        time.sleep(0.8)
 
     # 重複排除
     before = len(all_catches)
