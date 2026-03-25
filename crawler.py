@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.8
+関東船釣り情報クローラー v5.9
+変更点(v5.9):
+- update_history: weight_avgを週次・月次集計に追加
+- build_fish_pages: 昨年比テーブルの「平均サイズ/重さ」でsize_avg=0時はweight_avgを表示
+- build_sitemap(): sitemap.xml自動生成（index/fish/area/fish_area 全URL）
 変更点(v5.8):
 - 推薦コメント整合性: build_reason_tagsに先週比タグ追加（📈先週比UP/📉先週比DOWN）
 - build_comment: WoW矛盾注記（top/highでwow≦-30%→「直近は急減傾向・注意」）
@@ -748,13 +752,16 @@ def update_history(catches, history):
         for fish in c.get("fish", []):
             for store, key in [(temp_w, wk), (temp_m, mo)]:
                 if key not in store: store[key] = {}
-                if fish not in store[key]: store[key][fish] = {"ships": 0, "sum": 0, "cnt": 0, "max": 0, "szs": []}
+                if fish not in store[key]: store[key][fish] = {"ships": 0, "sum": 0, "cnt": 0, "max": 0, "szs": [], "wkgs": []}
                 d = store[key][fish]
                 d["ships"] += 1
                 if not is_boat:  # 船中数は平均に含めない
                     d["sum"] += avg; d["cnt"] += 1
                 if mx > d["max"]: d["max"] = mx
                 if sz > 0: d["szs"].append(sz)
+                wkg = c.get("weight_kg") or {}
+                wkg_avg = (wkg.get("min", 0) + wkg.get("max", 0)) / 2 if wkg else 0
+                if wkg_avg > 0: d["wkgs"].append(wkg_avg)
     for store, hist_key in [(temp_w, "weekly"), (temp_m, "monthly")]:
         for key, fish_data in store.items():
             history[hist_key][key] = {}
@@ -763,7 +770,8 @@ def update_history(catches, history):
                     "ships": d["ships"],
                     "avg":   round(d["sum"] / d["cnt"], 1) if d["cnt"] > 0 else 0,
                     "max":   d["max"],
-                    "size_avg": round(sum(d["szs"]) / len(d["szs"]), 1) if d["szs"] else 0,
+                    "size_avg":   round(sum(d["szs"]) / len(d["szs"]), 1) if d["szs"] else 0,
+                    "weight_avg": round(sum(d["wkgs"]) / len(d["wkgs"]), 2) if d["wkgs"] else 0,
                 }
     with open("history.json", "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
@@ -1586,7 +1594,7 @@ def build_html(catches, crawled_at, history):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.8</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.9</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -1710,7 +1718,7 @@ def build_fish_pages(data, history, crawled_at=""):
     <tr><th></th><th>今週 ({year}/W{week_num:02d})</th><th>昨年同週 ({year-1}/W{week_num:02d})</th><th>昨年比</th></tr>
     <tr><td>平均釣果</td><td>{fmt(this_w.get("avg"),"匹")}</td><td>{fmt(last_w.get("avg"),"匹")}</td>{diff_cell(this_w.get("avg"),last_w.get("avg"))}</tr>
     <tr><td>最高釣果</td><td>{fmt(this_w.get("max"),"匹")}</td><td>{fmt(last_w.get("max"),"匹")}</td>{diff_cell(this_w.get("max"),last_w.get("max"))}</tr>
-    <tr><td>平均サイズ</td><td>{fmt(this_w.get("size_avg"),"cm")}</td><td>{fmt(last_w.get("size_avg"),"cm")}</td>{diff_cell(this_w.get("size_avg"),last_w.get("size_avg"))}</tr>
+    <tr><td>平均サイズ/重さ</td><td>{fmt(this_w.get("size_avg"),"cm") if this_w.get("size_avg") else fmt(this_w.get("weight_avg"),"kg")}</td><td>{fmt(last_w.get("size_avg"),"cm") if last_w.get("size_avg") else fmt(last_w.get("weight_avg"),"kg")}</td>{diff_cell(this_w.get("size_avg") or this_w.get("weight_avg"),last_w.get("size_avg") or last_w.get("weight_avg"))}</tr>
     <tr><td>出船数</td><td>{fmt(this_w.get("ships"),"隻")}</td><td>{fmt(last_w.get("ships"),"隻")}</td>{diff_cell(this_w.get("ships"),last_w.get("ships"))}</tr>
   </table>"""
         fish_encoded = quote(fish, safe='')
@@ -2105,6 +2113,50 @@ def save_daily_csv(catches):
     return len(new_rows)
 
 
+# ============================================================
+# sitemap.xml 自動生成
+# ============================================================
+def build_sitemap(data):
+    from urllib.parse import quote as _quote
+    now = datetime.now().strftime("%Y-%m-%d")
+    urls = [
+        (f"{SITE_URL}/", "1.0", "daily"),
+        (f"{SITE_URL}/calendar.html", "0.6", "weekly"),
+    ]
+    # fish/*.html
+    fish_set = set()
+    for c in data:
+        for f in c["fish"]:
+            if f != "不明":
+                fish_set.add(f)
+    for fish in sorted(fish_set):
+        urls.append((f"{SITE_URL}/fish/{_quote(fish, safe='')}.html", "0.8", "daily"))
+    # area/*.html
+    area_set = set(c["area"] for c in data)
+    for area in sorted(area_set):
+        urls.append((f"{SITE_URL}/area/{_quote(area, safe='')}.html", "0.7", "daily"))
+    # fish_area/*.html（≥5件の組み合わせ）
+    fa_counts: dict = {}
+    for c in data:
+        for f in c["fish"]:
+            if f != "不明":
+                fa_counts[(f, c["area"])] = fa_counts.get((f, c["area"]), 0) + 1
+    for (fish, area), cnt in sorted(fa_counts.items()):
+        if cnt >= 5:
+            urls.append((f"{SITE_URL}/fish_area/{_quote(fish, safe='')}_{_quote(area, safe='')}.html", "0.7", "weekly"))
+    entries = "\n".join(
+        f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
+        for loc, pri, freq in urls
+    )
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{entries}
+</urlset>"""
+    with open("sitemap.xml", "w", encoding="utf-8") as f:
+        f.write(xml)
+    print(f"sitemap.xml: {len(urls)} URLs 生成")
+
+
 def main():
     all_catches = []
     errors = []
@@ -2113,7 +2165,7 @@ def main():
     year = now.year
     fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
     gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
-    print(f"=== 関東船釣りクローラー v5.8 開始: {crawled_at} ===")
+    print(f"=== 関東船釣りクローラー v5.9 開始: {crawled_at} ===")
     print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
     for s in SHIPS:
@@ -2170,10 +2222,11 @@ def main():
     build_fish_area_pages(valid_catches, crawled_at)
     with open("calendar.html", "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
+    build_sitemap(valid_catches)
     print(f"\n=== 完了 ===")
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
     print(f"エラー: {errors or 'なし'}")
-    print(f"出力: catches.json / index.html / fish/*.html / area/*.html / calendar.html")
+    print(f"出力: catches.json / index.html / fish/*.html / area/*.html / fish_area/*.html / sitemap.xml")
 
 if __name__ == "__main__":
     main()
