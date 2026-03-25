@@ -1,0 +1,21 @@
+name: history_crawl
+on:
+  workflow_dispatch:
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: run history_crawl
+        run: python3 history_crawl.py
+      - name: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add history.json
+          git commit -m "history: 過去2年データ一括取得 $(date +'%Y/%m/%d')" || echo "nothing to commit"
+          git push
