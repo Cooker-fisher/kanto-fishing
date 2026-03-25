@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.7
+関東船釣り情報クローラー v5.8
+変更点(v5.8):
+- 推薦コメント整合性: build_reason_tagsに先週比タグ追加（📈先週比UP/📉先週比DOWN）
+- build_comment: WoW矛盾注記（top/highでwow≦-30%→「直近は急減傾向・注意」）
+- 魚種×港ページ新設: build_fish_area_pages()（≥5件の組み合わせのみ fish_area/ に生成）
+- build_fish_pages: 「エリア別の釣果」セクション追加（fish_area/へのリンク）
 変更点(v5.7):
 - point列を point_place / point_depth に分割（「水深」を区切りに前後を分割）
 - count_avg フィールドを追加（count_range の min/max 平均）
@@ -1581,7 +1586,7 @@ def build_html(catches, crawled_at, history):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.6</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.8</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -2108,7 +2113,7 @@ def main():
     year = now.year
     fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
     gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
-    print(f"=== 関東船釣りクローラー v5.7 開始: {crawled_at} ===")
+    print(f"=== 関東船釣りクローラー v5.8 開始: {crawled_at} ===")
     print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
     for s in SHIPS:
