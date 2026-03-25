@@ -5,7 +5,7 @@ description: funatsuri-yoso.com の実装状況と未実装タスク（2026/03/2
 type: project
 ---
 
-現行バージョン: crawler.py v5.6
+現行バージョン: crawler.py v5.7
 
 最終更新: 2026/03/25
 
@@ -27,21 +27,27 @@ type: project
 - ✅ 不明・空欄行の薄表示（class="dim" opacity:0.45）（2026/03/24）
 - ✅ 全ページに「データについて」折りたたみフッター追加（2026/03/24）
 - ✅ SEO改善: fish・areaページのtitle/H1最適化（2026/03/25）
-  - title: 「関東の{魚種}釣果・船宿ランキング【今週N件】| 船釣り予想」
-  - area: 「{港}の釣果速報・おすすめ船宿【今週N件】| 船釣り予想」
 - ✅ SEO改善: canonical / OGP / BreadcrumbList schema 全ページ追加（2026/03/25）
 - ✅ SEO改善: 内部リンク強化（2026/03/25）
-  - fish page → 同エリアで釣れる関連魚種ページ（最大6件）
-  - area page → 同グループの近隣港ページ（データある港のみ）
+- ✅ 推薦コメント整合性（2026/03/25）
+  - build_reason_tagsに先週比タグ追加（📈先週比UP / 📉先週比DOWN）
+  - _render_tagsでwow-upを正方向として扱う
+  - build_commentでWoW矛盾注記: top/highでwow≦-30%→「直近は急減傾向・注意」
+- ✅ 魚種×港ページ（fish_area/）新設（2026/03/25）
+  - build_fish_area_pages(): ≥5件の(fish,area)組み合わせのみ生成
+  - fish pageに「エリア別の釣果」セクション追加（fish_area/へのリンク）
+  - main()に呼び出し追加
+  - URL: fish_area/{fish}_{area}.html
+  - 100〜200ページ増見込み
 
 ## 次チャットでやること（優先順）
 
-### ① 推薦コメント整合性（要件1）
-- 推薦タグ・コメントが件数/昨年比/先週比と矛盾しないようロジック修正
+### ① sitemap.xml の自動生成
+- fish_area/ ページが増えたため、sitemap.xml をクロール時に自動生成する
+- fish/*.html / area/*.html / fish_area/*.html を全列挙
 
-### ② 魚種×港ページ（fish_area/）新設（SEO最優先）
-- build_fish_area_pages() 追加 / ≥5件の組み合わせのみ生成
-- 100〜200ページ増見込み / 最高インパクト
+### ② 魚種ページに「今週vs昨年同週比較」テーブル表示
+- すでに実装済み（yoy_html）だが fish_area ページには未追加
 
 ## 未実装タスク（中長期）:
 - AdSense審査結果待ち
@@ -50,6 +56,5 @@ type: project
 - じゃらんアフィリエイト
 - history_crawl.pyで過去2年分一括取得
 - crawl.ymlのNode.js 20→24アップグレード
-- 魚種ページに昨年同週比較テーブル表示
 
-**Why:** ①②③を2026/03/24に実装完了。次は推薦コメント整合性（④）。
+**Why:** 推薦コメント整合性・魚種×港ページを2026/03/25に実装完了。次はsitemap.xml自動生成が最優先。
