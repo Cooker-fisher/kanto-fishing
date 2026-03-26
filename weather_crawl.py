@@ -6,6 +6,8 @@
   URL: https://marine-api.open-meteo.com/v1/marine
 - NOWPHAS（港湾の沿岸波浪情報）から潮位のみ取得（実測値）
   URL: https://nowphas.mlit.go.jp/choui_mapxml/
+- tide736.net APIから満干潮時刻・大潮小潮・月齢を取得
+  URL: https://tide736.net/api/get_tide.php?pc={pc}&hc={hc}&yr=...
 - weather_data/{海域コード}.csv に1時間ごとに追記
 
 [海域別の座標（Open-Meteo Marine）]
@@ -18,6 +20,12 @@
   217 = 第二海堡（東京湾）
   221 = 京浜港横浜（相模湾代替）
   222 = 鹿島港（外房・茨城）
+
+[tide736.net 港コード（関東エリア）]
+  pc=13, hc=0001 = 築地（東京湾）
+  pc=14, hc=0015 = 諸磯（相模湾）
+  pc=12, hc=0005 = 上総勝浦（外房）
+  pc=08, hc=0005 = 大洗（茨城）
 
 [アメダス観測点IDの確認方法]
   https://www.jma.go.jp/bosai/amedas/const/amedastable.json
@@ -41,34 +49,46 @@ SEA_AREAS = {
         "lat":        35.3,
         "lon":        139.7,
         "amedas_ids": ["46106", "45401"],   # 横浜・館山
-        "tide_code":  217,                   # 第二海堡
+        "tide_code":  217,                   # 第二海堡（NOWPHAS潮位）
+        "tide_pc":    13,                    # 都道府県コード: 東京
+        "tide_hc":    "0001",               # 港コード: 築地
     },
     "sagami_bay": {
         "name":       "相模湾",
         "lat":        35.0,
         "lon":        139.4,
         "amedas_ids": ["46211", "46106"],   # 三浦・横浜
-        "tide_code":  221,                   # 京浜港横浜（代替）
+        "tide_code":  221,                   # 京浜港横浜（NOWPHAS潮位）
+        "tide_pc":    14,                    # 都道府県コード: 神奈川
+        "tide_hc":    "0015",               # 港コード: 諸磯（三浦半島西岸）
     },
     "outer_boso": {
         "name":       "外房",
         "lat":        35.4,
         "lon":        140.6,
         "amedas_ids": ["45371", "45148"],   # 勝浦・銚子
-        "tide_code":  222,                   # 鹿島港
+        "tide_code":  222,                   # 鹿島港（NOWPHAS潮位）
+        "tide_pc":    12,                    # 都道府県コード: 千葉
+        "tide_hc":    "0005",               # 港コード: 上総勝浦
     },
     "ibaraki": {
         "name":       "茨城沖",
         "lat":        36.2,
         "lon":        140.7,
         "amedas_ids": ["40046", "45148"],   # 大洗・銚子
-        "tide_code":  222,                   # 鹿島港
+        "tide_code":  222,                   # 鹿島港（NOWPHAS潮位）
+        "tide_pc":    8,                     # 都道府県コード: 茨城
+        "tide_hc":    "0005",               # 港コード: 大洗
     },
 }
 
 CSV_HEADER = ["datetime", "wave_height", "wave_period", "swell_height",
               "wind_speed", "wind_dir", "temp", "sea_surface_temp",
-              "tide_level", "area"]
+              "tide_level",
+              "flood1", "flood1_cm", "flood2", "flood2_cm",
+              "ebb1", "ebb1_cm", "ebb2", "ebb2_cm",
+              "tide_range", "tide_type", "moon_age",
+              "area"]
 
 _WIND_DIR_DEG = {
     1: 0, 2: 23, 3: 45, 4: 68, 5: 90, 6: 113, 7: 135, 8: 158,
@@ -156,6 +176,55 @@ def get_marine_data(lat, lon):
     except Exception as e:
         print(f"  Open-Meteo Marine parse error: {e}")
         return None, None, None, None
+
+
+# ── tide736.net（満干潮時刻・大潮小潮・月齢） ─────────────────────────
+
+def get_tide_prediction(pc, hc):
+    """
+    満干潮時刻・潮汐区分（大潮/小潮）・月齢を返す。
+    戻り値: dict with flood1/flood1_cm/flood2/flood2_cm/ebb1/ebb1_cm/ebb2/ebb2_cm/
+                    tide_range/tide_type/moon_age
+    """
+    now = datetime.now()
+    url = (
+        f"https://tide736.net/api/get_tide.php"
+        f"?pc={pc}&hc={hc}"
+        f"&yr={now.year}&mn={now.month:02d}&dy={now.day:02d}&rg=day"
+    )
+    txt = fetch(url)
+    if not txt:
+        return {}
+    try:
+        data = json.loads(txt)
+        date_key = now.strftime("%Y-%m-%d")
+        day = data["tide"]["chart"][date_key]
+
+        floods = day.get("flood", [])
+        ebbs   = day.get("edd",   [])
+        moon   = day.get("moon",  {})
+
+        def _t(lst, i): return lst[i]["time"] if len(lst) > i else ""
+        def _c(lst, i): return lst[i]["cm"]   if len(lst) > i else ""
+
+        flood_cms = [f["cm"] for f in floods if f.get("cm") is not None]
+        ebb_cms   = [e["cm"] for e in ebbs   if e.get("cm") is not None]
+        tide_range = ""
+        if flood_cms and ebb_cms:
+            tide_range = round(max(flood_cms) - min(ebb_cms), 1)
+
+        return {
+            "flood1":    _t(floods, 0), "flood1_cm": _c(floods, 0),
+            "flood2":    _t(floods, 1), "flood2_cm": _c(floods, 1),
+            "ebb1":      _t(ebbs,   0), "ebb1_cm":   _c(ebbs,   0),
+            "ebb2":      _t(ebbs,   1), "ebb2_cm":   _c(ebbs,   1),
+            "tide_range": tide_range,
+            "tide_type":  moon.get("title", ""),
+            "moon_age":   moon.get("age",   ""),
+        }
+    except Exception as e:
+        print(f"  tide736 parse error: {e}")
+        return {}
 
 
 # ── NOWPHAS潮位（実測値のみ） ──────────────────────────────────────────
@@ -250,6 +319,13 @@ def main():
         tide = get_nowphas_tide(area["tide_code"])
         print(f"  潮位:{tide} cm  (code={area['tide_code']})")
 
+        # tide736.net（満干潮・大潮小潮・月齢）
+        tp = get_tide_prediction(area["tide_pc"], area["tide_hc"])
+        print(f"  満潮1:{tp.get('flood1','')} ({tp.get('flood1_cm','')}cm)  "
+              f"満潮2:{tp.get('flood2','')} ({tp.get('flood2_cm','')}cm)  "
+              f"潮区分:{tp.get('tide_type','')}  月齢:{tp.get('moon_age','')}")
+        time.sleep(0.5)
+
         row = {
             "datetime":         dt_str,
             "wave_height":      wave_h  if wave_h  is not None else "",
@@ -260,6 +336,17 @@ def main():
             "temp":             amed["temp"]        if amed["temp"]        is not None else "",
             "sea_surface_temp": sst     if sst     is not None else "",
             "tide_level":       tide    if tide    is not None else "",
+            "flood1":           tp.get("flood1",    ""),
+            "flood1_cm":        tp.get("flood1_cm", ""),
+            "flood2":           tp.get("flood2",    ""),
+            "flood2_cm":        tp.get("flood2_cm", ""),
+            "ebb1":             tp.get("ebb1",      ""),
+            "ebb1_cm":          tp.get("ebb1_cm",   ""),
+            "ebb2":             tp.get("ebb2",      ""),
+            "ebb2_cm":          tp.get("ebb2_cm",   ""),
+            "tide_range":       tp.get("tide_range",""),
+            "tide_type":        tp.get("tide_type", ""),
+            "moon_age":         tp.get("moon_age",  ""),
             "area":             area["name"],
         }
         save_csv(area_code, row)
