@@ -2,16 +2,22 @@
 """
 気象データ収集スクリプト weather_crawl.py
 - 気象庁アメダスから風速・風向・気温を取得
-- NOWPHAS（港湾の沿岸波浪情報）から波高・波周期・潮位を取得
-  URL: https://nowphas.mlit.go.jp/mapxml/       (波浪 XML)
-       https://nowphas.mlit.go.jp/choui_mapxml/ (潮位 XML)
+- Open-Meteo Marine APIから波高・波周期・うねり・海面水温を取得
+  URL: https://marine-api.open-meteo.com/v1/marine
+- NOWPHAS（港湾の沿岸波浪情報）から潮位のみ取得（実測値）
+  URL: https://nowphas.mlit.go.jp/choui_mapxml/
 - weather_data/{海域コード}.csv に1時間ごとに追記
 
-[NOWPHAS観測点コード（関東エリア）]
-  217 = 第二海堡（東京湾）     wave+tide
-  221 = 京浜港横浜（相模湾代替） tideのみ
-  222 = 鹿島港（外房代替）     wave+tide
-  209 = 茨城港常陸那珂（茨城）  wave+tide
+[海域別の座標（Open-Meteo Marine）]
+  東京湾:  lat=35.3, lon=139.7
+  相模湾:  lat=35.0, lon=139.4
+  外房:    lat=35.4, lon=140.6
+  茨城沖:  lat=36.2, lon=140.7
+
+[NOWPHAS潮位観測点コード（関東エリア）]
+  217 = 第二海堡（東京湾）
+  221 = 京浜港横浜（相模湾代替）
+  222 = 鹿島港（外房・茨城）
 
 [アメダス観測点IDの確認方法]
   https://www.jma.go.jp/bosai/amedas/const/amedastable.json
@@ -31,33 +37,38 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Safar
 # ── 海域設定 ───────────────────────────────────────────────────────────
 SEA_AREAS = {
     "tokyo_bay": {
-        "name":           "東京湾",
-        "amedas_ids":     ["46106", "45401"],   # 横浜・館山
-        "wave_code":      217,                   # 第二海堡
-        "tide_code":      217,                   # 第二海堡
+        "name":       "東京湾",
+        "lat":        35.3,
+        "lon":        139.7,
+        "amedas_ids": ["46106", "45401"],   # 横浜・館山
+        "tide_code":  217,                   # 第二海堡
     },
     "sagami_bay": {
-        "name":           "相模湾",
-        "amedas_ids":     ["46211", "46106"],   # 三浦・横浜
-        "wave_code":      None,                  # 観測点なし
-        "tide_code":      221,                   # 京浜港横浜（代替）
+        "name":       "相模湾",
+        "lat":        35.0,
+        "lon":        139.4,
+        "amedas_ids": ["46211", "46106"],   # 三浦・横浜
+        "tide_code":  221,                   # 京浜港横浜（代替）
     },
     "outer_boso": {
-        "name":           "外房",
-        "amedas_ids":     ["45371", "45148"],   # 勝浦・銚子
-        "wave_code":      222,                   # 鹿島港（代替）
-        "tide_code":      222,                   # 鹿島港
+        "name":       "外房",
+        "lat":        35.4,
+        "lon":        140.6,
+        "amedas_ids": ["45371", "45148"],   # 勝浦・銚子
+        "tide_code":  222,                   # 鹿島港
     },
     "ibaraki": {
-        "name":           "茨城沖",
-        "amedas_ids":     ["40046", "45148"],   # 大洗・銚子
-        "wave_code":      209,                   # 茨城港常陸那珂
-        "tide_code":      222,                   # 鹿島港（209に潮位データなしのため代替）
+        "name":       "茨城沖",
+        "lat":        36.2,
+        "lon":        140.7,
+        "amedas_ids": ["40046", "45148"],   # 大洗・銚子
+        "tide_code":  222,                   # 鹿島港
     },
 }
 
-CSV_HEADER = ["datetime", "wave_height", "wave_period", "wind_speed",
-              "wind_dir", "temp", "tide_level", "area"]
+CSV_HEADER = ["datetime", "wave_height", "wave_period", "swell_height",
+              "wind_speed", "wind_dir", "temp", "sea_surface_temp",
+              "tide_level", "area"]
 
 _WIND_DIR_DEG = {
     1: 0, 2: 23, 3: 45, 4: 68, 5: 90, 6: 113, 7: 135, 8: 158,
@@ -114,23 +125,49 @@ def parse_amedas(amedas_data, station_ids):
     }
 
 
-# ── NOWPHAS（波浪・潮位） ─────────────────────────────────────────────
-# URL: https://nowphas.mlit.go.jp/mapxml/       → 波浪 XML
-#      https://nowphas.mlit.go.jp/choui_mapxml/ → 潮位 XML
-# 欠測値 = 99999 → None として扱う
+# ── Open-Meteo Marine API（波浪・海面水温） ────────────────────────────
 
-NOWPHAS_WAVE_URL  = "https://nowphas.mlit.go.jp/mapxml/"
-NOWPHAS_TIDE_URL  = "https://nowphas.mlit.go.jp/choui_mapxml/"
+def get_marine_data(lat, lon):
+    """波高(m)・波周期(s)・うねり波高(m)・海面水温(℃)を返す。"""
+    url = (
+        f"https://marine-api.open-meteo.com/v1/marine"
+        f"?latitude={lat}&longitude={lon}"
+        f"&hourly=wave_height,wave_period,swell_wave_height,sea_surface_temperature"
+        f"&forecast_days=1&timezone=Asia/Tokyo"
+    )
+    txt = fetch(url)
+    if not txt:
+        return None, None, None, None
+    try:
+        data = json.loads(txt)
+        times = data["hourly"]["time"]
+        now_str = datetime.now().strftime("%Y-%m-%dT%H:00")
+        # 現在時刻のインデックスを探す（なければ直前の時刻を使う）
+        idx = 0
+        for i, t in enumerate(times):
+            if t <= now_str:
+                idx = i
+        h  = data["hourly"]["wave_height"][idx]
+        p  = data["hourly"]["wave_period"][idx]
+        sw = data["hourly"]["swell_wave_height"][idx]
+        st = data["hourly"]["sea_surface_temperature"][idx]
+        def _r(v, n=2): return round(v, n) if v is not None else None
+        return _r(h), _r(p), _r(sw), _r(st, 1)
+    except Exception as e:
+        print(f"  Open-Meteo Marine parse error: {e}")
+        return None, None, None, None
 
-_nowphas_wave_cache = None
+
+# ── NOWPHAS潮位（実測値のみ） ──────────────────────────────────────────
+
+NOWPHAS_TIDE_URL = "https://nowphas.mlit.go.jp/choui_mapxml/"
 _nowphas_tide_cache = None
 
-def _fetch_nowphas_xml(url):
-    txt = fetch(url)
+def _fetch_nowphas_tide_xml():
+    txt = fetch(NOWPHAS_TIDE_URL)
     if not txt: return {}
     result = {}
     try:
-        # BOM除去
         if txt.startswith('\ufeff'): txt = txt[1:]
         root = ET.fromstring(txt.encode('utf-8'))
         for mapdata in root.findall('mapdata'):
@@ -140,30 +177,11 @@ def _fetch_nowphas_xml(url):
         print(f"  NOWPHAS XML parse error: {e}")
     return result
 
-def get_nowphas_wave(code):
-    """波高(m)・波周期(s)を返す。欠測・観測なしは None。"""
-    global _nowphas_wave_cache
-    if _nowphas_wave_cache is None:
-        _nowphas_wave_cache = _fetch_nowphas_xml(NOWPHAS_WAVE_URL)
-        time.sleep(0.8)
-    if code is None: return None, None
-    mapdata = _nowphas_wave_cache.get(str(code))
-    if mapdata is None: return None, None
-    def _val(tag):
-        el = mapdata.find(tag)
-        if el is None or not el.text: return None
-        try:
-            v = float(el.text)
-            return None if v == 99999 else v
-        except: return None
-    return _val('yugiha'), _val('shiyuki')
-
 def get_nowphas_tide(code):
     """潮位(cm)を返す。欠測・観測なしは None。"""
     global _nowphas_tide_cache
     if _nowphas_tide_cache is None:
-        _nowphas_tide_cache = _fetch_nowphas_xml(NOWPHAS_TIDE_URL)
-        time.sleep(0.8)
+        _nowphas_tide_cache = _fetch_nowphas_tide_xml()
     if code is None: return None
     mapdata = _nowphas_tide_cache.get(str(code))
     if mapdata is None: return None
@@ -191,8 +209,7 @@ def save_csv(area_code, row):
 # ── メイン ───────────────────────────────────────────────────────────────
 
 def main():
-    global _nowphas_wave_cache, _nowphas_tide_cache
-    _nowphas_wave_cache = None
+    global _nowphas_tide_cache
     _nowphas_tide_cache = None
 
     now = datetime.now()
@@ -205,43 +222,45 @@ def main():
         print(f"アメダス時刻: {amedas_time}")
         amedas_data = fetch_amedas_map(amedas_time)
         print(f"アメダス観測点数: {len(amedas_data)}")
-        time.sleep(0.8)
+        time.sleep(0.5)
     else:
         print("アメダス時刻取得失敗")
 
-    # NOWPHAS データ一括取得（全海域共通）
-    print("NOWPHAS 波浪データ取得中...")
-    _nowphas_wave_cache = _fetch_nowphas_xml(NOWPHAS_WAVE_URL)
-    print(f"  観測点数: {len(_nowphas_wave_cache)}")
-    time.sleep(0.8)
+    # NOWPHAS潮位データ一括取得
     print("NOWPHAS 潮位データ取得中...")
-    _nowphas_tide_cache = _fetch_nowphas_xml(NOWPHAS_TIDE_URL)
+    _nowphas_tide_cache = _fetch_nowphas_tide_xml()
     print(f"  観測点数: {len(_nowphas_tide_cache)}")
-    time.sleep(0.8)
+    time.sleep(0.5)
 
     dt_str = now.strftime("%Y/%m/%d %H:%M")
 
     for area_code, area in SEA_AREAS.items():
         print(f"\n[{area['name']}]")
 
+        # アメダス（風・気温）
         amed = parse_amedas(amedas_data, area["amedas_ids"])
         print(f"  風速:{amed['wind_speed']} m/s  風向:{amed['wind_dir']}°  気温:{amed['temp']}℃")
 
-        wave_h, wave_p = get_nowphas_wave(area["wave_code"])
-        print(f"  波高:{wave_h} m  波周期:{wave_p} s  (code={area['wave_code']})")
+        # Open-Meteo Marine（波浪・海面水温）
+        wave_h, wave_p, swell_h, sst = get_marine_data(area["lat"], area["lon"])
+        print(f"  波高:{wave_h} m  波周期:{wave_p} s  うねり:{swell_h} m  水温:{sst}℃")
+        time.sleep(0.5)
 
+        # NOWPHAS潮位（実測）
         tide = get_nowphas_tide(area["tide_code"])
         print(f"  潮位:{tide} cm  (code={area['tide_code']})")
 
         row = {
-            "datetime":    dt_str,
-            "wave_height": wave_h   if wave_h   is not None else "",
-            "wave_period": wave_p   if wave_p   is not None else "",
-            "wind_speed":  amed["wind_speed"] if amed["wind_speed"] is not None else "",
-            "wind_dir":    amed["wind_dir"]   if amed["wind_dir"]   is not None else "",
-            "temp":        amed["temp"]        if amed["temp"]        is not None else "",
-            "tide_level":  tide     if tide     is not None else "",
-            "area":        area["name"],
+            "datetime":         dt_str,
+            "wave_height":      wave_h  if wave_h  is not None else "",
+            "wave_period":      wave_p  if wave_p  is not None else "",
+            "swell_height":     swell_h if swell_h is not None else "",
+            "wind_speed":       amed["wind_speed"] if amed["wind_speed"] is not None else "",
+            "wind_dir":         amed["wind_dir"]   if amed["wind_dir"]   is not None else "",
+            "temp":             amed["temp"]        if amed["temp"]        is not None else "",
+            "sea_surface_temp": sst     if sst     is not None else "",
+            "tide_level":       tide    if tide    is not None else "",
+            "area":             area["name"],
         }
         save_csv(area_code, row)
         print(f"  → weather_data/{area_code}.csv 保存済")
