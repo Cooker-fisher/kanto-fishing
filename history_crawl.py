@@ -13,11 +13,83 @@
 - UA複数ローテーション
 - 2年前より古いページは打ち切り
 """
-import re, json, time, os, sys, random, gzip
+import re, json, time, os, sys, random, gzip, csv
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from html.parser import HTMLParser
+
+CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max","cnt_avg",
+              "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_depth"]
+
+def save_to_daily_csv(all_records):
+    """
+    all_records を data/YYYY-MM.csv に月別追記（重複スキップ）。
+    crawler.py の save_daily_csv と同じフォーマット。
+    """
+    os.makedirs("data", exist_ok=True)
+    from collections import defaultdict
+
+    by_month = defaultdict(list)
+    for r in all_records:
+        date_str = r.get("date", "")
+        if not date_str:
+            continue
+        try:
+            ym = datetime.strptime(date_str, "%Y/%m/%d").strftime("%Y-%m")
+        except ValueError:
+            continue
+        by_month[ym].append(r)
+
+    total_added = 0
+    for ym, recs in by_month.items():
+        filepath = os.path.join("data", f"{ym}.csv")
+
+        existing_keys = set()
+        if os.path.exists(filepath):
+            with open(filepath, encoding="utf-8", newline="") as f:
+                for row in csv.DictReader(f):
+                    existing_keys.add((row["ship"], row["area"], row["date"], row["fish"]))
+
+        new_rows = []
+        for r in recs:
+            key = (r["ship"], r["area"], r["date"], r["fish"])
+            if key in existing_keys:
+                continue
+            avg = r.get("avg", 0)
+            mx  = r.get("max", 0)
+            mn  = max(0, 2 * avg - mx)  # avg=(min+max)//2 の逆算
+            sz  = r.get("size_max", 0)
+            wt  = r.get("weight_avg", 0)
+            new_rows.append({
+                "ship":        r["ship"],
+                "area":        r["area"],
+                "date":        r["date"],
+                "fish":        r["fish"],
+                "cnt_min":     mn if mn > 0 else "",
+                "cnt_max":     mx if mx > 0 else "",
+                "cnt_avg":     avg if avg > 0 else "",
+                "size_min":    "",
+                "size_max":    sz if sz > 0 else "",
+                "kg_min":      "",
+                "kg_max":      round(wt * 1.2, 2) if wt > 0 else "",
+                "is_boat":     1 if r.get("is_boat") else 0,
+                "point_place": "",
+                "point_depth": "",
+            })
+            existing_keys.add(key)
+
+        if not new_rows:
+            continue
+        write_header = not os.path.exists(filepath)
+        with open(filepath, "a", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=CSV_HEADER)
+            if write_header:
+                w.writeheader()
+            w.writerows(new_rows)
+        total_added += len(new_rows)
+
+    return total_added
 
 Z2H = str.maketrans("０１２３４５６７８９", "0123456789")
 # 全角数字＋小数点（gyo テキスト用）
@@ -428,6 +500,7 @@ def main():
         if i % 20 == 0:
             print(f">>> 中間保存... ({len(all_records)} 件)")
             build_and_save(all_records)
+            save_to_daily_csv(all_records)
         if i < total_fv:
             sleep_ship()
 
@@ -445,6 +518,7 @@ def main():
         if i % 10 == 0:
             print(f">>> 中間保存... ({len(all_records)} 件)")
             build_and_save(all_records)
+            save_to_daily_csv(all_records)
         if i < total_gyo:
             sleep_ship()
 
@@ -452,18 +526,15 @@ def main():
     wks = sorted(h["weekly"].keys())
     mos = sorted(h["monthly"].keys())
 
-    # 個別レコードを catches_all.json に保存（analysis用）
-    json.dump(all_records,
-              open("catches_all.json", "w", encoding="utf-8"),
-              ensure_ascii=False, indent=2)
+    # 日次CSVに保存（data/YYYY-MM.csv）
+    csv_added = save_to_daily_csv(all_records)
+
     print(f"\n=== 完了 ===")
     print(f"レコード総数: {len(all_records)} 件")
-    print(f"  釣りビジョン経由: fishing-v.jp")
-    print(f"  gyo.ne.jp 経由: gyo")
     print(f"週次: {len(wks)} 週 ({wks[0] if wks else '-'} 〜 {wks[-1] if wks else '-'})")
     print(f"月次: {len(mos)} ヶ月")
+    print(f"日次CSV追記: {csv_added} 件 → data/")
     print(f"終了: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')}")
-    print(f"個別レコード → catches_all.json")
 
 
 if __name__ == "__main__":
