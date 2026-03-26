@@ -2055,62 +2055,75 @@ CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max","cnt_avg",
               "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_depth"]
 
 def save_daily_csv(catches):
-    """当日の釣果をdata/YYYY-MM.csvに追記（重複スキップ）"""
+    """釣果をdata/YYYY-MM.csvに追記（重複スキップ）。
+    catches.json は pageID=1 で複数日分を含むため、今日分に限らず全件を保存する。
+    """
     os.makedirs("data", exist_ok=True)
-    today = datetime.now().strftime("%Y/%m/%d")
-    # 月ごとにファイル分割
-    ym = datetime.now().strftime("%Y-%m")
-    filepath = os.path.join("data", f"{ym}.csv")
 
-    # 既存レコードのキーセットを読み込んで重複チェック
-    existing_keys = set()
-    if os.path.exists(filepath):
-        with open(filepath, encoding="utf-8", newline="") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                key = (row["ship"], row["area"], row["date"], row["fish"])
-                existing_keys.add(key)
-
-    # 本日分のみ追記
-    new_rows = []
+    # 日付ごとにグループ化（月をまたぐ可能性があるため）
+    from collections import defaultdict
+    by_month = defaultdict(list)
     for c in catches:
-        if c.get("date") != today:
+        date_str = c.get("date", "")
+        if not date_str:
             continue
-        for fish in (c["fish"] or ["不明"]):
-            key = (c["ship"], c["area"], c["date"], fish)
-            if key in existing_keys:
-                continue
-            cr = c.get("count_range") or {}
-            sc = c.get("size_cm")    or {}
-            wk = c.get("weight_kg") or {}
-            new_rows.append({
-                "ship":        c["ship"],
-                "area":        c["area"],
-                "date":        c["date"],
-                "fish":        fish,
-                "cnt_min":     cr.get("min", ""),
-                "cnt_max":     cr.get("max", ""),
-                "cnt_avg":     c["count_avg"] if c.get("count_avg") is not None else "",
-                "size_min":    sc.get("min", ""),
-                "size_max":    sc.get("max", ""),
-                "kg_min":      wk.get("min", ""),
-                "kg_max":      wk.get("max", ""),
-                "is_boat":     1 if cr.get("is_boat") else 0,
-                "point_place": c.get("point_place") or "",
-                "point_depth": c.get("point_depth") or "",
-            })
+        try:
+            ym = datetime.strptime(date_str, "%Y/%m/%d").strftime("%Y-%m")
+        except ValueError:
+            continue
+        by_month[ym].append(c)
 
-    if not new_rows:
-        return 0
+    total_added = 0
+    for ym, month_catches in by_month.items():
+        filepath = os.path.join("data", f"{ym}.csv")
 
-    write_header = not os.path.exists(filepath)
-    with open(filepath, "a", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_HEADER)
-        if write_header:
-            writer.writeheader()
-        writer.writerows(new_rows)
+        # 既存レコードのキーセットを読み込んで重複チェック
+        existing_keys = set()
+        if os.path.exists(filepath):
+            with open(filepath, encoding="utf-8", newline="") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    key = (row["ship"], row["area"], row["date"], row["fish"])
+                    existing_keys.add(key)
 
-    return len(new_rows)
+        new_rows = []
+        for c in month_catches:
+            for fish in (c["fish"] or ["不明"]):
+                key = (c["ship"], c["area"], c["date"], fish)
+                if key in existing_keys:
+                    continue
+                cr = c.get("count_range") or {}
+                sc = c.get("size_cm")    or {}
+                wk = c.get("weight_kg") or {}
+                new_rows.append({
+                    "ship":        c["ship"],
+                    "area":        c["area"],
+                    "date":        c["date"],
+                    "fish":        fish,
+                    "cnt_min":     cr.get("min", ""),
+                    "cnt_max":     cr.get("max", ""),
+                    "cnt_avg":     c["count_avg"] if c.get("count_avg") is not None else "",
+                    "size_min":    sc.get("min", ""),
+                    "size_max":    sc.get("max", ""),
+                    "kg_min":      wk.get("min", ""),
+                    "kg_max":      wk.get("max", ""),
+                    "is_boat":     1 if cr.get("is_boat") else 0,
+                    "point_place": c.get("point_place") or "",
+                    "point_depth": c.get("point_depth") or "",
+                })
+
+        if not new_rows:
+            continue
+
+        write_header = not os.path.exists(filepath)
+        with open(filepath, "a", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_HEADER)
+            if write_header:
+                writer.writeheader()
+            writer.writerows(new_rows)
+        total_added += len(new_rows)
+
+    return total_added
 
 
 # ============================================================
@@ -2210,7 +2223,7 @@ def main():
     # 日次CSV蓄積
     csv_added = save_daily_csv(all_catches)
     if csv_added:
-        print(f"CSV保存: {csv_added} 件追記 → data/{datetime.now().strftime('%Y-%m')}.csv")
+        print(f"CSV保存: {csv_added} 件追記 → data/")
 
     with open("catches.json", "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
