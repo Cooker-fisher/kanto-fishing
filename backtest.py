@@ -121,42 +121,50 @@ def simple_regression(xs, ys):
 
 def weather_coefficient(weather_weekly, fish_records):
     """
-    fish_records: list of {"week": str, "actual_ships": int, "pred_ships": int}
-    気象係数（wave_height → 誤差の補正）を単純回帰で推定し、
-    残差の MAPE を返す。
+    気象閾値ルールによる avg MAPE 改善度を評価する。
+    波高・風速の閾値を超えた週は予測を下方修正する。
+
+    閾値ルール（経験則）:
+      wave_height >= 2.0m  → avg 予測を 0.75倍（荒天で釣果減）
+      wave_height >= 1.5m  → avg 予測を 0.85倍
+      wind_speed  >= 10 m/s → avg 予測を 0.90倍
     """
-    # wave_height と ratio (actual/pred) の回帰
-    xs, ys = [], []
+    MIN_SAMPLES = 5
+
+    def apply_rule(pred_avg, wdata):
+        if wdata is None:
+            return pred_avg
+        wh = wdata.get("wave_height") or 0
+        ws = wdata.get("wind_speed")  or 0
+        factor = 1.0
+        if   wh >= 2.0: factor *= 0.75
+        elif wh >= 1.5: factor *= 0.85
+        if ws >= 10.0:  factor *= 0.90
+        return pred_avg * factor
+
+    errors_base = []
+    errors_adj  = []
+
     for r in fish_records:
-        wk = r["week"]
-        w = weather_weekly.get(wk, {})
-        wh = w.get("wave_height")
-        if wh is None or r["pred_ships"] == 0:
+        wk  = r["week"]
+        wdata = weather_weekly.get(wk)
+        pa  = r["pred_avg"]
+        aa  = r["actual_avg"]
+        if pa <= 0 or aa <= 0:
             continue
-        ratio = r["actual_ships"] / r["pred_ships"]
-        xs.append(wh)
-        ys.append(ratio)
+        e_base = mape(pa, aa)
+        adj_pa = apply_rule(pa, wdata)
+        e_adj  = mape(adj_pa, aa)
+        if e_base is not None:
+            errors_base.append(e_base)
+        if e_adj is not None:
+            errors_adj.append(e_adj)
 
-    if len(xs) < 5:
-        return None  # データ不足
+    if len(errors_adj) < MIN_SAMPLES:
+        return None
 
-    slope, intercept = simple_regression(xs, ys)
-
-    errors = []
-    for r in fish_records:
-        wk = r["week"]
-        w = weather_weekly.get(wk, {})
-        wh = w.get("wave_height")
-        if wh is None or r["pred_ships"] == 0:
-            continue
-        adj_ratio = slope * wh + intercept
-        adj_ratio = max(0.3, min(3.0, adj_ratio))  # クリップ
-        adj_pred = r["pred_ships"] * adj_ratio
-        e = mape(adj_pred, r["actual_ships"])
-        if e is not None:
-            errors.append(e)
-
-    return round(sum(errors)/len(errors), 1) if errors else None
+    mape_adj = round(sum(errors_adj) / len(errors_adj), 1)
+    return mape_adj
 
 
 # ── メイン ───────────────────────────────────────────────────────
