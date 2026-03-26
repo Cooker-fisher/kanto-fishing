@@ -7,7 +7,7 @@
 - UA複数ローテーション
 - 2年前より古いページは打ち切り
 """
-import re, json, time, os, sys, random
+import re, json, time, os, sys, random, gzip
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
@@ -117,6 +117,9 @@ def fetch(url):
     try:
         r = urlopen(Request(url, headers=headers), timeout=15)
         raw = r.read()
+        # decompress if gzip
+        if raw[:2] == b'\x1f\x8b':
+            raw = gzip.decompress(raw)
         for enc in ("utf-8", "cp932", "shift_jis"):
             try: return raw.decode(enc)
             except: pass
@@ -248,11 +251,17 @@ def main():
     h = build_and_save(all_records)
     wks = sorted(h["weekly"].keys())
     mos = sorted(h["monthly"].keys())
+
+    # 個別レコードを catches_all.json に保存（analysis用）
+    json.dump(all_records,
+              open("catches_all.json", "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2)
     print(f"\n=== 完了 ===")
     print(f"レコード総数: {len(all_records)} 件")
     print(f"週次: {len(wks)} 週 ({wks[0] if wks else '-'} 〜 {wks[-1] if wks else '-'})")
     print(f"月次: {len(mos)} ヶ月")
     print(f"終了: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')}")
+    print(f"個別レコード → catches_all.json")
 
 
 if __name__ == "__main__":
