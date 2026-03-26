@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
 過去データ一括取得スクリプト（stealth mode）
+
+[データソース]
+- 釣りビジョン (fishing-v.jp): pageID ページネーション（pageID=1〜最大100）
+- gyo.ne.jp: nav リンク BFS（1ページ=1日付、約7日分/船宿）
+
+共通設定:
 - シングルワーカー（順次実行）
 - ページ間 1.5〜3.0 秒ランダムスリープ
 - 船宿間 5〜12 秒ランダムスリープ
@@ -14,8 +20,16 @@ from urllib.error import URLError
 from html.parser import HTMLParser
 
 Z2H = str.maketrans("０１２３４５６７８９", "0123456789")
+# 全角数字＋小数点（gyo テキスト用）
+Z2H_WIDE = str.maketrans("０１２３４５６７８９．", "0123456789.")
+
+# ── 釣りビジョン ──────────────────────────────────────────────────────
 BASE = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}&pageID={page}"
-GYO_BASE = "https://www.gyo.ne.jp/rep_tsuri_view%7CCID-{cid}.htm"
+
+# ── gyo.ne.jp ────────────────────────────────────────────────────────
+GYO_MAIN   = "https://www.gyo.ne.jp/rep_tsuri_view%7CCID-{cid}.htm"
+GYO_HIST   = "https://www.gyo.ne.jp/rep_tsuri_history_view%7CCID-{cid}%7Chdt-{hdt}%7Cdt-{dt}.htm"
+GYO_ORIGIN = "https://www.gyo.ne.jp"
 
 UA_POOL = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -186,6 +200,172 @@ def date_to_yearweek(ds):
     return f"{iso[0]}/W{iso[1]:02d}"
 
 
+# ── gyo.ne.jp フェッチ（Shift-JIS 優先） ────────────────────────────
+
+def fetch_gyo(url, retries=2):
+    """gyo.ne.jp 専用 fetch。cp932/shift_jis を優先してデコード。"""
+    for attempt in range(retries + 1):
+        try:
+            ua = random.choice(UA_POOL)
+            req = Request(url, headers={
+                "User-Agent": ua,
+                "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+                "Accept-Language": "ja,en-US;q=0.7",
+                "Connection": "keep-alive",
+            })
+            with urlopen(req, timeout=20) as r:
+                raw = r.read()
+            for enc in ("cp932", "shift_jis", "euc-jp", "utf-8"):
+                try:
+                    return raw.decode(enc)
+                except Exception:
+                    pass
+            return raw.decode("utf-8", errors="replace")
+        except Exception as e:
+            if attempt < retries:
+                time.sleep(2)
+            else:
+                print(f"  fetch_gyo error [{url[:80]}]: {e}")
+    return None
+
+
+# ── gyo.ne.jp テキストパーサー ────────────────────────────────────────
+
+# FISH_MAP をフラット化（長い名前を先にマッチ）: 遅延初期化
+_GYO_FISH_FLAT = {}   # keyword → canonical
+
+def _init_gyo_fish():
+    if _GYO_FISH_FLAT:
+        return
+    for canon, kws in FISH_MAP.items():
+        for kw in kws:
+            _GYO_FISH_FLAT[kw] = canon
+
+
+def _gyo_parse_page(html, date_str, ship_name, area_name):
+    """
+    gyo.ne.jp の 1 ページ（日付はURL等から既知）を解析し、
+    history_crawl 形式のレコードリストを返す。
+
+    テキストは全角数字を含むフリー文章形式。
+    テーブルが存在する場合にも対応する。
+    """
+    _init_gyo_fish()
+
+    # メインコンテンツ（word-break:break-all div 以降）を対象にする
+    anchor = html.find("word-break: break-all")
+    section = html[anchor:] if anchor >= 0 else html
+
+    # HTML タグ除去・全角→半角変換・空白正規化
+    text = re.sub(r"<[^>]+>", " ", section)
+    text = re.sub(r"&[a-zA-Z]+;|&#\d+;", " ", text)
+    text = re.sub(r"[\u3000\xa0\ufffd]+", " ", text)
+    text = text.translate(Z2H_WIDE)
+    text = re.sub(r"\s+", " ", text).strip()
+    if not text:
+        return []
+
+    sorted_names = sorted(_GYO_FISH_FLAT.keys(), key=len, reverse=True)
+    results = []
+    seen_canon = set()
+
+    for fish_name in sorted_names:
+        if fish_name not in text:
+            continue
+        canon = _GYO_FISH_FLAT[fish_name]
+        if canon in seen_canon:
+            continue
+
+        # 魚名から 100 文字以内で「N〜M 匹/枚/尾/本」パターンを探す
+        pat_range  = rf"{re.escape(fish_name)}.{{0,100}}?(\d+)\s*[〜~～]\s*(\d+)\s*[枚匹尾本]"
+        pat_single = rf"{re.escape(fish_name)}.{{0,60}}?(\d+)\s*[枚匹尾本]"
+
+        cr = None
+        for pat in (pat_range, pat_single):
+            m = re.search(pat, text, re.DOTALL)
+            if m:
+                if len(m.groups()) == 2:
+                    mn, mx = int(m.group(1)), int(m.group(2))
+                    cr = {"min": min(mn, mx), "max": max(mn, mx)}
+                else:
+                    v = int(m.group(1))
+                    cr = {"min": v, "max": v}
+                break
+
+        if not cr or cr["max"] == 0:
+            continue
+
+        seen_canon.add(canon)
+        results.append({
+            "date":       date_str,
+            "ship":       ship_name,
+            "area":       area_name,
+            "fish":       canon,
+            "max":        cr["max"],
+            "avg":        (cr["min"] + cr["max"]) // 2,
+            "is_boat":    False,
+            "size_max":   0,
+            "weight_avg": 0,
+        })
+
+    return results
+
+
+# ── gyo.ne.jp 船宿クローラー ──────────────────────────────────────────
+
+def crawl_ship_gyo(ship):
+    """
+    gyo.ne.jp の 1 船宿分（メインページ＋nav リンク）を取得する。
+
+    gyo.ne.jp は 1 ページ = 1 日付。
+    メインページと nav に列挙された過去ページをすべて取得する。
+    2 年前より古い日付はスキップ。
+    """
+    cid   = ship["cid"]
+    today = datetime.now().strftime("%Y/%m/%d")
+    all_records = []
+    visited = set()
+
+    def _parse_and_store(url, date_str):
+        if url in visited:
+            return
+        visited.add(url)
+        html = fetch_gyo(url)
+        if not html:
+            return
+        recs = _gyo_parse_page(html, date_str, ship["name"], ship["area"])
+        all_records.extend(recs)
+        return html  # nav リンク収集のため返す
+
+    # 1. メインページ（最新日付）
+    main_url = GYO_MAIN.format(cid=cid)
+    html = _parse_and_store(main_url, today)
+    if not html:
+        return all_records
+
+    # メインページ中の「発信」日付を抽出して上書き
+    m = re.search(r"(\d{4}/\d{2}/\d{2})\s*[&nbsp;　]*発信", html)
+    if m:
+        all_records_today_date = m.group(1)
+        for r in all_records:
+            r["date"] = all_records_today_date
+
+    # 2. nav リンクから過去ページを列挙して取得
+    nav_pattern = rf"/rep_tsuri_history_view\|CID-{re.escape(cid)}\|hdt-([0-9/]+)\|dt-([0-9/]+)\.htm"
+    for hdt, dt in re.findall(nav_pattern, html):
+        # 2 年以上前はスキップ
+        try:
+            if datetime.strptime(hdt, "%Y/%m/%d") < datetime.now() - timedelta(days=365 * 2):
+                continue
+        except ValueError:
+            continue
+        hist_url = GYO_HIST.format(cid=cid, hdt=hdt, dt=dt)
+        time.sleep(random.uniform(1.5, 3.0))
+        _parse_and_store(hist_url, hdt)
+
+    return all_records
+
+
 def build_and_save(all_records):
     weekly = {}; monthly = {}
     for r in all_records:
@@ -223,29 +403,49 @@ def build_and_save(all_records):
 def main():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from crawler import SHIPS
-    fv_ships = [s for s in SHIPS if s.get("source", "fishing-v") == "fishing-v"]
-    total = len(fv_ships)
+    fv_ships  = [s for s in SHIPS if s.get("source", "fishing-v") == "fishing-v"]
+    gyo_ships = [s for s in SHIPS if s.get("source") == "gyo"]
+
     print(f"=== 過去データ取得（stealth mode）===")
-    print(f"対象: {total} 船宿 / カットオフ: {CUTOFF}")
+    print(f"釣りビジョン: {len(fv_ships)} 船宿 / gyo.ne.jp: {len(gyo_ships)} 船宿")
+    print(f"カットオフ: {CUTOFF}")
     print(f"待機: ページ間1.5〜3秒 / 船宿間5〜12秒")
     print(f"開始: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')}\n")
 
     all_records = []
-    # シャッフルしてアクセス順をランダム化
+
+    # ── 釣りビジョン（pageID ページネーション） ──────────────────────
+    total_fv = len(fv_ships)
+    print(f"--- 釣りビジョン ({total_fv} 船宿) ---")
     ships_shuffled = fv_ships[:]
     random.shuffle(ships_shuffled)
 
     for i, ship in enumerate(ships_shuffled, 1):
-        print(f"[{i:03d}/{total}] {ship['area']} {ship['name']} ...", end=" ", flush=True)
+        print(f"[FV {i:03d}/{total_fv}] {ship['area']} {ship['name']} ...", end=" ", flush=True)
         recs = crawl_ship(ship)
         all_records.extend(recs)
         print(f"{len(recs)} 件")
-        # 20船宿ごとに中間保存
         if i % 20 == 0:
             print(f">>> 中間保存... ({len(all_records)} 件)")
             build_and_save(all_records)
-        # 船宿間スリープ（最後は不要）
-        if i < total:
+        if i < total_fv:
+            sleep_ship()
+
+    # ── gyo.ne.jp（nav リンク BFS） ──────────────────────────────────
+    total_gyo = len(gyo_ships)
+    print(f"\n--- gyo.ne.jp ({total_gyo} 船宿) ---")
+    gyo_shuffled = gyo_ships[:]
+    random.shuffle(gyo_shuffled)
+
+    for i, ship in enumerate(gyo_shuffled, 1):
+        print(f"[GYO {i:03d}/{total_gyo}] {ship['area']} {ship['name']} ...", end=" ", flush=True)
+        recs = crawl_ship_gyo(ship)
+        all_records.extend(recs)
+        print(f"{len(recs)} 件")
+        if i % 10 == 0:
+            print(f">>> 中間保存... ({len(all_records)} 件)")
+            build_and_save(all_records)
+        if i < total_gyo:
             sleep_ship()
 
     h = build_and_save(all_records)
@@ -258,6 +458,8 @@ def main():
               ensure_ascii=False, indent=2)
     print(f"\n=== 完了 ===")
     print(f"レコード総数: {len(all_records)} 件")
+    print(f"  釣りビジョン経由: fishing-v.jp")
+    print(f"  gyo.ne.jp 経由: gyo")
     print(f"週次: {len(wks)} 週 ({wks[0] if wks else '-'} 〜 {wks[-1] if wks else '-'})")
     print(f"月次: {len(mos)} ヶ月")
     print(f"終了: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')}")

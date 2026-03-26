@@ -602,15 +602,15 @@ def _parse_tables_gyo(tables, ship, area, date, month):
     return results
 
 
-def parse_catches_gyo(html, ship, area, year):
+def parse_catches_gyo(html, ship, area, year, cutoff_days=60):
     """
     gyo.ne.jp 専用パーサー。
     日付が特定できない記録は全てスキップ（今日の日付のデフォルト使用禁止）。
-    直近60日以内の日付のみ有効とする。
+    cutoff_days 日以内の日付のみ有効とする（デフォルト60日）。
     """
     results = []
     now     = datetime.now()
-    cutoff  = now - timedelta(days=60)
+    cutoff  = now - timedelta(days=cutoff_days)
 
     def _valid_date(y, mo, d):
         """(year, month, day) → (ok, date_str, month_int) or None"""
