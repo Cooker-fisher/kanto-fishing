@@ -264,6 +264,15 @@ def get_nowphas_tide(code):
 
 # ── CSV保存 ─────────────────────────────────────────────────────────────
 
+HISTORY_HEADER = [
+    "date", "wave_height", "wave_period", "swell_height",
+    "wind_speed", "wind_dir", "temp", "sea_surface_temp",
+    "flood1", "flood1_cm", "flood2", "flood2_cm",
+    "ebb1", "ebb1_cm", "ebb2", "ebb2_cm",
+    "tide_range", "tide_type", "moon_age",
+    "area",
+]
+
 def save_csv(area_code, row):
     os.makedirs("weather_data", exist_ok=True)
     path = os.path.join("weather_data", f"{area_code}.csv")
@@ -273,6 +282,27 @@ def save_csv(area_code, row):
         if write_header:
             w.writeheader()
         w.writerow(row)
+
+
+def save_history_csv(area_code, date_str, row):
+    """当日の日次サマリーを {area}_history.csv に追記。既存日付はスキップ。"""
+    os.makedirs("weather_data", exist_ok=True)
+    path = os.path.join("weather_data", f"{area_code}_history.csv")
+    # 既存の日付を確認
+    if os.path.exists(path):
+        with open(path, encoding="utf-8", newline="") as f:
+            for r in csv.DictReader(f):
+                if r.get("date") == date_str:
+                    return False  # 既存日付はスキップ
+    write_header = not os.path.exists(path)
+    history_row = {k: row.get(k, "") for k in HISTORY_HEADER}
+    history_row["date"] = date_str
+    with open(path, "a", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=HISTORY_HEADER)
+        if write_header:
+            w.writeheader()
+        w.writerow(history_row)
+    return True
 
 
 # ── メイン ───────────────────────────────────────────────────────────────
@@ -350,7 +380,9 @@ def main():
             "area":             area["name"],
         }
         save_csv(area_code, row)
-        print(f"  → weather_data/{area_code}.csv 保存済")
+        date_str = now.strftime("%Y-%m-%d")
+        added = save_history_csv(area_code, date_str, row)
+        print(f"  → weather_data/{area_code}.csv 保存済{'  / _history.csv 追記済' if added else '  / _history.csv スキップ（既存）'}")
 
     print(f"\n=== 完了 {datetime.now().strftime('%H:%M:%S')} ===")
 

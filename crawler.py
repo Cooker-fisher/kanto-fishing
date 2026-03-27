@@ -518,9 +518,10 @@ def _parse_text_section_gyo(section_html, ship, area, date_str, month):
         if canon in found_canon:
             continue
 
-        # 数量パターン: 魚種[、,\s]+ N〜M 枚/匹/尾/本
-        p_range = rf'{re.escape(fish_name)}\s*[、,，\s]+\s*(\d+)\s*[〜~～]\s*(\d+)\s*[枚匹尾本]'
-        p_single = rf'{re.escape(fish_name)}\s*[、,，\s]+\s*(\d+)\s*[枚匹尾本]'
+        # 数量パターン: 魚名から100文字以内に N〜M 枚/匹/尾/本
+        # 「マダイ 0.6キロ～1.5キロ 5～7枚」のように間に重さが入る形式にも対応
+        p_range  = rf'{re.escape(fish_name)}.{{0,100}}?(\d+)\s*[〜~～]\s*(\d+)\s*[枚匹尾本杯]'
+        p_single = rf'{re.escape(fish_name)}.{{0,100}}?(\d+)\s*[枚匹尾本杯]'
 
         cr = None
         for pat in [p_range, p_single]:
