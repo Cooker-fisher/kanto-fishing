@@ -1,6 +1,21 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.9
+関東船釣り情報クローラー v5.13
+変更点(v5.13):
+- 爆釣アラート: is_surge()追加（先週比1.5倍以上+出船5隻以上→🔥バッジ）
+- 旬の突入検出: calc_season_entry()追加（今年vs昨年の初釣果週を魚種ページに表示）
+- 週末予測確率: calc_weekend_prob()追加（過去2年同週実績→%表示）
+  - 狙い目セクションにプログレスバー表示
+  - 魚種カードにも小型プログレスバー追加
+変更点(v5.12):
+- 魚種別ページデザイン改善: ページ上部にサマリーカード（今週出船数・平均釣果・最高釣果）追加
+- 魚種別ページ: ランキングTOP3にメダル絵文字（🥇🥈🥉）
+- 魚種別ページ: テーブル縞模様・ホバー強調・バーにグラデーション追加
+変更点(v5.11):
+- staleデータフィルタ: 直近30日以内に釣果がない魚種をcalc_targetsのTOP5から除外
+- build_html: stale魚種カードを薄表示（opacity 0.55）＋最終釣果日の警告注記
+変更点(v5.10):
+- build_fish_area_pages: history引数追加・昨年同週比較テーブル（yoy-table）追加
 変更点(v5.9):
 - update_history: weight_avgを週次・月次集計に追加
 - build_fish_pages: 昨年比テーブルの「平均サイズ/重さ」でsize_avg=0時はweight_avgを表示
@@ -792,6 +807,44 @@ def get_prev_week_data(history, fish, year, week_num):
         prev_key = f"{year-1}/W52"
     return history["weekly"].get(prev_key, {}).get(fish)
 
+def calc_weekend_prob(history, fish, year, week_num):
+    """過去2年の同週±1週の実績から今週末の釣れる確率を算出（0〜100 or None）"""
+    weekly = history.get("weekly", {})
+    hits = 0
+    total = 0
+    for y in range(year - 2, year):
+        for w in range(max(1, week_num - 1), min(53, week_num + 2)):
+            key = f"{y}/W{w:02d}"
+            d = weekly.get(key, {}).get(fish)
+            if d is not None:
+                total += 1
+                if (d.get("ships") or 0) >= 3:
+                    hits += 1
+    if total == 0:
+        return None
+    return round(hits / total * 100)
+
+def is_surge(history, fish, year, week_num):
+    """先週比1.5倍以上かつ出船5隻以上なら爆釣アラート"""
+    this_w, _ = get_yoy_data(history, fish, year, week_num)
+    prev_w = get_prev_week_data(history, fish, year, week_num)
+    if not (this_w and prev_w):
+        return False
+    this_s = this_w.get("ships") or 0
+    prev_s = prev_w.get("ships") or 0
+    return prev_s > 0 and this_s / prev_s >= 1.5 and this_s >= 5
+
+def calc_season_entry(history, fish, year):
+    """今年と昨年の初釣果週（ships>=3の最初の週番号）を返す"""
+    weekly = history.get("weekly", {})
+    def _first_week(y):
+        for w in range(1, 53):
+            d = weekly.get(f"{y}/W{w:02d}", {}).get(fish)
+            if d and (d.get("ships") or 0) >= 3:
+                return w
+        return None
+    return _first_week(year), _first_week(year - 1)
+
 def calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month):
     """
     複合スコアを計算（0〜100点）
@@ -1214,6 +1267,8 @@ h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .fc{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;transition:border-color .2s}
 .fc:hover{border-color:#4db8ff}
+.fc.stale{opacity:0.55;border-color:#1a3050}
+.fc-stale{font-size:10px;color:#e85d04;margin-top:6px}
 .fc-summary{text-align:center}
 .fn{font-size:15px;font-weight:bold;color:#fff}
 .fk{font-size:12px;color:#4db8ff;margin-top:4px}
@@ -1283,6 +1338,9 @@ footer a:hover{text-decoration:underline}
 .tt-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .tt-comment{font-size:13px;color:#c8d8e8;line-height:1.6}
 .tt-meta{font-size:11px;color:#7a9bb5;margin-top:8px}
+.prob-wrap{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px}
+.prob-bar-bg{flex:1;max-width:120px;height:6px;background:#0a1628;border-radius:3px}
+.prob-bar-fill{height:6px;border-radius:3px}
 .rtag{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:bold}
 .rtag-up{background:#0d3320;color:#4dcc88;border:1px solid #1a5535}
 .rtag-down{background:#330d0d;color:#cc4d4d;border:1px solid #551a1a}
@@ -1296,6 +1354,13 @@ footer a:hover{text-decoration:underline}
 .trend-up{background:#0d3320;color:#4dcc88}
 .trend-down{background:#330d0d;color:#cc4d4d}
 .trend-flat{background:#1a2a3a;color:#7a9bb5}
+.surge-badge{font-size:11px;color:#e85d04;font-weight:bold;padding:2px 6px;background:#2a1000;border-radius:4px;border:1px solid #e85d04}
+.fc-prob{display:flex;align-items:center;gap:5px;font-size:11px;margin-top:5px}
+.prob-label{color:#7a9bb5;white-space:nowrap}
+.prob-bar-bg{width:60px;height:5px;background:#081020;border-radius:3px}
+.prob-bar-fill{height:5px;border-radius:3px}
+.prob-pct{font-weight:bold}
+.prob-wrap{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px}
 """
 
 # ============================================================
@@ -1305,16 +1370,24 @@ def calc_targets(data, history):
     now = datetime.now()
     cur_month = now.month
     year, week_num = current_iso_week()
+    cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
     fish_counts = {}
+    fish_latest: dict = {}
     ship_counts_per_fish = {}
     for c in data:
+        date_str = c.get("date") or ""
         for f in c["fish"]:
             if f != "不明":
                 fish_counts[f] = fish_counts.get(f, 0) + 1
                 ship_counts_per_fish.setdefault(f, set()).add(c["ship"])
+                if date_str > fish_latest.get(f, ""):
+                    fish_latest[f] = date_str
     max_cnt = max(fish_counts.values()) if fish_counts else 1
     targets = []
     for fish, cnt in fish_counts.items():
+        # 直近30日以内に釣果がない魚種はトップ除外
+        if fish_latest.get(fish, "") < cutoff:
+            continue
         score     = get_season_score(fish, cur_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         prev_w    = get_prev_week_data(history, fish, year, week_num)
@@ -1324,9 +1397,11 @@ def calc_targets(data, history):
         comment   = build_comment(fish, cnt, score, this_w, last_w, prev_w, max_cnt, composite)
         stars     = composite_to_stars(composite)
         tags      = build_reason_tags(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month)
+        prob      = calc_weekend_prob(history, fish, year, week_num)
+        surge     = is_surge(history, fish, year, week_num)
         targets.append({"fish": fish, "count": cnt, "score": score, "composite": composite,
                         "comment": comment, "badge": badge, "ships": ships,
-                        "stars": stars, "tags": tags})
+                        "stars": stars, "tags": tags, "prob": prob, "surge": surge})
     targets.sort(key=lambda x: -x["composite"])
     return targets[:5]
 
@@ -1337,11 +1412,26 @@ def _render_tags(tags):
         html += f'<span class="rtag {cls}">{label}</span>'
     return html
 
+def _prob_bar(prob, surge):
+    """週末予測確率のプログレスバーHTML"""
+    if prob is None:
+        return ""
+    color = "#e85d04" if prob >= 80 else ("#f4a261" if prob >= 50 else "#4db8ff")
+    surge_html = '<span style="color:#e85d04;font-size:11px;font-weight:bold;margin-left:6px">🔥 急上昇中</span>' if surge else ""
+    return (
+        f'<div class="prob-wrap">'
+        f'<span class="prob-label">今週末の予測</span>'
+        f'<div class="prob-bar-bg"><div class="prob-bar-fill" style="width:{prob}%;background:{color}"></div></div>'
+        f'<span class="prob-pct" style="color:{color}">{prob}%</span>'
+        f'{surge_html}</div>'
+    )
+
 def build_target_section(targets):
     if not targets:
         return "<p style='color:#7a9bb5'>データ収集中です。しばらくお待ちください。</p>"
     top = targets[0]
     tags_html = _render_tags(top.get("tags", []))
+    prob_html  = _prob_bar(top.get("prob"), top.get("surge"))
     top_html = f"""
     <a class="target-top" href="fish/{top['fish']}.html">
       <div style="flex:1">
@@ -1354,13 +1444,15 @@ def build_target_section(targets):
           <span class="tt-stars">{top['stars']}</span>
         </div>
         <div class="tt-tags">{tags_html}</div>
+        {prob_html}
         <div class="tt-comment">{top['comment']}</div>
         <div class="tt-meta">出船: 約{top['ships']}隻 ／ 直近釣果: {top['count']}件</div>
       </div>
     </a>"""
     rest_html = ""
     for t in targets[1:]:
-        t_tags = _render_tags(t.get("tags", []))
+        t_tags   = _render_tags(t.get("tags", []))
+        t_prob   = _prob_bar(t.get("prob"), t.get("surge"))
         rest_html += f"""
     <a class="target-card" href="fish/{t['fish']}.html">
       <div class="tc-name-row">
@@ -1368,6 +1460,7 @@ def build_target_section(targets):
         <span class="tc-stars">{t['stars']}</span>
       </div>
       <div class="tc-tags">{t_tags}</div>
+      {t_prob}
       <div class="tc-comment">{t['comment']}</div>
       <div class="tc-count">出船約{t['ships']}隻 ／ {t['count']}件</div>
     </a>"""
@@ -1467,6 +1560,7 @@ def build_html(catches, crawled_at, history):
     current_month = now.month
     fish_summary = {}
     year, week_num = current_iso_week()
+    stale_cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
     for c in catches:
         for f in c["fish"]:
             if f != "不明":
@@ -1476,6 +1570,8 @@ def build_html(catches, crawled_at, history):
     for fish, cs in sorted(fish_summary.items(), key=lambda x: -len(x[1])):
         areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))
         fish_id     = re.sub(r'[^\w]', '_', fish)
+        latest_date = max((c.get("date") or "" for c in cs), default="")
+        is_stale    = latest_date < stale_cutoff
         ship_counts = {}
         for c in cs: ship_counts[c["ship"]] = ship_counts.get(c["ship"], 0) + 1
         daily_rows = ""
@@ -1512,14 +1608,28 @@ def build_html(catches, crawled_at, history):
                     trend_html = '<div class="fc-trend trend-down">↓ 先週より減少</div>'
                 else:
                     trend_html = '<div class="fc-trend trend-flat">→ 先週並み</div>'
-        stats_html = f'<div class="fc-stats-row">{yoy_html}{avg_html}</div>{trend_html}'
+        surge_badge = '<span class="surge-badge">🔥 急上昇中</span>' if is_surge(history, fish, year, week_num) else ""
+        prob        = calc_weekend_prob(history, fish, year, week_num)
+        prob_html   = ""
+        if prob is not None:
+            color = "#e85d04" if prob >= 80 else ("#f4a261" if prob >= 50 else "#4db8ff")
+            prob_html = (
+                f'<div class="fc-prob">'
+                f'<span class="prob-label">今週末</span>'
+                f'<div class="prob-bar-bg"><div class="prob-bar-fill" style="width:{prob}%;background:{color}"></div></div>'
+                f'<span class="prob-pct" style="color:{color}">{prob}%</span></div>'
+            )
+        stats_html = f'<div class="fc-stats-row">{yoy_html}{avg_html}{surge_badge}</div>{trend_html}{prob_html}'
+        stale_note = f'<div class="fc-stale">⚠️ 最終釣果: {latest_date or "不明"}（30日以上前）</div>' if is_stale else ""
+        fc_cls = ' stale' if is_stale else ''
         cards += f"""
-    <div class="fc">
+    <div class="fc{fc_cls}">
       <div class="fc-summary">
         <div class="fn">{fish}{ships_html}</div>
         <div class="fk">{len(cs)}件</div>
         <div class="fa">{" / ".join(areas_list)}</div>
         {stats_html}
+        {stale_note}
       </div>
       <a class="fc-link" href="fish/{fish}.html">詳細・船宿ランキング →</a>
       <div class="fc-detail" style="display:none" id="detail-{fish_id}">
@@ -1594,7 +1704,7 @@ def build_html(catches, crawled_at, history):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.9</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.13</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -1669,6 +1779,27 @@ def build_fish_pages(data, history, crawled_at=""):
         score   = get_season_score(fish, current_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         comment = build_comment(fish, len(catches), score, this_w, last_w)
+        # 旬の突入検出
+        entry_this, entry_last = calc_season_entry(history, fish, year)
+        season_entry_html = ""
+        if entry_this and entry_last:
+            diff = entry_this - entry_last
+            if diff < 0:
+                trend_txt = f"昨年より{abs(diff)}週早い 🌱"
+                trend_cls = "entry-early"
+            elif diff > 0:
+                trend_txt = f"昨年より{diff}週遅い"
+                trend_cls = "entry-late"
+            else:
+                trend_txt = "昨年と同時期"
+                trend_cls = "entry-same"
+            season_entry_html = (
+                f'<div class="season-entry {trend_cls}">'
+                f'今年の初釣果: 第{entry_this}週 ／ 昨年: 第{entry_last}週'
+                f'<span class="entry-trend">（{trend_txt}）</span></div>'
+            )
+        elif entry_this and not entry_last:
+            season_entry_html = f'<div class="season-entry entry-early">今年の初釣果: 第{entry_this}週（昨年データなし）</div>'
         rows = ""
         max_cnt = 0
         for c in catches:
@@ -1690,12 +1821,14 @@ def build_fish_pages(data, history, crawled_at=""):
             if cr and not cr.get("is_boat"):
                 ship_max[c["ship"]] = max(ship_max.get(c["ship"], 0), cr["max"])
         rank_rows = ""
+        medals = {1: "🥇", 2: "🥈", 3: "🥉"}
         for i, (sn, cnt) in enumerate(sorted(ship_counts.items(), key=lambda x:-x[1])[:10], 1):
             mx   = ship_max.get(sn, 0)
             area = next((c["area"] for c in catches if c["ship"] == sn), "")
             pct  = int(cnt / len(catches) * 100) if catches else 0
+            medal_html = f'<span class="medal">{medals[i]}</span> ' if i in medals else f'<span style="color:#4db8ff;font-weight:bold">{i}</span> '
             rank_rows += f"""<tr>
-  <td style="color:#4db8ff;font-weight:bold;width:24px">{i}</td>
+  <td style="width:36px;text-align:center">{medal_html}</td>
   <td><strong>{sn}</strong><br><span style="font-size:11px;color:#7a9bb5">{area}</span></td>
   <td style="color:#4dcc88">{cnt}件</td>
   <td style="color:#e85d04">最高{mx}匹</td>
@@ -1721,6 +1854,14 @@ def build_fish_pages(data, history, crawled_at=""):
     <tr><td>平均サイズ/重さ</td><td>{fmt(this_w.get("size_avg"),"cm") if this_w.get("size_avg") else fmt(this_w.get("weight_avg"),"kg")}</td><td>{fmt(last_w.get("size_avg"),"cm") if last_w.get("size_avg") else fmt(last_w.get("weight_avg"),"kg")}</td>{diff_cell(this_w.get("size_avg") or this_w.get("weight_avg"),last_w.get("size_avg") or last_w.get("weight_avg"))}</tr>
     <tr><td>出船数</td><td>{fmt(this_w.get("ships"),"隻")}</td><td>{fmt(last_w.get("ships"),"隻")}</td>{diff_cell(this_w.get("ships"),last_w.get("ships"))}</tr>
   </table>"""
+        # サマリーカード用の数値
+        ship_num_total = len(ship_counts)
+        avg_cnt = round(this_w["avg"], 1) if this_w and this_w.get("avg") else None
+        stat_cards_html = f"""<div class="stat-cards">
+  <div class="stat-card"><div class="sv">{ship_num_total}隻</div><div class="sl">今週の出船数</div></div>
+  <div class="stat-card"><div class="sv">{"%.0f" % avg_cnt if avg_cnt else "-"}匹</div><div class="sl">平均釣果</div></div>
+  <div class="stat-card"><div class="sv">{max_cnt if max_cnt else "-"}匹</div><div class="sl">今週の最高釣果</div></div>
+</div>"""
         fish_encoded = quote(fish, safe='')
         fish_url = f"{SITE_URL}/fish/{fish_encoded}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
@@ -1756,7 +1897,7 @@ def build_fish_pages(data, history, crawled_at=""):
             '<h2>🗺️ エリア別の釣果</h2>'
             '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">' + _fa_links + '</div>'
         ) if _fa_links else ""
-        fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.boat-catch{color:#f0a040;font-size:11px}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
+        fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.stat-card .sv{font-size:22px;font-weight:bold;color:#4db8ff;line-height:1.2}.stat-card .sl{font-size:11px;color:#7a9bb5;margin-top:4px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tbody tr:nth-child(even) td{background:#0b1c30}tbody tr:hover td{background:#112240}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:10px;width:80px}.bar-fill{background:linear-gradient(90deg,#1a6ea8,#4db8ff);height:10px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.boat-catch{color:#f0a040;font-size:11px}.medal{font-size:16px;vertical-align:middle}.season-entry{font-size:12px;color:#7a9bb5;margin:8px 0;padding:6px 10px;border-radius:4px;background:#0d2137}.season-entry.entry-early{border-left:3px solid #4dcc88}.season-entry.entry-late{border-left:3px solid #f4a261}.season-entry.entry-same{border-left:3px solid #4db8ff}.entry-trend{font-weight:bold;margin-left:6px}.prob-wrap{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px}.prob-label{color:#7a9bb5;white-space:nowrap}.prob-bar-bg{flex:1;max-width:120px;height:6px;background:#0a1628;border-radius:3px}.prob-bar-fill{height:6px;border-radius:3px;transition:width .3s}.prob-pct{font-weight:bold;white-space:nowrap}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1779,7 +1920,9 @@ def build_fish_pages(data, history, crawled_at=""):
   <span style="font-size:12px;color:#7a9bb5">釣れているエリア：</span>{area_links}
 </nav>
 <div class="wrap">
+  {stat_cards_html}
   <h2>📅 年間シーズン</h2>{season_bar_html}
+  {season_entry_html}
   <div class="comment">💬 {comment}</div>
   {yoy_html}
   <h2>🏆 船宿ランキング（今週）</h2>
@@ -1907,7 +2050,7 @@ def build_area_pages(data, history, crawled_at=""):
 # ============================================================
 # #11: 魚種×港ページ（fish_area/）
 # ============================================================
-def build_fish_area_pages(data, crawled_at=""):
+def build_fish_area_pages(data, crawled_at="", history=None):
     os.makedirs("fish_area", exist_ok=True)
     fa_summary: dict = {}
     for c in data:
@@ -1915,7 +2058,7 @@ def build_fish_area_pages(data, crawled_at=""):
             if f != "不明":
                 fa_summary.setdefault((f, c["area"]), []).append(c)
 
-    fish_area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.boat-catch{color:#f0a040;font-size:11px}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
+    fish_area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.boat-catch{color:#f0a040;font-size:11px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}"
 
     count = 0
     for (fish, area), catches in fa_summary.items():
@@ -1953,6 +2096,30 @@ def build_fish_area_pages(data, crawled_at=""):
                 f'<td style="color:#e85d04">最高{mx}匹</td>'
                 f'<td><div class="bar-wrap"><div class="bar-fill" style="width:{pct}%"></div></div></td></tr>'
             )
+        # 昨年同週比較テーブル
+        yoy_html = ""
+        if history:
+            now_fa = datetime.now()
+            year_fa = now_fa.year
+            week_num_fa = int(now_fa.strftime("%W"))
+            this_w, last_w = get_yoy_data(history, fish, year_fa, week_num_fa)
+            if this_w and last_w:
+                def _fmt(v, unit=""): return f"{v}{unit}" if v else "-"
+                def _diff(t_val, l_val):
+                    if not t_val or not l_val: return "<td>-</td>"
+                    pct = round((t_val - l_val) / l_val * 100)
+                    cls = "up" if pct >= 0 else "down"
+                    sign = "+" if pct >= 0 else ""
+                    return f'<td class="{cls}">{sign}{pct}%</td>'
+                yoy_html = f"""
+  <h2>📊 昨年同週との比較（第{week_num_fa}週）</h2>
+  <table class="yoy-table">
+    <tr><th></th><th>今週 ({year_fa}/W{week_num_fa:02d})</th><th>昨年同週 ({year_fa-1}/W{week_num_fa:02d})</th><th>昨年比</th></tr>
+    <tr><td>平均釣果</td><td>{_fmt(this_w.get("avg"),"匹")}</td><td>{_fmt(last_w.get("avg"),"匹")}</td>{_diff(this_w.get("avg"),last_w.get("avg"))}</tr>
+    <tr><td>最高釣果</td><td>{_fmt(this_w.get("max"),"匹")}</td><td>{_fmt(last_w.get("max"),"匹")}</td>{_diff(this_w.get("max"),last_w.get("max"))}</tr>
+    <tr><td>平均サイズ/重さ</td><td>{_fmt(this_w.get("size_avg"),"cm") if this_w.get("size_avg") else _fmt(this_w.get("weight_avg"),"kg")}</td><td>{_fmt(last_w.get("size_avg"),"cm") if last_w.get("size_avg") else _fmt(last_w.get("weight_avg"),"kg")}</td>{_diff(this_w.get("size_avg") or this_w.get("weight_avg"),last_w.get("size_avg") or last_w.get("weight_avg"))}</tr>
+    <tr><td>出船数（関東全体）</td><td>{_fmt(this_w.get("ships"),"隻")}</td><td>{_fmt(last_w.get("ships"),"隻")}</td>{_diff(this_w.get("ships"),last_w.get("ships"))}</tr>
+  </table>"""
         fish_encoded = quote(fish, safe='')
         area_encoded = quote(area, safe='')
         page_url = f"{SITE_URL}/fish_area/{fish_encoded}_{area_encoded}.html"
@@ -1985,6 +2152,7 @@ def build_fish_area_pages(data, crawled_at=""):
   <a href="../area/{area}.html">{area}の全魚種釣果</a>
 </nav>
 <div class="wrap">
+  {yoy_html}
   <h2>🏆 船宿ランキング（今週）</h2>
   <table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table>
   <h2>📋 最近の釣果 ({len(catches)}件)</h2>
@@ -2178,7 +2346,7 @@ def main():
     year = now.year
     fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
     gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
-    print(f"=== 関東船釣りクローラー v5.9 開始: {crawled_at} ===")
+    print(f"=== 関東船釣りクローラー v5.13 開始: {crawled_at} ===")
     print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
     for s in SHIPS:
@@ -2232,7 +2400,7 @@ def main():
         f.write(build_html(valid_catches, crawled_at, history))
     build_fish_pages(valid_catches, history, crawled_at)
     build_area_pages(valid_catches, history, crawled_at)
-    build_fish_area_pages(valid_catches, crawled_at)
+    build_fish_area_pages(valid_catches, crawled_at, history)
     with open("calendar.html", "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)

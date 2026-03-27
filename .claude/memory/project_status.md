@@ -1,13 +1,13 @@
-<!-- 最終更新: 2026-03-25 -->
+<!-- 最終更新: 2026-03-27 -->
 ---
 name: プロジェクト現状
-description: funatsuri-yoso.com の実装状況と未実装タスク（2026/03/25時点）
+description: funatsuri-yoso.com の実装状況と未実装タスク（2026/03/27時点）
 type: project
 ---
 
-現行バージョン: crawler.py v5.7
+現行バージョン: crawler.py v5.13
 
-最終更新: 2026/03/25
+最終更新: 2026/03/27
 
 実装済み（主要なもの）:
 - 釣果自動収集・魚種別/エリア別ページ・狙い目TOP5
@@ -39,15 +39,18 @@ type: project
   - main()に呼び出し追加
   - URL: fish_area/{fish}_{area}.html
   - 100〜200ページ増見込み
+- ✅ sitemap.xml 自動生成（2026/03/27 ※v5.9で実装済みだった）
+  - build_sitemap(): index/fish/area/fish_area 全URL列挙
+- ✅ fish_area ページに昨年同週比較テーブル追加（2026/03/27 v5.10）
+  - build_fish_area_pages に history 引数追加
+  - yoy-table CSS追加
+  - 出船数は「関東全体」として表示
 
 ## 次チャットでやること（優先順）
 
-### ① sitemap.xml の自動生成
-- fish_area/ ページが増えたため、sitemap.xml をクロール時に自動生成する
-- fish/*.html / area/*.html / fish_area/*.html を全列挙
-
-### ② 魚種ページに「今週vs昨年同週比較」テーブル表示
-- すでに実装済み（yoy_html）だが fish_area ページには未追加
+### ① 次の施策を検討・実装
+- staleデータ（30日超）のトップ除外フィルタ
+- X自動投稿（アカウントロック解除後）
 
 ## 未実装タスク（中長期）:
 - AdSense審査結果待ち
@@ -57,4 +60,8 @@ type: project
 - history_crawl.pyで過去2年分一括取得
 - crawl.ymlのNode.js 20→24アップグレード
 
-**Why:** 推薦コメント整合性・魚種×港ページを2026/03/25に実装完了。次はsitemap.xml自動生成が最優先。
+- ✅ staleデータフィルタ（v5.11）: 30日超の魚種をTOP5除外・カード薄表示
+- ✅ 魚種ページデザイン改善（v5.12）: サマリーカード・メダル絵文字・縞模様テーブル
+- ✅ 毎日データ活用（v5.13）: 爆釣アラート・旬の突入検出・週末予測確率
+
+**Why:** history_crawl.py完了で過去2年分蓄積。毎日データを活かした独自機能を追加。
