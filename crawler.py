@@ -588,24 +588,72 @@ def _resolve_point(point_place, ship, fish, sfp):
         return fish_map.get("point1", "") or ""
     return ""
 
-def _load_point_normalize_map():
-    """point_normalize_map.json を読み込み"""
-    path = os.path.join(os.path.dirname(__file__), "point_normalize_map.json")
+def _load_area_weather_map():
+    """area_weather_map.json を読み込み"""
+    path = os.path.join(os.path.dirname(__file__), "area_weather_map.json")
     if not os.path.exists(path):
         return {}
     try:
         with open(path, encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+        return {k: v for k, v in data.items() if not k.startswith("_")}
     except Exception:
         return {}
 
-def _build_catch_weather_index(catches, weather):
-    """釣果×海況のJOIN済みインデックスを構築（エリアグループ付き）
-    1. point_normalize_map.json でポイント名を正規化
-    2. 正規化後もポイント空なら ship_fish_point.json でフォールバック
+def _load_weather_history_index():
+    """weather_data/*_history.csv → {area_code: {date: row}}"""
+    base = os.path.join(os.path.dirname(__file__), "weather_data")
+    if not os.path.isdir(base):
+        return {}
+    index = {}
+    for fname in os.listdir(base):
+        if not fname.endswith("_history.csv"): continue
+        area_code = fname.replace("_history.csv", "")
+        try:
+            with open(os.path.join(base, fname), encoding="utf-8", newline="") as f:
+                index[area_code] = {row["date"]: row for row in csv.DictReader(f)}
+        except Exception:
+            continue
+    return index
+
+# join_catch_weather.py と同じ不明ポイント判定
+_UNRESOLVABLE_RE = re.compile(r'^(航程|近場|浅場|深場|東京湾一帯|湾内|南沖|東沖|西沖|北沖|赤灯沖|観音沖).*')
+
+def _is_unresolvable(pp):
+    return not pp or bool(_UNRESOLVABLE_RE.match(pp))
+
+def _coords_to_weather_code(lat, lon):
+    """緯度経度から気象エリアコードを判定"""
+    if lon >= 140.4:
+        return "outer_boso" if lat < 36.0 else "ibaraki"
+    if lat >= 36.0:
+        return "ibaraki"
+    if lon >= 139.65 and lat >= 35.15:
+        return "tokyo_bay"
+    return "sagami_bay"
+
+def _build_catch_weather_index(catches, weather_by_point):
+    """釣果×海況のJOIN済みインデックスを構築（join_catch_weather.pyの3段階ロジック）
+    1. point_place が point_coords.json に存在 → weather/ の地点別データ
+    2. ship_fish_point.json でフォールバック → weather/ の地点別データ
+    3. area_weather_map.json でエリア代表 → weather_data/*_history.csv
     """
+    base = os.path.dirname(__file__)
     sfp = _load_ship_fish_point()
-    pnm = _load_point_normalize_map()
+    area_map = _load_area_weather_map()
+    weather_hist = _load_weather_history_index()
+
+    # point_coords.json
+    pc_path = os.path.join(base, "point_coords.json")
+    point_coords = {}
+    if os.path.exists(pc_path):
+        try:
+            with open(pc_path, encoding="utf-8") as f:
+                pc_raw = json.load(f)
+            point_coords = {k: v for k, v in pc_raw.items() if v.get("lat") is not None}
+        except Exception:
+            pass
+
     index = []
     for row in catches:
         dt = (row.get("date") or "").replace("/", "-")
@@ -613,22 +661,45 @@ def _build_catch_weather_index(catches, weather):
         area = (row.get("area") or "").strip()
         ship = (row.get("ship") or "").strip()
         if not dt or not fish: continue
-        # Step 1: point_place を正規化
-        pp = (row.get("point_place") or "").strip()
-        if pp and pp in pnm:
-            pp = pnm[pp]  # 空文字ならジャンクとして消える
-        # Step 2: 空ならship_fish_pointでフォールバック
-        if not pp:
-            pp = _resolve_point("", ship, fish, sfp)
-        if not pp: continue
-        wx = weather.get((dt, pp))
-        if not wx: continue
         try: cnt = float(row.get("cnt_max", ""))
         except: continue
         month = int(dt[5:7]) if len(dt) >= 7 else None
         group = _area_to_group(area)
-        index.append({"fish": fish, "cnt": cnt, "wave": wx["wave"],
-                       "wind": wx["wind"], "sst": wx["sst"], "month": month,
+
+        pp = (row.get("point_place") or "").strip()
+        wx = None
+
+        # Step 1: point_place が直接解決
+        if pp and not _is_unresolvable(pp) and pp in point_coords:
+            wx = weather_by_point.get((dt, pp))
+
+        # Step 2: ship_fish_point フォールバック
+        if not wx:
+            ship_entry = sfp.get(ship, {})
+            fish_entry = ship_entry.get(fish) or ship_entry.get("_default")
+            if fish_entry and isinstance(fish_entry, dict):
+                fb_point = fish_entry.get("point1", "")
+                if fb_point and fb_point in point_coords:
+                    wx = weather_by_point.get((dt, fb_point))
+
+        # Step 3: エリア代表の気象データ（weather_data/_history.csv）
+        if not wx:
+            # point_coordsから気象エリアを判定、またはarea_mapでフォールバック
+            weather_code = area_map.get(area, "tokyo_bay")
+            if pp and pp in point_coords:
+                c = point_coords[pp]
+                weather_code = _coords_to_weather_code(c["lat"], c["lon"])
+            w_row = weather_hist.get(weather_code, {}).get(dt)
+            if w_row:
+                wx = {
+                    "wave": _float_or_none(w_row.get("wave_height")),
+                    "wind": _float_or_none(w_row.get("wind_speed")),
+                    "sst":  _float_or_none(w_row.get("sea_surface_temp")),
+                }
+
+        if not wx: continue
+        index.append({"fish": fish, "cnt": cnt, "wave": wx.get("wave"),
+                       "wind": wx.get("wind"), "sst": wx.get("sst"), "month": month,
                        "area": area, "group": group})
     return index
 
