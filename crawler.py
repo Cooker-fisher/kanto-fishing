@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.13
-変更点(v5.13):
+関東船釣り情報クローラー v5.14
+変更点(v5.14):
+- 海況カード: load_weather_data()で最新weather_data/*.csvを読み込み、build_weather_section()でindex.htmlに海況4エリア表示
+- GA4カスタムイベント: 魚種カードクリック・狙い目クリック・エリアフィルター・魚種検索にgtag()イベント送信
+変更点(v5.14):
 - 爆釣アラート: is_surge()追加（先週比1.5倍以上+出船5隻以上→🔥バッジ）
 - 旬の突入検出: calc_season_entry()追加（今年vs昨年の初釣果週を魚種ページに表示）
 - 週末予測確率: calc_weekend_prob()追加（過去2年同週実績→%表示）
@@ -200,6 +203,114 @@ DATA_NOTE_HTML = """<div class="data-note">
     </ul>
   </details>
 </div>"""
+
+# ============================================================
+# 海況データ読み込み・表示
+# ============================================================
+WEATHER_AREAS = {
+    "tokyo_bay":  "東京湾",
+    "sagami_bay": "相模湾",
+    "outer_boso": "外房",
+    "ibaraki":    "茨城沖",
+}
+
+# 風向（度）→ 方角テキスト
+def _wind_dir_text(deg):
+    if deg is None or deg == "": return ""
+    try: deg = float(deg)
+    except: return ""
+    dirs = ["北","北北東","北東","東北東","東","東南東","南東","南南東",
+            "南","南南西","南西","西南西","西","西北西","北西","北北西"]
+    return dirs[int((deg + 11.25) / 22.5) % 16]
+
+def _wave_icon(h):
+    if h is None: return ""
+    if h < 0.5: return "🟢"
+    if h < 1.0: return "🟡"
+    if h < 1.5: return "🟠"
+    return "🔴"
+
+def _wave_label(h):
+    if h is None: return ""
+    if h < 0.5: return "穏やか"
+    if h < 1.0: return "やや波"
+    if h < 1.5: return "波あり"
+    return "高波注意"
+
+def load_weather_data():
+    """weather_data/{area}.csv から各海域の最新行を読み込む"""
+    result = {}
+    for area_code, area_name in WEATHER_AREAS.items():
+        path = os.path.join(os.path.dirname(__file__), "weather_data", f"{area_code}.csv")
+        if not os.path.exists(path):
+            continue
+        last_row = None
+        try:
+            with open(path, encoding="utf-8", newline="") as f:
+                for row in csv.DictReader(f):
+                    last_row = row
+        except Exception:
+            continue
+        if last_row:
+            result[area_code] = last_row
+    return result
+
+def build_weather_section(weather_data):
+    """海況カード4エリアのHTMLを生成"""
+    if not weather_data:
+        return ""
+    cards = ""
+    for area_code, area_name in WEATHER_AREAS.items():
+        row = weather_data.get(area_code)
+        if not row:
+            continue
+        wave_h = row.get("wave_height", "")
+        wave_h_f = float(wave_h) if wave_h else None
+        swell = row.get("swell_height", "")
+        swell_f = float(swell) if swell else None
+        wind = row.get("wind_speed", "")
+        wind_dir = _wind_dir_text(row.get("wind_dir", ""))
+        sst = row.get("sea_surface_temp", "")
+        tide_type = row.get("tide_type", "")
+        moon_age = row.get("moon_age", "")
+        dt = row.get("datetime", "")
+
+        icon = _wave_icon(wave_h_f)
+        wave_label = _wave_label(wave_h_f)
+
+        # 風の強さラベル
+        wind_label = ""
+        if wind:
+            try:
+                ws = float(wind)
+                if ws < 3: wind_label = "微風"
+                elif ws < 6: wind_label = "弱風"
+                elif ws < 10: wind_label = "やや強い"
+                else: wind_label = "強風注意"
+            except: pass
+
+        wave_txt = f"{wave_h}m" if wave_h else "-"
+        swell_txt = f"{swell}m" if swell else "-"
+        wind_txt = f"{wind}m/s" if wind else "-"
+        sst_txt = f"{sst}℃" if sst else "-"
+
+        cards += f"""
+      <div class="wx-card">
+        <div class="wx-area">{icon} {area_name}</div>
+        <div class="wx-wave">{wave_txt} <span class="wx-label">{wave_label}</span></div>
+        <div class="wx-detail">
+          <div>🌊 うねり {swell_txt}</div>
+          <div>💨 {wind_dir}{wind_txt} <span class="wx-label">{wind_label}</span></div>
+          <div>🌡️ 海水温 {sst_txt}</div>
+          <div>🌙 {tide_type}{(' (月齢' + str(moon_age) + ')') if moon_age else ''}</div>
+        </div>
+        <div class="wx-time">{dt}</div>
+      </div>"""
+    if not cards:
+        return ""
+    return f"""<h2>🌊 海況情報</h2>
+    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">各海域の最新観測データ（気象庁・Open-Meteo・NOWPHAS）</p>
+    <div class="wx-grid">{cards}</div>"""
 
 FISH_MAP = {
     "アジ":     ["アジ", "LTアジ", "ライトアジ"],
@@ -1364,6 +1475,14 @@ footer a:hover{text-decoration:underline}
 .prob-bar-fill{height:5px;border-radius:3px}
 .prob-pct{font-weight:bold}
 .prob-wrap{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px}
+.wx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:16px}
+.wx-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px}
+.wx-area{font-size:14px;font-weight:bold;color:#4db8ff;margin-bottom:6px}
+.wx-wave{font-size:18px;font-weight:bold;color:#fff;margin-bottom:6px}
+.wx-label{font-size:11px;color:#7a9bb5;font-weight:normal}
+.wx-detail{font-size:12px;color:#c8d8e8;line-height:1.8}
+.wx-detail div{display:flex;align-items:center;gap:4px}
+.wx-time{font-size:10px;color:#4a6a8a;margin-top:6px;text-align:right}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 """
@@ -1567,7 +1686,7 @@ def build_catch_table(catches):
 # ============================================================
 # index.html 生成
 # ============================================================
-def build_html(catches, crawled_at, history):
+def build_html(catches, crawled_at, history, weather_data=None):
     now = datetime.now()
     current_month = now.month
     fish_summary = {}
@@ -1663,6 +1782,7 @@ def build_html(catches, crawled_at, history):
     targets      = calc_targets(catches, history)
     target_html  = build_target_section(targets)
     forecast     = build_forecast(targets)
+    weather_html = build_weather_section(weather_data or {})
     catch_table  = build_catch_table(catches)
     active_areas = set(c["area"] for c in catches)
     area_nav_parts = []
@@ -1713,6 +1833,7 @@ def build_html(catches, crawled_at, history):
   <h2>🎯 今週の狙い目</h2>
   {forecast}
   {target_html}
+  {weather_html}
   <h2>🐟 釣れている魚</h2>
   <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">タップで詳細表示 ／ 各カードの「詳細→」で船宿ランキングを確認</p>
   <div class="grid">{cards}</div>
@@ -1724,7 +1845,7 @@ def build_html(catches, crawled_at, history):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.13</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.14</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -1774,9 +1895,41 @@ document.querySelectorAll('.fc').forEach(el => {{
   el.addEventListener('click', function(e) {{
     if (e.target.classList.contains('fc-link') || e.target.closest('.fc-link')) return;
     const d = this.querySelector('.fc-detail');
-    if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    if (d) {{
+      const opening = d.style.display === 'none';
+      d.style.display = opening ? 'block' : 'none';
+      if (opening && typeof gtag==='function') {{
+        const fn = this.querySelector('.fn');
+        gtag('event','fish_card_click',{{fish_name:fn?fn.textContent.trim():''}});
+      }}
+    }}
   }});
 }});
+document.querySelectorAll('.target-top,.target-card').forEach(el => {{
+  el.addEventListener('click', function() {{
+    if (typeof gtag==='function') {{
+      const n = this.querySelector('.tt-fish,.tc-fish-name');
+      gtag('event','target_click',{{fish_name:n?n.textContent.trim():''}});
+    }}
+  }});
+}});
+document.querySelectorAll('.filter-btn').forEach(el => {{
+  el.addEventListener('click', function() {{
+    if (typeof gtag==='function') gtag('event','area_filter',{{area:this.textContent.trim()}});
+  }});
+}});
+(function(){{
+  const si = document.getElementById('fish-search');
+  if (si) {{
+    let _t;
+    si.addEventListener('input', function() {{
+      clearTimeout(_t);
+      _t = setTimeout(function() {{
+        if (si.value.trim() && typeof gtag==='function') gtag('event','fish_search',{{query:si.value.trim()}});
+      }}, 1000);
+    }});
+  }}
+}})();
 </script>
 </body>
 </html>"""
@@ -2370,7 +2523,7 @@ def main():
     year = now.year
     fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
     gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
-    print(f"=== 関東船釣りクローラー v5.13 開始: {crawled_at} ===")
+    print(f"=== 関東船釣りクローラー v5.14 開始: {crawled_at} ===")
     print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
     for s in SHIPS:
@@ -2420,8 +2573,11 @@ def main():
     with open("catches.json", "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
                    "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
+    weather_data = load_weather_data()
+    if weather_data:
+        print(f"海況データ: {len(weather_data)} エリア読み込み")
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(build_html(valid_catches, crawled_at, history))
+        f.write(build_html(valid_catches, crawled_at, history, weather_data))
     build_fish_pages(valid_catches, history, crawled_at)
     build_area_pages(valid_catches, history, crawled_at)
     build_fish_area_pages(valid_catches, crawled_at, history)
