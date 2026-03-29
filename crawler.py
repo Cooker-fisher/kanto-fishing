@@ -524,7 +524,7 @@ def _load_historical_catches():
     return rows
 
 def _load_historical_weather():
-    """weather/*.csv から日付×地点の6-15時平均海況を返す"""
+    """weather/*.csv から日付×地点の6-15時平均海況を返す（波周期含む）"""
     base = os.path.dirname(__file__)
     wx_dir = os.path.join(base, "weather")
     if not os.path.isdir(wx_dir):
@@ -539,22 +539,61 @@ def _load_historical_weather():
                     if hr < 6 or hr > 15: continue
                     key = (dt, pt)
                     if key not in raw:
-                        raw[key] = {"w":[], "ws":[], "s":[]}
+                        raw[key] = {"w":[], "ws":[], "s":[], "wp":[]}
                     try: raw[key]["w"].append(float(row["wave_height"]))
                     except: pass
                     try: raw[key]["ws"].append(float(row["wind_speed"]))
                     except: pass
                     try: raw[key]["s"].append(float(row["sst"]))
                     except: pass
+                    try: raw[key]["wp"].append(float(row["wave_period"]))
+                    except: pass
         except Exception:
             continue
     result = {}
     for k, v in raw.items():
-        result[k] = {
-            "wave": round(sum(v["w"])/len(v["w"]),2) if v["w"] else None,
-            "wind": round(sum(v["ws"])/len(v["ws"]),2) if v["ws"] else None,
-            "sst":  round(sum(v["s"])/len(v["s"]),1) if v["s"] else None,
-        }
+        def _a(lst): return round(sum(lst)/len(lst), 2) if lst else None
+        result[k] = {"wave": _a(v["w"]), "wind": _a(v["ws"]),
+                      "sst": _a(v["s"]), "wave_period": _a(v["wp"])}
+    return result
+
+def _load_tide_data():
+    """tide/*.csv → {date: 潮差(max-min cm, 6-15時)}"""
+    base = os.path.join(os.path.dirname(__file__), "tide")
+    if not os.path.isdir(base):
+        return {}
+    raw = {}  # date -> [cm values]
+    for fname in sorted(os.listdir(base)):
+        if not fname.endswith(".csv"): continue
+        try:
+            with open(os.path.join(base, fname), encoding="utf-8", newline="") as f:
+                for row in csv.DictReader(f):
+                    hr = int(row.get("hour", "0"))
+                    if hr < 6 or hr > 15: continue
+                    dt = row.get("date", "")
+                    try: cm = float(row["tide_cm"])
+                    except: continue
+                    raw.setdefault(dt, []).append(cm)
+        except Exception:
+            continue
+    return {dt: round(max(vals) - min(vals), 1) for dt, vals in raw.items() if len(vals) >= 2}
+
+def _load_moon_data():
+    """moon.csv → {date: {"age": float, "title": str}}"""
+    path = os.path.join(os.path.dirname(__file__), "moon.csv")
+    if not os.path.exists(path):
+        return {}
+    result = {}
+    try:
+        with open(path, encoding="utf-8", newline="") as f:
+            for row in csv.DictReader(f):
+                dt = row.get("date", "")
+                result[dt] = {
+                    "age": float(row["moon_age"]) if row.get("moon_age") else None,
+                    "title": row.get("moon_title", ""),
+                }
+    except Exception:
+        pass
     return result
 
 def _area_to_group(area):
@@ -625,13 +664,15 @@ _AREA_CODE_TO_WX_POINT = {
     "ibaraki":    "鹿島沖",
 }
 
-def _build_catch_weather_index(catches, weather_by_point):
+def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_data=None):
     """釣果×海況のJOIN済みインデックスを構築（join_catch_weather.pyの3段階ロジック）
     全ステップで weather/ の96地点3時間粒度データを使用。
     1. point_place が point_coords.json に存在 → そのポイントのweatherデータ
     2. ship_fish_point.json でフォールバック → そのポイントのweatherデータ
     3. area_weather_map.json → エリア代表ポイントのweatherデータ
     """
+    if tide_data is None: tide_data = {}
+    if moon_data is None: moon_data = {}
     base = os.path.dirname(__file__)
     sfp = _load_ship_fish_point()
     area_map = _load_area_weather_map()
@@ -682,18 +723,31 @@ def _build_catch_weather_index(catches, weather_by_point):
             wx = weather_by_point.get((dt, rep_point))
 
         if not wx: continue
+        moon = moon_data.get(dt, {})
         index.append({"fish": fish, "cnt": cnt, "wave": wx.get("wave"),
-                       "wind": wx.get("wind"), "sst": wx.get("sst"), "month": month,
-                       "area": area, "group": group})
+                       "wind": wx.get("wind"), "sst": wx.get("sst"),
+                       "wave_period": wx.get("wave_period"),
+                       "tide_range": tide_data.get(dt),
+                       "moon_age": moon.get("age"),
+                       "moon_title": moon.get("title", ""),
+                       "month": month, "area": area, "group": group})
     return index
 
-def predict_catches(index, area_forecasts, target_month):
+def _calc_deviation_effect(month_rows, key, norm_val, threshold, base_avg):
+    """偏差補正の共通ロジック: low群とhigh群の釣果差から効果量を推定"""
+    if norm_val is None or base_avg <= 0:
+        return 0.0
+    low  = [r["cnt"] for r in month_rows if r.get(key) is not None and r[key] < norm_val - threshold]
+    high = [r["cnt"] for r in month_rows if r.get(key) is not None and r[key] > norm_val + threshold]
+    if not low or not high:
+        return 0.0
+    return (sum(high)/len(high) - sum(low)/len(low)) / base_avg
+
+def predict_catches(index, area_forecasts, target_month, forecast_tide=None, forecast_moon=None):
     """偏差ベース予測: エリア×魚種の平常値を基準に、予報日の海況偏差で補正。
 
-    1. エリア×魚種×同月の「基準釣果」（平常値）を算出
-    2. そのエリアの「平常海況」（平均波高・SST等）を算出
-    3. 予報海況と平常海況の偏差を計算
-    4. 過去データから「偏差→釣果変動」の係数を求めて補正
+    補正要素: 波高・風速・海水温・波周期・潮差・月齢（全6要素）
+    低匹数魚種対策: base_avg < 10 の場合は補正幅を縮小
     """
     predictions = {}
 
@@ -702,76 +756,101 @@ def predict_catches(index, area_forecasts, target_month):
         fc_sst  = fc.get("sst")
         fc_wind = fc.get("wind_speed")
 
-        # このエリアグループの過去データ
         group_rows = [r for r in index if r["group"] == group]
         if not group_rows: continue
 
-        # 魚種別に集計
         fish_groups = {}
         for r in group_rows:
             fish_groups.setdefault(r["fish"], []).append(r)
 
         for fish, rows in fish_groups.items():
             if fish == "不明": continue
-            # 同月 ± 1ヶ月
             month_rows = [r for r in rows if r["month"] is not None and
                           (abs(r["month"] - target_month) <= 1 or
                            abs(r["month"] - target_month) >= 11)]
             if len(month_rows) < 5: continue
 
-            # ── 基準値（このエリア×魚種×時期の平常） ──
+            # ── 基準値 ──
             cnts = [r["cnt"] for r in month_rows]
             base_avg = sum(cnts) / len(cnts)
             base_max = max(cnts)
+            # 中央値（低匹数魚種の外れ値対策）
+            sorted_cnts = sorted(cnts)
+            base_median = sorted_cnts[len(sorted_cnts) // 2]
 
-            waves = [r["wave"] for r in month_rows if r["wave"] is not None]
-            winds = [r["wind"] for r in month_rows if r["wind"] is not None]
-            ssts  = [r["sst"]  for r in month_rows if r["sst"]  is not None]
-            norm_wave = sum(waves) / len(waves) if waves else None
-            norm_wind = sum(winds) / len(winds) if winds else None
-            norm_sst  = sum(ssts)  / len(ssts)  if ssts  else None
+            def _norm(key):
+                vals = [r[key] for r in month_rows if r.get(key) is not None]
+                return sum(vals) / len(vals) if vals else None
 
-            # ── 偏差による補正係数を算出 ──
-            adjustment = 1.0
+            norm_wave = _norm("wave")
+            norm_wind = _norm("wind")
+            norm_sst  = _norm("sst")
+            norm_wp   = _norm("wave_period")
+            norm_tide = _norm("tide_range")
+            norm_moon = _norm("moon_age")
 
-            # 波高偏差: エリア内での波高→釣果の回帰係数
-            if fc_wave is not None and norm_wave is not None and waves:
+            # ── 偏差補正 ──
+            adjustment = 0.0  # 加算方式（最後に1+adjustmentで乗算）
+
+            # 低匹数魚種は補正幅を縮小（平均10匹未満→0.5倍、5匹未満→0.3倍）
+            damping = 1.0
+            if base_avg < 5:
+                damping = 0.3
+            elif base_avg < 10:
+                damping = 0.5
+
+            # 波高偏差
+            if fc_wave is not None and norm_wave is not None:
+                effect = _calc_deviation_effect(month_rows, "wave", norm_wave, 0.15, base_avg)
+                effect = max(-0.5, min(0.5, effect))
                 wave_dev = fc_wave - norm_wave
-                # 「穏やか」と「荒い」の釣果差からエリア内係数を推定
-                calm = [r["cnt"] for r in month_rows if r["wave"] is not None and r["wave"] < norm_wave - 0.15]
-                rough = [r["cnt"] for r in month_rows if r["wave"] is not None and r["wave"] > norm_wave + 0.15]
-                if calm and rough and base_avg > 0:
-                    calm_avg = sum(calm) / len(calm)
-                    rough_avg = sum(rough) / len(rough)
-                    # 波高1m上昇あたりの釣果変動率
-                    wave_effect = (rough_avg - calm_avg) / base_avg
-                    # 上限を設けて暴走防止
-                    wave_effect = max(-0.5, min(0.5, wave_effect))
-                    adjustment += wave_effect * (wave_dev / max(0.3, norm_wave))
+                adjustment += effect * (wave_dev / max(0.3, norm_wave)) * damping
 
             # 風速偏差
-            if fc_wind is not None and norm_wind is not None and winds:
+            if fc_wind is not None and norm_wind is not None:
+                effect = _calc_deviation_effect(month_rows, "wind", norm_wind, 1.0, base_avg)
+                effect = max(-0.3, min(0.3, effect))
                 wind_dev = fc_wind - norm_wind
-                light = [r["cnt"] for r in month_rows if r["wind"] is not None and r["wind"] < norm_wind - 1.0]
-                strong = [r["cnt"] for r in month_rows if r["wind"] is not None and r["wind"] > norm_wind + 1.0]
-                if light and strong and base_avg > 0:
-                    wind_effect = (sum(strong)/len(strong) - sum(light)/len(light)) / base_avg
-                    wind_effect = max(-0.3, min(0.3, wind_effect))
-                    adjustment += wind_effect * (wind_dev / max(1.0, norm_wind)) * 0.5
+                adjustment += effect * (wind_dev / max(1.0, norm_wind)) * 0.5 * damping
 
             # SST偏差
-            if fc_sst is not None and norm_sst is not None and ssts:
+            if fc_sst is not None and norm_sst is not None:
+                effect = _calc_deviation_effect(month_rows, "sst", norm_sst, 1.0, base_avg)
+                effect = max(-0.3, min(0.3, effect))
                 sst_dev = fc_sst - norm_sst
-                cold = [r["cnt"] for r in month_rows if r["sst"] is not None and r["sst"] < norm_sst - 1.0]
-                warm = [r["cnt"] for r in month_rows if r["sst"] is not None and r["sst"] > norm_sst + 1.0]
-                if cold and warm and base_avg > 0:
-                    sst_effect = (sum(warm)/len(warm) - sum(cold)/len(cold)) / base_avg
-                    sst_effect = max(-0.3, min(0.3, sst_effect))
-                    adjustment += sst_effect * (sst_dev / max(1.0, abs(norm_sst))) * 0.5
+                adjustment += effect * (sst_dev / max(1.0, abs(norm_sst))) * 0.5 * damping
 
-            # 補正を適用（0.5〜1.5の範囲に制限）
-            adjustment = max(0.5, min(1.5, adjustment))
-            pred_avg = round(base_avg * adjustment, 1)
+            # 波周期偏差（カサゴ等で効く）
+            if norm_wp is not None:
+                effect = _calc_deviation_effect(month_rows, "wave_period", norm_wp, 0.5, base_avg)
+                effect = max(-0.3, min(0.3, effect))
+                # 予報に波周期がない場合は波高偏差から推定（波高と相関が高い）
+                if fc_wave is not None and norm_wave is not None:
+                    wp_dev_est = (fc_wave - norm_wave) * 1.5  # 波高1m増→波周期1.5s増の概算
+                    adjustment += effect * (wp_dev_est / max(1.0, norm_wp)) * 0.3 * damping
+
+            # 潮差偏差（フグ・タチウオ等で効く）
+            if forecast_tide is not None and norm_tide is not None:
+                effect = _calc_deviation_effect(month_rows, "tide_range", norm_tide, 15, base_avg)
+                effect = max(-0.3, min(0.3, effect))
+                tide_dev = forecast_tide - norm_tide
+                adjustment += effect * (tide_dev / max(20, norm_tide)) * 0.5 * damping
+
+            # 月齢偏差（マルイカ等で効く）
+            if forecast_moon is not None and norm_moon is not None:
+                effect = _calc_deviation_effect(month_rows, "moon_age", norm_moon, 3, base_avg)
+                effect = max(-0.2, min(0.2, effect))
+                moon_dev = forecast_moon - norm_moon
+                adjustment += effect * (moon_dev / max(3, norm_moon)) * 0.3 * damping
+
+            # 補正を適用（0.6〜1.4。低匹数はさらに狭い範囲）
+            max_adj = 0.2 if base_avg < 5 else 0.3 if base_avg < 10 else 0.4
+            adjustment = max(-max_adj, min(max_adj, adjustment))
+            pred_avg = round(base_avg * (1.0 + adjustment), 1)
+            # 低匹数魚種は中央値ベースも加味（外れ値の影響を抑制）
+            if base_avg < 10:
+                pred_median = round(base_median * (1.0 + adjustment), 1)
+                pred_avg = round((pred_avg + pred_median) / 2, 1)
 
             key = (fish, group)
             predictions[key] = {
@@ -820,8 +899,10 @@ def build_forecast_json(weather_data):
     print("過去データ読み込み中...")
     hist_catches = _load_historical_catches()
     hist_weather = _load_historical_weather()
-    index = _build_catch_weather_index(hist_catches, hist_weather)
-    print(f"  釣果×海況インデックス: {len(index)} 件")
+    tide_data = _load_tide_data()
+    moon_data = _load_moon_data()
+    index = _build_catch_weather_index(hist_catches, hist_weather, tide_data, moon_data)
+    print(f"  釣果×海況インデックス: {len(index)} 件（潮汐{len(tide_data)}日・月齢{len(moon_data)}日）")
 
     result = {"generated_at": datetime.now().strftime("%Y/%m/%d %H:%M"), "days": {}}
 
