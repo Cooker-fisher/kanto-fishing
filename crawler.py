@@ -564,15 +564,42 @@ def _area_to_group(area):
             return group
     return None
 
+def _load_ship_fish_point():
+    """ship_fish_point.json を読み込み"""
+    path = os.path.join(os.path.dirname(__file__), "ship_fish_point.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _resolve_point(point_place, ship, fish, sfp):
+    """point_placeを解決。空の場合はship_fish_point.jsonでフォールバック"""
+    pp = (point_place or "").strip()
+    if pp:
+        return pp
+    ship_data = sfp.get(ship)
+    if not ship_data:
+        return ""
+    fish_map = ship_data.get(fish) or ship_data.get("_default")
+    if fish_map and isinstance(fish_map, dict):
+        return fish_map.get("point1", "") or ""
+    return ""
+
 def _build_catch_weather_index(catches, weather):
     """釣果×海況のJOIN済みインデックスを構築（エリアグループ付き）"""
+    sfp = _load_ship_fish_point()
     index = []
     for row in catches:
-        pp = (row.get("point_place") or "").strip()
         dt = (row.get("date") or "").replace("/", "-")
         fish = row.get("fish", "")
         area = (row.get("area") or "").strip()
-        if not pp or not dt or not fish: continue
+        ship = (row.get("ship") or "").strip()
+        if not dt or not fish: continue
+        pp = _resolve_point(row.get("point_place"), ship, fish, sfp)
+        if not pp: continue
         wx = weather.get((dt, pp))
         if not wx: continue
         try: cnt = float(row.get("cnt_max", ""))
