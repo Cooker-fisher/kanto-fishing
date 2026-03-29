@@ -600,48 +600,30 @@ def _load_area_weather_map():
     except Exception:
         return {}
 
-def _load_weather_history_index():
-    """weather_data/*_history.csv → {area_code: {date: row}}"""
-    base = os.path.join(os.path.dirname(__file__), "weather_data")
-    if not os.path.isdir(base):
-        return {}
-    index = {}
-    for fname in os.listdir(base):
-        if not fname.endswith("_history.csv"): continue
-        area_code = fname.replace("_history.csv", "")
-        try:
-            with open(os.path.join(base, fname), encoding="utf-8", newline="") as f:
-                index[area_code] = {row["date"]: row for row in csv.DictReader(f)}
-        except Exception:
-            continue
-    return index
-
 # join_catch_weather.py と同じ不明ポイント判定
 _UNRESOLVABLE_RE = re.compile(r'^(航程|近場|浅場|深場|東京湾一帯|湾内|南沖|東沖|西沖|北沖|赤灯沖|観音沖).*')
 
 def _is_unresolvable(pp):
     return not pp or bool(_UNRESOLVABLE_RE.match(pp))
 
-def _coords_to_weather_code(lat, lon):
-    """緯度経度から気象エリアコードを判定"""
-    if lon >= 140.4:
-        return "outer_boso" if lat < 36.0 else "ibaraki"
-    if lat >= 36.0:
-        return "ibaraki"
-    if lon >= 139.65 and lat >= 35.15:
-        return "tokyo_bay"
-    return "sagami_bay"
+# エリアコード → weather/ 96地点の代表ポイント
+_AREA_CODE_TO_WX_POINT = {
+    "tokyo_bay":  "中ノ瀬",
+    "sagami_bay": "城ヶ島沖",
+    "outer_boso": "大原沖",
+    "ibaraki":    "鹿島沖",
+}
 
 def _build_catch_weather_index(catches, weather_by_point):
     """釣果×海況のJOIN済みインデックスを構築（join_catch_weather.pyの3段階ロジック）
-    1. point_place が point_coords.json に存在 → weather/ の地点別データ
-    2. ship_fish_point.json でフォールバック → weather/ の地点別データ
-    3. area_weather_map.json でエリア代表 → weather_data/*_history.csv
+    全ステップで weather/ の96地点3時間粒度データを使用。
+    1. point_place が point_coords.json に存在 → そのポイントのweatherデータ
+    2. ship_fish_point.json でフォールバック → そのポイントのweatherデータ
+    3. area_weather_map.json → エリア代表ポイントのweatherデータ
     """
     base = os.path.dirname(__file__)
     sfp = _load_ship_fish_point()
     area_map = _load_area_weather_map()
-    weather_hist = _load_weather_history_index()
 
     # point_coords.json
     pc_path = os.path.join(base, "point_coords.json")
@@ -682,20 +664,11 @@ def _build_catch_weather_index(catches, weather_by_point):
                 if fb_point and fb_point in point_coords:
                     wx = weather_by_point.get((dt, fb_point))
 
-        # Step 3: エリア代表の気象データ（weather_data/_history.csv）
+        # Step 3: エリア代表ポイント（weather/ 96地点から）
         if not wx:
-            # point_coordsから気象エリアを判定、またはarea_mapでフォールバック
-            weather_code = area_map.get(area, "tokyo_bay")
-            if pp and pp in point_coords:
-                c = point_coords[pp]
-                weather_code = _coords_to_weather_code(c["lat"], c["lon"])
-            w_row = weather_hist.get(weather_code, {}).get(dt)
-            if w_row:
-                wx = {
-                    "wave": _float_or_none(w_row.get("wave_height")),
-                    "wind": _float_or_none(w_row.get("wind_speed")),
-                    "sst":  _float_or_none(w_row.get("sea_surface_temp")),
-                }
+            area_code = area_map.get(area, "tokyo_bay")
+            rep_point = _AREA_CODE_TO_WX_POINT.get(area_code, "中ノ瀬")
+            wx = weather_by_point.get((dt, rep_point))
 
         if not wx: continue
         index.append({"fish": fish, "cnt": cnt, "wave": wx.get("wave"),
