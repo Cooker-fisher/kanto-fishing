@@ -205,14 +205,33 @@ DATA_NOTE_HTML = """<div class="data-note">
 </div>"""
 
 # ============================================================
-# 海況データ読み込み・表示（weather/ 地点別3時間粒度データ）
+# 週末海況予報（Open-Meteo Marine API で土日の予報を取得）
 # ============================================================
-# weather_data/ の4エリアサマリー（潮汐・月齢はこちらのみ）
+# エリアグループごとの代表座標（Open-Meteo Marine APIで予報取得）
+AREA_FORECAST_COORDS = {
+    "茨城":           {"lat": 36.3, "lon": 140.7},
+    "千葉・外房":     {"lat": 35.3, "lon": 140.6},
+    "千葉・内房":     {"lat": 35.1, "lon": 139.8},
+    "千葉・東京湾奥": {"lat": 35.6, "lon": 139.9},
+    "東京":           {"lat": 35.5, "lon": 139.8},
+    "神奈川・東京湾": {"lat": 35.3, "lon": 139.7},
+    "神奈川・相模湾": {"lat": 35.1, "lon": 139.4},
+    "静岡":           {"lat": 35.0, "lon": 139.1},
+}
+
+# weather_data/ の4エリアサマリー（潮汐・月齢）
 _TIDE_AREA_MAP = {
     "tokyo_bay":  "東京湾",
     "sagami_bay": "相模湾",
     "outer_boso": "外房",
     "ibaraki":    "茨城沖",
+}
+
+_TIDE_GROUP_MAP = {
+    "千葉・東京湾奥": "tokyo_bay", "東京": "tokyo_bay", "神奈川・東京湾": "tokyo_bay",
+    "神奈川・相模湾": "sagami_bay", "静岡": "sagami_bay",
+    "千葉・外房": "outer_boso", "千葉・内房": "outer_boso",
+    "茨城": "ibaraki",
 }
 
 def _wind_dir_text(deg):
@@ -249,31 +268,131 @@ def _float_or_none(v):
     try: return float(v)
     except: return None
 
-def load_weather_data():
-    """weather/YYYY-MM.csv から地点×日付の最新データ + weather_data/の潮汐を読み込む"""
-    result = {"points": {}, "tide": {}}
-    base = os.path.dirname(__file__)
-
-    # weather/YYYY-MM.csv から地点別の最新行を取得（当月→前月の順）
+def _next_weekend():
+    """次の土日の日付を返す。土日当日なら今週末を返す。"""
     now = datetime.now()
-    for delta in range(0, 3):
-        d = now.replace(day=1) - timedelta(days=delta * 28)
-        fname = os.path.join(base, "weather", f"{d.year:04d}-{d.month:02d}.csv")
-        if not os.path.exists(fname):
+    wd = now.weekday()  # 0=月 ... 5=土 6=日
+    if wd == 5:       # 土曜日
+        sat = now
+    elif wd == 6:     # 日曜日
+        sat = now - timedelta(days=1)
+    else:
+        sat = now + timedelta(days=(5 - wd))
+    sun = sat + timedelta(days=1)
+    return sat, sun
+
+def _fetch_marine_forecast(lat, lon, date_from, date_to):
+    """Open-Meteo Marine APIから予報を取得。釣りの時間帯(6-15時)の平均を返す。"""
+    url = (
+        f"https://marine-api.open-meteo.com/v1/marine"
+        f"?latitude={lat}&longitude={lon}"
+        f"&hourly=wave_height,wave_period,swell_wave_height,sea_surface_temperature"
+        f"&start_date={date_from}&end_date={date_to}"
+        f"&timezone=Asia/Tokyo"
+    )
+    try:
+        req = Request(url, headers={"User-Agent": USER_AGENT})
+        with urlopen(req, timeout=15) as r:
+            data = json.loads(r.read())
+    except Exception as e:
+        print(f"  Marine forecast error [{lat},{lon}]: {e}")
+        return None
+    hourly = data.get("hourly", {})
+    times = hourly.get("time", [])
+    if not times:
+        return None
+    # 釣りの時間帯(6-15時)だけ抽出して日別に集約
+    day_data = {}
+    for i, t in enumerate(times):
+        dt_part, hr_part = t.split("T")
+        hour = int(hr_part.split(":")[0])
+        if hour < 6 or hour > 15:
             continue
-        try:
-            with open(fname, encoding="utf-8", newline="") as f:
-                for row in csv.DictReader(f):
-                    pt = row.get("point", "")
-                    dt = row.get("date", "")
-                    hr = row.get("hour", "")
-                    prev = result["points"].get(pt)
-                    if prev is None or (dt, hr) > (prev.get("date",""), prev.get("hour","")):
-                        result["points"][pt] = row
-        except Exception:
+        day_data.setdefault(dt_part, []).append({
+            "wave_height": hourly.get("wave_height", [None]*(i+1))[i],
+            "wave_period": hourly.get("wave_period", [None]*(i+1))[i],
+            "swell":       hourly.get("swell_wave_height", [None]*(i+1))[i],
+            "sst":         hourly.get("sea_surface_temperature", [None]*(i+1))[i],
+        })
+    result = {}
+    for day, rows in day_data.items():
+        def _avg(key):
+            vals = [r[key] for r in rows if r.get(key) is not None]
+            return round(sum(vals)/len(vals), 1) if vals else None
+        result[day] = {"wave_height": _avg("wave_height"), "wave_period": _avg("wave_period"),
+                       "swell": _avg("swell"), "sst": _avg("sst")}
+    return result
+
+def _fetch_wind_forecast(lat, lon, date_from, date_to):
+    """Open-Meteo Forecast APIから風速予報を取得。"""
+    url = (
+        f"https://api.open-meteo.com/v1/forecast"
+        f"?latitude={lat}&longitude={lon}"
+        f"&hourly=wind_speed_10m,wind_direction_10m"
+        f"&start_date={date_from}&end_date={date_to}"
+        f"&timezone=Asia/Tokyo&wind_speed_unit=ms"
+    )
+    try:
+        req = Request(url, headers={"User-Agent": USER_AGENT})
+        with urlopen(req, timeout=15) as r:
+            data = json.loads(r.read())
+    except Exception as e:
+        print(f"  Wind forecast error [{lat},{lon}]: {e}")
+        return None
+    hourly = data.get("hourly", {})
+    times = hourly.get("time", [])
+    day_data = {}
+    for i, t in enumerate(times):
+        dt_part, hr_part = t.split("T")
+        hour = int(hr_part.split(":")[0])
+        if hour < 6 or hour > 15:
             continue
+        ws = hourly.get("wind_speed_10m", [None]*(i+1))[i]
+        wd = hourly.get("wind_direction_10m", [None]*(i+1))[i]
+        day_data.setdefault(dt_part, []).append({"ws": ws, "wd": wd})
+    result = {}
+    for day, rows in day_data.items():
+        ws_vals = [r["ws"] for r in rows if r["ws"] is not None]
+        wd_vals = [r["wd"] for r in rows if r["wd"] is not None]
+        result[day] = {
+            "wind_speed": round(sum(ws_vals)/len(ws_vals), 1) if ws_vals else None,
+            "wind_dir":   round(sum(wd_vals)/len(wd_vals))     if wd_vals else None,
+        }
+    return result
+
+def load_weather_data():
+    """週末の海況予報を全エリアから取得 + 潮汐データを読み込む"""
+    result = {"forecast": {}, "tide": {}}
+    sat, sun = _next_weekend()
+    date_from = sat.strftime("%Y-%m-%d")
+    date_to   = sun.strftime("%Y-%m-%d")
+    result["sat_date"] = date_from
+    result["sun_date"] = date_to
+
+    print(f"週末海況予報取得: {date_from}(土) ～ {date_to}(日)")
+    for group, coord in AREA_FORECAST_COORDS.items():
+        print(f"  [{group}] ...", end=" ", flush=True)
+        marine = _fetch_marine_forecast(coord["lat"], coord["lon"], date_from, date_to)
+        wind   = _fetch_wind_forecast(coord["lat"], coord["lon"], date_from, date_to)
+        time.sleep(0.3)
+        if marine:
+            for day in [date_from, date_to]:
+                m = marine.get(day, {})
+                w = (wind or {}).get(day, {})
+                key = (group, day)
+                result["forecast"][key] = {
+                    "wave_height": m.get("wave_height"),
+                    "swell":       m.get("swell"),
+                    "sst":         m.get("sst"),
+                    "wind_speed":  w.get("wind_speed"),
+                    "wind_dir":    w.get("wind_dir"),
+                }
+            print("OK")
+        else:
+            print("SKIP")
 
     # weather_data/{area}.csv から潮汐情報
+    base = os.path.dirname(__file__)
     for area_code in _TIDE_AREA_MAP:
         path = os.path.join(base, "weather_data", f"{area_code}.csv")
         if not os.path.exists(path):
@@ -290,153 +409,422 @@ def load_weather_data():
 
     return result
 
-def _lookup_point_weather(weather_data, point_place):
-    """point_place → weather/ のデータを検索。完全一致 → 部分一致でフォールバック"""
-    pts = weather_data.get("points", {})
-    if not pts or not point_place:
-        return None
-    # 完全一致
-    if point_place in pts:
-        return pts[point_place]
-    # 「沖ノ瀬」→「沖の瀬」等の表記ゆれ対応
-    normalized = point_place.replace("ノ", "の").replace("ヶ", "ケ").replace("ケ", "ヶ")
-    if normalized in pts:
-        return pts[normalized]
-    # 「久里浜沖～剣崎沖」→ 先頭部分で検索
-    for sep in ["～", "〜", "~", "周辺"]:
-        if sep in point_place:
-            head = point_place.split(sep)[0].strip()
-            if head in pts:
-                return pts[head]
-    return None
+def _fishing_ok_score(wave, wind):
+    """出船可否スコア: 100=最適 0=欠航リスク"""
+    score = 100
+    if wave is not None:
+        if wave >= 2.5: score -= 60
+        elif wave >= 1.5: score -= 30
+        elif wave >= 1.0: score -= 10
+    if wind is not None:
+        if wind >= 12: score -= 50
+        elif wind >= 8: score -= 25
+        elif wind >= 6: score -= 10
+    return max(0, score)
 
-def _wx_inline(weather_data, point_place):
-    """釣果1件分のインライン海況テキスト（波高アイコン + 海水温 + ポイント名）"""
-    row = _lookup_point_weather(weather_data, point_place)
-    if not row:
-        return ""
-    wh = _float_or_none(row.get("wave_height"))
-    sst = _float_or_none(row.get("sst"))
-    pt = row.get("point", "")
-    parts = []
-    if wh is not None:
-        parts.append(f"{_wave_icon(wh)}{wh}m")
-    if sst is not None:
-        parts.append(f"{sst}℃")
-    if not parts:
-        return ""
-    txt = " ".join(parts)
-    if pt:
-        txt += f' <span style="color:#4a6a8a;font-size:9px">({pt})</span>'
-    return txt
+def _ok_label(score):
+    if score >= 80: return "◎ 出船日和", "#4dcc88"
+    if score >= 60: return "○ 概ね良好", "#f4a261"
+    if score >= 40: return "△ やや不安", "#e85d04"
+    return "✕ 欠航リスク", "#cc4d4d"
 
 def build_weather_section(weather_data):
-    """アクティブな地点の海況カードをエリアグループ別に生成"""
-    pts = weather_data.get("points", {})
-    if not pts:
+    """週末海況予報カードをエリアグループ別・土日別に生成"""
+    forecasts = weather_data.get("forecast", {})
+    if not forecasts:
         return ""
+    sat_date = weather_data.get("sat_date", "")
+    sun_date = weather_data.get("sun_date", "")
+    sat_m = int(sat_date[5:7]) if sat_date else 0
+    sat_d = int(sat_date[8:10]) if sat_date else 0
+    sun_m = int(sun_date[5:7]) if sun_date else 0
+    sun_d = int(sun_date[8:10]) if sun_date else 0
 
-    # エリアグループ → 代表地点マッピング（AREA_GROUPSの港名→「{港名の先頭}沖」で推測）
-    group_cards = []
-    for group_label, group_areas in AREA_GROUPS.items():
-        # グループ内の全地点から最新データを集約
-        group_points = []
-        for pt_name, pt_row in pts.items():
-            # 港名の一部がポイント名に含まれるか
-            for area in group_areas:
-                area_base = area.replace("港", "").replace("漁港", "")
-                if area_base in pt_name or pt_name.replace("沖","") in area:
-                    group_points.append(pt_row)
-                    break
-        if not group_points:
+    cards = ""
+    for group in AREA_FORECAST_COORDS:
+        sat_fc = forecasts.get((group, sat_date), {})
+        sun_fc = forecasts.get((group, sun_date), {})
+        if not sat_fc and not sun_fc:
             continue
-        # 最新のデータを代表値として使用
-        rep = max(group_points, key=lambda r: (r.get("date",""), r.get("hour","")))
-        # グループ内の平均も計算（波高・風速・海水温）
-        wave_vals = [_float_or_none(r.get("wave_height")) for r in group_points]
-        wind_vals = [_float_or_none(r.get("wind_speed")) for r in group_points]
-        sst_vals  = [_float_or_none(r.get("sst")) for r in group_points]
-        wave_vals = [v for v in wave_vals if v is not None]
-        wind_vals = [v for v in wind_vals if v is not None]
-        sst_vals  = [v for v in sst_vals  if v is not None]
 
-        avg_wave = round(sum(wave_vals)/len(wave_vals), 1) if wave_vals else None
-        avg_wind = round(sum(wind_vals)/len(wind_vals), 1) if wind_vals else None
-        avg_sst  = round(sum(sst_vals)/len(sst_vals),  1) if sst_vals  else None
-        wind_d   = _float_or_none(rep.get("wind_dir"))
-
-        icon     = _wave_icon(avg_wave)
-        wlabel   = _wave_label(avg_wave)
-        wnd_dir  = _wind_dir_text(wind_d)
-        wnd_lbl  = _wind_label(avg_wind)
-
-        wave_txt = f"{avg_wave}m" if avg_wave is not None else "-"
-        wind_txt = f"{avg_wind}m/s" if avg_wind is not None else "-"
-        sst_txt  = f"{avg_sst}℃" if avg_sst is not None else "-"
-
-        # 潮汐情報（weather_data/から）
-        tide_html = ""
-        for ac, aname in _TIDE_AREA_MAP.items():
-            trow = weather_data.get("tide", {}).get(ac)
-            if not trow:
+        day_rows = ""
+        for label, fc, date_str in [("土", sat_fc, sat_date), ("日", sun_fc, sun_date)]:
+            if not fc:
                 continue
-            # グループ名とエリア名の対応
-            if (("東京湾奥" in group_label and aname == "東京湾") or
-                ("東京" == group_label and aname == "東京湾") or
-                ("神奈川・東京湾" in group_label and aname == "東京湾") or
-                ("神奈川・相模湾" in group_label and aname == "相模湾") or
-                ("外房" in group_label and aname == "外房") or
-                ("内房" in group_label and aname == "外房") or
-                ("茨城" in group_label and aname == "茨城沖")):
+            wave = _float_or_none(fc.get("wave_height"))
+            wind = _float_or_none(fc.get("wind_speed"))
+            sst  = _float_or_none(fc.get("sst"))
+            wd   = fc.get("wind_dir")
+
+            icon   = _wave_icon(wave)
+            wlabel = _wave_label(wave)
+            wdir   = _wind_dir_text(wd)
+            wlbl   = _wind_label(wind)
+            score  = _fishing_ok_score(wave, wind)
+            ok_txt, ok_color = _ok_label(score)
+
+            wave_txt = f"{wave}m" if wave is not None else "-"
+            wind_txt = f"{wind}m/s" if wind is not None else "-"
+            sst_txt  = f"{sst}℃" if sst is not None else "-"
+
+            day_rows += f"""
+          <div class="wx-day">
+            <div class="wx-day-label">{label}</div>
+            <div class="wx-ok" style="color:{ok_color}">{ok_txt}</div>
+            <div class="wx-metrics">
+              <span>{icon} {wave_txt} {wlabel}</span>
+              <span>💨 {wdir}{wind_txt} {wlbl}</span>
+              <span>🌡️ {sst_txt}</span>
+            </div>
+          </div>"""
+
+        # 潮汐
+        tide_html = ""
+        tide_key = _TIDE_GROUP_MAP.get(group)
+        if tide_key:
+            trow = weather_data.get("tide", {}).get(tide_key)
+            if trow:
                 tt = trow.get("tide_type", "")
                 ma = trow.get("moon_age", "")
                 if tt:
-                    tide_html = f'<div>🌙 {tt}'
-                    if ma: tide_html += f' (月齢{ma})'
-                    tide_html += '</div>'
-                break
+                    tide_html = f'<span class="wx-tide">🌙 {tt}'
+                    if ma: tide_html += f'(月齢{ma})'
+                    tide_html += '</span>'
 
-        dt_str = rep.get("date", "")
-        hr_str = rep.get("hour", "")
-        time_str = f"{dt_str} {hr_str}:00" if dt_str and hr_str else dt_str
-        n_pts = len(group_points)
-
-        group_cards.append(f"""
+        cards += f"""
       <div class="wx-card">
-        <div class="wx-area">{icon} {group_label}</div>
-        <div class="wx-wave">{wave_txt} <span class="wx-label">{wlabel}</span></div>
-        <div class="wx-detail">
-          <div>💨 {wnd_dir}{wind_txt} <span class="wx-label">{wnd_lbl}</span></div>
-          <div>🌡️ 海水温 {sst_txt}</div>
-          {tide_html}
-        </div>
-        <div class="wx-time">{n_pts}地点の平均</div>
-      </div>""")
+        <div class="wx-area">{group} {tide_html}</div>
+        {day_rows}
+      </div>"""
 
-    if not group_cards:
+    if not cards:
         return ""
-    # 全地点の最新日時を取得して見出しに表示
-    all_dates = [(r.get("date",""), r.get("hour","")) for r in pts.values() if r.get("date")]
-    latest_dt = max(all_dates) if all_dates else ("","")
-    wx_date_str = ""
-    if latest_dt[0]:
-        wx_date_str = f"{latest_dt[0]} {latest_dt[1]}:00" if latest_dt[1] else latest_dt[0]
-        # N日前を計算
+    return f"""<h2>🌊 今週末の海況予報 <span style="font-size:12px;font-weight:normal;color:#7a9bb5">{sat_m}/{sat_d}(土)・{sun_m}/{sun_d}(日) 釣り時間帯 6〜15時の予報</span></h2>
+    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">波高・風速から出船可否を判定。データ: Open-Meteo Marine Forecast</p>
+    <div class="wx-grid">{cards}</div>"""
+
+# ============================================================
+# 釣果予測エンジン（海況予報 × 過去実績）
+# ============================================================
+def _load_historical_catches():
+    """data/*.csv から全釣果を読み込み"""
+    base = os.path.dirname(__file__)
+    data_dir = os.path.join(base, "data")
+    if not os.path.isdir(data_dir):
+        return []
+    rows = []
+    for fname in sorted(os.listdir(data_dir)):
+        if not fname.endswith(".csv"): continue
         try:
-            wx_dt = datetime.strptime(latest_dt[0], "%Y-%m-%d")
-            days_ago = (datetime.now() - wx_dt).days
-            if days_ago == 0:
-                age_str = "今日"
-            elif days_ago == 1:
-                age_str = "昨日"
-            else:
-                age_str = f"{days_ago}日前"
-            wx_date_str += f"（{age_str}）"
+            with open(os.path.join(data_dir, fname), encoding="utf-8", newline="") as f:
+                for row in csv.DictReader(f):
+                    rows.append(row)
         except Exception:
-            pass
-    return f"""<h2>🌊 海況情報 <span style="font-size:12px;font-weight:normal;color:#7a9bb5">📅 {wx_date_str} 時点</span></h2>
-    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">各エリアの海況データ（Open-Meteo Marine / 3時間粒度 / {len(pts)}地点）</p>
-    <div class="wx-grid">{"".join(group_cards)}</div>"""
+            continue
+    return rows
+
+def _load_historical_weather():
+    """weather/*.csv から日付×地点の6-15時平均海況を返す"""
+    base = os.path.dirname(__file__)
+    wx_dir = os.path.join(base, "weather")
+    if not os.path.isdir(wx_dir):
+        return {}
+    raw = {}
+    for fname in sorted(os.listdir(wx_dir)):
+        if not fname.endswith(".csv") or fname.startswith("."): continue
+        try:
+            with open(os.path.join(wx_dir, fname), encoding="utf-8", newline="") as f:
+                for row in csv.DictReader(f):
+                    pt, dt, hr = row.get("point",""), row.get("date",""), int(row.get("hour","0"))
+                    if hr < 6 or hr > 15: continue
+                    key = (dt, pt)
+                    if key not in raw:
+                        raw[key] = {"w":[], "ws":[], "s":[]}
+                    try: raw[key]["w"].append(float(row["wave_height"]))
+                    except: pass
+                    try: raw[key]["ws"].append(float(row["wind_speed"]))
+                    except: pass
+                    try: raw[key]["s"].append(float(row["sst"]))
+                    except: pass
+        except Exception:
+            continue
+    result = {}
+    for k, v in raw.items():
+        result[k] = {
+            "wave": round(sum(v["w"])/len(v["w"]),2) if v["w"] else None,
+            "wind": round(sum(v["ws"])/len(v["ws"]),2) if v["ws"] else None,
+            "sst":  round(sum(v["s"])/len(v["s"]),1) if v["s"] else None,
+        }
+    return result
+
+def _area_to_group(area):
+    """船宿エリア名 → AREA_GROUPSのグループ名"""
+    for group, areas in AREA_GROUPS.items():
+        if area in areas:
+            return group
+    return None
+
+def _build_catch_weather_index(catches, weather):
+    """釣果×海況のJOIN済みインデックスを構築（エリアグループ付き）"""
+    index = []
+    for row in catches:
+        pp = (row.get("point_place") or "").strip()
+        dt = (row.get("date") or "").replace("/", "-")
+        fish = row.get("fish", "")
+        area = (row.get("area") or "").strip()
+        if not pp or not dt or not fish: continue
+        wx = weather.get((dt, pp))
+        if not wx: continue
+        try: cnt = float(row.get("cnt_max", ""))
+        except: continue
+        month = int(dt[5:7]) if len(dt) >= 7 else None
+        group = _area_to_group(area)
+        index.append({"fish": fish, "cnt": cnt, "wave": wx["wave"],
+                       "wind": wx["wind"], "sst": wx["sst"], "month": month,
+                       "area": area, "group": group})
+    return index
+
+def predict_catches(index, area_forecasts, target_month):
+    """エリア別の海況予報から、エリア×魚種別の予測釣果を算出。
+    同月 × 同エリアグループ × 近い海況条件の過去実績から予測。
+    """
+    WAVE_TOL = 0.4
+    SST_TOL  = 2.0
+    predictions = {}
+
+    for group, fc in area_forecasts.items():
+        fc_wave = fc.get("wave_height")
+        fc_sst  = fc.get("sst")
+
+        # このエリアグループの過去データ
+        group_rows = [r for r in index if r["group"] == group]
+        if not group_rows: continue
+
+        # 魚種別に集計
+        fish_groups = {}
+        for r in group_rows:
+            fish_groups.setdefault(r["fish"], []).append(r)
+
+        for fish, rows in fish_groups.items():
+            if fish == "不明": continue
+            # 同月 ± 1ヶ月
+            month_rows = [r for r in rows if r["month"] is not None and
+                          (abs(r["month"] - target_month) <= 1 or
+                           abs(r["month"] - target_month) >= 11)]
+            if len(month_rows) < 3: continue
+
+            # 海況条件でフィルタ
+            similar = []
+            for r in month_rows:
+                if fc_wave is not None and r["wave"] is not None:
+                    if abs(r["wave"] - fc_wave) > WAVE_TOL: continue
+                if fc_sst is not None and r["sst"] is not None:
+                    if abs(r["sst"] - fc_sst) > SST_TOL: continue
+                similar.append(r)
+
+            if len(similar) < 5:
+                similar = month_rows
+
+            catches_vals = [r["cnt"] for r in similar]
+            avg_catch = round(sum(catches_vals) / len(catches_vals), 1)
+            max_catch = int(max(catches_vals))
+            n_samples = len(similar)
+
+            key = (fish, group)
+            # 同じ魚種が複数エリアに出る場合、エリア別に保持
+            predictions[key] = {
+                "fish": fish,
+                "group": group,
+                "avg": avg_catch,
+                "max": max_catch,
+                "samples": n_samples,
+            }
+
+    # 魚種でまとめつつ、エリア別の内訳も保持
+    fish_summary = {}
+    for (fish, group), pred in predictions.items():
+        if fish not in fish_summary:
+            fish_summary[fish] = {"areas": [], "total_samples": 0, "weighted_avg": 0}
+        fish_summary[fish]["areas"].append(pred)
+        fish_summary[fish]["total_samples"] += pred["samples"]
+        fish_summary[fish]["weighted_avg"] += pred["avg"] * pred["samples"]
+
+    result = []
+    for fish, s in fish_summary.items():
+        if s["total_samples"] == 0: continue
+        w_avg = round(s["weighted_avg"] / s["total_samples"], 1)
+        best_area = max(s["areas"], key=lambda a: a["avg"])
+        result.append({
+            "fish": fish,
+            "avg": w_avg,
+            "max": max(a["max"] for a in s["areas"]),
+            "samples": s["total_samples"],
+            "best_area": best_area["group"],
+            "best_avg": best_area["avg"],
+            "areas": sorted(s["areas"], key=lambda a: -a["avg"]),
+        })
+
+    result.sort(key=lambda x: -(x["samples"] * x["avg"]))
+    return result
+
+def build_forecast_json(weather_data):
+    """forecast.json を生成: 7日分の海況予報 × 釣果予測"""
+    forecasts = weather_data.get("forecast", {})
+    if not forecasts:
+        return None
+
+    print("過去データ読み込み中...")
+    hist_catches = _load_historical_catches()
+    hist_weather = _load_historical_weather()
+    index = _build_catch_weather_index(hist_catches, hist_weather)
+    print(f"  釣果×海況インデックス: {len(index)} 件")
+
+    result = {"generated_at": datetime.now().strftime("%Y/%m/%d %H:%M"), "days": {}}
+
+    # forecast内の全日付を処理
+    all_dates = sorted(set(d for (_, d) in forecasts.keys()))
+    for date_str in all_dates:
+        # 全エリアの予報を集約して代表値を算出
+        waves, winds, ssts = [], [], []
+        area_forecasts = {}
+        for (group, d), fc in forecasts.items():
+            if d != date_str: continue
+            area_forecasts[group] = fc
+            if fc.get("wave_height") is not None: waves.append(fc["wave_height"])
+            if fc.get("wind_speed") is not None: winds.append(fc["wind_speed"])
+            if fc.get("sst") is not None: ssts.append(fc["sst"])
+
+        avg_wave = round(sum(waves)/len(waves), 1) if waves else None
+        avg_wind = round(sum(winds)/len(winds), 1) if winds else None
+        avg_sst  = round(sum(ssts)/len(ssts), 1)   if ssts  else None
+        month = int(date_str[5:7]) if len(date_str) >= 7 else None
+
+        # 出船可否
+        score = _fishing_ok_score(avg_wave, avg_wind)
+        ok_txt, _ = _ok_label(score)
+
+        # 釣果予測（エリア別海況を使用）
+        predictions = predict_catches(index, area_forecasts, month) if month else []
+
+        # 上位10魚種
+        top_fish = []
+        for pred in predictions[:10]:
+            top_fish.append({
+                "fish": pred["fish"],
+                "avg": pred["avg"],
+                "max": pred["max"],
+                "samples": pred["samples"],
+                "best_area": pred["best_area"],
+                "best_avg": pred["best_avg"],
+            })
+
+        result["days"][date_str] = {
+            "wave": avg_wave,
+            "wind": avg_wind,
+            "sst": avg_sst,
+            "score": score,
+            "ok": ok_txt,
+            "areas": {g: {"wave": fc.get("wave_height"), "wind": fc.get("wind_speed"),
+                          "sst": fc.get("sst"), "score": _fishing_ok_score(
+                              fc.get("wave_height"), fc.get("wind_speed")),
+                          "ok": _ok_label(_fishing_ok_score(fc.get("wave_height"), fc.get("wind_speed")))[0]}
+                      for g, fc in area_forecasts.items()},
+            "predictions": top_fish,
+        }
+
+    return result
+
+def build_forecast_section(forecast_data, weather_data):
+    """海況予報 + 釣果予測のHTMLセクション（JS日付切替対応）"""
+    if not forecast_data or not forecast_data.get("days"):
+        return ""
+    sat_date = weather_data.get("sat_date", "")
+    sun_date = weather_data.get("sun_date", "")
+
+    days = forecast_data["days"]
+    all_dates = sorted(days.keys())
+
+    # 日付ボタン
+    date_btns = ""
+    for i, d in enumerate(all_dates):
+        m, dd = int(d[5:7]), int(d[8:10])
+        wd_idx = datetime.strptime(d, "%Y-%m-%d").weekday()
+        wd_names = ["月","火","水","木","金","土","日"]
+        wd = wd_names[wd_idx]
+        is_weekend = "weekend" if wd_idx >= 5 else ""
+        active = " active" if d == sat_date or (sat_date not in [x for x in all_dates] and i == 0) else ""
+        date_btns += f'<button class="fc-date-btn{active} {is_weekend}" data-date="{d}" onclick="switchForecastDate(this,\'{d}\')">{m}/{dd}({wd})</button>'
+
+    # 日別データをJSONとしてscriptタグに埋め込み
+    forecast_json = json.dumps(forecast_data["days"], ensure_ascii=False)
+
+    # 初期表示用の日付
+    init_date = sat_date if sat_date in days else all_dates[0]
+
+    return f"""<h2>🔮 釣果予測</h2>
+    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">海況予報と過去2年の実績データから、指定日の釣果を予測</p>
+    <div class="fc-date-bar">{date_btns}</div>
+    <div id="forecast-content"></div>
+    <script>
+    var _fcData = {forecast_json};
+    function switchForecastDate(btn, date) {{
+      document.querySelectorAll('.fc-date-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderForecast(date);
+      if(typeof gtag==='function') gtag('event','forecast_date',{{date:date}});
+    }}
+    function renderForecast(date) {{
+      var d = _fcData[date];
+      if (!d) {{ document.getElementById('forecast-content').innerHTML='<p style="color:#7a9bb5">データなし</p>'; return; }}
+      var h = '';
+      // 海況サマリー
+      var okColor = d.score>=80?'#4dcc88':d.score>=60?'#f4a261':d.score>=40?'#e85d04':'#cc4d4d';
+      h += '<div class="fc-wx-summary">';
+      h += '<span class="fc-ok" style="color:'+okColor+'">'+d.ok+'</span>';
+      h += '<span class="fc-wx-val">🌊 '+(d.wave!=null?d.wave+'m':'-')+'</span>';
+      h += '<span class="fc-wx-val">💨 '+(d.wind!=null?d.wind+'m/s':'-')+'</span>';
+      h += '<span class="fc-wx-val">🌡️ '+(d.sst!=null?d.sst+'℃':'-')+'</span>';
+      h += '</div>';
+      // エリア別
+      var areas = d.areas||{{}};
+      var ak = Object.keys(areas);
+      if (ak.length) {{
+        h += '<div class="wx-grid">';
+        ak.forEach(function(g){{
+          var a = areas[g];
+          var ac = a.score>=80?'#4dcc88':a.score>=60?'#f4a261':a.score>=40?'#e85d04':'#cc4d4d';
+          h += '<div class="wx-card">';
+          h += '<div class="wx-area">'+g+'</div>';
+          h += '<div class="wx-ok" style="color:'+ac+'">'+a.ok+'</div>';
+          h += '<div class="wx-detail">';
+          h += '<div>🌊 '+(a.wave!=null?a.wave+'m':'-')+'</div>';
+          h += '<div>💨 '+(a.wind!=null?a.wind+'m/s':'-')+'</div>';
+          h += '<div>🌡️ '+(a.sst!=null?a.sst+'℃':'-')+'</div>';
+          h += '</div></div>';
+        }});
+        h += '</div>';
+      }}
+      // 釣果予測
+      var preds = d.predictions||[];
+      if (preds.length) {{
+        h += '<h3 style="font-size:14px;color:#4db8ff;margin:16px 0 8px;border-left:3px solid #4db8ff;padding-left:8px">🐟 この海況での予測釣果</h3>';
+        h += '<div class="pred-grid">';
+        preds.forEach(function(p,i){{
+          var medal = i<3?['🥇','🥈','🥉'][i]:'';
+          h += '<div class="pred-card">';
+          h += '<div class="pred-fish">'+medal+' '+p.fish+'</div>';
+          h += '<div class="pred-avg">平均 <strong>'+p.avg+'</strong> 匹</div>';
+          h += '<div class="pred-max">最高 '+p.max+' 匹</div>';
+          if(p.best_area) h += '<div class="pred-area">📍 '+p.best_area+' (平均'+p.best_avg+'匹)</div>';
+          h += '<div class="pred-samples">過去'+p.samples+'件の実績</div>';
+          h += '</div>';
+        }});
+        h += '</div>';
+      }}
+      document.getElementById('forecast-content').innerHTML = h;
+    }}
+    renderForecast('{init_date}');
+    </script>"""
 
 FISH_MAP = {
     "アジ":     ["アジ", "LTアジ", "ライトアジ"],
@@ -1608,9 +1996,28 @@ footer a:hover{text-decoration:underline}
 .wx-label{font-size:11px;color:#7a9bb5;font-weight:normal}
 .wx-detail{font-size:12px;color:#c8d8e8;line-height:1.8}
 .wx-detail div{display:flex;align-items:center;gap:4px}
-.wx-point{font-size:10px;color:#4db8ff;margin-top:4px;opacity:0.7}
+.wx-day{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #1a3050}
+.wx-day-label{font-size:13px;font-weight:bold;color:#fff;min-width:20px}
+.wx-ok{font-size:12px;font-weight:bold;min-width:80px}
+.wx-metrics{font-size:11px;color:#c8d8e8;display:flex;gap:10px;flex-wrap:wrap}
+.wx-tide{font-size:11px;color:#7a9bb5;margin-left:8px}
 .wx-time{font-size:10px;color:#4a6a8a;margin-top:4px;text-align:right}
-.wx-inline{font-size:10px;color:#7a9bb5;white-space:nowrap}
+.fc-date-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fc-date-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s}
+.fc-date-btn:hover{border-color:#4db8ff;color:#4db8ff}
+.fc-date-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
+.fc-date-btn.weekend{border-color:#e85d04}
+.fc-date-btn.weekend.active{background:#e85d04}
+.fc-wx-summary{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:#0d2137;border-radius:8px;margin-bottom:12px}
+.fc-ok{font-size:15px;font-weight:bold}
+.fc-wx-val{font-size:13px;color:#c8d8e8}
+.pred-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.pred-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px}
+.pred-fish{font-size:15px;font-weight:bold;color:#fff;margin-bottom:4px}
+.pred-avg{font-size:13px;color:#4db8ff;margin-bottom:2px}
+.pred-max{font-size:11px;color:#7a9bb5}
+.pred-area{font-size:11px;color:#f4a261;margin-top:2px}
+.pred-samples{font-size:10px;color:#4a6a8a;margin-top:4px}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 """
@@ -1761,7 +2168,7 @@ def fmt_size(c):
     return " ".join(parts)
 
 # ============================================================
-def build_catch_table(catches, weather_data=None):
+def build_catch_table(catches):
     active_areas = set(c["area"] for c in catches)
     # 「すべて」だけフィルター、エリアボタンはページへ遷移
     filter_btns = '<div class="filter-group"><button class="filter-btn active all-btn" onclick="filterArea(this,\'all\')">すべて</button></div>'
@@ -1782,7 +2189,6 @@ def build_catch_table(catches, weather_data=None):
                         f'{"".join(others)}</div>')
     rows = ""
     max_count = 0
-    has_wx = weather_data and weather_data.get("points")
     _top = sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]
     for c in _top:
         cr = c.get("count_range")
@@ -1797,12 +2203,7 @@ def build_catch_table(catches, weather_data=None):
         hl = ' class="highlight"' if is_top else (' class="dim"' if is_dim else "")
         max_val = cr["max"] if cr and not cr.get("is_boat") else 0
         fish_str = "・".join(c["fish"])
-        wx_cell = ""
-        if has_wx:
-            pp = (c.get("point_place") or "").strip()
-            wx_cell = f'<td class="wx-inline">{_wx_inline(weather_data, pp)}</td>'
-        rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td>{wx_cell}</tr>'
-    wx_th = '<th>海況</th>' if has_wx else ''
+        rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>'
     return f"""
     <div class="search-sort-bar">
       <input id="fish-search" type="text" placeholder="🔍 魚種で絞り込む..." oninput="searchFish(this.value)">
@@ -1813,7 +2214,7 @@ def build_catch_table(catches, weather_data=None):
     </div>
     <div class="filter-bar">{filter_btns}</div>
     <div class="tbl-wrap"><table id="catch-table">
-      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th>{wx_th}</tr>
+      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th></tr>
       {rows}
     </table></div>"""
 
@@ -1917,7 +2318,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
     target_html  = build_target_section(targets)
     forecast     = build_forecast(targets)
     weather_html = build_weather_section(weather_data or {})
-    catch_table  = build_catch_table(catches, weather_data)
+    forecast_json_data = weather_data.get("_forecast_data") if weather_data else None
+    forecast_html = build_forecast_section(forecast_json_data, weather_data) if forecast_json_data else ""
+    catch_table  = build_catch_table(catches)
     active_areas = set(c["area"] for c in catches)
     area_nav_parts = []
     covered = set()
@@ -1968,6 +2371,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
   {forecast}
   {target_html}
   {weather_html}
+  {forecast_html}
   <h2>🐟 釣れている魚</h2>
   <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">タップで詳細表示 ／ 各カードの「詳細→」で船宿ランキングを確認</p>
   <div class="grid">{cards}</div>
@@ -2708,8 +3112,16 @@ def main():
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
                    "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
     weather_data = load_weather_data()
-    if weather_data:
-        print(f"海況データ: {len(weather_data)} エリア読み込み")
+    fc_count = len(weather_data.get("forecast", {}))
+    if fc_count:
+        print(f"海況予報: {fc_count} エリア×日")
+    # 釣果予測
+    forecast_data = build_forecast_json(weather_data) if fc_count else None
+    if forecast_data:
+        weather_data["_forecast_data"] = forecast_data
+        with open("forecast.json", "w", encoding="utf-8") as f:
+            json.dump(forecast_data, f, ensure_ascii=False, indent=2)
+        print(f"forecast.json: {len(forecast_data.get('days', {}))} 日分生成")
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
     build_fish_pages(valid_catches, history, crawled_at)
