@@ -588,9 +588,24 @@ def _resolve_point(point_place, ship, fish, sfp):
         return fish_map.get("point1", "") or ""
     return ""
 
+def _load_point_normalize_map():
+    """point_normalize_map.json を読み込み"""
+    path = os.path.join(os.path.dirname(__file__), "point_normalize_map.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
 def _build_catch_weather_index(catches, weather):
-    """釣果×海況のJOIN済みインデックスを構築（エリアグループ付き）"""
+    """釣果×海況のJOIN済みインデックスを構築（エリアグループ付き）
+    1. point_normalize_map.json でポイント名を正規化
+    2. 正規化後もポイント空なら ship_fish_point.json でフォールバック
+    """
     sfp = _load_ship_fish_point()
+    pnm = _load_point_normalize_map()
     index = []
     for row in catches:
         dt = (row.get("date") or "").replace("/", "-")
@@ -598,7 +613,13 @@ def _build_catch_weather_index(catches, weather):
         area = (row.get("area") or "").strip()
         ship = (row.get("ship") or "").strip()
         if not dt or not fish: continue
-        pp = _resolve_point(row.get("point_place"), ship, fish, sfp)
+        # Step 1: point_place を正規化
+        pp = (row.get("point_place") or "").strip()
+        if pp and pp in pnm:
+            pp = pnm[pp]  # 空文字ならジャンクとして消える
+        # Step 2: 空ならship_fish_pointでフォールバック
+        if not pp:
+            pp = _resolve_point("", ship, fish, sfp)
         if not pp: continue
         wx = weather.get((dt, pp))
         if not wx: continue
