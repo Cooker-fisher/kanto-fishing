@@ -205,16 +205,16 @@ DATA_NOTE_HTML = """<div class="data-note">
 </div>"""
 
 # ============================================================
-# 海況データ読み込み・表示
+# 海況データ読み込み・表示（weather/ 地点別3時間粒度データ）
 # ============================================================
-WEATHER_AREAS = {
+# weather_data/ の4エリアサマリー（潮汐・月齢はこちらのみ）
+_TIDE_AREA_MAP = {
     "tokyo_bay":  "東京湾",
     "sagami_bay": "相模湾",
     "outer_boso": "外房",
     "ibaraki":    "茨城沖",
 }
 
-# 風向（度）→ 方角テキスト
 def _wind_dir_text(deg):
     if deg is None or deg == "": return ""
     try: deg = float(deg)
@@ -237,11 +237,45 @@ def _wave_label(h):
     if h < 1.5: return "波あり"
     return "高波注意"
 
+def _wind_label(ws):
+    if ws is None: return ""
+    if ws < 3: return "微風"
+    if ws < 6: return "弱風"
+    if ws < 10: return "やや強い"
+    return "強風注意"
+
+def _float_or_none(v):
+    if v is None or v == "": return None
+    try: return float(v)
+    except: return None
+
 def load_weather_data():
-    """weather_data/{area}.csv から各海域の最新行を読み込む"""
-    result = {}
-    for area_code, area_name in WEATHER_AREAS.items():
-        path = os.path.join(os.path.dirname(__file__), "weather_data", f"{area_code}.csv")
+    """weather/YYYY-MM.csv から地点×日付の最新データ + weather_data/の潮汐を読み込む"""
+    result = {"points": {}, "tide": {}}
+    base = os.path.dirname(__file__)
+
+    # weather/YYYY-MM.csv から地点別の最新行を取得（当月→前月の順）
+    now = datetime.now()
+    for delta in range(0, 3):
+        d = now.replace(day=1) - timedelta(days=delta * 28)
+        fname = os.path.join(base, "weather", f"{d.year:04d}-{d.month:02d}.csv")
+        if not os.path.exists(fname):
+            continue
+        try:
+            with open(fname, encoding="utf-8", newline="") as f:
+                for row in csv.DictReader(f):
+                    pt = row.get("point", "")
+                    dt = row.get("date", "")
+                    hr = row.get("hour", "")
+                    prev = result["points"].get(pt)
+                    if prev is None or (dt, hr) > (prev.get("date",""), prev.get("hour","")):
+                        result["points"][pt] = row
+        except Exception:
+            continue
+
+    # weather_data/{area}.csv から潮汐情報
+    for area_code in _TIDE_AREA_MAP:
+        path = os.path.join(base, "weather_data", f"{area_code}.csv")
         if not os.path.exists(path):
             continue
         last_row = None
@@ -252,65 +286,132 @@ def load_weather_data():
         except Exception:
             continue
         if last_row:
-            result[area_code] = last_row
+            result["tide"][area_code] = last_row
+
     return result
 
-def build_weather_section(weather_data):
-    """海況カード4エリアのHTMLを生成"""
-    if not weather_data:
+def _lookup_point_weather(weather_data, point_place):
+    """point_place → weather/ のデータを検索。完全一致 → 部分一致でフォールバック"""
+    pts = weather_data.get("points", {})
+    if not pts or not point_place:
+        return None
+    # 完全一致
+    if point_place in pts:
+        return pts[point_place]
+    # 「沖ノ瀬」→「沖の瀬」等の表記ゆれ対応
+    normalized = point_place.replace("ノ", "の").replace("ヶ", "ケ").replace("ケ", "ヶ")
+    if normalized in pts:
+        return pts[normalized]
+    # 「久里浜沖～剣崎沖」→ 先頭部分で検索
+    for sep in ["～", "〜", "~", "周辺"]:
+        if sep in point_place:
+            head = point_place.split(sep)[0].strip()
+            if head in pts:
+                return pts[head]
+    return None
+
+def _wx_inline(weather_data, point_place):
+    """釣果1件分のインライン海況テキスト（波高アイコン + 海水温）"""
+    row = _lookup_point_weather(weather_data, point_place)
+    if not row:
         return ""
-    cards = ""
-    for area_code, area_name in WEATHER_AREAS.items():
-        row = weather_data.get(area_code)
-        if not row:
+    wh = _float_or_none(row.get("wave_height"))
+    sst = _float_or_none(row.get("sst"))
+    parts = []
+    if wh is not None:
+        parts.append(f"{_wave_icon(wh)}{wh}m")
+    if sst is not None:
+        parts.append(f"{sst}℃")
+    return " ".join(parts)
+
+def build_weather_section(weather_data):
+    """アクティブな地点の海況カードをエリアグループ別に生成"""
+    pts = weather_data.get("points", {})
+    if not pts:
+        return ""
+
+    # エリアグループ → 代表地点マッピング（AREA_GROUPSの港名→「{港名の先頭}沖」で推測）
+    group_cards = []
+    for group_label, group_areas in AREA_GROUPS.items():
+        # グループ内の全地点から最新データを集約
+        group_points = []
+        for pt_name, pt_row in pts.items():
+            # 港名の一部がポイント名に含まれるか
+            for area in group_areas:
+                area_base = area.replace("港", "").replace("漁港", "")
+                if area_base in pt_name or pt_name.replace("沖","") in area:
+                    group_points.append(pt_row)
+                    break
+        if not group_points:
             continue
-        wave_h = row.get("wave_height", "")
-        wave_h_f = float(wave_h) if wave_h else None
-        swell = row.get("swell_height", "")
-        swell_f = float(swell) if swell else None
-        wind = row.get("wind_speed", "")
-        wind_dir = _wind_dir_text(row.get("wind_dir", ""))
-        sst = row.get("sea_surface_temp", "")
-        tide_type = row.get("tide_type", "")
-        moon_age = row.get("moon_age", "")
-        dt = row.get("datetime", "")
+        # 最新のデータを代表値として使用
+        rep = max(group_points, key=lambda r: (r.get("date",""), r.get("hour","")))
+        # グループ内の平均も計算（波高・風速・海水温）
+        wave_vals = [_float_or_none(r.get("wave_height")) for r in group_points]
+        wind_vals = [_float_or_none(r.get("wind_speed")) for r in group_points]
+        sst_vals  = [_float_or_none(r.get("sst")) for r in group_points]
+        wave_vals = [v for v in wave_vals if v is not None]
+        wind_vals = [v for v in wind_vals if v is not None]
+        sst_vals  = [v for v in sst_vals  if v is not None]
 
-        icon = _wave_icon(wave_h_f)
-        wave_label = _wave_label(wave_h_f)
+        avg_wave = round(sum(wave_vals)/len(wave_vals), 1) if wave_vals else None
+        avg_wind = round(sum(wind_vals)/len(wind_vals), 1) if wind_vals else None
+        avg_sst  = round(sum(sst_vals)/len(sst_vals),  1) if sst_vals  else None
+        wind_d   = _float_or_none(rep.get("wind_dir"))
 
-        # 風の強さラベル
-        wind_label = ""
-        if wind:
-            try:
-                ws = float(wind)
-                if ws < 3: wind_label = "微風"
-                elif ws < 6: wind_label = "弱風"
-                elif ws < 10: wind_label = "やや強い"
-                else: wind_label = "強風注意"
-            except: pass
+        icon     = _wave_icon(avg_wave)
+        wlabel   = _wave_label(avg_wave)
+        wnd_dir  = _wind_dir_text(wind_d)
+        wnd_lbl  = _wind_label(avg_wind)
 
-        wave_txt = f"{wave_h}m" if wave_h else "-"
-        swell_txt = f"{swell}m" if swell else "-"
-        wind_txt = f"{wind}m/s" if wind else "-"
-        sst_txt = f"{sst}℃" if sst else "-"
+        wave_txt = f"{avg_wave}m" if avg_wave is not None else "-"
+        wind_txt = f"{avg_wind}m/s" if avg_wind is not None else "-"
+        sst_txt  = f"{avg_sst}℃" if avg_sst is not None else "-"
 
-        cards += f"""
+        # 潮汐情報（weather_data/から）
+        tide_html = ""
+        for ac, aname in _TIDE_AREA_MAP.items():
+            trow = weather_data.get("tide", {}).get(ac)
+            if not trow:
+                continue
+            # グループ名とエリア名の対応
+            if (("東京湾奥" in group_label and aname == "東京湾") or
+                ("東京" == group_label and aname == "東京湾") or
+                ("神奈川・東京湾" in group_label and aname == "東京湾") or
+                ("神奈川・相模湾" in group_label and aname == "相模湾") or
+                ("外房" in group_label and aname == "外房") or
+                ("内房" in group_label and aname == "外房") or
+                ("茨城" in group_label and aname == "茨城沖")):
+                tt = trow.get("tide_type", "")
+                ma = trow.get("moon_age", "")
+                if tt:
+                    tide_html = f'<div>🌙 {tt}'
+                    if ma: tide_html += f' (月齢{ma})'
+                    tide_html += '</div>'
+                break
+
+        dt_str = rep.get("date", "")
+        hr_str = rep.get("hour", "")
+        time_str = f"{dt_str} {hr_str}:00" if dt_str and hr_str else dt_str
+        n_pts = len(group_points)
+
+        group_cards.append(f"""
       <div class="wx-card">
-        <div class="wx-area">{icon} {area_name}</div>
-        <div class="wx-wave">{wave_txt} <span class="wx-label">{wave_label}</span></div>
+        <div class="wx-area">{icon} {group_label}</div>
+        <div class="wx-wave">{wave_txt} <span class="wx-label">{wlabel}</span></div>
         <div class="wx-detail">
-          <div>🌊 うねり {swell_txt}</div>
-          <div>💨 {wind_dir}{wind_txt} <span class="wx-label">{wind_label}</span></div>
+          <div>💨 {wnd_dir}{wind_txt} <span class="wx-label">{wnd_lbl}</span></div>
           <div>🌡️ 海水温 {sst_txt}</div>
-          <div>🌙 {tide_type}{(' (月齢' + str(moon_age) + ')') if moon_age else ''}</div>
+          {tide_html}
         </div>
-        <div class="wx-time">{dt}</div>
-      </div>"""
-    if not cards:
+        <div class="wx-time">{n_pts}地点平均 / {time_str}</div>
+      </div>""")
+
+    if not group_cards:
         return ""
     return f"""<h2>🌊 海況情報</h2>
-    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">各海域の最新観測データ（気象庁・Open-Meteo・NOWPHAS）</p>
-    <div class="wx-grid">{cards}</div>"""
+    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">各エリアの海況データ（Open-Meteo Marine / 3時間粒度 / {len(pts)}地点）</p>
+    <div class="wx-grid">{"".join(group_cards)}</div>"""
 
 FISH_MAP = {
     "アジ":     ["アジ", "LTアジ", "ライトアジ"],
@@ -1482,7 +1583,9 @@ footer a:hover{text-decoration:underline}
 .wx-label{font-size:11px;color:#7a9bb5;font-weight:normal}
 .wx-detail{font-size:12px;color:#c8d8e8;line-height:1.8}
 .wx-detail div{display:flex;align-items:center;gap:4px}
-.wx-time{font-size:10px;color:#4a6a8a;margin-top:6px;text-align:right}
+.wx-point{font-size:10px;color:#4db8ff;margin-top:4px;opacity:0.7}
+.wx-time{font-size:10px;color:#4a6a8a;margin-top:4px;text-align:right}
+.wx-inline{font-size:10px;color:#7a9bb5;white-space:nowrap}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 """
@@ -1633,7 +1736,7 @@ def fmt_size(c):
     return " ".join(parts)
 
 # ============================================================
-def build_catch_table(catches):
+def build_catch_table(catches, weather_data=None):
     active_areas = set(c["area"] for c in catches)
     # 「すべて」だけフィルター、エリアボタンはページへ遷移
     filter_btns = '<div class="filter-group"><button class="filter-btn active all-btn" onclick="filterArea(this,\'all\')">すべて</button></div>'
@@ -1654,6 +1757,7 @@ def build_catch_table(catches):
                         f'{"".join(others)}</div>')
     rows = ""
     max_count = 0
+    has_wx = weather_data and weather_data.get("points")
     _top = sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]
     for c in _top:
         cr = c.get("count_range")
@@ -1668,7 +1772,12 @@ def build_catch_table(catches):
         hl = ' class="highlight"' if is_top else (' class="dim"' if is_dim else "")
         max_val = cr["max"] if cr and not cr.get("is_boat") else 0
         fish_str = "・".join(c["fish"])
-        rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>'
+        wx_cell = ""
+        if has_wx:
+            pp = (c.get("point_place") or "").strip()
+            wx_cell = f'<td class="wx-inline">{_wx_inline(weather_data, pp)}</td>'
+        rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td>{wx_cell}</tr>'
+    wx_th = '<th>海況</th>' if has_wx else ''
     return f"""
     <div class="search-sort-bar">
       <input id="fish-search" type="text" placeholder="🔍 魚種で絞り込む..." oninput="searchFish(this.value)">
@@ -1679,7 +1788,7 @@ def build_catch_table(catches):
     </div>
     <div class="filter-bar">{filter_btns}</div>
     <div class="tbl-wrap"><table id="catch-table">
-      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th></tr>
+      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th>{wx_th}</tr>
       {rows}
     </table></div>"""
 
@@ -1783,7 +1892,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     target_html  = build_target_section(targets)
     forecast     = build_forecast(targets)
     weather_html = build_weather_section(weather_data or {})
-    catch_table  = build_catch_table(catches)
+    catch_table  = build_catch_table(catches, weather_data)
     active_areas = set(c["area"] for c in catches)
     area_nav_parts = []
     covered = set()
