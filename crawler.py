@@ -311,18 +311,24 @@ def _lookup_point_weather(weather_data, point_place):
     return None
 
 def _wx_inline(weather_data, point_place):
-    """釣果1件分のインライン海況テキスト（波高アイコン + 海水温）"""
+    """釣果1件分のインライン海況テキスト（波高アイコン + 海水温 + ポイント名）"""
     row = _lookup_point_weather(weather_data, point_place)
     if not row:
         return ""
     wh = _float_or_none(row.get("wave_height"))
     sst = _float_or_none(row.get("sst"))
+    pt = row.get("point", "")
     parts = []
     if wh is not None:
         parts.append(f"{_wave_icon(wh)}{wh}m")
     if sst is not None:
         parts.append(f"{sst}℃")
-    return " ".join(parts)
+    if not parts:
+        return ""
+    txt = " ".join(parts)
+    if pt:
+        txt += f' <span style="color:#4a6a8a;font-size:9px">({pt})</span>'
+    return txt
 
 def build_weather_section(weather_data):
     """アクティブな地点の海況カードをエリアグループ別に生成"""
@@ -404,12 +410,31 @@ def build_weather_section(weather_data):
           <div>🌡️ 海水温 {sst_txt}</div>
           {tide_html}
         </div>
-        <div class="wx-time">{n_pts}地点平均 / {time_str}</div>
+        <div class="wx-time">{n_pts}地点の平均</div>
       </div>""")
 
     if not group_cards:
         return ""
-    return f"""<h2>🌊 海況情報</h2>
+    # 全地点の最新日時を取得して見出しに表示
+    all_dates = [(r.get("date",""), r.get("hour","")) for r in pts.values() if r.get("date")]
+    latest_dt = max(all_dates) if all_dates else ("","")
+    wx_date_str = ""
+    if latest_dt[0]:
+        wx_date_str = f"{latest_dt[0]} {latest_dt[1]}:00" if latest_dt[1] else latest_dt[0]
+        # N日前を計算
+        try:
+            wx_dt = datetime.strptime(latest_dt[0], "%Y-%m-%d")
+            days_ago = (datetime.now() - wx_dt).days
+            if days_ago == 0:
+                age_str = "今日"
+            elif days_ago == 1:
+                age_str = "昨日"
+            else:
+                age_str = f"{days_ago}日前"
+            wx_date_str += f"（{age_str}）"
+        except Exception:
+            pass
+    return f"""<h2>🌊 海況情報 <span style="font-size:12px;font-weight:normal;color:#7a9bb5">📅 {wx_date_str} 時点</span></h2>
     <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">各エリアの海況データ（Open-Meteo Marine / 3時間粒度 / {len(pts)}地点）</p>
     <div class="wx-grid">{"".join(group_cards)}</div>"""
 
