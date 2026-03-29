@@ -1421,13 +1421,20 @@ def _prob_bar(prob, surge):
     """週末予測確率のプログレスバーHTML"""
     if prob is None:
         return ""
-    color = "#e85d04" if prob >= 80 else ("#f4a261" if prob >= 50 else "#4db8ff")
+    if prob >= 80:
+        color, label = "#e85d04", "激アツ"
+    elif prob >= 60:
+        color, label = "#f4a261", "良好"
+    elif prob >= 40:
+        color, label = "#4db8ff", "まずまず"
+    else:
+        color, label = "#7a9bb5", "渋め"
     surge_html = '<span style="color:#e85d04;font-size:11px;font-weight:bold;margin-left:6px">🔥 急上昇中</span>' if surge else ""
     return (
         f'<div class="prob-wrap">'
-        f'<span class="prob-label">今週末の予測</span>'
+        f'<span class="prob-label">週末の期待度</span>'
         f'<div class="prob-bar-bg"><div class="prob-bar-fill" style="width:{prob}%;background:{color}"></div></div>'
-        f'<span class="prob-pct" style="color:{color}">{prob}%</span>'
+        f'<span class="prob-pct" style="color:{color};font-weight:bold">{label}</span>'
         f'{surge_html}</div>'
     )
 
@@ -1617,12 +1624,19 @@ def build_html(catches, crawled_at, history):
         prob        = calc_weekend_prob(history, fish, year, week_num)
         prob_html   = ""
         if prob is not None:
-            color = "#e85d04" if prob >= 80 else ("#f4a261" if prob >= 50 else "#4db8ff")
+            if prob >= 80:
+                color, label = "#e85d04", "激アツ"
+            elif prob >= 60:
+                color, label = "#f4a261", "良好"
+            elif prob >= 40:
+                color, label = "#4db8ff", "まずまず"
+            else:
+                color, label = "#7a9bb5", "渋め"
             prob_html = (
                 f'<div class="fc-prob">'
-                f'<span class="prob-label">今週末</span>'
+                f'<span class="prob-label">週末</span>'
                 f'<div class="prob-bar-bg"><div class="prob-bar-fill" style="width:{prob}%;background:{color}"></div></div>'
-                f'<span class="prob-pct" style="color:{color}">{prob}%</span></div>'
+                f'<span class="prob-pct" style="color:{color};font-weight:bold">{label}</span></div>'
             )
         stats_html = f'<div class="fc-stats-row">{yoy_html}{avg_html}{surge_badge}</div>{trend_html}{prob_html}'
         stale_note = f'<div class="fc-stale">⚠️ 最終釣果: {latest_date or "不明"}（30日以上前）</div>' if is_stale else ""
