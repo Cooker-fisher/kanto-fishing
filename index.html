@@ -152,9 +152,28 @@ footer a:hover{text-decoration:underline}
 .wx-label{font-size:11px;color:#7a9bb5;font-weight:normal}
 .wx-detail{font-size:12px;color:#c8d8e8;line-height:1.8}
 .wx-detail div{display:flex;align-items:center;gap:4px}
-.wx-point{font-size:10px;color:#4db8ff;margin-top:4px;opacity:0.7}
+.wx-day{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #1a3050}
+.wx-day-label{font-size:13px;font-weight:bold;color:#fff;min-width:20px}
+.wx-ok{font-size:12px;font-weight:bold;min-width:80px}
+.wx-metrics{font-size:11px;color:#c8d8e8;display:flex;gap:10px;flex-wrap:wrap}
+.wx-tide{font-size:11px;color:#7a9bb5;margin-left:8px}
 .wx-time{font-size:10px;color:#4a6a8a;margin-top:4px;text-align:right}
-.wx-inline{font-size:10px;color:#7a9bb5;white-space:nowrap}
+.fc-date-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fc-date-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s}
+.fc-date-btn:hover{border-color:#4db8ff;color:#4db8ff}
+.fc-date-btn.active{background:#1a6ea8;color:#fff;border-color:#1a6ea8}
+.fc-date-btn.weekend{border-color:#e85d04}
+.fc-date-btn.weekend.active{background:#e85d04}
+.fc-wx-summary{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:#0d2137;border-radius:8px;margin-bottom:12px}
+.fc-ok{font-size:15px;font-weight:bold}
+.fc-wx-val{font-size:13px;color:#c8d8e8}
+.pred-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.pred-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px}
+.pred-fish{font-size:15px;font-weight:bold;color:#fff;margin-bottom:4px}
+.pred-avg{font-size:13px;color:#4db8ff;margin-bottom:2px}
+.pred-max{font-size:11px;color:#7a9bb5}
+.pred-area{font-size:11px;color:#f4a261;margin-top:2px}
+.pred-samples{font-size:10px;color:#4a6a8a;margin-top:4px}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 </style>
@@ -222,7 +241,7 @@ footer a:hover{text-decoration:underline}
       </div>
       <div class="tc-tags"><span class="rtag rtag-up">📈 昨年比UP</span><span class="rtag rtag-down">📉 先週比DOWN</span></div>
       <div class="prob-wrap"><span class="prob-label">週末の期待度</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:75%;background:#f4a261"></div></div><span class="prob-pct" style="color:#f4a261;font-weight:bold">良好</span></div>
-      <div class="tc-comment">シーズン中盤でも好調をキープ（今週35件・昨年比+87%・先週比-26%）</div>
+      <div class="tc-comment">安定して昨年を上回る推移（今週35件・昨年比+87%・先週比-26%）</div>
       <div class="tc-count">出船約9隻 ／ 35件</div>
     </a>
     <a class="target-card" href="fish/ヤリイカ.html">
@@ -232,82 +251,252 @@ footer a:hover{text-decoration:underline}
       </div>
       <div class="tc-tags"><span class="rtag rtag-up">📈 先週比UP</span></div>
       <div class="prob-wrap"><span class="prob-label">週末の期待度</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:50%;background:#4db8ff"></div></div><span class="prob-pct" style="color:#4db8ff;font-weight:bold">まずまず</span></div>
-      <div class="tc-comment">平年並みの釣果。可もなく不可もなく（今週24件・昨年比-15%・先週比+30%）</div>
+      <div class="tc-comment">数は出ないが型狙いも一手（今週24件・昨年比-15%・先週比+30%）</div>
       <div class="tc-count">出船約8隻 ／ 24件</div>
     </a></div>
-  <h2>🌊 海況情報 <span style="font-size:12px;font-weight:normal;color:#7a9bb5">📅 2026-03-26 21:00（3日前） 時点</span></h2>
-    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">各エリアの海況データ（Open-Meteo Marine / 3時間粒度 / 96地点）</p>
+  <h2>🌊 今週末の海況予報 <span style="font-size:12px;font-weight:normal;color:#7a9bb5">3/28(土)・3/29(日) 釣り時間帯 6〜15時の予報</span></h2>
+    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">波高・風速から出船可否を判定。データ: Open-Meteo Marine Forecast</p>
     <div class="wx-grid">
       <div class="wx-card">
-        <div class="wx-area">🔴 茨城</div>
-        <div class="wx-wave">2.3m <span class="wx-label">高波注意</span></div>
-        <div class="wx-detail">
-          <div>💨 東北東4.9m/s <span class="wx-label">弱風</span></div>
-          <div>🌡️ 海水温 14.9℃</div>
-          <div>🌙 若潮 (月齢10.1)</div>
-        </div>
-        <div class="wx-time">3地点の平均</div>
+        <div class="wx-area">茨城 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
+            <div class="wx-metrics">
+              <span>🔴 1.95m 高波注意</span>
+              <span>💨 4.08m/s 弱風</span>
+              <span>🌡️ 15.2℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
+            <div class="wx-metrics">
+              <span>🔴 1.95m 高波注意</span>
+              <span>💨 4.08m/s 弱風</span>
+              <span>🌡️ 15.2℃</span>
+            </div>
+          </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">🔴 千葉・外房</div>
-        <div class="wx-wave">2.9m <span class="wx-label">高波注意</span></div>
-        <div class="wx-detail">
-          <div>💨 北北東6.0m/s <span class="wx-label">やや強い</span></div>
-          <div>🌡️ 海水温 14.9℃</div>
-          <div>🌙 若潮 (月齢10.1)</div>
-        </div>
-        <div class="wx-time">8地点の平均</div>
+        <div class="wx-area">千葉・外房 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#e85d04">△ やや不安</div>
+            <div class="wx-metrics">
+              <span>🔴 2.53m 高波注意</span>
+              <span>💨 5.22m/s 弱風</span>
+              <span>🌡️ 15.3℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#e85d04">△ やや不安</div>
+            <div class="wx-metrics">
+              <span>🔴 2.53m 高波注意</span>
+              <span>💨 5.22m/s 弱風</span>
+              <span>🌡️ 15.3℃</span>
+            </div>
+          </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">🔴 千葉・内房</div>
-        <div class="wx-wave">1.7m <span class="wx-label">高波注意</span></div>
-        <div class="wx-detail">
-          <div>💨 北5.9m/s <span class="wx-label">弱風</span></div>
-          <div>🌡️ 海水温 14.4℃</div>
-          <div>🌙 若潮 (月齢10.1)</div>
-        </div>
-        <div class="wx-time">8地点の平均</div>
+        <div class="wx-area">千葉・内房 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">🟢 千葉・東京湾奥</div>
-        <div class="wx-wave">0.3m <span class="wx-label">穏やか</span></div>
-        <div class="wx-detail">
-          <div>💨 北3.5m/s <span class="wx-label">弱風</span></div>
-          <div>🌡️ 海水温 12.2℃</div>
-          <div>🌙 若潮 (月齢10.1)</div>
-        </div>
-        <div class="wx-time">1地点の平均</div>
+        <div class="wx-area">千葉・東京湾奥 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">🟡 東京</div>
-        <div class="wx-wave">0.9m <span class="wx-label">やや波</span></div>
-        <div class="wx-detail">
-          <div>💨 北3.6m/s <span class="wx-label">弱風</span></div>
-          <div>🌡️ 海水温 13.2℃</div>
-          <div>🌙 若潮 (月齢10.1)</div>
-        </div>
-        <div class="wx-time">2地点の平均</div>
+        <div class="wx-area">東京 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">🟠 神奈川・東京湾</div>
-        <div class="wx-wave">1.2m <span class="wx-label">波あり</span></div>
-        <div class="wx-detail">
-          <div>💨 北4.7m/s <span class="wx-label">弱風</span></div>
-          <div>🌡️ 海水温 14.0℃</div>
-          <div>🌙 若潮 (月齢10.1)</div>
-        </div>
-        <div class="wx-time">7地点の平均</div>
+        <div class="wx-area">神奈川・東京湾 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">🔴 神奈川・相模湾</div>
-        <div class="wx-wave">1.6m <span class="wx-label">高波注意</span></div>
-        <div class="wx-detail">
-          <div>💨 北5.1m/s <span class="wx-label">弱風</span></div>
-          <div>🌡️ 海水温 15.4℃</div>
-          <div>🌙 若潮 (月齢10.1)</div>
-        </div>
-        <div class="wx-time">7地点の平均</div>
+        <div class="wx-area">神奈川・相模湾 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
+            <div class="wx-metrics">
+              <span>🔴 2.17m 高波注意</span>
+              <span>💨 7.88m/s やや強い</span>
+              <span>🌡️ 15.4℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
+            <div class="wx-metrics">
+              <span>🔴 2.17m 高波注意</span>
+              <span>💨 7.88m/s やや強い</span>
+              <span>🌡️ 15.4℃</span>
+            </div>
+          </div>
+      </div>
+      <div class="wx-card">
+        <div class="wx-area">静岡 </div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 4.3m/s 弱風</span>
+              <span>🌡️ 13.1℃</span>
+            </div>
+          </div>
       </div></div>
+  <h2>🔮 釣果予測</h2>
+    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">海況予報と過去2年の実績データから、指定日の釣果を予測</p>
+    <div class="fc-date-bar"><button class="fc-date-btn active weekend" data-date="2026-03-28" onclick="switchForecastDate(this,'2026-03-28')">3/28(土)</button><button class="fc-date-btn weekend" data-date="2026-03-29" onclick="switchForecastDate(this,'2026-03-29')">3/29(日)</button></div>
+    <div id="forecast-content"></div>
+    <script>
+    var _fcData = {"2026-03-28": {"wave": 1.3, "wind": 4.8, "sst": 13.9, "score": 90, "ok": "◎ 出船日和", "areas": {"茨城": {"wave": 1.95, "wind": 4.08, "sst": 15.2, "score": 70, "ok": "○ 概ね良好"}, "千葉・外房": {"wave": 2.53, "wind": 5.22, "sst": 15.3, "score": 40, "ok": "△ やや不安"}, "千葉・内房": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "千葉・東京湾奥": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "東京": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "神奈川・東京湾": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "神奈川・相模湾": {"wave": 2.17, "wind": 7.88, "sst": 15.4, "score": 60, "ok": "○ 概ね良好"}, "静岡": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}}, "predictions": [{"fish": "アジ", "avg": 53.8, "max": 220, "samples": 813, "best_area": "東京", "best_avg": 85.5}, {"fish": "タチウオ", "avg": 17.0, "max": 85, "samples": 371, "best_area": "茨城", "best_avg": 34.2}, {"fish": "シロギス", "avg": 69.5, "max": 200, "samples": 85, "best_area": "千葉・東京湾奥", "best_avg": 71.8}, {"fish": "マダイ", "avg": 6.0, "max": 45, "samples": 752, "best_area": "千葉・外房", "best_avg": 9.0}, {"fish": "カサゴ", "avg": 34.1, "max": 124, "samples": 119, "best_area": "神奈川・東京湾", "best_avg": 58.4}, {"fish": "マルイカ", "avg": 22.8, "max": 90, "samples": 174, "best_area": "神奈川・東京湾", "best_avg": 24.3}, {"fish": "ヤリイカ", "avg": 14.3, "max": 51, "samples": 267, "best_area": "千葉・外房", "best_avg": 18.2}, {"fish": "イサキ", "avg": 38.4, "max": 50, "samples": 68, "best_area": "千葉・内房", "best_avg": 40.5}, {"fish": "フグ", "avg": 11.3, "max": 80, "samples": 152, "best_area": "千葉・外房", "best_avg": 16.6}, {"fish": "スルメイカ", "avg": 16.3, "max": 60, "samples": 95, "best_area": "神奈川・相模湾", "best_avg": 16.4}]}, "2026-03-29": {"wave": 1.3, "wind": 4.8, "sst": 13.9, "score": 90, "ok": "◎ 出船日和", "areas": {"茨城": {"wave": 1.95, "wind": 4.08, "sst": 15.2, "score": 70, "ok": "○ 概ね良好"}, "千葉・外房": {"wave": 2.53, "wind": 5.22, "sst": 15.3, "score": 40, "ok": "△ やや不安"}, "千葉・内房": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "千葉・東京湾奥": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "東京": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "神奈川・東京湾": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}, "神奈川・相模湾": {"wave": 2.17, "wind": 7.88, "sst": 15.4, "score": 60, "ok": "○ 概ね良好"}, "静岡": {"wave": 0.7, "wind": 4.3, "sst": 13.1, "score": 100, "ok": "◎ 出船日和"}}, "predictions": [{"fish": "アジ", "avg": 53.8, "max": 220, "samples": 813, "best_area": "東京", "best_avg": 85.5}, {"fish": "タチウオ", "avg": 17.0, "max": 85, "samples": 371, "best_area": "茨城", "best_avg": 34.2}, {"fish": "シロギス", "avg": 69.5, "max": 200, "samples": 85, "best_area": "千葉・東京湾奥", "best_avg": 71.8}, {"fish": "マダイ", "avg": 6.0, "max": 45, "samples": 752, "best_area": "千葉・外房", "best_avg": 9.0}, {"fish": "カサゴ", "avg": 34.1, "max": 124, "samples": 119, "best_area": "神奈川・東京湾", "best_avg": 58.4}, {"fish": "マルイカ", "avg": 22.8, "max": 90, "samples": 174, "best_area": "神奈川・東京湾", "best_avg": 24.3}, {"fish": "ヤリイカ", "avg": 14.3, "max": 51, "samples": 267, "best_area": "千葉・外房", "best_avg": 18.2}, {"fish": "イサキ", "avg": 38.4, "max": 50, "samples": 68, "best_area": "千葉・内房", "best_avg": 40.5}, {"fish": "フグ", "avg": 11.3, "max": 80, "samples": 152, "best_area": "千葉・外房", "best_avg": 16.6}, {"fish": "スルメイカ", "avg": 16.3, "max": 60, "samples": 95, "best_area": "神奈川・相模湾", "best_avg": 16.4}]}};
+    function switchForecastDate(btn, date) {
+      document.querySelectorAll('.fc-date-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderForecast(date);
+      if(typeof gtag==='function') gtag('event','forecast_date',{date:date});
+    }
+    function renderForecast(date) {
+      var d = _fcData[date];
+      if (!d) { document.getElementById('forecast-content').innerHTML='<p style="color:#7a9bb5">データなし</p>'; return; }
+      var h = '';
+      // 海況サマリー
+      var okColor = d.score>=80?'#4dcc88':d.score>=60?'#f4a261':d.score>=40?'#e85d04':'#cc4d4d';
+      h += '<div class="fc-wx-summary">';
+      h += '<span class="fc-ok" style="color:'+okColor+'">'+d.ok+'</span>';
+      h += '<span class="fc-wx-val">🌊 '+(d.wave!=null?d.wave+'m':'-')+'</span>';
+      h += '<span class="fc-wx-val">💨 '+(d.wind!=null?d.wind+'m/s':'-')+'</span>';
+      h += '<span class="fc-wx-val">🌡️ '+(d.sst!=null?d.sst+'℃':'-')+'</span>';
+      h += '</div>';
+      // エリア別
+      var areas = d.areas||{};
+      var ak = Object.keys(areas);
+      if (ak.length) {
+        h += '<div class="wx-grid">';
+        ak.forEach(function(g){
+          var a = areas[g];
+          var ac = a.score>=80?'#4dcc88':a.score>=60?'#f4a261':a.score>=40?'#e85d04':'#cc4d4d';
+          h += '<div class="wx-card">';
+          h += '<div class="wx-area">'+g+'</div>';
+          h += '<div class="wx-ok" style="color:'+ac+'">'+a.ok+'</div>';
+          h += '<div class="wx-detail">';
+          h += '<div>🌊 '+(a.wave!=null?a.wave+'m':'-')+'</div>';
+          h += '<div>💨 '+(a.wind!=null?a.wind+'m/s':'-')+'</div>';
+          h += '<div>🌡️ '+(a.sst!=null?a.sst+'℃':'-')+'</div>';
+          h += '</div></div>';
+        });
+        h += '</div>';
+      }
+      // 釣果予測
+      var preds = d.predictions||[];
+      if (preds.length) {
+        h += '<h3 style="font-size:14px;color:#4db8ff;margin:16px 0 8px;border-left:3px solid #4db8ff;padding-left:8px">🐟 この海況での予測釣果</h3>';
+        h += '<div class="pred-grid">';
+        preds.forEach(function(p,i){
+          var medal = i<3?['🥇','🥈','🥉'][i]:'';
+          h += '<div class="pred-card">';
+          h += '<div class="pred-fish">'+medal+' '+p.fish+'</div>';
+          h += '<div class="pred-avg">平均 <strong>'+p.avg+'</strong> 匹</div>';
+          h += '<div class="pred-max">最高 '+p.max+' 匹</div>';
+          if(p.best_area) h += '<div class="pred-area">📍 '+p.best_area+' (平均'+p.best_avg+'匹)</div>';
+          h += '<div class="pred-samples">過去'+p.samples+'件の実績</div>';
+          h += '</div>';
+        });
+        h += '</div>';
+      }
+      document.getElementById('forecast-content').innerHTML = h;
+    }
+    renderForecast('2026-03-28');
+    </script>
   <h2>🐟 釣れている魚</h2>
   <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">タップで詳細表示 ／ 各カードの「詳細→」で船宿ランキングを確認</p>
   <div class="grid">
@@ -682,8 +871,8 @@ footer a:hover{text-decoration:underline}
     </div>
     <div class="filter-bar"><div class="filter-group"><button class="filter-btn active all-btn" onclick="filterArea(this,'all')">すべて</button></div><div class="filter-group"><span class="filter-group-label">茨城</span><a href="area/日立久慈港.html" class="filter-btn">日立久慈港</a><a href="area/波崎港.html" class="filter-btn">波崎港</a><a href="area/鹿島港.html" class="filter-btn">鹿島港</a></div><div class="filter-group"><span class="filter-group-label">千葉・外房</span><a href="area/外川港.html" class="filter-btn">外川港</a><a href="area/飯岡港.html" class="filter-btn">飯岡港</a><a href="area/大原港.html" class="filter-btn">大原港</a><a href="area/勝浦川津港.html" class="filter-btn">勝浦川津港</a></div><div class="filter-group"><span class="filter-group-label">千葉・内房</span><a href="area/金谷港.html" class="filter-btn">金谷港</a><a href="area/富浦港.html" class="filter-btn">富浦港</a><a href="area/洲崎港.html" class="filter-btn">洲崎港</a><a href="area/長浦.html" class="filter-btn">長浦</a></div><div class="filter-group"><span class="filter-group-label">千葉・東京湾奥</span><a href="area/浦安.html" class="filter-btn">浦安</a><a href="area/東葛西.html" class="filter-btn">東葛西</a><a href="area/江戸川放水路･原木中山.html" class="filter-btn">江戸川放水路･原木中山</a></div><div class="filter-group"><span class="filter-group-label">東京</span><a href="area/羽田.html" class="filter-btn">羽田</a><a href="area/平和島.html" class="filter-btn">平和島</a><a href="area/横浜港･新山下.html" class="filter-btn">横浜港･新山下</a></div><div class="filter-group"><span class="filter-group-label">神奈川・東京湾</span><a href="area/小柴港.html" class="filter-btn">小柴港</a><a href="area/金沢漁港.html" class="filter-btn">金沢漁港</a><a href="area/金沢八景.html" class="filter-btn">金沢八景</a><a href="area/横浜本牧港.html" class="filter-btn">横浜本牧港</a><a href="area/磯子港.html" class="filter-btn">磯子港</a><a href="area/久比里港.html" class="filter-btn">久比里港</a><a href="area/鴨居大室港.html" class="filter-btn">鴨居大室港</a><a href="area/小坪港.html" class="filter-btn">小坪港</a><a href="area/小網代港.html" class="filter-btn">小網代港</a></div><div class="filter-group"><span class="filter-group-label">神奈川・相模湾</span><a href="area/松輪江奈港.html" class="filter-btn">松輪江奈港</a><a href="area/長井港.html" class="filter-btn">長井港</a><a href="area/長井新宿港.html" class="filter-btn">長井新宿港</a><a href="area/長井漆山港.html" class="filter-btn">長井漆山港</a><a href="area/葉山あぶずり港.html" class="filter-btn">葉山あぶずり港</a><a href="area/茅ヶ崎港.html" class="filter-btn">茅ヶ崎港</a><a href="area/平塚港.html" class="filter-btn">平塚港</a><a href="area/大磯港.html" class="filter-btn">大磯港</a><a href="area/小田原早川港.html" class="filter-btn">小田原早川港</a></div><div class="filter-group"><span class="filter-group-label">その他</span><a href="area/久里浜港.html" class="filter-btn">久里浜港</a><a href="area/佐島.html" class="filter-btn">佐島</a><a href="area/大津港.html" class="filter-btn">大津港</a><a href="area/松輪間口港.html" class="filter-btn">松輪間口港</a><a href="area/湘南片瀬港.html" class="filter-btn">湘南片瀬港</a><a href="area/腰越港.html" class="filter-btn">腰越港</a><a href="area/走水港.html" class="filter-btn">走水港</a></div></div>
     <div class="tbl-wrap"><table id="catch-table">
-      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th><th>海況</th></tr>
-      <tr data-area="久比里港" data-count="12" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山下丸</td><td>カワハギ</td><td>2〜12</td><td>18〜31cm</td><td></td><td class="wx-inline">🟠1.4m 14.9℃ <span style="color:#4a6a8a;font-size:9px">(久里浜沖)</span></td></tr><tr class="dim" data-area="久比里港" data-count="5" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山下丸</td><td>不明</td><td>1〜5</td><td></td><td>0.2〜0.6kg</td><td class="wx-inline">🟠1.2m 14.6℃ <span style="color:#4a6a8a;font-size:9px">(竹岡沖)</span></td></tr><tr data-area="久比里港" data-count="4" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山下丸</td><td>マダイ・アマダイ</td><td>0〜4</td><td>20〜37cm</td><td></td><td class="wx-inline">🔴2.1m 15.4℃ <span style="color:#4a6a8a;font-size:9px">(剣崎沖)</span></td></tr><tr data-area="久比里港" data-count="31" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山天丸</td><td>マルイカ</td><td>12〜31</td><td>15〜25cm</td><td></td><td class="wx-inline">🟠1.4m 14.9℃ <span style="color:#4a6a8a;font-size:9px">(久里浜沖)</span></td></tr><tr data-area="久比里港" data-count="7" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>巳之助丸</td><td>カワハギ</td><td>2〜7</td><td>17〜28cm</td><td></td><td class="wx-inline">🟠1.2m 14.6℃ <span style="color:#4a6a8a;font-size:9px">(竹岡沖)</span></td></tr><tr data-area="勝浦川津港" data-count="16" data-date="2026/03/27"><td>2026/03/27</td><td>勝浦川津港</td><td>不動丸</td><td>ヤリイカ・スルメイカ</td><td>13〜16</td><td>25〜40cm</td><td></td><td class="wx-inline">🔴3.1m 15.2℃ <span style="color:#4a6a8a;font-size:9px">(勝浦沖)</span></td></tr><tr data-area="外川港" data-count="8" data-date="2026/03/27"><td>2026/03/27</td><td>外川港</td><td>家田丸</td><td>ヒラメ</td><td>1〜8</td><td></td><td>0.8〜3.2kg</td><td class="wx-inline">🔴2.6m 14.6℃ <span style="color:#4a6a8a;font-size:9px">(外川沖)</span></td></tr><tr class="dim" data-area="大津港" data-count="0" data-date="2026/03/27"><td>2026/03/27</td><td>大津港</td><td>石田丸</td><td>アジ</td><td></td><td>20〜30cm</td><td></td><td class="wx-inline"></td></tr><tr class="dim" data-area="大津港" data-count="0" data-date="2026/03/27"><td>2026/03/27</td><td>大津港</td><td>石田丸</td><td>不明</td><td><span class='boat-catch' title='船全体の合計数'>船中2</span></td><td>45cm</td><td></td><td class="wx-inline"></td></tr><tr data-area="大磯港" data-count="0" data-date="2026/03/27"><td>2026/03/27</td><td>大磯港</td><td>恒丸</td><td>ワラサ</td><td><span class='boat-catch' title='船全体の合計数'>船中1</span></td><td></td><td>9.5kg</td><td class="wx-inline">🔴1.9m 15.6℃ <span style="color:#4a6a8a;font-size:9px">(瀬の海)</span></td></tr><tr data-area="大磯港" data-count="56" data-date="2026/03/27"><td>2026/03/27</td><td>大磯港</td><td>恒丸</td><td>アジ</td><td>25〜56</td><td>22〜38cm</td><td></td><td class="wx-inline"></td></tr><tr data-area="富浦港" data-count="6" data-date="2026/03/27"><td>2026/03/27</td><td>富浦港</td><td>共栄丸</td><td>マダイ</td><td>0〜6</td><td></td><td>0.6〜2.2kg</td><td class="wx-inline"></td></tr><tr class="highlight" data-area="小柴港" data-count="134" data-date="2026/03/27"><td>2026/03/27</td><td>小柴港</td><td>三喜丸釣船店</td><td>アジ</td><td>30〜134</td><td>17〜27cm</td><td></td><td class="wx-inline">🟠1.1m 13.6℃ <span style="color:#4a6a8a;font-size:9px">(小柴沖)</span></td></tr><tr class="dim" data-area="小柴港" data-count="1" data-date="2026/03/27"><td>2026/03/27</td><td>小柴港</td><td>三喜丸釣船店</td><td>不明</td><td>1</td><td></td><td>0.7〜1.5kg</td><td class="wx-inline">🟠1.2m 14.6℃ <span style="color:#4a6a8a;font-size:9px">(竹岡沖)</span></td></tr><tr class="dim" data-area="小柴港" data-count="4" data-date="2026/03/27"><td>2026/03/27</td><td>小柴港</td><td>三喜丸釣船店</td><td>不明</td><td>1〜4</td><td></td><td></td><td class="wx-inline"></td></tr><tr data-area="小田原早川港" data-count="46" data-date="2026/03/27"><td>2026/03/27</td><td>小田原早川港</td><td>平安丸</td><td>アジ</td><td>36〜46</td><td>22〜35cm</td><td></td><td class="wx-inline">🔴1.5m 15.4℃ <span style="color:#4a6a8a;font-size:9px">(二宮沖)</span></td></tr><tr data-area="小網代港" data-count="73" data-date="2026/03/27"><td>2026/03/27</td><td>小網代港</td><td>大和丸</td><td>マルイカ</td><td>7〜73</td><td>15〜28cm</td><td></td><td class="wx-inline"></td></tr><tr data-area="平塚港" data-count="20" data-date="2026/03/27"><td>2026/03/27</td><td>平塚港</td><td>庄治郎丸</td><td>アジ</td><td>7〜20</td><td>10〜36cm</td><td></td><td class="wx-inline"></td></tr><tr data-area="平塚港" data-count="2" data-date="2026/03/27"><td>2026/03/27</td><td>平塚港</td><td>庄治郎丸</td><td>マダイ・アマダイ</td><td>0〜2</td><td>20〜34cm</td><td></td><td class="wx-inline"></td></tr><tr data-area="平塚港" data-count="6" data-date="2026/03/27"><td>2026/03/27</td><td>平塚港</td><td>庄治郎丸</td><td>マルイカ</td><td>2〜6</td><td>18〜27cm</td><td></td><td class="wx-inline"></td></tr>
+      <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th></tr>
+      <tr data-area="久比里港" data-count="12" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山下丸</td><td>カワハギ</td><td>2〜12</td><td>18〜31cm</td><td></td></tr><tr class="dim" data-area="久比里港" data-count="5" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山下丸</td><td>不明</td><td>1〜5</td><td></td><td>0.2〜0.6kg</td></tr><tr data-area="久比里港" data-count="4" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山下丸</td><td>マダイ・アマダイ</td><td>0〜4</td><td>20〜37cm</td><td></td></tr><tr data-area="久比里港" data-count="31" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>山天丸</td><td>マルイカ</td><td>12〜31</td><td>15〜25cm</td><td></td></tr><tr data-area="久比里港" data-count="7" data-date="2026/03/27"><td>2026/03/27</td><td>久比里港</td><td>巳之助丸</td><td>カワハギ</td><td>2〜7</td><td>17〜28cm</td><td></td></tr><tr data-area="勝浦川津港" data-count="16" data-date="2026/03/27"><td>2026/03/27</td><td>勝浦川津港</td><td>不動丸</td><td>ヤリイカ・スルメイカ</td><td>13〜16</td><td>25〜40cm</td><td></td></tr><tr data-area="外川港" data-count="8" data-date="2026/03/27"><td>2026/03/27</td><td>外川港</td><td>家田丸</td><td>ヒラメ</td><td>1〜8</td><td></td><td>0.8〜3.2kg</td></tr><tr class="dim" data-area="大津港" data-count="0" data-date="2026/03/27"><td>2026/03/27</td><td>大津港</td><td>石田丸</td><td>アジ</td><td></td><td>20〜30cm</td><td></td></tr><tr class="dim" data-area="大津港" data-count="0" data-date="2026/03/27"><td>2026/03/27</td><td>大津港</td><td>石田丸</td><td>不明</td><td><span class='boat-catch' title='船全体の合計数'>船中2</span></td><td>45cm</td><td></td></tr><tr data-area="大磯港" data-count="0" data-date="2026/03/27"><td>2026/03/27</td><td>大磯港</td><td>恒丸</td><td>ワラサ</td><td><span class='boat-catch' title='船全体の合計数'>船中1</span></td><td></td><td>9.5kg</td></tr><tr data-area="大磯港" data-count="56" data-date="2026/03/27"><td>2026/03/27</td><td>大磯港</td><td>恒丸</td><td>アジ</td><td>25〜56</td><td>22〜38cm</td><td></td></tr><tr data-area="富浦港" data-count="6" data-date="2026/03/27"><td>2026/03/27</td><td>富浦港</td><td>共栄丸</td><td>マダイ</td><td>0〜6</td><td></td><td>0.6〜2.2kg</td></tr><tr class="highlight" data-area="小柴港" data-count="134" data-date="2026/03/27"><td>2026/03/27</td><td>小柴港</td><td>三喜丸釣船店</td><td>アジ</td><td>30〜134</td><td>17〜27cm</td><td></td></tr><tr class="dim" data-area="小柴港" data-count="1" data-date="2026/03/27"><td>2026/03/27</td><td>小柴港</td><td>三喜丸釣船店</td><td>不明</td><td>1</td><td></td><td>0.7〜1.5kg</td></tr><tr class="dim" data-area="小柴港" data-count="4" data-date="2026/03/27"><td>2026/03/27</td><td>小柴港</td><td>三喜丸釣船店</td><td>不明</td><td>1〜4</td><td></td><td></td></tr><tr data-area="小田原早川港" data-count="46" data-date="2026/03/27"><td>2026/03/27</td><td>小田原早川港</td><td>平安丸</td><td>アジ</td><td>36〜46</td><td>22〜35cm</td><td></td></tr><tr data-area="小網代港" data-count="73" data-date="2026/03/27"><td>2026/03/27</td><td>小網代港</td><td>大和丸</td><td>マルイカ</td><td>7〜73</td><td>15〜28cm</td><td></td></tr><tr data-area="平塚港" data-count="20" data-date="2026/03/27"><td>2026/03/27</td><td>平塚港</td><td>庄治郎丸</td><td>アジ</td><td>7〜20</td><td>10〜36cm</td><td></td></tr><tr data-area="平塚港" data-count="2" data-date="2026/03/27"><td>2026/03/27</td><td>平塚港</td><td>庄治郎丸</td><td>マダイ・アマダイ</td><td>0〜2</td><td>20〜34cm</td><td></td></tr><tr data-area="平塚港" data-count="6" data-date="2026/03/27"><td>2026/03/27</td><td>平塚港</td><td>庄治郎丸</td><td>マルイカ</td><td>2〜6</td><td>18〜27cm</td><td></td></tr>
     </table></div>
   <p class="note">最終更新: 2026/03/27 13:41<span id="new-badge"></span> ／ 総件数: 582 件</p>
 </div>
