@@ -733,6 +733,40 @@ def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_d
                        "month": month, "area": area, "group": group})
     return index
 
+# 魚種別の予測プロファイル（ネット調査 + データ分析に基づく）
+# weight: 各要素の重み（0=無視、1=標準、2=重要）
+# damping_override: 低匹数でも補正を効かせる場合はNone
+FISH_PREDICT_PROFILE = {
+    # 凪感応型: 波高・波周期が最重要
+    "カサゴ":   {"wave": 2.0, "wind": 0.3, "sst": 0.3, "wave_period": 2.0, "tide": 0.2, "moon": 0.3},
+    "メバル":   {"wave": 2.0, "wind": 1.5, "sst": 1.0, "wave_period": 1.5, "tide": 0.5, "moon": 0.3},
+    # SST感応型: 海水温が最重要
+    "カワハギ": {"wave": 0.3, "wind": 1.0, "sst": 2.0, "wave_period": 0.3, "tide": 0.5, "moon": 0.3},
+    # 潮感応型: 潮汐・潮差が重要
+    "タチウオ": {"wave": 0.3, "wind": 0.3, "sst": 1.5, "wave_period": 0.5, "tide": 1.5, "moon": 0.5},
+    "フグ":     {"wave": 0.3, "wind": 0.5, "sst": 1.5, "wave_period": 0.5, "tide": 2.0, "moon": 0.5},
+    # 月齢感応型
+    "マルイカ": {"wave": 0.3, "wind": 0.3, "sst": 0.3, "wave_period": 0.3, "tide": 0.5, "moon": 2.0},
+    # 回遊型: 海況の影響が小さい→補正を抑制
+    "ワラサ":   {"wave": 0.2, "wind": 0.2, "sst": 0.5, "wave_period": 0.2, "tide": 0.3, "moon": 0.2},
+    "サワラ":   {"wave": 0.2, "wind": 0.2, "sst": 0.3, "wave_period": 0.2, "tide": 0.2, "moon": 0.2},
+    "ヤリイカ": {"wave": 0.3, "wind": 0.3, "sst": 0.5, "wave_period": 0.3, "tide": 0.5, "moon": 0.5},
+    "スルメイカ":{"wave": 0.3, "wind": 0.3, "sst": 0.8, "wave_period": 0.3, "tide": 0.3, "moon": 1.0},
+    # 標準型: 波高が主
+    "アジ":     {"wave": 1.5, "wind": 0.5, "sst": 0.5, "wave_period": 1.0, "tide": 0.5, "moon": 0.3},
+    "シロギス": {"wave": 1.5, "wind": 1.0, "sst": 0.8, "wave_period": 0.5, "tide": 0.5, "moon": 0.3},
+    # 季節型: 月の基準値がほぼそのまま使われる
+    "マダイ":   {"wave": 0.5, "wind": 0.3, "sst": 0.5, "wave_period": 0.5, "tide": 0.5, "moon": 0.3},
+    "ヒラメ":   {"wave": 0.5, "wind": 0.5, "sst": 0.3, "wave_period": 0.3, "tide": 0.5, "moon": 0.3},
+    "アマダイ": {"wave": 0.5, "wind": 0.5, "sst": 0.5, "wave_period": 0.3, "tide": 0.3, "moon": 0.3},
+    "マハタ":   {"wave": 0.3, "wind": 0.3, "sst": 0.3, "wave_period": 0.3, "tide": 0.3, "moon": 0.3},
+    "キンメダイ":{"wave": 0.3, "wind": 0.3, "sst": 0.3, "wave_period": 0.3, "tide": 0.3, "moon": 0.3},
+    "クロムツ": {"wave": 0.5, "wind": 0.3, "sst": 0.5, "wave_period": 0.3, "tide": 0.3, "moon": 0.3},
+    "イサキ":   {"wave": 0.8, "wind": 0.5, "sst": 0.5, "wave_period": 0.5, "tide": 0.5, "moon": 0.3},
+    "メダイ":   {"wave": 0.3, "wind": 0.3, "sst": 0.3, "wave_period": 0.3, "tide": 0.3, "moon": 0.3},
+}
+_DEFAULT_PROFILE = {"wave": 0.5, "wind": 0.5, "sst": 0.5, "wave_period": 0.5, "tide": 0.5, "moon": 0.3}
+
 def _calc_deviation_effect(month_rows, key, norm_val, threshold, base_avg):
     """偏差補正の共通ロジック: low群とhigh群の釣果差から効果量を推定"""
     if norm_val is None or base_avg <= 0:
@@ -789,59 +823,59 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
             norm_tide = _norm("tide_range")
             norm_moon = _norm("moon_age")
 
-            # ── 偏差補正 ──
-            adjustment = 0.0  # 加算方式（最後に1+adjustmentで乗算）
+            # ── 魚種別プロファイルで偏差補正 ──
+            prof = FISH_PREDICT_PROFILE.get(fish, _DEFAULT_PROFILE)
+            adjustment = 0.0
 
-            # 低匹数魚種は補正幅を縮小（平均10匹未満→0.5倍、5匹未満→0.3倍）
+            # 低匹数魚種は補正幅を縮小
             damping = 1.0
             if base_avg < 5:
                 damping = 0.3
             elif base_avg < 10:
                 damping = 0.5
 
-            # 波高偏差
-            if fc_wave is not None and norm_wave is not None:
+            # 波高偏差 (weight: prof["wave"])
+            if fc_wave is not None and norm_wave is not None and prof["wave"] > 0:
                 effect = _calc_deviation_effect(month_rows, "wave", norm_wave, 0.15, base_avg)
                 effect = max(-0.5, min(0.5, effect))
                 wave_dev = fc_wave - norm_wave
-                adjustment += effect * (wave_dev / max(0.3, norm_wave)) * damping
+                adjustment += effect * (wave_dev / max(0.3, norm_wave)) * prof["wave"] * damping
 
-            # 風速偏差
-            if fc_wind is not None and norm_wind is not None:
+            # 風速偏差 (weight: prof["wind"])
+            if fc_wind is not None and norm_wind is not None and prof["wind"] > 0:
                 effect = _calc_deviation_effect(month_rows, "wind", norm_wind, 1.0, base_avg)
                 effect = max(-0.3, min(0.3, effect))
                 wind_dev = fc_wind - norm_wind
-                adjustment += effect * (wind_dev / max(1.0, norm_wind)) * 0.5 * damping
+                adjustment += effect * (wind_dev / max(1.0, norm_wind)) * 0.5 * prof["wind"] * damping
 
-            # SST偏差
-            if fc_sst is not None and norm_sst is not None:
+            # SST偏差 (weight: prof["sst"])
+            if fc_sst is not None and norm_sst is not None and prof["sst"] > 0:
                 effect = _calc_deviation_effect(month_rows, "sst", norm_sst, 1.0, base_avg)
                 effect = max(-0.3, min(0.3, effect))
                 sst_dev = fc_sst - norm_sst
-                adjustment += effect * (sst_dev / max(1.0, abs(norm_sst))) * 0.5 * damping
+                adjustment += effect * (sst_dev / max(1.0, abs(norm_sst))) * 0.5 * prof["sst"] * damping
 
-            # 波周期偏差（カサゴ等で効く）
-            if norm_wp is not None:
+            # 波周期偏差 (weight: prof["wave_period"])
+            if norm_wp is not None and prof["wave_period"] > 0:
                 effect = _calc_deviation_effect(month_rows, "wave_period", norm_wp, 0.5, base_avg)
                 effect = max(-0.3, min(0.3, effect))
-                # 予報に波周期がない場合は波高偏差から推定（波高と相関が高い）
                 if fc_wave is not None and norm_wave is not None:
-                    wp_dev_est = (fc_wave - norm_wave) * 1.5  # 波高1m増→波周期1.5s増の概算
-                    adjustment += effect * (wp_dev_est / max(1.0, norm_wp)) * 0.3 * damping
+                    wp_dev_est = (fc_wave - norm_wave) * 1.5
+                    adjustment += effect * (wp_dev_est / max(1.0, norm_wp)) * 0.3 * prof["wave_period"] * damping
 
-            # 潮差偏差（フグ・タチウオ等で効く）
-            if forecast_tide is not None and norm_tide is not None:
+            # 潮差偏差 (weight: prof["tide"])
+            if forecast_tide is not None and norm_tide is not None and prof["tide"] > 0:
                 effect = _calc_deviation_effect(month_rows, "tide_range", norm_tide, 15, base_avg)
                 effect = max(-0.3, min(0.3, effect))
                 tide_dev = forecast_tide - norm_tide
-                adjustment += effect * (tide_dev / max(20, norm_tide)) * 0.5 * damping
+                adjustment += effect * (tide_dev / max(20, norm_tide)) * 0.5 * prof["tide"] * damping
 
-            # 月齢偏差（マルイカ等で効く）
-            if forecast_moon is not None and norm_moon is not None:
+            # 月齢偏差 (weight: prof["moon"])
+            if forecast_moon is not None and norm_moon is not None and prof["moon"] > 0:
                 effect = _calc_deviation_effect(month_rows, "moon_age", norm_moon, 3, base_avg)
                 effect = max(-0.2, min(0.2, effect))
                 moon_dev = forecast_moon - norm_moon
-                adjustment += effect * (moon_dev / max(3, norm_moon)) * 0.3 * damping
+                adjustment += effect * (moon_dev / max(3, norm_moon)) * 0.3 * prof["moon"] * damping
 
             # 補正を適用（0.6〜1.4。低匹数はさらに狭い範囲）
             max_adj = 0.2 if base_avg < 5 else 0.3 if base_avg < 10 else 0.4
