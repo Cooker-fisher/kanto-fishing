@@ -21,6 +21,7 @@ jobs:
           python3 discover_gyo.py
       - name: run
         run: |
+          python3 weather_fetch.py
           python3 crawler.py
           python3 weather_crawl.py
       - name: push
