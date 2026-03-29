@@ -688,16 +688,19 @@ def _build_catch_weather_index(catches, weather_by_point):
     return index
 
 def predict_catches(index, area_forecasts, target_month):
-    """エリア別の海況予報から、エリア×魚種別の予測釣果を算出。
-    同月 × 同エリアグループ × 近い海況条件の過去実績から予測。
+    """偏差ベース予測: エリア×魚種の平常値を基準に、予報日の海況偏差で補正。
+
+    1. エリア×魚種×同月の「基準釣果」（平常値）を算出
+    2. そのエリアの「平常海況」（平均波高・SST等）を算出
+    3. 予報海況と平常海況の偏差を計算
+    4. 過去データから「偏差→釣果変動」の係数を求めて補正
     """
-    WAVE_TOL = 0.4
-    SST_TOL  = 2.0
     predictions = {}
 
     for group, fc in area_forecasts.items():
         fc_wave = fc.get("wave_height")
         fc_sst  = fc.get("sst")
+        fc_wind = fc.get("wind_speed")
 
         # このエリアグループの過去データ
         group_rows = [r for r in index if r["group"] == group]
@@ -714,33 +717,71 @@ def predict_catches(index, area_forecasts, target_month):
             month_rows = [r for r in rows if r["month"] is not None and
                           (abs(r["month"] - target_month) <= 1 or
                            abs(r["month"] - target_month) >= 11)]
-            if len(month_rows) < 3: continue
+            if len(month_rows) < 5: continue
 
-            # 海況条件でフィルタ
-            similar = []
-            for r in month_rows:
-                if fc_wave is not None and r["wave"] is not None:
-                    if abs(r["wave"] - fc_wave) > WAVE_TOL: continue
-                if fc_sst is not None and r["sst"] is not None:
-                    if abs(r["sst"] - fc_sst) > SST_TOL: continue
-                similar.append(r)
+            # ── 基準値（このエリア×魚種×時期の平常） ──
+            cnts = [r["cnt"] for r in month_rows]
+            base_avg = sum(cnts) / len(cnts)
+            base_max = max(cnts)
 
-            if len(similar) < 5:
-                similar = month_rows
+            waves = [r["wave"] for r in month_rows if r["wave"] is not None]
+            winds = [r["wind"] for r in month_rows if r["wind"] is not None]
+            ssts  = [r["sst"]  for r in month_rows if r["sst"]  is not None]
+            norm_wave = sum(waves) / len(waves) if waves else None
+            norm_wind = sum(winds) / len(winds) if winds else None
+            norm_sst  = sum(ssts)  / len(ssts)  if ssts  else None
 
-            catches_vals = [r["cnt"] for r in similar]
-            avg_catch = round(sum(catches_vals) / len(catches_vals), 1)
-            max_catch = int(max(catches_vals))
-            n_samples = len(similar)
+            # ── 偏差による補正係数を算出 ──
+            adjustment = 1.0
+
+            # 波高偏差: エリア内での波高→釣果の回帰係数
+            if fc_wave is not None and norm_wave is not None and waves:
+                wave_dev = fc_wave - norm_wave
+                # 「穏やか」と「荒い」の釣果差からエリア内係数を推定
+                calm = [r["cnt"] for r in month_rows if r["wave"] is not None and r["wave"] < norm_wave - 0.15]
+                rough = [r["cnt"] for r in month_rows if r["wave"] is not None and r["wave"] > norm_wave + 0.15]
+                if calm and rough and base_avg > 0:
+                    calm_avg = sum(calm) / len(calm)
+                    rough_avg = sum(rough) / len(rough)
+                    # 波高1m上昇あたりの釣果変動率
+                    wave_effect = (rough_avg - calm_avg) / base_avg
+                    # 上限を設けて暴走防止
+                    wave_effect = max(-0.5, min(0.5, wave_effect))
+                    adjustment += wave_effect * (wave_dev / max(0.3, norm_wave))
+
+            # 風速偏差
+            if fc_wind is not None and norm_wind is not None and winds:
+                wind_dev = fc_wind - norm_wind
+                light = [r["cnt"] for r in month_rows if r["wind"] is not None and r["wind"] < norm_wind - 1.0]
+                strong = [r["cnt"] for r in month_rows if r["wind"] is not None and r["wind"] > norm_wind + 1.0]
+                if light and strong and base_avg > 0:
+                    wind_effect = (sum(strong)/len(strong) - sum(light)/len(light)) / base_avg
+                    wind_effect = max(-0.3, min(0.3, wind_effect))
+                    adjustment += wind_effect * (wind_dev / max(1.0, norm_wind)) * 0.5
+
+            # SST偏差
+            if fc_sst is not None and norm_sst is not None and ssts:
+                sst_dev = fc_sst - norm_sst
+                cold = [r["cnt"] for r in month_rows if r["sst"] is not None and r["sst"] < norm_sst - 1.0]
+                warm = [r["cnt"] for r in month_rows if r["sst"] is not None and r["sst"] > norm_sst + 1.0]
+                if cold and warm and base_avg > 0:
+                    sst_effect = (sum(warm)/len(warm) - sum(cold)/len(cold)) / base_avg
+                    sst_effect = max(-0.3, min(0.3, sst_effect))
+                    adjustment += sst_effect * (sst_dev / max(1.0, abs(norm_sst))) * 0.5
+
+            # 補正を適用（0.5〜1.5の範囲に制限）
+            adjustment = max(0.5, min(1.5, adjustment))
+            pred_avg = round(base_avg * adjustment, 1)
 
             key = (fish, group)
-            # 同じ魚種が複数エリアに出る場合、エリア別に保持
             predictions[key] = {
                 "fish": fish,
                 "group": group,
-                "avg": avg_catch,
-                "max": max_catch,
-                "samples": n_samples,
+                "avg": pred_avg,
+                "base_avg": round(base_avg, 1),
+                "adjustment": round(adjustment, 3),
+                "max": int(base_max),
+                "samples": len(month_rows),
             }
 
     # 魚種でまとめつつ、エリア別の内訳も保持
