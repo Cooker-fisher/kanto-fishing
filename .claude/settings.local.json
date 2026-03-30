@@ -1,16 +1,4 @@
 {
-  "hooks": {
-    "WorktreeCreate": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '{\"continue\": false, \"stopReason\": \"Worktree disabled: work in main repo directly\"}'"
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "Bash(python3:*)",
@@ -39,7 +27,22 @@
       "Bash(tasklist)",
       "Bash(findstr python:*)",
       "Bash(gh workflow:*)",
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Bash(ls /c/Users/newsh/Desktop/kanto-fishing/*.json)",
+      "Bash(ls *.py)",
+      "Bash(xxd)"
+    ]
+  },
+  "hooks": {
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"continue\": false, \"stopReason\": \"Worktree disabled: work in main repo directly\"}'"
+          }
+        ]
+      }
     ]
   }
 }
