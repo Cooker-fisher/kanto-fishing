@@ -1,297 +1,283 @@
 {
-  "generated_at": "2026/03/29 14:23",
+  "generated_at": "2026/03/30 12:18",
   "days": {
-    "2026-03-28": {
-      "wave": 1.3,
-      "wind": 4.8,
-      "sst": 13.9,
+    "2026-04-04": {
+      "wave": 1.0,
+      "wind": 3.6,
+      "sst": 15.1,
       "score": 90,
       "ok": "◎ 出船日和",
       "areas": {
         "茨城": {
-          "wave": 1.95,
-          "wind": 4.08,
+          "wave": 1.2,
+          "wind": 5.6,
           "sst": 15.2,
-          "score": 70,
-          "ok": "○ 概ね良好"
+          "score": 90,
+          "ok": "◎ 出船日和"
         },
         "千葉・外房": {
-          "wave": 2.53,
-          "wind": 5.22,
-          "sst": 15.3,
-          "score": 40,
-          "ok": "△ やや不安"
+          "wave": 1.5,
+          "wind": 7.5,
+          "sst": 14.9,
+          "score": 60,
+          "ok": "○ 概ね良好"
         },
         "千葉・内房": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
+          "wave": 1.0,
+          "wind": 3.8,
+          "sst": 15.5,
+          "score": 90,
           "ok": "◎ 出船日和"
         },
         "千葉・東京湾奥": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
-          "ok": "◎ 出船日和"
-        },
-        "東京": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
+          "wave": 0.5,
+          "wind": 2.3,
+          "sst": 13.9,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・東京湾": {
           "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
+          "wind": 2.3,
+          "sst": 14.9,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・相模湾": {
-          "wave": 2.17,
-          "wind": 7.88,
-          "sst": 15.4,
-          "score": 60,
-          "ok": "○ 概ね良好"
+          "wave": 1.0,
+          "wind": 2.2,
+          "sst": 15.6,
+          "score": 90,
+          "ok": "◎ 出船日和"
         },
         "静岡": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
+          "wave": 1.0,
+          "wind": 1.5,
+          "sst": 15.5,
+          "score": 90,
           "ok": "◎ 出船日和"
         }
       },
       "predictions": [
         {
           "fish": "アジ",
-          "avg": 53.8,
-          "max": 220,
-          "samples": 813,
-          "best_area": "東京",
-          "best_avg": 85.5
-        },
-        {
-          "fish": "タチウオ",
-          "avg": 17.0,
-          "max": 85,
-          "samples": 371,
-          "best_area": "茨城",
-          "best_avg": 34.2
+          "avg": 51.8,
+          "max": 225,
+          "samples": 1533,
+          "best_area": "千葉・東京湾奥",
+          "best_avg": 70.8
         },
         {
           "fish": "シロギス",
-          "avg": 69.5,
-          "max": 200,
-          "samples": 85,
-          "best_area": "千葉・東京湾奥",
-          "best_avg": 71.8
-        },
-        {
-          "fish": "マダイ",
-          "avg": 6.0,
-          "max": 45,
-          "samples": 752,
-          "best_area": "千葉・外房",
-          "best_avg": 9.0
-        },
-        {
-          "fish": "カサゴ",
-          "avg": 34.1,
-          "max": 124,
-          "samples": 119,
+          "avg": 47.6,
+          "max": 224,
+          "samples": 318,
           "best_area": "神奈川・東京湾",
-          "best_avg": 58.4
-        },
-        {
-          "fish": "マルイカ",
-          "avg": 22.8,
-          "max": 90,
-          "samples": 174,
-          "best_area": "神奈川・東京湾",
-          "best_avg": 24.3
-        },
-        {
-          "fish": "ヤリイカ",
-          "avg": 14.3,
-          "max": 51,
-          "samples": 267,
-          "best_area": "千葉・外房",
-          "best_avg": 18.2
+          "best_avg": 48.2
         },
         {
           "fish": "イサキ",
-          "avg": 38.4,
+          "avg": 41.0,
           "max": 50,
-          "samples": 68,
+          "samples": 188,
           "best_area": "千葉・内房",
-          "best_avg": 40.5
+          "best_avg": 44.0
         },
         {
-          "fish": "フグ",
-          "avg": 11.3,
-          "max": 80,
-          "samples": 152,
-          "best_area": "千葉・外房",
-          "best_avg": 16.6
-        },
-        {
-          "fish": "スルメイカ",
-          "avg": 16.3,
-          "max": 60,
-          "samples": 95,
+          "fish": "マルイカ",
+          "avg": 30.2,
+          "max": 161,
+          "samples": 230,
           "best_area": "神奈川・相模湾",
-          "best_avg": 16.4
+          "best_avg": 32.1
+        },
+        {
+          "fish": "マダイ",
+          "avg": 5.0,
+          "max": 45,
+          "samples": 1130,
+          "best_area": "千葉・外房",
+          "best_avg": 7.8
+        },
+        {
+          "fish": "カワハギ",
+          "avg": 10.8,
+          "max": 27,
+          "samples": 156,
+          "best_area": "神奈川・東京湾",
+          "best_avg": 10.9
+        },
+        {
+          "fish": "ヒラメ",
+          "avg": 3.1,
+          "max": 12,
+          "samples": 349,
+          "best_area": "茨城",
+          "best_avg": 4.9
+        },
+        {
+          "fish": "アマダイ",
+          "avg": 4.4,
+          "max": 36,
+          "samples": 226,
+          "best_area": "茨城",
+          "best_avg": 5.0
+        },
+        {
+          "fish": "クロムツ",
+          "avg": 4.7,
+          "max": 26,
+          "samples": 163,
+          "best_area": "神奈川・相模湾",
+          "best_avg": 7.0
+        },
+        {
+          "fish": "クロダイ",
+          "avg": 2.2,
+          "max": 7,
+          "samples": 10,
+          "best_area": "神奈川・相模湾",
+          "best_avg": 2.2
         }
       ]
     },
-    "2026-03-29": {
-      "wave": 1.3,
-      "wind": 4.8,
-      "sst": 13.9,
-      "score": 90,
-      "ok": "◎ 出船日和",
+    "2026-04-05": {
+      "wave": 2.2,
+      "wind": 2.5,
+      "sst": 15.1,
+      "score": 70,
+      "ok": "○ 概ね良好",
       "areas": {
         "茨城": {
-          "wave": 1.95,
-          "wind": 4.08,
-          "sst": 15.2,
+          "wave": 1.6,
+          "wind": 2.2,
+          "sst": 15.4,
           "score": 70,
           "ok": "○ 概ね良好"
         },
         "千葉・外房": {
-          "wave": 2.53,
-          "wind": 5.22,
-          "sst": 15.3,
+          "wave": 3.4,
+          "wind": 3.4,
+          "sst": 14.6,
           "score": 40,
           "ok": "△ やや不安"
         },
         "千葉・内房": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
-          "ok": "◎ 出船日和"
+          "wave": 2.7,
+          "wind": 1.7,
+          "sst": 15.6,
+          "score": 40,
+          "ok": "△ やや不安"
         },
         "千葉・東京湾奥": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
-          "ok": "◎ 出船日和"
-        },
-        "東京": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
+          "wave": 1.0,
+          "wind": 2.0,
+          "sst": 14.1,
+          "score": 90,
           "ok": "◎ 出船日和"
         },
         "神奈川・東京湾": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
-          "ok": "◎ 出船日和"
+          "wave": 1.7,
+          "wind": 2.9,
+          "sst": 15.1,
+          "score": 70,
+          "ok": "○ 概ね良好"
         },
         "神奈川・相模湾": {
-          "wave": 2.17,
-          "wind": 7.88,
-          "sst": 15.4,
-          "score": 60,
+          "wave": 2.3,
+          "wind": 2.6,
+          "sst": 15.6,
+          "score": 70,
           "ok": "○ 概ね良好"
         },
         "静岡": {
-          "wave": 0.7,
-          "wind": 4.3,
-          "sst": 13.1,
-          "score": 100,
-          "ok": "◎ 出船日和"
+          "wave": 2.4,
+          "wind": 2.4,
+          "sst": 15.5,
+          "score": 70,
+          "ok": "○ 概ね良好"
         }
       },
       "predictions": [
         {
           "fish": "アジ",
-          "avg": 53.8,
-          "max": 220,
-          "samples": 813,
-          "best_area": "東京",
-          "best_avg": 85.5
-        },
-        {
-          "fish": "タチウオ",
-          "avg": 17.0,
-          "max": 85,
-          "samples": 371,
-          "best_area": "茨城",
-          "best_avg": 34.2
+          "avg": 58.0,
+          "max": 225,
+          "samples": 1533,
+          "best_area": "神奈川・東京湾",
+          "best_avg": 84.4
         },
         {
           "fish": "シロギス",
-          "avg": 69.5,
-          "max": 200,
-          "samples": 85,
-          "best_area": "千葉・東京湾奥",
-          "best_avg": 71.8
-        },
-        {
-          "fish": "マダイ",
-          "avg": 6.0,
-          "max": 45,
-          "samples": 752,
-          "best_area": "千葉・外房",
-          "best_avg": 9.0
-        },
-        {
-          "fish": "カサゴ",
-          "avg": 34.1,
-          "max": 124,
-          "samples": 119,
+          "avg": 36.5,
+          "max": 224,
+          "samples": 318,
           "best_area": "神奈川・東京湾",
-          "best_avg": 58.4
-        },
-        {
-          "fish": "マルイカ",
-          "avg": 22.8,
-          "max": 90,
-          "samples": 174,
-          "best_area": "神奈川・東京湾",
-          "best_avg": 24.3
-        },
-        {
-          "fish": "ヤリイカ",
-          "avg": 14.3,
-          "max": 51,
-          "samples": 267,
-          "best_area": "千葉・外房",
-          "best_avg": 18.2
-        },
-        {
-          "fish": "イサキ",
-          "avg": 38.4,
-          "max": 50,
-          "samples": 68,
-          "best_area": "千葉・内房",
           "best_avg": 40.5
         },
         {
-          "fish": "フグ",
-          "avg": 11.3,
-          "max": 80,
-          "samples": 152,
-          "best_area": "千葉・外房",
-          "best_avg": 16.6
+          "fish": "マルイカ",
+          "avg": 34.1,
+          "max": 161,
+          "samples": 230,
+          "best_area": "神奈川・相模湾",
+          "best_avg": 36.5
         },
         {
-          "fish": "スルメイカ",
-          "avg": 16.3,
-          "max": 60,
-          "samples": 95,
+          "fish": "イサキ",
+          "avg": 37.1,
+          "max": 50,
+          "samples": 188,
+          "best_area": "千葉・内房",
+          "best_avg": 46.9
+        },
+        {
+          "fish": "マダイ",
+          "avg": 4.7,
+          "max": 45,
+          "samples": 1130,
+          "best_area": "千葉・外房",
+          "best_avg": 6.7
+        },
+        {
+          "fish": "カワハギ",
+          "avg": 11.4,
+          "max": 27,
+          "samples": 156,
+          "best_area": "神奈川・東京湾",
+          "best_avg": 11.5
+        },
+        {
+          "fish": "ヒラメ",
+          "avg": 3.0,
+          "max": 12,
+          "samples": 349,
+          "best_area": "茨城",
+          "best_avg": 5.0
+        },
+        {
+          "fish": "アマダイ",
+          "avg": 4.2,
+          "max": 36,
+          "samples": 226,
+          "best_area": "茨城",
+          "best_avg": 5.0
+        },
+        {
+          "fish": "クロムツ",
+          "avg": 4.6,
+          "max": 26,
+          "samples": 163,
           "best_area": "神奈川・相模湾",
-          "best_avg": 16.4
+          "best_avg": 6.7
+        },
+        {
+          "fish": "クロダイ",
+          "avg": 1.9,
+          "max": 7,
+          "samples": 10,
+          "best_area": "神奈川・相模湾",
+          "best_avg": 1.9
         }
       ]
     }
