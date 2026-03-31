@@ -174,8 +174,26 @@ footer a:hover{text-decoration:underline}
 .pred-max{font-size:11px;color:#7a9bb5}
 .pred-area{font-size:11px;color:#f4a261;margin-top:2px}
 .pred-samples{font-size:10px;color:#4a6a8a;margin-top:4px}
+.combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.combo-card{display:block;background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-decoration:none;color:#e0e8f0;transition:border-color .2s,transform .1s}
+.combo-card:hover{border-color:#4db8ff;transform:translateY(-2px)}
+.combo-header{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.combo-fish{font-size:15px;font-weight:bold;color:#fff}
+.combo-x{color:#4a6a8a;font-size:12px}
+.combo-area{font-size:13px;color:#f4a261}
+.combo-trend{font-size:14px;font-weight:bold;margin-left:auto}
+.combo-trend.trend-up{color:#4dcc88}
+.combo-trend.trend-down{color:#cc4d4d}
+.combo-trend.trend-flat{color:#7a9bb5}
+.combo-stars{font-size:13px;margin:4px 0 2px}
+.combo-stats{font-size:12px;color:#4db8ff;margin:2px 0}
+.combo-meta{font-size:11px;color:#7a9bb5;margin-top:2px}
+.combo-rank{font-size:10px;font-weight:bold;border-radius:3px;padding:1px 5px;margin-right:4px}
+.combo-rank.rank-1{background:#e85d04;color:#fff}
+.combo-rank.rank-2{background:#7a9bb5;color:#fff}
+.combo-rank.rank-3{background:#8b6914;color:#fff}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
+@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.combo-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 </style>
 </head>
 <body>
@@ -202,7 +220,7 @@ footer a:hover{text-decoration:underline}
       <div style="flex:1">
         <div class="tt-header">
           <span class="tt-label">今週イチ押し</span>
-          <span class="yoy up">↑昨年比+5270%</span>
+          <span class="yoy up">↑昨年比+4930%</span>
         </div>
         <div class="tt-name-row">
           <span class="tt-fish">アジ</span>
@@ -210,8 +228,8 @@ footer a:hover{text-decoration:underline}
         </div>
         <div class="tt-tags"><span class="rtag rtag-down">📉 先週比DOWN</span><span class="rtag rtag-up">🔥 釣果多数</span></div>
         <div class="prob-wrap"><span class="prob-label">週末の期待度</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:0%;background:#7a9bb5"></div></div><span class="prob-pct" style="color:#7a9bb5;font-weight:bold">渋め</span></div>
-        <div class="tt-comment">コンスタントに釣れている。頼れる選択肢（直近は急減傾向・注意）（今週125件・先週比-86%）</div>
-        <div class="tt-meta">出船: 約26隻 ／ 直近釣果: 125件</div>
+        <div class="tt-comment">コンスタントに釣れている。頼れる選択肢（直近は急減傾向・注意）（今週126件・先週比-80%）</div>
+        <div class="tt-meta">出船: 約26隻 ／ 直近釣果: 126件</div>
       </div>
     </a><div class="target-grid">
     <a class="target-card" href="fish/マルイカ.html">
@@ -221,8 +239,8 @@ footer a:hover{text-decoration:underline}
       </div>
       <div class="tc-tags"><span class="rtag rtag-up">🎣 旬</span><span class="rtag rtag-up">📈 昨年比UP</span><span class="rtag rtag-down">📉 先週比DOWN</span></div>
       <div class="prob-wrap"><span class="prob-label">週末の期待度</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:33%;background:#7a9bb5"></div></div><span class="prob-pct" style="color:#7a9bb5;font-weight:bold">渋め</span></div>
-      <div class="tc-comment">釣果が昨年を大きく上回る好況（直近は急減傾向・注意）（今週44件・昨年比+1290%・先週比-82%）</div>
-      <div class="tc-count">出船約10隻 ／ 44件</div>
+      <div class="tc-comment">釣果が昨年を大きく上回る好況（直近は急減傾向・注意）（今週43件・昨年比+1295%・先週比-78%）</div>
+      <div class="tc-count">出船約10隻 ／ 43件</div>
     </a>
     <a class="target-card" href="fish/マダイ.html">
       <div class="tc-name-row">
@@ -231,8 +249,8 @@ footer a:hover{text-decoration:underline}
       </div>
       <div class="tc-tags"><span class="rtag rtag-down">📉 昨年比DOWN</span><span class="rtag rtag-down">📉 先週比DOWN</span><span class="rtag rtag-up">🔥 釣果多数</span></div>
       <div class="prob-wrap"><span class="prob-label">週末の期待度</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:100%;background:#e85d04"></div></div><span class="prob-pct" style="color:#e85d04;font-weight:bold">激アツ</span></div>
-      <div class="tc-comment">例年より少ないが完全にダメではない（今週122件・昨年比-33%・先週比-83%）</div>
-      <div class="tc-count">出船約27隻 ／ 122件</div>
+      <div class="tc-comment">やや渋め。腕の見せどころ（今週120件・昨年比-33%・先週比-82%）</div>
+      <div class="tc-count">出船約27隻 ／ 120件</div>
     </a>
     <a class="target-card" href="fish/メダイ.html">
       <div class="tc-name-row">
@@ -241,7 +259,7 @@ footer a:hover{text-decoration:underline}
       </div>
       <div class="tc-tags"><span class="rtag rtag-up">🎣 旬</span></div>
       <div class="prob-wrap"><span class="prob-label">週末の期待度</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:0%;background:#7a9bb5"></div></div><span class="prob-pct" style="color:#7a9bb5;font-weight:bold">渋め</span></div>
-      <div class="tc-comment">ピーク期ながら爆発力に欠ける。型狙いで（今週6件）</div>
+      <div class="tc-comment">旬だが今週は中位の釣れ具合（今週6件）</div>
       <div class="tc-count">出船約3隻 ／ 6件</div>
     </a>
     <a class="target-card" href="fish/カサゴ.html">
@@ -258,14 +276,14 @@ footer a:hover{text-decoration:underline}
     <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">波高・風速から出船可否を判定。データ: Open-Meteo Marine Forecast</p>
     <div class="wx-grid">
       <div class="wx-card">
-        <div class="wx-area">茨城 <span class="wx-tide">🌙 若潮(月齢10.1)</span></div>
+        <div class="wx-area">茨城 <span class="wx-tide">🌙 中潮(月齢11.1)</span></div>
         
           <div class="wx-day">
             <div class="wx-day-label">土</div>
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
-              <span>🟠 1.2m 波あり</span>
-              <span>💨 南5.6m/s 弱風</span>
+              <span>🟠 1.3m 波あり</span>
+              <span>💨 南5.2m/s 弱風</span>
               <span>🌡️ 15.2℃</span>
             </div>
           </div>
@@ -274,109 +292,43 @@ footer a:hover{text-decoration:underline}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 1.6m 高波注意</span>
-              <span>💨 東南東2.2m/s 微風</span>
+              <span>💨 南西3.9m/s 弱風</span>
               <span>🌡️ 15.4℃</span>
             </div>
           </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">千葉・外房 <span class="wx-tide">🌙 若潮(月齢10.1)</span></div>
+        <div class="wx-area">千葉・外房 <span class="wx-tide">🌙 中潮(月齢11.1)</span></div>
         
           <div class="wx-day">
             <div class="wx-day-label">土</div>
-            <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
+            <div class="wx-ok" style="color:#e85d04">△ やや不安</div>
             <div class="wx-metrics">
-              <span>🔴 1.5m 高波注意</span>
-              <span>💨 南7.5m/s やや強い</span>
+              <span>🔴 2.0m 高波注意</span>
+              <span>💨 南8.9m/s やや強い</span>
               <span>🌡️ 14.9℃</span>
             </div>
           </div>
           <div class="wx-day">
             <div class="wx-day-label">日</div>
-            <div class="wx-ok" style="color:#e85d04">△ やや不安</div>
+            <div class="wx-ok" style="color:#cc4d4d">✕ 欠航リスク</div>
             <div class="wx-metrics">
-              <span>🔴 3.4m 高波注意</span>
-              <span>💨 南西3.4m/s 弱風</span>
+              <span>🔴 3.1m 高波注意</span>
+              <span>💨 南南西8.2m/s やや強い</span>
               <span>🌡️ 14.6℃</span>
             </div>
           </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">千葉・内房 <span class="wx-tide">🌙 若潮(月齢10.1)</span></div>
+        <div class="wx-area">千葉・内房 <span class="wx-tide">🌙 中潮(月齢11.1)</span></div>
         
           <div class="wx-day">
             <div class="wx-day-label">土</div>
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
-              <span>🟠 1.0m 波あり</span>
-              <span>💨 南3.8m/s 弱風</span>
+              <span>🟠 1.4m 波あり</span>
+              <span>💨 南5.6m/s 弱風</span>
               <span>🌡️ 15.5℃</span>
-            </div>
-          </div>
-          <div class="wx-day">
-            <div class="wx-day-label">日</div>
-            <div class="wx-ok" style="color:#e85d04">△ やや不安</div>
-            <div class="wx-metrics">
-              <span>🔴 2.7m 高波注意</span>
-              <span>💨 南西1.7m/s 微風</span>
-              <span>🌡️ 15.6℃</span>
-            </div>
-          </div>
-      </div>
-      <div class="wx-card">
-        <div class="wx-area">千葉・東京湾奥 <span class="wx-tide">🌙 若潮(月齢10.1)</span></div>
-        
-          <div class="wx-day">
-            <div class="wx-day-label">土</div>
-            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
-            <div class="wx-metrics">
-              <span>🟡 0.5m やや波</span>
-              <span>💨 南2.3m/s 微風</span>
-              <span>🌡️ 13.9℃</span>
-            </div>
-          </div>
-          <div class="wx-day">
-            <div class="wx-day-label">日</div>
-            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
-            <div class="wx-metrics">
-              <span>🟠 1.0m 波あり</span>
-              <span>💨 南西2.0m/s 微風</span>
-              <span>🌡️ 14.1℃</span>
-            </div>
-          </div>
-      </div>
-      <div class="wx-card">
-        <div class="wx-area">神奈川・東京湾 <span class="wx-tide">🌙 若潮(月齢10.1)</span></div>
-        
-          <div class="wx-day">
-            <div class="wx-day-label">土</div>
-            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
-            <div class="wx-metrics">
-              <span>🟡 0.7m やや波</span>
-              <span>💨 南2.3m/s 微風</span>
-              <span>🌡️ 14.9℃</span>
-            </div>
-          </div>
-          <div class="wx-day">
-            <div class="wx-day-label">日</div>
-            <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
-            <div class="wx-metrics">
-              <span>🔴 1.7m 高波注意</span>
-              <span>💨 南南東2.9m/s 微風</span>
-              <span>🌡️ 15.1℃</span>
-            </div>
-          </div>
-      </div>
-      <div class="wx-card">
-        <div class="wx-area">神奈川・相模湾 <span class="wx-tide">🌙 若潮(月齢10.1)</span></div>
-        
-          <div class="wx-day">
-            <div class="wx-day-label">土</div>
-            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
-            <div class="wx-metrics">
-              <span>🟠 1.0m 波あり</span>
-              <span>💨 南2.2m/s 微風</span>
-              <span>🌡️ 15.6℃</span>
             </div>
           </div>
           <div class="wx-day">
@@ -384,20 +336,86 @@ footer a:hover{text-decoration:underline}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 2.3m 高波注意</span>
-              <span>💨 東南東2.6m/s 微風</span>
+              <span>💨 南南西6.4m/s やや強い</span>
               <span>🌡️ 15.6℃</span>
             </div>
           </div>
       </div>
       <div class="wx-card">
-        <div class="wx-area">静岡 <span class="wx-tide">🌙 若潮(月齢10.1)</span></div>
+        <div class="wx-area">千葉・東京湾奥 <span class="wx-tide">🌙 中潮(月齢11.1)</span></div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 南3.1m/s 弱風</span>
+              <span>🌡️ 13.9℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟡 0.7m やや波</span>
+              <span>💨 西南西2.4m/s 微風</span>
+              <span>🌡️ 14.1℃</span>
+            </div>
+          </div>
+      </div>
+      <div class="wx-card">
+        <div class="wx-area">神奈川・東京湾 <span class="wx-tide">🌙 中潮(月齢11.1)</span></div>
         
           <div class="wx-day">
             <div class="wx-day-label">土</div>
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
               <span>🟠 1.0m 波あり</span>
-              <span>💨 東北東1.5m/s 微風</span>
+              <span>💨 南南西4.4m/s 弱風</span>
+              <span>🌡️ 14.9℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟠 1.4m 波あり</span>
+              <span>💨 南南西3.7m/s 弱風</span>
+              <span>🌡️ 15.1℃</span>
+            </div>
+          </div>
+      </div>
+      <div class="wx-card">
+        <div class="wx-area">神奈川・相模湾 <span class="wx-tide">🌙 中潮(月齢11.1)</span></div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟠 1.3m 波あり</span>
+              <span>💨 南南西4.4m/s 弱風</span>
+              <span>🌡️ 15.6℃</span>
+            </div>
+          </div>
+          <div class="wx-day">
+            <div class="wx-day-label">日</div>
+            <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
+            <div class="wx-metrics">
+              <span>🔴 2.1m 高波注意</span>
+              <span>💨 南4.4m/s 弱風</span>
+              <span>🌡️ 15.6℃</span>
+            </div>
+          </div>
+      </div>
+      <div class="wx-card">
+        <div class="wx-area">静岡 <span class="wx-tide">🌙 中潮(月齢11.1)</span></div>
+        
+          <div class="wx-day">
+            <div class="wx-day-label">土</div>
+            <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
+            <div class="wx-metrics">
+              <span>🟠 1.3m 波あり</span>
+              <span>💨 南南東1.4m/s 微風</span>
               <span>🌡️ 15.5℃</span>
             </div>
           </div>
@@ -405,8 +423,8 @@ footer a:hover{text-decoration:underline}
             <div class="wx-day-label">日</div>
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
-              <span>🔴 2.4m 高波注意</span>
-              <span>💨 南西2.4m/s 微風</span>
+              <span>🔴 2.1m 高波注意</span>
+              <span>💨 南西4.6m/s 弱風</span>
               <span>🌡️ 15.5℃</span>
             </div>
           </div>
@@ -416,7 +434,7 @@ footer a:hover{text-decoration:underline}
     <div class="fc-date-bar"><button class="fc-date-btn active weekend" data-date="2026-04-04" onclick="switchForecastDate(this,'2026-04-04')">4/4(土)</button><button class="fc-date-btn weekend" data-date="2026-04-05" onclick="switchForecastDate(this,'2026-04-05')">4/5(日)</button></div>
     <div id="forecast-content"></div>
     <script>
-    var _fcData = {"2026-04-04": {"wave": 1.0, "wind": 3.6, "sst": 15.1, "score": 90, "ok": "◎ 出船日和", "areas": {"茨城": {"wave": 1.2, "wind": 5.6, "sst": 15.2, "score": 90, "ok": "◎ 出船日和"}, "千葉・外房": {"wave": 1.5, "wind": 7.5, "sst": 14.9, "score": 60, "ok": "○ 概ね良好"}, "千葉・内房": {"wave": 1.0, "wind": 3.8, "sst": 15.5, "score": 90, "ok": "◎ 出船日和"}, "千葉・東京湾奥": {"wave": 0.5, "wind": 2.3, "sst": 13.9, "score": 100, "ok": "◎ 出船日和"}, "神奈川・東京湾": {"wave": 0.7, "wind": 2.3, "sst": 14.9, "score": 100, "ok": "◎ 出船日和"}, "神奈川・相模湾": {"wave": 1.0, "wind": 2.2, "sst": 15.6, "score": 90, "ok": "◎ 出船日和"}, "静岡": {"wave": 1.0, "wind": 1.5, "sst": 15.5, "score": 90, "ok": "◎ 出船日和"}}, "predictions": [{"fish": "アジ", "avg": 51.8, "max": 225, "samples": 1533, "best_area": "千葉・東京湾奥", "best_avg": 70.8}, {"fish": "シロギス", "avg": 47.6, "max": 224, "samples": 318, "best_area": "神奈川・東京湾", "best_avg": 48.2}, {"fish": "イサキ", "avg": 41.0, "max": 50, "samples": 188, "best_area": "千葉・内房", "best_avg": 44.0}, {"fish": "マルイカ", "avg": 30.2, "max": 161, "samples": 230, "best_area": "神奈川・相模湾", "best_avg": 32.1}, {"fish": "マダイ", "avg": 5.0, "max": 45, "samples": 1130, "best_area": "千葉・外房", "best_avg": 7.8}, {"fish": "カワハギ", "avg": 10.8, "max": 27, "samples": 156, "best_area": "神奈川・東京湾", "best_avg": 10.9}, {"fish": "ヒラメ", "avg": 3.1, "max": 12, "samples": 349, "best_area": "茨城", "best_avg": 4.9}, {"fish": "アマダイ", "avg": 4.4, "max": 36, "samples": 226, "best_area": "茨城", "best_avg": 5.0}, {"fish": "クロムツ", "avg": 4.7, "max": 26, "samples": 163, "best_area": "神奈川・相模湾", "best_avg": 7.0}, {"fish": "クロダイ", "avg": 2.2, "max": 7, "samples": 10, "best_area": "神奈川・相模湾", "best_avg": 2.2}]}, "2026-04-05": {"wave": 2.2, "wind": 2.5, "sst": 15.1, "score": 70, "ok": "○ 概ね良好", "areas": {"茨城": {"wave": 1.6, "wind": 2.2, "sst": 15.4, "score": 70, "ok": "○ 概ね良好"}, "千葉・外房": {"wave": 3.4, "wind": 3.4, "sst": 14.6, "score": 40, "ok": "△ やや不安"}, "千葉・内房": {"wave": 2.7, "wind": 1.7, "sst": 15.6, "score": 40, "ok": "△ やや不安"}, "千葉・東京湾奥": {"wave": 1.0, "wind": 2.0, "sst": 14.1, "score": 90, "ok": "◎ 出船日和"}, "神奈川・東京湾": {"wave": 1.7, "wind": 2.9, "sst": 15.1, "score": 70, "ok": "○ 概ね良好"}, "神奈川・相模湾": {"wave": 2.3, "wind": 2.6, "sst": 15.6, "score": 70, "ok": "○ 概ね良好"}, "静岡": {"wave": 2.4, "wind": 2.4, "sst": 15.5, "score": 70, "ok": "○ 概ね良好"}}, "predictions": [{"fish": "アジ", "avg": 58.0, "max": 225, "samples": 1533, "best_area": "神奈川・東京湾", "best_avg": 84.4}, {"fish": "シロギス", "avg": 36.5, "max": 224, "samples": 318, "best_area": "神奈川・東京湾", "best_avg": 40.5}, {"fish": "マルイカ", "avg": 34.1, "max": 161, "samples": 230, "best_area": "神奈川・相模湾", "best_avg": 36.5}, {"fish": "イサキ", "avg": 37.1, "max": 50, "samples": 188, "best_area": "千葉・内房", "best_avg": 46.9}, {"fish": "マダイ", "avg": 4.7, "max": 45, "samples": 1130, "best_area": "千葉・外房", "best_avg": 6.7}, {"fish": "カワハギ", "avg": 11.4, "max": 27, "samples": 156, "best_area": "神奈川・東京湾", "best_avg": 11.5}, {"fish": "ヒラメ", "avg": 3.0, "max": 12, "samples": 349, "best_area": "茨城", "best_avg": 5.0}, {"fish": "アマダイ", "avg": 4.2, "max": 36, "samples": 226, "best_area": "茨城", "best_avg": 5.0}, {"fish": "クロムツ", "avg": 4.6, "max": 26, "samples": 163, "best_area": "神奈川・相模湾", "best_avg": 6.7}, {"fish": "クロダイ", "avg": 1.9, "max": 7, "samples": 10, "best_area": "神奈川・相模湾", "best_avg": 1.9}]}};
+    var _fcData = {"2026-04-04": {"wave": 1.3, "wind": 4.7, "sst": 15.1, "score": 90, "ok": "◎ 出船日和", "areas": {"茨城": {"wave": 1.3, "wind": 5.2, "sst": 15.2, "score": 90, "ok": "◎ 出船日和"}, "千葉・外房": {"wave": 2.0, "wind": 8.9, "sst": 14.9, "score": 45, "ok": "△ やや不安"}, "千葉・内房": {"wave": 1.4, "wind": 5.6, "sst": 15.5, "score": 90, "ok": "◎ 出船日和"}, "千葉・東京湾奥": {"wave": 0.7, "wind": 3.1, "sst": 13.9, "score": 100, "ok": "◎ 出船日和"}, "神奈川・東京湾": {"wave": 1.0, "wind": 4.4, "sst": 14.9, "score": 90, "ok": "◎ 出船日和"}, "神奈川・相模湾": {"wave": 1.3, "wind": 4.4, "sst": 15.6, "score": 90, "ok": "◎ 出船日和"}, "静岡": {"wave": 1.3, "wind": 1.4, "sst": 15.5, "score": 90, "ok": "◎ 出船日和"}}, "predictions": [{"fish": "アジ", "avg": 53.6, "max": 225, "samples": 1547, "best_area": "神奈川・東京湾", "best_avg": 71.7}, {"fish": "シロギス", "avg": 36.6, "max": 224, "samples": 320, "best_area": "神奈川・東京湾", "best_avg": 40.7}, {"fish": "イサキ", "avg": 40.1, "max": 50, "samples": 189, "best_area": "千葉・内房", "best_avg": 45.2}, {"fish": "マルイカ", "avg": 31.4, "max": 161, "samples": 236, "best_area": "神奈川・相模湾", "best_avg": 33.0}, {"fish": "マダイ", "avg": 4.9, "max": 45, "samples": 1145, "best_area": "千葉・外房", "best_avg": 7.5}, {"fish": "カワハギ", "avg": 10.8, "max": 27, "samples": 157, "best_area": "神奈川・東京湾", "best_avg": 10.9}, {"fish": "ヒラメ", "avg": 3.1, "max": 12, "samples": 354, "best_area": "茨城", "best_avg": 4.9}, {"fish": "アマダイ", "avg": 4.3, "max": 36, "samples": 229, "best_area": "茨城", "best_avg": 5.0}, {"fish": "クロムツ", "avg": 4.6, "max": 26, "samples": 165, "best_area": "神奈川・相模湾", "best_avg": 6.6}, {"fish": "クロダイ", "avg": 2.1, "max": 7, "samples": 10, "best_area": "神奈川・相模湾", "best_avg": 2.1}]}, "2026-04-05": {"wave": 1.9, "wind": 4.8, "sst": 15.1, "score": 70, "ok": "○ 概ね良好", "areas": {"茨城": {"wave": 1.6, "wind": 3.9, "sst": 15.4, "score": 70, "ok": "○ 概ね良好"}, "千葉・外房": {"wave": 3.1, "wind": 8.2, "sst": 14.6, "score": 15, "ok": "✕ 欠航リスク"}, "千葉・内房": {"wave": 2.3, "wind": 6.4, "sst": 15.6, "score": 60, "ok": "○ 概ね良好"}, "千葉・東京湾奥": {"wave": 0.7, "wind": 2.4, "sst": 14.1, "score": 100, "ok": "◎ 出船日和"}, "神奈川・東京湾": {"wave": 1.4, "wind": 3.7, "sst": 15.1, "score": 90, "ok": "◎ 出船日和"}, "神奈川・相模湾": {"wave": 2.1, "wind": 4.4, "sst": 15.6, "score": 70, "ok": "○ 概ね良好"}, "静岡": {"wave": 2.1, "wind": 4.6, "sst": 15.5, "score": 70, "ok": "○ 概ね良好"}}, "predictions": [{"fish": "アジ", "avg": 56.6, "max": 225, "samples": 1547, "best_area": "神奈川・東京湾", "best_avg": 81.2}, {"fish": "シロギス", "avg": 36.6, "max": 224, "samples": 320, "best_area": "神奈川・東京湾", "best_avg": 40.7}, {"fish": "マルイカ", "avg": 33.3, "max": 161, "samples": 236, "best_area": "神奈川・相模湾", "best_avg": 35.0}, {"fish": "イサキ", "avg": 38.0, "max": 50, "samples": 189, "best_area": "千葉・内房", "best_avg": 47.2}, {"fish": "マダイ", "avg": 4.7, "max": 45, "samples": 1145, "best_area": "千葉・外房", "best_avg": 6.8}, {"fish": "カワハギ", "avg": 11.1, "max": 27, "samples": 157, "best_area": "神奈川・東京湾", "best_avg": 11.2}, {"fish": "ヒラメ", "avg": 3.1, "max": 12, "samples": 354, "best_area": "茨城", "best_avg": 5.0}, {"fish": "アマダイ", "avg": 4.3, "max": 36, "samples": 229, "best_area": "茨城", "best_avg": 5.0}, {"fish": "クロムツ", "avg": 4.5, "max": 26, "samples": 165, "best_area": "千葉・外房", "best_avg": 6.5}, {"fish": "クロダイ", "avg": 2.0, "max": 7, "samples": 10, "best_area": "神奈川・相模湾", "best_avg": 2.0}]}};
     function switchForecastDate(btn, date) {
       document.querySelectorAll('.fc-date-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
@@ -475,15 +493,92 @@ footer a:hover{text-decoration:underline}
     }
     renderForecast('2026-04-04');
     </script>
+  
+  <h2>🔍 注目の魚種×エリア</h2>
+  <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">魚種とエリアの組み合わせをスコアリング。「どこで何を狙うか」の参考に</p>
+  <div class="combo-grid">
+    <a class="combo-card" href="fish_area/%E3%82%A2%E3%82%B8_%E4%B9%85%E6%AF%94%E9%87%8C%E6%B8%AF.html">
+      <div class="combo-header">
+        <span class="combo-rank rank-1">1st</span>
+        <span class="combo-fish">アジ</span>
+        <span class="combo-x">×</span>
+        <span class="combo-area">神奈川・東京湾</span>
+        <span class="combo-trend trend-down">↓</span>
+      </div>
+      <div class="combo-stars">★★★★☆</div>
+      <div class="combo-stats">平均42匹 / 最高156匹</div>
+      <div class="combo-meta">58件 / 10隻 / 久比里港・小坪港・小柴港</div>
+    </a>
+    <a class="combo-card" href="fish_area/%E3%83%9E%E3%83%AB%E3%82%A4%E3%82%AB_%E5%B9%B3%E5%A1%9A%E6%B8%AF.html">
+      <div class="combo-header">
+        <span class="combo-rank rank-2">2nd</span>
+        <span class="combo-fish">マルイカ</span>
+        <span class="combo-x">×</span>
+        <span class="combo-area">神奈川・相模湾</span>
+        <span class="combo-trend trend-down">↓</span>
+      </div>
+      <div class="combo-stars">★★★★☆</div>
+      <div class="combo-stats">平均21匹 / 最高90匹</div>
+      <div class="combo-meta">23件 / 6隻 / 平塚港・葉山あぶずり港・長井新宿港</div>
+    </a>
+    <a class="combo-card" href="fish_area/%E3%83%9E%E3%83%AB%E3%82%A4%E3%82%AB_%E4%B9%85%E6%AF%94%E9%87%8C%E6%B8%AF.html">
+      <div class="combo-header">
+        <span class="combo-rank rank-3">3rd</span>
+        <span class="combo-fish">マルイカ</span>
+        <span class="combo-x">×</span>
+        <span class="combo-area">神奈川・東京湾</span>
+        <span class="combo-trend trend-down">↓</span>
+      </div>
+      <div class="combo-stars">★★★★☆</div>
+      <div class="combo-stats">平均24匹 / 最高81匹</div>
+      <div class="combo-meta">15件 / 3隻 / 久比里港・小網代港</div>
+    </a>
+    <a class="combo-card" href="fish_area/%E3%82%A2%E3%82%B8_%E6%9D%B1%E8%91%9B%E8%A5%BF.html">
+      <div class="combo-header">
+        
+        <span class="combo-fish">アジ</span>
+        <span class="combo-x">×</span>
+        <span class="combo-area">千葉・東京湾奥</span>
+        <span class="combo-trend trend-down">↓</span>
+      </div>
+      <div class="combo-stars">★★★☆☆</div>
+      <div class="combo-stats">平均56匹 / 最高152匹</div>
+      <div class="combo-meta">16件 / 3隻 / 東葛西・江戸川放水路･原木中山・浦安</div>
+    </a>
+    <a class="combo-card" href="fish_area/%E3%82%A2%E3%82%B8_%E5%B9%B3%E5%92%8C%E5%B3%B6.html">
+      <div class="combo-header">
+        
+        <span class="combo-fish">アジ</span>
+        <span class="combo-x">×</span>
+        <span class="combo-area">東京</span>
+        <span class="combo-trend trend-down">↓</span>
+      </div>
+      <div class="combo-stars">★★★☆☆</div>
+      <div class="combo-stats">平均47匹 / 最高161匹</div>
+      <div class="combo-meta">15件 / 3隻 / 平和島・横浜港･新山下・羽田</div>
+    </a>
+    <a class="combo-card" href="fish_area/%E3%82%A2%E3%82%B8_%E9%87%91%E8%B0%B7%E6%B8%AF.html">
+      <div class="combo-header">
+        
+        <span class="combo-fish">アジ</span>
+        <span class="combo-x">×</span>
+        <span class="combo-area">千葉・内房</span>
+        <span class="combo-trend trend-down">↓</span>
+      </div>
+      <div class="combo-stars">★★★☆☆</div>
+      <div class="combo-stats">平均49匹 / 最高220匹</div>
+      <div class="combo-meta">14件 / 3隻 / 金谷港・長浦</div>
+    </a>
+  </div>
   <h2>🐟 釣れている魚</h2>
   <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">タップで詳細表示 ／ 各カードの「詳細→」で船宿ランキングを確認</p>
   <div class="grid">
     <div class="fc">
       <div class="fc-summary">
         <div class="fn">アジ<span class="ships-badge">約26隻</span></div>
-        <div class="fk">125件</div>
+        <div class="fk">126件</div>
         <div class="fa">久比里港</div>
-        <div class="fc-stats-row"><span class="yoy up">↑昨年比+5270%</span><span class="fc-avg">平均54匹・最高156匹</span></div><div class="fc-trend trend-down">↓ 先週より減少</div><div class="fc-prob"><span class="prob-label">週末</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:0%;background:#7a9bb5"></div></div><span class="prob-pct" style="color:#7a9bb5;font-weight:bold">渋め</span></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+4930%</span><span class="fc-avg">平均50匹・最高156匹</span></div><div class="fc-trend trend-down">↓ 先週より減少</div><div class="fc-prob"><span class="prob-label">週末</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:0%;background:#7a9bb5"></div></div><span class="prob-pct" style="color:#7a9bb5;font-weight:bold">渋め</span></div>
         
       </div>
       <a class="fc-link" href="fish/アジ.html">詳細・船宿ランキング →</a>
@@ -493,13 +588,13 @@ footer a:hover{text-decoration:underline}
           <button class="tab-btn" onclick="switchTab(event,'weekly-アジ','daily-アジ')">ウィークリー</button>
         </div>
         <div id="daily-アジ"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/03/30</td><td>大津港</td><td>石田丸</td><td>40</td><td>21〜26cm</td><td></td></tr><tr><td>2026/03/30</td><td>小柴港</td><td>三喜丸釣船店</td><td>44〜156</td><td>17〜28cm</td><td></td></tr><tr><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>5〜40</td><td></td><td></td></tr><tr><td>2026/03/30</td><td>松輪江奈港</td><td>あまさけや丸</td><td>20〜50</td><td>20〜43cm</td><td></td></tr><tr><td>2026/03/30</td><td>横浜本牧港</td><td>長崎屋</td><td>60〜72</td><td>17〜30cm</td><td></td></tr></table></div></div>
-        <div id="weekly-アジ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>弁天屋</td><td>15件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12%"></div></div></td></tr><tr><td>吉野屋</td><td>7件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>荒川屋</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>釣船 五郎丸</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>石田丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>洋征丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>三喜丸釣船店</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>船宿 まる八</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>庄治郎丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>渡辺釣船店</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr></table></div></div>
+        <div id="weekly-アジ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>弁天屋</td><td>15件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>荒川屋</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6%"></div></div></td></tr><tr><td>吉野屋</td><td>7件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>渡辺釣船店</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>釣船 五郎丸</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>石田丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr><tr><td>洋征丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr><tr><td>三喜丸釣船店</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr><tr><td>庄治郎丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr><tr><td>林遊船</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr></table></div></div>
       </div>
     </div>
     <div class="fc">
       <div class="fc-summary">
         <div class="fn">マダイ<span class="ships-badge">約27隻</span></div>
-        <div class="fk">122件</div>
+        <div class="fk">120件</div>
         <div class="fa">久比里港</div>
         <div class="fc-stats-row"><span class="yoy down">↓昨年比-33%</span><span class="fc-avg">平均2匹・最高9匹</span></div><div class="fc-trend trend-down">↓ 先週より減少</div><div class="fc-prob"><span class="prob-label">週末</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:100%;background:#e85d04"></div></div><span class="prob-pct" style="color:#e85d04;font-weight:bold">激アツ</span></div>
         
@@ -511,15 +606,15 @@ footer a:hover{text-decoration:underline}
           <button class="tab-btn" onclick="switchTab(event,'weekly-マダイ','daily-マダイ')">ウィークリー</button>
         </div>
         <div id="daily-マダイ"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/03/30</td><td>久比里港</td><td>山下丸</td><td>0〜3</td><td>20〜38cm</td><td></td></tr><tr><td>2026/03/30</td><td>佐島</td><td>つね丸</td><td></td><td></td><td></td></tr><tr><td>2026/03/30</td><td>小田原早川港</td><td>平安丸</td><td></td><td></td><td></td></tr><tr><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>0〜1</td><td></td><td>0.9〜0.95kg</td></tr><tr><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>1〜4</td><td>20〜34cm</td><td></td></tr></table></div></div>
-        <div id="weekly-マダイ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>あまさけや丸</td><td>9件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr><tr><td>大貫丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6%"></div></div></td></tr><tr><td>ちがさき丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6%"></div></div></td></tr><tr><td>共栄丸</td><td>7件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>幸丸</td><td>7件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>庄治郎丸</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>山下丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>平作丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>つね丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>弘漁丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr></table></div></div>
+        <div id="weekly-マダイ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>あまさけや丸</td><td>9件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr><tr><td>大貫丸</td><td>8件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6%"></div></div></td></tr><tr><td>ちがさき丸</td><td>7件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>幸丸</td><td>7件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>共栄丸</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>庄治郎丸</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div></td></tr><tr><td>山下丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>平作丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>つね丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr><tr><td>弘漁丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:4%"></div></div></td></tr></table></div></div>
       </div>
     </div>
     <div class="fc">
       <div class="fc-summary">
         <div class="fn">マルイカ<span class="ships-badge">約10隻</span></div>
-        <div class="fk">44件</div>
+        <div class="fk">43件</div>
         <div class="fa">久比里港</div>
-        <div class="fc-stats-row"><span class="yoy up">↑昨年比+1290%</span><span class="fc-avg">平均28匹・最高85匹</span></div><div class="fc-trend trend-down">↓ 先週より減少</div><div class="fc-prob"><span class="prob-label">週末</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:33%;background:#7a9bb5"></div></div><span class="prob-pct" style="color:#7a9bb5;font-weight:bold">渋め</span></div>
+        <div class="fc-stats-row"><span class="yoy up">↑昨年比+1295%</span><span class="fc-avg">平均28匹・最高85匹</span></div><div class="fc-trend trend-down">↓ 先週より減少</div><div class="fc-prob"><span class="prob-label">週末</span><div class="prob-bar-bg"><div class="prob-bar-fill" style="width:33%;background:#7a9bb5"></div></div><span class="prob-pct" style="color:#7a9bb5;font-weight:bold">渋め</span></div>
         
       </div>
       <a class="fc-link" href="fish/マルイカ.html">詳細・船宿ランキング →</a>
@@ -529,7 +624,7 @@ footer a:hover{text-decoration:underline}
           <button class="tab-btn" onclick="switchTab(event,'weekly-マルイカ','daily-マルイカ')">ウィークリー</button>
         </div>
         <div id="daily-マルイカ"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/03/30</td><td>久比里港</td><td>山天丸</td><td>7〜34</td><td>15〜30cm</td><td></td></tr><tr><td>2026/03/30</td><td>小網代港</td><td>大和丸</td><td>6〜43</td><td>15〜28cm</td><td></td></tr><tr><td>2026/03/30</td><td>小網代港</td><td>翔太丸</td><td>13〜48</td><td>15〜40cm</td><td></td></tr><tr><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>1〜25</td><td>16〜26cm</td><td></td></tr><tr><td>2026/03/30</td><td>松輪間口港</td><td>喜平治丸</td><td>3〜70</td><td>15〜30cm</td><td></td></tr></table></div></div>
-        <div id="weekly-マルイカ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>大和丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>翔太丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>庄治郎丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>喜平治丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>たいぞう丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>はら丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>長三朗丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>春盛丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>栃木丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td></tr></table></div></div>
+        <div id="weekly-マルイカ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>山天丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>大和丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>翔太丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>庄治郎丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>喜平治丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>はら丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>たいぞう丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>長三朗丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>春盛丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>栃木丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td></tr></table></div></div>
       </div>
     </div>
     <div class="fc">
@@ -548,24 +643,6 @@ footer a:hover{text-decoration:underline}
         </div>
         <div id="daily-ヒラメ"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/03/30</td><td>外川港</td><td>家田丸</td><td>7</td><td></td><td>0.5〜1.5kg</td></tr><tr><td>2026/03/30</td><td>大原港</td><td>春栄丸</td><td>0〜2</td><td></td><td>0.6〜2.3kg</td></tr><tr><td>2026/03/30</td><td>飯岡港</td><td>三次郎丸</td><td>0〜6</td><td></td><td>0.5〜2.7kg</td></tr><tr><td>2026/03/30</td><td>鹿島港</td><td>幸栄丸</td><td>0〜5</td><td></td><td>0.5〜4.5kg</td></tr><tr><td>2026/03/30</td><td>鹿島港</td><td>第三幸栄丸</td><td>0〜5</td><td></td><td>0.5〜4.5kg</td></tr></table></div></div>
         <div id="weekly-ヒラメ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>幸栄丸</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18%"></div></div></td></tr><tr><td>第三幸栄丸</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18%"></div></div></td></tr><tr><td>家田丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15%"></div></div></td></tr><tr><td>幸丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15%"></div></div></td></tr><tr><td>つる丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>春栄丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>三次郎丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9%"></div></div></td></tr><tr><td>石田丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr><tr><td>洋征丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr></table></div></div>
-      </div>
-    </div>
-    <div class="fc">
-      <div class="fc-summary">
-        <div class="fn">シロギス<span class="ships-badge">約6隻</span></div>
-        <div class="fk">28件</div>
-        <div class="fa">平和島 / 東葛西</div>
-        <div class="fc-stats-row"><span class="fc-avg">平均55匹・最高132匹</span></div><div class="fc-trend trend-down">↓ 先週より減少</div>
-        
-      </div>
-      <a class="fc-link" href="fish/シロギス.html">詳細・船宿ランキング →</a>
-      <div class="fc-detail" style="display:none" id="detail-シロギス">
-        <div class="tab-wrap">
-          <button class="tab-btn active" onclick="switchTab(event,'daily-シロギス','weekly-シロギス')">デイリー</button>
-          <button class="tab-btn" onclick="switchTab(event,'weekly-シロギス','daily-シロギス')">ウィークリー</button>
-        </div>
-        <div id="daily-シロギス"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/03/30</td><td>横浜本牧港</td><td>長崎屋</td><td>25〜132</td><td>14〜24cm</td><td></td></tr><tr><td>2026/03/30</td><td>羽田</td><td>かめだや</td><td>6〜58</td><td>14〜22cm</td><td></td></tr><tr><td>2026/03/29</td><td>東葛西</td><td>須原屋</td><td>3〜81</td><td>12〜24cm</td><td></td></tr><tr><td>2026/03/29</td><td>横浜本牧港</td><td>長崎屋</td><td>25〜125</td><td>14〜24cm</td><td></td></tr><tr><td>2026/03/29</td><td>金沢八景</td><td>弁天屋</td><td>8〜53</td><td>17〜23cm</td><td></td></tr></table></div></div>
-        <div id="weekly-シロギス" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>弁天屋</td><td>9件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:32%"></div></div></td></tr><tr><td>荒川屋</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:21%"></div></div></td></tr><tr><td>須原屋</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr><tr><td>長崎屋</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr><tr><td>かめだや</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr><tr><td>船宿 まる八</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr></table></div></div>
       </div>
     </div>
     <div class="fc">
@@ -620,6 +697,24 @@ footer a:hover{text-decoration:underline}
         </div>
         <div id="daily-ヤリイカ"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/03/30</td><td>勝浦川津港</td><td>不動丸</td><td>1〜12</td><td>25〜42cm</td><td></td></tr><tr><td>2026/03/30</td><td>長井新宿港</td><td>栃木丸</td><td>1〜14</td><td>25〜50cm</td><td></td></tr><tr><td>2026/03/30</td><td>長井港</td><td>儀兵衛丸</td><td>2〜6</td><td>25〜45cm</td><td></td></tr><tr><td>2026/03/29</td><td>勝浦川津港</td><td>不動丸</td><td>16〜25</td><td>25〜42cm</td><td></td></tr><tr><td>2026/03/29</td><td>小田原早川港</td><td>平安丸</td><td>0〜3</td><td>25〜42cm</td><td></td></tr></table></div></div>
         <div id="weekly-ヤリイカ" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>栃木丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18%"></div></div></td></tr><tr><td>はら丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18%"></div></div></td></tr><tr><td>儀兵衛丸</td><td>5件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18%"></div></div></td></tr><tr><td>不動丸</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr><tr><td>長三朗丸</td><td>3件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td></tr><tr><td>平安丸</td><td>2件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></td></tr><tr><td>喜平治丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr><tr><td>ちがさき丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr><tr><td>春盛丸</td><td>1件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></td></tr></table></div></div>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-summary">
+        <div class="fn">シロギス<span class="ships-badge">約5隻</span></div>
+        <div class="fk">27件</div>
+        <div class="fa">東葛西</div>
+        <div class="fc-stats-row"><span class="fc-avg">平均50匹・最高132匹</span></div><div class="fc-trend trend-down">↓ 先週より減少</div>
+        
+      </div>
+      <a class="fc-link" href="fish/シロギス.html">詳細・船宿ランキング →</a>
+      <div class="fc-detail" style="display:none" id="detail-シロギス">
+        <div class="tab-wrap">
+          <button class="tab-btn active" onclick="switchTab(event,'daily-シロギス','weekly-シロギス')">デイリー</button>
+          <button class="tab-btn" onclick="switchTab(event,'weekly-シロギス','daily-シロギス')">ウィークリー</button>
+        </div>
+        <div id="daily-シロギス"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/03/30</td><td>横浜本牧港</td><td>長崎屋</td><td>25〜132</td><td>14〜24cm</td><td></td></tr><tr><td>2026/03/30</td><td>羽田</td><td>かめだや</td><td>6〜58</td><td>14〜22cm</td><td></td></tr><tr><td>2026/03/30</td><td>金沢八景</td><td>荒川屋</td><td>7〜76</td><td>17〜21cm</td><td></td></tr><tr><td>2026/03/29</td><td>東葛西</td><td>須原屋</td><td>3〜81</td><td>12〜24cm</td><td></td></tr><tr><td>2026/03/29</td><td>横浜本牧港</td><td>長崎屋</td><td>25〜125</td><td>14〜24cm</td><td></td></tr></table></div></div>
+        <div id="weekly-シロギス" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr><tr><td>弁天屋</td><td>9件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div></td></tr><tr><td>荒川屋</td><td>6件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:22%"></div></div></td></tr><tr><td>須原屋</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr><tr><td>長崎屋</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr><tr><td>かめだや</td><td>4件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14%"></div></div></td></tr></table></div></div>
       </div>
     </div>
     <div class="fc">
@@ -852,7 +947,7 @@ footer a:hover{text-decoration:underline}
       <tr><th>日付</th><th>エリア</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ(cm)</th><th>重量(kg)</th></tr>
       <tr data-area="久比里港" data-count="24" data-date="2026/03/30"><td>2026/03/30</td><td>久比里港</td><td>山下丸</td><td>カワハギ</td><td>3〜24</td><td>18〜26cm</td><td></td></tr><tr data-area="久比里港" data-count="3" data-date="2026/03/30"><td>2026/03/30</td><td>久比里港</td><td>山下丸</td><td>マダイ・アマダイ</td><td>0〜3</td><td>20〜38cm</td><td></td></tr><tr data-area="久比里港" data-count="34" data-date="2026/03/30"><td>2026/03/30</td><td>久比里港</td><td>山天丸</td><td>マルイカ</td><td>7〜34</td><td>15〜30cm</td><td></td></tr><tr class="dim" data-area="佐島" data-count="0" data-date="2026/03/30"><td>2026/03/30</td><td>佐島</td><td>つね丸</td><td>マダイ</td><td></td><td></td><td></td></tr><tr data-area="勝浦川津港" data-count="12" data-date="2026/03/30"><td>2026/03/30</td><td>勝浦川津港</td><td>不動丸</td><td>ヤリイカ</td><td>1〜12</td><td>25〜42cm</td><td></td></tr><tr data-area="外川港" data-count="7" data-date="2026/03/30"><td>2026/03/30</td><td>外川港</td><td>家田丸</td><td>ヒラメ</td><td>7</td><td></td><td>0.5〜1.5kg</td></tr><tr data-area="大原港" data-count="4" data-date="2026/03/30"><td>2026/03/30</td><td>大原港</td><td>春栄丸</td><td>マハタ</td><td>0〜4</td><td></td><td>0.4〜7.02kg</td></tr><tr data-area="大原港" data-count="2" data-date="2026/03/30"><td>2026/03/30</td><td>大原港</td><td>春栄丸</td><td>ヒラメ</td><td>0〜2</td><td></td><td>0.6〜2.3kg</td></tr><tr data-area="大津港" data-count="40" data-date="2026/03/30"><td>2026/03/30</td><td>大津港</td><td>石田丸</td><td>アジ</td><td>40</td><td>21〜26cm</td><td></td></tr><tr class="highlight" data-area="小柴港" data-count="156" data-date="2026/03/30"><td>2026/03/30</td><td>小柴港</td><td>三喜丸釣船店</td><td>アジ</td><td>44〜156</td><td>17〜28cm</td><td></td></tr><tr data-area="小田原早川港" data-count="3" data-date="2026/03/30"><td>2026/03/30</td><td>小田原早川港</td><td>平安丸</td><td>キンメダイ</td><td>0〜3</td><td>25〜35cm</td><td></td></tr><tr class="dim" data-area="小田原早川港" data-count="0" data-date="2026/03/30"><td>2026/03/30</td><td>小田原早川港</td><td>平安丸</td><td>マダイ</td><td></td><td></td><td></td></tr><tr data-area="小田原早川港" data-count="0" data-date="2026/03/30"><td>2026/03/30</td><td>小田原早川港</td><td>平安丸</td><td>ワラサ</td><td><span class='boat-catch' title='船全体の合計数'>船中1</span></td><td></td><td>6.8kg</td></tr><tr data-area="小網代港" data-count="43" data-date="2026/03/30"><td>2026/03/30</td><td>小網代港</td><td>大和丸</td><td>マルイカ</td><td>6〜43</td><td>15〜28cm</td><td></td></tr><tr data-area="小網代港" data-count="48" data-date="2026/03/30"><td>2026/03/30</td><td>小網代港</td><td>翔太丸</td><td>マルイカ</td><td>13〜48</td><td>15〜40cm</td><td></td></tr><tr data-area="平塚港" data-count="40" data-date="2026/03/30"><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>アジ</td><td>5〜40</td><td></td><td></td></tr><tr class="dim" data-area="平塚港" data-count="0" data-date="2026/03/30"><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>ワラサ</td><td></td><td></td><td>5.0kg</td></tr><tr data-area="平塚港" data-count="1" data-date="2026/03/30"><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>マダイ</td><td>0〜1</td><td></td><td>0.9〜0.95kg</td></tr><tr data-area="平塚港" data-count="4" data-date="2026/03/30"><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>マダイ・アマダイ</td><td>1〜4</td><td>20〜34cm</td><td></td></tr><tr data-area="平塚港" data-count="25" data-date="2026/03/30"><td>2026/03/30</td><td>平塚港</td><td>庄治郎丸</td><td>マルイカ</td><td>1〜25</td><td>16〜26cm</td><td></td></tr>
     </table></div>
-  <p class="note">最終更新: 2026/03/30 12:15<span id="new-badge"></span> ／ 総件数: 581 件</p>
+  <p class="note">最終更新: 2026/03/31 11:33<span id="new-badge"></span> ／ 総件数: 579 件</p>
 </div>
 <div class="data-note">
   <details>
@@ -868,7 +963,7 @@ footer a:hover{text-decoration:underline}
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: 2026/03/30 12:15 | v5.14</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: 2026/03/31 11:33 | v5.15</p>
 </footer>
 <script>
 function filterArea(btn, area) {
@@ -897,7 +992,7 @@ function sortTable(key, btn) {
   rows.forEach(r => tbody.appendChild(r));
 }
 (function() {
-  const updated = "2026/03/30 12:15";
+  const updated = "2026/03/31 11:33";
   const m = updated.match(/(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2})/);
   if (m) {
     const t = new Date(m[1],m[2]-1,m[3],m[4],m[5]);
