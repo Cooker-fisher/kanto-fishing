@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.14
-変更点(v5.14):
+関東船釣り情報クローラー v5.15
+変更点(v5.15):
+- コンボ別詳細分析（セクション12）: calc_combo_scores()で魚種×エリアグループの複合スコアを計算
+- index.htmlに「注目の魚種×エリア」セクション追加（上位6コンボをカード表示）
+- fish_area/ページにサマリーカード・シーズンバー・トレンドコメント追加
+変更点(v5.15):
 - 海況カード: load_weather_data()で最新weather_data/*.csvを読み込み、build_weather_section()でindex.htmlに海況4エリア表示
 - GA4カスタムイベント: 魚種カードクリック・狙い目クリック・エリアフィルター・魚種検索にgtag()イベント送信
-変更点(v5.14):
+変更点(v5.15):
 - 爆釣アラート: is_surge()追加（先週比1.5倍以上+出船5隻以上→🔥バッジ）
 - 旬の突入検出: calc_season_entry()追加（今年vs昨年の初釣果週を魚種ページに表示）
 - 週末予測確率: calc_weekend_prob()追加（過去2年同週実績→%表示）
@@ -1219,22 +1223,43 @@ def extract_size_cm(t):
 
 def parse_point(s):
     """ポイント文字列を場所と水深に分割する。
-    '竹岡沖水深20～30m' → ('竹岡沖', '20～30m')
-    '水深15m'           → (None, '15m')
-    '竹岡沖'            → ('竹岡沖', None)
+    '竹岡沖水深20～30m'          → ('竹岡沖', '20～30m')
+    '水深15m'                    → (None, '15m')
+    '竹岡沖'                     → ('竹岡沖', None)
+    '秋谷沖～城ヶ島沖タナ57～100m' → ('秋谷沖～城ヶ島沖', '57～100m')
+    '二海堡沖深30m'               → ('二海堡沖', '30m')
+    '剣崎沖 70～100m'            → ('剣崎沖', '70～100m')
     """
     if not s:
         return None, None
     s = s.strip()
+    # 「航程」「潮」はポイント情報であり水深ではない → そのままplaceとして返す
+    if re.search(r'航程|潮', s):
+        return s or None, None
     # 先頭が「水深」→ place なし
-    m = re.match(r'^水深(.+)', s)
+    m = re.match(r'^水深\s*(.+)', s)
     if m:
         return None, m.group(1).strip()
     # 途中に「水深」→ place + depth
-    m = re.search(r'^(.+?)水深(.+)', s)
+    m = re.search(r'^(.+?)水深\s*(.+)', s)
     if m:
         return m.group(1).strip() or None, m.group(2).strip() or None
-    # 「水深」なし → 全部 place
+    # 途中に「タナ」→ place + depth
+    m = re.search(r'^(.+?)タナ\s*(.+)', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    # 途中に「深」(「水深」以外の単独「深」) → place + depth
+    m = re.search(r'^(.+?)深\s*(\d[\d～〜~\-mM\s]*)', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    # 末尾に「数字～数字m」or「数字m」→ place + depth（例: '剣崎沖 70～100m'）
+    m = re.search(r'^(.+?)\s+(\d+[～〜~\-]\d+\s*[mM]?)$', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    m = re.search(r'^(.+?)\s+(\d+\s*[mM])$', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    # 全部 place
     return s or None, None
 
 def parse_jp_date(date_str, year):
@@ -2280,8 +2305,26 @@ footer a:hover{text-decoration:underline}
 .pred-max{font-size:11px;color:#7a9bb5}
 .pred-area{font-size:11px;color:#f4a261;margin-top:2px}
 .pred-samples{font-size:10px;color:#4a6a8a;margin-top:4px}
+.combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.combo-card{display:block;background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-decoration:none;color:#e0e8f0;transition:border-color .2s,transform .1s}
+.combo-card:hover{border-color:#4db8ff;transform:translateY(-2px)}
+.combo-header{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.combo-fish{font-size:15px;font-weight:bold;color:#fff}
+.combo-x{color:#4a6a8a;font-size:12px}
+.combo-area{font-size:13px;color:#f4a261}
+.combo-trend{font-size:14px;font-weight:bold;margin-left:auto}
+.combo-trend.trend-up{color:#4dcc88}
+.combo-trend.trend-down{color:#cc4d4d}
+.combo-trend.trend-flat{color:#7a9bb5}
+.combo-stars{font-size:13px;margin:4px 0 2px}
+.combo-stats{font-size:12px;color:#4db8ff;margin:2px 0}
+.combo-meta{font-size:11px;color:#7a9bb5;margin-top:2px}
+.combo-rank{font-size:10px;font-weight:bold;border-radius:3px;padding:1px 5px;margin-right:4px}
+.combo-rank.rank-1{background:#e85d04;color:#fff}
+.combo-rank.rank-2{background:#7a9bb5;color:#fff}
+.combo-rank.rank-3{background:#8b6914;color:#fff}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
+@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.combo-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 """
 
 # ============================================================
@@ -2325,6 +2368,167 @@ def calc_targets(data, history):
                         "stars": stars, "tags": tags, "prob": prob, "surge": surge})
     targets.sort(key=lambda x: -x["composite"])
     return targets[:5]
+
+# ============================================================
+# #12: コンボ別詳細分析（魚種×エリアグループ）
+# ============================================================
+def calc_combo_scores(data, history):
+    """魚種×エリアグループごとの複合スコアを計算しランキング化"""
+    now = datetime.now()
+    cur_month = now.month
+    year, week_num = current_iso_week()
+    cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
+
+    # エリアグループごとに集計
+    combo: dict = {}  # (fish, group) -> list of catches
+    for c in data:
+        group = _area_to_group(c["area"])
+        if not group:
+            continue
+        for f in c["fish"]:
+            if f != "不明":
+                combo.setdefault((f, group), []).append(c)
+
+    results = []
+    # 全魚種最大件数（スコアリング用）
+    max_cnt = max((len(cs) for cs in combo.values()), default=1)
+
+    for (fish, group), catches in combo.items():
+        if len(catches) < 3:
+            continue
+        latest = max((c.get("date") or "" for c in catches), default="")
+        if latest < cutoff:
+            continue
+
+        # 個人釣果のみ（船中数除外）で統計
+        personal = [c for c in catches if c.get("count_range") and not c["count_range"].get("is_boat")]
+        if personal:
+            avgs = [(c["count_range"]["min"] + c["count_range"]["max"]) // 2 for c in personal]
+            combo_avg = round(sum(avgs) / len(avgs), 1)
+            combo_max = max(c["count_range"]["max"] for c in personal)
+        else:
+            combo_avg = 0
+            combo_max = 0
+
+        ships = len(set(c["ship"] for c in catches))
+
+        # 昨年比・前週比（魚種全体のhistoryを使用）
+        this_w, last_w = get_yoy_data(history, fish, year, week_num)
+        prev_w = get_prev_week_data(history, fish, year, week_num)
+
+        # コンボ専用スコア計算
+        cnt = len(catches)
+        count_s = cnt / max_cnt if max_cnt > 0 else 0.5
+
+        def safe_ratio(a, b, cap=2.0):
+            if a and b and b > 0:
+                return min(a / b, cap) / cap
+            return 0.5
+
+        avg_s = safe_ratio(
+            this_w.get("avg") if this_w else None,
+            last_w.get("avg") if last_w else None,
+        )
+        yoy_s = safe_ratio(
+            this_w.get("ships") if this_w else None,
+            last_w.get("ships") if last_w else None,
+        )
+        wow_s = safe_ratio(
+            this_w.get("ships") if this_w else None,
+            prev_w.get("ships") if prev_w else None,
+            cap=1.5,
+        )
+        season = get_season_score(fish, cur_month)
+        season_s = (season / 5.0) if season > 0 else 0.5
+        # コンボ密度ボーナス: 船宿数に対して件数が多い → 安定して釣れている
+        density_s = min(cnt / max(ships, 1) / 3.0, 1.0)
+
+        weights = [
+            (count_s,   0.20),
+            (avg_s,     0.15),
+            (yoy_s,     0.15),
+            (wow_s,     0.10),
+            (season_s,  0.15),
+            (density_s, 0.25),
+        ]
+        composite = round(sum(s * w for s, w in weights) * 100, 1)
+
+        # 前週比トレンド
+        trend = ""
+        if this_w and prev_w:
+            t_s = this_w.get("ships") or 0
+            p_s = prev_w.get("ships") or 0
+            if t_s and p_s:
+                ratio = t_s / p_s
+                if ratio > 1.2:
+                    trend = "up"
+                elif ratio < 0.8:
+                    trend = "down"
+                else:
+                    trend = "flat"
+
+        # エリア内の代表的な港
+        area_ports = list(dict.fromkeys(c["area"] for c in catches))[:3]
+
+        results.append({
+            "fish": fish, "group": group, "catches": cnt,
+            "avg": combo_avg, "max": combo_max, "ships": ships,
+            "composite": composite, "trend": trend,
+            "ports": area_ports, "season": season,
+        })
+
+    results.sort(key=lambda x: -x["composite"])
+    return results[:10]
+
+
+def build_combo_section(combos):
+    """index.htmlに表示するコンボ分析セクションHTML"""
+    if not combos:
+        return ""
+    cards = ""
+    for i, cb in enumerate(combos[:6]):
+        trend_icon = {"up": "↑", "down": "↓", "flat": "→"}.get(cb["trend"], "")
+        trend_cls = {"up": "trend-up", "down": "trend-down", "flat": "trend-flat"}.get(cb["trend"], "")
+        trend_html = f'<span class="combo-trend {trend_cls}">{trend_icon}</span>' if trend_icon else ""
+
+        stars = composite_to_stars(cb["composite"])
+        ports_str = "・".join(cb["ports"])
+        avg_str = f'平均{cb["avg"]:.0f}匹' if cb["avg"] else ""
+        max_str = f'最高{cb["max"]}匹' if cb["max"] else ""
+        stat_str = " / ".join(s for s in [avg_str, max_str] if s)
+
+        # 代表的なfish_areaページへのリンク（最初の港）
+        link_area = cb["ports"][0] if cb["ports"] else ""
+        link_href = f'fish_area/{quote(cb["fish"], safe="")}_{quote(link_area, safe="")}.html' if link_area else "#"
+
+        rank_label = ""
+        if i == 0:
+            rank_label = '<span class="combo-rank rank-1">1st</span>'
+        elif i == 1:
+            rank_label = '<span class="combo-rank rank-2">2nd</span>'
+        elif i == 2:
+            rank_label = '<span class="combo-rank rank-3">3rd</span>'
+
+        cards += f"""
+    <a class="combo-card" href="{link_href}">
+      <div class="combo-header">
+        {rank_label}
+        <span class="combo-fish">{cb['fish']}</span>
+        <span class="combo-x">×</span>
+        <span class="combo-area">{cb['group']}</span>
+        {trend_html}
+      </div>
+      <div class="combo-stars">{stars}</div>
+      <div class="combo-stats">{stat_str}</div>
+      <div class="combo-meta">{cb['catches']}件 / {cb['ships']}隻 / {ports_str}</div>
+    </a>"""
+
+    return f"""
+  <h2>🔍 注目の魚種×エリア</h2>
+  <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">魚種とエリアの組み合わせをスコアリング。「どこで何を狙うか」の参考に</p>
+  <div class="combo-grid">{cards}
+  </div>"""
+
 
 def _render_tags(tags):
     html = ""
@@ -2583,6 +2787,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
     forecast_json_data = weather_data.get("_forecast_data") if weather_data else None
     forecast_html = build_forecast_section(forecast_json_data, weather_data) if forecast_json_data else ""
     catch_table  = build_catch_table(catches)
+    combos       = calc_combo_scores(catches, history)
+    combo_html   = build_combo_section(combos)
     active_areas = set(c["area"] for c in catches)
     area_nav_parts = []
     covered = set()
@@ -2634,6 +2840,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
   {target_html}
   {weather_html}
   {forecast_html}
+  {combo_html}
   <h2>🐟 釣れている魚</h2>
   <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">タップで詳細表示 ／ 各カードの「詳細→」で船宿ランキングを確認</p>
   <div class="grid">{cards}</div>
@@ -2645,7 +2852,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <footer>
   <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.14</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.15</p>
 </footer>
 <script>
 function filterArea(btn, area) {{
@@ -3033,17 +3240,62 @@ def build_fish_area_pages(data, crawled_at="", history=None):
             if f != "不明":
                 fa_summary.setdefault((f, c["area"]), []).append(c)
 
-    fish_area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.boat-catch{color:#f0a040;font-size:11px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px;flex-wrap:wrap}.wrap{padding:14px 10px}table{font-size:11px}th,td{padding:5px 4px}}"
+    fish_area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.stat-card .sv{font-size:22px;font-weight:bold;color:#4db8ff;line-height:1.2}.stat-card .sl{font-size:11px;color:#7a9bb5;margin-top:4px}.stat-card.trend-up{border-color:#4dcc88}.stat-card.trend-down{border-color:#cc4d4d}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.boat-catch{color:#f0a040;font-size:11px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.combo-comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin:12px 0}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px;flex-wrap:wrap}.wrap{padding:14px 10px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}}"
+
+    now_fa_global = datetime.now()
+    current_month_fa = now_fa_global.month
+    year_fa_g, week_num_fa_g = current_iso_week()
 
     count = 0
     for (fish, area), catches in fa_summary.items():
         if len(catches) < 5:
             continue
         max_cnt = 0
+        personal_catches = []
         for c in catches:
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
                 max_cnt = max(max_cnt, cr["max"])
+                personal_catches.append(c)
+        # コンボ統計
+        combo_avg = 0
+        if personal_catches:
+            avgs = [(c["count_range"]["min"] + c["count_range"]["max"]) // 2 for c in personal_catches]
+            combo_avg = round(sum(avgs) / len(avgs), 1)
+        ship_num = len(set(c["ship"] for c in catches))
+        # トレンド判定
+        this_w_fa, last_w_fa = get_yoy_data(history, fish, year_fa_g, week_num_fa_g) if history else (None, None)
+        prev_w_fa = get_prev_week_data(history, fish, year_fa_g, week_num_fa_g) if history else None
+        trend_fa = ""
+        if this_w_fa and prev_w_fa:
+            t_s = this_w_fa.get("ships") or 0
+            p_s = prev_w_fa.get("ships") or 0
+            if t_s and p_s:
+                r = t_s / p_s
+                if r > 1.2: trend_fa = "up"
+                elif r < 0.8: trend_fa = "down"
+                else: trend_fa = "flat"
+        trend_cls = {"up": " trend-up", "down": " trend-down"}.get(trend_fa, "")
+        trend_label = {"up": "↑ 上昇中", "down": "↓ 減少", "flat": "→ 横ばい"}.get(trend_fa, "-")
+        stat_cards_fa = f"""<div class="stat-cards">
+  <div class="stat-card"><div class="sv">{ship_num}隻</div><div class="sl">出船数</div></div>
+  <div class="stat-card"><div class="sv">{"%.0f" % combo_avg if combo_avg else "-"}匹</div><div class="sl">平均釣果</div></div>
+  <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else "-"}匹</div><div class="sl">最高釣果</div></div>
+</div>"""
+        # シーズンバー
+        season_bar_fa = build_season_bar(fish, current_month_fa)
+        # コンボコメント
+        season_score_fa = get_season_score(fish, current_month_fa)
+        group_fa = _area_to_group(area) or area
+        if season_score_fa >= 4:
+            combo_cmt = f"💬 {group_fa}の{fish}は今月がシーズン本番。{trend_label}の傾向です。"
+        elif season_score_fa >= 3:
+            combo_cmt = f"💬 {group_fa}の{fish}はシーズン中盤。安定した釣果が期待できます。"
+        elif season_score_fa >= 2:
+            combo_cmt = f"💬 {group_fa}の{fish}はシーズンの立ち上がり／終盤。{trend_label}の傾向。"
+        else:
+            combo_cmt = f"💬 {group_fa}の{fish}はオフシーズンですが釣果報告あり。"
+        combo_comment_html = f'<div class="combo-comment">{combo_cmt}</div>'
         rows = ""
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]:
             cnt_str = fmt_count(c)
@@ -3128,6 +3380,9 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <a href="../area/{area}.html">{area}の全魚種釣果</a>
 </nav>
 <div class="wrap">
+  {stat_cards_fa}
+  <h2>📅 年間シーズン</h2>{season_bar_fa}
+  {combo_comment_html}
   {yoy_html}
   <h2>🏆 船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table></div>
@@ -3197,7 +3452,27 @@ def build_calendar_page(crawled_at=""):
 # メイン
 # ============================================================
 CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max","cnt_avg",
-              "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_depth"]
+              "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_place2",
+              "point_depth_min","point_depth_max"]
+
+def _split_depth(depth_str):
+    """水深文字列を min/max に分割。
+    '20～30m' → (20, 30)
+    '20m'     → (20, 20)
+    '20～30'  → (20, 30)
+    ''        → ('', '')
+    """
+    if not depth_str:
+        return "", ""
+    s = parse_num(depth_str.replace("m", "").replace("M", "").strip())
+    m = re.search(r"(\d+)[～〜~\-](\d+)", s)
+    if m:
+        return int(m.group(1)), int(m.group(2))
+    m = re.search(r"(\d+)", s)
+    if m:
+        v = int(m.group(1))
+        return v, v
+    return "", ""
 
 def save_daily_csv(catches):
     """釣果をdata/YYYY-MM.csvに追記（重複スキップ）。
@@ -3240,6 +3515,7 @@ def save_daily_csv(catches):
                 cr = c.get("count_range") or {}
                 sc = c.get("size_cm")    or {}
                 wk = c.get("weight_kg") or {}
+                d_min, d_max = _split_depth(c.get("point_depth") or "")
                 new_rows.append({
                     "ship":        c["ship"],
                     "area":        c["area"],
@@ -3254,7 +3530,9 @@ def save_daily_csv(catches):
                     "kg_max":      wk.get("max", ""),
                     "is_boat":     1 if cr.get("is_boat") else 0,
                     "point_place": c.get("point_place") or "",
-                    "point_depth": c.get("point_depth") or "",
+                    "point_place2": "",
+                    "point_depth_min": d_min,
+                    "point_depth_max": d_max,
                 })
 
         if not new_rows:
@@ -3269,6 +3547,85 @@ def save_daily_csv(catches):
         total_added += len(new_rows)
 
     return total_added
+
+
+def repair_csv_depth(catches):
+    """既存CSVの水深欠損を修復する。
+    1. 14列の壊れた行 → point_depth(raw)を分割して16列に復元
+    2. 16列でdepth空 → point_placeをparse_pointで再分割（タナ・深・末尾m対応）
+    3. それでも空 → catches.jsonから補完
+    """
+    # catches.json → (ship, date, fish) -> (point_place, point_depth)
+    depth_map = {}
+    for c in catches:
+        pd = c.get("point_depth") or ""
+        pp = c.get("point_place") or ""
+        if pd:
+            for fish in c.get("fish", []):
+                depth_map[(c["ship"], c.get("date", ""), fish)] = (pp, pd)
+
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    if not os.path.isdir(data_dir):
+        return 0
+    total_fixed = 0
+    for fname in sorted(os.listdir(data_dir)):
+        if not fname.endswith(".csv"):
+            continue
+        filepath = os.path.join(data_dir, fname)
+        with open(filepath, encoding="utf-8", newline="") as f:
+            reader = csv.reader(f)
+            header = next(reader)
+            rows = list(reader)
+
+        # Normalize header to 16 columns
+        target_header = CSV_HEADER
+        if header != target_header:
+            header = target_header
+
+        fixed_rows = []
+        fixed_count = 0
+        for row in rows:
+            # 14列 → 16列: point_place=12, point_depth(raw)=13 → split into 4 cols
+            if len(row) == 14:
+                pp = row[12]
+                pd_raw = row[13]
+                d_min, d_max = _split_depth(pd_raw)
+                row = row[:12] + [pp, "", str(d_min), str(d_max)]
+                fixed_count += 1
+            # 16列でdepth空 → point_placeをparse_pointで再分割
+            elif len(row) == 16:
+                if not row[14] and not row[15] and row[12]:
+                    new_place, new_depth = parse_point(row[12])
+                    if new_depth:
+                        d_min, d_max = _split_depth(new_depth)
+                        row[12] = new_place or ""
+                        row[14] = str(d_min)
+                        row[15] = str(d_max)
+                        fixed_count += 1
+                    else:
+                        # parse_pointで取れなければcatches.jsonから補完
+                        key = (row[0], row[2], row[3])  # ship, date, fish
+                        info = depth_map.get(key)
+                        if info:
+                            pp_cj, pd_cj = info
+                            d_min, d_max = _split_depth(pd_cj)
+                            if d_min:
+                                row[14] = str(d_min)
+                                row[15] = str(d_max)
+                                fixed_count += 1
+            # Pad short rows
+            while len(row) < 16:
+                row.append("")
+            fixed_rows.append(row)
+
+        if fixed_count > 0:
+            with open(filepath, "w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(target_header)
+                writer.writerows(fixed_rows)
+            total_fixed += fixed_count
+
+    return total_fixed
 
 
 # ============================================================
@@ -3323,7 +3680,7 @@ def main():
     year = now.year
     fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
     gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
-    print(f"=== 関東船釣りクローラー v5.14 開始: {crawled_at} ===")
+    print(f"=== 関東船釣りクローラー v5.15 開始: {crawled_at} ===")
     print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
     for s in SHIPS:
@@ -3369,6 +3726,11 @@ def main():
     csv_added = save_daily_csv(all_catches)
     if csv_added:
         print(f"CSV保存: {csv_added} 件追記 → data/")
+
+    # CSV水深データ修復（14列行の復元 + 空depth埋め）
+    depth_fixed = repair_csv_depth(all_catches)
+    if depth_fixed:
+        print(f"CSV水深修復: {depth_fixed} 行修正")
 
     with open("catches.json", "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
