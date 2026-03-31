@@ -748,6 +748,8 @@ FISH_PREDICT_PROFILE = {
     # ── 予測表示対象（バックテスト誤差50%以内） ──
     # 標準型: 波高が主
     "アジ":     {"wave": 1.5, "wind": 0.5, "sst": 0.5, "wave_period": 1.0, "tide": 0.5, "moon": 0.3, "show": True},
+    "LTアジ":   {"wave": 1.5, "wind": 0.5, "sst": 0.5, "wave_period": 1.0, "tide": 0.5, "moon": 0.3, "show": True},
+    "ビシアジ":  {"wave": 1.5, "wind": 0.5, "sst": 0.5, "wave_period": 1.0, "tide": 0.5, "moon": 0.3, "show": True},
     "シロギス": {"wave": 1.5, "wind": 1.0, "sst": 0.8, "wave_period": 0.5, "tide": 0.5, "moon": 0.3, "show": True},
     # SST感応型
     "カワハギ": {"wave": 0.3, "wind": 1.0, "sst": 2.0, "wave_period": 0.3, "tide": 0.5, "moon": 0.3, "show": True},
@@ -1097,7 +1099,9 @@ def build_forecast_section(forecast_data, weather_data):
     </script>"""
 
 FISH_MAP = {
-    "アジ":     ["アジ", "LTアジ", "ライトアジ"],
+    "LTアジ":   ["LTアジ", "ＬＴアジ", "ライトアジ", "ﾗｲﾄアジ"],
+    "ビシアジ":  ["ビシアジ"],
+    "アジ":     ["アジ", "マアジ"],
     "タチウオ": ["タチウオ"],
     "フグ":     ["フグ", "トラフグ", "ショウサイフグ"],
     "カワハギ": ["カワハギ"],
@@ -1125,6 +1129,8 @@ FISH_MAP = {
 # 魚種別の正常値範囲（異常値検知用）
 FISH_VALID_RANGE = {
     "アジ":       {"size_cm": (10, 55),   "count": (0, 400)},
+    "LTアジ":     {"size_cm": (10, 35),   "count": (0, 400)},
+    "ビシアジ":    {"size_cm": (15, 55),   "count": (0, 200)},
     "タチウオ":   {"size_cm": (50, 200),  "count": (0, 80)},
     "フグ":       {"size_cm": (10, 60),   "count": (0, 150)},
     "カワハギ":   {"size_cm": (10, 45),   "count": (0, 150)},
@@ -1195,7 +1201,17 @@ class TableParser(HTMLParser):
 # パース補助
 # ============================================================
 def guess_fish(t):
-    return [f for f, kws in FISH_MAP.items() if any(k in t for k in kws)] or ["不明"]
+    """魚種名テキストからFISH_MAPの魚種リストを返す。
+    LTアジ/ビシアジなど具体的な名前がマッチしたら、汎用の「アジ」は除外する。
+    """
+    # 具体的→汎用の順でマッチ（FISH_MAPの定義順に依存）
+    matched = [f for f, kws in FISH_MAP.items() if any(k in t for k in kws)]
+    if not matched:
+        return ["不明"]
+    # 「LTアジ」「ビシアジ」がマッチしたら「アジ」を除外
+    if ("LTアジ" in matched or "ビシアジ" in matched) and "アジ" in matched:
+        matched.remove("アジ")
+    return matched
 
 def parse_num(s):
     return s.translate(Z2H)
@@ -1833,6 +1849,8 @@ def yoy_badge(this_data, last_data):
 # ============================================================
 SEASON_DATA = {
     "アジ":     [3,3,3,4,4,5,5,4,4,4,4,3],
+    "LTアジ":   [3,3,3,4,4,5,5,4,4,4,4,3],
+    "ビシアジ":  [3,3,3,4,4,5,5,4,4,4,4,3],
     "タチウオ": [1,1,1,1,2,3,5,5,5,4,3,2],
     "フグ":     [3,3,4,4,3,2,2,2,3,4,4,3],
     "カワハギ": [2,2,2,2,2,2,3,4,5,5,4,3],
