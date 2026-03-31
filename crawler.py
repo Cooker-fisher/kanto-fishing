@@ -3431,7 +3431,27 @@ def build_calendar_page(crawled_at=""):
 # メイン
 # ============================================================
 CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max","cnt_avg",
-              "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_depth"]
+              "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_place2",
+              "point_depth_min","point_depth_max"]
+
+def _split_depth(depth_str):
+    """水深文字列を min/max に分割。
+    '20～30m' → (20, 30)
+    '20m'     → (20, 20)
+    '20～30'  → (20, 30)
+    ''        → ('', '')
+    """
+    if not depth_str:
+        return "", ""
+    s = parse_num(depth_str.replace("m", "").replace("M", "").strip())
+    m = re.search(r"(\d+)[～〜~\-](\d+)", s)
+    if m:
+        return int(m.group(1)), int(m.group(2))
+    m = re.search(r"(\d+)", s)
+    if m:
+        v = int(m.group(1))
+        return v, v
+    return "", ""
 
 def save_daily_csv(catches):
     """釣果をdata/YYYY-MM.csvに追記（重複スキップ）。
@@ -3474,6 +3494,7 @@ def save_daily_csv(catches):
                 cr = c.get("count_range") or {}
                 sc = c.get("size_cm")    or {}
                 wk = c.get("weight_kg") or {}
+                d_min, d_max = _split_depth(c.get("point_depth") or "")
                 new_rows.append({
                     "ship":        c["ship"],
                     "area":        c["area"],
@@ -3488,7 +3509,9 @@ def save_daily_csv(catches):
                     "kg_max":      wk.get("max", ""),
                     "is_boat":     1 if cr.get("is_boat") else 0,
                     "point_place": c.get("point_place") or "",
-                    "point_depth": c.get("point_depth") or "",
+                    "point_place2": "",
+                    "point_depth_min": d_min,
+                    "point_depth_max": d_max,
                 })
 
         if not new_rows:
@@ -3503,6 +3526,75 @@ def save_daily_csv(catches):
         total_added += len(new_rows)
 
     return total_added
+
+
+def repair_csv_depth(catches):
+    """既存CSVの水深欠損を修復する。
+    1. 14列の壊れた行 → catches.jsonのpoint_depthで16列に復元
+    2. 16列でpoint_depth_min/maxが空 → catches.jsonから埋める
+    """
+    # catches.json → (ship, date, fish) -> (point_place, point_depth)
+    depth_map = {}
+    for c in catches:
+        pd = c.get("point_depth") or ""
+        pp = c.get("point_place") or ""
+        if pd:
+            for fish in c.get("fish", []):
+                depth_map[(c["ship"], c.get("date", ""), fish)] = (pp, pd)
+
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    if not os.path.isdir(data_dir):
+        return 0
+    total_fixed = 0
+    for fname in sorted(os.listdir(data_dir)):
+        if not fname.endswith(".csv"):
+            continue
+        filepath = os.path.join(data_dir, fname)
+        with open(filepath, encoding="utf-8", newline="") as f:
+            reader = csv.reader(f)
+            header = next(reader)
+            rows = list(reader)
+
+        # Normalize header to 16 columns
+        target_header = CSV_HEADER
+        if header != target_header:
+            header = target_header
+
+        fixed_rows = []
+        fixed_count = 0
+        for row in rows:
+            # 14列 → 16列: point_place=12, point_depth(raw)=13 → split into 4 cols
+            if len(row) == 14:
+                pp = row[12]
+                pd_raw = row[13]
+                d_min, d_max = _split_depth(pd_raw)
+                row = row[:12] + [pp, "", str(d_min), str(d_max)]
+                fixed_count += 1
+            # 16列でdepth空 → catches.jsonから補完
+            elif len(row) == 16:
+                if not row[14] and not row[15]:
+                    key = (row[0], row[2], row[3])  # ship, date, fish
+                    info = depth_map.get(key)
+                    if info:
+                        pp_cj, pd_cj = info
+                        d_min, d_max = _split_depth(pd_cj)
+                        if d_min:
+                            row[14] = str(d_min)
+                            row[15] = str(d_max)
+                            fixed_count += 1
+            # Pad short rows
+            while len(row) < 16:
+                row.append("")
+            fixed_rows.append(row)
+
+        if fixed_count > 0:
+            with open(filepath, "w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(target_header)
+                writer.writerows(fixed_rows)
+            total_fixed += fixed_count
+
+    return total_fixed
 
 
 # ============================================================
@@ -3603,6 +3695,11 @@ def main():
     csv_added = save_daily_csv(all_catches)
     if csv_added:
         print(f"CSV保存: {csv_added} 件追記 → data/")
+
+    # CSV水深データ修復（14列行の復元 + 空depth埋め）
+    depth_fixed = repair_csv_depth(all_catches)
+    if depth_fixed:
+        print(f"CSV水深修復: {depth_fixed} 行修正")
 
     with open("catches.json", "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
