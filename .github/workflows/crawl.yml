@@ -6,31 +6,36 @@ on:
     - cron: '0 21 * * *'   # 毎日 06:00 JST（朝の気象データ）
   workflow_dispatch:
     inputs:
-      backfill_depth:
-        description: '水深バックフィル実行'
+      backfill:
+        description: 'バックフィル実行（水深+気圧再取得）'
         type: boolean
         default: false
 jobs:
   backfill:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.backfill_depth
+    if: github.event_name == 'workflow_dispatch' && inputs.backfill
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: backfill depth
+      - name: backfill depth (水深)
         run: python3 backfill_depth.py
+      - name: refetch weather with pressure (気圧)
+        run: |
+          rm -f weather/.progress.json
+          python3 weather_fetch.py
       - name: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "backfill depth $(date +'%Y/%m/%d')" || echo "nothing to commit"
+          git commit -m "backfill depth+pressure $(date +'%Y/%m/%d')" || echo "nothing to commit"
           git push --force
   crawl:
     runs-on: ubuntu-latest
-    if: github.event.schedule != '0 21 * * *' && !(github.event_name == 'workflow_dispatch' && inputs.backfill_depth)
+    if: github.event.schedule != '0 21 * * *' && !(github.event_name == 'workflow_dispatch' && inputs.backfill)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
