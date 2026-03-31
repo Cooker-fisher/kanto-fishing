@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Static File Server",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "Crawler Build",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["crawler.py"],
+      "port": null
+    }
+  ]
+}
