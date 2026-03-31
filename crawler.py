@@ -1325,6 +1325,33 @@ def parse_catches_from_html(html, ship, area, year):
         catches = _parse_tables(box_parser.tables, ship, area, date, month)
         results.extend(catches)
 
+        # テーブルが空 → 休船テキストを検出
+        if not catches:
+            box_text = re.sub(r'<[^>]+>', ' ', box_html)
+            box_text = ' '.join(box_text.split())
+            # 日付部分を除去して本文だけ残す
+            box_text = re.sub(r'\d{4}年\d{1,2}月\d{1,2}日[^\s]*', '', box_text).strip()
+            if box_text and re.search(
+                r'出船中止|欠航|定休|休業|出船なし|中止しました|休船|悪天|強風|荒天|予報悪|台風|波高|時化|シケ',
+                box_text
+            ):
+                results.append({
+                    "ship":            ship,
+                    "area":            area,
+                    "date":            date,
+                    "month":           month,
+                    "is_cancellation": True,
+                    "reason_text":     box_text[:300],
+                    "fish":            [],
+                    "catch_raw":       "",
+                    "count_range":     None,
+                    "count_avg":       None,
+                    "size_cm":         None,
+                    "weight_kg":       None,
+                    "point_place":     None,
+                    "point_depth":     None,
+                })
+
     return results
 
 
@@ -1362,6 +1389,7 @@ def _parse_tables(tables, ship, area, date, month):
                 "date":        date,
                 "month":       month,
                 "catch_raw":   f"{fish_name} {count_str} {size_str} {weight_str}".strip(),
+                "fish_raw":    fish_name,
                 "fish":        guess_fish(fish_name),
                 "count_range": cr,
                 "count_avg":   ((cr["min"] + cr["max"]) // 2) if cr else None,
@@ -3453,7 +3481,7 @@ def build_calendar_page(crawled_at=""):
 # ============================================================
 # メイン
 # ============================================================
-CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max","cnt_avg",
+CSV_HEADER = ["ship","area","date","fish","fish_raw","cnt_min","cnt_max","cnt_avg",
               "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_place2",
               "point_depth_min","point_depth_max"]
 
@@ -3496,6 +3524,8 @@ def save_daily_csv(catches):
     from collections import defaultdict
     by_month = defaultdict(list)
     for c in catches:
+        if c.get("is_cancellation"):
+            continue  # 休船行はcancellations.csvへ
         date_str = c.get("date", "")
         if not date_str:
             continue
@@ -3533,6 +3563,7 @@ def save_daily_csv(catches):
                     "area":        c["area"],
                     "date":        c["date"],
                     "fish":        fish,
+                    "fish_raw":    c.get("fish_raw", ""),
                     "cnt_min":     cr.get("min", ""),
                     "cnt_max":     cr.get("max", ""),
                     "cnt_avg":     c["count_avg"] if c.get("count_avg") is not None else "",
@@ -3559,6 +3590,47 @@ def save_daily_csv(catches):
         total_added += len(new_rows)
 
     return total_added
+
+
+CANCELLATIONS_HEADER = ["date", "ship", "area", "reason_text"]
+
+def save_cancellations_csv(catches):
+    """休船・出船中止をdata/cancellations.csvに追記（重複スキップ）。"""
+    cancels = [c for c in catches if c.get("is_cancellation")]
+    if not cancels:
+        return 0
+
+    os.makedirs("data", exist_ok=True)
+    filepath = os.path.join("data", "cancellations.csv")
+
+    existing_keys = set()
+    if os.path.exists(filepath):
+        with open(filepath, encoding="utf-8", newline="") as f:
+            for row in csv.DictReader(f):
+                existing_keys.add((row["date"], row["ship"]))
+
+    new_rows = []
+    for c in cancels:
+        key = (c["date"], c["ship"])
+        if key in existing_keys:
+            continue
+        new_rows.append({
+            "date":        c["date"],
+            "ship":        c["ship"],
+            "area":        c["area"],
+            "reason_text": c.get("reason_text", ""),
+        })
+
+    if not new_rows:
+        return 0
+
+    write_header = not os.path.exists(filepath)
+    with open(filepath, "a", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=CANCELLATIONS_HEADER)
+        if write_header:
+            writer.writeheader()
+        writer.writerows(new_rows)
+    return len(new_rows)
 
 
 def repair_csv_depth(catches):
@@ -3738,6 +3810,11 @@ def main():
     csv_added = save_daily_csv(all_catches)
     if csv_added:
         print(f"CSV保存: {csv_added} 件追記 → data/")
+
+    # 休船・出船中止の記録
+    cancel_added = save_cancellations_csv(all_catches)
+    if cancel_added:
+        print(f"休船記録: {cancel_added} 件追記 → data/cancellations.csv")
 
     # CSV水深データ修復（14列行の復元 + 空depth埋め）
     depth_fixed = repair_csv_depth(all_catches)
