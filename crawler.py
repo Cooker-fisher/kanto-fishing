@@ -1106,7 +1106,8 @@ FISH_MAP = {
     "カサゴ":   ["カサゴ", "オニカサゴ"],
     "メバル":   ["メバル"],
     "ワラサ":   ["ワラサ", "イナダ", "ブリ"],
-    "アマダイ": ["アマダイ"],
+    "シロアマダイ": ["シロアマダイ"],
+    "アマダイ": ["アカアマダイ", "アマダイ"],
     "メダイ":   ["メダイ"],
     "サワラ":   ["サワラ"],
     "ヒラメ":   ["ヒラメ"],
@@ -1133,6 +1134,7 @@ FISH_VALID_RANGE = {
     "カサゴ":     {"size_cm": (10, 55),   "count": (0, 80)},
     "メバル":     {"size_cm": (10, 45),   "count": (0, 80)},
     "ワラサ":     {"size_cm": (30, 110),  "count": (0, 20),  "weight_kg": (0.5, 15.0)},
+    "シロアマダイ": {"size_cm": (20, 65),  "count": (0, 10),  "weight_kg": (0.1, 3.0)},
     "アマダイ":   {"size_cm": (20, 75),   "count": (0, 20),  "weight_kg": (0.1, 5.0)},
     "メダイ":     {"size_cm": (30, 90),   "count": (0, 20),  "weight_kg": (0.3, 10.0)},
     "サワラ":     {"size_cm": (40, 130),  "count": (0, 20),  "weight_kg": (0.5, 15.0)},
@@ -3455,6 +3457,16 @@ CSV_HEADER = ["ship","area","date","fish","cnt_min","cnt_max","cnt_avg",
               "size_min","size_max","kg_min","kg_max","is_boat","point_place","point_place2",
               "point_depth_min","point_depth_max"]
 
+def _split_place_pair(place_str):
+    """「葉山沖〜城ヶ島沖」→ ('葉山沖', '城ヶ島沖')。〜がなければ (place, '')"""
+    if not place_str:
+        return "", ""
+    m = re.search(r'^(.+?)[〜～~](.+)$', place_str)
+    if m:
+        return m.group(1).strip(), m.group(2).strip()
+    return place_str, ""
+
+
 def _split_depth(depth_str):
     """水深文字列を min/max に分割。
     '20～30m' → (20, 30)
@@ -3529,8 +3541,8 @@ def save_daily_csv(catches):
                     "kg_min":      wk.get("min", ""),
                     "kg_max":      wk.get("max", ""),
                     "is_boat":     1 if cr.get("is_boat") else 0,
-                    "point_place": c.get("point_place") or "",
-                    "point_place2": "",
+                    "point_place": _split_place_pair(c.get("point_place") or "")[0],
+                    "point_place2": _split_place_pair(c.get("point_place") or "")[1],
                     "point_depth_min": d_min,
                     "point_depth_max": d_max,
                 })

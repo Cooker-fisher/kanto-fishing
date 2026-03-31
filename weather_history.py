@@ -54,6 +54,7 @@ SEA_AREAS = {
 
 CSV_HEADER = ["date", "wave_height", "wave_period", "swell_height",
               "wind_speed", "wind_dir", "temp", "sea_surface_temp",
+              "pressure",
               "flood1", "flood1_cm", "flood2", "flood2_cm",
               "ebb1", "ebb1_cm", "ebb2", "ebb2_cm",
               "tide_range", "tide_type", "moon_age",
@@ -95,7 +96,7 @@ def fetch_openmeteo_weather(lat, lon, start_date, end_date):
     url = (
         "https://archive-api.open-meteo.com/v1/archive"
         f"?latitude={lat}&longitude={lon}"
-        "&hourly=wind_speed_10m,wind_direction_10m,temperature_2m"
+        "&hourly=wind_speed_10m,wind_direction_10m,temperature_2m,surface_pressure"
         f"&start_date={start_date}&end_date={end_date}"
         "&timezone=Asia/Tokyo&wind_speed_unit=ms"
     )
@@ -104,18 +105,20 @@ def fetch_openmeteo_weather(lat, lon, start_date, end_date):
         return {}
     try:
         data = json.loads(txt)
-        times   = data["hourly"]["time"]
-        speeds  = data["hourly"]["wind_speed_10m"]
-        dirs    = data["hourly"]["wind_direction_10m"]
-        temps   = data["hourly"]["temperature_2m"]
+        times     = data["hourly"]["time"]
+        speeds    = data["hourly"]["wind_speed_10m"]
+        dirs      = data["hourly"]["wind_direction_10m"]
+        temps     = data["hourly"]["temperature_2m"]
+        pressures = data["hourly"]["surface_pressure"]
         result = {}
         for i, t in enumerate(times):
             if t.endswith("T06:00"):
                 d = t[:10]
                 result[d] = {
-                    "wind_speed": round(speeds[i], 1) if speeds[i] is not None else "",
-                    "wind_dir":   round(dirs[i])      if dirs[i]   is not None else "",
-                    "temp":       round(temps[i], 1)  if temps[i]  is not None else "",
+                    "wind_speed": round(speeds[i], 1)    if speeds[i]    is not None else "",
+                    "wind_dir":   round(dirs[i])          if dirs[i]      is not None else "",
+                    "temp":       round(temps[i], 1)      if temps[i]     is not None else "",
+                    "pressure":   round(pressures[i], 1) if pressures[i] is not None else "",
                 }
         return result
     except Exception as e:
@@ -295,6 +298,7 @@ def main():
                 "wind_dir":         w.get("wind_dir",         ""),
                 "temp":             w.get("temp",             ""),
                 "sea_surface_temp": m.get("sea_surface_temp", ""),
+                "pressure":         w.get("pressure",         ""),
                 "flood1":           tp.get("flood1",          ""),
                 "flood1_cm":        tp.get("flood1_cm",       ""),
                 "flood2":           tp.get("flood2",          ""),

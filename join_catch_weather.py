@@ -40,7 +40,7 @@ OUTPUT_HEADER = [
     "resolved_point",       # 実際に気象を引いたポイント名
     "resolve_method",       # "direct" / "fallback_fish" / "fallback_area"
     "wave_height", "wave_period", "swell_height",
-    "wind_speed", "wind_dir", "temp", "sea_surface_temp",
+    "wind_speed", "wind_dir", "temp", "sea_surface_temp", "pressure",
     "tide_type", "tide_range", "moon_age",
     "flood1", "flood1_cm", "ebb1", "ebb1_cm",
 ]
@@ -244,6 +244,7 @@ def main():
             "wind_dir":           w.get("wind_dir", ""),
             "temp":               w.get("temp", ""),
             "sea_surface_temp":   w.get("sea_surface_temp", ""),
+            "pressure":           w.get("pressure", ""),
             "tide_type":          w.get("tide_type", ""),
             "tide_range":         w.get("tide_range", ""),
             "moon_age":           w.get("moon_age", ""),
