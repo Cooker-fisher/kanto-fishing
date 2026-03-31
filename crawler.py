@@ -1223,22 +1223,43 @@ def extract_size_cm(t):
 
 def parse_point(s):
     """ポイント文字列を場所と水深に分割する。
-    '竹岡沖水深20～30m' → ('竹岡沖', '20～30m')
-    '水深15m'           → (None, '15m')
-    '竹岡沖'            → ('竹岡沖', None)
+    '竹岡沖水深20～30m'          → ('竹岡沖', '20～30m')
+    '水深15m'                    → (None, '15m')
+    '竹岡沖'                     → ('竹岡沖', None)
+    '秋谷沖～城ヶ島沖タナ57～100m' → ('秋谷沖～城ヶ島沖', '57～100m')
+    '二海堡沖深30m'               → ('二海堡沖', '30m')
+    '剣崎沖 70～100m'            → ('剣崎沖', '70～100m')
     """
     if not s:
         return None, None
     s = s.strip()
+    # 「航程」「潮」はポイント情報であり水深ではない → そのままplaceとして返す
+    if re.search(r'航程|潮', s):
+        return s or None, None
     # 先頭が「水深」→ place なし
-    m = re.match(r'^水深(.+)', s)
+    m = re.match(r'^水深\s*(.+)', s)
     if m:
         return None, m.group(1).strip()
     # 途中に「水深」→ place + depth
-    m = re.search(r'^(.+?)水深(.+)', s)
+    m = re.search(r'^(.+?)水深\s*(.+)', s)
     if m:
         return m.group(1).strip() or None, m.group(2).strip() or None
-    # 「水深」なし → 全部 place
+    # 途中に「タナ」→ place + depth
+    m = re.search(r'^(.+?)タナ\s*(.+)', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    # 途中に「深」(「水深」以外の単独「深」) → place + depth
+    m = re.search(r'^(.+?)深\s*(\d[\d～〜~\-mM\s]*)', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    # 末尾に「数字～数字m」or「数字m」→ place + depth（例: '剣崎沖 70～100m'）
+    m = re.search(r'^(.+?)\s+(\d+[～〜~\-]\d+\s*[mM]?)$', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    m = re.search(r'^(.+?)\s+(\d+\s*[mM])$', s)
+    if m:
+        return m.group(1).strip() or None, m.group(2).strip() or None
+    # 全部 place
     return s or None, None
 
 def parse_jp_date(date_str, year):
@@ -3530,8 +3551,9 @@ def save_daily_csv(catches):
 
 def repair_csv_depth(catches):
     """既存CSVの水深欠損を修復する。
-    1. 14列の壊れた行 → catches.jsonのpoint_depthで16列に復元
-    2. 16列でpoint_depth_min/maxが空 → catches.jsonから埋める
+    1. 14列の壊れた行 → point_depth(raw)を分割して16列に復元
+    2. 16列でdepth空 → point_placeをparse_pointで再分割（タナ・深・末尾m対応）
+    3. それでも空 → catches.jsonから補完
     """
     # catches.json → (ship, date, fish) -> (point_place, point_depth)
     depth_map = {}
@@ -3570,18 +3592,27 @@ def repair_csv_depth(catches):
                 d_min, d_max = _split_depth(pd_raw)
                 row = row[:12] + [pp, "", str(d_min), str(d_max)]
                 fixed_count += 1
-            # 16列でdepth空 → catches.jsonから補完
+            # 16列でdepth空 → point_placeをparse_pointで再分割
             elif len(row) == 16:
-                if not row[14] and not row[15]:
-                    key = (row[0], row[2], row[3])  # ship, date, fish
-                    info = depth_map.get(key)
-                    if info:
-                        pp_cj, pd_cj = info
-                        d_min, d_max = _split_depth(pd_cj)
-                        if d_min:
-                            row[14] = str(d_min)
-                            row[15] = str(d_max)
-                            fixed_count += 1
+                if not row[14] and not row[15] and row[12]:
+                    new_place, new_depth = parse_point(row[12])
+                    if new_depth:
+                        d_min, d_max = _split_depth(new_depth)
+                        row[12] = new_place or ""
+                        row[14] = str(d_min)
+                        row[15] = str(d_max)
+                        fixed_count += 1
+                    else:
+                        # parse_pointで取れなければcatches.jsonから補完
+                        key = (row[0], row[2], row[3])  # ship, date, fish
+                        info = depth_map.get(key)
+                        if info:
+                            pp_cj, pd_cj = info
+                            d_min, d_max = _split_depth(pd_cj)
+                            if d_min:
+                                row[14] = str(d_min)
+                                row[15] = str(d_max)
+                                fixed_count += 1
             # Pad short rows
             while len(row) < 16:
                 row.append("")
