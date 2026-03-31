@@ -1233,9 +1233,11 @@ def parse_point(s):
     if not s:
         return None, None
     s = s.strip()
-    # 「航程」「潮」はポイント情報であり水深ではない → そのままplaceとして返す
-    if re.search(r'航程|潮', s):
-        return s or None, None
+    # 数字のみ・「航程」→ ポイント情報ではない → 破棄
+    if re.match(r'^\d+$', s):
+        return None, None
+    if re.search(r'航程', s):
+        return None, None
     # 先頭が「水深」→ place なし
     m = re.match(r'^水深\s*(.+)', s)
     if m:
