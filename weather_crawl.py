@@ -84,6 +84,7 @@ SEA_AREAS = {
 
 CSV_HEADER = ["datetime", "wave_height", "wave_period", "swell_height",
               "wind_speed", "wind_dir", "temp", "sea_surface_temp",
+              "pressure",
               "tide_level",
               "flood1", "flood1_cm", "flood2", "flood2_cm",
               "ebb1", "ebb1_cm", "ebb2", "ebb2_cm",
@@ -125,23 +126,27 @@ def fetch_amedas_map(time_str):
     except: return {}
 
 def parse_amedas(amedas_data, station_ids):
-    wind_speeds, wind_dirs, temps = [], [], []
+    wind_speeds, wind_dirs, temps, pressures = [], [], [], []
     for sid in station_ids:
         d = amedas_data.get(sid)
         if not d: continue
         ws = d.get("wind")
         wd = d.get("windDirection")
         tp = d.get("temp")
+        pr = d.get("normalPressure") or d.get("pressure")
         if ws and isinstance(ws, list) and ws[0] is not None:
             wind_speeds.append(float(ws[0]))
         if wd and isinstance(wd, list) and wd[0] is not None:
             wind_dirs.append(_WIND_DIR_DEG.get(int(wd[0]), 0))
         if tp and isinstance(tp, list) and tp[0] is not None:
             temps.append(float(tp[0]))
+        if pr and isinstance(pr, list) and pr[0] is not None:
+            pressures.append(float(pr[0]))
     return {
         "wind_speed": round(sum(wind_speeds) / len(wind_speeds), 1) if wind_speeds else None,
         "wind_dir":   round(sum(wind_dirs)   / len(wind_dirs))      if wind_dirs   else None,
         "temp":       round(sum(temps)        / len(temps), 1)       if temps       else None,
+        "pressure":   round(sum(pressures)    / len(pressures), 1)   if pressures   else None,
     }
 
 
@@ -338,7 +343,7 @@ def main():
 
         # アメダス（風・気温）
         amed = parse_amedas(amedas_data, area["amedas_ids"])
-        print(f"  風速:{amed['wind_speed']} m/s  風向:{amed['wind_dir']}°  気温:{amed['temp']}℃")
+        print(f"  風速:{amed['wind_speed']} m/s  風向:{amed['wind_dir']}°  気温:{amed['temp']}℃  気圧:{amed.get('pressure')} hPa")
 
         # Open-Meteo Marine（波浪・海面水温）
         wave_h, wave_p, swell_h, sst = get_marine_data(area["lat"], area["lon"])
@@ -365,6 +370,7 @@ def main():
             "wind_dir":         amed["wind_dir"]   if amed["wind_dir"]   is not None else "",
             "temp":             amed["temp"]        if amed["temp"]        is not None else "",
             "sea_surface_temp": sst     if sst     is not None else "",
+            "pressure":         amed.get("pressure") if amed.get("pressure") is not None else "",
             "tide_level":       tide    if tide    is not None else "",
             "flood1":           tp.get("flood1",    ""),
             "flood1_cm":        tp.get("flood1_cm", ""),

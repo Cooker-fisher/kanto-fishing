@@ -20,7 +20,7 @@ TARGET_HOURS = {0, 3, 6, 9, 12, 15, 18, 21}  # JST 3時間粒度
 PROGRESS_FILE = 'weather/.progress.json'
 
 HEADERS = ['point', 'date', 'hour', 'wave_height', 'wave_period',
-           'wind_speed', 'wind_dir', 'sst', 'weather_code']
+           'wind_speed', 'wind_dir', 'sst', 'weather_code', 'pressure']
 
 
 def fetch_url(url, retries=3):
@@ -50,7 +50,7 @@ def fetch_marine(lat, lon):
 def fetch_archive(lat, lon):
     params = {
         'latitude': lat, 'longitude': lon,
-        'hourly': 'wind_speed_10m,wind_direction_10m,weather_code',
+        'hourly': 'wind_speed_10m,wind_direction_10m,weather_code,surface_pressure',
         'start_date': START_DATE.isoformat(),
         'end_date': END_DATE.isoformat(),
         'timezone': 'Asia/Tokyo',
@@ -141,7 +141,8 @@ def main():
 
         # archive を時刻→値の辞書に
         a = archive['hourly']
-        arch = {t: (a['wind_speed_10m'][j], a['wind_direction_10m'][j], a['weather_code'][j])
+        arch = {t: (a['wind_speed_10m'][j], a['wind_direction_10m'][j], a['weather_code'][j],
+                    a.get('surface_pressure', [None]*len(a['time']))[j])
                 for j, t in enumerate(a['time'])}
 
         # marine をなめて3時間粒度のみ抽出・月別に追記
@@ -151,7 +152,7 @@ def main():
             dt = datetime.fromisoformat(t)
             if dt.hour not in TARGET_HOURS:
                 continue
-            ws, wd, wc = arch.get(t, (None, None, None))
+            ws, wd, wc, sp = arch.get(t, (None, None, None, None))
             month_rows[(dt.year, dt.month)].append([
                 rep,
                 dt.strftime('%Y-%m-%d'),
@@ -162,6 +163,7 @@ def main():
                 '' if wd is None else int(wd),
                 fmt(m['sea_surface_temperature'][j]),
                 '' if wc is None else int(wc),
+                fmt(sp),
             ])
 
         # 月別CSVに追記（新規ファイルはヘッダー付き）

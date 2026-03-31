@@ -543,7 +543,7 @@ def _load_historical_weather():
                     if hr < 6 or hr > 15: continue
                     key = (dt, pt)
                     if key not in raw:
-                        raw[key] = {"w":[], "ws":[], "s":[], "wp":[]}
+                        raw[key] = {"w":[], "ws":[], "s":[], "wp":[], "p":[]}
                     try: raw[key]["w"].append(float(row["wave_height"]))
                     except: pass
                     try: raw[key]["ws"].append(float(row["wind_speed"]))
@@ -552,13 +552,16 @@ def _load_historical_weather():
                     except: pass
                     try: raw[key]["wp"].append(float(row["wave_period"]))
                     except: pass
+                    try: raw[key]["p"].append(float(row["pressure"]))
+                    except: pass
         except Exception:
             continue
     result = {}
     for k, v in raw.items():
         def _a(lst): return round(sum(lst)/len(lst), 2) if lst else None
         result[k] = {"wave": _a(v["w"]), "wind": _a(v["ws"]),
-                      "sst": _a(v["s"]), "wave_period": _a(v["wp"])}
+                      "sst": _a(v["s"]), "wave_period": _a(v["wp"]),
+                      "pressure": _a(v["p"])}
     return result
 
 def _load_tide_data():
@@ -731,6 +734,7 @@ def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_d
         index.append({"fish": fish, "cnt": cnt, "wave": wx.get("wave"),
                        "wind": wx.get("wind"), "sst": wx.get("sst"),
                        "wave_period": wx.get("wave_period"),
+                       "pressure": wx.get("pressure"),
                        "tide_range": tide_data.get(dt),
                        "moon_age": moon.get("age"),
                        "moon_title": moon.get("title", ""),
