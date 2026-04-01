@@ -1424,6 +1424,490 @@ def build_forecast_json(weather_data, catches=None, history=None):
 
     return result
 
+# ============================================================
+# 有料予測ページ HTML生成
+# ============================================================
+
+_FORECAST_CSS = """
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}
+header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}
+header h1{font-size:22px;color:#4db8ff}
+header p{font-size:12px;color:#7a9bb5;margin-top:4px}
+nav{background:#081020;padding:8px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+nav a{color:#7a9bb5;text-decoration:none;font-size:13px}
+nav a:hover{color:#4db8ff}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
+h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}
+h3{font-size:14px;color:#c8d8e8;margin:16px 0 8px}
+.date-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.date-nav a{display:inline-block;padding:6px 12px;background:#0d2137;border:1px solid #1a4060;border-radius:6px;color:#7a9bb5;font-size:12px;text-decoration:none}
+.date-nav a:hover,.date-nav a.active{color:#4db8ff;border-color:#4db8ff}
+.date-nav a.weekend{font-weight:bold}
+.wx-dash{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.wx-panel{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px;text-align:center}
+.wx-panel-icon{font-size:18px}
+.wx-panel-value{display:block;font-size:16px;font-weight:bold;color:#fff;margin:4px 0 2px}
+.wx-panel-label{font-size:10px;color:#7a9bb5}
+.wx-panel-note{font-size:11px;color:#5a7a95}
+.area-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.area-chip{padding:6px 12px;border-radius:16px;font-size:12px;text-decoration:none;font-weight:bold;color:#fff}
+.area-chip.ok-good{background:#0d3320;border:1px solid #1a5535}
+.area-chip.ok-fair{background:#2a2000;border:1px solid #5a4010}
+.area-chip.ok-warn{background:#2a1000;border:1px solid #553020}
+.area-chip.ok-bad{background:#330d0d;border:1px solid #552020}
+.pick-card{background:linear-gradient(135deg,#0d2137,#132a40);border:1px solid #2a5a8a;border-top:3px solid #d4a853;border-radius:12px;padding:20px;margin-bottom:20px}
+.pick-label{font-size:10px;color:#d4a853;letter-spacing:2px;font-weight:bold;margin-bottom:8px}
+.pick-fish{font-size:20px;font-weight:bold;color:#fff}
+.pick-range{font-size:14px;color:#c8d8e8;margin:6px 0}
+.pick-analysis{font-size:13px;color:#7a9bb5;line-height:1.7;margin:10px 0;background:#081830;border-left:3px solid #d4a853;padding:10px 14px;border-radius:0 8px 8px 0}
+.pick-meta{font-size:11px;color:#5a7a95}
+.pred-table{width:100%;border-collapse:collapse;margin-bottom:16px}
+.pred-table th{background:#081020;color:#4db8ff;padding:8px;font-size:11px;text-align:left;border-bottom:1px solid #1a4060}
+.pred-table td{padding:10px 8px;border-bottom:1px solid #0d2137;font-size:13px}
+.pred-table tr:hover{background:#112a42}
+.conf-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold}
+.conf-A{background:#e85d04;color:#fff}
+.conf-B{background:#1a6ea8;color:#fff}
+.conf-C{background:#1a4060;color:#c8d8e8}
+.conf-D{background:#0d2137;color:#5a7a95;border:1px solid #1a4060}
+.trend-up{color:#4dcc88}.trend-down{color:#cc4d4d}.trend-flat{color:#7a9bb5}
+.detail-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:16px;margin-bottom:12px}
+.detail-card.high-conf{border-top:3px solid #4db8ff}
+.detail-card.low-conf{border-top:3px solid #5a7a95}
+.dc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dc-fish{font-size:16px;font-weight:bold;color:#fff}
+.dc-range{font-size:14px;color:#c8d8e8;margin-bottom:6px}
+.dc-factors{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.dc-factor{font-size:12px;padding:4px 8px;border-radius:4px}
+.dc-factor.good{background:#0d3320;color:#4dcc88}
+.dc-factor.warn{background:#2a2000;color:#f4a261}
+.dc-factor.bad{background:#2a1000;color:#cc4d4d}
+.dc-factor.neutral{background:#1a2a3a;color:#7a9bb5}
+.dc-analysis{font-size:13px;color:#7a9bb5;line-height:1.7;margin:10px 0;padding:10px;background:#081830;border-radius:6px}
+.dc-uncertainty{font-size:12px;color:#f4a261;margin:8px 0;padding:8px;background:#1a1800;border-left:3px solid #f4a261;border-radius:0 6px 6px 0}
+.dc-ships{font-size:12px;color:#5a7a95}
+.paywall{text-align:center;padding:30px;background:linear-gradient(transparent,#0a1628 40%);margin-top:10px}
+.paywall-btn{display:inline-block;background:#e85d04;color:#fff;padding:12px 32px;border-radius:24px;font-size:14px;font-weight:bold;text-decoration:none}
+.paywall-btn:hover{background:#f4a261}
+.paywall-sub{font-size:12px;color:#7a9bb5;margin-top:8px}
+.blur-text{filter:blur(6px);user-select:none}
+.section-note{font-size:12px;color:#5a7a95;margin-bottom:12px}
+@media(max-width:640px){.wx-dash{grid-template-columns:repeat(2,1fr)}.pred-table{font-size:12px}}
+"""
+
+
+def _forecast_page_head(title):
+    return f"""<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title} - 船釣り予想</title>
+<style>{_FORECAST_CSS}</style>
+</head><body>
+<header><h1>🔮 船釣り予想 プレミアム</h1><p>{title}</p></header>
+<nav><a href="/forecast/">予測トップ</a><a href="/">無料版トップ</a></nav>
+<div class="wrap">"""
+
+
+def _forecast_page_foot():
+    return """</div>
+<footer style="text-align:center;padding:20px;font-size:11px;color:#5a7a95">
+© 船釣り予想 funatsuri-yoso.com | データ: 釣りビジョン・Open-Meteo
+</footer></body></html>"""
+
+
+def _forecast_date_nav(all_dates, all_weeks, current):
+    """日付ナビバー"""
+    html = '<div class="date-nav">'
+    for d in all_dates:
+        m, dd = int(d[5:7]), int(d[8:10])
+        wd_idx = datetime.strptime(d, "%Y-%m-%d").weekday()
+        wd = ["月","火","水","木","金","土","日"][wd_idx]
+        cls = " active" if d == current else ""
+        cls += " weekend" if wd_idx >= 5 else ""
+        html += f'<a href="{d}.html" class="{cls.strip()}">{m}/{dd}({wd})</a>'
+    for wk_id, wk in all_weeks.items():
+        cls = " active" if wk_id == current else ""
+        html += f'<a href="{wk_id}.html" class="{cls.strip()}">{wk["label"]}</a>'
+    html += '</div>'
+    return html
+
+
+def _forecast_combo_card(pred, fc=None, show_area=True):
+    """予測詳細カードHTML"""
+    fish = pred["fish"]
+    group = pred.get("group", "")
+    conf = pred.get("confidence", "D")
+    cls = "high-conf" if conf in ("A", "B") else "low-conf"
+    title = f"{fish} × {group}" if show_area else fish
+
+    avg = pred.get("avg", 0)
+    pred_min = max(1, round(avg * 0.6))
+    pred_max = pred.get("max", round(avg * 1.4))
+
+    size_str = ""
+    if pred.get("size_min") and pred.get("size_max"):
+        size_str = f' / {pred["size_min"]}〜{pred["size_max"]}cm'
+    weight_str = ""
+    if pred.get("weight_min") and pred.get("weight_max"):
+        weight_str = f' / {pred["weight_min"]}〜{pred["weight_max"]}kg'
+
+    season_type = pred.get("season_type", "")
+    type_str = f"{'数' if season_type == '数' else '型' if season_type == '型' else '数＆型'}狙い" if season_type else ""
+
+    # 海況ファクター
+    labels = pred.get("condition_labels", {})
+    factors_html = ""
+    for key, icon in [("wave", "🌊 波高"), ("wind", "💨 風"), ("sst", "🌡️ 水温"), ("pressure", "📊 気圧")]:
+        label = labels.get(key, "")
+        if label:
+            cls_f = "good" if label in ("好条件", "適温帯", "安定", "高気圧") else "warn" if "注意" in label else "neutral"
+            factors_html += f'<span class="dc-factor {cls_f}">{icon} → {label}</span>'
+    tide = pred.get("tide_impact", "")
+    if tide:
+        cls_t = "neutral" if "限定" in tide else "good"
+        factors_html += f'<span class="dc-factor {cls_t}">🌙 潮 → {tide}</span>'
+
+    analysis = pred.get("analysis", "")
+    uncertainty = pred.get("uncertainty", "")
+    ships = pred.get("top_ships", [])
+
+    html = f"""<div class="detail-card {cls}">
+<div class="dc-header"><span class="dc-fish">{title}</span><span class="conf-badge conf-{conf}">{conf}</span></div>
+<div class="dc-range">予測 {pred_min}〜{pred_max}匹{size_str}{weight_str}　{type_str}</div>
+<div class="dc-factors">{factors_html}</div>"""
+    if analysis:
+        html += f'<div class="dc-analysis">{analysis}</div>'
+    if uncertainty:
+        html += f'<div class="dc-uncertainty">⚠️ 予測のブレ要因: {uncertainty}</div>'
+    if ships:
+        html += f'<div class="dc-ships">📍 {" / ".join(ships)}</div>'
+    html += '</div>'
+    return html
+
+
+def _build_daily_page(date_str, day_data, forecast_data, weather_data):
+    """日次予測ページHTML"""
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    m, d = dt.month, dt.day
+    wd = ["月","火","水","木","金","土","日"][dt.weekday()]
+    title = f"{m}月{d}日({wd}) 釣果予測"
+
+    html = _forecast_page_head(title)
+
+    # 日付ナビ
+    all_dates = sorted(forecast_data.get("days", {}).keys())
+    all_weeks = forecast_data.get("weeks", {})
+    html += _forecast_date_nav(all_dates, all_weeks, date_str)
+
+    # 海況ダッシュボード
+    wave = day_data.get("wave")
+    wind = day_data.get("wind")
+    sst = day_data.get("sst")
+    pressure = day_data.get("pressure")
+    weather = day_data.get("weather_text", "")
+    moon_age = day_data.get("moon_age")
+    moon_title = day_data.get("moon_title", "")
+    ok = day_data.get("ok", "")
+
+    html += f"""<h2>{m}月{d}日({wd}) 海況</h2>
+<div class="wx-dash">
+<div class="wx-panel"><span class="wx-panel-icon">🌊</span><span class="wx-panel-value">{wave}m</span><span class="wx-panel-label">波高</span><span class="wx-panel-note">{_wave_label(wave)}</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">💨</span><span class="wx-panel-value">{wind}m/s</span><span class="wx-panel-label">風速</span><span class="wx-panel-note">{_wind_label(wind)}</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">☀️</span><span class="wx-panel-value">{weather or '-'}</span><span class="wx-panel-label">天気</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">📊</span><span class="wx-panel-value">{pressure or '-'}hPa</span><span class="wx-panel-label">気圧</span><span class="wx-panel-note">{_pressure_label(pressure)}</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">🌡️</span><span class="wx-panel-value">{sst or '-'}℃</span><span class="wx-panel-label">海水温</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">🌙</span><span class="wx-panel-value">{moon_title}</span><span class="wx-panel-label">月齢{moon_age or ''}</span></div>
+</div>
+<p style="font-size:14px;color:#fff;margin-bottom:8px">出船判定: {ok}</p>"""
+
+    # エリア別チップ（リンク付き）
+    areas = day_data.get("areas", {})
+    html += '<div class="area-chips">'
+    for g, a in areas.items():
+        s = a.get("score", 0)
+        cls = "ok-good" if s >= 70 else "ok-fair" if s >= 45 else "ok-warn" if s >= 20 else "ok-bad"
+        ok_mark = a.get("ok", "")
+        encoded = quote(g, safe="")
+        html += f'<a href="area/{encoded}.html" class="area-chip {cls}">{g} {ok_mark}</a>'
+    html += '</div>'
+
+    preds = day_data.get("predictions", [])
+    if not preds:
+        html += '<p style="color:#7a9bb5">予測データなし</p>'
+        html += _forecast_page_foot()
+        return html
+
+    # TODAY'S PICK
+    pick_name = day_data.get("todays_pick")
+    if pick_name and preds:
+        pick = next((p for p in preds if f'{p["fish"]}×{p["group"]}' == pick_name), preds[0])
+        avg = pick.get("avg", 0)
+        pred_min = max(1, round(avg * 0.6))
+        pred_max = pick.get("max", round(avg * 1.4))
+        size_str = f' / {pick["size_min"]}〜{pick["size_max"]}cm' if pick.get("size_min") else ""
+        analysis = pick.get("analysis", "")
+        ships = pick.get("top_ships", [])
+        html += f"""<div class="pick-card">
+<div class="pick-label">TODAY'S PICK</div>
+<div class="pick-fish">{pick['fish']} × {pick['group']}</div>
+<div class="pick-range">予測 {pred_min}〜{pred_max}匹{size_str}　{pick.get('season_type','')}{'狙い' if pick.get('season_type') else ''}</div>
+<div class="pick-analysis">{analysis}</div>
+<div class="pick-meta">📍 {' / '.join(ships)}　分析データ: {pick.get('samples',0):,}件</div>
+</div>"""
+
+    # 予測一覧テーブル（エリア別セクション）
+    html += '<h2>予測一覧</h2>'
+    # エリアでグループ化
+    area_groups = {}
+    for p in preds:
+        area_groups.setdefault(p["group"], []).append(p)
+
+    for group, group_preds in area_groups.items():
+        area_info = areas.get(group, {})
+        area_ok = area_info.get("ok", "")
+        html += f'<h3 id="area-{quote(group, safe="")}">{group} {area_ok}</h3>'
+        html += '<table class="pred-table"><thead><tr>'
+        html += '<th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th>'
+        html += '</tr></thead><tbody>'
+        for p in sorted(group_preds, key=lambda x: -x.get("avg", 0)):
+            avg = p.get("avg", 0)
+            pred_min = max(1, round(avg * 0.6))
+            pred_max = p.get("max", round(avg * 1.4))
+            size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
+            st = p.get("season_type", "")
+            type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
+            adj = p.get("adjustment", 0)
+            trend = '<span class="trend-up">↑</span>' if adj > 0.05 else '<span class="trend-down">↓</span>' if adj < -0.05 else '<span class="trend-flat">→</span>'
+            conf = p.get("confidence", "D")
+            html += f'<tr><td>{p["fish"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td>{trend}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
+        html += '</tbody></table>'
+
+        # 詳細カード
+        for p in sorted(group_preds, key=lambda x: -x.get("avg", 0)):
+            html += _forecast_combo_card(p, show_area=False)
+
+    html += _forecast_page_foot()
+    return html
+
+
+def _build_weekly_page(week_id, week_data, forecast_data):
+    """週次予測ページHTML"""
+    label = week_data.get("label", "")
+    start = week_data.get("start", "")
+    end = week_data.get("end", "")
+    s_m, s_d = int(start[5:7]), int(start[8:10]) if start else (0, 0)
+    e_m, e_d = int(end[5:7]), int(end[8:10]) if end else (0, 0)
+    title = f"{label} ({s_m}/{s_d}〜{e_m}/{e_d}) 釣果トレンド予測"
+
+    html = _forecast_page_head(title)
+    all_dates = sorted(forecast_data.get("days", {}).keys())
+    all_weeks = forecast_data.get("weeks", {})
+    html += _forecast_date_nav(all_dates, all_weeks, week_id)
+
+    # 潮回りスケジュール
+    html += f'<h2>{title}</h2>'
+    moon_title = week_data.get("moon_title", "")
+    html += f'<p style="color:#7a9bb5;margin-bottom:12px">🌙 {moon_title}　⚠️ 海況予報なし（季節傾向＋潮汐で予測）</p>'
+
+    schedule = week_data.get("tide_schedule", [])
+    if schedule:
+        html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">'
+        for s in schedule:
+            dd = int(s["date"][8:10])
+            html += f'<span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">{dd}({s["weekday"]}) {s["moon_title"]}</span>'
+        html += '</div>'
+
+    preds = week_data.get("predictions", [])
+    if preds:
+        html += '<table class="pred-table"><thead><tr><th>魚種</th><th>エリア</th><th>予測匹数</th><th>型</th><th>狙い</th><th>確信度</th></tr></thead><tbody>'
+        for p in sorted(preds, key=lambda x: -x.get("avg", 0)):
+            avg = p.get("avg", 0)
+            pred_min = max(1, round(avg * 0.6))
+            pred_max = p.get("max", round(avg * 1.4))
+            size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
+            st = p.get("season_type", "")
+            type_str = "数" if st == "数" else "型" if st == "型" else "-"
+            conf = p.get("confidence", "D")
+            html += f'<tr><td>{p["fish"]}</td><td>{p["group"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
+        html += '</tbody></table>'
+
+    html += _forecast_page_foot()
+    return html
+
+
+def _build_area_forecast_page(area_group, forecast_data):
+    """エリア別予測ページHTML"""
+    title = f"{area_group} 釣果予測"
+    html = _forecast_page_head(title)
+    all_dates = sorted(forecast_data.get("days", {}).keys())
+    all_weeks = forecast_data.get("weeks", {})
+    html += _forecast_date_nav(all_dates, all_weeks, "")
+
+    # 7日間サマリー（日付→日次ページリンク）
+    html += f'<h2>{area_group} 予測</h2>'
+    html += '<div class="date-nav">'
+    for d in all_dates:
+        day = forecast_data["days"].get(d, {})
+        area_info = day.get("areas", {}).get(area_group, {})
+        ok = area_info.get("ok", "")
+        m, dd = int(d[5:7]), int(d[8:10])
+        wd_idx = datetime.strptime(d, "%Y-%m-%d").weekday()
+        wd = ["月","火","水","木","金","土","日"][wd_idx]
+        cls = " weekend" if wd_idx >= 5 else ""
+        html += f'<a href="{d}.html#area-{quote(area_group, safe="")}" class="{cls.strip()}">{m}/{dd}({wd}) {ok}</a>'
+    html += '</div>'
+
+    # このエリアの予測一覧（最新日のデータ）
+    if all_dates:
+        latest = all_dates[-1]
+        # 次の土曜があればそちらを優先
+        for d in all_dates:
+            if datetime.strptime(d, "%Y-%m-%d").weekday() == 5:
+                latest = d
+                break
+        day = forecast_data["days"].get(latest, {})
+        preds = [p for p in day.get("predictions", []) if p.get("group") == area_group]
+
+        if preds:
+            html += f'<h3>このエリアの予測一覧（{latest}）</h3>'
+            html += '<table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody>'
+            for p in sorted(preds, key=lambda x: -x.get("avg", 0)):
+                avg = p.get("avg", 0)
+                pred_min = max(1, round(avg * 0.6))
+                pred_max = p.get("max", round(avg * 1.4))
+                size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
+                st = p.get("season_type", "")
+                type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
+                adj = p.get("adjustment", 0)
+                trend = '<span class="trend-up">↑</span>' if adj > 0.05 else '<span class="trend-down">↓</span>' if adj < -0.05 else '<span class="trend-flat">→</span>'
+                conf = p.get("confidence", "D")
+                html += f'<tr><td>{p["fish"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td>{trend}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
+            html += '</tbody></table>'
+
+            # 詳細カード
+            for p in sorted(preds, key=lambda x: -x.get("avg", 0)):
+                html += _forecast_combo_card(p, show_area=False)
+
+    html += _forecast_page_foot()
+    return html
+
+
+def _build_forecast_hub(forecast_data, catches=None):
+    """有料トップページHTML（予測結果レポート＋チラ見せ＋料金）"""
+    html = _forecast_page_head("釣果予測 プレミアム")
+
+    # ── 予測結果レポート（1件完全＋4件ぼかし）──
+    html += '<h2>📊 予測結果レポート</h2>'
+    # TODO: evaluate_predictions()で実績と突合。現時点ではプレースホルダ
+    html += '<p class="section-note">34,800件超の実績データに基づく独自分析。予測精度は継続的に検証しています。</p>'
+
+    # ── 今日の予測チラ見せ ──
+    days = forecast_data.get("days", {})
+    all_dates = sorted(days.keys())
+    all_weeks = forecast_data.get("weeks", {})
+
+    html += '<h2>📅 日付から探す</h2>'
+    html += _forecast_date_nav(all_dates, all_weeks, "")
+
+    if all_dates:
+        # 次の土曜を優先表示
+        show_date = all_dates[0]
+        for d in all_dates:
+            if datetime.strptime(d, "%Y-%m-%d").weekday() == 5:
+                show_date = d
+                break
+
+        day = days[show_date]
+        preds = day.get("predictions", [])
+        dt = datetime.strptime(show_date, "%Y-%m-%d")
+        m, d_num = dt.month, dt.day
+        wd = ["月","火","水","木","金","土","日"][dt.weekday()]
+
+        html += f'<h3>{m}月{d_num}日({wd}) の予測 — {len(preds)}件分析済み</h3>'
+
+        if preds:
+            # 1件目は完全表示
+            first = preds[0]
+            avg = first.get("avg", 0)
+            pred_min = max(1, round(avg * 0.6))
+            pred_max = first.get("max", round(avg * 1.4))
+            size = f'{first["size_min"]}〜{first["size_max"]}cm' if first.get("size_min") else "-"
+            st = first.get("season_type", "")
+            type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
+            conf = first.get("confidence", "D")
+            html += '<table class="pred-table"><thead><tr><th>魚種 × エリア</th><th>予測匹数</th><th>型</th><th>狙い</th><th>確信度</th></tr></thead><tbody>'
+            html += f'<tr><td>{first["fish"]} × {first["group"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
+
+            # 2〜5件はコンボ名ぼかし（匹数・型・確信度は見せる）
+            for p in preds[1:5]:
+                avg = p.get("avg", 0)
+                pred_min = max(1, round(avg * 0.6))
+                pred_max = p.get("max", round(avg * 1.4))
+                size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
+                st = p.get("season_type", "")
+                type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
+                conf = p.get("confidence", "D")
+                html += f'<tr><td class="blur-text">■■■ × ■■■</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
+            html += '</tbody></table>'
+
+            html += f"""<div class="paywall">
+<a href="#" class="paywall-btn">全{len(preds)}件の予測を見る（月額500円）</a>
+<p class="paywall-sub">スポット購入: 100円/日　|　1回の船代1万円。500円で判断材料を</p>
+</div>"""
+
+    # ── エリアから探す ──
+    html += '<h2>📍 エリアから探す</h2>'
+    html += '<div class="area-chips">'
+    for group in AREA_FORECAST_COORDS:
+        encoded = quote(group, safe="")
+        html += f'<a href="area/{encoded}.html" class="area-chip ok-good">{group}</a>'
+    html += '</div>'
+
+    html += _forecast_page_foot()
+    return html
+
+
+def build_forecast_pages(forecast_data, weather_data, catches=None, history=None):
+    """有料予測ページ群を生成（forecast/ディレクトリ）"""
+    if not forecast_data:
+        return
+
+    os.makedirs("forecast", exist_ok=True)
+    os.makedirs("forecast/area", exist_ok=True)
+    page_count = 0
+
+    # 日次ページ
+    for date_str, day_data in forecast_data.get("days", {}).items():
+        html = _build_daily_page(date_str, day_data, forecast_data, weather_data)
+        with open(f"forecast/{date_str}.html", "w", encoding="utf-8") as f:
+            f.write(html)
+        page_count += 1
+
+    # 週次ページ
+    for week_id, week_data in forecast_data.get("weeks", {}).items():
+        html = _build_weekly_page(week_id, week_data, forecast_data)
+        with open(f"forecast/{week_id}.html", "w", encoding="utf-8") as f:
+            f.write(html)
+        page_count += 1
+
+    # エリア別ページ
+    for group in AREA_FORECAST_COORDS:
+        html = _build_area_forecast_page(group, forecast_data)
+        encoded = quote(group, safe="")
+        with open(f"forecast/area/{encoded}.html", "w", encoding="utf-8") as f:
+            f.write(html)
+        page_count += 1
+
+    # ハブページ
+    html = _build_forecast_hub(forecast_data, catches)
+    with open("forecast/index.html", "w", encoding="utf-8") as f:
+        f.write(html)
+    page_count += 1
+
+    print(f"forecast/: {page_count}ページ生成")
+
+
 def build_forecast_section(forecast_data, weather_data):
     """海況予報 + 釣果予測のHTMLセクション（JS日付切替対応）"""
     if not forecast_data or not forecast_data.get("days"):
@@ -4258,7 +4742,8 @@ def main():
         weather_data["_forecast_data"] = forecast_data
         with open("forecast.json", "w", encoding="utf-8") as f:
             json.dump(forecast_data, f, ensure_ascii=False, indent=2)
-        print(f"forecast.json: {len(forecast_data.get('days', {}))} 日分生成")
+        print(f"forecast.json: {len(forecast_data.get('days', {}))} 日分 + {len(forecast_data.get('weeks', {}))} 週分生成")
+        build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
     build_fish_pages(valid_catches, history, crawled_at)
