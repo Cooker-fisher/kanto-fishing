@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.16
+関東船釣り情報クローラー v5.17
+変更点(v5.17):
+- SST傾向軸追加: 7日間予報のSST前半→後半変化から「上昇/安定/低下」を判定、分析テキストに反映
+- _build_analysis_text: sst_trendパラメータ追加
+- build_forecast_json: エリア別area_sst_trendsを事前計算、detailed_predictionsにsst_trendを追加
 変更点(v5.16):
 - 潮差・月齢を天文計算で算出し釣果予測に連携（_calc_moon_age, _calc_tide_range）
 - wave_periodの予報値をpredict_catchesに直接連携（波高からの間接推定をフォールバックに格下げ）
@@ -1134,7 +1138,7 @@ def _calc_confidence(samples, adjustment, season_score):
     return "D"
 
 
-def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, season_score, moon_title):
+def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, season_score, moon_title, sst_trend="stable"):
     """分析段落テキスト生成（閾値は非公開、定性表現のみ）"""
     parts = []
     labels = _condition_label(fish, fc)
@@ -1147,6 +1151,12 @@ def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, seas
         parts.append("海況は概ね良好。安定した釣果が期待できる条件")
     else:
         parts.append("海況にやや不安要素あり。条件次第で釣果が変動する可能性")
+
+    # SST傾向（7日間予報の前半→後半の変化から推定）
+    if sst_trend == "rising":
+        parts.append("今週を通じて海水温は上昇傾向。魚の活性が高まる方向")
+    elif sst_trend == "declining":
+        parts.append("海水温はやや低下傾向。水温変化への適応が遅い魚種は注意")
 
     # トレンド
     if trend_weeks and len(trend_weeks) >= 3:
@@ -1249,6 +1259,23 @@ def build_forecast_json(weather_data, catches=None, history=None):
 
     result = {"generated_at": datetime.now().strftime("%Y/%m/%d %H:%M"), "days": {}, "weeks": {}}
 
+    # ── エリア別SST傾向（7日間予報の前半→後半で変化方向を計算）──
+    _area_sst_pairs = {}
+    for (grp, d), fc in forecasts.items():
+        if fc.get("sst") is not None:
+            _area_sst_pairs.setdefault(grp, []).append((d, fc["sst"]))
+    area_sst_trends = {}
+    for grp, pairs in _area_sst_pairs.items():
+        pairs.sort()
+        if len(pairs) >= 4:
+            mid = len(pairs) // 2
+            avg_early = sum(v for _, v in pairs[:mid]) / mid
+            avg_late  = sum(v for _, v in pairs[mid:]) / (len(pairs) - mid)
+            diff = avg_late - avg_early
+            area_sst_trends[grp] = "rising" if diff > 0.4 else "declining" if diff < -0.4 else "stable"
+        else:
+            area_sst_trends[grp] = "stable"
+
     # ── 日次予測（7日分）──
     all_dates = sorted(set(d for (_, d) in forecasts.keys()))
     prev_pick_fish = None
@@ -1301,10 +1328,12 @@ def build_forecast_json(weather_data, catches=None, history=None):
                 yoy_data = None
                 if this_w and last_w:
                     yoy_data = {"this_avg": this_w.get("avg"), "last_avg": last_w.get("avg")}
+                sst_trend = area_sst_trends.get(area["group"], "stable")
                 analysis = _build_analysis_text(fish, area["group"], fc_for_area,
                                                  trend_weeks, yoy_data, area["samples"],
                                                  area.get("season_score", 0),
-                                                 _moon_title(fc_moon))
+                                                 _moon_title(fc_moon),
+                                                 sst_trend=sst_trend)
                 uncertainty = _build_uncertainty_text(fish, area["group"], confidence, area["samples"])
                 detailed_predictions.append({
                     "fish": fish,
@@ -1326,6 +1355,7 @@ def build_forecast_json(weather_data, catches=None, history=None):
                     "uncertainty": uncertainty,
                     "condition_labels": _condition_label(fish, fc_for_area),
                     "tide_impact": _tide_impact_label(fish),
+                    "sst_trend": sst_trend,
                 })
 
         # TODAY'S PICK
@@ -1567,6 +1597,11 @@ def _forecast_combo_card(pred, fc=None, show_area=True):
     if tide:
         cls_t = "neutral" if "限定" in tide else "good"
         factors_html += f'<span class="dc-factor {cls_t}">🌙 潮 → {tide}</span>'
+    sst_trend = pred.get("sst_trend", "stable")
+    if sst_trend == "rising":
+        factors_html += '<span class="dc-factor good">🌡️ 水温推移 → 上昇傾向</span>'
+    elif sst_trend == "declining":
+        factors_html += '<span class="dc-factor warn">🌡️ 水温推移 → 低下傾向</span>'
 
     analysis = pred.get("analysis", "")
     uncertainty = pred.get("uncertainty", "")
