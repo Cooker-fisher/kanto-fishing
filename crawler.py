@@ -1212,8 +1212,26 @@ def _select_todays_pick(predictions, prev_pick_fish=None):
     return predictions[0]["areas"][0] if predictions and predictions[0].get("areas") else None
 
 
-def build_forecast_json(weather_data):
-    """forecast.json を生成: 7日分の海況予報 × 釣果予測"""
+def _get_trend_weeks(history, fish, n=4):
+    """直近n週の推移データを取得"""
+    weekly = history.get("weekly", {})
+    year, week_num = current_iso_week()
+    weeks = []
+    for i in range(n, 0, -1):
+        w = week_num - i
+        y = year
+        if w <= 0:
+            w += 52
+            y -= 1
+        key = f"{y}/W{w:02d}"
+        d = weekly.get(key, {}).get(fish)
+        if d:
+            weeks.append({"week": key, "avg": d.get("avg", 0), "ships": d.get("ships", 0)})
+    return weeks
+
+
+def build_forecast_json(weather_data, catches=None, history=None):
+    """forecast.json を生成: 7日分の海況予報 × 釣果予測 + 2〜4週後の週次予測"""
     forecasts = weather_data.get("forecast", {})
     if not forecasts:
         return None
@@ -1226,13 +1244,16 @@ def build_forecast_json(weather_data):
     index = _build_catch_weather_index(hist_catches, hist_weather, tide_data, moon_data)
     print(f"  釣果×海況インデックス: {len(index)} 件（潮汐{len(tide_data)}日・月齢{len(moon_data)}日）")
 
-    result = {"generated_at": datetime.now().strftime("%Y/%m/%d %H:%M"), "days": {}}
+    if history is None:
+        history = {}
 
-    # forecast内の全日付を処理
+    result = {"generated_at": datetime.now().strftime("%Y/%m/%d %H:%M"), "days": {}, "weeks": {}}
+
+    # ── 日次予測（7日分）──
     all_dates = sorted(set(d for (_, d) in forecasts.keys()))
+    prev_pick_fish = None
     for date_str in all_dates:
-        # 全エリアの予報を集約して代表値を算出
-        waves, winds, ssts = [], [], []
+        waves, winds, ssts, pressures, weather_codes = [], [], [], [], []
         area_forecasts = {}
         for (group, d), fc in forecasts.items():
             if d != date_str: continue
@@ -1240,52 +1261,165 @@ def build_forecast_json(weather_data):
             if fc.get("wave_height") is not None: waves.append(fc["wave_height"])
             if fc.get("wind_speed") is not None: winds.append(fc["wind_speed"])
             if fc.get("sst") is not None: ssts.append(fc["sst"])
+            if fc.get("pressure") is not None: pressures.append(fc["pressure"])
+            if fc.get("weather_code") is not None: weather_codes.append(fc["weather_code"])
 
         avg_wave = round(sum(waves)/len(waves), 1) if waves else None
         avg_wind = round(sum(winds)/len(winds), 1) if winds else None
         avg_sst  = round(sum(ssts)/len(ssts), 1)   if ssts  else None
+        avg_pressure = round(sum(pressures)/len(pressures), 1) if pressures else None
+        wc_mode = max(set(weather_codes), key=weather_codes.count) if weather_codes else None
         month = int(date_str[5:7]) if len(date_str) >= 7 else None
 
-        # 出船可否
         score = _fishing_ok_score(avg_wave, avg_wind)
         ok_txt, _ = _ok_label(score)
-
-        # 潮差・月齢（天文計算で確定値）
         fc_tide = _calc_tide_range(date_str)
         fc_moon = _calc_moon_age(date_str)
 
-        # 釣果予測（エリア別海況 + 潮差・月齢を使用）
         predictions = predict_catches(index, area_forecasts, month,
                                       forecast_tide=fc_tide,
                                       forecast_moon=fc_moon) if month else []
 
-        # 上位10魚種
-        top_fish = []
-        for pred in predictions[:10]:
-            top_fish.append({
-                "fish": pred["fish"],
-                "avg": pred["avg"],
-                "max": pred["max"],
-                "samples": pred["samples"],
-                "best_area": pred["best_area"],
-                "best_avg": pred["best_avg"],
-            })
+        # enrichment: サイズ・船宿を付与
+        if catches:
+            _enrich_forecast_combos(predictions, catches)
+
+        # 全エリアの詳細予測を展開（確信度・分析テキスト付き）
+        year, week_num = current_iso_week()
+        detailed_predictions = []
+        for pred in predictions:
+            for area in pred.get("areas", []):
+                fish = area["fish"]
+                # サイズなしは除外
+                if area.get("size_min") is None and catches:
+                    continue
+                confidence = _calc_confidence(area["samples"], area["adjustment"],
+                                              area.get("season_score", 0))
+                fc_for_area = area_forecasts.get(area["group"], {})
+                trend_weeks = _get_trend_weeks(history, fish)
+                this_w, last_w = get_yoy_data(history, fish, year, week_num)
+                yoy_data = None
+                if this_w and last_w:
+                    yoy_data = {"this_avg": this_w.get("avg"), "last_avg": last_w.get("avg")}
+                analysis = _build_analysis_text(fish, area["group"], fc_for_area,
+                                                 trend_weeks, yoy_data, area["samples"],
+                                                 area.get("season_score", 0),
+                                                 _moon_title(fc_moon))
+                uncertainty = _build_uncertainty_text(fish, area["group"], confidence, area["samples"])
+                detailed_predictions.append({
+                    "fish": fish,
+                    "group": area["group"],
+                    "avg": area["avg"],
+                    "base_avg": area["base_avg"],
+                    "adjustment": area["adjustment"],
+                    "max": area["max"],
+                    "samples": area["samples"],
+                    "season_score": area.get("season_score", 0),
+                    "season_type": area.get("season_type", ""),
+                    "size_min": area.get("size_min"),
+                    "size_max": area.get("size_max"),
+                    "weight_min": area.get("weight_min"),
+                    "weight_max": area.get("weight_max"),
+                    "top_ships": area.get("top_ships", []),
+                    "confidence": confidence,
+                    "analysis": analysis,
+                    "uncertainty": uncertainty,
+                    "condition_labels": _condition_label(fish, fc_for_area),
+                    "tide_impact": _tide_impact_label(fish),
+                })
+
+        # TODAY'S PICK
+        pick = _select_todays_pick(predictions, prev_pick_fish)
+        if pick:
+            prev_pick_fish = pick["fish"]
+
+        # エリア別海況
+        area_detail = {}
+        for g, fc in area_forecasts.items():
+            s = _fishing_ok_score(fc.get("wave_height"), fc.get("wind_speed"))
+            area_detail[g] = {
+                "wave": fc.get("wave_height"), "wind": fc.get("wind_speed"),
+                "sst": fc.get("sst"), "wind_dir": fc.get("wind_dir"),
+                "weather_text": fc.get("weather_text", ""),
+                "pressure": fc.get("pressure"),
+                "score": s, "ok": _ok_label(s)[0],
+            }
 
         result["days"][date_str] = {
-            "wave": avg_wave,
-            "wind": avg_wind,
-            "sst": avg_sst,
-            "tide_range": fc_tide,
+            "wave": avg_wave, "wind": avg_wind, "sst": avg_sst,
+            "pressure": avg_pressure,
+            "weather_code": wc_mode,
+            "weather_text": _weather_code_text(wc_mode),
+            "tide_range": fc_tide, "moon_age": fc_moon,
+            "moon_title": _moon_title(fc_moon),
+            "score": score, "ok": ok_txt,
+            "areas": area_detail,
+            "predictions": detailed_predictions,
+            "todays_pick": pick["fish"] + "×" + pick["group"] if pick else None,
+        }
+
+    # ── 週次予測（2〜4週後）──
+    today = datetime.now()
+    for week_offset in range(2, 5):
+        week_start = today + timedelta(days=(7 * week_offset - today.weekday()))
+        week_end = week_start + timedelta(days=6)
+        mid_date = week_start + timedelta(days=3)
+        week_id = f"{mid_date.isocalendar()[0]}-W{mid_date.isocalendar()[1]:02d}"
+        month = mid_date.month
+
+        fc_tide = _calc_tide_range(mid_date.strftime("%Y-%m-%d"))
+        fc_moon = _calc_moon_age(mid_date.strftime("%Y-%m-%d"))
+
+        # 海況なし（空のarea_forecasts）→ 潮差・月齢のみで補正
+        empty_forecasts = {g: {} for g in AREA_FORECAST_COORDS}
+        predictions = predict_catches(index, empty_forecasts, month,
+                                      forecast_tide=fc_tide, forecast_moon=fc_moon)
+
+        if catches:
+            _enrich_forecast_combos(predictions, catches)
+
+        weekly_predictions = []
+        for pred in predictions:
+            for area in pred.get("areas", []):
+                if area.get("size_min") is None and catches:
+                    continue
+                confidence = _calc_confidence(area["samples"], area["adjustment"],
+                                              area.get("season_score", 0))
+                weekly_predictions.append({
+                    "fish": area["fish"],
+                    "group": area["group"],
+                    "avg": area["avg"],
+                    "max": area["max"],
+                    "samples": area["samples"],
+                    "season_score": area.get("season_score", 0),
+                    "season_type": area.get("season_type", ""),
+                    "size_min": area.get("size_min"),
+                    "size_max": area.get("size_max"),
+                    "top_ships": area.get("top_ships", []),
+                    "confidence": confidence,
+                    "tide_impact": _tide_impact_label(area["fish"]),
+                })
+
+        # 週の潮回りスケジュール
+        tide_schedule = []
+        for i in range(7):
+            d = week_start + timedelta(days=i)
+            ds = d.strftime("%Y-%m-%d")
+            tide_schedule.append({
+                "date": ds,
+                "weekday": ["月","火","水","木","金","土","日"][d.weekday()],
+                "moon_title": _moon_title(_calc_moon_age(ds)),
+            })
+
+        result["weeks"][week_id] = {
+            "label": f"{week_offset}週後",
+            "start": week_start.strftime("%Y-%m-%d"),
+            "end": week_end.strftime("%Y-%m-%d"),
+            "month": month,
+            "tide_schedule": tide_schedule,
             "moon_age": fc_moon,
             "moon_title": _moon_title(fc_moon),
-            "score": score,
-            "ok": ok_txt,
-            "areas": {g: {"wave": fc.get("wave_height"), "wind": fc.get("wind_speed"),
-                          "sst": fc.get("sst"), "score": _fishing_ok_score(
-                              fc.get("wave_height"), fc.get("wind_speed")),
-                          "ok": _ok_label(_fishing_ok_score(fc.get("wave_height"), fc.get("wind_speed")))[0]}
-                      for g, fc in area_forecasts.items()},
-            "predictions": top_fish,
+            "predictions": weekly_predictions,
         }
 
     return result
@@ -4119,7 +4253,7 @@ def main():
     if fc_count:
         print(f"海況予報: {fc_count} エリア×日")
     # 釣果予測
-    forecast_data = build_forecast_json(weather_data) if fc_count else None
+    forecast_data = build_forecast_json(weather_data, catches=valid_catches, history=history) if fc_count else None
     if forecast_data:
         weather_data["_forecast_data"] = forecast_data
         with open("forecast.json", "w", encoding="utf-8") as f:
