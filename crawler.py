@@ -427,22 +427,25 @@ def _fetch_wind_forecast(lat, lon, date_from, date_to):
     return result
 
 def load_weather_data():
-    """週末の海況予報を全エリアから取得 + 潮汐データを読み込む"""
+    """7日間の日次海況予報を全エリアから取得 + 潮汐データを読み込む"""
     result = {"forecast": {}, "tide": {}}
-    sat, sun = _next_weekend()
-    date_from = sat.strftime("%Y-%m-%d")
-    date_to   = sun.strftime("%Y-%m-%d")
-    result["sat_date"] = date_from
-    result["sun_date"] = date_to
+    today = datetime.now()
+    date_from = today.strftime("%Y-%m-%d")
+    date_to   = (today + timedelta(days=6)).strftime("%Y-%m-%d")
 
-    print(f"週末海況予報取得: {date_from}(土) ～ {date_to}(日)")
+    # 後方互換: 週末日付も保持（build_weather_section等で使用）
+    sat, sun = _next_weekend()
+    result["sat_date"] = sat.strftime("%Y-%m-%d")
+    result["sun_date"] = sun.strftime("%Y-%m-%d")
+
+    print(f"海況予報取得: {date_from} ～ {date_to}（7日間）")
     for group, coord in AREA_FORECAST_COORDS.items():
         print(f"  [{group}] ...", end=" ", flush=True)
         marine = _fetch_marine_forecast(coord["lat"], coord["lon"], date_from, date_to)
         wind   = _fetch_wind_forecast(coord["lat"], coord["lon"], date_from, date_to)
         time.sleep(0.3)
         if marine:
-            for day in [date_from, date_to]:
+            for day in sorted(marine.keys()):
                 m = marine.get(day, {})
                 w = (wind or {}).get(day, {})
                 key = (group, day)
