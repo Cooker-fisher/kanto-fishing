@@ -330,6 +330,33 @@ def _moon_title(age):
             return "若潮"
     return "中潮"
 
+def _weather_code_text(code):
+    """WMO Weather interpretation code → 日本語テキスト"""
+    if code is None: return ""
+    code = int(code)
+    if code == 0: return "快晴"
+    if code <= 2: return "晴れ"
+    if code == 3: return "曇り"
+    if code in (45, 48): return "霧"
+    if code <= 55: return "霧雨"
+    if code <= 65: return "雨"
+    if code <= 67: return "雨氷"
+    if code <= 75: return "雪"
+    if code <= 77: return "霧雪"
+    if code <= 82: return "にわか雨"
+    if code <= 86: return "にわか雪"
+    if code == 95: return "雷雨"
+    if code <= 99: return "雷雨(雹)"
+    return ""
+
+def _pressure_label(hpa):
+    """気圧 → 定性ラベル"""
+    if hpa is None: return ""
+    if hpa >= 1020: return "高気圧"
+    if hpa >= 1013: return "安定"
+    if hpa >= 1005: return "やや低め"
+    return "低気圧接近"
+
 def _calc_tide_range(date_str):
     """日付文字列(YYYY-MM-DD) → 潮差(cm)の概算を天文計算で返す。
     大潮(新月・満月)で最大、小潮(上弦・下弦)で最小。
@@ -390,11 +417,11 @@ def _fetch_marine_forecast(lat, lon, date_from, date_to):
     return result
 
 def _fetch_wind_forecast(lat, lon, date_from, date_to):
-    """Open-Meteo Forecast APIから風速予報を取得。"""
+    """Open-Meteo Forecast APIから風速・天気・気圧予報を取得。"""
     url = (
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={lat}&longitude={lon}"
-        f"&hourly=wind_speed_10m,wind_direction_10m"
+        f"&hourly=wind_speed_10m,wind_direction_10m,weather_code,surface_pressure"
         f"&start_date={date_from}&end_date={date_to}"
         f"&timezone=Asia/Tokyo&wind_speed_unit=ms"
     )
@@ -415,14 +442,22 @@ def _fetch_wind_forecast(lat, lon, date_from, date_to):
             continue
         ws = hourly.get("wind_speed_10m", [None]*(i+1))[i]
         wd = hourly.get("wind_direction_10m", [None]*(i+1))[i]
-        day_data.setdefault(dt_part, []).append({"ws": ws, "wd": wd})
+        wc = hourly.get("weather_code", [None]*(i+1))[i]
+        sp = hourly.get("surface_pressure", [None]*(i+1))[i]
+        day_data.setdefault(dt_part, []).append({"ws": ws, "wd": wd, "wc": wc, "sp": sp})
     result = {}
     for day, rows in day_data.items():
         ws_vals = [r["ws"] for r in rows if r["ws"] is not None]
         wd_vals = [r["wd"] for r in rows if r["wd"] is not None]
+        wc_vals = [r["wc"] for r in rows if r["wc"] is not None]
+        sp_vals = [r["sp"] for r in rows if r["sp"] is not None]
+        # 天気コードは最頻値を採用
+        wc_mode = max(set(wc_vals), key=wc_vals.count) if wc_vals else None
         result[day] = {
             "wind_speed": round(sum(ws_vals)/len(ws_vals), 1) if ws_vals else None,
             "wind_dir":   round(sum(wd_vals)/len(wd_vals))     if wd_vals else None,
+            "weather_code": wc_mode,
+            "pressure":   round(sum(sp_vals)/len(sp_vals), 1) if sp_vals else None,
         }
     return result
 
@@ -456,6 +491,9 @@ def load_weather_data():
                     "sst":          m.get("sst"),
                     "wind_speed":   w.get("wind_speed"),
                     "wind_dir":     w.get("wind_dir"),
+                    "weather_code": w.get("weather_code"),
+                    "weather_text": _weather_code_text(w.get("weather_code")),
+                    "pressure":     w.get("pressure"),
                     "tide_range":   _calc_tide_range(day),
                     "moon_age":     _calc_moon_age(day),
                     "moon_title":   _moon_title(_calc_moon_age(day)),
@@ -965,6 +1003,9 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
                 pred_avg = round((pred_avg + pred_median) / 2, 1)
 
             key = (fish, group)
+            season_score = get_season_score(fish, target_month) if target_month else 0
+            season_types = SEASON_TYPE.get(fish, [""]*12)
+            season_type = season_types[target_month - 1] if target_month and len(season_types) >= target_month else ""
             predictions[key] = {
                 "fish": fish,
                 "group": group,
@@ -973,6 +1014,8 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
                 "adjustment": round(adjustment, 3),
                 "max": int(base_max),
                 "samples": len(month_rows),
+                "season_score": season_score,
+                "season_type": season_type,
             }
 
     # 魚種でまとめつつ、エリア別の内訳も保持
@@ -1005,6 +1048,169 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
 
     result.sort(key=lambda x: -(x["samples"] * x["avg"]))
     return result
+
+# ============================================================
+# 有料予測ページ用の関数群
+# ============================================================
+
+def _enrich_forecast_combos(predictions, catches):
+    """predict_catches()結果の各areaにサイズ・船宿TOP3を付与。サイズなしは除外フラグ。"""
+    from collections import Counter
+    for pred in predictions:
+        for area in pred.get("areas", []):
+            fish, group = area["fish"], area["group"]
+            matching = [c for c in catches
+                        if fish in c.get("fish", [])
+                        and _area_to_group(c.get("area", "")) == group]
+            # サイズ集計（直近catchesのsize_cm）
+            sizes = [c["size_cm"] for c in matching
+                     if c.get("size_cm") and c["size_cm"].get("min") and c["size_cm"]["min"] > 0]
+            if sizes:
+                area["size_min"] = min(s["min"] for s in sizes)
+                area["size_max"] = max(s["max"] for s in sizes)
+            else:
+                area["size_min"] = None
+                area["size_max"] = None
+            # 重量集計
+            weights = [c["weight_kg"] for c in matching
+                       if c.get("weight_kg") and c["weight_kg"].get("min")]
+            if weights:
+                area["weight_min"] = min(w["min"] for w in weights)
+                area["weight_max"] = max(w["max"] for w in weights)
+            else:
+                area["weight_min"] = None
+                area["weight_max"] = None
+            # 船宿TOP3
+            ship_counts = Counter(c["ship"] for c in matching)
+            area["top_ships"] = [s for s, _ in ship_counts.most_common(3)]
+
+
+def _condition_label(fish, fc):
+    """海況予報値 → 定性表現dict（閾値は非公開）。内部でmaster_datasetの帯域判定を行うが出力は定性のみ。"""
+    labels = {}
+    wave = fc.get("wave_height") if fc else None
+    wind = fc.get("wind_speed") if fc else None
+    sst  = fc.get("sst") if fc else None
+    pressure = fc.get("pressure") if fc else None
+
+    # 波高
+    if wave is not None:
+        if wave < 0.5:   labels["wave"] = "好条件"
+        elif wave < 1.0: labels["wave"] = "好条件"
+        elif wave < 1.5: labels["wave"] = "やや注意"
+        else:            labels["wave"] = "注意"
+    # 風速
+    if wind is not None:
+        if wind < 5:     labels["wind"] = "好条件"
+        elif wind < 8:   labels["wind"] = "好条件"
+        elif wind < 12:  labels["wind"] = "やや注意"
+        else:            labels["wind"] = "注意"
+    # 水温（定性表現のみ。閾値は非公開）
+    if sst is not None:
+        labels["sst"] = "適温帯"  # 詳細はmaster_dataset分析で内部判定
+    # 気圧
+    if pressure is not None:
+        labels["pressure"] = _pressure_label(pressure)
+    return labels
+
+
+def _tide_impact_label(fish):
+    """魚種ごとの潮汐影響度テキスト（master_datasetの分析結果に基づく）。"""
+    # master_datasetの潮汐タイプ別平均差に基づく（±5%以内は「影響限定的」）
+    high_impact = {"マダイ", "タチウオ", "フグ", "マルイカ"}
+    if fish in high_impact:
+        return "影響あり"
+    return "影響限定的"
+
+
+def _calc_confidence(samples, adjustment, season_score):
+    """確信度A/B/C/D"""
+    if samples >= 500 and abs(adjustment) < 0.15 and season_score >= 4:
+        return "A"
+    if samples >= 200 and season_score >= 3:
+        return "B"
+    if samples >= 50:
+        return "C"
+    return "D"
+
+
+def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, season_score, moon_title):
+    """分析段落テキスト生成（閾値は非公開、定性表現のみ）"""
+    parts = []
+    labels = _condition_label(fish, fc)
+
+    # 海況コメント
+    good_count = sum(1 for v in labels.values() if v in ("好条件", "適温帯", "安定", "高気圧"))
+    if good_count >= 3:
+        parts.append("海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている")
+    elif good_count >= 2:
+        parts.append("海況は概ね良好。安定した釣果が期待できる条件")
+    else:
+        parts.append("海況にやや不安要素あり。条件次第で釣果が変動する可能性")
+
+    # トレンド
+    if trend_weeks and len(trend_weeks) >= 3:
+        avgs = [w.get("avg", 0) for w in trend_weeks[-3:]]
+        if all(avgs[i] < avgs[i+1] for i in range(len(avgs)-1)):
+            vals = "←".join(f"{a:.0f}匹" for a in reversed(avgs))
+            parts.append(f"{len(avgs)}週連続上昇中（{vals}）")
+        elif all(avgs[i] > avgs[i+1] for i in range(len(avgs)-1)):
+            parts.append(f"{len(avgs)}週連続で減少傾向")
+
+    # 昨年比
+    if yoy_data:
+        this_avg = yoy_data.get("this_avg")
+        last_avg = yoy_data.get("last_avg")
+        if this_avg and last_avg and last_avg > 0:
+            pct = round((this_avg - last_avg) / last_avg * 100)
+            if pct > 10:
+                parts.append(f"昨年同週を上回るペースで推移（+{pct}%）")
+            elif pct < -10:
+                parts.append(f"昨年同週を下回るペース（{pct}%）")
+
+    # サンプル数
+    parts.append(f"分析データ: {n_samples:,}件")
+
+    return "。".join(parts)
+
+
+def _build_uncertainty_text(fish, group, confidence, samples):
+    """確信度C/D向けの予測ブレ要因テキスト"""
+    if confidence in ("A", "B"):
+        return ""
+    parts = []
+    if samples < 100:
+        parts.append("分析データが少なく、予測の精度が出にくい")
+    # 魚種固有のブレ要因
+    uncertainty_map = {
+        "マダイ": "個体差が大きく匹数予測の精度が出にくい魚種",
+        "ワラサ": "回遊魚のため群れの接岸状況に大きく左右される",
+        "カツオ": "回遊次第で釣果が極端に変動する",
+        "サワラ": "回遊パターンが不安定で予測が難しい魚種",
+        "タチウオ": "群れの移動が速く、日による変動が大きい",
+        "ヤリイカ": "群れの接岸状況で大きく変動する",
+        "スルメイカ": "群れの接岸状況で大きく変動する",
+    }
+    if fish in uncertainty_map:
+        parts.append(uncertainty_map[fish])
+    if not parts:
+        parts.append("海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性")
+    return "。".join(parts)
+
+
+def _select_todays_pick(predictions, prev_pick_fish=None):
+    """TODAY'S PICK選出。偏り防止: 前日と同じ魚種なら2位を採用。"""
+    if not predictions:
+        return None
+    # compositeスコア順（samples * avg）で最高のものを選出
+    for pred in predictions:
+        if pred.get("areas"):
+            best = pred["areas"][0]  # avg最高のエリア
+            if prev_pick_fish and best["fish"] == prev_pick_fish and len(predictions) > 1:
+                continue  # 前日と同じなら次へ
+            return best
+    return predictions[0]["areas"][0] if predictions and predictions[0].get("areas") else None
+
 
 def build_forecast_json(weather_data):
     """forecast.json を生成: 7日分の海況予報 × 釣果予測"""
