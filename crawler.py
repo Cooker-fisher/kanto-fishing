@@ -1138,7 +1138,27 @@ def _calc_confidence(samples, adjustment, season_score):
     return "D"
 
 
-def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, season_score, moon_title, sst_trend="stable"):
+_WIND_ADVERSE_MAP = {
+    "茨城":               {"南東", "東南東", "東", "東北東", "南南東"},
+    "千葉・外房":         {"南東", "東南東", "東", "東北東", "南南東"},
+    "千葉・内房":         {"北東", "東北東", "東", "北北東"},
+    "千葉・東京湾奥":     {"北東", "東北東", "東", "北北東"},
+    "東京":               {"北東", "東北東", "東", "北北東"},
+    "神奈川・東京湾":     {"北東", "東北東", "東", "北北東"},
+    "神奈川・相模湾":     {"南", "南南東", "南東", "南南西"},
+}
+_WIND_FAVORABLE_MAP = {
+    "茨城":               {"北西", "西北西", "西", "西南西"},
+    "千葉・外房":         {"北西", "西北西", "西", "西南西"},
+    "千葉・内房":         {"南", "南南西", "南西"},
+    "千葉・東京湾奥":     {"南", "南南西", "南西"},
+    "東京":               {"南", "南南西", "南西"},
+    "神奈川・東京湾":     {"南", "南南西", "南西"},
+    "神奈川・相模湾":     {"北西", "北北西", "北", "北北東"},
+}
+
+
+def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, season_score, moon_title, sst_trend="stable", month=None):
     """分析段落テキスト生成（閾値は非公開、定性表現のみ）"""
     parts = []
     labels = _condition_label(fish, fc)
@@ -1152,13 +1172,43 @@ def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, seas
     else:
         parts.append("海況にやや不安要素あり。条件次第で釣果が変動する可能性")
 
+    # シーズンスコア定性表現
+    season_label_map = {5: "旬盛り", 4: "旬", 3: "平年並み", 2: "端境期", 1: "オフシーズン"}
+    season_label = season_label_map.get(season_score, "")
+    if season_label:
+        if season_score >= 4:
+            parts.append(f"シーズン的には「{season_label}」で活性が高い時期")
+        elif season_score == 3:
+            parts.append(f"シーズンは{season_label}で安定して出船がある時期")
+        else:
+            parts.append(f"シーズン的には「{season_label}」にあたり出船数は少なめ")
+
+    # 来月展望（SEASON_DATAで来月スコアと比較）
+    if month is not None:
+        next_month = (month % 12) + 1
+        next_score = get_season_score(fish, next_month)
+        if next_score > season_score:
+            parts.append(f"来月（{next_month}月）に向けてシーズンが上向く見込み")
+        elif next_score < season_score and season_score >= 4:
+            parts.append(f"今がピーク。{next_month}月以降は徐々に落ち着く傾向")
+
     # SST傾向（7日間予報の前半→後半の変化から推定）
     if sst_trend == "rising":
         parts.append("今週を通じて海水温は上昇傾向。魚の活性が高まる方向")
     elif sst_trend == "declining":
         parts.append("海水温はやや低下傾向。水温変化への適応が遅い魚種は注意")
 
-    # トレンド
+    # 風向き影響（エリア別の有利/不利方向マップ）
+    wind_dir = fc.get("wind_dir") if fc else None
+    if wind_dir is not None:
+        dir_text = _wind_dir_text(wind_dir)
+        if dir_text:
+            if dir_text in _WIND_ADVERSE_MAP.get(group, set()):
+                parts.append(f"{dir_text}風は{group}エリアでは時化やすく出船に影響する可能性")
+            elif dir_text in _WIND_FAVORABLE_MAP.get(group, set()):
+                parts.append(f"{dir_text}風はこのエリアで穏やかな海況をもたらす傾向")
+
+    # 平均匹数トレンド（3週連続変化）
     if trend_weeks and len(trend_weeks) >= 3:
         avgs = [w.get("avg", 0) for w in trend_weeks[-3:]]
         if all(avgs[i] < avgs[i+1] for i in range(len(avgs)-1)):
@@ -1166,6 +1216,17 @@ def _build_analysis_text(fish, group, fc, trend_weeks, yoy_data, n_samples, seas
             parts.append(f"{len(avgs)}週連続上昇中（{vals}）")
         elif all(avgs[i] > avgs[i+1] for i in range(len(avgs)-1)):
             parts.append(f"{len(avgs)}週連続で減少傾向")
+
+    # 船数トレンド（前週比）
+    if trend_weeks and len(trend_weeks) >= 2:
+        ships_prev = trend_weeks[-2].get("ships", 0)
+        ships_curr = trend_weeks[-1].get("ships", 0)
+        if ships_prev > 0 and ships_curr > 0:
+            ships_pct = round((ships_curr - ships_prev) / ships_prev * 100)
+            if ships_pct >= 30:
+                parts.append(f"出船数が前週から大幅増（+{ships_pct}%）。人気が集まっている")
+            elif ships_pct <= -30:
+                parts.append(f"出船数が前週から減少（{ships_pct}%）")
 
     # 昨年比
     if yoy_data:
@@ -1333,7 +1394,8 @@ def build_forecast_json(weather_data, catches=None, history=None):
                                                  trend_weeks, yoy_data, area["samples"],
                                                  area.get("season_score", 0),
                                                  _moon_title(fc_moon),
-                                                 sst_trend=sst_trend)
+                                                 sst_trend=sst_trend,
+                                                 month=month)
                 uncertainty = _build_uncertainty_text(fish, area["group"], confidence, area["samples"])
                 detailed_predictions.append({
                     "fish": fish,
