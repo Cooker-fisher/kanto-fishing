@@ -1,0 +1,648 @@
+{
+  "cutoff_date": "2025/07/01",
+  "train_records": 17727,
+  "test_records": 12816,
+  "predicted_count": 11736,
+  "overall_mape": 86.2,
+  "overall_avg_hit": 62.7,
+  "overall_overlap_hit": 90.2,
+  "combo_stats": {
+    "アジ×東京湾奥": {
+      "n": 955,
+      "mape": 55.2,
+      "avg_hit": 79.0,
+      "overlap_hit": 95.3,
+      "dir_rate": 40.6
+    },
+    "マダコ×東京湾奥": {
+      "n": 150,
+      "mape": 37.4,
+      "avg_hit": 92.0,
+      "overlap_hit": 99.3,
+      "dir_rate": 54.0
+    },
+    "フグ×東京湾奥": {
+      "n": 280,
+      "mape": 91.4,
+      "avg_hit": 60.7,
+      "overlap_hit": 94.3,
+      "dir_rate": 22.9
+    },
+    "シロギス×東京湾奥": {
+      "n": 275,
+      "mape": 52.9,
+      "avg_hit": 80.0,
+      "overlap_hit": 99.6,
+      "dir_rate": 30.9
+    },
+    "タチウオ×東京湾奥": {
+      "n": 549,
+      "mape": 67.6,
+      "avg_hit": 71.0,
+      "overlap_hit": 93.1,
+      "dir_rate": 57.7
+    },
+    "マダイ×外房": {
+      "n": 394,
+      "mape": 147.0,
+      "avg_hit": 55.3,
+      "overlap_hit": 88.6,
+      "dir_rate": 25.1
+    },
+    "ヒラメ×外房": {
+      "n": 654,
+      "mape": 80.8,
+      "avg_hit": 60.7,
+      "overlap_hit": 94.2,
+      "dir_rate": 27.7
+    },
+    "スルメイカ×相模湾": {
+      "n": 390,
+      "mape": 64.3,
+      "avg_hit": 55.4,
+      "overlap_hit": 89.2,
+      "dir_rate": 49.2
+    },
+    "マハタ×外房": {
+      "n": 80,
+      "mape": 71.6,
+      "avg_hit": 33.8,
+      "overlap_hit": 82.5,
+      "dir_rate": 7.5
+    },
+    "マダイ×茨城": {
+      "n": 403,
+      "mape": 126.1,
+      "avg_hit": 52.6,
+      "overlap_hit": 87.3,
+      "dir_rate": 9.7
+    },
+    "マダコ×茨城": {
+      "n": 90,
+      "mape": 82.2,
+      "avg_hit": 76.7,
+      "overlap_hit": 95.6,
+      "dir_rate": 65.6
+    },
+    "タチウオ×東京湾口": {
+      "n": 311,
+      "mape": 62.1,
+      "avg_hit": 73.0,
+      "overlap_hit": 97.4,
+      "dir_rate": 55.3
+    },
+    "アジ×東京湾口": {
+      "n": 682,
+      "mape": 80.3,
+      "avg_hit": 61.0,
+      "overlap_hit": 91.8,
+      "dir_rate": 30.2
+    },
+    "スルメイカ×外房": {
+      "n": 74,
+      "mape": 75.2,
+      "avg_hit": 25.7,
+      "overlap_hit": 62.2,
+      "dir_rate": 58.1
+    },
+    "アジ×外房": {
+      "n": 84,
+      "mape": 330.0,
+      "avg_hit": 7.1,
+      "overlap_hit": 16.7,
+      "dir_rate": 20.2
+    },
+    "カンパチ×外房": {
+      "n": 6,
+      "mape": 120.8,
+      "avg_hit": 50.0,
+      "overlap_hit": 50.0,
+      "dir_rate": 16.7
+    },
+    "ワラサ×外房": {
+      "n": 17,
+      "mape": 94.0,
+      "avg_hit": 47.1,
+      "overlap_hit": 52.9,
+      "dir_rate": 52.9
+    },
+    "クロムツ×外房": {
+      "n": 11,
+      "mape": 100.1,
+      "avg_hit": 27.3,
+      "overlap_hit": 27.3,
+      "dir_rate": 0.0
+    },
+    "マルイカ×外房": {
+      "n": 4,
+      "mape": 67.8,
+      "avg_hit": 25.0,
+      "overlap_hit": 50.0,
+      "dir_rate": 50.0
+    },
+    "マダコ×東京湾口": {
+      "n": 220,
+      "mape": 53.3,
+      "avg_hit": 87.7,
+      "overlap_hit": 99.1,
+      "dir_rate": 32.3
+    },
+    "シロギス×東京湾口": {
+      "n": 316,
+      "mape": 54.7,
+      "avg_hit": 51.6,
+      "overlap_hit": 98.4,
+      "dir_rate": 26.9
+    },
+    "イサキ×外房": {
+      "n": 79,
+      "mape": 82.3,
+      "avg_hit": 55.7,
+      "overlap_hit": 86.1,
+      "dir_rate": 36.7
+    },
+    "マゴチ×東京湾奥": {
+      "n": 6,
+      "mape": 64.2,
+      "avg_hit": 33.3,
+      "overlap_hit": 33.3,
+      "dir_rate": 50.0
+    },
+    "ヒラメ×東京湾奥": {
+      "n": 12,
+      "mape": 158.0,
+      "avg_hit": 16.7,
+      "overlap_hit": 16.7,
+      "dir_rate": 33.3
+    },
+    "マダイ×東京湾奥": {
+      "n": 61,
+      "mape": 83.1,
+      "avg_hit": 55.7,
+      "overlap_hit": 78.7,
+      "dir_rate": 23.0
+    },
+    "カサゴ×東京湾口": {
+      "n": 118,
+      "mape": 56.6,
+      "avg_hit": 78.8,
+      "overlap_hit": 93.2,
+      "dir_rate": 16.1
+    },
+    "クロムツ×茨城": {
+      "n": 81,
+      "mape": 48.7,
+      "avg_hit": 86.4,
+      "overlap_hit": 98.8,
+      "dir_rate": 13.6
+    },
+    "マダコ×外房": {
+      "n": 5,
+      "mape": 172.3,
+      "avg_hit": 20.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 0.0
+    },
+    "フグ×茨城": {
+      "n": 19,
+      "mape": 179.6,
+      "avg_hit": 31.6,
+      "overlap_hit": 78.9,
+      "dir_rate": 42.1
+    },
+    "アジ×相模湾": {
+      "n": 361,
+      "mape": 93.2,
+      "avg_hit": 56.2,
+      "overlap_hit": 84.5,
+      "dir_rate": 23.3
+    },
+    "カワハギ×東京湾口": {
+      "n": 577,
+      "mape": 56.3,
+      "avg_hit": 91.5,
+      "overlap_hit": 99.7,
+      "dir_rate": 23.6
+    },
+    "イサキ×東京湾口": {
+      "n": 45,
+      "mape": 32.7,
+      "avg_hit": 62.2,
+      "overlap_hit": 88.9,
+      "dir_rate": 51.1
+    },
+    "カサゴ×外房": {
+      "n": 24,
+      "mape": 1189.3,
+      "avg_hit": 16.7,
+      "overlap_hit": 29.2,
+      "dir_rate": 16.7
+    },
+    "メバル×茨城": {
+      "n": 8,
+      "mape": 95.3,
+      "avg_hit": 62.5,
+      "overlap_hit": 75.0,
+      "dir_rate": 0.0
+    },
+    "カサゴ×茨城": {
+      "n": 9,
+      "mape": 122.9,
+      "avg_hit": 33.3,
+      "overlap_hit": 66.7,
+      "dir_rate": 22.2
+    },
+    "アジ×茨城": {
+      "n": 3,
+      "mape": 1839.2,
+      "avg_hit": 33.3,
+      "overlap_hit": 33.3,
+      "dir_rate": 0.0
+    },
+    "マルイカ×相模湾": {
+      "n": 215,
+      "mape": 176.2,
+      "avg_hit": 54.0,
+      "overlap_hit": 90.7,
+      "dir_rate": 33.5
+    },
+    "マゴチ×茨城": {
+      "n": 6,
+      "mape": 119.2,
+      "avg_hit": 16.7,
+      "overlap_hit": 66.7,
+      "dir_rate": 33.3
+    },
+    "マダイ×相模湾": {
+      "n": 482,
+      "mape": 92.9,
+      "avg_hit": 57.1,
+      "overlap_hit": 90.7,
+      "dir_rate": 18.9
+    },
+    "イサキ×相模湾": {
+      "n": 3,
+      "mape": 22.8,
+      "avg_hit": 100.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 33.3
+    },
+    "ワラサ×相模湾": {
+      "n": 328,
+      "mape": 122.0,
+      "avg_hit": 37.2,
+      "overlap_hit": 74.1,
+      "dir_rate": 24.1
+    },
+    "カサゴ×相模湾": {
+      "n": 7,
+      "mape": 715.6,
+      "avg_hit": 14.3,
+      "overlap_hit": 28.6,
+      "dir_rate": 0.0
+    },
+    "シロギス×相模湾": {
+      "n": 9,
+      "mape": 112.2,
+      "avg_hit": 100.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 11.1
+    },
+    "マグロ×相模湾": {
+      "n": 239,
+      "mape": 39.3,
+      "avg_hit": 49.8,
+      "overlap_hit": 99.6,
+      "dir_rate": 13.4
+    },
+    "サバ×相模湾": {
+      "n": 2,
+      "mape": 23.4,
+      "avg_hit": 50.0,
+      "overlap_hit": 50.0,
+      "dir_rate": 50.0
+    },
+    "メダイ×相模湾": {
+      "n": 24,
+      "mape": 373.1,
+      "avg_hit": 79.2,
+      "overlap_hit": 83.3,
+      "dir_rate": 29.2
+    },
+    "クロムツ×相模湾": {
+      "n": 153,
+      "mape": 106.5,
+      "avg_hit": 32.7,
+      "overlap_hit": 72.5,
+      "dir_rate": 17.6
+    },
+    "ヒラメ×相模湾": {
+      "n": 94,
+      "mape": 106.4,
+      "avg_hit": 41.5,
+      "overlap_hit": 66.0,
+      "dir_rate": 29.8
+    },
+    "キンメダイ×相模湾": {
+      "n": 99,
+      "mape": 115.1,
+      "avg_hit": 42.4,
+      "overlap_hit": 75.8,
+      "dir_rate": 20.2
+    },
+    "カワハギ×東京湾奥": {
+      "n": 299,
+      "mape": 60.0,
+      "avg_hit": 83.9,
+      "overlap_hit": 98.7,
+      "dir_rate": 24.7
+    },
+    "カサゴ×東京湾奥": {
+      "n": 22,
+      "mape": 693.9,
+      "avg_hit": 50.0,
+      "overlap_hit": 54.5,
+      "dir_rate": 9.1
+    },
+    "ワラサ×東京湾奥": {
+      "n": 26,
+      "mape": 137.8,
+      "avg_hit": 34.6,
+      "overlap_hit": 34.6,
+      "dir_rate": 15.4
+    },
+    "アマダイ×東京湾奥": {
+      "n": 4,
+      "mape": 98.8,
+      "avg_hit": 75.0,
+      "overlap_hit": 75.0,
+      "dir_rate": 0.0
+    },
+    "アマダイ×茨城": {
+      "n": 65,
+      "mape": 76.2,
+      "avg_hit": 80.0,
+      "overlap_hit": 98.5,
+      "dir_rate": 10.8
+    },
+    "ワラサ×茨城": {
+      "n": 23,
+      "mape": 70.6,
+      "avg_hit": 34.8,
+      "overlap_hit": 78.3,
+      "dir_rate": 30.4
+    },
+    "ヒラメ×東京湾口": {
+      "n": 3,
+      "mape": 188.3,
+      "avg_hit": 33.3,
+      "overlap_hit": 33.3,
+      "dir_rate": 0.0
+    },
+    "アマダイ×相模湾": {
+      "n": 262,
+      "mape": 65.1,
+      "avg_hit": 72.9,
+      "overlap_hit": 96.2,
+      "dir_rate": 17.6
+    },
+    "マルイカ×茨城": {
+      "n": 5,
+      "mape": 113.2,
+      "avg_hit": 100.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 80.0
+    },
+    "スルメイカ×茨城": {
+      "n": 1,
+      "mape": 5.0,
+      "avg_hit": 100.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 0.0
+    },
+    "ヒラメ×茨城": {
+      "n": 245,
+      "mape": 54.5,
+      "avg_hit": 75.1,
+      "overlap_hit": 100.0,
+      "dir_rate": 32.7
+    },
+    "カンパチ×相模湾": {
+      "n": 87,
+      "mape": 66.1,
+      "avg_hit": 37.9,
+      "overlap_hit": 85.1,
+      "dir_rate": 11.5
+    },
+    "カワハギ×相模湾": {
+      "n": 44,
+      "mape": 210.3,
+      "avg_hit": 72.7,
+      "overlap_hit": 88.6,
+      "dir_rate": 15.9
+    },
+    "サワラ×相模湾": {
+      "n": 3,
+      "mape": 70.0,
+      "avg_hit": 33.3,
+      "overlap_hit": 100.0,
+      "dir_rate": 33.3
+    },
+    "クロダイ×相模湾": {
+      "n": 34,
+      "mape": 53.7,
+      "avg_hit": 52.9,
+      "overlap_hit": 97.1,
+      "dir_rate": 29.4
+    },
+    "カツオ×相模湾": {
+      "n": 125,
+      "mape": 89.4,
+      "avg_hit": 37.6,
+      "overlap_hit": 77.6,
+      "dir_rate": 2.4
+    },
+    "カンパチ×東京湾奥": {
+      "n": 2,
+      "mape": 136.0,
+      "avg_hit": 0.0,
+      "overlap_hit": 0.0,
+      "dir_rate": 0.0
+    },
+    "フグ×外房": {
+      "n": 70,
+      "mape": 164.0,
+      "avg_hit": 40.0,
+      "overlap_hit": 75.7,
+      "dir_rate": 1.4
+    },
+    "マダイ×東京湾口": {
+      "n": 278,
+      "mape": 68.8,
+      "avg_hit": 57.2,
+      "overlap_hit": 90.6,
+      "dir_rate": 19.4
+    },
+    "アマダイ×東京湾口": {
+      "n": 205,
+      "mape": 63.7,
+      "avg_hit": 70.2,
+      "overlap_hit": 94.1,
+      "dir_rate": 11.2
+    },
+    "カンパチ×東京湾口": {
+      "n": 22,
+      "mape": 59.1,
+      "avg_hit": 40.9,
+      "overlap_hit": 86.4,
+      "dir_rate": 9.1
+    },
+    "サワラ×東京湾奥": {
+      "n": 133,
+      "mape": 46.4,
+      "avg_hit": 48.1,
+      "overlap_hit": 93.2,
+      "dir_rate": 36.8
+    },
+    "マハタ×東京湾口": {
+      "n": 6,
+      "mape": 165.0,
+      "avg_hit": 0.0,
+      "overlap_hit": 33.3,
+      "dir_rate": 16.7
+    },
+    "ハナダイ×相模湾": {
+      "n": 28,
+      "mape": 37.8,
+      "avg_hit": 78.6,
+      "overlap_hit": 92.9,
+      "dir_rate": 0.0
+    },
+    "アオリイカ×相模湾": {
+      "n": 143,
+      "mape": 58.1,
+      "avg_hit": 81.8,
+      "overlap_hit": 98.6,
+      "dir_rate": 11.2
+    },
+    "マハタ×茨城": {
+      "n": 43,
+      "mape": 166.3,
+      "avg_hit": 20.9,
+      "overlap_hit": 62.8,
+      "dir_rate": 4.7
+    },
+    "ヤリイカ×相模湾": {
+      "n": 311,
+      "mape": 77.7,
+      "avg_hit": 60.5,
+      "overlap_hit": 91.6,
+      "dir_rate": 24.1
+    },
+    "クロムツ×東京湾口": {
+      "n": 5,
+      "mape": 130.0,
+      "avg_hit": 20.0,
+      "overlap_hit": 20.0,
+      "dir_rate": 20.0
+    },
+    "タチウオ×相模湾": {
+      "n": 46,
+      "mape": 89.2,
+      "avg_hit": 32.6,
+      "overlap_hit": 73.9,
+      "dir_rate": 23.9
+    },
+    "タチウオ×茨城": {
+      "n": 28,
+      "mape": 84.3,
+      "avg_hit": 25.0,
+      "overlap_hit": 82.1,
+      "dir_rate": 28.6
+    },
+    "アマダイ×外房": {
+      "n": 4,
+      "mape": 123.8,
+      "avg_hit": 50.0,
+      "overlap_hit": 75.0,
+      "dir_rate": 0.0
+    },
+    "ヤリイカ×茨城": {
+      "n": 57,
+      "mape": 49.2,
+      "avg_hit": 70.2,
+      "overlap_hit": 91.2,
+      "dir_rate": 28.1
+    },
+    "ヤリイカ×外房": {
+      "n": 29,
+      "mape": 61.9,
+      "avg_hit": 34.5,
+      "overlap_hit": 72.4,
+      "dir_rate": 27.6
+    },
+    "メダイ×外房": {
+      "n": 7,
+      "mape": 302.2,
+      "avg_hit": 28.6,
+      "overlap_hit": 57.1,
+      "dir_rate": 14.3
+    },
+    "キンメダイ×外房": {
+      "n": 6,
+      "mape": 124.6,
+      "avg_hit": 16.7,
+      "overlap_hit": 66.7,
+      "dir_rate": 0.0
+    },
+    "マハタ×相模湾": {
+      "n": 3,
+      "mape": 185.6,
+      "avg_hit": 0.0,
+      "overlap_hit": 33.3,
+      "dir_rate": 0.0
+    },
+    "メバル×東京湾奥": {
+      "n": 3,
+      "mape": 754.3,
+      "avg_hit": 33.3,
+      "overlap_hit": 33.3,
+      "dir_rate": 33.3
+    },
+    "メバル×外房": {
+      "n": 1,
+      "mape": 263.3,
+      "avg_hit": 0.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 0.0
+    },
+    "メバル×東京湾口": {
+      "n": 4,
+      "mape": 66.2,
+      "avg_hit": 25.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 25.0
+    },
+    "マルイカ×東京湾口": {
+      "n": 37,
+      "mape": 52.6,
+      "avg_hit": 40.5,
+      "overlap_hit": 83.8,
+      "dir_rate": 8.1
+    },
+    "フグ×相模湾": {
+      "n": 1,
+      "mape": 1420.0,
+      "avg_hit": 0.0,
+      "overlap_hit": 0.0,
+      "dir_rate": 0.0
+    },
+    "マゴチ×東京湾口": {
+      "n": 2,
+      "mape": 16.6,
+      "avg_hit": 100.0,
+      "overlap_hit": 100.0,
+      "dir_rate": 50.0
+    }
+  }
+}
