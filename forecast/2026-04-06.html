@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4月6日(月) 釣果予測 - 船釣り予想</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}
+header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}
+header h1{font-size:22px;color:#4db8ff}
+header p{font-size:12px;color:#7a9bb5;margin-top:4px}
+nav{background:#081020;padding:8px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+nav a{color:#7a9bb5;text-decoration:none;font-size:13px}
+nav a:hover{color:#4db8ff}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
+h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}
+h3{font-size:14px;color:#c8d8e8;margin:16px 0 8px}
+.date-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.date-nav a{display:inline-block;padding:6px 12px;background:#0d2137;border:1px solid #1a4060;border-radius:6px;color:#7a9bb5;font-size:12px;text-decoration:none}
+.date-nav a:hover,.date-nav a.active{color:#4db8ff;border-color:#4db8ff}
+.date-nav a.weekend{font-weight:bold}
+.wx-dash{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.wx-panel{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px;text-align:center}
+.wx-panel-icon{font-size:18px}
+.wx-panel-value{display:block;font-size:16px;font-weight:bold;color:#fff;margin:4px 0 2px}
+.wx-panel-label{font-size:10px;color:#7a9bb5}
+.wx-panel-note{font-size:11px;color:#5a7a95}
+.area-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.area-chip{padding:6px 12px;border-radius:16px;font-size:12px;text-decoration:none;font-weight:bold;color:#fff}
+.area-chip.ok-good{background:#0d3320;border:1px solid #1a5535}
+.area-chip.ok-fair{background:#2a2000;border:1px solid #5a4010}
+.area-chip.ok-warn{background:#2a1000;border:1px solid #553020}
+.area-chip.ok-bad{background:#330d0d;border:1px solid #552020}
+.pick-card{background:linear-gradient(135deg,#0d2137,#132a40);border:1px solid #2a5a8a;border-top:3px solid #d4a853;border-radius:12px;padding:20px;margin-bottom:20px}
+.pick-label{font-size:10px;color:#d4a853;letter-spacing:2px;font-weight:bold;margin-bottom:8px}
+.pick-fish{font-size:20px;font-weight:bold;color:#fff}
+.pick-range{font-size:14px;color:#c8d8e8;margin:6px 0}
+.pick-analysis{font-size:13px;color:#7a9bb5;line-height:1.7;margin:10px 0;background:#081830;border-left:3px solid #d4a853;padding:10px 14px;border-radius:0 8px 8px 0}
+.pick-meta{font-size:11px;color:#5a7a95}
+.pred-table{width:100%;border-collapse:collapse;margin-bottom:16px}
+.pred-table th{background:#081020;color:#4db8ff;padding:8px;font-size:11px;text-align:left;border-bottom:1px solid #1a4060}
+.pred-table td{padding:10px 8px;border-bottom:1px solid #0d2137;font-size:13px}
+.pred-table tr:hover{background:#112a42}
+.conf-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold}
+.conf-A{background:#e85d04;color:#fff}
+.conf-B{background:#1a6ea8;color:#fff}
+.conf-C{background:#1a4060;color:#c8d8e8}
+.conf-D{background:#0d2137;color:#5a7a95;border:1px solid #1a4060}
+.trend-up{color:#4dcc88}.trend-down{color:#cc4d4d}.trend-flat{color:#7a9bb5}
+.detail-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:16px;margin-bottom:12px}
+.detail-card.high-conf{border-top:3px solid #4db8ff}
+.detail-card.low-conf{border-top:3px solid #5a7a95}
+.dc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dc-fish{font-size:16px;font-weight:bold;color:#fff}
+.dc-range{font-size:14px;color:#c8d8e8;margin-bottom:6px}
+.dc-factors{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.dc-factor{font-size:12px;padding:4px 8px;border-radius:4px}
+.dc-factor.good{background:#0d3320;color:#4dcc88}
+.dc-factor.warn{background:#2a2000;color:#f4a261}
+.dc-factor.bad{background:#2a1000;color:#cc4d4d}
+.dc-factor.neutral{background:#1a2a3a;color:#7a9bb5}
+.dc-analysis{font-size:13px;color:#7a9bb5;line-height:1.7;margin:10px 0;padding:10px;background:#081830;border-radius:6px}
+.dc-uncertainty{font-size:12px;color:#f4a261;margin:8px 0;padding:8px;background:#1a1800;border-left:3px solid #f4a261;border-radius:0 6px 6px 0}
+.dc-ships{font-size:12px;color:#5a7a95}
+.paywall{text-align:center;padding:30px;background:linear-gradient(transparent,#0a1628 40%);margin-top:10px}
+.paywall-btn{display:inline-block;background:#e85d04;color:#fff;padding:12px 32px;border-radius:24px;font-size:14px;font-weight:bold;text-decoration:none}
+.paywall-btn:hover{background:#f4a261}
+.paywall-sub{font-size:12px;color:#7a9bb5;margin-top:8px}
+.blur-text{filter:blur(6px);user-select:none}
+.section-note{font-size:12px;color:#5a7a95;margin-bottom:12px}
+@media(max-width:640px){.wx-dash{grid-template-columns:repeat(2,1fr)}.pred-table{font-size:12px}}
+</style>
+</head><body>
+<header><h1>🔮 船釣り予想 プレミアム</h1><p>4月6日(月) 釣果予測</p></header>
+<nav><a href="/forecast/">予測トップ</a><a href="/">無料版トップ</a></nav>
+<div class="wrap"><div class="date-nav"><a href="2026-04-01.html" class="">4/1(水)</a><a href="2026-04-02.html" class="">4/2(木)</a><a href="2026-04-03.html" class="">4/3(金)</a><a href="2026-04-04.html" class="weekend">4/4(土)</a><a href="2026-04-05.html" class="weekend">4/5(日)</a><a href="2026-04-06.html" class="active">4/6(月)</a><a href="2026-04-07.html" class="">4/7(火)</a><a href="2026-W16.html" class="">2週後</a><a href="2026-W17.html" class="">3週後</a><a href="2026-W18.html" class="">4週後</a></div><h2>4月6日(月) 海況</h2>
+<div class="wx-dash">
+<div class="wx-panel"><span class="wx-panel-icon">🌊</span><span class="wx-panel-value">0.8m</span><span class="wx-panel-label">波高</span><span class="wx-panel-note">やや波</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">💨</span><span class="wx-panel-value">5.0m/s</span><span class="wx-panel-label">風速</span><span class="wx-panel-note">弱風</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">☀️</span><span class="wx-panel-value">晴れ</span><span class="wx-panel-label">天気</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">📊</span><span class="wx-panel-value">1013.0hPa</span><span class="wx-panel-label">気圧</span><span class="wx-panel-note">安定</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">🌡️</span><span class="wx-panel-value">16.5℃</span><span class="wx-panel-label">海水温</span></div>
+<div class="wx-panel"><span class="wx-panel-icon">🌙</span><span class="wx-panel-value">中潮</span><span class="wx-panel-label">月齢18.3</span></div>
+</div>
+<p style="font-size:14px;color:#fff;margin-bottom:8px">出船判定: ◎ 出船日和</p><div class="area-chips"><a href="area/%E8%8C%A8%E5%9F%8E.html" class="area-chip ok-good">茨城 ◎ 出船日和</a><a href="area/%E5%8D%83%E8%91%89%E3%83%BB%E5%A4%96%E6%88%BF.html" class="area-chip ok-good">千葉・外房 ◎ 出船日和</a><a href="area/%E5%8D%83%E8%91%89%E3%83%BB%E5%86%85%E6%88%BF.html" class="area-chip ok-good">千葉・内房 ◎ 出船日和</a><a href="area/%E5%8D%83%E8%91%89%E3%83%BB%E6%9D%B1%E4%BA%AC%E6%B9%BE%E5%A5%A5.html" class="area-chip ok-good">千葉・東京湾奥 ◎ 出船日和</a><a href="area/%E6%9D%B1%E4%BA%AC.html" class="area-chip ok-good">東京 ◎ 出船日和</a><a href="area/%E7%A5%9E%E5%A5%88%E5%B7%9D%E3%83%BB%E6%9D%B1%E4%BA%AC%E6%B9%BE.html" class="area-chip ok-good">神奈川・東京湾 ◎ 出船日和</a><a href="area/%E7%A5%9E%E5%A5%88%E5%B7%9D%E3%83%BB%E7%9B%B8%E6%A8%A1%E6%B9%BE.html" class="area-chip ok-good">神奈川・相模湾 ◎ 出船日和</a><a href="area/%E9%9D%99%E5%B2%A1.html" class="area-chip ok-good">静岡 ◎ 出船日和</a></div><div class="pick-card">
+<div class="pick-label">TODAY'S PICK</div>
+<div class="pick-fish">シロギス × 神奈川・東京湾</div>
+<div class="pick-range">予測 24〜224匹 / 13〜24cm　数狙い</div>
+<div class="pick-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+143%）。人気が集まっている。分析データ: 172件</div>
+<div class="pick-meta">📍 弁天屋 / 荒川屋 / 長崎屋　分析データ: 172件</div>
+</div><h2>予測一覧</h2><h3 id="area-%E6%9D%B1%E4%BA%AC">東京 ◎ 出船日和</h3><table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody><tr><td>アジ</td><td>52〜164匹</td><td>16〜30cm</td><td>数</td><td><span class="trend-up">↑</span></td><td><span class="conf-badge conf-C">C</span></td></tr><tr><td>シロギス</td><td>19〜139匹</td><td>14〜24cm</td><td>数</td><td><span class="trend-down">↓</span></td><td><span class="conf-badge conf-C">C</span></td></tr></tbody></table><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">アジ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 52〜164匹 / 16〜30cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+692%）。人気が集まっている。分析データ: 196件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性</div><div class="dc-ships">📍 渡辺釣船店 / かめだや / 船宿 まる八</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">シロギス</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 19〜139匹 / 14〜24cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+143%）。人気が集まっている。分析データ: 71件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 分析データが少なく、予測の精度が出にくい</div><div class="dc-ships">📍 かめだや</div></div><h3 id="area-%E5%8D%83%E8%91%89%E3%83%BB%E6%9D%B1%E4%BA%AC%E6%B9%BE%E5%A5%A5">千葉・東京湾奥 ◎ 出船日和</h3><table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody><tr><td>アジ</td><td>42〜225匹</td><td>13〜40cm</td><td>数</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-B">B</span></td></tr><tr><td>シロギス</td><td>19〜166匹</td><td>12〜24cm</td><td>数</td><td><span class="trend-down">↓</span></td><td><span class="conf-badge conf-C">C</span></td></tr></tbody></table><div class="detail-card high-conf">
+<div class="dc-header"><span class="dc-fish">アジ</span><span class="conf-badge conf-B">B</span></div>
+<div class="dc-range">予測 42〜225匹 / 13〜40cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+692%）。人気が集まっている。分析データ: 241件</div><div class="dc-ships">📍 吉野屋 / 林遊船 / 須原屋</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">シロギス</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 19〜166匹 / 12〜24cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+143%）。人気が集まっている。分析データ: 148件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性</div><div class="dc-ships">📍 須原屋</div></div><h3 id="area-%E7%A5%9E%E5%A5%88%E5%B7%9D%E3%83%BB%E6%9D%B1%E4%BA%AC%E6%B9%BE">神奈川・東京湾 ◎ 出船日和</h3><table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody><tr><td>アジ</td><td>41〜223匹</td><td>15〜42cm</td><td>数</td><td><span class="trend-up">↑</span></td><td><span class="conf-badge conf-A">A</span></td></tr><tr><td>シロギス</td><td>24〜224匹</td><td>13〜24cm</td><td>数</td><td><span class="trend-down">↓</span></td><td><span class="conf-badge conf-C">C</span></td></tr><tr><td>マルイカ</td><td>17〜81匹</td><td>15〜40cm</td><td>数</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-D">D</span></td></tr><tr><td>カワハギ</td><td>7〜27匹</td><td>16〜33cm</td><td>-</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-C">C</span></td></tr><tr><td>マダイ</td><td>3〜11匹</td><td>5〜51cm</td><td>型</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-C">C</span></td></tr><tr><td>アマダイ</td><td>3〜10匹</td><td>5〜51cm</td><td>-</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-C">C</span></td></tr><tr><td>クロムツ</td><td>1〜9匹</td><td>27〜60cm</td><td>-</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-C">C</span></td></tr></tbody></table><div class="detail-card high-conf">
+<div class="dc-header"><span class="dc-fish">アジ</span><span class="conf-badge conf-A">A</span></div>
+<div class="dc-range">予測 41〜223匹 / 15〜42cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+692%）。人気が集まっている。分析データ: 615件</div><div class="dc-ships">📍 弁天屋 / 荒川屋 / 釣船 五郎丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">シロギス</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 24〜224匹 / 13〜24cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+143%）。人気が集まっている。分析データ: 172件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性</div><div class="dc-ships">📍 弁天屋 / 荒川屋 / 長崎屋</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">マルイカ</span><span class="conf-badge conf-D">D</span></div>
+<div class="dc-range">予測 17〜81匹 / 15〜40cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor good">🌙 潮 → 影響あり</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+700%）。人気が集まっている。昨年同週を上回るペースで推移（+1295%）。分析データ: 33件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 分析データが少なく、予測の精度が出にくい</div><div class="dc-ships">📍 山天丸 / 大和丸 / 翔太丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">カワハギ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 7〜27匹 / 16〜33cm　</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 152件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性</div><div class="dc-ships">📍 山下丸 / 巳之助丸 / 山天丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">マダイ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 3〜11匹 / 5〜51cm / 0.4〜3.0kg　型狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor good">🌙 潮 → 影響あり</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+600%）。人気が集まっている。昨年同週を下回るペース（-33%）。分析データ: 167件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 個体差が大きく匹数予測の精度が出にくい魚種</div><div class="dc-ships">📍 山下丸 / 鴨下丸kawana / 米元釣船店</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">アマダイ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 3〜10匹 / 5〜51cm　</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+400%）。人気が集まっている。分析データ: 63件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 分析データが少なく、予測の精度が出にくい</div><div class="dc-ships">📍 山下丸 / 山天丸 / 巳之助丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">クロムツ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 1〜9匹 / 27〜60cm　</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（3匹←2匹←1匹）。出船数が前週から大幅増（+75%）。人気が集まっている。分析データ: 64件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 分析データが少なく、予測の精度が出にくい</div><div class="dc-ships">📍 太郎丸 / 洋征丸 / 新修丸</div></div><h3 id="area-%E5%8D%83%E8%91%89%E3%83%BB%E5%86%85%E6%88%BF">千葉・内房 ◎ 出船日和</h3><table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody><tr><td>アジ</td><td>33〜220匹</td><td>17〜42cm</td><td>数</td><td><span class="trend-down">↓</span></td><td><span class="conf-badge conf-B">B</span></td></tr><tr><td>イサキ</td><td>26〜50匹</td><td>25〜36cm</td><td>-</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-C">C</span></td></tr></tbody></table><div class="detail-card high-conf">
+<div class="dc-header"><span class="dc-fish">アジ</span><span class="conf-badge conf-B">B</span></div>
+<div class="dc-range">予測 33〜220匹 / 17〜42cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+692%）。人気が集まっている。分析データ: 316件</div><div class="dc-ships">📍 光進丸 / 勘次郎丸 / こなや丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">イサキ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 26〜50匹 / 25〜36cm　</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 72件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 分析データが少なく、予測の精度が出にくい</div><div class="dc-ships">📍 佐衛美丸</div></div><h3 id="area-%E7%A5%9E%E5%A5%88%E5%B7%9D%E3%83%BB%E7%9B%B8%E6%A8%A1%E6%B9%BE">神奈川・相模湾 ◎ 出船日和</h3><table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody><tr><td>アジ</td><td>21〜106匹</td><td>10〜43cm</td><td>数</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-B">B</span></td></tr><tr><td>マルイカ</td><td>19〜161匹</td><td>10〜35cm</td><td>数</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-C">C</span></td></tr><tr><td>クロムツ</td><td>4〜26匹</td><td>25〜61cm</td><td>-</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-D">D</span></td></tr><tr><td>アマダイ</td><td>3〜36匹</td><td>5〜48cm</td><td>-</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-C">C</span></td></tr><tr><td>マダイ</td><td>2〜36匹</td><td>5〜48cm</td><td>型</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-B">B</span></td></tr></tbody></table><div class="detail-card high-conf">
+<div class="dc-header"><span class="dc-fish">アジ</span><span class="conf-badge conf-B">B</span></div>
+<div class="dc-range">予測 21〜106匹 / 10〜43cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。南風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+692%）。人気が集まっている。分析データ: 254件</div><div class="dc-ships">📍 庄治郎丸 / 恒丸 / 平安丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">マルイカ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 19〜161匹 / 10〜35cm　数狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor good">🌙 潮 → 影響あり</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。南風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+700%）。人気が集まっている。昨年同週を上回るペースで推移（+1295%）。分析データ: 167件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性</div><div class="dc-ships">📍 庄治郎丸 / はら丸 / たいぞう丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">クロムツ</span><span class="conf-badge conf-D">D</span></div>
+<div class="dc-range">予測 4〜26匹 / 25〜61cm / 2.8〜2.8kg　</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。3週連続上昇中（3匹←2匹←1匹）。出船数が前週から大幅増（+75%）。人気が集まっている。分析データ: 47件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 分析データが少なく、予測の精度が出にくい</div><div class="dc-ships">📍 庄治郎丸 / 平安丸</div></div><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">アマダイ</span><span class="conf-badge conf-C">C</span></div>
+<div class="dc-range">予測 3〜36匹 / 5〜48cm　</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+400%）。人気が集まっている。分析データ: 127件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性</div><div class="dc-ships">📍 庄治郎丸 / ちがさき丸 / たいぞう丸</div></div><div class="detail-card high-conf">
+<div class="dc-header"><span class="dc-fish">マダイ</span><span class="conf-badge conf-B">B</span></div>
+<div class="dc-range">予測 2〜36匹 / 5〜48cm / 0.45〜4.8kg　型狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor good">🌙 潮 → 影響あり</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。南風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+600%）。人気が集まっている。昨年同週を下回るペース（-33%）。分析データ: 285件</div><div class="dc-ships">📍 あまさけや丸 / ちがさき丸 / 庄治郎丸</div></div><h3 id="area-%E8%8C%A8%E5%9F%8E">茨城 ◎ 出船日和</h3><table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody><tr><td>アマダイ</td><td>3〜10匹</td><td>30〜45cm</td><td>-</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-D">D</span></td></tr><tr><td>マダイ</td><td>3〜32匹</td><td>30〜45cm</td><td>型</td><td><span class="trend-flat">→</span></td><td><span class="conf-badge conf-B">B</span></td></tr></tbody></table><div class="detail-card low-conf">
+<div class="dc-header"><span class="dc-fish">アマダイ</span><span class="conf-badge conf-D">D</span></div>
+<div class="dc-range">予測 3〜10匹 / 30〜45cm　</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor neutral">🌙 潮 → 影響限定的</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+400%）。人気が集まっている。分析データ: 21件</div><div class="dc-uncertainty">⚠️ 予測のブレ要因: 分析データが少なく、予測の精度が出にくい</div><div class="dc-ships">📍 大貫丸</div></div><div class="detail-card high-conf">
+<div class="dc-header"><span class="dc-fish">マダイ</span><span class="conf-badge conf-B">B</span></div>
+<div class="dc-range">予測 3〜32匹 / 30〜45cm / 0.2〜4.22kg　型狙い</div>
+<div class="dc-factors"><span class="dc-factor good">🌊 波高 → 好条件</span><span class="dc-factor good">💨 風 → 好条件</span><span class="dc-factor good">🌡️ 水温 → 適温帯</span><span class="dc-factor good">📊 気圧 → 安定</span><span class="dc-factor good">🌙 潮 → 影響あり</span></div><div class="dc-analysis">海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。出船数が前週から大幅増（+600%）。人気が集まっている。昨年同週を下回るペース（-33%）。分析データ: 350件</div><div class="dc-ships">📍 大貫丸 / 弘漁丸 / 日正丸</div></div></div>
+<footer style="text-align:center;padding:20px;font-size:11px;color:#5a7a95">
+© 船釣り予想 funatsuri-yoso.com | データ: 釣りビジョン・Open-Meteo
+</footer></body></html>
