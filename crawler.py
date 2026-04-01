@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.15
+関東船釣り情報クローラー v5.16
+変更点(v5.16):
+- 潮差・月齢を天文計算で算出し釣果予測に連携（_calc_moon_age, _calc_tide_range）
+- wave_periodの予報値をpredict_catchesに直接連携（波高からの間接推定をフォールバックに格下げ）
+- forecast.jsonに潮差・月齢・潮汐タイプを追加
 変更点(v5.15):
 - コンボ別詳細分析（セクション12）: calc_combo_scores()で魚種×エリアグループの複合スコアを計算
 - index.htmlに「注目の魚種×エリア」セクション追加（上位6コンボをカード表示）
 - fish_area/ページにサマリーカード・シーズンバー・トレンドコメント追加
-変更点(v5.15):
 - 海況カード: load_weather_data()で最新weather_data/*.csvを読み込み、build_weather_section()でindex.htmlに海況4エリア表示
 - GA4カスタムイベント: 魚種カードクリック・狙い目クリック・エリアフィルター・魚種検索にgtag()イベント送信
-変更点(v5.15):
 - 爆釣アラート: is_surge()追加（先週比1.5倍以上+出船5隻以上→🔥バッジ）
 - 旬の突入検出: calc_season_entry()追加（今年vs昨年の初釣果週を魚種ページに表示）
 - 週末予測確率: calc_weekend_prob()追加（過去2年同週実績→%表示）
@@ -51,7 +53,7 @@
   → choka_box 単位で li.date から正しい出船日を取得
   → 全釣果に「今日の日付」が入る問題を修正
 """
-import re, json, time, os, csv
+import re, json, time, os, csv, math
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
@@ -285,6 +287,66 @@ def _next_weekend():
     sun = sat + timedelta(days=1)
     return sat, sun
 
+# ── 月齢・潮差の天文計算（標準ライブラリのみ） ──────────────────────
+
+def _calc_moon_age(date_str):
+    """日付文字列(YYYY-MM-DD) → 月齢(0〜29.5)を天文計算で返す。
+    Conway法: 2000年1月6日の新月を基準に、朔望月(29.53059日)で割った余り。
+    """
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        return None
+    # 基準新月: 2000-01-06 18:14 UTC
+    ref = datetime(2000, 1, 6, 18, 14)
+    diff = (dt - ref).total_seconds() / 86400.0
+    age = diff % 29.53059
+    return round(age, 1)
+
+def _moon_title(age):
+    """月齢 → 潮汐タイプ名"""
+    if age is None:
+        return ""
+    # 新月(0), 上弦(7.4), 満月(14.8), 下弦(22.1) 付近が大潮
+    for center in [0, 14.8, 29.53]:
+        if abs(age - center) <= 1.5:
+            return "大潮"
+    for center in [7.4, 22.1]:
+        if abs(age - center) <= 1.0:
+            return "小潮"
+    for center in [7.4, 22.1]:
+        if abs(age - center) <= 2.5:
+            return "中潮"
+    # 大潮の前後
+    for center in [0, 14.8, 29.53]:
+        if abs(age - center) <= 3.5:
+            return "中潮"
+    # 長潮・若潮（小潮の前後）
+    for center in [9.5, 24.0]:
+        if abs(age - center) <= 1.0:
+            return "長潮"
+    for center in [10.5, 25.0]:
+        if abs(age - center) <= 1.0:
+            return "若潮"
+    return "中潮"
+
+def _calc_tide_range(date_str):
+    """日付文字列(YYYY-MM-DD) → 潮差(cm)の概算を天文計算で返す。
+    大潮(新月・満月)で最大、小潮(上弦・下弦)で最小。
+    横須賀の実測データから: 大潮≒120cm, 小潮≒50cm を基準に正弦近似。
+    """
+    age = _calc_moon_age(date_str)
+    if age is None:
+        return None
+    # 月齢 → 朔望サイクルの位相(0〜2π)
+    phase = (age / 29.53059) * 2 * math.pi
+    # 新月(0)・満月(π)で大潮(最大)、上弦(π/2)・下弦(3π/2)で小潮(最小)
+    # cos(2*phase): 0,πで+1、π/2,3π/2で-1
+    amplitude = math.cos(2 * phase)
+    # 潮差: 中央85cm ± 35cm
+    tide_range = 85 + 35 * amplitude
+    return round(tide_range, 1)
+
 def _fetch_marine_forecast(lat, lon, date_from, date_to):
     """Open-Meteo Marine APIから予報を取得。釣りの時間帯(6-15時)の平均を返す。"""
     url = (
@@ -385,11 +447,15 @@ def load_weather_data():
                 w = (wind or {}).get(day, {})
                 key = (group, day)
                 result["forecast"][key] = {
-                    "wave_height": m.get("wave_height"),
-                    "swell":       m.get("swell"),
-                    "sst":         m.get("sst"),
-                    "wind_speed":  w.get("wind_speed"),
-                    "wind_dir":    w.get("wind_dir"),
+                    "wave_height":  m.get("wave_height"),
+                    "wave_period":  m.get("wave_period"),
+                    "swell":        m.get("swell"),
+                    "sst":          m.get("sst"),
+                    "wind_speed":   w.get("wind_speed"),
+                    "wind_dir":     w.get("wind_dir"),
+                    "tide_range":   _calc_tide_range(day),
+                    "moon_age":     _calc_moon_age(day),
+                    "moon_title":   _moon_title(_calc_moon_age(day)),
                 }
             print("OK")
         else:
@@ -859,10 +925,16 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
                 adjustment += effect * (sst_dev / max(1.0, abs(norm_sst))) * 0.5 * prof["sst"] * damping
 
             # 波周期偏差 (weight: prof["wave_period"])
+            fc_wp = fc.get("wave_period")
             if norm_wp is not None and prof["wave_period"] > 0:
                 effect = _calc_deviation_effect(month_rows, "wave_period", norm_wp, 0.5, base_avg)
                 effect = max(-0.3, min(0.3, effect))
-                if fc_wave is not None and norm_wave is not None:
+                if fc_wp is not None:
+                    # 予報値が直接ある場合はそれを使う
+                    wp_dev = fc_wp - norm_wp
+                    adjustment += effect * (wp_dev / max(1.0, norm_wp)) * 0.3 * prof["wave_period"] * damping
+                elif fc_wave is not None and norm_wave is not None:
+                    # フォールバック: 波高から間接推定
                     wp_dev_est = (fc_wave - norm_wave) * 1.5
                     adjustment += effect * (wp_dev_est / max(1.0, norm_wp)) * 0.3 * prof["wave_period"] * damping
 
@@ -969,8 +1041,14 @@ def build_forecast_json(weather_data):
         score = _fishing_ok_score(avg_wave, avg_wind)
         ok_txt, _ = _ok_label(score)
 
-        # 釣果予測（エリア別海況を使用）
-        predictions = predict_catches(index, area_forecasts, month) if month else []
+        # 潮差・月齢（天文計算で確定値）
+        fc_tide = _calc_tide_range(date_str)
+        fc_moon = _calc_moon_age(date_str)
+
+        # 釣果予測（エリア別海況 + 潮差・月齢を使用）
+        predictions = predict_catches(index, area_forecasts, month,
+                                      forecast_tide=fc_tide,
+                                      forecast_moon=fc_moon) if month else []
 
         # 上位10魚種
         top_fish = []
@@ -988,6 +1066,9 @@ def build_forecast_json(weather_data):
             "wave": avg_wave,
             "wind": avg_wind,
             "sst": avg_sst,
+            "tide_range": fc_tide,
+            "moon_age": fc_moon,
+            "moon_title": _moon_title(fc_moon),
             "score": score,
             "ok": ok_txt,
             "areas": {g: {"wave": fc.get("wave_height"), "wind": fc.get("wind_speed"),
