@@ -4,7 +4,7 @@ description: funatsuri-yoso.com の実装状況と次のアクション
 type: project
 ---
 
-現行バージョン: crawler.py v5.18（無料ページ強化 + データ3層蓄積 + trip_no/感想対応）
+現行バージョン: crawler.py v5.19（water_comment + main_fish 追加）
 最終更新: 2026/04/02
 
 ---
