@@ -2735,6 +2735,128 @@ def dedup_catches(catches):
             result.append(c)
     return result
 
+def append_weather_archive():
+    """前日の確定海況を Open-Meteo archive API から取得し weather/YYYY-MM.csv に追記する"""
+    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    csv_path = f"weather/{yesterday[:7]}.csv"
+    os.makedirs("weather", exist_ok=True)
+
+    # 既収録の (point, date) セットを構築してスキップ判定に使う
+    existing_keys = set()
+    file_exists = os.path.exists(csv_path)
+    if file_exists:
+        try:
+            import csv as _csv
+            with open(csv_path, encoding="utf-8", newline="") as f:
+                for row in _csv.DictReader(f):
+                    existing_keys.add((row.get("point",""), row.get("date","")))
+        except Exception:
+            pass
+
+    rows_added = 0
+    import csv as _csv
+    with open(csv_path, "a", encoding="utf-8", newline="") as out_f:
+        writer = _csv.writer(out_f)
+        if not file_exists:
+            writer.writerow(["point","date","hour","wave_height","wave_period","wind_speed","wind_dir","sst","weather_code"])
+
+        for group, coord in AREA_FORECAST_COORDS.items():
+            lat, lon = coord["lat"], coord["lon"]
+            # 既に全時刻分収録済みならスキップ（代表として00時をチェック）
+            if (group, yesterday) in existing_keys:
+                continue
+            try:
+                # Marine archive
+                marine_url = (
+                    f"https://marine-api.open-meteo.com/v1/marine"
+                    f"?latitude={lat}&longitude={lon}"
+                    f"&hourly=wave_height,wave_period,sea_surface_temperature"
+                    f"&start_date={yesterday}&end_date={yesterday}"
+                    f"&timezone=Asia/Tokyo"
+                )
+                req = Request(marine_url, headers={"User-Agent": USER_AGENT})
+                with urlopen(req, timeout=15) as r:
+                    marine_data = json.loads(r.read())
+                time.sleep(0.3)
+                # Atmosphere archive
+                atmos_url = (
+                    f"https://archive-api.open-meteo.com/v1/archive"
+                    f"?latitude={lat}&longitude={lon}"
+                    f"&hourly=wind_speed_10m,wind_direction_10m,weather_code"
+                    f"&start_date={yesterday}&end_date={yesterday}"
+                    f"&timezone=Asia/Tokyo&wind_speed_unit=ms"
+                )
+                req2 = Request(atmos_url, headers={"User-Agent": USER_AGENT})
+                with urlopen(req2, timeout=15) as r2:
+                    atmos_data = json.loads(r2.read())
+                time.sleep(0.3)
+            except Exception as e:
+                print(f"  weather archive [{group}] error: {e}")
+                continue
+
+            m_hourly = marine_data.get("hourly", {})
+            a_hourly = atmos_data.get("hourly", {})
+            times = m_hourly.get("time", [])
+            for i, t in enumerate(times):
+                dt_part, hr_part = t.split("T")
+                hour = int(hr_part.split(":")[0])
+                if hour % 3 != 0:
+                    continue
+                wh = m_hourly.get("wave_height", [None]*(i+1))[i]
+                wp = m_hourly.get("wave_period", [None]*(i+1))[i]
+                sst = m_hourly.get("sea_surface_temperature", [None]*(i+1))[i]
+                ws = a_hourly.get("wind_speed_10m", [None]*(i+1))[i] if a_hourly else None
+                wd = a_hourly.get("wind_direction_10m", [None]*(i+1))[i] if a_hourly else None
+                wc = a_hourly.get("weather_code", [None]*(i+1))[i] if a_hourly else None
+                writer.writerow([
+                    group, dt_part, f"{hour:02d}",
+                    round(wh, 1) if wh is not None else "",
+                    round(wp, 1) if wp is not None else "",
+                    round(ws, 1) if ws is not None else "",
+                    int(wd) if wd is not None else "",
+                    round(sst, 1) if sst is not None else "",
+                    int(wc) if wc is not None else "",
+                ])
+                rows_added += 1
+
+    if rows_added:
+        print(f"weather archive: {rows_added}行追記 → {csv_path}")
+    else:
+        print(f"weather archive: {yesterday} はスキップ（収録済みまたはデータなし）")
+
+
+def append_catches_all(valid_catches):
+    """catches_all.json に今回分の新規レコードを差分追記する"""
+    path = "catches_all.json"
+    existing = []
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            try: existing = json.load(f)
+            except: existing = []
+    keys = {(r["date"], r["ship"], r["area"], r["fish"]) for r in existing}
+    new_rows = []
+    for c in valid_catches:
+        cr = c.get("count_range") or {}
+        sz = c.get("size_cm") or {}
+        for fish in c.get("fish", []):
+            if fish == "不明": continue
+            key = (c["date"], c["ship"], c["area"], fish)
+            if key in keys: continue
+            new_rows.append({
+                "date": c["date"], "ship": c["ship"], "area": c["area"], "fish": fish,
+                "max": cr.get("max", 0),
+                "avg": (cr.get("min", 0) + cr.get("max", 0)) // 2,
+                "is_boat": cr.get("is_boat", False),
+                "size_max": sz.get("max", 0), "weight_avg": 0,
+            })
+    if new_rows:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(existing + new_rows, f, ensure_ascii=False, indent=2)
+        print(f"catches_all.json: {len(new_rows)}件追記 (累計{len(existing)+len(new_rows)}件)")
+    else:
+        print("catches_all.json: 新規レコードなし")
+
+
 def update_history(catches, history):
     """今週・今月のcatchesデータをhistory.jsonに反映する"""
     target_weeks = set()
@@ -2749,6 +2871,7 @@ def update_history(catches, history):
         return history
     temp_w = {}
     temp_m = {}
+    temp_d = {}
     for c in catches:
         if not c.get("date"): continue
         try: dt = datetime.strptime(c["date"], "%Y/%m/%d")
@@ -2766,7 +2889,7 @@ def update_history(catches, history):
         mx  = cr.get("max", 0)
         sz  = sr.get("max", 0)
         for fish in c.get("fish", []):
-            for store, key in [(temp_w, wk), (temp_m, mo)]:
+            for store, key in [(temp_w, wk), (temp_m, mo), (temp_d, c["date"])]:
                 if key not in store: store[key] = {}
                 if fish not in store[key]: store[key][fish] = {"ships": 0, "sum": 0, "cnt": 0, "max": 0, "szs": [], "wkgs": []}
                 d = store[key][fish]
@@ -2789,6 +2912,17 @@ def update_history(catches, history):
                     "size_avg":   round(sum(d["szs"]) / len(d["szs"]), 1) if d["szs"] else 0,
                     "weight_avg": round(sum(d["wkgs"]) / len(d["wkgs"]), 2) if d["wkgs"] else 0,
                 }
+    history.setdefault("daily", {})
+    for date_str, fish_data in temp_d.items():
+        history["daily"][date_str] = {}
+        for fish, d in fish_data.items():
+            history["daily"][date_str][fish] = {
+                "ships": d["ships"],
+                "avg":   round(d["sum"] / d["cnt"], 1) if d["cnt"] > 0 else 0,
+                "max":   d["max"],
+                "size_avg":   round(sum(d["szs"]) / len(d["szs"]), 1) if d["szs"] else 0,
+                "weight_avg": round(sum(d["wkgs"]) / len(d["wkgs"]), 2) if d["wkgs"] else 0,
+            }
     with open("history.json", "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
     return history
@@ -2807,6 +2941,11 @@ def get_prev_week_data(history, fish, year, week_num):
     else:
         prev_key = f"{year-1}/W52"
     return history["weekly"].get(prev_key, {}).get(fish)
+
+def get_daily_data(history, fish, date_str):
+    """history.dailyから特定日・魚種のデータを返す"""
+    return history.get("daily", {}).get(date_str, {}).get(fish)
+
 
 def calc_weekend_prob(history, fish, year, week_num):
     """過去2年の同週±1週の実績から今週末の釣れる確率を算出（0〜100 or None）"""
@@ -3556,15 +3695,21 @@ def calc_combo_scores(data, history):
         # エリア内の代表的な港
         area_ports = list(dict.fromkeys(c["area"] for c in catches))[:3]
 
+        # 前週比レシオ（急落検出用）
+        t_s = (this_w.get("ships") or 0) if this_w else 0
+        p_s = (prev_w.get("ships") or 0) if prev_w else 0
+        wow_ratio = round(t_s / p_s, 2) if (t_s and p_s) else None
+
         results.append({
             "fish": fish, "group": group, "catches": cnt,
             "avg": combo_avg, "max": combo_max, "ships": ships,
             "composite": composite, "trend": trend,
             "ports": area_ports, "season": season,
+            "wow_ratio": wow_ratio,
         })
 
     results.sort(key=lambda x: -x["composite"])
-    return results[:10]
+    return results
 
 
 def build_combo_section(combos):
@@ -3572,7 +3717,7 @@ def build_combo_section(combos):
     if not combos:
         return ""
     cards = ""
-    for i, cb in enumerate(combos[:6]):
+    for i, cb in enumerate(combos[:10]):
         trend_icon = {"up": "↑", "down": "↓", "flat": "→"}.get(cb["trend"], "")
         trend_cls = {"up": "trend-up", "down": "trend-down", "flat": "trend-flat"}.get(cb["trend"], "")
         trend_html = f'<span class="combo-trend {trend_cls}">{trend_icon}</span>' if trend_icon else ""
@@ -3609,11 +3754,29 @@ def build_combo_section(combos):
       <div class="combo-meta">{cb['catches']}件 / {cb['ships']}隻 / {ports_str}</div>
     </a>"""
 
+    # 先週比急落コンボ（-40%以上）
+    declining = sorted(
+        [cb for cb in combos if cb.get("wow_ratio") is not None and cb["wow_ratio"] < 0.6],
+        key=lambda x: x["wow_ratio"]
+    )[:3]
+    declining_html = ""
+    if declining:
+        d_items = ""
+        for cb in declining:
+            link_area = cb["ports"][0] if cb["ports"] else ""
+            link_href = f'fish_area/{quote(cb["fish"], safe="")}_{quote(link_area, safe="")}.html' if link_area else "#"
+            pct = int((cb["wow_ratio"] - 1) * 100)
+            d_items += f'<a href="{link_href}" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0d2137;border-radius:6px;border-left:3px solid #cc4d4d;text-decoration:none;color:#e0e8f0;font-size:13px;margin-bottom:6px"><span>{cb["fish"]} × {cb["group"]}</span><span style="color:#cc4d4d;font-weight:bold">↓ {pct}%</span></a>'
+        declining_html = f"""
+  <h2 style="margin-top:24px">⚠️ 先週比急落コンボ</h2>
+  <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">先週から出船数が大きく減少した組み合わせ。状況変化に注意。</p>
+  <div>{d_items}</div>"""
+
     return f"""
   <h2>🔍 注目の魚種×エリア</h2>
   <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">魚種とエリアの組み合わせをスコアリング。「どこで何を狙うか」の参考に</p>
   <div class="combo-grid">{cards}
-  </div>"""
+  </div>{declining_html}"""
 
 
 def _render_tags(tags):
@@ -4326,6 +4489,16 @@ def build_fish_area_pages(data, crawled_at="", history=None):
             if f != "不明":
                 fa_summary.setdefault((f, c["area"]), []).append(c)
 
+    # catches_all.json を一度だけ読み込んで (fish, area) → records の辞書を構築
+    catches_all_by_fa: dict = {}
+    if os.path.exists("catches_all.json"):
+        with open("catches_all.json", encoding="utf-8") as _f:
+            try:
+                for r in json.load(_f):
+                    catches_all_by_fa.setdefault((r["fish"], r["area"]), []).append(r)
+            except Exception:
+                pass
+
     fish_area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.stat-card .sv{font-size:22px;font-weight:bold;color:#4db8ff;line-height:1.2}.stat-card .sl{font-size:11px;color:#7a9bb5;margin-top:4px}.stat-card.trend-up{border-color:#4dcc88}.stat-card.trend-down{border-color:#cc4d4d}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.boat-catch{color:#f0a040;font-size:11px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.combo-comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin:12px 0}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px;flex-wrap:wrap}.wrap{padding:14px 10px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}}"
 
     now_fa_global = datetime.now()
@@ -4368,6 +4541,33 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <div class="stat-card"><div class="sv">{"%.0f" % combo_avg if combo_avg else "-"}匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else "-"}匹</div><div class="sl">最高釣果</div></div>
 </div>"""
+        # 本日 or 直近のTOP船宿（catches_all.json から）
+        today_str_fa = datetime.now().strftime("%Y/%m/%d")
+        fa_records = catches_all_by_fa.get((fish, area), [])
+        today_records = [r for r in fa_records if r.get("date") == today_str_fa and not r.get("is_boat")]
+        if today_records:
+            best_r = max(today_records, key=lambda r: r.get("avg", 0))
+            top_ship_html = (
+                f'<div style="background:#0d2137;border-left:3px solid #e85d04;padding:10px 14px;'
+                f'border-radius:4px;margin:12px 0;font-size:13px">'
+                f'🏅 本日のTOP船宿: <strong style="color:#4db8ff">{best_r["ship"]}</strong>'
+                f' 最高{best_r["max"]}匹 / 平均{best_r["avg"]}匹</div>'
+            )
+        elif fa_records:
+            recent_date = max((r.get("date","") for r in fa_records), default="")
+            recent_recs = [r for r in fa_records if r.get("date") == recent_date and not r.get("is_boat")]
+            if recent_recs:
+                best_r = max(recent_recs, key=lambda r: r.get("avg", 0))
+                top_ship_html = (
+                    f'<div style="background:#0d2137;border-left:3px solid #3a5a7a;padding:10px 14px;'
+                    f'border-radius:4px;margin:12px 0;font-size:13px;color:#7a9bb5">'
+                    f'🏅 直近TOP船宿 ({recent_date}): <strong style="color:#4db8ff">{best_r["ship"]}</strong>'
+                    f' 最高{best_r["max"]}匹</div>'
+                )
+            else:
+                top_ship_html = ""
+        else:
+            top_ship_html = ""
         # シーズンバー
         season_bar_fa = build_season_bar(fish, current_month_fa)
         # コンボコメント
@@ -4382,6 +4582,55 @@ def build_fish_area_pages(data, crawled_at="", history=None):
         else:
             combo_cmt = f"💬 {group_fa}の{fish}はオフシーズンですが釣果報告あり。"
         combo_comment_html = f'<div class="combo-comment">{combo_cmt}</div>'
+        # シーズンスコア星評価
+        stars_fa = "★" * season_score_fa + "☆" * (5 - season_score_fa)
+        season_score_html = (
+            f'<div style="font-size:13px;color:#7a9bb5;margin:4px 0 12px">'
+            f'シーズンスコア: <span style="color:#e85d04;font-size:15px">{stars_fa}</span>'
+            f' ({season_score_fa}/5)</div>'
+        )
+        # 7日間日次折れ線グラフ（catches_all.json から）
+        _from_date = datetime.now() - timedelta(days=6)
+        _labels = [(_from_date + timedelta(days=i)).strftime("%m/%d") for i in range(7)]
+        _dates_now = [(_from_date + timedelta(days=i)).strftime("%Y/%m/%d") for i in range(7)]
+        _dates_ly  = [(_from_date - timedelta(days=365) + timedelta(days=i)).strftime("%Y/%m/%d") for i in range(7)]
+        def _day_avg(records, date_str):
+            recs = [r for r in records if r.get("date") == date_str and not r.get("is_boat")]
+            return round(sum(r.get("avg", 0) for r in recs) / len(recs), 1) if recs else None
+        _this_yr = [_day_avg(fa_records, d) for d in _dates_now]
+        _last_yr = [_day_avg(fa_records, d) for d in _dates_ly]
+        _uid = (fish + "_" + area).replace(" ", "_").replace("・", "_")
+        daily_chart_html = f"""
+  <h2>📈 過去7日間の釣果推移</h2>
+  <canvas id="dc_{_uid}" style="max-height:200px;margin-bottom:8px"></canvas>
+  <script>
+  (function(){{
+    var ctx = document.getElementById('dc_{_uid}');
+    if(!ctx) return;
+    new Chart(ctx, {{type:'line',data:{{labels:{json.dumps(_labels)},datasets:[
+      {{label:'今年',data:{json.dumps(_this_yr)},borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4}},
+      {{label:'昨年',data:{json.dumps(_last_yr)},borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}}
+    ]}},options:{{responsive:true,plugins:{{legend:{{labels:{{color:'#e0e8f0'}}}}}},
+      scales:{{x:{{ticks:{{color:'#7a9bb5'}}}},y:{{ticks:{{color:'#7a9bb5'}},beginAtZero:true,title:{{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}}}}}
+    }});
+  }})();
+  </script>"""
+        # 未来7日ブラー + 有料CTA
+        _dummy_bars = "".join(
+            f'<div style="flex:1;background:#4db8ff;height:{h}%;border-radius:3px 3px 0 0"></div>'
+            for h in [55, 70, 45, 80, 60, 75, 50]
+        )
+        future_cta_html = f"""
+  <div style="position:relative;margin:0 0 24px">
+    <div style="filter:blur(5px);pointer-events:none;background:#0d2137;border-radius:6px;padding:16px">
+      <div style="display:flex;gap:6px;align-items:flex-end;height:80px">{_dummy_bars}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">{"".join(f'<span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">{l}</span>' for l in _labels)}</div>
+    </div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1">
+      <a href="../forecast/index.html" style="display:inline-block;background:#e85d04;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:14px;white-space:nowrap">📈 この魚の来週予測を見る →</a>
+      <div style="font-size:11px;color:#aaa;margin-top:6px">スポット100円 / 月額500円</div>
+    </div>
+  </div>"""
         rows = ""
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]:
             cnt_str = fmt_count(c)
@@ -4452,6 +4701,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_encoded}.html"}},{{"@type":"ListItem","position":3,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
   {GA_TAG}
   {ADSENSE_TAG}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>{fish_area_css}</style>
 </head><body>
 <header>
@@ -4467,8 +4717,12 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 </nav>
 <div class="wrap">
   {stat_cards_fa}
+  {top_ship_html}
   <h2>📅 年間シーズン</h2>{season_bar_fa}
+  {season_score_html}
   {combo_comment_html}
+  {daily_chart_html}
+  {future_cta_html}
   {yoy_html}
   <h2>🏆 船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table></div>
@@ -4861,6 +5115,8 @@ def main():
 
     history = load_history()
     history = update_history(valid_catches, history)
+    append_catches_all(valid_catches)
+    append_weather_archive()
 
     # 日次CSV蓄積
     csv_added = save_daily_csv(all_catches)
