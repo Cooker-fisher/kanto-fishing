@@ -4,12 +4,30 @@ description: funatsuri-yoso.com の実装状況と次のアクション
 type: project
 ---
 
-現行バージョン: crawler.py v5.17
-最終更新: 2026/04/01
+現行バージョン: crawler.py v5.18（無料ページ強化 + データ3層蓄積 + trip_no/感想対応）
+最終更新: 2026/04/02
 
 ---
 
 ## ★ 次チャットでやること（優先度順）
+
+### 0. 感想・出番データの動作確認（2026/04/02 実装済み・要実機確認）
+
+`python crawler.py` 実行後に catches.json で以下を確認:
+- `trip_no` フィールドが入っているか（1/2/3...の整数）
+- 同一出番の複数魚種（例: アジ・マダイ・クロダイ）が同じ `trip_no` を持つか
+- `trip_comment` に感想テキストが入っているか
+- `trip_type` に釣り物名（「LT五目」「アマダイ」等）が入っているか
+
+**ブラウザでHTMLを確認してほしいこと:**
+- 出番単位の休船（「マダイ便のみ欠航」等）はHTMLでどう表現されているか？
+  → 確認後に `is_cancellation` を出番単位で付与するか判断
+- 感想の実際のHTMLタグ構造（`<p>1 LT五目...` なのか `<li>` なのか等）
+  → パターンが異なれば正規表現を調整
+
+**新魚種FISH_MAP追加（実行後に判断）:**
+スクリーンショットで確認済みの未登録魚種:
+アオリイカ、カツオ、シイラ、カマス、イトヨリダイ、イシダイ、ホウボウ
 
 ### 1. 有料予測ページの動作確認・改善
 有料ページ機能はv5.15〜v5.17で実装済み。ただし実際のHTMLを目視確認できていない。
@@ -93,6 +111,35 @@ type: project
 
 ---
 
+## 実装済み機能（2026/04/02 追加）
+
+### 釣果データに出番・感想フィールド追加
+- ✅ `trip_no`: 出番番号（■1/■2/■3 → int）。0列目から抽出、同一出番を複数行引き継ぎ
+- ✅ `trip_type`: 釣り物名（感想先頭から抽出。「LT五目」「アマダイ」等）
+- ✅ `trip_comment`: 感想全文（生テキスト保存）
+- ✅ `_extract_trip_comments()`: choka_box内のテーブル外テキストから感想を出番番号→dictに変換
+- 出番単位の休船判定は実HTML確認後に実装予定（現状は生テキスト保存のみ）
+- 釣り物（trip_type）と魚種（fish）を明示的に分離
+
+### 無料ページ強化 + データ3層蓄積（v5.18）
+
+**データ蓄積層:**
+- ✅ `append_catches_all()`: catches_all.json に差分追記（毎クロール時）← **生データ層**
+- ✅ `append_weather_archive()`: 前日確定海況を weather/YYYY-MM.csv に追記
+- ✅ `update_history()`: daily キー追加（日次集計保存）
+
+**生データの活用:**
+- ✅ `build_fish_area_pages()` が catches_all.json を読み込み（関数先頭で一括ロード）
+  - 本日/直近TOP船宿の表示（`today_records` フィルタ）
+  - 過去7日間 + 昨年同期の折れ線グラフデータ（`_day_avg()` で日別集計）
+
+**無料ページ表示改善:**
+- ✅ `calc_combo_scores()`: wow_ratio 追加、全件返却
+- ✅ `build_combo_section()`: TOP6→TOP10 + 先週比急落コンボセクション
+- ✅ `build_fish_area_pages()`: TOP船宿・シーズンスコア星評価（★☆）・Chart.js 7日グラフ・未来7日ブラー＋有料CTA
+
+---
+
 ## ブランチ情報
-- 作業ブランチ: `claude/review-fishing-forecast-UenjU`
+- 作業ブランチ: `claude/continue-work-hS6fn`
 - リポジトリ: cooker-fisher/kanto-fishing
