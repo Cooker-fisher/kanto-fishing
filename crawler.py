@@ -2328,6 +2328,15 @@ def parse_catches_from_html(html, ship, area, year):
         box_parser = TableParser()
         box_parser.feed(box_html)
         catches = _parse_tables(box_parser.tables, ship, area, date, month)
+
+        # 感想テキストを抽出して各catchに紐付け
+        trip_comments = _extract_trip_comments(box_html)
+        for c in catches:
+            t = c.get("trip_no")
+            if t is not None and t in trip_comments:
+                c["trip_comment"] = trip_comments[t]["comment"]
+                c["trip_type"]    = trip_comments[t]["trip_type"]
+
         results.extend(catches)
 
         # テーブルが空 → 休船テキストを検出
@@ -2360,6 +2369,37 @@ def parse_catches_from_html(html, ship, area, year):
     return results
 
 
+def _extract_trip_comments(box_html):
+    """
+    choka_boxのHTMLからテーブル外の感想テキストを抽出。
+    '1 LT五目...' や '■1 LT五目...' のパターンを出船番号→感想のdictに変換。
+    Returns: {1: {"comment": "LT五目。他に...", "trip_type": "LT五目"}, ...}
+    """
+    # テーブルタグを除去
+    no_table = re.sub(r'<table[\s\S]*?</table>', '', box_html, flags=re.I)
+    # HTMLタグを除去してプレーンテキスト化
+    plain = re.sub(r'<[^>]+>', ' ', no_table)
+    plain = ' '.join(plain.split())
+
+    comments = {}
+    # ■1...■2 のような区切りで分割（■あり・なし両対応）
+    for m in re.finditer(r'[■□]?(\d+)\s+([^■□\d][^■□]*?)(?=[■□]?\d+\s+[^■□\d]|$)', plain):
+        trip_no = int(m.group(1))
+        text = m.group(2).strip()
+        if not text or len(text) <= 2:
+            continue
+        # 釣り物: 最初の「。」「、」「 」の前がtrip名
+        # 例: "LT五目。他にイナダ..." → "LT五目"
+        # 例: "他にカンコ・..." → None（「他に」で始まるものは釣り物名なし）
+        trip_type = None
+        if not text.startswith("他に"):
+            type_m = re.match(r'^([^\s。、・]{2,10})[\s。、]', text)
+            if type_m:
+                trip_type = type_m.group(1)
+        comments[trip_no] = {"comment": text, "trip_type": trip_type}
+    return comments
+
+
 def _parse_tables(tables, ship, area, date, month):
     """テーブルリストから釣果を抽出（日付は呼び出し元から受け取る）"""
     results = []
@@ -2374,9 +2414,17 @@ def _parse_tables(tables, ship, area, date, month):
         size_idx   = next((i for i,h in enumerate(header) if "大きさ" in h), 3)
         weight_idx = next((i for i,h in enumerate(header) if "重さ" in h), 4)
         point_idx  = next((i for i,h in enumerate(header) if "ポイント" in h), None)
+        # 0列目が出番列（ヘッダーなし or 空）と判定
+        trip_no_idx = 0 if fish_idx >= 1 else None
 
+        current_trip_no = None
         for row in table[1:]:
             if len(row) <= fish_idx: continue
+            # 0列目から出船番号を抽出（数字を含む場合のみ更新、空欄は前行を引き継ぎ）
+            if trip_no_idx is not None and trip_no_idx < len(row):
+                tn_m = re.search(r'(\d+)', row[trip_no_idx])
+                if tn_m:
+                    current_trip_no = int(tn_m.group(1))
             fish_name = row[fish_idx].strip()
             if not fish_name or fish_name in ("魚種", "-", "－", ""): continue
             count_str  = row[count_idx].strip()  if count_idx  < len(row) else ""
@@ -2402,6 +2450,9 @@ def _parse_tables(tables, ship, area, date, month):
                 "weight_kg":   extract_weight_kg(weight_str) or extract_weight_kg(size_str),
                 "point_place": _pp,
                 "point_depth": _pd,
+                "trip_no":     current_trip_no,
+                "trip_type":   None,
+                "trip_comment": None,
             })
     return results
 
