@@ -4,7 +4,7 @@ description: funatsuri-yoso.com の実装状況と次のアクション
 type: project
 ---
 
-現行バージョン: crawler.py v5.17 + trip_no/感想対応
+現行バージョン: crawler.py v5.18（無料ページ強化 + データ3層蓄積 + trip_no/感想対応）
 最終更新: 2026/04/02
 
 ---
@@ -120,6 +120,14 @@ type: project
 - ✅ `_extract_trip_comments()`: choka_box内のテーブル外テキストから感想を出番番号→dictに変換
 - 出番単位の休船判定は実HTML確認後に実装予定（現状は生テキスト保存のみ）
 - 釣り物（trip_type）と魚種（fish）を明示的に分離
+
+### 無料ページ強化 + データ3層蓄積（v5.18）
+- ✅ `append_catches_all()`: catches_all.json に差分追記（毎クロール時）
+- ✅ `append_weather_archive()`: 前日確定海況を weather/YYYY-MM.csv に追記
+- ✅ `update_history()`: daily キー追加（日次集計保存）
+- ✅ `calc_combo_scores()`: wow_ratio 追加、全件返却
+- ✅ `build_combo_section()`: TOP6→TOP10 + 先週比急落コンボセクション
+- ✅ `build_fish_area_pages()`: TOP船宿・シーズンスコア星評価・Chart.js 7日グラフ・有料CTA
 
 ---
 
