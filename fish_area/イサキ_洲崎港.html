@@ -12,6 +12,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":2,"name":"イサキの釣果","item":"https://funatsuri-yoso.com/fish/%E3%82%A4%E3%82%B5%E3%82%AD.html"},{"@type":"ListItem","position":3,"name":"洲崎港のイサキ釣果","item":"https://funatsuri-yoso.com/fish_area/%E3%82%A4%E3%82%B5%E3%82%AD_%E6%B4%B2%E5%B4%8E%E6%B8%AF.html"}]}</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.stat-card .sv{font-size:22px;font-weight:bold;color:#4db8ff;line-height:1.2}.stat-card .sl{font-size:11px;color:#7a9bb5;margin-top:4px}.stat-card.trend-up{border-color:#4dcc88}.stat-card.trend-down{border-color:#cc4d4d}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.boat-catch{color:#f0a040;font-size:11px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.combo-comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin:12px 0}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px;flex-wrap:wrap}.wrap{padding:14px 10px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}}</style>
 </head><body>
 <header>
@@ -31,8 +32,36 @@
   <div class="stat-card"><div class="sv">34匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card trend-down"><div class="sv">50匹</div><div class="sl">最高釣果</div></div>
 </div>
+  <div style="background:#0d2137;border-left:3px solid #3a5a7a;padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px;color:#7a9bb5">🏅 直近TOP船宿 (2026/03/30): <strong style="color:#4db8ff">佐衛美丸</strong> 最高40匹</div>
   <h2>📅 年間シーズン</h2><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell low " title="3月">3</div><div class="sb-cell mid now" title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-size " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell low " title="10月">10</div><div class="sb-cell low " title="11月">11</div><div class="sb-cell low " title="12月">12</div></div>
+  <div style="font-size:13px;color:#7a9bb5;margin:4px 0 12px">シーズンスコア: <span style="color:#e85d04;font-size:15px">★★★☆☆</span> (3/5)</div>
   <div class="combo-comment">💬 千葉・内房のイサキはシーズン中盤。安定した釣果が期待できます。</div>
+  
+  <h2>📈 過去7日間の釣果推移</h2>
+  <canvas id="dc_イサキ_洲崎港" style="max-height:200px;margin-bottom:8px"></canvas>
+  <script>
+  (function(){
+    var ctx = document.getElementById('dc_イサキ_洲崎港');
+    if(!ctx) return;
+    new Chart(ctx, {type:'line',data:{labels:["03/27", "03/28", "03/29", "03/30", "03/31", "04/01", "04/02"],datasets:[
+      {label:'今年',data:[26.0, 45.0, 36.0, 24.0, null, null, null],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
+      {label:'昨年',data:[null, null, null, null, null, null, null],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
+    ]},options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8f0'}}},
+      scales:{x:{ticks:{color:'#7a9bb5'}},y:{ticks:{color:'#7a9bb5'},beginAtZero:true,title:{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}
+    });
+  })();
+  </script>
+  
+  <div style="position:relative;margin:0 0 24px">
+    <div style="filter:blur(5px);pointer-events:none;background:#0d2137;border-radius:6px;padding:16px">
+      <div style="display:flex;gap:6px;align-items:flex-end;height:80px"><div style="flex:1;background:#4db8ff;height:55%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:70%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:45%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:80%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:60%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:75%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:50%;border-radius:3px 3px 0 0"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/27</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/28</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/29</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/30</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/31</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">04/01</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">04/02</span></div>
+    </div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1">
+      <a href="../forecast/index.html" style="display:inline-block;background:#e85d04;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:14px;white-space:nowrap">📈 この魚の来週予測を見る →</a>
+      <div style="font-size:11px;color:#aaa;margin-top:6px">スポット100円 / 月額500円</div>
+    </div>
+  </div>
   
   <h2>🏆 船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr><td style="color:#4db8ff;font-weight:bold;width:24px">1</td><td><strong>佐衛美丸</strong></td><td style="color:#4dcc88">5件</td><td style="color:#e85d04">最高50匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
@@ -53,6 +82,6 @@
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: 2026/04/01 11:31</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: 2026/04/02 11:08</p>
 </footer>
 </body></html>
