@@ -5562,12 +5562,13 @@ def main():
     now = datetime.now()
     crawled_at = now.strftime("%Y/%m/%d %H:%M")
     year = now.year
-    fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
-    gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
+    active_ships = [s for s in SHIPS if not s.get("exclude")]
+    fv_count  = sum(1 for s in active_ships if s.get("source", "fishing-v") == "fishing-v")
+    gyo_count = sum(1 for s in active_ships if s.get("source") == "gyo")
     print(f"=== 関東船釣りクローラー v5.15 開始: {crawled_at} ===")
-    print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
+    print(f"対象: {len(active_ships)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
-    for s in SHIPS:
+    for s in active_ships:
         source = s.get("source", "fishing-v")
         print(f"  [{s['area']}] {s['name']} ({source}) ...", end=" ", flush=True)
         if source == "gyo":

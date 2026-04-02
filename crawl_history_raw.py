@@ -89,7 +89,7 @@ def crawl_ship_all_pages(ship, year):
 def main():
     skip_done = "--skip-done" in sys.argv
 
-    ships = [s for s in crawler.SHIPS if s.get("source", "fishing-v") == "fishing-v"]
+    ships = [s for s in crawler.SHIPS if s.get("source", "fishing-v") == "fishing-v" and not s.get("exclude")]
     year  = datetime.now().year
 
     print(f"=== 過去データ取得 → catches_raw.json ===", flush=True)

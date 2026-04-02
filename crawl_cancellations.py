@@ -55,6 +55,7 @@ TARGET_SHIPS = {
     "岩崎レンタルボート(岩崎つり具店)",
     "敷嶋丸",
     "龍正丸",
+    "吉野屋",   # page13でタイムアウト→データ不足のため追加
 }
 
 
@@ -102,7 +103,7 @@ def crawl_ship_all_pages(ship, year):
 
 
 def main():
-    all_ships = [s for s in crawler.SHIPS if s.get("source", "fishing-v") == "fishing-v"]
+    all_ships = [s for s in crawler.SHIPS if s.get("source", "fishing-v") == "fishing-v" and not s.get("exclude")]
     target    = [s for s in all_ships if s["name"] in TARGET_SHIPS]
     year      = datetime.now().year
 
