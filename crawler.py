@@ -2954,24 +2954,29 @@ def append_catches_all(valid_catches):
 def to_raw_record(c):
     """catchレコード → catches_raw.json 用生フォーマットに変換（加工・正規化なし）"""
     return {
-        "ship":         c["ship"],
-        "area":         c["area"],
-        "date":         c["date"],
-        "trip_no":      c.get("trip_no"),
-        "fish_raw":     c.get("fish_raw", ""),
-        "count_raw":    c.get("count_raw", ""),
-        "size_raw":     c.get("size_raw", ""),
-        "weight_raw":   c.get("weight_raw", ""),
-        "tokki_raw":    c.get("tokki_raw", ""),
-        "point_raw":    c.get("point_raw", ""),
-        "kanso_raw":    c.get("trip_comment"),   # 感想（div.choka_comment の生テキスト）
-        "suion_raw":    None,                    # 水温（今後 choka_box から個別抽出）
-        "suishoku_raw": None,                    # 水色（今後 choka_box から個別抽出）
+        "ship":            c["ship"],
+        "area":            c["area"],
+        "date":            c["date"],
+        "trip_no":         c.get("trip_no"),
+        "is_cancellation": c.get("is_cancellation", False),
+        "reason_text":     c.get("reason_text", ""),   # 欠航理由（is_cancellation=Trueのみ）
+        "fish_raw":        c.get("fish_raw", ""),
+        "count_raw":       c.get("count_raw", ""),
+        "size_raw":        c.get("size_raw", ""),
+        "weight_raw":      c.get("weight_raw", ""),
+        "tokki_raw":       c.get("tokki_raw", ""),
+        "point_raw":       c.get("point_raw", ""),
+        "kanso_raw":       c.get("trip_comment"),   # 感想（div.choka_comment の生テキスト）
+        "suion_raw":       None,                    # 水温（今後 choka_box から個別抽出）
+        "suishoku_raw":    None,                    # 水色（今後 choka_box から個別抽出）
     }
 
 
 def append_raw_json(valid_catches):
-    """catches_raw.json に今回分の新規レコードを差分追記する（dedup キー: ship/date/trip_no/fish_raw）"""
+    """catches_raw.json に今回分の新規レコードを差分追記する。
+    釣果レコード: dedup キー = (ship, date, trip_no, fish_raw)
+    欠航レコード: dedup キー = (ship, date, "CANCEL", "") ← 負例データとして保存
+    """
     path = "catches_raw.json"
     existing = []
     if os.path.exists(path):
@@ -2981,18 +2986,28 @@ def append_raw_json(valid_catches):
     keys = {(r["ship"], r["date"], str(r.get("trip_no")), r.get("fish_raw","")) for r in existing}
     new_rows = []
     for c in valid_catches:
-        if c.get("is_cancellation") or not c.get("fish_raw"):
-            continue
-        raw = to_raw_record(c)
-        key = (raw["ship"], raw["date"], str(raw.get("trip_no")), raw.get("fish_raw",""))
-        if key not in keys:
-            new_rows.append(raw)
-            keys.add(key)
+        if c.get("is_cancellation"):
+            # 欠航レコード: fish_rawなしでも保存（予測モデルの負例データ）
+            raw = to_raw_record(c)
+            key = (raw["ship"], raw["date"], "CANCEL", "")
+            if key not in keys:
+                new_rows.append(raw)
+                keys.add(key)
+        elif c.get("fish_raw"):
+            # 通常釣果レコード
+            raw = to_raw_record(c)
+            key = (raw["ship"], raw["date"], str(raw.get("trip_no")), raw.get("fish_raw",""))
+            if key not in keys:
+                new_rows.append(raw)
+                keys.add(key)
+        # fish_rawもis_cancellationもない行（表ヘッダー等）はスキップ
     if new_rows:
         existing.extend(new_rows)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(existing, f, ensure_ascii=False, indent=2)
-        print(f"catches_raw.json: {len(new_rows)}件追記 (累計{len(existing)}件)")
+        cancels = sum(1 for r in new_rows if r.get("is_cancellation"))
+        catches = len(new_rows) - cancels
+        print(f"catches_raw.json: {len(new_rows)}件追記（釣果{catches}件＋欠航{cancels}件）累計{len(existing)}件")
     else:
         print("catches_raw.json: 新規レコードなし")
     return len(new_rows)

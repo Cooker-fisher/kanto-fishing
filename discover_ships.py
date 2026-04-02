@@ -12,7 +12,7 @@ import re, time, sys, json, os
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
-PREFS = {"8": "茨城", "12": "千葉", "13": "東京", "14": "神奈川"}
+PREFS = {"8": "茨城", "12": "千葉", "13": "東京", "14": "神奈川", "22": "静岡"}
 
 # 船釣りサイトに不要な施設（海釣り公園・かかり釣り等）を除外
 EXCLUDE_KEYWORDS = ["フィッシングピアーズ", "かかり釣りセンター", "海釣り施設"]
