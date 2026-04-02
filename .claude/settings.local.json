@@ -52,7 +52,9 @@
       "Bash(grep -r \"offset.*km\\\\|km.*offset\\\\|bearing\\\\|方位\" C:/Users/newsh/Desktop/kanto-fishing/ --include=*.py -n)",
       "Bash(grep -n \"offset.*km\\\\|km.*offset\\\\|港.*X km\\\\|harbor.*offset\" C:/Users/newsh/.claude/projects/C--Users-newsh-Desktop-kanto-fishing/*.jsonl)",
       "Bash(find C:/Users/newsh/Desktop/kanto-fishing/ -maxdepth 2 -type f \\\\\\(-name *.md -o -name *.json -o -name *harbor* -o -name *offset* \\\\\\))",
-      "Bash(grep -v \"^学習\\\\|^テスト\\\\|^予測\\\\|^ベース\\\\|^詳細\\\\|^$\")"
+      "Bash(grep -v \"^学習\\\\|^テスト\\\\|^予測\\\\|^ベース\\\\|^詳細\\\\|^$\")",
+      "Bash(del C:UsersnewshDesktopkanto-fishing_sample_test.json)",
+      "Bash(1 cat:*)"
     ]
   },
   "hooks": {

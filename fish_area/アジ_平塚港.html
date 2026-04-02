@@ -32,7 +32,7 @@
   <div class="stat-card"><div class="sv">19匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card trend-down"><div class="sv">50匹</div><div class="sl">最高釣果</div></div>
 </div>
-  <div style="background:#0d2137;border-left:3px solid #e85d04;padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px">🏅 本日のTOP船宿: <strong style="color:#4db8ff">庄治郎丸</strong> 最高22匹 / 平均15匹</div>
+  <div style="background:#0d2137;border-left:3px solid #3a5a7a;padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px;color:#7a9bb5">🏅 直近TOP船宿 (2026/04/02): <strong style="color:#4db8ff">庄治郎丸</strong> 最高22匹</div>
   <h2>📅 年間シーズン</h2><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid " title="3月">3</div><div class="sb-cell peak-count now" title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
   <div style="font-size:13px;color:#7a9bb5;margin:4px 0 12px">シーズンスコア: <span style="color:#e85d04;font-size:15px">★★★★☆</span> (4/5)</div>
   <div class="combo-comment">💬 神奈川・相模湾のアジは今月がシーズン本番。↓ 減少の傾向です。</div>
@@ -43,9 +43,9 @@
   (function(){
     var ctx = document.getElementById('dc_アジ_平塚港');
     if(!ctx) return;
-    new Chart(ctx, {type:'line',data:{labels:["03/27", "03/28", "03/29", "03/30", "03/31", "04/01", "04/02"],datasets:[
-      {label:'今年',data:[13.0, 17.0, 29.0, 22.0, null, null, 15.0],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
-      {label:'昨年',data:[28.5, null, 13.5, 18.0, 20.0, null, null],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
+    new Chart(ctx, {type:'line',data:{labels:["03/28", "03/29", "03/30", "03/31", "04/01", "04/02", "04/03"],datasets:[
+      {label:'今年',data:[17.0, 29.0, 22.0, null, null, 15.0, null],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
+      {label:'昨年',data:[null, 13.5, 18.0, 20.0, null, null, 23.0],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
     ]},options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8f0'}}},
       scales:{x:{ticks:{color:'#7a9bb5'}},y:{ticks:{color:'#7a9bb5'},beginAtZero:true,title:{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}
     });
@@ -55,7 +55,7 @@
   <div style="position:relative;margin:0 0 24px">
     <div style="filter:blur(5px);pointer-events:none;background:#0d2137;border-radius:6px;padding:16px">
       <div style="display:flex;gap:6px;align-items:flex-end;height:80px"><div style="flex:1;background:#4db8ff;height:55%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:70%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:45%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:80%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:60%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:75%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:#4db8ff;height:50%;border-radius:3px 3px 0 0"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/27</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/28</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/29</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/30</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/31</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">04/01</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">04/02</span></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/28</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/29</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/30</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">03/31</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">04/01</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">04/02</span><span style="flex:1;text-align:center;font-size:10px;color:#7a9bb5">04/03</span></div>
     </div>
     <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1">
       <a href="../forecast/index.html" style="display:inline-block;background:#e85d04;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:14px;white-space:nowrap">📈 この魚の来週予測を見る →</a>
@@ -82,6 +82,6 @@
 <footer>
   <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
   <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: 2026/04/02 11:08</p>
+  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: 2026/04/03 00:51</p>
 </footer>
 </body></html>
