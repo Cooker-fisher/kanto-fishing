@@ -122,12 +122,21 @@ type: project
 - 釣り物（trip_type）と魚種（fish）を明示的に分離
 
 ### 無料ページ強化 + データ3層蓄積（v5.18）
-- ✅ `append_catches_all()`: catches_all.json に差分追記（毎クロール時）
+
+**データ蓄積層:**
+- ✅ `append_catches_all()`: catches_all.json に差分追記（毎クロール時）← **生データ層**
 - ✅ `append_weather_archive()`: 前日確定海況を weather/YYYY-MM.csv に追記
 - ✅ `update_history()`: daily キー追加（日次集計保存）
+
+**生データの活用:**
+- ✅ `build_fish_area_pages()` が catches_all.json を読み込み（関数先頭で一括ロード）
+  - 本日/直近TOP船宿の表示（`today_records` フィルタ）
+  - 過去7日間 + 昨年同期の折れ線グラフデータ（`_day_avg()` で日別集計）
+
+**無料ページ表示改善:**
 - ✅ `calc_combo_scores()`: wow_ratio 追加、全件返却
 - ✅ `build_combo_section()`: TOP6→TOP10 + 先週比急落コンボセクション
-- ✅ `build_fish_area_pages()`: TOP船宿・シーズンスコア星評価・Chart.js 7日グラフ・有料CTA
+- ✅ `build_fish_area_pages()`: TOP船宿・シーズンスコア星評価（★☆）・Chart.js 7日グラフ・未来7日ブラー＋有料CTA
 
 ---
 
