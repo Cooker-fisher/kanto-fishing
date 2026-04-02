@@ -4,12 +4,27 @@ description: funatsuri-yoso.com の実装状況と次のアクション
 type: project
 ---
 
-現行バージョン: crawler.py v5.19（water_comment + main_fish 追加）
-最終更新: 2026/04/02
+現行バージョン: crawler.py v5.20（Layer1/Layer2 データ2層設計実装）
+最終更新: 2026/04/03
 
 ---
 
 ## ★ 次チャットでやること（優先度順）
+
+### 0. v5.20 の動作確認（2026/04/03 実装済み）
+
+`python crawler.py` 実行後に以下を確認:
+1. `catches_raw.json` が生成されているか
+2. 先頭レコードに `tokki_raw / count_raw / size_raw / weight_raw / point_raw / kanso_raw` が入っているか
+3. `fish_raw` 全種リストアップ → 未登録魚種を確認 → FISH_MAP 更新
+4. `export_csv_from_raw()` 単体実行 → `data/YYYY-MM.csv` を確認
+
+確認コマンド:
+```
+python -c "import json; data=json.load(open('catches_raw.json',encoding='utf-8')); fish=sorted(set(r['fish_raw'] for r in data if r.get('fish_raw'))); [print(f) for f in fish]; print(f'合計{len(fish)}種')"
+```
+
+
 
 ### 0. 感想・出番データの動作確認（2026/04/02 実装済み・要実機確認）
 
