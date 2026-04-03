@@ -35,22 +35,27 @@ def load_coords():
 def init_db(conn):
     conn.executescript("""
     CREATE TABLE IF NOT EXISTS forecast (
-        area        TEXT,
-        lat         REAL,
-        lon         REAL,
-        date        TEXT,
-        wind_speed  REAL,
-        wind_dir    REAL,
-        temp        REAL,
-        pressure    REAL,
-        wave_height  REAL,
-        wave_period  REAL,
-        swell_height REAL,
-        sst         REAL,
-        updated_at  TEXT,
+        area          TEXT,
+        lat           REAL,
+        lon           REAL,
+        date          TEXT,
+        wind_speed    REAL,
+        wind_dir      REAL,
+        temp          REAL,
+        pressure      REAL,
+        wave_height   REAL,
+        wave_period   REAL,
+        swell_height  REAL,
+        sst           REAL,
+        updated_at    TEXT,
+        precipitation REAL,
         PRIMARY KEY (area, date)
     );
     """)
+    try:
+        conn.execute("ALTER TABLE forecast ADD COLUMN precipitation REAL")
+    except Exception:
+        pass
     conn.commit()
 
 def fetch(url, retries=3):
@@ -68,7 +73,7 @@ def get_wx_forecast(lat, lon):
     """Open-Meteo Forecast API → 日別気象予報"""
     params = {
         "latitude": lat, "longitude": lon,
-        "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,surface_pressure",
+        "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,surface_pressure,precipitation",
         "forecast_days": FORECAST_DAYS,
         "timezone": "Asia/Tokyo",
         "wind_speed_unit": "ms",
@@ -84,10 +89,11 @@ def get_wx_forecast(lat, lon):
             continue
         d = t[:10]
         result[d] = {
-            "wind_speed": data["hourly"]["wind_speed_10m"][i],
-            "wind_dir":   data["hourly"]["wind_direction_10m"][i],
-            "temp":       data["hourly"]["temperature_2m"][i],
-            "pressure":   data["hourly"]["surface_pressure"][i],
+            "wind_speed":   data["hourly"]["wind_speed_10m"][i],
+            "wind_dir":     data["hourly"]["wind_direction_10m"][i],
+            "temp":         data["hourly"]["temperature_2m"][i],
+            "pressure":     data["hourly"]["surface_pressure"][i],
+            "precipitation": data["hourly"]["precipitation"][i],
         }
     return result
 
@@ -142,7 +148,7 @@ def main():
             row = wx.get(d, {})
             row.update(mar.get(d, {}))
             conn.execute("""
-                INSERT OR REPLACE INTO forecast VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                INSERT OR REPLACE INTO forecast VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 area, lat, lon, d,
                 row.get("wind_speed"), row.get("wind_dir"),
@@ -150,6 +156,7 @@ def main():
                 row.get("wave_height"),row.get("wave_period"),
                 row.get("swell_height"),row.get("sst"),
                 now_str,
+                row.get("precipitation"),
             ))
             saved += 1
         print(f"{len(dates)}日分")

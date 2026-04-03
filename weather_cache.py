@@ -81,6 +81,7 @@ def init_db(conn):
         sst          REAL,
         current_spd  REAL,
         current_dir  INTEGER,
+        precipitation REAL,
         PRIMARY KEY (lat, lon, dt)
     );
     CREATE TABLE IF NOT EXISTS tide (
@@ -103,6 +104,13 @@ def init_db(conn):
     CREATE INDEX IF NOT EXISTS idx_weather_dt     ON weather (dt);
     CREATE INDEX IF NOT EXISTS idx_tide_date      ON tide (date);
     """)
+    # 既存DBへのカラム追加（ALTER TABLE は IF NOT EXISTS 非対応のため例外を無視）
+    try:
+        conn.execute("ALTER TABLE weather ADD COLUMN precipitation REAL")
+        conn.commit()
+    except Exception:
+        pass  # 既にカラムが存在する場合はスキップ
+
     conn.commit()
 
 def get_latest_weather_dt(conn, lat, lon):
@@ -121,7 +129,8 @@ def get_latest_tide_date(conn, port_code):
 # ── Open-Meteo Weather ────────────────────────────────────────────────────
 WEATHER_VARS = (
     "wind_speed_10m,wind_direction_10m,"
-    "temperature_2m,surface_pressure,weather_code"
+    "temperature_2m,surface_pressure,weather_code,"
+    "precipitation"
 )
 
 def fetch_weather(lat, lon, start, end):
@@ -203,11 +212,12 @@ def merge_and_insert_weather(conn, lat, lon, w, m):
             g(m, "sea_surface_temperature", i),
             g(m, "ocean_current_velocity",  i),
             g(m, "ocean_current_direction", i),
+            g(w, "precipitation",           i),
         ))
 
     if rows:
         conn.executemany(
-            "INSERT OR IGNORE INTO weather VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT OR IGNORE INTO weather VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             rows
         )
         conn.commit()

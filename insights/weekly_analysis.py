@@ -26,6 +26,18 @@ DATA_DIR   = os.path.join(ROOT_DIR, "data")
 DB_PATH    = os.path.join(BASE_DIR, "analysis.sqlite")
 WEEKLY_DIR = os.path.join(BASE_DIR, "weekly")
 
+def _load_exclude_ships():
+    """ships.json から exclude:true / boat_only:true の船宿名セットを返す"""
+    path = os.path.join(ROOT_DIR, "ships.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            ships = json.load(f)
+        return {s["name"] for s in ships if s.get("exclude") or s.get("boat_only")}
+    except Exception:
+        return set()
+
+EXCLUDE_SHIPS = _load_exclude_ships()
+
 def _build_raw_to_tsuri_map():
     """tsuri_mono_map_draft.json から fish_raw → tsuri_mono の逆引き辞書を生成。"""
     path = os.path.join(ROOT_DIR, "tsuri_mono_map_draft.json")
@@ -126,9 +138,12 @@ def load_records(fish_filter=None):
                 except ValueError:
                     continue
                 week_no = d.isocalendar()[1]  # ISO週番号 1-53
+                ship = row.get("ship", "")
+                if ship in EXCLUDE_SHIPS:
+                    continue
                 records.append({
                     "fish":    fish,
-                    "ship":    row.get("ship", ""),
+                    "ship":    ship,
                     "week_no": week_no,
                     "cnt":     cnt,
                     "size":    _avg_size(row),

@@ -18,16 +18,17 @@ risk_predict.py — 今後7日間の釣りリスク予測
 [使い方]
   python insights/risk_predict.py
 """
-import os, sqlite3, math
+import json, os, sqlite3, math
 from collections import defaultdict
 from datetime import datetime, timedelta, date
 
-BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR    = os.path.dirname(BASE_DIR)
-DB_FORECAST = os.path.join(ROOT_DIR, "forecast_cache.sqlite")
-DB_ANA      = os.path.join(BASE_DIR, "analysis.sqlite")
-OUT_ALL     = os.path.join(BASE_DIR, "risk_forecast.txt")
-OUT_WEEKEND = os.path.join(BASE_DIR, "risk_weekend.txt")
+BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR      = os.path.dirname(BASE_DIR)
+DB_FORECAST   = os.path.join(ROOT_DIR, "forecast_cache.sqlite")
+DB_ANA        = os.path.join(BASE_DIR, "analysis.sqlite")
+OUT_ALL       = os.path.join(BASE_DIR, "risk_forecast.txt")
+OUT_WEEKEND   = os.path.join(BASE_DIR, "risk_weekend.txt")
+OVERRIDE_FILE = os.path.join(ROOT_DIR, "ship_wx_coord_override.json")
 
 # グローバルフォールバック閾値（cancel_thresholds に該当船宿がない場合）
 DEFAULT_CANCEL_WAVE  = 1.64   # 全船宿中央値
@@ -81,10 +82,21 @@ def load_forecast_by_coord(lat, lon):
         }
     return result
 
+def load_wx_overrides():
+    """ship_wx_coord_override.json から湾内船宿の座標オーバーライドを読み込む"""
+    try:
+        with open(OVERRIDE_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        return {ship: (info["lat"], info["lon"])
+                for ship, info in data.get("overrides", {}).items()}
+    except Exception:
+        return {}
+
 def load_ship_info():
     """
     ship -> {lat, lon, wave_thr, wind_thr, cancel_wave_avg, ok_wave_avg, n_cancel}
     combo_meta から座標、cancel_thresholds から実閾値を結合
+    湾内船宿は ship_wx_coord_override.json の座標を優先
     """
     conn = sqlite3.connect(DB_ANA)
     # 船宿ごとの代表座標
@@ -93,6 +105,14 @@ def load_ship_info():
         "SELECT ship, AVG(lat), AVG(lon) FROM combo_meta WHERE lat IS NOT NULL GROUP BY ship"
     ).fetchall():
         coords[ship] = {"lat": lat, "lon": lon}
+
+    # 湾内船宿の座標オーバーライドを適用
+    overrides = load_wx_overrides()
+    for ship, (lat, lon) in overrides.items():
+        if ship in coords:
+            coords[ship] = {"lat": lat, "lon": lon}
+        else:
+            coords[ship] = {"lat": lat, "lon": lon}
 
     # 実閾値（cancel_thresholds）
     thresholds = {}
@@ -147,6 +167,8 @@ def sea_risk(wx, wave_thr, wind_thr):
     """
     wave = wx.get("wave_height") or 0
     wind = wx.get("wind_speed") or 0
+    wave_thr = wave_thr or DEFAULT_CANCEL_WAVE
+    wind_thr = wind_thr or DEFAULT_CANCEL_WIND
     hard_wave = wave_thr * 0.65
     hard_wind = wind_thr * 0.65
 
