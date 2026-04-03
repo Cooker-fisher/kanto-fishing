@@ -5047,7 +5047,7 @@ document.querySelectorAll('.filter-btn').forEach(el => {{
 # ============================================================
 # #6: 魚種別ページ
 # ============================================================
-def build_fish_pages(data, history, crawled_at=""):
+def build_fish_pages(data, history, crawled_at="", predictions=None):
     os.makedirs("fish", exist_ok=True)
     now = datetime.now()
     current_month = now.month
@@ -5191,6 +5191,10 @@ def build_fish_pages(data, history, crawled_at=""):
             '<h2>🗺️ エリア別の釣果</h2>'
             '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">' + _fa_links + '</div>'
         ) if _fa_links else ""
+        # 予測セクション
+        _fish_preds = (predictions or {}).get(fish, [])
+        _sat_str = _next_weekend()[0].strftime("%Y/%m/%d")
+        pred_section_html = _pred_build_html(_fish_preds, _sat_str)
         fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.stat-card .sv{font-size:22px;font-weight:bold;color:#4db8ff;line-height:1.2}.stat-card .sl{font-size:11px;color:#7a9bb5;margin-top:4px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tbody tr:nth-child(even) td{background:#0b1c30}tbody tr:hover td{background:#112240}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:10px;width:80px}.bar-fill{background:linear-gradient(90deg,#1a6ea8,#4db8ff);height:10px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.boat-catch{color:#f0a040;font-size:11px}.medal{font-size:16px;vertical-align:middle}.season-entry{font-size:12px;color:#7a9bb5;margin:8px 0;padding:6px 10px;border-radius:4px;background:#0d2137}.season-entry.entry-early{border-left:3px solid #4dcc88}.season-entry.entry-late{border-left:3px solid #f4a261}.season-entry.entry-same{border-left:3px solid #4db8ff}.entry-trend{font-weight:bold;margin-left:6px}.prob-wrap{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px}.prob-label{color:#7a9bb5;white-space:nowrap}.prob-bar-bg{flex:1;max-width:120px;height:6px;background:#0a1628;border-radius:3px}.prob-bar-fill{height:6px;border-radius:3px;transition:width .3s}.prob-pct{font-weight:bold;white-space:nowrap}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px}.wrap{padding:14px 10px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}"
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
@@ -5224,6 +5228,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table></div>
   <h2>📋 最近の釣果 ({len(catches)}件)</h2>
   <div class="tbl-wrap"><table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table></div>
+  {pred_section_html}
   {related_section_html}
   {fish_area_section_html}
 </div>
@@ -5933,6 +5938,132 @@ def build_sitemap(data):
     print(f"sitemap.xml: {len(urls)} URLs 生成")
 
 
+# ============================================================
+# 予測モジュール（旬別ベースライン ± MAE）
+# ============================================================
+
+_INSIGHTS_DB = os.path.join(os.path.dirname(__file__), "insights", "analysis.sqlite")
+
+
+def _pred_decade_of(date_obj: datetime) -> int:
+    """datetime → 旬番号 1-36"""
+    dec = 1 if date_obj.day <= 10 else (2 if date_obj.day <= 20 else 3)
+    return (date_obj.month - 1) * 3 + dec
+
+
+def _pred_calc_stars(mape: float, n: int) -> int:
+    """cnt_avg MAPE@H=7d + サンプル数 → ★1〜5"""
+    if   mape < 25 and n >= 50: return 5
+    elif mape < 35 and n >= 30: return 4
+    elif mape < 50 and n >= 20: return 3
+    elif mape < 65 and n >= 10: return 2
+    else:                        return 1
+
+
+def _pred_build_all(target_date: datetime) -> dict:
+    """
+    全コンボの予測を計算して {fish: [pred_dict, ...]} を返す。
+    analysis.sqlite が存在しない場合は空 dict。
+    """
+    if not os.path.exists(_INSIGHTS_DB):
+        return {}
+    dekad = _pred_decade_of(target_date)
+    target_str = target_date.strftime("%Y/%m/%d")
+    results: dict = {}
+    try:
+        conn = sqlite3.connect(_INSIGHTS_DB)
+        rows = conn.execute(
+            "SELECT fish, ship, avg_cnt, avg_size, n FROM combo_decadal WHERE decade_no=?",
+            (dekad,)
+        ).fetchall()
+        if not rows:
+            rows = conn.execute(
+                "SELECT fish, ship, avg_cnt, avg_size, n FROM combo_decadal "
+                "WHERE decade_no IN (?,?,?)",
+                (dekad - 1, dekad, dekad + 1)
+            ).fetchall()
+        bt_map: dict = {}
+        for r in conn.execute(
+            "SELECT fish, ship, metric, mae, mape FROM combo_backtest WHERE horizon=7"
+        ).fetchall():
+            bt_map.setdefault((r[0], r[1]), {})[r[2]] = {"mae": r[3], "mape": r[4]}
+        meta_map = {(r[0], r[1]): r[2] for r in conn.execute(
+            "SELECT fish, ship, n_records FROM combo_meta"
+        ).fetchall()}
+        conn.close()
+
+        for fish, ship, avg_cnt, avg_size, n_dekad in rows:
+            if not avg_cnt or avg_cnt <= 0:
+                continue
+            bt       = bt_map.get((fish, ship), {})
+            cnt_bt   = bt.get("cnt_avg", {})
+            sz_bt    = bt.get("size_avg", {})
+            cnt_mae  = cnt_bt.get("mae")  or avg_cnt * 0.35
+            cnt_mape = cnt_bt.get("mape") or 999.0
+            size_mae = sz_bt.get("mae")
+            n_total  = meta_map.get((fish, ship), n_dekad)
+            stars    = _pred_calc_stars(cnt_mape, n_total)
+            results.setdefault(fish, []).append({
+                "ship":           ship,
+                "target_date":    target_str,
+                "cnt_predicted":  round(avg_cnt, 1),
+                "cnt_lo":         round(max(0, avg_cnt - cnt_mae), 1),
+                "cnt_hi":         round(avg_cnt + cnt_mae, 1),
+                "size_predicted": round(avg_size, 1) if avg_size else None,
+                "size_lo":        round(avg_size - size_mae, 1) if avg_size and size_mae else None,
+                "size_hi":        round(avg_size + size_mae, 1) if avg_size and size_mae else None,
+                "cnt_mape":       round(cnt_mape, 1),
+                "size_mape":      round(sz_bt["mape"], 1) if sz_bt.get("mape") else None,
+                "stars":          stars,
+                "n_total":        n_total,
+            })
+        for fish in results:
+            results[fish].sort(key=lambda x: (-x["stars"], x["cnt_mape"]))
+    except Exception as e:
+        print(f"予測データ取得エラー: {e}")
+    return results
+
+
+def _pred_build_html(preds: list, target_date_str: str) -> str:
+    """予測リスト → 魚種ページ用HTML（★3以上のみ表示）"""
+    visible = [p for p in preds if p["stars"] >= 3]
+    if not visible:
+        return ""
+    rows_html = ""
+    for p in visible[:10]:
+        stars_str = "★" * p["stars"] + "☆" * (5 - p["stars"])
+        cnt_str   = f"{p['cnt_lo']:.0f}〜{p['cnt_hi']:.0f}匹"
+        if p.get("size_lo") and p.get("size_hi"):
+            sz_str = f"{p['size_lo']:.0f}〜{p['size_hi']:.0f}cm"
+        elif p.get("size_predicted"):
+            sz_str = f"{p['size_predicted']:.0f}cm"
+        else:
+            sz_str = "---"
+        rows_html += f"""<tr>
+  <td style="font-weight:bold">{p['ship']}</td>
+  <td style="color:#4dcc88;font-weight:bold">{cnt_str}</td>
+  <td style="color:#7aa8d0">{sz_str}</td>
+  <td style="color:#f4a261">{"★" * p["stars"]}{"☆" * (5 - p["stars"])}</td>
+  <td style="color:#7a9bb5;font-size:11px">{p['cnt_mape']:.0f}%</td>
+</tr>"""
+    return f"""<style>
+.pred-section{{margin:24px 0}}
+.pred-note{{font-size:11px;color:#5a8aaa;margin:4px 0 10px;padding:6px 10px;background:#081020;border-radius:4px;border-left:3px solid #1a4060}}
+.pred-table{{width:100%;border-collapse:collapse;font-size:13px}}
+.pred-table th{{background:#0d2137;color:#4db8ff;padding:7px 10px;text-align:left;font-weight:normal}}
+.pred-table td{{padding:7px 10px;border-bottom:1px solid #0d2137}}
+.pred-table tbody tr:hover td{{background:#112240}}
+</style>
+<div class="pred-section">
+  <h2>📈 来週末の予測（{target_date_str}）</h2>
+  <div class="pred-note">旬別過去実績に基づく予測です。★が多いほど信頼度が高い（誤差率=過去実績との乖離幅）。当日の海況・天候により変動します。</div>
+  <div class="tbl-wrap"><table class="pred-table">
+    <thead><tr><th>船宿</th><th>予測匹数レンジ</th><th>サイズ</th><th>信頼度</th><th>誤差率</th></tr></thead>
+    <tbody>{rows_html}</tbody>
+  </table></div>
+</div>"""
+
+
 def main():
     all_catches = []
     errors = []
@@ -6030,7 +6161,13 @@ def main():
         build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
-    build_fish_pages(valid_catches, history, crawled_at)
+    # 来週末の予測データ取得
+    sat_dt, _ = _next_weekend()
+    predictions_by_fish = _pred_build_all(sat_dt)
+    pred_count = sum(len(v) for v in predictions_by_fish.values())
+    print(f"予測データ: {pred_count} コンボ（★3以上: {sum(1 for v in predictions_by_fish.values() for p in v if p['stars']>=3)}）")
+
+    build_fish_pages(valid_catches, history, crawled_at, predictions=predictions_by_fish)
     build_area_pages(valid_catches, history, crawled_at)
     build_fish_area_pages(valid_catches, crawled_at, history)
     with open("calendar.html", "w", encoding="utf-8") as f:
