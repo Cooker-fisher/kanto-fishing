@@ -63,6 +63,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: weather forecast (153座標)
+        run: python3 weather_forecast.py
       - name: weekly analysis
         run: |
           python3 insights/season_analysis.py
@@ -71,6 +73,8 @@ jobs:
           python3 insights/ship_peaks.py
           python3 insights/weekly_analysis.py
           python3 insights/weekly_wx_score.py
+          python3 insights/cancel_threshold.py
+          python3 insights/risk_predict.py
           python3 -c "
           import sqlite3, subprocess, sys
           conn = sqlite3.connect('insights/analysis.sqlite')
