@@ -3651,6 +3651,23 @@ def load_wx_context():
         return {}, {}
 
 
+def calc_single_wx_boost(fish, ship, current_wx, combo_wx):
+    """1コンボ（魚種×船宿）の wx_boost を返す（-1〜+1、キャップなし生値）。"""
+    params = combo_wx.get((fish, ship), [])
+    if not params or not current_wx:
+        return None
+    contributions = []
+    for fac, r, hist_mean, hist_std in params:
+        val = current_wx.get(fac)
+        if val is None or hist_std == 0:
+            continue
+        z = (val - hist_mean) / hist_std
+        contributions.append(r * z)
+    if not contributions:
+        return None
+    return sum(contributions) / len(contributions)
+
+
 def calc_wx_boost(fish, ships, current_wx, combo_wx):
     """
     船宿×魚種単位でwx_boostを計算し、船宿平均を返す（-0.1〜+0.1）。
@@ -4897,6 +4914,7 @@ def build_fish_pages(data, history, crawled_at=""):
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
+    current_wx, combo_wx = load_wx_context()
     fish_summary = {}
     for c in data:
         for f in c["fish"]:
@@ -4955,9 +4973,19 @@ def build_fish_pages(data, history, crawled_at=""):
             area = next((c["area"] for c in catches if c["ship"] == sn), "")
             pct  = int(cnt / len(catches) * 100) if catches else 0
             medal_html = f'<span class="medal">{medals[i]}</span> ' if i in medals else f'<span style="color:#4db8ff;font-weight:bold">{i}</span> '
+            # 今週の海況バッジ（船宿×魚種単位）
+            wx_val = calc_single_wx_boost(fish, sn, current_wx, combo_wx)
+            if wx_val is None:
+                wx_badge = ""
+            elif wx_val >= 0.2:
+                wx_badge = '<span style="color:#4dcc88;font-size:11px" title="今週の海況が有利">🌊良</span>'
+            elif wx_val <= -0.2:
+                wx_badge = '<span style="color:#e85d04;font-size:11px" title="今週の海況が不利">🌊不利</span>'
+            else:
+                wx_badge = ""
             rank_rows += f"""<tr>
   <td style="width:36px;text-align:center">{medal_html}</td>
-  <td><strong>{sn}</strong><br><span style="font-size:11px;color:#7a9bb5">{area}</span></td>
+  <td><strong>{sn}</strong>{wx_badge}<br><span style="font-size:11px;color:#7a9bb5">{area}</span></td>
   <td style="color:#4dcc88">{cnt}件</td>
   <td style="color:#e85d04">最高{mx}匹</td>
   <td><div class="bar-wrap"><div class="bar-fill" style="width:{pct}%"></div></div></td>

@@ -70,6 +70,7 @@ jobs:
           python3 insights/area_analysis.py
           python3 insights/ship_peaks.py
           python3 insights/weekly_analysis.py
+          python3 insights/weekly_wx_score.py
           python3 -c "
           import sqlite3, subprocess, sys
           conn = sqlite3.connect('insights/analysis.sqlite')
