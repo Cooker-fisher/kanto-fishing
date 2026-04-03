@@ -3697,6 +3697,120 @@ def calc_wx_boost(fish, ships, current_wx, combo_wx):
     return max(-0.1, min(0.1, raw * 0.15))  # ±10%にキャップ
 
 
+def load_risk_summary():
+    """
+    insights/risk_weekend.txt を読み込み、来週末のリスクサマリーを返す。
+    {
+      date: str,          # "2026-04-05（日）★週末★"
+      cancel: [(fish, n_ships), ...],
+      bad:    [(fish, n_ships), ...],
+      good:   [(fish, n_ships, catch_sc), ...],
+    } のリスト
+    失敗時は []
+    """
+    base = os.path.dirname(__file__)
+    risk_file = os.path.join(base, "insights", "risk_weekend.txt")
+    if not os.path.exists(risk_file):
+        return []
+    try:
+        with open(risk_file, encoding="utf-8") as f:
+            lines = f.readlines()
+        results = []
+        current = None
+        section = None  # "cancel" / "bad" / "good"
+        for line in lines:
+            line = line.rstrip("\n")
+            # 日付ヘッダー
+            if line.startswith("【") and "週末" in line:
+                if current:
+                    results.append(current)
+                # 日付抽出（例: 【2026-04-05（日） ★週末★】）
+                date_str = line.strip("【】").strip()
+                current = {"date": date_str, "cancel": [], "bad": [], "good": []}
+                section = None
+            elif current is None:
+                continue
+            elif "▼ 出船中止リスク" in line:
+                section = "cancel"
+            elif "▼ 釣りづらい" in line or "▼ 不漁リスク" in line:
+                section = "bad"
+            elif "▼ 好条件" in line:
+                section = "good"
+            elif section and ("🔴" in line or "🟠" in line or "🟢" in line):
+                # 例: "    🔴 マダイ        中止リスク船宿18件 | 例:..."
+                # 例: "    🟢 カツオ        3船宿好調 | 例:..."
+                import re as _re
+                fish_m = _re.search(r'[🔴🟠🟢]\s+([\w・ー]+)', line)
+                ships_m = _re.search(r'(\d+)船宿', line)
+                score_m = _re.search(r'catch_sc=([+-][\d.]+)', line)
+                if not fish_m:
+                    continue
+                fish_name = fish_m.group(1).strip()
+                n_ships   = int(ships_m.group(1)) if ships_m else 1
+                catch_sc  = float(score_m.group(1)) if score_m else 0.0
+                if section == "cancel":
+                    current["cancel"].append((fish_name, n_ships))
+                elif section == "bad":
+                    current["bad"].append((fish_name, n_ships))
+                elif section == "good":
+                    current["good"].append((fish_name, n_ships, catch_sc))
+        if current:
+            results.append(current)
+        return results
+    except Exception:
+        return []
+
+
+def build_risk_section(risk_data):
+    """来週末の釣りリスクセクションHTML"""
+    if not risk_data:
+        return ""
+    days_html = ""
+    for day in risk_data:
+        date_label = day["date"]
+        cancel = day["cancel"][:5]
+        bad    = day["bad"][:4]
+        good   = day["good"][:4]
+        # 出船中止
+        cancel_html = ""
+        if cancel:
+            items = "".join(
+                f'<span class="risk-item risk-cancel"><a href="fish/{f}.html">{f}</a>'
+                f'<small>{n}船宿</small></span>'
+                for f, n in cancel
+            )
+            cancel_html = f'<div class="risk-row"><span class="risk-label cancel-lbl">🔴 出船中止注意</span>{items}</div>'
+        # 釣りづらい/不漁
+        bad_html = ""
+        if bad:
+            items = "".join(
+                f'<span class="risk-item risk-bad"><a href="fish/{f}.html">{f}</a>'
+                f'<small>{n}船宿</small></span>'
+                for f, n in bad
+            )
+            bad_html = f'<div class="risk-row"><span class="risk-label bad-lbl">🟠 不漁・釣りづらい</span>{items}</div>'
+        # 好条件
+        good_html = ""
+        if good:
+            items = "".join(
+                f'<span class="risk-item risk-good"><a href="fish/{f}.html">{f}</a>'
+                f'<small>{n}船宿</small></span>'
+                for f, n, sc in good
+            )
+            good_html = f'<div class="risk-row"><span class="risk-label good-lbl">🟢 好条件</span>{items}</div>'
+        if not cancel_html and not bad_html and not good_html:
+            content = '<p style="color:#4db8ff;font-size:13px">特筆すべきリスクなし ✅</p>'
+        else:
+            content = cancel_html + bad_html + good_html
+        days_html += f'<div class="risk-day"><div class="risk-date">{date_label}</div>{content}</div>'
+    return f"""
+<div class="risk-section">
+  <h3>⛵ 今週末の出船リスク予報</h3>
+  <p class="risk-note">実データから算出した船宿別欠航閾値 × 7日間気象予報で自動計算</p>
+  {days_html}
+</div>"""
+
+
 def calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month, wx_boost=0.0):
     """
     複合スコアを計算（0〜100点）
@@ -4262,7 +4376,28 @@ footer a:hover{text-decoration:underline}
 .combo-rank.rank-2{background:#7a9bb5;color:#fff}
 .combo-rank.rank-3{background:#8b6914;color:#fff}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.combo-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
+/* ── リスク予報セクション ─────────────────────────────── */
+.risk-section{background:#0a1a2a;border:1px solid #1a3050;border-radius:12px;padding:18px 20px;margin:18px 0}
+.risk-section h3{margin:0 0 4px;font-size:16px;color:#c8d8e8}
+.risk-note{font-size:11px;color:#4a6a8a;margin:0 0 14px}
+.risk-day{border-top:1px solid #1a3050;padding:12px 0 4px}
+.risk-day:first-of-type{border-top:none;padding-top:0}
+.risk-date{font-size:13px;font-weight:bold;color:#4db8ff;margin-bottom:8px}
+.risk-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:6px}
+.risk-label{font-size:11px;font-weight:bold;white-space:nowrap;padding:2px 8px;border-radius:10px;min-width:fit-content}
+.cancel-lbl{background:#3a0a0a;color:#ff6b6b;border:1px solid #c0392b}
+.bad-lbl{background:#2a1a00;color:#f4a261;border:1px solid #e85d04}
+.good-lbl{background:#0a2a1a;color:#4cd97b;border:1px solid #27ae60}
+.risk-item{display:inline-flex;align-items:center;gap:4px;border-radius:8px;padding:3px 10px;font-size:12px}
+.risk-item a{text-decoration:none;color:inherit;font-weight:bold}
+.risk-item small{font-size:10px;color:#7a9bb5;margin-left:2px}
+.risk-cancel{background:#1a0505;border:1px solid #7a1a1a}
+.risk-cancel a{color:#ff9090}
+.risk-bad{background:#1a0f00;border:1px solid #5a3a00}
+.risk-bad a{color:#f4c27a}
+.risk-good{background:#051a0d;border:1px solid #1a5a30}
+.risk-good a{color:#7aecaa}
+@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}header .site-desc{font-size:10px}nav{padding:6px 12px;gap:8px 12px}.wrap{padding:14px 10px}.target-top{flex-direction:column;gap:10px}.target-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.area-grid{grid-template-columns:1fr 1fr}.combo-grid{grid-template-columns:1fr 1fr}.area-menu{min-width:min(300px,calc(100vw - 24px));max-height:55vh;overflow-y:auto}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}.risk-row{gap:4px}.risk-label{font-size:10px}}
 """
 
 # ============================================================
@@ -4273,7 +4408,7 @@ def calc_targets(data, history):
     cur_month = now.month
     year, week_num = current_iso_week()
     cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
-    current_wx, fish_wx = load_wx_context()
+    current_wx, combo_wx = load_wx_context()
     fish_counts = {}
     fish_latest: dict = {}
     ship_counts_per_fish = {}
@@ -4754,6 +4889,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
     catch_table  = build_catch_table(catches)
     combos       = calc_combo_scores(catches, history)
     combo_html   = build_combo_section(combos)
+    risk_data    = load_risk_summary()
+    risk_html    = build_risk_section(risk_data)
     active_areas = set(c["area"] for c in catches)
     area_nav_parts = []
     covered = set()
@@ -4803,6 +4940,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
   <h2>🎯 今週の狙い目</h2>
   {forecast}
   {target_html}
+  {risk_html}
   {weather_html}
   {forecast_html}
   {combo_html}
@@ -5582,7 +5720,9 @@ def save_daily_csv(catches):
             with open(filepath, encoding="utf-8", newline="") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    key = (row["ship"], row["area"], row["date"], row["fish"])
+                    # "fish" 列は旧形式。現CSVは "tsuri_mono" を使用
+                    fish_val = row.get("fish") or row.get("tsuri_mono") or row.get("fish_raw", "")
+                    key = (row["ship"], row["area"], row["date"], fish_val)
                     existing_keys.add(key)
 
         new_rows = []
