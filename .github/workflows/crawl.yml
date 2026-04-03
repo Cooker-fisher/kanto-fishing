@@ -4,6 +4,7 @@ on:
     - cron: '30 7 * * *'   # 毎日 16:30 JST（釣果クロール＋夕方気象）
     - cron: '0 7 1 * *'    # 毎月1日 16:00 JST（船宿SID自動更新）
     - cron: '0 21 * * *'   # 毎日 06:00 JST（朝の気象データ）
+    - cron: '0 8 * * 1'    # 毎週月曜 17:00 JST（週次分析再生成）
   workflow_dispatch:
     inputs:
       backfill_depth:
@@ -52,6 +53,38 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "update $(date +'%Y/%m/%d')" || echo "nothing to commit"
+          git push --force
+
+  weekly_insights:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 8 * * 1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: weekly analysis
+        run: |
+          python3 insights/season_analysis.py
+          python3 insights/season_detail.py
+          python3 insights/area_analysis.py
+          python3 insights/ship_peaks.py
+          python3 insights/weekly_analysis.py
+          python3 -c "
+          import sqlite3, subprocess, sys
+          conn = sqlite3.connect('insights/analysis.sqlite')
+          fish_list = [r[0] for r in conn.execute('SELECT DISTINCT fish FROM combo_weekly ORDER BY fish').fetchall()]
+          conn.close()
+          for fish in fish_list:
+              subprocess.run([sys.executable, 'insights/weekly_analysis.py', '--query', fish])
+              subprocess.run([sys.executable, 'insights/weekly_analysis.py', '--grid',  fish])
+          "
+      - name: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "weekly insights $(date +'%Y/%m/%d')" || echo "nothing to commit"
           git push --force
 
   weather:

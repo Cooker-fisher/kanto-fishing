@@ -20,10 +20,11 @@ import csv, json, os, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime, date
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(BASE_DIR)
-DATA_DIR = os.path.join(ROOT_DIR, "data")
-DB_PATH  = os.path.join(BASE_DIR, "analysis.sqlite")
+BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR   = os.path.dirname(BASE_DIR)
+DATA_DIR   = os.path.join(ROOT_DIR, "data")
+DB_PATH    = os.path.join(BASE_DIR, "analysis.sqlite")
+WEEKLY_DIR = os.path.join(BASE_DIR, "weekly")
 
 def _build_raw_to_tsuri_map():
     """tsuri_mono_map_draft.json から fish_raw → tsuri_mono の逆引き辞書を生成。"""
@@ -253,7 +254,8 @@ def save_query_file(conn, fish):
     if not rows:
         return
 
-    path = os.path.join(BASE_DIR, f"weekly_peaks_{fish}.txt")
+    os.makedirs(WEEKLY_DIR, exist_ok=True)
+    path = os.path.join(WEEKLY_DIR, f"weekly_peaks_{fish}.txt")
     with open(path, "w", encoding="utf-8") as f:
         f.write(f"=== {fish} 船宿別ピーク週（週単位旬より細かい） ===\n")
         f.write("-" * 105 + "\n")
@@ -277,7 +279,8 @@ def save_grid_file(conn, fish):
     if not ships:
         return
 
-    path = os.path.join(BASE_DIR, f"weekly_grid_{fish}.txt")
+    os.makedirs(WEEKLY_DIR, exist_ok=True)
+    path = os.path.join(WEEKLY_DIR, f"weekly_grid_{fish}.txt")
     with open(path, "w", encoding="utf-8") as f:
         f.write(f"=== {fish} 船宿×週グリッド（数量index、全期間平均=100） ===\n")
         # ヘッダ：月ごとにまとめ
