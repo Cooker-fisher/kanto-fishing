@@ -17,7 +17,7 @@ season_analysis.py — 船宿×釣り物ごとの「旬カレンダー」分析
   python season_analysis.py --calendar  # 月×魚種の一覧を表示
 """
 
-import csv, math, os, sqlite3, sys
+import csv, json, math, os, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime
 
@@ -25,6 +25,23 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 DATA_DIR = os.path.join(ROOT_DIR, "data")
 DB_PATH  = os.path.join(BASE_DIR, "analysis.sqlite")
+
+def _build_raw_to_tsuri_map():
+    path = os.path.join(ROOT_DIR, "tsuri_mono_map_draft.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    mapping = data.get("TSURI_MONO_MAP", {})
+    raw_to_tsuri = {}
+    for tsuri_mono, raw_list in mapping.items():
+        if tsuri_mono.startswith("_"):
+            continue
+        for raw in raw_list:
+            raw_to_tsuri[raw] = tsuri_mono
+    return raw_to_tsuri
+
+RAW_TO_TSURI = _build_raw_to_tsuri_map()
 
 MIN_MONTH_N = 5   # 月別最小件数（これ未満は除外）
 MIN_COMBO_N = 20  # コンボ最小総件数
@@ -89,7 +106,11 @@ def load_data(fish_filter=None):
             for row in csv.DictReader(f):
                 if row.get("is_cancellation") == "1":
                     continue
-                fish = row.get("tsuri_mono", "")
+                fish_raw = row.get("fish_raw", "").strip()
+                if fish_raw in RAW_TO_TSURI:
+                    fish = RAW_TO_TSURI[fish_raw]
+                else:
+                    fish = row.get("tsuri_mono", "").strip()
                 if not fish:
                     continue
                 if fish_filter and fish != fish_filter:
