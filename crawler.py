@@ -71,7 +71,7 @@
   → choka_box 単位で li.date から正しい出船日を取得
   → 全釣果に「今日の日付」が入る問題を修正
 """
-import re, json, time, os, csv, math
+import re, json, time, os, csv, math, sqlite3
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
@@ -3605,7 +3605,74 @@ def calc_season_entry(history, fish, year):
         return None
     return _first_week(year), _first_week(year - 1)
 
-def calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month):
+def load_wx_context():
+    """
+    今週の海況平均と fish_wx_params を返す。
+    失敗した場合は ({}, {}) を返す（スコアに影響させない）。
+    """
+    base = os.path.dirname(__file__)
+    wx_db   = os.path.join(base, "weather_cache.sqlite")
+    ana_db  = os.path.join(base, "insights", "analysis.sqlite")
+    if not os.path.exists(wx_db) or not os.path.exists(ana_db):
+        return {}, {}
+    try:
+        # ── 今週（過去7日間）の関東エリア平均海況 ──────────────────────
+        now = datetime.now()
+        week_start = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+        conn_wx = sqlite3.connect(wx_db)
+        row = conn_wx.execute("""
+            SELECT AVG(sst), AVG(temp), AVG(wave_height),
+                   AVG(wind_speed), AVG(pressure), AVG(current_spd)
+            FROM weather
+            WHERE lat BETWEEN 34.5 AND 36.5
+              AND lon BETWEEN 138.5 AND 141.0
+              AND dt >= ?
+        """, (week_start,)).fetchone()
+        conn_wx.close()
+        current_wx = {}
+        if row and row[0] is not None:
+            for key, val in zip(
+                ["sst","temp","wave_height","wind_speed","pressure","current_spd"], row
+            ):
+                if val is not None:
+                    current_wx[key] = val
+
+        # ── fish_wx_params ロード ──────────────────────────────────────
+        conn_ana = sqlite3.connect(ana_db)
+        params_rows = conn_ana.execute(
+            "SELECT fish, factor, r, hist_mean, hist_std FROM fish_wx_params"
+        ).fetchall()
+        conn_ana.close()
+        fish_wx = {}
+        for fish, fac, r, m, s in params_rows:
+            fish_wx.setdefault(fish, []).append((fac, r, m, s))
+        return current_wx, fish_wx
+    except Exception:
+        return {}, {}
+
+
+def calc_wx_boost(fish, current_wx, fish_wx):
+    """
+    今週の海況が当該魚種に有利か不利かを -0.1〜+0.1 で返す。
+    データなし → 0.0（スコアに影響させない）
+    """
+    params = fish_wx.get(fish, [])
+    if not params or not current_wx:
+        return 0.0
+    contributions = []
+    for fac, r, hist_mean, hist_std in params:
+        val = current_wx.get(fac)
+        if val is None or hist_std == 0:
+            continue
+        z = (val - hist_mean) / hist_std   # 平均からの偏差（標準化）
+        contributions.append(r * z)
+    if not contributions:
+        return 0.0
+    raw = sum(contributions) / len(contributions)
+    return max(-0.1, min(0.1, raw * 0.15))  # ±10%にキャップ
+
+
+def calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month, wx_boost=0.0):
     """
     複合スコアを計算（0〜100点）
     件数25% + 匹数20% + 昨年比20% + 先週比15% + シーズン15% + サイズ5%
@@ -3656,7 +3723,8 @@ def calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month):
         (season_s,0.15),
         (size_s,  0.05),
     ]
-    return round(sum(s * w for s, w in weights) * 100, 1)
+    base = sum(s * w for s, w in weights)
+    return round(max(0, min(100, (base + wx_boost) * 100)), 1)
 
 def yoy_badge(this_data, last_data):
     if not this_data or not last_data: return ""
@@ -4180,6 +4248,7 @@ def calc_targets(data, history):
     cur_month = now.month
     year, week_num = current_iso_week()
     cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
+    current_wx, fish_wx = load_wx_context()
     fish_counts = {}
     fish_latest: dict = {}
     ship_counts_per_fish = {}
@@ -4201,7 +4270,8 @@ def calc_targets(data, history):
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         prev_w    = get_prev_week_data(history, fish, year, week_num)
         ships     = len(ship_counts_per_fish.get(fish, set()))
-        composite = calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month)
+        wx_boost  = calc_wx_boost(fish, current_wx, fish_wx)
+        composite = calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month, wx_boost)
         badge     = yoy_badge(this_w, last_w)
         comment   = build_comment(fish, cnt, score, this_w, last_w, prev_w, max_cnt, composite)
         stars     = composite_to_stars(composite)
