@@ -110,7 +110,7 @@ def load_records(fish_filter=None):
     return records
 
 
-def aggregate(records, min_n=3):
+def aggregate(records, min_n=1):
     buckets = defaultdict(lambda: {"cnt": [], "size": []})
     for r in records:
         key = (r["fish"], r["ship"], r["week_no"])
