@@ -744,18 +744,74 @@ def _load_ship_fish_point():
     except Exception:
         return {}
 
-def _resolve_point(point_place, ship, fish, sfp):
-    """point_placeを解決。空の場合はship_fish_point.jsonでフォールバック"""
-    pp = (point_place or "").strip()
-    if pp:
-        return pp
-    ship_data = sfp.get(ship)
-    if not ship_data:
-        return ""
-    fish_map = ship_data.get(fish) or ship_data.get("_default")
-    if fish_map and isinstance(fish_map, dict):
-        return fish_map.get("point1", "") or ""
-    return ""
+def _load_area_coords():
+    """area_coords.json を読み込み → {area_name: {lat, lon, point}}"""
+    path = os.path.join(os.path.dirname(__file__), "area_coords.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _load_ship_area_map():
+    """ships.json から {ship_name: area} の辞書を返す"""
+    path = os.path.join(os.path.dirname(__file__), "ships.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            ships = json.load(f)
+        return {s["name"]: s.get("area", "") for s in ships if "name" in s}
+    except Exception:
+        return {}
+
+# 航程系・不明ポイントの判定パターン
+_UNRESOLVABLE_POINT_RE = re.compile(
+    r'^(航程|近場|浅場|深場|東京湾一帯|湾内|湾奥|港前|南沖|東沖|西沖|北沖|赤灯沖|観音沖|水深\d|^[0-9]+$|前後$)'
+)
+
+def _is_航程系(pp):
+    """航程表記・抽象地名など座標解決不能なポイント名か判定"""
+    return not pp or bool(_UNRESOLVABLE_POINT_RE.match(pp))
+
+def resolve_point(point_place1, ship, tsuri_mono, sfp, ship_area_map, point_coords, area_coords):
+    """
+    ポイント解決の3段階フォールバック。(lat, lon, source) を返す。
+
+    ① point_place1 が point_coords に存在 → その座標
+    ② ship_fish_point.json （船宿×魚種→ポイント名）→ point_coords
+    ③ area_coords.json （船宿エリアの代表座標）→ 直接 lat/lon
+    解決不能なら (None, None, None)。
+    """
+    pp = (point_place1 or "").strip()
+
+    # ① point_place1 直接解決
+    if pp and not _is_航程系(pp):
+        entry = point_coords.get(pp)
+        if entry and entry.get("lat") is not None:
+            return entry["lat"], entry["lon"], "direct"
+
+    # ② ship_fish_point フォールバック
+    ship_data = sfp.get(ship, {})
+    fish_entry = ship_data.get(tsuri_mono) or ship_data.get("_default")
+    if fish_entry and isinstance(fish_entry, dict):
+        for key in ("point1", "point2"):
+            pname = fish_entry.get(key, "") or ""
+            if pname:
+                entry = point_coords.get(pname)
+                if entry and entry.get("lat") is not None:
+                    return entry["lat"], entry["lon"], "sfp"
+
+    # ③ area_coords フォールバック（船宿エリアの代表座標）
+    area = ship_area_map.get(ship, "")
+    if area:
+        ac = area_coords.get(area)
+        if ac and ac.get("lat") is not None:
+            return ac["lat"], ac["lon"], "area"
+
+    return None, None, None
 
 def _load_area_weather_map():
     """area_weather_map.json を読み込み"""
