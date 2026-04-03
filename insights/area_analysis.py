@@ -27,7 +27,8 @@ from collections import defaultdict
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
+ROOT_DIR = os.path.dirname(BASE_DIR)
+DATA_DIR = os.path.join(ROOT_DIR, "data")
 DB_PATH  = os.path.join(BASE_DIR, "analysis.sqlite")
 
 # ── エリア定義 ────────────────────────────────────────────────────────────

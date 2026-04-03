@@ -23,8 +23,9 @@ import csv, json, math, os, sqlite3, sys
 from datetime import datetime
 
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
-DB_PATH     = os.path.join(BASE_DIR, "weather_cache.sqlite")
-DATA_DIR    = os.path.join(BASE_DIR, "data")
+ROOT_DIR    = os.path.dirname(BASE_DIR)
+DB_PATH     = os.path.join(ROOT_DIR, "weather_cache.sqlite")
+DATA_DIR    = os.path.join(ROOT_DIR, "data")
 OUTPUT_FILE = os.path.join(BASE_DIR, "enriched_catches.csv")
 
 DEPART_HOUR = "06:00"  # 出船時刻帯
@@ -64,16 +65,16 @@ def coord_to_port(lat, lon):
 
 
 # ── resolve_point のための依存関数をインポート ────────────────────────────
-sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, ROOT_DIR)
 from crawler import (
     resolve_point, _load_area_coords, _load_ship_area_map,
     _split_point_places_depth, _extract_point_from_kanso,
 )
 
 def load_support_data():
-    with open(os.path.join(BASE_DIR, "ship_fish_point.json"), encoding="utf-8") as f:
+    with open(os.path.join(ROOT_DIR, "ship_fish_point.json"), encoding="utf-8") as f:
         sfp = json.load(f)
-    with open(os.path.join(BASE_DIR, "point_coords.json"), encoding="utf-8") as f:
+    with open(os.path.join(ROOT_DIR, "point_coords.json"), encoding="utf-8") as f:
         pc = json.load(f)
     area_coords   = _load_area_coords()
     ship_area_map = _load_ship_area_map()
