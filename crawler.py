@@ -3637,38 +3637,46 @@ def load_wx_context():
                 if val is not None:
                     current_wx[key] = val
 
-        # ── fish_wx_params ロード ──────────────────────────────────────
+        # ── combo_wx_params ロード（船宿×魚種単位） ───────────────────
         conn_ana = sqlite3.connect(ana_db)
         params_rows = conn_ana.execute(
-            "SELECT fish, factor, r, hist_mean, hist_std FROM fish_wx_params"
+            "SELECT fish, ship, factor, r, hist_mean, hist_std FROM combo_wx_params"
         ).fetchall()
         conn_ana.close()
-        fish_wx = {}
-        for fish, fac, r, m, s in params_rows:
-            fish_wx.setdefault(fish, []).append((fac, r, m, s))
-        return current_wx, fish_wx
+        combo_wx = {}
+        for fish, ship, fac, r, m, s in params_rows:
+            combo_wx.setdefault((fish, ship), []).append((fac, r, m, s))
+        return current_wx, combo_wx
     except Exception:
         return {}, {}
 
 
-def calc_wx_boost(fish, current_wx, fish_wx):
+def calc_wx_boost(fish, ships, current_wx, combo_wx):
     """
-    今週の海況が当該魚種に有利か不利かを -0.1〜+0.1 で返す。
-    データなし → 0.0（スコアに影響させない）
+    船宿×魚種単位でwx_boostを計算し、船宿平均を返す（-0.1〜+0.1）。
+    ships: この魚種を直近で釣った船宿の集合
+    combo_wx: {(fish, ship): [(factor, r, hist_mean, hist_std), ...]}
+    データなし → 0.0
     """
-    params = fish_wx.get(fish, [])
-    if not params or not current_wx:
+    if not current_wx:
         return 0.0
-    contributions = []
-    for fac, r, hist_mean, hist_std in params:
-        val = current_wx.get(fac)
-        if val is None or hist_std == 0:
+    ship_boosts = []
+    for ship in ships:
+        params = combo_wx.get((fish, ship), [])
+        if not params:
             continue
-        z = (val - hist_mean) / hist_std   # 平均からの偏差（標準化）
-        contributions.append(r * z)
-    if not contributions:
+        contributions = []
+        for fac, r, hist_mean, hist_std in params:
+            val = current_wx.get(fac)
+            if val is None or hist_std == 0:
+                continue
+            z = (val - hist_mean) / hist_std  # 平均からの偏差
+            contributions.append(r * z)
+        if contributions:
+            ship_boosts.append(sum(contributions) / len(contributions))
+    if not ship_boosts:
         return 0.0
-    raw = sum(contributions) / len(contributions)
+    raw = sum(ship_boosts) / len(ship_boosts)
     return max(-0.1, min(0.1, raw * 0.15))  # ±10%にキャップ
 
 
@@ -4269,8 +4277,8 @@ def calc_targets(data, history):
         score     = get_season_score(fish, cur_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         prev_w    = get_prev_week_data(history, fish, year, week_num)
-        ships     = len(ship_counts_per_fish.get(fish, set()))
-        wx_boost  = calc_wx_boost(fish, current_wx, fish_wx)
+        ships_set = ship_counts_per_fish.get(fish, set())
+        wx_boost  = calc_wx_boost(fish, ships_set, current_wx, combo_wx)
         composite = calc_composite_score(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month, wx_boost)
         badge     = yoy_badge(this_w, last_w)
         comment   = build_comment(fish, cnt, score, this_w, last_w, prev_w, max_cnt, composite)
@@ -4278,6 +4286,7 @@ def calc_targets(data, history):
         tags      = build_reason_tags(fish, cnt, max_cnt, this_w, last_w, prev_w, cur_month)
         prob      = calc_weekend_prob(history, fish, year, week_num)
         surge     = is_surge(history, fish, year, week_num)
+        ships     = len(ships_set)
         targets.append({"fish": fish, "count": cnt, "score": score, "composite": composite,
                         "comment": comment, "badge": badge, "ships": ships,
                         "stars": stars, "tags": tags, "prob": prob, "surge": surge})
