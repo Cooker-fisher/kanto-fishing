@@ -232,13 +232,13 @@ def save_query_file(conn, fish):
     with open(path, "w", encoding="utf-8") as f:
         f.write(f"=== {fish} 船宿別ピーク週（週単位旬より細かい） ===\n")
         f.write("-" * 105 + "\n")
-        f.write(f"{'船宿':<16} {'エリア':<18} {'数量ピーク週':<12} {'最大匹':<7} {'index':<7} {'型ピーク週':<12} {'最大cm':<7} {'件数'}\n")
+        f.write(f"{'船宿':<16} {'エリア':<18} {'数量ピーク週':<12} {'最大(匹)':<9} {'index':<7} {'型ピーク週':<12} {'最大(cm)':<9} {'件数'}\n")
         f.write("-" * 105 + "\n")
         for ship, area, pw, mc, ci, psw, ms, top3, n in rows:
             pw_s  = week_label(pw)  if pw  else "-"
             psw_s = week_label(psw) if psw else "-"
             top3_labels = " / ".join(week_label(int(x)) for x in top3.split(",") if x.strip().isdigit())
-            f.write(f"{ship:<16} {(area or '-'):<18} {pw_s:<12} {str(round(mc))+'匹':<7} {str(round(ci)):<7} {psw_s:<12} {str(round(ms,1))+'cm' if ms else '-':<7} {n}\n")
+            f.write(f"{ship:<16} {(area or '-'):<18} {pw_s:<12} {round(mc):<9} {round(ci):<7} {psw_s:<12} {round(ms,1) if ms else '-':<9} {n}\n")
             f.write(f"  TOP3: {top3_labels}\n")
     print(f"保存: {path}")
     return path
@@ -310,13 +310,13 @@ def print_query(conn, fish):
         print(f"{fish} のデータなし")
         return
     print(f"\n=== {fish} 船宿別ピーク週 ===")
-    print(f"{'船宿':<14} {'エリア':<14} {'数量ピーク週':<10} {'最大匹':<7} {'index':<6} {'型ピーク週':<10} {'最大cm':<7} {'件数'}")
+    print(f"{'船宿':<14} {'エリア':<14} {'数量ピーク週':<10} {'最大(匹)':<9} {'index':<6} {'型ピーク週':<10} {'最大(cm)':<9} {'件数'}")
     print("-" * 80)
     for ship, area, pw, mc, ci, psw, ms, top3, n in rows:
         pw_s  = week_label(pw)  if pw  else "-"
         psw_s = week_label(psw) if psw else "-"
         top3_s = "/".join(week_label(int(x)) for x in top3.split(",") if x.strip().isdigit())
-        print(f"{ship:<14} {(area or '-'):<14} {pw_s:<10} {round(mc):<7} {round(ci):<6} {psw_s:<10} {str(round(ms,1))+'cm' if ms else '-':<7} {n}")
+        print(f"{ship:<14} {(area or '-'):<14} {pw_s:<10} {round(mc):<9} {round(ci):<6} {psw_s:<10} {round(ms,1) if ms else '-':<9} {n}")
         print(f"  TOP3: {top3_s}")
 
 
