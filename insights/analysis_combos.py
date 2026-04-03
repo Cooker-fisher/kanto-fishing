@@ -164,7 +164,7 @@ def make_weekly_stats(rows):
         except ValueError:
             continue
         week = d.strftime("%G/W%V")  # ISO週
-        fish = r["tsuri_mono"]
+        fish = r.get("tsuri_mono", "").strip()
         if fish and r["main_sub"] == "メイン":
             week_data[week][fish].append(cnt)
         if r["lat"]:

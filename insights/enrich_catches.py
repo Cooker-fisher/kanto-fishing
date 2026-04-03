@@ -24,6 +24,23 @@ from datetime import datetime
 
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR    = os.path.dirname(BASE_DIR)
+
+def _build_raw_to_tsuri_map():
+    path = os.path.join(ROOT_DIR, "tsuri_mono_map_draft.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    mapping = data.get("TSURI_MONO_MAP", {})
+    raw_to_tsuri = {}
+    for tsuri_mono, raw_list in mapping.items():
+        if tsuri_mono.startswith("_"):
+            continue
+        for raw in raw_list:
+            raw_to_tsuri[raw] = tsuri_mono
+    return raw_to_tsuri
+
+RAW_TO_TSURI = _build_raw_to_tsuri_map()
 DB_PATH     = os.path.join(ROOT_DIR, "weather_cache.sqlite")
 DATA_DIR    = os.path.join(ROOT_DIR, "data")
 OUTPUT_FILE = os.path.join(BASE_DIR, "enriched_catches.csv")
@@ -168,7 +185,11 @@ def main():
 
                     ship        = row.get("ship", "")
                     date_str_ym = row.get("date", "")           # "2024/03/15"
-                    tsuri_mono  = row.get("tsuri_mono", "") or row.get("tsuri_mono_raw", "")
+                    fish_raw_v  = row.get("fish_raw", "").strip()
+                    if fish_raw_v in RAW_TO_TSURI:
+                        tsuri_mono = RAW_TO_TSURI[fish_raw_v]
+                    else:
+                        tsuri_mono = row.get("tsuri_mono", "") or row.get("tsuri_mono_raw", "")
 
                     # 日付を SQLite フォーマット（YYYY-MM-DD）に変換
                     try:
