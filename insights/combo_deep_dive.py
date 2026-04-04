@@ -279,12 +279,19 @@ def load_ship_coords():
     return coords
 
 def load_wx_coords_list():
-    conn = sqlite3.connect(DB_WX)
-    coords = conn.execute("SELECT DISTINCT lat, lon FROM weather").fetchall()
-    conn.close()
-    return list(coords)
+    if not os.path.exists(DB_WX) or os.path.getsize(DB_WX) == 0:
+        return []
+    try:
+        conn = sqlite3.connect(DB_WX)
+        coords = conn.execute("SELECT DISTINCT lat, lon FROM weather").fetchall()
+        conn.close()
+        return list(coords)
+    except Exception:
+        return []
 
 def nearest_coord(lat, lon, coords):
+    if not coords:
+        return (lat, lon)
     return min(coords, key=lambda c: (c[0]-lat)**2 + (c[1]-lon)**2)
 
 def load_decadal(fish, ship):
@@ -356,6 +363,8 @@ def load_records(fish, ship_filter=None):
 
 def get_wx(conn_wx, lat, lon, date_iso):
     """指定座標・日付の 06:00 前後の海況を返す（瞬間値：波高・風速・SST など）"""
+    if conn_wx is None:
+        return {}
     row = conn_wx.execute("""
         SELECT wind_speed, wind_dir, temp, pressure,
                wave_height, wave_period, swell_height, sst
@@ -371,12 +380,9 @@ def get_wx(conn_wx, lat, lon, date_iso):
     return dict(zip(keys, row))
 
 def get_daily_agg(conn_wx, lat, lon, date_iso):
-    """その日の全3時間データ（最大8点）を日次集計して返す。
-    06:00の単点でなく、1日全体の分布を捉えることで精度向上。
-    【重要知見】
-      - pressure_range（日内変動幅）: 前線通過日はアジが活性化（正相関）
-      - precip_sum2（2日前合計）: 負相関 → 雨の2日後に濁りが最大（全魚種共通）
-    """
+    """その日の全3時間データ（最大8点）を日次集計して返す。"""
+    if conn_wx is None:
+        return {}
     rows = conn_wx.execute("""
         SELECT pressure, precipitation, wind_speed, wave_height,
                temp, swell_height, wave_period
@@ -431,6 +437,8 @@ def get_daily_agg(conn_wx, lat, lon, date_iso):
 
 def get_tide(conn_wx, port_code, date_iso):
     """潮汐データを返す"""
+    if conn_wx is None:
+        return None
     row = conn_wx.execute("""
         SELECT tide_range, moon_age, tide_type
         FROM tide WHERE port_code=? AND date=?
@@ -546,9 +554,15 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
 # ═══════════════════════════════════════════════════════════════════════════
 
 def section_basic(records):
-    cnts = [r["cnt_avg"] for r in records]
+    cnts = [r["cnt_avg"] for r in records if r["cnt_avg"] is not None]
     n = len(cnts)
+    if not cnts:
+        return ["  (釣果数データなし)"]
     m, s = mean_std(cnts)
+    if m is None:
+        m = sum(cnts) / len(cnts)
+    if s is None:
+        s = 0.0
     med = sorted(cnts)[n//2]
 
     cnt_mins = [r["cnt_min"] for r in records if r["cnt_min"]]
@@ -1189,7 +1203,7 @@ def deep_dive(fish, ship, verbose=True):
         print(f"  {fish} × {ship}: データ不足 ({len(records)}件)")
         return
 
-    conn_wx = sqlite3.connect(DB_WX)
+    conn_wx = sqlite3.connect(DB_WX) if (os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0) else None
     en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records)
     decadal = load_decadal(fish, ship)
 
@@ -1222,7 +1236,8 @@ def deep_dive(fish, ship, verbose=True):
     bt_lines, bt_data = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal)
     out += bt_lines
 
-    conn_wx.close()
+    if conn_wx is not None:
+        conn_wx.close()
 
     text = "\n".join(out)
     out_path = os.path.join(OUT_DIR, f"{fish}_{ship}.txt")

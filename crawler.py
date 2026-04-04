@@ -3142,9 +3142,18 @@ def normalize_tsuri_mono(raw, ship=""):
     _gomoku_keys = ("五目", "LT五目", "タイ五目", "イナダ五目", "イサキ五目", "根魚五目", "青物")
     if any(k in raw for k in _gomoku_keys) and ship in SHIP_GOMOKU_RULES:
         return SHIP_GOMOKU_RULES[ship]
-    # 通常マッチ（58種MAP）
+    # 通常マッチ（58種MAP）: 優先順位を厳密に
+    # 1. キー完全一致（例: raw="アマダイ" → TSURI_MONO_MAP["アマダイ"]）
+    if raw in TSURI_MONO_MAP:
+        return raw
+    # 2. パターン完全一致（例: raw="LTアマダイ" → patterns["アマダイ"]に"LTアマダイ"あり）
     for tsuri_mono, patterns in TSURI_MONO_MAP.items():
-        if any(p in raw or raw in p for p in patterns):
+        if raw in patterns:
+            return tsuri_mono
+    # 3. パターンがrawに含まれる（例: raw="大マダイ" → "マダイ" in "大マダイ"）
+    #    ※ raw in p（逆方向）は使わない → アマダイ→マダイ等の誤分類を防ぐ
+    for tsuri_mono, patterns in TSURI_MONO_MAP.items():
+        if any(p in raw for p in patterns):
             return tsuri_mono
     return ""
 
@@ -3252,6 +3261,49 @@ def _extract_by_catch(comment):
     return ",".join(valid)
 
 
+def _classify_cancel_type(reason: str) -> str:
+    """欠航理由テキスト → 分類。定休日 / 荒天 / 台風 / 不漁 / 不明"""
+    if not reason:
+        return "不明"
+    if any(k in reason for k in ["定休", "定期休", "休業日", "お休み"]):
+        return "定休日"
+    if any(k in reason for k in ["台風"]):
+        return "台風"
+    if any(k in reason for k in ["強風", "風強", "荒天", "悪天", "しけ", "シケ",
+                                   "波高", "高波", "うねり", "大波", "雷", "霧",
+                                   "雨", "雪", "天候", "気象", "海況", "海が悪"]):
+        return "荒天"
+    if any(k in reason for k in ["中止", "欠航", "キャンセル", "休み", "お休"]):
+        return "中止"
+    return "不明"
+
+
+def _extract_time_slot(fish_raw: str) -> str:
+    """fish_raw から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'"""
+    if not fish_raw:
+        return ""
+    # 優先順位順にチェック（長いパターンを先に）
+    for pattern, slot in [
+        ("ショートショート", "ショート"),
+        ("午前半日",   "午前"),
+        ("午後半日",   "午後"),
+        ("ナイト",     "夜"),
+        ("デイゲーム", "昼"),
+        ("午前",       "午前"),
+        ("午後",       "午後"),
+        ("朝マヅメ",   "朝"),
+        ("夕マヅメ",   "夕"),
+        ("夜",         "夜"),
+        ("朝",         "朝"),
+        ("夕",         "夕"),
+        ("ショート",   "ショート"),
+        ("半日",       "午前"),
+    ]:
+        if pattern in fish_raw:
+            return slot
+    return ""
+
+
 def _extract_tackle(tokki):
     """特記欄から仕掛けを抽出"""
     for word in ["ルアー", "テンヤ", "コマセ", "ビシ", "胴付き", "泳がせ", "エサ"]:
@@ -3306,7 +3358,7 @@ def _split_point_places_depth(point_raw, comment=""):
 RAW_CSV_HEADER = [
     "ship", "area", "date",
     "trip_no", "is_cancellation", "tsuri_mono_raw", "tsuri_mono", "main_sub",
-    "fish_raw",
+    "fish_raw", "time_slot",
     "cnt_min", "cnt_max", "cnt_avg", "is_boat",
     "size_min", "size_max", "kg_min", "kg_max",
     "tackle",
@@ -3319,6 +3371,7 @@ RAW_CSV_HEADER = [
     "wave_info",
     "weather",
     "by_catch",
+    "cancel_reason", "cancel_type",
     "kanso_raw", "suion_raw", "suishoku_raw",
 ]
 
@@ -3366,6 +3419,7 @@ def export_csv_from_raw(raw_path="catches_raw.json", output_dir="data", ships_fi
                     "tsuri_mono":     "欠航",
                     "main_sub":       "",
                     "fish_raw":       "",
+                    "time_slot":      "",
                     "cnt_min": "", "cnt_max": "", "cnt_avg": "", "is_boat": "",
                     "size_min": "", "size_max": "", "kg_min": "", "kg_max": "",
                     "tackle": "",
@@ -3374,6 +3428,8 @@ def export_csv_from_raw(raw_path="catches_raw.json", output_dir="data", ships_fi
                     "water_temp_min": "", "water_temp_max": "",
                     "water_color": "", "wind_direction": "", "wind_speed": "",
                     "tide_info": "", "wave_info": "", "weather": "", "by_catch": "",
+                    "cancel_reason":  r.get("reason_text", ""),
+                    "cancel_type":    _classify_cancel_type(r.get("reason_text", "")),
                     "kanso_raw":      r.get("reason_text", ""),
                     "suion_raw":      "",
                     "suishoku_raw":   "",
@@ -3437,6 +3493,7 @@ def export_csv_from_raw(raw_path="catches_raw.json", output_dir="data", ships_fi
                 "tsuri_mono":     tsuri_norm,
                 "main_sub":       main_sub,
                 "fish_raw":       r.get("fish_raw", ""),
+                "time_slot":      _extract_time_slot(r.get("fish_raw", "")),
                 "cnt_min":        cr["min"] if cr else "",
                 "cnt_max":        cr["max"] if cr else "",
                 "cnt_avg":        cnt_avg if cnt_avg is not None else "",
@@ -3460,6 +3517,8 @@ def export_csv_from_raw(raw_path="catches_raw.json", output_dir="data", ships_fi
                 "wave_info":      wave_info,
                 "weather":        weather,
                 "by_catch":       by_catch,
+                "cancel_reason":  "",
+                "cancel_type":    "",
                 "kanso_raw":      kanso_short,
                 "suion_raw":      r.get("suion_raw") or "",
                 "suishoku_raw":   r.get("suishoku_raw") or "",

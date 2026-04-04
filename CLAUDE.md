@@ -239,3 +239,5 @@ git push
 
 @.claude/memory/project_status.md
 @.claude/memory/feedback_crawler_editing.md
+
+@PIPELINE.md
