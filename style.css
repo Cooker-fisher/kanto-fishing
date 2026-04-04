@@ -10,7 +10,7 @@
   --border: #d0d8e0;
   --text-primary: #1a2332;
   --text-secondary: #5a6a7a;
-  --text-muted: #8a96a4;
+  --text-muted: #6b7a8a;
   --accent: #0077cc;
   --accent-hover: #005fa3;
   --cta: #e85d04;
@@ -729,6 +729,7 @@ a.filter-btn { text-decoration: none; display: inline-block; }
 }
 .area-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,.08); text-decoration: none; }
 .area-name { font-size: 15px; font-weight: bold; color: var(--accent); margin-bottom: 6px; }
+.area-fish { font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
 .area-fish { font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
 .area-ships { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 .fish-grid {
