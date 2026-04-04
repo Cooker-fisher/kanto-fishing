@@ -37,6 +37,7 @@ BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR      = os.path.dirname(BASE_DIR)
 DATA_DIR      = os.path.join(ROOT_DIR, "data")
 DB_WX         = os.path.join(ROOT_DIR, "weather_cache.sqlite")
+DB_TIDE       = os.path.join(ROOT_DIR, "tide_moon.sqlite")
 DB_ANA        = os.path.join(BASE_DIR, "analysis.sqlite")
 OUT_DIR       = os.path.join(BASE_DIR, "deep_dive")
 OVERRIDE_FILE = os.path.join(ROOT_DIR, "ship_wx_coord_override.json")
@@ -435,24 +436,24 @@ def get_daily_agg(conn_wx, lat, lon, date_iso):
 
     return result
 
-def get_tide(conn_wx, port_code, date_iso):
-    """潮汐データを返す"""
-    if conn_wx is None:
+def get_tide(conn_tide, date_iso):
+    """潮汐データを返す（tide_moon.sqlite から取得）"""
+    if conn_tide is None:
         return None
-    row = conn_wx.execute("""
-        SELECT tide_range, moon_age, tide_type
-        FROM tide WHERE port_code=? AND date=?
-    """, (port_code, date_iso)).fetchone()
+    row = conn_tide.execute("""
+        SELECT tide_coeff, moon_age, tide_type
+        FROM tide_moon WHERE date=?
+    """, (date_iso,)).fetchone()
     if not row:
         return None
-    tide_range, moon_age, tide_type = row
+    tide_coeff, moon_age, tide_type = row
     return {
-        "tide_range":  tide_range,
+        "tide_range":  tide_coeff,   # tide_coeff(0-100) を tide_range の代替として使用
         "moon_age":    moon_age,
         "tide_type_n": TIDE_TYPE_MAP.get(tide_type, 2),
     }
 
-def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None):
+def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None):
     """全レコードに海況・潮汐・前週釣果を付与（horizon 日前の weather を使用）。
 
     all_records: 前週釣果(prev_week_cnt)の参照用に全期間レコードを渡す。
@@ -521,12 +522,10 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         p_prev  = wx.get("pressure_min1")
         wx["pressure_delta"] = (p_today - p_prev) if (p_today and p_prev) else None
 
-        # 潮汐（当日）
-        area  = ship_area.get(ship, r.get("area", ""))
-        pcode = AREA_PORT.get(area, "tokyo_bay")
-        tk = (pcode, tide_date)
+        # 潮汐（当日）: tide_moon.sqlite から日付ベースで取得
+        tk = tide_date
         if tk not in tide_cache:
-            tide_cache[tk] = get_tide(conn_wx, pcode, tide_date)
+            tide_cache[tk] = get_tide(conn_tide, tide_date)
         tide = tide_cache[tk] or {}
 
         # ── 前週釣果（prev_week_cnt）────────────────────────────────────────
@@ -817,7 +816,7 @@ def _backtest_metric(metric, train_en, test_en_by_H, hist_params, decadal,
     return fac_desc, (r_own, n_own), rows
 
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal):
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None):
     """ローリング月次クロスバリデーション
 
     各月をテスト期として、それ以前の全データを学習に使う拡張ウィンドウCV。
@@ -837,7 +836,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     for H in HORIZONS:
         all_en_by_H[H] = enrich(
             records, ship_coords, wx_coords, conn_wx, ship_area,
-            horizon=H, all_records=records
+            horizon=H, all_records=records, conn_tide=conn_tide
         )
 
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg"]
@@ -1203,8 +1202,9 @@ def deep_dive(fish, ship, verbose=True):
         print(f"  {fish} × {ship}: データ不足 ({len(records)}件)")
         return
 
-    conn_wx = sqlite3.connect(DB_WX) if (os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0) else None
-    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records)
+    conn_wx   = sqlite3.connect(DB_WX)   if (os.path.exists(DB_WX)   and os.path.getsize(DB_WX)   > 0) else None
+    conn_tide = sqlite3.connect(DB_TIDE) if (os.path.exists(DB_TIDE) and os.path.getsize(DB_TIDE) > 0) else None
+    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records, conn_tide=conn_tide)
     decadal = load_decadal(fish, ship)
 
     SEP  = "=" * 72
@@ -1233,11 +1233,13 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal)
+    bt_lines, bt_data = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide)
     out += bt_lines
 
     if conn_wx is not None:
         conn_wx.close()
+    if conn_tide is not None:
+        conn_tide.close()
 
     text = "\n".join(out)
     out_path = os.path.join(OUT_DIR, f"{fish}_{ship}.txt")
