@@ -1,0 +1,92 @@
+name: Competitor Research
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-competitors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npx playwright install chromium --with-deps
+
+      - name: Fetch competitor sites
+        run: |
+          mkdir -p redesign/research/競合分析/screenshots
+
+          # スクリーンショット撮影スクリプト
+          cat > capture.mjs << 'SCRIPT'
+          import { chromium } from 'playwright';
+
+          const sites = [
+            { name: 'fishing-v_choka', url: 'https://www.fishing-v.jp/choka/', desc: '釣りビジョン 釣果一覧' },
+            { name: 'fishing-v_detail', url: 'https://www.fishing-v.jp/choka/detail.php?tihou=2', desc: '釣りビジョン 関東一覧' },
+            { name: 'funaduri_top', url: 'https://funaduri.jp/', desc: '船釣り.jp トップ' },
+            { name: 'funaduri_fish', url: 'https://funaduri.jp/fish.cgi?fish=all', desc: '船釣り.jp 魚種一覧' },
+            { name: 'chowari_top', url: 'https://www.chowari.jp/', desc: '釣割 トップ' },
+            { name: 'chowari_catch', url: 'https://www.chowari.jp/catch/', desc: '釣割 釣果' },
+            { name: 'anglers_top', url: 'https://anglers.jp/', desc: 'ANGLERS トップ' },
+            { name: 'netkeiba_top', url: 'https://www.netkeiba.com/', desc: 'netkeiba トップ（参考: 予想課金UI）' },
+            { name: 'boatrace_official', url: 'https://www.boatrace.jp/', desc: 'ボートレース公式（参考: 予想UI）' },
+          ];
+
+          const browser = await chromium.launch();
+
+          for (const site of sites) {
+            console.log(`Capturing: ${site.name} (${site.url})`);
+            try {
+              const ctx = await browser.newContext({
+                viewport: { width: 1280, height: 900 },
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                locale: 'ja-JP',
+              });
+              const page = await ctx.newPage();
+              await page.goto(site.url, { waitUntil: 'networkidle', timeout: 30000 });
+
+              // PC版スクショ
+              await page.screenshot({
+                path: `redesign/research/競合分析/screenshots/${site.name}_pc.png`,
+                fullPage: false,
+              });
+
+              // モバイル版スクショ
+              await page.setViewportSize({ width: 375, height: 812 });
+              await page.screenshot({
+                path: `redesign/research/競合分析/screenshots/${site.name}_mobile.png`,
+                fullPage: false,
+              });
+
+              // HTML保存（分析用）
+              const html = await page.content();
+              const fs = await import('fs');
+              fs.writeFileSync(
+                `redesign/research/競合分析/screenshots/${site.name}.html`,
+                html.substring(0, 200000)
+              );
+
+              console.log(`  ✅ ${site.desc}`);
+              await ctx.close();
+            } catch (e) {
+              console.log(`  ❌ ${site.name}: ${e.message}`);
+            }
+          }
+
+          await browser.close();
+          console.log('Done!');
+          SCRIPT
+
+          npx playwright test --config=/dev/null 2>/dev/null || true
+          node capture.mjs
+
+      - name: Commit screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add redesign/research/競合分析/screenshots/ || true
+          git commit -m "add competitor site screenshots (automated research)" || echo "No changes"
+          git push || echo "Push failed"
