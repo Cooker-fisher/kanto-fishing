@@ -3,16 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>エリア別 週単位旬カレンダー — 船釣り予想[有料]</title>
-<meta name="description" content="世界唯一の週単位旬カレンダー。52週×12魚種×主要エリアで数と型の最適タイミングを可視化。">
+<title>旬カレンダー — 船釣り予想[有料]</title>
+<meta name="description" content="エリア別・週単位の旬カレンダー一覧。12魚種から選んで表示。">
 <style>
-:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:1200px}
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:1100px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:60px;position:relative}
-/* ウォーターマーク */
-body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;background-image:repeating-linear-gradient(-30deg,transparent 0,transparent 180px,rgba(13,43,74,.035) 180px,rgba(13,43,74,.035) 181px);mix-blend-mode:multiply}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:60px;position:relative;-webkit-user-select:none;user-select:none}
 .watermark-text{position:fixed;inset:0;pointer-events:none;z-index:9998;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);overflow:hidden}
-.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(13,43,74,.04);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
+.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(13,43,74,.05);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
+@media print{.watermark-text span{color:rgba(13,43,74,.4) !important}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:linear-gradient(135deg,#0d2b4a,#4c1d95);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
@@ -21,63 +20,39 @@ header h1{font-size:19px;font-weight:700}header h1 span{color:var(--prem)}
 nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
 nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
 nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--prem);padding:18px 0 8px;border-bottom:2px solid var(--prem);margin-bottom:12px}
 
-.hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:20px 14px;text-align:center}
+.hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:22px 14px;text-align:center}
 .hero .unique{display:inline-block;font-size:10px;padding:3px 10px;background:var(--cta);border-radius:10px;font-weight:700;margin-bottom:6px}
 .hero h2{font-size:22px;font-weight:800}
 .hero .hs{font-size:11px;color:rgba(255,255,255,.7);margin-top:4px}
 
 .bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
 
-/* タブ: エリア */
-.area-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
-.area-tab{padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;font-size:11px;color:var(--sub);font-weight:600;text-decoration:none}
-.area-tab.on{background:var(--prem);color:#fff;border-color:var(--prem)}
+/* 魚種カード */
+.fish-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:20px}
+@media(min-width:600px){.fish-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.fish-grid{grid-template-columns:repeat(4,1fr)}}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;cursor:pointer;transition:border-color .15s,transform .15s}
+.fc:hover{border-color:var(--prem);transform:translateY(-2px);text-decoration:none}
+.fc-name{font-size:16px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.fc-status{font-size:10px;color:var(--sub);margin-bottom:6px;line-height:1.4}
+.fc-status strong{color:var(--accent)}
+.fc-preview{display:flex;align-items:flex-end;height:16px;gap:1px}
+.fc-preview div{flex:1;border-radius:1px}
+.fc-preview .off{background:#e5e7eb}
+.fc-preview .low{background:#fef3c7}
+.fc-preview .mid{background:#fbbf24}
+.fc-preview .high{background:#f97316}
+.fc-preview .peak{background:#dc2626}
+.fc-footer{font-size:9px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between}
+.fc-footer .current{color:var(--cta);font-weight:700}
+.fc-star{font-size:9px;color:var(--warn);margin-top:3px}
 
-/* タブ: 数/型切替 */
-.mode-tabs{display:flex;gap:0;margin-bottom:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:3px}
-.mode-tab{flex:1;padding:8px 12px;text-align:center;font-size:12px;font-weight:700;color:var(--sub);border-radius:6px;cursor:pointer}
-.mode-tab.on{background:var(--prem);color:#fff}
-
-/* 凡例 */
-.legend{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:10px}
-.legend .lg-title{font-weight:700;color:var(--accent);margin-right:2px}
-.legend .lgi{display:flex;align-items:center;gap:3px}
-.legend .box{width:14px;height:11px;border-radius:2px}
-.box.off{background:#e5e7eb}
-.box.low{background:#fef3c7}
-.box.mid{background:#fbbf24}
-.box.high{background:#f97316}
-.box.peak{background:#dc2626}
-
-/* カレンダーテーブル */
-.cal-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:16px;overflow-x:auto}
-.cal-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.cal-title .cal-sub{font-size:10px;color:var(--muted);font-weight:400}
-.cal-table{border-collapse:separate;border-spacing:0;font-size:9px;table-layout:fixed}
-.cal-table th,.cal-table td{border:1px solid #fff;padding:0;text-align:center}
-.cal-table th.mh{background:var(--bg);color:var(--accent);font-weight:700;padding:4px 0;font-size:10px;border-bottom:2px solid var(--border)}
-.cal-table th.mh:nth-child(2n){background:#e9ecef}
-.cal-table th.fn-h{background:var(--bg);width:64px;min-width:64px}
-.cal-table td.fn{background:var(--card);color:var(--accent);font-weight:700;font-size:11px;padding:4px 6px;text-align:left;width:64px;min-width:64px;border-right:2px solid var(--border)}
-.cal-table td.cc{width:18px;height:22px;cursor:pointer;transition:transform .1s}
-.cal-table td.cc:hover{transform:scale(1.4);z-index:3;position:relative;box-shadow:0 0 0 2px var(--accent)}
-.cal-table td.cc.off{background:#e5e7eb}
-.cal-table td.cc.low{background:#fef3c7}
-.cal-table td.cc.mid{background:#fbbf24}
-.cal-table td.cc.high{background:#f97316}
-.cal-table td.cc.peak{background:#dc2626}
-.cal-table td.cc.current{outline:2px solid var(--prem);outline-offset:-2px;z-index:1;position:relative}
-
-.info-note{font-size:10px;color:var(--muted);margin:6px 0;text-align:center}
-
-/* ハイライト情報 */
-.highlight-box{background:var(--prem-bg);border:1px solid #e0d6f5;border-radius:var(--r);padding:14px;margin-bottom:16px}
-.highlight-box h3{font-size:13px;font-weight:700;color:var(--prem);margin-bottom:8px}
-.hl-row{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px}
-.hl-row:last-child{border-bottom:none}
-.hl-row .hl-lb{flex:0 0 100px;color:var(--sub);font-weight:600}
-.hl-row .hl-vl{flex:1;color:var(--accent);font-weight:700}
+/* Filter tabs */
+.filter-tabs{display:flex;gap:4px;margin-bottom:12px}
+.filter-tab{flex:1;padding:8px;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--sub);font-weight:600;cursor:pointer}
+.filter-tab.on{background:var(--prem);color:#fff;border-color:var(--prem)}
 
 footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
 footer a{color:rgba(255,255,255,.7)}
@@ -89,13 +64,12 @@ footer a{color:rgba(255,255,255,.7)}
 </head>
 <body>
 
-<!-- ウォーターマーク（username透かし） -->
 <div class="watermark-text" aria-hidden="true">
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
 </div>
 
 <header><div class="inner"><h1>船釣り<span>予想</span>👑</h1><span style="font-size:11px;opacity:.5">旬カレンダー</span></div></header>
@@ -103,111 +77,150 @@ footer a{color:rgba(255,255,255,.7)}
 
 <div class="hero">
 <div class="unique">🌏 世界で唯一・週単位52週</div>
-<h2>エリア別 超詳細 旬カレンダー</h2>
-<div class="hs">52週 × 12魚種 × 主要エリア | 数と型を別軸で可視化 | 過去3年の実績から算出</div>
+<h2>魚種別 旬カレンダー</h2>
+<div class="hs">12魚種 × 8エリア × 数/型 | 4月第1週現在の状況</div>
 </div>
 
 <div class="c">
 <div class="bread"><a href="mockup-paid-dashboard.html">ダッシュボード</a> &gt; 旬カレンダー</div>
 
-<!-- エリア選択 -->
-<div class="area-tabs">
-<a class="area-tab on" href="#">金沢八景</a>
-<a class="area-tab" href="#">走水</a>
-<a class="area-tab" href="#">剣崎</a>
-<a class="area-tab" href="#">横浜</a>
-<a class="area-tab" href="#">久里浜</a>
-<a class="area-tab" href="#">大原</a>
-<a class="area-tab" href="#">勝山</a>
-<a class="area-tab" href="#">飯岡</a>
+<!-- フィルター -->
+<div class="filter-tabs">
+<div class="filter-tab on">全魚種</div>
+<div class="filter-tab">今週ピーク中</div>
+<div class="filter-tab">これから上昇</div>
+<div class="filter-tab">お気に入りのみ</div>
 </div>
 
-<!-- 数/型タブ -->
-<div class="mode-tabs">
-<div class="mode-tab on">📊 数の旬（1日あたり匹数）</div>
-<div class="mode-tab">📏 型の旬（大型率）</div>
+<h2 class="st">魚種を選んで詳細カレンダーへ</h2>
+
+<div class="fish-grid">
+
+<a class="fc" href="mockup-paid-fish-calendar.html">
+<div class="fc-name">アジ</div>
+<div class="fc-status">現在: <strong>上昇前期</strong> / 数ピーク: 6-7月 / 型ピーク: 8-9月</div>
+<div class="fc-preview">
+<div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="low"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+</div>
+<div class="fc-footer"><span>エリア: 8</span><span class="current">●現在</span></div>
+<div class="fc-star">信頼度: ★★★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">シロギス</div>
+<div class="fc-status">現在: <strong>上昇中</strong> / 数ピーク: 6月 / 型ピーク: 8月</div>
+<div class="fc-preview">
+<div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+</div>
+<div class="fc-footer"><span>エリア: 6</span><span class="current">●現在</span></div>
+<div class="fc-star">信頼度: ★★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">マダイ</div>
+<div class="fc-status">現在: <strong>最盛期ピーク</strong> / 春の大型シーズン</div>
+<div class="fc-preview">
+<div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="mid"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="mid"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+</div>
+<div class="fc-footer"><span>エリア: 7</span><span class="current">●現在</span></div>
+<div class="fc-star">信頼度: ★★★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">カワハギ</div>
+<div class="fc-status">現在: <strong>終盤</strong> / 本番は10-12月</div>
+<div class="fc-preview">
+<div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div>
+</div>
+<div class="fc-footer"><span>エリア: 5</span><span>↓下降</span></div>
+<div class="fc-star">信頼度: ★★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">タチウオ</div>
+<div class="fc-status">現在: <strong>オフ</strong> / 7-9月が最盛期</div>
+<div class="fc-preview">
+<div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+</div>
+<div class="fc-footer"><span>エリア: 5</span><span>待機</span></div>
+<div class="fc-star">信頼度: ★★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">アマダイ</div>
+<div class="fc-status">現在: <strong>盛期終盤</strong> / 秋冬が本番</div>
+<div class="fc-preview">
+<div class="low"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="mid"></div><div class="mid"></div>
+</div>
+<div class="fc-footer"><span>エリア: 4</span><span class="current">●現在</span></div>
+<div class="fc-star">信頼度: ★★★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">ヒラメ</div>
+<div class="fc-status">現在: <strong>終盤</strong> / 冬〜春メイン</div>
+<div class="fc-preview">
+<div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div>
+</div>
+<div class="fc-footer"><span>エリア: 4</span><span>↓終盤</span></div>
+<div class="fc-star">信頼度: ★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">マゴチ</div>
+<div class="fc-status">現在: <strong>旬入り</strong> / 5-7月ピーク</div>
+<div class="fc-preview">
+<div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+</div>
+<div class="fc-footer"><span>エリア: 3</span><span class="current">●上昇</span></div>
+<div class="fc-star">信頼度: ★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">イサキ</div>
+<div class="fc-status">現在: <strong>上昇中</strong> / 5-7月ピーク</div>
+<div class="fc-preview">
+<div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+</div>
+<div class="fc-footer"><span>エリア: 4</span><span class="current">●上昇</span></div>
+<div class="fc-star">信頼度: ★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">フグ</div>
+<div class="fc-status">現在: <strong>終盤</strong> / 秋冬メイン</div>
+<div class="fc-preview">
+<div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div>
+</div>
+<div class="fc-footer"><span>エリア: 3</span><span>↓終盤</span></div>
+<div class="fc-star">信頼度: ★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">ヤリイカ</div>
+<div class="fc-status">現在: <strong>終盤</strong> / 1-3月ピーク</div>
+<div class="fc-preview">
+<div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="high"></div>
+</div>
+<div class="fc-footer"><span>エリア: 3</span><span>↓終盤</span></div>
+<div class="fc-star">信頼度: ★★★</div>
+</a>
+
+<a class="fc" href="#">
+<div class="fc-name">ワラサ</div>
+<div class="fc-status">現在: <strong>オフ</strong> / 7-9月ピーク</div>
+<div class="fc-preview">
+<div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="low"></div><div class="mid"></div><div class="mid"></div><div class="high"></div><div class="high"></div><div class="peak"></div><div class="peak"></div><div class="peak"></div><div class="high"></div><div class="high"></div><div class="mid"></div><div class="mid"></div><div class="low"></div><div class="low"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div><div class="off"></div>
+</div>
+<div class="fc-footer"><span>エリア: 3</span><span>待機</span></div>
+<div class="fc-star">信頼度: ★★★</div>
+</a>
+
 </div>
 
-<!-- 凡例 -->
-<div class="legend">
-<span class="lg-title">凡例:</span>
-<div class="lgi"><div class="box off"></div>オフ</div>
-<div class="lgi"><div class="box low"></div>初期</div>
-<div class="lgi"><div class="box mid"></div>上昇</div>
-<div class="lgi"><div class="box high"></div>盛期</div>
-<div class="lgi"><div class="box peak"></div>最盛期</div>
-<div class="lgi" style="margin-left:auto"><span style="display:inline-block;width:14px;height:11px;border:2px solid var(--prem);border-radius:2px"></span>現在週（4月第1週）</div>
-</div>
-
-<!-- 数の旬 -->
-<div class="cal-wrap">
-<div class="cal-title">📊 数の旬カレンダー <span class="cal-sub">金沢八景エリア・週単位（1日あたり匹数ベース）</span></div>
-<table class="cal-table">
-<thead>
-<tr><th class="fn-h"></th><th class="mh" colspan="4">1月</th><th class="mh" colspan="4">2月</th><th class="mh" colspan="5">3月</th><th class="mh" colspan="4">4月</th><th class="mh" colspan="4">5月</th><th class="mh" colspan="5">6月</th><th class="mh" colspan="4">7月</th><th class="mh" colspan="5">8月</th><th class="mh" colspan="4">9月</th><th class="mh" colspan="4">10月</th><th class="mh" colspan="5">11月</th><th class="mh" colspan="4">12月</th></tr>
-</thead>
-<tbody>
-<tr><td class="fn">アジ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">シロギス</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">マダイ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid current"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">カワハギ</td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td></tr>
-<tr><td class="fn">タチウオ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">アマダイ</td><td class="cc low"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak current"></td><td class="cc high"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td></tr>
-<tr><td class="fn">ヒラメ</td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td></tr>
-<tr><td class="fn">マゴチ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">イサキ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">フグ</td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td></tr>
-<tr><td class="fn">ヤリイカ</td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td></tr>
-<tr><td class="fn">ワラサ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-</tbody>
-</table>
-<div class="info-note">セルをタップで該当週×魚種の詳細（平均匹数・好条件・推奨船宿）へ</div>
-</div>
-
-<!-- 型の旬 -->
-<div class="cal-wrap">
-<div class="cal-title">📏 型の旬カレンダー <span class="cal-sub">金沢八景エリア・週単位（大型サイズ率ベース）</span></div>
-<table class="cal-table">
-<thead>
-<tr><th class="fn-h"></th><th class="mh" colspan="4">1月</th><th class="mh" colspan="4">2月</th><th class="mh" colspan="5">3月</th><th class="mh" colspan="4">4月</th><th class="mh" colspan="4">5月</th><th class="mh" colspan="5">6月</th><th class="mh" colspan="4">7月</th><th class="mh" colspan="5">8月</th><th class="mh" colspan="4">9月</th><th class="mh" colspan="4">10月</th><th class="mh" colspan="5">11月</th><th class="mh" colspan="4">12月</th></tr>
-</thead>
-<tbody>
-<tr><td class="fn">アジ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">シロギス</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">マダイ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid current"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">カワハギ</td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td></tr>
-<tr><td class="fn">タチウオ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">アマダイ</td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td></tr>
-<tr><td class="fn">ヒラメ</td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td></tr>
-<tr><td class="fn">マゴチ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">イサキ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">フグ</td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td></tr>
-<tr><td class="fn">ヤリイカ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-<tr><td class="fn">ワラサ</td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off current"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc low"></td><td class="cc low"></td><td class="cc mid"></td><td class="cc high"></td><td class="cc high"></td><td class="cc high"></td><td class="cc peak"></td><td class="cc high"></td><td class="cc high"></td><td class="cc mid"></td><td class="cc low"></td><td class="cc low"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td><td class="cc off"></td></tr>
-</tbody>
-</table>
-<div class="info-note">※ 同じ魚でも「数が釣れる週」と「型が出る週」は異なる。大物狙いは型カレンダー参照</div>
-</div>
-
-<!-- 現在週のハイライト -->
-<div class="highlight-box">
-<h3>📍 4月第1週 の金沢八景（現在週）</h3>
-<div class="hl-row"><span class="hl-lb">数が狙える魚</span><span class="hl-vl">マダイ(盛期) / アマダイ(盛期) / ヒラメ(終盤) / ヤリイカ(盛期)</span></div>
-<div class="hl-row"><span class="hl-lb">型が狙える魚</span><span class="hl-vl">マダイ(最盛期・大型) / ヒラメ(終盤大型) / アマダイ(上昇)</span></div>
-<div class="hl-row"><span class="hl-lb">これから上昇</span><span class="hl-vl">アジ(6月ピークへ) / シロギス(6月ピークへ) / マゴチ(6-7月ピーク)</span></div>
-<div class="hl-row"><span class="hl-lb">オフシーズン入り</span><span class="hl-vl">カワハギ / フグ(夏前まで)</span></div>
-</div>
-
-<!-- 使い方 -->
-<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px">
-<h3 style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px">この週単位カレンダーが強い理由</h3>
-<div style="font-size:11px;color:var(--sub);line-height:1.7">
-<strong>1. 週単位の細かさ</strong> — 他の釣りサイトは月単位。うちは過去3年のデータから週単位で盛期を割り出し<br>
-<strong>2. 数と型を分けた表示</strong> — 同じ魚でも「数釣りの旬」と「大物の旬」は違う。両方カバー<br>
-<strong>3. エリア別</strong> — 同じアジでも金沢八景と茨城で旬がズレる。ここまで細かいのは唯一無二<br>
-<strong>4. 実データから算出</strong> — 過去3年の実釣果データから機械的に計算。船宿宣伝ではなく事実ベース<br>
-<strong>5. タップで詳細</strong> — 該当週の平均匹数・好条件・推奨船宿を即確認
-</div>
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:11px;color:var(--sub);line-height:1.7">
+<strong style="color:var(--accent);display:block;margin-bottom:4px">このカレンダーの特徴</strong>
+魚種ごとに全エリア（最大8エリア）× 数/型の2軸で週単位表示。同じ魚でも「東京湾奥の数の旬」と「外房の型の旬」は異なる。カードタップで個別の魚種詳細カレンダーへ。
 </div>
 
 </div>

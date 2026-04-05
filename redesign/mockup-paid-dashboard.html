@@ -7,10 +7,12 @@
 <style>
 :root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem2:#6d28d9;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px;position:relative}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px;position:relative;-webkit-user-select:none;user-select:none}
 /* Watermark */
 .watermark-text{position:fixed;inset:0;pointer-events:none;z-index:9998;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);overflow:hidden}
-.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(13,43,74,.04);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
+.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(13,43,74,.05);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
+@media print{.watermark-text span{color:rgba(13,43,74,.4) !important}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+input,select,button,textarea{-webkit-user-select:auto;user-select:auto}
 a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:linear-gradient(135deg,#0d2b4a,#4c1d95);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
@@ -124,11 +126,11 @@ footer a{color:rgba(255,255,255,.7)}
 <body>
 
 <div class="watermark-text" aria-hidden="true">
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
-<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
 </div>
 
 <header><div class="inner"><h1>船釣り<span>予想</span><span class="crown">👑</span></h1><span style="font-size:11px;opacity:.5">会員ダッシュボード</span></div></header>
@@ -271,7 +273,25 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 
 <!-- 釣行予定ウォッチ -->
-<h2 class="st">🎣 釣行予定ウォッチ <span class="st-sub">予定日の状況を自動監視</span></h2>
+<h2 class="st">🎣 釣行予定ウォッチ <span class="st-sub">予定日・釣り物・船宿を監視</span></h2>
+
+<!-- 予定日入力フォーム（自動提案） -->
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--prem);border-radius:var(--r);padding:14px;margin-bottom:12px">
+<h3 style="font-size:13px;color:var(--prem);margin-bottom:8px">🗓 予定日から最適プラン提案</h3>
+<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+<input type="date" value="2026-04-19" style="flex:1;min-width:140px;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:12px">
+<select style="flex:1;min-width:120px;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:12px"><option>全エリア</option><option>金沢八景</option><option>走水</option><option>剣崎</option></select>
+</div>
+<button style="width:100%;padding:10px;background:var(--prem);color:#fff;border:none;border-radius:20px;font-weight:700;font-size:12px;cursor:pointer">この日に最適な魚種TOP5を提案</button>
+<div style="font-size:10px;color:var(--muted);margin-top:6px">※ 海況予報・旬データ・信頼度から自動算出</div>
+</div>
+
+<!-- ウォッチタブ（魚種/船宿） -->
+<div style="display:flex;gap:4px;margin-bottom:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:3px">
+<div style="flex:1;padding:8px;text-align:center;font-size:12px;font-weight:700;color:#fff;background:var(--prem);border-radius:6px;cursor:pointer">🎣 釣行予定</div>
+<div style="flex:1;padding:8px;text-align:center;font-size:12px;font-weight:700;color:var(--sub);cursor:pointer">⚓ 船宿ウォッチ</div>
+</div>
+
 <div class="trip-watch">
 
 <!-- 4/12 の予定 -->
@@ -288,7 +308,7 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 <div class="tw-actions">
 <a class="tw-btn" href="#">詳細を見る</a>
-<a class="tw-btn" href="#">通知設定</a>
+<a class="tw-btn" href="#">LINE転送</a>
 <a class="tw-btn" href="#">削除</a>
 </div>
 </div>
@@ -310,12 +330,37 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 <div class="tw-actions">
 <a class="tw-btn" href="#">詳細を見る</a>
-<a class="tw-btn" href="#">日付変更</a>
+<a class="tw-btn" href="#">LINE転送</a>
 <a class="tw-btn" href="#">削除</a>
 </div>
 </div>
 
 <a class="tw-add" href="#">+ 釣行予定を追加</a>
+</div>
+
+<!-- 船宿ウォッチ（別セクション） -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px">
+<h3 style="font-size:13px;color:var(--accent);margin-bottom:10px">⚓ ウォッチ中の船宿（明日の予測）</h3>
+
+<div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:6px;border-left:3px solid var(--pos)">
+<div style="font-size:13px;font-weight:700;color:var(--accent)">忠彦丸（金沢八景）</div>
+<div style="font-size:11px;color:var(--cta);font-weight:700;margin-top:2px">明日: アジ ◎ ★★★★★ / シロギス ○ ★★★★</div>
+<div style="font-size:10px;color:var(--sub);margin-top:2px">走水沖 / 午前便・午後便</div>
+</div>
+
+<div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:6px;border-left:3px solid var(--pos)">
+<div style="font-size:13px;font-weight:700;color:var(--accent)">荒川屋（金沢八景）</div>
+<div style="font-size:11px;color:var(--cta);font-weight:700;margin-top:2px">明日: シロギス ◎ ★★★★★ / アジ ◎ ★★★★</div>
+<div style="font-size:10px;color:var(--sub);margin-top:2px">中ノ瀬 / 午前便</div>
+</div>
+
+<div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:6px;border-left:3px solid var(--warn)">
+<div style="font-size:13px;font-weight:700;color:var(--accent)">佐円丸（剣崎）</div>
+<div style="font-size:11px;color:var(--cta);font-weight:700;margin-top:2px">明日: マダイ △ ★★★</div>
+<div style="font-size:10px;color:var(--sub);margin-top:2px">剣崎沖 / 南風6m予報で注意</div>
+</div>
+
+<a href="#" style="display:block;text-align:center;padding:8px;color:var(--prem);font-size:11px;font-weight:700;text-decoration:none">+ 船宿を追加</a>
 </div>
 
 <!-- LINE通知設定 -->
@@ -338,6 +383,19 @@ footer a{color:rgba(255,255,255,.7)}
 <span class="ln-rule-on" style="background:var(--muted)">OFF</span>
 </div>
 <a class="ln-add-btn" href="#">+ 新しい通知ルールを追加</a>
+
+<!-- 通知転送プレビュー -->
+<div style="background:#fff;border:1px dashed #06c755;border-radius:8px;padding:10px;margin-top:10px">
+<div style="font-size:10px;color:#06c755;font-weight:700;margin-bottom:4px">📲 通知内容プレビュー（タップで仲間にLINE転送）</div>
+<div style="font-size:11px;color:var(--accent);background:#f0f9ff;padding:8px;border-radius:4px;line-height:1.5">
+【船釣り予想 通知】<br>
+明日 4/6(日) の予測：<br>
+◎ アジ 金沢八景 28〜52匹 ★★★★★<br>
+◎ 忠彦丸 好調（+52%）<br>
+https://funatsuri-yoso.com/share/xxx
+</div>
+<button style="width:100%;margin-top:6px;padding:6px;background:#06c755;color:#fff;border:none;border-radius:14px;font-size:11px;font-weight:700;cursor:pointer">この内容をLINEで友達に転送</button>
+</div>
 </div>
 
 <!-- お気に入り通知 -->
