@@ -3,11 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>船釣り予想 — リデザイン モックアップ</title>
+<title>船釣り予想 — リデザイン モックアップ v2</title>
 <style>
-/* ================================================================
-   CSS Variables — ダークネイビー + オレンジ
-   ================================================================ */
 :root {
   --bg-primary:    #f5f7fa;
   --bg-card:       #ffffff;
@@ -32,335 +29,117 @@
   --radius-lg:     14px;
   --max-width:     900px;
 }
-
-/* ================================================================
-   Reset & Base
-   ================================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: system-ui, -apple-system, "Helvetica Neue", "Hiragino Sans", sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  background: var(--bg-primary); color: var(--text-primary);
+  line-height: 1.6; -webkit-font-smoothing: antialiased;
 }
 a { color: var(--cta); text-decoration: none; }
 a:hover { text-decoration: underline; }
 .container { max-width: var(--max-width); margin: 0 auto; padding: 0 16px; }
 
-/* ================================================================
-   Header
-   ================================================================ */
-header {
-  background: var(--header-bg);
-  color: var(--header-text);
-  padding: 16px 24px;
-  border-bottom: 3px solid var(--cta);
-}
+/* Header */
+header { background: var(--header-bg); color: var(--header-text); padding: 14px 24px; border-bottom: 3px solid var(--cta); }
 header .inner { max-width: var(--max-width); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 header h1 { font-size: 20px; font-weight: 700; }
 header h1 span { color: var(--cta); }
 
-/* ================================================================
-   Nav
-   ================================================================ */
-nav {
-  background: var(--nav-bg);
-  padding: 8px 24px;
-  display: flex; gap: 8px; flex-wrap: wrap;
-  justify-content: center;
-  border-bottom: 1px solid var(--border);
-}
-nav a {
-  color: var(--text-secondary);
-  font-size: 13px; font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 20px;
-  transition: all .15s;
-}
-nav a:hover, nav a.active {
-  background: var(--accent);
-  color: #fff;
-  text-decoration: none;
-}
+/* Nav */
+nav { background: var(--nav-bg); padding: 8px 24px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; border-bottom: 1px solid var(--border); }
+nav a { color: var(--text-secondary); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; transition: all .15s; }
+nav a:hover, nav a.active { background: var(--accent); color: #fff; text-decoration: none; }
 
-/* ================================================================
-   HERO
-   ================================================================ */
-.hero {
-  background: linear-gradient(135deg, #0d2b4a 0%, #163d5c 100%);
-  color: #fff;
-  text-align: center;
-  padding: 32px 16px 28px;
-}
-.hero .count { font-size: 48px; font-weight: 800; color: var(--cta); }
-.hero .count-label { font-size: 15px; color: rgba(255,255,255,.8); margin-top: 4px; }
-.hero .updated {
-  font-size: 12px; color: rgba(255,255,255,.5);
-  margin-top: 12px;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.hero .updated .dot { width: 8px; height: 8px; background: var(--positive); border-radius: 50%; display: inline-block; }
+/* HERO */
+.hero { background: linear-gradient(135deg, #0d2b4a 0%, #163d5c 100%); color: #fff; text-align: center; padding: 28px 16px 24px; }
+.hero-catch { font-size: 13px; color: rgba(255,255,255,.7); letter-spacing: .5px; }
+.hero .count { font-size: 52px; font-weight: 800; color: var(--cta); line-height: 1.1; }
+.hero .count-unit { font-size: 18px; color: rgba(255,255,255,.8); font-weight: 400; margin-left: 4px; }
+.hero .count-label { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 4px; }
+.hero .updated { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.hero .updated .dot { width: 7px; height: 7px; background: var(--positive); border-radius: 50%; }
 
-/* ================================================================
-   Section headings
-   ================================================================ */
-.section-title {
-  font-size: 17px; font-weight: 700;
-  color: var(--accent);
-  padding: 20px 0 12px;
-  border-bottom: 2px solid var(--accent);
-  margin-bottom: 16px;
-}
-.section-title .free-badge {
-  font-size: 10px; background: var(--positive); color: #fff;
-  padding: 2px 8px; border-radius: 10px; margin-left: 8px;
-  vertical-align: middle; font-weight: 700;
-}
+/* Section */
+.section-title { font-size: 16px; font-weight: 700; color: var(--accent); padding: 20px 0 10px; border-bottom: 2px solid var(--accent); margin-bottom: 14px; }
 
-/* ================================================================
-   Fish Cards — ZONE B
-   ================================================================ */
-.fish-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
-.fc {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  text-align: center;
-  transition: box-shadow .15s, border-color .15s;
-  cursor: pointer;
-}
-.fc:hover {
-  border-color: var(--cta);
-  box-shadow: 0 4px 12px rgba(13,43,74,.12);
-}
-.fc .fn { font-size: 17px; font-weight: 700; color: var(--accent); }
-.fc .yoy {
-  display: inline-block;
-  font-size: 11px; font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-left: 6px;
-}
+/* Fish Cards */
+.fish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.fc { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 12px; transition: box-shadow .15s, border-color .15s; cursor: pointer; }
+.fc:hover { border-color: var(--cta); box-shadow: 0 4px 12px rgba(13,43,74,.1); }
+.fc .fn { font-size: 16px; font-weight: 700; color: var(--accent); }
+.fc .yoy { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-left: 4px; }
 .fc .yoy.up { background: #e6f7ee; color: var(--positive); }
 .fc .yoy.down { background: #fde8e8; color: var(--negative); }
-.fc .fk { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
-.fc .fk strong { color: var(--cta); font-size: 16px; }
-.fc .fa { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
-.fc .season-bar {
-  display: flex; gap: 2px; margin-top: 8px; justify-content: center;
-}
-.fc .season-bar span {
-  width: 12px; height: 16px; border-radius: 2px;
-}
-.fc .fc-link {
-  display: block; margin-top: 10px;
-  font-size: 12px; color: var(--cta); font-weight: 600;
-}
+.fc .fc-nums { margin-top: 6px; font-size: 13px; color: var(--text-secondary); }
+.fc .fc-nums strong { color: var(--cta); font-size: 20px; font-weight: 800; }
+.fc .fc-nums .unit { font-size: 11px; color: var(--text-muted); }
+.fc .fc-size { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.fc .fc-area { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.fc .fc-sea { font-size: 10px; color: var(--accent); margin-top: 6px; padding: 4px 6px; background: #edf2f7; border-radius: 4px; }
+.fc .fc-link { display: block; margin-top: 8px; font-size: 12px; color: var(--cta); font-weight: 600; }
+.fc .fc-ships { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-/* ================================================================
-   ZONE B' — Prediction Answer Check (Bridge)
-   ================================================================ */
-.answer-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  margin-bottom: 24px;
-}
-.answer-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  margin-bottom: 12px;
-  position: relative;
-}
-.answer-card:last-child { margin-bottom: 0; }
-.answer-card .fish-name {
-  font-size: 16px; font-weight: 700; color: var(--accent);
-}
-.answer-badge {
-  display: inline-block;
-  font-size: 11px; font-weight: 700;
-  padding: 3px 10px; border-radius: 12px;
-  margin-left: 8px;
-}
+/* Answer Section */
+.answer-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; }
+.answer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.answer-header h3 { font-size: 15px; color: var(--accent); font-weight: 700; }
+.answer-accuracy { font-size: 12px; padding: 4px 10px; background: #e6f7ee; color: var(--positive); border-radius: 12px; font-weight: 700; }
+.answer-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; margin-bottom: 10px; }
+.answer-card:last-of-type { margin-bottom: 0; }
+.answer-card .fish-name { font-size: 15px; font-weight: 700; color: var(--accent); }
+.answer-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin-left: 8px; }
 .answer-badge.hit { background: var(--positive); color: #fff; }
 .answer-badge.miss { background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--border); }
-
-.answer-row {
-  display: flex; align-items: center; gap: 12px;
-  margin-top: 10px; font-size: 14px;
-}
-.answer-row .label { color: var(--text-muted); font-size: 12px; min-width: 32px; }
-.answer-row .val { font-weight: 700; font-size: 18px; }
-.answer-row .val.pred { color: var(--accent); }
-.answer-row .val.actual { color: var(--cta); }
-.answer-row .arrow { color: var(--text-muted); font-size: 16px; }
-
-.answer-reason {
-  font-size: 12px; color: var(--text-secondary);
-  margin-top: 8px;
-  padding: 8px 10px;
-  background: var(--bg-input);
-  border-radius: var(--radius-sm);
-}
+.answer-compare { display: flex; gap: 8px; margin-top: 10px; align-items: stretch; }
+.answer-box { flex: 1; padding: 10px; border-radius: var(--radius-sm); text-align: center; }
+.answer-box.pred { background: #edf2f7; }
+.answer-box.actual { background: #fef6ee; }
+.answer-box .ab-label { font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: .5px; }
+.answer-box .ab-pct { font-size: 22px; font-weight: 800; margin-top: 2px; }
+.answer-box.pred .ab-pct { color: var(--accent); }
+.answer-box.actual .ab-pct { color: var(--cta); }
+.answer-box .ab-detail { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.answer-arrow { display: flex; align-items: center; font-size: 18px; color: var(--text-muted); padding: 0 2px; }
+.answer-reason { font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding: 8px; background: var(--bg-input); border-radius: var(--radius-sm); }
 .answer-reason strong { color: var(--text-primary); }
-
-/* miss card: cause attribution */
-.answer-cause {
-  font-size: 12px; color: var(--text-secondary);
-  margin-top: 6px;
-  padding: 6px 10px;
-  background: #fef3e6;
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--warning);
-}
-
-/* blurred paid detail */
-.answer-paid {
-  margin-top: 10px; padding: 10px;
-  background: var(--bg-input);
-  border-radius: var(--radius-sm);
-  filter: blur(5px);
-  user-select: none; pointer-events: none;
-  font-size: 13px; color: var(--text-secondary);
-}
-.answer-paid-overlay {
-  position: relative;
-}
-.answer-paid-overlay .lock {
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  font-size: 13px; font-weight: 600; color: var(--premium);
-}
-
-.answer-cta {
-  display: block; text-align: center;
-  margin-top: 16px;
-  padding: 12px;
-  background: var(--cta);
-  color: #fff;
-  border-radius: 24px;
-  font-weight: 700;
-  font-size: 14px;
-  transition: background .15s;
-}
+.answer-cause { font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding: 8px; background: #fef3e6; border-radius: var(--radius-sm); border-left: 3px solid var(--warning); }
+.answer-card.locked { position: relative; overflow: hidden; }
+.answer-card.locked .answer-blur { filter: blur(5px); user-select: none; pointer-events: none; }
+.answer-card.locked .lock-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--premium); background: rgba(255,255,255,.6); border-radius: var(--radius-md); }
+.answer-cta { display: block; text-align: center; margin-top: 14px; padding: 12px; background: var(--cta); color: #fff; border-radius: 24px; font-weight: 700; font-size: 14px; }
 .answer-cta:hover { background: var(--cta-hover); text-decoration: none; }
 
-/* ================================================================
-   Premium Zone — ZONE D
-   ================================================================ */
-.premium-zone {
-  background: linear-gradient(135deg, #f8f4ff 0%, #f0eafa 100%);
-  border: 1px solid #e0d6f5;
-  border-radius: var(--radius-lg);
-  padding: 24px 20px;
-  margin-bottom: 24px;
-  text-align: center;
-}
-.premium-zone h2 {
-  font-size: 17px; color: var(--premium); margin-bottom: 12px;
-}
-.premium-preview {
-  display: grid; grid-template-columns: 1fr; gap: 10px;
-  margin-bottom: 16px; text-align: left;
-}
-.premium-item {
-  background: var(--bg-card);
-  border: 1px solid #e0d6f5;
-  border-radius: var(--radius-md);
-  padding: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.premium-item.locked .premium-content {
-  filter: blur(6px);
-  user-select: none; pointer-events: none;
-}
-.premium-item.locked::after {
-  content: "\01F512 \00A0 \u8A73\7D30\3092\898B\308B";
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(124,58,237,.08);
-  font-size: 14px; font-weight: 600; color: var(--premium);
-  border-radius: var(--radius-md);
-}
-.premium-item .pi-fish { font-weight: 700; color: var(--accent); }
-.premium-item .pi-detail { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
-.premium-cta-btn {
-  display: inline-block;
-  background: var(--premium);
-  color: #fff;
-  padding: 12px 32px;
-  border-radius: 24px;
-  font-size: 15px; font-weight: 700;
-  transition: opacity .15s;
-}
+/* Premium Zone */
+.premium-zone { background: linear-gradient(135deg, #f8f4ff 0%, #f0eafa 100%); border: 1px solid #e0d6f5; border-radius: var(--radius-lg); padding: 20px 16px; margin-bottom: 20px; text-align: center; }
+.premium-zone h2 { font-size: 16px; color: var(--premium); margin-bottom: 12px; }
+.premium-preview { display: grid; gap: 8px; margin-bottom: 14px; text-align: left; }
+.premium-item { background: var(--bg-card); border: 1px solid #e0d6f5; border-radius: var(--radius-md); padding: 12px; position: relative; overflow: hidden; }
+.premium-item.locked .premium-content { filter: blur(6px); user-select: none; pointer-events: none; }
+.premium-item.locked::after { content: "\01F512 \00A0 \u8A73\7D30\3092\898B\308B"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(124,58,237,.06); font-size: 13px; font-weight: 600; color: var(--premium); }
+.premium-item .pi-fish { font-weight: 700; color: var(--accent); font-size: 14px; }
+.premium-item .pi-detail { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+.premium-cta-btn { display: inline-block; background: var(--premium); color: #fff; padding: 12px 28px; border-radius: 24px; font-size: 14px; font-weight: 700; }
 .premium-cta-btn:hover { opacity: .85; text-decoration: none; }
-.premium-sub { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+.premium-sub { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
 
-/* ================================================================
-   Area Cards — ZONE E
-   ================================================================ */
-.area-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-  margin-bottom: 24px;
-}
-.area-card {
-  display: block;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  text-align: center;
-  transition: border-color .15s;
-}
+/* Area Cards */
+.area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 20px; }
+.area-card { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; text-align: center; }
 .area-card:hover { border-color: var(--cta); text-decoration: none; }
-.area-card .area-name { font-size: 15px; font-weight: 700; color: var(--accent); }
-.area-card .area-count { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.area-card .area-name { font-size: 14px; font-weight: 700; color: var(--accent); }
+.area-card .area-count { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-/* ================================================================
-   Footer
-   ================================================================ */
-footer {
-  background: var(--header-bg);
-  color: rgba(255,255,255,.6);
-  padding: 24px;
-  text-align: center;
-  font-size: 12px;
-  margin-top: 32px;
-}
+/* Footer */
+footer { background: var(--header-bg); color: rgba(255,255,255,.6); padding: 20px; text-align: center; font-size: 11px; margin-top: 24px; }
 footer a { color: rgba(255,255,255,.8); }
 
-/* ================================================================
-   Bottom Nav (Mobile)
-   ================================================================ */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
-  display: flex; z-index: 100;
-  box-shadow: 0 -2px 8px rgba(0,0,0,.06);
-}
-.bottom-nav a {
-  flex: 1; text-align: center; padding: 8px 0;
-  font-size: 10px; color: var(--text-muted);
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-}
+/* Bottom Nav */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,.06); }
+.bottom-nav a { flex: 1; text-align: center; padding: 8px 0; font-size: 10px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .bottom-nav a .icon { font-size: 20px; }
 .bottom-nav a.active { color: var(--cta); }
 .bottom-nav a:hover { text-decoration: none; color: var(--cta); }
-body { padding-bottom: 64px; }
-
+body { padding-bottom: 60px; }
 @media (min-width: 769px) {
   .bottom-nav { display: none; }
   body { padding-bottom: 0; }
@@ -370,9 +149,6 @@ body { padding-bottom: 64px; }
 </head>
 <body>
 
-<!-- ============================================================
-     Header
-     ============================================================ -->
 <header>
   <div class="inner">
     <h1>船釣り<span>予想</span></h1>
@@ -380,271 +156,198 @@ body { padding-bottom: 64px; }
   </div>
 </header>
 
-<!-- ============================================================
-     Nav
-     ============================================================ -->
 <nav>
   <a href="#" class="active">今日の釣果</a>
   <a href="#">魚種</a>
   <a href="#">エリア</a>
   <a href="#">カレンダー</a>
-  <a href="#" style="color:var(--premium)">予測</a>
 </nav>
 
-<!-- ============================================================
-     HERO
-     ============================================================ -->
+<!-- HERO -->
 <div class="hero">
   <div class="hero-catch">関東の船釣り 今日の釣果</div>
   <div class="count">47<span class="count-unit">件</span></div>
   <div class="count-label">8エリア・23船宿から報告</div>
-  <div class="updated">
-    <span class="dot"></span>
-    2026/04/05 16:30 更新
-  </div>
+  <div class="updated"><span class="dot"></span>2026/04/05 16:30 更新</div>
 </div>
 
 <div class="container">
 
 <!-- ============================================================
-     ZONE B: 今日の釣果（無料メイン）
+     今日の釣果（無料メイン）
      ============================================================ -->
-<h2 class="section-title">
-  今日の釣果
-  <span class="free-badge">無料</span>
-</h2>
+<h2 class="section-title">今日の釣果</h2>
 
 <div class="fish-grid">
-  <!-- アジ -->
+
   <div class="fc">
     <div class="fn">アジ <span class="yoy up">+32%</span></div>
-    <div class="fk"><strong>23</strong> 件（8船宿）</div>
-    <div class="fa">横浜 / 金沢八景 / 走水</div>
-    <div class="season-bar">
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#43a047"></span>
-      <span style="background:#2e7d32;outline:2px solid var(--cta)"></span>
-      <span style="background:#43a047"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#e8f5e9"></span>
-    </div>
-    <a class="fc-link" href="#">詳細・船宿ランキング &rarr;</a>
+    <div class="fc-nums"><strong>28</strong> <span class="unit">匹 平均</span></div>
+    <div class="fc-size">18〜25cm</div>
+    <div class="fc-ships">23件・8船宿</div>
+    <div class="fc-area">横浜 / 金沢八景 / 走水</div>
+    <div class="fc-sea">水温 18.2&#8451; / 大潮 / 波 0.5m</div>
+    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
   </div>
 
-  <!-- マダイ -->
   <div class="fc">
     <div class="fn">マダイ <span class="yoy up">+18%</span></div>
-    <div class="fk"><strong>15</strong> 件（6船宿）</div>
-    <div class="fa">剣崎 / 久里浜 / 勝山</div>
-    <div class="season-bar">
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#43a047;outline:2px solid var(--cta)"></span>
-      <span style="background:#2e7d32"></span>
-      <span style="background:#43a047"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#c8e6c9"></span>
-    </div>
-    <a class="fc-link" href="#">詳細・船宿ランキング &rarr;</a>
+    <div class="fc-nums"><strong>2.8</strong> <span class="unit">匹 平均</span></div>
+    <div class="fc-size">30〜55cm</div>
+    <div class="fc-ships">15件・6船宿</div>
+    <div class="fc-area">剣崎 / 久里浜 / 勝山</div>
+    <div class="fc-sea">水温 17.5&#8451; / 大潮 / 波 0.8m</div>
+    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
   </div>
 
-  <!-- タチウオ -->
   <div class="fc">
     <div class="fn">タチウオ <span class="yoy down">-12%</span></div>
-    <div class="fk"><strong>11</strong> 件（5船宿）</div>
-    <div class="fa">走水 / 観音崎 / 金谷</div>
-    <div class="season-bar">
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#66bb6a;outline:2px solid var(--cta)"></span>
-      <span style="background:#2e7d32"></span>
-      <span style="background:#2e7d32"></span>
-      <span style="background:#43a047"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#c8e6c9"></span>
-    </div>
-    <a class="fc-link" href="#">詳細・船宿ランキング &rarr;</a>
+    <div class="fc-nums"><strong>15</strong> <span class="unit">匹 平均</span></div>
+    <div class="fc-size">70〜95cm</div>
+    <div class="fc-ships">11件・5船宿</div>
+    <div class="fc-area">走水 / 観音崎 / 金谷</div>
+    <div class="fc-sea">水温 16.8&#8451; / 大潮 / 波 1.2m</div>
+    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
   </div>
 
-  <!-- カワハギ -->
   <div class="fc">
     <div class="fn">カワハギ <span class="yoy up">+8%</span></div>
-    <div class="fk"><strong>9</strong> 件（4船宿）</div>
-    <div class="fa">剣崎 / 佐島 / 小坪</div>
-    <div class="season-bar">
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#c8e6c9;outline:2px solid var(--cta)"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#43a047"></span>
-      <span style="background:#2e7d32"></span>
-    </div>
-    <a class="fc-link" href="#">詳細・船宿ランキング &rarr;</a>
+    <div class="fc-nums"><strong>12</strong> <span class="unit">匹 平均</span></div>
+    <div class="fc-size">15〜22cm</div>
+    <div class="fc-ships">9件・4船宿</div>
+    <div class="fc-area">剣崎 / 佐島 / 小坪</div>
+    <div class="fc-sea">水温 17.0&#8451; / 大潮 / 波 0.6m</div>
+    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
   </div>
 
-  <!-- シロギス -->
   <div class="fc">
     <div class="fn">シロギス <span class="yoy up">+45%</span></div>
-    <div class="fk"><strong>7</strong> 件（3船宿）</div>
-    <div class="fa">金沢八景 / 本牧</div>
-    <div class="season-bar">
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#43a047;outline:2px solid var(--cta)"></span>
-      <span style="background:#2e7d32"></span>
-      <span style="background:#43a047"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#e8f5e9"></span>
-    </div>
-    <a class="fc-link" href="#">詳細・船宿ランキング &rarr;</a>
+    <div class="fc-nums"><strong>35</strong> <span class="unit">匹 平均</span></div>
+    <div class="fc-size">15〜23cm</div>
+    <div class="fc-ships">7件・3船宿</div>
+    <div class="fc-area">金沢八景 / 本牧</div>
+    <div class="fc-sea">水温 18.0&#8451; / 大潮 / 波 0.4m</div>
+    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
   </div>
 
-  <!-- フグ -->
   <div class="fc">
     <div class="fn">フグ <span class="yoy down">-5%</span></div>
-    <div class="fk"><strong>5</strong> 件（3船宿）</div>
-    <div class="fa">大原 / 飯岡</div>
-    <div class="season-bar">
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#43a047;outline:2px solid var(--cta)"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#e8f5e9"></span>
-      <span style="background:#c8e6c9"></span>
-      <span style="background:#a5d6a7"></span>
-      <span style="background:#66bb6a"></span>
-      <span style="background:#a5d6a7"></span>
-    </div>
-    <a class="fc-link" href="#">詳細・船宿ランキング &rarr;</a>
+    <div class="fc-nums"><strong>8</strong> <span class="unit">匹 平均</span></div>
+    <div class="fc-size">25〜35cm</div>
+    <div class="fc-ships">5件・3船宿</div>
+    <div class="fc-area">大原 / 飯岡</div>
+    <div class="fc-sea">水温 16.5&#8451; / 大潮 / 波 1.0m</div>
+    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
   </div>
+
 </div>
 
 <!-- ============================================================
-     ZONE B': 昨日の予測答え合わせ（無料 → 有料の橋）
+     予測の答え合わせ（無料の橋）
      ============================================================ -->
-<h2 class="section-title">昨日の予測 答え合わせ</h2>
+<h2 class="section-title">一昨日の予測 答え合わせ</h2>
 
 <div class="answer-section">
-  <!-- 的中カード -->
+  <div class="answer-header">
+    <h3>4/3(木) の予測 vs 実績</h3>
+    <span class="answer-accuracy">的中率 72%</span>
+  </div>
+
+  <!-- 1件目: フル公開（無料） -->
   <div class="answer-card">
     <div>
       <span class="fish-name">アジ</span>
       <span class="answer-badge hit">的中</span>
     </div>
-    <div class="answer-row">
-      <span class="label">予想</span>
-      <span class="val pred">+20%</span>
-      <span class="arrow">&rarr;</span>
-      <span class="label">実績</span>
-      <span class="val actual">+25%</span>
+    <div class="answer-compare">
+      <div class="answer-box pred">
+        <div class="ab-label">予想</div>
+        <div class="ab-pct">+20%</div>
+        <div class="ab-detail">平均 30匹</div>
+        <div class="ab-detail">18〜25cm</div>
+      </div>
+      <div class="answer-arrow">&rarr;</div>
+      <div class="answer-box actual">
+        <div class="ab-label">実績</div>
+        <div class="ab-pct">+25%</div>
+        <div class="ab-detail">平均 32匹</div>
+        <div class="ab-detail">20〜28cm</div>
+      </div>
     </div>
     <div class="answer-reason">
-      <strong>根拠:</strong> 水温 18.2&#8451; + 大潮 &rarr; 平年比プラス予測
-    </div>
-    <!-- 有料部分（ブラー） -->
-    <div class="answer-paid-overlay">
-      <div class="answer-paid">平均 32匹 / 20〜45匹 / サイズ 18〜25cm</div>
-      <div class="lock">&#x1F512; 匹数・サイズ詳細は有料</div>
+      <strong>根拠:</strong> 水温 18.2&#8451; + 大潮 &rarr; 平年比プラス予測。実際も水温上昇で活性高かった
     </div>
   </div>
 
-  <!-- ハズレカード -->
+  <!-- 2件目: フル公開（ハズレ） -->
   <div class="answer-card">
     <div>
       <span class="fish-name">マダイ</span>
       <span class="answer-badge miss">ハズレ</span>
     </div>
-    <div class="answer-row">
-      <span class="label">予想</span>
-      <span class="val pred">+10%</span>
-      <span class="arrow">&rarr;</span>
-      <span class="label">実績</span>
-      <span class="val actual">-5%</span>
+    <div class="answer-compare">
+      <div class="answer-box pred">
+        <div class="ab-label">予想</div>
+        <div class="ab-pct">+10%</div>
+        <div class="ab-detail">平均 3.2匹</div>
+        <div class="ab-detail">30〜50cm</div>
+      </div>
+      <div class="answer-arrow">&rarr;</div>
+      <div class="answer-box actual">
+        <div class="ab-label">実績</div>
+        <div class="ab-pct">-5%</div>
+        <div class="ab-detail">平均 2.1匹</div>
+        <div class="ab-detail">30〜55cm</div>
+      </div>
     </div>
     <div class="answer-cause">
       <strong>原因:</strong> 風速予報 5m &rarr; 実際 12m（予報ズレ）。予報通りなら <strong>+18%</strong> 相当
     </div>
-    <!-- 有料部分（ブラー） -->
-    <div class="answer-paid-overlay">
-      <div class="answer-paid">平均 2.1匹 / 0〜5匹 / サイズ 30〜55cm</div>
-      <div class="lock">&#x1F512; 匹数・サイズ詳細は有料</div>
-    </div>
   </div>
 
-  <!-- 的中カード 2 -->
-  <div class="answer-card">
-    <div>
-      <span class="fish-name">タチウオ</span>
-      <span class="answer-badge hit">的中</span>
+  <!-- 3件目: ブラー（有料） -->
+  <div class="answer-card locked">
+    <div class="answer-blur">
+      <div>
+        <span class="fish-name">タチウオ</span>
+        <span class="answer-badge hit">的中</span>
+      </div>
+      <div class="answer-compare">
+        <div class="answer-box pred">
+          <div class="ab-label">予想</div>
+          <div class="ab-pct">-8%</div>
+          <div class="ab-detail">平均 14匹</div>
+        </div>
+        <div class="answer-arrow">&rarr;</div>
+        <div class="answer-box actual">
+          <div class="ab-label">実績</div>
+          <div class="ab-pct">-12%</div>
+          <div class="ab-detail">平均 12匹</div>
+        </div>
+      </div>
     </div>
-    <div class="answer-row">
-      <span class="label">予想</span>
-      <span class="val pred">-8%</span>
-      <span class="arrow">&rarr;</span>
-      <span class="label">実績</span>
-      <span class="val actual">-12%</span>
-    </div>
-    <div class="answer-reason">
-      <strong>根拠:</strong> 南西風 8m + 中潮 &rarr; やや渋め予測
-    </div>
-    <div class="answer-paid-overlay">
-      <div class="answer-paid">平均 15匹 / 5〜28匹 / サイズ 70〜95cm</div>
-      <div class="lock">&#x1F512; 匹数・サイズ詳細は有料</div>
-    </div>
+    <div class="lock-overlay">他の魚種の答え合わせを見る</div>
   </div>
 
-  <a class="answer-cta" href="#">明日以降の予測を見る &rarr; 月額500円</a>
+  <a class="answer-cta" href="#">過去の予測履歴・明日以降の予測を見る &rarr;</a>
 </div>
 
 <!-- ============================================================
-     ZONE D: 有料集約ゾーン
+     有料ゾーン（控えめに）
      ============================================================ -->
 <div class="premium-zone">
-  <h2>&#x1F52E; 明日以降の釣果予測</h2>
-
+  <h2>明日以降の釣果予測</h2>
   <div class="premium-preview">
-    <!-- 1件目: 無料プレビュー -->
     <div class="premium-item">
       <div class="pi-fish">4/6(日) アジ &mdash; 前年比 <span style="color:var(--positive);font-weight:700">+25%</span></div>
-      <div class="pi-detail">水温上昇 + 大潮2日目。金沢八景・走水エリアが狙い目</div>
+      <div class="pi-detail">水温上昇 + 大潮2日目。金沢八景・走水が狙い目</div>
     </div>
-    <!-- 2件目: ロック -->
     <div class="premium-item locked">
       <div class="premium-content">
         <div class="pi-fish">4/6(日) マダイ &mdash; 前年比 +12%</div>
         <div class="pi-detail">潮回り良好。剣崎沖・久里浜で期待</div>
       </div>
     </div>
-    <!-- 3件目: ロック -->
     <div class="premium-item locked">
       <div class="premium-content">
         <div class="pi-fish">4/7(月) タチウオ &mdash; 前年比 -3%</div>
@@ -652,66 +355,34 @@ body { padding-bottom: 64px; }
       </div>
     </div>
   </div>
-
   <a class="premium-cta-btn" href="#">月額 500円で全予測を解放</a>
   <div class="premium-sub">スポット購入: 1日分 100円</div>
 </div>
 
 <!-- ============================================================
-     ZONE E: エリアから探す
+     エリアから探す
      ============================================================ -->
 <h2 class="section-title">エリアから探す</h2>
-
 <div class="area-grid">
-  <a class="area-card" href="#">
-    <div class="area-name">金沢八景</div>
-    <div class="area-count">12件</div>
-  </a>
-  <a class="area-card" href="#">
-    <div class="area-name">走水</div>
-    <div class="area-count">8件</div>
-  </a>
-  <a class="area-card" href="#">
-    <div class="area-name">剣崎</div>
-    <div class="area-count">6件</div>
-  </a>
-  <a class="area-card" href="#">
-    <div class="area-name">大原</div>
-    <div class="area-count">5件</div>
-  </a>
-  <a class="area-card" href="#">
-    <div class="area-name">久里浜</div>
-    <div class="area-count">4件</div>
-  </a>
-  <a class="area-card" href="#">
-    <div class="area-name">勝山</div>
-    <div class="area-count">3件</div>
-  </a>
-  <a class="area-card" href="#">
-    <div class="area-name">飯岡</div>
-    <div class="area-count">3件</div>
-  </a>
-  <a class="area-card" href="#">
-    <div class="area-name">本牧</div>
-    <div class="area-count">2件</div>
-  </a>
+  <a class="area-card" href="#"><div class="area-name">金沢八景</div><div class="area-count">12件</div></a>
+  <a class="area-card" href="#"><div class="area-name">走水</div><div class="area-count">8件</div></a>
+  <a class="area-card" href="#"><div class="area-name">剣崎</div><div class="area-count">6件</div></a>
+  <a class="area-card" href="#"><div class="area-name">大原</div><div class="area-count">5件</div></a>
+  <a class="area-card" href="#"><div class="area-name">久里浜</div><div class="area-count">4件</div></a>
+  <a class="area-card" href="#"><div class="area-name">勝山</div><div class="area-count">3件</div></a>
+  <a class="area-card" href="#"><div class="area-name">飯岡</div><div class="area-count">3件</div></a>
+  <a class="area-card" href="#"><div class="area-name">本牧</div><div class="area-count">2件</div></a>
 </div>
 
-</div><!-- /.container -->
+</div>
 
-<!-- ============================================================
-     Footer
-     ============================================================ -->
 <footer>
   <a href="#">プライバシーポリシー</a> &middot;
   <a href="#">利用規約</a> &middot;
   <a href="#">サイトについて</a><br>
-  <span style="margin-top:8px;display:inline-block">&copy; 2026 船釣り予想 funatsuri-yoso.com</span>
+  <span style="margin-top:6px;display:inline-block">&copy; 2026 船釣り予想 funatsuri-yoso.com</span>
 </footer>
 
-<!-- ============================================================
-     Bottom Nav (Mobile)
-     ============================================================ -->
 <div class="bottom-nav">
   <a href="#" class="active"><span class="icon">&#x1F3A3;</span>釣果</a>
   <a href="#"><span class="icon">&#x1F41F;</span>魚種</a>
