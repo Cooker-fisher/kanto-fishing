@@ -17,47 +17,39 @@ nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;j
 nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
 nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
-
-/* Area hero */
 .area-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
 .area-hero h2{font-size:22px;font-weight:800}
 .area-hero .ah-meta{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
-.area-hero .ah-sea{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:13px;color:rgba(255,255,255,.8)}
-.area-hero .ah-sea span{display:flex;align-items:center;gap:4px}
-
+.area-hero .ah-sea{display:flex;justify-content:center;gap:14px;margin-top:10px;font-size:12px;color:rgba(255,255,255,.8);flex-wrap:wrap}
 .bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
 
-/* Fish list in area */
-.af{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
-.af:hover{border-color:var(--cta)}
-.af-name{font-size:16px;font-weight:800;color:var(--accent);flex:0 0 70px}
-.af-range{font-size:15px;font-weight:800;color:var(--cta);flex:0 0 80px}
-.af-size{font-size:11px;color:var(--muted);flex:0 0 60px}
-.af-yoy{font-size:11px;font-weight:700;padding:2px 6px;border-radius:8px;flex:0 0 50px;text-align:center}
-.af-yoy.up{background:#e6f7ee;color:var(--pos)}
-.af-yoy.dn{background:#fde8e8;color:var(--neg)}
-.af-ships{flex:1;font-size:10px;color:var(--muted);text-align:right}
+/* Fish rows */
+.af{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.af:hover{border-color:var(--cta);text-decoration:none}
+.af .af-name{flex:0 0 65px;font-size:15px;font-weight:800;color:var(--accent)}
+.af .af-range{flex:0 0 75px;font-size:15px;font-weight:800;color:var(--cta)}
+.af .af-size{flex:0 0 55px;font-size:10px;color:var(--muted)}
+.af .af-yoy{font-size:10px;font-weight:700;padding:2px 5px;border-radius:6px;flex:0 0 45px;text-align:center}
+.af .af-yoy.up{background:#e6f7ee;color:var(--pos)}.af .af-yoy.dn{background:#fde8e8;color:var(--neg)}
+.af .af-ship{flex:1;font-size:10px;color:var(--pos);font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Ship list */
-.ship-list{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
-.ship-list h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.sl{padding:10px 0;border-bottom:1px solid var(--bg)}
-.sl:last-child{border-bottom:none}
+.sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.sl-card h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.sl{padding:10px 0;border-bottom:1px solid var(--bg)}.sl:last-child{border-bottom:none}
 .sl-top{display:flex;align-items:center;gap:8px}
 .sl-name{font-size:14px;font-weight:700;color:var(--accent);flex:1}
 .sl-fish{display:flex;gap:4px;flex-wrap:wrap}
 .sl-fish span{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600}
-.sl-fish span.good{background:#e6f7ee;color:var(--pos)}
-.sl-fish span.ok{background:#edf2f7;color:var(--sub)}
-.sl-fish span.bad{background:#fde8e8;color:var(--neg)}
-.sl-detail{font-size:11px;color:var(--muted);margin-top:4px}
+.sl-fish span.g{background:#e6f7ee;color:var(--pos)}
+.sl-fish span.o{background:#edf2f7;color:var(--sub)}
+.sl-fish span.b{background:#fde8e8;color:var(--neg)}
+.sl-detail{font-size:10px;color:var(--muted);margin-top:3px}
 
-/* Sea conditions */
-.sea-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
-.sea-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.sea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.sea-item{text-align:center;padding:10px;background:var(--bg);border-radius:8px}
-.sea-item .sv{font-size:20px;font-weight:800;color:var(--accent)}
+/* Sea grid */
+.sea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.sea-item{text-align:center;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.sea-item .sv{font-size:18px;font-weight:800;color:var(--accent)}
 .sea-item .sl2{font-size:10px;color:var(--muted);margin-top:2px}
 
 footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
@@ -71,35 +63,27 @@ footer a{color:rgba(255,255,255,.7)}
 <body>
 
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
-<nav>
-<a href="mockup.html">今日の釣果</a>
-<a href="#">魚種</a>
-<a href="#" class="on">エリア</a>
-<a href="#">カレンダー</a>
-</nav>
+<nav><a href="mockup.html">今日の釣果</a><a href="#">魚種</a><a href="#" class="on">エリア</a><a href="#">カレンダー</a></nav>
 
 <div class="area-hero">
 <h2>金沢八景</h2>
 <div class="ah-meta">今日 12件・4船宿から報告</div>
 <div class="ah-sea">
-<span>🌡 18.3℃</span>
-<span>🌊 0.4m</span>
-<span>💨 南西 3m</span>
-<span>🌕 大潮</span>
+<span>🌡 18.3℃</span><span>🌊 0.4m</span><span>💨 南西3m</span><span>🌕 大潮</span>
 </div>
 </div>
 
 <div class="c">
 <div class="bread"><a href="mockup.html">トップ</a> &gt; 金沢八景</div>
 
-<h2 class="st">今日の釣果</h2>
+<h2 class="st">今日の釣果（魚種を選んで詳細へ）</h2>
 
 <a class="af" href="mockup-fish.html">
 <span class="af-name">アジ</span>
 <span class="af-range">25〜45匹</span>
 <span class="af-size">18〜25cm</span>
 <span class="af-yoy up">+38%</span>
-<span class="af-ships">◎忠彦丸 ◎荒川屋</span>
+<span class="af-ship">◎忠彦丸 ◎荒川屋</span>
 </a>
 
 <a class="af" href="#">
@@ -107,7 +91,7 @@ footer a{color:rgba(255,255,255,.7)}
 <span class="af-range">18〜52匹</span>
 <span class="af-size">15〜23cm</span>
 <span class="af-yoy up">+45%</span>
-<span class="af-ships">◎荒川屋</span>
+<span class="af-ship">◎荒川屋</span>
 </a>
 
 <a class="af" href="#">
@@ -115,7 +99,7 @@ footer a{color:rgba(255,255,255,.7)}
 <span class="af-range">8〜18匹</span>
 <span class="af-size">15〜22cm</span>
 <span class="af-yoy up">+12%</span>
-<span class="af-ships">○一之瀬丸</span>
+<span class="af-ship">○一之瀬丸</span>
 </a>
 
 <a class="af" href="#">
@@ -123,12 +107,10 @@ footer a{color:rgba(255,255,255,.7)}
 <span class="af-range">0〜3匹</span>
 <span class="af-size">30〜48cm</span>
 <span class="af-yoy dn">-8%</span>
-<span class="af-ships">△太田屋</span>
+<span class="af-ship">△太田屋</span>
 </a>
 
-<!-- Sea conditions -->
 <h2 class="st">海況データ</h2>
-<div class="sea-box">
 <div class="sea-grid">
 <div class="sea-item"><div class="sv">18.3℃</div><div class="sl2">水温</div></div>
 <div class="sea-item"><div class="sv">0.4m</div><div class="sl2">波高</div></div>
@@ -137,71 +119,31 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="sea-item"><div class="sv">12.8</div><div class="sl2">月齢</div></div>
 <div class="sea-item"><div class="sv">1015hPa</div><div class="sl2">気圧</div></div>
 </div>
-</div>
 
-<!-- Ship list -->
 <h2 class="st">船宿一覧</h2>
-<div class="ship-list">
-
+<div class="sl-card">
 <div class="sl">
-<div class="sl-top">
-<span class="sl-name">忠彦丸</span>
-<div class="sl-fish">
-<span class="good">アジ◎ +52%</span>
-<span class="ok">シロギス○ +20%</span>
-</div>
-</div>
+<div class="sl-top"><span class="sl-name">忠彦丸</span><div class="sl-fish"><span class="g">アジ◎+52%</span><span class="o">シロギス○+20%</span></div></div>
 <div class="sl-detail">走水沖・猿島沖 | 午前便・午後便</div>
 </div>
-
 <div class="sl">
-<div class="sl-top">
-<span class="sl-name">荒川屋</span>
-<div class="sl-fish">
-<span class="good">シロギス◎ +60%</span>
-<span class="good">アジ◎ +38%</span>
-</div>
-</div>
+<div class="sl-top"><span class="sl-name">荒川屋</span><div class="sl-fish"><span class="g">シロギス◎+60%</span><span class="g">アジ◎+38%</span></div></div>
 <div class="sl-detail">中ノ瀬 | 午前便</div>
 </div>
-
 <div class="sl">
-<div class="sl-top">
-<span class="sl-name">一之瀬丸</span>
-<div class="sl-fish">
-<span class="ok">カワハギ○ +12%</span>
-<span class="ok">アジ○ +18%</span>
-</div>
-</div>
+<div class="sl-top"><span class="sl-name">一之瀬丸</span><div class="sl-fish"><span class="o">カワハギ○+12%</span><span class="o">アジ○+18%</span></div></div>
 <div class="sl-detail">猿島沖・佐島沖 | 午前便・午後便</div>
 </div>
-
 <div class="sl">
-<div class="sl-top">
-<span class="sl-name">太田屋</span>
-<div class="sl-fish">
-<span class="ok">アジ○ +12%</span>
-<span class="bad">マダイ△ -8%</span>
-</div>
-</div>
+<div class="sl-top"><span class="sl-name">太田屋</span><div class="sl-fish"><span class="o">アジ○+12%</span><span class="b">マダイ△-8%</span></div></div>
 <div class="sl-detail">中ノ瀬・走水沖 | 午前便</div>
 </div>
-
 </div>
 
 </div>
 
-<footer>
-<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
-<span style="margin-top:4px;display:inline-block">© 2026 船釣り予想</span>
-</footer>
-
-<div class="bn">
-<a href="mockup.html"><span class="i">🎣</span>釣果</a>
-<a href="#"><span class="i">🐟</span>魚種</a>
-<a href="#" class="on"><span class="i">📍</span>エリア</a>
-<a href="#"><span class="i">🔮</span>予測</a>
-</div>
+<footer><a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br><span style="margin-top:4px;display:inline-block">© 2026 船釣り予想</span></footer>
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="#"><span class="i">🐟</span>魚種</a><a href="#" class="on"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
 
 </body>
 </html>
