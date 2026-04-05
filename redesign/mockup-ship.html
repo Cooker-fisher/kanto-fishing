@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>忠彦丸の釣果情報 — 船釣り予想</title>
+<meta name="description" content="忠彦丸（金沢八景）の船釣り釣果。アジ・シロギス・マダイの直近実績、ポイント情報、ランキング。">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
+.ship-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.ship-hero .sh-badge{font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);border-radius:10px;color:#fff}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
+
+/* Info box */
+.info-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:12px;color:var(--sub);line-height:1.8}
+.info-box strong{color:var(--text)}
+.info-box .info-row{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--bg)}
+.info-box .info-row:last-child{border-bottom:none}
+.info-box .info-label{flex:0 0 80px;color:var(--muted);font-weight:600}
+.info-box .info-val{flex:1}
+
+/* Fish rows */
+.af{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;transition:border-color .15s}
+.af:hover{border-color:var(--cta);text-decoration:none}
+.af .af-m{font-size:14px;font-weight:800;color:var(--cta);flex:0 0 24px;text-align:center}
+.af .af-name{flex:0 0 65px;font-size:14px;font-weight:700;color:var(--accent)}
+.af .af-range{flex:0 0 75px;font-size:14px;font-weight:800;color:var(--cta)}
+.af .af-size{flex:0 0 55px;font-size:10px;color:var(--muted)}
+.af .af-pct{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;flex:0 0 45px;text-align:center}
+.af .af-pct.up{background:#e6f7ee;color:var(--pos)}.af .af-pct.dn{background:#fde8e8;color:var(--neg)}
+.af .af-dots{flex:1;font-size:10px;text-align:right;letter-spacing:1px}
+
+/* 7-day chart per fish */
+.fish-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.fish-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.fish-section h3 .h-range{color:var(--cta);font-size:15px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
+.chart-bars .cb.today{opacity:1;background:var(--pos)}
+.chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.fish-meta{font-size:11px;color:var(--sub);margin-top:8px;padding-top:8px;border-top:1px solid var(--bg)}
+.fish-meta strong{color:var(--accent)}
+
+/* Ranking in area */
+.rank-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.rank-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.rk{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--bg);gap:8px;font-size:12px}
+.rk:last-child{border-bottom:none}
+.rk.self{background:#fef6ee;border-radius:6px;padding:8px;border-bottom:none;margin-bottom:4px}
+.rk .rk-rank{font-weight:800;color:var(--cta);flex:0 0 30px;text-align:center}
+.rk .rk-name{flex:1;font-weight:700;color:var(--accent)}
+.rk .rk-pct{font-weight:700;font-size:11px;padding:2px 6px;border-radius:6px}
+.rk .rk-pct.up{background:#e6f7ee;color:var(--pos)}.rk .rk-pct.dn{background:#fde8e8;color:var(--neg)}
+
+/* Contact CTA */
+.contact-cta{background:var(--accent);color:#fff;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:16px}
+.contact-cta h3{font-size:14px;margin-bottom:8px}
+.contact-cta p{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px}
+.contact-cta a{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--cta)}.bn a:hover{text-decoration:none;color:var(--cta)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="#" class="on">船宿</a></nav>
+
+<div class="ship-hero">
+<h2>忠彦丸</h2>
+<div class="sh-area">金沢八景エリア</div>
+<div class="sh-badges">
+<span class="sh-badge">アジ◎ +52%</span>
+<span class="sh-badge">シロギス○ +20%</span>
+<span class="sh-badge">カワハギ○ +8%</span>
+</div>
+<div class="sh-overall">総合スコア: ◎ | 直近30日の好調度: 85%</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup.html">トップ</a> &gt; <a href="mockup-area.html">金沢八景</a> &gt; 忠彦丸</div>
+
+<!-- 船宿情報 -->
+<div class="info-box">
+<div class="info-row"><span class="info-label">エリア</span><span class="info-val"><a href="mockup-area.html">金沢八景</a></span></div>
+<div class="info-row"><span class="info-label">主要ポイント</span><span class="info-val">走水沖 / 猿島沖 / 中ノ瀬</span></div>
+<div class="info-row"><span class="info-label">出船時間</span><span class="info-val">午前便 / 午後便</span></div>
+<div class="info-row"><span class="info-label">対象魚種</span><span class="info-val">アジ・シロギス・カワハギ・マダイ・タチウオ他</span></div>
+<div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船26日 / 欠航4日（出船率87%）</span></div>
+</div>
+
+<h2 class="st">今日の釣果（魚種別）</h2>
+
+<!-- #1 アジ -->
+<div class="fish-section">
+<h3>アジ <span class="h-range">30〜45匹</span></h3>
+<div class="chart-bars">
+<div class="cb" style="height:50%"></div>
+<div class="cb" style="height:70%"></div>
+<div class="cb" style="height:60%"></div>
+<div class="cb" style="height:80%"></div>
+<div class="cb" style="height:55%"></div>
+<div class="cb" style="height:75%"></div>
+<div class="cb today" style="height:95%"></div>
+</div>
+<div class="chart-labels"><span>3/30</span><span>3/31</span><span>4/1</span><span>4/2</span><span>4/3</span><span>4/4</span><span>今日</span></div>
+<div class="fish-meta">
+<strong>サイズ:</strong> 18〜25cm | <strong>ポイント:</strong> 走水沖 | <strong>去年同週比:</strong> +52% ◎<br>
+<strong>直近7日の評価:</strong> <span style="color:var(--pos)">◎◎○◎◎◎◎</span> — 安定して好調
+</div>
+</div>
+
+<!-- #2 シロギス -->
+<div class="fish-section">
+<h3>シロギス <span class="h-range">20〜40匹</span></h3>
+<div class="chart-bars">
+<div class="cb" style="height:30%"></div>
+<div class="cb" style="height:35%"></div>
+<div class="cb" style="height:45%"></div>
+<div class="cb" style="height:50%"></div>
+<div class="cb" style="height:55%"></div>
+<div class="cb" style="height:60%"></div>
+<div class="cb today" style="height:70%"></div>
+</div>
+<div class="chart-labels"><span>3/30</span><span>3/31</span><span>4/1</span><span>4/2</span><span>4/3</span><span>4/4</span><span>今日</span></div>
+<div class="fish-meta">
+<strong>サイズ:</strong> 15〜22cm | <strong>ポイント:</strong> 中ノ瀬 | <strong>去年同週比:</strong> +20% ○<br>
+<strong>直近7日の評価:</strong> <span style="color:var(--sub)">○○○○◎○◎</span> — 上昇中
+</div>
+</div>
+
+<!-- 広告枠 -->
+<div class="ad-slot">広告スペース（レクタングル）</div>
+
+<!-- #3 カワハギ -->
+<div class="fish-section">
+<h3>カワハギ <span class="h-range">8〜18匹</span></h3>
+<div class="chart-bars">
+<div class="cb" style="height:50%"></div>
+<div class="cb" style="height:55%"></div>
+<div class="cb" style="height:60%"></div>
+<div class="cb" style="height:55%"></div>
+<div class="cb" style="height:65%"></div>
+<div class="cb" style="height:60%"></div>
+<div class="cb today" style="height:65%"></div>
+</div>
+<div class="chart-labels"><span>3/30</span><span>3/31</span><span>4/1</span><span>4/2</span><span>4/3</span><span>4/4</span><span>今日</span></div>
+<div class="fish-meta">
+<strong>サイズ:</strong> 15〜22cm | <strong>ポイント:</strong> 走水沖 | <strong>去年同週比:</strong> +8% ○<br>
+<strong>直近7日の評価:</strong> <span style="color:var(--sub)">○○○○○○○</span> — 安定
+</div>
+</div>
+
+<!-- ランキング -->
+<div class="rank-box">
+<h3>金沢八景エリアの船宿ランキング（総合スコア）</h3>
+<div class="rk self">
+<span class="rk-rank">1位</span>
+<span class="rk-name">忠彦丸（このページ）</span>
+<span class="rk-pct up">+52%</span>
+</div>
+<div class="rk">
+<span class="rk-rank">2位</span>
+<span class="rk-name"><a href="#">荒川屋</a></span>
+<span class="rk-pct up">+38%</span>
+</div>
+<div class="rk">
+<span class="rk-rank">3位</span>
+<span class="rk-name"><a href="#">一之瀬丸</a></span>
+<span class="rk-pct up">+25%</span>
+</div>
+<div class="rk">
+<span class="rk-rank">4位</span>
+<span class="rk-name"><a href="#">太田屋</a></span>
+<span class="rk-pct up">+12%</span>
+</div>
+<div class="rk">
+<span class="rk-rank">5位</span>
+<span class="rk-name"><a href="#">弁天屋</a></span>
+<span class="rk-pct dn">-5%</span>
+</div>
+</div>
+
+<!-- 予約CTA（外部リンク風）-->
+<div class="contact-cta">
+<h3>忠彦丸で釣行を計画する</h3>
+<p>直接船宿へお問い合わせください</p>
+<a href="#">船宿の公式サイトへ →</a>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">アジ</a> · <a href="mockup-area.html">金沢八景</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
+
+</body>
+</html>

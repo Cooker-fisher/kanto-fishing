@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>金沢八景のアジ釣果 — 船釣り予想</title>
+<meta name="description" content="金沢八景エリアのアジ船釣り釣果。25〜45匹、18〜25cm。忠彦丸◎+52%、荒川屋◎+38%。">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
+.combo-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
+.combo-hero .ch-sub{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px}
+.combo-hero h2{font-size:22px;font-weight:800;margin-top:2px}
+.combo-hero h2 em{font-style:normal;color:var(--cta)}
+.combo-hero .ch-r{font-size:26px;font-weight:800;color:var(--cta);margin-top:6px}
+.combo-hero .ch-r small{font-size:12px;color:rgba(255,255,255,.6);font-weight:400}
+.combo-hero .ch-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:6px}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
+
+/* Chart */
+.chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:50px}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
+.chart-bars .cb.today{opacity:1;background:var(--pos)}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
+
+/* Sea conditions */
+.sea-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.sea-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.sea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.sea-item{text-align:center;padding:8px;background:var(--bg);border-radius:6px}
+.sea-item .sv{font-size:16px;font-weight:800;color:var(--accent)}
+.sea-item .sl2{font-size:9px;color:var(--muted);margin-top:1px}
+
+/* Ship ranking */
+.ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
+.sr:last-child{border-bottom:none}
+.sr .sr-m{font-size:13px;font-weight:800;color:var(--cta);flex:0 0 20px;text-align:center}
+.sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700}
+.sr .sr-name a{color:var(--accent)}
+.sr .sr-range{flex:0 0 75px;font-size:13px;font-weight:700;color:var(--cta)}
+.sr .sr-pct{font-size:10px;font-weight:700;padding:2px 5px;border-radius:6px;flex:0 0 45px;text-align:center}
+.sr .sr-pct.up{background:#e6f7ee;color:var(--pos)}.sr .sr-pct.dn{background:#fde8e8;color:var(--neg)}
+.sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
+
+/* Related */
+.related{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.related h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.related .rl{display:flex;flex-wrap:wrap;gap:6px}
+.related .rl a{font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
+.related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--cta)}.bn a:hover{text-decoration:none;color:var(--cta)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="#">カレンダー</a></nav>
+
+<div class="combo-hero">
+<div class="ch-sub">エリア × 魚種</div>
+<h2><em>金沢八景</em>の<em>アジ</em></h2>
+<div class="ch-r">25〜45匹 <small>(去年同週比 +38%)</small></div>
+<div class="ch-m">18〜25cm | 今日 12件・4船宿</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup.html">トップ</a> &gt; <a href="mockup-area.html">金沢八景</a> &gt; アジ</div>
+
+<!-- 7-day chart for this combo -->
+<div class="chart7">
+<h3>金沢八景×アジ 直近7日間の推移</h3>
+<div class="chart-bars">
+<div class="cb" style="height:45%"></div>
+<div class="cb" style="height:68%"></div>
+<div class="cb" style="height:58%"></div>
+<div class="cb weekend" style="height:85%"></div>
+<div class="cb weekend" style="height:80%"></div>
+<div class="cb" style="height:72%"></div>
+<div class="cb today" style="height:95%"></div>
+</div>
+<div class="chart-labels"><span>3/30(月)</span><span>3/31</span><span>4/1</span><span>4/2</span><span>4/3</span><span>4/4</span><span>今日</span></div>
+<div class="chart-trend">↑ 上昇トレンド</div>
+</div>
+
+<!-- Sea conditions -->
+<div class="sea-box">
+<h3>金沢八景の海況（今日）</h3>
+<div class="sea-grid">
+<div class="sea-item"><div class="sv">18.3℃</div><div class="sl2">水温</div></div>
+<div class="sea-item"><div class="sv">0.4m</div><div class="sl2">波高</div></div>
+<div class="sea-item"><div class="sv">南西3m</div><div class="sl2">風</div></div>
+<div class="sea-item"><div class="sv">大潮</div><div class="sl2">潮汐</div></div>
+<div class="sea-item"><div class="sv">12.8</div><div class="sl2">月齢</div></div>
+<div class="sea-item"><div class="sv">1015hPa</div><div class="sl2">気圧</div></div>
+</div>
+</div>
+
+<div class="ad-slot">広告スペース（レクタングル）</div>
+
+<!-- Ship ranking for this combo -->
+<div class="ship-rank">
+<h3>金沢八景×アジ 船宿ランキング</h3>
+<div class="sr"><span class="sr-m">◎</span><span class="sr-name"><a href="mockup-ship.html">忠彦丸</a></span><span class="sr-range">30〜45匹</span><span class="sr-pct up">+52%</span><span class="sr-pt">走水沖</span></div>
+<div class="sr"><span class="sr-m">◎</span><span class="sr-name"><a href="#">荒川屋</a></span><span class="sr-range">25〜42匹</span><span class="sr-pct up">+38%</span><span class="sr-pt">中ノ瀬</span></div>
+<div class="sr"><span class="sr-m">○</span><span class="sr-name"><a href="#">一之瀬丸</a></span><span class="sr-range">22〜38匹</span><span class="sr-pct up">+18%</span><span class="sr-pt">猿島沖</span></div>
+<div class="sr"><span class="sr-m">○</span><span class="sr-name"><a href="#">太田屋</a></span><span class="sr-range">20〜35匹</span><span class="sr-pct up">+12%</span><span class="sr-pt">—</span></div>
+</div>
+
+<!-- 他エリアのアジ -->
+<div class="related">
+<h3>他のエリアのアジ</h3>
+<div class="rl">
+<a href="#">走水×アジ（20〜40匹・+28%）</a>
+<a href="#">横浜×アジ（15〜35匹・+15%）</a>
+<a href="#">久里浜×アジ（18〜32匹・+10%）</a>
+</div>
+</div>
+
+<!-- 金沢八景の他の魚 -->
+<div class="related">
+<h3>金沢八景の他の魚種</h3>
+<div class="rl">
+<a href="#">金沢八景×シロギス（18〜52匹・+45%）</a>
+<a href="#">金沢八景×カワハギ（8〜18匹・+12%）</a>
+<a href="#">金沢八景×マダイ（0〜3匹・-8%）</a>
+</div>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">アジ全体</a> · <a href="mockup-area.html">金沢八景全体</a> · <a href="mockup-ship.html">忠彦丸</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
+
+</body>
+</html>
