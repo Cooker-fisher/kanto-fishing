@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>金沢八景 — 船釣り予想</title>
+<title>金沢八景の釣果情報 — 船釣り予想</title>
+<meta name="description" content="金沢八景エリアの船釣り釣果。今日はアジ25〜45匹◎、シロギス18〜52匹◎。船宿別の魚種×釣果一覧。">
 <style>
 :root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -19,19 +20,25 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
 .area-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
 .area-hero h2{font-size:22px;font-weight:800}
-.area-hero .ah-meta{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.area-hero .ah-m{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
 .area-hero .ah-sea{display:flex;justify-content:center;gap:14px;margin-top:10px;font-size:12px;color:rgba(255,255,255,.8);flex-wrap:wrap}
 .bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
 
-/* Fish rows */
-.af{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+/* Fish rows (click → fish page, bidirectional) */
+.af{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;transition:border-color .15s}
 .af:hover{border-color:var(--cta);text-decoration:none}
-.af .af-name{flex:0 0 65px;font-size:15px;font-weight:800;color:var(--accent)}
-.af .af-range{flex:0 0 75px;font-size:15px;font-weight:800;color:var(--cta)}
+.af .af-name{flex:0 0 60px;font-size:15px;font-weight:800;color:var(--accent)}
+.af .af-range{flex:0 0 80px;font-size:15px;font-weight:800;color:var(--cta)}
 .af .af-size{flex:0 0 55px;font-size:10px;color:var(--muted)}
-.af .af-yoy{font-size:10px;font-weight:700;padding:2px 5px;border-radius:6px;flex:0 0 45px;text-align:center}
-.af .af-yoy.up{background:#e6f7ee;color:var(--pos)}.af .af-yoy.dn{background:#fde8e8;color:var(--neg)}
+.af .af-pct{font-size:10px;color:var(--muted);flex:0 0 40px}
 .af .af-ship{flex:1;font-size:10px;color:var(--pos);font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Sea grid */
+.sea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.sea-item{text-align:center;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.sea-item .sv{font-size:18px;font-weight:800;color:var(--accent)}
+.sea-item .sl2{font-size:10px;color:var(--muted);margin-top:2px}
 
 /* Ship list */
 .sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
@@ -45,12 +52,14 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .sl-fish span.o{background:#edf2f7;color:var(--sub)}
 .sl-fish span.b{background:#fde8e8;color:var(--neg)}
 .sl-detail{font-size:10px;color:var(--muted);margin-top:3px}
+.sl-dots{font-size:10px;margin-top:2px;letter-spacing:1px}
 
-/* Sea grid */
-.sea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.sea-item{text-align:center;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
-.sea-item .sv{font-size:18px;font-weight:800;color:var(--accent)}
-.sea-item .sl2{font-size:10px;color:var(--muted);margin-top:2px}
+/* Related areas (G: bidirectional) */
+.related{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.related h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.related .rl{display:flex;flex-wrap:wrap;gap:6px}
+.related .rl a{font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
+.related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}
 
 footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
 footer a{color:rgba(255,255,255,.7)}
@@ -63,11 +72,11 @@ footer a{color:rgba(255,255,255,.7)}
 <body>
 
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
-<nav><a href="mockup.html">今日の釣果</a><a href="#">魚種</a><a href="#" class="on">エリア</a><a href="#">カレンダー</a></nav>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="#" class="on">エリア</a><a href="#">カレンダー</a></nav>
 
 <div class="area-hero">
 <h2>金沢八景</h2>
-<div class="ah-meta">今日 12件・4船宿から報告</div>
+<div class="ah-m">今日 12件・4船宿から報告</div>
 <div class="ah-sea">
 <span>🌡 18.3℃</span><span>🌊 0.4m</span><span>💨 南西3m</span><span>🌕 大潮</span>
 </div>
@@ -78,37 +87,12 @@ footer a{color:rgba(255,255,255,.7)}
 
 <h2 class="st">今日の釣果（魚種を選んで詳細へ）</h2>
 
-<a class="af" href="mockup-fish.html">
-<span class="af-name">アジ</span>
-<span class="af-range">25〜45匹</span>
-<span class="af-size">18〜25cm</span>
-<span class="af-yoy up">+38%</span>
-<span class="af-ship">◎忠彦丸 ◎荒川屋</span>
-</a>
+<a class="af" href="mockup-fish.html"><span class="af-name">アジ</span><span class="af-range">25〜45匹</span><span class="af-size">18〜25cm</span><span class="af-pct">(+38%)</span><span class="af-ship">◎忠彦丸 ◎荒川屋</span></a>
+<a class="af" href="#"><span class="af-name">シロギス</span><span class="af-range">18〜52匹</span><span class="af-size">15〜23cm</span><span class="af-pct">(+45%)</span><span class="af-ship">◎荒川屋</span></a>
+<a class="af" href="#"><span class="af-name">カワハギ</span><span class="af-range">8〜18匹</span><span class="af-size">15〜22cm</span><span class="af-pct">(+12%)</span><span class="af-ship">○一之瀬丸</span></a>
+<a class="af" href="#"><span class="af-name">マダイ</span><span class="af-range">0〜3匹</span><span class="af-size">30〜48cm</span><span class="af-pct">(-8%)</span><span class="af-ship">△太田屋</span></a>
 
-<a class="af" href="#">
-<span class="af-name">シロギス</span>
-<span class="af-range">18〜52匹</span>
-<span class="af-size">15〜23cm</span>
-<span class="af-yoy up">+45%</span>
-<span class="af-ship">◎荒川屋</span>
-</a>
-
-<a class="af" href="#">
-<span class="af-name">カワハギ</span>
-<span class="af-range">8〜18匹</span>
-<span class="af-size">15〜22cm</span>
-<span class="af-yoy up">+12%</span>
-<span class="af-ship">○一之瀬丸</span>
-</a>
-
-<a class="af" href="#">
-<span class="af-name">マダイ</span>
-<span class="af-range">0〜3匹</span>
-<span class="af-size">30〜48cm</span>
-<span class="af-yoy dn">-8%</span>
-<span class="af-ship">△太田屋</span>
-</a>
+<div class="ad-slot">広告スペース（インフィード）</div>
 
 <h2 class="st">海況データ</h2>
 <div class="sea-grid">
@@ -125,25 +109,45 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="sl">
 <div class="sl-top"><span class="sl-name">忠彦丸</span><div class="sl-fish"><span class="g">アジ◎+52%</span><span class="o">シロギス○+20%</span></div></div>
 <div class="sl-detail">走水沖・猿島沖 | 午前便・午後便</div>
+<div class="sl-dots"><span style="color:var(--pos)">◎◎○◎◎◎◎</span></div>
 </div>
 <div class="sl">
 <div class="sl-top"><span class="sl-name">荒川屋</span><div class="sl-fish"><span class="g">シロギス◎+60%</span><span class="g">アジ◎+38%</span></div></div>
 <div class="sl-detail">中ノ瀬 | 午前便</div>
+<div class="sl-dots"><span style="color:var(--pos)">○○◎</span><span style="color:var(--muted)">○○</span><span style="color:var(--pos)">◎○</span></div>
 </div>
 <div class="sl">
 <div class="sl-top"><span class="sl-name">一之瀬丸</span><div class="sl-fish"><span class="o">カワハギ○+12%</span><span class="o">アジ○+18%</span></div></div>
 <div class="sl-detail">猿島沖・佐島沖 | 午前便・午後便</div>
+<div class="sl-dots"><span style="color:var(--pos)">◎○◎</span><span style="color:var(--muted)">○○○○</span></div>
 </div>
 <div class="sl">
 <div class="sl-top"><span class="sl-name">太田屋</span><div class="sl-fish"><span class="o">アジ○+12%</span><span class="b">マダイ△-8%</span></div></div>
 <div class="sl-detail">中ノ瀬・走水沖 | 午前便</div>
+<div class="sl-dots"><span style="color:var(--muted)">○○</span><span style="color:var(--neg)">△</span><span style="color:var(--muted)">○○○○</span></div>
+</div>
+</div>
+
+<!-- 近隣エリア (G: bidirectional) -->
+<div class="related">
+<h3>近隣エリア</h3>
+<div class="rl">
+<a href="#">走水（8件）</a>
+<a href="#">横浜（4件）</a>
+<a href="#">久里浜（4件）</a>
+<a href="#">剣崎（6件）</a>
 </div>
 </div>
 
 </div>
 
-<footer><a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br><span style="margin-top:4px;display:inline-block">© 2026 船釣り予想</span></footer>
-<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="#"><span class="i">🐟</span>魚種</a><a href="#" class="on"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">アジ</a> · <a href="#">マダイ</a> · <a href="#">走水</a> · <a href="#">剣崎</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="#" class="on"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
 
 </body>
 </html>

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>アジ — 船釣り予想</title>
+<title>アジの釣果情報 — 船釣り予想</title>
+<meta name="description" content="関東のアジ船釣り釣果。今日は20〜45匹、18〜25cm。金沢八景・走水エリアが好調。船宿別ランキング・直近7日推移グラフ。">
 <style>
 :root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -17,36 +18,39 @@ nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;j
 nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
 nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
-
 .fish-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
 .fish-hero h2{font-size:24px;font-weight:800}
-.fish-hero .fh-range{font-size:28px;font-weight:800;color:var(--cta);margin-top:4px}
-.fish-hero .fh-size{font-size:13px;color:rgba(255,255,255,.6)}
-.fish-hero .fh-yoy{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;background:rgba(26,157,86,.3);color:#7aeba5;margin-top:6px}
-.fish-hero .fh-meta{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
+.fish-hero .fh-r{font-size:28px;font-weight:800;color:var(--cta);margin-top:4px}
+.fish-hero .fh-r small{font-size:14px;color:rgba(255,255,255,.6);font-weight:400}
+.fish-hero .fh-s{font-size:13px;color:rgba(255,255,255,.6)}
+.fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
 .bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
+
+/* Description (G: auto-generated text) */
+.desc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:13px;color:var(--sub);line-height:1.8}
+.desc h3{font-size:14px;color:var(--accent);font-weight:700;margin-bottom:6px}
 
 /* 7-day chart */
 .chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:50px}
-.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px;position:relative}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
 .chart-bars .cb.today{opacity:1;background:var(--pos)}
 .chart-bars .cb.weekend{opacity:.8;background:#f4a043}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 
 /* Area comparison */
 .area-cmp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .area-cmp h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .ar{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
 .ar:last-child{border-bottom:none}
-.ar .ar-name{flex:0 0 75px;font-size:13px;font-weight:700;color:var(--accent)}
-.ar .ar-range{flex:0 0 75px;font-size:14px;font-weight:700;color:var(--cta)}
+.ar .ar-name{flex:0 0 75px;font-size:13px;font-weight:700;color:var(--cta)}
+.ar .ar-range{flex:0 0 75px;font-size:14px;font-weight:700;color:var(--accent)}
 .ar .ar-sea{flex:1;font-size:10px;color:var(--muted)}
-.ar .ar-yoy{font-size:11px;font-weight:700;padding:2px 6px;border-radius:8px}
-.ar .ar-yoy.up{background:#e6f7ee;color:var(--pos)}.ar .ar-yoy.dn{background:#fde8e8;color:var(--neg)}
 
-/* Ship ranking */
+/* Ship ranking (P: top3 points only) */
 .ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid var(--bg);gap:6px}
@@ -54,13 +58,21 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .sr .sr-m{font-size:13px;font-weight:800;color:var(--cta);flex:0 0 20px;text-align:center}
 .sr .sr-name{flex:0 0 75px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 70px;font-size:13px;font-weight:700;color:var(--cta)}
-.sr .sr-yoy{font-size:10px;font-weight:700;padding:2px 5px;border-radius:6px;flex:0 0 50px;text-align:center}
-.sr .sr-yoy.up{background:#e6f7ee;color:var(--pos)}.sr .sr-yoy.dn{background:#fde8e8;color:var(--neg)}
+.sr .sr-pct{font-size:10px;font-weight:700;padding:2px 5px;border-radius:6px;flex:0 0 45px;text-align:center}
+.sr .sr-pct.up{background:#e6f7ee;color:var(--pos)}.sr .sr-pct.dn{background:#fde8e8;color:var(--neg)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
-.sr .sr-bar{flex:0 0 45px;height:10px;background:#edf2f7;border-radius:5px;overflow:hidden}
+.sr .sr-dots{font-size:10px;flex:0 0 60px;text-align:right;letter-spacing:1px}
+.sr .sr-bar{flex:0 0 40px;height:10px;background:#edf2f7;border-radius:5px;overflow:hidden}
 .sr .sr-bar div{height:100%;border-radius:5px}
 
-/* Promo sample (1 month ago full) */
+/* Related fish (G: bidirectional links) */
+.related{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.related h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.related .rl{display:flex;flex-wrap:wrap;gap:6px}
+.related .rl a{font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
+.related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}
+
+/* Sample (1-month-ago full) */
 .sample{background:var(--card);border:2px solid var(--cta);border-radius:var(--r);padding:16px;margin-bottom:16px}
 .sample h3{font-size:14px;color:var(--cta);margin-bottom:4px}
 .sample .sample-sub{font-size:11px;color:var(--sub);margin-bottom:12px}
@@ -69,8 +81,6 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .sample-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--bg)}
 .sample-row:last-child{border-bottom:none}
 .sample-row .sl{color:var(--sub)}.sample-row .sv2{font-weight:700;color:var(--accent)}
-.sample-bars{display:flex;align-items:flex-end;gap:2px;height:35px;margin:8px 0}
-.sample-bars .sb{flex:1;border-radius:2px 2px 0 0;min-width:4px}
 .sample-ans{margin-top:10px;padding:10px;background:#f0fdf4;border-radius:8px;border:1px solid #c6f6d5}
 .sample-ans h4{font-size:12px;color:var(--pos);margin-bottom:6px}
 .sample-cta{display:block;text-align:center;margin-top:12px;padding:10px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px}
@@ -83,26 +93,44 @@ footer a{color:rgba(255,255,255,.7)}
 .bn a .i{font-size:18px}.bn a.on{color:var(--cta)}.bn a:hover{text-decoration:none;color:var(--cta)}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 </style>
+<!-- FAQ structured data (G) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"アジは何月が旬ですか？","acceptedAnswer":{"@type":"Answer","text":"関東のアジ船釣りは6〜8月が盛期です。4月は上昇期で、水温の上昇とともに釣果が伸びます。"}},
+{"@type":"Question","name":"アジ船釣りで何匹くらい釣れますか？","acceptedAnswer":{"@type":"Answer","text":"1人あたり20〜45匹が一般的です。好調時は60匹を超えることもあります。日によるバラつきがあります。"}},
+{"@type":"Question","name":"金沢八景でアジを釣るならどの船宿がいいですか？","acceptedAnswer":{"@type":"Answer","text":"直近の実績では忠彦丸・荒川屋が好調です。船宿別ランキングで最新の前年比を確認できます。"}}
+]}
+</script>
 </head>
 <body>
 
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
-<nav><a href="mockup.html">今日の釣果</a><a href="#" class="on">魚種</a><a href="#">エリア</a><a href="#">カレンダー</a></nav>
+<nav><a href="mockup.html">今日の釣果</a><a href="#" class="on">魚種</a><a href="mockup-area.html">エリア</a><a href="#">カレンダー</a></nav>
 
 <div class="fish-hero">
 <h2>アジ</h2>
-<div class="fh-range">20〜45匹</div>
-<div class="fh-size">18〜25cm</div>
-<div class="fh-yoy">去年同週比 +32%</div>
-<div class="fh-meta">今日 23件・8船宿 | 水温 18.2℃ / 大潮 / 波 0.5m</div>
+<div class="fh-r">20〜45匹 <small>(去年同週比 +32%)</small></div>
+<div class="fh-s">18〜25cm</div>
+<div class="fh-m">今日 23件・8船宿 | 水温 18.2℃ / 大潮 / 波 0.5m</div>
 </div>
 
 <div class="c">
 <div class="bread"><a href="mockup.html">トップ</a> &gt; アジ</div>
 
+<!-- 自動生成の解説文 (G: テキストコンテンツ) -->
+<div class="desc">
+<h3>アジの船釣り（関東）</h3>
+<strong>旬:</strong> 6〜8月が盛期。4月は上昇期で期待大。<br>
+<strong>エリア:</strong> 金沢八景・走水・横浜が主要エリア。中ノ瀬・走水沖・猿島沖がメインポイント。<br>
+<strong>匹数の目安:</strong> 1人20〜45匹が標準。好調時は60匹超え。日によるバラつきあり。<br>
+<strong>サイズ:</strong> 18〜25cm中心。大型30cm以上も。<br>
+<strong>外道:</strong> カサゴ・イシモチ・サバが混じることも。<br>
+<strong>出船率:</strong> 通年90%以上（1〜2月は荒天注意）。
+</div>
+
 <!-- 7-day chart -->
 <div class="chart7">
-<h3>直近7日間の釣果推移</h3>
+<h3>直近7日間の釣果推移（匹数上限）</h3>
 <div class="chart-bars">
 <div class="cb" style="height:40%"></div>
 <div class="cb" style="height:65%"></div>
@@ -113,85 +141,86 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="cb today" style="height:90%"></div>
 </div>
 <div class="chart-labels"><span>3/30(月)</span><span>3/31</span><span>4/1</span><span>4/2</span><span>4/3</span><span>4/4</span><span>今日</span></div>
+<div class="chart-trend">↑ 上昇トレンド</div>
 </div>
 
-<!-- Area comparison -->
+<!-- 広告枠 (G) -->
+<div class="ad-slot">広告スペース（レクタングル）</div>
+
+<!-- Area comparison (links to area×fish page) (G: bidirectional) -->
 <div class="area-cmp">
 <h3>エリア別の今日の釣果</h3>
-<div class="ar"><span class="ar-name">金沢八景</span><span class="ar-range">25〜45匹</span><span class="ar-sea">水温18.3℃ 波0.4m</span><span class="ar-yoy up">+38%</span></div>
-<div class="ar"><span class="ar-name">走水</span><span class="ar-range">20〜40匹</span><span class="ar-sea">水温18.0℃ 波0.6m</span><span class="ar-yoy up">+28%</span></div>
-<div class="ar"><span class="ar-name">横浜</span><span class="ar-range">15〜35匹</span><span class="ar-sea">水温18.5℃ 波0.3m</span><span class="ar-yoy up">+15%</span></div>
+<a class="ar" href="mockup-area.html"><span class="ar-name">金沢八景</span><span class="ar-range">25〜45匹</span><span class="ar-sea">水温18.3℃ 波0.4m</span></a>
+<a class="ar" href="#"><span class="ar-name">走水</span><span class="ar-range">20〜40匹</span><span class="ar-sea">水温18.0℃ 波0.6m</span></a>
+<a class="ar" href="#"><span class="ar-name">横浜</span><span class="ar-range">15〜35匹</span><span class="ar-sea">水温18.5℃ 波0.3m</span></a>
 </div>
 
-<!-- Ship ranking -->
+<!-- Ship ranking (P: top3 points, B: 7-day dots) -->
 <div class="ship-rank">
 <h3>船宿ランキング（去年同週比）</h3>
-<div class="sr"><span class="sr-m">◎</span><span class="sr-name">忠彦丸</span><span class="sr-range">30〜45匹</span><span class="sr-yoy up">+52%</span><span class="sr-pt">走水沖</span><span class="sr-bar"><div style="width:95%;background:var(--pos)"></div></span></div>
-<div class="sr"><span class="sr-m">◎</span><span class="sr-name">一之瀬丸</span><span class="sr-range">25〜42匹</span><span class="sr-yoy up">+38%</span><span class="sr-pt">猿島沖</span><span class="sr-bar"><div style="width:82%;background:var(--pos)"></div></span></div>
-<div class="sr"><span class="sr-m">○</span><span class="sr-name">荒川屋</span><span class="sr-range">25〜40匹</span><span class="sr-yoy up">+25%</span><span class="sr-pt">中ノ瀬</span><span class="sr-bar"><div style="width:70%;background:var(--cta)"></div></span></div>
-<div class="sr"><span class="sr-m">○</span><span class="sr-name">太田屋</span><span class="sr-range">20〜35匹</span><span class="sr-yoy up">+12%</span><span class="sr-pt">中ノ瀬</span><span class="sr-bar"><div style="width:55%;background:var(--cta)"></div></span></div>
-<div class="sr"><span class="sr-m">△</span><span class="sr-name">弁天屋</span><span class="sr-range">15〜28匹</span><span class="sr-yoy dn">-5%</span><span class="sr-pt">本牧沖</span><span class="sr-bar"><div style="width:35%;background:var(--neg)"></div></span></div>
+<div class="sr"><span class="sr-m">◎</span><span class="sr-name">忠彦丸</span><span class="sr-range">30〜45匹</span><span class="sr-pct up">+52%</span><span class="sr-pt">走水沖</span><span class="sr-dots" style="color:var(--pos)">◎◎○◎◎◎◎</span></div>
+<div class="sr"><span class="sr-m">◎</span><span class="sr-name">一之瀬丸</span><span class="sr-range">25〜42匹</span><span class="sr-pct up">+38%</span><span class="sr-pt">猿島沖</span><span class="sr-dots"><span style="color:var(--pos)">◎○◎</span><span style="color:var(--muted)">○○</span><span style="color:var(--pos)">◎◎</span></span></div>
+<div class="sr"><span class="sr-m">○</span><span class="sr-name">荒川屋</span><span class="sr-range">25〜40匹</span><span class="sr-pct up">+25%</span><span class="sr-pt">中ノ瀬</span><span class="sr-dots"><span style="color:var(--pos)">○○◎</span><span style="color:var(--muted)">○○○</span><span style="color:var(--pos)">○</span></span></div>
+<div class="sr"><span class="sr-m">○</span><span class="sr-name">太田屋</span><span class="sr-range">20〜35匹</span><span class="sr-pct up">+12%</span><span class="sr-pt">—</span><span class="sr-dots"><span style="color:var(--muted)">○○</span><span style="color:var(--neg)">△</span><span style="color:var(--muted)">○○○○</span></span></div>
+<div class="sr"><span class="sr-m">△</span><span class="sr-name">弁天屋</span><span class="sr-range">15〜28匹</span><span class="sr-pct dn">-5%</span><span class="sr-pt">—</span><span class="sr-dots"><span style="color:var(--neg)">△△</span><span style="color:var(--muted)">○</span><span style="color:var(--neg)">△△</span><span style="color:var(--muted)">○</span><span style="color:var(--neg)">△</span></span></div>
 </div>
 
-<!-- ===== 有料プラン サンプル: 1ヶ月前のフル公開 ===== -->
-<div class="sample">
+<!-- 同じエリアで釣れる魚 (G: bidirectional internal links) -->
+<div class="related">
+<h3>同じエリアで釣れている魚</h3>
+<div class="rl">
+<a href="#">シロギス（金沢八景◎）</a>
+<a href="#">カワハギ（剣崎○）</a>
+<a href="#">マダイ（剣崎◎）</a>
+<a href="#">タチウオ（走水◎）</a>
+</div>
+</div>
+
+<!-- 広告枠 -->
+<div class="ad-slot">広告スペース（レクタングル）</div>
+
+<!-- 有料サンプル: 1ヶ月前フル公開 (P: 閾値非公開、方向性のみ) -->
+<div class="sample" id="sample">
 <h3>有料プランではこのような情報が見れます</h3>
 <div class="sample-sub">3/1〜3/7のアジ予測を全公開。予測→実績の答え合わせ付き。</div>
 
 <div class="sample-section">
-<h4>30日間の推移グラフ（有料）</h4>
-<div class="sample-bars">
-<div class="sb" style="height:25%;background:var(--cta);opacity:.5"></div>
-<div class="sb" style="height:30%;background:var(--cta);opacity:.5"></div>
-<div class="sb" style="height:35%;background:var(--cta);opacity:.5"></div>
-<div class="sb" style="height:40%;background:var(--cta);opacity:.5"></div>
-<div class="sb" style="height:35%;background:var(--cta);opacity:.6"></div>
-<div class="sb" style="height:45%;background:var(--cta);opacity:.6"></div>
-<div class="sb" style="height:50%;background:var(--cta);opacity:.6"></div>
-<div class="sb" style="height:40%;background:var(--cta);opacity:.6"></div>
-<div class="sb" style="height:55%;background:var(--cta);opacity:.7"></div>
-<div class="sb" style="height:60%;background:var(--cta);opacity:.7"></div>
-<div class="sb" style="height:50%;background:var(--cta);opacity:.7"></div>
-<div class="sb" style="height:65%;background:var(--cta);opacity:.7"></div>
-<div class="sb" style="height:70%;background:var(--cta);opacity:.8"></div>
-<div class="sb" style="height:60%;background:var(--cta);opacity:.8"></div>
-</div>
-<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>2/1</span><span>2/15</span><span>3/1</span></div>
+<h4>日別予測（有料で毎日配信）</h4>
+<div class="sample-row"><span class="sl">3/1(土)</span><span class="sv2">予測: 18〜35匹（+15%）◎忠彦丸</span></div>
+<div class="sample-row"><span class="sl">3/2(日)</span><span class="sv2">予測: 20〜40匹（+22%）◎荒川屋</span></div>
+<div class="sample-row"><span class="sl">3/3(月)</span><span class="sv2">予測: 15〜30匹（+8%）○一之瀬丸</span></div>
+<div class="sample-row"><span class="sl">3/4(火)</span><span class="sv2">予測: 10〜25匹（-5%）△弁天屋</span></div>
+<div class="sample-row"><span class="sl">3/5(水)</span><span class="sv2">予測: 16〜32匹（+12%）○太田屋</span></div>
 </div>
 
 <div class="sample-section">
-<h4>3/1〜3/7 の日別予測（有料で毎日配信）</h4>
-<div class="sample-row"><span class="sl">3/1(土)</span><span class="sv2">予測: +15%（18〜35匹）</span></div>
-<div class="sample-row"><span class="sl">3/2(日)</span><span class="sv2">予測: +22%（20〜40匹）</span></div>
-<div class="sample-row"><span class="sl">3/3(月)</span><span class="sv2">予測: +8%（15〜30匹）</span></div>
-<div class="sample-row"><span class="sl">3/4(火)</span><span class="sv2">予測: -5%（10〜25匹）</span></div>
-<div class="sample-row"><span class="sl">3/5(水)</span><span class="sv2">予測: +12%（16〜32匹）</span></div>
-</div>
-
-<div class="sample-section">
-<h4>船宿別の予測（有料）</h4>
-<div class="sample-row"><span class="sl">3/1 忠彦丸</span><span class="sv2">◎ +35%（25〜40匹）走水沖</span></div>
-<div class="sample-row"><span class="sl">3/1 荒川屋</span><span class="sv2">○ +18%（20〜35匹）中ノ瀬</span></div>
-<div class="sample-row"><span class="sl">3/1 弁天屋</span><span class="sv2">△ -8%（12〜22匹）本牧沖</span></div>
+<h4>因果分析コメント（有料）</h4>
+<div class="sample-row"><span class="sl">3/1</span><span class="sv2">水温が好条件帯に入り活性UP。大潮で潮通し良好</span></div>
+<div class="sample-row"><span class="sl">3/4</span><span class="sv2">北風強で水温低下。ベイト散り気味で食い渋り予測</span></div>
 </div>
 
 <div class="sample-ans">
 <h4>答え合わせ（正直に公開）</h4>
-<div class="sample-row"><span class="sl">3/1 予測+15%</span><span class="sv2" style="color:var(--pos)">→ 実績+20% 的中</span></div>
-<div class="sample-row"><span class="sl">3/2 予測+22%</span><span class="sv2" style="color:var(--pos)">→ 実績+18% 的中</span></div>
-<div class="sample-row"><span class="sl">3/3 予測+8%</span><span class="sv2" style="color:var(--neg)">→ 実績-3% ハズレ（風速予報ズレ）</span></div>
-<div class="sample-row"><span class="sl">3/4 予測-5%</span><span class="sv2" style="color:var(--pos)">→ 実績-8% 的中</span></div>
-<div class="sample-row"><span class="sl">3/5 予測+12%</span><span class="sv2" style="color:var(--pos)">→ 実績+15% 的中</span></div>
+<div class="sample-row"><span class="sl">3/1 予測18〜35匹</span><span class="sv2" style="color:var(--pos)">→ 実績20〜38匹 ○的中</span></div>
+<div class="sample-row"><span class="sl">3/2 予測20〜40匹</span><span class="sv2" style="color:var(--pos)">→ 実績22〜42匹 ○的中</span></div>
+<div class="sample-row"><span class="sl">3/3 予測15〜30匹</span><span class="sv2" style="color:var(--neg)">→ 実績8〜18匹 ×ハズレ（風速予報ズレ）</span></div>
+<div class="sample-row"><span class="sl">3/4 予測10〜25匹</span><span class="sv2" style="color:var(--pos)">→ 実績12〜22匹 ○的中</span></div>
+<div class="sample-row"><span class="sl">3/5 予測16〜32匹</span><span class="sv2" style="color:var(--pos)">→ 実績18〜35匹 ○的中</span></div>
 <div style="text-align:center;margin-top:8px;font-size:13px;font-weight:700;color:var(--pos)">この週の的中率: 4/5 = 80%</div>
 </div>
 
-<a class="sample-cta" href="#">この精度の予測を毎日受け取る → 月額500円</a>
+<a class="sample-cta" href="#">この精度の予測を毎日受け取る → 月額500円（仕掛け1セット分）</a>
 </div>
 
 </div>
 
-<footer><a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br><span style="margin-top:4px;display:inline-block">© 2026 船釣り予想</span></footer>
-<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="#" class="on"><span class="i">🐟</span>魚種</a><a href="#"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="#">マダイ</a> · <a href="#">タチウオ</a> · <a href="mockup-area.html">金沢八景</a> · <a href="#">走水</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="#" class="on"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
 
 </body>
 </html>
