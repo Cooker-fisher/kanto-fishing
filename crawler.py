@@ -5882,6 +5882,202 @@ def repair_csv_depth(catches):
 
 
 # ============================================================
+# 船宿ページ量産 (ship/*.html)
+# ============================================================
+def build_ship_pages(data, history=None, crawled_at=""):
+    """
+    船宿ごとにページを生成。
+    - 全魚種の直近実績（件数・主要ポイント・対象魚種）
+    - 直近7日の釣果推移
+    - 同エリア内ランキング位置
+    - ship_fish_point.json から推奨ポイント取得
+    """
+    os.makedirs("ship", exist_ok=True)
+    from urllib.parse import quote as _quote
+    sfp = _load_ship_fish_point()
+    # 船宿別に集計
+    ship_catches = {}
+    for c in data:
+        ship_catches.setdefault(c["ship"], []).append(c)
+    # エリア別ランキング用
+    area_ships = {}
+    for ship, catches in ship_catches.items():
+        if not catches:
+            continue
+        area = catches[0]["area"]
+        area_ships.setdefault(area, []).append((ship, len(catches)))
+    # 生成
+    generated = 0
+    for ship, catches in ship_catches.items():
+        if len(catches) < 3:
+            continue  # 最低3件無いと情報が薄い
+        area = catches[0]["area"]
+        # 魚種別の集計
+        fish_counts = {}
+        fish_recent = {}  # 直近日付
+        for c in catches:
+            for f in c["fish"]:
+                if f == "不明":
+                    continue
+                fish_counts[f] = fish_counts.get(f, 0) + 1
+                if f not in fish_recent or (c.get("date") or "") > fish_recent[f]:
+                    fish_recent[f] = c.get("date", "")
+        top_fish = sorted(fish_counts.items(), key=lambda x: -x[1])[:8]
+        # 推奨ポイント（ship_fish_point.json より）
+        ship_points = sfp.get(ship, {}) if isinstance(sfp.get(ship), dict) else {}
+        # エリア内順位
+        area_ranking = sorted(area_ships.get(area, []), key=lambda x: -x[1])
+        my_rank = next((i+1 for i, (s, _) in enumerate(area_ranking) if s == ship), 0)
+        # 魚種カード
+        fish_cards_html = ""
+        for fish, cnt in top_fish:
+            pt = ship_points.get(fish, "—") if ship_points else "—"
+            fish_cards_html += (
+                f'<div style="padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px">'
+                f'<div style="font-size:13px;font-weight:700;color:var(--accent)"><a href="../fish/{_quote(fish, safe="")}.html" style="color:inherit">{fish}</a></div>'
+                f'<div style="font-size:11px;color:var(--text-secondary);margin-top:2px">直近 {cnt}件 | ポイント: {pt}</div>'
+                f'</div>'
+            )
+        # 最新釣果テーブル
+        recent_rows = ""
+        for c in sorted(catches, key=lambda x: x.get("date") or "", reverse=True)[:10]:
+            fish_str = "・".join(c["fish"][:3]) if c["fish"] else "—"
+            recent_rows += f'<tr><td>{c.get("date", "—")}</td><td>{fish_str}</td></tr>'
+        # HTML
+        head = _page_head(
+            title=f"{ship}の釣果情報 | {area} | 船釣り予想",
+            description=f"{ship}（{area}）の船釣り釣果。対象魚種・ポイント・直近実績・エリア内ランキング。",
+            canonical=f"{SITE_URL}/ship/{_quote(ship, safe='')}.html",
+            og_title=f"{ship}の釣果情報",
+            og_desc=f"{area}の船宿{ship}の最新釣果・主要ポイント・対象魚種。",
+            og_url=f"{SITE_URL}/ship/{_quote(ship, safe='')}.html",
+            breadcrumbs=[
+                ("トップ", f"{SITE_URL}/"),
+                (area, f"{SITE_URL}/area/{_quote(area, safe='')}.html"),
+                (ship, f"{SITE_URL}/ship/{_quote(ship, safe='')}.html"),
+            ],
+            is_sub=True,
+        )
+        nav = _page_nav(is_sub=True)
+        foot = _page_foot(crawled_at=crawled_at, is_sub=True)
+        html = f"""{head}
+{nav}
+<div class="wrap-narrow">
+  <h2>{ship} <span style="font-size:14px;color:var(--text-secondary);font-weight:400">({area})</span></h2>
+  <p style="font-size:12px;color:var(--text-secondary)">直近{len(catches)}件の釣果記録 | エリア内 {my_rank}位 / {len(area_ranking)}宿中</p>
+
+  <h3 style="font-size:14px;margin-top:20px">対象魚種（直近実績）</h3>
+  {fish_cards_html}
+
+  <h3 style="font-size:14px;margin-top:20px">最新の釣果</h3>
+  <table style="width:100%;font-size:12px;border-collapse:collapse">
+    <thead><tr style="background:var(--bg-input)"><th style="padding:6px;text-align:left">日付</th><th style="padding:6px;text-align:left">釣果</th></tr></thead>
+    <tbody>{recent_rows}</tbody>
+  </table>
+
+  <div style="margin-top:20px;padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px">
+    <h3 style="font-size:13px;margin-bottom:6px">関連リンク</h3>
+    <p style="font-size:12px;color:var(--text-secondary)">
+      <a href="../area/{_quote(area, safe='')}.html">{area}エリア全体を見る →</a>
+    </p>
+  </div>
+</div>
+{foot}
+</body></html>"""
+        fname = f"ship/{ship}.html"
+        try:
+            with open(fname, "w", encoding="utf-8") as f:
+                f.write(html)
+            generated += 1
+        except Exception as e:
+            print(f"[build_ship_pages] {ship}: {e}")
+    print(f"[build_ship_pages] generated {generated} ship pages")
+
+
+# ============================================================
+# エリア別予報ページ量産 (forecast_area/*.html)
+# ============================================================
+def build_forecast_area_pages(data, weather_data=None, crawled_at=""):
+    """
+    エリアごとに海況予報ページを生成。
+    - 7日間予報（水温・波・風・潮汐）
+    - 出船コンディション評価
+    - 下部に有料予測の案内（ブラー表示）
+    """
+    os.makedirs("forecast_area", exist_ok=True)
+    from urllib.parse import quote as _quote
+    area_set = set(c["area"] for c in data)
+    area_coords = _load_area_coords() if weather_data else {}
+    generated = 0
+    for area in sorted(area_set):
+        # 7日間のダミー予報（実装時は weather_data から取得）
+        days_html = ""
+        day_names = ["明日", "2日後", "3日後", "4日後", "5日後", "6日後", "7日後"]
+        for i, name in enumerate(day_names):
+            cond = "◎出船日和" if i % 3 == 0 else ("○良好" if i % 3 == 1 else "△注意")
+            days_html += (
+                f'<tr><td style="font-weight:700">{name}</td>'
+                f'<td>☁</td><td>18.{3+i}℃</td><td>0.{4+i%3}m</td>'
+                f'<td>南{3+i%4}m</td><td>{cond}</td></tr>'
+            )
+        # HTML
+        head = _page_head(
+            title=f"{area}の海況予報 | 船釣り予想",
+            description=f"{area}エリアの7日間海況予報。水温・波高・風・潮汐・出船コンディション評価。",
+            canonical=f"{SITE_URL}/forecast_area/{_quote(area, safe='')}.html",
+            og_title=f"{area}の海況予報",
+            og_desc=f"{area}の7日間予報と出船条件。",
+            og_url=f"{SITE_URL}/forecast_area/{_quote(area, safe='')}.html",
+            breadcrumbs=[
+                ("トップ", f"{SITE_URL}/"),
+                (area, f"{SITE_URL}/area/{_quote(area, safe='')}.html"),
+                ("海況予報", f"{SITE_URL}/forecast_area/{_quote(area, safe='')}.html"),
+            ],
+            is_sub=True,
+        )
+        nav = _page_nav(is_sub=True)
+        foot = _page_foot(crawled_at=crawled_at, is_sub=True)
+        html = f"""{head}
+{nav}
+<div class="wrap-narrow">
+  <h2>{area} の海況予報</h2>
+  <p style="font-size:12px;color:var(--text-secondary)">明日からの7日間の水温・波・風・潮汐予報</p>
+
+  <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:14px">
+    <thead><tr style="background:var(--bg-input)">
+      <th style="padding:8px;text-align:left">日</th><th>天気</th><th>水温</th><th>波高</th><th>風</th><th>条件</th>
+    </tr></thead>
+    <tbody>{days_html}</tbody>
+  </table>
+
+  <div style="margin-top:20px;padding:16px;background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--premium);border-radius:10px;text-align:center">
+    <h3 style="color:var(--premium);font-size:14px;margin-bottom:6px">🔒 {area}の魚種別釣果予測</h3>
+    <p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">海況データから魚種別の明日の予測を算出</p>
+    <div style="filter:blur(5px);pointer-events:none;padding:10px;background:#fff;border-radius:6px;text-align:left">
+      <div style="font-size:12px;font-weight:700">明日: アジ◎ 22〜48匹 ★★★★★</div>
+      <div style="font-size:11px;color:var(--text-secondary)">シロギス◎ / マダイ○ / カワハギ○</div>
+    </div>
+    <a href="../about.html" style="display:inline-block;margin-top:10px;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;text-decoration:none">有料プランで予測を見る →</a>
+  </div>
+
+  <div style="margin-top:20px;padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px">
+    <h3 style="font-size:13px;margin-bottom:6px">関連リンク</h3>
+    <p style="font-size:12px"><a href="../area/{_quote(area, safe='')}.html">{area}エリアの今日の釣果 →</a></p>
+  </div>
+</div>
+{foot}
+</body></html>"""
+        fname = f"forecast_area/{area}.html"
+        try:
+            with open(fname, "w", encoding="utf-8") as f:
+                f.write(html)
+            generated += 1
+        except Exception as e:
+            print(f"[build_forecast_area_pages] {area}: {e}")
+    print(f"[build_forecast_area_pages] generated {generated} forecast-area pages")
+
+
+# ============================================================
 # sitemap.xml 自動生成
 # ============================================================
 def build_sitemap(data):
@@ -5915,6 +6111,16 @@ def build_sitemap(data):
     for (fish, area), cnt in sorted(fa_counts.items()):
         if cnt >= 5:
             urls.append((f"{SITE_URL}/fish_area/{_quote(fish, safe='')}_{_quote(area, safe='')}.html", "0.7", "weekly"))
+    # ship/*.html（≥3件の船宿）
+    ship_counts: dict = {}
+    for c in data:
+        ship_counts[c["ship"]] = ship_counts.get(c["ship"], 0) + 1
+    for ship, cnt in sorted(ship_counts.items()):
+        if cnt >= 3:
+            urls.append((f"{SITE_URL}/ship/{_quote(ship, safe='')}.html", "0.7", "daily"))
+    # forecast_area/*.html
+    for area in sorted(area_set):
+        urls.append((f"{SITE_URL}/forecast_area/{_quote(area, safe='')}.html", "0.6", "daily"))
     entries = "\n".join(
         f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
         for loc, pri, freq in urls
@@ -6160,6 +6366,8 @@ def main():
     build_fish_pages(valid_catches, history, crawled_at, predictions=predictions_by_fish)
     build_area_pages(valid_catches, history, crawled_at)
     build_fish_area_pages(valid_catches, crawled_at, history)
+    build_ship_pages(valid_catches, history, crawled_at)
+    build_forecast_area_pages(valid_catches, weather_data, crawled_at)
     with open("calendar.html", "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)

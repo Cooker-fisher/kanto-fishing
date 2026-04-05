@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>サイトについて — 船釣り予想</title>
+<meta name="description" content="船釣り予想（funatsuri-yoso.com）について。関東の船釣り釣果データを集計・分析。データソース・運営方針・予測モデル・免責事項。">
+<link rel="canonical" href="https://funatsuri-yoso.com/about.html">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
+.st{font-size:16px;font-weight:700;color:var(--accent);padding:20px 0 10px;border-bottom:2px solid var(--accent);margin-bottom:14px}
+.about-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:28px 14px 24px;text-align:center}
+.about-hero h2{font-size:26px;font-weight:800}
+.about-hero .ah-sub{font-size:13px;color:rgba(255,255,255,.7);margin-top:6px}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+
+.box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.box h3{font-size:14px;color:var(--accent);font-weight:700;margin-bottom:8px}
+.box p{font-size:13px;color:var(--sub);margin-bottom:8px}
+.box p:last-child{margin-bottom:0}
+.box ul{font-size:12px;color:var(--sub);margin:6px 0 6px 18px}
+.box ul li{padding:2px 0}
+.box table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.box th,.box td{padding:8px;text-align:left;border-bottom:1px solid var(--bg)}
+.box th{background:var(--bg);color:var(--accent);font-weight:700;font-size:11px}
+.box td strong{color:var(--accent)}
+
+.num-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.num{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center}
+.num .n-big{font-size:26px;font-weight:800;color:var(--cta);line-height:1}
+.num .n-big small{font-size:13px;color:var(--sub);font-weight:400}
+.num .n-lb{font-size:10px;color:var(--muted);margin-top:4px}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--cta)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-history.html">予測履歴</a><a href="#" class="on">サイトについて</a></nav>
+
+<div class="about-hero">
+<h2>船釣り予想</h2>
+<div class="ah-sub">関東の船釣り釣果データを集計・分析して可視化</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup.html">トップ</a> &gt; サイトについて</div>
+
+<!-- サイトコンセプト -->
+<div class="box">
+<h3>サイトのコンセプト</h3>
+<p>「船釣り予想（funatsuri-yoso.com）」は、関東の船釣り釣果情報を毎日集計して、<strong>「今何が釣れているか」「どの船宿が好調か」「いつが旬か」</strong>を可視化する情報サイトです。</p>
+<p>釣り人が船宿のホームページを一つずつ開いて比較する手間を、このサイト1つで完結させることを目的としています。</p>
+<p>また、過去3年分の実釣果データと海況データ（水温・潮汐・波高・風速）の相関から、<strong>明日以降の釣果予測</strong>を有料プランで提供しています。</p>
+</div>
+
+<!-- データの規模 -->
+<div class="num-grid">
+<div class="num"><div class="n-big">75<small>船宿</small></div><div class="n-lb">対象船宿</div></div>
+<div class="num"><div class="n-big">8<small>エリア</small></div><div class="n-lb">対象エリア</div></div>
+<div class="num"><div class="n-big">84,757<small>件</small></div><div class="n-lb">釣果記録</div></div>
+<div class="num"><div class="n-big">3<small>年</small></div><div class="n-lb">データ期間</div></div>
+<div class="num"><div class="n-big">51<small>種</small></div><div class="n-lb">対象魚種</div></div>
+<div class="num"><div class="n-big">毎日<small>16:30</small></div><div class="n-lb">自動更新</div></div>
+</div>
+
+<!-- データソース -->
+<div class="box">
+<h3>データソース</h3>
+<table>
+<thead><tr><th>データ</th><th>ソース</th><th>更新頻度</th></tr></thead>
+<tbody>
+<tr><td><strong>釣果データ</strong></td><td>釣りビジョン（fishing-v.jp）公開ページ</td><td>毎日16:30</td></tr>
+<tr><td><strong>気象・海況</strong></td><td>Open-Meteo Archive / Marine API</td><td>毎日</td></tr>
+<tr><td><strong>台風データ</strong></td><td>気象庁 BestTrack</td><td>年次</td></tr>
+<tr><td><strong>潮汐・月齢</strong></td><td>天文計算（独自実装）</td><td>静的</td></tr>
+<tr><td><strong>ポイント座標</strong></td><td>独自に306地点をマッピング</td><td>静的</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 対象エリア -->
+<div class="box">
+<h3>対象エリア・魚種</h3>
+<p><strong>対象エリア:</strong> 神奈川・東京・千葉・茨城・静岡の主要8エリア（金沢八景・走水・剣崎・横浜・久里浜・大原・勝山・飯岡ほか）</p>
+<p><strong>対象魚種:</strong> アジ・マダイ・タチウオ・カワハギ・シロギス・アマダイ・ヒラメ・マゴチ・フグ・ヤリイカ・ワラサ・イサキなど51種</p>
+</div>
+
+<!-- 予測モデル -->
+<div class="box">
+<h3>予測モデルについて</h3>
+<p>有料プランで提供する「釣果予測」は、過去3年分の実釣果データと以下の環境変数を独自ロジックで組み合わせて算出しています。</p>
+<ul>
+<li><strong>水温</strong>（表層・海底）</li>
+<li><strong>潮汐</strong>（大潮・中潮・小潮・長潮・若潮）</li>
+<li><strong>月齢</strong></li>
+<li><strong>波高・うねり高・周期</strong></li>
+<li><strong>風速・風向</strong></li>
+<li><strong>気圧</strong></li>
+<li><strong>気温</strong></li>
+<li><strong>台風位置</strong>（接近時）</li>
+<li><strong>旬（週単位の過去実績）</strong></li>
+<li><strong>船宿ごとの傾向（出船ポイント・実績）</strong></li>
+</ul>
+<p>※ 具体的な閾値・重み付けは非公開です（模倣防止のため）。</p>
+<p>予測の的中率は<a href="mockup-history.html">予測履歴ページ</a>で常時公開しています。直近30日の的中率は72%（126件中91件）です。</p>
+</div>
+
+<!-- 独自性 -->
+<div class="box">
+<h3>他の釣りサイトとの違い</h3>
+<table>
+<thead><tr><th>サイト</th><th>強み</th><th>弱み</th></tr></thead>
+<tbody>
+<tr><td>釣りビジョン</td><td>個別船宿の詳細記録</td><td>横断集計・予測なし</td></tr>
+<tr><td>船釣り.jp</td><td>船宿データベース・年間傾向</td><td>週単位の予測なし</td></tr>
+<tr><td><strong>船釣り予想</strong></td><td><strong>横断集計＋週単位予測＋エリア×魚種の旬可視化</strong></td><td>対象エリアが関東のみ</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 免責事項 -->
+<div class="box" style="background:#fef9c3;border-color:#eab308">
+<h3>免責事項</h3>
+<p style="font-size:12px">・本サイトの予測は過去データに基づく統計的な参考情報であり、釣果を保証するものではありません。</p>
+<p style="font-size:12px">・釣行の判断は最終的にご自身で行ってください。海況の急変・船宿の欠航判断を優先してください。</p>
+<p style="font-size:12px">・データは釣りビジョンほか公開情報を集計していますが、集計・正規化の過程で誤りが生じる可能性があります。</p>
+<p style="font-size:12px">・スクレイピングによるデータ取得、機械的な大量アクセスは禁止しています（利用規約参照）。</p>
+</div>
+
+<!-- 更新履歴 -->
+<div class="box">
+<h3>更新履歴</h3>
+<table>
+<thead><tr><th>日付</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>2026/04</td><td>UIリデザイン実施（週単位旬カレンダー・エリア別予報ページ新設）</td></tr>
+<tr><td>2026/03</td><td>ポイント解決率 94.9% 到達（306ポイントマスター整備）</td></tr>
+<tr><td>2026/02</td><td>気象データ153座標×145万行蓄積完了</td></tr>
+<tr><td>2026/01</td><td>魚種別旬カレンダー機能リリース</td></tr>
+<tr><td>2025/12</td><td>船宿×魚種ページ（fish_area/）リリース</td></tr>
+<tr><td>2025/11</td><td>サイト公開（https://funatsuri-yoso.com/）</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- お問い合わせ -->
+<div class="box">
+<h3>お問い合わせ</h3>
+<p>サイトへのご意見・データの誤り報告・取材依頼などは下記までお願いします。</p>
+<p><strong>メール:</strong> info@funatsuri-yoso.com</p>
+<p><strong>GitHub:</strong> <a href="https://github.com/Cooker-fisher/kanto-fishing">Cooker-fisher/kanto-fishing</a>（開発リポジトリ）</p>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">魚種</a> · <a href="mockup-area.html">エリア</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-premium.html"><span class="i">⭐</span>有料</a></div>
+
+</body>
+</html>
