@@ -7,7 +7,10 @@
 <style>
 :root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem2:#6d28d9;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px;position:relative}
+/* Watermark */
+.watermark-text{position:fixed;inset:0;pointer-events:none;z-index:9998;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);overflow:hidden}
+.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(13,43,74,.04);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
 a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:linear-gradient(135deg,#0d2b4a,#4c1d95);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
@@ -75,14 +78,40 @@ nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
 .fw-alert{font-size:10px;padding:2px 6px;border-radius:6px;background:var(--pos);color:#fff;font-weight:700}
 .fw-alert.off{background:var(--muted)}
 
-/* Streak */
-.streak{background:linear-gradient(135deg,#fef6ee,#fed7aa);border:1px solid #fb923c;border-radius:var(--r);padding:14px;margin-bottom:16px;text-align:center}
-.streak .sb-big{font-size:28px;font-weight:800;color:var(--cta);line-height:1}
-.streak .sb-big small{font-size:12px;color:var(--sub)}
-.streak .sb-msg{font-size:11px;color:var(--sub);margin-top:4px}
-.streak-days{display:flex;justify-content:center;gap:3px;margin-top:8px}
-.streak-day{width:16px;height:16px;background:var(--cta);border-radius:3px;opacity:.7}
-.streak-day.today{opacity:1;border:2px solid var(--accent)}
+/* Trip watch */
+.trip-watch{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.tw-item{padding:12px;background:var(--bg);border-radius:8px;margin-bottom:8px;border-left:4px solid var(--prem)}
+.tw-item.cancel{border-left-color:var(--neg);background:#fef2f2}
+.tw-item.caution{border-left-color:var(--warn);background:#fffbeb}
+.tw-item.good{border-left-color:var(--pos);background:#f0fdf4}
+.tw-item:last-child{margin-bottom:0}
+.tw-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.tw-date{font-size:14px;font-weight:800;color:var(--accent)}
+.tw-date small{font-size:10px;color:var(--muted);font-weight:400;margin-left:4px}
+.tw-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px}
+.tw-status.good{background:var(--pos);color:#fff}
+.tw-status.caution{background:var(--warn);color:#fff}
+.tw-status.cancel{background:var(--neg);color:#fff}
+.tw-body{font-size:12px;color:var(--sub)}
+.tw-body .tw-fish{font-weight:700;color:var(--accent)}
+.tw-pred{font-size:11px;color:var(--cta);font-weight:700;margin-top:4px}
+.tw-pred small{color:var(--muted);font-weight:400}
+.tw-warn{font-size:11px;color:var(--neg);font-weight:700;margin-top:6px;padding:6px 8px;background:rgba(212,51,51,.05);border-radius:4px}
+.tw-actions{display:flex;gap:6px;margin-top:8px}
+.tw-btn{flex:1;padding:6px;background:var(--card);border:1px solid var(--border);border-radius:6px;font-size:10px;text-align:center;color:var(--sub);font-weight:600;text-decoration:none}
+.tw-btn:hover{border-color:var(--prem);color:var(--prem);text-decoration:none}
+.tw-add{display:block;padding:10px;background:var(--prem);color:#fff;text-align:center;border-radius:20px;font-weight:700;font-size:12px;margin-top:8px;text-decoration:none}
+.tw-add:hover{opacity:.85;text-decoration:none}
+
+/* LINE通知設定 */
+.line-notify{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #06c755;border-radius:var(--r);padding:14px;margin-bottom:16px}
+.line-notify h3{font-size:13px;font-weight:700;color:#06c755;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.line-notify h3 .line-badge{font-size:10px;padding:2px 8px;background:#06c755;color:#fff;border-radius:10px}
+.ln-rule{padding:8px;background:var(--card);border-radius:6px;margin-bottom:6px;font-size:11px;color:var(--sub)}
+.ln-rule:last-child{margin-bottom:0}
+.ln-rule strong{color:var(--accent)}
+.ln-rule-on{float:right;font-size:10px;padding:2px 8px;border-radius:10px;background:#06c755;color:#fff;font-weight:700}
+.ln-add-btn{display:block;padding:8px;text-align:center;font-size:11px;color:#06c755;font-weight:700;margin-top:8px;text-decoration:none}
 
 footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
 footer a{color:rgba(255,255,255,.7)}
@@ -94,17 +123,21 @@ footer a{color:rgba(255,255,255,.7)}
 </head>
 <body>
 
+<div class="watermark-text" aria-hidden="true">
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+</div>
+
 <header><div class="inner"><h1>船釣り<span>予想</span><span class="crown">👑</span></h1><span style="font-size:11px;opacity:.5">会員ダッシュボード</span></div></header>
 <nav><a href="#" class="on">ダッシュボード</a><a href="mockup-paid-forecast.html">予測全覧</a><a href="mockup-paid-calendar.html">旬カレンダー</a><a href="mockup-history.html">履歴</a><a href="mockup-mypage.html">マイページ</a></nav>
 
 <div class="hero">
-<div class="hero-greet">ようこそ</div>
+<div class="hero-greet">おかえりなさい</div>
 <h2>田中さん</h2>
-<div class="hero-stats">
-<div class="hs-item"><div class="hv">28</div><div class="hl">連続ログイン</div></div>
-<div class="hs-item"><div class="hv">72%</div><div class="hl">累計的中率</div></div>
-<div class="hs-item"><div class="hv">¥500</div><div class="hl">月額</div></div>
-</div>
+<div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">釣行予定 2件ウォッチ中 | 直近的中率 72%</div>
 </div>
 
 <div class="c">
@@ -237,13 +270,74 @@ footer a{color:rgba(255,255,255,.7)}
 
 </div>
 
-<!-- 連続ログイン -->
-<div class="streak">
-<div class="sb-big">🔥 28<small>日連続</small></div>
-<div class="sb-msg">チャンスを逃さない習慣</div>
-<div class="streak-days">
-<div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day today"></div>
+<!-- 釣行予定ウォッチ -->
+<h2 class="st">🎣 釣行予定ウォッチ <span class="st-sub">予定日の状況を自動監視</span></h2>
+<div class="trip-watch">
+
+<!-- 4/12 の予定 -->
+<div class="tw-item good">
+<div class="tw-head">
+<div class="tw-date">4/12(土) <small>残り7日</small></div>
+<span class="tw-status good">◎ 出船日和</span>
 </div>
+<div class="tw-body">
+<span class="tw-fish">アジ</span> × 金沢八景・忠彦丸
+</div>
+<div class="tw-pred">
+予測: 28〜52匹 <small>(去年同週比 +32%) ★★★★★</small>
+</div>
+<div class="tw-actions">
+<a class="tw-btn" href="#">詳細を見る</a>
+<a class="tw-btn" href="#">通知設定</a>
+<a class="tw-btn" href="#">削除</a>
+</div>
+</div>
+
+<!-- 4/19 の予定 -->
+<div class="tw-item caution">
+<div class="tw-head">
+<div class="tw-date">4/19(土) <small>残り14日</small></div>
+<span class="tw-status caution">△ 要注意</span>
+</div>
+<div class="tw-body">
+<span class="tw-fish">マダイ</span> × 剣崎・佐円丸
+</div>
+<div class="tw-pred">
+予測: 1〜4匹 <small>(去年同週比 -5%) ★★★</small>
+</div>
+<div class="tw-warn">
+⚠️ 低気圧接近の兆候。長期予報で南風強まる可能性あり。4/17(木)頃に再確認推奨
+</div>
+<div class="tw-actions">
+<a class="tw-btn" href="#">詳細を見る</a>
+<a class="tw-btn" href="#">日付変更</a>
+<a class="tw-btn" href="#">削除</a>
+</div>
+</div>
+
+<a class="tw-add" href="#">+ 釣行予定を追加</a>
+</div>
+
+<!-- LINE通知設定 -->
+<div class="line-notify">
+<h3><span class="line-badge">LINE</span> 通知ルール設定</h3>
+<div class="ln-rule">
+<strong>アジ が +30% 超え</strong>たらLINE通知
+<span class="ln-rule-on">ON</span>
+</div>
+<div class="ln-rule">
+<strong>忠彦丸 の明日の予測が ★★★★★</strong> になったら通知
+<span class="ln-rule-on">ON</span>
+</div>
+<div class="ln-rule">
+<strong>ウォッチ中の釣行予定日が「欠航リスク」</strong> になったら即通知
+<span class="ln-rule-on">ON</span>
+</div>
+<div class="ln-rule">
+<strong>金沢八景エリアで +50% 超えの魚種</strong> が出たら通知
+<span class="ln-rule-on" style="background:var(--muted)">OFF</span>
+</div>
+<a class="ln-add-btn" href="#">+ 新しい通知ルールを追加</a>
 </div>
 
 <!-- お気に入り通知 -->

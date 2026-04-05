@@ -8,7 +8,16 @@
 <style>
 :root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px;position:relative}
+.watermark-text{position:fixed;inset:0;pointer-events:none;z-index:9998;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);overflow:hidden}
+.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(13,43,74,.04);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
+.line-rule{padding:10px;background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.line-rule:last-child{margin-bottom:0}
+.line-rule .lr-text{flex:1;color:var(--sub)}
+.line-rule .lr-text strong{color:var(--accent)}
+.line-rule .lr-toggle{font-size:10px;padding:3px 10px;border-radius:10px;font-weight:700;color:#fff}
+.line-rule .lr-toggle.on{background:#06c755}
+.line-rule .lr-toggle.off{background:var(--muted)}
 a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
@@ -100,6 +109,14 @@ footer a{color:rgba(255,255,255,.7)}
 </head>
 <body>
 
+<div class="watermark-text" aria-hidden="true">
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+<span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span><span>tanaka-san · funatsuri-yoso.com</span>
+</div>
+
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
 <nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-history.html">予測履歴</a><a href="#" class="on">マイページ</a></nav>
 
@@ -112,21 +129,25 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="c">
 <div class="bread"><a href="mockup.html">トップ</a> &gt; マイページ</div>
 
-<!-- 統計 -->
-<div class="stats-row">
-<div class="stat"><div class="s-big">28<small>日</small></div><div class="s-lb">連続ログイン</div></div>
-<div class="stat"><div class="s-big">15<small>回</small></div><div class="s-lb">今月の予測参照</div></div>
-<div class="stat"><div class="s-big s-streak">🔥 3</div><div class="s-lb">通知中の魚種</div></div>
+<!-- LINE通知ルール -->
+<div class="mp-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#06c755">
+<h3 style="color:#06c755">📱 LINE通知ルール <a href="#">+ 追加 →</a></h3>
+<div class="line-rule">
+<div class="lr-text"><strong>アジ</strong> が <strong>+30%</strong> 超えたら通知</div>
+<span class="lr-toggle on">ON</span>
 </div>
-
-<!-- 連続ログイン -->
-<div class="streak-box">
-<div class="sb-big">28<small>日連続</small></div>
-<div class="sb-msg">毎日チェックして、釣果チャンスを逃さない！</div>
-<div class="streak-days">
-<div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day today"></div>
+<div class="line-rule">
+<div class="lr-text"><strong>忠彦丸</strong> の明日の予測が <strong>★★★★★</strong> になったら通知</div>
+<span class="lr-toggle on">ON</span>
 </div>
-<div style="font-size:9px;color:var(--muted);margin-top:4px">直近7日</div>
+<div class="line-rule">
+<div class="lr-text">釣行予定日に <strong>欠航リスク</strong> が出たら即通知</div>
+<span class="lr-toggle on">ON</span>
+</div>
+<div class="line-rule">
+<div class="lr-text"><strong>金沢八景</strong> で <strong>+50%</strong> 超えの魚種があれば通知</div>
+<span class="lr-toggle off">OFF</span>
+</div>
 </div>
 
 <!-- クイックアクション -->
