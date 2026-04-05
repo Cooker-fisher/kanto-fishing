@@ -23,6 +23,34 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .hero .info{font-size:12px;color:rgba(255,255,255,.5);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
 .hero .dot{width:6px;height:6px;background:var(--pos);border-radius:50%}
 .st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
+.st.prem{color:var(--prem);border-color:var(--prem)}
+.st .prem-tag{display:inline-block;font-size:9px;padding:2px 7px;background:var(--prem);color:#fff;border-radius:8px;margin-left:6px;vertical-align:middle}
+
+/* Top3 confidence predictions (teaser) */
+.top3{background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:1px solid #e0d6f5;border-radius:var(--r);padding:12px;margin-bottom:16px}
+.top3-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.top3-head h3{font-size:13px;color:var(--prem);font-weight:800}
+.top3-acc{font-size:10px;padding:2px 8px;background:#e6f7ee;color:var(--pos);border-radius:10px;font-weight:700}
+.t3-item{background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.t3-item:last-child{margin-bottom:0}
+.t3-rank{flex:0 0 24px;font-size:16px;font-weight:800;color:var(--prem);text-align:center}
+.t3-body{flex:1}
+.t3-fish{font-size:13px;font-weight:800;color:var(--accent)}
+.t3-star{color:var(--warn);font-size:10px;margin-left:4px}
+.t3-range{font-size:14px;font-weight:700;color:var(--cta);margin-top:2px}
+.t3-range small{font-size:10px;color:var(--muted);font-weight:400}
+.t3-lock{flex:0 0 24px;font-size:14px;color:var(--prem);text-align:center}
+.top3-cta{display:block;text-align:center;margin-top:8px;padding:8px;background:var(--prem);color:#fff;border-radius:16px;font-weight:700;font-size:12px}
+.top3-cta:hover{opacity:.85;text-decoration:none}
+
+/* Weekend recommended */
+.weekend{background:linear-gradient(135deg,#fef6ee,#fed7aa);border:1px solid #fb923c;border-radius:var(--r);padding:12px;margin-bottom:16px}
+.weekend h3{font-size:13px;color:var(--cta);font-weight:800;margin-bottom:8px}
+.w-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.w-item{background:var(--card);border:1px solid #fed7aa;border-radius:6px;padding:8px;text-align:center}
+.w-item .wi-fish{font-size:12px;font-weight:700;color:var(--accent)}
+.w-item .wi-phase{font-size:9px;color:var(--cta);font-weight:700;margin-top:2px}
+.w-item .wi-area{font-size:9px;color:var(--muted);margin-top:2px}
 
 /* 2-col fish cards */
 .fish-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
@@ -104,7 +132,7 @@ footer a{color:rgba(255,255,255,.7)}
 <body>
 
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
-<nav><a href="#" class="on">今日の釣果</a><a href="#">魚種</a><a href="#">エリア</a><a href="#">カレンダー</a></nav>
+<nav><a href="#" class="on">今日の釣果</a><a href="#">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-history.html">予測履歴</a><a href="mockup-premium.html">有料プラン</a></nav>
 
 <div class="hero">
 <div class="hero-sub">関東の船釣り 今日の釣果</div>
@@ -113,6 +141,55 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 
 <div class="c">
+
+<!-- 今日の自信予測 TOP3 (有料チラ見せ) -->
+<h2 class="st prem">明日の自信予測 TOP3 <span class="prem-tag">🔒 有料</span></h2>
+<div class="top3">
+<div class="top3-head">
+<h3>明日 4/6(日) の信頼度ランキング</h3>
+<span class="top3-acc">的中率 72%</span>
+</div>
+
+<div class="t3-item">
+<div class="t3-rank">1</div>
+<div class="t3-body">
+<div class="t3-fish">アジ × 金沢八景 <span class="t3-star">★★★★★</span></div>
+<div class="t3-range">22〜48匹 <small>(去年同週比 +25%)</small></div>
+</div>
+<div class="t3-lock">🔒</div>
+</div>
+
+<div class="t3-item">
+<div class="t3-rank">2</div>
+<div class="t3-body">
+<div class="t3-fish">シロギス × 金沢八景 <span class="t3-star">★★★★</span></div>
+<div class="t3-range">18〜45匹 <small>(+30%)</small></div>
+</div>
+<div class="t3-lock">🔒</div>
+</div>
+
+<div class="t3-item">
+<div class="t3-rank">3</div>
+<div class="t3-body">
+<div class="t3-fish">マダイ × 剣崎 <span class="t3-star">★★★</span></div>
+<div class="t3-range">1〜4匹 <small>(+12%)</small></div>
+</div>
+<div class="t3-lock">🔒</div>
+</div>
+
+<a class="top3-cta" href="mockup-premium.html">詳細・根拠を見る →</a>
+</div>
+
+<!-- 今週末のおすすめ (無料・2-3週後計画用) -->
+<h2 class="st">今週末のおすすめ</h2>
+<div class="weekend">
+<h3>4/11-12(土日) に狙い目の魚種</h3>
+<div class="w-grid">
+<div class="w-item"><div class="wi-fish">アジ</div><div class="wi-phase">★最盛期入り</div><div class="wi-area">金沢八景・走水</div></div>
+<div class="w-item"><div class="wi-fish">シロギス</div><div class="wi-phase">★上昇中</div><div class="wi-area">金沢八景・本牧</div></div>
+<div class="w-item"><div class="wi-fish">マダイ</div><div class="wi-phase">★旬</div><div class="wi-area">剣崎・久里浜</div></div>
+</div>
+</div>
 
 <h2 class="st">今日の釣果</h2>
 
@@ -295,7 +372,7 @@ footer a{color:rgba(255,255,255,.7)}
 <span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
 </footer>
 
-<div class="bn"><a href="#" class="on"><span class="i">🎣</span>釣果</a><a href="#"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
+<div class="bn"><a href="#" class="on"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-premium.html"><span class="i">⭐</span>有料</a></div>
 
 </body>
 </html>

@@ -40,6 +40,28 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .sea-item .sv{font-size:18px;font-weight:800;color:var(--accent)}
 .sea-item .sl2{font-size:10px;color:var(--muted);margin-top:2px}
 
+/* Tide */
+.tide-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.tide-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.tide-box h3 .tide-sub{font-size:10px;color:var(--muted);font-weight:400}
+.tide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.tide-item{padding:8px 4px;border-radius:6px;border:1px solid var(--border)}
+.tide-item.high{background:#fef6ee;border-color:#fb923c}
+.tide-item.low{background:#edf2f7}
+.tide-item .tt{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.5px}
+.tide-item .tv{font-size:13px;font-weight:800;color:var(--accent);margin-top:2px}
+.tide-item .th{font-size:9px;color:var(--sub);margin-top:1px}
+.tide-note{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+
+/* Map */
+.area-map{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.area-map h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;text-align:center}
+.map-box{background:linear-gradient(180deg,#e3f2fd,#bbdefb);border-radius:8px;padding:24px 14px;text-align:center;position:relative}
+.map-pin{display:inline-block;background:var(--cta);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin:3px;text-decoration:none}
+.map-pin:hover{text-decoration:none;opacity:.85}
+.map-pin.current{background:var(--prem);border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.map-caption{font-size:10px;color:var(--muted);margin-top:10px}
+
 /* Ship list */
 .sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .sl-card h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
@@ -72,7 +94,7 @@ footer a{color:rgba(255,255,255,.7)}
 <body>
 
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
-<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="#" class="on">エリア</a><a href="#">カレンダー</a></nav>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="#" class="on">エリア</a><a href="mockup-history.html">予測履歴</a><a href="mockup-premium.html">有料プラン</a></nav>
 
 <div class="area-hero">
 <h2>金沢八景</h2>
@@ -93,6 +115,33 @@ footer a{color:rgba(255,255,255,.7)}
 <a class="af" href="#"><span class="af-name">マダイ</span><span class="af-range">0〜3匹</span><span class="af-size">30〜48cm</span><span class="af-pct">(-8%)</span><span class="af-ship">△太田屋</span></a>
 
 <div class="ad-slot">広告スペース（インフィード）</div>
+
+<!-- 潮汐 -->
+<div class="tide-box">
+<h3>今日の潮汐 <span class="tide-sub">大潮 / 月齢12.8</span></h3>
+<div class="tide-grid">
+<div class="tide-item low"><div class="tt">干潮</div><div class="tv">05:12</div><div class="th">18cm</div></div>
+<div class="tide-item high"><div class="tt">満潮</div><div class="tv">11:48</div><div class="th">172cm</div></div>
+<div class="tide-item low"><div class="tt">干潮</div><div class="tv">17:55</div><div class="th">22cm</div></div>
+<div class="tide-item high"><div class="tt">満潮</div><div class="tv">23:45</div><div class="th">168cm</div></div>
+</div>
+<div class="tide-note">日の出 05:25 / 日の入り 18:12</div>
+</div>
+
+<!-- エリア地図 -->
+<div class="area-map">
+<h3>🗺 近隣エリアマップ</h3>
+<div class="map-box">
+<div style="font-size:10px;color:var(--sub);margin-bottom:8px">東京湾 北部</div>
+<a class="map-pin" href="#">本牧 (2件)</a>
+<a class="map-pin" href="#">横浜 (4件)</a><br>
+<a class="map-pin current" href="#">● 金沢八景 (12件)</a>
+<a class="map-pin" href="#">走水 (8件)</a><br>
+<a class="map-pin" href="#">久里浜 (4件)</a>
+<a class="map-pin" href="#">剣崎 (6件)</a>
+</div>
+<div class="map-caption">タップで各エリアの詳細へ</div>
+</div>
 
 <h2 class="st">海況データ</h2>
 <div class="sea-grid">
@@ -147,7 +196,7 @@ footer a{color:rgba(255,255,255,.7)}
 <span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
 </footer>
 
-<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="#" class="on"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="#" class="on"><span class="i">📍</span>エリア</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-premium.html"><span class="i">⭐</span>有料</a></div>
 
 </body>
 </html>

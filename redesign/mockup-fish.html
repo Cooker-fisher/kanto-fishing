@@ -41,6 +41,30 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 
+/* Phase box */
+.phase-box{background:linear-gradient(135deg,#fef6ee,#fed7aa);border:1px solid #fb923c;border-radius:var(--r);padding:14px;margin-bottom:16px;text-align:center}
+.phase-box .phase-big{font-size:18px;font-weight:800;color:var(--cta)}
+.phase-box .phase-desc{font-size:11px;color:var(--sub);margin-top:4px}
+.phase-timeline{display:flex;gap:2px;margin-top:10px;height:20px}
+.pt{flex:1;border-radius:3px;position:relative;background:#fed7aa;opacity:.4}
+.pt.active{opacity:1}
+.pt.current{outline:2px solid var(--cta);outline-offset:1px}
+.pt-labels{display:flex;gap:2px;margin-top:4px;font-size:8px;color:var(--muted)}
+.pt-labels span{flex:1;text-align:center}
+
+/* Tide table */
+.tide-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.tide-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.tide-box h3 .tide-sub{font-size:10px;color:var(--muted);font-weight:400}
+.tide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.tide-item{padding:8px 4px;border-radius:6px;border:1px solid var(--border)}
+.tide-item.high{background:#fef6ee;border-color:#fb923c}
+.tide-item.low{background:#edf2f7}
+.tide-item .tt{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.5px}
+.tide-item .tv{font-size:13px;font-weight:800;color:var(--accent);margin-top:2px}
+.tide-item .th{font-size:9px;color:var(--sub);margin-top:1px}
+.tide-note{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+
 /* Area comparison */
 .area-cmp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .area-cmp h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
@@ -105,7 +129,7 @@ footer a{color:rgba(255,255,255,.7)}
 <body>
 
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
-<nav><a href="mockup.html">今日の釣果</a><a href="#" class="on">魚種</a><a href="mockup-area.html">エリア</a><a href="#">カレンダー</a></nav>
+<nav><a href="mockup.html">今日の釣果</a><a href="#" class="on">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-history.html">予測履歴</a><a href="mockup-premium.html">有料プラン</a></nav>
 
 <div class="fish-hero">
 <h2>アジ</h2>
@@ -116,6 +140,39 @@ footer a{color:rgba(255,255,255,.7)}
 
 <div class="c">
 <div class="bread"><a href="mockup.html">トップ</a> &gt; アジ</div>
+
+<!-- 旬フェーズ -->
+<div class="phase-box">
+<div class="phase-big">★ 上昇期（旬入り直前）</div>
+<div class="phase-desc">4月は上昇フェーズ。6〜8月の最盛期に向けて釣果が伸びる時期</div>
+<div class="phase-timeline">
+<div class="pt"></div>
+<div class="pt"></div>
+<div class="pt"></div>
+<div class="pt active current"></div>
+<div class="pt active"></div>
+<div class="pt active"></div>
+<div class="pt active"></div>
+<div class="pt active"></div>
+<div class="pt active"></div>
+<div class="pt"></div>
+<div class="pt"></div>
+<div class="pt"></div>
+</div>
+<div class="pt-labels"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div>
+</div>
+
+<!-- 潮汐タイムテーブル -->
+<div class="tide-box">
+<h3>今日の潮汐 <span class="tide-sub">大潮 / 月齢12.8</span></h3>
+<div class="tide-grid">
+<div class="tide-item low"><div class="tt">干潮</div><div class="tv">05:12</div><div class="th">潮位 18cm</div></div>
+<div class="tide-item high"><div class="tt">満潮</div><div class="tv">11:48</div><div class="th">潮位 172cm</div></div>
+<div class="tide-item low"><div class="tt">干潮</div><div class="tv">17:55</div><div class="th">潮位 22cm</div></div>
+<div class="tide-item high"><div class="tt">満潮</div><div class="tv">23:45</div><div class="th">潮位 168cm</div></div>
+</div>
+<div class="tide-note">日の出 05:25 / 日の入り 18:12</div>
+</div>
 
 <!-- 自動生成の解説文 (G: テキストコンテンツ) -->
 <div class="desc">
@@ -220,7 +277,7 @@ footer a{color:rgba(255,255,255,.7)}
 <span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
 </footer>
 
-<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="#" class="on"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="#"><span class="i">⭐</span>有料</a></div>
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="#" class="on"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-premium.html"><span class="i">⭐</span>有料</a></div>
 
 </body>
 </html>

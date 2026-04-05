@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>有料プラン — 船釣り予想</title>
+<meta name="description" content="船釣り予想の有料プラン。明日〜4週間後の釣果予測、船宿別◎○△、最適ポイント・仕掛け推奨。的中率72%。">
+<link rel="canonical" href="https://funatsuri-yoso.com/premium.html">
+<meta property="og:title" content="有料プラン — 船釣り予想">
+<meta property="og:description" content="明日の釣果を予測。月額500円（仕掛け1セット分）">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem2:#6d28d9;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--prem)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--prem);padding:18px 0 8px;border-bottom:2px solid var(--prem);margin-bottom:12px}
+.prem-hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:28px 14px 24px;text-align:center}
+.prem-hero .lock{font-size:32px;margin-bottom:6px}
+.prem-hero h2{font-size:22px;font-weight:800}
+.prem-hero .ph-price{font-size:40px;font-weight:800;color:#fff;margin-top:8px;line-height:1}
+.prem-hero .ph-price small{font-size:14px;font-weight:400;color:rgba(255,255,255,.7);margin-left:4px}
+.prem-hero .ph-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:4px}
+.prem-hero .ph-trial{display:inline-block;margin-top:12px;padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;font-size:11px;color:#fff;font-weight:700}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+
+/* Features */
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-bottom:20px}
+.ft{background:var(--card);border:1px solid #e0d6f5;border-radius:var(--r);padding:14px}
+.ft .ft-icon{font-size:20px;margin-bottom:4px}
+.ft .ft-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.ft .ft-desc{font-size:11px;color:var(--sub);line-height:1.6}
+
+/* Accuracy box */
+.acc-box{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid var(--pos);border-radius:var(--r);padding:20px 14px;margin-bottom:20px;text-align:center}
+.acc-box .ab-big{font-size:48px;font-weight:800;color:var(--pos);line-height:1}
+.acc-box .ab-big small{font-size:16px;font-weight:400;color:var(--sub)}
+.acc-box .ab-sub{font-size:12px;color:var(--sub);margin-top:4px}
+.acc-box .ab-compare{display:flex;justify-content:center;gap:12px;margin-top:12px;font-size:11px}
+.acc-box .ab-compare div{padding:6px 10px;background:var(--card);border-radius:6px;border:1px solid var(--border)}
+.acc-box .ab-compare strong{color:var(--pos)}
+
+/* Voice (ユーザーの声) */
+.voices{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:20px}
+.voices h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.voice{padding:12px;background:var(--bg);border-left:3px solid var(--cta);border-radius:4px;margin-bottom:8px}
+.voice:last-child{margin-bottom:0}
+.voice .v-star{color:var(--warn);font-size:12px;margin-bottom:4px}
+.voice .v-msg{font-size:12px;color:var(--text);line-height:1.6}
+.voice .v-author{font-size:10px;color:var(--muted);margin-top:6px}
+
+/* Sample teaser */
+.sample{background:var(--card);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:20px}
+.sample h3{font-size:14px;color:var(--prem);margin-bottom:4px}
+.sample-sub{font-size:11px;color:var(--sub);margin-bottom:12px}
+.pred-item{background:var(--prem-bg);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px}
+.pred-item .pi-head{display:flex;justify-content:space-between;align-items:center}
+.pred-item .pi-fish{font-size:13px;font-weight:800;color:var(--accent)}
+.pred-item .pi-conf{font-size:10px;color:var(--warn);font-weight:700}
+.pred-item .pi-range{font-size:16px;font-weight:800;color:var(--cta);margin-top:4px}
+.pred-item .pi-range small{font-size:10px;color:var(--muted);font-weight:400}
+.pred-item .pi-ship{font-size:11px;color:var(--pos);margin-top:3px;font-weight:600}
+.pred-item .pi-reason{font-size:10px;color:var(--sub);margin-top:4px;padding:4px 6px;background:var(--card);border-radius:4px}
+
+/* Plan box */
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.plan{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px;text-align:center}
+.plan.recommended{border-color:var(--prem);position:relative}
+.plan.recommended::before{content:"おすすめ";position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--prem);color:#fff;font-size:10px;padding:2px 10px;border-radius:10px;font-weight:700}
+.plan h3{font-size:14px;color:var(--accent);margin-bottom:8px}
+.plan .price{font-size:28px;font-weight:800;color:var(--cta);line-height:1}
+.plan .price small{font-size:12px;color:var(--sub);font-weight:400}
+.plan .plan-desc{font-size:10px;color:var(--muted);margin:6px 0 10px}
+.plan-cta{display:block;padding:10px;background:var(--prem);color:#fff;border-radius:20px;font-weight:700;font-size:12px}
+.plan.recommended .plan-cta{background:var(--cta)}
+.plan-cta:hover{opacity:.85;text-decoration:none}
+
+/* FAQ */
+.faq{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:20px}
+.faq h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.faq-item{padding:10px 0;border-bottom:1px solid var(--bg)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:12px;font-weight:700;color:var(--accent)}
+.faq-q::before{content:"Q. ";color:var(--prem)}
+.faq-a{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.7}
+.faq-a::before{content:"A. ";color:var(--cta);font-weight:700}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--prem)}.bn a:hover{text-decoration:none;color:var(--prem)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-history.html">予測履歴</a><a href="#" class="on">有料プラン</a></nav>
+
+<div class="prem-hero">
+<div class="lock">🔐</div>
+<h2>有料プラン</h2>
+<div class="ph-price">¥500<small>/月</small></div>
+<div class="ph-sub">仕掛け1セット分の値段で、毎日の予測が見放題</div>
+<div class="ph-trial">初回7日間無料トライアル</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup.html">トップ</a> &gt; 有料プラン</div>
+
+<!-- 的中率 -->
+<div class="acc-box">
+<div class="ab-big">72<small>%</small></div>
+<div class="ab-sub">直近30日の予測的中率（126件中91件）</div>
+<div class="ab-compare">
+<div>他社A: <strong>55%</strong></div>
+<div>他社B: <strong>60%</strong></div>
+<div>うち: <strong>72%</strong></div>
+</div>
+</div>
+
+<h2 class="st">有料で見れる情報</h2>
+<div class="features">
+<div class="ft"><div class="ft-icon">🔮</div><div class="ft-title">明日〜1週間後の予測</div><div class="ft-desc">魚種別・エリア別の釣果予測。匹数レンジ+信頼度★5段階</div></div>
+<div class="ft"><div class="ft-icon">📅</div><div class="ft-title">2〜4週間後の中期予測</div><div class="ft-desc">週末の釣行計画に。旬入り/ピーク/終盤の判定</div></div>
+<div class="ft"><div class="ft-icon">📊</div><div class="ft-title">30日間の詳細グラフ</div><div class="ft-desc">日別・魚種別・船宿別の推移。水温・潮汐と釣果の相関</div></div>
+<div class="ft"><div class="ft-icon">💡</div><div class="ft-title">因果分析コメント</div><div class="ft-desc">「なぜ釣れたか/釣れなかったか」を数値根拠付きで解説</div></div>
+<div class="ft"><div class="ft-icon">🎯</div><div class="ft-title">最適ポイント・仕掛け推奨</div><div class="ft-desc">水深・潮流から逆算した号数・棚・仕掛け</div></div>
+<div class="ft"><div class="ft-icon">⚓</div><div class="ft-title">欠航リスク予報</div><div class="ft-desc">出船可能性・欠航確率。前日夜に確認</div></div>
+<div class="ft"><div class="ft-icon">🗺</div><div class="ft-title">釣行プラン提案</div><div class="ft-desc">「4/19に金沢八景でアジ」→最適船宿+時間+仕掛け自動提案</div></div>
+<div class="ft"><div class="ft-icon">📈</div><div class="ft-title">予測履歴 全30日分</div><div class="ft-desc">ハズレた日の原因分析付き。精度の透明性を担保</div></div>
+</div>
+
+<!-- 予測サンプル (チラ見せ) -->
+<h2 class="st">予測サンプル（明日 4/6(日)）</h2>
+<div class="sample">
+<h3>🎯 今日の自信予測 TOP3（有料）</h3>
+<div class="sample-sub">信頼度の高い順に予測を公開。クリックで詳細ページへ</div>
+
+<div class="pred-item">
+<div class="pi-head"><span class="pi-fish">アジ × 金沢八景</span><span class="pi-conf">信頼度 ★★★★★</span></div>
+<div class="pi-range">22〜48匹 <small>(去年同週比 +25%)</small></div>
+<div class="pi-ship">◎忠彦丸 / ◎荒川屋</div>
+<div class="pi-reason">水温が好条件帯に入り、大潮2日目で潮通し良好。過去の同条件で95%の確率で高釣果</div>
+</div>
+
+<div class="pred-item">
+<div class="pi-head"><span class="pi-fish">シロギス × 金沢八景</span><span class="pi-conf">信頼度 ★★★★</span></div>
+<div class="pi-range">18〜45匹 <small>(去年同週比 +30%)</small></div>
+<div class="pi-ship">◎荒川屋</div>
+<div class="pi-reason">水温上昇で活性UP。中ノ瀬の潮通し良好。仕掛けは軽めのオモリ推奨</div>
+</div>
+
+<div class="pred-item">
+<div class="pi-head"><span class="pi-fish">マダイ × 剣崎</span><span class="pi-conf">信頼度 ★★★</span></div>
+<div class="pi-range">1〜4匹 <small>(去年同週比 +12%)</small></div>
+<div class="pi-ship">◎佐円丸</div>
+<div class="pi-reason">潮回り良好。風やや強めに注意。午前便推奨</div>
+</div>
+
+</div>
+
+<!-- ユーザーの声 -->
+<div class="voices">
+<h3>ご利用者の声</h3>
+<div class="voice">
+<div class="v-star">★★★★★</div>
+<div class="v-msg">「先週アジを予測通り40匹釣れました。忠彦丸◎の推奨が的中。月500円は安い」</div>
+<div class="v-author">— 田中さん（週末アングラー・5年）</div>
+</div>
+<div class="voice">
+<div class="v-star">★★★★★</div>
+<div class="v-msg">「水温と潮のデータが正確。仕掛け推奨が実戦的で助かる。経験20年だが納得のサービス」</div>
+<div class="v-author">— 佐藤さん（ガチ勢・20年）</div>
+</div>
+<div class="voice">
+<div class="v-star">★★★★</div>
+<div class="v-msg">「的中率72%は競馬AIより高い。答え合わせが正直なのが信頼できる」</div>
+<div class="v-author">— 山田さん（データ好き・2年）</div>
+</div>
+</div>
+
+<!-- プラン比較 -->
+<h2 class="st">プランを選ぶ</h2>
+<div class="plans">
+<div class="plan recommended">
+<h3>月額プラン</h3>
+<div class="price">¥500<small>/月</small></div>
+<div class="plan-desc">全機能 使い放題<br>初回7日間無料</div>
+<a class="plan-cta" href="mockup-plan.html">月額で始める</a>
+</div>
+<div class="plan">
+<h3>スポット</h3>
+<div class="price">¥100<small>/日</small></div>
+<div class="plan-desc">1日分だけ購入<br>気になる日だけ</div>
+<a class="plan-cta" href="mockup-plan.html">スポット購入</a>
+</div>
+</div>
+
+<!-- FAQ -->
+<div class="faq">
+<h3>よくある質問</h3>
+<div class="faq-item"><div class="faq-q">予測がハズレたら返金はありますか？</div><div class="faq-a">返金はありません。ただし的中率と答え合わせを全公開しているので、精度は事前に確認できます。</div></div>
+<div class="faq-item"><div class="faq-q">いつでも解約できますか？</div><div class="faq-a">はい。マイページからいつでも解約可能です。日割り返金はありません。</div></div>
+<div class="faq-item"><div class="faq-q">予測はどうやって作っていますか？</div><div class="faq-a">水温・潮汐・月齢・波高・気圧など12指標を3年分の実績データと照合し、独自のロジックで算出しています。</div></div>
+<div class="faq-item"><div class="faq-q">無料版だけでは足りませんか？</div><div class="faq-a">過去の事実を確認するだけなら無料で十分です。将来の予測・因果分析・最適ポイント推奨が必要な方向けです。</div></div>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">魚種</a> · <a href="mockup-area.html">エリア</a> · <a href="mockup-history.html">予測履歴</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="#" class="on"><span class="i">⭐</span>有料</a></div>
+
+</body>
+</html>
