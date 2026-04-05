@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>金沢八景の海況予報 — 船釣り予想</title>
+<meta name="description" content="金沢八景エリアの明日以降の海況予報。水温・波・風・潮汐の7日間予報。">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
+.fc-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
+.fc-hero .fch-sub{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px}
+.fc-hero h2{font-size:22px;font-weight:800;margin-top:2px}
+.fc-hero .fch-meta{font-size:11px;color:rgba(255,255,255,.5);margin-top:6px}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+
+/* 7日予報テーブル */
+.forecast-table{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;overflow-x:auto}
+.forecast-table h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.forecast-table table{width:100%;border-collapse:collapse;font-size:11px;min-width:500px}
+.forecast-table th,.forecast-table td{padding:8px 4px;text-align:center;border-bottom:1px solid var(--bg)}
+.forecast-table th{background:var(--bg);color:var(--sub);font-weight:700;font-size:10px}
+.forecast-table th:first-child,.forecast-table td:first-child{text-align:left;padding-left:8px}
+.forecast-table .day-name{font-weight:700;color:var(--accent)}
+.forecast-table .day-name small{color:var(--muted);font-weight:400}
+.forecast-table .today{background:#fef6ee}
+.forecast-table .weather{font-size:14px}
+.forecast-table .good{color:var(--pos);font-weight:700}
+.forecast-table .warn{color:var(--warn);font-weight:700}
+.forecast-table .bad{color:var(--neg);font-weight:700}
+
+/* 出船条件 */
+.cond-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.cond-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.cond-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:8px}
+.cond-row:last-child{border-bottom:none}
+.cond-date{flex:0 0 80px;font-size:12px;font-weight:700;color:var(--accent)}
+.cond-status{flex:0 0 80px;font-size:12px;font-weight:700;text-align:center;padding:4px;border-radius:6px}
+.cond-status.good{background:#e6f7ee;color:var(--pos)}
+.cond-status.warn{background:#fef3c7;color:var(--warn)}
+.cond-status.bad{background:#fde8e8;color:var(--neg)}
+.cond-note{flex:1;font-size:11px;color:var(--sub)}
+
+/* 有料ブラー予測 */
+.paid-forecast{background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px;position:relative}
+.paid-forecast h3{font-size:14px;color:var(--prem);font-weight:800;margin-bottom:6px;text-align:center}
+.paid-forecast .pf-sub{font-size:11px;color:var(--sub);text-align:center;margin-bottom:12px}
+.paid-forecast .pf-teaser{font-size:13px;color:var(--cta);text-align:center;font-weight:700;margin-bottom:8px}
+.paid-content{filter:blur(5px);user-select:none;pointer-events:none;position:relative}
+.paid-content .pc-item{background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px}
+.paid-content .pc-head{display:flex;justify-content:space-between;align-items:center}
+.paid-content .pc-day{font-size:12px;font-weight:700;color:var(--accent)}
+.paid-content .pc-star{font-size:10px;color:var(--warn);font-weight:700}
+.paid-content .pc-fish-list{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.paid-content .pc-fish{display:flex;justify-content:space-between;font-size:11px;padding:4px 8px;background:var(--bg);border-radius:4px}
+.paid-content .pc-fish-name{color:var(--accent);font-weight:700}
+.paid-content .pc-fish-range{color:var(--cta);font-weight:700}
+.paid-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(124,58,237,.08);border-radius:var(--r);padding:20px}
+.paid-overlay .po-lock{font-size:28px;margin-bottom:8px}
+.paid-overlay .po-title{font-size:14px;font-weight:800;color:var(--prem);text-align:center;margin-bottom:6px}
+.paid-overlay .po-desc{font-size:11px;color:var(--sub);text-align:center;margin-bottom:12px}
+.paid-overlay .po-cta{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;text-decoration:none}
+.paid-overlay .po-cta:hover{background:var(--cta2);text-decoration:none}
+.paid-overlay .po-trial{font-size:10px;color:var(--sub);margin-top:6px}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--cta)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-history.html">予測履歴</a><a href="mockup-premium.html">有料プラン</a></nav>
+
+<div class="fc-hero">
+<div class="fch-sub">海況予報</div>
+<h2>金沢八景エリア</h2>
+<div class="fch-meta">明日 4/6(日) 〜 4/12(土) の7日間予報</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup.html">トップ</a> &gt; <a href="mockup-area.html">金沢八景</a> &gt; 海況予報</div>
+
+<!-- 7日間予報（無料） -->
+<div class="forecast-table">
+<h3>7日間の海況予報</h3>
+<table>
+<thead>
+<tr><th>日付</th><th>天気</th><th>水温</th><th>波高</th><th>風</th><th>潮汐</th></tr>
+</thead>
+<tbody>
+<tr class="today">
+<td class="day-name">4/6(日) <small>明日</small></td>
+<td class="weather">☀</td>
+<td class="good">18.5℃</td>
+<td class="good">0.4m</td>
+<td class="good">南 3m</td>
+<td>大潮</td>
+</tr>
+<tr>
+<td class="day-name">4/7(月)</td>
+<td class="weather">☁</td>
+<td class="good">18.6℃</td>
+<td class="good">0.5m</td>
+<td>南西 4m</td>
+<td>大潮</td>
+</tr>
+<tr>
+<td class="day-name">4/8(火)</td>
+<td class="weather">☁</td>
+<td class="good">18.4℃</td>
+<td class="warn">0.8m</td>
+<td class="warn">南西 6m</td>
+<td>中潮</td>
+</tr>
+<tr>
+<td class="day-name">4/9(水)</td>
+<td class="weather">🌧</td>
+<td>18.2℃</td>
+<td class="warn">1.0m</td>
+<td class="warn">南 7m</td>
+<td>中潮</td>
+</tr>
+<tr>
+<td class="day-name">4/10(木)</td>
+<td class="weather">☁</td>
+<td>18.3℃</td>
+<td class="good">0.6m</td>
+<td class="good">北東 4m</td>
+<td>小潮</td>
+</tr>
+<tr>
+<td class="day-name">4/11(金)</td>
+<td class="weather">☀</td>
+<td class="good">18.5℃</td>
+<td class="good">0.4m</td>
+<td class="good">北 3m</td>
+<td>小潮</td>
+</tr>
+<tr>
+<td class="day-name">4/12(土)</td>
+<td class="weather">☀</td>
+<td class="good">18.7℃</td>
+<td class="good">0.3m</td>
+<td class="good">南東 3m</td>
+<td>若潮</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- 出船条件 -->
+<div class="cond-box">
+<h3>出船コンディション評価</h3>
+<div class="cond-row">
+<span class="cond-date">4/6(日)</span>
+<span class="cond-status good">◎出船日和</span>
+<span class="cond-note">波穏やか・風弱・大潮で潮通し良好</span>
+</div>
+<div class="cond-row">
+<span class="cond-date">4/7(月)</span>
+<span class="cond-status good">○良好</span>
+<span class="cond-note">大潮2日目、午後やや風強まる</span>
+</div>
+<div class="cond-row">
+<span class="cond-date">4/8(火)</span>
+<span class="cond-status warn">△注意</span>
+<span class="cond-note">南西風強。午前便推奨</span>
+</div>
+<div class="cond-row">
+<span class="cond-date">4/9(水)</span>
+<span class="cond-status bad">×欠航可能性</span>
+<span class="cond-note">雨・波1m超。欠航判断は当日朝</span>
+</div>
+<div class="cond-row">
+<span class="cond-date">4/10-12</span>
+<span class="cond-status good">◎出船日和</span>
+<span class="cond-note">週末は回復。波・風ともに穏やか</span>
+</div>
+</div>
+
+<!-- 有料ブラー予測（ここが核心） -->
+<div class="paid-forecast">
+<h3>🔒 金沢八景の魚種別釣果予測</h3>
+<div class="pf-sub">海況データと過去3年の実績から予測</div>
+<div class="pf-teaser">有料プランならこの海況に基づいた魚種別の釣果予測が見れます</div>
+
+<div class="paid-content">
+<div class="pc-item">
+<div class="pc-head"><span class="pc-day">4/6(日)</span><span class="pc-star">信頼度 ★★★★★</span></div>
+<div class="pc-fish-list">
+<div class="pc-fish"><span class="pc-fish-name">アジ ◎</span><span class="pc-fish-range">22〜48匹 (+25%)</span></div>
+<div class="pc-fish"><span class="pc-fish-name">シロギス ◎</span><span class="pc-fish-range">18〜45匹 (+30%)</span></div>
+<div class="pc-fish"><span class="pc-fish-name">カワハギ ○</span><span class="pc-fish-range">8〜20匹 (+12%)</span></div>
+</div>
+</div>
+<div class="pc-item">
+<div class="pc-head"><span class="pc-day">4/7(月)</span><span class="pc-star">信頼度 ★★★★</span></div>
+<div class="pc-fish-list">
+<div class="pc-fish"><span class="pc-fish-name">アジ ◎</span><span class="pc-fish-range">20〜42匹 (+18%)</span></div>
+<div class="pc-fish"><span class="pc-fish-name">マダイ ○</span><span class="pc-fish-range">1〜4匹 (+10%)</span></div>
+</div>
+</div>
+<div class="pc-item">
+<div class="pc-head"><span class="pc-day">4/8(火)</span><span class="pc-star">信頼度 ★★★</span></div>
+<div class="pc-fish-list">
+<div class="pc-fish"><span class="pc-fish-name">アジ ○</span><span class="pc-fish-range">15〜35匹 (+8%)</span></div>
+</div>
+</div>
+</div>
+
+<div class="paid-overlay">
+<div class="po-lock">🔒</div>
+<div class="po-title">予測まで見れちゃうの？</div>
+<div class="po-desc">海況データから明日の魚種別釣果・信頼度・最適船宿を予測<br>的中率 72%（直近30日・126件中91件）</div>
+<a href="mockup-premium.html" class="po-cta">月額500円で予測を見る →</a>
+<div class="po-trial">初回7日間無料トライアル</div>
+</div>
+</div>
+
+<!-- 他のエリア予報 -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px">
+<h3 style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px">他エリアの予報</h3>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<a href="#" style="font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600;text-decoration:none">走水</a>
+<a href="#" style="font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600;text-decoration:none">剣崎</a>
+<a href="#" style="font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600;text-decoration:none">大原</a>
+<a href="#" style="font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600;text-decoration:none">久里浜</a>
+<a href="#" style="font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600;text-decoration:none">勝山</a>
+</div>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">アジ</a> · <a href="mockup-area.html">金沢八景</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html" class="on"><span class="i">📍</span>エリア</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-premium.html"><span class="i">⭐</span>有料</a></div>
+
+</body>
+</html>

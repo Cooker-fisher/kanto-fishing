@@ -22,7 +22,8 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .fish-hero h2{font-size:24px;font-weight:800}
 .fish-hero .fh-r{font-size:28px;font-weight:800;color:var(--cta);margin-top:4px}
 .fish-hero .fh-r small{font-size:14px;color:rgba(255,255,255,.6);font-weight:400}
-.fish-hero .fh-s{font-size:13px;color:rgba(255,255,255,.6)}
+.fish-hero .fh-s{font-size:18px;font-weight:700;color:#fff;margin-top:2px}
+.fish-hero .fh-s u{font-size:11px;font-weight:400;color:rgba(255,255,255,.6);text-decoration:none;margin-left:4px}
 .fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
 .bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
 .ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
@@ -73,6 +74,22 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .ar .ar-name{flex:0 0 75px;font-size:13px;font-weight:700;color:var(--cta)}
 .ar .ar-range{flex:0 0 75px;font-size:14px;font-weight:700;color:var(--accent)}
 .ar .ar-sea{flex:1;font-size:10px;color:var(--muted)}
+
+/* Forecast CTA */
+.forecast-cta{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid #a5b4fc;border-radius:var(--r);padding:14px;margin-bottom:16px;text-align:center}
+.forecast-cta h3{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:4px}
+.forecast-cta p{font-size:11px;color:var(--sub);margin-bottom:10px}
+.forecast-cta .fc-links{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.forecast-cta .fc-links a{display:inline-block;padding:6px 12px;background:var(--card);border:1px solid #a5b4fc;border-radius:16px;font-size:12px;color:var(--accent);font-weight:600;text-decoration:none}
+.forecast-cta .fc-links a:hover{background:var(--accent);color:#fff}
+
+/* Area characteristics */
+.area-chr{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.area-chr h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.achr{padding:8px 0;border-bottom:1px solid var(--bg);display:flex;gap:8px}
+.achr:last-child{border-bottom:none}
+.achr-name{flex:0 0 80px;font-size:12px;font-weight:700;color:var(--cta)}
+.achr-desc{flex:1;font-size:11px;color:var(--sub);line-height:1.6}
 
 /* Ship ranking (P: top3 points only) */
 .ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
@@ -134,7 +151,7 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="fish-hero">
 <h2>アジ</h2>
 <div class="fh-r">20〜45匹 <small>(去年同週比 +32%)</small></div>
-<div class="fh-s">18〜25cm</div>
+<div class="fh-s">18〜25cm <u>(型平均 21cm)</u></div>
 <div class="fh-m">今日 23件・8船宿 | 水温 18.2℃ / 大潮 / 波 0.5m</div>
 </div>
 
@@ -174,17 +191,6 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="tide-note">日の出 05:25 / 日の入り 18:12</div>
 </div>
 
-<!-- 自動生成の解説文 (G: テキストコンテンツ) -->
-<div class="desc">
-<h3>アジの船釣り（関東）</h3>
-<strong>旬:</strong> 6〜8月が盛期。4月は上昇期で期待大。<br>
-<strong>エリア:</strong> 金沢八景・走水・横浜が主要エリア。中ノ瀬・走水沖・猿島沖がメインポイント。<br>
-<strong>匹数の目安:</strong> 1人20〜45匹が標準。好調時は60匹超え。日によるバラつきあり。<br>
-<strong>サイズ:</strong> 18〜25cm中心。大型30cm以上も。<br>
-<strong>外道:</strong> カサゴ・イシモチ・サバが混じることも。<br>
-<strong>出船率:</strong> 通年90%以上（1〜2月は荒天注意）。
-</div>
-
 <!-- 7-day chart -->
 <div class="chart7">
 <h3>直近7日間の釣果推移（匹数上限）</h3>
@@ -212,6 +218,17 @@ footer a{color:rgba(255,255,255,.7)}
 <a class="ar" href="#"><span class="ar-name">横浜</span><span class="ar-range">15〜35匹</span><span class="ar-sea">水温18.5℃ 波0.3m</span></a>
 </div>
 
+<!-- エリア予報導線 -->
+<div class="forecast-cta">
+<h3>🔮 明日以降の海況予報はこちら</h3>
+<p>エリア別の海況予報ページへ。水温・波・風・予測釣果まで確認できます</p>
+<div class="fc-links">
+<a href="mockup-forecast-area.html">金沢八景の予報 →</a>
+<a href="#">走水の予報 →</a>
+<a href="#">横浜の予報 →</a>
+</div>
+</div>
+
 <!-- Ship ranking (P: top3 points, B: 7-day dots) -->
 <div class="ship-rank">
 <h3>船宿ランキング（去年同週比）</h3>
@@ -220,6 +237,27 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="sr"><span class="sr-m">○</span><span class="sr-name">荒川屋</span><span class="sr-range">25〜40匹</span><span class="sr-pct up">+25%</span><span class="sr-pt">中ノ瀬</span><span class="sr-dots"><span style="color:var(--pos)">○○◎</span><span style="color:var(--muted)">○○○</span><span style="color:var(--pos)">○</span></span></div>
 <div class="sr"><span class="sr-m">○</span><span class="sr-name">太田屋</span><span class="sr-range">20〜35匹</span><span class="sr-pct up">+12%</span><span class="sr-pt">—</span><span class="sr-dots"><span style="color:var(--muted)">○○</span><span style="color:var(--neg)">△</span><span style="color:var(--muted)">○○○○</span></span></div>
 <div class="sr"><span class="sr-m">△</span><span class="sr-name">弁天屋</span><span class="sr-range">15〜28匹</span><span class="sr-pct dn">-5%</span><span class="sr-pt">—</span><span class="sr-dots"><span style="color:var(--neg)">△△</span><span style="color:var(--muted)">○</span><span style="color:var(--neg)">△△</span><span style="color:var(--muted)">○</span><span style="color:var(--neg)">△</span></span></div>
+</div>
+
+<!-- エリア別の特徴（無料・基礎情報） -->
+<div class="area-chr">
+<h3>エリア別のアジ釣りの特徴</h3>
+<div class="achr">
+<span class="achr-name">東京湾（金沢八景・横浜）</span>
+<span class="achr-desc">波が安定していて初心者向け。数釣り中心。サイズは18〜25cm。中ノ瀬・走水沖が主要ポイント</span>
+</div>
+<div class="achr">
+<span class="achr-name">相模湾（久里浜・佐島）</span>
+<span class="achr-desc">潮の流れが速いためタックル選びが重要。中型主体。22〜28cmが平均</span>
+</div>
+<div class="achr">
+<span class="achr-name">外房（勝浦・大原）</span>
+<span class="achr-desc">型重視。25cm超えの良型が多い。ただし波が高めで出船率はやや低い</span>
+</div>
+<div class="achr">
+<span class="achr-name">茨城（鹿島・平潟）</span>
+<span class="achr-desc">大型狙い。30cm超えの「ゴマサバ混じりの尺アジ」が出ることも。上級者向け</span>
+</div>
 </div>
 
 <!-- 同じエリアで釣れる魚 (G: bidirectional internal links) -->
@@ -267,6 +305,28 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 
 <a class="sample-cta" href="#">この精度の予測を毎日受け取る → 月額500円（仕掛け1セット分）</a>
+</div>
+
+<!-- 魚種の解説（下部） -->
+<div class="desc">
+<h3>アジの船釣り（関東）</h3>
+<strong>釣り方の特徴:</strong> 関東のアジ船釣りはコマセ釣り（LTアジ）が主流。ビシカゴにコマセを入れ、付けエサのアオイソメやイカ短で釣る。棚は底から2〜3mを基本に、魚の反応を見て調整。軽量タックル（LT）で繊細な誘いが重要。<br><br>
+<strong>旬:</strong> 6〜8月が盛期。4月は上昇期で期待大。<br>
+<strong>エリア:</strong> 金沢八景・走水・横浜が主要。中ノ瀬・走水沖・猿島沖がメインポイント。<br>
+<strong>匹数の目安:</strong> 1人20〜45匹が標準。好調時は60匹超え。日によるバラつきあり。<br>
+<strong>サイズ:</strong> 18〜25cm中心。大型30cm以上も。<br>
+<strong>外道:</strong> カサゴ・イシモチ・サバが混じることも。<br>
+<strong>出船率:</strong> 通年90%以上（1〜2月は荒天注意）。
+</div>
+
+<!-- 共有ボタン -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
+<div style="font-size:12px;color:var(--sub);font-weight:600;margin-bottom:10px">このページを共有</div>
+<div style="display:flex;gap:8px;justify-content:center">
+<a href="#" style="display:inline-block;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;background:#06c755;text-decoration:none">LINE</a>
+<a href="#" style="display:inline-block;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;background:#000;text-decoration:none">𝕏 (Twitter)</a>
+<a href="#" style="display:inline-block;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;background:var(--sub);text-decoration:none">🔗 リンク</a>
+</div>
 </div>
 
 </div>

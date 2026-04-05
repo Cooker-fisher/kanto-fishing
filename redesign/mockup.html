@@ -78,11 +78,18 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .fish-others .fo-list a:hover{background:var(--accent);color:#fff;text-decoration:none}
 
 /* Area */
-.area-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:20px}
-.ac{display:block;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;text-align:center}
-.ac:hover{border-color:var(--cta);text-decoration:none}
-.ac .an{font-size:13px;font-weight:700;color:var(--accent)}
-.ac .ai{font-size:10px;color:var(--muted);margin-top:2px}
+/* Area eye-catch */
+.area-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.al{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:border-color .15s;display:block}
+.al:hover{border-color:var(--cta);text-decoration:none}
+.al-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.al-name{font-size:16px;font-weight:800;color:var(--accent)}
+.al-count{font-size:11px;color:var(--muted)}
+.al-fish{display:flex;gap:4px;flex-wrap:wrap}
+.al-fish-item{flex:1;min-width:80px;padding:6px 8px;background:var(--bg);border-radius:6px;text-align:center;border:1px solid var(--border)}
+.al-fish-item .alf-name{font-size:12px;font-weight:700;color:var(--accent)}
+.al-fish-item .alf-range{font-size:11px;font-weight:700;color:var(--cta);margin-top:2px}
+.al-fish-item .alf-mark{font-size:9px;color:var(--pos);font-weight:700}
 
 /* Answer check */
 .ans-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:20px}
@@ -121,6 +128,15 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .promo .promo-cta{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px}
 .promo .promo-cta:hover{background:var(--cta2);text-decoration:none}
 
+.share{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px}
+.share h3{font-size:12px;color:var(--sub);font-weight:600;margin-bottom:10px}
+.share-btns{display:flex;gap:8px;justify-content:center}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;text-decoration:none}
+.share-btn.line{background:#06c755}
+.share-btn.x{background:#000}
+.share-btn.copy{background:var(--sub)}
+.share-btn:hover{opacity:.85;text-decoration:none}
+
 footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
 footer a{color:rgba(255,255,255,.7)}
 .bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
@@ -141,55 +157,6 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 
 <div class="c">
-
-<!-- 今日の自信予測 TOP3 (有料チラ見せ) -->
-<h2 class="st prem">明日の自信予測 TOP3 <span class="prem-tag">🔒 有料</span></h2>
-<div class="top3">
-<div class="top3-head">
-<h3>明日 4/6(日) の信頼度ランキング</h3>
-<span class="top3-acc">的中率 72%</span>
-</div>
-
-<div class="t3-item">
-<div class="t3-rank">1</div>
-<div class="t3-body">
-<div class="t3-fish">アジ × 金沢八景 <span class="t3-star">★★★★★</span></div>
-<div class="t3-range">22〜48匹 <small>(去年同週比 +25%)</small></div>
-</div>
-<div class="t3-lock">🔒</div>
-</div>
-
-<div class="t3-item">
-<div class="t3-rank">2</div>
-<div class="t3-body">
-<div class="t3-fish">シロギス × 金沢八景 <span class="t3-star">★★★★</span></div>
-<div class="t3-range">18〜45匹 <small>(+30%)</small></div>
-</div>
-<div class="t3-lock">🔒</div>
-</div>
-
-<div class="t3-item">
-<div class="t3-rank">3</div>
-<div class="t3-body">
-<div class="t3-fish">マダイ × 剣崎 <span class="t3-star">★★★</span></div>
-<div class="t3-range">1〜4匹 <small>(+12%)</small></div>
-</div>
-<div class="t3-lock">🔒</div>
-</div>
-
-<a class="top3-cta" href="mockup-premium.html">詳細・根拠を見る →</a>
-</div>
-
-<!-- 今週末のおすすめ (無料・2-3週後計画用) -->
-<h2 class="st">今週末のおすすめ</h2>
-<div class="weekend">
-<h3>4/11-12(土日) に狙い目の魚種</h3>
-<div class="w-grid">
-<div class="w-item"><div class="wi-fish">アジ</div><div class="wi-phase">★最盛期入り</div><div class="wi-area">金沢八景・走水</div></div>
-<div class="w-item"><div class="wi-fish">シロギス</div><div class="wi-phase">★上昇中</div><div class="wi-area">金沢八景・本牧</div></div>
-<div class="w-item"><div class="wi-fish">マダイ</div><div class="wi-phase">★旬</div><div class="wi-area">剣崎・久里浜</div></div>
-</div>
-</div>
 
 <h2 class="st">今日の釣果</h2>
 
@@ -299,18 +266,56 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 </div>
 
-<!-- エリアから探す -->
-<h2 class="st">エリアから探す</h2>
-<div class="area-grid">
-<a class="ac" href="mockup-area.html"><div class="an">金沢八景</div><div class="ai">12件 | アジ◎ シロギス◎</div></a>
-<a class="ac" href="#"><div class="an">走水</div><div class="ai">8件 | タチウオ◎ アジ○</div></a>
-<a class="ac" href="#"><div class="an">剣崎</div><div class="ai">6件 | マダイ◎ カワハギ○</div></a>
-<a class="ac" href="#"><div class="an">大原</div><div class="ai">5件 | フグ○ ヒラメ○</div></a>
-<a class="ac" href="#"><div class="an">久里浜</div><div class="ai">4件 | マダイ○ アジ○</div></a>
-<a class="ac" href="#"><div class="an">勝山</div><div class="ai">3件 | マダイ○</div></a>
-<a class="ac" href="#"><div class="an">飯岡</div><div class="ai">3件 | フグ○</div></a>
-<a class="ac" href="#"><div class="an">本牧</div><div class="ai">2件 | シロギス○</div></a>
+<!-- エリアから探す：今日のエリア別TOP5魚種 -->
+<h2 class="st">エリア別の今日の釣果</h2>
+<div class="area-list">
+
+<a class="al" href="mockup-area.html">
+<div class="al-head"><span class="al-name">金沢八景</span><span class="al-count">12件・4船宿</span></div>
+<div class="al-fish">
+<div class="al-fish-item"><div class="alf-name">アジ</div><div class="alf-range">25〜45匹</div><div class="alf-mark">◎+38%</div></div>
+<div class="al-fish-item"><div class="alf-name">シロギス</div><div class="alf-range">18〜52匹</div><div class="alf-mark">◎+45%</div></div>
+<div class="al-fish-item"><div class="alf-name">カワハギ</div><div class="alf-range">8〜18匹</div><div class="alf-mark">○+12%</div></div>
+<div class="al-fish-item"><div class="alf-name">マダイ</div><div class="alf-range">0〜3匹</div><div class="alf-mark">△-8%</div></div>
+<div class="al-fish-item"><div class="alf-name">タチウオ</div><div class="alf-range">3〜12匹</div><div class="alf-mark">○+5%</div></div>
 </div>
+</a>
+
+<a class="al" href="#">
+<div class="al-head"><span class="al-name">走水</span><span class="al-count">8件・3船宿</span></div>
+<div class="al-fish">
+<div class="al-fish-item"><div class="alf-name">タチウオ</div><div class="alf-range">8〜25匹</div><div class="alf-mark">◎+22%</div></div>
+<div class="al-fish-item"><div class="alf-name">アジ</div><div class="alf-range">20〜40匹</div><div class="alf-mark">○+28%</div></div>
+<div class="al-fish-item"><div class="alf-name">マダイ</div><div class="alf-range">1〜4匹</div><div class="alf-mark">○+10%</div></div>
+<div class="al-fish-item"><div class="alf-name">カワハギ</div><div class="alf-range">5〜15匹</div><div class="alf-mark">○+8%</div></div>
+<div class="al-fish-item"><div class="alf-name">スミイカ</div><div class="alf-range">2〜8杯</div><div class="alf-mark">○+3%</div></div>
+</div>
+</a>
+
+<a class="al" href="#">
+<div class="al-head"><span class="al-name">剣崎</span><span class="al-count">6件・2船宿</span></div>
+<div class="al-fish">
+<div class="al-fish-item"><div class="alf-name">マダイ</div><div class="alf-range">1〜5匹</div><div class="alf-mark">◎+35%</div></div>
+<div class="al-fish-item"><div class="alf-name">カワハギ</div><div class="alf-range">8〜22匹</div><div class="alf-mark">○+15%</div></div>
+<div class="al-fish-item"><div class="alf-name">アマダイ</div><div class="alf-range">0〜4匹</div><div class="alf-mark">◎+30%</div></div>
+<div class="al-fish-item"><div class="alf-name">ヒラメ</div><div class="alf-range">0〜3匹</div><div class="alf-mark">○+10%</div></div>
+<div class="al-fish-item"><div class="alf-name">イシダイ</div><div class="alf-range">0〜2匹</div><div class="alf-mark">○+5%</div></div>
+</div>
+</a>
+
+<a class="al" href="#">
+<div class="al-head"><span class="al-name">大原</span><span class="al-count">5件・2船宿</span></div>
+<div class="al-fish">
+<div class="al-fish-item"><div class="alf-name">フグ</div><div class="alf-range">5〜12匹</div><div class="alf-mark">○+8%</div></div>
+<div class="al-fish-item"><div class="alf-name">ヒラメ</div><div class="alf-range">1〜3匹</div><div class="alf-mark">◎+20%</div></div>
+<div class="al-fish-item"><div class="alf-name">マダイ</div><div class="alf-range">0〜4匹</div><div class="alf-mark">○+12%</div></div>
+<div class="al-fish-item"><div class="alf-name">イサキ</div><div class="alf-range">5〜18匹</div><div class="alf-mark">○+15%</div></div>
+<div class="al-fish-item"><div class="alf-name">マゴチ</div><div class="alf-range">0〜3匹</div><div class="alf-mark">◎+25%</div></div>
+</div>
+</a>
+
+</div>
+<div style="text-align:center;margin-bottom:20px"><a href="#" style="font-size:12px;color:var(--cta);font-weight:600">すべてのエリアを見る →</a></div>
 
 <!-- 答え合わせ (S: 1件フル、他ラベルのみ) (C: 的中定義+○×ドット) -->
 <h2 class="st">一昨日の予測 答え合わせ</h2>
@@ -340,6 +345,16 @@ footer a{color:rgba(255,255,255,.7)}
 <span><span style="color:var(--pos)">○</span> シロギス</span>
 </div>
 <a class="ans-cta" href="#">全魚種の答え合わせ詳細を見る →</a>
+</div>
+
+<!-- 共有ボタン -->
+<div class="share">
+<h3>このページを共有</h3>
+<div class="share-btns">
+<a class="share-btn line" href="#">LINE</a>
+<a class="share-btn x" href="#">𝕏 (Twitter)</a>
+<a class="share-btn copy" href="#">🔗 リンク</a>
+</div>
 </div>
 
 <!-- 広告枠 -->
