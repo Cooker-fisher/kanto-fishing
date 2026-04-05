@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>エリア別旬カレンダー — 船釣り予想[有料]</title>
+<meta name="description" content="世界唯一のエリア別超詳細旬カレンダー。12魚種×12ヶ月×主要エリアで最適タイミングを可視化。">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:1100px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:60px}
+a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:linear-gradient(135deg,#0d2b4a,#4c1d95);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--prem)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
+
+.hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:20px 14px;text-align:center}
+.hero .unique{display:inline-block;font-size:10px;padding:3px 10px;background:var(--cta);border-radius:10px;font-weight:700;margin-bottom:6px}
+.hero h2{font-size:22px;font-weight:800}
+.hero .hs{font-size:11px;color:rgba(255,255,255,.7);margin-top:4px}
+
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+
+/* Legend */
+.legend{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:11px}
+.legend .lg-title{font-weight:700;color:var(--accent);margin-right:4px}
+.legend .lgi{display:flex;align-items:center;gap:4px}
+.legend .box{width:18px;height:14px;border-radius:3px}
+.box.off{background:#e5e7eb}
+.box.low{background:#fef3c7}
+.box.mid{background:#fbbf24}
+.box.high{background:#f97316}
+.box.peak{background:#dc2626}
+
+/* Area selector */
+.area-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.area-tab{padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:16px;font-size:11px;color:var(--sub);font-weight:600;cursor:pointer;text-decoration:none}
+.area-tab.on{background:var(--prem);color:#fff;border-color:var(--prem)}
+
+/* Calendar heatmap */
+.cal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;overflow-x:auto}
+.cal-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.cal-table{width:100%;border-collapse:separate;border-spacing:0;font-size:9px;min-width:700px}
+.cal-table th,.cal-table td{padding:0;text-align:center;border:1px solid #fff}
+.cal-table th{background:var(--bg);color:var(--sub);font-weight:700;padding:6px 4px;font-size:10px}
+.cal-table th:first-child{text-align:left;padding-left:10px;background:var(--bg)}
+.cal-table td:first-child{padding:6px 8px;font-weight:700;color:var(--accent);text-align:left;background:var(--card);font-size:11px}
+.cal-cell{height:30px;position:relative;cursor:pointer;transition:transform .1s}
+.cal-cell:hover{transform:scale(1.1);z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.15);border:2px solid var(--accent)}
+.cal-cell.off{background:#e5e7eb}
+.cal-cell.low{background:#fef3c7}
+.cal-cell.mid{background:#fbbf24}
+.cal-cell.high{background:#f97316}
+.cal-cell.peak{background:#dc2626}
+.cal-cell.current{outline:3px solid var(--prem);outline-offset:-3px;z-index:1}
+
+/* Detail box */
+.detail{background:var(--prem-bg);border:1px solid #e0d6f5;border-radius:var(--r);padding:14px;margin-bottom:16px}
+.detail h3{font-size:13px;font-weight:700;color:var(--prem);margin-bottom:8px}
+.detail-row{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px}
+.detail-row:last-child{border-bottom:none}
+.detail-row .dl{flex:0 0 100px;color:var(--sub);font-weight:600}
+.detail-row .dv{flex:1;color:var(--accent);font-weight:700}
+
+/* Key info */
+.key-info{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.ki{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.ki h4{font-size:12px;color:var(--accent);font-weight:700;margin-bottom:4px}
+.ki .ki-big{font-size:20px;font-weight:800;color:var(--cta);margin:4px 0}
+.ki .ki-desc{font-size:10px;color:var(--sub);line-height:1.5}
+
+.info-note{font-size:10px;color:var(--muted);margin:8px 0;text-align:center}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--prem)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span>👑</h1><span style="font-size:11px;opacity:.5">旬カレンダー</span></div></header>
+<nav><a href="mockup-paid-dashboard.html">ダッシュボード</a><a href="mockup-paid-forecast.html">予測全覧</a><a href="#" class="on">旬カレンダー</a><a href="mockup-history.html">履歴</a><a href="mockup-mypage.html">マイページ</a></nav>
+
+<div class="hero">
+<div class="unique">🌏 世界で唯一</div>
+<h2>エリア別 超詳細 旬カレンダー</h2>
+<div class="hs">12魚種 × 12ヶ月 × 主要エリア | 過去3年の実績データから算出</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup-paid-dashboard.html">ダッシュボード</a> &gt; 旬カレンダー</div>
+
+<!-- エリア選択 -->
+<div class="area-tabs">
+<a class="area-tab on" href="#">金沢八景</a>
+<a class="area-tab" href="#">走水</a>
+<a class="area-tab" href="#">剣崎</a>
+<a class="area-tab" href="#">横浜</a>
+<a class="area-tab" href="#">久里浜</a>
+<a class="area-tab" href="#">大原</a>
+<a class="area-tab" href="#">勝山</a>
+<a class="area-tab" href="#">飯岡</a>
+</div>
+
+<!-- 凡例 -->
+<div class="legend">
+<span class="lg-title">凡例:</span>
+<div class="lgi"><div class="box off"></div>オフ</div>
+<div class="lgi"><div class="box low"></div>初期</div>
+<div class="lgi"><div class="box mid"></div>上昇</div>
+<div class="lgi"><div class="box high"></div>盛期</div>
+<div class="lgi"><div class="box peak"></div>最盛期</div>
+</div>
+
+<!-- カレンダーヒートマップ -->
+<div class="cal-box">
+<h3>金沢八景エリアの旬カレンダー（12魚種 × 12ヶ月）</h3>
+<table class="cal-table">
+<thead>
+<tr><th>魚種</th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th><th>9月</th><th>10月</th><th>11月</th><th>12月</th></tr>
+</thead>
+<tbody>
+<tr><td>アジ</td><td class="cal-cell low"></td><td class="cal-cell low"></td><td class="cal-cell mid"></td><td class="cal-cell mid current"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell low"></td></tr>
+<tr><td>シロギス</td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid current"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell low"></td><td class="cal-cell off"></td></tr>
+<tr><td>マダイ</td><td class="cal-cell low"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell peak current"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell mid"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td></tr>
+<tr><td>カワハギ</td><td class="cal-cell high"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell mid current"></td><td class="cal-cell low"></td><td class="cal-cell low"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td></tr>
+<tr><td>タチウオ</td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell low current"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell low"></td></tr>
+<tr><td>アマダイ</td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell high"></td><td class="cal-cell high current"></td><td class="cal-cell mid"></td><td class="cal-cell low"></td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td></tr>
+<tr><td>ヒラメ</td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell mid current"></td><td class="cal-cell low"></td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td></tr>
+<tr><td>マゴチ</td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid current"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell low"></td><td class="cal-cell off"></td><td class="cal-cell off"></td></tr>
+<tr><td>イサキ</td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid current"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell low"></td><td class="cal-cell off"></td><td class="cal-cell off"></td></tr>
+<tr><td>フグ</td><td class="cal-cell high"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell mid current"></td><td class="cal-cell low"></td><td class="cal-cell low"></td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td></tr>
+<tr><td>ヤリイカ</td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell mid current"></td><td class="cal-cell low"></td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell off"></td><td class="cal-cell low"></td><td class="cal-cell mid"></td><td class="cal-cell high"></td></tr>
+<tr><td>ワラサ</td><td class="cal-cell mid"></td><td class="cal-cell low"></td><td class="cal-cell low"></td><td class="cal-cell mid current"></td><td class="cal-cell high"></td><td class="cal-cell high"></td><td class="cal-cell peak"></td><td class="cal-cell peak"></td><td class="cal-cell high"></td><td class="cal-cell mid"></td><td class="cal-cell mid"></td><td class="cal-cell low"></td></tr>
+</tbody>
+</table>
+<div class="info-note">※ セルをタップで魚種×月の詳細（平均匹数・サイズ・好条件）へ | 🔲 現在月</div>
+</div>
+
+<!-- 4月の金沢八景 詳細（選択時の表示） -->
+<div class="detail">
+<h3>📍 4月の金沢八景で今が旬の魚種</h3>
+<div class="detail-row"><span class="dl">🥇 マダイ</span><span class="dv">最盛期（4月ピーク）| 1〜5匹 / 30〜55cm / 好条件: 水温17-19℃・大潮</span></div>
+<div class="detail-row"><span class="dl">🥈 アマダイ</span><span class="dv">盛期末期 | 0〜5匹 / 30〜48cm / 深場ポイントで期待</span></div>
+<div class="detail-row"><span class="dl">🥉 アジ</span><span class="dv">上昇期（6月ピークへ） | 20〜45匹 / 18〜25cm</span></div>
+<div class="detail-row"><span class="dl">⭐ シロギス</span><span class="dv">上昇期 | 15〜52匹 / 15〜23cm / 中ノ瀬好調</span></div>
+<div class="detail-row"><span class="dl">⭐ カワハギ</span><span class="dv">中間期 | 5〜22匹 / 15〜22cm / 9月以降が本番</span></div>
+</div>
+
+<!-- 重要情報 -->
+<h2 style="font-size:14px;color:var(--accent);margin:16px 0 8px">このカレンダーから分かること</h2>
+<div class="key-info">
+<div class="ki"><h4>最適な釣行時期</h4><div class="ki-big">6〜8月</div><div class="ki-desc">金沢八景で最も多くの魚種が盛期を迎える時期</div></div>
+<div class="ki"><h4>狙い目の端境期</h4><div class="ki-big">4月</div><div class="ki-desc">マダイ・アマダイピーク、アジ上昇開始の重なり</div></div>
+<div class="ki"><h4>オフシーズン</h4><div class="ki-big">2月</div><div class="ki-desc">多くの魚種がオフ。ヒラメ・ヤリイカなら狙える</div></div>
+<div class="ki"><h4>同時狙い可能</h4><div class="ki-big">5種</div><div class="ki-desc">4月現在、同日に5魚種以上が好調</div></div>
+</div>
+
+<!-- 使い方 -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px">
+<h3 style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px">このカレンダーの使い方</h3>
+<div style="font-size:11px;color:var(--sub);line-height:1.7">
+<strong>1. エリアを選ぶ</strong>: 釣行予定のエリアをタブで切り替え<br>
+<strong>2. 狙いたい魚種の行を見る</strong>: 色の濃さで最盛期が一目瞭然<br>
+<strong>3. 複数魚種の重なる月を探す</strong>: 同日に複数魚種狙えるタイミングが最強<br>
+<strong>4. セルをタップで詳細</strong>: その魚種×月の平均匹数・好条件を確認<br>
+<strong>5. 釣行プラン作成へ</strong>: カレンダーからそのまま日付指定で予測ページへ
+</div>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="mockup-mypage.html">マイページ</a><br>
+<span style="margin-top:4px;display:inline-block">© 2026 船釣り予想 [Premium]</span>
+</footer>
+
+<div class="bn"><a href="mockup-paid-dashboard.html"><span class="i">🏠</span>Home</a><a href="mockup-paid-forecast.html"><span class="i">🔮</span>予測</a><a href="#" class="on"><span class="i">📅</span>旬暦</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-mypage.html"><span class="i">⚙</span>設定</a></div>
+
+</body>
+</html>

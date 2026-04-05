@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ダッシュボード — 船釣り予想[有料]</title>
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem2:#6d28d9;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:linear-gradient(135deg,#0d2b4a,#4c1d95);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--prem)}
+header .crown{font-size:14px;color:var(--cta)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--prem);padding:18px 0 8px;border-bottom:2px solid var(--prem);margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline}
+.st .st-sub{font-size:10px;color:var(--muted);font-weight:400}
+
+.hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:20px 14px;text-align:center}
+.hero-greet{font-size:12px;color:rgba(255,255,255,.7)}
+.hero h2{font-size:22px;font-weight:800;margin-top:2px}
+.hero-stats{display:flex;justify-content:center;gap:12px;margin-top:10px}
+.hs-item{background:rgba(255,255,255,.15);padding:6px 12px;border-radius:8px;min-width:70px}
+.hs-item .hv{font-size:18px;font-weight:800;color:var(--cta)}
+.hs-item .hl{font-size:9px;color:rgba(255,255,255,.7);margin-top:-2px}
+
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+
+/* Top10 predictions */
+.top10{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.t10-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--bg);gap:8px}
+.t10-row:last-child{border-bottom:none}
+.t10-rank{flex:0 0 24px;font-size:16px;font-weight:800;color:var(--cta);text-align:center}
+.t10-rank.gold{color:#f59e0b}
+.t10-body{flex:1}
+.t10-fish{font-size:14px;font-weight:800;color:var(--accent)}
+.t10-area{font-size:10px;color:var(--sub);margin-left:4px;font-weight:400}
+.t10-range{font-size:13px;font-weight:700;color:var(--cta);margin-top:2px}
+.t10-range small{font-size:10px;color:var(--muted);font-weight:400}
+.t10-star{flex:0 0 80px;text-align:right;font-size:11px;color:var(--warn);font-weight:700}
+.t10-reason{font-size:10px;color:var(--sub);margin-top:4px;padding-left:32px}
+
+/* Weather forecast */
+.wf{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.wf-days{display:flex;gap:4px;overflow-x:auto}
+.wf-day{flex:0 0 80px;padding:8px;background:var(--bg);border-radius:6px;text-align:center}
+.wf-day.today{background:var(--prem-bg);border:1px solid var(--prem)}
+.wf-day .wf-date{font-size:10px;font-weight:700;color:var(--accent)}
+.wf-day .wf-icon{font-size:20px;margin:2px 0}
+.wf-day .wf-temp{font-size:11px;color:var(--cta);font-weight:700}
+.wf-day .wf-cond{font-size:9px;color:var(--muted);margin-top:2px}
+.wf-day .wf-cond.good{color:var(--pos);font-weight:700}
+
+/* Quick actions */
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+@media(min-width:600px){.quick{grid-template-columns:repeat(4,1fr)}}
+.qa{background:var(--card);border:1px solid #e0d6f5;border-radius:var(--r);padding:14px;text-align:center;text-decoration:none;color:inherit}
+.qa:hover{border-color:var(--prem);text-decoration:none}
+.qa .qa-icon{font-size:22px;margin-bottom:4px}
+.qa .qa-title{font-size:11px;font-weight:700;color:var(--accent)}
+.qa .qa-sub{font-size:9px;color:var(--muted);margin-top:2px}
+
+/* Favorites widget */
+.fav-widget{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fw-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:8px}
+.fw-row:last-child{border-bottom:none}
+.fw-icon{flex:0 0 24px;font-size:16px;text-align:center}
+.fw-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
+.fw-status{flex:1;font-size:11px;color:var(--sub)}
+.fw-status strong{color:var(--cta)}
+.fw-alert{font-size:10px;padding:2px 6px;border-radius:6px;background:var(--pos);color:#fff;font-weight:700}
+.fw-alert.off{background:var(--muted)}
+
+/* Streak */
+.streak{background:linear-gradient(135deg,#fef6ee,#fed7aa);border:1px solid #fb923c;border-radius:var(--r);padding:14px;margin-bottom:16px;text-align:center}
+.streak .sb-big{font-size:28px;font-weight:800;color:var(--cta);line-height:1}
+.streak .sb-big small{font-size:12px;color:var(--sub)}
+.streak .sb-msg{font-size:11px;color:var(--sub);margin-top:4px}
+.streak-days{display:flex;justify-content:center;gap:3px;margin-top:8px}
+.streak-day{width:16px;height:16px;background:var(--cta);border-radius:3px;opacity:.7}
+.streak-day.today{opacity:1;border:2px solid var(--accent)}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--prem)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span><span class="crown">👑</span></h1><span style="font-size:11px;opacity:.5">会員ダッシュボード</span></div></header>
+<nav><a href="#" class="on">ダッシュボード</a><a href="mockup-paid-forecast.html">予測全覧</a><a href="mockup-paid-calendar.html">旬カレンダー</a><a href="mockup-history.html">履歴</a><a href="mockup-mypage.html">マイページ</a></nav>
+
+<div class="hero">
+<div class="hero-greet">ようこそ</div>
+<h2>田中さん</h2>
+<div class="hero-stats">
+<div class="hs-item"><div class="hv">28</div><div class="hl">連続ログイン</div></div>
+<div class="hs-item"><div class="hv">72%</div><div class="hl">累計的中率</div></div>
+<div class="hs-item"><div class="hv">¥500</div><div class="hl">月額</div></div>
+</div>
+</div>
+
+<div class="c">
+
+<!-- クイックアクション -->
+<div class="quick">
+<a class="qa" href="mockup-paid-forecast.html"><div class="qa-icon">🔮</div><div class="qa-title">予測全覧</div><div class="qa-sub">魚種×エリア×日付</div></a>
+<a class="qa" href="mockup-paid-calendar.html"><div class="qa-icon">📅</div><div class="qa-title">旬カレンダー</div><div class="qa-sub">365日×12魚種</div></a>
+<a class="qa" href="#"><div class="qa-icon">🗺</div><div class="qa-title">釣行プラン</div><div class="qa-sub">日付+エリア入力</div></a>
+<a class="qa" href="#"><div class="qa-icon">⚓</div><div class="qa-title">欠航リスク</div><div class="qa-sub">船宿別の出船確率</div></a>
+</div>
+
+<!-- 7日間海況 -->
+<h2 class="st">7日間の海況予報 <span class="st-sub">金沢八景エリア</span></h2>
+<div class="wf">
+<div class="wf-days">
+<div class="wf-day today"><div class="wf-date">4/6(日)</div><div class="wf-icon">☀</div><div class="wf-temp">18.5℃</div><div class="wf-cond good">◎出船日和</div></div>
+<div class="wf-day"><div class="wf-date">4/7(月)</div><div class="wf-icon">☁</div><div class="wf-temp">18.6℃</div><div class="wf-cond good">○良好</div></div>
+<div class="wf-day"><div class="wf-date">4/8(火)</div><div class="wf-icon">☁</div><div class="wf-temp">18.4℃</div><div class="wf-cond">△風強</div></div>
+<div class="wf-day"><div class="wf-date">4/9(水)</div><div class="wf-icon">🌧</div><div class="wf-temp">18.2℃</div><div class="wf-cond">×欠航可能</div></div>
+<div class="wf-day"><div class="wf-date">4/10(木)</div><div class="wf-icon">☁</div><div class="wf-temp">18.3℃</div><div class="wf-cond good">○良好</div></div>
+<div class="wf-day"><div class="wf-date">4/11(金)</div><div class="wf-icon">☀</div><div class="wf-temp">18.5℃</div><div class="wf-cond good">◎</div></div>
+<div class="wf-day"><div class="wf-date">4/12(土)</div><div class="wf-icon">☀</div><div class="wf-temp">18.7℃</div><div class="wf-cond good">◎</div></div>
+</div>
+</div>
+
+<!-- TOP10 自信予測 -->
+<h2 class="st">明日の自信予測 TOP10 <span class="st-sub">信頼度順</span></h2>
+<div class="top10">
+
+<div class="t10-row">
+<div class="t10-rank gold">1</div>
+<div class="t10-body">
+<div class="t10-fish">アジ <span class="t10-area">× 金沢八景・走水</span></div>
+<div class="t10-range">22〜48匹 <small>(去年同週比 +25%)</small></div>
+<div class="t10-reason">水温 18.5℃ + 大潮 + 無風 → 活性高い。忠彦丸◎・荒川屋◎</div>
+</div>
+<div class="t10-star">★★★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank gold">2</div>
+<div class="t10-body">
+<div class="t10-fish">シロギス <span class="t10-area">× 金沢八景</span></div>
+<div class="t10-range">18〜45匹 <small>(+30%)</small></div>
+<div class="t10-reason">中ノ瀬 潮通し良好。荒川屋◎</div>
+</div>
+<div class="t10-star">★★★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank gold">3</div>
+<div class="t10-body">
+<div class="t10-fish">マダイ <span class="t10-area">× 剣崎</span></div>
+<div class="t10-range">1〜5匹 <small>(+35%)</small></div>
+<div class="t10-reason">水温上昇で活性UP。佐円丸◎</div>
+</div>
+<div class="t10-star">★★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank">4</div>
+<div class="t10-body">
+<div class="t10-fish">カワハギ <span class="t10-area">× 剣崎・佐島</span></div>
+<div class="t10-range">8〜22匹 <small>(+15%)</small></div>
+<div class="t10-reason">佐島の根回り好調。巳之助丸◎</div>
+</div>
+<div class="t10-star">★★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank">5</div>
+<div class="t10-body">
+<div class="t10-fish">アマダイ <span class="t10-area">× 剣崎沖</span></div>
+<div class="t10-range">0〜5匹 <small>(+30%)</small></div>
+<div class="t10-reason">水深120mライン好調。福よし丸◎</div>
+</div>
+<div class="t10-star">★★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank">6</div>
+<div class="t10-body">
+<div class="t10-fish">タチウオ <span class="t10-area">× 走水</span></div>
+<div class="t10-range">8〜25匹 <small>(+10%)</small></div>
+<div class="t10-reason">夕方便推奨。山天丸◎</div>
+</div>
+<div class="t10-star">★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank">7</div>
+<div class="t10-body">
+<div class="t10-fish">マゴチ <span class="t10-area">× 金沢八景</span></div>
+<div class="t10-range">0〜5匹 <small>(+35%)</small></div>
+<div class="t10-reason">旬入り。太田屋◎</div>
+</div>
+<div class="t10-star">★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank">8</div>
+<div class="t10-body">
+<div class="t10-fish">ヒラメ <span class="t10-area">× 大原</span></div>
+<div class="t10-range">0〜3匹 <small>(+20%)</small></div>
+<div class="t10-reason">外房の水温上昇で活性化</div>
+</div>
+<div class="t10-star">★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank">9</div>
+<div class="t10-body">
+<div class="t10-fish">フグ <span class="t10-area">× 大原</span></div>
+<div class="t10-range">5〜12匹 <small>(+8%)</small></div>
+<div class="t10-reason">安定の日ムラ小</div>
+</div>
+<div class="t10-star">★★★</div>
+</div>
+
+<div class="t10-row">
+<div class="t10-rank">10</div>
+<div class="t10-body">
+<div class="t10-fish">イシダイ <span class="t10-area">× 剣崎</span></div>
+<div class="t10-range">0〜2匹 <small>(+5%)</small></div>
+<div class="t10-reason">荒れ明けで期待</div>
+</div>
+<div class="t10-star">★★</div>
+</div>
+
+</div>
+
+<!-- 連続ログイン -->
+<div class="streak">
+<div class="sb-big">🔥 28<small>日連続</small></div>
+<div class="sb-msg">チャンスを逃さない習慣</div>
+<div class="streak-days">
+<div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day"></div><div class="streak-day today"></div>
+</div>
+</div>
+
+<!-- お気に入り通知 -->
+<h2 class="st">お気に入りの動向 <span class="st-sub">通知設定済み</span></h2>
+<div class="fav-widget">
+<div class="fw-row"><div class="fw-icon">🐟</div><div class="fw-name">アジ</div><div class="fw-status">今日 +32% / 明日予測 <strong>+25%</strong> ★★★★★</div><span class="fw-alert">🔔 通知中</span></div>
+<div class="fw-row"><div class="fw-icon">🐟</div><div class="fw-name">マダイ</div><div class="fw-status">今日 +18% / 明日予測 <strong>+12%</strong> ★★★★</div><span class="fw-alert">🔔 通知中</span></div>
+<div class="fw-row"><div class="fw-icon">🐟</div><div class="fw-name">シロギス</div><div class="fw-status">今日 +45% / 明日予測 <strong>+30%</strong> ★★★★★</div><span class="fw-alert">🔔 通知中</span></div>
+<div class="fw-row"><div class="fw-icon">⚓</div><div class="fw-name">忠彦丸</div><div class="fw-status">本日アジ◎+52% / 明日 ◎★★★★★</div><span class="fw-alert">🔔 通知中</span></div>
+<div class="fw-row"><div class="fw-icon">📍</div><div class="fw-name">金沢八景</div><div class="fw-status">今日12件 / 明日5魚種が好調予測</div><span class="fw-alert off">🔕 OFF</span></div>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="mockup-mypage.html">マイページ</a><br>
+<span style="margin-top:4px;display:inline-block">© 2026 船釣り予想 [Premium]</span>
+</footer>
+
+<div class="bn"><a href="#" class="on"><span class="i">🏠</span>Home</a><a href="mockup-paid-forecast.html"><span class="i">🔮</span>予測</a><a href="mockup-paid-calendar.html"><span class="i">📅</span>旬暦</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-mypage.html"><span class="i">⚙</span>設定</a></div>
+
+</body>
+</html>
