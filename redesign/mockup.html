@@ -3,391 +3,377 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>船釣り予想 — リデザイン モックアップ v2</title>
+<title>船釣り予想 v3</title>
 <style>
-:root {
-  --bg-primary:    #f5f7fa;
-  --bg-card:       #ffffff;
-  --bg-input:      #eef1f5;
-  --border:        #d0d8e0;
-  --text-primary:  #1a2332;
-  --text-secondary:#5a6a7a;
-  --text-muted:    #8a96a4;
-  --accent:        #0d2b4a;
-  --accent-hover:  #1a3d5c;
-  --cta:           #e85d04;
-  --cta-hover:     #d04e00;
-  --positive:      #1a9d56;
-  --negative:      #d43333;
-  --warning:       #d4a017;
-  --premium:       #7c3aed;
-  --header-bg:     #0d2b4a;
-  --header-text:   #ffffff;
-  --nav-bg:        #f0f3f7;
-  --radius-sm:     6px;
-  --radius-md:     10px;
-  --radius-lg:     14px;
-  --max-width:     900px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: system-ui, -apple-system, "Helvetica Neue", "Hiragino Sans", sans-serif;
-  background: var(--bg-primary); color: var(--text-primary);
-  line-height: 1.6; -webkit-font-smoothing: antialiased;
-}
-a { color: var(--cta); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.container { max-width: var(--max-width); margin: 0 auto; padding: 0 16px; }
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 
 /* Header */
-header { background: var(--header-bg); color: var(--header-text); padding: 14px 24px; border-bottom: 3px solid var(--cta); }
-header .inner { max-width: var(--max-width); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-header h1 { font-size: 20px; font-weight: 700; }
-header h1 span { color: var(--cta); }
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}
+header h1 span{color:var(--cta)}
 
 /* Nav */
-nav { background: var(--nav-bg); padding: 8px 24px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; border-bottom: 1px solid var(--border); }
-nav a { color: var(--text-secondary); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; transition: all .15s; }
-nav a:hover, nav a.active { background: var(--accent); color: #fff; text-decoration: none; }
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 
-/* HERO */
-.hero { background: linear-gradient(135deg, #0d2b4a 0%, #163d5c 100%); color: #fff; text-align: center; padding: 28px 16px 24px; }
-.hero-catch { font-size: 13px; color: rgba(255,255,255,.7); letter-spacing: .5px; }
-.hero .count { font-size: 52px; font-weight: 800; color: var(--cta); line-height: 1.1; }
-.hero .count-unit { font-size: 18px; color: rgba(255,255,255,.8); font-weight: 400; margin-left: 4px; }
-.hero .count-label { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 4px; }
-.hero .updated { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.hero .updated .dot { width: 7px; height: 7px; background: var(--positive); border-radius: 50%; }
+/* Hero */
+.hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;text-align:center;padding:24px 14px 20px}
+.hero-sub{font-size:12px;color:rgba(255,255,255,.6);letter-spacing:.3px}
+.hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1}
+.hero .n u{font-size:16px;color:rgba(255,255,255,.7);font-weight:400;text-decoration:none;margin-left:3px}
+.hero .info{font-size:12px;color:rgba(255,255,255,.5);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
+.hero .dot{width:6px;height:6px;background:var(--pos);border-radius:50%}
 
 /* Section */
-.section-title { font-size: 16px; font-weight: 700; color: var(--accent); padding: 20px 0 10px; border-bottom: 2px solid var(--accent); margin-bottom: 14px; }
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
 
-/* Fish Cards */
-.fish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 10px; margin-bottom: 20px; }
-.fc { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 12px; transition: box-shadow .15s, border-color .15s; cursor: pointer; }
-.fc:hover { border-color: var(--cta); box-shadow: 0 4px 12px rgba(13,43,74,.1); }
-.fc .fn { font-size: 16px; font-weight: 700; color: var(--accent); }
-.fc .yoy { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-left: 4px; }
-.fc .yoy.up { background: #e6f7ee; color: var(--positive); }
-.fc .yoy.down { background: #fde8e8; color: var(--negative); }
-.fc .fc-nums { margin-top: 6px; font-size: 13px; color: var(--text-secondary); }
-.fc .fc-nums strong { color: var(--cta); font-size: 20px; font-weight: 800; }
-.fc .fc-nums .unit { font-size: 11px; color: var(--text-muted); }
-.fc .fc-size { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.fc .fc-area { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
-.fc .fc-sea { font-size: 10px; color: var(--accent); margin-top: 6px; padding: 4px 6px; background: #edf2f7; border-radius: 4px; }
-.fc .fc-link { display: block; margin-top: 8px; font-size: 12px; color: var(--cta); font-weight: 600; }
-.fc .fc-ships { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+/* ===== FISH RANKING (new concept) ===== */
+.fish-rank{margin-bottom:20px}
+.fr{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.fr:hover{border-color:var(--cta)}
+.fr-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.fr-name{font-size:17px;font-weight:800;color:var(--accent)}
+.fr-range{font-size:18px;font-weight:800;color:var(--cta)}
+.fr-size{font-size:12px;color:var(--muted)}
+.fr-yoy{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.fr-yoy.up{background:#e6f7ee;color:var(--pos)}
+.fr-yoy.dn{background:#fde8e8;color:var(--neg)}
+.fr-meta{font-size:11px;color:var(--muted);margin-top:4px}
+.fr-sea{display:inline-block;font-size:10px;color:var(--accent);background:#edf2f7;padding:2px 6px;border-radius:4px;margin-top:4px}
 
-/* Answer Section */
-.answer-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; }
-.answer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-.answer-header h3 { font-size: 15px; color: var(--accent); font-weight: 700; }
-.answer-accuracy { font-size: 12px; padding: 4px 10px; background: #e6f7ee; color: var(--positive); border-radius: 12px; font-weight: 700; }
-.answer-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; margin-bottom: 10px; }
-.answer-card:last-of-type { margin-bottom: 0; }
-.answer-card .fish-name { font-size: 15px; font-weight: 700; color: var(--accent); }
-.answer-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin-left: 8px; }
-.answer-badge.hit { background: var(--positive); color: #fff; }
-.answer-badge.miss { background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--border); }
-.answer-compare { display: flex; gap: 8px; margin-top: 10px; align-items: stretch; }
-.answer-box { flex: 1; padding: 10px; border-radius: var(--radius-sm); text-align: center; }
-.answer-box.pred { background: #edf2f7; }
-.answer-box.actual { background: #fef6ee; }
-.answer-box .ab-label { font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: .5px; }
-.answer-box .ab-pct { font-size: 22px; font-weight: 800; margin-top: 2px; }
-.answer-box.pred .ab-pct { color: var(--accent); }
-.answer-box.actual .ab-pct { color: var(--cta); }
-.answer-box .ab-detail { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
-.answer-arrow { display: flex; align-items: center; font-size: 18px; color: var(--text-muted); padding: 0 2px; }
-.answer-reason { font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding: 8px; background: var(--bg-input); border-radius: var(--radius-sm); }
-.answer-reason strong { color: var(--text-primary); }
-.answer-cause { font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding: 8px; background: #fef3e6; border-radius: var(--radius-sm); border-left: 3px solid var(--warning); }
-.answer-card.locked { position: relative; overflow: hidden; }
-.answer-card.locked .answer-blur { filter: blur(5px); user-select: none; pointer-events: none; }
-.answer-card.locked .lock-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--premium); background: rgba(255,255,255,.6); border-radius: var(--radius-md); }
-.answer-cta { display: block; text-align: center; margin-top: 14px; padding: 12px; background: var(--cta); color: #fff; border-radius: 24px; font-weight: 700; font-size: 14px; }
-.answer-cta:hover { background: var(--cta-hover); text-decoration: none; }
+/* Ship ratings */
+.fr-ships{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ship{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:600;white-space:nowrap}
+.ship.s1{background:#e6f7ee;color:var(--pos)}
+.ship.s2{background:#edf2f7;color:var(--sub)}
+.ship.s3{background:#fde8e8;color:var(--neg)}
+.ship-more{font-size:10px;color:var(--muted)}
 
-/* Premium Zone */
-.premium-zone { background: linear-gradient(135deg, #f8f4ff 0%, #f0eafa 100%); border: 1px solid #e0d6f5; border-radius: var(--radius-lg); padding: 20px 16px; margin-bottom: 20px; text-align: center; }
-.premium-zone h2 { font-size: 16px; color: var(--premium); margin-bottom: 12px; }
-.premium-preview { display: grid; gap: 8px; margin-bottom: 14px; text-align: left; }
-.premium-item { background: var(--bg-card); border: 1px solid #e0d6f5; border-radius: var(--radius-md); padding: 12px; position: relative; overflow: hidden; }
-.premium-item.locked .premium-content { filter: blur(6px); user-select: none; pointer-events: none; }
-.premium-item.locked::after { content: "\01F512 \00A0 \u8A73\7D30\3092\898B\308B"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(124,58,237,.06); font-size: 13px; font-weight: 600; color: var(--premium); }
-.premium-item .pi-fish { font-weight: 700; color: var(--accent); font-size: 14px; }
-.premium-item .pi-detail { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
-.premium-cta-btn { display: inline-block; background: var(--premium); color: #fff; padding: 12px 28px; border-radius: 24px; font-size: 14px; font-weight: 700; }
-.premium-cta-btn:hover { opacity: .85; text-decoration: none; }
-.premium-sub { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+/* Mini bar chart (7-day catches) */
+.bars{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:8px}
+.bars .b{flex:1;min-width:8px;max-width:16px;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;position:relative}
+.bars .b.today{opacity:1;background:var(--pos)}
+.bars-label{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:1px}
 
-/* Area Cards */
-.area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 20px; }
-.area-card { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; text-align: center; }
-.area-card:hover { border-color: var(--cta); text-decoration: none; }
-.area-card .area-name { font-size: 14px; font-weight: 700; color: var(--accent); }
-.area-card .area-count { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.fr-link{display:block;margin-top:8px;font-size:12px;color:var(--cta);font-weight:600}
+
+/* ===== PREDICTION TEASER ===== */
+.pred-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px}
+.pred-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.pred-header h3{font-size:14px;color:var(--accent);font-weight:700}
+.pred-accuracy{font-size:11px;padding:3px 10px;background:#e6f7ee;color:var(--pos);border-radius:12px;font-weight:700}
+.pred-card{border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.pred-card .pf{font-size:14px;font-weight:700;color:var(--accent)}
+.pred-card .pd{font-size:12px;color:var(--sub);margin-top:3px}
+.pred-card .pr{font-size:20px;font-weight:800;color:var(--cta);margin-top:4px}
+.pred-card.teaser{position:relative;overflow:hidden}
+.pred-card.teaser .blur{filter:blur(5px);user-select:none;pointer-events:none}
+.pred-card.teaser .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.7);border-radius:var(--r);gap:6px}
+.pred-card.teaser .overlay span{font-size:13px;font-weight:600;color:var(--prem)}
+.pred-cta{display:block;text-align:center;margin-top:10px;padding:10px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px}
+.pred-cta:hover{background:var(--cta2);text-decoration:none}
+
+/* ===== ANSWER CHECK ===== */
+.ans-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px}
+.ans-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ans-header h3{font-size:14px;color:var(--accent);font-weight:700}
+.ans-card{border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
+.ans-fish{font-size:14px;font-weight:700;color:var(--accent)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+.badge.hit{background:var(--pos);color:#fff}
+.badge.miss{background:var(--bg);color:var(--sub);border:1px solid var(--border)}
+.ans-row{display:flex;gap:6px;margin-top:8px}
+.ans-box{flex:1;padding:8px;border-radius:6px;text-align:center}
+.ans-box.p{background:#edf2f7}
+.ans-box.a{background:#fef6ee}
+.ans-box .lb{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.ans-box .pct{font-size:20px;font-weight:800;margin-top:2px}
+.ans-box.p .pct{color:var(--accent)}
+.ans-box.a .pct{color:var(--cta)}
+.ans-box .dt{font-size:11px;color:var(--sub);margin-top:2px}
+.ans-arrow{display:flex;align-items:center;font-size:16px;color:var(--muted);padding:0 2px}
+.ans-reason{font-size:11px;color:var(--sub);margin-top:6px;padding:6px 8px;background:var(--bg);border-radius:6px}
+.ans-reason strong{color:var(--text)}
+.ans-cause{font-size:11px;color:var(--sub);margin-top:6px;padding:6px 8px;background:#fef3e6;border-radius:6px;border-left:3px solid var(--warn)}
+
+/* ===== AREA CARDS ===== */
+.area-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:20px}
+.ac{display:block;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center}
+.ac:hover{border-color:var(--cta);text-decoration:none}
+.ac .an{font-size:14px;font-weight:700;color:var(--accent)}
+.ac .ai{font-size:11px;color:var(--muted);margin-top:2px}
 
 /* Footer */
-footer { background: var(--header-bg); color: rgba(255,255,255,.6); padding: 20px; text-align: center; font-size: 11px; margin-top: 24px; }
-footer a { color: rgba(255,255,255,.8); }
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
 
-/* Bottom Nav */
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,.06); }
-.bottom-nav a { flex: 1; text-align: center; padding: 8px 0; font-size: 10px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.bottom-nav a .icon { font-size: 20px; }
-.bottom-nav a.active { color: var(--cta); }
-.bottom-nav a:hover { text-decoration: none; color: var(--cta); }
-body { padding-bottom: 60px; }
-@media (min-width: 769px) {
-  .bottom-nav { display: none; }
-  body { padding-bottom: 0; }
-  .fish-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
-}
+/* Bottom nav */
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}
+.bn a.on{color:var(--cta)}
+.bn a:hover{text-decoration:none;color:var(--cta)}
+
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="inner">
-    <h1>船釣り<span>予想</span></h1>
-    <span style="font-size:12px;opacity:.6">funatsuri-yoso.com</span>
-  </div>
-</header>
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
 
 <nav>
-  <a href="#" class="active">今日の釣果</a>
-  <a href="#">魚種</a>
-  <a href="#">エリア</a>
-  <a href="#">カレンダー</a>
+<a href="#" class="on">今日の釣果</a>
+<a href="#">魚種</a>
+<a href="#">エリア</a>
+<a href="#">カレンダー</a>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
-  <div class="hero-catch">関東の船釣り 今日の釣果</div>
-  <div class="count">47<span class="count-unit">件</span></div>
-  <div class="count-label">8エリア・23船宿から報告</div>
-  <div class="updated"><span class="dot"></span>2026/04/05 16:30 更新</div>
+<div class="hero-sub">関東の船釣り 今日の釣果</div>
+<div class="n">47<u>件</u></div>
+<div class="info"><span class="dot"></span>8エリア・23船宿 | 2026/04/05 16:30 更新</div>
 </div>
 
-<div class="container">
+<div class="c">
 
-<!-- ============================================================
-     今日の釣果（無料メイン）
-     ============================================================ -->
-<h2 class="section-title">今日の釣果</h2>
+<!-- ===== TODAY'S CATCH: RANKING STYLE ===== -->
+<h2 class="st">今日の釣果</h2>
 
-<div class="fish-grid">
+<div class="fish-rank">
 
-  <div class="fc">
-    <div class="fn">アジ <span class="yoy up">+32%</span></div>
-    <div class="fc-nums"><strong>28</strong> <span class="unit">匹 平均</span></div>
-    <div class="fc-size">18〜25cm</div>
-    <div class="fc-ships">23件・8船宿</div>
-    <div class="fc-area">横浜 / 金沢八景 / 走水</div>
-    <div class="fc-sea">水温 18.2&#8451; / 大潮 / 波 0.5m</div>
-    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
-  </div>
+<!-- #1 アジ -->
+<div class="fr" onclick="location.href='mockup-fish.html'">
+<div class="fr-top">
+<span class="fr-name">アジ</span>
+<span class="fr-range">20〜45匹</span>
+<span class="fr-size">18〜25cm</span>
+<span class="fr-yoy up">去年同週比 +32%</span>
+</div>
+<div class="fr-meta">23件・8船宿 | 横浜・金沢八景・走水</div>
+<span class="fr-sea">水温 18.2℃ / 大潮 / 波 0.5m</span>
 
-  <div class="fc">
-    <div class="fn">マダイ <span class="yoy up">+18%</span></div>
-    <div class="fc-nums"><strong>2.8</strong> <span class="unit">匹 平均</span></div>
-    <div class="fc-size">30〜55cm</div>
-    <div class="fc-ships">15件・6船宿</div>
-    <div class="fc-area">剣崎 / 久里浜 / 勝山</div>
-    <div class="fc-sea">水温 17.5&#8451; / 大潮 / 波 0.8m</div>
-    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
-  </div>
+<div class="fr-ships">
+<span class="ship s1">◎ 忠彦丸 +52%</span>
+<span class="ship s1">◎ 一之瀬丸 +38%</span>
+<span class="ship s2">○ 太田屋 +12%</span>
+<span class="ship-more">他5宿</span>
+</div>
 
-  <div class="fc">
-    <div class="fn">タチウオ <span class="yoy down">-12%</span></div>
-    <div class="fc-nums"><strong>15</strong> <span class="unit">匹 平均</span></div>
-    <div class="fc-size">70〜95cm</div>
-    <div class="fc-ships">11件・5船宿</div>
-    <div class="fc-area">走水 / 観音崎 / 金谷</div>
-    <div class="fc-sea">水温 16.8&#8451; / 大潮 / 波 1.2m</div>
-    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
-  </div>
+<div class="bars">
+<div class="b" style="height:40%"></div>
+<div class="b" style="height:65%"></div>
+<div class="b" style="height:55%"></div>
+<div class="b" style="height:80%"></div>
+<div class="b" style="height:45%"></div>
+<div class="b" style="height:70%"></div>
+<div class="b today" style="height:90%"></div>
+</div>
+<div class="bars-label"><span>3/30</span><span>← 直近7日 →</span><span>今日</span></div>
 
-  <div class="fc">
-    <div class="fn">カワハギ <span class="yoy up">+8%</span></div>
-    <div class="fc-nums"><strong>12</strong> <span class="unit">匹 平均</span></div>
-    <div class="fc-size">15〜22cm</div>
-    <div class="fc-ships">9件・4船宿</div>
-    <div class="fc-area">剣崎 / 佐島 / 小坪</div>
-    <div class="fc-sea">水温 17.0&#8451; / 大潮 / 波 0.6m</div>
-    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
-  </div>
+<a class="fr-link" href="mockup-fish.html">船宿ランキング・詳細 →</a>
+</div>
 
-  <div class="fc">
-    <div class="fn">シロギス <span class="yoy up">+45%</span></div>
-    <div class="fc-nums"><strong>35</strong> <span class="unit">匹 平均</span></div>
-    <div class="fc-size">15〜23cm</div>
-    <div class="fc-ships">7件・3船宿</div>
-    <div class="fc-area">金沢八景 / 本牧</div>
-    <div class="fc-sea">水温 18.0&#8451; / 大潮 / 波 0.4m</div>
-    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
-  </div>
+<!-- #2 マダイ -->
+<div class="fr">
+<div class="fr-top">
+<span class="fr-name">マダイ</span>
+<span class="fr-range">0〜5匹</span>
+<span class="fr-size">30〜55cm</span>
+<span class="fr-yoy up">去年同週比 +18%</span>
+</div>
+<div class="fr-meta">15件・6船宿 | 剣崎・久里浜・勝山</div>
+<span class="fr-sea">水温 17.5℃ / 大潮 / 波 0.8m</span>
 
-  <div class="fc">
-    <div class="fn">フグ <span class="yoy down">-5%</span></div>
-    <div class="fc-nums"><strong>8</strong> <span class="unit">匹 平均</span></div>
-    <div class="fc-size">25〜35cm</div>
-    <div class="fc-ships">5件・3船宿</div>
-    <div class="fc-area">大原 / 飯岡</div>
-    <div class="fc-sea">水温 16.5&#8451; / 大潮 / 波 1.0m</div>
-    <a class="fc-link" href="#">船宿ランキング &rarr;</a>
-  </div>
+<div class="fr-ships">
+<span class="ship s1">◎ 佐円丸 +35%</span>
+<span class="ship s2">○ 育丸 +15%</span>
+<span class="ship s3">△ 太田屋 -8%</span>
+<span class="ship-more">他3宿</span>
+</div>
+
+<div class="bars">
+<div class="b" style="height:50%"></div>
+<div class="b" style="height:30%"></div>
+<div class="b" style="height:70%"></div>
+<div class="b" style="height:20%"></div>
+<div class="b" style="height:85%"></div>
+<div class="b" style="height:40%"></div>
+<div class="b today" style="height:60%"></div>
+</div>
+<div class="bars-label"><span>3/30</span><span>← 直近7日 →</span><span>今日</span></div>
+
+<a class="fr-link" href="#">船宿ランキング・詳細 →</a>
+</div>
+
+<!-- #3 タチウオ -->
+<div class="fr">
+<div class="fr-top">
+<span class="fr-name">タチウオ</span>
+<span class="fr-range">5〜28匹</span>
+<span class="fr-size">70〜95cm</span>
+<span class="fr-yoy dn">去年同週比 -12%</span>
+</div>
+<div class="fr-meta">11件・5船宿 | 走水・観音崎・金谷</div>
+<span class="fr-sea">水温 16.8℃ / 大潮 / 波 1.2m</span>
+
+<div class="fr-ships">
+<span class="ship s1">◎ 山天丸 +22%</span>
+<span class="ship s2">○ 長谷川丸 +5%</span>
+<span class="ship s3">△ 深田丸 -20%</span>
+<span class="ship-more">他2宿</span>
+</div>
+
+<div class="bars">
+<div class="b" style="height:90%"></div>
+<div class="b" style="height:75%"></div>
+<div class="b" style="height:60%"></div>
+<div class="b" style="height:50%"></div>
+<div class="b" style="height:40%"></div>
+<div class="b" style="height:35%"></div>
+<div class="b today" style="height:30%"></div>
+</div>
+<div class="bars-label"><span>3/30</span><span>← 直近7日 下降中 →</span><span>今日</span></div>
+
+<a class="fr-link" href="#">船宿ランキング・詳細 →</a>
+</div>
+
+<!-- #4 compact -->
+<div class="fr">
+<div class="fr-top">
+<span class="fr-name">カワハギ</span>
+<span class="fr-range">5〜22匹</span>
+<span class="fr-size">15〜22cm</span>
+<span class="fr-yoy up">去年同週比 +8%</span>
+</div>
+<div class="fr-meta">9件・4船宿 | 剣崎・佐島</div>
+<div class="fr-ships">
+<span class="ship s1">◎ 巳之助丸 +28%</span>
+<span class="ship s2">○ 瀬戸丸 +10%</span>
+<span class="ship-more">他2宿</span>
+</div>
+<a class="fr-link" href="#">詳細 →</a>
+</div>
+
+<div class="fr">
+<div class="fr-top">
+<span class="fr-name">シロギス</span>
+<span class="fr-range">15〜52匹</span>
+<span class="fr-size">15〜23cm</span>
+<span class="fr-yoy up">去年同週比 +45%</span>
+</div>
+<div class="fr-meta">7件・3船宿 | 金沢八景・本牧</div>
+<div class="fr-ships">
+<span class="ship s1">◎ 荒川屋 +60%</span>
+<span class="ship-more">他2宿</span>
+</div>
+<a class="fr-link" href="#">詳細 →</a>
+</div>
 
 </div>
 
-<!-- ============================================================
-     予測の答え合わせ（無料の橋）
-     ============================================================ -->
-<h2 class="section-title">一昨日の予測 答え合わせ</h2>
+<!-- ===== TOMORROW'S PREDICTION (teaser) ===== -->
+<h2 class="st">明日の予測</h2>
 
-<div class="answer-section">
-  <div class="answer-header">
-    <h3>4/3(木) の予測 vs 実績</h3>
-    <span class="answer-accuracy">的中率 72%</span>
-  </div>
-
-  <!-- 1件目: フル公開（無料） -->
-  <div class="answer-card">
-    <div>
-      <span class="fish-name">アジ</span>
-      <span class="answer-badge hit">的中</span>
-    </div>
-    <div class="answer-compare">
-      <div class="answer-box pred">
-        <div class="ab-label">予想</div>
-        <div class="ab-pct">+20%</div>
-        <div class="ab-detail">平均 30匹</div>
-        <div class="ab-detail">18〜25cm</div>
-      </div>
-      <div class="answer-arrow">&rarr;</div>
-      <div class="answer-box actual">
-        <div class="ab-label">実績</div>
-        <div class="ab-pct">+25%</div>
-        <div class="ab-detail">平均 32匹</div>
-        <div class="ab-detail">20〜28cm</div>
-      </div>
-    </div>
-    <div class="answer-reason">
-      <strong>根拠:</strong> 水温 18.2&#8451; + 大潮 &rarr; 平年比プラス予測。実際も水温上昇で活性高かった
-    </div>
-  </div>
-
-  <!-- 2件目: フル公開（ハズレ） -->
-  <div class="answer-card">
-    <div>
-      <span class="fish-name">マダイ</span>
-      <span class="answer-badge miss">ハズレ</span>
-    </div>
-    <div class="answer-compare">
-      <div class="answer-box pred">
-        <div class="ab-label">予想</div>
-        <div class="ab-pct">+10%</div>
-        <div class="ab-detail">平均 3.2匹</div>
-        <div class="ab-detail">30〜50cm</div>
-      </div>
-      <div class="answer-arrow">&rarr;</div>
-      <div class="answer-box actual">
-        <div class="ab-label">実績</div>
-        <div class="ab-pct">-5%</div>
-        <div class="ab-detail">平均 2.1匹</div>
-        <div class="ab-detail">30〜55cm</div>
-      </div>
-    </div>
-    <div class="answer-cause">
-      <strong>原因:</strong> 風速予報 5m &rarr; 実際 12m（予報ズレ）。予報通りなら <strong>+18%</strong> 相当
-    </div>
-  </div>
-
-  <!-- 3件目: ブラー（有料） -->
-  <div class="answer-card locked">
-    <div class="answer-blur">
-      <div>
-        <span class="fish-name">タチウオ</span>
-        <span class="answer-badge hit">的中</span>
-      </div>
-      <div class="answer-compare">
-        <div class="answer-box pred">
-          <div class="ab-label">予想</div>
-          <div class="ab-pct">-8%</div>
-          <div class="ab-detail">平均 14匹</div>
-        </div>
-        <div class="answer-arrow">&rarr;</div>
-        <div class="answer-box actual">
-          <div class="ab-label">実績</div>
-          <div class="ab-pct">-12%</div>
-          <div class="ab-detail">平均 12匹</div>
-        </div>
-      </div>
-    </div>
-    <div class="lock-overlay">他の魚種の答え合わせを見る</div>
-  </div>
-
-  <a class="answer-cta" href="#">過去の予測履歴・明日以降の予測を見る &rarr;</a>
+<div class="pred-section">
+<div class="pred-header">
+<h3>4/6(日) の釣果予測</h3>
+<span class="pred-accuracy">的中率 72%（18件中13件）</span>
 </div>
 
-<!-- ============================================================
-     有料ゾーン（控えめに）
-     ============================================================ -->
-<div class="premium-zone">
-  <h2>明日以降の釣果予測</h2>
-  <div class="premium-preview">
-    <div class="premium-item">
-      <div class="pi-fish">4/6(日) アジ &mdash; 前年比 <span style="color:var(--positive);font-weight:700">+25%</span></div>
-      <div class="pi-detail">水温上昇 + 大潮2日目。金沢八景・走水が狙い目</div>
-    </div>
-    <div class="premium-item locked">
-      <div class="premium-content">
-        <div class="pi-fish">4/6(日) マダイ &mdash; 前年比 +12%</div>
-        <div class="pi-detail">潮回り良好。剣崎沖・久里浜で期待</div>
-      </div>
-    </div>
-    <div class="premium-item locked">
-      <div class="premium-content">
-        <div class="pi-fish">4/7(月) タチウオ &mdash; 前年比 -3%</div>
-        <div class="pi-detail">北風やや強め。走水・観音崎は注意</div>
-      </div>
-    </div>
-  </div>
-  <a class="premium-cta-btn" href="#">月額 500円で全予測を解放</a>
-  <div class="premium-sub">スポット購入: 1日分 100円</div>
+<!-- 1 item free -->
+<div class="pred-card">
+<div class="pf">アジ — 金沢八景・走水エリア</div>
+<div class="pr">去年同週比 +25%（22〜48匹）</div>
+<div class="pd">水温上昇 + 大潮2日目 → 活性高い。忠彦丸◎・荒川屋◎</div>
 </div>
 
-<!-- ============================================================
-     エリアから探す
-     ============================================================ -->
-<h2 class="section-title">エリアから探す</h2>
+<!-- teaser -->
+<div class="pred-card teaser">
+<div class="blur">
+<div class="pf">マダイ — 剣崎エリア</div>
+<div class="pr">去年同週比 +12%（1〜4匹）</div>
+<div class="pd">潮回り良好。佐円丸◎。走水沖は風で厳しめ</div>
+</div>
+<div class="overlay">
+<span>🔒 他の予測を見る</span>
+</div>
+</div>
+
+<div class="pred-card teaser">
+<div class="blur">
+<div class="pf">タチウオ — 走水エリア</div>
+<div class="pr">去年同週比 -3%（8〜25匹）</div>
+<div class="pd">北風やや強め。夕方便が狙い目</div>
+</div>
+<div class="overlay">
+<span>🔒 他の予測を見る</span>
+</div>
+</div>
+
+<a class="pred-cta" href="#">月額500円で全予測を見る（スポット100円/日）</a>
+</div>
+
+<!-- ===== ANSWER CHECK ===== -->
+<h2 class="st">一昨日の予測 答え合わせ</h2>
+
+<div class="ans-section">
+<div class="ans-header">
+<h3>4/3(木) の予測 vs 実績</h3>
+</div>
+
+<!-- hit - full -->
+<div class="ans-card">
+<span class="ans-fish">アジ</span><span class="badge hit">的中</span>
+<div class="ans-row">
+<div class="ans-box p"><div class="lb">予想</div><div class="pct">+20%</div><div class="dt">25〜42匹</div></div>
+<div class="ans-arrow">→</div>
+<div class="ans-box a"><div class="lb">実績</div><div class="pct">+25%</div><div class="dt">20〜48匹</div></div>
+</div>
+<div class="ans-reason"><strong>根拠:</strong> 水温18.2℃+大潮。実際も活性高く的中</div>
+</div>
+
+<!-- miss - full -->
+<div class="ans-card">
+<span class="ans-fish">マダイ</span><span class="badge miss">ハズレ</span>
+<div class="ans-row">
+<div class="ans-box p"><div class="lb">予想</div><div class="pct">+10%</div><div class="dt">1〜5匹</div></div>
+<div class="ans-arrow">→</div>
+<div class="ans-box a"><div class="lb">実績</div><div class="pct">-5%</div><div class="dt">0〜3匹</div></div>
+</div>
+<div class="ans-cause"><strong>原因:</strong> 風速予報5m→実際12m。予報通りなら<strong>+18%</strong>相当</div>
+</div>
+
+</div>
+
+<!-- ===== AREA ===== -->
+<h2 class="st">エリアから探す</h2>
 <div class="area-grid">
-  <a class="area-card" href="#"><div class="area-name">金沢八景</div><div class="area-count">12件</div></a>
-  <a class="area-card" href="#"><div class="area-name">走水</div><div class="area-count">8件</div></a>
-  <a class="area-card" href="#"><div class="area-name">剣崎</div><div class="area-count">6件</div></a>
-  <a class="area-card" href="#"><div class="area-name">大原</div><div class="area-count">5件</div></a>
-  <a class="area-card" href="#"><div class="area-name">久里浜</div><div class="area-count">4件</div></a>
-  <a class="area-card" href="#"><div class="area-name">勝山</div><div class="area-count">3件</div></a>
-  <a class="area-card" href="#"><div class="area-name">飯岡</div><div class="area-count">3件</div></a>
-  <a class="area-card" href="#"><div class="area-name">本牧</div><div class="area-count">2件</div></a>
+<a class="ac" href="mockup-area.html"><div class="an">金沢八景</div><div class="ai">12件・アジ◎</div></a>
+<a class="ac" href="#"><div class="an">走水</div><div class="ai">8件・タチウオ○</div></a>
+<a class="ac" href="#"><div class="an">剣崎</div><div class="ai">6件・マダイ◎</div></a>
+<a class="ac" href="#"><div class="an">大原</div><div class="ai">5件・フグ○</div></a>
+<a class="ac" href="#"><div class="an">久里浜</div><div class="ai">4件・マダイ○</div></a>
+<a class="ac" href="#"><div class="an">勝山</div><div class="ai">3件</div></a>
 </div>
 
 </div>
 
 <footer>
-  <a href="#">プライバシーポリシー</a> &middot;
-  <a href="#">利用規約</a> &middot;
-  <a href="#">サイトについて</a><br>
-  <span style="margin-top:6px;display:inline-block">&copy; 2026 船釣り予想 funatsuri-yoso.com</span>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<span style="margin-top:4px;display:inline-block">© 2026 船釣り予想</span>
 </footer>
 
-<div class="bottom-nav">
-  <a href="#" class="active"><span class="icon">&#x1F3A3;</span>釣果</a>
-  <a href="#"><span class="icon">&#x1F41F;</span>魚種</a>
-  <a href="#"><span class="icon">&#x1F4CD;</span>エリア</a>
-  <a href="#"><span class="icon">&#x1F52E;</span>予測</a>
+<div class="bn">
+<a href="#" class="on"><span class="i">🎣</span>釣果</a>
+<a href="#"><span class="i">🐟</span>魚種</a>
+<a href="#"><span class="i">📍</span>エリア</a>
+<a href="#"><span class="i">🔮</span>予測</a>
 </div>
 
 </body>
