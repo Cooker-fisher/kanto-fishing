@@ -47,6 +47,9 @@ jobs:
           python3 weather_fetch.py
           python3 crawler.py
           python3 weather_crawl.py
+      - name: gyo direct crawl
+        continue-on-error: true
+        run: python3 direct-crawl/gyo_crawler.py
       - name: push
         run: |
           git config user.name "github-actions[bot]"

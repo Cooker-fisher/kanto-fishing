@@ -1,26 +1,38 @@
 現行バージョン: crawler.py v5.21（kanso_rawからポイント名補完追加）
-最終更新: 2026/04/04
+最終更新: 2026/04/07
 
 ---
 
 ## ★ 次チャットでやること（優先度順）
 
-### 1. combo_deep_dive.py を全51魚種で実行（ユーザー許可が必要）
+### 1. catches_raw_direct.json → CSV統合（別途話す）
+- `generate_csv_all()` の冒頭で `catches_raw_direct.json` をマージして同じパイプラインに流す
+- 抽出ロジックは船ごとに分岐不要（regex部分一致で対応できる）
+- 要注意: `time_slot` の `午前・午後` 併記（忠彦丸）→ `null` or `全日` にする1行追加が必要
+
+### 2. combo_deep_dive.py を全51魚種で実行（ユーザー許可が必要）
 - tide fix済み（tide_moon.sqlite参照に変更・コミット済み `72b7743`）
 - 実行前にユーザーに確認してから走らせること
 
-### 2. parse_deepdive.py → deepdive_params.json
+### 3. parse_deepdive.py → deepdive_params.json
 - combo_deep_dive 完了後に実行
 
-### 3. 売り物設計（予測の出力形式）
+### 4. 売り物設計（予測の出力形式）
 - 現状MAPE 27〜55%（CVが低い船宿）→ 匹数絶対値ではなく「平年比±%」「★評価」で出す
 - 「来週末アジは平年比+25%（★★★★）」の形式が現実的
 - 要実装: 旬別ベースラインからの偏差率を★5段階に変換するロジック
 
-## ✅ 今セッション完了
-- CLAUDE.md 全面書き直し（ファイル構成・価格・パイプライン層を実態に合わせる）
-- combo_deep_dive.py tide_moon.sqlite参照に修正
-- GitHubプッシュ済み（コミット `72b7743`）
+## ✅ 今セッション完了（2026/04/07）
+- **gyo_crawler.py 新規作成** (`direct-crawl/gyo_crawler.py`)
+  - 忠彦丸（table形式）・一之瀬丸・米元釣船店（freetext形式）対応
+  - 出力: `direct-crawl/catches_raw_direct.json`（15フィールド・catches_raw.jsonと同一構造）
+  - 初回108件取得（忠彦丸5 / 一之瀬丸82 / 米元21）
+  - FISH_MAP不使用・stdlib only・dedup: (ship, date, fish_raw)
+  - Table B（タックル情報）→ kanso_rawに連結済み
+  - 非釣果セクション（お知らせ・アクセス・BBQ等）→ _NON_FISHINGフィルターで除外済み
+  - 日付はhistory URLのhdtパラメータから確定（HTMLコンテンツ内日付パース不要）
+- **crawl.yml に統合**
+  - `crawler.py` の後に `gyo direct crawl` ステップ追加（`continue-on-error: true`）
 
 ---
 
