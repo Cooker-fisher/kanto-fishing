@@ -17,7 +17,60 @@
      6      2.7      2.7     -0.0     3
      8      4.3      4.3     +0.0     3
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 28件）】
+
+  [cnt_avg]
+    temp_range       r=-0.428*  p=0.016  n=28  ↓
+    wind_speed       r=+0.379*  p=0.037  n=28  ↑
+    pressure_delta   r=+0.377*  p=0.038  n=28  ↑
+    temp_max         r=-0.373*  p=0.040  n=28  ↓
+    wave_height      r=+0.326   p=0.078  n=28  ↑
+
+  [cnt_max]
+    pressure_delta   r=+0.410*  p=0.022  n=28  ↑
+    wave_height      r=+0.399*  p=0.026  n=28  ↑
+    temp_max         r=-0.395*  p=0.028  n=28  ↓
+    temp_range       r=-0.365*  p=0.045  n=28  ↓
+    wind_speed       r=+0.346   p=0.060  n=28  ↑
+
+  [size_avg]
+    pressure_range   r=+0.611**  p=0.000  n=27  ↑
+    swell_height_max r=+0.523**  p=0.002  n=27  ↑
+    swell_height     r=+0.433*  p=0.016  n=27  ↑
+    pressure_min     r=-0.368*  p=0.048  n=27  ↓
+    wave_height      r=+0.366*  p=0.049  n=27  ↑
+
+【因子相関（週集計: n=10週）】
+
+  [cnt_avg]
+    temp_range       r=-0.885**  p=0.000  n=10  ↓
+    pressure_delta   r=+0.672*  p=0.010  n=10  ↑
+    wave_period      r=-0.671*  p=0.010  n=10  ↓
+    wind_speed       r=+0.631*  p=0.021  n=10  ↑
+    wave_height      r=+0.552   p=0.061  n=10  ↑
+    precip_sum2      r=-0.504   p=0.099  n=10  ↓
+
+  [cnt_max]
+    temp_range       r=-0.793**  p=0.000  n=10  ↓
+    pressure_delta   r=+0.714**  p=0.004  n=10  ↑
+    wind_speed       r=+0.660*  p=0.013  n=10  ↑
+    wave_period      r=-0.654*  p=0.014  n=10  ↓
+    wave_height      r=+0.649*  p=0.016  n=10  ↑
+    temp_max         r=-0.528   p=0.079  n=10  ↓
+
+  [size_avg]
+    wave_height_max  r=+0.779**  p=0.000  n=10  ↑
+    swell_height_max r=+0.777**  p=0.000  n=10  ↑
+    wave_height      r=+0.739**  p=0.002  n=10  ↑
+    swell_height     r=+0.733**  p=0.002  n=10  ↑
+    pressure_range   r=+0.692**  p=0.007  n=10  ↑
+    pressure_min     r=-0.676**  p=0.009  n=10  ↓
+    pressure_delta   r=+0.567   p=0.052  n=10  ↑
+
+【因子相関（旬集計: n=8旬）】
+  (有意な相関なし)
+
+【因子相関（月集計: n=3月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

@@ -17,7 +17,47 @@
     25      1.8      1.5     -0.3     4
     26      1.2      1.5     +0.3     2
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 28件）】
+
+  [cnt_avg]
+    wave_height      r=-0.467**  p=0.007  n=28  ↓
+    swell_height     r=-0.467**  p=0.007  n=28  ↓
+    wave_height_max  r=-0.453**  p=0.009  n=28  ↓
+    swell_height_max r=-0.415*  p=0.020  n=28  ↓
+    wind_speed_max   r=-0.339   p=0.066  n=28  ↓
+    typhoon_wind     r=-0.334   p=0.089  n=25  ↓
+    tide_range       r=+0.332   p=0.073  n=28  ↑
+
+  [cnt_max]
+    wave_height      r=-0.495**  p=0.004  n=28  ↓
+    swell_height     r=-0.485**  p=0.005  n=28  ↓
+    wave_height_max  r=-0.468**  p=0.007  n=28  ↓
+    swell_height_max r=-0.426*  p=0.016  n=28  ↓
+    typhoon_wind     r=-0.364   p=0.061  n=25  ↓
+    tide_range       r=+0.356   p=0.052  n=28  ↑
+    wind_speed_max   r=-0.346   p=0.060  n=28  ↓
+
+  [kg_avg]
+    wave_period_min  r=+0.669**  p=0.000  n=28  ↑
+    wave_period      r=+0.609**  p=0.000  n=28  ↑
+    wind_dir         r=-0.544**  p=0.001  n=28  ↓
+    temp_range       r=+0.487**  p=0.004  n=28  ↑
+    pressure_min     r=-0.444*  p=0.012  n=28  ↓
+    typhoon_dist     r=-0.442*  p=0.018  n=25  ↓
+    pressure         r=-0.418*  p=0.019  n=28  ↓
+    pressure_delta   r=-0.417*  p=0.019  n=28  ↓
+    wind_speed_max   r=-0.406*  p=0.024  n=28  ↓
+    sst              r=+0.381*  p=0.036  n=28  ↑
+    temp_max         r=+0.373*  p=0.040  n=28  ↑
+    prev_week_cnt    r=+0.348   p=0.069  n=26  ↑
+
+【因子相関（週集計: n=7週）】
+  (有意な相関なし)
+
+【因子相関（旬集計: n=5旬）】
+  (有意な相関なし)
+
+【因子相関（月集計: n=2月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

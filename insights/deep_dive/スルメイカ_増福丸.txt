@@ -15,7 +15,52 @@
     23     51.2     51.2     +0.0     8
     24     50.8     50.8     +0.0     6
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 26件）】
+
+  [cnt_avg]
+    moon_age         r=+0.366   p=0.054  n=26  ↑
+    precip_sum2      r=-0.336   p=0.081  n=26  ↓
+    wave_period_min  r=-0.321   p=0.097  n=26  ↓
+
+  [cnt_max]
+    wave_period_min  r=-0.407*  p=0.029  n=26  ↓
+    sst              r=-0.393*  p=0.036  n=26  ↓
+    moon_age         r=+0.383*  p=0.042  n=26  ↑
+    wave_height      r=-0.361   p=0.058  n=26  ↓
+    swell_height     r=-0.340   p=0.076  n=26  ↓
+    swell_height_max r=-0.328   p=0.089  n=26  ↓
+    wave_period      r=-0.327   p=0.090  n=26  ↓
+    wave_height_max  r=-0.325   p=0.092  n=26  ↓
+
+  [size_avg]
+    prev_week_cnt    r=+0.421*  p=0.026  n=25  ↑
+    typhoon_dist     r=-0.389*  p=0.043  n=25  ↓
+    sst              r=-0.389*  p=0.039  n=26  ↓
+
+【因子相関（週集計: n=10週）】
+
+  [cnt_avg]
+    wind_speed_max   r=+0.642*  p=0.018  n=10  ↑
+    sst              r=-0.547   p=0.065  n=10  ↓
+    wave_period_min  r=-0.531   p=0.076  n=10  ↓
+    pressure         r=-0.527   p=0.079  n=10  ↓
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+
+  [cnt_max]
+    wind_speed_max   r=+0.619*  p=0.026  n=10  ↑
+    sst              r=-0.605*  p=0.032  n=10  ↓
+    prev_week_cnt    r=+0.599*  p=0.048  n=9  ↑
+    wave_period_min  r=-0.556   p=0.059  n=10  ↓
+
+  [size_avg]
+    wind_speed_max   r=+0.533   p=0.075  n=10  ↑
+    pressure         r=-0.513   p=0.091  n=10  ↓
+    pressure_min     r=-0.506   p=0.097  n=10  ↓
+
+【因子相関（旬集計: n=8旬）】
+  (有意な相関なし)
+
+【因子相関（月集計: n=3月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

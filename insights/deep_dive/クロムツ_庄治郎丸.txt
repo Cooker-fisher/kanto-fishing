@@ -19,7 +19,49 @@
      8      7.2      6.0     -1.2     2
      9      4.2      7.0     +2.8     1
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 16件）】
+
+  [cnt_avg]
+    tide_type_n      r=-0.507*  p=0.028  n=16  ↓
+    moon_age         r=-0.411   p=0.092  n=16  ↓
+
+  [cnt_max]
+    sst              r=-0.464   p=0.050  n=16  ↓
+
+  [size_avg]
+    prev_week_cnt    r=-0.670**  p=0.007  n=11  ↓
+    sst              r=+0.530*  p=0.048  n=12  ↑
+    wind_speed       r=-0.491   p=0.074  n=12  ↓
+    temp_range       r=+0.475   p=0.088  n=12  ↑
+
+【因子相関（週集計: n=10週）】
+
+  [cnt_avg]
+    temp_range       r=-0.575*  p=0.047  n=10  ↓
+    temp_max         r=-0.563   p=0.054  n=10  ↓
+    moon_age         r=-0.549   p=0.063  n=10  ↓
+    tide_type_n      r=-0.544   p=0.067  n=10  ↓
+    sst              r=-0.520   p=0.085  n=10  ↓
+
+  [cnt_max]
+    sst              r=-0.655*  p=0.014  n=10  ↓
+    prev_week_cnt    r=+0.604*  p=0.045  n=9  ↑
+    temp_range       r=-0.586*  p=0.041  n=10  ↓
+
+【因子相関（旬集計: n=10旬）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.591   p=0.053  n=9  ↑
+    tide_type_n      r=-0.587*  p=0.040  n=10  ↓
+    moon_age         r=-0.531   p=0.076  n=10  ↓
+    sst              r=-0.530   p=0.077  n=10  ↓
+
+  [cnt_max]
+    sst              r=-0.627*  p=0.023  n=10  ↓
+    prev_week_cnt    r=+0.622*  p=0.036  n=9  ↑
+    temp_range       r=-0.618*  p=0.026  n=10  ↓
+
+【因子相関（月集計: n=5月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

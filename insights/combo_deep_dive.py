@@ -38,6 +38,7 @@ ROOT_DIR      = os.path.dirname(BASE_DIR)
 DATA_DIR      = os.path.join(ROOT_DIR, "data")
 DB_WX         = os.path.join(ROOT_DIR, "weather_cache.sqlite")
 DB_TIDE       = os.path.join(ROOT_DIR, "tide_moon.sqlite")
+DB_TYPHOON    = os.path.join(ROOT_DIR, "typhoon.sqlite")
 DB_ANA        = os.path.join(BASE_DIR, "analysis.sqlite")
 OUT_DIR       = os.path.join(BASE_DIR, "deep_dive")
 OVERRIDE_FILE = os.path.join(ROOT_DIR, "ship_wx_coord_override.json")
@@ -79,6 +80,7 @@ FAST_FACTORS = {
     "precip_sum1",                         # 前日合計（翌日の濁り）
     "precip_sum2",                         # 前々日合計（2日遅れ濁りピーク）
     "prev_week_cnt",                       # 前週釣果（自己相関）H>7では2週以上前の情報になるため無効化
+    "typhoon_dist", "typhoon_wind",        # 台風接近距離・最大風速（イベント変数 H≤5が有効限界）
 }
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
@@ -109,8 +111,11 @@ TIDE_FACTORS = ["tide_range", "moon_age", "tide_type_n"]
 # 釣果自己相関因子（前週釣果 → H≤7で有効、H>7では2週以上前の情報で精度低下）
 CATCH_FACTORS = ["prev_week_cnt"]
 
+# 台風因子（イベント変数 → FAST扱いで H>7 は無効化）
+TYPHOON_FACTORS = ["typhoon_dist", "typhoon_wind"]
+
 # 全因子（相関計算対象）
-ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS
+ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS
 
 TIDE_TYPE_MAP = {"大潮": 4, "中潮": 3, "小潮": 2, "長潮": 1, "若潮": 1}
 
@@ -268,7 +273,7 @@ def load_wx_overrides():
         return {}
 
 def load_ship_coords():
-    """combo_meta から avg lat/lon + オーバーライド適用"""
+    """combo_meta から avg lat/lon + オーバーライド適用（レコードに lat/lon がない場合の保険）"""
     conn = sqlite3.connect(DB_ANA)
     rows = conn.execute(
         "SELECT ship, AVG(lat), AVG(lon) FROM combo_meta WHERE lat IS NOT NULL GROUP BY ship"
@@ -356,6 +361,8 @@ def load_records(fish, ship_filter=None):
                     "size_avg": size_avg,
                     "kg_avg":   kg_avg,
                     "point":    row.get("point_place1", "").strip(),
+                    "lat":      _float(row.get("lat")),
+                    "lon":      _float(row.get("lon")),
                     "kanso":    (row.get("kanso_raw") or row.get("fish_raw") or "").strip(),
                     "is_train": date_str <= TRAIN_END,
                 })
@@ -453,7 +460,24 @@ def get_tide(conn_tide, date_iso):
         "tide_type_n": TIDE_TYPE_MAP.get(tide_type, 2),
     }
 
-def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None):
+def get_typhoon(conn_ty, date_iso):
+    """台風接近データを返す（typhoon.sqlite から取得）。
+    台風なし日は None を返す（相関計算から除外するため 9999 は使わない）。
+    """
+    if conn_ty is not None:
+        row = conn_ty.execute("""
+            SELECT min_dist, wind_kt
+            FROM typhoon_track
+            WHERE date(dt) = ?
+            ORDER BY min_dist ASC
+            LIMIT 1
+        """, (date_iso,)).fetchone()
+        if row:
+            return {"typhoon_dist": row[0], "typhoon_wind": row[1]}
+    return {"typhoon_dist": None, "typhoon_wind": None}
+
+
+def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None, conn_typhoon=None):
     """全レコードに海況・潮汐・前週釣果を付与（horizon 日前の weather を使用）。
 
     all_records: 前週釣果(prev_week_cnt)の参照用に全期間レコードを渡す。
@@ -461,8 +485,9 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
     horizon=H のとき、prediction_date = D - H 以前の最新釣果を prev_week_cnt とする。
     H=0〜7: 先週以内の釣果 → 有効  |  H>7: 2週以上前 → FAST_FACTORS により無効化
     """
-    wx_cache   = {}
-    tide_cache = {}
+    wx_cache      = {}
+    tide_cache    = {}
+    typhoon_cache = {}
     result = []
 
     # 前週釣果の参照先（日付昇順ソート済み）
@@ -472,10 +497,15 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
 
     for r in records:
         ship = r["ship"]
-        if ship not in ship_coords:
+        # 座標優先順: ①レコード個別lat/lon（CSV 3段階フォールバック済み）→ ②ship_coords（保険）
+        rlat, rlon = r.get("lat"), r.get("lon")
+        if rlat and rlon:
+            wlat, wlon = nearest_coord(rlat, rlon, wx_coords)
+        elif ship in ship_coords:
+            slat, slon = ship_coords[ship]
+            wlat, wlon = nearest_coord(slat, slon, wx_coords)
+        else:
             continue
-        slat, slon = ship_coords[ship]
-        wlat, wlon = nearest_coord(slat, slon, wx_coords)
 
         try:
             d = datetime.strptime(r["date"], "%Y/%m/%d")
@@ -540,9 +570,14 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
                 break
         wx["prev_week_cnt"] = prev_cnt
 
+        # 台風（wx_date = D-H の台風接近距離）
+        if wx_date not in typhoon_cache:
+            typhoon_cache[wx_date] = get_typhoon(conn_typhoon, wx_date)
+
         rec = dict(r)
         rec.update(wx)
         rec.update(tide)
+        rec.update(typhoon_cache[wx_date])
         result.append(rec)
 
     return result
@@ -618,6 +653,38 @@ def section_decadal(records, decadal):
         dev = act - exp
         lines.append(f"  {dn:>4}  {exp:>7.1f}  {act:>7.1f}  {dev:>+7.1f}  {len(acts):>4}")
     return lines[:22]
+
+def _period_key(date_str, period):
+    """日付文字列 → 集計キー（week/decade/month）"""
+    d = datetime.strptime(date_str, "%Y/%m/%d")
+    if period == "week":
+        iso = d.isocalendar()
+        return f"{iso[0]}-W{iso[1]:02d}"
+    elif period == "decade":
+        decade = min((d.day - 1) // 10, 2)  # 0=上旬, 1=中旬, 2=下旬
+        return f"{d.year}-{d.month:02d}-D{decade}"
+    elif period == "month":
+        return f"{d.year}-{d.month:02d}"
+
+
+def aggregate_by_period(enriched_recs, period):
+    """enriched records を週/旬/月単位で集計（数値フィールドの平均）"""
+    buckets = defaultdict(list)
+    for r in enriched_recs:
+        buckets[_period_key(r["date"], period)].append(r)
+
+    num_keys = {k for r in enriched_recs[:20] for k, v in r.items() if isinstance(v, (int, float))}
+
+    result = []
+    for key in sorted(buckets.keys()):
+        recs = buckets[key]
+        agg = {"date": key, "_n": len(recs)}
+        for k in num_keys:
+            vals = [r[k] for r in recs if r.get(k) is not None]
+            agg[k] = sum(vals) / len(vals) if vals else None
+        result.append(agg)
+    return result
+
 
 def section_corr(enriched_recs, metrics=None):
     if metrics is None:
@@ -816,7 +883,7 @@ def _backtest_metric(metric, train_en, test_en_by_H, hist_params, decadal,
     return fac_desc, (r_own, n_own), rows
 
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None):
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None):
     """ローリング月次クロスバリデーション
 
     各月をテスト期として、それ以前の全データを学習に使う拡張ウィンドウCV。
@@ -836,7 +903,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     for H in HORIZONS:
         all_en_by_H[H] = enrich(
             records, ship_coords, wx_coords, conn_wx, ship_area,
-            horizon=H, all_records=records, conn_tide=conn_tide
+            horizon=H, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon
         )
 
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg"]
@@ -1202,9 +1269,10 @@ def deep_dive(fish, ship, verbose=True):
         print(f"  {fish} × {ship}: データ不足 ({len(records)}件)")
         return
 
-    conn_wx   = sqlite3.connect(DB_WX)   if (os.path.exists(DB_WX)   and os.path.getsize(DB_WX)   > 0) else None
-    conn_tide = sqlite3.connect(DB_TIDE) if (os.path.exists(DB_TIDE) and os.path.getsize(DB_TIDE) > 0) else None
-    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records, conn_tide=conn_tide)
+    conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
+    conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
+    conn_typhoon = sqlite3.connect(DB_TYPHOON) if (os.path.exists(DB_TYPHOON) and os.path.getsize(DB_TYPHOON) > 0) else None
+    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
     decadal = load_decadal(fish, ship)
 
     SEP  = "=" * 72
@@ -1221,9 +1289,15 @@ def deep_dive(fish, ship, verbose=True):
     out.append(f"\n【旬別ベースライン（n={len(records)}件）】")
     out += section_decadal(records, decadal)
 
-    out.append(f"\n【因子相関（海況マッチ: {len(en0)}件, 予報可能因子のみ）】")
+    out.append(f"\n【因子相関（日次: {len(en0)}件）】")
     corr_lines, corr_results = section_corr(en0)
     out += corr_lines
+
+    for period, label in [("week", "週"), ("decade", "旬"), ("month", "月")]:
+        agg = aggregate_by_period(en0, period)
+        out.append(f"\n【因子相関（{label}集計: n={len(agg)}{label}）】")
+        agg_lines, _ = section_corr(agg)
+        out += agg_lines
 
     out.append("\n【コメントキーワード解析】")
     kw_lines, kw_data = section_keywords(records)
@@ -1233,13 +1307,15 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide)
+    bt_lines, bt_data = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
     out += bt_lines
 
     if conn_wx is not None:
         conn_wx.close()
     if conn_tide is not None:
         conn_tide.close()
+    if conn_typhoon is not None:
+        conn_typhoon.close()
 
     text = "\n".join(out)
     out_path = os.path.join(OUT_DIR, f"{fish}_{ship}.txt")

@@ -10,8 +10,86 @@
 【旬別ベースライン（n=14件）】
   (combo_decadal データなし)
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
-  (有意な相関なし)
+【因子相関（日次: 14件）】
+
+  [cnt_avg]
+    typhoon_wind     r=+0.736   p=0.060  n=5  ↑
+    prev_week_cnt    r=+0.734**  p=0.000  n=13  ↑
+    pressure_range   r=+0.583*  p=0.013  n=14  ↑
+    temp_range       r=+0.546*  p=0.024  n=14  ↑
+    swell_height     r=+0.542*  p=0.025  n=14  ↑
+    wave_height_max  r=+0.536*  p=0.028  n=14  ↑
+    wave_height      r=+0.482   p=0.056  n=14  ↑
+    swell_height_max r=+0.474   p=0.062  n=14  ↑
+    precip_sum2      r=-0.451   p=0.080  n=14  ↓
+    wind_speed_max   r=+0.446   p=0.084  n=14  ↑
+
+  [cnt_max]
+    precip_sum2      r=-0.635**  p=0.004  n=14  ↓
+    prev_week_cnt    r=+0.621**  p=0.009  n=13  ↑
+    pressure_range   r=+0.587*  p=0.012  n=14  ↑
+    temp_range       r=+0.514*  p=0.038  n=14  ↑
+    swell_height     r=+0.437   p=0.093  n=14  ↑
+
+【因子相関（週集計: n=14週）】
+
+  [cnt_avg]
+    typhoon_wind     r=+0.736   p=0.060  n=5  ↑
+    prev_week_cnt    r=+0.734**  p=0.000  n=13  ↑
+    pressure_range   r=+0.583*  p=0.013  n=14  ↑
+    temp_range       r=+0.546*  p=0.024  n=14  ↑
+    swell_height     r=+0.542*  p=0.025  n=14  ↑
+    wave_height_max  r=+0.536*  p=0.028  n=14  ↑
+    wave_height      r=+0.482   p=0.056  n=14  ↑
+    swell_height_max r=+0.474   p=0.062  n=14  ↑
+    precip_sum2      r=-0.451   p=0.080  n=14  ↓
+    wind_speed_max   r=+0.446   p=0.084  n=14  ↑
+
+  [cnt_max]
+    precip_sum2      r=-0.635**  p=0.004  n=14  ↓
+    prev_week_cnt    r=+0.621**  p=0.009  n=13  ↑
+    pressure_range   r=+0.587*  p=0.012  n=14  ↑
+    temp_range       r=+0.514*  p=0.038  n=14  ↑
+    swell_height     r=+0.437   p=0.093  n=14  ↑
+
+【因子相関（旬集計: n=13旬）】
+
+  [cnt_avg]
+    typhoon_wind     r=+0.736   p=0.060  n=5  ↑
+    prev_week_cnt    r=+0.708**  p=0.002  n=12  ↑
+    pressure_range   r=+0.698**  p=0.001  n=13  ↑
+    swell_height     r=+0.643**  p=0.005  n=13  ↑
+    wave_height      r=+0.603*  p=0.012  n=13  ↑
+    wave_height_max  r=+0.593*  p=0.015  n=13  ↑
+    wind_speed_max   r=+0.567*  p=0.022  n=13  ↑
+    swell_height_max r=+0.531*  p=0.037  n=13  ↑
+    pressure_min     r=-0.484   p=0.066  n=13  ↓
+    temp_range       r=+0.451   p=0.094  n=13  ↑
+
+  [cnt_max]
+    pressure_range   r=+0.703**  p=0.001  n=13  ↑
+    precip_sum2      r=-0.639**  p=0.006  n=13  ↓
+    prev_week_cnt    r=+0.583*  p=0.023  n=12  ↑
+    swell_height     r=+0.527*  p=0.040  n=13  ↑
+    wave_height      r=+0.478   p=0.071  n=13  ↑
+    pressure_min     r=-0.457   p=0.088  n=13  ↓
+
+【因子相関（月集計: n=11月）】
+
+  [cnt_avg]
+    typhoon_wind     r=+0.778*  p=0.032  n=5  ↑
+    pressure_range   r=+0.754**  p=0.001  n=11  ↑
+    prev_week_cnt    r=+0.749**  p=0.001  n=10  ↑
+    swell_height     r=+0.623*  p=0.017  n=11  ↑
+    wave_height      r=+0.613*  p=0.020  n=11  ↑
+    wave_height_max  r=+0.603*  p=0.024  n=11  ↑
+    wind_speed_max   r=+0.517   p=0.070  n=11  ↑
+    swell_height_max r=+0.494   p=0.089  n=11  ↑
+
+  [cnt_max]
+    pressure_range   r=+0.769**  p=0.000  n=11  ↑
+    precip_sum2      r=-0.667**  p=0.007  n=11  ↓
+    prev_week_cnt    r=+0.616*  p=0.027  n=10  ↑
 
 【コメントキーワード解析】
   (有意なキーワードなし)

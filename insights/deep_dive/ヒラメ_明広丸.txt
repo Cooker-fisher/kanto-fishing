@@ -32,8 +32,144 @@
     33      2.2      2.2     -0.0    23
     34      2.4      2.4     -0.0    21
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
-  (有意な相関なし)
+【因子相関（日次: 348件）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.211**  p=0.000  n=347  ↑
+    swell_height     r=-0.175**  p=0.001  n=348  ↓
+    wave_period      r=-0.157**  p=0.003  n=347  ↓
+    sst              r=+0.142**  p=0.009  n=338  ↑
+    precip_sum1      r=-0.141**  p=0.008  n=348  ↓
+    wave_height      r=-0.131*  p=0.014  n=348  ↓
+    wind_speed       r=+0.116*  p=0.030  n=348  ↑
+    swell_height_max r=-0.113*  p=0.035  n=348  ↓
+    wave_height_max  r=-0.111*  p=0.038  n=348  ↓
+    wave_period_min  r=-0.092   p=0.085  n=348  ↓
+
+  [cnt_max]
+    swell_height     r=-0.242**  p=0.000  n=348  ↓
+    typhoon_dist     r=+0.237*  p=0.030  n=81  ↑
+    prev_week_cnt    r=+0.231**  p=0.000  n=347  ↑
+    wave_height      r=-0.228**  p=0.000  n=348  ↓
+    swell_height_max r=-0.208**  p=0.000  n=348  ↓
+    temp             r=-0.204**  p=0.000  n=348  ↓
+    temp_min         r=-0.194**  p=0.000  n=348  ↓
+    temp_max         r=-0.180**  p=0.001  n=348  ↓
+    wave_height_max  r=-0.171**  p=0.001  n=348  ↓
+    precip_sum1      r=-0.161**  p=0.002  n=348  ↓
+    wave_period      r=-0.161**  p=0.002  n=347  ↓
+    wave_period_min  r=-0.148**  p=0.005  n=348  ↓
+
+  [kg_avg]
+    temp_min         r=-0.305**  p=0.000  n=344  ↓
+    temp             r=-0.295**  p=0.000  n=344  ↓
+    temp_max         r=-0.289**  p=0.000  n=344  ↓
+    sst              r=-0.248**  p=0.000  n=334  ↓
+    swell_height     r=-0.127*  p=0.018  n=344  ↓
+    temp_range       r=+0.121*  p=0.024  n=344  ↑
+    wave_height      r=-0.118*  p=0.029  n=344  ↓
+
+【因子相関（週集計: n=93週）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.512**  p=0.000  n=93  ↑
+    pressure         r=-0.279**  p=0.006  n=93  ↓
+    swell_height     r=-0.278**  p=0.006  n=93  ↓
+    pressure_min     r=-0.266**  p=0.008  n=93  ↓
+    wave_period      r=-0.255*  p=0.012  n=93  ↓
+    wave_period_min  r=-0.232*  p=0.023  n=93  ↓
+    pressure_delta   r=-0.223*  p=0.029  n=93  ↓
+    sst              r=+0.199   p=0.054  n=92  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.506**  p=0.000  n=93  ↑
+    typhoon_dist     r=+0.403*  p=0.031  n=26  ↑
+    swell_height     r=-0.360**  p=0.000  n=93  ↓
+    wave_height      r=-0.319**  p=0.001  n=93  ↓
+    temp             r=-0.281**  p=0.005  n=93  ↓
+    temp_min         r=-0.270**  p=0.008  n=93  ↓
+    swell_height_max r=-0.259*  p=0.011  n=93  ↓
+    temp_max         r=-0.234*  p=0.022  n=93  ↓
+    wave_period_min  r=-0.232*  p=0.023  n=93  ↓
+    temp_range       r=+0.232*  p=0.023  n=93  ↑
+    pressure_min     r=-0.231*  p=0.024  n=93  ↓
+    pressure         r=-0.230*  p=0.024  n=93  ↓
+
+  [kg_avg]
+    typhoon_dist     r=+0.369   p=0.057  n=25  ↑
+    temp_min         r=-0.356**  p=0.000  n=92  ↓
+    temp             r=-0.351**  p=0.000  n=92  ↓
+    temp_max         r=-0.319**  p=0.001  n=92  ↓
+    wave_height      r=-0.268**  p=0.008  n=92  ↓
+    temp_range       r=+0.266**  p=0.009  n=92  ↑
+    swell_height     r=-0.245*  p=0.016  n=92  ↓
+    sst              r=-0.233*  p=0.024  n=91  ↓
+    wind_speed       r=-0.209*  p=0.042  n=92  ↓
+    swell_height_max r=-0.181   p=0.080  n=92  ↓
+
+【因子相関（旬集計: n=64旬）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.763**  p=0.000  n=64  ↑
+    pressure_delta   r=-0.268*  p=0.029  n=64  ↓
+    sst              r=+0.263*  p=0.033  n=63  ↑
+    swell_height     r=-0.211   p=0.089  n=64  ↓
+    pressure         r=-0.208   p=0.095  n=64  ↓
+
+  [cnt_max]
+    prev_week_cnt    r=+0.740**  p=0.000  n=64  ↑
+    swell_height     r=-0.312**  p=0.010  n=64  ↓
+    temp             r=-0.291*  p=0.016  n=64  ↓
+    temp_max         r=-0.291*  p=0.017  n=64  ↓
+    temp_min         r=-0.270*  p=0.027  n=64  ↓
+    pressure_delta   r=-0.247*  p=0.044  n=64  ↓
+    pressure_min     r=-0.242*  p=0.049  n=64  ↓
+    wave_height      r=-0.240   p=0.052  n=64  ↓
+    pressure         r=-0.239   p=0.053  n=64  ↓
+    pressure_range   r=+0.215   p=0.083  n=64  ↑
+    swell_height_max r=-0.213   p=0.085  n=64  ↓
+
+  [kg_avg]
+    typhoon_dist     r=+0.567**  p=0.006  n=18  ↑
+    temp             r=-0.403**  p=0.001  n=64  ↓
+    temp_min         r=-0.398**  p=0.001  n=64  ↓
+    typhoon_wind     r=-0.391   p=0.089  n=18  ↓
+    temp_max         r=-0.368**  p=0.002  n=64  ↓
+    temp_range       r=+0.319**  p=0.008  n=64  ↑
+    sst              r=-0.307*  p=0.012  n=63  ↓
+    swell_height     r=-0.276*  p=0.024  n=64  ↓
+    prev_week_cnt    r=+0.263*  p=0.032  n=64  ↑
+    precip_sum       r=-0.262*  p=0.033  n=64  ↓
+    wave_height      r=-0.246*  p=0.045  n=64  ↓
+    swell_height_max r=-0.212   p=0.088  n=64  ↓
+
+【因子相関（月集計: n=24月）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.873**  p=0.000  n=24  ↑
+    pressure_delta   r=-0.483**  p=0.010  n=24  ↓
+    pressure         r=-0.403*  p=0.039  n=24  ↓
+    pressure_min     r=-0.383   p=0.051  n=24  ↓
+    sst              r=+0.343   p=0.087  n=24  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.763**  p=0.000  n=24  ↑
+    typhoon_dist     r=+0.726**  p=0.005  n=9  ↑
+    temp             r=-0.416*  p=0.032  n=24  ↓
+    temp_min         r=-0.399*  p=0.041  n=24  ↓
+    pressure         r=-0.391*  p=0.046  n=24  ↓
+    temp_max         r=-0.388*  p=0.049  n=24  ↓
+    pressure_delta   r=-0.363   p=0.068  n=24  ↓
+    pressure_min     r=-0.363   p=0.068  n=24  ↓
+
+  [kg_avg]
+    typhoon_dist     r=+0.881**  p=0.000  n=9  ↑
+    typhoon_wind     r=-0.652*  p=0.023  n=9  ↓
+    temp             r=-0.435*  p=0.023  n=24  ↓
+    temp_min         r=-0.433*  p=0.024  n=24  ↓
+    temp_range       r=+0.416*  p=0.032  n=24  ↑
+    temp_max         r=-0.406*  p=0.037  n=24  ↓
+    prev_week_cnt    r=+0.341   p=0.089  n=24  ↑
 
 【コメントキーワード解析】
 
@@ -59,12 +195,39 @@
   岩和田東沖                      2      1.0        1        1
 
 【マルチホライズン バックテスト（ローリング月次CV）】
-  ローリング月次CV  全24ヶ月  テスト総計: 0件
+  ローリング月次CV  全24ヶ月  テスト総計: 332件
 
-  ─ Ave匹数 : データ不足 ─
+  ─ Ave匹数 ─
+       ホライズン        r      MAE     MAPE       方向一致     n
+  -------------------------------------------------------
+     H=  0(実測)  +0.308*     0.7匹    42.9%      47.6%   332  
+      H=  1d 前  +0.290*     0.7匹    42.9%      50.3%   332  
+      H=  3d 前  +0.282*     0.7匹    42.3%      53.4%   332  
+      H=  7d 前  +0.262*     0.7匹    44.1%      51.9%   332  
+      H= 14d 前  +0.170      0.8匹    49.0%      50.8%   332  (10/27因子)
+      H= 21d 前  +0.176      0.8匹    48.7%      51.3%   332  (10/27因子)
+      H= 28d 前  +0.171      0.8匹    50.0%      52.4%   332  (10/27因子)
 
-  ─ Min匹数 : データ不足 ─
+  ─ Min匹数 ─
+       ホライズン        r      MAE     MAPE       方向一致     n
+  -------------------------------------------------------
+     H=  0(実測)  +0.180      0.8匹    61.7%      50.6%   332  
+      H=  1d 前  +0.141      0.8匹    63.5%      45.5%   332  
+      H=  3d 前  +0.197      0.8匹    62.5%      52.8%   332  
+      H=  7d 前  +0.068      0.8匹    60.3%      50.6%   332  
+      H= 14d 前  +0.153      0.8匹    62.0%      60.2%   332  (10/27因子)
+      H= 21d 前  +0.149      0.8匹    60.9%      49.4%   332  (10/27因子)
+      H= 28d 前  +0.149      0.9匹    62.2%      50.0%   332  (10/27因子)
 
-  ─ Max匹数 : データ不足 ─
+  ─ Max匹数 ─
+       ホライズン        r      MAE     MAPE       方向一致     n
+  -------------------------------------------------------
+     H=  0(実測)  +0.242*     1.2匹    41.3%      55.3%   332  
+      H=  1d 前  +0.241*     1.2匹    40.6%      56.6%   332  
+      H=  3d 前  +0.196      1.2匹    41.9%      43.8%   332  
+      H=  7d 前  +0.196      1.2匹    42.5%      50.6%   332  
+      H= 14d 前  +0.105      1.3匹    44.9%      46.4%   332  (10/27因子)
+      H= 21d 前  +0.096      1.3匹    44.5%      49.4%   332  (10/27因子)
+      H= 28d 前  +0.092      1.3匹    44.1%      48.9%   332  (10/27因子)
 
   ─ Ave型   : データ不足 ─

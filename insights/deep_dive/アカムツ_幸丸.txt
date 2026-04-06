@@ -15,7 +15,55 @@
     10      2.8      2.8     +0.0     6
     11      2.8      2.8     +0.0     5
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 20件）】
+
+  [cnt_avg]
+    precip_sum1      r=+0.692**  p=0.000  n=20  ↑
+    temp_min         r=+0.419   p=0.050  n=20  ↑
+    swell_height     r=+0.398   p=0.065  n=20  ↑
+    tide_range       r=+0.396   p=0.067  n=20  ↑
+    temp             r=+0.367   p=0.094  n=20  ↑
+
+  [cnt_max]
+    temp_min         r=+0.508*  p=0.012  n=20  ↑
+    moon_age         r=-0.479*  p=0.021  n=20  ↓
+    temp             r=+0.447*  p=0.034  n=20  ↑
+    temp_range       r=-0.442*  p=0.037  n=20  ↓
+    precip_sum1      r=+0.391   p=0.072  n=20  ↑
+
+  [size_avg]
+    pressure_delta   r=+0.436*  p=0.040  n=20  ↑
+
+【因子相関（週集計: n=11週）】
+
+  [cnt_avg]
+    swell_height_max r=+0.743**  p=0.001  n=11  ↑
+    swell_height     r=+0.678**  p=0.006  n=11  ↑
+    precip_sum1      r=+0.623*  p=0.017  n=11  ↑
+    wave_height      r=+0.623*  p=0.017  n=11  ↑
+    moon_age         r=-0.562*  p=0.042  n=11  ↓
+    wave_height_max  r=+0.498   p=0.085  n=11  ↑
+
+  [cnt_max]
+    swell_height_max r=+0.715**  p=0.002  n=11  ↑
+    moon_age         r=-0.605*  p=0.023  n=11  ↓
+    swell_height     r=+0.576*  p=0.034  n=11  ↑
+    wave_height      r=+0.576*  p=0.034  n=11  ↑
+    precip_sum1      r=+0.540   p=0.055  n=11  ↑
+
+  [size_avg]
+    pressure_delta   r=+0.664**  p=0.008  n=11  ↑
+    pressure_range   r=+0.481   p=0.100  n=11  ↑
+
+【因子相関（旬集計: n=10旬）】
+
+  [cnt_max]
+    moon_age         r=-0.548   p=0.064  n=10  ↓
+
+  [size_avg]
+    pressure_delta   r=+0.608*  p=0.030  n=10  ↑
+
+【因子相関（月集計: n=6月）】
   (有意な相関なし)
 
 【コメントキーワード解析】
@@ -25,7 +73,7 @@
   (ポイントデータなし)
 
 【マルチホライズン バックテスト（ローリング月次CV）】
-  ローリング月次CV  全6ヶ月  テスト総計: 0件
+  ローリング月次CV  全6ヶ月  テスト総計: 3件
 
   ─ Ave匹数 : データ不足 ─
 

@@ -11,7 +11,32 @@
 【旬別ベースライン（n=13件）】
   (combo_decadal データなし)
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 13件）】
+
+  [cnt_avg]
+    pressure_range   r=+0.517*  p=0.045  n=13  ↑
+    moon_age         r=-0.487   p=0.064  n=13  ↓
+
+  [size_avg]
+    precip_sum1      r=-0.526   p=0.080  n=10  ↓
+    wave_period_min  r=-0.504   p=0.099  n=10  ↓
+
+【因子相関（週集計: n=10週）】
+  (有意な相関なし)
+
+【因子相関（旬集計: n=10旬）】
+
+  [cnt_avg]
+    wind_dir         r=-0.571*  p=0.049  n=10  ↓
+    pressure_range   r=+0.538   p=0.071  n=10  ↑
+    wind_speed       r=+0.523   p=0.083  n=10  ↑
+
+  [cnt_max]
+    wind_dir         r=-0.642*  p=0.018  n=10  ↓
+    pressure_min     r=+0.508   p=0.095  n=10  ↑
+    wind_speed       r=+0.506   p=0.097  n=10  ↑
+
+【因子相関（月集計: n=9月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

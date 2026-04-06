@@ -13,7 +13,53 @@
   ---------------------------------------------
      4      6.7      6.7     -0.0     3
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 12件）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.668**  p=0.007  n=11  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.583*  p=0.031  n=11  ↑
+    pressure_range   r=+0.565*  p=0.030  n=12  ↑
+    swell_height_max r=+0.488   p=0.077  n=12  ↑
+    wind_speed       r=+0.464   p=0.098  n=12  ↑
+
+  [size_avg]
+    wind_speed       r=+0.584*  p=0.023  n=12  ↑
+    wave_height      r=+0.561*  p=0.032  n=12  ↑
+    wave_height_max  r=+0.518   p=0.055  n=12  ↑
+
+【因子相関（週集計: n=12週）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.668**  p=0.007  n=11  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.583*  p=0.031  n=11  ↑
+    pressure_range   r=+0.565*  p=0.030  n=12  ↑
+    swell_height_max r=+0.488   p=0.077  n=12  ↑
+    wind_speed       r=+0.464   p=0.098  n=12  ↑
+
+  [size_avg]
+    wind_speed       r=+0.584*  p=0.023  n=12  ↑
+    wave_height      r=+0.561*  p=0.032  n=12  ↑
+    wave_height_max  r=+0.518   p=0.055  n=12  ↑
+
+【因子相関（旬集計: n=11旬）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.665*  p=0.012  n=10  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.583*  p=0.042  n=10  ↑
+    pressure_range   r=+0.539   p=0.055  n=11  ↑
+    swell_height_max r=+0.529   p=0.062  n=11  ↑
+
+  [size_avg]
+    wave_height      r=+0.521   p=0.067  n=11  ↑
+    wind_speed       r=+0.498   p=0.085  n=11  ↑
+
+【因子相関（月集計: n=9月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

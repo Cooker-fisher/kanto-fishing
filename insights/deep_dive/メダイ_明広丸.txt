@@ -17,7 +17,56 @@
     25      6.0      6.0     +0.0     4
     26      5.0      5.0     +0.0     6
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 28件）】
+
+  [cnt_avg]
+    typhoon_wind     r=+0.515*  p=0.013  n=19  ↑
+    moon_age         r=+0.406*  p=0.023  n=28  ↑
+    wind_speed       r=+0.344   p=0.062  n=28  ↑
+
+  [cnt_max]
+    typhoon_wind     r=+0.465*  p=0.031  n=19  ↑
+    moon_age         r=+0.396*  p=0.028  n=28  ↑
+    tide_type_n      r=+0.310   p=0.096  n=28  ↑
+
+  [kg_avg]
+    precip_sum       r=+0.510**  p=0.002  n=28  ↑
+    pressure_min     r=-0.374*  p=0.040  n=28  ↓
+    pressure         r=-0.371*  p=0.042  n=28  ↓
+    moon_age         r=+0.362*  p=0.048  n=28  ↑
+    wind_dir         r=-0.319   p=0.086  n=28  ↓
+
+【因子相関（週集計: n=15週）】
+
+  [cnt_avg]
+    tide_range       r=+0.532*  p=0.023  n=15  ↑
+    moon_age         r=+0.510*  p=0.032  n=15  ↑
+    tide_type_n      r=+0.485*  p=0.045  n=15  ↑
+
+  [cnt_max]
+    tide_range       r=+0.529*  p=0.024  n=15  ↑
+    tide_type_n      r=+0.503*  p=0.036  n=15  ↑
+    moon_age         r=+0.463   p=0.059  n=15  ↑
+
+  [kg_avg]
+    precip_sum       r=+0.584**  p=0.009  n=15  ↑
+
+【因子相関（旬集計: n=12旬）】
+
+  [cnt_avg]
+    tide_range       r=+0.493   p=0.073  n=12  ↑
+    pressure_range   r=-0.493   p=0.073  n=12  ↓
+    tide_type_n      r=+0.478   p=0.085  n=12  ↑
+
+  [cnt_max]
+    tide_type_n      r=+0.474   p=0.089  n=12  ↑
+
+  [kg_avg]
+    moon_age         r=+0.780**  p=0.000  n=12  ↑
+    precip_sum       r=+0.723**  p=0.001  n=12  ↑
+    wind_dir         r=-0.524   p=0.052  n=12  ↓
+
+【因子相関（月集計: n=5月）】
   (有意な相関なし)
 
 【コメントキーワード解析】
@@ -33,7 +82,7 @@
   岩和田沖航程35                   4      3.2        8        1
 
 【マルチホライズン バックテスト（ローリング月次CV）】
-  ローリング月次CV  全5ヶ月  テスト総計: 0件
+  ローリング月次CV  全5ヶ月  テスト総計: 4件
 
   ─ Ave匹数 : データ不足 ─
 

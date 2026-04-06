@@ -15,7 +15,39 @@
      5      4.0      4.0     +0.0     3
      9      5.2      5.2     +0.0     5
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 18件）】
+
+  [cnt_avg]
+    precip_sum       r=+0.769**  p=0.000  n=18  ↑
+    pressure         r=-0.733**  p=0.000  n=18  ↓
+    pressure_min     r=-0.721**  p=0.000  n=18  ↓
+    prev_week_cnt    r=+0.657**  p=0.001  n=17  ↑
+    temp_max         r=+0.484*  p=0.027  n=18  ↑
+    pressure_delta   r=-0.435   p=0.053  n=18  ↓
+    swell_height_max r=+0.433   p=0.055  n=18  ↑
+    temp_min         r=+0.405   p=0.076  n=18  ↑
+    temp             r=+0.390   p=0.090  n=18  ↑
+
+  [cnt_max]
+    precip_sum       r=+0.795**  p=0.000  n=18  ↑
+    pressure         r=-0.701**  p=0.000  n=18  ↓
+    pressure_min     r=-0.697**  p=0.000  n=18  ↓
+    prev_week_cnt    r=+0.683**  p=0.000  n=17  ↑
+    pressure_delta   r=-0.476*  p=0.030  n=18  ↓
+    pressure_range   r=+0.445*  p=0.047  n=18  ↑
+    temp_max         r=+0.442*  p=0.049  n=18  ↑
+
+  [size_avg]
+    sst              r=-0.403   p=0.078  n=18  ↓
+    wave_height      r=-0.399   p=0.082  n=18  ↓
+
+【因子相関（週集計: n=9週）】
+  (有意な相関なし)
+
+【因子相関（旬集計: n=7旬）】
+  (有意な相関なし)
+
+【因子相関（月集計: n=3月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

@@ -11,7 +11,39 @@
 【旬別ベースライン（n=11件）】
   (combo_decadal データなし)
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 11件）】
+
+  [cnt_avg]
+    typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    precip_sum2      r=+0.750**  p=0.001  n=11  ↑
+    sst              r=+0.484   p=0.097  n=11  ↑
+    swell_height_max r=-0.484   p=0.097  n=11  ↓
+
+  [cnt_max]
+    typhoon_dist     r=-0.824*  p=0.012  n=5  ↓
+    wind_speed       r=-0.513   p=0.073  n=11  ↓
+
+【因子相関（週集計: n=10週）】
+
+  [cnt_avg]
+    precip_sum2      r=+0.751**  p=0.001  n=10  ↑
+    typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    swell_height_max r=-0.508   p=0.096  n=10  ↓
+
+  [cnt_max]
+    typhoon_dist     r=-0.824*  p=0.012  n=5  ↓
+
+【因子相関（旬集計: n=10旬）】
+
+  [cnt_avg]
+    precip_sum2      r=+0.751**  p=0.001  n=10  ↑
+    typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    swell_height_max r=-0.508   p=0.096  n=10  ↓
+
+  [cnt_max]
+    typhoon_dist     r=-0.824*  p=0.012  n=5  ↓
+
+【因子相関（月集計: n=6月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

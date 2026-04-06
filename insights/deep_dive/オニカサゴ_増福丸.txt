@@ -14,8 +14,85 @@
      4      3.7      3.7     -0.0     3
      7      4.7      5.5     +0.8     4
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
-  (有意な相関なし)
+【因子相関（日次: 19件）】
+
+  [cnt_avg]
+    sst              r=+0.452*  p=0.043  n=18  ↑
+    wind_speed_max   r=-0.389   p=0.082  n=19  ↓
+    temp_min         r=+0.385   p=0.085  n=19  ↑
+    temp_max         r=+0.374   p=0.097  n=19  ↑
+
+  [cnt_max]
+    wind_dir         r=+0.478*  p=0.025  n=19  ↑
+    wave_height_max  r=-0.377   p=0.093  n=19  ↓
+
+【因子相関（週集計: n=16週）】
+
+  [cnt_avg]
+    sst              r=+0.588**  p=0.009  n=15  ↑
+    temp_min         r=+0.588**  p=0.007  n=16  ↑
+    temp             r=+0.567*  p=0.010  n=16  ↑
+    temp_max         r=+0.565*  p=0.010  n=16  ↑
+    wind_dir         r=+0.466*  p=0.048  n=16  ↑
+    wave_height_max  r=-0.460   p=0.053  n=16  ↓
+    wind_speed_max   r=-0.434   p=0.071  n=16  ↓
+
+  [cnt_max]
+    wind_dir         r=+0.587**  p=0.007  n=16  ↑
+    temp_min         r=+0.568**  p=0.010  n=16  ↑
+    temp             r=+0.560*  p=0.011  n=16  ↑
+    temp_max         r=+0.522*  p=0.022  n=16  ↑
+    sst              r=+0.492*  p=0.041  n=15  ↑
+    wave_height_max  r=-0.472*  p=0.045  n=16  ↓
+
+【因子相関（旬集計: n=16旬）】
+
+  [cnt_avg]
+    sst              r=+0.570*  p=0.012  n=15  ↑
+    temp_min         r=+0.526*  p=0.021  n=16  ↑
+    temp_max         r=+0.503*  p=0.029  n=16  ↑
+    temp             r=+0.502*  p=0.030  n=16  ↑
+    wind_speed_max   r=-0.488*  p=0.037  n=16  ↓
+    wind_dir         r=+0.472*  p=0.045  n=16  ↑
+    wave_height_max  r=-0.419   p=0.084  n=16  ↓
+
+  [cnt_max]
+    temp_min         r=+0.529*  p=0.020  n=16  ↑
+    wind_dir         r=+0.515*  p=0.025  n=16  ↑
+    temp             r=+0.511*  p=0.026  n=16  ↑
+    sst              r=+0.500*  p=0.037  n=15  ↑
+    wave_height_max  r=-0.495*  p=0.033  n=16  ↓
+    temp_max         r=+0.467*  p=0.048  n=16  ↑
+    wind_speed_max   r=-0.459   p=0.053  n=16  ↓
+
+【因子相関（月集計: n=10月）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.850**  p=0.000  n=9  ↑
+    temp_max         r=+0.829**  p=0.000  n=10  ↑
+    temp_min         r=+0.768**  p=0.001  n=10  ↑
+    temp             r=+0.756**  p=0.001  n=10  ↑
+    sst              r=+0.754**  p=0.002  n=9  ↑
+    wave_period      r=+0.726**  p=0.003  n=10  ↑
+    pressure         r=-0.684**  p=0.008  n=10  ↓
+    wind_speed_max   r=-0.673*  p=0.010  n=10  ↓
+    wave_period_min  r=+0.670*  p=0.011  n=10  ↑
+    wind_speed       r=-0.659*  p=0.013  n=10  ↓
+    wave_height_max  r=-0.608*  p=0.030  n=10  ↓
+    pressure_min     r=-0.531   p=0.077  n=10  ↓
+
+  [cnt_max]
+    temp_max         r=+0.885**  p=0.000  n=10  ↑
+    temp_min         r=+0.859**  p=0.000  n=10  ↑
+    temp             r=+0.856**  p=0.000  n=10  ↑
+    prev_week_cnt    r=+0.814**  p=0.000  n=9  ↑
+    sst              r=+0.813**  p=0.000  n=9  ↑
+    wave_period_min  r=+0.788**  p=0.000  n=10  ↑
+    wave_period      r=+0.785**  p=0.000  n=10  ↑
+    wind_speed_max   r=-0.766**  p=0.001  n=10  ↓
+    wave_height_max  r=-0.715**  p=0.004  n=10  ↓
+    wind_speed       r=-0.678**  p=0.009  n=10  ↓
+    pressure         r=-0.525   p=0.081  n=10  ↓
 
 【コメントキーワード解析】
   (有意なキーワードなし)
@@ -26,7 +103,7 @@
   御前崎沖                      18      4.2        9        2
 
 【マルチホライズン バックテスト（ローリング月次CV）】
-  ローリング月次CV  全10ヶ月  テスト総計: 0件
+  ローリング月次CV  全10ヶ月  テスト総計: 4件
 
   ─ Ave匹数 : データ不足 ─
 

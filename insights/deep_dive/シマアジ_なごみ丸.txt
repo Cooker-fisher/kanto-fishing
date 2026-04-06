@@ -18,7 +18,74 @@
     32      2.6      3.0     +0.4     4
     33      3.7      2.0     -1.7     2
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
+【因子相関（日次: 27件）】
+
+  [cnt_avg]
+    typhoon_dist     r=-0.625**  p=0.004  n=15  ↓
+    temp_min         r=+0.529**  p=0.002  n=27  ↑
+    temp             r=+0.506**  p=0.003  n=27  ↑
+    typhoon_wind     r=+0.492*  p=0.042  n=15  ↑
+    temp_max         r=+0.461**  p=0.009  n=27  ↑
+    wind_speed       r=+0.425*  p=0.019  n=27  ↑
+    pressure         r=-0.407*  p=0.026  n=27  ↓
+    wave_height      r=+0.324   p=0.086  n=27  ↑
+    sst              r=+0.323   p=0.088  n=27  ↑
+
+  [cnt_max]
+    typhoon_dist     r=-0.610**  p=0.005  n=15  ↓
+    temp_min         r=+0.504**  p=0.004  n=27  ↑
+    temp             r=+0.483**  p=0.006  n=27  ↑
+    typhoon_wind     r=+0.454   p=0.066  n=15  ↑
+    wind_speed       r=+0.432*  p=0.017  n=27  ↑
+    temp_max         r=+0.414*  p=0.023  n=27  ↑
+    pressure         r=-0.371*  p=0.046  n=27  ↓
+    sst              r=+0.326   p=0.085  n=27  ↑
+    wave_height      r=+0.317   p=0.094  n=27  ↑
+
+  [kg_avg]
+    wind_speed       r=-0.317   p=0.095  n=27  ↓
+
+【因子相関（週集計: n=10週）】
+
+  [cnt_avg]
+    typhoon_dist     r=-0.879**  p=0.000  n=6  ↓
+    prev_week_cnt    r=+0.803**  p=0.000  n=9  ↑
+    typhoon_wind     r=+0.755*  p=0.021  n=6  ↑
+    wave_period_min  r=+0.750**  p=0.001  n=10  ↑
+    wave_height      r=+0.701**  p=0.005  n=10  ↑
+    wave_period      r=+0.658*  p=0.014  n=10  ↑
+    temp_max         r=+0.657*  p=0.014  n=10  ↑
+    temp_min         r=+0.651*  p=0.015  n=10  ↑
+    temp             r=+0.631*  p=0.021  n=10  ↑
+    swell_height_max r=+0.623*  p=0.024  n=10  ↑
+    wave_height_max  r=+0.525   p=0.081  n=10  ↑
+    swell_height     r=+0.509   p=0.094  n=10  ↑
+
+  [cnt_max]
+    typhoon_dist     r=-0.911**  p=0.000  n=6  ↓
+    prev_week_cnt    r=+0.858**  p=0.000  n=9  ↑
+    wave_period_min  r=+0.785**  p=0.000  n=10  ↑
+    typhoon_wind     r=+0.742*  p=0.027  n=6  ↑
+    wave_period      r=+0.713**  p=0.004  n=10  ↑
+    temp_min         r=+0.709**  p=0.004  n=10  ↑
+    wave_height      r=+0.706**  p=0.005  n=10  ↑
+    temp             r=+0.706**  p=0.005  n=10  ↑
+    temp_max         r=+0.670*  p=0.011  n=10  ↑
+    swell_height_max r=+0.665*  p=0.012  n=10  ↑
+    wave_height_max  r=+0.577*  p=0.045  n=10  ↑
+    sst              r=+0.575*  p=0.047  n=10  ↑
+
+  [kg_avg]
+    prev_week_cnt    r=-0.668*  p=0.018  n=9  ↓
+    typhoon_dist     r=+0.645   p=0.091  n=6  ↑
+    wind_dir         r=-0.632*  p=0.021  n=10  ↓
+    precip_sum2      r=+0.576*  p=0.046  n=10  ↑
+    temp_range       r=+0.557   p=0.058  n=10  ↑
+
+【因子相関（旬集計: n=8旬）】
+  (有意な相関なし)
+
+【因子相関（月集計: n=4月）】
   (有意な相関なし)
 
 【コメントキーワード解析】

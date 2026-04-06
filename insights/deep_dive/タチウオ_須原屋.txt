@@ -11,8 +11,84 @@
 【旬別ベースライン（n=16件）】
   (combo_decadal データなし)
 
-【因子相関（海況マッチ: 0件, 予報可能因子のみ）】
-  (有意な相関なし)
+【因子相関（日次: 16件）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.479*  p=0.049  n=15  ↑
+    wave_height_max  r=+0.438   p=0.068  n=16  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.471   p=0.054  n=15  ↑
+
+  [size_avg]
+    swell_height     r=-0.530*  p=0.019  n=16  ↓
+    precip_sum2      r=+0.491*  p=0.035  n=16  ↑
+    precip_sum1      r=+0.452   p=0.058  n=16  ↑
+    wave_height_max  r=-0.430   p=0.075  n=16  ↓
+    pressure_min     r=+0.415   p=0.088  n=16  ↑
+    swell_height_max r=-0.407   p=0.096  n=16  ↓
+
+【因子相関（週集計: n=15週）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.486   p=0.054  n=14  ↑
+    wave_height_max  r=+0.430   p=0.086  n=15  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.483   p=0.056  n=14  ↑
+
+  [size_avg]
+    swell_height     r=-0.534*  p=0.023  n=15  ↓
+    precip_sum2      r=+0.496*  p=0.039  n=15  ↑
+    precip_sum1      r=+0.456   p=0.065  n=15  ↑
+    wind_dir         r=-0.438   p=0.079  n=15  ↓
+    wave_height_max  r=-0.430   p=0.086  n=15  ↓
+    pressure_min     r=+0.425   p=0.091  n=15  ↑
+
+【因子相関（旬集計: n=15旬）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.458   p=0.074  n=14  ↑
+
+  [cnt_max]
+    prev_week_cnt    r=+0.451   p=0.080  n=14  ↑
+
+  [size_avg]
+    swell_height     r=-0.531*  p=0.024  n=15  ↓
+    precip_sum2      r=+0.496*  p=0.039  n=15  ↑
+    precip_sum1      r=+0.456   p=0.065  n=15  ↑
+    wind_dir         r=-0.438   p=0.079  n=15  ↓
+    wave_height_max  r=-0.432   p=0.084  n=15  ↓
+    pressure_min     r=+0.427   p=0.089  n=15  ↑
+
+【因子相関（月集計: n=10月）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.637*  p=0.029  n=9  ↑
+    wind_dir         r=-0.634*  p=0.021  n=10  ↓
+    wind_speed       r=+0.611*  p=0.029  n=10  ↑
+    temp_range       r=-0.554   p=0.060  n=10  ↓
+    wave_height      r=+0.543   p=0.067  n=10  ↑
+    precip_sum1      r=+0.534   p=0.074  n=10  ↑
+    wave_height_max  r=+0.532   p=0.075  n=10  ↑
+    wind_speed_max   r=+0.506   p=0.097  n=10  ↑
+
+  [cnt_max]
+    wind_speed       r=+0.657*  p=0.014  n=10  ↑
+    prev_week_cnt    r=+0.642*  p=0.027  n=9  ↑
+    wind_dir         r=-0.637*  p=0.020  n=10  ↓
+    precip_sum1      r=+0.602*  p=0.033  n=10  ↑
+    wave_height      r=+0.548   p=0.064  n=10  ↑
+    tide_range       r=-0.541   p=0.069  n=10  ↓
+    wind_speed_max   r=+0.531   p=0.077  n=10  ↑
+    temp_range       r=-0.517   p=0.088  n=10  ↓
+    tide_type_n      r=-0.503   p=0.100  n=10  ↓
+
+  [size_avg]
+    wind_speed       r=+0.667*  p=0.011  n=10  ↑
+    precip_sum2      r=+0.568   p=0.051  n=10  ↑
+    precip_sum1      r=+0.560   p=0.056  n=10  ↑
+    swell_height     r=-0.559   p=0.056  n=10  ↓
 
 【コメントキーワード解析】
   (有意なキーワードなし)
@@ -24,7 +100,7 @@
   横浜沖                        2      3.0        4        2
 
 【マルチホライズン バックテスト（ローリング月次CV）】
-  ローリング月次CV  全10ヶ月  テスト総計: 0件
+  ローリング月次CV  全10ヶ月  テスト総計: 1件
 
   ─ Ave匹数 : データ不足 ─
 
