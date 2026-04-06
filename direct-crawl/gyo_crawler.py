@@ -535,6 +535,13 @@ def append_raw_direct_json(new_records):
             keys.add(key)
             added.append(rec)
 
+    # trip_no を (ship, date) 内で再採番（保存のたびに全件振り直し）
+    _counter = {}
+    for r in existing:
+        k = (r["ship"], r["date"])
+        _counter[k] = _counter.get(k, 0) + 1
+        r["trip_no"] = _counter[k]
+
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(existing, f, ensure_ascii=False, indent=2)
 

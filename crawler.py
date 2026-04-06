@@ -3331,12 +3331,6 @@ def export_csv_from_raw(raw_path="catches_raw.json", output_dir="data", ships_fi
     if os.path.exists(_direct_path):
         with open(_direct_path, encoding="utf-8") as _df:
             _direct = json.load(_df)
-        # trip_no を (ship, date) 内で連番付与（same_trip_records が混在しないよう分離）
-        _trip_counter = {}
-        for _r in _direct:
-            _key = (_r["ship"], _r["date"])
-            _trip_counter[_key] = _trip_counter.get(_key, 0) + 1
-            _r["trip_no"] = _trip_counter[_key]
         # size_raw / weight_raw を count_raw から補完（full-width cm/kg 対応）
         for _r in _direct:
             _c = (_r.get("count_raw") or "").translate(Z2H)
