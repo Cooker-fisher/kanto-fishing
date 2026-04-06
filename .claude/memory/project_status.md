@@ -19,11 +19,12 @@
 - 要実装: 旬別ベースラインからの偏差率を★5段階に変換するロジック
 
 ## ✅ 今セッション完了（2026/04/08）
-- **catches_raw_direct.json → CSV 統合**（crawler.py v5.22 / `9087b76`）
-  - `export_csv_from_raw()` 冒頭で `direct-crawl/catches_raw_direct.json` をマージ
-  - trip_no を ship+date 内で連番付与（same_trip_records 分離）
+- **catches_raw_direct.json → CSV 統合**（crawler.py v5.22 / `ce35b3d`）
+  - `export_csv_from_raw()` 冒頭で `direct-crawl/catches_raw_direct.json` をメモリ結合してCSV生成
   - size_raw / weight_raw を count_raw から補完（full-width ｃｍ/ｋｇ 対応）
   - `_extract_time_slot()`: 「午前・午後」併記 → ""（時間帯不定）
+  - trip_no 採番は `gyo_crawler.py` の `append_raw_direct_json()` 保存時に実施（raw側で完結）
+  - 既存 108 件に trip_no 適用済み（一之瀬丸 04/07: 1〜11）
   - テスト結果: 108件→108行CSV出力、tsuri_mono/cnt/size/kg すべて正常抽出
 
 ## ✅ 前セッション完了（2026/04/07）
