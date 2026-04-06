@@ -1,5 +1,6 @@
 現行バージョン: crawler.py v5.22（catches_raw_direct.json → CSV統合）
 最終更新: 2026/04/08
+最新コミット: ce35b3d
 
 ---
 
