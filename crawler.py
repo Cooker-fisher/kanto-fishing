@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.20
+関東船釣り情報クローラー v5.22
+変更点(v5.22):
+- export_csv_from_raw(): catches_raw_direct.json をマージ（忠彦丸・一之瀬丸・米元等）
+  - trip_no を ship+date 内で連番付与（same_trip_records 分離）
+  - size_raw / weight_raw を count_raw から補完（full-width ｃｍ/ｋｇ 対応）
+- _extract_time_slot(): 「午前・午後」併記 → "" （時間帯不定扱い）
+変更点(v5.21):
+- _extract_point_from_kanso(): kanso_raw からポイント名補完
 変更点(v5.20):
 - Layer1/Layer2 データ2層設計を実装
 - catches_raw.json: div.choka_boxの生テキストを1魚種1レコードで蓄積
@@ -3211,6 +3218,9 @@ def _extract_time_slot(fish_raw: str) -> str:
     """fish_raw から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'"""
     if not fish_raw:
         return ""
+    # 午前・午後 併記（例: 忠彦丸「午前・午後ライトアジ乗合船」）→ 時間帯不定
+    if "午前" in fish_raw and "午後" in fish_raw:
+        return ""
     # 優先順位順にチェック（長いパターンを先に）
     for pattern, slot in [
         ("ショートショート", "ショート"),
@@ -3314,6 +3324,40 @@ def export_csv_from_raw(raw_path="catches_raw.json", output_dir="data", ships_fi
         return 0
     with open(raw_path, encoding="utf-8") as f:
         records = json.load(f)
+
+    # catches_raw_direct.json をマージ（忠彦丸・一之瀬丸・米元等の直接クロール分）
+    _direct_path = os.path.join(os.path.dirname(os.path.abspath(raw_path)),
+                                "direct-crawl", "catches_raw_direct.json")
+    if os.path.exists(_direct_path):
+        with open(_direct_path, encoding="utf-8") as _df:
+            _direct = json.load(_df)
+        # trip_no を (ship, date) 内で連番付与（same_trip_records が混在しないよう分離）
+        _trip_counter = {}
+        for _r in _direct:
+            _key = (_r["ship"], _r["date"])
+            _trip_counter[_key] = _trip_counter.get(_key, 0) + 1
+            _r["trip_no"] = _trip_counter[_key]
+        # size_raw / weight_raw を count_raw から補完（full-width cm/kg 対応）
+        for _r in _direct:
+            _c = (_r.get("count_raw") or "").translate(Z2H)
+            if not _r.get("size_raw"):
+                _sm = re.search(r'(\d+)[~〜～](\d+)\s*(?:cm|㎝|ｃｍ)', _c, re.I)
+                if _sm:
+                    _r["size_raw"] = f"{_sm.group(1)}～{_sm.group(2)} cm"
+                else:
+                    _sm = re.search(r'(\d+)\s*(?:cm|㎝|ｃｍ)', _c, re.I)
+                    if _sm:
+                        _r["size_raw"] = f"{_sm.group(1)} cm"
+            if not _r.get("weight_raw"):
+                _wm = re.search(r'(\d+\.?\d*)[~〜～](\d+\.?\d*)\s*(?:kg|ｋｇ)', _c, re.I)
+                if _wm:
+                    _r["weight_raw"] = f"{_wm.group(1)}～{_wm.group(2)} kg"
+                else:
+                    _wm = re.search(r'(\d+\.?\d*)\s*(?:kg|ｋｇ)', _c, re.I)
+                    if _wm:
+                        _r["weight_raw"] = f"{_wm.group(1)} kg"
+        records = _direct + records
+        print(f"export_csv_from_raw: direct merge {len(_direct)}件")
 
     os.makedirs(output_dir, exist_ok=True)
     from collections import defaultdict as _dd
