@@ -176,31 +176,68 @@ analysis/
 
 ### Phase 4b: analysis/V2/ 作成（高リスク）
 
-**最大リスク: ROOT_DIR パターンの書き換え**
+**アーキテクチャ設計（2026/04/08 確定）**
 
-現行の insights/*.py は全て:
+スクリプト本数に関わらず、将来のバージョンアップも楽になる設計を採用。
+
+**新規作成ファイル（4つ）:**
+
 ```python
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # insights/
-ROOT_DIR = os.path.dirname(BASE_DIR)                    # プロジェクトルート ✅
+# 1. config.json（プロジェクトルート）— 全員が参照する唯一の真実
+{
+  "active_version": "V2",
+  "versions": {
+    "V1": {"period": "〜2026-03", "note": "旧フォーマット"},
+    "V2": {"period": "2026-04〜", "note": "weather_cache.sqlite導入・51魚種"}
+  }
+}
+
+# 2. analysis/V2/methods/_paths.py — スクリプト内パス自動解決
+def _find_root():
+    """CLAUDE.md を目印にプロジェクトルートを自動検出（何段深くても動く）"""
+    p = os.path.dirname(os.path.abspath(__file__))
+    while True:
+        if os.path.exists(os.path.join(p, "CLAUDE.md")):
+            return p
+        parent = os.path.dirname(p)
+        if parent == p: raise RuntimeError("root not found")
+        p = parent
+
+ROOT_DIR    = _find_root()
+RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../results")
+DATA_DIR    = os.path.join(ROOT_DIR, "data")
+NORMALIZE   = os.path.join(ROOT_DIR, "normalize")
+OCEAN_DIR   = os.path.join(ROOT_DIR, "ocean")
+
+# 3. analysis/analysis_config.py — 後工程（crawler.py等）が使うユーティリティ
+def get_results_dir():
+    config = json.load(open(os.path.join(_DIR, "config.json")))
+    return os.path.join(_DIR, config["active_version"], "results")
+
+# 4. analysis/run.py — crawl.yml のランチャー
+ver = json.load(open("analysis/config.json"))["active_version"]
+subprocess.run([sys.executable, f"analysis/{ver}/methods/{sys.argv[1]}"] + sys.argv[2:])
+```
+
+**各スクリプトの修正は最小限（パス定数の置き換えだけ）:**
+```python
+# 変更前（insights/script.py）
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
 DB_ANA   = os.path.join(BASE_DIR, "analysis.sqlite")
-OUT_DIR  = os.path.join(BASE_DIR, "deep_dive")
+
+# 変更後（analysis/V2/methods/script.py）
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE, OCEAN_DIR
+DB_ANA  = os.path.join(RESULTS_DIR, "analysis.sqlite")
+OUT_DIR = os.path.join(RESULTS_DIR, "deep_dive")
 ```
 
-移動後の analysis/V2/methods/*.py は:
-```python
-BASE_DIR    = os.path.dirname(os.path.abspath(__file__))        # analysis/V2/methods/
-ROOT_DIR    = os.path.abspath(os.path.join(BASE_DIR, "../../.."))  # プロジェクトルート ✅
-RESULTS_DIR = os.path.abspath(os.path.join(BASE_DIR, "../results"))  # analysis/V2/results/
-DB_ANA      = os.path.join(RESULTS_DIR, "analysis.sqlite")
-OUT_DIR     = os.path.join(RESULTS_DIR, "deep_dive")
-NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")             # 変わらない
+**V3 切替時の操作:**
 ```
-
-**修正対象スクリプト（14本）:**
-combo_deep_dive.py / cancel_threshold.py / risk_predict.py / enrich_catches.py /
-area_analysis.py / season_analysis.py / season_detail.py / weekly_analysis.py /
-backtest.py / backtest_oos.py / analysis_combos.py / compare_granularity.py /
-parse_deepdive.py / predict_count.py / ship_peaks.py / save_insights.py
+config.json の active_version を "V3" に変更するだけ
+→ crawl.yml・crawler.py・全スクリプトが自動でV3を参照
+→ _paths.py を V3/methods/ にコピー（中身変更不要）
+```
 
 **移動対象:**
 
