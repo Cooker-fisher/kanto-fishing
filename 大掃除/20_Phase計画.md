@@ -126,24 +126,144 @@ catches_raw.jsonは参照が多いため慎重に。
 
 ---
 
-## Phase 4: insights/ 整理 + analysis/ 統合
+## Phase 4: analysis/ バージョン管理構造への移行
 
-### 概要
-analysis/フォルダの有用物をinsights/に統合し、残りをdustbox/へ。
+### 概要（2026/04/08 再設計）
 
-### 対象
-- analysis/ 全体（9ファイル・6MB）
-  - 統合候補: analyze.py, analysis_results.md
-  - dustbox候補: master_dataset.csv（再生成可能）, report.html
+分析をバージョン管理する。旧 `analysis/` と現行 `insights/` を統合し、
+`analysis/V1/`（旧）・`analysis/V2/`（現行）として再編成する。
 
-### 前提条件
-- [ ] Phase 3 完了
-- [ ] 掃除屋がanalysis/の各ファイルを判定
+```
+analysis/
+├── README.md         ← バージョン管理の説明・現行バージョン明示
+├── V1/
+│   ├── README.md     ← V1の分析条件・データ期間・V2との差分
+│   ├── methods/      ← 旧 analysis/ のスクリプト・方法論文書
+│   └── results/      ← 旧 analysis/ の出力物
+└── V2/
+    ├── README.md     ← V2の条件・出力先・参照先の明示
+    ├── methods/      ← 現行 insights/*.py (14本)
+    └── results/      ← analysis.sqlite, deep_dive/, weekly/, *.txt
+```
+
+### 段階（4a → 4b → 4c → 4d）
+
+---
+
+### Phase 4a: analysis/V1/ 作成（低リスク）
+
+**対象ファイル:**
+
+| ファイル | 移動先 |
+|---------|--------|
+| analyze.py | analysis/V1/methods/ |
+| analysis_guide.md | analysis/V1/methods/ |
+| discovery_process.md | analysis/V1/methods/ |
+| analysis/README.md（旧） | analysis/V1/methods/ |
+| analysis_results.md | analysis/V1/results/ |
+| folklore_analysis.md | analysis/V1/results/ |
+| catch_weather.csv | analysis/V1/results/ |
+| report.html | analysis/V1/results/ |
+| master_dataset.csv | dustbox/（5.8MB・要gitignore確認） |
+
+**パス修正:** なし（旧ファイルはどこからも参照されていない）
+
+**前提条件:**
+- [ ] 掃除屋: master_dataset.csv の4条件チェック + gitignore確認
+- [ ] GitHub担当者: analysis/ 内ファイルの参照元ゼロ確認
+
+---
+
+### Phase 4b: analysis/V2/ 作成（高リスク）
+
+**最大リスク: ROOT_DIR パターンの書き換え**
+
+現行の insights/*.py は全て:
+```python
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # insights/
+ROOT_DIR = os.path.dirname(BASE_DIR)                    # プロジェクトルート ✅
+DB_ANA   = os.path.join(BASE_DIR, "analysis.sqlite")
+OUT_DIR  = os.path.join(BASE_DIR, "deep_dive")
+```
+
+移動後の analysis/V2/methods/*.py は:
+```python
+BASE_DIR    = os.path.dirname(os.path.abspath(__file__))        # analysis/V2/methods/
+ROOT_DIR    = os.path.abspath(os.path.join(BASE_DIR, "../../.."))  # プロジェクトルート ✅
+RESULTS_DIR = os.path.abspath(os.path.join(BASE_DIR, "../results"))  # analysis/V2/results/
+DB_ANA      = os.path.join(RESULTS_DIR, "analysis.sqlite")
+OUT_DIR     = os.path.join(RESULTS_DIR, "deep_dive")
+NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")             # 変わらない
+```
+
+**修正対象スクリプト（14本）:**
+combo_deep_dive.py / cancel_threshold.py / risk_predict.py / enrich_catches.py /
+area_analysis.py / season_analysis.py / season_detail.py / weekly_analysis.py /
+backtest.py / backtest_oos.py / analysis_combos.py / compare_granularity.py /
+parse_deepdive.py / predict_count.py / ship_peaks.py / save_insights.py
+
+**移動対象:**
+
+| 移動元 | 移動先 |
+|--------|--------|
+| insights/*.py (14本) | analysis/V2/methods/ |
+| insights/deep_dive/ | analysis/V2/results/deep_dive/ |
+| insights/weekly/ | analysis/V2/results/weekly/ |
+| insights/analysis.sqlite | analysis/V2/results/analysis.sqlite |
+| insights/*.txt (6本) | analysis/V2/results/ |
+
+**外部からの参照修正:**
+
+| ファイル | 修正箇所 | 内容 |
+|---------|---------|------|
+| crawler.py | L3644, L6183 | insights/analysis.sqlite → analysis/V2/results/analysis.sqlite |
+| crawler.py | L3741 | insights/risk_weekend.txt → analysis/V2/results/risk_weekend.txt |
+| crawl.yml | L73-88 | insights/*.py → analysis/V2/methods/*.py |
+| crawl.yml | L83 | insights/analysis.sqlite → analysis/V2/results/analysis.sqlite |
+
+**前提条件:**
+- [ ] Phase 4a 完了
+- [ ] GitHub担当者: 全参照箇所リスト確定
+- [ ] py_compile で全スクリプト事前確認
+
+---
+
+### Phase 4c: README 作成
+
+| ファイル | 内容 |
+|---------|------|
+| analysis/README.md | バージョン一覧・現行バージョン・切り替えルール |
+| analysis/V1/README.md | V1の分析条件・データ期間・主要ファイル説明 |
+| analysis/V2/README.md | **出力先・参照先の明示**（コラボレーターの要件） |
+
+**analysis/V2/README.md の必須セクション:**
+```markdown
+## 出力先（書く側へ）
+→ 分析結果は必ず `analysis/V2/results/` に出力すること
+
+## 参照先（読む側へ）
+→ 分析結果を使う場合は `analysis/V2/results/` を参照すること
+→ 旧バージョンとの比較は `analysis/V1/results/` を参照
+```
+
+---
+
+### Phase 4d: ドキュメント更新
+
+- [ ] PIPELINE.md: C層の記載を analysis/V2/methods/ に更新
+- [ ] CLAUDE.md: ファイル構成セクション全更新
+- [ ] 12_入出力契約.md: insights/ → analysis/V2/ に更新
+- [ ] insights/ フォルダ: 空になったら削除
+
+---
 
 ### 完了条件
-- [ ] analysis/フォルダが空になり削除済み
-- [ ] 有用物がinsights/に統合済み
-- [ ] 不要物がdustbox/に退避済み
+
+- [ ] analysis/V1/ と analysis/V2/ にファイルが整理済み
+- [ ] insights/ フォルダが削除済み
+- [ ] 旧パス残存ゼロ（crawler.py / crawl.yml 含む）
+- [ ] py_compile 全スクリプトOK
+- [ ] crawl.yml が新パスで正常動作
 - [ ] 引き渡し責任者の検証合格
 
 ---
