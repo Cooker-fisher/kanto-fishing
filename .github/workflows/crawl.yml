@@ -70,22 +70,23 @@ jobs:
         run: python3 weather_forecast.py
       - name: weekly analysis
         run: |
-          python3 insights/season_analysis.py
-          python3 insights/season_detail.py
-          python3 insights/area_analysis.py
-          python3 insights/ship_peaks.py
-          python3 insights/weekly_analysis.py
-          python3 insights/weekly_wx_score.py
-          python3 insights/cancel_threshold.py
-          python3 insights/risk_predict.py
+          python3 analysis/run.py season_analysis.py
+          python3 analysis/run.py season_detail.py
+          python3 analysis/run.py area_analysis.py
+          python3 analysis/run.py ship_peaks.py
+          python3 analysis/run.py weekly_analysis.py
+          python3 analysis/run.py cancel_threshold.py
+          python3 analysis/run.py risk_predict.py
           python3 -c "
-          import sqlite3, subprocess, sys
-          conn = sqlite3.connect('insights/analysis.sqlite')
+          import json, os, sqlite3, subprocess, sys
+          with open('config.json', encoding='utf-8') as f: ver = json.load(f)['active_version']
+          db = os.path.join('analysis', ver, 'results', 'analysis.sqlite')
+          conn = sqlite3.connect(db)
           fish_list = [r[0] for r in conn.execute('SELECT DISTINCT fish FROM combo_weekly ORDER BY fish').fetchall()]
           conn.close()
           for fish in fish_list:
-              subprocess.run([sys.executable, 'insights/weekly_analysis.py', '--query', fish])
-              subprocess.run([sys.executable, 'insights/weekly_analysis.py', '--grid',  fish])
+              subprocess.run([sys.executable, 'analysis/run.py', 'weekly_analysis.py', '--query', fish])
+              subprocess.run([sys.executable, 'analysis/run.py', 'weekly_analysis.py', '--grid',  fish])
           "
       - name: push
         run: |

@@ -3641,7 +3641,7 @@ def load_wx_context():
     """
     base = os.path.dirname(__file__)
     wx_db   = os.path.join(base, "ocean", "weather_cache.sqlite")
-    ana_db  = os.path.join(base, "insights", "analysis.sqlite")
+    ana_db  = os.path.join(base, "analysis", "V2", "results", "analysis.sqlite")
     if not os.path.exists(wx_db) or not os.path.exists(ana_db):
         return {}, {}
     try:
@@ -3738,7 +3738,7 @@ def load_risk_summary():
     失敗時は []
     """
     base = os.path.dirname(__file__)
-    risk_file = os.path.join(base, "insights", "risk_weekend.txt")
+    risk_file = os.path.join(base, "analysis", "V2", "results", "risk_weekend.txt")
     if not os.path.exists(risk_file):
         return []
     try:
@@ -6180,7 +6180,7 @@ def build_sitemap(data):
 # 予測モジュール（旬別ベースライン ± MAE）
 # ============================================================
 
-_INSIGHTS_DB = os.path.join(os.path.dirname(__file__), "insights", "analysis.sqlite")
+_INSIGHTS_DB = os.path.join(os.path.dirname(__file__), "analysis", "V2", "results", "analysis.sqlite")
 
 
 def _pred_decade_of(date_obj: datetime) -> int:
