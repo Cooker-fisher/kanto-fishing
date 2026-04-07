@@ -831,8 +831,7 @@ def resolve_point(point_place1, ship, tsuri_mono, sfp, ship_area_map, point_coor
 
 def _load_area_weather_map():
     """area_weather_map.json を読み込み
-    現在はStep3フォールバック（ポイント未解決時のエリア→代表weather地点）で必要。
-    TODO: weather_cache.sqlite移行後は area_coords.json の座標で直接JOINできるため削除可能
+    TODO: weather_cache.sqlite移行後に削除（area_coords.jsonの座標で直接JOIN可能）
     """
     path = os.path.join(os.path.dirname(__file__), "area_weather_map.json")
     if not os.path.exists(path):
@@ -845,8 +844,7 @@ def _load_area_weather_map():
         return {}
 
 # join_catch_weather.py と同じ不明ポイント判定
-# TODO: weather_cache.sqlite移行後に _GROUP_TO_WX_POINT / _AREA_CODE_TO_WX_POINT は削除
-# _load_area_weather_map は移行後 area_coords.json 座標JOINに置換（Step3フォールバック機能は維持）
+# TODO: weather_cache.sqlite移行後に _load_area_weather_map / _GROUP_TO_WX_POINT / _AREA_CODE_TO_WX_POINT は削除
 _UNRESOLVABLE_RE = re.compile(r'^(航程|近場|浅場|深場|東京湾一帯|湾内|南沖|東沖|西沖|北沖|赤灯沖|観音沖).*')
 
 def _is_unresolvable(pp):
