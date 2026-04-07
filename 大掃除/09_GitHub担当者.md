@@ -118,3 +118,36 @@ grep -n '\.json\|\.csv\|\.sqlite\|\.html' crawler.py | head -50
 2. **大掃除/・dustbox/内のヒットは除外** — 管理文書内の言及はカウントしない
 3. **crawl.ymlの修正は最優先** — 壊れるとデータ欠損
 4. **移動とパス修正は同一コミット** — 別コミットにすると中間状態で壊れる
+
+---
+
+## セッション記録
+
+### 2026/04/08（事後記録）
+
+**完了済みパス修正:**
+
+| Phase | 修正ファイル | 修正箇所数 | 旧パス残存 |
+|-------|------------|-----------|----------|
+| 1 (ocean/) | crawler.py, insights/combo_deep_dive.py, .gitignore | 複数 | ✅ 0件 |
+| 2 (crawl/) | crawler.py, crawl.yml, direct-crawl/gyo_crawler.py | 複数 | ✅ 0件 |
+| 3 (normalize/) | crawler.py(5箇所), ocean/rebuild_weather_cache.py(2箇所), insights/8ファイル | 15箇所 | ✅ 0件 |
+
+**Phase 3 で発見したプラン漏れ（修正済み）:**
+- insights/weekly_analysis.py: `tsuri_mono_map_draft.json` への参照がプランになかったが実在した。normalize/ パスに修正済み。
+
+**.gitignore 対応記録:**
+- `weather_cache.sqlite` → ファイル名のみの記載に変更（`ocean/weather_cache.sqlite` ではなく）
+- 理由: フォルダ位置が変わっても確実に除外されるように
+
+**ドキュメント更新 — 未実施（⚠️）:**
+- PIPELINE.md: フォルダ構成の記載が旧構成のまま
+- CLAUDE.md: ファイル構成セクションが旧構成のまま
+→ Phase 4完了後に一括更新予定
+
+**Phase 4 事前 grep チェックリスト（次セッションで実施）:**
+```bash
+# analysis/ 内ファイルの参照元確認
+grep -rn "analysis/" --include="*.py" --include="*.yml" . | grep -v "大掃除/" | grep -v ".git/"
+grep -rn "analyze.py\|catch_weather.csv\|master_dataset.csv" --include="*.py" --include="*.yml" .
+```
