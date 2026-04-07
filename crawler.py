@@ -528,6 +528,7 @@ def load_weather_data():
         else:
             print("SKIP")
 
+    # TODO: weather_cache.sqlite移行後に削除（tide_moon.sqliteで代替可能）
     # weather_data/{area}.csv から潮汐情報
     base = os.path.dirname(__file__)
     for area_code in _TIDE_AREA_MAP:
@@ -661,7 +662,9 @@ def _load_historical_catches():
     return rows
 
 def _load_historical_weather():
-    """weather/*.csv から日付×地点の6-15時平均海況を返す（波周期含む）"""
+    """weather/*.csv から日付×地点の6-15時平均海況を返す（波周期含む）
+    TODO: weather_cache.sqlite移行後に削除（weather_cache.sqliteで代替可能）
+    """
     base = os.path.dirname(__file__)
     wx_dir = os.path.join(base, "weather")
     if not os.path.isdir(wx_dir):
@@ -695,7 +698,9 @@ def _load_historical_weather():
     return result
 
 def _load_tide_data():
-    """tide/*.csv → {date: 潮差(max-min cm, 6-15時)}"""
+    """tide/*.csv → {date: 潮差(max-min cm, 6-15時)}
+    TODO: weather_cache.sqlite移行後に削除（tide_moon.sqliteで代替可能）
+    """
     base = os.path.join(os.path.dirname(__file__), "tide")
     if not os.path.isdir(base):
         return {}
@@ -716,7 +721,9 @@ def _load_tide_data():
     return {dt: round(max(vals) - min(vals), 1) for dt, vals in raw.items() if len(vals) >= 2}
 
 def _load_moon_data():
-    """moon.csv → {date: {"age": float, "title": str}}"""
+    """moon.csv → {date: {"age": float, "title": str}}
+    TODO: weather_cache.sqlite移行後に削除（tide_moon.sqliteで代替可能）
+    """
     path = os.path.join(os.path.dirname(__file__), "moon.csv")
     if not os.path.exists(path):
         return {}
@@ -821,7 +828,9 @@ def resolve_point(point_place1, ship, tsuri_mono, sfp, ship_area_map, point_coor
     return None, None, None
 
 def _load_area_weather_map():
-    """area_weather_map.json を読み込み"""
+    """area_weather_map.json を読み込み
+    TODO: weather_cache.sqlite移行後に削除（座標ベースJOINで不要になる）
+    """
     path = os.path.join(os.path.dirname(__file__), "area_weather_map.json")
     if not os.path.exists(path):
         return {}
@@ -833,6 +842,7 @@ def _load_area_weather_map():
         return {}
 
 # join_catch_weather.py と同じ不明ポイント判定
+# TODO: weather_cache.sqlite移行後に _is_unresolvable は残すが、上の _load_area_weather_map / _GROUP_TO_WX_POINT / _AREA_CODE_TO_WX_POINT は削除
 _UNRESOLVABLE_RE = re.compile(r'^(航程|近場|浅場|深場|東京湾一帯|湾内|南沖|東沖|西沖|北沖|赤灯沖|観音沖).*')
 
 def _is_unresolvable(pp):
@@ -865,6 +875,7 @@ def _extract_point_from_kanso(comment):
         return ""
     return (m := _build_kanso_point_re().search(comment)) and m.group(0) or ""
 
+# TODO: weather_cache.sqlite移行後に削除（weather/*.csv用マッピング → 座標ベースJOINで不要）
 # エリアグループ → weather/ 96地点の代表ポイント（エリアごとに異なる海況を反映）
 _GROUP_TO_WX_POINT = {
     "茨城":           "鹿島沖",
@@ -876,7 +887,7 @@ _GROUP_TO_WX_POINT = {
     "神奈川・相模湾": "城ヶ島沖",
     "静岡":           "真鶴沖",
 }
-# area_weather_map.json のコード用（Step3フォールバック）
+# TODO: weather_cache.sqlite移行後に削除（area_weather_map.json用 → 座標ベースJOINで不要）
 _AREA_CODE_TO_WX_POINT = {
     "tokyo_bay":  "八景沖",
     "sagami_bay": "城ヶ島沖",
@@ -890,6 +901,8 @@ def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_d
     1. point_place が point_coords.json に存在 → そのポイントのweatherデータ
     2. ship_fish_point.json でフォールバック → そのポイントのweatherデータ
     3. area_weather_map.json → エリア代表ポイントのweatherデータ
+
+    TODO: weather_cache.sqlite移行後に削除（weather_cache.sqliteから直接座標ベースJOINに置換）
     """
     if tide_data is None: tide_data = {}
     if moon_data is None: moon_data = {}
@@ -1412,11 +1425,12 @@ def build_forecast_json(weather_data, catches=None, history=None):
     if not forecasts:
         return None
 
+    # TODO: weather_cache.sqlite移行後にこのブロックをweather_cache.sqlite+tide_moon.sqlite直接参照に置換
     print("過去データ読み込み中...")
     hist_catches = _load_historical_catches()
-    hist_weather = _load_historical_weather()
-    tide_data = _load_tide_data()
-    moon_data = _load_moon_data()
+    hist_weather = _load_historical_weather()  # TODO: weather_cache.sqlite移行後に削除
+    tide_data = _load_tide_data()              # TODO: tide_moon.sqlite移行後に削除
+    moon_data = _load_moon_data()              # TODO: tide_moon.sqlite移行後に削除
     index = _build_catch_weather_index(hist_catches, hist_weather, tide_data, moon_data)
     print(f"  釣果×海況インデックス: {len(index)} 件（潮汐{len(tide_data)}日・月齢{len(moon_data)}日）")
 
@@ -2845,7 +2859,9 @@ def dedup_catches(catches):
     return result
 
 def append_weather_archive():
-    """前日の確定海況を Open-Meteo archive API から取得し weather/YYYY-MM.csv に追記する"""
+    """前日の確定海況を Open-Meteo archive API から取得し weather/YYYY-MM.csv に追記する
+    TODO: weather_cache.sqlite移行後に削除（rebuild_weather_cache.pyで一括管理）
+    """
     yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     csv_path = f"weather/{yesterday[:7]}.csv"
     os.makedirs("weather", exist_ok=True)
@@ -6355,7 +6371,7 @@ def main():
     history = update_history(valid_catches, history)
     append_catches_all(valid_catches)
     append_raw_json(valid_catches)
-    append_weather_archive()
+    append_weather_archive()  # TODO: weather_cache.sqlite移行後に削除
 
     # 日次CSV蓄積
     csv_added = save_daily_csv(all_catches)
