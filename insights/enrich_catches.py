@@ -41,7 +41,7 @@ def _build_raw_to_tsuri_map():
     return raw_to_tsuri
 
 RAW_TO_TSURI = _build_raw_to_tsuri_map()
-DB_PATH     = os.path.join(ROOT_DIR, "weather_cache.sqlite")
+DB_PATH     = os.path.join(ROOT_DIR, "ocean", "weather_cache.sqlite")
 DATA_DIR    = os.path.join(ROOT_DIR, "data")
 OUTPUT_FILE = os.path.join(BASE_DIR, "enriched_catches.csv")
 

@@ -531,7 +531,7 @@ def load_weather_data():
     # weather_data/{area}.csv から潮汐情報
     base = os.path.dirname(__file__)
     for area_code in _TIDE_AREA_MAP:
-        path = os.path.join(base, "weather_data", f"{area_code}.csv")
+        path = os.path.join(base, "ocean", "weather_data", f"{area_code}.csv")
         if not os.path.exists(path):
             continue
         last_row = None
@@ -3637,7 +3637,7 @@ def load_wx_context():
     失敗した場合は ({}, {}) を返す（スコアに影響させない）。
     """
     base = os.path.dirname(__file__)
-    wx_db   = os.path.join(base, "weather_cache.sqlite")
+    wx_db   = os.path.join(base, "ocean", "weather_cache.sqlite")
     ana_db  = os.path.join(base, "insights", "analysis.sqlite")
     if not os.path.exists(wx_db) or not os.path.exists(ana_db):
         return {}, {}

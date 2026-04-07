@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 DATA_DIR = os.path.join(ROOT_DIR, "data")
 DB_ANA   = os.path.join(BASE_DIR, "analysis.sqlite")
-DB_WX    = os.path.join(ROOT_DIR, "weather_cache.sqlite")
+DB_WX    = os.path.join(ROOT_DIR, "ocean", "weather_cache.sqlite")
 OUT_TXT  = os.path.join(BASE_DIR, "backtest_oos.txt")
 
 TRAIN_END = "2024-12-31"   # 学習期間の終わり（YYYY-MM-DD）
