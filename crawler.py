@@ -6376,7 +6376,7 @@ def main():
     if depth_fixed:
         print(f"CSV水深修復: {depth_fixed} 行修正")
 
-    with open(os.path.join(os.path.dirname(__file__), "crawl", "catches.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(__file__), "crawl", "dustbox", "catches.json"), "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
                    "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
 
