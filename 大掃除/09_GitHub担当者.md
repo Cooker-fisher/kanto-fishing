@@ -125,13 +125,17 @@ grep -n '\.json\|\.csv\|\.sqlite\|\.html' crawler.py | head -50
 
 ### 2026/04/08（事後記録）
 
-**完了済みパス修正:**
+**完了済みパス修正（詳細）:**
 
-| Phase | 修正ファイル | 修正箇所数 | 旧パス残存 |
-|-------|------------|-----------|----------|
-| 1 (ocean/) | crawler.py, insights/combo_deep_dive.py, .gitignore | 複数 | ✅ 0件 |
-| 2 (crawl/) | crawler.py, crawl.yml, direct-crawl/gyo_crawler.py | 複数 | ✅ 0件 |
-| 3 (normalize/) | crawler.py(5箇所), ocean/rebuild_weather_cache.py(2箇所), insights/8ファイル | 15箇所 | ✅ 0件 |
+| Phase | コミット | 移動ファイル | 修正スクリプト |
+|-------|---------|------------|--------------|
+| 1 ocean/ | `5286a28` | rebuild_weather_cache.py, build_typhoon.py, build_tide_moon.py, tide_fetch.py, tide_moon.sqlite, typhoon.sqlite, weather_data/, tide/ | crawler.py(L534 weather_data→ocean/weather_data), insights/combo_deep_dive.py(L39-41), insights/backtest.py(L26), insights/backtest_oos.py(L23), insights/cancel_threshold.py(L25), insights/enrich_catches.py(L44), .gitignore |
+| ocean/dustbox/ | `9c494f9` | moon.py, typhoon.py, moon.csv, typhoon.csv, backfill_precipitation.py → ocean/dustbox/ | なし（参照ゼロ確認済み） |
+| 2 crawl/ | `7b2a3d0` | discover_ships.py, ships.json, catches_raw.json, catches_all.json→crawl/dustbox/, history.json→crawl/dustbox/ | crawler.py(ships.json/catches_raw.json/catches_all.json/history.json全参照), crawl.yml(discover_ships.py), insights/combo_deep_dive.py・cancel_threshold.py・weekly_analysis.py(ships.json), export_csv_from_raw()のraw_path=Noneフォールバック追加 |
+| catches.json | `6481b91` | catches.json→crawl/dustbox/ | crawler.py L6375（書き込み先をcrawl/dustbox/catches.jsonに変更） |
+| 3 normalize/ | `5b2a5ff` | tsuri_mono_map_draft.json, point_coords.json, ship_fish_point.json, area_coords.json, ship_wx_coord_override.json→normalize/, point_normalize_map.json→dustbox/ | crawler.py(L745/L756/L849/L901/L3041), ocean/rebuild_weather_cache.py(L33 AREA_FILE/L34 POINT_FILE), insights/8ファイル(NORMALIZE_DIR追加) |
+
+旧パス残存: 全Phase ✅ 0件確認済み
 
 **Phase 3 で発見したプラン漏れ（修正済み）:**
 - insights/weekly_analysis.py: `tsuri_mono_map_draft.json` への参照がプランになかったが実在した。normalize/ パスに修正済み。
