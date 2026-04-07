@@ -8,7 +8,7 @@
 
 | Phase | 内容 | リスク | 状態 |
 |-------|------|--------|------|
-| 0 | dustbox/作成 + 不要ファイル退避 | ★ 極低 | 未着手 |
+| 0 | dustbox/作成 + 不要ファイル退避 | ★ 極低 | ✅ 完了 |
 | 1 | ocean/ 分離 | ★ 低 | 未着手 |
 | 2 | crawl/ 分離 | ★★ 中 | 未着手 |
 | 3 | normalize/ 分離 | ★★★ 高 | 未着手 |
@@ -28,16 +28,19 @@
 - データ: moon.csv, typhoon.csv, fish_raw_list.txt, turimono_list_raw.txt, history_crawl_log.txt
 
 ### 前提条件
-- [ ] 掃除屋が4条件チェック完了
-- [ ] 監視員がレビュー合格
-- [ ] 責任者がユーザー承認取得
-- [ ] GitHub担当者が参照ゼロを確認
+- [x] 掃除屋が4条件チェック完了
+- [x] 監視員がレビュー合格
+- [x] 責任者がユーザー承認取得
+- [x] GitHub担当者が参照ゼロを確認
 
 ### 完了条件
-- [ ] dustbox/フォルダ作成済み
-- [ ] dustbox/README.mdに全移動ファイルの記録がある
-- [ ] 移動後にcrawler.pyが正常動作
-- [ ] 引き渡し責任者の検証合格
+- [x] dustbox/フォルダ作成済み
+- [x] dustbox/README.mdに全移動ファイルの記録がある
+- [x] 移動後にcrawler.pyが正常動作（moon.csvガード付きで影響なし）
+- [x] 引き渡し責任者の検証合格
+
+### 追加対応
+- [x] crawl.ymlからbackfill_depthジョブ・inputを削除（参照解消）
 
 ---
 
