@@ -28,7 +28,8 @@ DB_FORECAST   = os.path.join(ROOT_DIR, "forecast_cache.sqlite")
 DB_ANA        = os.path.join(BASE_DIR, "analysis.sqlite")
 OUT_ALL       = os.path.join(BASE_DIR, "risk_forecast.txt")
 OUT_WEEKEND   = os.path.join(BASE_DIR, "risk_weekend.txt")
-OVERRIDE_FILE = os.path.join(ROOT_DIR, "ship_wx_coord_override.json")
+NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
+OVERRIDE_FILE = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
 
 # グローバルフォールバック閾値（cancel_thresholds に該当船宿がない場合）
 DEFAULT_CANCEL_WAVE  = 1.64   # 全船宿中央値

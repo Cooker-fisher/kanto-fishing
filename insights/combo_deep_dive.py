@@ -41,7 +41,8 @@ DB_TIDE       = os.path.join(ROOT_DIR, "ocean", "tide_moon.sqlite")
 DB_TYPHOON    = os.path.join(ROOT_DIR, "ocean", "typhoon.sqlite")
 DB_ANA        = os.path.join(BASE_DIR, "analysis.sqlite")
 OUT_DIR       = os.path.join(BASE_DIR, "deep_dive")
-OVERRIDE_FILE = os.path.join(ROOT_DIR, "ship_wx_coord_override.json")
+NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
+OVERRIDE_FILE = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
 SHIPS_FILE    = os.path.join(ROOT_DIR, "crawl", "ships.json")
 
 TRAIN_END  = "2024/12/31"   # この日以前 = 学習データ

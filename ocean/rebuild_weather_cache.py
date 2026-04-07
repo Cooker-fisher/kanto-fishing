@@ -30,8 +30,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 DB_PATH     = os.path.join(BASE_DIR, "weather_cache.sqlite")
-AREA_FILE   = os.path.join(BASE_DIR, "area_coords.json")
-POINT_FILE  = os.path.join(BASE_DIR, "point_coords.json")
+AREA_FILE   = os.path.join(os.path.dirname(BASE_DIR), "normalize", "area_coords.json")
+POINT_FILE  = os.path.join(os.path.dirname(BASE_DIR), "normalize", "point_coords.json")
 
 START_DATE = "2023-01-01"
 END_DATE   = datetime.today().strftime("%Y-%m-%d")

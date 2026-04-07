@@ -20,11 +20,12 @@ import csv, json, os, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime, date
 
-BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR   = os.path.dirname(BASE_DIR)
-DATA_DIR   = os.path.join(ROOT_DIR, "data")
-DB_PATH    = os.path.join(BASE_DIR, "analysis.sqlite")
-WEEKLY_DIR = os.path.join(BASE_DIR, "weekly")
+BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR      = os.path.dirname(BASE_DIR)
+DATA_DIR      = os.path.join(ROOT_DIR, "data")
+DB_PATH       = os.path.join(BASE_DIR, "analysis.sqlite")
+WEEKLY_DIR    = os.path.join(BASE_DIR, "weekly")
+NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
 
 def _load_exclude_ships():
     """ships.json から exclude:true / boat_only:true の船宿名セットを返す"""
@@ -40,7 +41,7 @@ EXCLUDE_SHIPS = _load_exclude_ships()
 
 def _build_raw_to_tsuri_map():
     """tsuri_mono_map_draft.json から fish_raw → tsuri_mono の逆引き辞書を生成。"""
-    path = os.path.join(ROOT_DIR, "tsuri_mono_map_draft.json")
+    path = os.path.join(NORMALIZE_DIR, "tsuri_mono_map_draft.json")
     if not os.path.exists(path):
         return {}
     with open(path, encoding="utf-8") as f:

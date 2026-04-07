@@ -22,11 +22,12 @@ enrich_catches.py — 釣果CSV × 海況SQLite → enriched_catches.csv
 import csv, json, math, os, sqlite3, sys
 from datetime import datetime
 
-BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR    = os.path.dirname(BASE_DIR)
+BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR      = os.path.dirname(BASE_DIR)
+NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
 
 def _build_raw_to_tsuri_map():
-    path = os.path.join(ROOT_DIR, "tsuri_mono_map_draft.json")
+    path = os.path.join(NORMALIZE_DIR, "tsuri_mono_map_draft.json")
     if not os.path.exists(path):
         return {}
     with open(path, encoding="utf-8") as f:
@@ -89,9 +90,9 @@ from crawler import (
 )
 
 def load_support_data():
-    with open(os.path.join(ROOT_DIR, "ship_fish_point.json"), encoding="utf-8") as f:
+    with open(os.path.join(NORMALIZE_DIR, "ship_fish_point.json"), encoding="utf-8") as f:
         sfp = json.load(f)
-    with open(os.path.join(ROOT_DIR, "point_coords.json"), encoding="utf-8") as f:
+    with open(os.path.join(NORMALIZE_DIR, "point_coords.json"), encoding="utf-8") as f:
         pc = json.load(f)
     area_coords   = _load_area_coords()
     ship_area_map = _load_ship_area_map()

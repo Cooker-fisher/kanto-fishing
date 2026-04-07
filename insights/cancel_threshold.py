@@ -24,7 +24,8 @@ DATA_DIR      = os.path.join(ROOT_DIR, "data")
 DB_ANA        = os.path.join(BASE_DIR, "analysis.sqlite")
 DB_WX         = os.path.join(ROOT_DIR, "ocean", "weather_cache.sqlite")
 OUT_TXT       = os.path.join(BASE_DIR, "cancel_threshold.txt")
-OVERRIDE_FILE = os.path.join(ROOT_DIR, "ship_wx_coord_override.json")
+NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
+OVERRIDE_FILE = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
 
 MIN_CANCEL_RATE  = 0.80   # 閾値上での最低欠航率（確実欠航の定義）
 MIN_CANCEL_ABOVE = 3      # 閾値上の欠航件数の最低数

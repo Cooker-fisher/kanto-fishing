@@ -742,7 +742,7 @@ def _area_to_group(area):
 
 def _load_ship_fish_point():
     """ship_fish_point.json を読み込み"""
-    path = os.path.join(os.path.dirname(__file__), "ship_fish_point.json")
+    path = os.path.join(os.path.dirname(__file__), "normalize", "ship_fish_point.json")
     if not os.path.exists(path):
         return {}
     try:
@@ -753,7 +753,7 @@ def _load_ship_fish_point():
 
 def _load_area_coords():
     """area_coords.json を読み込み → {area_name: {lat, lon, point}}"""
-    path = os.path.join(os.path.dirname(__file__), "area_coords.json")
+    path = os.path.join(os.path.dirname(__file__), "normalize", "area_coords.json")
     if not os.path.exists(path):
         return {}
     try:
@@ -846,7 +846,7 @@ def _build_kanso_point_re():
     global _KANSO_POINT_RE
     if _KANSO_POINT_RE is not None:
         return _KANSO_POINT_RE
-    pc_path = os.path.join(os.path.dirname(__file__), "point_coords.json")
+    pc_path = os.path.join(os.path.dirname(__file__), "normalize", "point_coords.json")
     try:
         with open(pc_path, encoding="utf-8") as f:
             pc = json.load(f)
@@ -898,7 +898,7 @@ def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_d
     area_map = _load_area_weather_map()
 
     # point_coords.json
-    pc_path = os.path.join(base, "point_coords.json")
+    pc_path = os.path.join(base, "normalize", "point_coords.json")
     point_coords = {}
     if os.path.exists(pc_path):
         try:
@@ -3038,7 +3038,7 @@ def append_raw_json(valid_catches):
 # ============================================================
 
 # tsuri_mono_map_draft.json から58種MAPを動的ロード
-_tmap_path = os.path.join(os.path.dirname(__file__), "tsuri_mono_map_draft.json")
+_tmap_path = os.path.join(os.path.dirname(__file__), "normalize", "tsuri_mono_map_draft.json")
 with open(_tmap_path, encoding="utf-8") as _f:
     _tmap_data = json.load(_f)
 TSURI_MONO_MAP = {
