@@ -43,9 +43,13 @@
 
 ## B: 正規化・CSV化層
 
+> **data/ はバージョン管理される。** 現行: `data/V2/`（config.json active_version に連動）
+> CSV 列追加時は active_version を上げ `export_csv_from_raw()` で全期間再生成すること。
+
 | スクリプト | 入力 | 出力 | 実行タイミング |
 |-----------|------|------|--------------|
-| crawler.py (generate_csv_all) | catches_raw.json | data/YYYY-MM.csv | crawl後自動 |
+| crawler.py (save_daily_csv) | catches_raw.json | data/V2/YYYY-MM.csv | crawl後自動 |
+| crawler.py (export_csv_from_raw) | catches_raw.json | data/V2/YYYY-MM.csv | 全再生成時（手動） |
 
 ### CSV列一覧（B1）
 

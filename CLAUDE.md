@@ -62,10 +62,12 @@ kanto-fishing/
 │   └── ship_wx_coord_override.json # 気象座標上書き
 │
 ├── # ── 釣果データ ──
-├── catches_raw.json            # 釣果生データ（84,757件・毎日更新）
+├── catches_raw.json            # 釣果生データ（84,757件・毎日更新）※バージョン管理なし
 ├── catches.json                # 当日釣果スナップショット（index.html生成用）
 ├── history.json                # 週次・月次集計データ（蓄積）
-├── data/                       # 月別正規化CSV（data/YYYY-MM.csv・82,650行）
+├── data/
+│   └── V2/                    # 月別正規化CSV（data/V2/YYYY-MM.csv・82,650行）
+│                               # config.json active_version に連動。CSV列追加時は V3 に上げ全再生成
 │
 ├── # ── 分析（バージョン管理） ──
 ├── analysis/

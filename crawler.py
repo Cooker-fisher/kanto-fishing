@@ -85,6 +85,17 @@ from urllib.error import URLError
 from urllib.parse import quote
 from html.parser import HTMLParser
 
+# ── data/ バージョン管理 ───────────────────────────────────────────────────
+# config.json の active_version に連動して data/{ver}/ を DATA_DIR として使う。
+# バージョンアップ時（CSV列追加等）は config.json の active_version を上げるだけ。
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+try:
+    with open(os.path.join(_BASE_DIR, "config.json"), encoding="utf-8") as _f:
+        _ACTIVE_VER = json.load(_f)["active_version"]
+except Exception:
+    _ACTIVE_VER = "V2"
+_DATA_DIR = os.path.join(_BASE_DIR, "data", _ACTIVE_VER)
+
 SHIPS = [
     # ── 茨城 ──────────────────────────────────
     {"area": "日立久慈港",         "name": "日正丸",              "sid": 11},
@@ -645,8 +656,7 @@ def build_weather_section(weather_data):
 # ============================================================
 def _load_historical_catches():
     """data/*.csv から全釣果を読み込み"""
-    base = os.path.dirname(__file__)
-    data_dir = os.path.join(base, "data")
+    data_dir = _DATA_DIR
     if not os.path.isdir(data_dir):
         return []
     rows = []
@@ -3316,10 +3326,13 @@ RAW_CSV_HEADER = [
 ]
 
 
-def export_csv_from_raw(raw_path=None, output_dir="data", ships_filter=None):
-    """catches_raw.json を読み込み、data/YYYY-MM.csv を全件上書き再生成。
+def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
+    """catches_raw.json を読み込み、data/V{n}/YYYY-MM.csv を全件上書き再生成。
+    output_dir: 省略時は _DATA_DIR（config.json の active_version に連動）。
     ships_filter: リスト指定でその船宿のみ処理（テスト用）。
     TSURI_MONO_MAP更新後に単体呼び出し可。"""
+    if output_dir is None:
+        output_dir = _DATA_DIR
     if raw_path is None:
         raw_path = os.path.join(os.path.dirname(__file__), "crawl", "catches_raw.json")
     if not os.path.exists(raw_path):
@@ -5727,7 +5740,7 @@ def save_daily_csv(catches):
     """釣果をdata/YYYY-MM.csvに追記（重複スキップ）。
     catches.json は pageID=1 で複数日分を含むため、今日分に限らず全件を保存する。
     """
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(_DATA_DIR, exist_ok=True)
 
     # 日付ごとにグループ化（月をまたぐ可能性があるため）
     from collections import defaultdict
@@ -5746,7 +5759,7 @@ def save_daily_csv(catches):
 
     total_added = 0
     for ym, month_catches in by_month.items():
-        filepath = os.path.join("data", f"{ym}.csv")
+        filepath = os.path.join(_DATA_DIR, f"{ym}.csv")
 
         # 既存レコードのキーセットを読み込んで重複チェック
         existing_keys = set()
@@ -5811,8 +5824,8 @@ def save_cancellations_csv(catches):
     if not cancels:
         return 0
 
-    os.makedirs("data", exist_ok=True)
-    filepath = os.path.join("data", "cancellations.csv")
+    os.makedirs(_DATA_DIR, exist_ok=True)
+    filepath = os.path.join(_DATA_DIR, "cancellations.csv")
 
     existing_keys = set()
     if os.path.exists(filepath):
@@ -5859,7 +5872,7 @@ def repair_csv_depth(catches):
             for fish in c.get("fish", []):
                 depth_map[(c["ship"], c.get("date", ""), fish)] = (pp, pd)
 
-    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    data_dir = _DATA_DIR
     if not os.path.isdir(data_dir):
         return 0
     total_fixed = 0
