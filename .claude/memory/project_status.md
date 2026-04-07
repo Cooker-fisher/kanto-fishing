@@ -1,6 +1,16 @@
 現行バージョン: crawler.py v5.22（catches_raw_direct.json → CSV統合）
 最終更新: 2026/04/08
-最新コミット: ce35b3d
+最新コミット: 520bbf8（Phase 4b: insights/ → analysis/V2/ 移行）
+
+## ★ 大掃除完了状況
+- Phase 0（dustbox/作成）: 完了
+- Phase 1（ocean/分離）: 完了 コミット 5286a28
+- Phase 2（crawl/分離）: 完了 コミット 9c494f9
+- Phase 3（normalize/分離）: 完了 コミット 5b2a5ff
+- Phase 4a（analysis/V1/作成）: 完了 コミット 237ade2
+- Phase 4b（analysis/V2/移行）: 完了 コミット 520bbf8
+- Phase 4c（README作成）: 完了（4b と同コミット）
+- Phase 4d（ドキュメント更新）: 完了
 
 ---
 

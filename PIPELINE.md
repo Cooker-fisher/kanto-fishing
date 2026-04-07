@@ -98,10 +98,14 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 
 ## C: 分析・集計層
 
-| スクリプト | 入力 | 出力テーブル | 実行タイミング |
-|-----------|------|------------|--------------|
-| combo_deep_dive.py | data/*.csv + weather_cache.sqlite | analysis.sqlite | 手動（全51魚種） |
-| parse_deepdive.py | analysis.sqlite | deepdive_params.json | C1後に実行 |
+> **スクリプトは `analysis/V2/methods/`、出力は `analysis/V2/results/` に配置。**
+> バージョンは `config.json` の `active_version` で管理。
+
+| スクリプト | 入力 | 出力 | 実行タイミング |
+|-----------|------|------|--------------|
+| analysis/V2/methods/combo_deep_dive.py | data/*.csv + ocean/*.sqlite | analysis/V2/results/analysis.sqlite | 手動（全51魚種） |
+| analysis/V2/methods/parse_deepdive.py | analysis/V2/results/analysis.sqlite | analysis/V2/results/deepdive_params.json | C1後に実行 |
+| analysis/run.py {script} | — | — | crawl.yml 経由で自動 |
 
 ### analysis.sqlite テーブル一覧
 

@@ -35,36 +35,53 @@ kanto-fishing/
 ├── CLAUDE.md                   # このファイル（Claude Codeへの指示）
 ├── PIPELINE.md                 # データパイプライン設計図（変更前に必読）
 │
+├── config.json                 # 分析バージョン管理（active_version: "V2"）
+│
 ├── # ── データ収集・変換スクリプト ──
 ├── crawler.py                  # メインクローラー＋CSV生成＋HTML生成（毎日自動実行）
-├── discover_ships.py           # 釣りビジョンから船宿SIDを自動収集（月1実行）
-├── rebuild_weather_cache.py    # Open-Meteoから気象・海況データ取得（手動・約30分）
-├── build_typhoon.py            # 気象庁BestTrackから台風データ取得（手動・年次更新）
-├── build_tide_moon.py          # 月齢・潮汐区分を天文計算で算出（手動・5秒）
 │
-├── # ── マスターデータ（JSON）──
-├── ships.json                  # 収集済み船宿一覧（discover_ships.py が生成）
-├── tsuri_mono_map_draft.json   # 釣り物名正規化マップ（58魚種）
-│                               #   ⚠ 構造: m["TSURI_MONO_MAP"]["アジ"] = [...]
-│                               #   魚種リスト取得: m["TSURI_MONO_MAP"].keys()
-├── point_coords.json           # ポイント名→座標（306ポイント）
-├── ship_fish_point.json        # 船宿×魚種→デフォルトポイント（73船宿）
-├── area_coords.json            # エリア代表座標（58エリア）
+├── # ── データ収集サブモジュール ──
+├── crawl/                      # A1: 釣果クロール関連
+│   ├── discover_ships.py       # 船宿SID自動収集（月1実行）
+│   └── ships.json              # 収集済み船宿一覧
+├── ocean/                      # A2〜A4: 海況・気象・台風・潮汐データ
+│   ├── rebuild_weather_cache.py  # 気象・海況データ取得（手動・約30分）
+│   ├── build_typhoon.py          # 台風データ取得（手動・年次）
+│   ├── build_tide_moon.py        # 潮汐・月齢算出（手動・5秒）
+│   ├── weather_cache.sqlite      # 気象・海況（153座標×145万行）※gitignore
+│   ├── tide_moon.sqlite          # 月齢・潮汐（1,190日分）
+│   └── typhoon.sqlite            # 台風トラック（70台風）
 │
-├── # ── データファイル ──
+├── # ── マスターデータ（JSON）— normalize/ 管理 ──
+├── normalize/
+│   ├── tsuri_mono_map_draft.json  # 魚種正規化マップ（58魚種）
+│   │                              #   ⚠ 構造: m["TSURI_MONO_MAP"]["アジ"] = [...]
+│   ├── point_coords.json          # ポイント名→座標（306ポイント）
+│   ├── ship_fish_point.json       # 船宿×魚種→ポイント（73船宿）
+│   ├── area_coords.json           # エリア代表座標（58エリア）
+│   └── ship_wx_coord_override.json # 気象座標上書き
+│
+├── # ── 釣果データ ──
 ├── catches_raw.json            # 釣果生データ（84,757件・毎日更新）
 ├── catches.json                # 当日釣果スナップショット（index.html生成用）
 ├── history.json                # 週次・月次集計データ（蓄積）
 ├── data/                       # 月別正規化CSV（data/YYYY-MM.csv・82,650行）
-├── weather_cache.sqlite        # 気象・海況データ（153座標×145万行）※gitignore
-├── tide_moon.sqlite            # 月齢・潮汐データ（1,190日分）
-├── typhoon.sqlite              # 台風トラックデータ（70台風・2,475ポイント）
 │
-├── # ── 分析スクリプト ──
-├── insights/
-│   ├── combo_deep_dive.py      # 魚種×船宿×気象の相関分析（手動実行・全51魚種）
-│   ├── analysis.sqlite         # 分析結果DB（combo_decadal・cancel_thresholds等）
-│   └── deep_dive/              # 船宿別テキストサマリー
+├── # ── 分析（バージョン管理） ──
+├── analysis/
+│   ├── README.md               # バージョン一覧・切替ルール
+│   ├── analysis_config.py      # 後工程が results/ を参照するユーティリティ
+│   ├── run.py                  # crawl.yml ランチャー（バージョン自動解決）
+│   ├── V1/                     # 旧分析（〜2026-03・参照専用）
+│   └── V2/                     # 現行分析（2026-04〜）
+│       ├── methods/            # 分析スクリプト群（16本）
+│       │   ├── _paths.py       # パス自動解決（CLAUDE.md 目印）
+│       │   ├── combo_deep_dive.py  # 相関分析（手動実行・51魚種）
+│       │   └── ...
+│       └── results/            # 分析結果出力先
+│           ├── analysis.sqlite # 分析結果DB（combo_decadal等）
+│           ├── risk_weekend.txt # 来週末リスクサマリー
+│           └── deep_dive/      # 船宿別テキストサマリー
 │
 ├── # ── 自動生成HTML ──
 ├── index.html
@@ -96,7 +113,7 @@ kanto-fishing/
 | A3 台風 | build_typhoon.py | typhoon.sqlite | 手動（年次） |
 | A4 潮汐 | build_tide_moon.py | tide_moon.sqlite | 手動（5秒） |
 | B CSV化 | crawler.py | data/YYYY-MM.csv | A1後自動 |
-| C 分析 | insights/combo_deep_dive.py | analysis.sqlite | 手動 |
+| C 分析 | analysis/V2/methods/combo_deep_dive.py | analysis/V2/results/analysis.sqlite | 手動 |
 | D 予測 | 未実装 | - | - |
 | E 表示 | crawler.py | *.html | A1後自動 |
 
