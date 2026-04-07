@@ -28,7 +28,7 @@ WEEKLY_DIR = os.path.join(BASE_DIR, "weekly")
 
 def _load_exclude_ships():
     """ships.json から exclude:true / boat_only:true の船宿名セットを返す"""
-    path = os.path.join(ROOT_DIR, "ships.json")
+    path = os.path.join(ROOT_DIR, "crawl", "ships.json")
     try:
         with open(path, encoding="utf-8") as f:
             ships = json.load(f)

@@ -207,7 +207,7 @@ AREA_GROUPS = {
 }
 
 # ships.json が存在すれば上書き（discover_ships.py が月1回更新）
-_ships_json = os.path.join(os.path.dirname(__file__), "ships.json")
+_ships_json = os.path.join(os.path.dirname(__file__), "crawl", "ships.json")
 if os.path.exists(_ships_json):
     with open(_ships_json, encoding="utf-8") as _f:
         SHIPS = json.load(_f)
@@ -764,7 +764,7 @@ def _load_area_coords():
 
 def _load_ship_area_map():
     """ships.json から {ship_name: area} の辞書を返す"""
-    path = os.path.join(os.path.dirname(__file__), "ships.json")
+    path = os.path.join(os.path.dirname(__file__), "crawl", "ships.json")
     if not os.path.exists(path):
         return {}
     try:
@@ -2795,9 +2795,10 @@ def parse_catches_gyo(html, ship, area, year, cutoff_days=60):
 # history.json (#3: ISO週に統一)
 # ============================================================
 def load_history():
-    if os.path.exists("history.json"):
+    _hist = os.path.join(os.path.dirname(__file__), "crawl", "dustbox", "history.json")
+    if os.path.exists(_hist):
         try:
-            with open("history.json", encoding="utf-8") as f:
+            with open(_hist, encoding="utf-8") as f:
                 return json.load(f)
         except: pass
     return {"weekly": {}, "monthly": {}}
@@ -2936,7 +2937,7 @@ def append_weather_archive():
 
 def append_catches_all(valid_catches):
     """catches_all.json に今回分の新規レコードを差分追記する"""
-    path = "catches_all.json"
+    path = os.path.join(os.path.dirname(__file__), "crawl", "dustbox", "catches_all.json")
     existing = []
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
@@ -2996,7 +2997,7 @@ def append_raw_json(valid_catches):
     釣果レコード: dedup キー = (ship, date, trip_no, fish_raw)
     欠航レコード: dedup キー = (ship, date, "CANCEL", "") ← 負例データとして保存
     """
-    path = "catches_raw.json"
+    path = os.path.join(os.path.dirname(__file__), "crawl", "catches_raw.json")
     existing = []
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
@@ -3315,10 +3316,12 @@ RAW_CSV_HEADER = [
 ]
 
 
-def export_csv_from_raw(raw_path="catches_raw.json", output_dir="data", ships_filter=None):
+def export_csv_from_raw(raw_path=None, output_dir="data", ships_filter=None):
     """catches_raw.json を読み込み、data/YYYY-MM.csv を全件上書き再生成。
     ships_filter: リスト指定でその船宿のみ処理（テスト用）。
     TSURI_MONO_MAP更新後に単体呼び出し可。"""
+    if raw_path is None:
+        raw_path = os.path.join(os.path.dirname(__file__), "crawl", "catches_raw.json")
     if not os.path.exists(raw_path):
         print(f"export_csv_from_raw: {raw_path} が見つかりません")
         return 0
@@ -3569,7 +3572,7 @@ def update_history(catches, history):
                 "size_avg":   round(sum(d["szs"]) / len(d["szs"]), 1) if d["szs"] else 0,
                 "weight_avg": round(sum(d["wkgs"]) / len(d["wkgs"]), 2) if d["wkgs"] else 0,
             }
-    with open("history.json", "w", encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(__file__), "crawl", "dustbox", "history.json"), "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
     return history
 
@@ -5410,8 +5413,9 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 
     # catches_all.json を一度だけ読み込んで (fish, area) → records の辞書を構築
     catches_all_by_fa: dict = {}
-    if os.path.exists("catches_all.json"):
-        with open("catches_all.json", encoding="utf-8") as _f:
+    _ca = os.path.join(os.path.dirname(__file__), "crawl", "dustbox", "catches_all.json")
+    if os.path.exists(_ca):
+        with open(_ca, encoding="utf-8") as _f:
             try:
                 for r in json.load(_f):
                     catches_all_by_fa.setdefault((r["fish"], r["area"]), []).append(r)
@@ -6372,7 +6376,7 @@ def main():
     if depth_fixed:
         print(f"CSV水深修復: {depth_fixed} 行修正")
 
-    with open("catches.json", "w", encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(__file__), "crawl", "catches.json"), "w", encoding="utf-8") as f:
         json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
                    "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
 

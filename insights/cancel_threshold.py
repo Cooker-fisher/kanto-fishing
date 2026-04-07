@@ -39,7 +39,7 @@ SEASONS = {
 }
 
 def load_exclude_ships():
-    path = os.path.join(ROOT_DIR, "ships.json")
+    path = os.path.join(ROOT_DIR, "crawl", "ships.json")
     try:
         with open(path, encoding="utf-8") as f:
             ships = json.load(f)
