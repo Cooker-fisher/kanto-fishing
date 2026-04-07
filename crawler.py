@@ -251,6 +251,7 @@ AREA_FORECAST_COORDS = {
     "静岡":           {"lat": 35.0, "lon": 139.1},
 }
 
+# TODO: weather_cache.sqlite移行後に削除（weather_data/*.csv用マッピング → tide_moon.sqliteで代替）
 # weather_data/ の4エリアサマリー（潮汐・月齢）
 _TIDE_AREA_MAP = {
     "tokyo_bay":  "東京湾",
@@ -259,6 +260,7 @@ _TIDE_AREA_MAP = {
     "ibaraki":    "茨城沖",
 }
 
+# TODO: weather_cache.sqlite移行後に削除（_TIDE_AREA_MAPと同様）
 _TIDE_GROUP_MAP = {
     "千葉・東京湾奥": "tokyo_bay", "東京": "tokyo_bay", "神奈川・東京湾": "tokyo_bay",
     "神奈川・相模湾": "sagami_bay", "静岡": "sagami_bay",
