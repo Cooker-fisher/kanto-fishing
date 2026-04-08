@@ -1,8 +1,8 @@
-現行バージョン: crawler.py v5.22（catches_raw_direct.json → CSV統合）
+現行バージョン: crawler.py v5.23（design_version 同期・pages/ 移行）
 最終更新: 2026/04/08
-最新コミット: 520bbf8（Phase 4b: insights/ → analysis/V2/ 移行）
+最新コミット: eb904ba（pages/: 静的HTML移動・crawler.py リンク更新）
 
-## ★ 大掃除完了状況
+## ★ 大掃除完了状況（全フェーズ完了）
 - Phase 0（dustbox/作成）: 完了
 - Phase 1（ocean/分離）: 完了 コミット 5286a28
 - Phase 2（crawl/分離）: 完了 コミット 9c494f9
@@ -11,6 +11,7 @@
 - Phase 4b（analysis/V2/移行）: 完了 コミット 520bbf8
 - Phase 4c（README作成）: 完了（4b と同コミット）
 - Phase 4d（ドキュメント更新）: 完了
+- Phase 5（ルート整理・design/・pages/）: 完了 コミット eb904ba
 
 ---
 
@@ -20,34 +21,69 @@
 - tide fix済み（tide_moon.sqlite参照に変更・コミット済み `72b7743`）
 - 実行前にユーザーに確認してから走らせること
 
-### 3. parse_deepdive.py → deepdive_params.json
+### 2. parse_deepdive.py → deepdive_params.json
 - combo_deep_dive 完了後に実行
 
-### 4. 売り物設計（予測の出力形式）
+### 3. 売り物設計（予測の出力形式）
 - 現状MAPE 27〜55%（CVが低い船宿）→ 匹数絶対値ではなく「平年比±%」「★評価」で出す
 - 「来週末アジは平年比+25%（★★★★）」の形式が現実的
 - 要実装: 旬別ベースラインからの偏差率を★5段階に変換するロジック
 
-## ✅ 今セッション完了（2026/04/08）
-- **catches_raw_direct.json → CSV 統合**（crawler.py v5.22 / `ce35b3d`）
-  - `export_csv_from_raw()` 冒頭で `direct-crawl/catches_raw_direct.json` をメモリ結合してCSV生成
-  - size_raw / weight_raw を count_raw から補完（full-width ｃｍ/ｋｇ 対応）
-  - `_extract_time_slot()`: 「午前・午後」併記 → ""（時間帯不定）
-  - trip_no 採番は `gyo_crawler.py` の `append_raw_direct_json()` 保存時に実施（raw側で完結）
-  - 既存 108 件に trip_no 適用済み（一之瀬丸 04/07: 1〜11）
-  - テスト結果: 108件→108行CSV出力、tsuri_mono/cnt/size/kg すべて正常抽出
+---
 
-## ✅ 前セッション完了（2026/04/07）
-- **gyo_crawler.py 新規作成** (`direct-crawl/gyo_crawler.py`)
-  - 忠彦丸（table形式）・一之瀬丸・米元釣船店（freetext形式）対応
-  - 出力: `direct-crawl/catches_raw_direct.json`（15フィールド・catches_raw.jsonと同一構造）
-  - 初回108件取得（忠彦丸5 / 一之瀬丸82 / 米元21）
-  - FISH_MAP不使用・stdlib only・dedup: (ship, date, fish_raw)
-  - Table B（タックル情報）→ kanso_rawに連結済み
-  - 非釣果セクション（お知らせ・アクセス・BBQ等）→ _NON_FISHINGフィルターで除外済み
-  - 日付はhistory URLのhdtパラメータから確定（HTMLコンテンツ内日付パース不要）
-- **crawl.yml に統合**
-  - `crawler.py` の後に `gyo direct crawl` ステップ追加（`continue-on-error: true`）
+## ✅ 今セッション完了（2026/04/08 後半）
+
+### ルート整理・フォルダ構成
+- **design/ フォルダ整備**（コミット `5d410b0`）
+  - redesign/ → design/V2/ に移動（ロールMD体制・モックアップ全保持）
+  - design/V1/ 作成: style.css / main.js のアーカイブコピー
+  - design/README.md / design/V1/README.md 追加
+- **design/V1/ に静的HTMLアーカイブ追加**（コミット `d2a9a1f`）
+  - about / contact / privacy / terms の V1 スナップショット保存
+- **ルートのゴミファイル3本 dustbox 退避**（コミット `30edffb`）
+  - crawl.yml（旧ワークフロー）/ fish_raw_list.txt / turimono_list_raw.txt
+- **crawler.py: design_version 自動同期**（コミット `106ab37`）
+  - config.json に `"design_version": "V1"` 追加
+  - crawler.py 実行時に design/{design_version}/ の HTML/CSS/JS をルートへコピー
+  - V2 移行は config.json の design_version を変えるだけで完結
+- **pages/ フォルダ新設・静的HTML移動**（コミット `eb904ba`）
+  - about / contact / privacy / terms → pages/ へ移動
+  - 各HTML: 相対パスを ../ 補正
+  - crawler.py: フッター/ナビ/サイトマップのリンクを pages/ 向けに更新
+  - デザイン同期の HTML 出力先を pages/ に変更（CSS/JS はルート維持）
+
+### 現在のルート構成
+```
+kanto-fishing/
+├── CLAUDE.md / PIPELINE.md / README.md / CNAME / config.json / .gitignore
+├── crawler.py
+├── catches_raw.json / catches.json / history.json / forecast.json
+├── index.html / calendar.html / sitemap.xml / robots.txt
+├── main.js / style.css
+├── pages/          ← 静的ページ（about/contact/privacy/terms）
+├── fish/ / area/ / forecast/
+└── [フォルダ] crawl/ ocean/ normalize/ data/ analysis/ design/ dustbox/
+```
+
+### config.json 現状
+```json
+{
+  "active_version": "V2",       ← data/V2/ CSV に連動
+  "design_version": "V1",       ← design/V1/ → pages/ & root に同期
+  "versions": { ... }
+}
+```
+
+### デザイン移行フロー（V2 移行時）
+1. design/V2/ に全ファイル完成させる（style.css / main.js / about.html 等）
+2. config.json の `"design_version": "V2"` に変更
+3. crawler.py 実行 → 自動でルート・pages/ に反映
+
+---
+
+## ✅ 前セッション完了（2026/04/08 前半）
+- **catches_raw_direct.json → CSV 統合**（crawler.py v5.22 / `ce35b3d`）
+- **大掃除 Phase 3〜4d 完了**（normalize/・analysis/ 整備）
 
 ---
 
@@ -68,7 +104,6 @@
 - data/YYYY-MM.csv: **82,481行**
 - point_place1あり: **36,553件（44.8%）** kanso補完後
 - 期間: 2023/01/01〜2026/04/03
-- 最新コミット: `8a2fb00`
 
 ### ポイント解決（3段階フォールバック・完全実装済み）
 ```
