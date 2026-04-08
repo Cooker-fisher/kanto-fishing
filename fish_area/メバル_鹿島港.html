@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>鹿島港のメバル釣果・おすすめ船宿【今週6件】| 船釣り予想</title>
+  <meta name="description" content="鹿島港でのメバル釣果情報。今週6件・最高33匹。船宿別ランキングをリアルタイム更新。">
+  <link rel="canonical" href="https://funatsuri-yoso.com/fish_area/%E3%83%A1%E3%83%90%E3%83%AB_%E9%B9%BF%E5%B3%B6%E6%B8%AF.html">
+  <meta property="og:title" content="鹿島港のメバル釣果・おすすめ船宿【今週6件】"><meta property="og:description" content="鹿島港でのメバル釣果情報。今週6件・最高33匹。船宿別ランキングをリアルタイム更新。"><meta property="og:url" content="https://funatsuri-yoso.com/fish_area/%E3%83%A1%E3%83%90%E3%83%AB_%E9%B9%BF%E5%B3%B6%E6%B8%AF.html"><meta property="og:type" content="website"><meta property="og:site_name" content="船釣り予想">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":2,"name":"メバルの釣果","item":"https://funatsuri-yoso.com/fish/%E3%83%A1%E3%83%90%E3%83%AB.html"},{"@type":"ListItem","position":3,"name":"鹿島港のメバル釣果","item":"https://funatsuri-yoso.com/fish_area/%E3%83%A1%E3%83%90%E3%83%AB_%E9%B9%BF%E5%B3%B6%E6%B8%AF.html"}]}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h1><a href="../index.html" style="color:inherit;text-decoration:none">船釣り予想</a></h1>
+    <button class="hamburger" aria-label="メニュー">☰</button>
+  </div>
+  <p>関東エリアの船宿釣果をリアルタイム集計</p>
+</header>
+<nav>
+  <span class="nav-links">
+    <a href="../index.html">トップ</a>
+    <a href="../calendar.html">カレンダー</a>
+    <span class="sep">|</span>
+    <div class="area-dropdown">
+      <button class="area-btn">エリアから探す ▼</button>
+      <div class="area-menu" id="areaMenu"></div>
+    </div>
+    <a href="../fish/メバル.html">メバルの全釣果</a><a href="../area/鹿島港.html">鹿島港の全魚種</a>
+  </span>
+</nav>
+<div class="drawer-overlay"></div>
+<div class="drawer">
+  <a href="../index.html">トップ</a>
+  <a href="../calendar.html">カレンダー</a>
+  <a href="../pages/privacy.html">プライバシーポリシー</a>
+  <a href="../pages/about.html">このサイトについて</a>
+  
+</div>
+<div class="wrap-narrow">
+  <div class="stat-cards">
+  <div class="stat-card"><div class="sv">2隻</div><div class="sl">出船数</div></div>
+  <div class="stat-card"><div class="sv">16匹</div><div class="sl">平均釣果</div></div>
+  <div class="stat-card trend-down"><div class="sv">33匹</div><div class="sl">最高釣果</div></div>
+</div>
+  <div style="background:var(--bg-card);border-left:3px solid var(--cta);padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px">🏅 本日のTOP船宿: <strong style="color:var(--accent)">幸栄丸</strong> 最高20匹 / 平均12匹</div>
+  <h2>📅 年間シーズン</h2><div class="season-bar"><div class="sb-cell peak-size " title="1月">1</div><div class="sb-cell peak-size " title="2月">2</div><div class="sb-cell peak-size " title="3月">3</div><div class="sb-cell mid now" title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell low " title="6月">6</div><div class="sb-cell low " title="7月">7</div><div class="sb-cell low " title="8月">8</div><div class="sb-cell low " title="9月">9</div><div class="sb-cell mid " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
+  <div style="font-size:13px;color:var(--text-secondary);margin:4px 0 12px">シーズンスコア: <span style="color:var(--cta);font-size:15px">★★★☆☆</span> (3/5)</div>
+  <div class="combo-comment">💬 茨城のメバルはシーズン中盤。安定した釣果が期待できます。</div>
+  
+  <h2>📈 過去7日間の釣果推移</h2>
+  <canvas id="dc_メバル_鹿島港" style="max-height:200px;margin-bottom:8px"></canvas>
+  <script>
+  (function(){
+    var ctx = document.getElementById('dc_メバル_鹿島港');
+    if(!ctx) return;
+    new Chart(ctx, {type:'line',data:{labels:["04/02", "04/03", "04/04", "04/05", "04/06", "04/07", "04/08"],datasets:[
+      {label:'今年',data:[null, 13.0, 22.0, null, null, null, 12.0],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
+      {label:'昨年',data:[null, null, 12.0, 10.0, 40.0, null, 11.0],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
+    ]},options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8f0'}}},
+      scales:{x:{ticks:{color:'#7a9bb5'}},y:{ticks:{color:'#7a9bb5'},beginAtZero:true,title:{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}
+    });
+  })();
+  </script>
+  
+  <div style="position:relative;margin:0 0 24px">
+    <div style="filter:blur(5px);pointer-events:none;background:var(--bg-card);border-radius:6px;padding:16px">
+      <div style="display:flex;gap:6px;align-items:flex-end;height:80px"><div style="flex:1;background:var(--accent);height:55%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:70%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:45%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:80%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:60%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:75%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:50%;border-radius:3px 3px 0 0"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/02</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/03</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/04</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/05</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/06</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/07</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/08</span></div>
+    </div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1">
+      <a href="../forecast/index.html" style="display:inline-block;background:var(--cta);color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:14px;white-space:nowrap">📈 この魚の来週予測を見る →</a>
+      <div style="font-size:11px;color:#aaa;margin-top:6px">スポット100円 / 月額500円</div>
+    </div>
+  </div>
+  
+  <h2>🏆 船宿ランキング（今週）</h2>
+  <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">1</td><td><strong>幸栄丸</strong></td><td style="color:var(--positive)">3件</td><td style="color:var(--cta)">最高33匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">2</td><td><strong>第三幸栄丸</strong></td><td style="color:var(--positive)">3件</td><td style="color:var(--cta)">最高33匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50%"></div></div></td></tr></table></div>
+  <h2>📋 最近の釣果 (6件)</h2>
+  <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/04/08</td><td>幸栄丸</td><td>5〜20</td><td>25〜35cm</td><td></td></tr><tr><td>2026/04/08</td><td>第三幸栄丸</td><td>5〜20</td><td>25〜35cm</td><td></td></tr><tr class="highlight"><td>2026/04/04</td><td>幸栄丸</td><td>12〜33</td><td>23〜30cm</td><td></td></tr><tr class="highlight"><td>2026/04/04</td><td>第三幸栄丸</td><td>12〜33</td><td>23〜30cm</td><td></td></tr><tr><td>2026/04/03</td><td>幸栄丸</td><td>0〜27</td><td>23〜30cm</td><td></td></tr><tr><td>2026/04/03</td><td>第三幸栄丸</td><td>0〜27</td><td>23〜30cm</td><td></td></tr></table></div>
+</div>
+<div class="data-note">
+  <details>
+    <summary>データについて</summary>
+    <ul>
+      <li>釣果データは関東各地の船宿情報から毎日自動収集しています</li>
+      <li>船宿ごとの表記ゆれや未記載項目があり、数値は参考値です</li>
+      <li>魚種・数量・サイズは独自ルールで正規化しています</li>
+      <li>「最終更新」は本サイトのデータ取得日時（日本時間16:30頃）を示します</li>
+    </ul>
+  </details>
+</div>
+<footer>
+  <p><a href="../pages/about.html">このサイトについて</a> | <a href="../pages/privacy.html">プライバシーポリシー</a> | <a href="../pages/terms.html">利用規約</a></p>
+  <p style="margin-top:8px">&copy; 2026 船釣り予想. All rights reserved.</p>
+  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/08 10:45</p>
+</footer>
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a href="../index.html"><span class="nav-icon">🐟</span>釣果</a>
+    <a href="../calendar.html"><span class="nav-icon">📅</span>カレンダー</a>
+    <a href="../forecast/index.html"><span class="nav-icon">📈</span>予測</a>
+    <a href="../pages/about.html"><span class="nav-icon">ℹ️</span>情報</a>
+  </div>
+</div>
+<script src="../main.js"></script>
+</body>
+</html>
