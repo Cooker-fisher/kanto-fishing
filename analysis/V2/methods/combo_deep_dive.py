@@ -1038,6 +1038,13 @@ def _wmape(preds, acts):
     total_act = sum(a for _, a in pairs)
     return sum(abs(p-a) for p, a in pairs) / total_act * 100 if total_act else None
 
+def _rmse(preds, acts):
+    """RMSE: 大外し事故の検出指標（外れ値に敏感）"""
+    pairs = [(p, a) for p, a in zip(preds, acts) if a is not None and p is not None]
+    if not pairs:
+        return None
+    return math.sqrt(sum((p - a) ** 2 for p, a in pairs) / len(pairs))
+
 def _good_bad_acc(preds, acts, threshold):
     """良日（actual≥threshold）と不漁日（actual<threshold）の的中率を返す。
     良日的中率: 実際に良い日に予測も良日判定できた割合
@@ -1084,7 +1091,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < MIN_TRAIN_MONTHS + 1:
-        return ["  データ不足（ローリングCV最低月数に達しない）"], []
+        return ["  データ不足（ローリングCV最低月数に達しない）"], [], {}
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}
@@ -1103,6 +1110,16 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     all_cls_true = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
     # 季節別閾値（学習データから fold ごとに更新）
     season_thr   = {met: {} for met in METRICS_LIST}  # {met: {season: (p33,p67)}}
+    # ── ベースライン予測蓄積 ───────────────────────────────────────────────────
+    # BL-0: 学習データ全体平均（combo全体のナイーブ予測）
+    # BL-1: 旬別平均（現モデルのbase部分のみ）
+    # BL-2: H日前時点の直近最大7件平均（短期自己相関ベースライン）
+    bl0_preds = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    bl0_acts  = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    bl1_preds = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    bl1_acts  = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    bl2_preds = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    bl2_acts  = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
 
     for test_month in months:
         train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] < test_month]
@@ -1214,6 +1231,25 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     p33, p67 = season_thr[met].get(s, (None, None))
                     all_cls_true[met][H].append(_classify3(act,  p33, p67))
                     all_cls_pred[met][H].append(_classify3(pred, p33, p67))
+                    # ── ベースライン予測 ────────────────────────────────────────
+                    # BL-0: 学習データ全体平均
+                    bl0_preds[met][H].append(met_mean_m)
+                    bl0_acts[met][H].append(act)
+                    # BL-1: 旬別平均
+                    bl1_preds[met][H].append(m_dec.get(dn, met_mean_m))
+                    bl1_acts[met][H].append(act)
+                    # BL-2: H日前時点の直近最大7件平均
+                    _bl2_idx = bisect.bisect_left(train_dates_m, cutoff) - 1
+                    _bl2_recent = []
+                    _bi = _bl2_idx
+                    while _bi >= 0 and len(_bl2_recent) < 7:
+                        v = train_sorted_m[_bi].get(met)
+                        if v is not None:
+                            _bl2_recent.append(v)
+                        _bi -= 1
+                    _bl2_p = sum(_bl2_recent) / len(_bl2_recent) if _bl2_recent else met_mean_m
+                    bl2_preds[met][H].append(_bl2_p)
+                    bl2_acts[met][H].append(act)
 
     # 結果出力
     total_n = len(all_acts["cnt_avg"].get(0, []))
@@ -1247,6 +1283,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             mape_v        = _mape(ps, acs)
             smape_v       = _smape(ps, acs)
             wmape_v       = _wmape(ps, acs)
+            rmse_v        = _rmse(ps, acs)
             dacc_v        = _dir_acc(ps, acs)
             good_r, bad_r = _good_bad_acc(ps, acs, threshold)
             # 3分類 Precision/Recall/F1
@@ -1260,10 +1297,22 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                        if t is not None and p is not None and t == p) / n_valid if n_valid else None
             n_f    = sum(1 for fac in ALL_FACTORS
                          if fac in SLOW_FACTORS or H <= FAST_MAX_H)
-            rows.append((H, rv, mae_v, mape_v, smape_v, wmape_v,
+            # ベースラインメトリクス（各H・各metで計算）
+            def _bl_metrics(bps, bas):
+                if not bps:
+                    return None, None, None
+                bm = sum(abs(p-a) for p,a in zip(bps,bas)) / len(bps)
+                bw = _wmape(bps, bas)
+                br = _rmse(bps, bas)
+                return bw, bm, br
+            bl0w, bl0m, bl0r = _bl_metrics(bl0_preds[met][H], bl0_acts[met][H])
+            bl1w, bl1m, bl1r = _bl_metrics(bl1_preds[met][H], bl1_acts[met][H])
+            bl2w, bl2m, bl2r = _bl_metrics(bl2_preds[met][H], bl2_acts[met][H])
+            rows.append((H, rv, mae_v, mape_v, smape_v, wmape_v, rmse_v,
                          dacc_v, good_r, bad_r,
                          good_prec2, good_rec2, good_f1,
-                         bad_prec, bad_rec, bad_f1, acc3, n, n_f))
+                         bad_prec, bad_rec, bad_f1, acc3, n, n_f,
+                         bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r))
 
         if not rows:
             lines.append(f"\n  ─ {label} : データ不足 ─")
@@ -1272,16 +1321,18 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         thr_s = f"{threshold:.1f}{unit}" if threshold is not None else "-"
         lines.append(f"\n  ─ {label} ─  良日閾値:{thr_s}（季節別P33/P67を使用）")
         lines.append(
-            f"  {'ホライズン':>10}  {'r':>7}  {'MAE':>7}  "
+            f"  {'ホライズン':>10}  {'r':>7}  {'MAE':>7}  {'RMSE':>7}  "
             f"{'wMAPE':>7}  {'sMAPE':>7}  "
             f"{'釣良F1':>7}  {'釣良Prec':>8}  {'釣良Rec':>7}  "
             f"{'不漁F1':>7}  {'3分類Acc':>8}  {'n':>4}"
         )
-        lines.append("  " + "-"*100)
-        for H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, \
-                gprec, grec, gf1, bprec, brec, bf1, acc3, n, n_f in rows:
+        lines.append("  " + "-"*108)
+        for H, rv, mae, mape, smape, wmape, rmse, dacc, good_r, bad_r, \
+                gprec, grec, gf1, bprec, brec, bf1, acc3, n, n_f, \
+                bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r in rows:
             lh   = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
             star = "**" if rv >= 0.4 else ("*" if rv >= 0.2 else " ")
+            rs   = f"{rmse:>6.1f}"   if rmse  is not None else "     -"
             ws   = f"{wmape:>6.1f}%" if wmape is not None else "     -"
             ss   = f"{smape:>6.1f}%" if smape is not None else "     -"
             gf   = f"{gf1:>6.1%}"   if gf1   is not None else "     -"
@@ -1291,12 +1342,33 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             ac   = f"{acc3:>7.1%}"  if acc3   is not None else "      -"
             fn   = f"({n_f}/{len(ALL_FACTORS)}因子)" if n_f < len(ALL_FACTORS) else ""
             lines.append(
-                f"  {lh:>12}  {rv:>+6.3f}{star}  {mae:>6.1f}{unit}  "
+                f"  {lh:>12}  {rv:>+6.3f}{star}  {mae:>6.1f}{unit}  {rs}  "
                 f"{ws}  {ss}  {gf}  {gp}  {gr}  {bf}  {ac}  {n:>4}  {fn}"
             )
-            bt_data.append((met, H, rv, mae, mape, smape, wmape, dacc,
+            bt_data.append((met, H, rv, mae, mape, smape, wmape, rmse, dacc,
                             good_r, bad_r, gprec, grec, gf1,
-                            bprec, brec, bf1, acc3, n, 0.0))
+                            bprec, brec, bf1, acc3, n, 0.0,
+                            bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r))
+        # ── ベースライン比較サマリー（H=1d, H=7d）──────────────────────────
+        bl_rows = {row[0]: row for row in rows}  # H → row
+        lines.append(f"\n  【ベースライン比較】  wMAPE / MAE / RMSE")
+        lines.append(f"  {'':>14}  {'wMAPE':>7}  {'MAE':>7}  {'RMSE':>7}   H=1d | H=7d")
+        lines.append("  " + "-"*60)
+        for h_label, H in [("H=1d 前", 1), ("H=7d 前", 7)]:
+            row = bl_rows.get(H)
+            if row is None:
+                continue
+            _, rv, mae, mape, smape, wmape, rmse, dacc, *_, bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r = row
+            def _fmt3(w, m, r):
+                ws = f"{w:.1f}%" if w is not None else "-"
+                ms = f"{m:.1f}" if m is not None else "-"
+                rs = f"{r:.1f}" if r is not None else "-"
+                return f"{ws:>7}  {ms:>7}  {rs:>7}"
+            lines.append(f"  {'モデル':>14}  {_fmt3(wmape, mae, rmse)}   ({h_label})")
+            lines.append(f"  {'BL-0 全体平均':>14}  {_fmt3(bl0w, bl0m, bl0r)}")
+            lines.append(f"  {'BL-1 旬別平均':>14}  {_fmt3(bl1w, bl1m, bl1r)}")
+            lines.append(f"  {'BL-2 直近7件':>14}  {_fmt3(bl2w, bl2m, bl2r)}")
+            lines.append("  " + "-"*60)
 
     return lines, bt_data, season_thr
 
@@ -1386,20 +1458,32 @@ def save_backtest(fish, ship, bt_data):
         ("good_prec","REAL"), ("good_rec","REAL"), ("good_f1","REAL"),
         ("bad_prec","REAL"),  ("bad_rec","REAL"),  ("bad_f1","REAL"),
         ("acc3","REAL"),
+        ("rmse","REAL"),
+        ("bl0_wmape","REAL"), ("bl0_mae","REAL"), ("bl0_rmse","REAL"),
+        ("bl1_wmape","REAL"), ("bl1_mae","REAL"), ("bl1_rmse","REAL"),
+        ("bl2_wmape","REAL"), ("bl2_mae","REAL"), ("bl2_rmse","REAL"),
     ]:
         if col not in existing:
             conn.execute(f"ALTER TABLE combo_backtest ADD COLUMN {col} {typ}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rows = [
         (fish, ship, metric, H, rv, mae, mape, smape, wmape, dacc,
-         good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own, now)
-        for metric, H, rv, mae, mape, smape, wmape, dacc,
-            good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own in bt_data
+         good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own, now,
+         rmse, bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r)
+        for metric, H, rv, mae, mape, smape, wmape, rmse, dacc,
+            good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own,
+            bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r in bt_data
     ]
-    conn.executemany(
-        "INSERT OR REPLACE INTO combo_backtest "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
-    )
+    conn.executemany("""
+        INSERT OR REPLACE INTO combo_backtest
+        (fish, ship, metric, horizon, r, mae, mape, smape, wmape, dir_acc,
+         good_recall, bad_recall, good_prec, good_rec, good_f1,
+         bad_prec, bad_rec, bad_f1, acc3, n, r_own, updated_at, rmse,
+         bl0_wmape, bl0_mae, bl0_rmse,
+         bl1_wmape, bl1_mae, bl1_rmse,
+         bl2_wmape, bl2_mae, bl2_rmse)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """, rows)
     conn.commit()
     conn.close()
 
