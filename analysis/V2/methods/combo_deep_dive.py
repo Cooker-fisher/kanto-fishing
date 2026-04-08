@@ -68,7 +68,7 @@ SLOW_FACTORS = {
     "temp_avg", "temp_max", "temp_min",    # 気温（日次avg/max/min）
     "pressure_avg", "pressure_min",        # 気圧水準（日次avg/min）
     "pressure_delta",                      # 気圧変化傾向（低気圧接近シグナル）
-    "tide_range", "moon_age", "tide_type_n",
+    "tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
 }
 # 速い変数（風・波・降水・急変動）：数日で激変 → H>7 では無効化
 FAST_FACTORS = {
@@ -78,6 +78,7 @@ FAST_FACTORS = {
     "wave_period_avg", "wave_period_min",  # 波周期（日次avg/min）
     "swell_height_avg", "swell_height_max",# うねり（日次avg/max）
     "temp_range",                          # 日較差（晴天シグナル、急変しやすい）
+    "temp_delta",                          # 前日比気温変化（冬の南風警告: 急上昇→不漁）
     "pressure_range",                      # 日内変動幅（前線通過強度）
     "precip_sum",                          # 当日合計降水量
     "precip_sum1",                         # 前日合計（翌日の濁り）
@@ -108,12 +109,15 @@ WX_FACTORS = [
     "swell_height_avg", "swell_height_max",
     # 降水量（日次合計 + ラグ）
     # 【重要】雨の2日後に濁りが最大 → precip_sum2 が負相関（全魚種共通シグナル）
+    # 【重要】イカ類は雨後活性↑（栄養塩流入・濁り）→ precip_sum/sum1 で正相関が出るケースあり
     "precip_sum",    # 当日合計：低気圧通過シグナル（正相関の可能性）
     "precip_sum1",   # 前日合計：翌日の濁り（負相関の可能性）
     "precip_sum2",   # 前々日合計：2日遅れ濁りピーク（負相関 → 全魚種適用）
+    # 気温変化（前日比）
+    "temp_delta",    # 当日avg - 前日avg（冬の急上昇 → 南風・表層暖水 → イカ不漁）
 ]
 # 潮汐（tide テーブルから取る）
-TIDE_FACTORS = ["tide_range", "moon_age", "tide_type_n"]
+TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta"]
 
 # 釣果自己相関因子（前週釣果 → H≤7で有効、H>7では2週以上前の情報で精度低下）
 CATCH_FACTORS = ["prev_week_cnt"]
@@ -616,9 +620,14 @@ def get_tide(conn_tide, date_iso):
     if not row:
         return None
     tide_coeff, moon_age, tide_type = row
+    # 月齢を sin/cos 変換（周期29.5日の円形統計）
+    # sin: 新月0→上弦+1→満月0→下弦-1  cos: 新月+1→上弦0→満月-1→下弦0
+    _phase = moon_age / 29.5 * 2 * math.pi if moon_age is not None else 0.0
     return {
         "tide_range":  tide_coeff,   # tide_coeff(0-100) を tide_range の代替として使用
         "moon_age":    moon_age,
+        "moon_sin":    math.sin(_phase),   # 月周期正弦（夜釣り活性・イカ浮上と相関）
+        "moon_cos":    math.cos(_phase),   # 月周期余弦（上弦/下弦の検出）
         "tide_type_n": TIDE_TYPE_MAP.get(tide_type, 2),
     }
 
@@ -710,6 +719,20 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         if tk not in tide_cache:
             tide_cache[tk] = get_tide(conn_tide, tide_date)
         tide = tide_cache[tk] or {}
+
+        # tide_delta: 当日潮係数 - 前日潮係数（転換点検出: 大潮→小潮 or 小潮→大潮）
+        tide_prev_date = (d - timedelta(days=horizon+1)).strftime("%Y-%m-%d")
+        if tide_prev_date not in tide_cache:
+            tide_cache[tide_prev_date] = get_tide(conn_tide, tide_prev_date)
+        tide_prev = tide_cache[tide_prev_date] or {}
+        tc_today = tide.get("tide_range")
+        tc_prev  = tide_prev.get("tide_range")
+        tide["tide_delta"] = (tc_today - tc_prev) if (tc_today is not None and tc_prev is not None) else None
+
+        # temp_delta: 当日気温avg - 前日気温avg（冬の南風/急上昇シグナル）
+        t_today = wx.get("temp_avg")
+        t_prev  = dagg1.get("temp_avg")
+        wx["temp_delta"] = (t_today - t_prev) if (t_today is not None and t_prev is not None) else None
 
         # ── 前週釣果（prev_week_cnt）────────────────────────────────────────
         # prediction_date = D - horizon の時点で知っている最新の釣果を取得
