@@ -22,6 +22,10 @@
     pressure_delta   r=+0.600*  p=0.024  n=11  ↑
     wave_period_avg  r=-0.495   p=0.087  n=11  ↓
 
+  [cnt_min]
+    pressure_delta   r=+0.600*  p=0.024  n=11  ↑
+    wave_period_avg  r=-0.495   p=0.087  n=11  ↓
+
   [cnt_max]
     pressure_delta   r=+0.600*  p=0.024  n=11  ↑
     wave_period_avg  r=-0.495   p=0.087  n=11  ↓
@@ -29,6 +33,11 @@
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
+    wave_period_avg  r=-0.589*  p=0.039  n=10  ↓
+    pressure_delta   r=+0.581*  p=0.044  n=10  ↑
+    temp_range       r=-0.551   p=0.062  n=10  ↓
+
+  [cnt_min]
     wave_period_avg  r=-0.589*  p=0.039  n=10  ↓
     pressure_delta   r=+0.581*  p=0.044  n=10  ↑
     temp_range       r=-0.551   p=0.062  n=10  ↓

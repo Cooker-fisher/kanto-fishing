@@ -18,8 +18,13 @@
   [cnt_avg]
     temp_range       r=+0.500   p=0.084  n=11  ↑
 
+  [cnt_min]
+    precip_sum2      r=+0.564*  p=0.041  n=11  ↑
+
   [cnt_max]
+    is_holiday       r=-0.656**  p=0.009  n=11  ↓
     wave_height_avg  r=-0.565*  p=0.040  n=11  ↓
+    wave_clamp       r=-0.565*  p=0.040  n=11  ↓
     swell_height_avg r=-0.558*  p=0.043  n=11  ↓
     swell_height_max r=-0.542   p=0.053  n=11  ↓
 

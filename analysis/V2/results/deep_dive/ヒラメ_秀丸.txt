@@ -21,12 +21,18 @@
   [cnt_avg]
     typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
 
+  [cnt_min]
+    typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
+
   [cnt_max]
     typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
 
 【因子相関（週集計: n=15週）】
 
   [cnt_avg]
+    typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
+
+  [cnt_min]
     typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
 
   [cnt_max]
@@ -37,11 +43,22 @@
   [cnt_avg]
     typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
 
+  [cnt_min]
+    typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
+
   [cnt_max]
     typhoon_dist     r=+0.854**  p=0.001  n=6  ↑
 
 【因子相関（月集計: n=13月）】
-  (有意な相関なし)
+
+  [cnt_avg]
+    wind_dir_e       r=-0.450   p=0.094  n=13  ↓
+
+  [cnt_min]
+    wind_dir_e       r=-0.450   p=0.094  n=13  ↓
+
+  [cnt_max]
+    wind_dir_e       r=-0.450   p=0.094  n=13  ↓
 
 【観測因子相関（予報不可・パターン把握用）】
   因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg

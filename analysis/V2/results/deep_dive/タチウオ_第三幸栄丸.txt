@@ -18,15 +18,29 @@
 
   [cnt_avg]
     pressure_avg     r=-0.627*  p=0.011  n=12  ↓
+    moon_sin         r=+0.613*  p=0.014  n=12  ↑
     precip_sum       r=+0.561*  p=0.032  n=12  ↑
     pressure_min     r=-0.544*  p=0.041  n=12  ↓
     precip_sum1      r=+0.540*  p=0.042  n=12  ↑
 
+  [cnt_min]
+    precip_sum       r=+0.829**  p=0.000  n=12  ↑
+    pressure_avg     r=-0.796**  p=0.000  n=12  ↓
+    moon_sin         r=+0.786**  p=0.000  n=12  ↑
+    precip_sum1      r=+0.785**  p=0.000  n=12  ↑
+    pressure_min     r=-0.779**  p=0.000  n=12  ↓
+    pressure_delta   r=-0.561*  p=0.032  n=12  ↓
+    temp_avg         r=+0.525   p=0.051  n=12  ↑
+
   [cnt_max]
     pressure_avg     r=-0.504   p=0.065  n=12  ↓
+    moon_sin         r=+0.491   p=0.075  n=12  ↑
 
   [size_avg]
+    is_consec_holiday r=-0.602*  p=0.017  n=12  ↓
+    wind_dir_n       r=+0.585*  p=0.023  n=12  ↑
     pressure_avg     r=+0.566*  p=0.030  n=12  ↑
+    moon_sin         r=-0.487   p=0.078  n=12  ↓
 
 【因子相関（週集計: n=6週）】
   (有意な相関なし)

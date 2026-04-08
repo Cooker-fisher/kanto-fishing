@@ -19,6 +19,7 @@
 
   [cnt_avg]
     wave_height_avg  r=-0.649**  p=0.001  n=17  ↓
+    wave_clamp       r=-0.649**  p=0.001  n=17  ↓
     prev_week_cnt    r=+0.566*  p=0.010  n=16  ↑
     pressure_delta   r=+0.561**  p=0.009  n=17  ↑
     wave_height_max  r=-0.556**  p=0.010  n=17  ↓
@@ -28,8 +29,19 @@
     wave_period_min  r=-0.446   p=0.054  n=17  ↓
     wind_speed_avg   r=-0.410   p=0.082  n=17  ↓
 
+  [cnt_min]
+    wave_height_avg  r=-0.553*  p=0.010  n=17  ↓
+    wave_clamp       r=-0.553*  p=0.010  n=17  ↓
+    tide_range       r=-0.519*  p=0.019  n=17  ↓
+    pressure_delta   r=+0.487*  p=0.031  n=17  ↑
+    wave_period_min  r=-0.464*  p=0.043  n=17  ↓
+    prev_week_cnt    r=+0.464   p=0.050  n=16  ↑
+    wave_height_max  r=-0.450   p=0.051  n=17  ↓
+    swell_height_avg r=-0.437   p=0.060  n=17  ↓
+
   [cnt_max]
     wave_height_avg  r=-0.726**  p=0.000  n=17  ↓
+    wave_clamp       r=-0.726**  p=0.000  n=17  ↓
     wave_height_max  r=-0.650**  p=0.001  n=17  ↓
     prev_week_cnt    r=+0.650**  p=0.001  n=16  ↑
     swell_height_avg r=-0.608**  p=0.003  n=17  ↓
@@ -37,12 +49,16 @@
     swell_height_max r=-0.550*  p=0.011  n=17  ↓
     tide_range       r=-0.493*  p=0.028  n=17  ↓
     wind_speed_avg   r=-0.455*  p=0.048  n=17  ↓
+    sst_delta        r=+0.447   p=0.053  n=17  ↑
     wave_period_min  r=-0.402   p=0.089  n=17  ↓
+    is_summer_vacation r=-0.395   p=0.095  n=17  ↓
 
   [kg_avg]
     pressure_avg     r=-0.697**  p=0.000  n=17  ↓
     pressure_min     r=-0.666**  p=0.001  n=17  ↓
     typhoon_dist     r=-0.558*  p=0.026  n=13  ↓
+    moon_sin         r=-0.512*  p=0.021  n=17  ↓
+    tide_delta       r=-0.494*  p=0.028  n=17  ↓
 
 【因子相関（週集計: n=7週）】
   (有意な相関なし)

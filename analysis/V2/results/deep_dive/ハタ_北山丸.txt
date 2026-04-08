@@ -14,22 +14,42 @@
 【因子相関（日次: 13件）】
 
   [cnt_avg]
+    sst_delta        r=-0.519   p=0.055  n=12  ↓
     pressure_range   r=+0.517*  p=0.045  n=13  ↑
     moon_age         r=-0.487   p=0.064  n=13  ↓
+    temp_delta       r=-0.463   p=0.083  n=13  ↓
+
+  [cnt_min]
+    sst_delta        r=-0.577*  p=0.026  n=12  ↓
+    pressure_range   r=+0.507   p=0.051  n=13  ↑
+    moon_age         r=-0.506   p=0.052  n=13  ↓
+    temp_delta       r=-0.472   p=0.076  n=13  ↓
 
   [size_avg]
     precip_sum1      r=-0.526   p=0.080  n=10  ↓
     wave_period_min  r=-0.504   p=0.099  n=10  ↓
 
 【因子相関（週集計: n=10週）】
-  (有意な相関なし)
+
+  [cnt_min]
+    sst_delta        r=-0.569   p=0.067  n=9  ↓
+
+  [cnt_max]
+    is_consec_holiday r=-0.534   p=0.074  n=10  ↓
 
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
     pressure_range   r=+0.538   p=0.071  n=10  ↑
+    sst_delta        r=-0.535   p=0.073  n=10  ↓
+    temp_delta       r=-0.521   p=0.084  n=10  ↓
+
+  [cnt_min]
+    sst_delta        r=-0.557   p=0.058  n=10  ↓
+    pressure_range   r=+0.545   p=0.066  n=10  ↑
 
   [cnt_max]
+    is_consec_holiday r=-0.582*  p=0.043  n=10  ↓
     pressure_avg     r=+0.551   p=0.062  n=10  ↑
     pressure_min     r=+0.508   p=0.095  n=10  ↑
 

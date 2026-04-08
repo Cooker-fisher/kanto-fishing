@@ -28,7 +28,16 @@
     wind_speed_max   r=+0.380*  p=0.011  n=40  ↑
     wind_speed_avg   r=+0.371*  p=0.014  n=40  ↑
     temp_range       r=-0.349*  p=0.022  n=40  ↓
+    moon_cos         r=+0.301   p=0.051  n=40  ↑
     temp_min         r=+0.273   p=0.080  n=40  ↑
+
+  [cnt_min]
+    prev_week_cnt    r=+0.573**  p=0.000  n=39  ↑
+    wave_period_avg  r=-0.357*  p=0.018  n=40  ↓
+    sst_avg          r=+0.304*  p=0.049  n=40  ↑
+    temp_range       r=-0.287   p=0.065  n=40  ↓
+    wind_speed_avg   r=+0.282   p=0.070  n=40  ↑
+    wave_period_min  r=-0.271   p=0.083  n=40  ↓
 
   [cnt_max]
     prev_week_cnt    r=+0.652**  p=0.000  n=39  ↑
@@ -36,15 +45,19 @@
     wind_speed_max   r=+0.410**  p=0.006  n=40  ↑
     wind_speed_avg   r=+0.377*  p=0.012  n=40  ↑
     temp_range       r=-0.350*  p=0.021  n=40  ↓
+    moon_cos         r=+0.327*  p=0.033  n=40  ↑
     temp_min         r=+0.297   p=0.055  n=40  ↑
     wave_height_max  r=+0.293   p=0.058  n=40  ↑
 
   [size_avg]
     sst_avg          r=-0.649**  p=0.000  n=40  ↓
+    is_holiday       r=-0.577**  p=0.000  n=40  ↓
     wind_speed_avg   r=-0.451**  p=0.002  n=40  ↓
     precip_sum       r=-0.350*  p=0.021  n=40  ↓
     wave_height_avg  r=-0.317*  p=0.039  n=40  ↓
+    wave_clamp       r=-0.317*  p=0.039  n=40  ↓
     swell_height_max r=-0.267   p=0.087  n=40  ↓
+    sst_delta        r=-0.266   p=0.089  n=40  ↓
     pressure_avg     r=+0.265   p=0.090  n=40  ↑
     wind_speed_max   r=-0.261   p=0.095  n=40  ↓
 
@@ -57,9 +70,18 @@
     wave_height_max  r=+0.733**  p=0.001  n=12  ↑
     temp_range       r=-0.518   p=0.055  n=12  ↓
     wave_height_avg  r=+0.480   p=0.084  n=12  ↑
+    wave_clamp       r=+0.480   p=0.084  n=12  ↑
     pressure_delta   r=+0.475   p=0.088  n=12  ↑
     pressure_range   r=+0.472   p=0.090  n=12  ↑
     wave_period_avg  r=-0.466   p=0.096  n=12  ↓
+
+  [cnt_min]
+    prev_week_cnt    r=+0.846**  p=0.000  n=12  ↑
+    wind_speed_avg   r=+0.749**  p=0.000  n=12  ↑
+    wind_speed_max   r=+0.661**  p=0.005  n=12  ↑
+    wave_period_avg  r=-0.549*  p=0.038  n=12  ↓
+    wave_height_max  r=+0.545*  p=0.040  n=12  ↑
+    pressure_range   r=+0.502   p=0.067  n=12  ↑
 
   [cnt_max]
     wind_speed_avg   r=+0.839**  p=0.000  n=12  ↑
@@ -68,12 +90,14 @@
     wave_height_max  r=+0.766**  p=0.000  n=12  ↑
     temp_range       r=-0.540*  p=0.043  n=12  ↓
     wave_height_avg  r=+0.518   p=0.055  n=12  ↑
+    wave_clamp       r=+0.518   p=0.055  n=12  ↑
     pressure_range   r=+0.482   p=0.082  n=12  ↑
     pressure_delta   r=+0.463   p=0.099  n=12  ↑
 
   [size_avg]
     sst_avg          r=-0.823**  p=0.000  n=12  ↓
     precip_sum       r=-0.800**  p=0.000  n=12  ↓
+    is_holiday       r=-0.704**  p=0.002  n=12  ↓
     temp_range       r=+0.596*  p=0.019  n=12  ↑
     temp_min         r=-0.526   p=0.051  n=12  ↓
     moon_age         r=+0.489   p=0.076  n=12  ↑

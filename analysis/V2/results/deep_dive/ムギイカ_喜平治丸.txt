@@ -14,15 +14,21 @@
 【因子相関（日次: 12件）】
 
   [cnt_avg]
+    sst_delta        r=+0.623*  p=0.012  n=12  ↑
     pressure_avg     r=+0.581*  p=0.024  n=12  ↑
     pressure_min     r=+0.578*  p=0.025  n=12  ↑
     wave_period_avg  r=+0.562*  p=0.032  n=12  ↑
+    tide_delta       r=-0.546*  p=0.039  n=12  ↓
+    moon_cos         r=-0.509   p=0.062  n=12  ↓
     swell_height_avg r=-0.464   p=0.098  n=12  ↓
 
   [cnt_max]
+    sst_delta        r=+0.641**  p=0.008  n=12  ↑
     pressure_avg     r=+0.600*  p=0.018  n=12  ↑
     pressure_min     r=+0.593*  p=0.020  n=12  ↑
     wave_period_avg  r=+0.574*  p=0.027  n=12  ↑
+    tide_delta       r=-0.562*  p=0.032  n=12  ↓
+    moon_cos         r=-0.539*  p=0.043  n=12  ↓
     swell_height_avg r=-0.467   p=0.095  n=12  ↓
 
   [size_avg]
@@ -30,6 +36,8 @@
     temp_min         r=+0.681**  p=0.003  n=12  ↑
     temp_avg         r=+0.677**  p=0.004  n=12  ↑
     temp_max         r=+0.664**  p=0.005  n=12  ↑
+    moon_sin         r=+0.524   p=0.052  n=12  ↑
+    moon_cos         r=+0.463   p=0.099  n=12  ↑
 
 【因子相関（週集計: n=4週）】
   (有意な相関なし)

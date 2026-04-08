@@ -22,18 +22,24 @@
     temp_min         r=-0.667*  p=0.011  n=10  ↓
     temp_avg         r=-0.664*  p=0.012  n=10  ↓
     wave_height_avg  r=+0.639*  p=0.019  n=10  ↑
+    wave_clamp       r=+0.639*  p=0.019  n=10  ↑
     swell_height_avg r=+0.539   p=0.071  n=10  ↑
     swell_height_max r=+0.508   p=0.095  n=10  ↑
+
+  [cnt_min]
+    tide_delta       r=-0.576*  p=0.046  n=10  ↓
 
   [cnt_max]
     temp_max         r=-0.724**  p=0.003  n=10  ↓
     temp_avg         r=-0.688**  p=0.007  n=10  ↓
     wave_height_avg  r=+0.677**  p=0.009  n=10  ↑
+    wave_clamp       r=+0.677**  p=0.009  n=10  ↑
     temp_min         r=-0.651*  p=0.015  n=10  ↓
     swell_height_avg r=+0.610*  p=0.030  n=10  ↑
     swell_height_max r=+0.554   p=0.060  n=10  ↑
 
   [size_avg]
+    is_holiday       r=-0.659*  p=0.013  n=10  ↓
     wind_speed_max   r=+0.656*  p=0.014  n=10  ↑
     wave_height_max  r=+0.579*  p=0.044  n=10  ↑
     precip_sum2      r=-0.568   p=0.051  n=10  ↓

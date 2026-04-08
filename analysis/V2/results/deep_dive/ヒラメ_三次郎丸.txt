@@ -21,18 +21,34 @@
 【因子相関（日次: 26件）】
 
   [cnt_avg]
+    is_holiday       r=-0.432*  p=0.019  n=26  ↓
+    moon_sin         r=-0.424*  p=0.022  n=26  ↓
     swell_height_max r=-0.391*  p=0.038  n=26  ↓
     temp_min         r=-0.387*  p=0.040  n=26  ↓
     wave_height_avg  r=-0.383*  p=0.042  n=26  ↓
+    wave_clamp       r=-0.383*  p=0.042  n=26  ↓
     wave_period_min  r=-0.380*  p=0.044  n=26  ↓
     swell_height_avg r=-0.375*  p=0.047  n=26  ↓
+
+  [cnt_min]
+    is_holiday       r=-0.453*  p=0.013  n=26  ↓
+    moon_sin         r=-0.401*  p=0.032  n=26  ↓
+    swell_height_max r=-0.376*  p=0.047  n=26  ↓
+    temp_min         r=-0.356   p=0.062  n=26  ↓
+    precip_sum2      r=+0.333   p=0.083  n=26  ↑
+    swell_height_avg r=-0.332   p=0.085  n=26  ↓
+    wave_height_avg  r=-0.330   p=0.087  n=26  ↓
+    wave_clamp       r=-0.330   p=0.087  n=26  ↓
 
   [cnt_max]
     temp_min         r=-0.475**  p=0.008  n=26  ↓
     wave_height_avg  r=-0.458*  p=0.012  n=26  ↓
+    wave_clamp       r=-0.458*  p=0.012  n=26  ↓
     swell_height_avg r=-0.439*  p=0.017  n=26  ↓
     swell_height_max r=-0.436*  p=0.018  n=26  ↓
+    moon_sin         r=-0.394*  p=0.036  n=26  ↓
     wave_period_min  r=-0.389*  p=0.038  n=26  ↓
+    is_holiday       r=-0.379*  p=0.045  n=26  ↓
     temp_range       r=+0.365   p=0.055  n=26  ↑
     temp_avg         r=-0.337   p=0.080  n=26  ↓
 
@@ -41,13 +57,14 @@
     wave_period_min  r=+0.431*  p=0.019  n=26  ↑
     wave_period_avg  r=+0.417*  p=0.024  n=26  ↑
     precip_sum2      r=+0.392*  p=0.037  n=26  ↑
+    wind_dir_e       r=+0.389*  p=0.038  n=26  ↑
     swell_height_avg r=+0.387*  p=0.040  n=26  ↑
     wave_height_avg  r=+0.385*  p=0.041  n=26  ↑
+    wave_clamp       r=+0.385*  p=0.041  n=26  ↑
     swell_height_max r=+0.384*  p=0.042  n=26  ↑
     wave_height_max  r=+0.367   p=0.053  n=26  ↑
     precip_sum1      r=+0.344   p=0.072  n=26  ↑
     temp_range       r=-0.331   p=0.086  n=26  ↓
-    pressure_delta   r=+0.326   p=0.091  n=26  ↑
 
 【因子相関（週集計: n=13週）】
 
@@ -55,8 +72,17 @@
     prev_week_cnt    r=+0.940**  p=0.000  n=13  ↑
     wave_period_min  r=-0.620**  p=0.009  n=13  ↓
     wind_speed_max   r=+0.598*  p=0.013  n=13  ↑
+    moon_sin         r=-0.533*  p=0.037  n=13  ↓
+    temp_delta       r=+0.519*  p=0.044  n=13  ↑
     wave_period_avg  r=-0.468   p=0.079  n=13  ↓
     swell_height_avg r=-0.445   p=0.099  n=13  ↓
+
+  [cnt_min]
+    prev_week_cnt    r=+0.958**  p=0.000  n=13  ↑
+    wind_speed_max   r=+0.572*  p=0.021  n=13  ↑
+    wave_period_min  r=-0.519*  p=0.044  n=13  ↓
+    temp_delta       r=+0.498   p=0.057  n=13  ↑
+    moon_sin         r=-0.484   p=0.067  n=13  ↓
 
   [cnt_max]
     prev_week_cnt    r=+0.850**  p=0.000  n=13  ↑
@@ -64,16 +90,22 @@
     wind_speed_max   r=+0.649**  p=0.005  n=13  ↑
     swell_height_avg r=-0.607*  p=0.011  n=13  ↓
     wave_height_avg  r=-0.586*  p=0.016  n=13  ↓
+    wave_clamp       r=-0.586*  p=0.016  n=13  ↓
+    temp_delta       r=+0.568*  p=0.022  n=13  ↑
     wave_period_avg  r=-0.547*  p=0.030  n=13  ↓
     temp_range       r=+0.525*  p=0.041  n=13  ↑
     swell_height_max r=-0.518*  p=0.044  n=13  ↓
+    moon_sin         r=-0.500   p=0.055  n=13  ↓
+    wind_dir_e       r=-0.488   p=0.063  n=13  ↓
 
   [kg_avg]
     wind_dir_mode    r=-0.797**  p=0.000  n=13  ↓
     wave_period_avg  r=+0.648**  p=0.005  n=13  ↑
     wave_height_max  r=+0.647**  p=0.005  n=13  ↑
     wave_height_avg  r=+0.639**  p=0.006  n=13  ↑
+    wave_clamp       r=+0.639**  p=0.006  n=13  ↑
     temp_range       r=-0.633**  p=0.007  n=13  ↓
+    wind_dir_e       r=+0.631**  p=0.007  n=13  ↑
     wave_period_min  r=+0.617**  p=0.009  n=13  ↑
     swell_height_avg r=+0.608*  p=0.011  n=13  ↑
     swell_height_max r=+0.594*  p=0.014  n=13  ↑

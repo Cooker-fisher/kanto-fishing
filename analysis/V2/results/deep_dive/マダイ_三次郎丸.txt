@@ -18,10 +18,17 @@
   [cnt_avg]
     precip_sum2      r=+0.695**  p=0.000  n=16  ↑
     precip_sum1      r=+0.467*  p=0.048  n=16  ↑
+    wind_dir_n       r=+0.419   p=0.084  n=16  ↑
+
+  [cnt_min]
+    precip_sum2      r=+0.593**  p=0.006  n=16  ↑
+    precip_sum1      r=+0.456   p=0.055  n=16  ↑
+    wind_dir_n       r=+0.456   p=0.055  n=16  ↑
 
   [cnt_max]
     precip_sum2      r=+0.712**  p=0.000  n=16  ↑
     wave_height_avg  r=+0.465*  p=0.049  n=16  ↑
+    wave_clamp       r=+0.465*  p=0.049  n=16  ↑
     wave_height_max  r=+0.459   p=0.053  n=16  ↑
     wind_speed_avg   r=+0.453   p=0.057  n=16  ↑
     precip_sum1      r=+0.416   p=0.087  n=16  ↑
@@ -29,8 +36,10 @@
   [kg_avg]
     precip_sum2      r=+0.851**  p=0.000  n=16  ↑
     wave_period_avg  r=+0.594**  p=0.006  n=16  ↑
+    moon_sin         r=-0.529*  p=0.020  n=16  ↓
     wave_period_min  r=+0.475*  p=0.043  n=16  ↑
     moon_age         r=+0.432   p=0.073  n=16  ↑
+    wind_dir_n       r=+0.423   p=0.081  n=16  ↑
 
 【因子相関（週集計: n=11週）】
 
@@ -42,6 +51,13 @@
     wave_height_max  r=+0.497   p=0.086  n=11  ↑
     temp_range       r=-0.496   p=0.087  n=11  ↓
     wave_height_avg  r=+0.490   p=0.092  n=11  ↑
+    wave_clamp       r=+0.490   p=0.092  n=11  ↑
+
+  [cnt_min]
+    precip_sum2      r=+0.634*  p=0.014  n=11  ↑
+    pressure_avg     r=+0.532   p=0.060  n=11  ↑
+    wave_period_avg  r=+0.485   p=0.096  n=11  ↑
+    pressure_min     r=+0.484   p=0.097  n=11  ↑
 
   [cnt_max]
     precip_sum2      r=+0.734**  p=0.001  n=11  ↑
@@ -49,6 +65,7 @@
     pressure_avg     r=+0.622*  p=0.017  n=11  ↑
     wave_height_max  r=+0.584*  p=0.031  n=11  ↑
     wave_height_avg  r=+0.583*  p=0.031  n=11  ↑
+    wave_clamp       r=+0.583*  p=0.031  n=11  ↑
     temp_range       r=-0.577*  p=0.034  n=11  ↓
     pressure_min     r=+0.559*  p=0.043  n=11  ↑
     wave_period_min  r=+0.548*  p=0.050  n=11  ↑
@@ -58,7 +75,9 @@
     wave_period_avg  r=+0.778**  p=0.000  n=11  ↑
     wave_period_min  r=+0.608*  p=0.021  n=11  ↑
     tide_range       r=-0.569*  p=0.038  n=11  ↓
+    moon_sin         r=-0.551*  p=0.047  n=11  ↓
     wave_height_avg  r=+0.540   p=0.054  n=11  ↑
+    wave_clamp       r=+0.540   p=0.054  n=11  ↑
     wave_height_max  r=+0.517   p=0.070  n=11  ↑
 
 【因子相関（旬集計: n=8旬）】

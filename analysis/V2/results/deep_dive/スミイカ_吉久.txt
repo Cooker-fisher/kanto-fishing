@@ -19,6 +19,16 @@
 
 【因子相関（日次: 22件）】
 
+  [cnt_avg]
+    is_holiday       r=-0.400   p=0.051  n=22  ↓
+
+  [cnt_min]
+    is_holiday       r=-0.386   p=0.061  n=22  ↓
+
+  [cnt_max]
+    tide_delta       r=-0.408*  p=0.046  n=22  ↓
+    is_holiday       r=-0.398   p=0.052  n=22  ↓
+
   [kg_avg]
     temp_min         r=+0.533**  p=0.005  n=22  ↑
     sst_avg          r=+0.528**  p=0.005  n=22  ↑
@@ -30,7 +40,8 @@
     tide_range       r=+0.419*  p=0.039  n=22  ↑
     tide_type_n      r=+0.382   p=0.065  n=22  ↑
     wave_height_avg  r=+0.381   p=0.065  n=22  ↑
-    prev_week_cnt    r=-0.369   p=0.083  n=21  ↓
+    wave_clamp       r=+0.381   p=0.065  n=22  ↑
+    wind_dir_n       r=-0.370   p=0.075  n=22  ↓
 
 【因子相関（週集計: n=9週）】
   (有意な相関なし)

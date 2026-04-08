@@ -14,19 +14,34 @@
 【因子相関（日次: 10件）】
 
   [cnt_avg]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
     swell_height_avg r=+0.682**  p=0.008  n=10  ↑
     swell_height_max r=+0.681**  p=0.008  n=10  ↑
     wave_height_max  r=+0.669*  p=0.011  n=10  ↑
     wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_min]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
     wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
     pressure_min     r=-0.520   p=0.085  n=10  ↓
     pressure_avg     r=-0.514   p=0.090  n=10  ↓
 
   [cnt_max]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
     swell_height_avg r=+0.682**  p=0.008  n=10  ↑
     swell_height_max r=+0.681**  p=0.008  n=10  ↑
     wave_height_max  r=+0.669*  p=0.011  n=10  ↑
     wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
     wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
     pressure_min     r=-0.520   p=0.085  n=10  ↓
     pressure_avg     r=-0.514   p=0.090  n=10  ↓
@@ -34,19 +49,34 @@
 【因子相関（週集計: n=10週）】
 
   [cnt_avg]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
     swell_height_avg r=+0.682**  p=0.008  n=10  ↑
     swell_height_max r=+0.681**  p=0.008  n=10  ↑
     wave_height_max  r=+0.669*  p=0.011  n=10  ↑
     wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_min]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
     wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
     pressure_min     r=-0.520   p=0.085  n=10  ↓
     pressure_avg     r=-0.514   p=0.090  n=10  ↓
 
   [cnt_max]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
     swell_height_avg r=+0.682**  p=0.008  n=10  ↑
     swell_height_max r=+0.681**  p=0.008  n=10  ↑
     wave_height_max  r=+0.669*  p=0.011  n=10  ↑
     wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
     wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
     pressure_min     r=-0.520   p=0.085  n=10  ↓
     pressure_avg     r=-0.514   p=0.090  n=10  ↓
@@ -54,19 +84,34 @@
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
     swell_height_avg r=+0.682**  p=0.008  n=10  ↑
     swell_height_max r=+0.681**  p=0.008  n=10  ↑
     wave_height_max  r=+0.669*  p=0.011  n=10  ↑
     wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_min]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
     wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
     pressure_min     r=-0.520   p=0.085  n=10  ↓
     pressure_avg     r=-0.514   p=0.090  n=10  ↓
 
   [cnt_max]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
     swell_height_avg r=+0.682**  p=0.008  n=10  ↑
     swell_height_max r=+0.681**  p=0.008  n=10  ↑
     wave_height_max  r=+0.669*  p=0.011  n=10  ↑
     wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
     wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
     pressure_min     r=-0.520   p=0.085  n=10  ↓
     pressure_avg     r=-0.514   p=0.090  n=10  ↓

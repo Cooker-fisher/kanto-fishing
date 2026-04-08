@@ -27,6 +27,15 @@
     tide_type_n      r=-0.489*  p=0.021  n=19  ↓
     pressure_delta   r=+0.389   p=0.082  n=19  ↑
 
+  [cnt_min]
+    precip_sum1      r=+0.816**  p=0.000  n=19  ↑
+    wave_period_avg  r=+0.735**  p=0.000  n=19  ↑
+    wave_period_min  r=+0.629**  p=0.001  n=19  ↑
+    pressure_delta   r=+0.585**  p=0.003  n=19  ↑
+    tide_range       r=-0.429   p=0.050  n=19  ↓
+    tide_type_n      r=-0.429   p=0.050  n=19  ↓
+    pressure_avg     r=+0.373   p=0.097  n=19  ↑
+
   [cnt_max]
     precip_sum1      r=+0.682**  p=0.000  n=19  ↑
     tide_range       r=-0.529*  p=0.010  n=19  ↓
@@ -41,6 +50,7 @@
     wave_period_min  r=-0.434   p=0.072  n=16  ↓
     pressure_delta   r=-0.416   p=0.087  n=16  ↓
     tide_type_n      r=+0.411   p=0.091  n=16  ↑
+    moon_sin         r=+0.405   p=0.097  n=16  ↑
 
 【因子相関（週集計: n=6週）】
   (有意な相関なし)

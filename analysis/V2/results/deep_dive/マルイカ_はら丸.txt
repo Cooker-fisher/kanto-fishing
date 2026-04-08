@@ -25,10 +25,24 @@
     temp_max         r=+0.503*  p=0.020  n=18  ↑
     swell_height_avg r=+0.472*  p=0.032  n=18  ↑
     temp_avg         r=+0.470*  p=0.033  n=18  ↑
+    moon_cos         r=-0.465*  p=0.036  n=18  ↓
     wave_height_avg  r=+0.464*  p=0.036  n=18  ↑
+    wave_clamp       r=+0.464*  p=0.036  n=18  ↑
     pressure_delta   r=-0.435   p=0.053  n=18  ↓
     temp_min         r=+0.434   p=0.054  n=18  ↑
-    swell_height_max r=+0.414   p=0.069  n=18  ↑
+
+  [cnt_min]
+    precip_sum2      r=+0.594**  p=0.003  n=18  ↑
+    pressure_avg     r=-0.558**  p=0.007  n=18  ↓
+    swell_height_max r=+0.549**  p=0.009  n=18  ↑
+    swell_height_avg r=+0.535*  p=0.011  n=18  ↑
+    pressure_min     r=-0.483*  p=0.027  n=18  ↓
+    temp_max         r=+0.471*  p=0.033  n=18  ↑
+    temp_min         r=+0.465*  p=0.036  n=18  ↑
+    precip_sum1      r=+0.464*  p=0.036  n=18  ↑
+    wave_height_avg  r=+0.441*  p=0.049  n=18  ↑
+    wave_clamp       r=+0.441*  p=0.049  n=18  ↑
+    temp_avg         r=+0.440*  p=0.050  n=18  ↑
 
   [cnt_max]
     precip_sum       r=+0.792**  p=0.000  n=18  ↑
@@ -37,14 +51,19 @@
     pressure_avg     r=-0.668**  p=0.000  n=18  ↓
     pressure_delta   r=-0.476*  p=0.030  n=18  ↓
     temp_max         r=+0.466*  p=0.035  n=18  ↑
+    wind_dir_e       r=-0.464*  p=0.036  n=18  ↓
     pressure_range   r=+0.446*  p=0.046  n=18  ↑
+    moon_cos         r=-0.443*  p=0.048  n=18  ↓
     temp_avg         r=+0.442*  p=0.049  n=18  ↑
     wave_height_avg  r=+0.434   p=0.054  n=18  ↑
-    swell_height_avg r=+0.422   p=0.063  n=18  ↑
-    temp_min         r=+0.395   p=0.085  n=18  ↑
+    wave_clamp       r=+0.434   p=0.054  n=18  ↑
 
   [size_avg]
     wind_dir_mode    r=+0.519*  p=0.015  n=18  ↑
+    wind_dir_n       r=-0.516*  p=0.016  n=18  ↓
+    moon_cos         r=+0.514*  p=0.017  n=18  ↑
+    sst_delta        r=-0.498*  p=0.022  n=18  ↓
+    wind_dir_e       r=-0.466*  p=0.035  n=18  ↓
     sst_avg          r=-0.410   p=0.072  n=18  ↓
 
 【因子相関（週集計: n=9週）】

@@ -20,15 +20,27 @@
 【因子相関（日次: 26件）】
 
   [cnt_avg]
+    is_holiday       r=-0.495**  p=0.005  n=26  ↓
+    temp_delta       r=-0.432*  p=0.019  n=26  ↓
     temp_range       r=-0.371   p=0.050  n=26  ↓
     wave_height_max  r=-0.345   p=0.072  n=26  ↓
     pressure_delta   r=+0.344   p=0.072  n=26  ↑
+    wind_dir_e       r=+0.338   p=0.079  n=26  ↑
     wave_height_avg  r=-0.331   p=0.085  n=26  ↓
+    wave_clamp       r=-0.331   p=0.085  n=26  ↓
+
+  [cnt_min]
+    is_holiday       r=-0.465*  p=0.010  n=26  ↓
+    temp_range       r=-0.352   p=0.066  n=26  ↓
 
   [cnt_max]
+    temp_delta       r=-0.472**  p=0.009  n=26  ↓
     pressure_delta   r=+0.466**  p=0.010  n=26  ↑
+    is_holiday       r=-0.443*  p=0.016  n=26  ↓
+    wind_dir_e       r=+0.383*  p=0.042  n=26  ↑
     wave_height_max  r=-0.381*  p=0.044  n=26  ↓
     wave_height_avg  r=-0.366   p=0.054  n=26  ↓
+    wave_clamp       r=-0.366   p=0.054  n=26  ↓
     temp_range       r=-0.325   p=0.092  n=26  ↓
 
   [size_avg]
@@ -39,8 +51,10 @@
     wave_period_min  r=-0.509**  p=0.004  n=26  ↓
     swell_height_max r=-0.390*  p=0.038  n=26  ↓
     swell_height_avg r=-0.384*  p=0.042  n=26  ↓
+    moon_sin         r=-0.369   p=0.052  n=26  ↓
     pressure_avg     r=+0.339   p=0.077  n=26  ↑
     precip_sum2      r=-0.323   p=0.095  n=26  ↓
+    is_holiday       r=-0.321   p=0.097  n=26  ↓
 
 【因子相関（週集計: n=8週）】
   (有意な相関なし)

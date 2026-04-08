@@ -18,14 +18,24 @@
 【因子相関（日次: 26件）】
 
   [cnt_avg]
+    is_holiday       r=-0.447*  p=0.014  n=26  ↓
+    is_summer_vacation r=+0.426*  p=0.021  n=26  ↑
     moon_age         r=+0.366   p=0.054  n=26  ↑
     sst_avg          r=-0.335   p=0.081  n=26  ↓
     temp_max         r=+0.321   p=0.096  n=26  ↑
 
+  [cnt_min]
+    is_holiday       r=-0.408*  p=0.029  n=26  ↓
+    typhoon_dist     r=-0.331   p=0.092  n=25  ↓
+    precip_sum2      r=-0.328   p=0.089  n=26  ↓
+
   [cnt_max]
+    is_summer_vacation r=+0.489**  p=0.006  n=26  ↑
     sst_avg          r=-0.437*  p=0.017  n=26  ↓
+    is_holiday       r=-0.430*  p=0.020  n=26  ↓
     wave_period_min  r=-0.399*  p=0.033  n=26  ↓
     moon_age         r=+0.383*  p=0.042  n=26  ↑
+    wave_clamp       r=-0.363   p=0.057  n=26  ↓
     wave_period_avg  r=-0.352   p=0.065  n=26  ↓
     temp_max         r=+0.344   p=0.072  n=26  ↑
     swell_height_avg r=-0.340   p=0.076  n=26  ↓
@@ -33,6 +43,7 @@
     wave_height_max  r=-0.323   p=0.095  n=26  ↓
 
   [size_avg]
+    is_summer_vacation r=+0.714**  p=0.000  n=26  ↑
     prev_week_cnt    r=+0.421*  p=0.026  n=25  ↑
     sst_avg          r=-0.412*  p=0.027  n=26  ↓
     typhoon_dist     r=-0.389*  p=0.043  n=25  ↓
@@ -42,22 +53,40 @@
 
   [cnt_avg]
     temp_max         r=+0.758**  p=0.001  n=10  ↑
+    is_summer_vacation r=+0.673*  p=0.010  n=10  ↑
+    temp_delta       r=-0.619*  p=0.026  n=10  ↓
+    wind_dir_e       r=-0.546   p=0.066  n=10  ↓
     pressure_avg     r=-0.542   p=0.068  n=10  ↓
     pressure_min     r=-0.520   p=0.085  n=10  ↓
     sst_avg          r=-0.512   p=0.092  n=10  ↓
     wave_period_min  r=-0.511   p=0.093  n=10  ↓
     temp_avg         r=+0.510   p=0.093  n=10  ↑
 
+  [cnt_min]
+    temp_max         r=+0.745**  p=0.002  n=10  ↑
+    temp_delta       r=-0.727**  p=0.003  n=10  ↓
+    pressure_avg     r=-0.647*  p=0.016  n=10  ↓
+    pressure_min     r=-0.629*  p=0.022  n=10  ↓
+    is_summer_vacation r=+0.580*  p=0.044  n=10  ↑
+    temp_avg         r=+0.554   p=0.060  n=10  ↑
+    pressure_delta   r=+0.550   p=0.063  n=10  ↑
+
   [cnt_max]
     temp_max         r=+0.729**  p=0.003  n=10  ↑
+    is_summer_vacation r=+0.698**  p=0.006  n=10  ↑
     prev_week_cnt    r=+0.599*  p=0.048  n=9  ↑
     sst_avg          r=-0.586*  p=0.041  n=10  ↓
+    wind_dir_e       r=-0.581*  p=0.044  n=10  ↓
     wave_period_min  r=-0.538   p=0.071  n=10  ↓
+    temp_delta       r=-0.535   p=0.073  n=10  ↓
+    wind_dir_n       r=+0.527   p=0.079  n=10  ↑
     wave_period_avg  r=-0.517   p=0.088  n=10  ↓
     wind_dir_mode    r=+0.508   p=0.095  n=10  ↑
 
   [size_avg]
+    is_summer_vacation r=+0.827**  p=0.000  n=10  ↑
     temp_max         r=+0.617*  p=0.027  n=10  ↑
+    wind_dir_e       r=-0.586*  p=0.041  n=10  ↓
     wind_dir_mode    r=+0.556   p=0.059  n=10  ↑
     pressure_avg     r=-0.524   p=0.082  n=10  ↓
 

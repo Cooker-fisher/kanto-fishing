@@ -18,13 +18,26 @@
   [cnt_avg]
     precip_sum1      r=+0.901**  p=0.000  n=10  ↑
     precip_sum       r=+0.814**  p=0.000  n=10  ↑
+    is_holiday       r=-0.600*  p=0.034  n=10  ↓
+    moon_cos         r=-0.529   p=0.078  n=10  ↓
+    wind_dir_e       r=+0.523   p=0.083  n=10  ↑
+
+  [cnt_min]
+    moon_cos         r=-0.722**  p=0.003  n=10  ↓
+    precip_sum       r=+0.607*  p=0.031  n=10  ↑
+    moon_sin         r=+0.584*  p=0.042  n=10  ↑
+    is_holiday       r=-0.562   p=0.054  n=10  ↓
+    wind_dir_e       r=+0.514   p=0.090  n=10  ↑
 
   [cnt_max]
     precip_sum1      r=+0.945**  p=0.000  n=10  ↑
     precip_sum       r=+0.813**  p=0.000  n=10  ↑
+    is_holiday       r=-0.555   p=0.059  n=10  ↓
 
   [kg_avg]
+    moon_sin         r=+0.829**  p=0.000  n=10  ↑
     moon_age         r=-0.758**  p=0.001  n=10  ↓
+    wind_dir_e       r=+0.625*  p=0.024  n=10  ↑
     wind_dir_mode    r=-0.508   p=0.095  n=10  ↓
 
 【因子相関（週集計: n=8週）】

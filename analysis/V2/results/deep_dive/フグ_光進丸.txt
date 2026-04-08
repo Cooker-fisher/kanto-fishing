@@ -19,25 +19,32 @@
 
   [cnt_avg]
     prev_week_cnt    r=+0.580**  p=0.000  n=33  ↑
+    moon_cos         r=-0.516**  p=0.001  n=34  ↓
     sst_avg          r=+0.439**  p=0.006  n=34  ↑
     temp_max         r=+0.438**  p=0.006  n=34  ↑
     pressure_avg     r=-0.428**  p=0.007  n=34  ↓
     temp_avg         r=+0.406*  p=0.012  n=34  ↑
+    sst_delta        r=+0.400*  p=0.013  n=34  ↑
     pressure_min     r=-0.399*  p=0.014  n=34  ↓
     temp_min         r=+0.376*  p=0.022  n=34  ↑
+    tide_delta       r=+0.349*  p=0.035  n=34  ↑
 
   [cnt_max]
     prev_week_cnt    r=+0.633**  p=0.000  n=33  ↑
+    moon_cos         r=-0.509**  p=0.001  n=34  ↓
     sst_avg          r=+0.485**  p=0.002  n=34  ↑
     temp_max         r=+0.460**  p=0.003  n=34  ↑
     pressure_avg     r=-0.452**  p=0.004  n=34  ↓
     pressure_min     r=-0.438**  p=0.006  n=34  ↓
     temp_avg         r=+0.425**  p=0.008  n=34  ↑
     temp_min         r=+0.381*  p=0.020  n=34  ↑
+    sst_delta        r=+0.376*  p=0.022  n=34  ↑
+    tide_delta       r=+0.355*  p=0.032  n=34  ↑
 
   [kg_avg]
     tide_type_n      r=-0.323   p=0.053  n=34  ↓
     sst_avg          r=-0.313   p=0.062  n=34  ↓
+    moon_sin         r=+0.309   p=0.066  n=34  ↑
     wind_speed_avg   r=-0.294   p=0.081  n=34  ↓
 
 【因子相関（週集計: n=8週）】

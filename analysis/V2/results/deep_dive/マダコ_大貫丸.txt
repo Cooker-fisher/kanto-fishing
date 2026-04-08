@@ -20,14 +20,25 @@
   [cnt_avg]
     wave_period_min  r=+0.572**  p=0.009  n=16  ↑
     wave_period_avg  r=+0.500*  p=0.031  n=16  ↑
+    tide_delta       r=-0.488*  p=0.037  n=16  ↓
+
+  [cnt_min]
+    prev_week_cnt    r=-0.539*  p=0.021  n=15  ↓
+    is_holiday       r=-0.456   p=0.055  n=16  ↓
+    tide_delta       r=-0.452   p=0.058  n=16  ↓
+    wave_period_avg  r=+0.450   p=0.059  n=16  ↑
+    wave_period_min  r=+0.433   p=0.072  n=16  ↑
 
   [cnt_max]
     wave_period_min  r=+0.555*  p=0.012  n=16  ↑
     pressure_delta   r=+0.485*  p=0.038  n=16  ↑
     wave_period_avg  r=+0.452   p=0.058  n=16  ↑
     moon_age         r=-0.447   p=0.061  n=16  ↓
+    sst_delta        r=-0.437   p=0.069  n=16  ↓
+    tide_delta       r=-0.412   p=0.091  n=16  ↓
 
   [kg_avg]
+    wind_dir_n       r=+0.469*  p=0.047  n=16  ↑
     swell_height_avg r=+0.436   p=0.070  n=16  ↑
     swell_height_max r=+0.429   p=0.076  n=16  ↑
 

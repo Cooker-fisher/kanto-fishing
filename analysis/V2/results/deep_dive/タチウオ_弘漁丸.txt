@@ -19,24 +19,31 @@
 
   [cnt_avg]
     wave_height_avg  r=-0.651**  p=0.002  n=15  ↓
+    wave_clamp       r=-0.651**  p=0.002  n=15  ↓
     temp_avg         r=-0.628**  p=0.004  n=15  ↓
     temp_min         r=-0.622**  p=0.004  n=15  ↓
     temp_max         r=-0.618**  p=0.005  n=15  ↓
     swell_height_avg r=-0.594**  p=0.008  n=15  ↓
     wave_height_max  r=-0.573*  p=0.012  n=15  ↓
+    moon_sin         r=-0.564*  p=0.014  n=15  ↓
     swell_height_max r=-0.561*  p=0.015  n=15  ↓
     pressure_range   r=+0.558*  p=0.015  n=15  ↑
     sst_avg          r=-0.478*  p=0.050  n=15  ↓
-    tide_range       r=+0.426   p=0.090  n=15  ↑
+    is_holiday       r=-0.464   p=0.059  n=15  ↓
+
+  [cnt_min]
+    tide_range       r=+0.475   p=0.052  n=15  ↑
 
   [cnt_max]
     temp_min         r=-0.685**  p=0.001  n=15  ↓
     temp_avg         r=-0.683**  p=0.001  n=15  ↓
     temp_max         r=-0.676**  p=0.001  n=15  ↓
     wave_height_avg  r=-0.660**  p=0.002  n=15  ↓
+    wave_clamp       r=-0.660**  p=0.002  n=15  ↓
     pressure_range   r=+0.658**  p=0.002  n=15  ↑
     swell_height_avg r=-0.626**  p=0.004  n=15  ↓
     swell_height_max r=-0.590**  p=0.008  n=15  ↓
+    moon_sin         r=-0.589**  p=0.009  n=15  ↓
     wave_height_max  r=-0.570*  p=0.012  n=15  ↓
     sst_avg          r=-0.521*  p=0.028  n=15  ↓
     wind_dir_mode    r=+0.495*  p=0.040  n=15  ↑
@@ -48,8 +55,11 @@
     moon_age         r=+0.645**  p=0.008  n=12  ↑
     pressure_avg     r=-0.625*  p=0.011  n=12  ↓
     temp_min         r=+0.619*  p=0.013  n=12  ↑
+    sst_delta        r=+0.599*  p=0.018  n=12  ↑
+    is_consec_holiday r=+0.555*  p=0.035  n=12  ↑
     temp_max         r=+0.544*  p=0.040  n=12  ↑
     precip_sum1      r=+0.513   p=0.059  n=12  ↑
+    moon_sin         r=-0.511   p=0.060  n=12  ↓
 
 【因子相関（週集計: n=5週）】
   (有意な相関なし)

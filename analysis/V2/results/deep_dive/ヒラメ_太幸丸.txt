@@ -16,7 +16,15 @@
 
 【因子相関（日次: 13件）】
 
+  [cnt_avg]
+    sst_delta        r=+0.597*  p=0.014  n=13  ↑
+    moon_cos         r=-0.512*  p=0.048  n=13  ↓
+    wind_dir_n       r=+0.449   p=0.096  n=13  ↑
+
   [cnt_max]
+    sst_delta        r=+0.672**  p=0.003  n=13  ↑
+    wind_dir_n       r=+0.613*  p=0.010  n=13  ↑
+    moon_cos         r=-0.491   p=0.061  n=13  ↓
     precip_sum       r=+0.456   p=0.089  n=13  ↑
 
   [kg_avg]
