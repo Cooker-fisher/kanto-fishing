@@ -32,177 +32,187 @@
 
   [cnt_avg]
     prev_week_cnt    r=+0.382**  p=0.000  n=223  ↑
-    temp_min         r=+0.359**  p=0.000  n=224  ↑
-    temp             r=+0.356**  p=0.000  n=224  ↑
-    temp_max         r=+0.351**  p=0.000  n=224  ↑
-    sst              r=+0.334**  p=0.000  n=224  ↑
+    temp_max         r=+0.374**  p=0.000  n=224  ↑
+    temp_avg         r=+0.356**  p=0.000  n=224  ↑
+    temp_min         r=+0.340**  p=0.000  n=224  ↑
     tide_range       r=-0.296**  p=0.000  n=224  ↓
+    sst_avg          r=+0.292**  p=0.000  n=224  ↑
+    wave_height_max  r=-0.277**  p=0.000  n=224  ↓
     typhoon_wind     r=-0.266*  p=0.015  n=79  ↓
-    tide_type_n      r=-0.240**  p=0.000  n=224  ↓
-    swell_height_max r=-0.193**  p=0.003  n=224  ↓
-    wind_speed_max   r=-0.191**  p=0.004  n=224  ↓
-    wave_height_max  r=-0.190**  p=0.004  n=224  ↓
-    wave_height      r=-0.173**  p=0.009  n=224  ↓
+    wind_speed_max   r=-0.261**  p=0.000  n=224  ↓
+    wave_height_avg  r=-0.260**  p=0.000  n=224  ↓
+    swell_height_max r=-0.259**  p=0.000  n=224  ↓
+    swell_height_avg r=-0.246**  p=0.000  n=224  ↓
 
   [cnt_max]
     prev_week_cnt    r=+0.379**  p=0.000  n=223  ↑
-    temp_min         r=+0.344**  p=0.000  n=224  ↑
-    temp             r=+0.339**  p=0.000  n=224  ↑
-    temp_max         r=+0.337**  p=0.000  n=224  ↑
-    sst              r=+0.329**  p=0.000  n=224  ↑
+    temp_max         r=+0.363**  p=0.000  n=224  ↑
+    temp_avg         r=+0.340**  p=0.000  n=224  ↑
+    temp_min         r=+0.325**  p=0.000  n=224  ↑
+    wave_height_max  r=-0.297**  p=0.000  n=224  ↓
     tide_range       r=-0.288**  p=0.000  n=224  ↓
+    wind_speed_max   r=-0.287**  p=0.000  n=224  ↓
     typhoon_wind     r=-0.280*  p=0.010  n=79  ↓
-    tide_type_n      r=-0.229**  p=0.000  n=224  ↓
-    wind_speed_max   r=-0.227**  p=0.001  n=224  ↓
-    wave_height_max  r=-0.222**  p=0.001  n=224  ↓
-    swell_height_max r=-0.216**  p=0.001  n=224  ↓
-    wave_height      r=-0.192**  p=0.004  n=224  ↓
+    sst_avg          r=+0.278**  p=0.000  n=224  ↑
+    swell_height_max r=-0.273**  p=0.000  n=224  ↓
+    wave_height_avg  r=-0.266**  p=0.000  n=224  ↓
+    swell_height_avg r=-0.246**  p=0.000  n=224  ↓
 
   [size_avg]
-    temp_max         r=+0.451**  p=0.000  n=224  ↑
-    temp_min         r=+0.430**  p=0.000  n=224  ↑
-    temp             r=+0.426**  p=0.000  n=224  ↑
-    sst              r=+0.377**  p=0.000  n=224  ↑
-    wind_speed_max   r=-0.263**  p=0.000  n=224  ↓
-    pressure_range   r=-0.227**  p=0.001  n=224  ↓
-    precip_sum1      r=-0.219**  p=0.001  n=224  ↓
-    wave_height_max  r=-0.183**  p=0.006  n=224  ↓
-    wind_speed       r=-0.177**  p=0.007  n=224  ↓
-    wave_height      r=-0.167*  p=0.012  n=224  ↓
-    swell_height_max r=-0.156*  p=0.019  n=224  ↓
-    pressure         r=-0.149*  p=0.025  n=224  ↓
+    temp_max         r=+0.455**  p=0.000  n=224  ↑
+    temp_avg         r=+0.437**  p=0.000  n=224  ↑
+    temp_min         r=+0.426**  p=0.000  n=224  ↑
+    sst_avg          r=+0.412**  p=0.000  n=224  ↑
+    wind_speed_max   r=-0.292**  p=0.000  n=224  ↓
+    pressure_range   r=-0.232**  p=0.000  n=224  ↓
+    precip_sum1      r=-0.216**  p=0.001  n=224  ↓
+    wave_height_max  r=-0.180**  p=0.006  n=224  ↓
+    wind_speed_avg   r=-0.170*  p=0.010  n=224  ↓
+    pressure_avg     r=-0.160*  p=0.016  n=224  ↓
+    swell_height_max r=-0.158*  p=0.017  n=224  ↓
 
 【因子相関（週集計: n=65週）】
 
   [cnt_avg]
     prev_week_cnt    r=+0.804**  p=0.000  n=65  ↑
-    temp             r=+0.482**  p=0.000  n=65  ↑
-    temp_min         r=+0.481**  p=0.000  n=65  ↑
-    temp_max         r=+0.480**  p=0.000  n=65  ↑
-    sst              r=+0.429**  p=0.000  n=65  ↑
-    wind_speed       r=-0.322**  p=0.007  n=65  ↓
-    wind_speed_max   r=-0.305*  p=0.011  n=65  ↓
-    pressure         r=-0.302*  p=0.012  n=65  ↓
-    wave_height      r=-0.298*  p=0.013  n=65  ↓
-    wave_height_max  r=-0.297*  p=0.014  n=65  ↓
-    swell_height_max r=-0.291*  p=0.016  n=65  ↓
-    precip_sum1      r=-0.278*  p=0.021  n=65  ↓
+    temp_max         r=+0.502**  p=0.000  n=65  ↑
+    temp_avg         r=+0.480**  p=0.000  n=65  ↑
+    temp_min         r=+0.472**  p=0.000  n=65  ↑
+    wind_speed_max   r=-0.409**  p=0.000  n=65  ↓
+    wave_height_max  r=-0.409**  p=0.000  n=65  ↓
+    sst_avg          r=+0.399**  p=0.001  n=65  ↑
+    swell_height_max r=-0.385**  p=0.001  n=65  ↓
+    wave_height_avg  r=-0.379**  p=0.001  n=65  ↓
+    swell_height_avg r=-0.335**  p=0.005  n=65  ↓
+    wind_dir_mode    r=+0.302*  p=0.012  n=65  ↑
+    wind_speed_avg   r=-0.298*  p=0.013  n=65  ↓
 
   [cnt_max]
     prev_week_cnt    r=+0.753**  p=0.000  n=65  ↑
-    temp_min         r=+0.475**  p=0.000  n=65  ↑
-    temp_max         r=+0.473**  p=0.000  n=65  ↑
-    temp             r=+0.472**  p=0.000  n=65  ↑
-    sst              r=+0.420**  p=0.000  n=65  ↑
-    wave_height      r=-0.321**  p=0.007  n=65  ↓
-    wind_speed_max   r=-0.320**  p=0.007  n=65  ↓
-    swell_height_max r=-0.319**  p=0.008  n=65  ↓
-    wave_height_max  r=-0.313**  p=0.009  n=65  ↓
-    precip_sum2      r=-0.312**  p=0.009  n=65  ↓
-    wind_speed       r=-0.300*  p=0.012  n=65  ↓
-    pressure_delta   r=-0.289*  p=0.017  n=65  ↓
+    temp_max         r=+0.491**  p=0.000  n=65  ↑
+    temp_avg         r=+0.470**  p=0.000  n=65  ↑
+    temp_min         r=+0.463**  p=0.000  n=65  ↑
+    wind_speed_max   r=-0.414**  p=0.000  n=65  ↓
+    wave_height_max  r=-0.401**  p=0.001  n=65  ↓
+    swell_height_max r=-0.390**  p=0.001  n=65  ↓
+    sst_avg          r=+0.379**  p=0.001  n=65  ↑
+    wave_height_avg  r=-0.366**  p=0.002  n=65  ↓
+    swell_height_avg r=-0.332**  p=0.005  n=65  ↓
+    precip_sum2      r=-0.315**  p=0.008  n=65  ↓
+    wind_dir_mode    r=+0.293*  p=0.015  n=65  ↑
 
   [size_avg]
-    temp_min         r=+0.612**  p=0.000  n=65  ↑
-    temp             r=+0.609**  p=0.000  n=65  ↑
-    temp_max         r=+0.606**  p=0.000  n=65  ↑
-    pressure_range   r=-0.532**  p=0.000  n=65  ↓
-    sst              r=+0.496**  p=0.000  n=65  ↑
-    pressure_delta   r=-0.346**  p=0.003  n=65  ↓
-    wind_speed       r=-0.325**  p=0.006  n=65  ↓
+    temp_min         r=+0.610**  p=0.000  n=65  ↑
+    temp_max         r=+0.599**  p=0.000  n=65  ↑
+    temp_avg         r=+0.599**  p=0.000  n=65  ↑
+    pressure_range   r=-0.541**  p=0.000  n=65  ↓
+    sst_avg          r=+0.513**  p=0.000  n=65  ↑
+    wind_speed_max   r=-0.368**  p=0.002  n=65  ↓
+    pressure_delta   r=-0.344**  p=0.004  n=65  ↓
     typhoon_wind     r=-0.323   p=0.066  n=31  ↓
-    temp_range       r=-0.322**  p=0.007  n=65  ↓
-    wind_speed_max   r=-0.320**  p=0.007  n=65  ↓
-    wind_dir         r=+0.300*  p=0.012  n=65  ↑
-    precip_sum1      r=-0.264*  p=0.030  n=65  ↓
+    pressure_avg     r=-0.270*  p=0.026  n=65  ↓
+    precip_sum1      r=-0.262*  p=0.031  n=65  ↓
+    wind_dir_mode    r=+0.253*  p=0.038  n=65  ↑
+    temp_range       r=-0.241*  p=0.048  n=65  ↓
 
 【因子相関（旬集計: n=48旬）】
 
   [cnt_avg]
     prev_week_cnt    r=+0.808**  p=0.000  n=48  ↑
-    temp             r=+0.512**  p=0.000  n=48  ↑
-    temp_min         r=+0.509**  p=0.000  n=48  ↑
-    temp_max         r=+0.500**  p=0.000  n=48  ↑
-    wind_speed       r=-0.443**  p=0.001  n=48  ↓
-    sst              r=+0.435**  p=0.001  n=48  ↑
-    wind_speed_max   r=-0.408**  p=0.002  n=48  ↓
-    precip_sum1      r=-0.360**  p=0.009  n=48  ↓
-    pressure         r=-0.348*  p=0.012  n=48  ↓
-    wave_height      r=-0.337*  p=0.015  n=48  ↓
-    pressure_delta   r=-0.335*  p=0.016  n=48  ↓
-    pressure_range   r=-0.324*  p=0.020  n=48  ↓
+    temp_max         r=+0.511**  p=0.000  n=48  ↑
+    temp_avg         r=+0.507**  p=0.000  n=48  ↑
+    temp_min         r=+0.505**  p=0.000  n=48  ↑
+    wind_speed_max   r=-0.497**  p=0.000  n=48  ↓
+    wind_speed_avg   r=-0.414**  p=0.002  n=48  ↓
+    sst_avg          r=+0.411**  p=0.002  n=48  ↑
+    wave_height_max  r=-0.400**  p=0.003  n=48  ↓
+    precip_sum1      r=-0.375**  p=0.006  n=48  ↓
+    wind_dir_mode    r=+0.365**  p=0.008  n=48  ↑
+    wave_height_avg  r=-0.335*  p=0.016  n=48  ↓
+    pressure_delta   r=-0.334*  p=0.016  n=48  ↓
 
   [cnt_max]
     prev_week_cnt    r=+0.746**  p=0.000  n=48  ↑
-    temp             r=+0.511**  p=0.000  n=48  ↑
-    temp_min         r=+0.511**  p=0.000  n=48  ↑
-    temp_max         r=+0.504**  p=0.000  n=48  ↑
-    wind_speed       r=-0.456**  p=0.001  n=48  ↓
-    wind_speed_max   r=-0.441**  p=0.001  n=48  ↓
-    sst              r=+0.441**  p=0.001  n=48  ↑
-    wave_height      r=-0.378**  p=0.006  n=48  ↓
-    wave_height_max  r=-0.355*  p=0.010  n=48  ↓
-    precip_sum1      r=-0.352*  p=0.011  n=48  ↓
+    wind_speed_max   r=-0.524**  p=0.000  n=48  ↓
+    temp_max         r=+0.512**  p=0.000  n=48  ↑
+    temp_avg         r=+0.507**  p=0.000  n=48  ↑
+    temp_min         r=+0.505**  p=0.000  n=48  ↑
+    wind_speed_avg   r=-0.421**  p=0.002  n=48  ↓
+    wave_height_max  r=-0.414**  p=0.002  n=48  ↓
+    sst_avg          r=+0.403**  p=0.003  n=48  ↑
+    wind_dir_mode    r=+0.385**  p=0.005  n=48  ↑
+    precip_sum1      r=-0.368**  p=0.007  n=48  ↓
+    pressure_range   r=-0.344*  p=0.013  n=48  ↓
     pressure_delta   r=-0.343*  p=0.013  n=48  ↓
-    pressure_range   r=-0.336*  p=0.016  n=48  ↓
 
   [size_avg]
-    temp             r=+0.639**  p=0.000  n=48  ↑
     temp_min         r=+0.634**  p=0.000  n=48  ↑
-    temp_max         r=+0.630**  p=0.000  n=48  ↑
-    wind_speed       r=-0.533**  p=0.000  n=48  ↓
-    pressure_delta   r=-0.532**  p=0.000  n=48  ↓
-    sst              r=+0.531**  p=0.000  n=48  ↑
-    pressure_range   r=-0.518**  p=0.000  n=48  ↓
-    wind_speed_max   r=-0.501**  p=0.000  n=48  ↓
-    wind_dir         r=+0.352*  p=0.011  n=48  ↑
-    temp_range       r=-0.331*  p=0.017  n=48  ↓
-    pressure         r=-0.320*  p=0.022  n=48  ↓
-    wave_height_max  r=-0.292*  p=0.038  n=48  ↓
+    temp_avg         r=+0.628**  p=0.000  n=48  ↑
+    temp_max         r=+0.627**  p=0.000  n=48  ↑
+    sst_avg          r=+0.533**  p=0.000  n=48  ↑
+    wind_speed_max   r=-0.531**  p=0.000  n=48  ↓
+    pressure_range   r=-0.530**  p=0.000  n=48  ↓
+    pressure_delta   r=-0.529**  p=0.000  n=48  ↓
+    wind_speed_avg   r=-0.417**  p=0.002  n=48  ↓
+    wind_dir_mode    r=+0.351*  p=0.011  n=48  ↑
+    pressure_avg     r=-0.337*  p=0.015  n=48  ↓
+    temp_range       r=-0.278*  p=0.049  n=48  ↓
+    wave_height_max  r=-0.270   p=0.057  n=48  ↓
 
 【因子相関（月集計: n=18月）】
 
   [cnt_avg]
     prev_week_cnt    r=+0.759**  p=0.000  n=18  ↑
-    temp_min         r=+0.715**  p=0.000  n=18  ↑
-    temp             r=+0.709**  p=0.000  n=18  ↑
+    temp_min         r=+0.714**  p=0.000  n=18  ↑
+    temp_avg         r=+0.709**  p=0.000  n=18  ↑
     temp_max         r=+0.699**  p=0.000  n=18  ↑
-    sst              r=+0.639**  p=0.001  n=18  ↑
-    wind_speed       r=-0.632**  p=0.001  n=18  ↓
-    wind_speed_max   r=-0.548**  p=0.009  n=18  ↓
-    pressure         r=-0.527*  p=0.013  n=18  ↓
-    pressure_min     r=-0.484*  p=0.027  n=18  ↓
-    wave_height      r=-0.480*  p=0.029  n=18  ↓
-    pressure_range   r=-0.456*  p=0.040  n=18  ↓
-    wind_dir         r=+0.445*  p=0.047  n=18  ↑
+    wind_dir_mode    r=+0.663**  p=0.000  n=18  ↑
+    wind_speed_max   r=-0.628**  p=0.001  n=18  ↓
+    sst_avg          r=+0.623**  p=0.001  n=18  ↑
+    wind_speed_avg   r=-0.536*  p=0.011  n=18  ↓
+    pressure_avg     r=-0.517*  p=0.016  n=18  ↓
+    pressure_min     r=-0.475*  p=0.031  n=18  ↓
+    wave_height_max  r=-0.469*  p=0.034  n=18  ↓
+    pressure_range   r=-0.465*  p=0.036  n=18  ↓
 
   [cnt_max]
     prev_week_cnt    r=+0.726**  p=0.000  n=18  ↑
-    temp_min         r=+0.722**  p=0.000  n=18  ↑
-    temp_max         r=+0.718**  p=0.000  n=18  ↑
-    temp             r=+0.716**  p=0.000  n=18  ↑
-    wind_speed       r=-0.667**  p=0.000  n=18  ↓
-    sst              r=+0.653**  p=0.001  n=18  ↑
-    wind_speed_max   r=-0.584**  p=0.004  n=18  ↓
-    wave_height      r=-0.562**  p=0.007  n=18  ↓
-    pressure         r=-0.501*  p=0.021  n=18  ↓
-    pressure_range   r=-0.493*  p=0.023  n=18  ↓
-    wave_height_max  r=-0.484*  p=0.027  n=18  ↓
-    wind_dir         r=+0.465*  p=0.036  n=18  ↑
+    temp_min         r=+0.721**  p=0.000  n=18  ↑
+    temp_avg         r=+0.719**  p=0.000  n=18  ↑
+    temp_max         r=+0.712**  p=0.000  n=18  ↑
+    wind_dir_mode    r=+0.672**  p=0.000  n=18  ↑
+    wind_speed_max   r=-0.639**  p=0.001  n=18  ↓
+    sst_avg          r=+0.629**  p=0.001  n=18  ↑
+    wind_speed_avg   r=-0.563**  p=0.006  n=18  ↓
+    pressure_avg     r=-0.519*  p=0.015  n=18  ↓
+    pressure_range   r=-0.502*  p=0.020  n=18  ↓
+    wave_height_max  r=-0.492*  p=0.024  n=18  ↓
+    pressure_min     r=-0.467*  p=0.034  n=18  ↓
 
   [size_avg]
-    temp             r=+0.736**  p=0.000  n=18  ↑
-    temp_min         r=+0.729**  p=0.000  n=18  ↑
-    temp_max         r=+0.724**  p=0.000  n=18  ↑
-    pressure_range   r=-0.691**  p=0.000  n=18  ↓
-    pressure_delta   r=-0.647**  p=0.001  n=18  ↓
-    wind_speed       r=-0.642**  p=0.001  n=18  ↓
-    sst              r=+0.633**  p=0.001  n=18  ↑
-    wave_height      r=-0.595**  p=0.003  n=18  ↓
-    wind_speed_max   r=-0.587**  p=0.004  n=18  ↓
-    wind_dir         r=+0.582**  p=0.004  n=18  ↑
-    wave_height_max  r=-0.553**  p=0.008  n=18  ↓
-    pressure         r=-0.510*  p=0.018  n=18  ↓
+    temp_min         r=+0.731**  p=0.000  n=18  ↑
+    temp_max         r=+0.722**  p=0.000  n=18  ↑
+    temp_avg         r=+0.720**  p=0.000  n=18  ↑
+    pressure_range   r=-0.704**  p=0.000  n=18  ↓
+    pressure_delta   r=-0.646**  p=0.001  n=18  ↓
+    sst_avg          r=+0.630**  p=0.001  n=18  ↑
+    wind_speed_max   r=-0.600**  p=0.003  n=18  ↓
+    pressure_avg     r=-0.557**  p=0.007  n=18  ↓
+    wind_speed_avg   r=-0.530*  p=0.012  n=18  ↓
+    wave_height_max  r=-0.523*  p=0.014  n=18  ↓
+    precip_sum1      r=-0.454*  p=0.041  n=18  ↓
+    pressure_min     r=-0.451*  p=0.043  n=18  ↓
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        100.0%  -0.339**(n=224)  -0.321**(n=224)  -0.453**(n=224)           —
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=224)  +0.000  (n=224)  +0.000  (n=224)           —
 
 【コメントキーワード解析】
   (有意なキーワードなし)
@@ -221,43 +231,43 @@
   ─ Ave匹数 ─
        ホライズン        r      MAE     MAPE       方向一致     n
   -------------------------------------------------------
-     H=  0(実測)  +0.485**     9.3匹    31.7%      54.5%   207  
-      H=  1d 前  +0.493**     9.3匹    31.3%      52.0%   207  
-      H=  3d 前  +0.457**     9.6匹    32.4%      49.0%   207  
-      H=  7d 前  +0.448**     9.5匹    32.2%      47.0%   207  
-      H= 14d 前  +0.490**     9.4匹    30.9%      57.1%   207  (10/27因子)
-      H= 21d 前  +0.474**     9.6匹    31.2%      51.0%   207  (10/27因子)
-      H= 28d 前  +0.479**     9.5匹    30.6%      60.1%   207  (10/27因子)
+     H=  0(実測)  +0.495**     9.1匹    31.0%      56.1%   207  
+      H=  1d 前  +0.500**     9.1匹    30.6%      54.0%   207  
+      H=  3d 前  +0.446**     9.5匹    31.9%      49.0%   207  
+      H=  7d 前  +0.444**     9.4匹    31.3%      49.5%   207  
+      H= 14d 前  +0.481**     9.4匹    30.9%      55.6%   207  (10/27因子)
+      H= 21d 前  +0.461**     9.7匹    31.7%      51.0%   207  (10/27因子)
+      H= 28d 前  +0.470**     9.6匹    31.0%      57.1%   207  (10/27因子)
 
   ─ Min匹数 ─
        ホライズン        r      MAE     MAPE       方向一致     n
   -------------------------------------------------------
-     H=  0(実測)  +0.206*    10.7匹    58.7%      50.8%   207  
-      H=  1d 前  +0.222*    10.7匹    56.8%      42.9%   207  
-      H=  3d 前  +0.198     11.0匹    58.8%      51.8%   207  
-      H=  7d 前  +0.178     10.9匹    57.9%      51.3%   207  
-      H= 14d 前  +0.222*    11.0匹    56.0%      50.8%   207  (10/27因子)
-      H= 21d 前  +0.210*    11.1匹    56.0%      46.6%   207  (10/27因子)
-      H= 28d 前  +0.205*    11.2匹    57.0%      49.7%   207  (10/27因子)
+     H=  0(実測)  +0.213*    10.5匹    57.3%      48.2%   207  
+      H=  1d 前  +0.235*    10.6匹    55.8%      50.8%   207  
+      H=  3d 前  +0.205*    10.9匹    57.6%      52.4%   207  
+      H=  7d 前  +0.170     10.8匹    56.3%      51.8%   207  
+      H= 14d 前  +0.218*    11.1匹    56.1%      53.9%   207  (10/27因子)
+      H= 21d 前  +0.198     11.2匹    56.2%      48.2%   207  (10/27因子)
+      H= 28d 前  +0.192     11.3匹    57.2%      48.7%   207  (10/27因子)
 
   ─ Max匹数 ─
        ホライズン        r      MAE     MAPE       方向一致     n
   -------------------------------------------------------
-     H=  0(実測)  +0.205*    13.9匹    33.5%      48.3%   207  
-      H=  1d 前  +0.229*    13.7匹    32.7%      54.2%   207  
-      H=  3d 前  +0.172     14.1匹    33.8%      48.3%   207  
-      H=  7d 前  +0.162     14.3匹    34.1%      39.3%   207  
-      H= 14d 前  +0.238*    14.3匹    33.4%      54.7%   207  (10/27因子)
-      H= 21d 前  +0.238*    14.2匹    32.8%      53.7%   207  (10/27因子)
-      H= 28d 前  +0.243*    14.2匹    32.3%      54.2%   207  (10/27因子)
+     H=  0(実測)  +0.193     13.9匹    33.0%      52.7%   207  
+      H=  1d 前  +0.227*    13.8匹    32.2%      54.7%   207  
+      H=  3d 前  +0.139     14.6匹    34.3%      50.7%   207  
+      H=  7d 前  +0.146     14.5匹    34.0%      43.8%   207  
+      H= 14d 前  +0.222*    14.4匹    33.4%      54.7%   207  (10/27因子)
+      H= 21d 前  +0.220*    14.5匹    33.4%      52.2%   207  (10/27因子)
+      H= 28d 前  +0.213*    14.5匹    33.1%      52.2%   207  (10/27因子)
 
   ─ Ave型   ─
        ホライズン        r      MAE     MAPE       方向一致     n
   -------------------------------------------------------
-     H=  0(実測)  +0.302*     0.7cm     3.1%      45.3%   207  
-      H=  1d 前  +0.313*     0.7cm     3.1%      50.4%   207  
-      H=  3d 前  +0.302*     0.7cm     3.1%      55.4%   207  
-      H=  7d 前  +0.287*     0.7cm     3.1%      44.6%   207  
-      H= 14d 前  +0.308*     0.7cm     3.2%      53.2%   207  (10/27因子)
-      H= 21d 前  +0.326*     0.7cm     3.3%      49.6%   207  (10/27因子)
-      H= 28d 前  +0.288*     0.7cm     3.3%      52.5%   207  (10/27因子)
+     H=  0(実測)  +0.311*     0.6cm     2.9%      52.5%   207  
+      H=  1d 前  +0.322*     0.6cm     3.0%      55.4%   207  
+      H=  3d 前  +0.312*     0.6cm     3.0%      53.2%   207  
+      H=  7d 前  +0.284*     0.7cm     3.1%      44.6%   207  
+      H= 14d 前  +0.311*     0.7cm     3.0%      52.5%   207  (10/27因子)
+      H= 21d 前  +0.323*     0.7cm     3.2%      51.1%   207  (10/27因子)
+      H= 28d 前  +0.299*     0.7cm     3.2%      53.2%   207  (10/27因子)

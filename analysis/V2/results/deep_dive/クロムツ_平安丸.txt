@@ -15,48 +15,46 @@
 
   [cnt_avg]
     prev_week_cnt    r=-0.541   p=0.069  n=10  ↓
-    precip_sum       r=-0.507   p=0.078  n=11  ↓
+    temp_range       r=+0.496   p=0.087  n=11  ↑
 
   [cnt_max]
-    pressure_range   r=+0.568*  p=0.039  n=11  ↑
-    pressure_delta   r=-0.562*  p=0.041  n=11  ↓
-
-  [size_avg]
-    wind_speed_max   r=-0.593*  p=0.027  n=11  ↓
-    wave_period      r=+0.484   p=0.097  n=11  ↑
+    pressure_delta   r=-0.546   p=0.050  n=11  ↓
+    pressure_range   r=+0.531   p=0.060  n=11  ↑
 
 【因子相関（週集計: n=10週）】
 
   [cnt_avg]
     prev_week_cnt    r=-0.588   p=0.055  n=9  ↓
-    precip_sum       r=-0.550   p=0.063  n=10  ↓
-
-  [cnt_max]
-    precip_sum       r=-0.529   p=0.078  n=10  ↓
 
   [size_avg]
-    wind_speed_max   r=-0.740**  p=0.002  n=10  ↓
-    wind_speed       r=-0.638*  p=0.019  n=10  ↓
-    pressure_delta   r=+0.629*  p=0.022  n=10  ↑
-    pressure_min     r=+0.551   p=0.062  n=10  ↑
+    pressure_delta   r=+0.645*  p=0.017  n=10  ↑
+    pressure_min     r=+0.583*  p=0.042  n=10  ↑
+    pressure_avg     r=+0.568   p=0.051  n=10  ↑
 
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
     prev_week_cnt    r=-0.588   p=0.055  n=9  ↓
-    precip_sum       r=-0.550   p=0.063  n=10  ↓
-
-  [cnt_max]
-    precip_sum       r=-0.529   p=0.078  n=10  ↓
 
   [size_avg]
-    wind_speed_max   r=-0.740**  p=0.002  n=10  ↓
-    wind_speed       r=-0.638*  p=0.019  n=10  ↓
-    pressure_delta   r=+0.629*  p=0.022  n=10  ↑
-    pressure_min     r=+0.551   p=0.062  n=10  ↑
+    pressure_delta   r=+0.645*  p=0.017  n=10  ↑
+    pressure_min     r=+0.583*  p=0.042  n=10  ↑
+    pressure_avg     r=+0.568   p=0.051  n=10  ↑
 
 【因子相関（月集計: n=9月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       100.0%  +0.147  (n=11)  +0.076  (n=11)  +0.399  (n=11)           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=11)  +0.000  (n=11)  +0.000  (n=11)           —
+  (有意な観測因子相関なし)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

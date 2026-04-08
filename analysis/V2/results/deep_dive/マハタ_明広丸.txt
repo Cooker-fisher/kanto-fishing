@@ -24,100 +24,117 @@
 【因子相関（日次: 58件）】
 
   [cnt_avg]
-    swell_height     r=+0.326**  p=0.010  n=58  ↑
-    wave_height      r=+0.277*  p=0.031  n=58  ↑
-    swell_height_max r=+0.275*  p=0.032  n=58  ↑
-    wave_period_min  r=+0.220   p=0.092  n=58  ↑
+    swell_height_avg r=+0.400**  p=0.001  n=58  ↑
+    swell_height_max r=+0.297*  p=0.020  n=58  ↑
+    wave_height_avg  r=+0.281*  p=0.028  n=58  ↑
 
   [cnt_max]
-    swell_height     r=+0.366**  p=0.003  n=58  ↑
-    wave_height      r=+0.353**  p=0.005  n=58  ↑
-    swell_height_max r=+0.352**  p=0.005  n=58  ↑
-    wave_height_max  r=+0.243   p=0.061  n=58  ↑
-    wave_period_min  r=+0.230   p=0.077  n=58  ↑
+    swell_height_avg r=+0.455**  p=0.000  n=58  ↑
+    wave_height_avg  r=+0.391**  p=0.001  n=58  ↑
+    swell_height_max r=+0.371**  p=0.003  n=58  ↑
+    wave_height_max  r=+0.255*  p=0.049  n=58  ↑
+    wave_period_avg  r=+0.230   p=0.076  n=58  ↑
+    wave_period_min  r=+0.219   p=0.094  n=58  ↑
 
 【因子相関（週集計: n=36週）】
 
   [cnt_avg]
-    swell_height     r=+0.445**  p=0.004  n=36  ↑
-    wave_height      r=+0.350*  p=0.029  n=36  ↑
-    swell_height_max r=+0.335*  p=0.038  n=36  ↑
-    wind_dir         r=+0.308   p=0.059  n=36  ↑
-    wave_period_min  r=+0.304   p=0.062  n=36  ↑
-    pressure_min     r=+0.284   p=0.084  n=36  ↑
+    swell_height_avg r=+0.491**  p=0.001  n=36  ↑
+    swell_height_max r=+0.364*  p=0.023  n=36  ↑
+    wave_height_avg  r=+0.354*  p=0.028  n=36  ↑
+    pressure_min     r=+0.290   p=0.077  n=36  ↑
+    wave_period_min  r=+0.289   p=0.078  n=36  ↑
 
   [cnt_max]
-    swell_height     r=+0.484**  p=0.001  n=36  ↑
-    wave_height      r=+0.426**  p=0.006  n=36  ↑
-    swell_height_max r=+0.400*  p=0.011  n=36  ↑
-    wave_period_min  r=+0.333*  p=0.039  n=36  ↑
-    pressure_min     r=+0.322*  p=0.047  n=36  ↑
-    pressure         r=+0.292   p=0.075  n=36  ↑
-    wind_dir         r=+0.290   p=0.078  n=36  ↑
-    wave_period      r=+0.274   p=0.097  n=36  ↑
+    swell_height_avg r=+0.532**  p=0.000  n=36  ↑
+    wave_height_avg  r=+0.440**  p=0.004  n=36  ↑
+    swell_height_max r=+0.426**  p=0.006  n=36  ↑
+    pressure_min     r=+0.325*  p=0.045  n=36  ↑
+    wave_period_min  r=+0.319*  p=0.049  n=36  ↑
+    pressure_avg     r=+0.304   p=0.063  n=36  ↑
+    wave_period_avg  r=+0.303   p=0.064  n=36  ↑
+    wave_height_max  r=+0.277   p=0.092  n=36  ↑
 
   [kg_avg]
-    precip_sum       r=+0.291   p=0.081  n=35  ↑
+    precip_sum       r=+0.290   p=0.082  n=35  ↑
 
 【因子相関（旬集計: n=29旬）】
 
   [cnt_avg]
-    swell_height     r=+0.493**  p=0.003  n=29  ↑
-    swell_height_max r=+0.421*  p=0.016  n=29  ↑
-    wave_height      r=+0.377*  p=0.034  n=29  ↑
-    wave_period_min  r=+0.360*  p=0.045  n=29  ↑
-    pressure_min     r=+0.325   p=0.074  n=29  ↑
-    wind_dir         r=+0.302   p=0.099  n=29  ↑
+    swell_height_avg r=+0.515**  p=0.002  n=29  ↑
+    swell_height_max r=+0.425*  p=0.015  n=29  ↑
+    wave_height_avg  r=+0.407*  p=0.021  n=29  ↑
+    wave_period_min  r=+0.343   p=0.058  n=29  ↑
+    wave_period_avg  r=+0.328   p=0.072  n=29  ↑
 
   [cnt_max]
-    swell_height     r=+0.512**  p=0.002  n=29  ↑
-    swell_height_max r=+0.461**  p=0.007  n=29  ↑
-    wave_height      r=+0.425*  p=0.015  n=29  ↑
-    wave_period_min  r=+0.408*  p=0.020  n=29  ↑
-    pressure_min     r=+0.398*  p=0.024  n=29  ↑
-    pressure         r=+0.340   p=0.060  n=29  ↑
-    wave_period      r=+0.339   p=0.062  n=29  ↑
-    wave_height_max  r=+0.309   p=0.092  n=29  ↑
+    swell_height_avg r=+0.553**  p=0.001  n=29  ↑
+    wave_height_avg  r=+0.480**  p=0.004  n=29  ↑
+    swell_height_max r=+0.470**  p=0.006  n=29  ↑
+    wave_period_min  r=+0.391*  p=0.027  n=29  ↑
+    wave_period_avg  r=+0.382*  p=0.032  n=29  ↑
+    wave_height_max  r=+0.329   p=0.070  n=29  ↑
+    pressure_min     r=+0.307   p=0.094  n=29  ↑
 
   [kg_avg]
-    precip_sum2      r=-0.334   p=0.071  n=28  ↓
+    precip_sum2      r=-0.312   p=0.094  n=28  ↓
 
 【因子相関（月集計: n=15月）】
 
   [cnt_avg]
-    swell_height     r=+0.771**  p=0.000  n=15  ↑
-    swell_height_max r=+0.692**  p=0.001  n=15  ↑
-    wave_period_min  r=+0.683**  p=0.001  n=15  ↑
-    wave_height      r=+0.662**  p=0.001  n=15  ↑
-    pressure_min     r=+0.604**  p=0.006  n=15  ↑
-    wave_period      r=+0.601**  p=0.007  n=15  ↑
-    pressure         r=+0.514*  p=0.031  n=15  ↑
+    swell_height_avg r=+0.825**  p=0.000  n=15  ↑
+    swell_height_max r=+0.729**  p=0.000  n=15  ↑
+    wave_height_avg  r=+0.681**  p=0.001  n=15  ↑
+    wave_period_min  r=+0.657**  p=0.002  n=15  ↑
+    wave_period_avg  r=+0.613**  p=0.005  n=15  ↑
+    pressure_min     r=+0.570*  p=0.012  n=15  ↑
+    pressure_avg     r=+0.543*  p=0.020  n=15  ↑
     moon_age         r=-0.514*  p=0.031  n=15  ↓
-    wind_dir         r=+0.494*  p=0.041  n=15  ↑
+    wind_dir_mode    r=-0.507*  p=0.034  n=15  ↓
+    wave_height_max  r=+0.481*  p=0.048  n=15  ↑
     tide_type_n      r=+0.480*  p=0.049  n=15  ↑
-    wave_height_max  r=+0.430   p=0.086  n=15  ↑
 
   [cnt_max]
-    swell_height     r=+0.767**  p=0.000  n=15  ↑
-    swell_height_max r=+0.696**  p=0.000  n=15  ↑
-    wave_height      r=+0.689**  p=0.001  n=15  ↑
-    wave_period_min  r=+0.674**  p=0.001  n=15  ↑
-    pressure_min     r=+0.616**  p=0.005  n=15  ↑
-    wave_period      r=+0.588**  p=0.009  n=15  ↑
+    swell_height_avg r=+0.824**  p=0.000  n=15  ↑
+    swell_height_max r=+0.734**  p=0.000  n=15  ↑
+    wave_height_avg  r=+0.714**  p=0.000  n=15  ↑
+    wave_period_min  r=+0.649**  p=0.002  n=15  ↑
+    wave_period_avg  r=+0.611**  p=0.005  n=15  ↑
+    pressure_min     r=+0.563*  p=0.014  n=15  ↑
+    pressure_avg     r=+0.534*  p=0.023  n=15  ↑
     moon_age         r=-0.531*  p=0.024  n=15  ↓
-    pressure         r=+0.526*  p=0.026  n=15  ↑
+    wave_height_max  r=+0.526*  p=0.026  n=15  ↑
     tide_type_n      r=+0.522*  p=0.027  n=15  ↑
-    wind_dir         r=+0.492*  p=0.041  n=15  ↑
-    wave_height_max  r=+0.476   p=0.051  n=15  ↑
+    wind_dir_mode    r=-0.486*  p=0.045  n=15  ↓
 
   [kg_avg]
-    precip_sum2      r=-0.732**  p=0.000  n=14  ↓
+    precip_sum2      r=-0.748**  p=0.000  n=14  ↓
     precip_sum1      r=-0.441   p=0.089  n=14  ↓
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        96.6%  +0.806**(n=56)  +0.840**(n=56)           —  +0.041  (n=55)
+  water_color_n    10.3%  +0.000  (n=6)  +0.000  (n=6)           —  +0.000  (n=6)
+  tide_speed_n      8.6%  +0.000  (n=5)  +0.134  (n=5)           —  -0.236  (n=5)
+  wave_obs_n        3.4%           —           —           —           —
+  by_catch_n       100.0%  -0.379**(n=58)  -0.322**(n=58)           —  +0.120  (n=55)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  -0.605**(n=58)  -0.596**(n=58)           —  +0.092  (n=55)
 
 【コメントキーワード解析】
 
+  [潮]
+    「潮が速」 n=  4  1.0匹  vs 通常 1.8匹  (-43%)
+
+  [活性]
+    「反応」 n= 39  1.5匹  vs 通常 2.2匹  (-31%)
+
   [色]
-    「濁り」 n=  3  1.3匹  vs 通常 1.7匹  (-23%)
+    「濁り」 n=  6  1.2匹  vs 通常 1.8匹  (-34%)
+
+  [流れ]
+    「潮流」 n=  5  1.6匹  vs 通常 1.7匹  (-7%)
 
 【ポイント別集計】
   ポイント                       n       平均       最大       最小
@@ -136,34 +153,34 @@
   ─ Ave匹数 ─
        ホライズン        r      MAE     MAPE       方向一致     n
   -------------------------------------------------------
-     H=  0(実測)  -0.097      1.1匹    53.9%      50.0%    41  
-      H=  1d 前  -0.142      1.1匹    54.8%      40.9%    41  
-      H=  3d 前  -0.059      1.2匹    60.7%      36.4%    41  
-      H=  7d 前  +0.046      1.1匹    53.4%      50.0%    41  
-      H= 14d 前  -0.090      1.1匹    56.4%      45.5%    41  (10/27因子)
-      H= 21d 前  +0.022      1.1匹    52.1%      63.6%    41  (10/27因子)
-      H= 28d 前  -0.038      1.1匹    58.6%      45.5%    41  (10/27因子)
+     H=  0(実測)  -0.099      1.1匹    55.0%      52.2%    41  
+      H=  1d 前  -0.123      1.1匹    53.5%      39.1%    41  
+      H=  3d 前  -0.064      1.1匹    59.1%      52.2%    41  
+      H=  7d 前  +0.011      1.1匹    52.6%      69.6%    41  
+      H= 14d 前  -0.047      1.1匹    51.2%      56.5%    41  (10/27因子)
+      H= 21d 前  +0.027      1.0匹    49.5%      65.2%    41  (10/27因子)
+      H= 28d 前  -0.033      1.1匹    55.6%      47.8%    41  (10/27因子)
 
   ─ Min匹数 ─
        ホライズン        r      MAE     MAPE       方向一致     n
   -------------------------------------------------------
-     H=  0(実測)  -0.040      1.0匹    51.0%      40.0%    41  
-      H=  1d 前  -0.041      1.0匹    51.2%      40.0%    41  
-      H=  3d 前  -0.020      1.0匹    54.4%      36.0%    41  
-      H=  7d 前  +0.103      0.9匹    51.1%      64.0%    41  
-      H= 14d 前  +0.105      1.0匹    55.6%      48.0%    41  (10/27因子)
-      H= 21d 前  +0.117      1.1匹    58.0%      48.0%    41  (10/27因子)
-      H= 28d 前  +0.091      1.0匹    57.8%      40.0%    41  (10/27因子)
+     H=  0(実測)  -0.081      1.0匹    52.0%      46.2%    41  
+      H=  1d 前  -0.084      1.0匹    53.7%      42.3%    41  
+      H=  3d 前  -0.065      1.1匹    55.7%      46.2%    41  
+      H=  7d 前  +0.042      1.0匹    53.4%      53.8%    41  
+      H= 14d 前  +0.040      1.0匹    56.5%      50.0%    41  (10/27因子)
+      H= 21d 前  +0.040      1.1匹    57.2%      42.3%    41  (10/27因子)
+      H= 28d 前  +0.036      1.0匹    55.7%      34.6%    41  (10/27因子)
 
   ─ Max匹数 ─
        ホライズン        r      MAE     MAPE       方向一致     n
   -------------------------------------------------------
-     H=  0(実測)  +0.004      1.7匹    54.1%      68.8%    41  
-      H=  1d 前  +0.004      1.7匹    53.5%      56.2%    41  
-      H=  3d 前  -0.015      1.7匹    57.8%      59.4%    41  
-      H=  7d 前  -0.015      1.7匹    54.3%      68.8%    41  
-      H= 14d 前  -0.081      1.7匹    58.3%      53.1%    41  (10/27因子)
-      H= 21d 前  -0.071      1.7匹    56.7%      53.1%    41  (10/27因子)
-      H= 28d 前  -0.066      1.7匹    59.3%      59.4%    41  (10/27因子)
+     H=  0(実測)  +0.045      1.7匹    54.1%      66.7%    41  
+      H=  1d 前  +0.040      1.7匹    53.0%      66.7%    41  
+      H=  3d 前  -0.002      1.7匹    58.1%      63.6%    41  
+      H=  7d 前  -0.007      1.6匹    53.1%      66.7%    41  
+      H= 14d 前  -0.069      1.6匹    56.7%      57.6%    41  (10/27因子)
+      H= 21d 前  -0.045      1.6匹    53.2%      57.6%    41  (10/27因子)
+      H= 28d 前  -0.047      1.6匹    56.2%      66.7%    41  (10/27因子)
 
   ─ Ave型   : データ不足 ─

@@ -13,13 +13,13 @@
 【因子相関（日次: 18件）】
 
   [cnt_max]
-    wind_speed       r=+0.584**  p=0.004  n=18  ↑
-    pressure         r=-0.536*  p=0.011  n=18  ↓
+    wind_speed_avg   r=+0.642**  p=0.001  n=18  ↑
     wind_speed_max   r=+0.534*  p=0.011  n=18  ↑
+    pressure_avg     r=-0.523*  p=0.014  n=18  ↓
     pressure_min     r=-0.495*  p=0.023  n=18  ↓
     pressure_delta   r=-0.491*  p=0.024  n=18  ↓
-    temp             r=+0.413   p=0.069  n=18  ↑
     temp_min         r=+0.400   p=0.081  n=18  ↑
+    temp_avg         r=+0.383   p=0.097  n=18  ↑
 
   [size_avg]
     typhoon_dist     r=+0.626*  p=0.034  n=9  ↑
@@ -27,13 +27,13 @@
 【因子相関（週集計: n=18週）】
 
   [cnt_max]
-    wind_speed       r=+0.584**  p=0.004  n=18  ↑
-    pressure         r=-0.536*  p=0.011  n=18  ↓
+    wind_speed_avg   r=+0.642**  p=0.001  n=18  ↑
     wind_speed_max   r=+0.534*  p=0.011  n=18  ↑
+    pressure_avg     r=-0.523*  p=0.014  n=18  ↓
     pressure_min     r=-0.495*  p=0.023  n=18  ↓
     pressure_delta   r=-0.491*  p=0.024  n=18  ↓
-    temp             r=+0.413   p=0.069  n=18  ↑
     temp_min         r=+0.400   p=0.081  n=18  ↑
+    temp_avg         r=+0.383   p=0.097  n=18  ↑
 
   [size_avg]
     typhoon_dist     r=+0.626*  p=0.034  n=9  ↑
@@ -41,12 +41,11 @@
 【因子相関（旬集計: n=17旬）】
 
   [cnt_max]
-    wind_speed       r=+0.581**  p=0.006  n=17  ↑
-    pressure         r=-0.546*  p=0.012  n=17  ↓
+    wind_speed_avg   r=+0.633**  p=0.002  n=17  ↑
+    pressure_avg     r=-0.530*  p=0.016  n=17  ↓
     wind_speed_max   r=+0.523*  p=0.017  n=17  ↑
     pressure_min     r=-0.496*  p=0.027  n=17  ↓
     pressure_delta   r=-0.485*  p=0.032  n=17  ↓
-    temp             r=+0.410   p=0.082  n=17  ↑
     temp_min         r=+0.397   p=0.094  n=17  ↑
 
   [size_avg]
@@ -55,14 +54,26 @@
 【因子相関（月集計: n=16月）】
 
   [cnt_max]
-    wind_speed       r=+0.583**  p=0.007  n=16  ↑
-    pressure         r=-0.505*  p=0.029  n=16  ↓
+    wind_speed_avg   r=+0.604**  p=0.005  n=16  ↑
+    pressure_avg     r=-0.487*  p=0.037  n=16  ↓
     wind_speed_max   r=+0.483*  p=0.039  n=16  ↑
     pressure_min     r=-0.454   p=0.056  n=16  ↓
     pressure_delta   r=-0.434   p=0.072  n=16  ↓
 
   [size_avg]
     typhoon_dist     r=+0.628*  p=0.048  n=8  ↑
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=18)  +0.000  (n=18)  +0.000  (n=18)           —
+  (有意な観測因子相関なし)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

@@ -14,19 +14,15 @@
 【因子相関（日次: 10件）】
 
   [cnt_avg]
-    wind_speed_max   r=-0.635*  p=0.020  n=10  ↓
-    wave_height      r=-0.623*  p=0.024  n=10  ↓
+    wind_speed_max   r=-0.655*  p=0.014  n=10  ↓
     typhoon_dist     r=-0.603*  p=0.046  n=9  ↓
-    wind_speed       r=-0.591*  p=0.038  n=10  ↓
-    wave_period      r=+0.545   p=0.066  n=10  ↑
+    wind_speed_avg   r=-0.554   p=0.060  n=10  ↓
 
   [cnt_max]
-    wind_speed_max   r=-0.730**  p=0.003  n=10  ↓
-    wind_speed       r=-0.664*  p=0.012  n=10  ↓
+    wind_speed_max   r=-0.722**  p=0.003  n=10  ↓
+    wind_speed_avg   r=-0.637*  p=0.020  n=10  ↓
     moon_age         r=-0.607*  p=0.031  n=10  ↓
     typhoon_dist     r=-0.606*  p=0.044  n=9  ↓
-    wave_period      r=+0.580*  p=0.044  n=10  ↑
-    precip_sum1      r=-0.545   p=0.066  n=10  ↓
 
 【因子相関（週集計: n=6週）】
   (有意な相関なし)
@@ -36,6 +32,18 @@
 
 【因子相関（月集計: n=4月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       10.0%           —           —           —           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=10)  +0.000  (n=10)           —  +0.000  (n=6)
+  (有意な観測因子相関なし)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

@@ -21,7 +21,7 @@
 
   [cnt_avg]
     precip_sum1      r=+0.817**  p=0.000  n=19  ↑
-    wave_period      r=+0.648**  p=0.000  n=19  ↑
+    wave_period_avg  r=+0.587**  p=0.003  n=19  ↑
     wave_period_min  r=+0.531**  p=0.010  n=19  ↑
     tide_range       r=-0.522*  p=0.012  n=19  ↓
     tide_type_n      r=-0.489*  p=0.021  n=19  ↓
@@ -31,18 +31,16 @@
     precip_sum1      r=+0.682**  p=0.000  n=19  ↑
     tide_range       r=-0.529*  p=0.010  n=19  ↓
     tide_type_n      r=-0.467*  p=0.029  n=19  ↓
-    wave_period      r=+0.451*  p=0.037  n=19  ↑
     pressure_range   r=+0.372   p=0.098  n=19  ↑
 
   [size_avg]
     precip_sum1      r=-0.901**  p=0.000  n=16  ↓
     precip_sum2      r=-0.861**  p=0.000  n=16  ↓
-    wave_period      r=-0.459   p=0.053  n=16  ↓
+    wave_period_avg  r=-0.530*  p=0.019  n=16  ↓
     pressure_range   r=-0.453   p=0.058  n=16  ↓
     wave_period_min  r=-0.434   p=0.072  n=16  ↓
     pressure_delta   r=-0.416   p=0.087  n=16  ↓
     tide_type_n      r=+0.411   p=0.091  n=16  ↑
-    swell_height     r=-0.408   p=0.095  n=16  ↓
 
 【因子相関（週集計: n=6週）】
   (有意な相関なし)
@@ -52,6 +50,18 @@
 
 【因子相関（月集計: n=3月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=19)  +0.000  (n=19)  +0.000  (n=16)           —
+  (有意な観測因子相関なし)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

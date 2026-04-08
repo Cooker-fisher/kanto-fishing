@@ -24,50 +24,76 @@
 
   [cnt_avg]
     prev_week_cnt    r=+0.662**  p=0.000  n=39  ↑
-    pressure_delta   r=+0.267   p=0.087  n=40  ↑
-    wind_speed_max   r=+0.263   p=0.092  n=40  ↑
+    sst_avg          r=+0.426**  p=0.004  n=40  ↑
+    wind_speed_max   r=+0.380*  p=0.011  n=40  ↑
+    wind_speed_avg   r=+0.371*  p=0.014  n=40  ↑
+    temp_range       r=-0.349*  p=0.022  n=40  ↓
+    temp_min         r=+0.273   p=0.080  n=40  ↑
 
   [cnt_max]
     prev_week_cnt    r=+0.652**  p=0.000  n=39  ↑
-    wind_speed_max   r=+0.288   p=0.064  n=40  ↑
-    pressure_delta   r=+0.271   p=0.083  n=40  ↑
+    sst_avg          r=+0.428**  p=0.004  n=40  ↑
+    wind_speed_max   r=+0.410**  p=0.006  n=40  ↑
+    wind_speed_avg   r=+0.377*  p=0.012  n=40  ↑
+    temp_range       r=-0.350*  p=0.021  n=40  ↓
+    temp_min         r=+0.297   p=0.055  n=40  ↑
+    wave_height_max  r=+0.293   p=0.058  n=40  ↑
 
   [size_avg]
-    sst              r=-0.586**  p=0.000  n=40  ↓
-    precip_sum       r=-0.380*  p=0.011  n=40  ↓
-    temp             r=-0.296   p=0.056  n=40  ↓
-    wave_period_min  r=+0.269   p=0.085  n=40  ↑
-    temp_min         r=-0.261   p=0.095  n=40  ↓
+    sst_avg          r=-0.649**  p=0.000  n=40  ↓
+    wind_speed_avg   r=-0.451**  p=0.002  n=40  ↓
+    precip_sum       r=-0.350*  p=0.021  n=40  ↓
+    wave_height_avg  r=-0.317*  p=0.039  n=40  ↓
+    swell_height_max r=-0.267   p=0.087  n=40  ↓
+    pressure_avg     r=+0.265   p=0.090  n=40  ↑
+    wind_speed_max   r=-0.261   p=0.095  n=40  ↓
 
 【因子相関（週集計: n=12週）】
 
   [cnt_avg]
-    wind_speed_max   r=+0.891**  p=0.000  n=12  ↑
+    wind_speed_avg   r=+0.833**  p=0.000  n=12  ↑
     prev_week_cnt    r=+0.811**  p=0.000  n=12  ↑
-    wave_height_max  r=+0.802**  p=0.000  n=12  ↑
-    wave_height      r=+0.664**  p=0.005  n=12  ↑
-    pressure_range   r=+0.571*  p=0.028  n=12  ↑
-    temp_range       r=-0.521   p=0.054  n=12  ↓
+    wind_speed_max   r=+0.793**  p=0.000  n=12  ↑
+    wave_height_max  r=+0.733**  p=0.001  n=12  ↑
+    temp_range       r=-0.518   p=0.055  n=12  ↓
+    wave_height_avg  r=+0.480   p=0.084  n=12  ↑
+    pressure_delta   r=+0.475   p=0.088  n=12  ↑
+    pressure_range   r=+0.472   p=0.090  n=12  ↑
+    wave_period_avg  r=-0.466   p=0.096  n=12  ↓
 
   [cnt_max]
-    wind_speed_max   r=+0.891**  p=0.000  n=12  ↑
-    wave_height_max  r=+0.805**  p=0.000  n=12  ↑
+    wind_speed_avg   r=+0.839**  p=0.000  n=12  ↑
+    wind_speed_max   r=+0.811**  p=0.000  n=12  ↑
     prev_week_cnt    r=+0.785**  p=0.000  n=12  ↑
-    wave_height      r=+0.692**  p=0.002  n=12  ↑
-    pressure_range   r=+0.583*  p=0.023  n=12  ↑
-    temp_range       r=-0.529*  p=0.049  n=12  ↓
+    wave_height_max  r=+0.766**  p=0.000  n=12  ↑
+    temp_range       r=-0.540*  p=0.043  n=12  ↓
+    wave_height_avg  r=+0.518   p=0.055  n=12  ↑
+    pressure_range   r=+0.482   p=0.082  n=12  ↑
+    pressure_delta   r=+0.463   p=0.099  n=12  ↑
 
   [size_avg]
-    sst              r=-0.767**  p=0.000  n=12  ↓
-    precip_sum       r=-0.644**  p=0.008  n=12  ↓
+    sst_avg          r=-0.823**  p=0.000  n=12  ↓
+    precip_sum       r=-0.800**  p=0.000  n=12  ↓
+    temp_range       r=+0.596*  p=0.019  n=12  ↑
+    temp_min         r=-0.526   p=0.051  n=12  ↓
     moon_age         r=+0.489   p=0.076  n=12  ↑
-    temp_range       r=+0.472   p=0.091  n=12  ↑
 
 【因子相関（旬集計: n=9旬）】
   (有意な相関なし)
 
 【因子相関（月集計: n=3月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        100.0%  +0.375**(n=40)  +0.392**(n=40)  -0.755**(n=40)           —
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=40)  +0.000  (n=40)  +0.000  (n=40)           —
 
 【コメントキーワード解析】
   (有意なキーワードなし)

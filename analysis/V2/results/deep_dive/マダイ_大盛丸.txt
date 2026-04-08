@@ -17,17 +17,18 @@
   [cnt_avg]
     wave_period_min  r=+0.775**  p=0.001  n=10  ↑
     prev_week_cnt    r=+0.722**  p=0.006  n=9  ↑
-    pressure         r=+0.658*  p=0.013  n=10  ↑
-    wave_period      r=+0.609*  p=0.030  n=10  ↑
+    pressure_avg     r=+0.651*  p=0.015  n=10  ↑
+    wave_period_avg  r=+0.631*  p=0.021  n=10  ↑
     pressure_min     r=+0.569   p=0.050  n=10  ↑
 
   [cnt_max]
+    pressure_avg     r=+0.757**  p=0.001  n=10  ↑
     prev_week_cnt    r=+0.740**  p=0.004  n=9  ↑
     pressure_min     r=+0.726**  p=0.003  n=10  ↑
-    pressure         r=+0.699**  p=0.006  n=10  ↑
     wave_period_min  r=+0.636*  p=0.020  n=10  ↑
     moon_age         r=-0.588*  p=0.040  n=10  ↓
-    sst              r=+0.560   p=0.056  n=10  ↑
+    wind_dir_mode    r=-0.565   p=0.053  n=10  ↓
+    sst_avg          r=+0.557   p=0.058  n=10  ↑
     precip_sum       r=+0.513   p=0.091  n=10  ↑
 
 【因子相関（週集計: n=9週）】
@@ -38,6 +39,17 @@
 
 【因子相関（月集計: n=5月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        10.0%           —           —           —           —
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       100.0%  +0.787**(n=10)  +0.736**(n=10)  +0.176  (n=8)           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=10)  +0.000  (n=10)  +0.000  (n=8)           —
 
 【コメントキーワード解析】
   (有意なキーワードなし)

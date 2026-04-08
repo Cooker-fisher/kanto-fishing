@@ -14,81 +14,95 @@
 【因子相関（日次: 14件）】
 
   [cnt_avg]
-    wind_dir         r=+0.530*  p=0.030  n=14  ↑
-    precip_sum2      r=+0.502*  p=0.045  n=14  ↑
-    sst              r=+0.470   p=0.065  n=14  ↑
-    temp_max         r=+0.431   p=0.098  n=14  ↑
+    precip_sum2      r=+0.473   p=0.063  n=14  ↑
+    sst_avg          r=+0.467   p=0.067  n=14  ↑
+    temp_min         r=+0.431   p=0.098  n=14  ↑
 
   [cnt_max]
-    wind_dir         r=+0.523*  p=0.034  n=14  ↑
-    sst              r=+0.489   p=0.052  n=14  ↑
-    precip_sum2      r=+0.484   p=0.055  n=14  ↑
-    temp_max         r=+0.464   p=0.070  n=14  ↑
-    temp_min         r=+0.437   p=0.092  n=14  ↑
+    sst_avg          r=+0.485   p=0.055  n=14  ↑
+    temp_min         r=+0.459   p=0.074  n=14  ↑
+    precip_sum2      r=+0.451   p=0.080  n=14  ↑
+    temp_avg         r=+0.435   p=0.094  n=14  ↑
+    temp_max         r=+0.430   p=0.099  n=14  ↑
 
   [size_avg]
-    wave_period      r=+0.548*  p=0.030  n=13  ↑
-    swell_height_max r=+0.508   p=0.050  n=13  ↑
-    temp             r=-0.474   p=0.074  n=13  ↓
-    temp_min         r=-0.450   p=0.095  n=13  ↓
-    temp_max         r=-0.450   p=0.095  n=13  ↓
+    wind_dir_mode    r=-0.572*  p=0.021  n=13  ↓
+    wave_period_avg  r=+0.511*  p=0.049  n=13  ↑
+    swell_height_max r=+0.501   p=0.055  n=13  ↑
+    temp_min         r=-0.448   p=0.096  n=13  ↓
 
 【因子相関（週集計: n=13週）】
 
   [cnt_avg]
-    precip_sum2      r=+0.511*  p=0.049  n=13  ↑
-    wind_dir         r=+0.492   p=0.061  n=13  ↑
-    sst              r=+0.482   p=0.068  n=13  ↑
+    sst_avg          r=+0.480   p=0.069  n=13  ↑
+    precip_sum2      r=+0.478   p=0.071  n=13  ↑
+    temp_min         r=+0.448   p=0.097  n=13  ↑
 
   [cnt_max]
-    sst              r=+0.499   p=0.056  n=13  ↑
-    precip_sum2      r=+0.492   p=0.061  n=13  ↑
-    wind_dir         r=+0.491   p=0.062  n=13  ↑
-    temp_max         r=+0.471   p=0.077  n=13  ↑
-    temp_min         r=+0.450   p=0.094  n=13  ↑
+    sst_avg          r=+0.496   p=0.058  n=13  ↑
+    temp_min         r=+0.473   p=0.075  n=13  ↑
+    precip_sum2      r=+0.455   p=0.090  n=13  ↑
+    temp_avg         r=+0.448   p=0.097  n=13  ↑
 
   [size_avg]
-    wave_period      r=+0.578*  p=0.025  n=12  ↑
-    swell_height_max r=+0.522   p=0.053  n=12  ↑
-    wave_period_min  r=+0.491   p=0.075  n=12  ↑
-    pressure         r=+0.482   p=0.082  n=12  ↑
-    pressure_min     r=+0.476   p=0.087  n=12  ↑
-    temp             r=-0.475   p=0.088  n=12  ↓
+    wave_period_avg  r=+0.569*  p=0.029  n=12  ↑
+    wind_dir_mode    r=-0.557*  p=0.034  n=12  ↓
+    swell_height_max r=+0.513   p=0.059  n=12  ↑
+    wave_period_min  r=+0.485   p=0.080  n=12  ↑
+    pressure_min     r=+0.484   p=0.080  n=12  ↑
+    pressure_avg     r=+0.481   p=0.083  n=12  ↑
 
 【因子相関（旬集計: n=11旬）】
 
   [cnt_avg]
-    temp_max         r=+0.603*  p=0.023  n=11  ↑
-    sst              r=+0.602*  p=0.024  n=11  ↑
-    temp_min         r=+0.582*  p=0.032  n=11  ↑
-    pressure_range   r=-0.579*  p=0.033  n=11  ↓
-    wind_dir         r=+0.564*  p=0.041  n=11  ↑
-    temp             r=+0.554*  p=0.046  n=11  ↑
-    wave_height_max  r=-0.501   p=0.083  n=11  ↓
+    sst_avg          r=+0.605*  p=0.023  n=11  ↑
+    temp_min         r=+0.599*  p=0.025  n=11  ↑
+    temp_max         r=+0.582*  p=0.032  n=11  ↑
+    wave_period_avg  r=-0.579*  p=0.033  n=11  ↓
+    temp_avg         r=+0.567*  p=0.039  n=11  ↑
+    pressure_range   r=-0.560*  p=0.042  n=11  ↓
+    wave_height_max  r=-0.519   p=0.069  n=11  ↓
 
   [cnt_max]
-    temp_max         r=+0.633*  p=0.014  n=11  ↑
-    sst              r=+0.629*  p=0.015  n=11  ↑
-    temp_min         r=+0.612*  p=0.020  n=11  ↑
-    temp             r=+0.585*  p=0.031  n=11  ↑
-    pressure_range   r=-0.579*  p=0.033  n=11  ↓
-    wind_dir         r=+0.544   p=0.052  n=11  ↑
-    wave_height_max  r=-0.486   p=0.095  n=11  ↓
+    sst_avg          r=+0.630*  p=0.015  n=11  ↑
+    temp_min         r=+0.627*  p=0.016  n=11  ↑
+    temp_max         r=+0.610*  p=0.021  n=11  ↑
+    temp_avg         r=+0.597*  p=0.026  n=11  ↑
+    wave_period_avg  r=-0.595*  p=0.026  n=11  ↓
+    pressure_range   r=-0.563*  p=0.041  n=11  ↓
+    wave_height_max  r=-0.499   p=0.084  n=11  ↓
 
   [size_avg]
-    wave_period_min  r=+0.695**  p=0.006  n=10  ↑
-    wave_period      r=+0.641*  p=0.018  n=10  ↑
-    pressure_min     r=+0.604*  p=0.032  n=10  ↑
-    pressure         r=+0.597*  p=0.035  n=10  ↑
-    swell_height_max r=+0.559   p=0.057  n=10  ↑
-    temp             r=-0.527   p=0.079  n=10  ↓
-    temp_max         r=-0.521   p=0.084  n=10  ↓
+    wind_dir_mode    r=-0.756**  p=0.001  n=10  ↓
+    wave_period_min  r=+0.679**  p=0.009  n=10  ↑
+    wave_period_avg  r=+0.659*  p=0.013  n=10  ↑
+    pressure_min     r=+0.613*  p=0.028  n=10  ↑
+    pressure_avg     r=+0.601*  p=0.034  n=10  ↑
+    swell_height_max r=+0.551   p=0.062  n=10  ↑
+    temp_max         r=-0.505   p=0.098  n=10  ↓
 
 【因子相関（月集計: n=7月）】
   (有意な相関なし)
 
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n     21.4%           —           —           —           —
+  wave_obs_n       35.7%  +0.137  (n=5)  -0.020  (n=5)  -0.201  (n=5)           —
+  by_catch_n       85.7%  +0.088  (n=12)  +0.058  (n=12)  +0.160  (n=11)           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=14)  +0.000  (n=14)  +0.000  (n=13)           —
+  (有意な観測因子相関なし)
+
 【コメントキーワード解析】
-  (有意なキーワードなし)
+
+  [活性]
+    「反応」 n=  4  12.2匹  vs 通常 11.9匹  (+3%)
+
+  [海況]
+    「ウネリ」 n=  3  12.0匹  vs 通常 12.0匹  (+0%)
 
 【ポイント別集計】
   ポイント                       n       平均       最大       最小

@@ -18,27 +18,30 @@
 
   [cnt_avg]
     pressure_range   r=+0.652**  p=0.001  n=16  ↑
-    wave_height      r=+0.641**  p=0.002  n=16  ↑
     swell_height_max r=+0.584**  p=0.007  n=16  ↑
     precip_sum1      r=+0.582**  p=0.007  n=16  ↑
-    swell_height     r=+0.468*  p=0.047  n=16  ↑
     pressure_delta   r=+0.463   p=0.051  n=16  ↑
+    swell_height_avg r=+0.412   p=0.090  n=16  ↑
+    wind_speed_avg   r=+0.406   p=0.097  n=16  ↑
 
   [cnt_max]
-    wave_height      r=+0.755**  p=0.000  n=16  ↑
     pressure_range   r=+0.728**  p=0.000  n=16  ↑
     swell_height_max r=+0.701**  p=0.000  n=16  ↑
     precip_sum1      r=+0.630**  p=0.002  n=16  ↑
-    swell_height     r=+0.604**  p=0.005  n=16  ↑
+    wind_speed_avg   r=+0.547*  p=0.014  n=16  ↑
+    swell_height_avg r=+0.535*  p=0.018  n=16  ↑
+    wind_dir_mode    r=-0.505*  p=0.029  n=16  ↓
+    wave_height_avg  r=+0.499*  p=0.031  n=16  ↑
     moon_age         r=-0.433   p=0.073  n=16  ↓
     pressure_min     r=-0.409   p=0.093  n=16  ↓
 
   [kg_avg]
+    temp_avg         r=-0.737**  p=0.002  n=10  ↓
     temp_min         r=-0.734**  p=0.002  n=10  ↓
     temp_max         r=-0.663*  p=0.012  n=10  ↓
-    temp             r=-0.660*  p=0.013  n=10  ↓
-    wind_dir         r=-0.571*  p=0.049  n=10  ↓
+    wind_dir_mode    r=-0.577*  p=0.046  n=10  ↓
     temp_range       r=+0.531   p=0.076  n=10  ↑
+    wind_speed_avg   r=+0.514   p=0.090  n=10  ↑
 
 【因子相関（週集計: n=13週）】
 
@@ -46,15 +49,14 @@
     precip_sum1      r=+0.674**  p=0.002  n=13  ↑
     pressure_delta   r=+0.650**  p=0.005  n=13  ↑
     moon_age         r=-0.596*  p=0.014  n=13  ↓
-    wave_height      r=+0.561*  p=0.025  n=13  ↑
     swell_height_max r=+0.484   p=0.066  n=13  ↑
 
   [cnt_max]
-    wave_height      r=+0.778**  p=0.000  n=13  ↑
     swell_height_max r=+0.716**  p=0.001  n=13  ↑
     moon_age         r=-0.701**  p=0.001  n=13  ↓
     precip_sum1      r=+0.701**  p=0.001  n=13  ↑
-    swell_height     r=+0.615**  p=0.010  n=13  ↑
+    swell_height_avg r=+0.637**  p=0.006  n=13  ↑
+    wind_dir_mode    r=-0.607*  p=0.011  n=13  ↓
     pressure_delta   r=+0.487   p=0.065  n=13  ↑
     pressure_range   r=+0.485   p=0.066  n=13  ↑
 
@@ -62,23 +64,34 @@
 
   [cnt_avg]
     precip_sum2      r=+0.723**  p=0.002  n=11  ↑
-    wave_height      r=+0.622*  p=0.017  n=11  ↑
     pressure_range   r=+0.521   p=0.067  n=11  ↑
+    swell_height_avg r=+0.516   p=0.071  n=11  ↑
     pressure_min     r=-0.507   p=0.078  n=11  ↓
     precip_sum1      r=+0.488   p=0.094  n=11  ↑
 
   [cnt_max]
-    wave_height      r=+0.809**  p=0.000  n=11  ↑
     swell_height_max r=+0.718**  p=0.002  n=11  ↑
-    swell_height     r=+0.657**  p=0.009  n=11  ↑
+    swell_height_avg r=+0.716**  p=0.002  n=11  ↑
+    wave_height_avg  r=+0.646*  p=0.011  n=11  ↑
     moon_age         r=-0.586*  p=0.030  n=11  ↓
-    pressure         r=-0.556*  p=0.045  n=11  ↓
     pressure_min     r=-0.544   p=0.052  n=11  ↓
     pressure_range   r=+0.536   p=0.057  n=11  ↑
     precip_sum1      r=+0.535   p=0.058  n=11  ↑
+    pressure_avg     r=-0.482   p=0.098  n=11  ↓
 
 【因子相関（月集計: n=7月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        62.5%  -0.098  (n=10)  +0.211  (n=10)  +0.015  (n=5)  -0.182  (n=5)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       100.0%  +0.274  (n=16)  +0.356  (n=16)  -0.877**(n=6)  +0.337  (n=10)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=16)  +0.000  (n=16)  +0.000  (n=6)  +0.000  (n=10)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

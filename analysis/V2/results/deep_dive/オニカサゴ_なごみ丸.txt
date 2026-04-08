@@ -15,18 +15,22 @@
 
   [cnt_avg]
     temp_range       r=+0.605*  p=0.023  n=11  ↑
+    wave_height_avg  r=-0.509   p=0.076  n=11  ↓
 
   [cnt_max]
     moon_age         r=-0.680**  p=0.005  n=11  ↓
     temp_range       r=+0.664**  p=0.008  n=11  ↑
-    pressure         r=+0.573*  p=0.036  n=11  ↑
+    wave_period_avg  r=+0.623*  p=0.017  n=11  ↑
+    wave_height_avg  r=-0.577*  p=0.034  n=11  ↓
     pressure_range   r=+0.558*  p=0.044  n=11  ↑
+    swell_height_avg r=-0.507   p=0.078  n=11  ↓
+    pressure_avg     r=+0.488   p=0.094  n=11  ↑
     wave_height_max  r=-0.485   p=0.096  n=11  ↓
 
   [kg_avg]
     pressure_range   r=+0.619*  p=0.018  n=11  ↑
-    sst              r=-0.508   p=0.077  n=11  ↓
     temp_range       r=+0.503   p=0.080  n=11  ↑
+    sst_avg          r=-0.502   p=0.081  n=11  ↓
     moon_age         r=-0.498   p=0.085  n=11  ↓
 
 【因子相関（週集計: n=10週）】
@@ -38,14 +42,15 @@
   [cnt_max]
     moon_age         r=-0.749**  p=0.001  n=10  ↓
     temp_range       r=+0.702**  p=0.005  n=10  ↑
+    wave_period_avg  r=+0.603*  p=0.033  n=10  ↑
     pressure_range   r=+0.566   p=0.052  n=10  ↑
-    pressure         r=+0.547   p=0.064  n=10  ↑
+    wave_height_avg  r=-0.549   p=0.063  n=10  ↓
 
   [kg_avg]
     moon_age         r=-0.669*  p=0.011  n=10  ↓
     pressure_range   r=+0.633*  p=0.021  n=10  ↑
     temp_range       r=+0.594*  p=0.037  n=10  ↑
-    sst              r=-0.514   p=0.090  n=10  ↓
+    sst_avg          r=-0.509   p=0.095  n=10  ↓
 
 【因子相関（旬集計: n=10旬）】
 
@@ -56,17 +61,29 @@
   [cnt_max]
     moon_age         r=-0.749**  p=0.001  n=10  ↓
     temp_range       r=+0.702**  p=0.005  n=10  ↑
+    wave_period_avg  r=+0.603*  p=0.033  n=10  ↑
     pressure_range   r=+0.566   p=0.052  n=10  ↑
-    pressure         r=+0.547   p=0.064  n=10  ↑
+    wave_height_avg  r=-0.549   p=0.063  n=10  ↓
 
   [kg_avg]
     moon_age         r=-0.669*  p=0.011  n=10  ↓
     pressure_range   r=+0.633*  p=0.021  n=10  ↑
     temp_range       r=+0.594*  p=0.037  n=10  ↑
-    sst              r=-0.514   p=0.090  n=10  ↓
+    sst_avg          r=-0.509   p=0.095  n=10  ↓
 
 【因子相関（月集計: n=8月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        100.0%  -0.062  (n=11)  -0.162  (n=11)           —  -0.217  (n=11)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n     27.3%           —           —           —           —
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       63.6%  -0.220  (n=7)  -0.091  (n=7)           —  -0.674**(n=7)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=11)  -0.301  (n=11)           —  -0.479  (n=11)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

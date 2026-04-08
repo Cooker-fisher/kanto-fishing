@@ -22,16 +22,17 @@
 【因子相関（日次: 37件）】
 
   [cnt_avg]
-    swell_height     r=-0.302   p=0.061  n=37  ↓
-    wave_height      r=-0.287   p=0.076  n=37  ↓
+    wind_speed_avg   r=-0.273   p=0.093  n=37  ↓
 
   [cnt_max]
-    swell_height     r=-0.374*  p=0.017  n=37  ↓
-    wave_height      r=-0.344*  p=0.030  n=37  ↓
+    wave_height_avg  r=-0.308   p=0.055  n=37  ↓
+    swell_height_avg r=-0.308   p=0.055  n=37  ↓
     wave_height_max  r=-0.308   p=0.055  n=37  ↓
-    wind_speed       r=-0.297   p=0.066  n=37  ↓
     swell_height_max r=-0.297   p=0.066  n=37  ↓
+    wind_speed_avg   r=-0.279   p=0.085  n=37  ↓
     wind_speed_max   r=-0.277   p=0.089  n=37  ↓
+    wind_dir_mode    r=+0.272   p=0.095  n=37  ↑
+    temp_avg         r=-0.270   p=0.097  n=37  ↓
 
   [kg_avg]
     prev_week_cnt    r=-0.283   p=0.085  n=36  ↓
@@ -39,23 +40,25 @@
 【因子相関（週集計: n=12週）】
 
   [cnt_avg]
-    swell_height     r=-0.633**  p=0.010  n=12  ↓
-    wind_speed       r=-0.625*  p=0.011  n=12  ↓
-    wave_height      r=-0.610*  p=0.015  n=12  ↓
     swell_height_max r=-0.595*  p=0.019  n=12  ↓
     wave_height_max  r=-0.569*  p=0.028  n=12  ↓
+    swell_height_avg r=-0.562*  p=0.032  n=12  ↓
+    wave_height_avg  r=-0.538*  p=0.044  n=12  ↓
+    wind_dir_mode    r=+0.528*  p=0.049  n=12  ↑
+    wind_speed_avg   r=-0.486   p=0.079  n=12  ↓
     tide_range       r=-0.472   p=0.091  n=12  ↓
 
   [cnt_max]
-    swell_height     r=-0.788**  p=0.000  n=12  ↓
-    wave_height      r=-0.779**  p=0.000  n=12  ↓
     swell_height_max r=-0.746**  p=0.000  n=12  ↓
     wave_height_max  r=-0.743**  p=0.000  n=12  ↓
-    wind_speed       r=-0.742**  p=0.000  n=12  ↓
+    swell_height_avg r=-0.709**  p=0.001  n=12  ↓
+    wind_dir_mode    r=+0.707**  p=0.002  n=12  ↑
+    wave_height_avg  r=-0.696**  p=0.002  n=12  ↓
     temp_range       r=+0.617*  p=0.013  n=12  ↑
+    pressure_avg     r=-0.597*  p=0.019  n=12  ↓
     pressure_min     r=-0.570*  p=0.028  n=12  ↓
     temp_min         r=-0.525   p=0.051  n=12  ↓
-    pressure         r=-0.510   p=0.061  n=12  ↓
+    wind_speed_avg   r=-0.523   p=0.053  n=12  ↓
 
   [kg_avg]
     precip_sum       r=+0.502   p=0.067  n=12  ↑
@@ -65,6 +68,18 @@
 
 【因子相関（月集計: n=3月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        2.7%           —           —           —           —
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=37)  +0.000  (n=37)           —  +0.000  (n=37)
+  (有意な観測因子相関なし)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

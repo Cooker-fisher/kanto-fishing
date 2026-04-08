@@ -17,34 +17,49 @@
 【因子相関（日次: 14件）】
 
   [cnt_avg]
-    precip_sum2      r=+0.671**  p=0.002  n=14  ↑
+    precip_sum2      r=+0.613**  p=0.007  n=14  ↑
 
   [cnt_max]
-    precip_sum2      r=+0.675**  p=0.002  n=14  ↑
+    precip_sum2      r=+0.612**  p=0.007  n=14  ↑
 
   [kg_avg]
-    temp_range       r=+0.630**  p=0.005  n=14  ↑
+    temp_range       r=+0.735**  p=0.000  n=14  ↑
+    wave_period_min  r=-0.562*  p=0.019  n=14  ↓
+    wave_period_avg  r=-0.520*  p=0.035  n=14  ↓
     typhoon_dist     r=+0.508   p=0.051  n=13  ↑
-    wave_period_min  r=-0.463   p=0.070  n=14  ↓
 
 【因子相関（週集計: n=12週）】
 
   [cnt_avg]
-    precip_sum1      r=+0.563*  p=0.031  n=12  ↑
+    precip_sum1      r=+0.595*  p=0.019  n=12  ↑
 
   [cnt_max]
-    wind_speed_max   r=-0.551*  p=0.037  n=12  ↓
+    precip_sum1      r=+0.563*  p=0.031  n=12  ↑
+    wind_speed_max   r=-0.545*  p=0.040  n=12  ↓
     typhoon_dist     r=-0.489   p=0.093  n=11  ↓
 
   [kg_avg]
-    temp_range       r=+0.693**  p=0.002  n=12  ↑
-    pressure_range   r=+0.512   p=0.060  n=12  ↑
+    temp_range       r=+0.804**  p=0.000  n=12  ↑
+    wave_period_min  r=-0.583*  p=0.023  n=12  ↓
+    pressure_range   r=+0.505   p=0.065  n=12  ↑
+    wave_period_avg  r=-0.501   p=0.067  n=12  ↓
 
 【因子相関（旬集計: n=9旬）】
   (有意な相関なし)
 
 【因子相関（月集計: n=6月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       14.3%           —           —           —           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  -0.548**(n=14)  -0.593**(n=14)           —  +0.825**(n=14)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

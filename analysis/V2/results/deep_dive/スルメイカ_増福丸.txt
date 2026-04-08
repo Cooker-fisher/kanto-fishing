@@ -19,49 +19,64 @@
 
   [cnt_avg]
     moon_age         r=+0.366   p=0.054  n=26  ↑
-    precip_sum2      r=-0.336   p=0.081  n=26  ↓
-    wave_period_min  r=-0.321   p=0.097  n=26  ↓
+    sst_avg          r=-0.335   p=0.081  n=26  ↓
+    temp_max         r=+0.321   p=0.096  n=26  ↑
 
   [cnt_max]
-    wave_period_min  r=-0.407*  p=0.029  n=26  ↓
-    sst              r=-0.393*  p=0.036  n=26  ↓
+    sst_avg          r=-0.437*  p=0.017  n=26  ↓
+    wave_period_min  r=-0.399*  p=0.033  n=26  ↓
     moon_age         r=+0.383*  p=0.042  n=26  ↑
-    wave_height      r=-0.361   p=0.058  n=26  ↓
-    swell_height     r=-0.340   p=0.076  n=26  ↓
-    swell_height_max r=-0.328   p=0.089  n=26  ↓
-    wave_period      r=-0.327   p=0.090  n=26  ↓
-    wave_height_max  r=-0.325   p=0.092  n=26  ↓
+    wave_period_avg  r=-0.352   p=0.065  n=26  ↓
+    temp_max         r=+0.344   p=0.072  n=26  ↑
+    swell_height_avg r=-0.340   p=0.076  n=26  ↓
+    wave_height_avg  r=-0.332   p=0.085  n=26  ↓
+    wave_height_max  r=-0.323   p=0.095  n=26  ↓
 
   [size_avg]
     prev_week_cnt    r=+0.421*  p=0.026  n=25  ↑
+    sst_avg          r=-0.412*  p=0.027  n=26  ↓
     typhoon_dist     r=-0.389*  p=0.043  n=25  ↓
-    sst              r=-0.389*  p=0.039  n=26  ↓
+    wind_dir_mode    r=+0.329   p=0.088  n=26  ↑
 
 【因子相関（週集計: n=10週）】
 
   [cnt_avg]
-    wind_speed_max   r=+0.642*  p=0.018  n=10  ↑
-    sst              r=-0.547   p=0.065  n=10  ↓
-    wave_period_min  r=-0.531   p=0.076  n=10  ↓
-    pressure         r=-0.527   p=0.079  n=10  ↓
+    temp_max         r=+0.758**  p=0.001  n=10  ↑
+    pressure_avg     r=-0.542   p=0.068  n=10  ↓
     pressure_min     r=-0.520   p=0.085  n=10  ↓
+    sst_avg          r=-0.512   p=0.092  n=10  ↓
+    wave_period_min  r=-0.511   p=0.093  n=10  ↓
+    temp_avg         r=+0.510   p=0.093  n=10  ↑
 
   [cnt_max]
-    wind_speed_max   r=+0.619*  p=0.026  n=10  ↑
-    sst              r=-0.605*  p=0.032  n=10  ↓
+    temp_max         r=+0.729**  p=0.003  n=10  ↑
     prev_week_cnt    r=+0.599*  p=0.048  n=9  ↑
-    wave_period_min  r=-0.556   p=0.059  n=10  ↓
+    sst_avg          r=-0.586*  p=0.041  n=10  ↓
+    wave_period_min  r=-0.538   p=0.071  n=10  ↓
+    wave_period_avg  r=-0.517   p=0.088  n=10  ↓
+    wind_dir_mode    r=+0.508   p=0.095  n=10  ↑
 
   [size_avg]
-    wind_speed_max   r=+0.533   p=0.075  n=10  ↑
-    pressure         r=-0.513   p=0.091  n=10  ↓
-    pressure_min     r=-0.506   p=0.097  n=10  ↓
+    temp_max         r=+0.617*  p=0.027  n=10  ↑
+    wind_dir_mode    r=+0.556   p=0.059  n=10  ↑
+    pressure_avg     r=-0.524   p=0.082  n=10  ↓
 
 【因子相関（旬集計: n=8旬）】
   (有意な相関なし)
 
 【因子相関（月集計: n=3月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        100.0%  +0.258  (n=26)  +0.234  (n=26)  +0.535**(n=26)           —
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      3.8%           —           —           —           —
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       30.8%  +0.000  (n=8)  +0.000  (n=8)  +0.000  (n=8)           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=26)  +0.000  (n=26)  +0.000  (n=26)           —
 
 【コメントキーワード解析】
   (有意なキーワードなし)

@@ -22,7 +22,6 @@
   [cnt_avg]
     typhoon_wind     r=+0.515*  p=0.013  n=19  ↑
     moon_age         r=+0.406*  p=0.023  n=28  ↑
-    wind_speed       r=+0.344   p=0.062  n=28  ↑
 
   [cnt_max]
     typhoon_wind     r=+0.465*  p=0.031  n=19  ↑
@@ -31,10 +30,9 @@
 
   [kg_avg]
     precip_sum       r=+0.510**  p=0.002  n=28  ↑
-    pressure_min     r=-0.374*  p=0.040  n=28  ↓
-    pressure         r=-0.371*  p=0.042  n=28  ↓
+    pressure_avg     r=-0.424*  p=0.017  n=28  ↓
+    pressure_min     r=-0.375*  p=0.039  n=28  ↓
     moon_age         r=+0.362*  p=0.048  n=28  ↑
-    wind_dir         r=-0.319   p=0.086  n=28  ↓
 
 【因子相関（週集計: n=15週）】
 
@@ -50,12 +48,14 @@
 
   [kg_avg]
     precip_sum       r=+0.584**  p=0.009  n=15  ↑
+    wind_dir_mode    r=-0.489*  p=0.043  n=15  ↓
+    pressure_avg     r=-0.489*  p=0.043  n=15  ↓
 
 【因子相関（旬集計: n=12旬）】
 
   [cnt_avg]
     tide_range       r=+0.493   p=0.073  n=12  ↑
-    pressure_range   r=-0.493   p=0.073  n=12  ↓
+    pressure_range   r=-0.482   p=0.082  n=12  ↓
     tide_type_n      r=+0.478   p=0.085  n=12  ↑
 
   [cnt_max]
@@ -64,10 +64,20 @@
   [kg_avg]
     moon_age         r=+0.780**  p=0.000  n=12  ↑
     precip_sum       r=+0.723**  p=0.001  n=12  ↑
-    wind_dir         r=-0.524   p=0.052  n=12  ↓
 
 【因子相関（月集計: n=5月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        100.0%  -0.236  (n=28)  -0.421**(n=28)           —  +0.260  (n=28)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       100.0%  -0.326*(n=28)  -0.230  (n=28)           —  -0.185  (n=28)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  -0.195  (n=28)  -0.247  (n=28)           —  -0.386**(n=28)
 
 【コメントキーワード解析】
 

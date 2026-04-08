@@ -20,29 +20,43 @@
 
   [cnt_avg]
     pressure_delta   r=+0.600*  p=0.024  n=11  ↑
-    wave_period      r=-0.529   p=0.061  n=11  ↓
+    wave_period_avg  r=-0.495   p=0.087  n=11  ↓
 
   [cnt_max]
     pressure_delta   r=+0.600*  p=0.024  n=11  ↑
-    wave_period      r=-0.529   p=0.061  n=11  ↓
+    wave_period_avg  r=-0.495   p=0.087  n=11  ↓
 
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
-    wave_period      r=-0.585*  p=0.041  n=10  ↓
+    wave_period_avg  r=-0.589*  p=0.039  n=10  ↓
     pressure_delta   r=+0.581*  p=0.044  n=10  ↑
     temp_range       r=-0.551   p=0.062  n=10  ↓
 
   [cnt_max]
-    wave_period      r=-0.585*  p=0.041  n=10  ↓
+    wave_period_avg  r=-0.589*  p=0.039  n=10  ↓
     pressure_delta   r=+0.581*  p=0.044  n=10  ↑
     temp_range       r=-0.551   p=0.062  n=10  ↓
 
 【因子相関（月集計: n=8月）】
   (有意な相関なし)
 
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       57.1%  +0.093  (n=8)  +0.093  (n=8)           —           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  -0.283  (n=14)  -0.283  (n=14)           —  -0.246  (n=7)
+  (有意な観測因子相関なし)
+
 【コメントキーワード解析】
-  (有意なキーワードなし)
+
+  [外道]
+    「フグ」 n=  6  5.2匹  vs 通常 3.9匹  (+33%)
 
 【ポイント別集計】
   (ポイントデータなし)

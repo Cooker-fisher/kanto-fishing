@@ -17,35 +17,29 @@
 
 【因子相関（日次: 25件）】
 
-  [cnt_avg]
-    wave_height      r=-0.352   p=0.072  n=25  ↓
-    swell_height     r=-0.339   p=0.084  n=25  ↓
-
   [cnt_max]
     prev_week_cnt    r=-0.390*  p=0.047  n=24  ↓
-    wave_height      r=-0.380*  p=0.049  n=25  ↓
     temp_range       r=-0.373   p=0.054  n=25  ↓
-    swell_height     r=-0.336   p=0.087  n=25  ↓
 
   [size_avg]
     typhoon_dist     r=+0.713**  p=0.001  n=13  ↑
-    sst              r=-0.639**  p=0.003  n=15  ↓
-    wind_dir         r=+0.574*  p=0.011  n=15  ↑
+    sst_avg          r=-0.652**  p=0.002  n=15  ↓
+    swell_height_avg r=-0.459   p=0.063  n=15  ↓
     precip_sum       r=-0.456   p=0.065  n=15  ↓
 
   [kg_avg]
-    sst              r=+0.904**  p=0.000  n=10  ↑
+    sst_avg          r=+0.908**  p=0.000  n=10  ↑
     typhoon_dist     r=-0.875**  p=0.000  n=9  ↓
     temp_max         r=+0.844**  p=0.000  n=10  ↑
+    temp_avg         r=+0.778**  p=0.000  n=10  ↑
     temp_range       r=+0.772**  p=0.001  n=10  ↑
     prev_week_cnt    r=+0.684**  p=0.008  n=10  ↑
     wind_speed_max   r=-0.610*  p=0.029  n=10  ↓
     precip_sum2      r=-0.609*  p=0.030  n=10  ↓
-    wind_dir         r=-0.567   p=0.052  n=10  ↓
+    swell_height_avg r=+0.541   p=0.069  n=10  ↑
     temp_min         r=+0.533   p=0.075  n=10  ↑
     wave_period_min  r=+0.527   p=0.079  n=10  ↑
-    wave_period      r=+0.513   p=0.091  n=10  ↑
-    temp             r=+0.512   p=0.092  n=10  ↑
+    pressure_min     r=+0.506   p=0.097  n=10  ↑
 
 【因子相関（週集計: n=7週）】
   (有意な相関なし)
@@ -55,6 +49,17 @@
 
 【因子相関（月集計: n=4月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        60.0%  +0.481**(n=15)  +0.127  (n=15)  -0.090  (n=15)           —
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       96.0%  -0.095  (n=24)  -0.028  (n=24)  +0.565**(n=14)  -0.737**(n=10)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=25)  +0.000  (n=25)  +0.000  (n=15)  +0.000  (n=10)
 
 【コメントキーワード解析】
   (有意なキーワードなし)

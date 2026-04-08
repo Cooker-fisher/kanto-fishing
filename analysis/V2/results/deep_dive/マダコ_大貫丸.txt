@@ -19,16 +19,17 @@
 
   [cnt_avg]
     wave_period_min  r=+0.572**  p=0.009  n=16  ↑
+    wave_period_avg  r=+0.500*  p=0.031  n=16  ↑
 
   [cnt_max]
     wave_period_min  r=+0.555*  p=0.012  n=16  ↑
     pressure_delta   r=+0.485*  p=0.038  n=16  ↑
+    wave_period_avg  r=+0.452   p=0.058  n=16  ↑
     moon_age         r=-0.447   p=0.061  n=16  ↓
 
   [kg_avg]
-    swell_height     r=+0.518*  p=0.023  n=16  ↑
+    swell_height_avg r=+0.436   p=0.070  n=16  ↑
     swell_height_max r=+0.429   p=0.076  n=16  ↑
-    wave_height      r=+0.412   p=0.091  n=16  ↑
 
 【因子相関（週集計: n=8週）】
   (有意な相関なし)
@@ -38,6 +39,18 @@
 
 【因子相関（月集計: n=3月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=16)  +0.000  (n=16)           —  +0.000  (n=16)
+  (有意な観測因子相関なし)
 
 【コメントキーワード解析】
 

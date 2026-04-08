@@ -19,27 +19,26 @@
 
   [cnt_avg]
     prev_week_cnt    r=+0.580**  p=0.000  n=33  ↑
-    pressure         r=-0.475**  p=0.002  n=34  ↓
-    temp_max         r=+0.423**  p=0.008  n=34  ↑
-    pressure_min     r=-0.401*  p=0.013  n=34  ↓
-    temp_min         r=+0.377*  p=0.022  n=34  ↑
-    temp             r=+0.336*  p=0.044  n=34  ↑
+    sst_avg          r=+0.439**  p=0.006  n=34  ↑
+    temp_max         r=+0.438**  p=0.006  n=34  ↑
+    pressure_avg     r=-0.428**  p=0.007  n=34  ↓
+    temp_avg         r=+0.406*  p=0.012  n=34  ↑
+    pressure_min     r=-0.399*  p=0.014  n=34  ↓
+    temp_min         r=+0.376*  p=0.022  n=34  ↑
 
   [cnt_max]
     prev_week_cnt    r=+0.633**  p=0.000  n=33  ↑
-    pressure         r=-0.475**  p=0.002  n=34  ↓
-    pressure_min     r=-0.449**  p=0.005  n=34  ↓
-    temp_max         r=+0.446**  p=0.005  n=34  ↑
-    temp_min         r=+0.370*  p=0.024  n=34  ↑
-    temp             r=+0.342*  p=0.039  n=34  ↑
-    sst              r=+0.287   p=0.090  n=34  ↑
+    sst_avg          r=+0.485**  p=0.002  n=34  ↑
+    temp_max         r=+0.460**  p=0.003  n=34  ↑
+    pressure_avg     r=-0.452**  p=0.004  n=34  ↓
+    pressure_min     r=-0.438**  p=0.006  n=34  ↓
+    temp_avg         r=+0.425**  p=0.008  n=34  ↑
+    temp_min         r=+0.381*  p=0.020  n=34  ↑
 
   [kg_avg]
-    wave_period_min  r=+0.394*  p=0.015  n=34  ↑
-    sst              r=-0.367*  p=0.025  n=34  ↓
     tide_type_n      r=-0.323   p=0.053  n=34  ↓
-    wind_dir         r=+0.319   p=0.057  n=34  ↑
-    pressure_range   r=-0.290   p=0.087  n=34  ↓
+    sst_avg          r=-0.313   p=0.062  n=34  ↓
+    wind_speed_avg   r=-0.294   p=0.081  n=34  ↓
 
 【因子相関（週集計: n=8週）】
   (有意な相関なし)
@@ -50,8 +49,24 @@
 【因子相関（月集計: n=4月）】
   (有意な相関なし)
 
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.590**(n=34)  +0.602**(n=34)           —  +0.016  (n=34)
+
 【コメントキーワード解析】
-  (有意なキーワードなし)
+
+  [活性]
+    「反応」 n=  9  1.4匹  vs 通常 1.6匹  (-7%)
+
+  [外道]
+    「フグ」 n= 34  1.5匹  vs 通常 0.0匹  (+0%)
 
 【ポイント別集計】
   ポイント                       n       平均       最大       最小

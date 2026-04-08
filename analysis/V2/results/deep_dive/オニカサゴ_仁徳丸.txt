@@ -16,18 +16,18 @@
   [cnt_avg]
     typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
     precip_sum2      r=+0.750**  p=0.001  n=11  ↑
-    sst              r=+0.484   p=0.097  n=11  ↑
+    swell_height_avg r=-0.538   p=0.055  n=11  ↓
     swell_height_max r=-0.484   p=0.097  n=11  ↓
 
   [cnt_max]
     typhoon_dist     r=-0.824*  p=0.012  n=5  ↓
-    wind_speed       r=-0.513   p=0.073  n=11  ↓
 
 【因子相関（週集計: n=10週）】
 
   [cnt_avg]
     precip_sum2      r=+0.751**  p=0.001  n=10  ↑
     typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    swell_height_avg r=-0.552   p=0.061  n=10  ↓
     swell_height_max r=-0.508   p=0.096  n=10  ↓
 
   [cnt_max]
@@ -38,6 +38,7 @@
   [cnt_avg]
     precip_sum2      r=+0.751**  p=0.001  n=10  ↑
     typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    swell_height_avg r=-0.552   p=0.061  n=10  ↓
     swell_height_max r=-0.508   p=0.096  n=10  ↓
 
   [cnt_max]
@@ -45,6 +46,17 @@
 
 【因子相関（月集計: n=6月）】
   (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        90.9%  +0.000  (n=10)  +0.000  (n=10)           —  +0.000  (n=10)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      9.1%           —           —           —           —
+  wave_obs_n       27.3%           —           —           —           —
+  by_catch_n       90.9%  +0.373  (n=10)  +0.512*(n=10)           —  +0.496  (n=10)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=11)  +0.000  (n=11)           —  +0.000  (n=11)
 
 【コメントキーワード解析】
 
