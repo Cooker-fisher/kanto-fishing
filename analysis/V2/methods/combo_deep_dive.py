@@ -779,7 +779,7 @@ def section_corr(enriched_recs, metrics=None):
             if rv is None:
                 continue
             all_results[(metric, fac)] = (rv, pv, nn)
-            if abs(rv) >= 0.08 and pv < 0.10:
+            if abs(rv) >= 0.15 and pv < 0.10:
                 sig.append((fac, rv, pv, nn))
         if not sig:
             continue
@@ -911,13 +911,16 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     _db[dn].append(val)
             metric_decadal_m[met] = {dn: sum(v)/len(v) for dn, v in _db.items()}
 
+        # train_sorted_m の日付リスト（bisect用）
+        train_dates_m = [r["date"] for r in train_sorted_m]
+
         for met in METRICS_LIST:
             tr_ys = [r.get(met) for r in train_en_h0]
             factor_r_m = {}
             for fac in ALL_FACTORS:
                 xs = [r.get(fac) for r in train_en_h0]
                 rv, _, _ = pearson(xs, tr_ys)
-                if rv is not None and abs(rv) >= 0.05:
+                if rv is not None and abs(rv) >= 0.10:
                     factor_r_m[fac] = rv
             if not factor_r_m:
                 continue
@@ -929,11 +932,18 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
             m_dec = metric_decadal_m.get(met, {})
 
+            # ⑦ 自己相関 r_own（前回値 → 当回値）を学習データから計算
+            own_pairs = [(train_sorted_m[i-1].get(met), train_sorted_m[i].get(met))
+                         for i in range(1, len(train_sorted_m))]
+            own_pairs = [(x, y) for x, y in own_pairs if x is not None and y is not None]
+            r_own_m, _, _ = pearson([x for x, y in own_pairs], [y for x, y in own_pairs])
+            r_own_m = r_own_m if r_own_m is not None else 0.0
+
             for H in HORIZONS:
                 te_en_h = [r for r in all_en_by_H[H] if r["date"][:7] == test_month]
                 usable  = {fac: rv for fac, rv in factor_r_m.items()
                            if fac in SLOW_FACTORS or H <= FAST_MAX_H}
-                w_h = sum(rv**2 for rv in usable.values()) or 1.0
+                w_h = sum(abs(rv) for rv in usable.values()) or 1.0
 
                 for r in te_en_h:
                     act = r.get(met)
@@ -946,6 +956,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     else:
                         base = m_dec.get(dn, met_mean_m)
 
+                    # ⑤ 予測式: rv * z（線形加重和）に修正
                     num_wx = 0.0
                     for fac, rv in usable.items():
                         val = r.get(fac)
@@ -953,9 +964,27 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                             continue
                         fm, fs = hist_params_m[fac]
                         z = (val - fm) / fs
-                        num_wx += rv**2 * z * (1.0 if rv > 0 else -1.0)
+                        num_wx += rv * z
 
-                    pred = base + (num_wx / w_h) * met_std_m * 0.5
+                    # ⑦ 自己相関項を追加（H日前の時点で知っている最新値）
+                    d_obj   = datetime.strptime(r["date"], "%Y/%m/%d")
+                    cutoff  = (d_obj - timedelta(days=H)).strftime("%Y/%m/%d")
+                    idx     = bisect.bisect_left(train_dates_m, cutoff) - 1
+                    last_own_val = None
+                    while idx >= 0:
+                        if train_sorted_m[idx].get(met) is not None:
+                            last_own_val = train_sorted_m[idx].get(met)
+                            break
+                        idx -= 1
+
+                    if last_own_val is not None and abs(r_own_m) >= 0.10:
+                        own_z   = (last_own_val - met_mean_m) / met_std_m
+                        num_own = r_own_m * own_z
+                        w_total = w_h + abs(r_own_m)
+                        pred = base + ((num_wx + num_own) / w_total) * met_std_m * 0.5
+                    else:
+                        pred = base + (num_wx / w_h) * met_std_m * 0.5
+
                     all_preds[met][H].append(pred)
                     all_acts[met][H].append(act)
 
