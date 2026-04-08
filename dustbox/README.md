@@ -27,6 +27,9 @@
 | point_normalize_map.json | build_point_coords.py の副産物。crawler.py 参照ゼロ | 2026/04/08 |
 | recrawl_ships.py | 船宿再クロール一時スクリプト | 2026/04/08 |
 | typhoon.py | 旧台風処理スクリプト（build_typhoon.py に置換） | 2026/04/08 |
+| crawl.yml | ルートに残っていた旧ワークフロー定義（.github/workflows/crawl.yml が正） | 2026/04/08 |
+| fish_raw_list.txt | 魚種名一覧デバッグ用一時ファイル。参照ゼロ | 2026/04/08 |
+| turimono_list_raw.txt | 魚種×件数集計デバッグ用一時ファイル。参照ゼロ | 2026/04/08 |
 
 ---
 
