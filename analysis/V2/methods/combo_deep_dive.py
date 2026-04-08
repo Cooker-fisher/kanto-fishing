@@ -1178,6 +1178,60 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             r_own_m, _, _ = pearson([x for x, y in own_pairs], [y for x, y in own_pairs])
             r_own_m = r_own_m if r_own_m is not None else 0.0
 
+            # ── 案B+C: α（スケーリング）と β（BL-2ブレンド比）を学習データから OLS 推定 ──
+            # pred = base + correction * α
+            # pred_final = pred + β × (bl2 - pred)
+            # α: OLS 解析解 α = Σ(c*y) / Σ(c²)
+            # β: OLS 解析解 β = Σ(d*(act-pred)) / Σ(d²)  where d = bl2 - pred
+            _w_all = sum(abs(rv) for rv in factor_r_m.values()) or 1.0
+            _w_all_own = (_w_all + abs(r_own_m)) if abs(r_own_m) >= 0.10 else None
+            _ols_num = 0.0; _ols_den = 0.0
+            _alpha_tr = []  # (base, corr, bl2_p, act) for β 計算
+            for _r in train_en_h0:
+                _act = _r.get(met)
+                if _act is None:
+                    continue
+                _dn = _r.get("decade")
+                if met == "cnt_avg" and decadal and _dn in decadal:
+                    _base = decadal[_dn].get("avg_cnt", met_mean_m)
+                else:
+                    _base = m_dec.get(_dn, met_mean_m)
+                _nx = 0.0
+                for fac, rv in factor_r_m.items():
+                    _v = _r.get(fac)
+                    if _v is None or fac not in hist_params_m:
+                        continue
+                    _fm, _fs = hist_params_m[fac]
+                    _nx += rv * (_v - _fm) / _fs
+                # 前レコード探索（自己相関 + BL-2 の両方に使う）
+                _ridx = bisect.bisect_left(train_dates_m, _r["date"]) - 1
+                _bl2_v = []; _lo = None; _bi = _ridx
+                while _bi >= 0 and len(_bl2_v) < 7:
+                    _v7 = train_sorted_m[_bi].get(met)
+                    if _v7 is not None:
+                        if _lo is None:
+                            _lo = _v7
+                        _bl2_v.append(_v7)
+                    _bi -= 1
+                if _lo is not None and _w_all_own is not None:
+                    _no = r_own_m * (_lo - met_mean_m) / met_std_m
+                    _corr = (_nx + _no) / _w_all_own * met_std_m
+                else:
+                    _corr = _nx / _w_all * met_std_m
+                _bl2_p_tr = sum(_bl2_v) / len(_bl2_v) if _bl2_v else met_mean_m
+                _ols_num += _corr * (_act - _base)
+                _ols_den += _corr * _corr
+                _alpha_tr.append((_base, _corr, _bl2_p_tr, _act))
+            alpha_scale = max(0.1, min(2.0, _ols_num / _ols_den)) if _ols_den > 1e-9 else 0.5
+            # β: BL-2 ブレンド比（0〜0.5 にクリップ）
+            _bt_num = 0.0; _bt_den = 0.0
+            for _b, _c, _bl2t, _a in _alpha_tr:
+                _mp = _b + _c * alpha_scale
+                _d  = _bl2t - _mp
+                _bt_num += _d * (_a - _mp)
+                _bt_den += _d * _d
+            beta_bl2 = max(0.0, min(0.5, _bt_num / _bt_den)) if _bt_den > 1e-9 else 0.0
+
             for H in HORIZONS:
                 te_en_h = [r for r in all_en_by_H[H] if r["date"][:7] == test_month]
                 usable  = {fac: rv for fac, rv in factor_r_m.items()
@@ -1220,9 +1274,22 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         own_z   = (last_own_val - met_mean_m) / met_std_m
                         num_own = r_own_m * own_z
                         w_total = w_h + abs(r_own_m)
-                        pred = base + ((num_wx + num_own) / w_total) * met_std_m * 0.5
+                        pred = base + ((num_wx + num_own) / w_total) * met_std_m * alpha_scale
                     else:
-                        pred = base + (num_wx / w_h) * met_std_m * 0.5
+                        pred = base + (num_wx / w_h) * met_std_m * alpha_scale
+
+                    # BL-2: H日前時点の直近最大7件平均（案C ブレンド用 + 評価用を兼ねる）
+                    _bl2_idx = bisect.bisect_left(train_dates_m, cutoff) - 1
+                    _bl2_recent = []
+                    _bi = _bl2_idx
+                    while _bi >= 0 and len(_bl2_recent) < 7:
+                        v = train_sorted_m[_bi].get(met)
+                        if v is not None:
+                            _bl2_recent.append(v)
+                        _bi -= 1
+                    _bl2_p = sum(_bl2_recent) / len(_bl2_recent) if _bl2_recent else met_mean_m
+                    # 案C: BL-2 ブレンド適用
+                    pred = pred + beta_bl2 * (_bl2_p - pred)
 
                     all_preds[met][H].append(pred)
                     all_acts[met][H].append(act)
@@ -1238,16 +1305,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     # BL-1: 旬別平均
                     bl1_preds[met][H].append(m_dec.get(dn, met_mean_m))
                     bl1_acts[met][H].append(act)
-                    # BL-2: H日前時点の直近最大7件平均
-                    _bl2_idx = bisect.bisect_left(train_dates_m, cutoff) - 1
-                    _bl2_recent = []
-                    _bi = _bl2_idx
-                    while _bi >= 0 and len(_bl2_recent) < 7:
-                        v = train_sorted_m[_bi].get(met)
-                        if v is not None:
-                            _bl2_recent.append(v)
-                        _bi -= 1
-                    _bl2_p = sum(_bl2_recent) / len(_bl2_recent) if _bl2_recent else met_mean_m
+                    # BL-2: 評価用（上で計算済みの _bl2_p を再利用）
                     bl2_preds[met][H].append(_bl2_p)
                     bl2_acts[met][H].append(act)
 
