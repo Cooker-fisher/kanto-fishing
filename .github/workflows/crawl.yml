@@ -1,15 +1,13 @@
 ﻿name: crawl
 on:
   schedule:
-    - cron: '30 7 * * *'   # 毎日 16:30 JST（釣果クロール＋夕方気象）
+    - cron: '30 7 * * *'   # 毎日 16:30 JST（釣果クロール）
     - cron: '0 7 1 * *'    # 毎月1日 16:00 JST（船宿SID自動更新）
-    - cron: '0 21 * * *'   # 毎日 06:00 JST（朝の気象データ）
     - cron: '0 8 * * 1'    # 毎週月曜 17:00 JST（週次分析再生成）
   workflow_dispatch:
 jobs:
   crawl:
     runs-on: ubuntu-latest
-    if: github.event.schedule != '0 21 * * *'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,14 +15,9 @@ jobs:
           python-version: '3.11'
       - name: discover ships (月1日のみ)
         if: github.event.schedule == '0 7 1 * *' || github.event_name == 'workflow_dispatch'
-        run: |
-          python3 crawl/discover_ships.py
-          python3 discover_gyo.py
+        run: python3 crawl/discover_ships.py
       - name: run
-        run: |
-          python3 weather_fetch.py
-          python3 crawler.py
-          python3 weather_crawl.py
+        run: python3 crawler.py
       - name: gyo direct crawl
         continue-on-error: true
         run: python3 direct-crawl/gyo_crawler.py
@@ -44,8 +37,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: weather forecast (153座標)
-        run: python3 weather_forecast.py
       - name: weekly analysis
         run: |
           python3 analysis/run.py season_analysis.py
@@ -74,20 +65,3 @@ jobs:
           git commit -m "weekly insights $(date +'%Y/%m/%d')" || echo "nothing to commit"
           git push --force
 
-  weather:
-    runs-on: ubuntu-latest
-    if: github.event.schedule == '0 21 * * *'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: weather
-        run: python3 weather_crawl.py
-      - name: push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "weather $(date +'%Y/%m/%d %H:%M')" || echo "nothing to commit"
-          git push --force
