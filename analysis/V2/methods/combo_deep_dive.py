@@ -89,6 +89,41 @@ FAST_FACTORS = {
     "prev_week_cnt",                       # 前週釣果（自己相関）H>7では2週以上前の情報になるため無効化
     "typhoon_dist", "typhoon_wind",        # 台風接近距離・最大風速（イベント変数 H≤5が有効限界）
 }
+
+# カレンダー因子（土日・祝日フラグ）── 未来も確定値なので全ホライズンで有効
+# 【重要】土日祝は乗合船に初心者・月イチアングラーが増える → cnt_min↓, cnt_avg↓
+# 平日比: 土日のcnt_min -28〜-32%（アジ全船宿集計 2023-2026）
+# 2023〜2026 国民の祝日リスト（振替休日含む・土日は weekday() で別途判定）
+_JP_HOLIDAYS = frozenset([
+    # 2023
+    "2023/01/01","2023/01/02","2023/01/09","2023/02/23","2023/03/21",
+    "2023/04/29","2023/05/03","2023/05/04","2023/05/05",
+    "2023/07/17","2023/08/11","2023/09/18","2023/09/23","2023/10/09",
+    "2023/11/03","2023/11/23",
+    # 2024
+    "2024/01/01","2024/01/08","2024/02/12","2024/02/23","2024/03/20",
+    "2024/04/29","2024/05/03","2024/05/06","2024/07/15","2024/08/12",
+    "2024/09/16","2024/09/22","2024/09/23","2024/10/14",
+    "2024/11/04","2024/11/23",
+    # 2025
+    "2025/01/01","2025/01/13","2025/02/11","2025/02/24","2025/03/20",
+    "2025/04/29","2025/05/05","2025/05/06","2025/07/21","2025/08/11",
+    "2025/09/15","2025/09/23","2025/10/13",
+    "2025/11/03","2025/11/24",
+    # 2026
+    "2026/01/01","2026/01/12","2026/02/11","2026/02/23","2026/03/20",
+    "2026/04/29","2026/05/04","2026/05/05","2026/05/06",
+    "2026/07/20","2026/08/11","2026/09/21","2026/09/23",
+    "2026/10/12","2026/11/03","2026/11/23",
+])
+
+def _is_holiday(date_str: str) -> int:
+    """土日・祝日なら1、平日なら0"""
+    try:
+        dt = datetime.strptime(date_str, "%Y/%m/%d")
+        return 1 if (dt.weekday() >= 5 or date_str in _JP_HOLIDAYS) else 0
+    except Exception:
+        return 0
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
 # ── 全因子リスト（相関計算・バックテスト対象）──────────────────────────────
@@ -133,8 +168,11 @@ CATCH_FACTORS = ["prev_week_cnt"]
 # 台風因子（イベント変数 → FAST扱いで H>7 は無効化）
 TYPHOON_FACTORS = ["typhoon_dist", "typhoon_wind"]
 
+# カレンダー因子（土日・祝日 → 全ホライズンで有効）
+CALENDAR_FACTORS = ["is_holiday"]
+
 # 全因子（相関計算対象）
-ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS
+ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS + CALENDAR_FACTORS
 
 # 観測因子リストは normalize/obs_fields.json から動的に取得する。
 # → OBS_FACTORS は _get_obs_factors() で取得。新CSV列追加時は obs_fields.json だけ変更。
@@ -533,6 +571,8 @@ def load_records(fish, ship_filter=None):
                     # 参照用（obs_fields.json 外）
                     "trip_no": int(row.get("trip_no") or 1),
                     "is_train": date_str <= TRAIN_END,
+                    # カレンダー因子（土日・祝日）
+                    "is_holiday": _is_holiday(date_str),
                     **obs,   # OBS因子 + テキストフィールド + text_all
                 })
     records.sort(key=lambda r: r["date"])
@@ -895,7 +935,7 @@ def aggregate_by_period(enriched_recs, period):
 
 def section_corr(enriched_recs, metrics=None):
     if metrics is None:
-        metrics = ["cnt_avg", "cnt_max", "size_avg", "kg_avg"]
+        metrics = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
     lines = []
     all_results = {}
     for metric in metrics:
