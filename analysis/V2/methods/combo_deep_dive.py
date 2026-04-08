@@ -959,6 +959,63 @@ def section_points(records):
         )
     return lines[:16]
 
+def _season_of(month):
+    """月 → 季節（春/夏/秋/冬）"""
+    if month in (3, 4, 5):  return "春"
+    if month in (6, 7, 8):  return "夏"
+    if month in (9, 10, 11): return "秋"
+    return "冬"
+
+def _percentile(vals, p):
+    """vals（ソート済み想定なし）の p パーセンタイルを返す。線形補間なし。"""
+    sv = sorted(v for v in vals if v is not None)
+    if not sv:
+        return None
+    idx = int(len(sv) * p / 100)
+    return sv[min(idx, len(sv)-1)]
+
+def _season_thresholds(records, metric):
+    """records から季節別 (p33, p67) を計算。5件未満の季節は overall で補完。"""
+    by_season = {"春": [], "夏": [], "秋": [], "冬": []}
+    for r in records:
+        v = r.get(metric)
+        m = int(r["date"][5:7])
+        if v is not None:
+            by_season[_season_of(m)].append(v)
+    overall = [v for vs in by_season.values() for v in vs]
+    ov_p33 = _percentile(overall, 33)
+    ov_p67 = _percentile(overall, 67)
+    result = {}
+    for s, vals in by_season.items():
+        if len(vals) >= 5:
+            result[s] = (_percentile(vals, 33), _percentile(vals, 67))
+        else:
+            result[s] = (ov_p33, ov_p67)
+    return result  # {season: (p33, p67)}
+
+def _classify3(val, p33, p67):
+    """val を (p33, p67) で 0=釣れない / 1=普通 / 2=釣れる に分類"""
+    if val is None or p33 is None or p67 is None:
+        return None
+    if val >= p67: return 2
+    if val >= p33: return 1
+    return 0
+
+def _prf1_multi(y_true, y_pred, target_cls):
+    """target_cls を陽性として Precision / Recall / F1 を計算"""
+    tp = fp = fn = 0
+    for t, p in zip(y_true, y_pred):
+        if t is None or p is None:
+            continue
+        if p == target_cls:
+            if t == target_cls: tp += 1
+            else:               fp += 1
+        elif t == target_cls:   fn += 1
+    prec = tp / (tp + fp) if (tp + fp) > 0 else None
+    rec  = tp / (tp + fn) if (tp + fn) > 0 else None
+    f1   = 2*prec*rec / (prec+rec) if (prec and rec) else None
+    return prec, rec, f1
+
 def _mape(preds, acts):
     pairs = [(p, a) for p, a in zip(preds, acts) if a and a > 0]
     if not pairs:
@@ -1039,13 +1096,22 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg"]
     # 各月・各ホライズンの予測と実測を蓄積
-    all_preds = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
-    all_acts  = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    all_preds    = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    all_acts     = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    # 3分類ラベル（季節別閾値で分類）
+    all_cls_pred = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    all_cls_true = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    # 季節別閾値（学習データから fold ごとに更新）
+    season_thr   = {met: {} for met in METRICS_LIST}  # {met: {season: (p33,p67)}}
 
     for test_month in months:
         train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] < test_month]
         if len(train_en_h0) < MIN_TRAIN_N:
             continue
+
+        # 季節別分類閾値（学習データのみから計算 → テストデータを汚染しない）
+        for met in METRICS_LIST:
+            season_thr[met] = _season_thresholds(train_en_h0, met)
 
         # 学習データからパラメータ推定
         hist_params_m = {}
@@ -1143,6 +1209,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
                     all_preds[met][H].append(pred)
                     all_acts[met][H].append(act)
+                    # 3分類ラベル（季節別閾値）
+                    s = _season_of(int(r["date"][5:7]))
+                    p33, p67 = season_thr[met].get(s, (None, None))
+                    all_cls_true[met][H].append(_classify3(act,  p33, p67))
+                    all_cls_pred[met][H].append(_classify3(pred, p33, p67))
 
     # 結果出力
     total_n = len(all_acts["cnt_avg"].get(0, []))
@@ -1178,39 +1249,56 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             wmape_v       = _wmape(ps, acs)
             dacc_v        = _dir_acc(ps, acs)
             good_r, bad_r = _good_bad_acc(ps, acs, threshold)
+            # 3分類 Precision/Recall/F1
+            ct = all_cls_true[met][H]
+            cp = all_cls_pred[met][H]
+            _, good_rec2, good_f1 = _prf1_multi(ct, cp, 2)   # 釣れる
+            good_prec2, _, _      = _prf1_multi(ct, cp, 2)
+            bad_prec,  bad_rec, bad_f1 = _prf1_multi(ct, cp, 0)  # 釣れない
+            n_valid = sum(1 for t in ct if t is not None)
+            acc3 = sum(1 for t, p in zip(ct, cp)
+                       if t is not None and p is not None and t == p) / n_valid if n_valid else None
             n_f    = sum(1 for fac in ALL_FACTORS
                          if fac in SLOW_FACTORS or H <= FAST_MAX_H)
             rows.append((H, rv, mae_v, mape_v, smape_v, wmape_v,
-                         dacc_v, good_r, bad_r, n, n_f))
+                         dacc_v, good_r, bad_r,
+                         good_prec2, good_rec2, good_f1,
+                         bad_prec, bad_rec, bad_f1, acc3, n, n_f))
 
         if not rows:
             lines.append(f"\n  ─ {label} : データ不足 ─")
             continue
 
         thr_s = f"{threshold:.1f}{unit}" if threshold is not None else "-"
-        lines.append(f"\n  ─ {label} ─  良日閾値:{thr_s}")
+        lines.append(f"\n  ─ {label} ─  良日閾値:{thr_s}（季節別P33/P67を使用）")
         lines.append(
             f"  {'ホライズン':>10}  {'r':>7}  {'MAE':>7}  "
-            f"{'MAPE':>7}  {'sMAPE':>7}  {'WMAPE':>7}  "
-            f"{'良日的中':>8}  {'不漁的中':>8}  {'n':>4}"
+            f"{'wMAPE':>7}  {'sMAPE':>7}  "
+            f"{'釣良F1':>7}  {'釣良Prec':>8}  {'釣良Rec':>7}  "
+            f"{'不漁F1':>7}  {'3分類Acc':>8}  {'n':>4}"
         )
-        lines.append("  " + "-"*85)
-        for H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, n_f in rows:
+        lines.append("  " + "-"*100)
+        for H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, \
+                gprec, grec, gf1, bprec, brec, bf1, acc3, n, n_f in rows:
             lh   = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
             star = "**" if rv >= 0.4 else ("*" if rv >= 0.2 else " ")
-            ms   = f"{mape:>6.1f}%" if mape   is not None else "     -"
-            ss   = f"{smape:>6.1f}%" if smape  is not None else "     -"
-            ws   = f"{wmape:>6.1f}%" if wmape  is not None else "     -"
-            gs   = f"{good_r:>7.1%}" if good_r is not None else "      -"
-            bs   = f"{bad_r:>7.1%}"  if bad_r  is not None else "      -"
+            ws   = f"{wmape:>6.1f}%" if wmape is not None else "     -"
+            ss   = f"{smape:>6.1f}%" if smape is not None else "     -"
+            gf   = f"{gf1:>6.1%}"   if gf1   is not None else "     -"
+            gp   = f"{gprec:>7.1%}" if gprec  is not None else "      -"
+            gr   = f"{grec:>6.1%}"  if grec   is not None else "     -"
+            bf   = f"{bf1:>6.1%}"   if bf1    is not None else "     -"
+            ac   = f"{acc3:>7.1%}"  if acc3   is not None else "      -"
             fn   = f"({n_f}/{len(ALL_FACTORS)}因子)" if n_f < len(ALL_FACTORS) else ""
             lines.append(
                 f"  {lh:>12}  {rv:>+6.3f}{star}  {mae:>6.1f}{unit}  "
-                f"{ms}  {ss}  {ws}  {gs}  {bs}  {n:>4}  {fn}"
+                f"{ws}  {ss}  {gf}  {gp}  {gr}  {bf}  {ac}  {n:>4}  {fn}"
             )
-            bt_data.append((met, H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, 0.0))
+            bt_data.append((met, H, rv, mae, mape, smape, wmape, dacc,
+                            good_r, bad_r, gprec, grec, gf1,
+                            bprec, brec, bf1, acc3, n, 0.0))
 
-    return lines, bt_data
+    return lines, bt_data, season_thr
 
 
 def save_params(fish, ship, corr_results):
@@ -1292,16 +1380,55 @@ def save_backtest(fish, ship, bt_data):
     """)
     # 既存テーブルへの列追加（マイグレーション）
     existing = {r[1] for r in conn.execute("PRAGMA table_info(combo_backtest)").fetchall()}
-    for col, typ in [("smape","REAL"),("wmape","REAL"),
-                     ("good_recall","REAL"),("bad_recall","REAL")]:
+    for col, typ in [
+        ("smape","REAL"), ("wmape","REAL"),
+        ("good_recall","REAL"), ("bad_recall","REAL"),
+        ("good_prec","REAL"), ("good_rec","REAL"), ("good_f1","REAL"),
+        ("bad_prec","REAL"),  ("bad_rec","REAL"),  ("bad_f1","REAL"),
+        ("acc3","REAL"),
+    ]:
         if col not in existing:
             conn.execute(f"ALTER TABLE combo_backtest ADD COLUMN {col} {typ}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    rows = [(fish, ship, metric, H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, r_own, now)
-            for metric, H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, r_own in bt_data]
+    rows = [
+        (fish, ship, metric, H, rv, mae, mape, smape, wmape, dacc,
+         good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own, now)
+        for metric, H, rv, mae, mape, smape, wmape, dacc,
+            good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own in bt_data
+    ]
     conn.executemany(
         "INSERT OR REPLACE INTO combo_backtest "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_thresholds(fish, ship, season_thr_final):
+    """季節別分類閾値を combo_thresholds テーブルに保存"""
+    if not season_thr_final:
+        return
+    conn = sqlite3.connect(DB_ANA)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_thresholds (
+            fish    TEXT,
+            ship    TEXT,
+            metric  TEXT,
+            season  TEXT,
+            p33     REAL,
+            p67     REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, metric, season)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = []
+    for met, sthr in season_thr_final.items():
+        for season, (p33, p67) in sthr.items():
+            if p33 is not None and p67 is not None:
+                rows.append((fish, ship, met, season, p33, p67, now))
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_thresholds VALUES (?,?,?,?,?,?,?)", rows
     )
     conn.commit()
     conn.close()
@@ -1364,7 +1491,7 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
+    bt_lines, bt_data, season_thr_final = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
     out += bt_lines
 
     if conn_wx is not None:
@@ -1386,6 +1513,7 @@ def deep_dive(fish, ship, verbose=True):
     save_params(fish, ship, corr_results)
     save_keywords(fish, ship, kw_data)
     save_backtest(fish, ship, bt_data)
+    save_thresholds(fish, ship, season_thr_final)
 
 
 def main():
