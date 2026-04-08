@@ -123,6 +123,13 @@ TYPHOON_FACTORS = ["typhoon_dist", "typhoon_wind"]
 # 全因子（相関計算対象）
 ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS
 
+# 観測因子（船長ログから取れる当日実測値 — 予報不可 → バックテスト対象外・相関確認のみ）
+# water_color_n : 澄み=1 / やや澄=0.5 / 普通=0 / やや濁=-0.5 / 濁り=-1 / 青潮赤潮=-2
+# tide_speed_n  : 上げ=1 / 下げ=0.5 / 普通=0 / 速=-0.5 / 止まり/二枚=-1
+# wave_obs_n    : 凪=1 / 普通=0 / ウネリ=-0.5 / 時化=-1
+# by_catch_n    : by_catch に記録された外道魚種の数
+OBS_FACTORS = ["water_color_n", "tide_speed_n", "wave_obs_n", "by_catch_n"]
+
 TIDE_TYPE_MAP = {"大潮": 4, "中潮": 3, "小潮": 2, "長潮": 1, "若潮": 1}
 
 # エリア → 潮汐ポートコード マッピング
@@ -183,11 +190,13 @@ AREA_PORT = {
 }
 
 KEYWORDS = {
-    "潮":   ["上げ潮", "下げ潮", "潮止まり", "二枚潮", "潮が澄", "潮が濁"],
-    "活性": ["群れ", "ムラ", "単発", "入れ食い", "渋い", "活性"],
+    "潮":   ["上げ潮", "下げ潮", "潮止まり", "二枚潮", "潮が澄", "潮が濁", "潮が速", "潮かわり"],
+    "活性": ["群れ", "ムラ", "単発", "入れ食い", "渋い", "活性", "食い渋", "反応"],
     "深度": ["深場", "浅場", "底", "中層", "表層"],
-    "色":   ["澄み", "濁り", "青潮", "赤潮"],
+    "色":   ["澄み", "濁り", "青潮", "赤潮", "笹濁"],
     "流れ": ["潮流", "速潮", "潮が走", "二枚潮"],
+    "外道": ["外道", "ゲスト", "サメ", "フグ", "ハモ"],
+    "海況": ["ウネリ", "うねり", "時化", "シケ", "べた凪", "ナギ"],
 }
 
 
@@ -429,21 +438,89 @@ def load_records(fish, ship_filter=None):
                     point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
                 )
 
+                # ── テキストフィールド（船長ログの観測値） ──
+                kanso      = (row.get("kanso_raw") or row.get("fish_raw") or "").strip()
+                by_catch   = (row.get("by_catch") or "").strip()
+                tide_info  = (row.get("tide_info") or "").strip()
+                wave_info  = (row.get("wave_info") or "").strip()
+                water_col  = (row.get("water_color") or row.get("suishoku_raw") or "").strip()
+                # 全テキスト結合（キーワード検索用）
+                text_all   = " ".join(filter(None, [kanso, by_catch, tide_info, wave_info, water_col]))
+
+                # ── OBS 数値エンコード ──
+                # water_color_n
+                _wc = water_col + " " + kanso  # water_color フィールド優先、kansoも参照
+                if any(k in _wc for k in ["青潮", "赤潮"]):
+                    water_color_n = -2.0
+                elif any(k in _wc for k in ["濁り", "茶色", "チョコ"]):
+                    water_color_n = -1.0
+                elif any(k in _wc for k in ["笹濁", "やや濁"]):
+                    water_color_n = -0.5
+                elif any(k in _wc for k in ["澄み", "澄んで", "やや澄"]):
+                    water_color_n = 0.5
+                elif any(k in _wc for k in ["澄", "青い", "綺麗", "きれい"]):
+                    water_color_n = 1.0
+                else:
+                    water_color_n = None
+
+                # tide_speed_n
+                _ti = tide_info + " " + kanso
+                if any(k in _ti for k in ["止まり", "止り", "二枚潮", "長潮"]):
+                    tide_speed_n = -1.0
+                elif any(k in _ti for k in ["速潮", "潮が速", "潮速"]):
+                    tide_speed_n = -0.5
+                elif any(k in _ti for k in ["ゆるい", "ゆっくり", "緩い"]):
+                    tide_speed_n = 0.0
+                elif any(k in _ti for k in ["下げ潮", "下げ"]):
+                    tide_speed_n = 0.5
+                elif any(k in _ti for k in ["上げ潮", "上げ"]):
+                    tide_speed_n = 1.0
+                else:
+                    tide_speed_n = None
+
+                # wave_obs_n
+                _wi = wave_info + " " + kanso
+                if any(k in _wi for k in ["時化", "シケ", "荒れ"]):
+                    wave_obs_n = -1.0
+                elif any(k in _wi for k in ["ウネリ", "うねり", "うねって"]):
+                    wave_obs_n = -0.5
+                elif any(k in _wi for k in ["べた凪", "べたなぎ", "ナギ", "凪", "穏やか"]):
+                    wave_obs_n = 1.0
+                else:
+                    wave_obs_n = None
+
+                # by_catch_n: 外道リストの魚種数（カンマ/スラッシュ/スペース区切りを想定）
+                if by_catch:
+                    _parts = re.split(r'[,、/・\s]+', by_catch)
+                    by_catch_n = float(len([p for p in _parts if len(p) >= 2]))
+                else:
+                    by_catch_n = None
+
                 records.append({
-                    "ship":     ship,
-                    "area":     row.get("area", "").strip(),
-                    "date":     date_str,
-                    "decade":   decade_of(date_str),
-                    "cnt_avg":  cnt_avg,
-                    "cnt_min":  _float(row.get("cnt_min")),
-                    "cnt_max":  _float(row.get("cnt_max")),
-                    "size_avg": size_avg,
-                    "kg_avg":   kg_avg,
-                    "point":    point_place1,
-                    "lat":      lat,
-                    "lon":      lon,
-                    "kanso":    (row.get("kanso_raw") or row.get("fish_raw") or "").strip(),
-                    "is_train": date_str <= TRAIN_END,
+                    "ship":          ship,
+                    "area":          row.get("area", "").strip(),
+                    "date":          date_str,
+                    "decade":        decade_of(date_str),
+                    "cnt_avg":       cnt_avg,
+                    "cnt_min":       _float(row.get("cnt_min")),
+                    "cnt_max":       _float(row.get("cnt_max")),
+                    "size_avg":      size_avg,
+                    "kg_avg":        kg_avg,
+                    "point":         point_place1,
+                    "lat":           lat,
+                    "lon":           lon,
+                    "kanso":         kanso,
+                    "by_catch":      by_catch,
+                    "tide_info":     tide_info,
+                    "wave_info":     wave_info,
+                    "water_color":   water_col,
+                    "text_all":      text_all,
+                    # OBS数値因子
+                    "water_color_n": water_color_n,
+                    "tide_speed_n":  tide_speed_n,
+                    "wave_obs_n":    wave_obs_n,
+                    "by_catch_n":    by_catch_n,
+                    "is_train":      date_str <= TRAIN_END,
                 })
     records.sort(key=lambda r: r["date"])
     return records
@@ -802,8 +879,8 @@ def section_keywords(records):
     for cat, kws in KEYWORDS.items():
         cat_rows = []
         for kw in kws:
-            hits = [r for r in records if kw in r.get("kanso","")]
-            miss = [r for r in records if kw not in r.get("kanso","")]
+            hits = [r for r in records if kw in r.get("text_all","")]
+            miss = [r for r in records if kw not in r.get("text_all","")]
             if len(hits) < 3:
                 continue
             ah = sum(r["cnt_avg"] for r in hits) / len(hits)
@@ -821,6 +898,45 @@ def section_keywords(records):
             )
             kw_data.append((cat_, kw, nh, ah, am, pct))
     return (lines or ["  (有意なキーワードなし)"]), kw_data
+
+def section_obs_corr(records):
+    """観測因子（OBS_FACTORS）の相関分析。予報不可だが釣果パターン把握に使う。
+    船宿ごとに fill rate を表示し、フィールドが薄い場合は注記する。
+    """
+    targets = ["cnt_avg", "cnt_max", "size_avg", "kg_avg"]
+    lines   = []
+    fill_rates = {}
+    for fac in OBS_FACTORS:
+        vals = [r.get(fac) for r in records]
+        n_filled = sum(1 for v in vals if v is not None)
+        fill_rates[fac] = n_filled / len(records) * 100 if records else 0
+    lines.append(f"  {'因子':<16} {'fill%':>5}  cnt_avg     cnt_max     size_avg    kg_avg")
+    lines.append("  " + "-"*75)
+    any_result = False
+    for fac in OBS_FACTORS:
+        fill = fill_rates[fac]
+        if fill < 1.0:
+            lines.append(f"  {fac:<16} {fill:>4.1f}%  (データ不足・スキップ)")
+            continue
+        row_parts = [f"  {fac:<16} {fill:>4.1f}%"]
+        has_sig = False
+        for tgt in targets:
+            xs = [r.get(fac) for r in records]
+            ys = [r.get(tgt) for r in records]
+            r_val, p_val, nn = pearson(xs, ys)
+            if r_val is None:
+                row_parts.append(f"  {'—':>10}")
+            else:
+                star = "**" if (p_val is not None and p_val < 0.05) else ("*" if (p_val is not None and p_val < 0.10) else "  ")
+                row_parts.append(f"  {r_val:+.3f}{star}(n={nn})")
+                if p_val is not None and p_val < 0.10:
+                    has_sig = True
+        if has_sig:
+            any_result = True
+        lines.append("".join(row_parts))
+    if not any_result:
+        lines.append("  (有意な観測因子相関なし)")
+    return lines
 
 def section_points(records):
     buckets = defaultdict(list)
@@ -1166,6 +1282,9 @@ def deep_dive(fish, ship, verbose=True):
         out.append(f"\n【因子相関（{label}集計: n={len(agg)}{label}）】")
         agg_lines, _ = section_corr(agg)
         out += agg_lines
+
+    out.append("\n【観測因子相関（予報不可・パターン把握用）】")
+    out += section_obs_corr(records)
 
     out.append("\n【コメントキーワード解析】")
     kw_lines, kw_data = section_keywords(records)
