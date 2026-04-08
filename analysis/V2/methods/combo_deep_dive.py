@@ -31,7 +31,7 @@ combo_deep_dive.py — 船宿×魚種ペア 深掘り分析
   insights/analysis.sqlite  → combo_deep_params テーブル
 """
 
-import argparse, csv, json, math, os, sqlite3, sys
+import argparse, csv, json, math, os, re, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime, timedelta
 
@@ -252,6 +252,66 @@ def decade_of(date_str):
 # 設定ロード
 # ═══════════════════════════════════════════════════════════════════════════
 
+# ── ポイント解決（crawler.py の resolve_point と同ロジック） ─────────────────
+_UNRESOLVABLE_POINT_RE = re.compile(
+    r'^(航程|近場|浅場|深場|東京湾一帯|湾内|湾奥|港前|南沖|東沖|西沖|北沖|赤灯沖|観音沖|水深\d|^[0-9]+$|前後$)'
+)
+
+def _is_航程系(pp):
+    return not pp or bool(_UNRESOLVABLE_POINT_RE.match(pp))
+
+def _load_point_coords():
+    path = os.path.join(NORMALIZE_DIR, "point_coords.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _load_ship_fish_point():
+    path = os.path.join(NORMALIZE_DIR, "ship_fish_point.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return {k: v for k, v in data.items() if not k.startswith("_")}
+    except Exception:
+        return {}
+
+def _load_area_coords():
+    path = os.path.join(NORMALIZE_DIR, "area_coords.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _resolve_point(point_place1, ship, tsuri_mono, sfp, ship_area_map, point_coords, area_coords):
+    """point_place1 + 船宿 + 魚種 → (lat, lon)。解決不能なら (None, None)。"""
+    pp = (point_place1 or "").strip()
+    # ① point_place1 直接解決
+    if pp and not _is_航程系(pp):
+        entry = point_coords.get(pp)
+        if entry and entry.get("lat") is not None:
+            return entry["lat"], entry["lon"]
+    # ② ship_fish_point フォールバック
+    ship_data = sfp.get(ship, {})
+    fish_entry = ship_data.get(tsuri_mono) or ship_data.get("_default")
+    if fish_entry and isinstance(fish_entry, dict):
+        for key in ("point1", "point2"):
+            pname = fish_entry.get(key, "") or ""
+            if pname:
+                entry = point_coords.get(pname)
+                if entry and entry.get("lat") is not None:
+                    return entry["lat"], entry["lon"]
+    # ③ area_coords フォールバック
+    area = ship_area_map.get(ship, "")
+    if area:
+        ac = area_coords.get(area)
+        if ac and ac.get("lat") is not None:
+            return ac["lat"], ac["lon"]
+    return None, None
+
+
 def load_exclude_ships():
     try:
         with open(SHIPS_FILE, encoding="utf-8") as f:
@@ -321,8 +381,15 @@ def load_decadal(fish, ship):
 # ═══════════════════════════════════════════════════════════════════════════
 
 def load_records(fish, ship_filter=None):
-    """data/YYYY-MM.csv から指定魚種のレコードをロード"""
-    exclude = load_exclude_ships()
+    """data/YYYY-MM.csv から指定魚種のレコードをロード。
+    point_place1 → point_coords.json → lat/lon を per-record で解決する。
+    """
+    exclude      = load_exclude_ships()
+    ship_area    = load_ship_area()
+    point_coords = _load_point_coords()
+    sfp          = _load_ship_fish_point()
+    area_coords  = _load_area_coords()
+
     records = []
     for fn in sorted(os.listdir(DATA_DIR)):
         if not fn.endswith(".csv") or fn == "cancellations.csv":
@@ -356,6 +423,12 @@ def load_records(fish, ship_filter=None):
                 kg_max = _float(row.get("kg_max"))
                 kg_avg  = ((kg_min + kg_max) / 2) if kg_min and kg_max else (kg_min or kg_max)
 
+                # per-record 座標解決（3段階フォールバック）
+                point_place1 = row.get("point_place1", "").strip()
+                lat, lon = _resolve_point(
+                    point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
+                )
+
                 records.append({
                     "ship":     ship,
                     "area":     row.get("area", "").strip(),
@@ -366,9 +439,9 @@ def load_records(fish, ship_filter=None):
                     "cnt_max":  _float(row.get("cnt_max")),
                     "size_avg": size_avg,
                     "kg_avg":   kg_avg,
-                    "point":    row.get("point_place1", "").strip(),
-                    "lat":      _float(row.get("lat")),
-                    "lon":      _float(row.get("lon")),
+                    "point":    point_place1,
+                    "lat":      lat,
+                    "lon":      lon,
                     "kanso":    (row.get("kanso_raw") or row.get("fish_raw") or "").strip(),
                     "is_train": date_str <= TRAIN_END,
                 })
