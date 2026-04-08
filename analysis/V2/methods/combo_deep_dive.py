@@ -70,6 +70,9 @@ SLOW_FACTORS = {
     "pressure_avg", "pressure_min",        # 気圧水準（日次avg/min）
     "pressure_delta",                      # 気圧変化傾向（低気圧接近シグナル）
     "tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
+    "is_holiday",          # カレンダー因子：未来確定値 → 全ホライズン有効
+    "is_consec_holiday",   # 連休フラグ（GW/盆/年末年始の3日以上連続休日）
+    "is_summer_vacation",  # 夏休みフラグ（7/21〜8/31：家族・子供客増加シグナル）
 }
 # 速い変数（風・波・降水・急変動）：数日で激変 → H>7 では無効化
 FAST_FACTORS = {
@@ -78,6 +81,7 @@ FAST_FACTORS = {
     "wind_dir_n",                          # 風向北南成分 cos(deg): 北=+1, 南=-1（循環補正）
     "wind_dir_e",                          # 風向東西成分 sin(deg): 東=+1, 西=-1（循環補正）
     "wave_height_avg", "wave_height_max",  # 波高（日次avg/max）
+    "wave_clamp",                          # 波高キャップ min(wave_height_avg, 2.0)：逆U字効果（2m超は"釣れない荒れ"）
     "wave_period_avg", "wave_period_min",  # 波周期（日次avg/min）
     "swell_height_avg", "swell_height_max",# うねり（日次avg/max）
     "temp_range",                          # 日較差（晴天シグナル、急変しやすい）
@@ -124,6 +128,46 @@ def _is_holiday(date_str: str) -> int:
         return 1 if (dt.weekday() >= 5 or date_str in _JP_HOLIDAYS) else 0
     except Exception:
         return 0
+
+# ── 連休・夏休みフラグ ────────────────────────────────────────────────────────
+# GW/盆/年末年始の「3日以上続く連休ブロック」に含まれる日付を事前キャッシュ
+def _build_consec_holiday_set() -> frozenset:
+    """GW/盆/年末年始シーズン内で3日以上連続する土日祝の日付セットを返す。"""
+    from datetime import date as _date, timedelta as _td
+    TARGET_SEASONS = []
+    for y in range(2023, 2027):
+        TARGET_SEASONS += [
+            (_date(y, 4, 29), _date(y, 5, 6)),            # GW
+            (_date(y, 8, 10), _date(y, 8, 16)),            # お盆
+            (_date(y - 1, 12, 28), _date(y, 1, 4)),        # 年末年始
+        ]
+    result = set()
+    for start, end in TARGET_SEASONS:
+        block = []
+        d = start
+        while d <= end:
+            ds = d.strftime("%Y/%m/%d")
+            if d.weekday() >= 5 or ds in _JP_HOLIDAYS:
+                block.append(ds)
+            d += _td(days=1)
+        if len(block) >= 3:
+            result.update(block)
+    return frozenset(result)
+
+_CONSEC_HOLIDAY_SET = _build_consec_holiday_set()
+
+def _is_consec_holiday(date_str: str) -> int:
+    """GW・盆・年末年始の連休（3日以上連続）なら1"""
+    return 1 if date_str in _CONSEC_HOLIDAY_SET else 0
+
+def _is_summer_vacation(date_str: str) -> int:
+    """夏休み期間（7/21〜8/31）なら1。家族・子供客増加シグナル。"""
+    try:
+        dt = datetime.strptime(date_str, "%Y/%m/%d")
+        return 1 if (dt.month == 7 and dt.day >= 21) or dt.month == 8 else 0
+    except Exception:
+        return 0
+
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
 # ── 全因子リスト（相関計算・バックテスト対象）──────────────────────────────
@@ -144,6 +188,7 @@ WX_FACTORS = [
     "wind_dir_e",      # 東西成分 sin(wind_dir_deg): 東=+1, 西=-1
     # 波浪（日次 avg/max + 周期 avg/min）
     "wave_height_avg", "wave_height_max",
+    "wave_clamp",          # 波高キャップ min(wave_height_avg, 2.0)：逆U字効果（2m超は"釣れない荒れ"）
     "wave_period_avg", "wave_period_min",
     # うねり（日次 avg/max）
     "swell_height_avg", "swell_height_max",
@@ -169,7 +214,7 @@ CATCH_FACTORS = ["prev_week_cnt"]
 TYPHOON_FACTORS = ["typhoon_dist", "typhoon_wind"]
 
 # カレンダー因子（土日・祝日 → 全ホライズンで有効）
-CALENDAR_FACTORS = ["is_holiday"]
+CALENDAR_FACTORS = ["is_holiday", "is_consec_holiday", "is_summer_vacation"]
 
 # 全因子（相関計算対象）
 ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS + CALENDAR_FACTORS
@@ -571,8 +616,10 @@ def load_records(fish, ship_filter=None):
                     # 参照用（obs_fields.json 外）
                     "trip_no": int(row.get("trip_no") or 1),
                     "is_train": date_str <= TRAIN_END,
-                    # カレンダー因子（土日・祝日）
-                    "is_holiday": _is_holiday(date_str),
+                    # カレンダー因子（土日・祝日・連休・夏休み）
+                    "is_holiday":         _is_holiday(date_str),
+                    "is_consec_holiday":  _is_consec_holiday(date_str),
+                    "is_summer_vacation": _is_summer_vacation(date_str),
                     **obs,   # OBS因子 + テキストフィールド + text_all
                 })
     records.sort(key=lambda r: r["date"])
@@ -632,10 +679,13 @@ def get_daily_wx(conn_wx, lat, lon, date_iso):
         result["pressure_min"]   = min(pressures)
         result["pressure_range"] = max(pressures) - min(pressures)
 
-    # ── 波高: avg, max ──
+    # ── 波高: avg, max, clamp ──
     if wave_heights:
         result["wave_height_avg"] = sum(wave_heights) / len(wave_heights)
         result["wave_height_max"] = max(wave_heights)
+        # wave_clamp: 逆U字効果（1.5m前後が"釣れる波"、2m超は"釣れない荒れ"）
+        # min(avg, 2.0)で2m超の影響を頭打ちにする（統計SP推奨・案C）
+        result["wave_clamp"] = min(result["wave_height_avg"], 2.0)
 
     # ── 波周期: avg, min ──
     if wave_periods:
