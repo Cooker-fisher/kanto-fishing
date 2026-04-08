@@ -1,4 +1,4 @@
-# データパイプライン設計図 v2.0（2026/04/04）
+# データパイプライン設計図 v2.1（2026/04/08）
 
 このファイルはパイプラインの構造と変更インパクトを記録するリファレンスです。
 **何かを変更する前に必ずこのファイルを確認すること。**
@@ -17,10 +17,12 @@
 
 | レイヤ | スクリプト | 出力ファイル | 実行タイミング |
 |--------|-----------|------------|--------------|
-| A1 釣果クロール | crawler.py | catches_raw.json (84,757件) | 毎日16:30 JST（GitHub Actions） |
-| A2 気象データ | rebuild_weather_cache.py | weather_cache.sqlite | 手動（約30分）|
-| A3 台風データ | build_typhoon.py | typhoon.sqlite | 手動（年次更新）|
-| A4 潮汐・月齢 | build_tide_moon.py | tide_moon.sqlite | 手動（5秒）|
+| A1 釣果クロール | crawler.py | crawl/catches_raw.json (84,757件) | 毎日16:30 JST（GitHub Actions） |
+| A1b 直接クロール | direct-crawl/gyo_crawler.py | direct-crawl/catches_raw_direct.json | 毎日（A1後・crawl.yml） |
+| A2 気象データ | ocean/rebuild_weather_cache.py | ocean/weather_cache.sqlite | 手動（約30分）|
+| A3 台風データ | ocean/build_typhoon.py | ocean/typhoon.sqlite | 手動（年次更新）|
+| A4 潮汐・月齢 | ocean/build_tide_moon.py | ocean/tide_moon.sqlite | 手動（5秒）|
+| A5 海況CSV | crawler.py (fetch_weather_csv) | weather/YYYY-MM.csv | 毎日自動（A1後）|
 
 ### A2 weather_cache.sqlite 詳細
 - **ソース**: Open-Meteo Archive API + Marine API
@@ -164,9 +166,30 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 | ページ | 生成スクリプト | 自動更新 |
 |--------|--------------|---------|
 | index.html | crawler.py: build_html | ✅ 毎日 |
+| calendar.html | crawler.py: build_calendar_page | ✅ 毎日 |
 | fish/*.html (51魚種) | crawler.py: build_fish_pages | ✅ 毎日 |
 | area/*.html | crawler.py: build_area_pages | ✅ 毎日 |
-| calendar.html | crawler.py: build_calendar_page | ✅ 毎日 |
+| fish_area/*.html | crawler.py: build_fish_area_pages | ✅ 毎日 |
+| forecast/index.html | crawler.py: build_forecast | ✅ 毎日 |
+| sitemap.xml | crawler.py: build_sitemap | ✅ 毎日 |
+| pages/*.html | crawler.py: design sync | ✅ 毎日（design/Vn/ から自動コピー） |
+| style.css / main.js | crawler.py: design sync | ✅ 毎日（design/Vn/ から自動コピー） |
+
+### デザインバージョン管理（E層）
+
+```
+config.json
+  "design_version": "V1"  ← ここを V2 に変えるだけで全デザイン切替
+        ↓
+crawler.py 実行時
+  design/V1/*.html → pages/（about/contact/privacy/terms）
+  design/V1/style.css → ルート
+  design/V1/main.js   → ルート
+```
+
+- **HTML構造（fish/*.html等）**: crawler.py が毎日再生成 → design_version 変更で自動反映
+- **静的ページ（pages/）**: design/Vn/ からコピー → URL は `/pages/about.html` 等
+- **注意**: fish/ area/ 等の URL 構造変更は SEO リセットを伴う → V2 設計時に要決定
 
 ---
 
@@ -188,18 +211,33 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 
 ---
 
-## 現在のデータ状態（2026/04/04）
+## 現在のデータ状態（2026/04/08）
 
 | レイヤ | 状態 | 件数・規模 |
 |--------|------|---------|
 | A1 catches_raw.json | ✅ 最新 | 84,757件 |
+| A1b catches_raw_direct.json | ✅ 稼働中 | 108件（忠彦丸・一之瀬丸・米元） |
 | A2 weather_cache.sqlite | ✅ 完成 | 153座標×145万行 |
 | A3 typhoon.sqlite | ✅ 完成 | 70台風 2,475ポイント |
 | A4 tide_moon.sqlite | ✅ 完成 | 1,190日分 |
-| B1 data/*.csv | ✅ 最新 | 82,650行 |
-| C1 analysis.sqlite | ⏳ 要再実行（weather有効化後） | 51魚種 |
+| A5 weather/YYYY-MM.csv | ✅ 毎日更新 | 96地点×月別 |
+| B1 data/V2/*.csv | ✅ 最新 | 82,650行 |
+| C1 analysis.sqlite | ⏳ 要再実行 | 51魚種 |
 | C2 deepdive_params.json | ⏳ C1後に実行 | - |
 | D1-4 予測モデル | 🔲 未実装 | - |
+| E デザイン | ✅ V1稼働中 | design_version: "V1" |
+
+---
+
+## 変更インパクトマトリクス（追記）
+
+| 変更対象 | 影響する層 | 必要な再実行 | コスト |
+|---------|-----------|------------|------|
+| config.json design_version | E | crawler.py 実行のみ | ★ 低 |
+| design/Vn/*.html/css/js | E | crawler.py 実行のみ | ★ 低 |
+| fish/ area/ のURL構造変更 | E + SEO | crawler.py + 全インデックス再取得 | ★★★ 高（SEOリセット） |
+| weather/YYYY-MM.csv スキーマ変更 | E | 全CSV再生成 + crawler.py修正 | ★★ 中 |
+| direct-crawl/gyo_crawler.py | A1b→B | CSV再統合 | ★ 低 |
 
 ---
 
@@ -211,3 +249,11 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 - rebuild_weather_cache.py: 新規作成（point_coords.json 152座標ベース）
 - build_typhoon.py: 新規作成（JMA BestTrack、bst_all.zipから2023-2025年取得）
 - build_tide_moon.py: 新規作成（stdlib天文計算、tide_coeff = (cos+1)/2×100）
+
+### 2026/04/08
+- フォルダ大掃除完了: crawl/ ocean/ normalize/ data/V2/ analysis/V2/ design/ pages/ dustbox/ 整備
+- config.json に design_version 追加（デザイン切替を1行で完結）
+- direct-crawl/ 新設: gyo_crawler.py（忠彦丸・一之瀬丸・米元）→ catches_raw_direct.json → CSV統合
+- pages/ 新設: 静的HTMLをルートから分離（about/contact/privacy/terms）
+- weather/ の位置: ルート直下に残留（A5: E層向け海況CSV、crawler.py が毎日追記）
+- fish/ forecast/ のURL構造: V2設計時に要決定（SEOリセット覚悟で英語URL化の方向）

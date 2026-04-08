@@ -35,24 +35,31 @@ kanto-fishing/
 ├── CLAUDE.md                   # このファイル（Claude Codeへの指示）
 ├── PIPELINE.md                 # データパイプライン設計図（変更前に必読）
 │
-├── config.json                 # 分析バージョン管理（active_version: "V2"）
+├── config.json                 # バージョン管理（active_version: "V2" / design_version: "V1"）
+│                               #   active_version  → data/Vn/ と analysis/Vn/ に連動
+│                               #   design_version  → design/Vn/ からルート・pages/ に自動同期
 │
-├── # ── データ収集・変換スクリプト ──
-├── crawler.py                  # メインクローラー＋CSV生成＋HTML生成（毎日自動実行）
+├── # ── メインスクリプト ──
+├── crawler.py                  # A1クロール＋B CSV生成＋E HTML生成（毎日自動実行）
 │
-├── # ── データ収集サブモジュール ──
-├── crawl/                      # A1: 釣果クロール関連
+├── # ── A層: データ収集 ──
+├── crawl/                      # A1: 釣果クロール
 │   ├── discover_ships.py       # 船宿SID自動収集（月1実行）
-│   └── ships.json              # 収集済み船宿一覧
-├── ocean/                      # A2〜A4: 海況・気象・台風・潮汐データ
-│   ├── rebuild_weather_cache.py  # 気象・海況データ取得（手動・約30分）
-│   ├── build_typhoon.py          # 台風データ取得（手動・年次）
-│   ├── build_tide_moon.py        # 潮汐・月齢算出（手動・5秒）
+│   └── ships.json              # 収集済み船宿一覧（有効75件）
+├── direct-crawl/               # A1b: 直接クロール（船宿サイト個別対応）
+│   ├── gyo_crawler.py          # 忠彦丸・一之瀬丸・米元 対応
+│   └── catches_raw_direct.json # 直接クロール生データ（crawler.py に CSV 統合済み）
+├── ocean/                      # A2〜A4: 気象・台風・潮汐（SQLite）
+│   ├── rebuild_weather_cache.py  # Open-Meteo から気象・海況取得（手動・約30分）
+│   ├── build_typhoon.py          # 気象庁 BestTrack から台風取得（手動・年次）
+│   ├── build_tide_moon.py        # 天文計算で月齢・潮汐算出（手動・5秒）
 │   ├── weather_cache.sqlite      # 気象・海況（153座標×145万行）※gitignore
 │   ├── tide_moon.sqlite          # 月齢・潮汐（1,190日分）
 │   └── typhoon.sqlite            # 台風トラック（70台風）
+├── weather/                    # A5: E層向け海況CSV（crawler.py が毎日追記）
+│   └── YYYY-MM.csv             # 96地点×月別。HTML生成時の海況表示に使用
 │
-├── # ── マスターデータ（JSON）— normalize/ 管理 ──
+├── # ── B層: 正規化マスターデータ ──
 ├── normalize/
 │   ├── tsuri_mono_map_draft.json  # 魚種正規化マップ（58魚種）
 │   │                              #   ⚠ 構造: m["TSURI_MONO_MAP"]["アジ"] = [...]
@@ -61,39 +68,66 @@ kanto-fishing/
 │   ├── area_coords.json           # エリア代表座標（58エリア）
 │   └── ship_wx_coord_override.json # 気象座標上書き
 │
-├── # ── 釣果データ ──
+├── # ── B層: 釣果データ ──
 ├── catches_raw.json            # 釣果生データ（84,757件・毎日更新）※バージョン管理なし
 ├── catches.json                # 当日釣果スナップショット（index.html生成用）
 ├── history.json                # 週次・月次集計データ（蓄積）
 ├── data/
-│   └── V2/                    # 月別正規化CSV（data/V2/YYYY-MM.csv・82,650行）
-│                               # config.json active_version に連動。CSV列追加時は V3 に上げ全再生成
+│   └── V2/                    # 月別正規化CSV（YYYY-MM.csv・82,650行）
+│                               # config.json active_version に連動
+│                               # CSV列追加時は V3 に上げ全再生成
 │
-├── # ── 分析（バージョン管理） ──
+├── # ── C層: 分析（バージョン管理） ──
 ├── analysis/
 │   ├── README.md               # バージョン一覧・切替ルール
-│   ├── analysis_config.py      # 後工程が results/ を参照するユーティリティ
-│   ├── run.py                  # crawl.yml ランチャー（バージョン自動解決）
+│   ├── analysis_config.py      # 後工程（crawler.py等）が results/ を参照するユーティリティ
+│   ├── run.py                  # crawl.yml ランチャー（active_version 自動解決）
 │   ├── V1/                     # 旧分析（〜2026-03・参照専用）
 │   └── V2/                     # 現行分析（2026-04〜）
 │       ├── methods/            # 分析スクリプト群（16本）
-│       │   ├── _paths.py       # パス自動解決（CLAUDE.md 目印）
-│       │   ├── combo_deep_dive.py  # 相関分析（手動実行・51魚種）
+│       │   ├── _paths.py       # パス自動解決（CLAUDE.md を目印にルート検出）
+│       │   ├── combo_deep_dive.py  # 釣果×気象相関分析（手動実行・51魚種）
 │       │   └── ...
 │       └── results/            # 分析結果出力先
 │           ├── analysis.sqlite # 分析結果DB（combo_decadal等）
 │           ├── risk_weekend.txt # 来週末リスクサマリー
 │           └── deep_dive/      # 船宿別テキストサマリー
 │
-├── # ── 自動生成HTML ──
-├── index.html
-├── calendar.html
-├── fish/                       # 魚種別ページ（51魚種）
-├── area/                       # エリア別ページ
+├── # ── E層: 自動生成HTML（GitHub Pages 配信） ──
+├── index.html                  # トップページ（毎日再生成）
+├── calendar.html               # 釣りものカレンダー（毎日再生成）
+├── sitemap.xml                 # サイトマップ（毎日再生成）
+├── robots.txt                  # クローラー制御
+├── fish/                       # 魚種別ページ（51魚種・毎日再生成）
+├── area/                       # エリア別ページ（毎日再生成）
+├── fish_area/                  # 魚種×エリア別ページ（毎日再生成）
+├── forecast/                   # 予測ページ（毎日再生成）
+│
+├── # ── デザイン管理 ──
+├── style.css                   # デプロイ中CSS（design/V1/ から自動同期）
+├── main.js                     # デプロイ中JS（design/V1/ から自動同期）
+├── pages/                      # 静的ページ（design/Vn/ から自動同期）
+│   ├── about.html / contact.html / privacy.html / terms.html
+├── design/                     # デザインバージョン管理
+│   ├── README.md               # バージョン管理・デプロイ手順
+│   ├── V1/                     # 現行デプロイ中デザイン（アーカイブ＆同期元）
+│   │   ├── style.css / main.js
+│   │   └── about.html / contact.html / privacy.html / terms.html
+│   └── V2/                     # リデザイン作業中
+│       ├── README.md（ロールシステム）
+│       ├── 00〜06_*.md（ロール定義）
+│       ├── 10〜20_*.md（設計ドキュメント）
+│       ├── 90_決定ログ.md
+│       ├── mockup-*.html
+│       └── research/
+│
+├── # ── 管理・アーカイブ ──
+├── dustbox/                    # 退避ファイル置き場（削除せず保管）
+├── 大掃除/                     # フォルダ整理プロジェクト管理（ロール定義・Phase記録）
 │
 ├── CNAME                       # funatsuri-yoso.com
 ├── .github/workflows/
-│   └── crawl.yml               # GitHub Actions定義（毎日+月1日）
+│   └── crawl.yml               # GitHub Actions定義（毎日16:30 JST + 月1日）
 └── .claude/
     └── memory/                 # Claude Codeの記憶（会話をまたいで保持）
 ```
