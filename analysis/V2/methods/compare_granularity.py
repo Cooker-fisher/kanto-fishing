@@ -26,10 +26,11 @@ import csv, math, os, sys
 from collections import defaultdict
 from datetime import datetime
 
-BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
-INPUT_CSV  = os.path.join(BASE_DIR, "enriched_catches.csv")
-DETAIL_TXT = os.path.join(BASE_DIR, "granularity_comparison.txt")
-SUMMARY_TXT= os.path.join(BASE_DIR, "granularity_summary.txt")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+INPUT_CSV  = os.path.join(RESULTS_DIR, "enriched_catches.csv")
+DETAIL_TXT = os.path.join(RESULTS_DIR, "granularity_comparison.txt")
+SUMMARY_TXT= os.path.join(RESULTS_DIR, "granularity_summary.txt")
 
 MIN_DAILY_N  = 30   # コンボ最小レコード数
 MIN_WEEKLY_N = 10   # 週次集計後の最小週数

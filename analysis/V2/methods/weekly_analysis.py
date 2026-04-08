@@ -20,12 +20,10 @@ import csv, json, os, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime, date
 
-BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR      = os.path.dirname(BASE_DIR)
-DATA_DIR      = os.path.join(ROOT_DIR, "data")
-DB_PATH       = os.path.join(BASE_DIR, "analysis.sqlite")
-WEEKLY_DIR    = os.path.join(BASE_DIR, "weekly")
-NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+DB_PATH       = os.path.join(RESULTS_DIR, "analysis.sqlite")
+WEEKLY_DIR    = os.path.join(RESULTS_DIR, "weekly")
 
 def _load_exclude_ships():
     """ships.json から exclude:true / boat_only:true の船宿名セットを返す"""

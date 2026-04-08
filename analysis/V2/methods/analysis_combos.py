@@ -30,11 +30,12 @@ import csv, math, os, re, sys
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_CSV = os.path.join(BASE_DIR, "enriched_catches.csv")
-REPORT_TXT = os.path.join(BASE_DIR, "analysis_report.txt")
-SUMMARY_CSV = os.path.join(BASE_DIR, "analysis_summary.csv")
-COOCCUR_CSV = os.path.join(BASE_DIR, "fish_cooccurrence.csv")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+INPUT_CSV = os.path.join(RESULTS_DIR, "enriched_catches.csv")
+REPORT_TXT = os.path.join(RESULTS_DIR, "analysis_report.txt")
+SUMMARY_CSV = os.path.join(RESULTS_DIR, "analysis_summary.csv")
+COOCCUR_CSV = os.path.join(RESULTS_DIR, "fish_cooccurrence.csv")
 
 MIN_COMBO_N = 30  # コンボ最小件数
 

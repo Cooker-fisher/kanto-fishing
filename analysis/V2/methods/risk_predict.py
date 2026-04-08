@@ -22,13 +22,12 @@ import json, os, sqlite3, math
 from collections import defaultdict
 from datetime import datetime, timedelta, date
 
-BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR      = os.path.dirname(BASE_DIR)
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
 DB_FORECAST   = os.path.join(ROOT_DIR, "forecast_cache.sqlite")
-DB_ANA        = os.path.join(BASE_DIR, "analysis.sqlite")
-OUT_ALL       = os.path.join(BASE_DIR, "risk_forecast.txt")
-OUT_WEEKEND   = os.path.join(BASE_DIR, "risk_weekend.txt")
-NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
+DB_ANA        = os.path.join(RESULTS_DIR, "analysis.sqlite")
+OUT_ALL       = os.path.join(RESULTS_DIR, "risk_forecast.txt")
+OUT_WEEKEND   = os.path.join(RESULTS_DIR, "risk_weekend.txt")
 OVERRIDE_FILE = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
 
 # グローバルフォールバック閾値（cancel_thresholds に該当船宿がない場合）

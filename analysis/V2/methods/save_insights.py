@@ -18,12 +18,13 @@ save_insights.py — 分析結果を analysis.sqlite に蓄積する
 import csv, json, os, re, sqlite3, sys
 from datetime import datetime
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH  = os.path.join(BASE_DIR, "analysis.sqlite")
-REPORT   = os.path.join(BASE_DIR, "analysis_report.txt")
-SUMMARY  = os.path.join(BASE_DIR, "analysis_summary.csv")
-COOCCUR  = os.path.join(BASE_DIR, "fish_cooccurrence.csv")
-ENRICHED = os.path.join(BASE_DIR, "enriched_catches.csv")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+DB_PATH  = os.path.join(RESULTS_DIR, "analysis.sqlite")
+REPORT   = os.path.join(RESULTS_DIR, "analysis_report.txt")
+SUMMARY  = os.path.join(RESULTS_DIR, "analysis_summary.csv")
+COOCCUR  = os.path.join(RESULTS_DIR, "fish_cooccurrence.csv")
+ENRICHED = os.path.join(RESULTS_DIR, "enriched_catches.csv")
 
 # ── DB 初期化 ──────────────────────────────────────────────────────────────
 def init_db(conn):

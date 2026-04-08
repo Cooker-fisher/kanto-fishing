@@ -22,9 +22,8 @@ enrich_catches.py — 釣果CSV × 海況SQLite → enriched_catches.csv
 import csv, json, math, os, sqlite3, sys
 from datetime import datetime
 
-BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR      = os.path.dirname(BASE_DIR)
-NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
 
 def _build_raw_to_tsuri_map():
     path = os.path.join(NORMALIZE_DIR, "tsuri_mono_map_draft.json")
@@ -42,9 +41,8 @@ def _build_raw_to_tsuri_map():
     return raw_to_tsuri
 
 RAW_TO_TSURI = _build_raw_to_tsuri_map()
-DB_PATH     = os.path.join(ROOT_DIR, "ocean", "weather_cache.sqlite")
-DATA_DIR    = os.path.join(ROOT_DIR, "data")
-OUTPUT_FILE = os.path.join(BASE_DIR, "enriched_catches.csv")
+DB_PATH     = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
+OUTPUT_FILE = os.path.join(RESULTS_DIR, "enriched_catches.csv")
 
 DEPART_HOUR = "06:00"  # 出船時刻帯
 

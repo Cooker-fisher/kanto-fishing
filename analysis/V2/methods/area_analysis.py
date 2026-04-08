@@ -26,11 +26,9 @@ import csv, json, os, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime
 
-BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR      = os.path.dirname(BASE_DIR)
-DATA_DIR      = os.path.join(ROOT_DIR, "data")
-DB_PATH       = os.path.join(BASE_DIR, "analysis.sqlite")
-NORMALIZE_DIR = os.path.join(ROOT_DIR, "normalize")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+DB_PATH       = os.path.join(RESULTS_DIR, "analysis.sqlite")
 
 def _build_raw_to_tsuri_map():
     path = os.path.join(NORMALIZE_DIR, "tsuri_mono_map_draft.json")

@@ -19,12 +19,11 @@ import csv, math, os, sqlite3
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(BASE_DIR)
-DATA_DIR = os.path.join(ROOT_DIR, "data")
-DB_ANA   = os.path.join(BASE_DIR, "analysis.sqlite")
-DB_WX    = os.path.join(ROOT_DIR, "ocean", "weather_cache.sqlite")
-OUT_TXT  = os.path.join(BASE_DIR, "backtest.txt")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+DB_ANA   = os.path.join(RESULTS_DIR, "analysis.sqlite")
+DB_WX    = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
+OUT_TXT  = os.path.join(RESULTS_DIR, "backtest.txt")
 
 # ── ユーティリティ ─────────────────────────────────────────────────────────
 def nearest_coord(lat, lon, coords):

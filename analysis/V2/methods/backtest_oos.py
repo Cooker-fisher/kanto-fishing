@@ -16,12 +16,11 @@ import csv, math, os, sqlite3
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(BASE_DIR)
-DATA_DIR = os.path.join(ROOT_DIR, "data")
-DB_ANA   = os.path.join(BASE_DIR, "analysis.sqlite")
-DB_WX    = os.path.join(ROOT_DIR, "ocean", "weather_cache.sqlite")
-OUT_TXT  = os.path.join(BASE_DIR, "backtest_oos.txt")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+DB_ANA   = os.path.join(RESULTS_DIR, "analysis.sqlite")
+DB_WX    = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
+OUT_TXT  = os.path.join(RESULTS_DIR, "backtest_oos.txt")
 
 TRAIN_END = "2024-12-31"   # 学習期間の終わり（YYYY-MM-DD）
 TEST_START = "2025-01-01"  # 検証期間の始まり
@@ -330,7 +329,7 @@ def write_results(combo_params, score_results, cancel_stats):
     # in-sample 結果を読み込んで比較
     is_summary = {}
     try:
-        with open(os.path.join(BASE_DIR, "backtest.txt"), encoding="utf-8") as f:
+        with open(os.path.join(RESULTS_DIR, "backtest.txt"), encoding="utf-8") as f:
             for line in f:
                 parts = line.split()
                 if len(parts) >= 6 and parts[-1].endswith('%') and parts[-3].startswith(('+','-')):

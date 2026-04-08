@@ -20,8 +20,9 @@ import os, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH  = os.path.join(BASE_DIR, "analysis.sqlite")
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
+DB_PATH  = os.path.join(RESULTS_DIR, "analysis.sqlite")
 
 # エリア分類（area_analysis.py と同じ定義）
 AREAS = [
