@@ -4300,8 +4300,8 @@ def _page_nav(area_nav="", is_sub=False, extra_links=None):
 <div class="drawer">
   <a href="{prefix}index.html">トップ</a>
   <a href="{prefix}calendar.html">カレンダー</a>
-  <a href="{prefix}privacy.html">プライバシーポリシー</a>
-  <a href="{prefix}about.html">このサイトについて</a>
+  <a href="{prefix}pages/privacy.html">プライバシーポリシー</a>
+  <a href="{prefix}pages/about.html">このサイトについて</a>
   {area_nav}
 </div>"""
 
@@ -4312,7 +4312,7 @@ def _page_foot(crawled_at="", is_sub=False):
     js_path = f"{prefix}main.js"
     return f"""{DATA_NOTE_HTML}
 <footer>
-  <p><a href="{prefix}about.html">このサイトについて</a> | <a href="{prefix}privacy.html">プライバシーポリシー</a> | <a href="{prefix}terms.html">利用規約</a></p>
+  <p><a href="{prefix}pages/about.html">このサイトについて</a> | <a href="{prefix}pages/privacy.html">プライバシーポリシー</a> | <a href="{prefix}pages/terms.html">利用規約</a></p>
   <p style="margin-top:8px">&copy; 2026 船釣り予想. All rights reserved.</p>
   <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: {crawled_at}</p>
 </footer>
@@ -4321,7 +4321,7 @@ def _page_foot(crawled_at="", is_sub=False):
     <a href="{prefix}index.html"><span class="nav-icon">🐟</span>釣果</a>
     <a href="{prefix}calendar.html"><span class="nav-icon">📅</span>カレンダー</a>
     <a href="{prefix}forecast/index.html"><span class="nav-icon">📈</span>予測</a>
-    <a href="{prefix}about.html"><span class="nav-icon">ℹ️</span>情報</a>
+    <a href="{prefix}pages/about.html"><span class="nav-icon">ℹ️</span>情報</a>
   </div>
 </div>
 <script src="{js_path}"></script>
@@ -6145,9 +6145,9 @@ def build_sitemap(data):
     urls = [
         (f"{SITE_URL}/", "1.0", "daily"),
         (f"{SITE_URL}/calendar.html", "0.6", "weekly"),
-        (f"{SITE_URL}/about.html", "0.4", "monthly"),
-        (f"{SITE_URL}/privacy.html", "0.3", "monthly"),
-        (f"{SITE_URL}/terms.html", "0.3", "monthly"),
+        (f"{SITE_URL}/pages/about.html", "0.4", "monthly"),
+        (f"{SITE_URL}/pages/privacy.html", "0.3", "monthly"),
+        (f"{SITE_URL}/pages/terms.html", "0.3", "monthly"),
     ]
     # fish/*.html
     fish_set = set()
@@ -6431,14 +6431,20 @@ def main():
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
 
-    # ── デザインファイルをルートに同期（design/{design_version}/ → ルート）──
-    _design_files = ["about.html", "contact.html", "privacy.html", "terms.html", "style.css", "main.js"]
+    # ── デザインファイル同期（design/{design_version}/ → 各出力先）──
+    # HTML静的ページ → pages/、CSS/JS → ルート
+    _pages_dir = os.path.join(_BASE_DIR, "pages")
+    os.makedirs(_pages_dir, exist_ok=True)
     _synced = []
-    for _fname in _design_files:
+    for _fname in ["about.html", "contact.html", "privacy.html", "terms.html"]:
         _src = os.path.join(_DESIGN_DIR, _fname)
-        _dst = os.path.join(_BASE_DIR, _fname)
         if os.path.exists(_src):
-            shutil.copy2(_src, _dst)
+            shutil.copy2(_src, os.path.join(_pages_dir, _fname))
+            _synced.append(_fname)
+    for _fname in ["style.css", "main.js"]:
+        _src = os.path.join(_DESIGN_DIR, _fname)
+        if os.path.exists(_src):
+            shutil.copy2(_src, os.path.join(_BASE_DIR, _fname))
             _synced.append(_fname)
     if _synced:
         print(f"デザイン同期 ({_DESIGN_VER}): {', '.join(_synced)}")
