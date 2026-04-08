@@ -128,7 +128,13 @@ ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS
 # tide_speed_n  : 上げ=1 / 下げ=0.5 / 普通=0 / 速=-0.5 / 止まり/二枚=-1
 # wave_obs_n    : 凪=1 / 普通=0 / ウネリ=-0.5 / 時化=-1
 # by_catch_n    : by_catch に記録された外道魚種の数
-OBS_FACTORS = ["water_color_n", "tide_speed_n", "wave_obs_n", "by_catch_n"]
+# depth_avg     : (depth_min + depth_max) / 2 [m]
+# time_slot_n   : 午前=1 / ショート=0.5 / 午後=0 / 夜=-1
+# is_boat       : 仕立て=1 / 乗合=0（釣果バイアス要因）
+OBS_FACTORS = [
+    "water_color_n", "tide_speed_n", "wave_obs_n", "by_catch_n",
+    "depth_avg", "time_slot_n", "is_boat",
+]
 
 TIDE_TYPE_MAP = {"大潮": 4, "中潮": 3, "小潮": 2, "長潮": 1, "若潮": 1}
 
@@ -438,6 +444,15 @@ def load_records(fish, ship_filter=None):
                     point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
                 )
 
+                # ── trip_no / is_boat ──
+                trip_no = int(row.get("trip_no") or 1)
+                is_boat = int(row.get("is_boat") or 0)
+
+                # ── depth ──
+                d_min = _float(row.get("depth_min"))
+                d_max = _float(row.get("depth_max"))
+                depth_avg = ((d_min + d_max) / 2) if d_min and d_max else (d_min or d_max)
+
                 # ── テキストフィールド（船長ログの観測値） ──
                 kanso      = (row.get("kanso_raw") or row.get("fish_raw") or "").strip()
                 by_catch   = (row.get("by_catch") or "").strip()
@@ -496,6 +511,21 @@ def load_records(fish, ship_filter=None):
                 else:
                     by_catch_n = None
 
+                # time_slot_n
+                _ts = (row.get("time_slot") or "").strip()
+                if _ts == "午前":
+                    time_slot_n = 1.0
+                elif _ts == "ショート":
+                    time_slot_n = 0.5
+                elif _ts == "午後":
+                    time_slot_n = 0.0
+                elif _ts in ("朝", "夕"):
+                    time_slot_n = 0.5
+                elif _ts == "夜":
+                    time_slot_n = -1.0
+                else:
+                    time_slot_n = None
+
                 records.append({
                     "ship":          ship,
                     "area":          row.get("area", "").strip(),
@@ -520,6 +550,11 @@ def load_records(fish, ship_filter=None):
                     "tide_speed_n":  tide_speed_n,
                     "wave_obs_n":    wave_obs_n,
                     "by_catch_n":    by_catch_n,
+                    "depth_avg":     depth_avg,
+                    "time_slot_n":   time_slot_n,
+                    "is_boat":       float(is_boat),
+                    # 参照用
+                    "trip_no":       trip_no,
                     "is_train":      date_str <= TRAIN_END,
                 })
     records.sort(key=lambda r: r["date"])
