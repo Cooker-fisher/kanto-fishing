@@ -164,14 +164,14 @@ def parse_file(path: str) -> dict | None:
                                  ("7d 前", "h7"), ("14d 前", "h14"), ("21d 前", "h21"),
                                  ("28d 前", "h28")]:
             lm = re.search(
-                rf'H=\s*{re.escape(h_label)}\s+([+\-][\d.]+)[\*\s]+\s*([\d.]+)(?:匹|cm|kg)\s+([\d.]+)%',
+                rf'H=\s*{re.escape(h_label)}\s+([+\-][\d.]+)[\*\s]+\s*([\d.]+)(?:匹|cm|kg)\s+[\d.]+\s+([\d.]+)%',
                 block
             )
             if lm:
                 horizons[h_key] = {
-                    "r":    float(lm.group(1)),
-                    "mae":  float(lm.group(2)),
-                    "mape": float(lm.group(3)),
+                    "r":     float(lm.group(1)),
+                    "mae":   float(lm.group(2)),
+                    "wmape": float(lm.group(3)),
                 }
         return horizons if horizons else None
 
@@ -218,12 +218,12 @@ def calc_stars(acc: dict, n: int) -> int:
     h7 = (acc.get("cnt_avg") or {}).get("h7")
     if not h7:
         return 1
-    mape = h7["mape"]
-    if   mape < 25 and n >= 50: return 5
-    elif mape < 35 and n >= 30: return 4
-    elif mape < 50 and n >= 20: return 3
-    elif mape < 65 and n >= 10: return 2
-    else:                        return 1
+    wmape = h7["wmape"]
+    if   wmape < 25 and n >= 50: return 5
+    elif wmape < 35 and n >= 30: return 4
+    elif wmape < 50 and n >= 20: return 3
+    elif wmape < 65 and n >= 10: return 2
+    else:                         return 1
 
 
 # ── メイン ───────────────────────────────────────────────────────────────────
@@ -273,13 +273,13 @@ def main():
     for r in results:
         h7 = (r["accuracy"].get("cnt_avg") or {}).get("h7")
         if h7:
-            mapes.append(h7["mape"])
+            mapes.append(h7["wmape"])
     if mapes:
         mapes.sort()
-        print(f"\ncnt_avg MAPE@H=7d: 中央値 {mapes[len(mapes)//2]:.1f}%  "
+        print(f"\ncnt_avg wMAPE@H=7d: 中央値 {mapes[len(mapes)//2]:.1f}%  "
               f"最小 {min(mapes):.1f}%  最大 {max(mapes):.1f}%")
         usable = sum(1 for m in mapes if m < 50)
-        print(f"MAPE<50%(★★★以上): {usable}/{len(mapes)} コンボ ({100*usable/len(mapes):.0f}%)")
+        print(f"wMAPE<50%(★★★以上): {usable}/{len(mapes)} コンボ ({100*usable/len(mapes):.0f}%)")
 
 
 if __name__ == "__main__":
