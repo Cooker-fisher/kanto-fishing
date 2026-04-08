@@ -16,13 +16,17 @@
   [cnt_avg]
     wind_speed_max   r=-0.655*  p=0.014  n=10  ↓
     typhoon_dist     r=-0.603*  p=0.046  n=9  ↓
+    is_holiday       r=-0.583*  p=0.042  n=10  ↓
+    is_summer_vacation r=-0.583*  p=0.042  n=10  ↓
     wind_speed_avg   r=-0.554   p=0.060  n=10  ↓
 
   [cnt_max]
     wind_speed_max   r=-0.722**  p=0.003  n=10  ↓
+    is_holiday       r=-0.646*  p=0.017  n=10  ↓
     wind_speed_avg   r=-0.637*  p=0.020  n=10  ↓
     moon_age         r=-0.607*  p=0.031  n=10  ↓
     typhoon_dist     r=-0.606*  p=0.044  n=9  ↓
+    moon_sin         r=+0.515   p=0.089  n=10  ↑
 
 【因子相関（週集計: n=6週）】
   (有意な相関なし)

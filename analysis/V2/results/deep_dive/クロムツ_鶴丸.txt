@@ -11,10 +11,30 @@
   (combo_decadal データなし)
 
 【因子相関（日次: 10件）】
-  (有意な相関なし)
+
+  [cnt_avg]
+    sst_delta        r=+0.555   p=0.059  n=10  ↑
+
+  [cnt_min]
+    moon_age         r=+0.767**  p=0.001  n=10  ↑
+    pressure_delta   r=+0.601*  p=0.033  n=10  ↑
+    moon_sin         r=-0.590*  p=0.039  n=10  ↓
+
+  [cnt_max]
+    sst_delta        r=+0.606*  p=0.031  n=10  ↑
 
 【因子相関（週集計: n=10週）】
-  (有意な相関なし)
+
+  [cnt_avg]
+    sst_delta        r=+0.555   p=0.059  n=10  ↑
+
+  [cnt_min]
+    moon_age         r=+0.767**  p=0.001  n=10  ↑
+    pressure_delta   r=+0.601*  p=0.033  n=10  ↑
+    moon_sin         r=-0.590*  p=0.039  n=10  ↓
+
+  [cnt_max]
+    sst_delta        r=+0.606*  p=0.031  n=10  ↑
 
 【因子相関（旬集計: n=9旬）】
   (有意な相関なし)

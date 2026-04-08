@@ -23,13 +23,24 @@
     swell_height_avg r=-0.385   p=0.077  n=20  ↓
     tide_range       r=+0.380   p=0.082  n=20  ↑
 
+  [cnt_min]
+    temp_delta       r=-0.516*  p=0.011  n=20  ↓
+    wind_dir_mode    r=-0.427*  p=0.045  n=20  ↓
+    tide_type_n      r=+0.419   p=0.051  n=20  ↑
+    pressure_delta   r=+0.418   p=0.051  n=20  ↑
+    sst_avg          r=-0.413   p=0.054  n=20  ↓
+    tide_range       r=+0.380   p=0.081  n=20  ↑
+    wind_dir_n       r=+0.379   p=0.082  n=20  ↑
+
   [cnt_max]
     swell_height_avg r=-0.437*  p=0.039  n=20  ↓
     pressure_delta   r=+0.389   p=0.073  n=20  ↑
     tide_range       r=+0.368   p=0.093  n=20  ↑
     wave_height_avg  r=-0.366   p=0.096  n=20  ↓
+    wave_clamp       r=-0.366   p=0.096  n=20  ↓
 
   [size_avg]
+    temp_delta       r=-0.598**  p=0.010  n=14  ↓
     temp_range       r=-0.478   p=0.060  n=14  ↓
 
 【因子相関（週集計: n=8週）】

@@ -21,24 +21,42 @@
     temp_avg         r=+0.588**  p=0.003  n=19  ↑
     temp_min         r=+0.576**  p=0.004  n=19  ↑
     temp_max         r=+0.554**  p=0.006  n=19  ↑
+    moon_sin         r=-0.492*  p=0.020  n=19  ↓
+    wind_dir_e       r=+0.491*  p=0.020  n=19  ↑
     pressure_range   r=-0.463*  p=0.031  n=19  ↓
     sst_avg          r=+0.418   p=0.058  n=19  ↑
+    tide_delta       r=-0.412   p=0.062  n=19  ↓
+
+  [cnt_min]
+    temp_avg         r=+0.581**  p=0.003  n=19  ↑
+    temp_min         r=+0.569**  p=0.004  n=19  ↑
+    temp_max         r=+0.543**  p=0.008  n=19  ↑
+    wind_dir_e       r=+0.541**  p=0.008  n=19  ↑
+    moon_sin         r=-0.522*  p=0.012  n=19  ↓
+    pressure_range   r=-0.447*  p=0.040  n=19  ↓
+    sst_avg          r=+0.436*  p=0.046  n=19  ↑
+    tide_delta       r=-0.433*  p=0.048  n=19  ↓
 
   [cnt_max]
     temp_avg         r=+0.579**  p=0.003  n=19  ↑
     temp_min         r=+0.570**  p=0.004  n=19  ↑
     temp_max         r=+0.546**  p=0.007  n=19  ↑
     pressure_range   r=-0.478*  p=0.025  n=19  ↓
+    moon_sin         r=-0.456*  p=0.035  n=19  ↓
+    wind_dir_e       r=+0.442*  p=0.042  n=19  ↑
     sst_avg          r=+0.393   p=0.078  n=19  ↑
+    tide_delta       r=-0.391   p=0.079  n=19  ↓
 
   [size_avg]
     typhoon_dist     r=-0.788*  p=0.011  n=6  ↓
     temp_min         r=+0.535*  p=0.018  n=16  ↑
     temp_avg         r=+0.529*  p=0.020  n=16  ↑
+    tide_delta       r=-0.518*  p=0.023  n=16  ↓
     sst_avg          r=+0.515*  p=0.025  n=16  ↑
     wind_speed_max   r=-0.494*  p=0.033  n=16  ↓
     temp_max         r=+0.476*  p=0.043  n=16  ↑
     temp_range       r=-0.456   p=0.055  n=16  ↓
+    wind_dir_e       r=+0.419   p=0.084  n=16  ↑
 
 【因子相関（週集計: n=9週）】
   (有意な相関なし)

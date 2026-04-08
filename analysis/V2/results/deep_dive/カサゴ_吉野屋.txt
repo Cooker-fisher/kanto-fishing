@@ -23,13 +23,19 @@
   [cnt_avg]
     sst_avg          r=+0.725**  p=0.000  n=22  ↑
     wave_height_avg  r=+0.463*  p=0.020  n=22  ↑
+    wave_clamp       r=+0.463*  p=0.020  n=22  ↑
     wave_height_max  r=+0.441*  p=0.028  n=22  ↑
     swell_height_avg r=+0.384   p=0.063  n=22  ↑
     swell_height_max r=+0.360   p=0.085  n=22  ↑
 
+  [cnt_min]
+    sst_avg          r=+0.426*  p=0.035  n=22  ↑
+    wave_period_avg  r=+0.359   p=0.086  n=22  ↑
+
   [cnt_max]
     sst_avg          r=+0.739**  p=0.000  n=22  ↑
     wave_height_avg  r=+0.449*  p=0.024  n=22  ↑
+    wave_clamp       r=+0.449*  p=0.024  n=22  ↑
     wave_height_max  r=+0.434*  p=0.031  n=22  ↑
     temp_avg         r=+0.368   p=0.077  n=22  ↑
     temp_min         r=+0.360   p=0.084  n=22  ↑
@@ -38,6 +44,7 @@
   [size_avg]
     tide_type_n      r=+0.455*  p=0.041  n=18  ↑
     tide_range       r=+0.437   p=0.052  n=18  ↑
+    moon_cos         r=-0.384   p=0.096  n=18  ↓
 
 【因子相関（週集計: n=9週）】
   (有意な相関なし)

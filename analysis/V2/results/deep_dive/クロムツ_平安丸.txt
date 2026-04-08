@@ -14,8 +14,21 @@
 【因子相関（日次: 11件）】
 
   [cnt_avg]
+    is_summer_vacation r=+0.719**  p=0.002  n=11  ↑
+    is_holiday       r=-0.593*  p=0.027  n=11  ↓
     prev_week_cnt    r=-0.541   p=0.069  n=10  ↓
     temp_range       r=+0.496   p=0.087  n=11  ↑
+
+  [cnt_min]
+    is_summer_vacation r=+0.843**  p=0.000  n=11  ↑
+    sst_delta        r=+0.804**  p=0.000  n=11  ↑
+    temp_max         r=+0.585*  p=0.030  n=11  ↑
+    temp_delta       r=-0.584*  p=0.031  n=11  ↓
+    is_holiday       r=-0.576*  p=0.035  n=11  ↓
+    sst_avg          r=+0.558*  p=0.044  n=11  ↑
+    temp_avg         r=+0.557*  p=0.044  n=11  ↑
+    prev_week_cnt    r=-0.513   p=0.091  n=10  ↓
+    temp_min         r=+0.511   p=0.075  n=11  ↑
 
   [cnt_max]
     pressure_delta   r=-0.546   p=0.050  n=11  ↓
@@ -24,22 +37,56 @@
 【因子相関（週集計: n=10週）】
 
   [cnt_avg]
+    is_summer_vacation r=+0.820**  p=0.000  n=10  ↑
+    is_holiday       r=-0.648*  p=0.016  n=10  ↓
     prev_week_cnt    r=-0.588   p=0.055  n=9  ↓
+
+  [cnt_min]
+    is_summer_vacation r=+0.852**  p=0.000  n=10  ↑
+    sst_delta        r=+0.793**  p=0.000  n=10  ↑
+    is_holiday       r=-0.681**  p=0.009  n=10  ↓
+    prev_week_cnt    r=-0.609*  p=0.042  n=9  ↓
+    temp_delta       r=-0.569   p=0.050  n=10  ↓
+    temp_max         r=+0.555   p=0.059  n=10  ↑
+    sst_avg          r=+0.537   p=0.072  n=10  ↑
+    temp_avg         r=+0.526   p=0.080  n=10  ↑
+
+  [cnt_max]
+    is_summer_vacation r=+0.620*  p=0.026  n=10  ↑
+    moon_cos         r=-0.577*  p=0.045  n=10  ↓
 
   [size_avg]
     pressure_delta   r=+0.645*  p=0.017  n=10  ↑
     pressure_min     r=+0.583*  p=0.042  n=10  ↑
     pressure_avg     r=+0.568   p=0.051  n=10  ↑
+    wind_dir_n       r=+0.515   p=0.089  n=10  ↑
 
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
+    is_summer_vacation r=+0.820**  p=0.000  n=10  ↑
+    is_holiday       r=-0.648*  p=0.016  n=10  ↓
     prev_week_cnt    r=-0.588   p=0.055  n=9  ↓
+
+  [cnt_min]
+    is_summer_vacation r=+0.852**  p=0.000  n=10  ↑
+    sst_delta        r=+0.793**  p=0.000  n=10  ↑
+    is_holiday       r=-0.681**  p=0.009  n=10  ↓
+    prev_week_cnt    r=-0.609*  p=0.042  n=9  ↓
+    temp_delta       r=-0.569   p=0.050  n=10  ↓
+    temp_max         r=+0.555   p=0.059  n=10  ↑
+    sst_avg          r=+0.537   p=0.072  n=10  ↑
+    temp_avg         r=+0.526   p=0.080  n=10  ↑
+
+  [cnt_max]
+    is_summer_vacation r=+0.620*  p=0.026  n=10  ↑
+    moon_cos         r=-0.577*  p=0.045  n=10  ↓
 
   [size_avg]
     pressure_delta   r=+0.645*  p=0.017  n=10  ↑
     pressure_min     r=+0.583*  p=0.042  n=10  ↑
     pressure_avg     r=+0.568   p=0.051  n=10  ↑
+    wind_dir_n       r=+0.515   p=0.089  n=10  ↑
 
 【因子相関（月集計: n=9月）】
   (有意な相関なし)

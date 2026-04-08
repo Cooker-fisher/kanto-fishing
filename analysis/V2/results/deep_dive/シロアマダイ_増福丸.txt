@@ -15,10 +15,26 @@
 
 【因子相関（日次: 10件）】
 
+  [cnt_avg]
+    temp_delta       r=-0.720**  p=0.003  n=10  ↓
+    is_consec_holiday r=+0.704**  p=0.005  n=10  ↑
+    tide_delta       r=-0.665*  p=0.012  n=10  ↓
+
+  [cnt_min]
+    prev_week_cnt    r=-0.765**  p=0.004  n=8  ↓
+    is_consec_holiday r=+0.669*  p=0.011  n=10  ↑
+    temp_delta       r=-0.613*  p=0.028  n=10  ↓
+    tide_delta       r=-0.563   p=0.054  n=10  ↓
+
   [cnt_max]
+    temp_delta       r=-0.734**  p=0.002  n=10  ↓
     tide_type_n      r=-0.697**  p=0.006  n=10  ↓
+    is_consec_holiday r=+0.683**  p=0.008  n=10  ↑
+    tide_delta       r=-0.659*  p=0.013  n=10  ↓
 
   [size_avg]
+    is_holiday       r=-0.744**  p=0.002  n=10  ↓
+    moon_sin         r=-0.722**  p=0.003  n=10  ↓
     prev_week_cnt    r=-0.691*  p=0.019  n=8  ↓
     precip_sum2      r=+0.646*  p=0.017  n=10  ↑
     precip_sum1      r=+0.504   p=0.098  n=10  ↑

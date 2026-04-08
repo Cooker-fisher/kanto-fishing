@@ -19,27 +19,54 @@
   [cnt_avg]
     pressure_min     r=+0.607**  p=0.002  n=19  ↑
     pressure_avg     r=+0.598**  p=0.002  n=19  ↑
+    sst_delta        r=+0.530**  p=0.010  n=19  ↑
     temp_range       r=-0.444*  p=0.041  n=19  ↓
     temp_max         r=-0.377   p=0.093  n=19  ↓
 
+  [cnt_min]
+    pressure_min     r=+0.624**  p=0.001  n=19  ↑
+    pressure_avg     r=+0.624**  p=0.001  n=19  ↑
+    sst_delta        r=+0.482*  p=0.023  n=19  ↑
+    wind_dir_e       r=+0.390   p=0.081  n=19  ↑
+    temp_range       r=-0.371   p=0.099  n=19  ↓
+
   [cnt_max]
     precip_sum1      r=-0.572**  p=0.004  n=19  ↓
+    sst_delta        r=+0.420   p=0.056  n=19  ↑
     temp_range       r=-0.404   p=0.068  n=19  ↓
     pressure_min     r=+0.373   p=0.098  n=19  ↑
 
 【因子相関（週集計: n=14週）】
 
   [cnt_avg]
+    sst_delta        r=+0.583*  p=0.013  n=14  ↑
     temp_range       r=-0.440   p=0.090  n=14  ↓
     pressure_min     r=+0.439   p=0.090  n=14  ↑
 
+  [cnt_min]
+    sst_delta        r=+0.568*  p=0.017  n=14  ↑
+    pressure_min     r=+0.526*  p=0.032  n=14  ↑
+    pressure_avg     r=+0.477   p=0.060  n=14  ↑
+
   [cnt_max]
+    sst_delta        r=+0.449   p=0.081  n=14  ↑
     temp_range       r=-0.449   p=0.081  n=14  ↓
 
 【因子相関（旬集計: n=12旬）】
 
   [cnt_avg]
+    sst_delta        r=+0.678**  p=0.003  n=12  ↑
     temp_max         r=-0.490   p=0.075  n=12  ↓
+
+  [cnt_min]
+    sst_delta        r=+0.829**  p=0.000  n=12  ↑
+    temp_max         r=-0.652**  p=0.007  n=12  ↓
+    temp_avg         r=-0.607*  p=0.016  n=12  ↓
+    temp_min         r=-0.556*  p=0.034  n=12  ↓
+    wave_period_min  r=+0.546*  p=0.039  n=12  ↑
+    pressure_min     r=+0.539*  p=0.043  n=12  ↑
+    wave_period_avg  r=+0.508   p=0.062  n=12  ↑
+    pressure_avg     r=+0.478   p=0.085  n=12  ↑
 
 【因子相関（月集計: n=7月）】
   (有意な相関なし)

@@ -24,19 +24,30 @@
     temp_max         r=-0.397*  p=0.028  n=28  ↓
     temp_avg         r=-0.372*  p=0.041  n=28  ↓
     pressure_delta   r=+0.357   p=0.051  n=28  ↑
+    wind_dir_n       r=+0.343   p=0.062  n=28  ↑
+    temp_delta       r=-0.336   p=0.069  n=28  ↓
+
+  [cnt_min]
+    is_holiday       r=-0.546**  p=0.001  n=28  ↓
+    wind_dir_e       r=+0.486**  p=0.005  n=28  ↑
+    wind_speed_max   r=+0.342   p=0.064  n=28  ↑
 
   [cnt_max]
     temp_range       r=-0.420*  p=0.018  n=28  ↓
     temp_max         r=-0.410*  p=0.022  n=28  ↓
     temp_avg         r=-0.399*  p=0.026  n=28  ↓
     pressure_delta   r=+0.380*  p=0.036  n=28  ↑
+    wind_dir_n       r=+0.318   p=0.087  n=28  ↑
+    temp_delta       r=-0.313   p=0.093  n=28  ↓
 
   [size_avg]
     pressure_range   r=+0.605**  p=0.000  n=27  ↑
     wave_height_max  r=+0.582**  p=0.000  n=27  ↑
     wave_height_avg  r=+0.479**  p=0.006  n=27  ↑
+    wave_clamp       r=+0.479**  p=0.006  n=27  ↑
     swell_height_max r=+0.475**  p=0.007  n=27  ↑
     swell_height_avg r=+0.439*  p=0.014  n=27  ↑
+    sst_delta        r=-0.424*  p=0.019  n=27  ↓
     pressure_min     r=-0.360   p=0.053  n=27  ↓
 
 【因子相関（週集計: n=10週）】
@@ -44,11 +55,20 @@
   [cnt_avg]
     temp_range       r=-0.727**  p=0.003  n=10  ↓
     pressure_delta   r=+0.657*  p=0.014  n=10  ↑
+    temp_delta       r=-0.622*  p=0.025  n=10  ↓
     precip_sum2      r=-0.593*  p=0.037  n=10  ↓
     temp_max         r=-0.506   p=0.097  n=10  ↓
+    wind_dir_n       r=+0.505   p=0.098  n=10  ↑
+
+  [cnt_min]
+    is_holiday       r=-0.747**  p=0.001  n=10  ↓
+    temp_range       r=-0.641*  p=0.018  n=10  ↓
+    moon_age         r=+0.521   p=0.084  n=10  ↑
 
   [cnt_max]
+    temp_delta       r=-0.731**  p=0.002  n=10  ↓
     pressure_delta   r=+0.695**  p=0.006  n=10  ↑
+    wind_dir_n       r=+0.576*  p=0.046  n=10  ↑
     temp_range       r=-0.567   p=0.052  n=10  ↓
     precip_sum2      r=-0.536   p=0.073  n=10  ↓
     temp_max         r=-0.524   p=0.081  n=10  ↓
@@ -60,8 +80,11 @@
     pressure_range   r=+0.697**  p=0.006  n=10  ↑
     pressure_min     r=-0.687**  p=0.007  n=10  ↓
     wave_height_avg  r=+0.665*  p=0.012  n=10  ↑
+    wave_clamp       r=+0.665*  p=0.012  n=10  ↑
     swell_height_max r=+0.626*  p=0.023  n=10  ↑
+    sst_delta        r=-0.589*  p=0.040  n=10  ↓
     pressure_delta   r=+0.576*  p=0.046  n=10  ↑
+    wind_dir_e       r=-0.555   p=0.059  n=10  ↓
     wave_period_avg  r=-0.544   p=0.066  n=10  ↓
     wave_period_min  r=-0.515   p=0.089  n=10  ↓
 

@@ -18,9 +18,16 @@
 
   [cnt_avg]
     precip_sum2      r=+0.613**  p=0.007  n=14  ↑
+    is_holiday       r=-0.519*  p=0.036  n=14  ↓
+
+  [cnt_min]
+    precip_sum2      r=+0.586*  p=0.012  n=14  ↑
+    is_holiday       r=-0.548*  p=0.023  n=14  ↓
+    tide_delta       r=+0.499*  p=0.046  n=14  ↑
 
   [cnt_max]
     precip_sum2      r=+0.612**  p=0.007  n=14  ↑
+    is_holiday       r=-0.458   p=0.074  n=14  ↓
 
   [kg_avg]
     temp_range       r=+0.735**  p=0.000  n=14  ↑
@@ -33,9 +40,16 @@
   [cnt_avg]
     precip_sum1      r=+0.595*  p=0.019  n=12  ↑
 
+  [cnt_min]
+    precip_sum       r=+0.682**  p=0.003  n=12  ↑
+    precip_sum1      r=+0.547*  p=0.039  n=12  ↑
+    tide_delta       r=+0.512   p=0.059  n=12  ↑
+    is_holiday       r=-0.494   p=0.072  n=12  ↓
+
   [cnt_max]
     precip_sum1      r=+0.563*  p=0.031  n=12  ↑
     wind_speed_max   r=-0.545*  p=0.040  n=12  ↓
+    is_summer_vacation r=+0.528*  p=0.049  n=12  ↑
     typhoon_dist     r=-0.489   p=0.093  n=11  ↓
 
   [kg_avg]

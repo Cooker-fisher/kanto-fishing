@@ -19,7 +19,16 @@
     typhoon_dist     r=+0.792*  p=0.025  n=5  ↑
     precip_sum       r=+0.692**  p=0.007  n=10  ↑
 
+  [cnt_min]
+    typhoon_dist     r=+0.795*  p=0.023  n=5  ↑
+    precip_sum       r=+0.726**  p=0.003  n=10  ↑
+    temp_delta       r=-0.644*  p=0.017  n=10  ↓
+    tide_range       r=+0.632*  p=0.021  n=10  ↑
+    tide_type_n      r=+0.622*  p=0.025  n=10  ↑
+    sst_delta        r=-0.555   p=0.059  n=10  ↓
+
   [cnt_max]
+    wind_dir_n       r=+0.610*  p=0.029  n=10  ↑
     wind_dir_mode    r=-0.547   p=0.065  n=10  ↓
     pressure_delta   r=+0.528   p=0.079  n=10  ↑
     precip_sum1      r=+0.518   p=0.087  n=10  ↑

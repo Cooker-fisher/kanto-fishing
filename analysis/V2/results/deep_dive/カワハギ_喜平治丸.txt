@@ -20,9 +20,15 @@
     sst_avg          r=+0.560*  p=0.043  n=11  ↑
     wind_dir_mode    r=+0.557*  p=0.044  n=11  ↑
     pressure_range   r=-0.540   p=0.054  n=11  ↓
+    moon_sin         r=+0.540   p=0.054  n=11  ↑
     moon_age         r=-0.507   p=0.077  n=11  ↓
     pressure_delta   r=+0.504   p=0.080  n=11  ↑
     precip_sum       r=-0.494   p=0.089  n=11  ↓
+
+  [cnt_min]
+    is_holiday       r=-0.674**  p=0.006  n=11  ↓
+    wave_period_avg  r=-0.578*  p=0.034  n=11  ↓
+    temp_range       r=-0.534   p=0.058  n=11  ↓
 
   [cnt_max]
     wind_dir_mode    r=+0.631*  p=0.015  n=11  ↑
@@ -33,6 +39,7 @@
     temp_min         r=+0.553*  p=0.047  n=11  ↑
     sst_avg          r=+0.552*  p=0.047  n=11  ↑
     temp_max         r=+0.521   p=0.067  n=11  ↑
+    moon_cos         r=+0.517   p=0.070  n=11  ↑
     wind_speed_avg   r=-0.513   p=0.073  n=11  ↓
 
 【因子相関（週集計: n=6週）】

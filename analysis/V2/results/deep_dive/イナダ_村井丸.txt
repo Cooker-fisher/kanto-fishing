@@ -17,6 +17,12 @@
 
 【因子相関（日次: 25件）】
 
+  [cnt_min]
+    is_holiday       r=-0.353   p=0.070  n=25  ↓
+    precip_sum2      r=+0.348   p=0.075  n=25  ↑
+    tide_range       r=-0.343   p=0.080  n=25  ↓
+    wind_speed_avg   r=+0.338   p=0.085  n=25  ↑
+
   [cnt_max]
     prev_week_cnt    r=-0.390*  p=0.047  n=24  ↓
     temp_range       r=-0.373   p=0.054  n=25  ↓
@@ -28,18 +34,18 @@
     precip_sum       r=-0.456   p=0.065  n=15  ↓
 
   [kg_avg]
+    sst_delta        r=+0.914**  p=0.000  n=10  ↑
     sst_avg          r=+0.908**  p=0.000  n=10  ↑
     typhoon_dist     r=-0.875**  p=0.000  n=9  ↓
     temp_max         r=+0.844**  p=0.000  n=10  ↑
     temp_avg         r=+0.778**  p=0.000  n=10  ↑
     temp_range       r=+0.772**  p=0.001  n=10  ↑
     prev_week_cnt    r=+0.684**  p=0.008  n=10  ↑
+    moon_sin         r=-0.612*  p=0.029  n=10  ↓
     wind_speed_max   r=-0.610*  p=0.029  n=10  ↓
     precip_sum2      r=-0.609*  p=0.030  n=10  ↓
+    temp_delta       r=+0.586*  p=0.041  n=10  ↑
     swell_height_avg r=+0.541   p=0.069  n=10  ↑
-    temp_min         r=+0.533   p=0.075  n=10  ↑
-    wave_period_min  r=+0.527   p=0.079  n=10  ↑
-    pressure_min     r=+0.506   p=0.097  n=10  ↑
 
 【因子相関（週集計: n=7週）】
   (有意な相関なし)

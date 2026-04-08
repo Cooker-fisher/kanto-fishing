@@ -19,13 +19,24 @@
 
   [cnt_avg]
     wind_dir_mode    r=-0.735**  p=0.002  n=10  ↓
+    wind_dir_n       r=+0.715**  p=0.004  n=10  ↑
+    moon_sin         r=-0.658*  p=0.013  n=10  ↓
     moon_age         r=+0.560   p=0.056  n=10  ↑
     pressure_avg     r=-0.520   p=0.085  n=10  ↓
     wind_speed_max   r=-0.505   p=0.098  n=10  ↓
 
+  [cnt_min]
+    wind_dir_mode    r=-0.694**  p=0.006  n=10  ↓
+    wind_dir_n       r=+0.664*  p=0.012  n=10  ↑
+    pressure_avg     r=-0.582*  p=0.043  n=10  ↓
+    pressure_min     r=-0.533   p=0.075  n=10  ↓
+    sst_avg          r=+0.524   p=0.082  n=10  ↑
+
   [cnt_max]
+    moon_sin         r=-0.796**  p=0.000  n=10  ↓
     moon_age         r=+0.728**  p=0.003  n=10  ↑
     wind_dir_mode    r=-0.707**  p=0.005  n=10  ↓
+    wind_dir_n       r=+0.685**  p=0.008  n=10  ↑
     wind_speed_max   r=-0.600*  p=0.034  n=10  ↓
 
 【因子相関（週集計: n=6週）】

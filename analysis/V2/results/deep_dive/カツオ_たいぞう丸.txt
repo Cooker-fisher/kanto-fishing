@@ -21,16 +21,25 @@
 
   [cnt_avg]
     temp_range       r=-0.463**  p=0.008  n=28  ↓
+    moon_cos         r=+0.447*  p=0.011  n=28  ↑
     temp_max         r=-0.407*  p=0.023  n=28  ↓
+    sst_delta        r=+0.376*  p=0.039  n=28  ↑
     typhoon_wind     r=-0.334   p=0.089  n=25  ↓
     tide_range       r=+0.332   p=0.073  n=28  ↑
     wave_period_min  r=+0.324   p=0.081  n=28  ↑
 
+  [cnt_min]
+    temp_range       r=-0.487**  p=0.005  n=28  ↓
+    sst_delta        r=+0.470**  p=0.007  n=28  ↑
+    temp_max         r=-0.428*  p=0.016  n=28  ↓
+
   [cnt_max]
     temp_range       r=-0.467**  p=0.007  n=28  ↓
+    moon_cos         r=+0.460**  p=0.008  n=28  ↑
     temp_max         r=-0.430*  p=0.015  n=28  ↓
     typhoon_wind     r=-0.364   p=0.061  n=25  ↓
     tide_range       r=+0.356   p=0.052  n=28  ↑
+    sst_delta        r=+0.322   p=0.083  n=28  ↑
     pressure_range   r=-0.314   p=0.092  n=28  ↓
     wave_period_min  r=+0.310   p=0.096  n=28  ↑
 
@@ -44,9 +53,9 @@
     pressure_avg     r=-0.438*  p=0.013  n=28  ↓
     wind_speed_max   r=-0.427*  p=0.016  n=28  ↓
     pressure_delta   r=-0.424*  p=0.017  n=28  ↓
+    wind_dir_e       r=+0.381*  p=0.036  n=28  ↑
     prev_week_cnt    r=+0.348   p=0.069  n=26  ↑
-    wave_height_avg  r=-0.313   p=0.093  n=28  ↓
-    wind_speed_avg   r=-0.309   p=0.098  n=28  ↓
+    is_summer_vacation r=+0.321   p=0.084  n=28  ↑
 
 【因子相関（週集計: n=7週）】
   (有意な相関なし)

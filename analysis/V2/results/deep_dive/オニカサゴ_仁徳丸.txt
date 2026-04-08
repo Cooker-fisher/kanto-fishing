@@ -16,33 +16,72 @@
   [cnt_avg]
     typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
     precip_sum2      r=+0.750**  p=0.001  n=11  ↑
+    temp_delta       r=-0.743**  p=0.001  n=11  ↓
     swell_height_avg r=-0.538   p=0.055  n=11  ↓
     swell_height_max r=-0.484   p=0.097  n=11  ↓
 
+  [cnt_min]
+    precip_sum2      r=+0.989**  p=0.000  n=11  ↑
+    typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    temp_delta       r=-0.637*  p=0.013  n=11  ↓
+    pressure_avg     r=-0.497   p=0.085  n=11  ↓
+
   [cnt_max]
     typhoon_dist     r=-0.824*  p=0.012  n=5  ↓
+    is_holiday       r=-0.564*  p=0.041  n=11  ↓
+    temp_delta       r=-0.556*  p=0.045  n=11  ↓
+
+  [kg_avg]
+    is_holiday       r=-0.662**  p=0.008  n=11  ↓
+    sst_delta        r=-0.502   p=0.081  n=11  ↓
 
 【因子相関（週集計: n=10週）】
 
   [cnt_avg]
+    temp_delta       r=-0.768**  p=0.001  n=10  ↓
     precip_sum2      r=+0.751**  p=0.001  n=10  ↑
     typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
     swell_height_avg r=-0.552   p=0.061  n=10  ↓
     swell_height_max r=-0.508   p=0.096  n=10  ↓
 
+  [cnt_min]
+    precip_sum2      r=+0.990**  p=0.000  n=10  ↑
+    typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    temp_delta       r=-0.679**  p=0.009  n=10  ↓
+    tide_type_n      r=-0.557   p=0.058  n=10  ↓
+
   [cnt_max]
     typhoon_dist     r=-0.824*  p=0.012  n=5  ↓
+    is_holiday       r=-0.643*  p=0.017  n=10  ↓
+    temp_delta       r=-0.537   p=0.072  n=10  ↓
+
+  [kg_avg]
+    is_holiday       r=-0.564   p=0.053  n=10  ↓
+    sst_delta        r=-0.552   p=0.061  n=10  ↓
 
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
+    temp_delta       r=-0.768**  p=0.001  n=10  ↓
     precip_sum2      r=+0.751**  p=0.001  n=10  ↑
     typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
     swell_height_avg r=-0.552   p=0.061  n=10  ↓
     swell_height_max r=-0.508   p=0.096  n=10  ↓
 
+  [cnt_min]
+    precip_sum2      r=+0.990**  p=0.000  n=10  ↑
+    typhoon_dist     r=-0.750*  p=0.049  n=5  ↓
+    temp_delta       r=-0.679**  p=0.009  n=10  ↓
+    tide_type_n      r=-0.557   p=0.058  n=10  ↓
+
   [cnt_max]
     typhoon_dist     r=-0.824*  p=0.012  n=5  ↓
+    is_holiday       r=-0.643*  p=0.017  n=10  ↓
+    temp_delta       r=-0.537   p=0.072  n=10  ↓
+
+  [kg_avg]
+    is_holiday       r=-0.564   p=0.053  n=10  ↓
+    sst_delta        r=-0.552   p=0.061  n=10  ↓
 
 【因子相関（月集計: n=6月）】
   (有意な相関なし)

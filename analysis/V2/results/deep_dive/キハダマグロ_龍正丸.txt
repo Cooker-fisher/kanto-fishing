@@ -17,9 +17,20 @@
 【因子相関（日次: 10件）】
 
   [cnt_avg]
+    tide_delta       r=-0.608*  p=0.031  n=10  ↓
     moon_age         r=-0.601*  p=0.034  n=10  ↓
     sst_avg          r=+0.588*  p=0.040  n=10  ↑
     precip_sum1      r=+0.579*  p=0.045  n=10  ↑
+
+  [cnt_min]
+    sst_avg          r=+0.630*  p=0.022  n=10  ↑
+    tide_delta       r=-0.583*  p=0.043  n=10  ↓
+    moon_cos         r=+0.572*  p=0.049  n=10  ↑
+    temp_range       r=-0.547   p=0.064  n=10  ↓
+    wind_speed_max   r=+0.535   p=0.073  n=10  ↑
+    precip_sum1      r=+0.522   p=0.084  n=10  ↑
+    wind_speed_avg   r=+0.516   p=0.088  n=10  ↑
+    temp_min         r=+0.510   p=0.094  n=10  ↑
 
   [cnt_max]
     wave_period_min  r=+0.585*  p=0.042  n=10  ↑
@@ -28,6 +39,7 @@
 
   [kg_avg]
     sst_avg          r=-0.650*  p=0.015  n=10  ↓
+    tide_delta       r=+0.603*  p=0.032  n=10  ↑
     temp_min         r=-0.591*  p=0.038  n=10  ↓
     moon_age         r=+0.581*  p=0.043  n=10  ↑
     temp_avg         r=-0.577*  p=0.046  n=10  ↓
