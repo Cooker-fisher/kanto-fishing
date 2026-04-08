@@ -31,7 +31,7 @@ combo_deep_dive.py — 船宿×魚種ペア 深掘り分析
   insights/analysis.sqlite  → combo_deep_params テーブル
 """
 
-import argparse, csv, json, math, os, re, sqlite3, sys
+import argparse, bisect, csv, json, math, os, re, sqlite3, sys
 from collections import defaultdict
 from datetime import datetime, timedelta
 
@@ -576,7 +576,7 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
 
     # 前週釣果の参照先（日付昇順ソート済み）
     _ref_records = sorted(all_records or records, key=lambda r: r["date"])
-    # 日付→cnt_avg の高速参照用インデックス（先頭から順に走査）
+    # bisect 用の日付リスト（O(log n) 検索）
     _ref_dates = [r["date"] for r in _ref_records]
 
     for r in records:
@@ -637,12 +637,14 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         # prediction_date = D - horizon の時点で知っている最新の釣果を取得
         # 同船宿の直近釣果が最良の事前情報（自己相関 r=0.4〜0.5）
         pred_date_str = (d - timedelta(days=horizon)).strftime("%Y/%m/%d")
+        # bisect で pred_date_str 未満の最新レコードを O(log n) で取得
+        idx = bisect.bisect_left(_ref_dates, pred_date_str) - 1
         prev_cnt = None
-        # _ref_dates は昇順済み → 後ろから走査して最初に pred_date_str 未満を見つける
-        for _pr in reversed(_ref_records):
-            if _pr["date"] < pred_date_str and _pr.get("cnt_avg") is not None:
-                prev_cnt = _pr["cnt_avg"]
+        while idx >= 0:
+            if _ref_records[idx].get("cnt_avg") is not None:
+                prev_cnt = _ref_records[idx]["cnt_avg"]
                 break
+            idx -= 1
         wx["prev_week_cnt"] = prev_cnt
 
         # 台風（wx_date = D-H の台風接近距離）
@@ -748,7 +750,7 @@ def aggregate_by_period(enriched_recs, period):
     for r in enriched_recs:
         buckets[_period_key(r["date"], period)].append(r)
 
-    num_keys = {k for r in enriched_recs[:20] for k, v in r.items() if isinstance(v, (int, float))}
+    num_keys = {k for r in enriched_recs for k, v in r.items() if isinstance(v, (int, float))}
 
     result = []
     for key in sorted(buckets.keys()):
@@ -855,108 +857,6 @@ def _dir_acc(preds, acts):
                 dc += 1
             dt += 1
     return dc / dt if dt else None
-
-def _backtest_metric(metric, train_en, test_en_by_H, hist_params, decadal,
-                     global_mean, global_std, train_sorted, factor_r_all,
-                     metric_decadal=None):
-    """1メトリクス分のバックテスト行を返す"""
-    # メトリクス専用の factor_r を計算
-    tr_ys = [r.get(metric) for r in train_en]
-    factor_r = {}
-    for fac in ALL_FACTORS:
-        xs = [r.get(fac) for r in train_en]
-        rv, _, _ = pearson(xs, tr_ys)
-        if rv is not None and abs(rv) >= 0.05:
-            factor_r[fac] = rv
-    if not factor_r:
-        return None, None, []
-
-    met_vals = [r.get(metric) for r in train_en if r.get(metric) is not None]
-    met_mean, met_std = mean_std(met_vals)
-    if met_mean is None or not met_std:
-        return None, None, []
-
-    # 自船前回の自己相関（cnt_avg ベース → メトリクス本体で）
-    own_pairs = [(train_sorted[i-1].get(metric), train_sorted[i].get(metric))
-                 for i in range(1, len(train_sorted))]
-    own_pairs = [(x, y) for x, y in own_pairs if x is not None and y is not None]
-    r_own, _, n_own = pearson([x for x,y in own_pairs], [y for x,y in own_pairs])
-    r_own = r_own if r_own is not None else 0.0
-    r_own_sq = r_own ** 2
-
-    # メトリクス専用の旬別ベースライン（metric_decadal[decade_no] = mean_val）
-    # → 渡されなければ met_mean で代用
-    m_dec = metric_decadal or {}
-
-    rows = []
-    for H, te_en in sorted(test_en_by_H.items()):
-        usable = {fac: rv for fac, rv in factor_r.items()
-                  if fac in SLOW_FACTORS or H <= FAST_MAX_H}
-        w_h = sum(rv**2 for rv in usable.values()) or 1.0
-
-        preds, acts = [], []
-        for r in te_en:
-            act = r.get(metric)
-            if act is None:
-                continue
-            d_obj  = datetime.strptime(r["date"], "%Y/%m/%d")
-            cutoff = (d_obj - timedelta(days=H)).strftime("%Y/%m/%d")
-            last_own = None
-            for tr in reversed(train_sorted):
-                if tr["date"] < cutoff:
-                    last_own = tr
-                    break
-
-            dn   = r.get("decade")
-            # 全メトリクスで旬別ベースラインを使用（季節成分を除去して因子効果を分離）
-            # cnt_avg: combo_decadal テーブル優先、なければ学習データ内旬別平均
-            # cnt_min/cnt_max/size_avg: 学習データ内旬別平均を使用
-            if metric == "cnt_avg" and decadal and dn in decadal:
-                base = decadal[dn].get("avg_cnt", met_mean)
-            else:
-                base = m_dec.get(dn, met_mean)
-
-            num_wx = 0.0
-            for fac, rv in usable.items():
-                val = r.get(fac)
-                if val is None or fac not in hist_params:
-                    continue
-                m, s = hist_params[fac]
-                z = (val - m) / s
-                num_wx += rv**2 * z * (1.0 if rv > 0 else -1.0)
-
-            if last_own and r_own_sq > 0 and met_std:
-                own_val = last_own.get(metric)
-                if own_val is not None:
-                    own_z   = (own_val - met_mean) / met_std
-                    num_own = r_own_sq * own_z * (1.0 if r_own > 0 else -1.0)
-                    w_total = w_h + r_own_sq
-                    pred = base + ((num_wx + num_own) / w_total) * met_std * 0.5
-                else:
-                    pred = base + (num_wx / w_h) * met_std * 0.5
-            else:
-                pred = base + (num_wx / w_h) * met_std * 0.5
-
-            preds.append(pred)
-            acts.append(act)
-
-        if len(acts) < 3:
-            continue
-        rv_t, _, n = pearson(preds, acts)
-        if rv_t is None:
-            continue
-        mae  = sum(abs(p-a) for p, a in zip(preds, acts)) / len(preds)
-        mape = _mape(preds, acts)
-        dacc = _dir_acc(preds, acts)
-        n_f  = len(usable)
-        rows.append((H, rv_t, mae, mape, dacc, n, n_f, len(factor_r)))
-
-    fac_desc = ", ".join(
-        f"{k}({v:+.2f})"
-        for k, v in sorted(factor_r.items(), key=lambda x: -abs(x[1]))[:4]
-    )
-    return fac_desc, (r_own, n_own), rows
-
 
 def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None):
     """ローリング月次クロスバリデーション
@@ -1108,142 +1008,6 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
     return lines, bt_data
 
-
-def section_backtest(records, ship_coords, wx_coords, conn_wx, ship_area, decadal):
-    train = [r for r in records if r["is_train"]]
-    test  = [r for r in records if not r["is_train"]]
-    if len(train) < 15:
-        return [f"  学習データ不足 ({len(train)}件)"], []
-    if len(test) < 5:
-        return [f"  テストデータ不足 ({len(test)}件)"], []
-
-    tr_en = enrich(train, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records)
-    if len(tr_en) < 10:
-        return ["  学習データの海況マッチ不足"], []
-
-    # 共通: 海況因子の hist_params（z正規化用）
-    hist_params = {}
-    for fac in ALL_FACTORS:
-        vals = [r.get(fac) for r in tr_en if r.get(fac) is not None]
-        m, s = mean_std(vals)
-        if m is not None and s:
-            hist_params[fac] = (m, s)
-
-    global_mean, global_std = mean_std([r["cnt_avg"] for r in tr_en])
-    train_sorted = sorted(train, key=lambda r: r["date"])
-
-    # メトリクス専用の旬別ベースライン（学習データから計算）
-    # 全メトリクスで季節成分を除去 → Min/Max の負r問題を解消
-    METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg"]
-    metric_decadal_all = {}
-    for _met in METRICS_LIST:
-        _db = defaultdict(list)
-        for r in tr_en:
-            dn = r.get("decade")
-            val = r.get(_met)
-            if dn is not None and val is not None:
-                _db[dn].append(val)
-        metric_decadal_all[_met] = {dn: sum(v)/len(v) for dn, v in _db.items()}
-
-    # テストデータを全ホライズン分 enrich（1回ずつ）
-    test_en_by_H = {}
-    for H in HORIZONS:
-        te = enrich(test, ship_coords, wx_coords, conn_wx, ship_area, horizon=H, all_records=records)
-        if len(te) >= 3:
-            test_en_by_H[H] = te
-
-    lines = [
-        f"  学習: 〜{TRAIN_END}  ({len(tr_en)}件マッチ)  "
-        f"テスト: {TRAIN_END[:4]}以降 ({len(test)}件)",
-    ]
-
-    METRICS = [
-        ("cnt_avg",  "匹"),
-        ("cnt_min",  "匹"),
-        ("cnt_max",  "匹"),
-        ("size_avg", "cm"),
-    ]
-    METRIC_LABEL = {
-        "cnt_avg":  "Ave匹数",
-        "cnt_min":  "Min匹数",
-        "cnt_max":  "Max匹数",
-        "size_avg": "Ave型  ",
-    }
-
-    # ── 逆転バックテスト用: テストデータ(2025+)を学習として使う ──────────────
-    # 逆転チェック: 2025+ = 訓練、〜2024 = テスト
-    # 両方向で r > 0 なら因子が真に頑健、片方が負なら分布シフトあり
-    te_rev_en = tr_en  # 〜2024 の H=0 データをテストとして使用
-    tr_rev_en = test_en_by_H.get(0, [])  # 2025+ の H=0 データを訓練として使用
-    rev_available = len(tr_rev_en) >= 5 and len(te_rev_en) >= 5
-    if rev_available:
-        hist_params_rev = {}
-        for fac in ALL_FACTORS:
-            vals = [r.get(fac) for r in tr_rev_en if r.get(fac) is not None]
-            m2, s2 = mean_std(vals)
-            if m2 is not None and s2:
-                hist_params_rev[fac] = (m2, s2)
-        train_sorted_rev = sorted(
-            [r for r in records if not r["is_train"]], key=lambda r: r["date"]
-        )
-        metric_decadal_rev = {}
-        for _met in METRICS_LIST:
-            _db2 = defaultdict(list)
-            for r in tr_rev_en:
-                dn = r.get("decade")
-                val = r.get(_met)
-                if dn is not None and val is not None:
-                    _db2[dn].append(val)
-            metric_decadal_rev[_met] = {dn: sum(v)/len(v) for dn, v in _db2.items()}
-
-    bt_data = []  # (metric, H, rv, mae, mape, dacc, n, r_own)
-    for metric, unit in METRICS:
-        fac_desc, own_info, rows = _backtest_metric(
-            metric, tr_en, test_en_by_H, hist_params, decadal,
-            global_mean, global_std, train_sorted, {},
-            metric_decadal=metric_decadal_all.get(metric)
-        )
-        if not rows:
-            lines.append(f"\n  ─ {METRIC_LABEL[metric]} : データ不足 ─")
-            continue
-
-        # 逆転チェック（H=0のみ）: 因子の頑健性を確認
-        rev_r_str = ""
-        if rev_available:
-            _, _, rev_rows = _backtest_metric(
-                metric, tr_rev_en, {0: te_rev_en}, hist_params_rev, decadal,
-                *mean_std([r["cnt_avg"] for r in tr_rev_en]),
-                train_sorted_rev, {},
-                metric_decadal=metric_decadal_rev.get(metric)
-            )
-            if rev_rows:
-                rv_rev = rev_rows[0][1]  # H=0 の r
-                mark = "✓" if rv_rev > 0 else "⚠"
-                rev_r_str = f"  逆転r={rv_rev:+.3f}{mark}"
-
-        r_own, n_own = own_info
-        lines.append(f"\n  ─ {METRIC_LABEL[metric]}  因子: {fac_desc}  自己相関r={r_own:+.3f}(n={n_own}){rev_r_str} ─")
-        lines.append(
-            f"  {'ホライズン':>10}  {'r':>7}  {'MAE':>7}  {'MAPE':>7}  {'方向一致':>9}  {'n':>4}"
-        )
-        lines.append("  " + "-"*55)
-        for H, rv, mae, mape, dacc, n, n_f, n_f_all in rows:
-            label    = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
-            star     = "**" if rv >= 0.4 else ("*" if rv >= 0.2 else " ")
-            mape_s   = f"{mape:>6.1f}%" if mape else "     -"
-            dacc_s   = f"{dacc:>9.1%}" if dacc is not None else "        -"
-            fac_note = f"({n_f}/{n_f_all}因子)" if n_f < n_f_all else ""
-            lines.append(
-                f"  {label:>12}  {rv:>+6.3f}{star}  {mae:>6.1f}{unit}  {mape_s}  {dacc_s}  {n:>4}  {fac_note}"
-            )
-            bt_data.append((metric, H, rv, mae, mape, dacc, n, r_own))
-
-    return lines, bt_data
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-# DB 保存
-# ═══════════════════════════════════════════════════════════════════════════
 
 def save_params(fish, ship, corr_results):
     conn = sqlite3.connect(DB_ANA)
