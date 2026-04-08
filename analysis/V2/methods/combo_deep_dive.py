@@ -965,6 +965,44 @@ def _mape(preds, acts):
         return None
     return sum(abs(p-a)/a for p, a in pairs) / len(pairs) * 100
 
+def _smape(preds, acts):
+    """対称MAPE: 分母に予測値も混ぜる → ゼロ実績での爆発を抑制。上限200%"""
+    pairs = [(p, a) for p, a in zip(preds, acts)
+             if a is not None and p is not None and (p + a) > 0]
+    if not pairs:
+        return None
+    return sum(abs(p-a) / ((p+a) / 2) for p, a in pairs) / len(pairs) * 100
+
+def _wmape(preds, acts):
+    """重み付きMAPE: 合計誤差 ÷ 合計実績 → 釣れた日の誤差を重視"""
+    pairs = [(p, a) for p, a in zip(preds, acts) if a is not None and a > 0]
+    if not pairs:
+        return None
+    total_act = sum(a for _, a in pairs)
+    return sum(abs(p-a) for p, a in pairs) / total_act * 100 if total_act else None
+
+def _good_bad_acc(preds, acts, threshold):
+    """良日（actual≥threshold）と不漁日（actual<threshold）の的中率を返す。
+    良日的中率: 実際に良い日に予測も良日判定できた割合
+    不漁的中率: 実際に悪い日に予測も不漁判定できた割合
+    """
+    if threshold is None or not preds:
+        return None, None
+    good_c = good_t = bad_c = bad_t = 0
+    for p, a in zip(preds, acts):
+        if a is None:
+            continue
+        if a >= threshold:
+            good_t += 1
+            if p >= threshold:
+                good_c += 1
+        else:
+            bad_t += 1
+            if p < threshold:
+                bad_c += 1
+    return (good_c / good_t if good_t else None,
+            bad_c  / bad_t  if bad_t  else None)
+
 def _dir_acc(preds, acts):
     dc = dt = 0
     for i in range(1, len(acts)):
@@ -1121,6 +1159,12 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         label = METRIC_LABEL[met]
         unit  = METRIC_UNIT[met]
         rows  = []
+        # 良日閾値: met の全実績値の中央値（学習・テスト合算 - 評価目的のみ）
+        all_act_vals = sorted(
+            a for a in all_acts[met].get(0, []) if a is not None
+        )
+        threshold = all_act_vals[len(all_act_vals) // 2] if all_act_vals else None
+
         for H in HORIZONS:
             ps = all_preds[met][H]; acs = all_acts[met][H]
             if len(acs) < 3:
@@ -1128,30 +1172,43 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             rv, _, n = pearson(ps, acs)
             if rv is None:
                 continue
-            mae_v  = sum(abs(p-a) for p,a in zip(ps,acs)) / len(ps)
-            mape_v = _mape(ps, acs)
-            dacc_v = _dir_acc(ps, acs)
+            mae_v         = sum(abs(p-a) for p,a in zip(ps,acs)) / len(ps)
+            mape_v        = _mape(ps, acs)
+            smape_v       = _smape(ps, acs)
+            wmape_v       = _wmape(ps, acs)
+            dacc_v        = _dir_acc(ps, acs)
+            good_r, bad_r = _good_bad_acc(ps, acs, threshold)
             n_f    = sum(1 for fac in ALL_FACTORS
                          if fac in SLOW_FACTORS or H <= FAST_MAX_H)
-            rows.append((H, rv, mae_v, mape_v, dacc_v, n, n_f))
+            rows.append((H, rv, mae_v, mape_v, smape_v, wmape_v,
+                         dacc_v, good_r, bad_r, n, n_f))
 
         if not rows:
             lines.append(f"\n  ─ {label} : データ不足 ─")
             continue
 
-        lines.append(f"\n  ─ {label} ─")
-        lines.append(f"  {'ホライズン':>10}  {'r':>7}  {'MAE':>7}  {'MAPE':>7}  {'方向一致':>9}  {'n':>4}")
-        lines.append("  " + "-"*55)
-        for H, rv, mae, mape, dacc, n, n_f in rows:
-            lh    = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
-            star  = "**" if rv >= 0.4 else ("*" if rv >= 0.2 else " ")
-            ms    = f"{mape:>6.1f}%" if mape else "     -"
-            ds    = f"{dacc:>9.1%}" if dacc is not None else "        -"
-            fn    = f"({n_f}/{len(ALL_FACTORS)}因子)" if n_f < len(ALL_FACTORS) else ""
+        thr_s = f"{threshold:.1f}{unit}" if threshold is not None else "-"
+        lines.append(f"\n  ─ {label} ─  良日閾値:{thr_s}")
+        lines.append(
+            f"  {'ホライズン':>10}  {'r':>7}  {'MAE':>7}  "
+            f"{'MAPE':>7}  {'sMAPE':>7}  {'WMAPE':>7}  "
+            f"{'良日的中':>8}  {'不漁的中':>8}  {'n':>4}"
+        )
+        lines.append("  " + "-"*85)
+        for H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, n_f in rows:
+            lh   = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
+            star = "**" if rv >= 0.4 else ("*" if rv >= 0.2 else " ")
+            ms   = f"{mape:>6.1f}%" if mape   is not None else "     -"
+            ss   = f"{smape:>6.1f}%" if smape  is not None else "     -"
+            ws   = f"{wmape:>6.1f}%" if wmape  is not None else "     -"
+            gs   = f"{good_r:>7.1%}" if good_r is not None else "      -"
+            bs   = f"{bad_r:>7.1%}"  if bad_r  is not None else "      -"
+            fn   = f"({n_f}/{len(ALL_FACTORS)}因子)" if n_f < len(ALL_FACTORS) else ""
             lines.append(
-                f"  {lh:>12}  {rv:>+6.3f}{star}  {mae:>6.1f}{unit}  {ms}  {ds}  {n:>4}  {fn}"
+                f"  {lh:>12}  {rv:>+6.3f}{star}  {mae:>6.1f}{unit}  "
+                f"{ms}  {ss}  {ws}  {gs}  {bs}  {n:>4}  {fn}"
             )
-            bt_data.append((met, H, rv, mae, mape, dacc, n, 0.0))
+            bt_data.append((met, H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, 0.0))
 
     return lines, bt_data
 
@@ -1222,18 +1279,29 @@ def save_backtest(fish, ship, bt_data):
             r           REAL,
             mae         REAL,
             mape        REAL,
+            smape       REAL,
+            wmape       REAL,
             dir_acc     REAL,
+            good_recall REAL,
+            bad_recall  REAL,
             n           INTEGER,
             r_own       REAL,
             updated_at  TEXT,
             PRIMARY KEY (fish, ship, metric, horizon)
         )
     """)
+    # 既存テーブルへの列追加（マイグレーション）
+    existing = {r[1] for r in conn.execute("PRAGMA table_info(combo_backtest)").fetchall()}
+    for col, typ in [("smape","REAL"),("wmape","REAL"),
+                     ("good_recall","REAL"),("bad_recall","REAL")]:
+        if col not in existing:
+            conn.execute(f"ALTER TABLE combo_backtest ADD COLUMN {col} {typ}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    rows = [(fish, ship, metric, H, rv, mae, mape, dacc, n, r_own, now)
-            for metric, H, rv, mae, mape, dacc, n, r_own in bt_data]
+    rows = [(fish, ship, metric, H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, r_own, now)
+            for metric, H, rv, mae, mape, smape, wmape, dacc, good_r, bad_r, n, r_own in bt_data]
     conn.executemany(
-        "INSERT OR REPLACE INTO combo_backtest VALUES (?,?,?,?,?,?,?,?,?,?,?)", rows
+        "INSERT OR REPLACE INTO combo_backtest "
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
     )
     conn.commit()
     conn.close()
