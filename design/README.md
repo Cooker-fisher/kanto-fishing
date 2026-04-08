@@ -36,9 +36,11 @@ design/
 
 **V2 を本番に上げるとき:**
 ```
-1. design/V2/ の全ファイルが確定したら
-2. ルートの該当ファイルを V2 版で上書き（style.css / main.js / about.html 等）
-3. config.json や CLAUDE.md のデザインバージョン記載を更新
+1. design/V2/ の全ファイルを完成させる
+   （style.css / main.js / about.html / contact.html / privacy.html / terms.html）
+2. config.json の "design_version": "V1" → "V2" に変更
+3. crawler.py を実行（またはGitHub Actions の次回実行を待つ）
+   → design/V2/ の全ファイルが自動的にルートへコピーされる
 ```
 
 ---

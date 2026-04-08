@@ -78,23 +78,27 @@
   → choka_box 単位で li.date から正しい出船日を取得
   → 全釣果に「今日の日付」が入る問題を修正
 """
-import re, json, time, os, csv, math, sqlite3
+import re, json, time, os, csv, math, sqlite3, shutil
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from urllib.parse import quote
 from html.parser import HTMLParser
 
-# ── data/ バージョン管理 ───────────────────────────────────────────────────
-# config.json の active_version に連動して data/{ver}/ を DATA_DIR として使う。
-# バージョンアップ時（CSV列追加等）は config.json の active_version を上げるだけ。
+# ── data/ / design/ バージョン管理 ──────────────────────────────────────────
+# config.json の active_version / design_version に連動。
+# バージョンアップ時は config.json の該当フィールドを上げるだけ。
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 try:
     with open(os.path.join(_BASE_DIR, "config.json"), encoding="utf-8") as _f:
-        _ACTIVE_VER = json.load(_f)["active_version"]
+        _cfg = json.load(_f)
+        _ACTIVE_VER = _cfg["active_version"]
+        _DESIGN_VER = _cfg.get("design_version", _ACTIVE_VER)
 except Exception:
     _ACTIVE_VER = "V2"
-_DATA_DIR = os.path.join(_BASE_DIR, "data", _ACTIVE_VER)
+    _DESIGN_VER = "V2"
+_DATA_DIR   = os.path.join(_BASE_DIR, "data",   _ACTIVE_VER)
+_DESIGN_DIR = os.path.join(_BASE_DIR, "design", _DESIGN_VER)
 
 SHIPS = [
     # ── 茨城 ──────────────────────────────────
@@ -6426,6 +6430,19 @@ def main():
     with open("calendar.html", "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
+
+    # ── デザインファイルをルートに同期（design/{design_version}/ → ルート）──
+    _design_files = ["about.html", "contact.html", "privacy.html", "terms.html", "style.css", "main.js"]
+    _synced = []
+    for _fname in _design_files:
+        _src = os.path.join(_DESIGN_DIR, _fname)
+        _dst = os.path.join(_BASE_DIR, _fname)
+        if os.path.exists(_src):
+            shutil.copy2(_src, _dst)
+            _synced.append(_fname)
+    if _synced:
+        print(f"デザイン同期 ({_DESIGN_VER}): {', '.join(_synced)}")
+
     print(f"\n=== 完了 ===")
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
     print(f"エラー: {errors or 'なし'}")
