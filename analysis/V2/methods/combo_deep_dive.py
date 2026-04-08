@@ -15,10 +15,12 @@ combo_deep_dive.py — 船宿×魚種ペア 深掘り分析
   6. マルチホライズン バックテスト（H=0,1,3,7,14,21,28日前の海況で予測）
 
 [予報可能因子（バックテスト制約）]
-  ○ sst, temp, pressure, wind_speed, wind_dir,
-    wave_height, wave_period, swell_height  ← forecast_cache にある
-  ○ tide_range, moon_age, tide_type          ← 天文計算で未来も確定
-  × current_spd, wave_dir, swell_period      ← 予報APIに含まれない
+  ○ sst_avg, temp_avg/max/min, pressure_avg/min,
+    wind_speed_avg/max, wind_dir_mode,
+    wave_height_avg/max, wave_period_avg/min,
+    swell_height_avg/max              ← 全変数を日次集計（min/max/avg）に統一
+  ○ tide_range, moon_age, tide_type   ← 天文計算で未来も確定
+  × current_spd, wave_dir, swell_period ← 予報APIに含まれない
 
 [使い方]
   python insights/combo_deep_dive.py --fish アジ --ship かめだや
@@ -61,18 +63,19 @@ MIN_N_COMBO = 10            # 分析最小件数
 # ── 予報有効ホライズン分類 ────────────────────────────────────────────────
 # 遅い変数（SST・気温・気圧水準）：変化が緩やか → H=28 でも有効
 SLOW_FACTORS = {
-    "sst",
-    "temp", "temp_max", "temp_min",        # 気温（06:00・日内max/min）
-    "pressure", "pressure_min",            # 気圧水準
+    "sst_avg",                             # SST日次平均（日内変動極小）
+    "temp_avg", "temp_max", "temp_min",    # 気温（日次avg/max/min）
+    "pressure_avg", "pressure_min",        # 気圧水準（日次avg/min）
     "pressure_delta",                      # 気圧変化傾向（低気圧接近シグナル）
     "tide_range", "moon_age", "tide_type_n",
 }
 # 速い変数（風・波・降水・急変動）：数日で激変 → H>7 では無効化
 FAST_FACTORS = {
-    "wind_speed", "wind_dir", "wind_speed_max",
-    "wave_height", "wave_height_max",
-    "wave_period", "wave_period_min",      # 波周期（最短=荒れた海）
-    "swell_height", "swell_height_max",
+    "wind_speed_avg", "wind_speed_max",    # 風速（日次avg/max）
+    "wind_dir_mode",                       # 風向（最頻方角）
+    "wave_height_avg", "wave_height_max",  # 波高（日次avg/max）
+    "wave_period_avg", "wave_period_min",  # 波周期（日次avg/min）
+    "swell_height_avg", "swell_height_max",# うねり（日次avg/max）
     "temp_range",                          # 日較差（晴天シグナル、急変しやすい）
     "pressure_range",                      # 日内変動幅（前線通過強度）
     "precip_sum",                          # 当日合計降水量
@@ -84,20 +87,24 @@ FAST_FACTORS = {
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
 # ── 全因子リスト（相関計算・バックテスト対象）──────────────────────────────
+# 06:00スナップショットを廃止し、全変数を日次集計（min/max/avg）に統一。
 WX_FACTORS = [
-    # 水温・気温（遅い変数）
-    "sst",
-    "temp", "temp_max", "temp_min", "temp_range",
-    # 気圧（水準 + 変化）
-    "pressure", "pressure_min",
+    # 水温（日内変動極小 → avg のみ）
+    "sst_avg",
+    # 気温（日次 avg/max/min/range）
+    "temp_avg", "temp_max", "temp_min", "temp_range",
+    # 気圧（日次 avg/min + 変化 + 変動幅）
+    "pressure_avg", "pressure_min",
     "pressure_delta",   # 当日min - 前日min（低気圧接近/通過シグナル）
     "pressure_range",   # 日内変動幅（前線通過強度 → 全魚種で活性化）
-    # 風（06:00瞬間値 + 日内最大）
-    "wind_speed", "wind_dir", "wind_speed_max",
-    # 波浪（06:00瞬間値 + 日内max/min）
-    "wave_height", "wave_height_max",
-    "wave_period", "wave_period_min",
-    "swell_height", "swell_height_max",
+    # 風（日次 avg/max + 最頻風向）
+    "wind_speed_avg", "wind_speed_max",
+    "wind_dir_mode",    # 最頻風向（16方位に丸めて mode）
+    # 波浪（日次 avg/max + 周期 avg/min）
+    "wave_height_avg", "wave_height_max",
+    "wave_period_avg", "wave_period_min",
+    # うねり（日次 avg/max）
+    "swell_height_avg", "swell_height_max",
     # 降水量（日次合計 + ラグ）
     # 【重要】雨の2日後に濁りが最大 → precip_sum2 が負相関（全魚種共通シグナル）
     "precip_sum",    # 当日合計：低気圧通過シグナル（正相関の可能性）
@@ -368,77 +375,82 @@ def load_records(fish, ship_filter=None):
     records.sort(key=lambda r: r["date"])
     return records
 
-def get_wx(conn_wx, lat, lon, date_iso):
-    """指定座標・日付の 06:00 前後の海況を返す（瞬間値：波高・風速・SST など）"""
-    if conn_wx is None:
-        return {}
-    row = conn_wx.execute("""
-        SELECT wind_speed, wind_dir, temp, pressure,
-               wave_height, wave_period, swell_height, sst
-        FROM weather
-        WHERE lat=? AND lon=? AND dt LIKE ?
-        ORDER BY ABS(CAST(substr(dt,12,2) AS INT) - 6)
-        LIMIT 1
-    """, (lat, lon, f"{date_iso}%")).fetchone()
-    if not row:
-        return None
-    keys = ["wind_speed","wind_dir","temp","pressure",
-            "wave_height","wave_period","swell_height","sst"]
-    return dict(zip(keys, row))
-
-def get_daily_agg(conn_wx, lat, lon, date_iso):
-    """その日の全3時間データ（最大8点）を日次集計して返す。"""
+def get_daily_wx(conn_wx, lat, lon, date_iso):
+    """その日の全3時間データ（最大8点）を日次集計して返す。
+    06:00スナップショットを廃止し、全変数を min/max/avg で統一。
+    wind_dir は最頻風向（mode）を使用。
+    """
     if conn_wx is None:
         return {}
     rows = conn_wx.execute("""
-        SELECT pressure, precipitation, wind_speed, wave_height,
-               temp, swell_height, wave_period
+        SELECT wind_speed, wind_dir, temp, pressure,
+               wave_height, wave_period, swell_height, sst,
+               precipitation
         FROM weather
         WHERE lat=? AND lon=? AND dt LIKE ?
         ORDER BY dt
     """, (lat, lon, f"{date_iso}%")).fetchall()
     if not rows:
-        return {}
+        return None
 
-    pressures     = [r[0] for r in rows if r[0] is not None]
-    precips       = [r[1] for r in rows if r[1] is not None]
-    wind_speeds   = [r[2] for r in rows if r[2] is not None]
-    wave_heights  = [r[3] for r in rows if r[3] is not None]
-    temps         = [r[4] for r in rows if r[4] is not None]
-    swell_heights = [r[5] for r in rows if r[5] is not None]
-    wave_periods  = [r[6] for r in rows if r[6] is not None]
+    wind_speeds   = [r[0] for r in rows if r[0] is not None]
+    wind_dirs     = [r[1] for r in rows if r[1] is not None]
+    temps         = [r[2] for r in rows if r[2] is not None]
+    pressures     = [r[3] for r in rows if r[3] is not None]
+    wave_heights  = [r[4] for r in rows if r[4] is not None]
+    wave_periods  = [r[5] for r in rows if r[5] is not None]
+    swell_heights = [r[6] for r in rows if r[6] is not None]
+    ssts          = [r[7] for r in rows if r[7] is not None]
+    precips       = [r[8] for r in rows if r[8] is not None]
 
     result = {}
-    # 降水量：日次合計（ラグ付きで濁り判定に使用）
-    if precips:
-        result["precip_sum"] = sum(precips)
 
-    # 気圧：最低値（低気圧の深さ）＋変動幅（前線通過強度）
+    # ── 風速: avg, max ──
+    if wind_speeds:
+        result["wind_speed_avg"] = sum(wind_speeds) / len(wind_speeds)
+        result["wind_speed_max"] = max(wind_speeds)
+
+    # ── 風向: 最頻方角（16方位に丸めて mode）──
+    if wind_dirs:
+        # 16方位（22.5°刻み）に丸めて最頻値を取る
+        binned = [round(d / 22.5) % 16 * 22.5 for d in wind_dirs]
+        result["wind_dir_mode"] = max(set(binned), key=binned.count)
+
+    # ── 気温: avg, max, min ──
+    if temps:
+        result["temp_avg"]   = sum(temps) / len(temps)
+        result["temp_max"]   = max(temps)
+        result["temp_min"]   = min(temps)
+        result["temp_range"] = max(temps) - min(temps)
+
+    # ── 気圧: avg, min ──
     if pressures:
+        result["pressure_avg"]   = sum(pressures) / len(pressures)
         result["pressure_min"]   = min(pressures)
         result["pressure_range"] = max(pressures) - min(pressures)
 
-    # 風速：日内最大（最悪条件・出船判断に関与）
-    if wind_speeds:
-        result["wind_speed_max"] = max(wind_speeds)
-
-    # 波高：日内最大（06:00より実態を反映）
+    # ── 波高: avg, max ──
     if wave_heights:
+        result["wave_height_avg"] = sum(wave_heights) / len(wave_heights)
         result["wave_height_max"] = max(wave_heights)
 
-    # 気温：日内最高・最低・変動幅
-    if temps:
-        result["temp_max"]   = max(temps)
-        result["temp_min"]   = min(temps)
-        result["temp_range"] = max(temps) - min(temps)  # 日較差大=晴天/移動性高気圧
+    # ── 波周期: avg, min ──
+    if wave_periods:
+        result["wave_period_avg"] = sum(wave_periods) / len(wave_periods)
+        result["wave_period_min"] = min(wave_periods)
 
-    # うねり：日内最大（沖あわせ・出船可否に影響）
+    # ── うねり: avg, max ──
     if swell_heights:
+        result["swell_height_avg"] = sum(swell_heights) / len(swell_heights)
         result["swell_height_max"] = max(swell_heights)
 
-    # 波周期：日内最短（最短=短周期波が混在=荒れた海）
-    if wave_periods:
-        result["wave_period_min"] = min(wave_periods)
+    # ── SST: avg のみ（日内変動極小）──
+    if ssts:
+        result["sst_avg"] = sum(ssts) / len(ssts)
+
+    # ── 降水量: 日次合計 ──
+    if precips:
+        result["precip_sum"] = sum(precips)
 
     return result
 
@@ -513,37 +525,28 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         wx_date   = (d - timedelta(days=horizon)).strftime("%Y-%m-%d")
         tide_date = d.strftime("%Y-%m-%d")  # 潮汐は当日固定（天文計算で確定）
 
-        # 海況（horizon 日前）
+        # 海況（horizon 日前）── 全変数を日次集計（min/max/avg）で取得
         wk = (wlat, wlon, wx_date)
         if wk not in wx_cache:
-            wx_cache[wk] = get_wx(conn_wx, wlat, wlon, wx_date)
+            wx_cache[wk] = get_daily_wx(conn_wx, wlat, wlon, wx_date)
         wx = wx_cache[wk]
         if not wx:
             continue
-
-        # ── 日次集計（3時間×8点を横断）──────────────────────────────────
-        # 当日の日次集計（precip_sum0, pressure_min, pressure_range など）
-        dagg_key = (wlat, wlon, wx_date, "dagg")
-        if dagg_key not in wx_cache:
-            wx_cache[dagg_key] = get_daily_agg(conn_wx, wlat, wlon, wx_date)
-        dagg = wx_cache[dagg_key]
-        wx.update(dagg)  # precip_sum0, pressure_min, pressure_range, wind_speed_max, wave_height_max
+        wx = dict(wx)  # 元キャッシュを破壊しないようコピー
 
         # 前日（D-1）の日次集計
         prev_date1 = (d - timedelta(days=horizon+1)).strftime("%Y-%m-%d")
-        dagg1_key = (wlat, wlon, prev_date1, "dagg")
-        if dagg1_key not in wx_cache:
-            wx_cache[dagg1_key] = get_daily_agg(conn_wx, wlat, wlon, prev_date1)
-        dagg1 = wx_cache[dagg1_key]
+        if (wlat, wlon, prev_date1) not in wx_cache:
+            wx_cache[(wlat, wlon, prev_date1)] = get_daily_wx(conn_wx, wlat, wlon, prev_date1)
+        dagg1 = wx_cache[(wlat, wlon, prev_date1)] or {}
         wx["precip_sum1"]      = dagg1.get("precip_sum")       # 前日合計降水量
         wx["pressure_min1"]    = dagg1.get("pressure_min")     # 前日最低気圧
 
         # 前々日（D-2）の日次集計
         prev_date2 = (d - timedelta(days=horizon+2)).strftime("%Y-%m-%d")
-        dagg2_key = (wlat, wlon, prev_date2, "dagg")
-        if dagg2_key not in wx_cache:
-            wx_cache[dagg2_key] = get_daily_agg(conn_wx, wlat, wlon, prev_date2)
-        dagg2 = wx_cache[dagg2_key]
+        if (wlat, wlon, prev_date2) not in wx_cache:
+            wx_cache[(wlat, wlon, prev_date2)] = get_daily_wx(conn_wx, wlat, wlon, prev_date2)
+        dagg2 = wx_cache[(wlat, wlon, prev_date2)] or {}
         wx["precip_sum2"]      = dagg2.get("precip_sum")       # 前々日合計降水量
 
         # pressure_delta: 当日最低気圧 - 前日最低気圧（気圧変化の方向・速度）
