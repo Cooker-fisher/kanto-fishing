@@ -42,8 +42,9 @@ DB_TIDE       = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
 DB_TYPHOON    = os.path.join(OCEAN_DIR, "typhoon.sqlite")
 DB_ANA        = os.path.join(RESULTS_DIR, "analysis.sqlite")
 OUT_DIR       = os.path.join(RESULTS_DIR, "deep_dive")
-OVERRIDE_FILE = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
-SHIPS_FILE    = os.path.join(ROOT_DIR, "crawl", "ships.json")
+OVERRIDE_FILE  = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
+SHIPS_FILE     = os.path.join(ROOT_DIR, "crawl", "ships.json")
+OBS_FIELDS_FILE = os.path.join(NORMALIZE_DIR, "obs_fields.json")
 
 TRAIN_END  = "2024/12/31"   # この日以前 = 学習データ
 HORIZONS   = [0, 1, 3, 7, 14, 21, 28]
@@ -123,18 +124,75 @@ TYPHOON_FACTORS = ["typhoon_dist", "typhoon_wind"]
 # 全因子（相関計算対象）
 ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS
 
-# 観測因子（船長ログから取れる当日実測値 — 予報不可 → バックテスト対象外・相関確認のみ）
-# water_color_n : 澄み=1 / やや澄=0.5 / 普通=0 / やや濁=-0.5 / 濁り=-1 / 青潮赤潮=-2
-# tide_speed_n  : 上げ=1 / 下げ=0.5 / 普通=0 / 速=-0.5 / 止まり/二枚=-1
-# wave_obs_n    : 凪=1 / 普通=0 / ウネリ=-0.5 / 時化=-1
-# by_catch_n    : by_catch に記録された外道魚種の数
-# depth_avg     : (depth_min + depth_max) / 2 [m]
-# time_slot_n   : 午前=1 / ショート=0.5 / 午後=0 / 夜=-1
-# is_boat       : 仕立て=1 / 乗合=0（釣果バイアス要因）
-OBS_FACTORS = [
-    "water_color_n", "tide_speed_n", "wave_obs_n", "by_catch_n",
-    "depth_avg", "time_slot_n", "is_boat",
-]
+# 観測因子リストは normalize/obs_fields.json から動的に取得する。
+# → OBS_FACTORS は _get_obs_factors() で取得。新CSV列追加時は obs_fields.json だけ変更。
+_OBS_CONFIG_CACHE = None
+
+def _get_obs_config():
+    global _OBS_CONFIG_CACHE
+    if _OBS_CONFIG_CACHE is None:
+        try:
+            with open(OBS_FIELDS_FILE, encoding="utf-8") as f:
+                _OBS_CONFIG_CACHE = json.load(f)
+        except Exception:
+            _OBS_CONFIG_CACHE = {"fields": {}}
+    return _OBS_CONFIG_CACHE
+
+def _get_obs_factors():
+    """obs_fields.json の role=obs_factor なフィールド名リストを返す"""
+    cfg = _get_obs_config()
+    return [name for name, spec in cfg.get("fields", {}).items()
+            if spec.get("role") == "obs_factor"]
+
+def _compute_obs_fields(row):
+    """obs_fields.json の定義に従い CSV 行から全OBS/TEXTフィールドを計算する。
+    戻り値: {field_name: value, ..., 'text_all': '...'}
+    新CSV列追加時はこの関数ではなく obs_fields.json にエントリを追加する。
+    """
+    cfg = _get_obs_config()
+    result = {}
+    text_parts = []
+
+    for name, spec in cfg.get("fields", {}).items():
+        role    = spec.get("role", "obs_factor")
+        compute = spec.get("compute", "direct")
+        src     = spec.get("source", name)
+        srcs    = [src] if isinstance(src, str) else list(src)
+
+        val = None
+        if compute == "direct":
+            val = _float(row.get(srcs[0]))
+        elif compute == "binary":
+            v = (row.get(srcs[0]) or "").strip()
+            val = float(v) if v in ("0", "1") else None
+        elif compute == "avg":
+            nums = [_float(row.get(s)) for s in srcs]
+            nums = [n for n in nums if n is not None]
+            val  = sum(nums) / len(nums) if nums else None
+        elif compute == "map":
+            raw = (row.get(srcs[0]) or "").strip()
+            val = spec.get("map", {}).get(raw)
+        elif compute == "keyword_score":
+            combined = " ".join((row.get(s) or "") for s in srcs)
+            for kw, score in spec.get("scores", {}).items():
+                if kw in combined:
+                    val = score
+                    break
+        elif compute == "split_count":
+            raw = (row.get(srcs[0]) or "").strip()
+            if raw:
+                parts = re.split(r'[,、/・\s]+', raw)
+                val   = float(len([p for p in parts if len(p) >= 2]))
+        elif compute == "text_concat":
+            raw = " ".join(filter(None, ((row.get(s) or "").strip() for s in srcs)))
+            val = raw if raw else None
+
+        result[name] = val
+        if role == "text_field" and val:
+            text_parts.append(val)
+
+    result["text_all"] = " ".join(text_parts)
+    return result
 
 TIDE_TYPE_MAP = {"大潮": 4, "中潮": 3, "小潮": 2, "長潮": 1, "若潮": 1}
 
@@ -444,118 +502,26 @@ def load_records(fish, ship_filter=None):
                     point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
                 )
 
-                # ── trip_no / is_boat ──
-                trip_no = int(row.get("trip_no") or 1)
-                is_boat = int(row.get("is_boat") or 0)
-
-                # ── depth ──
-                d_min = _float(row.get("depth_min"))
-                d_max = _float(row.get("depth_max"))
-                depth_avg = ((d_min + d_max) / 2) if d_min and d_max else (d_min or d_max)
-
-                # ── テキストフィールド（船長ログの観測値） ──
-                kanso      = (row.get("kanso_raw") or row.get("fish_raw") or "").strip()
-                by_catch   = (row.get("by_catch") or "").strip()
-                tide_info  = (row.get("tide_info") or "").strip()
-                wave_info  = (row.get("wave_info") or "").strip()
-                water_col  = (row.get("water_color") or row.get("suishoku_raw") or "").strip()
-                # 全テキスト結合（キーワード検索用）
-                text_all   = " ".join(filter(None, [kanso, by_catch, tide_info, wave_info, water_col]))
-
-                # ── OBS 数値エンコード ──
-                # water_color_n
-                _wc = water_col + " " + kanso  # water_color フィールド優先、kansoも参照
-                if any(k in _wc for k in ["青潮", "赤潮"]):
-                    water_color_n = -2.0
-                elif any(k in _wc for k in ["濁り", "茶色", "チョコ"]):
-                    water_color_n = -1.0
-                elif any(k in _wc for k in ["笹濁", "やや濁"]):
-                    water_color_n = -0.5
-                elif any(k in _wc for k in ["澄み", "澄んで", "やや澄"]):
-                    water_color_n = 0.5
-                elif any(k in _wc for k in ["澄", "青い", "綺麗", "きれい"]):
-                    water_color_n = 1.0
-                else:
-                    water_color_n = None
-
-                # tide_speed_n
-                _ti = tide_info + " " + kanso
-                if any(k in _ti for k in ["止まり", "止り", "二枚潮", "長潮"]):
-                    tide_speed_n = -1.0
-                elif any(k in _ti for k in ["速潮", "潮が速", "潮速"]):
-                    tide_speed_n = -0.5
-                elif any(k in _ti for k in ["ゆるい", "ゆっくり", "緩い"]):
-                    tide_speed_n = 0.0
-                elif any(k in _ti for k in ["下げ潮", "下げ"]):
-                    tide_speed_n = 0.5
-                elif any(k in _ti for k in ["上げ潮", "上げ"]):
-                    tide_speed_n = 1.0
-                else:
-                    tide_speed_n = None
-
-                # wave_obs_n
-                _wi = wave_info + " " + kanso
-                if any(k in _wi for k in ["時化", "シケ", "荒れ"]):
-                    wave_obs_n = -1.0
-                elif any(k in _wi for k in ["ウネリ", "うねり", "うねって"]):
-                    wave_obs_n = -0.5
-                elif any(k in _wi for k in ["べた凪", "べたなぎ", "ナギ", "凪", "穏やか"]):
-                    wave_obs_n = 1.0
-                else:
-                    wave_obs_n = None
-
-                # by_catch_n: 外道リストの魚種数（カンマ/スラッシュ/スペース区切りを想定）
-                if by_catch:
-                    _parts = re.split(r'[,、/・\s]+', by_catch)
-                    by_catch_n = float(len([p for p in _parts if len(p) >= 2]))
-                else:
-                    by_catch_n = None
-
-                # time_slot_n
-                _ts = (row.get("time_slot") or "").strip()
-                if _ts == "午前":
-                    time_slot_n = 1.0
-                elif _ts == "ショート":
-                    time_slot_n = 0.5
-                elif _ts == "午後":
-                    time_slot_n = 0.0
-                elif _ts in ("朝", "夕"):
-                    time_slot_n = 0.5
-                elif _ts == "夜":
-                    time_slot_n = -1.0
-                else:
-                    time_slot_n = None
+                # OBS/TEキストフィールドを obs_fields.json から一括計算
+                obs = _compute_obs_fields(row)
 
                 records.append({
-                    "ship":          ship,
-                    "area":          row.get("area", "").strip(),
-                    "date":          date_str,
-                    "decade":        decade_of(date_str),
-                    "cnt_avg":       cnt_avg,
-                    "cnt_min":       _float(row.get("cnt_min")),
-                    "cnt_max":       _float(row.get("cnt_max")),
-                    "size_avg":      size_avg,
-                    "kg_avg":        kg_avg,
-                    "point":         point_place1,
-                    "lat":           lat,
-                    "lon":           lon,
-                    "kanso":         kanso,
-                    "by_catch":      by_catch,
-                    "tide_info":     tide_info,
-                    "wave_info":     wave_info,
-                    "water_color":   water_col,
-                    "text_all":      text_all,
-                    # OBS数値因子
-                    "water_color_n": water_color_n,
-                    "tide_speed_n":  tide_speed_n,
-                    "wave_obs_n":    wave_obs_n,
-                    "by_catch_n":    by_catch_n,
-                    "depth_avg":     depth_avg,
-                    "time_slot_n":   time_slot_n,
-                    "is_boat":       float(is_boat),
-                    # 参照用
-                    "trip_no":       trip_no,
-                    "is_train":      date_str <= TRAIN_END,
+                    "ship":    ship,
+                    "area":    row.get("area", "").strip(),
+                    "date":    date_str,
+                    "decade":  decade_of(date_str),
+                    "cnt_avg": cnt_avg,
+                    "cnt_min": _float(row.get("cnt_min")),
+                    "cnt_max": _float(row.get("cnt_max")),
+                    "size_avg": size_avg,
+                    "kg_avg":  kg_avg,
+                    "point":   point_place1,
+                    "lat":     lat,
+                    "lon":     lon,
+                    # 参照用（obs_fields.json 外）
+                    "trip_no": int(row.get("trip_no") or 1),
+                    "is_train": date_str <= TRAIN_END,
+                    **obs,   # OBS因子 + テキストフィールド + text_all
                 })
     records.sort(key=lambda r: r["date"])
     return records
@@ -935,20 +901,21 @@ def section_keywords(records):
     return (lines or ["  (有意なキーワードなし)"]), kw_data
 
 def section_obs_corr(records):
-    """観測因子（OBS_FACTORS）の相関分析。予報不可だが釣果パターン把握に使う。
-    船宿ごとに fill rate を表示し、フィールドが薄い場合は注記する。
+    """観測因子（obs_fields.json role=obs_factor）の相関分析。
+    予報不可だが釣果パターン把握に使う。フィールド定義は normalize/obs_fields.json を参照。
     """
+    obs_factors = _get_obs_factors()
     targets = ["cnt_avg", "cnt_max", "size_avg", "kg_avg"]
     lines   = []
     fill_rates = {}
-    for fac in OBS_FACTORS:
+    for fac in obs_factors:
         vals = [r.get(fac) for r in records]
         n_filled = sum(1 for v in vals if v is not None)
         fill_rates[fac] = n_filled / len(records) * 100 if records else 0
     lines.append(f"  {'因子':<16} {'fill%':>5}  cnt_avg     cnt_max     size_avg    kg_avg")
     lines.append("  " + "-"*75)
     any_result = False
-    for fac in OBS_FACTORS:
+    for fac in obs_factors:
         fill = fill_rates[fac]
         if fill < 1.0:
             lines.append(f"  {fac:<16} {fill:>4.1f}%  (データ不足・スキップ)")

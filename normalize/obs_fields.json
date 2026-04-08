@@ -1,0 +1,141 @@
+{
+  "_note": [
+    "CSV列追加時の手順（PIPELINE.md も参照）:",
+    "1. このファイルにエントリを追加するだけで combo_deep_dive.py に自動適用される",
+    "2. role: 'obs_factor'  → OBS因子として相関分析に使う（予報不可・バックテスト対象外）",
+    "3. role: 'text_field'  → text_all に結合してキーワード検索に使う",
+    "4. compute 種別:",
+    "   direct       : CSV列の数値をそのまま使う",
+    "   avg          : 複数ソース列の平均（例: depth_min + depth_max）",
+    "   map          : 文字列 → 数値の辞書変換（完全一致）",
+    "   keyword_score: テキスト内のキーワードにスコアを割り当てる（先頭一致が優先）",
+    "   split_count  : カンマ/スラッシュ等で分割した要素数を数える",
+    "   text_concat  : 複数列を結合してテキストとして扱う"
+  ],
+  "fields": {
+    "depth_avg": {
+      "source": ["depth_min", "depth_max"],
+      "compute": "avg",
+      "role": "obs_factor",
+      "desc": "実測水深[m]（depth_min/max の平均）"
+    },
+    "water_color_n": {
+      "source": ["water_color", "suishoku_raw"],
+      "compute": "keyword_score",
+      "scores": {
+        "青潮":   -2.0,
+        "赤潮":   -2.0,
+        "濁り":   -1.0,
+        "茶色":   -1.0,
+        "チョコ": -1.0,
+        "笹濁":   -0.5,
+        "やや濁": -0.5,
+        "やや澄":  0.5,
+        "澄み":    1.0,
+        "澄んで":  1.0,
+        "青い":    1.0,
+        "綺麗":    1.0,
+        "きれい":  1.0
+      },
+      "role": "obs_factor",
+      "desc": "水色スコア（澄み=+1, 濁り=-1, 青潮赤潮=-2）"
+    },
+    "tide_speed_n": {
+      "source": ["tide_info", "kanso_raw"],
+      "compute": "keyword_score",
+      "scores": {
+        "止まり":   -1.0,
+        "止り":     -1.0,
+        "二枚潮":   -1.0,
+        "長潮":     -1.0,
+        "速潮":     -0.5,
+        "潮が速":   -0.5,
+        "潮速":     -0.5,
+        "ゆるい":    0.0,
+        "ゆっくり":  0.0,
+        "緩い":      0.0,
+        "下げ潮":    0.5,
+        "下げ":      0.5,
+        "上げ潮":    1.0,
+        "上げ":      1.0
+      },
+      "role": "obs_factor",
+      "desc": "潮速スコア（上げ=+1, 止まり=-1）"
+    },
+    "wave_obs_n": {
+      "source": ["wave_info", "kanso_raw"],
+      "compute": "keyword_score",
+      "scores": {
+        "時化":     -1.0,
+        "シケ":     -1.0,
+        "荒れ":     -1.0,
+        "ウネリ":   -0.5,
+        "うねり":   -0.5,
+        "うねって": -0.5,
+        "べた凪":    1.0,
+        "べたなぎ":  1.0,
+        "ナギ":      1.0,
+        "凪":        1.0,
+        "穏やか":    1.0
+      },
+      "role": "obs_factor",
+      "desc": "波況スコア（凪=+1, 時化=-1）"
+    },
+    "by_catch_n": {
+      "source": "by_catch",
+      "compute": "split_count",
+      "role": "obs_factor",
+      "desc": "外道魚種数（by_catch のカンマ/スラッシュ区切り数）"
+    },
+    "time_slot_n": {
+      "source": "time_slot",
+      "compute": "map",
+      "map": {
+        "午前":    1.0,
+        "朝":      0.5,
+        "夕":      0.5,
+        "ショート": 0.5,
+        "午後":    0.0,
+        "夜":     -1.0
+      },
+      "role": "obs_factor",
+      "desc": "出船時間帯スコア（午前=1, 午後=0, 夜=-1）"
+    },
+    "is_boat": {
+      "source": "is_boat",
+      "compute": "direct",
+      "role": "obs_factor",
+      "desc": "仕立て=1 / 乗合=0（釣果バイアス要因）"
+    },
+    "kanso": {
+      "source": ["kanso_raw", "fish_raw"],
+      "compute": "text_concat",
+      "role": "text_field",
+      "desc": "感想テキスト（kanso_raw 優先、なければ fish_raw）"
+    },
+    "by_catch": {
+      "source": "by_catch",
+      "compute": "text_concat",
+      "role": "text_field",
+      "desc": "外道テキスト"
+    },
+    "tide_info": {
+      "source": "tide_info",
+      "compute": "text_concat",
+      "role": "text_field",
+      "desc": "潮情報テキスト"
+    },
+    "wave_info": {
+      "source": "wave_info",
+      "compute": "text_concat",
+      "role": "text_field",
+      "desc": "波況テキスト"
+    },
+    "water_color": {
+      "source": ["water_color", "suishoku_raw"],
+      "compute": "text_concat",
+      "role": "text_field",
+      "desc": "水色テキスト"
+    }
+  }
+}
