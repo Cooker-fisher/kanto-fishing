@@ -65,6 +65,7 @@ MIN_N_COMBO = 10            # 分析最小件数
 # 遅い変数（SST・気温・気圧水準）：変化が緩やか → H=28 でも有効
 SLOW_FACTORS = {
     "sst_avg",                             # SST日次平均（日内変動極小）
+    "sst_delta",                           # 7日間SST変化（回遊アジ到来/離脱シグナル）
     "temp_avg", "temp_max", "temp_min",    # 気温（日次avg/max/min）
     "pressure_avg", "pressure_min",        # 気圧水準（日次avg/min）
     "pressure_delta",                      # 気圧変化傾向（低気圧接近シグナル）
@@ -74,6 +75,8 @@ SLOW_FACTORS = {
 FAST_FACTORS = {
     "wind_speed_avg", "wind_speed_max",    # 風速（日次avg/max）
     "wind_dir_mode",                       # 風向（最頻方角）
+    "wind_dir_n",                          # 風向北南成分 cos(deg): 北=+1, 南=-1（循環補正）
+    "wind_dir_e",                          # 風向東西成分 sin(deg): 東=+1, 西=-1（循環補正）
     "wave_height_avg", "wave_height_max",  # 波高（日次avg/max）
     "wave_period_avg", "wave_period_min",  # 波周期（日次avg/min）
     "swell_height_avg", "swell_height_max",# うねり（日次avg/max）
@@ -101,7 +104,9 @@ WX_FACTORS = [
     "pressure_range",   # 日内変動幅（前線通過強度 → 全魚種で活性化）
     # 風（日次 avg/max + 最頻風向）
     "wind_speed_avg", "wind_speed_max",
-    "wind_dir_mode",    # 最頻風向（16方位に丸めて mode）
+    "wind_dir_mode",    # 最頻風向（16方位に丸めて mode、度数単位）
+    "wind_dir_n",      # 北南成分 cos(wind_dir_deg): 北=+1, 南=-1
+    "wind_dir_e",      # 東西成分 sin(wind_dir_deg): 東=+1, 西=-1
     # 波浪（日次 avg/max + 周期 avg/min）
     "wave_height_avg", "wave_height_max",
     "wave_period_avg", "wave_period_min",
@@ -115,6 +120,9 @@ WX_FACTORS = [
     "precip_sum2",   # 前々日合計：2日遅れ濁りピーク（負相関 → 全魚種適用）
     # 気温変化（前日比）
     "temp_delta",    # 当日avg - 前日avg（冬の急上昇 → 南風・表層暖水 → イカ不漁）
+    # SST変化率（7日間）
+    # 【重要】回遊アジは水温変化で到来/離脱 → SST急落時に大アジ回遊開始シグナル
+    "sst_delta",     # 当日SST - 7日前SST（降下=冬型アジ到来、上昇=夏型移行シグナル）
 ]
 # 潮汐（tide テーブルから取る）
 TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta"]
@@ -733,6 +741,27 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         t_today = wx.get("temp_avg")
         t_prev  = dagg1.get("temp_avg")
         wx["temp_delta"] = (t_today - t_prev) if (t_today is not None and t_prev is not None) else None
+
+        # wind_dir_n/e: 風向の循環補正（北南・東西成分に分解）
+        # wind_dir_mode は 0〜337.5度 → cos/sin で north/east 成分へ変換
+        # 北風(0°)=+1/0、南風(180°)=-1/0、東風(90°)=0/+1、西風(270°)=0/-1
+        _wdeg = wx.get("wind_dir_mode")
+        if _wdeg is not None:
+            _wrad = math.radians(_wdeg)
+            wx["wind_dir_n"] = math.cos(_wrad)   # 北=+1, 南=-1
+            wx["wind_dir_e"] = math.sin(_wrad)   # 東=+1, 西=-1
+        else:
+            wx["wind_dir_n"] = None
+            wx["wind_dir_e"] = None
+
+        # sst_delta: 当日SST - 7日前SST（回遊アジ到来シグナル：急降下=冬アジ接近）
+        prev_date7 = (d - timedelta(days=horizon+7)).strftime("%Y-%m-%d")
+        if (wlat, wlon, prev_date7) not in wx_cache:
+            wx_cache[(wlat, wlon, prev_date7)] = get_daily_wx(conn_wx, wlat, wlon, prev_date7)
+        dagg7 = wx_cache[(wlat, wlon, prev_date7)] or {}
+        sst_now  = wx.get("sst_avg")
+        sst_prev7 = dagg7.get("sst_avg")
+        wx["sst_delta"] = (sst_now - sst_prev7) if (sst_now is not None and sst_prev7 is not None) else None
 
         # ── 前週釣果（prev_week_cnt）────────────────────────────────────────
         # prediction_date = D - horizon の時点で知っている最新の釣果を取得

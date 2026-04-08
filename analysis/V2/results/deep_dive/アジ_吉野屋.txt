@@ -48,6 +48,7 @@
     prev_week_cnt    r=+0.221   p=0.055  n=74  ↑
     wave_period_avg  r=-0.204   p=0.075  n=75  ↓
     wind_speed_avg   r=-0.202   p=0.078  n=75  ↓
+    moon_sin         r=+0.196   p=0.087  n=75  ↑
 
   [size_avg]
     sst_avg          r=+0.670**  p=0.000  n=75  ↑
@@ -60,17 +61,20 @@
     wind_dir_mode    r=-0.230*  p=0.043  n=75  ↓
     wave_period_min  r=+0.227*  p=0.046  n=75  ↑
     swell_height_max r=+0.221   p=0.052  n=75  ↑
+    sst_delta        r=-0.218   p=0.057  n=75  ↓
 
 【因子相関（週集計: n=13週）】
 
   [cnt_avg]
     prev_week_cnt    r=+0.852**  p=0.000  n=13  ↑
     precip_sum       r=+0.714**  p=0.001  n=13  ↑
+    wind_dir_n       r=-0.626**  p=0.008  n=13  ↓
     precip_sum1      r=+0.542*  p=0.033  n=13  ↑
 
   [cnt_max]
     precip_sum       r=+0.846**  p=0.000  n=13  ↑
     prev_week_cnt    r=+0.823**  p=0.000  n=13  ↑
+    wind_dir_n       r=-0.695**  p=0.001  n=13  ↓
     precip_sum1      r=+0.693**  p=0.001  n=13  ↑
     temp_min         r=+0.621**  p=0.009  n=13  ↑
     temp_avg         r=+0.600*  p=0.013  n=13  ↑
@@ -81,11 +85,14 @@
 
   [size_avg]
     precip_sum2      r=-0.523*  p=0.042  n=13  ↓
+    moon_sin         r=-0.471   p=0.077  n=13  ↓
+    moon_cos         r=+0.470   p=0.078  n=13  ↑
 
 【因子相関（旬集計: n=10旬）】
 
   [cnt_avg]
     prev_week_cnt    r=+0.905**  p=0.000  n=10  ↑
+    wind_dir_n       r=-0.655*  p=0.014  n=10  ↓
     precip_sum       r=+0.614*  p=0.028  n=10  ↑
     pressure_range   r=+0.587*  p=0.040  n=10  ↑
     temp_min         r=+0.569   p=0.050  n=10  ↑
@@ -98,6 +105,7 @@
     prev_week_cnt    r=+0.869**  p=0.000  n=10  ↑
     temp_min         r=+0.708**  p=0.005  n=10  ↑
     precip_sum       r=+0.699**  p=0.006  n=10  ↑
+    wind_dir_n       r=-0.697**  p=0.006  n=10  ↓
     temp_avg         r=+0.648*  p=0.016  n=10  ↑
     precip_sum1      r=+0.638*  p=0.019  n=10  ↑
     sst_avg          r=+0.629*  p=0.022  n=10  ↑
@@ -106,9 +114,12 @@
 
   [size_avg]
     precip_sum2      r=-0.879**  p=0.000  n=10  ↓
+    wind_dir_n       r=+0.676**  p=0.009  n=10  ↑
     temp_max         r=-0.600*  p=0.034  n=10  ↓
     precip_sum1      r=-0.594*  p=0.037  n=10  ↓
     precip_sum       r=-0.583*  p=0.042  n=10  ↓
+    moon_cos         r=+0.570*  p=0.050  n=10  ↑
+    sst_delta        r=-0.569   p=0.051  n=10  ↓
     temp_avg         r=-0.543   p=0.067  n=10  ↓
 
 【因子相関（月集計: n=4月）】
