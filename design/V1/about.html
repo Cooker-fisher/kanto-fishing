@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>このサイトについて | 船釣り予想</title>
+  <meta name="description" content="船釣り予想は関東エリアの船宿釣果を毎日自動収集・横断集計し、釣行の意思決定をサポートするサイトです。">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h1><a href="index.html" style="color:inherit;text-decoration:none">船釣り予想</a></h1>
+    <button class="hamburger" aria-label="メニュー">☰</button>
+  </div>
+</header>
+<nav><span class="nav-links"><a href="index.html">トップ</a><a href="calendar.html">カレンダー</a></span></nav>
+<div class="drawer-overlay"></div>
+<div class="drawer"><a href="index.html">トップ</a><a href="calendar.html">カレンダー</a><a href="privacy.html">プライバシーポリシー</a><a href="about.html">このサイトについて</a></div>
+<div class="wrap-narrow">
+  <h2>このサイトについて</h2>
+
+  <h3 style="margin:20px 0 8px;font-size:14px">船釣り予想とは</h3>
+  <p style="font-size:13px;line-height:1.8;margin-bottom:12px">「船釣り予想」は、関東エリア（神奈川・東京・千葉・茨城）の船宿釣果情報を毎日自動収集し、魚種・エリア・船宿を横断的に集計・分析するサイトです。「今週どこで何を狙うか」の意思決定をデータでサポートします。</p>
+
+  <h3 style="margin:20px 0 8px;font-size:14px">特徴</h3>
+  <ul style="font-size:13px;line-height:1.8;margin:8px 0 12px 20px">
+    <li><strong>横断集計</strong>: 約75軒の船宿釣果を一括比較</li>
+    <li><strong>毎日更新</strong>: 毎日16:30 JSTに自動更新</li>
+    <li><strong>釣果予測</strong>: 過去データ×気象データから来週の釣果傾向を予測（有料）</li>
+    <li><strong>海況連動</strong>: 波高・風速・水温・潮汐と釣果の相関分析</li>
+  </ul>
+
+  <h3 style="margin:20px 0 8px;font-size:14px">競合との違い</h3>
+  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;margin:12px 0">
+    <p style="font-size:13px;line-height:1.8;margin-bottom:8px"><strong>釣りビジョン</strong> = 個別船宿の詳細記録</p>
+    <p style="font-size:13px;line-height:1.8;margin-bottom:8px"><strong>船釣り.jp</strong> = 船宿・口コミのデータベース＋年間傾向</p>
+    <p style="font-size:13px;line-height:1.8"><strong>船釣り予想</strong> = <span style="color:var(--accent);font-weight:bold">横断集計＋予測で意思決定を助ける</span></p>
+  </div>
+
+  <h3 style="margin:20px 0 8px;font-size:14px">データソース</h3>
+  <ul style="font-size:13px;line-height:1.8;margin:8px 0 12px 20px">
+    <li><strong>釣果データ</strong>: 釣りビジョン (fishing-v.jp) から毎日自動収集</li>
+    <li><strong>気象・海況データ</strong>: Open-Meteo API（波高・風速・水温・気圧）</li>
+    <li><strong>潮汐・月齢データ</strong>: 天文計算による算出</li>
+    <li><strong>台風データ</strong>: 気象庁 BestTrack</li>
+  </ul>
+
+  <h3 style="margin:20px 0 8px;font-size:14px">カバレッジ</h3>
+  <p style="font-size:13px;line-height:1.8;margin-bottom:12px">茨城・千葉（外房・内房・東京湾奥）・東京・神奈川（東京湾・相模湾）・静岡の約75軒の船宿から、51魚種・306ポイントの釣果データを収集しています。データ蓄積期間は2023年1月〜現在です。</p>
+
+  <h3 style="margin:20px 0 8px;font-size:14px">有料コンテンツ</h3>
+  <p style="font-size:13px;line-height:1.8;margin-bottom:12px">無料コンテンツとして当日の釣果事実データ（何が釣れたか）を提供し、有料コンテンツとして分析・予測（なぜ釣れたか、来週の見通し）を提供します。</p>
+  <ul style="font-size:13px;line-height:1.8;margin:8px 0 12px 20px">
+    <li>月額500円: 全分析・予測コンテンツ閲覧可能</li>
+    <li>スポット100円: 単発で特定の予測を閲覧</li>
+  </ul>
+</div>
+<footer>
+  <p><a href="about.html">このサイトについて</a> | <a href="privacy.html">プライバシーポリシー</a> | <a href="terms.html">利用規約</a></p>
+  <p style="margin-top:8px">&copy; 2026 船釣り予想. All rights reserved.</p>
+</footer>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <a href="index.html"><span class="nav-icon">🐟</span>釣果</a>
+  <a href="calendar.html"><span class="nav-icon">📅</span>カレンダー</a>
+  <a href="forecast/index.html"><span class="nav-icon">📈</span>予測</a>
+  <a href="about.html"><span class="nav-icon">ℹ️</span>情報</a>
+</div></div>
+<script src="main.js"></script>
+</body></html>

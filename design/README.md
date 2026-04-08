@@ -36,10 +36,9 @@ design/
 
 **V2 を本番に上げるとき:**
 ```
-1. design/V2/ の CSS/JS が確定したら
-2. ルートの style.css / main.js を V2 版で上書き
-3. design/V2/style.css を V2 のアーカイブとして保存
-4. config.json や CLAUDE.md のデザインバージョン記載を更新
+1. design/V2/ の全ファイルが確定したら
+2. ルートの該当ファイルを V2 版で上書き（style.css / main.js / about.html 等）
+3. config.json や CLAUDE.md のデザインバージョン記載を更新
 ```
 
 ---

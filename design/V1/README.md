@@ -15,6 +15,10 @@
 |---------|------|
 | style.css | V1 CSS（ルートの style.css のコピー） |
 | main.js | V1 JS（ルートの main.js のコピー） |
+| about.html | このサイトについて |
+| contact.html | お問い合わせ |
+| privacy.html | プライバシーポリシー |
+| terms.html | 利用規約 |
 
 ---
 
