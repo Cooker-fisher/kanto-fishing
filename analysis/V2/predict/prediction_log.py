@@ -116,12 +116,16 @@ def init_table(conn: sqlite3.Connection):
         actual_pct      REAL,
         actual_wave     REAL,
         actual_wind     REAL,
-        -- サイズ予測（有料表示用・データあり魚種のみ）
+        -- サイズ予測・実績 cm（魚種によりデータあり/なし）
         pred_size_lo    REAL,
         pred_size_hi    REAL,
-        -- サイズ実績（match後）
         actual_size_min REAL,
         actual_size_max REAL,
+        -- 重量予測・実績 kg（魚種によりデータあり/なし）
+        pred_kg_lo      REAL,
+        pred_kg_hi      REAL,
+        actual_kg_min   REAL,
+        actual_kg_max   REAL,
         -- 精度評価
         wmape           REAL,
         mae             REAL,
@@ -132,9 +136,11 @@ def init_table(conn: sqlite3.Connection):
         UNIQUE(fish, ship, target_date, pred_date)
     )
     """)
-    # 既存テーブルへの列追加（テーブルが先に作られていた場合のマイグレーション）
+    # 既存テーブルへの列追加（マイグレーション）
     for col, typ in [("pred_size_lo", "REAL"), ("pred_size_hi", "REAL"),
-                     ("actual_size_min", "REAL"), ("actual_size_max", "REAL")]:
+                     ("actual_size_min", "REAL"), ("actual_size_max", "REAL"),
+                     ("pred_kg_lo", "REAL"), ("pred_kg_hi", "REAL"),
+                     ("actual_kg_min", "REAL"), ("actual_kg_max", "REAL")]:
         try:
             conn.execute(f"ALTER TABLE prediction_log ADD COLUMN {col} {typ}")
         except sqlite3.OperationalError:
@@ -263,11 +269,19 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
 
         # ベースライン取得（combo_decadal の旬別平均）
         bl_row = conn.execute(
-            "SELECT avg_cnt FROM combo_decadal WHERE fish=? AND ship=? AND decade_no=?",
+            "SELECT avg_cnt, avg_kg FROM combo_decadal WHERE fish=? AND ship=? AND decade_no=?",
             (fish, ship, dekad)
         ).fetchone()
         baseline_cnt = bl_row[0] if bl_row else None
+        avg_kg       = bl_row[1] if bl_row else None
         pred_pct     = _pct_vs_baseline(pred["cnt_predicted"], baseline_cnt)
+
+        # kg予測レンジ（avg_kg ± cnt_mape相対誤差）
+        pred_kg_lo = pred_kg_hi = None
+        if avg_kg and avg_kg > 0:
+            rel_err = wmape / 100 if (wmape := pred.get("cnt_mape", 35.0)) else 0.35
+            pred_kg_lo = round(max(0.0, avg_kg * (1 - rel_err)), 2)
+            pred_kg_hi = round(avg_kg * (1 + rel_err), 2)
 
         # 気象予報取得
         fcast_wave = fcast_wind = fcast_sst = fcast_temp = None
@@ -288,14 +302,16 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
                      pred_cnt_avg, pred_cnt_min, pred_cnt_max, pred_stars,
                      baseline_cnt, pred_pct,
                      pred_size_lo, pred_size_hi,
+                     pred_kg_lo, pred_kg_hi,
                      fcast_wave, fcast_wind, fcast_sst, fcast_temp,
                      created_at)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 fish, ship, target_date, pred_date, horizon,
                 pred["cnt_predicted"], pred["cnt_lo"], pred["cnt_hi"], stars,
                 baseline_cnt, pred_pct,
                 pred.get("size_lo"), pred.get("size_hi"),
+                pred_kg_lo, pred_kg_hi,
                 fcast_wave, fcast_wind, fcast_sst, fcast_temp,
                 now_str
             ))
@@ -352,6 +368,8 @@ def _get_actual(csv_rows: list[dict], fish: str, ship: str) -> dict | None:
         "cnt_max":  _avg([r.get("cnt_max")  for r in matched]),
         "size_min": _avg([r.get("size_min") for r in matched]),
         "size_max": _avg([r.get("size_max") for r in matched]),
+        "kg_min":   _avg([r.get("kg_min")   for r in matched]),
+        "kg_max":   _avg([r.get("kg_max")   for r in matched]),
     }
 
 
@@ -433,11 +451,13 @@ def match_actuals(dry_run: bool = False) -> int:
             SET actual_cnt_avg=?, actual_cnt_min=?, actual_cnt_max=?,
                 actual_pct=?,
                 actual_size_min=?, actual_size_max=?,
+                actual_kg_min=?,  actual_kg_max=?,
                 wmape=?, mae=?, is_good_hit=?, matched_at=?
             WHERE id=?
         """, (act_avg, act_min, act_max,
               actual_pct,
               actual.get("size_min"), actual.get("size_max"),
+              actual.get("kg_min"),   actual.get("kg_max"),
               wmape, mae, is_good_hit, now_str,
               row_id))
         updated += 1
