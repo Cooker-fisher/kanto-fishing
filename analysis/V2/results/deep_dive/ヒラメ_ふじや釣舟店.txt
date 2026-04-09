@@ -1,0 +1,154 @@
+========================================================================
+  ヒラメ × ふじや釣舟店
+========================================================================
+
+【基本統計】
+  件数: 10件 / 期間: 2024/02/11 〜 2026/01/06
+  cnt_avg  : 平均 1.1匹  中央値 1.0  std 0.3  [1 〜 2]
+  cnt_min  : 平均 1.1  cnt_max 平均 1.1  (10/10件, 100%)
+  kg_avg   : 平均 2.44kg  std 0.74  (9/10件, 90%)
+
+【旬別ベースライン（n=10件）】
+  (combo_decadal データなし)
+
+【因子相関（日次: 10件）】
+
+  [cnt_avg]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_min]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_max]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+【因子相関（週集計: n=10週）】
+
+  [cnt_avg]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_min]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_max]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+【因子相関（旬集計: n=10旬）】
+
+  [cnt_avg]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_min]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+  [cnt_max]
+    temp_delta       r=-0.754**  p=0.001  n=10  ↓
+    swell_height_avg r=+0.682**  p=0.008  n=10  ↑
+    swell_height_max r=+0.681**  p=0.008  n=10  ↑
+    wave_height_max  r=+0.669*  p=0.011  n=10  ↑
+    wave_height_avg  r=+0.634*  p=0.020  n=10  ↑
+    wave_clamp       r=+0.634*  p=0.020  n=10  ↑
+    wind_speed_avg   r=+0.572*  p=0.048  n=10  ↑
+    pressure_min     r=-0.520   p=0.085  n=10  ↓
+    pressure_avg     r=-0.514   p=0.090  n=10  ↓
+
+【因子相関（月集計: n=9月）】
+  (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.111  (n=10)  +0.111  (n=10)           —  -0.273  (n=9)
+  (有意な観測因子相関なし)
+
+【コメントキーワード解析】
+  (有意なキーワードなし)
+
+【ポイント別集計】
+  ポイント                       n       平均       最大       最小
+  -------------------------------------------------------
+  貯木場                        7      1.1        2        1
+  折戸湾                        2      1.0        1        1
+
+【マルチホライズン バックテスト（ローリング月次CV）】
+  ローリング月次CV  全9ヶ月  テスト総計: 0件
+
+  ─ Ave匹数 : データ不足 ─
+
+  ─ Min匹数 : データ不足 ─
+
+  ─ Max匹数 : データ不足 ─
+
+  ─ Ave型   : データ不足 ─
+
+  ─ Ave重量 : データ不足 ─

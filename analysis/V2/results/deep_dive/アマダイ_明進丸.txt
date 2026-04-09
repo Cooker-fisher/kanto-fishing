@@ -1,0 +1,211 @@
+========================================================================
+  アマダイ × 明進丸
+========================================================================
+
+【基本統計】
+  件数: 42件 / 期間: 2023/10/08 〜 2026/03/11
+  cnt_avg  : 平均 4.1匹  中央値 4.0  std 1.9  [1 〜 10]
+  cnt_min  : 平均 1.9  cnt_max 平均 7.3  (26/42件, 62%)
+  size_avg : 平均 38.1cm  std 1.8  [35 〜 44]  (41/42件, 98%)
+
+【旬別ベースライン（n=42件）】
+     旬       期待       実績       偏差     n  
+  ---------------------------------------------
+     8      3.8      3.8     +0.0     5
+    26      4.0      4.0     +0.0     4
+    28      4.8      4.8     +0.0     5
+    29      3.5      3.5     +0.0     6
+    30      4.2      4.2     +0.0     4
+    31      7.7      7.7     -0.0     3
+    32      3.0      3.0     +0.0     3
+    33      3.2      3.2     +0.0     5
+
+【因子相関（日次: 42件）】
+
+  [cnt_avg]
+    precip_sum2      r=+0.530**  p=0.000  n=42  ↑
+    prev_week_cnt    r=+0.466**  p=0.001  n=41  ↑
+    tide_range       r=+0.426**  p=0.003  n=42  ↑
+    wind_dir_e       r=-0.312*  p=0.038  n=42  ↓
+    tide_type_n      r=+0.311*  p=0.038  n=42  ↑
+
+  [cnt_min]
+    is_holiday       r=-0.499**  p=0.000  n=42  ↓
+    precip_sum2      r=+0.272   p=0.074  n=42  ↑
+
+  [cnt_max]
+    precip_sum2      r=+0.557**  p=0.000  n=42  ↑
+    prev_week_cnt    r=+0.494**  p=0.000  n=41  ↑
+    tide_range       r=+0.464**  p=0.001  n=42  ↑
+    wind_dir_e       r=-0.331*  p=0.027  n=42  ↓
+    tide_type_n      r=+0.318*  p=0.034  n=42  ↑
+
+  [size_avg]
+    precip_sum       r=+0.468**  p=0.001  n=41  ↑
+    typhoon_wind     r=-0.394*  p=0.044  n=24  ↓
+    temp_avg         r=-0.378*  p=0.011  n=41  ↓
+    temp_max         r=-0.375*  p=0.011  n=41  ↓
+    temp_min         r=-0.355*  p=0.018  n=41  ↓
+    tide_type_n      r=-0.338*  p=0.025  n=41  ↓
+    sst_avg          r=-0.279   p=0.070  n=41  ↓
+
+【因子相関（週集計: n=29週）】
+
+  [cnt_avg]
+    precip_sum2      r=+0.564**  p=0.000  n=29  ↑
+    tide_range       r=+0.557**  p=0.000  n=29  ↑
+    prev_week_cnt    r=+0.439*  p=0.013  n=28  ↑
+    wind_dir_e       r=-0.432*  p=0.013  n=29  ↓
+    tide_type_n      r=+0.417*  p=0.017  n=29  ↑
+    typhoon_wind     r=-0.385   p=0.095  n=18  ↓
+
+  [cnt_min]
+    is_holiday       r=-0.586**  p=0.000  n=29  ↓
+    precip_sum2      r=+0.482**  p=0.004  n=29  ↑
+    tide_range       r=+0.397*  p=0.024  n=29  ↑
+    tide_type_n      r=+0.322   p=0.077  n=29  ↑
+
+  [cnt_max]
+    tide_range       r=+0.528**  p=0.001  n=29  ↑
+    precip_sum2      r=+0.509**  p=0.002  n=29  ↑
+    prev_week_cnt    r=+0.502**  p=0.003  n=28  ↑
+    wind_dir_e       r=-0.457**  p=0.008  n=29  ↓
+    typhoon_wind     r=-0.446*  p=0.046  n=18  ↓
+    tide_type_n      r=+0.391*  p=0.027  n=29  ↑
+    wind_dir_mode    r=+0.305   p=0.096  n=29  ↑
+
+  [size_avg]
+    temp_max         r=-0.496**  p=0.003  n=29  ↓
+    temp_avg         r=-0.493**  p=0.003  n=29  ↓
+    temp_min         r=-0.459**  p=0.007  n=29  ↓
+    swell_height_avg r=-0.420*  p=0.016  n=29  ↓
+    swell_height_max r=-0.413*  p=0.019  n=29  ↓
+    sst_avg          r=-0.408*  p=0.020  n=29  ↓
+    tide_type_n      r=-0.382*  p=0.032  n=29  ↓
+    wave_height_avg  r=-0.352   p=0.051  n=29  ↓
+    wave_height_max  r=-0.341   p=0.059  n=29  ↓
+    wave_clamp       r=-0.321   p=0.078  n=29  ↓
+    wind_speed_max   r=+0.315   p=0.084  n=29  ↑
+    precip_sum       r=+0.305   p=0.097  n=29  ↑
+
+【因子相関（旬集計: n=24旬）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.803**  p=0.000  n=23  ↑
+    precip_sum2      r=+0.650**  p=0.000  n=24  ↑
+    wind_dir_e       r=-0.430*  p=0.026  n=24  ↓
+    typhoon_dist     r=-0.424   p=0.091  n=15  ↓
+    tide_range       r=+0.337   p=0.093  n=24  ↑
+
+  [cnt_min]
+    is_holiday       r=-0.588**  p=0.001  n=24  ↓
+    precip_sum2      r=+0.555**  p=0.002  n=24  ↑
+    prev_week_cnt    r=+0.479*  p=0.012  n=23  ↑
+    pressure_delta   r=-0.477*  p=0.011  n=24  ↓
+
+  [cnt_max]
+    prev_week_cnt    r=+0.781**  p=0.000  n=23  ↑
+    precip_sum2      r=+0.569**  p=0.001  n=24  ↑
+    wind_dir_e       r=-0.465*  p=0.014  n=24  ↓
+    typhoon_dist     r=-0.458   p=0.063  n=15  ↓
+    tide_range       r=+0.456*  p=0.016  n=24  ↑
+    typhoon_wind     r=-0.419   p=0.096  n=15  ↓
+    wind_speed_avg   r=-0.400*  p=0.040  n=24  ↓
+    sst_delta        r=+0.396*  p=0.048  n=23  ↑
+
+  [size_avg]
+    temp_avg         r=-0.600**  p=0.000  n=24  ↓
+    temp_max         r=-0.592**  p=0.001  n=24  ↓
+    temp_min         r=-0.565**  p=0.001  n=24  ↓
+    sst_avg          r=-0.492**  p=0.008  n=24  ↓
+    wind_speed_max   r=+0.484**  p=0.010  n=24  ↑
+    typhoon_dist     r=+0.482*  p=0.047  n=15  ↑
+    wind_speed_avg   r=+0.422*  p=0.029  n=24  ↑
+    precip_sum       r=+0.403*  p=0.039  n=24  ↑
+    temp_range       r=+0.398*  p=0.042  n=24  ↑
+
+【因子相関（月集計: n=13月）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.845**  p=0.000  n=13  ↑
+    precip_sum2      r=+0.771**  p=0.000  n=13  ↑
+    wave_period_min  r=-0.571*  p=0.021  n=13  ↓
+    wind_dir_e       r=-0.510*  p=0.049  n=13  ↓
+    wave_period_avg  r=-0.445   p=0.099  n=13  ↓
+
+  [cnt_min]
+    precip_sum2      r=+0.769**  p=0.000  n=13  ↑
+    wave_period_min  r=-0.743**  p=0.000  n=13  ↓
+    typhoon_dist     r=-0.642   p=0.061  n=7  ↓
+    prev_week_cnt    r=+0.569*  p=0.022  n=13  ↑
+    wave_period_avg  r=-0.515*  p=0.046  n=13  ↓
+
+  [cnt_max]
+    prev_week_cnt    r=+0.847**  p=0.000  n=13  ↑
+    precip_sum2      r=+0.689**  p=0.002  n=13  ↑
+    wind_dir_e       r=-0.550*  p=0.029  n=13  ↓
+    tide_range       r=+0.517*  p=0.045  n=13  ↑
+    wave_period_min  r=-0.474   p=0.074  n=13  ↓
+
+  [size_avg]
+    temp_avg         r=-0.679**  p=0.002  n=13  ↓
+    temp_max         r=-0.662**  p=0.003  n=13  ↓
+    temp_min         r=-0.650**  p=0.005  n=13  ↓
+    temp_range       r=+0.564*  p=0.023  n=13  ↑
+    tide_type_n      r=-0.552*  p=0.028  n=13  ↓
+    wave_period_avg  r=+0.511*  p=0.048  n=13  ↑
+    sst_avg          r=-0.504   p=0.053  n=13  ↓
+    moon_age         r=+0.499   p=0.056  n=13  ↑
+    wind_dir_n       r=+0.466   p=0.081  n=13  ↑
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n     11.9%  -0.456  (n=5)  -0.741*(n=5)  -0.153  (n=5)           —
+  wave_obs_n       47.6%  +0.434**(n=20)  +0.416*(n=20)  +0.346  (n=19)           —
+  by_catch_n       92.9%  +0.094  (n=39)  +0.128  (n=39)  -0.078  (n=38)           —
+  time_slot_n      11.9%  +0.000  (n=5)  +0.000  (n=5)  +0.000  (n=5)           —
+  is_boat          100.0%  +0.000  (n=42)  +0.000  (n=42)  +0.000  (n=41)           —
+
+【コメントキーワード解析】
+
+  [海況]
+    「ウネリ」 n= 17  3.5匹  vs 通常 4.6匹  (-24%)
+
+  [外道_危険迷惑]
+    「ゲスト」 n= 11  4.6匹  vs 通常 3.9匹  (+18%)
+
+  [外道_青物]
+    「イナダ」 n=  3  3.0匹  vs 通常 4.2匹  (-29%)
+    「サバ」 n= 20  3.8匹  vs 通常 4.5匹  (-16%)
+    「シイラ」 n=  3  4.7匹  vs 通常 4.1匹  (+14%)
+    「ワラサ」 n=  9  3.9匹  vs 通常 4.2匹  (-7%)
+
+  [外道_根魚]
+    「メバル」 n= 19  3.4匹  vs 通常 4.7匹  (-27%)
+    「オニカサゴ」 n= 21  4.2匹  vs 通常 4.0匹  (+6%)
+    「カサゴ」 n= 23  4.1匹  vs 通常 4.2匹  (-2%)
+
+  [外道_底魚]
+    「レンコダイ」 n= 21  5.0匹  vs 通常 3.3匹  (+51%)
+    「ホウボウ」 n= 34  4.3匹  vs 通常 3.5匹  (+22%)
+    「ハナダイ」 n=  9  3.6匹  vs 通常 4.3匹  (-17%)
+    「マトウダイ」 n=  4  4.2匹  vs 通常 4.1匹  (+4%)
+
+【ポイント別集計】
+  (ポイントデータなし)
+
+【マルチホライズン バックテスト（ローリング月次CV）】
+  ローリング月次CV  全13ヶ月  テスト総計: 23件
+
+  ─ Ave匹数 : データ不足 ─
+
+  ─ Min匹数 : データ不足 ─
+
+  ─ Max匹数 : データ不足 ─
+
+  ─ Ave型   : データ不足 ─
+
+  ─ Ave重量 : データ不足 ─

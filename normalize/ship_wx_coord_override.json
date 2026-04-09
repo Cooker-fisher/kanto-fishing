@@ -1,0 +1,37 @@
+{
+  "_comment": "湾内船宿の気象座標オーバーライド",
+  "_reason": "nearest_coord()は釣り場平均座標を使うが、東京湾奥港発の船は出船判断を湾内条件で行う。combo_metaの平均が湾の外縁を拾うケースを修正。",
+  "_coords_available": "weather_cache.sqlite の DISTINCT lat/lon から選択（avg_wave が低い = 湾内を確認済み）",
+  "overrides": {
+    "かめだや": {
+      "lat": 35.51, "lon": 139.70,
+      "reason": "羽田出船 → 東京湾中央部（現状(35.4,139.78)は湾の外縁）",
+      "avg_wave_ref": "0.42m",
+      "typhoon_max_ref": "1.46m"
+    },
+    "船宿 まる八": {
+      "lat": 35.51, "lon": 139.70,
+      "reason": "平和島出船 → 東京湾中央部（現状(35.4,139.78)は湾の外縁）",
+      "avg_wave_ref": "0.42m",
+      "typhoon_max_ref": "1.46m"
+    },
+    "吉久": {
+      "lat": 35.61, "lon": 140.05,
+      "reason": "浦安出船 → 東京湾奥（現状(35.32,139.78)は湾南部・走水沖相当）",
+      "avg_wave_ref": "0.28m",
+      "typhoon_max_ref": "1.10m"
+    },
+    "吉野屋": {
+      "lat": 35.61, "lon": 140.05,
+      "reason": "浦安出船 → 東京湾奥",
+      "avg_wave_ref": "0.28m",
+      "typhoon_max_ref": "1.10m"
+    },
+    "林遊船": {
+      "lat": 35.65, "lon": 139.90,
+      "reason": "江戸川放水路出船 → 東京湾最奥（nearest_coord()も同じ座標を選ぶが明示的に固定）",
+      "avg_wave_ref": "0.31m",
+      "typhoon_max_ref": "1.16m"
+    }
+  }
+}

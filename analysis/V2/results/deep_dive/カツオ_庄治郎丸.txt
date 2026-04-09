@@ -1,0 +1,192 @@
+========================================================================
+  カツオ × 庄治郎丸
+========================================================================
+
+【基本統計】
+  件数: 44件 / 期間: 2023/07/10 〜 2025/10/27
+  cnt_avg  : 平均 2.4匹  中央値 2.0  std 2.1  [1 〜 11]
+  cnt_min  : 平均 1.9  cnt_max 平均 4.4  (16/44件, 36%)
+  kg_avg   : 平均 3.39kg  std 3.53  (44/44件, 100%)
+
+【旬別ベースライン（n=44件）】
+     旬       期待       実績       偏差     n  
+  ---------------------------------------------
+    22      2.7      2.2     -0.4     9
+    23      1.5      1.5     +0.0     4
+    24      1.8      1.8     +0.0     5
+    25      1.2      1.3     +0.1     3
+    27      4.5      4.5     +0.0     6
+    28      2.6      1.2     -1.3     4
+    29      2.9      3.6     +0.7     7
+    30      1.0      1.0     +0.0     2
+
+【因子相関（日次: 44件）】
+
+  [cnt_avg]
+    sst_delta        r=-0.399**  p=0.005  n=44  ↓
+    temp_range       r=+0.362*  p=0.012  n=44  ↑
+    moon_cos         r=+0.337*  p=0.020  n=44  ↑
+    prev_week_cnt    r=+0.290   p=0.052  n=43  ↑
+    wave_height_max  r=-0.271   p=0.068  n=44  ↓
+    wave_height_avg  r=-0.248   p=0.096  n=44  ↓
+    wave_clamp       r=-0.248   p=0.096  n=44  ↓
+
+  [cnt_min]
+    typhoon_wind     r=+0.358*  p=0.023  n=37  ↑
+    sst_avg          r=-0.333*  p=0.022  n=44  ↓
+    prev_week_cnt    r=+0.314*  p=0.034  n=43  ↑
+    sst_delta        r=-0.304*  p=0.039  n=44  ↓
+    temp_range       r=+0.250   p=0.094  n=44  ↑
+
+  [cnt_max]
+    temp_range       r=+0.367*  p=0.010  n=44  ↑
+    sst_delta        r=-0.361*  p=0.012  n=44  ↓
+    moon_cos         r=+0.360*  p=0.012  n=44  ↑
+    wind_speed_avg   r=-0.261   p=0.080  n=44  ↓
+    wave_height_max  r=-0.255   p=0.087  n=44  ↓
+    prev_week_cnt    r=+0.251   p=0.096  n=43  ↑
+
+  [kg_avg]
+    swell_height_max r=-0.286   p=0.053  n=44  ↓
+    wave_height_avg  r=-0.285   p=0.054  n=44  ↓
+    wave_clamp       r=-0.285   p=0.054  n=44  ↓
+    wave_height_max  r=-0.271   p=0.068  n=44  ↓
+    swell_height_avg r=-0.270   p=0.069  n=44  ↓
+    tide_delta       r=+0.256   p=0.086  n=44  ↑
+    pressure_delta   r=+0.256   p=0.087  n=44  ↑
+
+【因子相関（週集計: n=22週）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.633**  p=0.000  n=21  ↑
+    wave_period_avg  r=+0.522**  p=0.006  n=22  ↑
+    temp_range       r=+0.471*  p=0.017  n=22  ↑
+    typhoon_wind     r=+0.406   p=0.085  n=17  ↑
+    wave_height_avg  r=-0.377   p=0.069  n=22  ↓
+    wave_clamp       r=-0.377   p=0.069  n=22  ↓
+    swell_height_avg r=-0.376   p=0.070  n=22  ↓
+    wave_height_max  r=-0.372   p=0.073  n=22  ↓
+    swell_height_max r=-0.366   p=0.078  n=22  ↓
+
+  [cnt_min]
+    typhoon_wind     r=+0.620**  p=0.002  n=17  ↑
+    prev_week_cnt    r=+0.517**  p=0.008  n=21  ↑
+    sst_avg          r=-0.444*  p=0.027  n=22  ↓
+    wind_dir_e       r=-0.422*  p=0.037  n=22  ↓
+
+  [cnt_max]
+    wave_period_avg  r=+0.523**  p=0.006  n=22  ↑
+    temp_range       r=+0.521**  p=0.006  n=22  ↑
+    prev_week_cnt    r=+0.475*  p=0.019  n=21  ↑
+    moon_cos         r=+0.392   p=0.057  n=22  ↑
+    swell_height_avg r=-0.384   p=0.063  n=22  ↓
+    wave_height_avg  r=-0.384   p=0.063  n=22  ↓
+    wave_clamp       r=-0.384   p=0.063  n=22  ↓
+    wave_height_max  r=-0.356   p=0.088  n=22  ↓
+    swell_height_max r=-0.354   p=0.090  n=22  ↓
+
+  [kg_avg]
+    pressure_delta   r=+0.525**  p=0.006  n=22  ↑
+    temp_delta       r=-0.359   p=0.085  n=22  ↓
+    tide_delta       r=+0.346   p=0.100  n=22  ↑
+
+【因子相関（旬集計: n=17旬）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.823**  p=0.000  n=16  ↑
+    typhoon_wind     r=+0.673**  p=0.002  n=14  ↑
+    wave_period_avg  r=+0.519*  p=0.019  n=17  ↑
+    temp_range       r=+0.466*  p=0.041  n=17  ↑
+
+  [cnt_min]
+    typhoon_wind     r=+0.735**  p=0.000  n=14  ↑
+    prev_week_cnt    r=+0.634**  p=0.002  n=16  ↑
+    wind_dir_e       r=-0.527*  p=0.016  n=17  ↓
+    sst_avg          r=-0.515*  p=0.020  n=17  ↓
+    wind_dir_n       r=-0.397   p=0.094  n=17  ↓
+
+  [cnt_max]
+    prev_week_cnt    r=+0.707**  p=0.000  n=16  ↑
+    typhoon_wind     r=+0.586*  p=0.012  n=14  ↑
+    wave_period_avg  r=+0.579**  p=0.006  n=17  ↑
+    temp_range       r=+0.502*  p=0.025  n=17  ↑
+    moon_cos         r=+0.464*  p=0.043  n=17  ↑
+    wave_period_min  r=+0.397   p=0.094  n=17  ↑
+
+  [kg_avg]
+    tide_delta       r=+0.433   p=0.063  n=17  ↑
+    pressure_delta   r=+0.419   p=0.074  n=17  ↑
+
+【因子相関（月集計: n=10月）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.916**  p=0.000  n=9  ↑
+    typhoon_wind     r=+0.842**  p=0.000  n=8  ↑
+    wave_period_avg  r=+0.644*  p=0.017  n=10  ↑
+    moon_cos         r=+0.592*  p=0.038  n=10  ↑
+    wave_height_max  r=-0.560   p=0.056  n=10  ↓
+    wind_speed_avg   r=-0.539   p=0.070  n=10  ↓
+    swell_height_max r=-0.531   p=0.076  n=10  ↓
+
+  [cnt_min]
+    typhoon_wind     r=+0.872**  p=0.000  n=8  ↑
+    prev_week_cnt    r=+0.791**  p=0.001  n=9  ↑
+    sst_avg          r=-0.659*  p=0.013  n=10  ↓
+    wave_height_max  r=-0.648*  p=0.016  n=10  ↓
+    wind_speed_max   r=-0.607*  p=0.031  n=10  ↓
+    swell_height_max r=-0.593*  p=0.037  n=10  ↓
+    wind_speed_avg   r=-0.591*  p=0.038  n=10  ↓
+    wave_height_avg  r=-0.569   p=0.050  n=10  ↓
+    wave_clamp       r=-0.569   p=0.050  n=10  ↓
+    wind_dir_e       r=-0.553   p=0.060  n=10  ↓
+    swell_height_avg r=-0.535   p=0.073  n=10  ↓
+    pressure_delta   r=-0.521   p=0.084  n=10  ↓
+
+  [cnt_max]
+    typhoon_wind     r=+0.822**  p=0.000  n=8  ↑
+    prev_week_cnt    r=+0.762**  p=0.002  n=9  ↑
+    wave_period_avg  r=+0.755**  p=0.001  n=10  ↑
+    moon_cos         r=+0.676**  p=0.009  n=10  ↑
+    sst_delta        r=-0.649*  p=0.016  n=10  ↓
+    pressure_min     r=+0.624*  p=0.024  n=10  ↑
+    pressure_avg     r=+0.585*  p=0.041  n=10  ↑
+    wave_period_min  r=+0.582*  p=0.043  n=10  ↑
+    tide_type_n      r=+0.567   p=0.052  n=10  ↑
+    tide_range       r=+0.538   p=0.071  n=10  ↑
+
+  [kg_avg]
+    precip_sum2      r=+0.674**  p=0.010  n=10  ↑
+    wind_dir_e       r=+0.547   p=0.065  n=10  ↑
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       11.4%  -0.232  (n=5)  -0.217  (n=5)           —  -0.711*(n=5)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  -0.096  (n=44)  -0.226  (n=44)           —  -0.077  (n=44)
+
+【コメントキーワード解析】
+
+  [外道_青物]
+    「カツオ」 n= 41  2.5匹  vs 通常 1.0匹  (+149%)
+    「ソウダ」 n=  4  3.0匹  vs 通常 2.3匹  (+29%)
+
+【ポイント別集計】
+  (ポイントデータなし)
+
+【マルチホライズン バックテスト（ローリング月次CV）】
+  ローリング月次CV  全10ヶ月  テスト総計: 18件
+
+  ─ Ave匹数 : データ不足 ─
+
+  ─ Min匹数 : データ不足 ─
+
+  ─ Max匹数 : データ不足 ─
+
+  ─ Ave型   : データ不足 ─
+
+  ─ Ave重量 : データ不足 ─

@@ -1,4 +1,13 @@
 .claude/worktrees/
+.claude/settings.local.json
 __pycache__/
 *.tmp
 *.pyc
+_*.py
+!analysis/**/methods/_paths.py
+_*.json
+tmp.txt
+weather_cache.sqlite
+_*.txt
+forecast_cache.sqlite
+master_dataset.csv

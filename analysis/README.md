@@ -1,95 +1,59 @@
-# 釣果予測分析パイプライン - データ収集フェーズ完了
+# analysis/ — 分析バージョン管理
 
-## 完成したデータ一覧
-
-| ファイル | 内容 | 行数 | サイズ |
-|---------|------|------|--------|
-| `data/YYYY-MM.csv` | 釣果データ（25ヶ月） | 34,280行 | - |
-| `weather/YYYY-MM.csv` | 気象データ（96ポイント・3時間粒度） | 458,200行 | 22MB |
-| `tide/YYYY-MM.csv` | 潮汐データ（4港・毎時） | - | 78KB/月 |
-| `moon.csv` | 月齢・潮回り（全期間） | 726行 | - |
-| `typhoon.csv` | 台風接近フラグ（全期間） | 726行 | - |
-| `point_coords.json` | ポイント名→緯度経度（204エントリ・96ユニーク座標） | - | - |
-| `ship_fish_point.json` | 船宿×魚種→ポイント フォールバック（69件） | - | - |
-
-**期間**: 2024年4月〜2026年3月（約2年）
+> **現行バージョン**: V2（config.json の `active_version` で管理）
 
 ---
 
-## データ詳細
+## バージョン一覧
 
-### 釣果データ (`data/YYYY-MM.csv`)
-```
-ship, area, date, fish, cnt_min, cnt_max, cnt_avg,
-size_min, size_max, kg_min, kg_max, is_boat,
-point_place, point_place2, point_depth_min, point_depth_max
-```
-- ポイント解決率: **100%**（point_coords.json直接 + ship_fish_pointフォールバック）
-
-### 気象データ (`weather/YYYY-MM.csv`)
-```
-point, date, hour, wave_height, wave_period, wind_speed, wind_dir, sst, weather_code
-```
-- ソース: Open-Meteo（Marine API + Archive API）
-- 粒度: 3時間ごと JST（00/03/06/09/12/15/18/21時）
-- ポイント数: 96座標（point_coords.jsonのユニーク座標）
-
-### 潮汐データ (`tide/YYYY-MM.csv`)
-```
-port, date, hour, tide_cm
-```
-- ソース: tide736.net API
-- 港: 横須賀(pc=14,hc=7) / 羽田(pc=13,hc=3) / 銚子(pc=12,hc=2) / 鹿島(pc=8,hc=4)
-- 粒度: 毎時
-
-### 月齢・潮回り (`moon.csv`)
-```
-date, moon_age, moon_title
-```
-- 計算式: 既知の新月(2000-01-06)からの朔望月サイクル
-- moon_title: 大潮 / 中潮 / 小潮 / 長潮 / 若潮
-
-### 台風接近 (`typhoon.csv`)
-```
-date, typhoon_flag, min_dist_km, typhoon_name
-```
-- ソース: 気象庁 RSMC ベストトラック (bst_all.zip)
-- typhoon_flag: 関東中心(35.5N,139.7E)から500km以内で1
-- 接近実績: 19日（AMPIL, PULASAN, KROSA, PEIPAH 等）
+| バージョン | 期間 | 状態 | 主な変更 |
+|-----------|------|------|---------|
+| V1 | 〜2026年3月 | アーカイブ（参照専用） | 旧フォーマット・CSV気象データ |
+| **V2** | 2026年4月〜 | **現行** | weather_cache.sqlite 導入・51魚種対応 |
 
 ---
 
-## 取得スクリプト
+## フォルダ構成
 
-| スクリプト | 役割 | 実行時間目安 |
-|-----------|------|------------|
-| `weather_fetch.py` | Open-Meteoから気象データ取得 | 約5分 |
-| `tide_fetch.py` | tide736.netから潮汐データ取得 | 約10分 |
-| `moon.py` | 月齢計算（API不要） | 数秒 |
-| `typhoon.py` | JMAベストトラック取得・解析 | 数秒 |
-
-すべて**標準ライブラリのみ**で動作。
+```
+analysis/
+├── README.md             ← このファイル
+├── config.json           ← ※プロジェクトルートに配置（全員が参照する唯一の真実）
+├── analysis_config.py    ← 後工程（crawler.py 等）が results/ を参照するユーティリティ
+├── run.py                ← crawl.yml のランチャー（バージョン自動解決）
+├── V1/
+│   ├── README.md         ← V1 の分析条件・前後工程との契約
+│   ├── methods/          ← 旧スクリプト群（参照専用）
+│   └── results/          ← 旧分析結果（参照専用）
+└── V2/
+    ├── README.md         ← V2 の分析条件・前後工程との契約
+    ├── methods/          ← 現行スクリプト群（16本）
+    │   └── _paths.py     ← パス自動解決（CLAUDE.md を目印）
+    └── results/          ← 分析結果出力先
+```
 
 ---
 
-## 次のステップ
+## バージョン切替ルール
 
-### `join_catch_weather.py`（未実装）
-釣果データ × 気象データを結合して分析用CSVを生成する。
+1. プロジェクトルートの `config.json` の `active_version` を変更する
+2. `analysis/V{n+1}/methods/` フォルダを作成
+3. `_paths.py` を前バージョンからコピー（中身変更不要）
+4. 新しいスクリプトを作成（`from _paths import ...` の1行を追加するだけ）
+5. `analysis/V{n+1}/README.md` に変更点・前後工程との契約を記述
 
-結合キー:
-1. `data/YYYY-MM.csv` の `point_place` → `point_coords.json` → (lat, lon)
-2. (lat, lon) + date → `weather/YYYY-MM.csv` の該当行（06:00 JST）
-3. date → `moon.csv` / `typhoon.csv`
-4. area → 最近傍港 → `tide/YYYY-MM.csv`
+---
 
-出力: `analysis/catch_weather.csv`
+## 後工程（crawler.py 等）からの参照方法
+
+```python
+# analysis/analysis_config.py を使う
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+from analysis.analysis_config import get_results_dir, get_db_path
+
+results_dir = get_results_dir()        # → analysis/V2/results/
+db_path     = get_db_path()            # → analysis/V2/results/analysis.sqlite
 ```
-ship, area, date, fish, cnt_avg, point, lat, lon,
-wave_height, wind_speed, sst, weather_code,
-tide_cm, moon_age, moon_title, typhoon_flag
-```
 
-### その後
-- 予測モデル構築（線形回帰 or 決定木）
-- backtest.py v3 での精度検証
+バージョン切替は `config.json` の1行変更だけ。crawler.py 自体の修正は不要。

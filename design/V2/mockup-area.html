@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>金沢八景の釣果情報 — 船釣り予想</title>
+<meta name="description" content="金沢八景エリアの船釣り釣果。今日はアジ25〜45匹◎、シロギス18〜52匹◎。船宿別の魚種×釣果一覧。">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
+.area-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
+.area-hero h2{font-size:22px;font-weight:800}
+.area-hero .ah-m{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.area-hero .ah-sea{display:flex;justify-content:center;gap:14px;margin-top:10px;font-size:12px;color:rgba(255,255,255,.8);flex-wrap:wrap}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
+
+/* Fish rows (click → fish page, bidirectional) */
+.af{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;transition:border-color .15s}
+.af:hover{border-color:var(--cta);text-decoration:none}
+.af .af-name{flex:0 0 60px;font-size:15px;font-weight:800;color:var(--accent)}
+.af .af-range{flex:0 0 80px;font-size:15px;font-weight:800;color:var(--cta)}
+.af .af-size{flex:0 0 55px;font-size:10px;color:var(--muted)}
+.af .af-pct{font-size:10px;color:var(--muted);flex:0 0 40px}
+.af .af-ship{flex:1;font-size:10px;color:var(--pos);font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Sea grid */
+.sea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.sea-item{text-align:center;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.sea-item .sv{font-size:18px;font-weight:800;color:var(--accent)}
+.sea-item .sl2{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* Tide */
+.tide-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.tide-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.tide-box h3 .tide-sub{font-size:10px;color:var(--muted);font-weight:400}
+.tide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.tide-item{padding:8px 4px;border-radius:6px;border:1px solid var(--border)}
+.tide-item.high{background:#fef6ee;border-color:#fb923c}
+.tide-item.low{background:#edf2f7}
+.tide-item .tt{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.5px}
+.tide-item .tv{font-size:13px;font-weight:800;color:var(--accent);margin-top:2px}
+.tide-item .th{font-size:9px;color:var(--sub);margin-top:1px}
+.tide-note{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+
+/* Map */
+.area-map{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.area-map h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;text-align:center}
+.map-box{background:linear-gradient(180deg,#e3f2fd,#bbdefb);border-radius:8px;padding:24px 14px;text-align:center;position:relative}
+.map-pin{display:inline-block;background:var(--cta);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin:3px;text-decoration:none}
+.map-pin:hover{text-decoration:none;opacity:.85}
+.map-pin.current{background:var(--prem);border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.map-caption{font-size:10px;color:var(--muted);margin-top:10px}
+
+/* Ship list */
+.sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.sl-card h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.sl{padding:10px 0;border-bottom:1px solid var(--bg)}.sl:last-child{border-bottom:none}
+.sl-top{display:flex;align-items:center;gap:8px}
+.sl-name{font-size:14px;font-weight:700;color:var(--accent);flex:1}
+.sl-fish{display:flex;gap:4px;flex-wrap:wrap}
+.sl-fish span{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600}
+.sl-fish span.g{background:#e6f7ee;color:var(--pos)}
+.sl-fish span.o{background:#edf2f7;color:var(--sub)}
+.sl-fish span.b{background:#fde8e8;color:var(--neg)}
+.sl-detail{font-size:10px;color:var(--muted);margin-top:3px}
+.sl-dots{font-size:10px;margin-top:2px;letter-spacing:1px}
+
+/* Related areas (G: bidirectional) */
+.related{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.related h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.related .rl{display:flex;flex-wrap:wrap;gap:6px}
+.related .rl a{font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
+.related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--cta)}.bn a:hover{text-decoration:none;color:var(--cta)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="#" class="on">エリア</a><a href="mockup-history.html">予測履歴</a><a href="mockup-premium.html">有料プラン</a></nav>
+
+<div class="area-hero">
+<h2>金沢八景</h2>
+<div class="ah-m">今日 12件・4船宿から報告</div>
+<div class="ah-sea">
+<span>🌡 18.3℃</span><span>🌊 0.4m</span><span>💨 南西3m</span><span>🌕 大潮</span>
+</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup.html">トップ</a> &gt; 金沢八景</div>
+
+<h2 class="st">今日の釣果（魚種を選んで詳細へ）</h2>
+
+<a class="af" href="mockup-fish.html"><span class="af-name">アジ</span><span class="af-range">25〜45匹</span><span class="af-size">18〜25cm</span><span class="af-pct">(+38%)</span><span class="af-ship">◎忠彦丸 ◎荒川屋</span></a>
+<a class="af" href="#"><span class="af-name">シロギス</span><span class="af-range">18〜52匹</span><span class="af-size">15〜23cm</span><span class="af-pct">(+45%)</span><span class="af-ship">◎荒川屋</span></a>
+<a class="af" href="#"><span class="af-name">カワハギ</span><span class="af-range">8〜18匹</span><span class="af-size">15〜22cm</span><span class="af-pct">(+12%)</span><span class="af-ship">○一之瀬丸</span></a>
+<a class="af" href="#"><span class="af-name">マダイ</span><span class="af-range">0〜3匹</span><span class="af-size">30〜48cm</span><span class="af-pct">(-8%)</span><span class="af-ship">△太田屋</span></a>
+
+<div class="ad-slot">広告スペース（インフィード）</div>
+
+<!-- 潮汐 -->
+<div class="tide-box">
+<h3>今日の潮汐 <span class="tide-sub">大潮 / 月齢12.8</span></h3>
+<div class="tide-grid">
+<div class="tide-item low"><div class="tt">干潮</div><div class="tv">05:12</div><div class="th">18cm</div></div>
+<div class="tide-item high"><div class="tt">満潮</div><div class="tv">11:48</div><div class="th">172cm</div></div>
+<div class="tide-item low"><div class="tt">干潮</div><div class="tv">17:55</div><div class="th">22cm</div></div>
+<div class="tide-item high"><div class="tt">満潮</div><div class="tv">23:45</div><div class="th">168cm</div></div>
+</div>
+<div class="tide-note">日の出 05:25 / 日の入り 18:12</div>
+</div>
+
+<!-- エリア地図 -->
+<div class="area-map">
+<h3>🗺 近隣エリアマップ</h3>
+<div class="map-box">
+<div style="font-size:10px;color:var(--sub);margin-bottom:8px">東京湾 北部</div>
+<a class="map-pin" href="#">本牧 (2件)</a>
+<a class="map-pin" href="#">横浜 (4件)</a><br>
+<a class="map-pin current" href="#">● 金沢八景 (12件)</a>
+<a class="map-pin" href="#">走水 (8件)</a><br>
+<a class="map-pin" href="#">久里浜 (4件)</a>
+<a class="map-pin" href="#">剣崎 (6件)</a>
+</div>
+<div class="map-caption">タップで各エリアの詳細へ</div>
+</div>
+
+<h2 class="st">海況データ</h2>
+<div class="sea-grid">
+<div class="sea-item"><div class="sv">18.3℃</div><div class="sl2">水温</div></div>
+<div class="sea-item"><div class="sv">0.4m</div><div class="sl2">波高</div></div>
+<div class="sea-item"><div class="sv">南西3m</div><div class="sl2">風</div></div>
+<div class="sea-item"><div class="sv">大潮</div><div class="sl2">潮汐</div></div>
+<div class="sea-item"><div class="sv">12.8</div><div class="sl2">月齢</div></div>
+<div class="sea-item"><div class="sv">1015hPa</div><div class="sl2">気圧</div></div>
+</div>
+
+<h2 class="st">船宿一覧</h2>
+<div class="sl-card">
+<div class="sl">
+<div class="sl-top"><span class="sl-name">忠彦丸</span><div class="sl-fish"><span class="g">アジ◎+52%</span><span class="o">シロギス○+20%</span></div></div>
+<div class="sl-detail">走水沖・猿島沖 | 午前便・午後便</div>
+<div class="sl-dots"><span style="color:var(--pos)">◎◎○◎◎◎◎</span></div>
+</div>
+<div class="sl">
+<div class="sl-top"><span class="sl-name">荒川屋</span><div class="sl-fish"><span class="g">シロギス◎+60%</span><span class="g">アジ◎+38%</span></div></div>
+<div class="sl-detail">中ノ瀬 | 午前便</div>
+<div class="sl-dots"><span style="color:var(--pos)">○○◎</span><span style="color:var(--muted)">○○</span><span style="color:var(--pos)">◎○</span></div>
+</div>
+<div class="sl">
+<div class="sl-top"><span class="sl-name">一之瀬丸</span><div class="sl-fish"><span class="o">カワハギ○+12%</span><span class="o">アジ○+18%</span></div></div>
+<div class="sl-detail">猿島沖・佐島沖 | 午前便・午後便</div>
+<div class="sl-dots"><span style="color:var(--pos)">◎○◎</span><span style="color:var(--muted)">○○○○</span></div>
+</div>
+<div class="sl">
+<div class="sl-top"><span class="sl-name">太田屋</span><div class="sl-fish"><span class="o">アジ○+12%</span><span class="b">マダイ△-8%</span></div></div>
+<div class="sl-detail">中ノ瀬・走水沖 | 午前便</div>
+<div class="sl-dots"><span style="color:var(--muted)">○○</span><span style="color:var(--neg)">△</span><span style="color:var(--muted)">○○○○</span></div>
+</div>
+</div>
+
+<!-- 近隣エリア (G: bidirectional) -->
+<div class="related">
+<h3>近隣エリア</h3>
+<div class="rl">
+<a href="#">走水（8件）</a>
+<a href="#">横浜（4件）</a>
+<a href="#">久里浜（4件）</a>
+<a href="#">剣崎（6件）</a>
+</div>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">アジ</a> · <a href="#">マダイ</a> · <a href="#">走水</a> · <a href="#">剣崎</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="#" class="on"><span class="i">📍</span>エリア</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-premium.html"><span class="i">⭐</span>有料</a></div>
+
+</body>
+</html>

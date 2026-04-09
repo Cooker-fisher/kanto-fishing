@@ -1,0 +1,165 @@
+========================================================================
+  タチウオ × 大貫丸
+========================================================================
+
+【基本統計】
+  件数: 40件 / 期間: 2024/04/12 〜 2026/01/08
+  cnt_avg  : 平均 22.0匹  中央値 21.0  std 11.6  [6 〜 64]
+  cnt_min  : 平均 7.8  cnt_max 平均 37.5  (35/40件, 88%)
+  size_avg : 平均 103.0cm  std 5.8  [90 〜 112]  (40/40件, 100%)
+
+【旬別ベースライン（n=40件）】
+     旬       期待       実績       偏差     n  
+  ---------------------------------------------
+     1     28.0     28.0     +0.0     4
+     3     31.5     31.5     +0.0     6
+     4     21.0     21.0     +0.0     5
+     5     23.0     23.0     +0.0     5
+     9     13.7     13.7     -0.0     3
+    10     22.2     22.2     +0.0     5
+    11     20.0     20.0     +0.0     5
+    12     15.3     15.3     -0.0     7
+
+【因子相関（日次: 40件）】
+
+  [cnt_avg]
+    sst_delta        r=-0.382*  p=0.035  n=28  ↓
+    wind_dir_mode    r=+0.317*  p=0.039  n=40  ↑
+    precip_sum1      r=-0.309*  p=0.045  n=40  ↓
+    precip_sum2      r=-0.291   p=0.061  n=40  ↓
+
+  [cnt_min]
+    sst_delta        r=-0.335   p=0.070  n=28  ↓
+    swell_height_avg r=+0.290   p=0.062  n=40  ↑
+    swell_height_max r=+0.287   p=0.065  n=40  ↑
+    wave_height_avg  r=+0.268   p=0.086  n=40  ↑
+    wave_clamp       r=+0.268   p=0.086  n=40  ↑
+    tide_range       r=-0.261   p=0.096  n=40  ↓
+
+  [cnt_max]
+    sst_delta        r=-0.379*  p=0.037  n=28  ↓
+    wind_dir_mode    r=+0.355*  p=0.019  n=40  ↑
+    precip_sum1      r=-0.335*  p=0.028  n=40  ↓
+    precip_sum2      r=-0.302   p=0.051  n=40  ↓
+    temp_avg         r=-0.301   p=0.052  n=40  ↓
+    temp_max         r=-0.287   p=0.065  n=40  ↓
+    temp_min         r=-0.284   p=0.068  n=40  ↓
+
+  [size_avg]
+    sst_avg          r=-0.481**  p=0.002  n=33  ↓
+    is_holiday       r=+0.451**  p=0.002  n=40  ↑
+    temp_range       r=+0.368*  p=0.015  n=40  ↑
+    moon_sin         r=+0.329*  p=0.032  n=40  ↑
+    wave_period_min  r=+0.291   p=0.061  n=40  ↑
+    temp_delta       r=+0.290   p=0.062  n=40  ↑
+    wind_speed_avg   r=-0.274   p=0.080  n=40  ↓
+    wave_period_avg  r=+0.262   p=0.094  n=40  ↑
+
+【因子相関（週集計: n=15週）】
+
+  [cnt_avg]
+    is_holiday       r=+0.672**  p=0.001  n=15  ↑
+    sst_delta        r=-0.582*  p=0.018  n=13  ↓
+    pressure_min     r=+0.562*  p=0.014  n=15  ↑
+    precip_sum1      r=-0.544*  p=0.019  n=15  ↓
+    pressure_avg     r=+0.513*  p=0.031  n=15  ↑
+    temp_delta       r=+0.497*  p=0.039  n=15  ↑
+    sst_avg          r=-0.436   p=0.093  n=14  ↓
+
+  [cnt_min]
+    is_holiday       r=+0.636**  p=0.003  n=15  ↑
+    temp_delta       r=+0.559*  p=0.015  n=15  ↑
+    sst_delta        r=-0.528*  p=0.039  n=13  ↓
+    pressure_min     r=+0.483*  p=0.047  n=15  ↑
+
+  [cnt_max]
+    is_holiday       r=+0.659**  p=0.002  n=15  ↑
+    precip_sum1      r=-0.595**  p=0.008  n=15  ↓
+    sst_delta        r=-0.583*  p=0.017  n=13  ↓
+    pressure_min     r=+0.569*  p=0.013  n=15  ↑
+    pressure_avg     r=+0.534*  p=0.023  n=15  ↑
+    temp_delta       r=+0.453   p=0.067  n=15  ↑
+    sst_avg          r=-0.447   p=0.084  n=14  ↓
+    temp_max         r=-0.436   p=0.081  n=15  ↓
+
+  [size_avg]
+    is_holiday       r=+0.622**  p=0.004  n=15  ↑
+    sst_avg          r=-0.619**  p=0.006  n=14  ↓
+    temp_range       r=+0.567*  p=0.013  n=15  ↑
+    prev_week_cnt    r=-0.475   p=0.062  n=14  ↓
+
+【因子相関（旬集計: n=10旬）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.790**  p=0.000  n=10  ↑
+    sst_delta        r=-0.765**  p=0.004  n=8  ↓
+    precip_sum2      r=-0.737**  p=0.002  n=10  ↓
+    precip_sum1      r=-0.704**  p=0.005  n=10  ↓
+    wind_speed_max   r=+0.671*  p=0.011  n=10  ↑
+    temp_max         r=-0.653*  p=0.015  n=10  ↓
+    wind_dir_e       r=-0.648*  p=0.016  n=10  ↓
+    temp_avg         r=-0.633*  p=0.021  n=10  ↓
+    wind_speed_avg   r=+0.604*  p=0.032  n=10  ↑
+    wind_dir_mode    r=+0.591*  p=0.038  n=10  ↑
+    temp_min         r=-0.581*  p=0.044  n=10  ↓
+
+  [cnt_min]
+    tide_type_n      r=-0.645*  p=0.017  n=10  ↓
+    pressure_delta   r=-0.618*  p=0.026  n=10  ↓
+    sst_delta        r=-0.617   p=0.055  n=8  ↓
+    precip_sum2      r=-0.615*  p=0.027  n=10  ↓
+    prev_week_cnt    r=+0.584*  p=0.042  n=10  ↑
+
+  [cnt_max]
+    precip_sum1      r=-0.795**  p=0.000  n=10  ↓
+    prev_week_cnt    r=+0.774**  p=0.001  n=10  ↑
+    wind_speed_max   r=+0.767**  p=0.001  n=10  ↑
+    sst_delta        r=-0.758**  p=0.004  n=8  ↓
+    temp_max         r=-0.720**  p=0.003  n=10  ↓
+    precip_sum2      r=-0.705**  p=0.005  n=10  ↓
+    temp_avg         r=-0.699**  p=0.006  n=10  ↓
+    wind_speed_avg   r=+0.646*  p=0.017  n=10  ↑
+    temp_min         r=-0.644*  p=0.017  n=10  ↓
+    wind_dir_e       r=-0.641*  p=0.018  n=10  ↓
+    wind_dir_mode    r=+0.637*  p=0.020  n=10  ↑
+    wave_period_avg  r=+0.567   p=0.052  n=10  ↑
+
+  [size_avg]
+    is_holiday       r=+0.687**  p=0.007  n=10  ↑
+    temp_range       r=+0.640*  p=0.018  n=10  ↑
+    tide_delta       r=+0.619*  p=0.026  n=10  ↑
+    sst_avg          r=-0.577   p=0.062  n=9  ↓
+
+【因子相関（月集計: n=6月）】
+  (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        2.5%           —           —           —           —
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=40)  +0.000  (n=40)  +0.000  (n=40)           —
+  (有意な観測因子相関なし)
+
+【コメントキーワード解析】
+  (有意なキーワードなし)
+
+【ポイント別集計】
+  (ポイントデータなし)
+
+【マルチホライズン バックテスト（ローリング月次CV）】
+  ローリング月次CV  全6ヶ月  テスト総計: 18件
+
+  ─ Ave匹数 : データ不足 ─
+
+  ─ Min匹数 : データ不足 ─
+
+  ─ Max匹数 : データ不足 ─
+
+  ─ Ave型   : データ不足 ─
+
+  ─ Ave重量 : データ不足 ─

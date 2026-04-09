@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>スピナー D+F デモ</title>
+<style>
+:root {
+  --bg-primary: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-input: #eef1f5;
+  --border: #d0d8e0;
+  --text-primary: #1a2332;
+  --text-secondary: #5a6a7a;
+  --text-muted: #8a96a4;
+  --accent: #0d2b4a;
+  --cta: #e85d04;
+  --cta-hover: #d04e00;
+  --positive: #1a9d56;
+  --premium: #7c3aed;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, "Hiragino Sans", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+h1 { font-size: 16px; color: var(--text-secondary); font-weight: 600; }
+
+/* ── トリガーボタン ── */
+.demo-btn {
+  background: var(--cta);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 36px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.demo-btn:hover { background: var(--cta-hover); }
+
+/* ── 予測結果カード（最初は非表示） ── */
+.forecast-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  width: min(360px, 100%);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.forecast-card.visible { opacity: 1; transform: translateY(0); }
+
+.fc-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.fc-fish {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.fc-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.fc-item {
+  flex: 1;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+.fc-item-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.fc-item-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--cta);
+  font-variant-numeric: tabular-nums;
+}
+.fc-item-unit {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+.fc-stars {
+  font-size: 18px;
+  color: #d4a017;
+  margin-bottom: 8px;
+}
+.fc-note {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ================================================================
+   D: Analysis Overlay (Stepper)
+   ================================================================ */
+.analysis-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.analysis-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.analysis-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 20px;
+  width: min(340px, 90vw);
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.analysis-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  display: block;
+  animation: bob 1.2s ease-in-out infinite;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+.analysis-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+/* ── ステップ ── */
+.analysis-steps {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.25;
+  transition: opacity 0.4s ease;
+}
+.step.active { opacity: 1; }
+.step.done   { opacity: 0.5; }
+
+/* CSS製ドット */
+.step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.3s, border-color 0.3s;
+}
+.step.active .step-dot {
+  background: var(--cta);
+  border-color: var(--cta);
+  animation: pulse-dot 0.9s ease-in-out infinite;
+}
+.step.done .step-dot {
+  background: var(--positive);
+  border-color: var(--positive);
+  animation: none;
+}
+.step.done .step-dot::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(232, 93, 4, 0.18); }
+  50%       { box-shadow: 0 0 0 8px rgba(232, 93, 4, 0.07); }
+}
+
+.step-icon { font-size: 16px; }
+.step-body { display: flex; flex-direction: column; gap: 2px; }
+.step-text { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.step-meta { font-size: 11px; color: var(--text-muted); }
+
+/* プログレスバー */
+.analysis-progress-wrap {
+  height: 4px;
+  background: var(--bg-input);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.analysis-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--cta));
+  border-radius: 2px;
+  transition: width 0.7s ease;
+}
+.analysis-note { font-size: 11px; color: var(--text-muted); }
+
+/* ================================================================
+   F: Counter-up
+   ================================================================ */
+.count-up-target { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<h1>D（ステッパー）+ F（カウンター）デモ</h1>
+
+<button class="demo-btn" id="demoBtn">来週末の予測を見る</button>
+
+<!-- 予測結果カード -->
+<div class="forecast-card" id="forecastCard">
+  <div class="fc-label">来週末の予測（4/12 土）</div>
+  <div class="fc-fish">アジ — 横浜・金沢八景</div>
+  <div class="fc-row">
+    <div class="fc-item">
+      <div class="fc-item-label">釣果</div>
+      <div class="fc-item-value">
+        <span class="count-up-target" id="cntMin">0</span>〜<span class="count-up-target" id="cntMax">0</span>
+        <span class="fc-item-unit">匹</span>
+      </div>
+    </div>
+    <div class="fc-item">
+      <div class="fc-item-label">型</div>
+      <div class="fc-item-value">
+        <span class="count-up-target" id="szMin">0</span>〜<span class="count-up-target" id="szMax">0</span>
+        <span class="fc-item-unit">cm</span>
+      </div>
+    </div>
+  </div>
+  <div class="fc-stars">★★★★☆</div>
+  <div class="fc-note" id="fcNote"></div>
+</div>
+
+<!-- D: オーバーレイ -->
+<div id="analysisOverlay" class="analysis-overlay" aria-hidden="true">
+  <div class="analysis-modal" role="status">
+    <span class="analysis-icon">🎣</span>
+    <p class="analysis-title">予測データを準備中</p>
+    <div class="analysis-steps">
+      <div class="step" id="astep1">
+        <span class="step-dot"></span>
+        <span class="step-icon">📊</span>
+        <span class="step-body">
+          <span class="step-text">釣果データを読み込み中</span>
+          <span class="step-meta">84,757件</span>
+        </span>
+      </div>
+      <div class="step" id="astep2">
+        <span class="step-dot"></span>
+        <span class="step-icon">🌊</span>
+        <span class="step-body">
+          <span class="step-text">海況データと照合中</span>
+          <span class="step-meta">波高・水温・潮汐・気圧</span>
+        </span>
+      </div>
+      <div class="step" id="astep3">
+        <span class="step-dot"></span>
+        <span class="step-icon">🤖</span>
+        <span class="step-body">
+          <span class="step-text">予測モデルで計算中</span>
+          <span class="step-meta"></span>
+        </span>
+      </div>
+    </div>
+    <div class="analysis-progress-wrap">
+      <div class="analysis-progress-fill" id="analysisFill"></div>
+    </div>
+    <p class="analysis-note">初回のみ数秒かかります</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var COMMENT = '水温上昇中・大潮・南西風弱 — 好条件が重なる週末';
+
+  /* ── ランダム ms（min〜max） ── */
+  function rnd(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  /* ── D: ステッパー（ランダムタイミング） ── */
+  function showAnalysis(onComplete, cacheKey) {
+    var overlay = document.getElementById('analysisOverlay');
+    var steps   = overlay.querySelectorAll('.step');
+    var bar     = document.getElementById('analysisFill');
+    var cached  = cacheKey && sessionStorage.getItem('spinner_' + cacheKey);
+
+    /* リセット */
+    steps.forEach(function (s) { s.className = 'step'; });
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    bar.getBoundingClientRect(); /* forceReflow */
+    bar.style.transition = 'width 0.7s ease';
+
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    if (cached) {
+      bar.style.width = '100%';
+      setTimeout(function () { finishOverlay(overlay, onComplete); }, 600);
+      return;
+    }
+
+    /* 各ステップの所要時間をランダムに決定
+       step1: 800〜1600ms  step2: 700〜1500ms  step3: 600〜1200ms
+       → 合計 2.1〜4.3秒。毎回違う体感になる */
+    var t1 = rnd(800,  1600);
+    var t2 = rnd(700,  1500);
+    var t3 = rnd(600,  1200);
+    var t1end = t1;
+    var t2end = t1end + t2;
+    var t3end = t2end + t3;
+    var close = t3end + 400; /* 完了→クローズまで 400ms */
+
+    /* プログレスバーのtransitionをステップ時間に合わせる */
+    function setBar(pct, dur) {
+      bar.style.transition = 'width ' + (dur / 1000).toFixed(2) + 's ease';
+      bar.style.width = pct + '%';
+    }
+
+    /* Step 1 start */
+    steps[0].classList.add('active');
+    setBar(35, t1);
+
+    /* Step 2 start */
+    setTimeout(function () {
+      steps[0].classList.remove('active');
+      steps[0].classList.add('done');
+      steps[1].classList.add('active');
+      setBar(70, t2);
+    }, t1end);
+
+    /* Step 3 start */
+    setTimeout(function () {
+      steps[1].classList.remove('active');
+      steps[1].classList.add('done');
+      steps[2].classList.add('active');
+      setBar(95, t3);
+    }, t2end);
+
+    /* 完了 */
+    setTimeout(function () {
+      steps[2].classList.remove('active');
+      steps[2].classList.add('done');
+      bar.style.transition = 'width 0.3s ease';
+      bar.style.width = '100%';
+    }, t3end);
+
+    /* フェードアウト */
+    setTimeout(function () {
+      finishOverlay(overlay, onComplete);
+      if (cacheKey) sessionStorage.setItem('spinner_' + cacheKey, '1');
+    }, close);
+  }
+
+  function finishOverlay(overlay, onComplete) {
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (onComplete) onComplete();
+  }
+
+  /* ── F: カウンターアップ（easeOutCubic） ── */
+  function countUp(el, to, duration) {
+    var start = null;
+    function tick(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / duration, 1);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(to * e);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ── G: タイプライター ── */
+  function typeWriter(el, text, msPerChar, onDone) {
+    el.textContent = '';
+    var i = 0;
+    /* 文字間隔に ±30% のランダムゆらぎを加えて「人が打ってる感」 */
+    function next() {
+      if (i >= text.length) { if (onDone) onDone(); return; }
+      el.textContent += text[i++];
+      var jitter = msPerChar * (0.7 + Math.random() * 0.6);
+      setTimeout(next, jitter);
+    }
+    next();
+  }
+
+  /* ── ボタン ── */
+  var btn   = document.getElementById('demoBtn');
+  var card  = document.getElementById('forecastCard');
+  var note  = document.getElementById('fcNote');
+  var fired = false;
+
+  btn.addEventListener('click', function () {
+    /* リセット */
+    card.classList.remove('visible');
+    note.textContent = '';
+    ['cntMin','cntMax','szMin','szMax'].forEach(function (id) {
+      document.getElementById(id).textContent = '0';
+    });
+
+    showAnalysis(function () {
+      /* カードフェードイン */
+      card.classList.add('visible');
+
+      /* F: カウンターアップ（同時スタート） */
+      countUp(document.getElementById('cntMin'), 25, 800);
+      countUp(document.getElementById('cntMax'), 35, 800);
+      countUp(document.getElementById('szMin'),  22, 800);
+      countUp(document.getElementById('szMax'),  30, 800);
+
+      /* G: タイプライター（カウンター完了後に開始） */
+      setTimeout(function () {
+        typeWriter(note, COMMENT, 40);
+      }, 850);
+
+    }, fired ? 'aji_demo' : null);
+
+    fired = true;
+  });
+})();
+</script>
+</body>
+</html>

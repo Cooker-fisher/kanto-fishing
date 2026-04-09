@@ -1,98 +1,135 @@
----
-name: プロジェクト現状
-description: funatsuri-yoso.com の実装状況と次のアクション
-type: project
----
+現行バージョン: crawler.py v5.23（design_version 同期・pages/ 移行）
+最終更新: 2026/04/08
+最新コミット: eb904ba（pages/: 静的HTML移動・crawler.py リンク更新）
 
-現行バージョン: crawler.py v5.17
-最終更新: 2026/04/01
+## ★ 大掃除完了状況（全フェーズ完了）
+- Phase 0（dustbox/作成）: 完了
+- Phase 1（ocean/分離）: 完了 コミット 5286a28
+- Phase 2（crawl/分離）: 完了 コミット 9c494f9
+- Phase 3（normalize/分離）: 完了 コミット 5b2a5ff
+- Phase 4a（analysis/V1/作成）: 完了 コミット 237ade2
+- Phase 4b（analysis/V2/移行）: 完了 コミット 520bbf8
+- Phase 4c（README作成）: 完了（4b と同コミット）
+- Phase 4d（ドキュメント更新）: 完了
+- Phase 5（ルート整理・design/・pages/）: 完了 コミット eb904ba
 
 ---
 
 ## ★ 次チャットでやること（優先度順）
 
-### 1. 有料予測ページの動作確認・改善
-有料ページ機能はv5.15〜v5.17で実装済み。ただし実際のHTMLを目視確認できていない。
-`python3 crawler.py` で生成してブラウザ確認が必要。
+### 1. combo_deep_dive.py を全51魚種で実行（ユーザー許可が必要）
+- tide fix済み（tide_moon.sqlite参照に変更・コミット済み `72b7743`）
+- 実行前にユーザーに確認してから走らせること
 
-確認ポイント:
-- forecast/index.html: 予測結果レポート（1件完全＋4件ぼかし）＋日付ナビ＋エリアリンク
-- forecast/2026-04-01.html（等）: 6指標海況ダッシュボード＋TODAY'S PICK＋予測一覧テーブル＋詳細カード
-- forecast/2026-W15.html（等）: 週次潮汐スケジュール＋予測テーブル
-- forecast/area/東京湾奥.html（等）: 7日間サマリー＋エリア別予測
-- 確信度C/Dのカードに「予測のブレ要因」が出ていること
-- 詳細カードのSST傾向ファクター（🌡️水温推移 → 上昇/低下）が出ていること
+### 2. parse_deepdive.py → deepdive_params.json
+- combo_deep_dive 完了後に実行
 
-### 2. 分析テキスト（テンプレート軸）の充実
-現状の`_build_analysis_text`は5軸程度。以下の追加軸が議論済みで未実装:
-
-| 軸 | 実装方法 | データ |
-|----|---------|--------|
-| シーズンスコア定性表現 | season_score→「旬」「端境期」等 | SEASON_DATA |
-| 前週比 (WoW) | history.jsonの直前週と比較 | history.json |
-| 風向き影響 | 魚種×エリアで有利/不利の風向をマップ | 固定マップ |
-| サイズ傾向 | 直近catches vs history.size_avg | history.json |
-| 来月展望 | SEASON_DATAで来月スコアと比較 | SEASON_DATA |
-| 船数トレンド | history.shipsの増減 | history.json |
-
-### 3. 決済連携（後回しでOK）
-- Stripe Payment Links か codoc を使う方向
-- サーバーサイド認証なし（GitHub Pages静的）
-- DevToolsで突破可能だが500円なので許容範囲と判断済み
+### 3. 売り物設計（予測の出力形式）
+- 現状MAPE 27〜55%（CVが低い船宿）→ 匹数絶対値ではなく「平年比±%」「★評価」で出す
+- 「来週末アジは平年比+25%（★★★★）」の形式が現実的
+- 要実装: 旬別ベースラインからの偏差率を★5段階に変換するロジック
 
 ---
 
-## 実装済み機能（v5.15〜v5.17）
+## ✅ 今セッション完了（2026/04/08 後半）
 
-### 有料予測ページ群（forecast/）
-- ✅ forecast/index.html: ハブページ（予測結果レポート＋チラ見せ＋料金）
-- ✅ forecast/YYYY-MM-DD.html: 日次ページ×7（海況ダッシュボード6指標＋TODAY'S PICK＋予測一覧＋詳細カード）
-- ✅ forecast/YYYY-WXX.html: 週次ページ×3（2〜4週後、潮汐スケジュール＋予測テーブル）
-- ✅ forecast/area/エリア名.html: エリア別ページ×8（7日間サマリー＋詳細カード）
-- ✅ 無料/有料境界: 1件目完全表示、2〜5件目はコンボ名blur（HTMLソースにコンボ名なし）
-- ✅ 価格表示: 月額500円/スポット100円
+### ルート整理・フォルダ構成
+- **design/ フォルダ整備**（コミット `5d410b0`）
+  - redesign/ → design/V2/ に移動（ロールMD体制・モックアップ全保持）
+  - design/V1/ 作成: style.css / main.js のアーカイブコピー
+  - design/README.md / design/V1/README.md 追加
+- **design/V1/ に静的HTMLアーカイブ追加**（コミット `d2a9a1f`）
+  - about / contact / privacy / terms の V1 スナップショット保存
+- **ルートのゴミファイル3本 dustbox 退避**（コミット `30edffb`）
+  - crawl.yml（旧ワークフロー）/ fish_raw_list.txt / turimono_list_raw.txt
+- **crawler.py: design_version 自動同期**（コミット `106ab37`）
+  - config.json に `"design_version": "V1"` 追加
+  - crawler.py 実行時に design/{design_version}/ の HTML/CSS/JS をルートへコピー
+  - V2 移行は config.json の design_version を変えるだけで完結
+- **pages/ フォルダ新設・静的HTML移動**（コミット `eb904ba`）
+  - about / contact / privacy / terms → pages/ へ移動
+  - 各HTML: 相対パスを ../ 補正
+  - crawler.py: フッター/ナビ/サイトマップのリンクを pages/ 向けに更新
+  - デザイン同期の HTML 出力先を pages/ に変更（CSS/JS はルート維持）
 
-### データ取得・予測エンジン
-- ✅ weather_code（天気）・surface_pressure（気圧）をOpen-Meteo Forecast APIから取得
-- ✅ 潮差・月齢は天文計算で算出（Conway法、sine近似）→ 無限先の日付に対応
-- ✅ predict_catches: 偏差ベース×6要素（波高・風速・SST・波周期・潮差・月齢）
-- ✅ _enrich_forecast_combos: サイズ範囲・船宿TOP3をcatches.jsonから付与
-- ✅ 確信度A/B/C/D: samples×adjustment×season_scoreで算出
-- ✅ 詳細カード: A/B=通常、C/D=「予測のブレ要因」テキスト追加
-- ✅ TODAY'S PICK選出: compositeスコア最高、前日同魚種なら2位採用
-- ✅ SST傾向軸（v5.17）: 7日間予報の前半/後半比較→上昇/安定/低下を分析テキスト＋ファクター表示に反映
+### 現在のルート構成
+```
+kanto-fishing/
+├── CLAUDE.md / PIPELINE.md / README.md / CNAME / config.json / .gitignore
+├── crawler.py
+├── catches_raw.json / catches.json / history.json / forecast.json
+├── index.html / calendar.html / sitemap.xml / robots.txt
+├── main.js / style.css
+├── pages/          ← 静的ページ（about/contact/privacy/terms）
+├── fish/ / area/ / forecast/
+└── [フォルダ] crawl/ ocean/ normalize/ data/ analysis/ design/ dustbox/
+```
 
-### 確定した設計方針（変更不可）
-- 価格: **月額500円 / スポット100円**（380円ではない）
-- 無料で見せるのは1件目のみ（魚種名・エリア名・匹数すべて表示）
-- 2〜5件目: 匹数・型・確信度は見える、コンボ名（魚種×エリア）はblur
-- HTMLソースにぼかし行のコンボ名は書き出さない（blur解除対策）
-- 予想屋スタイル（◎○▲△✕・出馬表）は採用しない
-- 分析テキスト: 閾値・係数は非公開、定性表現のみ（パクリ防止）
-- LLMによるテキスト生成は採用しない（ハルシネーション防止）
+### config.json 現状
+```json
+{
+  "active_version": "V2",       ← data/V2/ CSV に連動
+  "design_version": "V1",       ← design/V1/ → pages/ & root に同期
+  "versions": { ... }
+}
+```
+
+### デザイン移行フロー（V2 移行時）
+1. design/V2/ に全ファイル完成させる（style.css / main.js / about.html 等）
+2. config.json の `"design_version": "V2"` に変更
+3. crawler.py 実行 → 自動でルート・pages/ に反映
 
 ---
 
-## 実装済み機能（v5.11〜v5.14）
-- ✅ staleデータフィルタ（v5.11）
-- ✅ 魚種ページデザイン改善（v5.12）
-- ✅ 爆釣アラート・旬の突入検出・週末予測確率（v5.13）
-- ✅ 海況カード・GA4カスタムイベント（v5.14）
-- ✅ 釣果予測エンジン初版（v5.14）
+## ✅ 前セッション完了（2026/04/08 前半）
+- **catches_raw_direct.json → CSV 統合**（crawler.py v5.22 / `ce35b3d`）
+- **大掃除 Phase 3〜4d 完了**（normalize/・analysis/ 整備）
+
+---
+
+## 確定した設計方針（変更不可）
+
+### FISH_MAP → 廃止決定（2026/04/09確定）
+- **不要**: `tsuri_mono + main_sub` で同等のフィルタが可能
+- 分析クエリは `tsuri_mono = "アジ" AND main_sub = "メイン"` で行う
+- サブ魚種クロス集計が必要になったときに再検討
+
+### ships.json フィールド（2026/04/03更新）
+- `exclude: true` → 利一丸・岩崎レンタルボート・海上つり堀まるや（3件）
+- `boat_only: true` → 青木丸（1件）
+- 有効船宿: 75件＋静岡エリア多数
+
+### データ収集状況（2026/04/03時点）
+- catches_raw.json: **84,757件**（欠航893件含む）
+- data/YYYY-MM.csv: **82,481行**
+- point_place1あり: **36,553件（44.8%）** kanso補完後
+- 期間: 2023/01/01〜2026/04/03
+
+### ポイント解決（3段階フォールバック・完全実装済み）
+```
+① point_place1 → point_coords.json（306ポイント）→ 座標
+② 空/航程系 → ship_fish_point.json（73船宿）→ ポイント名 → 座標
+③ ② も未登録 → area_coords.json（58エリア）→ 直接 lat/lon
+```
+- resolve_point() 関数で実装済み（crawler.py）
+- _extract_point_from_kanso() で kanso_raw からもポイント名補完（+630件）
+- 解決率: **94.9%**（除外船宿を除く）
+
+### ポイント解決ファイル現状
+| ファイル | 件数 | 内容 |
+|---------|------|------|
+| point_coords.json | **306ポイント** | ポイント名→座標（エイリアス含む） |
+| ship_fish_point.json | **73船宿** | 船宿×魚種→ポイント名（②フォールバック） |
+| area_coords.json | **58エリア** | 港エリア名→代表沖合座標（③フォールバック） |
+
+### 価格・マネタイズ
+- **月額500円 / スポット100円**
+- 無料=事実、有料=分析+予測
 
 ---
 
 ## 後回し・未実装
-- [ ] エリアごとの海況閾値最適化（東京湾と外房で波の影響が違う）
 - [ ] 決済連携（Stripe等）
-- [ ] サーバーサイド認証
-- [ ] prediction_history.json（予測精度の蓄積・表示）
 - [ ] AdSense審査結果待ち（2026/03/21申請済み）
 - [ ] X自動投稿（アカウントロック解除待ち）
 - [ ] crawl.ymlのNode.js 20→24アップグレード
-
----
-
-## ブランチ情報
-- 作業ブランチ: `claude/review-fishing-forecast-UenjU`
-- リポジトリ: cooker-fisher/kanto-fishing

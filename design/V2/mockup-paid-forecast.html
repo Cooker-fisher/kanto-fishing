@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>予測全覧 — 船釣り予想[有料]</title>
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:1100px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:60px;position:relative;-webkit-user-select:none;user-select:none}
+.watermark-text{position:fixed;inset:0;pointer-events:none;z-index:9998;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);overflow:hidden}
+.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(13,43,74,.05);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
+@media print{.watermark-text span{color:rgba(13,43,74,.4) !important}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+input,select,button,textarea{-webkit-user-select:auto;user-select:auto}
+a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:linear-gradient(135deg,#0d2b4a,#4c1d95);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--prem)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
+
+.hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:16px 14px;text-align:center}
+.hero h2{font-size:20px;font-weight:800}
+.hero .hs{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+
+/* Filters */
+.filters{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters label{font-size:11px;color:var(--sub);font-weight:600}
+.filters select,.filters input{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--card)}
+.filters .filter-btn{padding:5px 10px;background:var(--prem);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
+
+/* Matrix table */
+.matrix{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:0;margin-bottom:16px;overflow-x:auto}
+.matrix table{width:100%;border-collapse:separate;border-spacing:0;font-size:10px;min-width:700px}
+.matrix th,.matrix td{padding:6px 4px;text-align:center;border-bottom:1px solid var(--bg);border-right:1px solid var(--bg);white-space:nowrap}
+.matrix th{background:var(--bg);color:var(--accent);font-weight:700;position:sticky;top:0;z-index:2}
+.matrix th:first-child,.matrix td:first-child{position:sticky;left:0;background:var(--card);text-align:left;padding-left:10px;font-weight:700;color:var(--accent);z-index:1;min-width:80px}
+.matrix th:first-child{z-index:3;background:var(--bg)}
+.matrix .pred-cell{cursor:pointer;font-weight:700}
+.matrix .pred-cell.s5{background:#dcfce7;color:var(--pos)}
+.matrix .pred-cell.s4{background:#ecfccb;color:#65a30d}
+.matrix .pred-cell.s3{background:#fef9c3;color:#ca8a04}
+.matrix .pred-cell.s2{background:#fed7aa;color:#ea580c}
+.matrix .pred-cell.s1{background:#fee2e2;color:var(--neg)}
+.matrix .pred-cell.none{color:var(--muted);background:var(--bg)}
+.matrix .today-col{background:var(--prem-bg)}
+.matrix .weekend{background:#fef6ee}
+.matrix .stars{display:block;font-size:8px;color:var(--warn);margin-top:1px}
+.matrix .range{display:block;font-size:10px}
+
+/* Legend */
+.legend{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;font-size:10px;align-items:center}
+.legend .lgi{display:flex;align-items:center;gap:4px}
+.legend .box{width:16px;height:12px;border-radius:3px}
+.legend .box.s5{background:#dcfce7}
+.legend .box.s4{background:#ecfccb}
+.legend .box.s3{background:#fef9c3}
+.legend .box.s2{background:#fed7aa}
+.legend .box.s1{background:#fee2e2}
+
+/* Area filter chips */
+.area-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.area-chip{padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;font-size:11px;color:var(--sub);font-weight:600;cursor:pointer;text-decoration:none}
+.area-chip.on{background:var(--prem);color:#fff;border-color:var(--prem)}
+
+.info-note{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--prem)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<div class="watermark-text" aria-hidden="true">
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
+</div>
+
+<header><div class="inner"><h1>船釣り<span>予想</span>👑</h1><span style="font-size:11px;opacity:.5">予測全覧</span></div></header>
+<nav><a href="mockup-paid-dashboard.html">ダッシュボード</a><a href="#" class="on">予測全覧</a><a href="mockup-paid-calendar.html">旬カレンダー</a><a href="mockup-history.html">履歴</a><a href="mockup-mypage.html">マイページ</a></nav>
+
+<div class="hero">
+<h2>予測全覧</h2>
+<div class="hs">明日 4/6 〜 4/12 の7日間 × 12魚種 × 4エリア</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup-paid-dashboard.html">ダッシュボード</a> &gt; 予測全覧</div>
+
+<!-- エリアフィルター -->
+<div class="area-chips">
+<a class="area-chip on" href="#">金沢八景</a>
+<a class="area-chip" href="#">走水</a>
+<a class="area-chip" href="#">剣崎</a>
+<a class="area-chip" href="#">大原</a>
+<a class="area-chip" href="#">横浜</a>
+<a class="area-chip" href="#">久里浜</a>
+</div>
+
+<!-- 詳細フィルター -->
+<div class="filters">
+<label>魚種:</label>
+<select><option>全魚種</option><option>アジ</option><option>マダイ</option></select>
+<label>信頼度:</label>
+<select><option>★3以上</option><option>★4以上</option><option>★5のみ</option></select>
+<label>期間:</label>
+<select><option>7日間</option><option>14日間</option><option>28日間</option></select>
+<button class="filter-btn">適用</button>
+</div>
+
+<!-- 凡例 -->
+<div class="legend">
+<div class="lgi"><div class="box s5"></div>★★★★★ 信頼度最高</div>
+<div class="lgi"><div class="box s4"></div>★★★★</div>
+<div class="lgi"><div class="box s3"></div>★★★</div>
+<div class="lgi"><div class="box s2"></div>★★</div>
+<div class="lgi"><div class="box s1"></div>★</div>
+</div>
+
+<!-- マトリクス表 -->
+<div class="matrix">
+<table>
+<thead>
+<tr>
+<th>魚種</th>
+<th class="today-col">4/6(日)</th>
+<th>4/7(月)</th>
+<th>4/8(火)</th>
+<th>4/9(水)</th>
+<th>4/10(木)</th>
+<th class="weekend">4/11(金)</th>
+<th class="weekend">4/12(土)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>アジ</td>
+<td class="pred-cell s5 today-col"><span class="range">22〜48</span><span class="stars">★★★★★</span></td>
+<td class="pred-cell s4"><span class="range">20〜42</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s3"><span class="range">15〜35</span><span class="stars">★★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s4"><span class="range">18〜38</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s5 weekend"><span class="range">25〜50</span><span class="stars">★★★★★</span></td>
+<td class="pred-cell s5 weekend"><span class="range">28〜52</span><span class="stars">★★★★★</span></td>
+</tr>
+<tr>
+<td>シロギス</td>
+<td class="pred-cell s5 today-col"><span class="range">18〜45</span><span class="stars">★★★★★</span></td>
+<td class="pred-cell s4"><span class="range">15〜38</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s3"><span class="range">12〜32</span><span class="stars">★★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s4"><span class="range">18〜42</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s5 weekend"><span class="range">22〜48</span><span class="stars">★★★★★</span></td>
+<td class="pred-cell s5 weekend"><span class="range">25〜52</span><span class="stars">★★★★★</span></td>
+</tr>
+<tr>
+<td>マダイ</td>
+<td class="pred-cell s4 today-col"><span class="range">1〜5</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s3"><span class="range">1〜4</span><span class="stars">★★★</span></td>
+<td class="pred-cell s2"><span class="range">0〜3</span><span class="stars">★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s3"><span class="range">1〜4</span><span class="stars">★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">1〜5</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">2〜6</span><span class="stars">★★★★</span></td>
+</tr>
+<tr>
+<td>タチウオ</td>
+<td class="pred-cell s3 today-col"><span class="range">8〜25</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3"><span class="range">6〜22</span><span class="stars">★★★</span></td>
+<td class="pred-cell s2"><span class="range">5〜18</span><span class="stars">★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s3"><span class="range">8〜22</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3 weekend"><span class="range">10〜25</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3 weekend"><span class="range">10〜28</span><span class="stars">★★★</span></td>
+</tr>
+<tr>
+<td>カワハギ</td>
+<td class="pred-cell s4 today-col"><span class="range">8〜22</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s4"><span class="range">8〜20</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s3"><span class="range">6〜18</span><span class="stars">★★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s4"><span class="range">8〜22</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">10〜25</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s5 weekend"><span class="range">12〜28</span><span class="stars">★★★★★</span></td>
+</tr>
+<tr>
+<td>アマダイ</td>
+<td class="pred-cell s4 today-col"><span class="range">0〜5</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s3"><span class="range">0〜4</span><span class="stars">★★★</span></td>
+<td class="pred-cell s2"><span class="range">0〜3</span><span class="stars">★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s3"><span class="range">0〜4</span><span class="stars">★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">1〜5</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">1〜6</span><span class="stars">★★★★</span></td>
+</tr>
+<tr>
+<td>ヒラメ</td>
+<td class="pred-cell s3 today-col"><span class="range">0〜3</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3"><span class="range">0〜3</span><span class="stars">★★★</span></td>
+<td class="pred-cell s2"><span class="range">0〜2</span><span class="stars">★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s3"><span class="range">0〜3</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3 weekend"><span class="range">0〜3</span><span class="stars">★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">1〜4</span><span class="stars">★★★★</span></td>
+</tr>
+<tr>
+<td>フグ</td>
+<td class="pred-cell s3 today-col"><span class="range">5〜12</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3"><span class="range">5〜10</span><span class="stars">★★★</span></td>
+<td class="pred-cell s2"><span class="range">3〜8</span><span class="stars">★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s3"><span class="range">5〜12</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3 weekend"><span class="range">6〜14</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3 weekend"><span class="range">6〜15</span><span class="stars">★★★</span></td>
+</tr>
+<tr>
+<td>マゴチ</td>
+<td class="pred-cell s3 today-col"><span class="range">0〜5</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3"><span class="range">0〜5</span><span class="stars">★★★</span></td>
+<td class="pred-cell s2"><span class="range">0〜4</span><span class="stars">★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s3"><span class="range">0〜5</span><span class="stars">★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">1〜6</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">1〜7</span><span class="stars">★★★★</span></td>
+</tr>
+<tr>
+<td>イサキ</td>
+<td class="pred-cell s3 today-col"><span class="range">5〜18</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3"><span class="range">5〜15</span><span class="stars">★★★</span></td>
+<td class="pred-cell s2"><span class="range">3〜12</span><span class="stars">★★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s3"><span class="range">5〜18</span><span class="stars">★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">8〜22</span><span class="stars">★★★★</span></td>
+<td class="pred-cell s4 weekend"><span class="range">10〜25</span><span class="stars">★★★★</span></td>
+</tr>
+<tr>
+<td>ヤリイカ</td>
+<td class="pred-cell s2 today-col"><span class="range">5〜20</span><span class="stars">★★</span></td>
+<td class="pred-cell s2"><span class="range">4〜18</span><span class="stars">★★</span></td>
+<td class="pred-cell s1"><span class="range">2〜12</span><span class="stars">★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s2"><span class="range">3〜15</span><span class="stars">★★</span></td>
+<td class="pred-cell s2 weekend"><span class="range">3〜15</span><span class="stars">★★</span></td>
+<td class="pred-cell s1 weekend"><span class="range">2〜10</span><span class="stars">★</span></td>
+</tr>
+<tr>
+<td>ワラサ</td>
+<td class="pred-cell s2 today-col"><span class="range">0〜3</span><span class="stars">★★</span></td>
+<td class="pred-cell s2"><span class="range">0〜3</span><span class="stars">★★</span></td>
+<td class="pred-cell s1"><span class="range">0〜2</span><span class="stars">★</span></td>
+<td class="pred-cell none"><span class="range">欠航</span><span class="stars">—</span></td>
+<td class="pred-cell s2"><span class="range">0〜3</span><span class="stars">★★</span></td>
+<td class="pred-cell s3 weekend"><span class="range">0〜4</span><span class="stars">★★★</span></td>
+<td class="pred-cell s3 weekend"><span class="range">1〜5</span><span class="stars">★★★</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="info-note">※ セルをタップで魚種×エリア×日の詳細予測へ | 欠航日は予測非表示</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="mockup-mypage.html">マイページ</a><br>
+<span style="margin-top:4px;display:inline-block">© 2026 船釣り予想 [Premium]</span>
+</footer>
+
+<div class="bn"><a href="mockup-paid-dashboard.html"><span class="i">🏠</span>Home</a><a href="#" class="on"><span class="i">🔮</span>予測</a><a href="mockup-paid-calendar.html"><span class="i">📅</span>旬暦</a><a href="mockup-history.html"><span class="i">📊</span>履歴</a><a href="mockup-mypage.html"><span class="i">⚙</span>設定</a></div>
+
+</body>
+</html>

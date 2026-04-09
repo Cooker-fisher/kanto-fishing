@@ -1,36 +1,13 @@
 ﻿name: crawl
 on:
   schedule:
-    - cron: '30 7 * * *'   # 毎日 16:30 JST（釣果クロール＋夕方気象）
+    - cron: '30 7 * * *'   # 毎日 16:30 JST（釣果クロール）
     - cron: '0 7 1 * *'    # 毎月1日 16:00 JST（船宿SID自動更新）
-    - cron: '0 21 * * *'   # 毎日 06:00 JST（朝の気象データ）
+    - cron: '0 8 * * 1'    # 毎週月曜 17:00 JST（週次分析再生成）
   workflow_dispatch:
-    inputs:
-      backfill_depth:
-        description: '水深バックフィル実行'
-        type: boolean
-        default: false
 jobs:
-  backfill:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.backfill_depth
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: backfill depth
-        run: python3 backfill_depth.py
-      - name: push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "backfill depth $(date +'%Y/%m/%d')" || echo "nothing to commit"
-          git push --force
   crawl:
     runs-on: ubuntu-latest
-    if: github.event.schedule != '0 21 * * *' && !(github.event_name == 'workflow_dispatch' && inputs.backfill_depth)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,14 +15,15 @@ jobs:
           python-version: '3.11'
       - name: discover ships (月1日のみ)
         if: github.event.schedule == '0 7 1 * *' || github.event_name == 'workflow_dispatch'
-        run: |
-          python3 discover_ships.py
-          python3 discover_gyo.py
+        run: python3 crawl/discover_ships.py
       - name: run
-        run: |
-          python3 weather_fetch.py
-          python3 crawler.py
-          python3 weather_crawl.py
+        run: python3 crawler.py
+      - name: gyo direct crawl
+        continue-on-error: true
+        run: python3 direct-crawl/gyo_crawler.py
+      - name: prediction log (predict + match)
+        continue-on-error: true
+        run: python3 analysis/run.py prediction_log.py --both
       - name: push
         run: |
           git config user.name "github-actions[bot]"
@@ -54,20 +32,39 @@ jobs:
           git commit -m "update $(date +'%Y/%m/%d')" || echo "nothing to commit"
           git push --force
 
-  weather:
+  weekly_insights:
     runs-on: ubuntu-latest
-    if: github.event.schedule == '0 21 * * *'
+    if: github.event.schedule == '0 8 * * 1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: weather
-        run: python3 weather_crawl.py
+      - name: weekly analysis
+        run: |
+          python3 analysis/run.py season_analysis.py
+          python3 analysis/run.py season_detail.py
+          python3 analysis/run.py area_analysis.py
+          python3 analysis/run.py ship_peaks.py
+          python3 analysis/run.py weekly_analysis.py
+          python3 analysis/run.py cancel_threshold.py
+          python3 analysis/run.py risk_predict.py
+          python3 -c "
+          import json, os, sqlite3, subprocess, sys
+          with open('config.json', encoding='utf-8') as f: ver = json.load(f)['active_version']
+          db = os.path.join('analysis', ver, 'results', 'analysis.sqlite')
+          conn = sqlite3.connect(db)
+          fish_list = [r[0] for r in conn.execute('SELECT DISTINCT fish FROM combo_weekly ORDER BY fish').fetchall()]
+          conn.close()
+          for fish in fish_list:
+              subprocess.run([sys.executable, 'analysis/run.py', 'weekly_analysis.py', '--query', fish])
+              subprocess.run([sys.executable, 'analysis/run.py', 'weekly_analysis.py', '--grid',  fish])
+          "
       - name: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "weather $(date +'%Y/%m/%d %H:%M')" || echo "nothing to commit"
+          git commit -m "weekly insights $(date +'%Y/%m/%d')" || echo "nothing to commit"
           git push --force
+

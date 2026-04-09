@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プラン比較 — 船釣り予想</title>
+<meta name="description" content="船釣り予想の料金プラン。月額500円（7日間無料）、スポット100円/日。機能比較と支払い方法。">
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--prem:#7c3aed;--prem2:#6d28d9;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--prem)}
+nav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
+.st{font-size:15px;font-weight:700;color:var(--prem);padding:18px 0 8px;border-bottom:2px solid var(--prem);margin-bottom:12px}
+.plan-hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:24px 14px;text-align:center}
+.plan-hero h2{font-size:22px;font-weight:800}
+.plan-hero .ph-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:4px}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+
+/* Plan cards */
+.plans{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px}
+@media(min-width:600px){.plans{grid-template-columns:repeat(3,1fr)}}
+.plan{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;position:relative}
+.plan.popular{border-color:var(--prem);background:linear-gradient(180deg,#faf7ff,#fff)}
+.plan.popular::before{content:"人気No.1";position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--prem);color:#fff;font-size:10px;padding:3px 14px;border-radius:10px;font-weight:700}
+.plan h3{font-size:15px;color:var(--accent);font-weight:700}
+.plan-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.plan .price{font-size:36px;font-weight:800;color:var(--cta);line-height:1;margin:10px 0 4px}
+.plan .price small{font-size:13px;font-weight:400;color:var(--sub)}
+.plan .trial{display:inline-block;font-size:10px;padding:3px 8px;background:var(--pos);color:#fff;border-radius:10px;font-weight:700;margin-bottom:10px}
+.plan ul{text-align:left;font-size:11px;color:var(--sub);list-style:none;margin:10px 0}
+.plan ul li{padding:3px 0;padding-left:16px;position:relative}
+.plan ul li::before{content:"✓";position:absolute;left:0;color:var(--pos);font-weight:700}
+.plan ul li.no::before{content:"✗";color:var(--neg)}
+.plan ul li.no{color:var(--muted)}
+.plan .plan-cta{display:block;padding:12px;background:var(--prem);color:#fff;border-radius:22px;font-weight:700;font-size:13px;margin-top:12px}
+.plan.popular .plan-cta{background:var(--cta)}
+.plan .plan-cta:hover{opacity:.85;text-decoration:none}
+
+/* Compare table */
+.compare{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;overflow-x:auto}
+.compare h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.compare table{width:100%;border-collapse:collapse;font-size:11px}
+.compare th,.compare td{padding:8px 6px;border-bottom:1px solid var(--bg);text-align:center}
+.compare th:first-child,.compare td:first-child{text-align:left;color:var(--sub);font-weight:600}
+.compare th{font-size:10px;color:var(--accent);font-weight:700;background:var(--bg)}
+.compare td.yes{color:var(--pos);font-weight:700}
+.compare td.no{color:var(--muted)}
+
+/* Value prop */
+.value{background:linear-gradient(135deg,#fef6ee,#fed7aa);border:1px solid #fb923c;border-radius:var(--r);padding:16px;margin-bottom:16px}
+.value h3{font-size:13px;color:var(--cta);margin-bottom:8px;text-align:center}
+.value-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px;border-bottom:1px dashed #fb923c}
+.value-row:last-child{border-bottom:none}
+.value-row .vl{color:var(--text);font-weight:600}
+.value-row .vv{color:var(--cta);font-weight:800}
+
+/* Payment */
+.payment{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.payment h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.payment .pay-list{display:flex;gap:8px;flex-wrap:wrap}
+.payment .pay-item{font-size:11px;padding:6px 12px;background:var(--bg);border-radius:6px;color:var(--sub);font-weight:600}
+
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--prem)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+
+<header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
+<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-premium.html" class="on">有料プラン</a></nav>
+
+<div class="plan-hero">
+<h2>プラン比較</h2>
+<div class="ph-sub">あなたに合ったプランを選べます</div>
+</div>
+
+<div class="c">
+<div class="bread"><a href="mockup.html">トップ</a> &gt; <a href="mockup-premium.html">有料プラン</a> &gt; プラン比較</div>
+
+<!-- 価値訴求 -->
+<div class="value">
+<h3>💰 月額500円の価値</h3>
+<div class="value-row"><span class="vl">仕掛け1セット（道糸・ハリス・オモリ）</span><span class="vv">約500〜1,000円</span></div>
+<div class="value-row"><span class="vl">船宿1回の乗船料</span><span class="vv">約8,000〜15,000円</span></div>
+<div class="value-row"><span class="vl">釣り雑誌1冊</span><span class="vv">約800円</span></div>
+<div class="value-row"><span class="vl"><strong>船釣り予想 1ヶ月</strong></span><span class="vv"><strong>¥500</strong></span></div>
+</div>
+
+<!-- 3プラン -->
+<h2 class="st">プラン一覧</h2>
+<div class="plans">
+
+<div class="plan">
+<h3>無料プラン</h3>
+<div class="plan-sub">事実情報のみ</div>
+<div class="price">¥0</div>
+<ul>
+<li>今日の釣果（全魚種）</li>
+<li>直近7日の推移グラフ</li>
+<li>船宿◎○△ ランキング</li>
+<li>エリア・魚種詳細</li>
+<li>答え合わせ（1件/日）</li>
+<li class="no">明日以降の予測</li>
+<li class="no">因果分析コメント</li>
+<li class="no">最適仕掛け推奨</li>
+</ul>
+<a class="plan-cta" href="mockup.html">無料で使う</a>
+</div>
+
+<div class="plan popular">
+<h3>月額プラン</h3>
+<div class="plan-sub">フル機能</div>
+<div class="price">¥500<small>/月</small></div>
+<span class="trial">7日間無料トライアル（クレカ登録必須）</span>
+<ul>
+<li>無料プランの全機能</li>
+<li>明日〜4週間後の予測</li>
+<li>信頼度★5段階評価</li>
+<li>因果分析コメント</li>
+<li>最適ポイント・仕掛け推奨</li>
+<li>欠航リスク予報</li>
+<li>30日分の詳細履歴</li>
+<li>釣行プラン提案機能</li>
+</ul>
+<a class="plan-cta" href="#">月額で始める →</a>
+</div>
+
+<div class="plan">
+<h3>スポット</h3>
+<div class="plan-sub">1日単位で購入</div>
+<div class="price">¥100<small>/日</small></div>
+<ul>
+<li>指定日の予測のみ</li>
+<li>選んだ魚種の予測</li>
+<li>釣行前日だけ買える</li>
+<li>月3回まで</li>
+<li class="no">長期予測</li>
+<li class="no">釣行プラン提案</li>
+<li class="no">マイページ機能</li>
+<li class="no">お気に入り通知</li>
+</ul>
+<a class="plan-cta" href="#">スポット購入</a>
+</div>
+
+</div>
+
+<!-- 機能比較表 -->
+<div class="compare">
+<h3>機能比較</h3>
+<table>
+<thead><tr><th>機能</th><th>無料</th><th>月額¥500</th><th>スポット¥100</th></tr></thead>
+<tbody>
+<tr><td>今日の釣果</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>直近7日グラフ</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>船宿◎○△</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>答え合わせ（1件/日）</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>明日の予測</td><td class="no">—</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>1週間予測</td><td class="no">—</td><td class="yes">○</td><td class="no">—</td></tr>
+<tr><td>4週間予測</td><td class="no">—</td><td class="yes">○</td><td class="no">—</td></tr>
+<tr><td>因果分析コメント</td><td class="no">—</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>最適ポイント推奨</td><td class="no">—</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>仕掛け推奨</td><td class="no">—</td><td class="yes">○</td><td class="no">—</td></tr>
+<tr><td>信頼度★評価</td><td class="no">—</td><td class="yes">○</td><td class="yes">○</td></tr>
+<tr><td>欠航リスク予報</td><td class="no">—</td><td class="yes">○</td><td class="no">—</td></tr>
+<tr><td>30日詳細履歴</td><td class="no">—</td><td class="yes">○</td><td class="no">—</td></tr>
+<tr><td>釣行プラン提案</td><td class="no">—</td><td class="yes">○</td><td class="no">—</td></tr>
+<tr><td>マイページ・通知</td><td class="no">—</td><td class="yes">○</td><td class="no">—</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 支払い方法 -->
+<div class="payment">
+<h3>お支払い方法</h3>
+<div class="pay-list">
+<div class="pay-item">クレジットカード</div>
+<div class="pay-item">デビットカード</div>
+<div class="pay-item">Apple Pay</div>
+<div class="pay-item">Google Pay</div>
+</div>
+<div style="font-size:10px;color:var(--muted);margin-top:8px">※ 決済はStripe社が安全に処理します。カード情報は当サイトに保存されません。<br>※ 7日間無料トライアルもクレカ登録が必要です。期間中に解約すれば請求は発生しません。</div>
+</div>
+
+<!-- ご利用規約（抜粋） -->
+<div class="payment" style="background:#fef9c3;border-color:#eab308">
+<h3 style="color:#a16207">⚠️ ご利用規約（抜粋）</h3>
+<div style="font-size:11px;color:var(--sub);line-height:1.7">
+<strong>・スクレイピング・自動取得の禁止</strong>: 本サイトの予測データ・釣果データの機械的な取得・転載を禁止します。違反した場合は即時アカウント停止・法的措置を取る場合があります。<br>
+<strong>・API非公開</strong>: 公式APIの提供はありません。プログラムによる大量アクセスを検知した場合、IPブロック等の対応を行います。<br>
+<strong>・ウォーターマーク</strong>: 有料ページには会員識別用の透かしが入ります。スクリーンショットを第三者に共有した場合、流出元が特定されます。<br>
+<strong>・1日の閲覧上限</strong>: 1アカウントあたり200ページ/日の閲覧上限があります。<br>
+<strong>・予測の免責</strong>: 予測はあくまで参考情報です。釣果を保証するものではありません。的中率と答え合わせは全公開しています。
+</div>
+<div style="text-align:center;margin-top:8px"><a href="#" style="font-size:11px;color:var(--prem);font-weight:700">利用規約 全文を見る →</a></div>
+</div>
+
+<!-- 友達紹介 -->
+<div class="value" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:var(--pos)">
+<h3 style="color:var(--pos)">🎁 友達紹介プログラム</h3>
+<div style="font-size:12px;color:var(--sub);text-align:center;padding:6px 0">
+月額プラン会員が友達を招待すると、<br>
+<strong style="color:var(--pos)">紹介した人 : 1ヶ月無料</strong><br>
+<strong style="color:var(--pos)">招待された人 : 初月半額</strong>
+</div>
+</div>
+
+</div>
+
+<footer>
+<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a> · <a href="#">特定商取引法</a><br>
+<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-premium.html">有料プラン</a> · <a href="mockup-history.html">予測履歴</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
+</footer>
+
+<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="mockup-premium.html" class="on"><span class="i">⭐</span>有料</a></div>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+========================================================================
+  アマダイ × あまさけや丸
+========================================================================
+
+【基本統計】
+  件数: 38件 / 期間: 2023/09/17 〜 2026/03/14
+  cnt_avg  : 平均 2.5匹  中央値 2.0  std 1.4  [1 〜 6]
+  cnt_min  : 平均 1.6  cnt_max 平均 4.7  (24/38件, 63%)
+  size_avg : 平均 30.3cm  std 4.6  [18 〜 38]  (25/38件, 66%)
+  kg_avg   : 平均 0.73kg  std 0.45  (13/38件, 34%)
+
+【旬別ベースライン（n=38件）】
+     旬       期待       実績       偏差     n  
+  ---------------------------------------------
+     2      3.2      3.2     +0.0     4
+     3      2.8      2.8     +0.0     6
+     4      3.0      4.0     +1.0     2
+     6      3.4      3.4     +0.0     5
+    30      1.3      1.3     +0.0     3
+    33      1.7      1.7     -0.0     3
+
+【因子相関（日次: 38件）】
+
+  [cnt_avg]
+    wave_period_avg  r=-0.559**  p=0.000  n=38  ↓
+    temp_max         r=-0.412**  p=0.007  n=38  ↓
+    temp_avg         r=-0.392*  p=0.011  n=38  ↓
+    moon_sin         r=-0.385*  p=0.012  n=38  ↓
+    wave_period_min  r=-0.378*  p=0.014  n=38  ↓
+    temp_min         r=-0.367*  p=0.018  n=38  ↓
+    sst_avg          r=-0.340*  p=0.032  n=37  ↓
+    moon_cos         r=-0.319*  p=0.044  n=38  ↓
+
+  [cnt_max]
+    wave_period_avg  r=-0.554**  p=0.000  n=38  ↓
+    temp_max         r=-0.433**  p=0.004  n=38  ↓
+    temp_avg         r=-0.410**  p=0.007  n=38  ↓
+    temp_min         r=-0.388*  p=0.011  n=38  ↓
+    wave_period_min  r=-0.378*  p=0.014  n=38  ↓
+    sst_avg          r=-0.373*  p=0.017  n=37  ↓
+    moon_cos         r=-0.329*  p=0.036  n=38  ↓
+    moon_sin         r=-0.321*  p=0.042  n=38  ↓
+    precip_sum2      r=+0.292   p=0.067  n=38  ↑
+    prev_week_cnt    r=+0.281   p=0.083  n=37  ↑
+
+  [size_avg]
+    sst_avg          r=+0.457*  p=0.016  n=24  ↑
+    temp_max         r=+0.372   p=0.055  n=25  ↑
+    temp_min         r=+0.371   p=0.055  n=25  ↑
+    temp_avg         r=+0.369   p=0.057  n=25  ↑
+    moon_cos         r=-0.346   p=0.077  n=25  ↓
+    pressure_avg     r=-0.333   p=0.090  n=25  ↓
+
+  [kg_avg]
+    precip_sum       r=+0.942**  p=0.000  n=13  ↑
+    pressure_min     r=-0.782**  p=0.000  n=13  ↓
+    pressure_avg     r=-0.757**  p=0.000  n=13  ↓
+    is_holiday       r=-0.566*  p=0.023  n=13  ↓
+
+【因子相関（週集計: n=30週）】
+
+  [cnt_avg]
+    wave_period_avg  r=-0.543**  p=0.001  n=30  ↓
+    temp_max         r=-0.425*  p=0.013  n=30  ↓
+    temp_avg         r=-0.406*  p=0.019  n=30  ↓
+    moon_sin         r=-0.391*  p=0.024  n=30  ↓
+    temp_min         r=-0.382*  p=0.029  n=30  ↓
+    precip_sum2      r=+0.367*  p=0.037  n=30  ↑
+    sst_avg          r=-0.344   p=0.057  n=29  ↓
+    wave_period_min  r=-0.317   p=0.077  n=30  ↓
+    moon_cos         r=-0.309   p=0.085  n=30  ↓
+
+  [cnt_min]
+    wave_height_max  r=-0.333   p=0.062  n=30  ↓
+
+  [cnt_max]
+    wave_period_avg  r=-0.551**  p=0.000  n=30  ↓
+    temp_max         r=-0.467**  p=0.005  n=30  ↓
+    temp_avg         r=-0.448**  p=0.008  n=30  ↓
+    precip_sum2      r=+0.432*  p=0.011  n=30  ↑
+    temp_min         r=-0.432*  p=0.011  n=30  ↓
+    sst_avg          r=-0.401*  p=0.023  n=29  ↓
+    wind_dir_n       r=+0.340   p=0.056  n=30  ↑
+    wave_period_min  r=-0.326   p=0.068  n=30  ↓
+    moon_cos         r=-0.322   p=0.071  n=30  ↓
+    moon_sin         r=-0.318   p=0.075  n=30  ↓
+
+  [size_avg]
+    sst_avg          r=+0.510*  p=0.014  n=19  ↑
+    pressure_avg     r=-0.445*  p=0.035  n=20  ↓
+    moon_cos         r=-0.426*  p=0.046  n=20  ↓
+    temp_min         r=+0.413   p=0.055  n=20  ↑
+    temp_max         r=+0.407   p=0.058  n=20  ↑
+    temp_avg         r=+0.407   p=0.059  n=20  ↑
+
+  [kg_avg]
+    pressure_avg     r=-0.755**  p=0.000  n=12  ↓
+    pressure_min     r=-0.751**  p=0.000  n=12  ↓
+    is_holiday       r=-0.516   p=0.057  n=12  ↓
+
+【因子相関（旬集計: n=27旬）】
+
+  [cnt_avg]
+    wave_period_avg  r=-0.579**  p=0.000  n=27  ↓
+    wave_period_min  r=-0.413*  p=0.023  n=27  ↓
+    temp_max         r=-0.388*  p=0.035  n=27  ↓
+    temp_avg         r=-0.373*  p=0.044  n=27  ↓
+    moon_sin         r=-0.362   p=0.052  n=27  ↓
+    temp_min         r=-0.356   p=0.057  n=27  ↓
+    sst_avg          r=-0.340   p=0.077  n=26  ↓
+
+  [cnt_max]
+    wave_period_avg  r=-0.616**  p=0.000  n=27  ↓
+    temp_max         r=-0.449*  p=0.012  n=27  ↓
+    temp_avg         r=-0.427*  p=0.018  n=27  ↓
+    wave_period_min  r=-0.425*  p=0.019  n=27  ↓
+    temp_min         r=-0.414*  p=0.023  n=27  ↓
+    sst_avg          r=-0.398*  p=0.033  n=26  ↓
+    precip_sum1      r=+0.354   p=0.058  n=27  ↑
+    precip_sum2      r=+0.353   p=0.060  n=27  ↑
+    moon_sin         r=-0.327   p=0.083  n=27  ↓
+
+  [size_avg]
+    sst_avg          r=+0.525*  p=0.011  n=19  ↑
+    temp_max         r=+0.451*  p=0.032  n=20  ↑
+    pressure_avg     r=-0.446*  p=0.035  n=20  ↓
+    temp_avg         r=+0.438*  p=0.039  n=20  ↑
+    temp_min         r=+0.433*  p=0.042  n=20  ↑
+    moon_cos         r=-0.421*  p=0.049  n=20  ↓
+    wind_dir_e       r=-0.375   p=0.086  n=20  ↓
+    wind_dir_n       r=-0.372   p=0.089  n=20  ↓
+
+  [kg_avg]
+    precip_sum       r=+0.968**  p=0.000  n=11  ↑
+    pressure_avg     r=-0.839**  p=0.000  n=11  ↓
+    pressure_min     r=-0.838**  p=0.000  n=11  ↓
+    pressure_range   r=+0.579*  p=0.033  n=11  ↑
+
+【因子相関（月集計: n=19月）】
+
+  [cnt_avg]
+    temp_max         r=-0.452*  p=0.037  n=19  ↓
+    sst_avg          r=-0.430*  p=0.050  n=19  ↓
+    temp_avg         r=-0.426   p=0.053  n=19  ↓
+    precip_sum1      r=+0.425   p=0.053  n=19  ↑
+    wave_period_avg  r=-0.407   p=0.066  n=19  ↓
+    temp_min         r=-0.404   p=0.069  n=19  ↓
+    precip_sum2      r=+0.397   p=0.074  n=19  ↑
+    moon_cos         r=-0.392   p=0.079  n=19  ↓
+
+  [cnt_min]
+    wind_dir_mode    r=+0.528*  p=0.010  n=19  ↑
+    wind_dir_e       r=-0.518*  p=0.012  n=19  ↓
+    pressure_range   r=-0.486*  p=0.022  n=19  ↓
+    temp_delta       r=+0.477*  p=0.025  n=19  ↑
+    prev_week_cnt    r=+0.453*  p=0.036  n=19  ↑
+    wind_dir_n       r=-0.453*  p=0.036  n=19  ↓
+
+  [cnt_max]
+    wave_period_avg  r=-0.548**  p=0.007  n=19  ↓
+    temp_max         r=-0.499*  p=0.018  n=19  ↓
+    temp_avg         r=-0.477*  p=0.025  n=19  ↓
+    temp_min         r=-0.468*  p=0.029  n=19  ↓
+    sst_avg          r=-0.446*  p=0.040  n=19  ↓
+    precip_sum1      r=+0.437*  p=0.045  n=19  ↑
+    precip_sum2      r=+0.427   p=0.051  n=19  ↑
+    tide_range       r=+0.393   p=0.078  n=19  ↑
+    wave_period_min  r=-0.382   p=0.088  n=19  ↓
+    moon_cos         r=-0.378   p=0.092  n=19  ↓
+
+  [size_avg]
+    moon_cos         r=-0.645**  p=0.005  n=13  ↓
+    pressure_avg     r=-0.638**  p=0.006  n=13  ↓
+    pressure_min     r=-0.548*  p=0.030  n=13  ↓
+    sst_avg          r=+0.501   p=0.055  n=13  ↑
+
+  [kg_avg]
+    pressure_min     r=-0.899**  p=0.000  n=10  ↓
+    pressure_avg     r=-0.891**  p=0.000  n=10  ↓
+    precip_sum       r=+0.639*  p=0.019  n=10  ↑
+    moon_sin         r=+0.539   p=0.070  n=10  ↑
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n       78.9%  +0.170  (n=30)  +0.217  (n=30)  -0.136  (n=19)  -0.151  (n=11)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=38)  +0.000  (n=38)  +0.000  (n=25)  +0.000  (n=13)
+  (有意な観測因子相関なし)
+
+【コメントキーワード解析】
+
+  [外道_青物]
+    「イナダ」 n=  3  2.0匹  vs 通常 2.6匹  (-22%)
+    「サバ」 n=  5  2.6匹  vs 通常 2.5匹  (+3%)
+
+  [外道_根魚]
+    「カサゴ」 n= 14  2.7匹  vs 通常 2.4匹  (+12%)
+    「オニカサゴ」 n= 11  2.6匹  vs 通常 2.5匹  (+6%)
+
+  [外道_底魚]
+    「レンコダイ」 n= 21  2.9匹  vs 通常 2.1匹  (+41%)
+    「ホウボウ」 n=  7  3.0匹  vs 通常 2.4匹  (+24%)
+    「イトヨリ」 n=  7  2.1匹  vs 通常 2.6匹  (-18%)
+
+【ポイント別集計】
+  ポイント                       n       平均       最大       最小
+  -------------------------------------------------------
+  剣崎沖                        7      3.0        6        1
+
+【マルチホライズン バックテスト（ローリング月次CV）】
+  ローリング月次CV  全19ヶ月  テスト総計: 23件
+
+  ─ Ave匹数 : データ不足 ─
+
+  ─ Min匹数 : データ不足 ─
+
+  ─ Max匹数 : データ不足 ─
+
+  ─ Ave型   : データ不足 ─
+
+  ─ Ave重量 : データ不足 ─

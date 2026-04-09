@@ -1,0 +1,112 @@
+========================================================================
+  シーバス × 村松釣具店
+========================================================================
+
+【基本統計】
+  件数: 18件 / 期間: 2023/05/07 〜 2025/10/12
+  cnt_avg  : 平均 1.0匹  中央値 1.0  std 0.0  [1 〜 1]
+  size_avg : 平均 34.0cm  std 3.9  [28 〜 45]  (18/18件, 100%)
+
+【旬別ベースライン（n=18件）】
+  (combo_decadal データなし)
+
+【因子相関（日次: 18件）】
+
+  [cnt_max]
+    wind_speed_avg   r=+0.642**  p=0.001  n=18  ↑
+    wind_dir_n       r=-0.578**  p=0.005  n=18  ↓
+    sst_delta        r=+0.574**  p=0.005  n=18  ↑
+    wind_speed_max   r=+0.534*  p=0.011  n=18  ↑
+    pressure_avg     r=-0.523*  p=0.014  n=18  ↓
+    pressure_min     r=-0.495*  p=0.023  n=18  ↓
+    pressure_delta   r=-0.491*  p=0.024  n=18  ↓
+    temp_min         r=+0.400   p=0.081  n=18  ↑
+    is_consec_holiday r=+0.391   p=0.089  n=18  ↑
+    temp_avg         r=+0.383   p=0.097  n=18  ↑
+
+  [size_avg]
+    typhoon_dist     r=+0.626*  p=0.034  n=9  ↑
+    tide_delta       r=-0.467*  p=0.035  n=18  ↓
+
+【因子相関（週集計: n=18週）】
+
+  [cnt_max]
+    wind_speed_avg   r=+0.642**  p=0.001  n=18  ↑
+    wind_dir_n       r=-0.578**  p=0.005  n=18  ↓
+    sst_delta        r=+0.574**  p=0.005  n=18  ↑
+    wind_speed_max   r=+0.534*  p=0.011  n=18  ↑
+    pressure_avg     r=-0.523*  p=0.014  n=18  ↓
+    pressure_min     r=-0.495*  p=0.023  n=18  ↓
+    pressure_delta   r=-0.491*  p=0.024  n=18  ↓
+    temp_min         r=+0.400   p=0.081  n=18  ↑
+    is_consec_holiday r=+0.391   p=0.089  n=18  ↑
+    temp_avg         r=+0.383   p=0.097  n=18  ↑
+
+  [size_avg]
+    typhoon_dist     r=+0.626*  p=0.034  n=9  ↑
+    tide_delta       r=-0.467*  p=0.035  n=18  ↓
+
+【因子相関（旬集計: n=17旬）】
+
+  [cnt_max]
+    wind_dir_n       r=-0.641**  p=0.001  n=17  ↓
+    wind_speed_avg   r=+0.633**  p=0.002  n=17  ↑
+    sst_delta        r=+0.593**  p=0.004  n=17  ↑
+    pressure_avg     r=-0.530*  p=0.016  n=17  ↓
+    wind_speed_max   r=+0.523*  p=0.017  n=17  ↑
+    pressure_min     r=-0.496*  p=0.027  n=17  ↓
+    pressure_delta   r=-0.485*  p=0.032  n=17  ↓
+    temp_min         r=+0.397   p=0.094  n=17  ↑
+
+  [size_avg]
+    typhoon_dist     r=+0.626*  p=0.034  n=9  ↑
+    tide_delta       r=-0.423   p=0.071  n=17  ↓
+
+【因子相関（月集計: n=16月）】
+
+  [cnt_max]
+    wind_dir_n       r=-0.608**  p=0.004  n=16  ↓
+    wind_speed_avg   r=+0.604**  p=0.005  n=16  ↑
+    sst_delta        r=+0.581**  p=0.008  n=16  ↑
+    pressure_avg     r=-0.487*  p=0.037  n=16  ↓
+    wind_speed_max   r=+0.483*  p=0.039  n=16  ↑
+    pressure_min     r=-0.454   p=0.056  n=16  ↓
+    is_consec_holiday r=+0.447   p=0.061  n=16  ↑
+    pressure_delta   r=-0.434   p=0.072  n=16  ↓
+    tide_delta       r=-0.427   p=0.078  n=16  ↓
+
+  [size_avg]
+    typhoon_dist     r=+0.628*  p=0.048  n=8  ↑
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg         0.0%  (データ不足・スキップ)
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=18)  +0.000  (n=18)  +0.000  (n=18)           —
+  (有意な観測因子相関なし)
+
+【コメントキーワード解析】
+  (有意なキーワードなし)
+
+【ポイント別集計】
+  ポイント                       n       平均       最大       最小
+  -------------------------------------------------------
+  大井川港                      18      1.0        1        1
+
+【マルチホライズン バックテスト（ローリング月次CV）】
+  ローリング月次CV  全16ヶ月  テスト総計: 0件
+
+  ─ Ave匹数 : データ不足 ─
+
+  ─ Min匹数 : データ不足 ─
+
+  ─ Max匹数 : データ不足 ─
+
+  ─ Ave型   : データ不足 ─
+
+  ─ Ave重量 : データ不足 ─

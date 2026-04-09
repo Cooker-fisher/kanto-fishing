@@ -1,0 +1,135 @@
+========================================================================
+  タチウオ × 吉野屋
+========================================================================
+
+【基本統計】
+  件数: 40件 / 期間: 2026/01/07 〜 2026/03/28
+  cnt_avg  : 平均 7.8匹  中央値 6.0  std 6.0  [1 〜 24]
+  cnt_min  : 平均 3.0  cnt_max 平均 14.9  (16/40件, 40%)
+  size_avg : 平均 85.9cm  std 5.2  [75 〜 95]  (40/40件, 100%)
+
+【旬別ベースライン（n=40件）】
+     旬       期待       実績       偏差     n  
+  ---------------------------------------------
+     1     18.0     18.0     +0.0     3
+     2     13.4     13.4     -0.0     7
+     3      6.8      6.8     +0.0     6
+     4      3.2      3.2     -0.0     6
+     5      4.2      4.2     -0.0     6
+     6      4.3      4.3     +0.0     3
+     7      3.0      3.0     +0.0     3
+     8      9.5      9.5     +0.0     4
+
+【因子相関（日次: 40件）】
+
+  [cnt_avg]
+    prev_week_cnt    r=+0.662**  p=0.000  n=39  ↑
+    sst_avg          r=+0.426**  p=0.004  n=40  ↑
+    wind_speed_max   r=+0.380*  p=0.011  n=40  ↑
+    wind_speed_avg   r=+0.371*  p=0.014  n=40  ↑
+    temp_range       r=-0.349*  p=0.022  n=40  ↓
+    moon_cos         r=+0.301   p=0.051  n=40  ↑
+    temp_min         r=+0.273   p=0.080  n=40  ↑
+
+  [cnt_min]
+    prev_week_cnt    r=+0.573**  p=0.000  n=39  ↑
+    wave_period_avg  r=-0.357*  p=0.018  n=40  ↓
+    sst_avg          r=+0.304*  p=0.049  n=40  ↑
+    temp_range       r=-0.287   p=0.065  n=40  ↓
+    wind_speed_avg   r=+0.282   p=0.070  n=40  ↑
+    wave_period_min  r=-0.271   p=0.083  n=40  ↓
+
+  [cnt_max]
+    prev_week_cnt    r=+0.652**  p=0.000  n=39  ↑
+    sst_avg          r=+0.428**  p=0.004  n=40  ↑
+    wind_speed_max   r=+0.410**  p=0.006  n=40  ↑
+    wind_speed_avg   r=+0.377*  p=0.012  n=40  ↑
+    temp_range       r=-0.350*  p=0.021  n=40  ↓
+    moon_cos         r=+0.327*  p=0.033  n=40  ↑
+    temp_min         r=+0.297   p=0.055  n=40  ↑
+    wave_height_max  r=+0.293   p=0.058  n=40  ↑
+
+  [size_avg]
+    sst_avg          r=-0.649**  p=0.000  n=40  ↓
+    is_holiday       r=-0.577**  p=0.000  n=40  ↓
+    wind_speed_avg   r=-0.451**  p=0.002  n=40  ↓
+    precip_sum       r=-0.350*  p=0.021  n=40  ↓
+    wave_height_avg  r=-0.317*  p=0.039  n=40  ↓
+    wave_clamp       r=-0.317*  p=0.039  n=40  ↓
+    swell_height_max r=-0.267   p=0.087  n=40  ↓
+    sst_delta        r=-0.266   p=0.089  n=40  ↓
+    pressure_avg     r=+0.265   p=0.090  n=40  ↑
+    wind_speed_max   r=-0.261   p=0.095  n=40  ↓
+
+【因子相関（週集計: n=12週）】
+
+  [cnt_avg]
+    wind_speed_avg   r=+0.833**  p=0.000  n=12  ↑
+    prev_week_cnt    r=+0.811**  p=0.000  n=12  ↑
+    wind_speed_max   r=+0.793**  p=0.000  n=12  ↑
+    wave_height_max  r=+0.733**  p=0.001  n=12  ↑
+    temp_range       r=-0.518   p=0.055  n=12  ↓
+    wave_height_avg  r=+0.480   p=0.084  n=12  ↑
+    wave_clamp       r=+0.480   p=0.084  n=12  ↑
+    pressure_delta   r=+0.475   p=0.088  n=12  ↑
+    pressure_range   r=+0.472   p=0.090  n=12  ↑
+    wave_period_avg  r=-0.466   p=0.096  n=12  ↓
+
+  [cnt_min]
+    prev_week_cnt    r=+0.846**  p=0.000  n=12  ↑
+    wind_speed_avg   r=+0.749**  p=0.000  n=12  ↑
+    wind_speed_max   r=+0.661**  p=0.005  n=12  ↑
+    wave_period_avg  r=-0.549*  p=0.038  n=12  ↓
+    wave_height_max  r=+0.545*  p=0.040  n=12  ↑
+    pressure_range   r=+0.502   p=0.067  n=12  ↑
+
+  [cnt_max]
+    wind_speed_avg   r=+0.839**  p=0.000  n=12  ↑
+    wind_speed_max   r=+0.811**  p=0.000  n=12  ↑
+    prev_week_cnt    r=+0.785**  p=0.000  n=12  ↑
+    wave_height_max  r=+0.766**  p=0.000  n=12  ↑
+    temp_range       r=-0.540*  p=0.043  n=12  ↓
+    wave_height_avg  r=+0.518   p=0.055  n=12  ↑
+    wave_clamp       r=+0.518   p=0.055  n=12  ↑
+    pressure_range   r=+0.482   p=0.082  n=12  ↑
+    pressure_delta   r=+0.463   p=0.099  n=12  ↑
+
+  [size_avg]
+    sst_avg          r=-0.823**  p=0.000  n=12  ↓
+    precip_sum       r=-0.800**  p=0.000  n=12  ↓
+    is_holiday       r=-0.704**  p=0.002  n=12  ↓
+    temp_range       r=+0.596*  p=0.019  n=12  ↑
+    temp_min         r=-0.526   p=0.051  n=12  ↓
+    moon_age         r=+0.489   p=0.076  n=12  ↑
+
+【因子相関（旬集計: n=9旬）】
+  (有意な相関なし)
+
+【因子相関（月集計: n=3月）】
+  (有意な相関なし)
+
+【観測因子相関（予報不可・パターン把握用）】
+  因子               fill%  cnt_avg     cnt_max     size_avg    kg_avg
+  ---------------------------------------------------------------------------
+  depth_avg        100.0%  +0.375**(n=40)  +0.392**(n=40)  -0.755**(n=40)           —
+  water_color_n     0.0%  (データ不足・スキップ)
+  tide_speed_n      0.0%  (データ不足・スキップ)
+  wave_obs_n        0.0%  (データ不足・スキップ)
+  by_catch_n        0.0%  (データ不足・スキップ)
+  time_slot_n       0.0%  (データ不足・スキップ)
+  is_boat          100.0%  +0.000  (n=40)  +0.000  (n=40)  +0.000  (n=40)           —
+
+【コメントキーワード解析】
+  (有意なキーワードなし)
+
+【ポイント別集計】
+  ポイント                       n       平均       最大       最小
+  -------------------------------------------------------
+  観音崎沖                      11     11.9       24        2
+  久里浜沖                       5     11.0       14        4
+  走水沖                       10      7.4       24        2
+  横浜沖                        2      4.0        6        2
+  本牧沖                       11      3.6        9        1
+
+【マルチホライズン バックテスト（ローリング月次CV）】
+  データ不足（ローリングCV最低月数に達しない）
