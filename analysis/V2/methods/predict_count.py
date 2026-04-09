@@ -116,26 +116,28 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     if not dekad:
         return None
 
-    # 旬別ベースライン
+    # 旬別ベースライン（avg_cnt_min/max も取得）
     row = conn.execute(
-        "SELECT avg_cnt, avg_size, avg_kg, n FROM combo_decadal "
+        "SELECT avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max FROM combo_decadal "
         "WHERE fish=? AND ship=? AND decade_no=?",
         (fish, ship, dekad)
     ).fetchone()
 
     if row:
-        avg_cnt, avg_size, avg_kg, n_dekad = row
+        avg_cnt, avg_size, avg_kg, n_dekad, avg_cnt_min, avg_cnt_max = row
         fallback = False
     else:
         # 最近傍旬（±3以内）にフォールバック
         near = conn.execute(
-            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n FROM combo_decadal "
+            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max "
+            "FROM combo_decadal "
             "WHERE fish=? AND ship=? ORDER BY ABS(decade_no - ?) LIMIT 1",
             (fish, ship, dekad)
         ).fetchone()
         if not near or abs(near[0] - dekad) > 3:
             return None
         avg_cnt, avg_size, avg_kg, n_dekad = near[1], near[2], near[3], near[4]
+        avg_cnt_min, avg_cnt_max = near[5], near[6]
         fallback = True
 
     if not avg_cnt or avg_cnt <= 0:
@@ -184,6 +186,21 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     if transition_risk > 0.3:
         stars = max(1, stars - 1)
 
+    # ── min/max 予測（初心者〜ベテランレンジ） ───────────────────────────────
+    # avg_cnt_min/max が旬別データにある場合: ratio法で予測（比率を cnt_predicted に適用）
+    # ない場合: cnt_predicted ± cnt_mae で信頼区間フォールバック
+    if avg_cnt_min is not None and avg_cnt > 0:
+        min_ratio = avg_cnt_min / avg_cnt
+        cnt_lo    = round(max(0, avg_cnt * min_ratio), 1)
+    else:
+        cnt_lo    = round(max(0, avg_cnt - cnt_mae), 1)
+
+    if avg_cnt_max is not None and avg_cnt > 0:
+        max_ratio = avg_cnt_max / avg_cnt
+        cnt_hi    = round(avg_cnt * max_ratio, 1)
+    else:
+        cnt_hi    = round(avg_cnt + cnt_mae, 1)
+
     return {
         "fish":            fish,
         "ship":            ship,
@@ -192,8 +209,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
         "fallback_dekad":  fallback,
         # 予測
         "cnt_predicted":   round(avg_cnt, 1),
-        "cnt_lo":          round(max(0, avg_cnt - cnt_mae), 1),
-        "cnt_hi":          round(avg_cnt + cnt_mae, 1),
+        "cnt_lo":          cnt_lo,   # 初心者釣果（旬別min_ratio または avg-MAE）
+        "cnt_hi":          cnt_hi,   # ベテラン釣果（旬別max_ratio または avg+MAE）
         "size_predicted":  round(avg_size, 1) if avg_size else None,
         "size_lo":         round(avg_size - size_mae, 1) if avg_size and size_mae else None,
         "size_hi":         round(avg_size + size_mae, 1) if avg_size and size_mae else None,

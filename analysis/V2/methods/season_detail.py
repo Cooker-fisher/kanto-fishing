@@ -64,14 +64,16 @@ def decade_label(n):
 def init_tables(conn):
     conn.executescript("""
     CREATE TABLE IF NOT EXISTS combo_decadal (
-        fish       TEXT,
-        ship       TEXT,
-        decade_no  INTEGER,
-        n          INTEGER,
-        avg_cnt    REAL,
-        avg_size   REAL,
-        avg_kg     REAL,
-        updated_at TEXT,
+        fish        TEXT,
+        ship        TEXT,
+        decade_no   INTEGER,
+        n           INTEGER,
+        avg_cnt     REAL,
+        avg_size    REAL,
+        avg_kg      REAL,
+        updated_at  TEXT,
+        avg_cnt_min REAL,
+        avg_cnt_max REAL,
         PRIMARY KEY (fish, ship, decade_no)
     );
     CREATE TABLE IF NOT EXISTS decadal_calendar (
@@ -132,22 +134,30 @@ def load_data(fish_filter=None):
                 except ValueError:
                     continue
                 records.append({
-                    "fish":  fish,
-                    "ship":  row.get("ship", ""),
-                    "dec":   decade_no(d),
-                    "cnt":   cnt,
-                    "size":  _avg_size(row),
-                    "kg":    _avg_kg(row),
+                    "fish":    fish,
+                    "ship":    row.get("ship", ""),
+                    "dec":     decade_no(d),
+                    "cnt":     cnt,
+                    "cnt_min": _float(row.get("cnt_min")),
+                    "cnt_max": _float(row.get("cnt_max")),
+                    "size":    _avg_size(row),
+                    "kg":      _avg_kg(row),
                 })
     return records
 
 # ── 集計 ─────────────────────────────────────────────────────────────────
 def aggregate_combo(records):
-    """(fish, ship, decade_no) → avg_cnt/size/kg"""
-    buckets = defaultdict(lambda: {"cnt": [], "size": [], "kg": []})
+    """(fish, ship, decade_no) → avg_cnt/size/kg + avg_cnt_min/max"""
+    buckets = defaultdict(lambda: {"cnt": [], "cnt_min": [], "cnt_max": [], "size": [], "kg": []})
     for r in records:
         key = (r["fish"], r["ship"], r["dec"])
         buckets[key]["cnt"].append(r["cnt"])
+        # cnt_min/max: 単一値報告（min=avg=max）は除外し、実レンジのあるデータのみ集計
+        cm = r.get("cnt_min")
+        cx = r.get("cnt_max")
+        if cm is not None and cx is not None and cm < r["cnt"] and cx > r["cnt"]:
+            buckets[key]["cnt_min"].append(cm)
+            buckets[key]["cnt_max"].append(cx)
         if r["size"] is not None: buckets[key]["size"].append(r["size"])
         if r["kg"]   is not None: buckets[key]["kg"].append(r["kg"])
     result = {}
@@ -155,10 +165,12 @@ def aggregate_combo(records):
         if len(d["cnt"]) < MIN_DECADE_N:
             continue
         result[key] = {
-            "n":        len(d["cnt"]),
-            "avg_cnt":  sum(d["cnt"]) / len(d["cnt"]),
-            "avg_size": sum(d["size"]) / len(d["size"]) if d["size"] else None,
-            "avg_kg":   sum(d["kg"])   / len(d["kg"])   if d["kg"]   else None,
+            "n":          len(d["cnt"]),
+            "avg_cnt":    sum(d["cnt"]) / len(d["cnt"]),
+            "avg_cnt_min": sum(d["cnt_min"]) / len(d["cnt_min"]) if len(d["cnt_min"]) >= 3 else None,
+            "avg_cnt_max": sum(d["cnt_max"]) / len(d["cnt_max"]) if len(d["cnt_max"]) >= 3 else None,
+            "avg_size":   sum(d["size"]) / len(d["size"]) if d["size"] else None,
+            "avg_kg":     sum(d["kg"])   / len(d["kg"])   if d["kg"]   else None,
         }
     return result
 
@@ -206,11 +218,23 @@ def make_indices(fleet):
 def save(conn, combo_data, fleet_data):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
+    # マイグレーション: 既存テーブルに avg_cnt_min/max 列がなければ追加
+    for col in ("avg_cnt_min", "avg_cnt_max"):
+        try:
+            conn.execute(f"ALTER TABLE combo_decadal ADD COLUMN {col} REAL")
+        except Exception:
+            pass
+
     rows = [(fish, ship, dec, d["n"], round(d["avg_cnt"], 2),
              round(d["avg_size"], 2) if d["avg_size"] else None,
-             round(d["avg_kg"], 3) if d["avg_kg"] else None, now)
+             round(d["avg_kg"], 3) if d["avg_kg"] else None, now,
+             round(d["avg_cnt_min"], 2) if d["avg_cnt_min"] else None,
+             round(d["avg_cnt_max"], 2) if d["avg_cnt_max"] else None)
             for (fish, ship, dec), d in combo_data.items()]
-    conn.executemany("INSERT OR REPLACE INTO combo_decadal VALUES (?,?,?,?,?,?,?,?)", rows)
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_decadal "
+        "(fish, ship, decade_no, n, avg_cnt, avg_size, avg_kg, updated_at, avg_cnt_min, avg_cnt_max) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?)", rows)
 
     rows = [(fish, dec, d["n"], round(d["avg_cnt"], 2), d["cnt_index"],
              round(d["avg_size"], 2) if d["avg_size"] else None,
