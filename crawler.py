@@ -1952,22 +1952,23 @@ def _build_forecast_hub(forecast_data, catches=None, combo_preds=None):
         m, d_num = dt_sat.month, dt_sat.day
         wd = ["月","火","水","木","金","土","日"][dt_sat.weekday()]
 
-        # ★3以上のみ
-        top_preds = [p for p in combo_preds if p.get("stars", 0) >= 3]
+        # ★4・5 = チラ見せ対象、★3以上 = ペイウォール内総件数
+        teaser_preds = [p for p in combo_preds if p.get("stars", 0) >= 4]
+        total_preds  = [p for p in combo_preds if p.get("stars", 0) >= 3]
 
         html += f'<h2>📊 予測結果レポート</h2>'
         html += '<p class="section-note">82,000件超の実績データ＋気象補正による独自分析。予測精度は継続的に検証（wMAPE 約34%）。</p>'
 
-        html += f'<h3>{m}月{d_num}日({wd}) の予測 — {len(top_preds)}件分析済み（★3以上）</h3>'
+        html += f'<h3>{m}月{d_num}日({wd}) の予測 — {len(total_preds)}件分析済み（★3以上）</h3>'
 
-        if top_preds:
+        if teaser_preds:
             stars_label = {5: "★★★★★", 4: "★★★★☆", 3: "★★★☆☆", 2: "★★☆☆☆", 1: "★☆☆☆☆"}
             html += '<table class="pred-table"><thead><tr>'
             html += '<th>魚種 × 船宿</th><th>予測匹数レンジ</th><th>サイズ</th><th>精度</th>'
             html += '</tr></thead><tbody>'
 
-            # 1件目：完全表示
-            first = top_preds[0]
+            # 1件目（★4・5から）：完全表示
+            first = teaser_preds[0]
             lo, hi = first.get("cnt_lo", 0), first.get("cnt_hi", 0)
             cnt_str = f"{lo:.0f}〜{hi:.0f}匹"
             if first.get("size_lo") and first.get("size_hi"):
@@ -1979,8 +1980,8 @@ def _build_forecast_hub(forecast_data, catches=None, combo_preds=None):
             st_str = stars_label.get(first.get("stars", 1), "")
             html += f'<tr><td>{first["fish"]} × {first["ship"]}</td><td>{cnt_str}</td><td>{sz_str}</td><td>{st_str}</td></tr>'
 
-            # 2〜5件：コンボ名ぼかし
-            for p in top_preds[1:5]:
+            # 2〜5件（★4・5の残り）：コンボ名ぼかし
+            for p in teaser_preds[1:5]:
                 lo, hi = p.get("cnt_lo", 0), p.get("cnt_hi", 0)
                 cnt_str = f"{lo:.0f}〜{hi:.0f}匹"
                 if p.get("size_lo") and p.get("size_hi"):
@@ -1995,11 +1996,11 @@ def _build_forecast_hub(forecast_data, catches=None, combo_preds=None):
             html += '</tbody></table>'
 
             html += f"""<div class="paywall">
-<a href="#" class="paywall-btn">全{len(top_preds)}件の予測を見る（月額500円）</a>
+<a href="#" class="paywall-btn">全{len(total_preds)}件の予測を見る（月額500円）</a>
 <p class="paywall-sub">スポット購入: 100円/日　|　1回の船代1万円。500円で判断材料を</p>
 </div>"""
         else:
-            html += '<p style="color:var(--text-secondary)">予測データなし（★3以上のコンボがありません）</p>'
+            html += '<p style="color:var(--text-secondary)">予測データなし（★4以上のコンボがありません）</p>'
     else:
         html += '<h2>📊 予測結果レポート</h2>'
         html += '<p class="section-note">34,800件超の実績データに基づく独自分析。予測精度は継続的に検証しています。</p>'
