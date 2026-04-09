@@ -24,9 +24,12 @@ if len(sys.argv) < 2:
 script_name = sys.argv[1]
 extra_args  = sys.argv[2:]
 script_path = os.path.join(_DIR, ver, "methods", script_name)
+if not os.path.exists(script_path):
+    # predict/ フォルダも探す（D層スクリプト）
+    script_path = os.path.join(_DIR, ver, "predict", script_name)
 
 if not os.path.exists(script_path):
-    print(f"ERROR: {script_path} not found", file=sys.stderr)
+    print(f"ERROR: {script_name} not found in methods/ or predict/", file=sys.stderr)
     sys.exit(1)
 
 result = subprocess.run([sys.executable, script_path] + extra_args)
