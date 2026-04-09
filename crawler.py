@@ -1940,68 +1940,78 @@ def _build_area_forecast_page(area_group, forecast_data):
     return html
 
 
-def _build_forecast_hub(forecast_data, catches=None):
+def _build_forecast_hub(forecast_data, catches=None, combo_preds=None):
     """有料トップページHTML（予測結果レポート＋チラ見せ＋料金）"""
     html = _forecast_page_head("釣果予測 プレミアム")
 
-    # ── 予測結果レポート（1件完全＋4件ぼかし）──
-    html += '<h2>📊 予測結果レポート</h2>'
-    # TODO: evaluate_predictions()で実績と突合。現時点ではプレースホルダ
-    html += '<p class="section-note">34,800件超の実績データに基づく独自分析。予測精度は継続的に検証しています。</p>'
+    # ── コンボ予測チラ見せ（predict_count.py 天候補正済み） ──
+    if combo_preds:
+        sat, _ = _next_weekend()
+        sat_str = sat.strftime("%Y/%m/%d")
+        dt_sat = sat
+        m, d_num = dt_sat.month, dt_sat.day
+        wd = ["月","火","水","木","金","土","日"][dt_sat.weekday()]
 
-    # ── 今日の予測チラ見せ ──
-    days = forecast_data.get("days", {})
-    all_dates = sorted(days.keys())
-    all_weeks = forecast_data.get("weeks", {})
+        # ★3以上のみ
+        top_preds = [p for p in combo_preds if p.get("stars", 0) >= 3]
 
-    html += '<h2>📅 日付から探す</h2>'
-    html += _forecast_date_nav(all_dates, all_weeks, "")
+        html += f'<h2>📊 予測結果レポート</h2>'
+        html += '<p class="section-note">82,000件超の実績データ＋気象補正による独自分析。予測精度は継続的に検証（wMAPE 約34%）。</p>'
 
-    if all_dates:
-        # 次の土曜を優先表示
-        show_date = all_dates[0]
-        for d in all_dates:
-            if datetime.strptime(d, "%Y-%m-%d").weekday() == 5:
-                show_date = d
-                break
+        html += f'<h3>{m}月{d_num}日({wd}) の予測 — {len(top_preds)}件分析済み（★3以上）</h3>'
 
-        day = days[show_date]
-        preds = day.get("predictions", [])
-        dt = datetime.strptime(show_date, "%Y-%m-%d")
-        m, d_num = dt.month, dt.day
-        wd = ["月","火","水","木","金","土","日"][dt.weekday()]
+        if top_preds:
+            stars_label = {5: "★★★★★", 4: "★★★★☆", 3: "★★★☆☆", 2: "★★☆☆☆", 1: "★☆☆☆☆"}
+            html += '<table class="pred-table"><thead><tr>'
+            html += '<th>魚種 × 船宿</th><th>予測匹数レンジ</th><th>サイズ</th><th>精度</th>'
+            html += '</tr></thead><tbody>'
 
-        html += f'<h3>{m}月{d_num}日({wd}) の予測 — {len(preds)}件分析済み</h3>'
+            # 1件目：完全表示
+            first = top_preds[0]
+            lo, hi = first.get("cnt_lo", 0), first.get("cnt_hi", 0)
+            cnt_str = f"{lo:.0f}〜{hi:.0f}匹"
+            if first.get("size_lo") and first.get("size_hi"):
+                sz_str = f"{first['size_lo']:.0f}〜{first['size_hi']:.0f}cm"
+            elif first.get("size_predicted"):
+                sz_str = f"{first['size_predicted']:.0f}cm"
+            else:
+                sz_str = "-"
+            st_str = stars_label.get(first.get("stars", 1), "")
+            html += f'<tr><td>{first["fish"]} × {first["ship"]}</td><td>{cnt_str}</td><td>{sz_str}</td><td>{st_str}</td></tr>'
 
-        if preds:
-            # 1件目は完全表示
-            first = preds[0]
-            avg = first.get("avg", 0)
-            pred_min = max(1, round(avg * 0.6))
-            pred_max = first.get("max", round(avg * 1.4))
-            size = f'{first["size_min"]}〜{first["size_max"]}cm' if first.get("size_min") else "-"
-            st = first.get("season_type", "")
-            type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
-            conf = first.get("confidence", "D")
-            html += '<table class="pred-table"><thead><tr><th>魚種 × エリア</th><th>予測匹数</th><th>型</th><th>狙い</th><th>確信度</th></tr></thead><tbody>'
-            html += f'<tr><td>{first["fish"]} × {first["group"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
+            # 2〜5件：コンボ名ぼかし
+            for p in top_preds[1:5]:
+                lo, hi = p.get("cnt_lo", 0), p.get("cnt_hi", 0)
+                cnt_str = f"{lo:.0f}〜{hi:.0f}匹"
+                if p.get("size_lo") and p.get("size_hi"):
+                    sz_str = f"{p['size_lo']:.0f}〜{p['size_hi']:.0f}cm"
+                elif p.get("size_predicted"):
+                    sz_str = f"{p['size_predicted']:.0f}cm"
+                else:
+                    sz_str = "-"
+                st_str = stars_label.get(p.get("stars", 1), "")
+                html += f'<tr><td class="blur-text">■■■ × ■■■</td><td>{cnt_str}</td><td>{sz_str}</td><td>{st_str}</td></tr>'
 
-            # 2〜5件はコンボ名ぼかし（匹数・型・確信度は見せる）
-            for p in preds[1:5]:
-                avg = p.get("avg", 0)
-                pred_min = max(1, round(avg * 0.6))
-                pred_max = p.get("max", round(avg * 1.4))
-                size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
-                st = p.get("season_type", "")
-                type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
-                conf = p.get("confidence", "D")
-                html += f'<tr><td class="blur-text">■■■ × ■■■</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
             html += '</tbody></table>'
 
             html += f"""<div class="paywall">
-<a href="#" class="paywall-btn">全{len(preds)}件の予測を見る（月額500円）</a>
+<a href="#" class="paywall-btn">全{len(top_preds)}件の予測を見る（月額500円）</a>
 <p class="paywall-sub">スポット購入: 100円/日　|　1回の船代1万円。500円で判断材料を</p>
 </div>"""
+        else:
+            html += '<p style="color:var(--text-secondary)">予測データなし（★3以上のコンボがありません）</p>'
+    else:
+        html += '<h2>📊 予測結果レポート</h2>'
+        html += '<p class="section-note">34,800件超の実績データに基づく独自分析。予測精度は継続的に検証しています。</p>'
+
+    # ── 日付ナビ ──
+    days = forecast_data.get("days", {}) if forecast_data else {}
+    all_dates = sorted(days.keys())
+    all_weeks = forecast_data.get("weeks", {}) if forecast_data else {}
+
+    if all_dates:
+        html += '<h2>📅 日付から探す</h2>'
+        html += _forecast_date_nav(all_dates, all_weeks, "")
 
     # ── エリアから探す ──
     html += '<h2>📍 エリアから探す</h2>'
@@ -2015,39 +2025,37 @@ def _build_forecast_hub(forecast_data, catches=None):
     return html
 
 
-def build_forecast_pages(forecast_data, weather_data, catches=None, history=None):
+def build_forecast_pages(forecast_data, weather_data, catches=None, history=None, combo_preds=None):
     """有料予測ページ群を生成（forecast/ディレクトリ）"""
-    if not forecast_data:
-        return
-
     os.makedirs("forecast", exist_ok=True)
     os.makedirs("forecast/area", exist_ok=True)
     page_count = 0
 
-    # 日次ページ
-    for date_str, day_data in forecast_data.get("days", {}).items():
-        html = _build_daily_page(date_str, day_data, forecast_data, weather_data)
-        with open(f"forecast/{date_str}.html", "w", encoding="utf-8") as f:
-            f.write(html)
-        page_count += 1
+    if forecast_data:
+        # 日次ページ
+        for date_str, day_data in forecast_data.get("days", {}).items():
+            html = _build_daily_page(date_str, day_data, forecast_data, weather_data)
+            with open(f"forecast/{date_str}.html", "w", encoding="utf-8") as f:
+                f.write(html)
+            page_count += 1
 
-    # 週次ページ
-    for week_id, week_data in forecast_data.get("weeks", {}).items():
-        html = _build_weekly_page(week_id, week_data, forecast_data)
-        with open(f"forecast/{week_id}.html", "w", encoding="utf-8") as f:
-            f.write(html)
-        page_count += 1
+        # 週次ページ
+        for week_id, week_data in forecast_data.get("weeks", {}).items():
+            html = _build_weekly_page(week_id, week_data, forecast_data)
+            with open(f"forecast/{week_id}.html", "w", encoding="utf-8") as f:
+                f.write(html)
+            page_count += 1
 
-    # エリア別ページ
-    for group in AREA_FORECAST_COORDS:
-        html = _build_area_forecast_page(group, forecast_data)
-        encoded = quote(group, safe="")
-        with open(f"forecast/area/{encoded}.html", "w", encoding="utf-8") as f:
-            f.write(html)
-        page_count += 1
+        # エリア別ページ
+        for group in AREA_FORECAST_COORDS:
+            html = _build_area_forecast_page(group, forecast_data)
+            encoded = quote(group, safe="")
+            with open(f"forecast/area/{encoded}.html", "w", encoding="utf-8") as f:
+                f.write(html)
+            page_count += 1
 
-    # ハブページ
-    html = _build_forecast_hub(forecast_data, catches)
+    # ハブページ（combo_preds がなくても生成する）
+    html = _build_forecast_hub(forecast_data or {}, catches, combo_preds=combo_preds)
     with open("forecast/index.html", "w", encoding="utf-8") as f:
         f.write(html)
     page_count += 1
@@ -6281,6 +6289,39 @@ def _pred_build_all(target_date: datetime) -> dict:
     return results
 
 
+def _load_combo_predictions(target_date_str: str, min_stars: int = 3) -> list:
+    """
+    predict_count.py を subprocess で呼び出し、天候補正済み予測リストを返す。
+    predict_count.py が存在しない・エラー時は空リスト。
+    target_date_str: "YYYY/MM/DD"
+    返り値: predict_combo() の辞書リスト（stars 降順）
+    """
+    import subprocess
+    script = os.path.join(
+        os.path.dirname(__file__),
+        "analysis", "V2", "methods", "predict_count.py"
+    )
+    if not os.path.exists(script):
+        return []
+    try:
+        result = subprocess.run(
+            [sys.executable, script,
+             "--date", target_date_str,
+             "--min-stars", str(min_stars),
+             "--json-out"],
+            capture_output=True, text=True, encoding="utf-8", timeout=120
+        )
+        if result.returncode != 0:
+            print(f"[_load_combo_predictions] NG returncode={result.returncode}")
+            if result.stderr:
+                print(result.stderr[:300])
+            return []
+        return json.loads(result.stdout)
+    except Exception as e:
+        print(f"[_load_combo_predictions] エラー: {e}")
+        return []
+
+
 def _pred_build_html(preds: list, target_date_str: str) -> str:
     """予測リスト → 魚種ページ用HTML（★3以上のみ表示）"""
     visible = [p for p in preds if p["stars"] >= 3]
@@ -6415,11 +6456,16 @@ def main():
         with open("forecast.json", "w", encoding="utf-8") as f:
             json.dump(forecast_data, f, ensure_ascii=False, indent=2)
         print(f"forecast.json: {len(forecast_data.get('days', {}))} 日分 + {len(forecast_data.get('weeks', {}))} 週分生成")
-        build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history)
+    # 天候補正済みコンボ予測（predict_count.py）
+    sat_dt, _ = _next_weekend()
+    sat_str = sat_dt.strftime("%Y/%m/%d")
+    print(f"コンボ予測生成中（{sat_str}）...")
+    combo_preds = _load_combo_predictions(sat_str, min_stars=3)
+    print(f"コンボ予測: {len(combo_preds)}件（★3以上）")
+    build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history, combo_preds=combo_preds)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
-    # 来週末の予測データ取得
-    sat_dt, _ = _next_weekend()
+    # 来週末の予測データ取得（魚種ページ用）
     predictions_by_fish = _pred_build_all(sat_dt)
     pred_count = sum(len(v) for v in predictions_by_fish.values())
     print(f"予測データ: {pred_count} コンボ（★3以上: {sum(1 for v in predictions_by_fish.values() for p in v if p['stars']>=3)}）")

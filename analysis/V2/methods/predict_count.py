@@ -484,8 +484,9 @@ def main():
     args = parser.parse_args()
 
     target_date = args.date or next_saturday()
-    print(f"予測日: {target_date}  旬{decade_of(target_date)}")
-    print()
+    if not args.json_out:
+        print(f"予測日: {target_date}  旬{decade_of(target_date)}")
+        print()
 
     results = predict_all(
         fish=args.fish,
