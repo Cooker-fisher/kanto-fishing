@@ -165,32 +165,53 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
 
     stars = calc_stars(cnt_mape, n_total)
 
+    # ── シーズン変動リスク（船長の知見: シーズンの変わり目はブレやすい） ────────
+    # 対象旬 ±2 の avg_cnt を集め、変動係数（std/mean）を計算する。
+    # CV > 0.3 = 季節変わり目の可能性高 → 信頼性が落ちるため stars を1下げる。
+    nearby = conn.execute(
+        "SELECT avg_cnt FROM combo_decadal WHERE fish=? AND ship=? "
+        "AND decade_no BETWEEN ? AND ?",
+        (fish, ship, max(1, dekad - 2), min(36, dekad + 2))
+    ).fetchall()
+    nearby_cnts = [r[0] for r in nearby if r[0] and r[0] > 0]
+    if len(nearby_cnts) >= 2:
+        mn = sum(nearby_cnts) / len(nearby_cnts)
+        sd = (sum((x - mn) ** 2 for x in nearby_cnts) / len(nearby_cnts)) ** 0.5
+        transition_risk = round(sd / mn, 3) if mn > 0 else 0.0
+    else:
+        transition_risk = 0.0
+    # 変動リスクが高い場合、★を1つ下げる（最低1）
+    if transition_risk > 0.3:
+        stars = max(1, stars - 1)
+
     return {
-        "fish":           fish,
-        "ship":           ship,
-        "target_date":    target_date,
-        "dekad":          dekad,
-        "fallback_dekad": fallback,
+        "fish":            fish,
+        "ship":            ship,
+        "target_date":     target_date,
+        "dekad":           dekad,
+        "fallback_dekad":  fallback,
         # 予測
-        "cnt_predicted":  round(avg_cnt, 1),
-        "cnt_lo":         round(max(0, avg_cnt - cnt_mae), 1),
-        "cnt_hi":         round(avg_cnt + cnt_mae, 1),
-        "size_predicted": round(avg_size, 1) if avg_size else None,
-        "size_lo":        round(avg_size - size_mae, 1) if avg_size and size_mae else None,
-        "size_hi":        round(avg_size + size_mae, 1) if avg_size and size_mae else None,
-        "kg_predicted":   round(avg_kg, 2) if avg_kg else None,
-        "kg_lo":          round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
-        "kg_hi":          round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
+        "cnt_predicted":   round(avg_cnt, 1),
+        "cnt_lo":          round(max(0, avg_cnt - cnt_mae), 1),
+        "cnt_hi":          round(avg_cnt + cnt_mae, 1),
+        "size_predicted":  round(avg_size, 1) if avg_size else None,
+        "size_lo":         round(avg_size - size_mae, 1) if avg_size and size_mae else None,
+        "size_hi":         round(avg_size + size_mae, 1) if avg_size and size_mae else None,
+        "kg_predicted":    round(avg_kg, 2) if avg_kg else None,
+        "kg_lo":           round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
+        "kg_hi":           round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
         # 精度
-        "cnt_mape":       round(cnt_mape, 1),
-        "size_mape":      round(size_mape, 1) if size_mape else None,
-        "kg_mape":        round(kg_mape, 1) if kg_mape else None,
-        "stars":          stars,
+        "cnt_mape":        round(cnt_mape, 1),
+        "size_mape":       round(size_mape, 1) if size_mape else None,
+        "kg_mape":         round(kg_mape, 1) if kg_mape else None,
+        "stars":           stars,
+        # シーズン変動リスク（0.0〜1.0+、0.3超で変動期判定）
+        "transition_risk": transition_risk,
         # メタ
-        "n_total":        n_total,
-        "n_dekad":        n_dekad,
-        "lat":            lat,
-        "lon":            lon,
+        "n_total":         n_total,
+        "n_dekad":         n_dekad,
+        "lat":             lat,
+        "lon":             lon,
     }
 
 

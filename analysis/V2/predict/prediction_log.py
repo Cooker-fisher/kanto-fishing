@@ -126,6 +126,8 @@ def init_table(conn: sqlite3.Connection):
         pred_kg_hi      REAL,
         actual_kg_min   REAL,
         actual_kg_max   REAL,
+        -- シーズン変動リスク（旬±2のCV。0.3超=変動期・★1下げ済み）
+        transition_risk REAL,
         -- 精度評価
         wmape           REAL,
         mae             REAL,
@@ -140,7 +142,8 @@ def init_table(conn: sqlite3.Connection):
     for col, typ in [("pred_size_lo", "REAL"), ("pred_size_hi", "REAL"),
                      ("actual_size_min", "REAL"), ("actual_size_max", "REAL"),
                      ("pred_kg_lo", "REAL"), ("pred_kg_hi", "REAL"),
-                     ("actual_kg_min", "REAL"), ("actual_kg_max", "REAL")]:
+                     ("actual_kg_min", "REAL"), ("actual_kg_max", "REAL"),
+                     ("transition_risk", "REAL")]:
         try:
             conn.execute(f"ALTER TABLE prediction_log ADD COLUMN {col} {typ}")
         except sqlite3.OperationalError:
@@ -307,8 +310,9 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
                      pred_size_lo, pred_size_hi,
                      pred_kg_lo, pred_kg_hi,
                      fcast_wave, fcast_wind, fcast_sst, fcast_temp,
+                     transition_risk,
                      created_at)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 fish, ship, target_date, pred_date, horizon,
                 pred["cnt_predicted"], pred["cnt_lo"], pred["cnt_hi"], stars,
@@ -316,6 +320,7 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
                 pred.get("size_lo"), pred.get("size_hi"),
                 pred_kg_lo, pred_kg_hi,
                 fcast_wave, fcast_wind, fcast_sst, fcast_temp,
+                pred.get("transition_risk", 0.0),
                 now_str
             ))
             if conn.execute("SELECT changes()").fetchone()[0]:

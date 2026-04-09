@@ -64,6 +64,24 @@
 
 ---
 
+## フォルダ構成
+
+```
+analysis/V2/
+├── methods/             # C層: 分析スクリプト群（16本）
+├── predict/             # D層: 予測スクリプト群
+│   ├── prediction_log.py    # 予測ログ蓄積・答え合わせ（毎日自動実行）
+│   └── README.md
+├── results/             # 分析・予測結果出力先
+└── analysis-improvement/  # ロール定義・決定ログ（V2専用）
+```
+
+- **methods/**: 分析（C層）。`_paths.py` のインポート必須。
+- **predict/**: 予測（D層）。`_paths.py` は `sys.path.insert(..., "../methods")` 経由で参照。
+- 新スクリプト追加時は `analysis/run.py` 経由で実行できることを確認すること（run.py は methods/ → predict/ の順でスクリプトを検索）。
+
+---
+
 ## methods/ ファイル一覧
 
 | ファイル | 内容 |
