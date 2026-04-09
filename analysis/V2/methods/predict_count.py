@@ -54,12 +54,16 @@ def next_saturday() -> str:
 
 # ── ★評価 ────────────────────────────────────────────────────────────────────
 
-def calc_stars(mape: float, n: int) -> int:
-    """cnt_avg の H=7d MAPE + サンプル数 → ★1〜5"""
-    if   mape < 25 and n >= 50: return 5
-    elif mape < 35 and n >= 30: return 4
-    elif mape < 50 and n >= 20: return 3
-    elif mape < 65 and n >= 10: return 2
+def calc_stars(wmape: float, n: int) -> int:
+    """cnt_avg の H=7d wMAPE + サンプル数 → ★1〜5
+    wMAPE（加重平均絶対誤差率）を基準とする。
+    MAPEより外れ値の影響を受けにくく、イカ等バラつきが大きい魚種でも適切に評価できる。
+    wmape が None の場合は呼び出し側で mape にフォールバックすること。
+    """
+    if   wmape < 20 and n >= 50: return 5
+    elif wmape < 30 and n >= 30: return 4
+    elif wmape < 50 and n >= 20: return 3
+    elif wmape < 65 and n >= 10: return 2
     else:                        return 1
 
 
@@ -327,13 +331,14 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
         return None
 
     # 精度メトリクス (H=7d)
-    bt = {r[0]: {"mae": r[1], "mape": r[2]} for r in conn.execute(
-        "SELECT metric, mae, mape FROM combo_backtest WHERE fish=? AND ship=? AND horizon=7",
+    bt = {r[0]: {"mae": r[1], "mape": r[2], "wmape": r[3]} for r in conn.execute(
+        "SELECT metric, mae, mape, wmape FROM combo_backtest WHERE fish=? AND ship=? AND horizon=7",
         (fish, ship)
     ).fetchall()}
 
-    cnt_mae   = (bt.get("cnt_avg")  or {}).get("mae")  or avg_cnt * 0.35
-    cnt_mape  = (bt.get("cnt_avg")  or {}).get("mape") or 999.0
+    cnt_mae   = (bt.get("cnt_avg")  or {}).get("mae")   or avg_cnt * 0.35
+    cnt_mape  = (bt.get("cnt_avg")  or {}).get("mape")  or 999.0
+    cnt_wmape = (bt.get("cnt_avg")  or {}).get("wmape")
     size_mae  = (bt.get("size_avg") or {}).get("mae")
     size_mape = (bt.get("size_avg") or {}).get("mape")
     kg_mae    = (bt.get("kg_avg")   or {}).get("mae")
@@ -351,7 +356,9 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     if n_total < 30:  # サンプル不足コンボは予測しない（統計的に意味ある下限）
         return None
 
-    stars = calc_stars(cnt_mape, n_total)
+    # wMAPE 優先、None の場合は MAPE にフォールバック
+    stars_metric = cnt_wmape if cnt_wmape is not None else cnt_mape
+    stars = calc_stars(stars_metric, n_total)
 
     # ── シーズン変動リスク（船長の知見: シーズンの変わり目はブレやすい） ────────
     # 対象旬 ±2 の avg_cnt を集め、変動係数（std/mean）を計算する。
@@ -416,6 +423,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
         "kg_hi":           round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
         # 精度
         "cnt_mape":        round(cnt_mape, 1),
+        "cnt_wmape":       round(cnt_wmape, 1) if cnt_wmape is not None else None,
         "size_mape":       round(size_mape, 1) if size_mape else None,
         "kg_mape":         round(kg_mape, 1) if kg_mape else None,
         "stars":           stars,
