@@ -50,6 +50,10 @@ TRAIN_END  = "2024/12/31"   # この日以前 = 学習データ
 HORIZONS   = [0, 1, 3, 7, 14, 21, 28]
 MIN_N_COMBO = 10            # 分析最小件数
 
+# wave_clamp 閾値（モジュール変数。--wave-clamp 引数で上書き可）
+# 1.5m / 2.0m / 2.5m で比較検証するための可変定数
+WAVE_CLAMP_THRESHOLD: float = 2.0
+
 # ── 変数の予報有効ホライズン ────────────────────────────────────────────
 # 「遅い変数」: 日々の変化が小さく、N日前の値≒当日値 → 長期予報でも有効
 # 「速い変数」: 数日で激変 → 短期予報（〜7日）以外は当日値と無関係
@@ -683,9 +687,9 @@ def get_daily_wx(conn_wx, lat, lon, date_iso):
     if wave_heights:
         result["wave_height_avg"] = sum(wave_heights) / len(wave_heights)
         result["wave_height_max"] = max(wave_heights)
-        # wave_clamp: 逆U字効果（1.5m前後が"釣れる波"、2m超は"釣れない荒れ"）
-        # min(avg, 2.0)で2m超の影響を頭打ちにする（統計SP推奨・案C）
-        result["wave_clamp"] = min(result["wave_height_avg"], 2.0)
+        # wave_clamp: 逆U字効果（1.5m前後が"釣れる波"、閾値超は"釣れない荒れ"）
+        # WAVE_CLAMP_THRESHOLD（デフォルト2.0m）で頭打ち。--wave-clamp で変更可
+        result["wave_clamp"] = min(result["wave_height_avg"], WAVE_CLAMP_THRESHOLD)
 
     # ── 波周期: avg, min ──
     if wave_periods:
@@ -1803,9 +1807,18 @@ def deep_dive(fish, ship, verbose=True):
 
 def main():
     parser = argparse.ArgumentParser(description="船宿×魚種 深掘り分析")
-    parser.add_argument("--fish", required=True, help="魚種名（例: アジ）")
-    parser.add_argument("--ship", default=None,  help="船宿名（省略時は全船宿）")
+    parser.add_argument("--fish",       required=True,  help="魚種名（例: アジ）")
+    parser.add_argument("--ship",       default=None,   help="船宿名（省略時は全船宿）")
+    parser.add_argument("--wave-clamp", type=float, default=None,
+                        help="wave_clamp 閾値（例: 1.5, 2.0, 2.5。省略時はデフォルト2.0m）")
     args = parser.parse_args()
+
+    if args.wave_clamp is not None:
+        import combo_deep_dive as _self
+        _self.WAVE_CLAMP_THRESHOLD = args.wave_clamp
+        global WAVE_CLAMP_THRESHOLD
+        WAVE_CLAMP_THRESHOLD = args.wave_clamp
+        print(f"[wave_clamp] 閾値を {args.wave_clamp}m に設定")
 
     if args.ship:
         deep_dive(args.fish, args.ship)
