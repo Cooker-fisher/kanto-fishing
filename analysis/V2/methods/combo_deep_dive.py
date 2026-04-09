@@ -1687,7 +1687,7 @@ def save_params(fish, ship, corr_results):
     conn.close()
 
 
-def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None):
+def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None, use_fallback=False):
     """天候補正パラメータを combo_wx_params テーブルに保存。
     predict_count.py が天候補正時に参照する。
     factor='_meta' 行: alpha_scale / met_mean / met_std / lat / lon（コンボ代表座標）
@@ -1699,25 +1699,26 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None):
     conn = sqlite3.connect(DB_ANA)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_wx_params (
-            fish        TEXT,
-            ship        TEXT,
-            metric      TEXT,
-            factor      TEXT,
-            mean        REAL,
-            std         REAL,
-            r           REAL,
-            alpha_scale REAL,
-            met_mean    REAL,
-            met_std     REAL,
-            lat         REAL,
-            lon         REAL,
-            updated_at  TEXT,
+            fish         TEXT,
+            ship         TEXT,
+            metric       TEXT,
+            factor       TEXT,
+            mean         REAL,
+            std          REAL,
+            r            REAL,
+            alpha_scale  REAL,
+            met_mean     REAL,
+            met_std      REAL,
+            lat          REAL,
+            lon          REAL,
+            updated_at   TEXT,
+            use_fallback INTEGER DEFAULT 0,
             PRIMARY KEY (fish, ship, metric, factor)
         )
     """)
     # 既存テーブルへの列追加（マイグレーション）
     existing = {r[1] for r in conn.execute("PRAGMA table_info(combo_wx_params)").fetchall()}
-    for col, typ in [("lat", "REAL"), ("lon", "REAL")]:
+    for col, typ in [("lat", "REAL"), ("lon", "REAL"), ("use_fallback", "INTEGER")]:
         if col not in existing:
             conn.execute(f"ALTER TABLE combo_wx_params ADD COLUMN {col} {typ}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -1726,11 +1727,11 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None):
         rows.append((fish, ship, met, "_meta",
                      None, None, None,
                      params["alpha_scale"], params["met_mean"], params["met_std"],
-                     modal_lat, modal_lon, now))
+                     modal_lat, modal_lon, now, int(use_fallback)))
         for fac, (mean, std, r) in params["factors"].items():
-            rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None, now))
+            rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None, now, 0))
     conn.executemany(
-        "INSERT OR REPLACE INTO combo_wx_params VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
+        "INSERT OR REPLACE INTO combo_wx_params VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
     )
     conn.commit()
     conn.close()
@@ -1938,7 +1939,20 @@ def deep_dive(fish, ship, verbose=True):
     save_keywords(fish, ship, kw_data)
     save_backtest(fish, ship, bt_data)
     save_thresholds(fish, ship, season_thr_final)
-    save_wx_params(fish, ship, wx_params_data, modal_lat=modal_lat, modal_lon=modal_lon)
+
+    # auto_fallback: H=0 cnt_avg でモデルが BL-0（全体平均）より 10pt 以上悪い場合、
+    # predict_count.py で気象補正をスキップして旬別ベースラインをそのまま使う。
+    # 例: ヒラメ×つる丸（model=91.4% vs BL0=69.2%）→ use_fallback=True
+    use_fallback = False
+    for row in bt_data:
+        met = row[0]; H = row[1]; wmape = row[6]; bl0w = row[9]
+        if met == "cnt_avg" and H == 0:
+            if wmape is not None and bl0w is not None and wmape > bl0w + 10:
+                use_fallback = True
+            break
+
+    save_wx_params(fish, ship, wx_params_data, modal_lat=modal_lat, modal_lon=modal_lon,
+                   use_fallback=use_fallback)
 
 
 def main():

@@ -158,6 +158,19 @@ def _get_tide(date_iso: str) -> dict:
     }
 
 
+def _get_use_fallback(conn, fish: str, ship: str) -> bool:
+    """combo_wx_params._meta の use_fallback フラグを返す。
+    use_fallback=True のコンボは気象補正をスキップして旬別ベースラインをそのまま使う。
+    例: ヒラメ×つる丸（model wMAPE が BL-0 より 10pt 以上悪い）
+    """
+    row = conn.execute(
+        "SELECT use_fallback FROM combo_wx_params "
+        "WHERE fish=? AND ship=? AND metric='cnt_avg' AND factor='_meta'",
+        (fish, ship)
+    ).fetchone()
+    return bool(row and row[0])
+
+
 def _apply_wx_correction(conn, fish: str, ship: str,
                           target_date: str, baseline_cnt: float,
                           lat: float, lon: float) -> float:
@@ -384,8 +397,9 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     # ── 天候補正 ──────────────────────────────────────────────────────────────
     # combo_wx_params が存在すれば気象補正を適用し cnt_predicted を更新。
     # weather_cache.sqlite にデータがない将来日は tide/moon のみの部分補正。
+    # use_fallback=True のコンボ（気象補正がノイズ化するコンボ）は補正をスキップ。
     baseline_cnt = avg_cnt  # 旬別ベースライン（補正前）
-    if lat and lon:
+    if lat and lon and not _get_use_fallback(conn, fish, ship):
         cnt_predicted = _apply_wx_correction(conn, fish, ship, target_date, avg_cnt, lat, lon)
     else:
         cnt_predicted = round(avg_cnt, 1)
