@@ -143,12 +143,68 @@ def init_table(conn: sqlite3.Connection):
                      ("actual_size_min", "REAL"), ("actual_size_max", "REAL"),
                      ("pred_kg_lo", "REAL"), ("pred_kg_hi", "REAL"),
                      ("actual_kg_min", "REAL"), ("actual_kg_max", "REAL"),
-                     ("transition_risk", "REAL")]:
+                     ("transition_risk", "REAL"),
+                     ("obs_kw_ratio", "REAL")]:  # OBSキーワード補正係数（1.0=補正なし）
         try:
             conn.execute(f"ALTER TABLE prediction_log ADD COLUMN {col} {typ}")
         except sqlite3.OperationalError:
             pass  # 既に存在する
     conn.commit()
+
+
+# ── OBSキーワード補正 ────────────────────────────────────────────────────────────
+
+def _apply_obs_kw_correction(conn: sqlite3.Connection,
+                              fish: str, ship: str,
+                              target_date: str, horizon: int,
+                              pred_cnt: float) -> tuple[float, float]:
+    """
+    obs_keyword_corrections テーブルを参照し、kanso_raw にキーワードが含まれる場合に
+    pred_cnt を補正する。H=0-2 専用（max_horizon で制御）。
+
+    Returns: (補正後cnt, 適用ratio)
+      - キーワード未検出 or horizon > max_horizon → (pred_cnt, 1.0)
+      - 複数ルールは ratio を乗算
+    """
+    rules = conn.execute(
+        "SELECT keyword, effect_lag_max, ratio_lag0, ratio_lag1plus, max_horizon "
+        "FROM obs_keyword_corrections WHERE fish=? AND ship=?",
+        (fish, ship)
+    ).fetchall()
+
+    if not rules:
+        return pred_cnt, 1.0
+
+    td = datetime.strptime(target_date.replace("-", "/"), "%Y/%m/%d")
+    csv_cache_local: dict[str, list] = {}
+    combined_ratio = 1.0
+
+    for keyword, effect_lag_max, ratio_lag0, ratio_lag1plus, max_horizon in rules:
+        if horizon > max_horizon:
+            continue  # このルールは適用対象外
+
+        # accessible lag range: min_lag=horizon（今日=target-horizon）〜 effect_lag_max
+        # lag0 = target_date 当日、lag1+ = 前日以前
+        best_ratio = None
+        for lag in range(horizon, effect_lag_max + 1):
+            check_date = (td - timedelta(days=lag)).strftime("%Y/%m/%d")
+            if check_date not in csv_cache_local:
+                csv_cache_local[check_date] = _load_csv_for_date(check_date)
+            for row in csv_cache_local[check_date]:
+                if row.get("ship") == ship and row.get("tsuri_mono") == fish:
+                    if keyword in (row.get("kanso_raw") or ""):
+                        best_ratio = ratio_lag0 if lag == 0 else ratio_lag1plus
+                        break  # この lag で発見
+            if best_ratio is not None:
+                break  # 最も近い lag を採用
+
+        if best_ratio is not None:
+            combined_ratio *= best_ratio
+
+    if combined_ratio == 1.0:
+        return pred_cnt, 1.0
+    corrected = round(max(0.0, pred_cnt * combined_ratio), 1)
+    return corrected, round(combined_ratio, 4)
 
 
 # ── 気象予報取得 ────────────────────────────────────────────────────────────────
@@ -270,6 +326,15 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
             skipped += 1
             continue
 
+        # ── OBSキーワード補正（H=0-2専用） ──────────────────────────────────
+        # obs_keyword_corrections にルールがあり、kanso_raw にキーワードが含まれる場合のみ補正
+        corrected_cnt, obs_kw_ratio = _apply_obs_kw_correction(
+            conn, fish, ship, target_date, horizon, pred["cnt_predicted"]
+        )
+        if obs_kw_ratio != 1.0:
+            pred = dict(pred)  # コピーして上書き（元の pred_combo 結果は保持）
+            pred["cnt_predicted"] = corrected_cnt
+
         # ベースライン取得（combo_decadal の旬別平均）
         bl_row = conn.execute(
             "SELECT avg_cnt, avg_kg FROM combo_decadal WHERE fish=? AND ship=? AND decade_no=?",
@@ -310,9 +375,9 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
                      pred_size_lo, pred_size_hi,
                      pred_kg_lo, pred_kg_hi,
                      fcast_wave, fcast_wind, fcast_sst, fcast_temp,
-                     transition_risk,
+                     transition_risk, obs_kw_ratio,
                      created_at)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 fish, ship, target_date, pred_date, horizon,
                 pred["cnt_predicted"], pred["cnt_lo"], pred["cnt_hi"], stars,
@@ -321,6 +386,7 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
                 pred_kg_lo, pred_kg_hi,
                 fcast_wave, fcast_wind, fcast_sst, fcast_temp,
                 pred.get("transition_risk", 0.0),
+                obs_kw_ratio if obs_kw_ratio != 1.0 else None,  # 補正なしはNULLで保存
                 now_str
             ))
             if conn.execute("SELECT changes()").fetchone()[0]:
