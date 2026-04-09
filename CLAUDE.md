@@ -208,7 +208,6 @@ kanto-fishing/
 ## 未実装・ブロック中
 
 - [ ] 予測モデル実装（D層・設計済み・PIPELINE.md参照）
-- [ ] parse_deepdive.py → deepdive_params.json（C完了後に実行）
 - [ ] 決済連携（Stripe等）
 - [ ] AdSense審査結果待ち（2026/03/21申請済み）
 - [ ] X自動投稿（アカウントロック解除待ち）

@@ -157,7 +157,6 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 | スクリプト | 入力 | 出力 | 実行タイミング |
 |-----------|------|------|--------------|
 | analysis/V2/methods/combo_deep_dive.py | data/*.csv + ocean/*.sqlite | analysis/V2/results/analysis.sqlite | 手動（全51魚種） |
-| analysis/V2/methods/parse_deepdive.py | analysis/V2/results/analysis.sqlite | analysis/V2/results/deepdive_params.json | C1後に実行 |
 | analysis/run.py {script} | — | — | crawl.yml 経由で自動 |
 
 ### analysis.sqlite テーブル一覧
