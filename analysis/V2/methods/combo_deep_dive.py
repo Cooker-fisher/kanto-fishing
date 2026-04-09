@@ -1730,8 +1730,13 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None, u
                      modal_lat, modal_lon, now, int(use_fallback)))
         for fac, (mean, std, r) in params["factors"].items():
             rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None, now, 0))
+    # 列名を明示して列順ずれを防ぐ（ALTER TABLE でカラム追加した場合の位置ズレ対策）
     conn.executemany(
-        "INSERT OR REPLACE INTO combo_wx_params VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
+        """INSERT OR REPLACE INTO combo_wx_params
+           (fish, ship, metric, factor, mean, std, r,
+            alpha_scale, met_mean, met_std, lat, lon, updated_at, use_fallback)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        rows
     )
     conn.commit()
     conn.close()
@@ -1944,8 +1949,12 @@ def deep_dive(fish, ship, verbose=True):
     # predict_count.py で気象補正をスキップして旬別ベースラインをそのまま使う。
     # 例: ヒラメ×つる丸（model=91.4% vs BL0=69.2%）→ use_fallback=True
     use_fallback = False
+    # bt_data row: (met, H, rv, mae, mape, smape, wmape, rmse, dacc,
+    #               good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, 0.0,
+    #               bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r)
+    # bl0_wmape は index 20
     for row in bt_data:
-        met = row[0]; H = row[1]; wmape = row[6]; bl0w = row[9]
+        met = row[0]; H = row[1]; wmape = row[6]; bl0w = row[20]  # row[20] = bl0_wmape
         if met == "cnt_avg" and H == 0:
             if wmape is not None and bl0w is not None and wmape > bl0w + 10:
                 use_fallback = True
