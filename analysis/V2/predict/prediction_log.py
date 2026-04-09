@@ -276,10 +276,13 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
         avg_kg       = bl_row[1] if bl_row else None
         pred_pct     = _pct_vs_baseline(pred["cnt_predicted"], baseline_cnt)
 
-        # kg予測レンジ（avg_kg ± cnt_mape相対誤差）
-        pred_kg_lo = pred_kg_hi = None
-        if avg_kg and avg_kg > 0:
-            rel_err = wmape / 100 if (wmape := pred.get("cnt_mape", 35.0)) else 0.35
+        # kg予測レンジ
+        # combo_deep_dive 再実行後は pred["kg_lo/hi"] に MAE ベースの正確な値が入る
+        # それまでは cnt_mape 相対誤差でフォールバック
+        pred_kg_lo = pred.get("kg_lo")
+        pred_kg_hi = pred.get("kg_hi")
+        if pred_kg_lo is None and avg_kg and avg_kg > 0:
+            rel_err = (pred.get("cnt_mape") or 35.0) / 100
             pred_kg_lo = round(max(0.0, avg_kg * (1 - rel_err)), 2)
             pred_kg_hi = round(avg_kg * (1 + rel_err), 2)
 

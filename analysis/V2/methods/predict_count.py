@@ -118,24 +118,24 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
 
     # 旬別ベースライン
     row = conn.execute(
-        "SELECT avg_cnt, avg_size, n FROM combo_decadal "
+        "SELECT avg_cnt, avg_size, avg_kg, n FROM combo_decadal "
         "WHERE fish=? AND ship=? AND decade_no=?",
         (fish, ship, dekad)
     ).fetchone()
 
     if row:
-        avg_cnt, avg_size, n_dekad = row
+        avg_cnt, avg_size, avg_kg, n_dekad = row
         fallback = False
     else:
         # 最近傍旬（±3以内）にフォールバック
         near = conn.execute(
-            "SELECT decade_no, avg_cnt, avg_size, n FROM combo_decadal "
+            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n FROM combo_decadal "
             "WHERE fish=? AND ship=? ORDER BY ABS(decade_no - ?) LIMIT 1",
             (fish, ship, dekad)
         ).fetchone()
         if not near or abs(near[0] - dekad) > 3:
             return None
-        avg_cnt, avg_size, n_dekad = near[1], near[2], near[3]
+        avg_cnt, avg_size, avg_kg, n_dekad = near[1], near[2], near[3], near[4]
         fallback = True
 
     if not avg_cnt or avg_cnt <= 0:
@@ -151,6 +151,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     cnt_mape  = (bt.get("cnt_avg")  or {}).get("mape") or 999.0
     size_mae  = (bt.get("size_avg") or {}).get("mae")
     size_mape = (bt.get("size_avg") or {}).get("mape")
+    kg_mae    = (bt.get("kg_avg")   or {}).get("mae")
+    kg_mape   = (bt.get("kg_avg")   or {}).get("mape")
 
     # 座標・総件数
     meta = conn.execute(
@@ -176,9 +178,13 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
         "size_predicted": round(avg_size, 1) if avg_size else None,
         "size_lo":        round(avg_size - size_mae, 1) if avg_size and size_mae else None,
         "size_hi":        round(avg_size + size_mae, 1) if avg_size and size_mae else None,
+        "kg_predicted":   round(avg_kg, 2) if avg_kg else None,
+        "kg_lo":          round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
+        "kg_hi":          round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
         # 精度
         "cnt_mape":       round(cnt_mape, 1),
         "size_mape":      round(size_mape, 1) if size_mape else None,
+        "kg_mape":        round(kg_mape, 1) if kg_mape else None,
         "stars":          stars,
         # メタ
         "n_total":        n_total,

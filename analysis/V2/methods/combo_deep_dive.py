@@ -1243,7 +1243,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             horizon=H, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon
         )
 
-    METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg"]
+    METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
     # 各月・各ホライズンの予測と実測を蓄積
     all_preds    = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
     all_acts     = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
@@ -1458,8 +1458,9 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     ]
 
     METRIC_LABEL = {"cnt_avg": "Ave匹数", "cnt_min": "Min匹数",
-                    "cnt_max": "Max匹数", "size_avg": "Ave型  "}
-    METRIC_UNIT  = {"cnt_avg": "匹", "cnt_min": "匹", "cnt_max": "匹", "size_avg": "cm"}
+                    "cnt_max": "Max匹数", "size_avg": "Ave型  ", "kg_avg": "Ave重量"}
+    METRIC_UNIT  = {"cnt_avg": "匹", "cnt_min": "匹", "cnt_max": "匹",
+                    "size_avg": "cm", "kg_avg": "kg"}
     bt_data = []
 
     for met in METRICS_LIST:
