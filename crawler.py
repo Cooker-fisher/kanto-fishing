@@ -3240,15 +3240,12 @@ def _classify_cancel_type(reason: str) -> str:
     return "不明"
 
 
-def _extract_time_slot(fish_raw: str) -> str:
-    """fish_raw から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'"""
-    if not fish_raw:
-        return ""
-    # 午前・午後 併記（例: 忠彦丸「午前・午後ライトアジ乗合船」）→ 時間帯不定
-    if "午前" in fish_raw and "午後" in fish_raw:
-        return ""
-    # 優先順位順にチェック（長いパターンを先に）
-    for pattern, slot in [
+def _extract_time_slot(fish_raw: str, kanso_raw: str = "") -> str:
+    """fish_raw から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'
+    fish_raw で取れない場合は kanso_raw の先頭部分（最初の句点まで）をフォールバック参照。
+    例: 光進丸「アジ」→kanso_raw冒頭「午前LT黄金アジ船。...」→'午前'
+    """
+    PATTERNS = [
         ("ショートショート", "ショート"),
         ("午前半日",   "午前"),
         ("午後半日",   "午後"),
@@ -3263,10 +3260,23 @@ def _extract_time_slot(fish_raw: str) -> str:
         ("夕",         "夕"),
         ("ショート",   "ショート"),
         ("半日",       "午前"),
-    ]:
-        if pattern in fish_raw:
-            return slot
-    return ""
+    ]
+
+    def _match(text: str) -> str:
+        # 午前・午後 併記 → 時間帯不定
+        if "午前" in text and "午後" in text:
+            return ""
+        for pattern, slot in PATTERNS:
+            if pattern in text:
+                return slot
+        return ""
+
+    slot = _match(fish_raw) if fish_raw else ""
+    if not slot and kanso_raw:
+        # kanso_raw の最初の句点（。）または改行までを対象に限定
+        kanso_head = kanso_raw.split("。")[0][:40]
+        slot = _match(kanso_head)
+    return slot
 
 
 def _extract_tackle(tokki):
@@ -3491,7 +3501,7 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 "tsuri_mono":     tsuri_norm,
                 "main_sub":       main_sub,
                 "fish_raw":       r.get("fish_raw", ""),
-                "time_slot":      _extract_time_slot(r.get("fish_raw", "")),
+                "time_slot":      _extract_time_slot(r.get("fish_raw", ""), r.get("kanso_raw", "")),
                 "cnt_min":        (min(cr["min"], cr["max"]) if cr else ""),
                 "cnt_max":        (max(cr["min"], cr["max"]) if cr else ""),
                 "cnt_avg":        cnt_avg if cnt_avg is not None else "",

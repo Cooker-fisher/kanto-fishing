@@ -293,10 +293,12 @@ def fetch_weather_context(lat: float, lon: float, date_str: str) -> dict:
 
 # ── 1コンボ予測 ───────────────────────────────────────────────────────────────
 
-def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
+def predict_combo(conn, fish: str, ship: str, target_date: str,
+                  time_slot: str = "") -> dict | None:
     """
-    旬別ベースライン + 天候補正で予測する。
+    旬別ベースライン + 天候補正 + time_slot補正で予測する。
     combo_wx_params があれば気象補正を適用、なければベースラインのみ。
+    time_slot が指定され combo_slot_ratio に登録があれば ratio を乗じて補正。
     データ不足なら None。
     """
     dekad = decade_of(target_date)
@@ -388,6 +390,19 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     else:
         cnt_predicted = round(avg_cnt, 1)
 
+    # ── time_slot 補正 ────────────────────────────────────────────────────────
+    # combo_slot_ratio に登録がある場合のみ適用。
+    # 補正後 cnt_predicted に ratio を乗じる。min/max も同倍率で補正。
+    slot_ratio = 1.0
+    if time_slot:
+        slot_row = conn.execute(
+            "SELECT ratio FROM combo_slot_ratio WHERE fish=? AND ship=? AND time_slot=?",
+            (fish, ship, time_slot)
+        ).fetchone()
+        if slot_row:
+            slot_ratio = slot_row[0]
+            cnt_predicted = round(cnt_predicted * slot_ratio, 1)
+
     # ── min/max 予測（初心者〜ベテランレンジ） ───────────────────────────────
     # 補正後の cnt_predicted に min/max 比率を適用する。
     # avg_cnt_min/max が旬別データにある場合: ratio法（旬別の比率を補正後中央値に適用）
@@ -429,6 +444,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
         "stars":           stars,
         # シーズン変動リスク（0.0〜1.0+、0.3超で変動期判定）
         "transition_risk": transition_risk,
+        # time_slot 補正（1.0 = 補正なし）
+        "slot_ratio":      round(slot_ratio, 3),
         # メタ
         "n_total":         n_total,
         "n_dekad":         n_dekad,
