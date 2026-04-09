@@ -159,8 +159,8 @@ def _apply_obs_kw_correction(conn: sqlite3.Connection,
                               target_date: str, horizon: int,
                               pred_cnt: float) -> tuple[float, float]:
     """
-    obs_keyword_corrections テーブルを参照し、kanso_raw にキーワードが含まれる場合に
-    pred_cnt を補正する。H=0-2 専用（max_horizon で制御）。
+    obs_keyword_corrections テーブルを参照し、kanso_raw / water_color / suishoku_raw に
+    キーワードが含まれる場合に pred_cnt を補正する。H=0-2 専用（max_horizon で制御）。
 
     Returns: (補正後cnt, 適用ratio)
       - キーワード未検出 or horizon > max_horizon → (pred_cnt, 1.0)
@@ -192,7 +192,8 @@ def _apply_obs_kw_correction(conn: sqlite3.Connection,
                 csv_cache_local[check_date] = _load_csv_for_date(check_date)
             for row in csv_cache_local[check_date]:
                 if row.get("ship") == ship and row.get("tsuri_mono") == fish:
-                    if keyword in (row.get("kanso_raw") or ""):
+                    text = " ".join(row.get(c) or "" for c in ["kanso_raw", "water_color", "suishoku_raw"])
+                    if keyword in text:
                         best_ratio = ratio_lag0 if lag == 0 else ratio_lag1plus
                         break  # この lag で発見
             if best_ratio is not None:
@@ -327,7 +328,7 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
             continue
 
         # ── OBSキーワード補正（H=0-2専用） ──────────────────────────────────
-        # obs_keyword_corrections にルールがあり、kanso_raw にキーワードが含まれる場合のみ補正
+        # obs_keyword_corrections にルールがあり、kanso_raw/water_color/suishoku_raw にキーワードが含まれる場合のみ補正
         corrected_cnt, obs_kw_ratio = _apply_obs_kw_correction(
             conn, fish, ship, target_date, horizon, pred["cnt_predicted"]
         )
