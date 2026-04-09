@@ -419,6 +419,26 @@ def match_actuals(dry_run: bool = False) -> int:
         if (f, s) not in thresh_fallback:
             thresh_fallback[(f, s)] = vals
 
+    # 実績波高の取得用（FEC計算のため）
+    conn_wx = None
+    wx_cache_actual: dict[tuple, float | None] = {}
+    try:
+        import importlib.util as _ilu
+        spec = _ilu.spec_from_file_location(
+            "_paths2", os.path.join(os.path.dirname(__file__), "..", "methods", "_paths.py"))
+        _p = _ilu.module_from_spec(spec); spec.loader.exec_module(_p)
+        _ocean_dir = _p.OCEAN_DIR
+        _wx_path = os.path.join(_ocean_dir, "weather_cache.sqlite")
+        if os.path.exists(_wx_path):
+            conn_wx = sqlite3.connect(_wx_path)
+    except Exception:
+        pass
+
+    # combo_meta から lat/lon 取得
+    combo_coords = {(r[0], r[1]): (r[2], r[3]) for r in conn.execute(
+        "SELECT fish, ship, lat, lon FROM combo_meta WHERE lat IS NOT NULL"
+    ).fetchall()}
+
     csv_cache: dict[str, list] = {}
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     updated = 0
@@ -454,24 +474,57 @@ def match_actuals(dry_run: bool = False) -> int:
         if p33 is not None and p67 is not None:
             is_good_hit = 1 if _classify3(pred_cnt_avg, p33, p67) == _classify3(act_avg, p33, p67) else 0
 
+        # 実績波高取得（FEC用）
+        actual_wave_val = None
+        if conn_wx:
+            latlon = combo_coords.get((fish, ship))
+            if latlon:
+                lat, lon = latlon
+                key_wx = (round(lat, 2), round(lon, 2), target_date)
+                if key_wx not in wx_cache_actual:
+                    d_iso = target_date.replace("/", "-")
+                    # nearest coord を weather_cache から取得
+                    try:
+                        near = conn_wx.execute(
+                            "SELECT lat, lon FROM weather "
+                            "WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? LIMIT 1",
+                            (lat-0.5, lat+0.5, lon-0.5, lon+0.5)
+                        ).fetchone()
+                        if near:
+                            wrow = conn_wx.execute(
+                                "SELECT AVG(wave_height) FROM weather "
+                                "WHERE lat=? AND lon=? AND dt LIKE ? AND wave_height IS NOT NULL",
+                                (near[0], near[1], f"{d_iso}%")
+                            ).fetchone()
+                            wx_cache_actual[key_wx] = wrow[0] if wrow else None
+                        else:
+                            wx_cache_actual[key_wx] = None
+                    except Exception:
+                        wx_cache_actual[key_wx] = None
+                actual_wave_val = wx_cache_actual.get(key_wx)
+
         conn.execute("""
             UPDATE prediction_log
             SET actual_cnt_avg=?, actual_cnt_min=?, actual_cnt_max=?,
                 actual_pct=?,
                 actual_size_min=?, actual_size_max=?,
                 actual_kg_min=?,  actual_kg_max=?,
+                actual_wave=?,
                 wmape=?, mae=?, is_good_hit=?, matched_at=?
             WHERE id=?
         """, (act_avg, act_min, act_max,
               actual_pct,
               actual.get("size_min"), actual.get("size_max"),
               actual.get("kg_min"),   actual.get("kg_max"),
+              actual_wave_val,
               wmape, mae, is_good_hit, now_str,
               row_id))
         updated += 1
 
     conn.commit()
     conn.close()
+    if conn_wx:
+        conn_wx.close()
 
     print(f"match_actuals: updated={updated} no_data={no_data} total={len(unmatched)}")
     return updated
@@ -535,6 +588,145 @@ def show_stats():
     conn.close()
 
 
+# ── phase2_stats ────────────────────────────────────────────────────────────────
+
+def phase2_stats(min_n: int = 10):
+    """
+    フェーズ2精度テスト: Skill Score と FEC を計算・表示する。
+
+    Skill Score = 1 - (RMSE_model / RMSE_climatology)
+        RMSE_model       = sqrt(mean((pred_cnt_avg - actual_cnt_avg)^2))
+        RMSE_climatology = sqrt(mean((baseline_cnt  - actual_cnt_avg)^2))
+        > 0 → モデルがベースライン(旬別平均)に勝っている
+        < 0 → ベースラインに負けている（モデルが害になっている）
+
+    FEC (Forecast Error Correlation)
+        fcast_error = (fcast_wave - actual_wave)  ← 波高予報誤差
+        pred_error  = (pred_cnt_avg - actual_cnt_avg) / actual_cnt_avg
+        r > 0 → 波高予報が外れたとき釣果予測も外れやすい（波高誤差が釣果誤差を誘発）
+        r < 0 → 逆の関係（珍しい）
+    """
+    if not os.path.exists(DB_PATH):
+        print("analysis.sqlite not found")
+        return
+
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        conn.execute("SELECT 1 FROM prediction_log LIMIT 1")
+    except sqlite3.OperationalError:
+        print("prediction_log テーブルなし")
+        conn.close()
+        return
+
+    rows = conn.execute("""
+        SELECT fish, ship,
+               pred_cnt_avg, actual_cnt_avg, baseline_cnt,
+               fcast_wave, actual_wave, fcast_wind,
+               transition_risk, pred_stars
+        FROM prediction_log
+        WHERE matched_at IS NOT NULL
+          AND actual_cnt_avg IS NOT NULL
+          AND pred_cnt_avg   IS NOT NULL
+          AND baseline_cnt   IS NOT NULL
+    """).fetchall()
+    conn.close()
+
+    if len(rows) < min_n:
+        print(f"フェーズ2: データ不足 ({len(rows)}件 / 最低{min_n}件)")
+        print("  → prediction_log に照合済みデータが蓄積されるまで待機")
+        return
+
+    print(f"=== フェーズ2 精度テスト (n={len(rows)}) ===")
+    print()
+
+    # ── 全体 Skill Score ─────────────────────────────────────────────────────
+    def rmse(errs):
+        return (sum(e**2 for e in errs) / len(errs)) ** 0.5
+
+    model_errs = [r[2] - r[3] for r in rows]
+    clim_errs  = [r[4] - r[3] for r in rows]  # baseline_cnt - actual
+
+    rmse_m = rmse(model_errs)
+    rmse_c = rmse(clim_errs)
+    skill  = round(1 - rmse_m / rmse_c, 3) if rmse_c > 0 else None
+
+    print(f"  Skill Score (全体):  {skill:+.3f}  "
+          f"(RMSE model={rmse_m:.1f} / climatology={rmse_c:.1f})")
+    if skill is not None:
+        if skill > 0.1:   print("    → ✓ モデルがベースラインに勝っている")
+        elif skill > 0:   print("    → △ わずかにベースライン勝ち")
+        elif skill > -0.1: print("    → ▲ ほぼ同等（ベースラインで十分）")
+        else:             print("    → ✗ ベースラインに負けている（モデル有害）")
+    print()
+
+    # ── 変動期 vs 安定期 Skill Score ────────────────────────────────────────
+    stable   = [(r[2], r[3], r[4]) for r in rows if (r[8] or 0.0) <= 0.3]
+    unstable = [(r[2], r[3], r[4]) for r in rows if (r[8] or 0.0) >  0.3]
+    for label, grp in [("安定期(CV≤0.3)", stable), ("変動期(CV>0.3)", unstable)]:
+        if len(grp) < 3:
+            print(f"  Skill Score {label}: n={len(grp)} (少なすぎ)")
+            continue
+        me = [g[0] - g[1] for g in grp]
+        ce = [g[2] - g[1] for g in grp]
+        rm, rc = rmse(me), rmse(ce)
+        sk = round(1 - rm / rc, 3) if rc > 0 else None
+        print(f"  Skill Score {label}: {sk:+.3f}  (n={len(grp)})")
+    print()
+
+    # ── FEC: 波高予報誤差 vs 釣果予測誤差の相関 ─────────────────────────────
+    fec_rows = [(r[5], r[6], r[2], r[3])  # fcast_wave, actual_wave, pred, actual
+                for r in rows
+                if r[5] is not None and r[6] is not None and r[3] > 0]
+    if len(fec_rows) >= min_n:
+        fw_errs   = [r[0] - r[1] for r in fec_rows]     # 波高予報誤差
+        pred_errs = [(r[2] - r[3]) / r[3] for r in fec_rows]  # 相対釣果誤差
+        def pearson(xs, ys):
+            n = len(xs)
+            mx, my = sum(xs)/n, sum(ys)/n
+            cov = sum((x-mx)*(y-my) for x,y in zip(xs,ys)) / n
+            sx = (sum((x-mx)**2 for x in xs)/n)**0.5
+            sy = (sum((y-my)**2 for y in ys)/n)**0.5
+            return round(cov/(sx*sy), 3) if sx*sy > 0 else None
+        fec = pearson(fw_errs, pred_errs)
+        print(f"  FEC (波高予報誤差×釣果誤差相関): r={fec}  (n={len(fec_rows)})")
+        if fec is not None:
+            if fec > 0.3:  print("    → 波高予報誤差が釣果予測誤差を誘発（予報精度改善で改善余地あり）")
+            elif fec < -0.3: print("    → 逆相関（要調査）")
+            else:          print("    → 弱い相関（波高以外の要因が支配的）")
+    else:
+        print(f"  FEC: 波高実績データ不足 ({len(fec_rows)}件)")
+    print()
+
+    # ── 魚種別 Skill Score ランキング ────────────────────────────────────────
+    from collections import defaultdict
+    by_fish = defaultdict(list)
+    for r in rows:
+        by_fish[r[0]].append((r[2], r[3], r[4]))
+    fish_skills = []
+    for fish, grp in by_fish.items():
+        if len(grp) < 3: continue
+        me = [g[0]-g[1] for g in grp]
+        ce = [g[2]-g[1] for g in grp]
+        rm, rc = rmse(me), rmse(ce)
+        fish_skills.append((fish, len(grp), round(1-rm/rc, 3) if rc>0 else None))
+    fish_skills.sort(key=lambda x: -(x[2] or -99))
+    if fish_skills:
+        print("  魚種別 Skill Score (上位5 / 下位5):")
+        for fish, n, sk in fish_skills[:5]:
+            print(f"    {fish:<10} n={n:3d}  {sk:+.3f}")
+        if len(fish_skills) > 5:
+            print("    ...")
+            for fish, n, sk in fish_skills[-3:]:
+                print(f"    {fish:<10} n={n:3d}  {sk:+.3f}")
+
+    # ── 予報劣化量の推定（フェーズ1比較） ───────────────────────────────────
+    wm_all = [abs(r[2]-r[3])/r[3]*100 for r in rows if r[3] > 0]
+    if wm_all:
+        print()
+        print(f"  フェーズ2 wMAPE平均: {sum(wm_all)/len(wm_all):.1f}%")
+        print(f"  (フェーズ1基準: 44.8% → 予報劣化分の上乗せ量が確認できます)")
+
+
 # ── メイン ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -543,6 +735,7 @@ def main():
     parser.add_argument("--match",     action="store_true", help="昨日以前の実績照合")
     parser.add_argument("--both",      action="store_true", help="predict + match 両方")
     parser.add_argument("--stats",     action="store_true", help="蓄積状況サマリー")
+    parser.add_argument("--phase2",    action="store_true", help="フェーズ2精度テスト（Skill Score / FEC）")
     parser.add_argument("--dry-run",   action="store_true", help="DB書き込みなし")
     parser.add_argument("--horizon",   type=int, default=7,  help="予測ホライズン（デフォルト7）")
     parser.add_argument("--min-stars", type=int, default=3,  help="最小★（デフォルト3）")
@@ -550,6 +743,10 @@ def main():
 
     if args.stats:
         show_stats()
+        return
+
+    if args.phase2:
+        phase2_stats()
         return
 
     if args.both or (not args.predict and not args.match and not args.stats):
