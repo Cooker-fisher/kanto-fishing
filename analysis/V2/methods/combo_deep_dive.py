@@ -358,8 +358,20 @@ KEYWORDS = {
     "深度": ["深場", "浅場", "底", "中層", "表層"],
     "色":   ["澄み", "濁り", "青潮", "赤潮", "笹濁"],
     "流れ": ["潮流", "速潮", "潮が走", "二枚潮"],
-    "外道": ["外道", "ゲスト", "サメ", "フグ", "ハモ"],
     "海況": ["ウネリ", "うねり", "時化", "シケ", "べた凪", "海上ナギ", "ベタナギ"],
+    # ── 外道カテゴリ（by_catch + kanso_raw 両方を検索）─────────────────────────
+    # text_allはby_catchとkanso_rawの結合。「記録の有無」だけでなく
+    # kansoの言及（「サバだらけ」等）も含まれ、海況・活性のシグナルとして有効。
+    "外道_危険迷惑": ["外道", "ゲスト", "サメ", "ハモ", "ゴンズイ", "オコゼ"],
+    "外道_青物":     ["サバ", "イナダ", "ワラサ", "カツオ", "ソウダ", "カンパチ", "シイラ"],
+    # サバ: イカ・アジ・タチウオで「邪魔者シグナル」。ヤリイカkanso_rawに223件の言及あり
+    "外道_根魚":     ["カサゴ", "メバル", "ソイ", "マハタ", "オニカサゴ"],
+    # 根が荒いポイントのシグナル。アマダイ・ヒラメで混じりやすい
+    "外道_底魚":     ["ハナダイ", "ウマヅラハギ", "ガンゾウビラメ", "ホウボウ", "イトヨリ",
+                     "マトウダイ", "レンコダイ", "ユメカサゴ", "ハチビキ"],
+    # 同タナ・同層を泳ぐ魚。マダイ・ヒラメ・アマダイで連動しやすい
+    "外道_エサ系":   ["イワシ", "キビナゴ"],
+    # 捕食対象ベイトの回遊シグナル。ヒラメ・タチウオで重要
 }
 
 
@@ -1028,10 +1040,10 @@ def section_keywords(records):
         for kw in kws:
             hits = [r for r in records if kw in r.get("text_all","")]
             miss = [r for r in records if kw not in r.get("text_all","")]
-            if len(hits) < 3:
+            if len(hits) < 3 or len(miss) < 3:
                 continue
             ah = sum(r["cnt_avg"] for r in hits) / len(hits)
-            am = sum(r["cnt_avg"] for r in miss) / len(miss) if miss else 0
+            am = sum(r["cnt_avg"] for r in miss) / len(miss)
             pct = (ah - am) / am * 100 if am else 0
             cat_rows.append((cat, kw, len(hits), ah, am, pct))
         if not cat_rows:

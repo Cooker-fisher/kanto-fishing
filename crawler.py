@@ -3452,9 +3452,8 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
             tsuri_norm = normalize_tsuri_mono(tsuri_raw, r["ship"])
             main_sub   = _classify_main_sub(r.get("fish_raw", ""), tsuri_norm)
 
-            # kanso_rawは2番目の「。」まで保存（情報取得は全文参照済み）
-            _parts = comment.split("。")
-            kanso_short = "。".join(_parts[:2]) + ("。" if len(_parts) > 1 else "")
+            # kanso_rawは全文保存（OBS因子の網羅性向上のため制限撤廃）
+            kanso_short = comment
 
             # 海況抽出（suion_raw/suishoku_raw があれば優先、なければ kanso_raw 全文から）
             wt          = _extract_water_temp_range(r.get("suion_raw") or comment)

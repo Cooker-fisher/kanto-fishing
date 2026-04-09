@@ -194,7 +194,7 @@ def _apply_obs_kw_correction(conn: sqlite3.Connection,
                 csv_cache_local[check_date] = _load_csv_for_date(check_date)
             for row in csv_cache_local[check_date]:
                 if row.get("ship") == ship and row.get("tsuri_mono") == fish:
-                    text = " ".join(row.get(c) or "" for c in ["kanso_raw", "water_color", "suishoku_raw"])
+                    text = " ".join(row.get(c) or "" for c in ["kanso_raw", "water_color", "suishoku_raw", "by_catch"])
                     if keyword in text:
                         best_ratio = ratio_lag0 if lag == 0 else ratio_lag1plus
                         break  # この lag で発見
