@@ -166,12 +166,8 @@ def run(start: str, end: str, dry_run: bool = False):
             skipped += 1
             continue
 
-        pred_cnt  = pred["cnt_predicted"]
-        baseline  = pred.get("baseline_cnt") or conn.execute(
-            "SELECT avg_cnt FROM combo_decadal WHERE fish=? AND ship=? AND decade_no=?",
-            (fish, ship, pred.get("dekad", 0))
-        ).fetchone()
-        baseline_cnt = baseline[0] if isinstance(baseline, tuple) else pred_cnt  # フォールバック
+        pred_cnt     = pred["cnt_predicted"]
+        baseline_cnt = pred.get("baseline_cnt") or pred_cnt  # baseline_cnt は predict_combo が返す
 
         conn.execute("""
             INSERT OR REPLACE INTO retro_backtest

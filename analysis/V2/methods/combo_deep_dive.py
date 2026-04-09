@@ -1237,7 +1237,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < MIN_TRAIN_MONTHS + 1:
-        return ["  データ不足（ローリングCV最低月数に達しない）"], [], {}
+        return ["  データ不足（ローリングCV最低月数に達しない）"], [], {}, {}, None, None
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}
@@ -1266,6 +1266,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     bl1_acts  = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
     bl2_preds = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
     bl2_acts  = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+    # フォールドごとの alpha_scale を収集 → 最終パラメータには中央値を使う
+    alpha_scales_by_met = {met: [] for met in METRICS_LIST}
 
     for test_month in months:
         train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] < test_month]
@@ -1369,6 +1371,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 _ols_den += _corr * _corr
                 _alpha_tr.append((_base, _corr, _bl2_p_tr, _act))
             alpha_scale = max(0.1, min(2.0, _ols_num / _ols_den)) if _ols_den > 1e-9 else 0.5
+            alpha_scales_by_met[met].append(alpha_scale)  # フォールドごとに収集
             # β: BL-2 ブレンド比（0〜0.5 にクリップ）
             _bt_num = 0.0; _bt_den = 0.0
             for _b, _c, _bl2t, _a in _alpha_tr:
@@ -1575,7 +1578,78 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             lines.append(f"  {'BL-2 直近7件':>14}  {_fmt3(bl2w, bl2m, bl2r)}")
             lines.append("  " + "-"*60)
 
-    return lines, bt_data, season_thr
+    # ── 全学習データ（TRAIN_END以前）での最終パラメータ確定 ─────────────────────────
+    # バックテスト後に全学習データで因子統計・α・β を再計算し save_wx_params() で保存。
+    # predict_count.py の天候補正で使用する。
+    wx_params_data = {}  # metric -> {factors, alpha_scale, met_mean, met_std}
+    final_train = [r for r in all_en_by_H[0] if r["date"] <= TRAIN_END]
+
+    # コンボ代表座標: 学習データの最頻 (lat, lon) ペアを使う
+    # avg ではなく mode を使うことで、実際の主要釣り場座標に近づける
+    _modal_lat = None; _modal_lon = None
+    _coord_pairs = [(round(r.get("lat", 0) or 0, 3), round(r.get("lon", 0) or 0, 3))
+                    for r in final_train if r.get("lat") and r.get("lon")]
+    if _coord_pairs:
+        _modal_pair = max(set(_coord_pairs), key=_coord_pairs.count)
+        _modal_lat, _modal_lon = _modal_pair
+
+    if len(final_train) >= MIN_TRAIN_N:
+        # 因子の統計（mean/std）を全学習データから計算
+        final_hist_params = {}
+        for fac in ALL_FACTORS:
+            vals = [r.get(fac) for r in final_train if r.get(fac) is not None]
+            m2, s2 = mean_std(vals)
+            if m2 is not None and s2:
+                final_hist_params[fac] = (m2, s2)
+
+        # 旬別ベースライン（全学習データ）
+        final_decadal_by_met = {}
+        for met in METRICS_LIST:
+            _db = defaultdict(list)
+            for r in final_train:
+                dn = r.get("decade"); val = r.get(met)
+                if dn is not None and val is not None:
+                    _db[dn].append(val)
+            final_decadal_by_met[met] = {dn: sum(v)/len(v) for dn, v in _db.items()}
+
+        for met in METRICS_LIST:
+            final_ys = [r.get(met) for r in final_train]
+            final_factor_r = {}
+            for fac in ALL_FACTORS:
+                xs = [r.get(fac) for r in final_train]
+                rv, _, _ = pearson(xs, final_ys)
+                if rv is not None and abs(rv) >= 0.10:
+                    final_factor_r[fac] = rv
+            if not final_factor_r:
+                continue
+
+            met_vals = [r.get(met) for r in final_train if r.get(met) is not None]
+            met_mean_f, met_std_f = mean_std(met_vals)
+            if met_mean_f is None or not met_std_f:
+                continue
+
+            m_dec_f = final_decadal_by_met.get(met, {})
+
+            # alpha_scale = ローリングCVの各フォールドで収集した値の中央値
+            # 全学習データOLSより安定（フォールド間のバラつきを平均化）
+            fold_alphas = alpha_scales_by_met.get(met, [])
+            if fold_alphas:
+                fold_alphas_s = sorted(fold_alphas)
+                mid = len(fold_alphas_s) // 2
+                alpha_scale_f = fold_alphas_s[mid] if len(fold_alphas_s) % 2 == 1 \
+                    else (fold_alphas_s[mid-1] + fold_alphas_s[mid]) / 2
+            else:
+                alpha_scale_f = 0.5
+
+            wx_params_data[met] = {
+                "factors": {fac: (final_hist_params[fac][0], final_hist_params[fac][1], rv)
+                            for fac, rv in final_factor_r.items() if fac in final_hist_params},
+                "alpha_scale": alpha_scale_f,
+                "met_mean": met_mean_f,
+                "met_std": met_std_f,
+            }
+
+    return lines, bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
 
 
 def save_params(fish, ship, corr_results):
@@ -1596,6 +1670,55 @@ def save_params(fish, ship, corr_results):
             for (metric, fac), (rv, pv, nn) in corr_results.items()]
     conn.executemany(
         "INSERT OR REPLACE INTO combo_deep_params VALUES (?,?,?,?,?,?,?)", rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None):
+    """天候補正パラメータを combo_wx_params テーブルに保存。
+    predict_count.py が天候補正時に参照する。
+    factor='_meta' 行: alpha_scale / met_mean / met_std / lat / lon（コンボ代表座標）
+    factor=<因子名> 行: 因子の mean / std / r
+    lat/lon は学習データの最頻ポイント座標（avg ではなく mode）
+    """
+    if not wx_params_data:
+        return
+    conn = sqlite3.connect(DB_ANA)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_wx_params (
+            fish        TEXT,
+            ship        TEXT,
+            metric      TEXT,
+            factor      TEXT,
+            mean        REAL,
+            std         REAL,
+            r           REAL,
+            alpha_scale REAL,
+            met_mean    REAL,
+            met_std     REAL,
+            lat         REAL,
+            lon         REAL,
+            updated_at  TEXT,
+            PRIMARY KEY (fish, ship, metric, factor)
+        )
+    """)
+    # 既存テーブルへの列追加（マイグレーション）
+    existing = {r[1] for r in conn.execute("PRAGMA table_info(combo_wx_params)").fetchall()}
+    for col, typ in [("lat", "REAL"), ("lon", "REAL")]:
+        if col not in existing:
+            conn.execute(f"ALTER TABLE combo_wx_params ADD COLUMN {col} {typ}")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = []
+    for met, params in wx_params_data.items():
+        rows.append((fish, ship, met, "_meta",
+                     None, None, None,
+                     params["alpha_scale"], params["met_mean"], params["met_std"],
+                     modal_lat, modal_lon, now))
+        for fac, (mean, std, r) in params["factors"].items():
+            rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None, now))
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_wx_params VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", rows
     )
     conn.commit()
     conn.close()
@@ -1780,7 +1903,7 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, season_thr_final = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
+    bt_lines, bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
     out += bt_lines
 
     if conn_wx is not None:
@@ -1803,6 +1926,7 @@ def deep_dive(fish, ship, verbose=True):
     save_keywords(fish, ship, kw_data)
     save_backtest(fish, ship, bt_data)
     save_thresholds(fish, ship, season_thr_final)
+    save_wx_params(fish, ship, wx_params_data, modal_lat=modal_lat, modal_lon=modal_lon)
 
 
 def main():

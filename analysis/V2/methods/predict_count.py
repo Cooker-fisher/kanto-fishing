@@ -2,11 +2,9 @@
 """
 predict_count.py — 匹数・サイズ絶対値予測
 
-analysis.sqlite の旬別ベースライン + 精度指標から
-指定日の魚種・船宿別予測を行う。
-
-気象補正はv1では行わない（旬別平均 ± MAE のみ）。
-気象は Open-Meteo から取得してコンテキスト表示のみに使用。
+analysis.sqlite の旬別ベースライン + 天候補正から指定日の魚種・船宿別予測を行う。
+天候補正: combo_wx_params（combo_deep_dive.py が学習データから保存）を参照し、
+          weather_cache.sqlite + tide_moon.sqlite の当日気象で補正を適用。
 
 使い方:
   python insights/predict_count.py                   # 全魚種・来週土曜・★3以上
@@ -16,7 +14,7 @@ analysis.sqlite の旬別ベースライン + 精度指標から
   python insights/predict_count.py --json-out        # JSON出力
 """
 
-import argparse, json, os, sqlite3, sys, urllib.request
+import argparse, json, math, os, sqlite3, sys, urllib.request
 from datetime import datetime, timedelta
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -24,6 +22,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
 DB_PATH  = os.path.join(RESULTS_DIR, "analysis.sqlite")
+DB_WX    = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
+DB_TIDE  = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
+
+TIDE_TYPE_MAP = {"大潮": 4, "中潮": 3, "小潮": 2, "長潮": 1, "若潮": 1}
 
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 MARINE_URL   = "https://marine-api.open-meteo.com/v1/marine"
@@ -59,6 +61,186 @@ def calc_stars(mape: float, n: int) -> int:
     elif mape < 50 and n >= 20: return 3
     elif mape < 65 and n >= 10: return 2
     else:                        return 1
+
+
+# ── 天候補正用 気象ユーティリティ ────────────────────────────────────────────
+
+def _nearest_wx_coord(conn_wx, lat, lon):
+    """weather_cache.sqlite から最近傍の格納済み座標を返す"""
+    coords = conn_wx.execute("SELECT DISTINCT lat, lon FROM weather").fetchall()
+    if not coords:
+        return lat, lon
+    return min(coords, key=lambda c: (c[0] - lat) ** 2 + (c[1] - lon) ** 2)
+
+
+def _get_daily_wx(conn_wx, lat, lon, date_iso):
+    """日次気象集計。combo_deep_dive.get_daily_wx と同等ロジック。"""
+    rows = conn_wx.execute("""
+        SELECT wind_speed, wind_dir, temp, pressure,
+               wave_height, wave_period, swell_height, sst, precipitation
+        FROM weather WHERE lat=? AND lon=? AND dt LIKE ?
+        ORDER BY dt
+    """, (lat, lon, f"{date_iso}%")).fetchall()
+    if not rows:
+        return {}
+    result = {}
+    wind_speeds   = [r[0] for r in rows if r[0] is not None]
+    wind_dirs     = [r[1] for r in rows if r[1] is not None]
+    temps         = [r[2] for r in rows if r[2] is not None]
+    pressures     = [r[3] for r in rows if r[3] is not None]
+    wave_heights  = [r[4] for r in rows if r[4] is not None]
+    wave_periods  = [r[5] for r in rows if r[5] is not None]
+    swell_heights = [r[6] for r in rows if r[6] is not None]
+    ssts          = [r[7] for r in rows if r[7] is not None]
+    precips       = [r[8] for r in rows if r[8] is not None]
+    if wind_speeds:
+        result["wind_speed_avg"] = sum(wind_speeds) / len(wind_speeds)
+        result["wind_speed_max"] = max(wind_speeds)
+    if wind_dirs:
+        binned = [round(d / 22.5) % 16 * 22.5 for d in wind_dirs]
+        wdm = max(set(binned), key=binned.count)
+        result["wind_dir_mode"] = wdm
+        result["wind_dir_n"] = math.cos(math.radians(wdm))
+        result["wind_dir_e"] = math.sin(math.radians(wdm))
+    if temps:
+        result["temp_avg"]   = sum(temps) / len(temps)
+        result["temp_max"]   = max(temps)
+        result["temp_min"]   = min(temps)
+        result["temp_range"] = max(temps) - min(temps)
+    if pressures:
+        result["pressure_avg"]   = sum(pressures) / len(pressures)
+        result["pressure_min"]   = min(pressures)
+        result["pressure_range"] = max(pressures) - min(pressures)
+    if wave_heights:
+        result["wave_height_avg"] = sum(wave_heights) / len(wave_heights)
+        result["wave_height_max"] = max(wave_heights)
+        result["wave_clamp"]      = min(result["wave_height_avg"], 2.0)
+    if wave_periods:
+        result["wave_period_avg"] = sum(wave_periods) / len(wave_periods)
+        result["wave_period_min"] = min(wave_periods)
+    if swell_heights:
+        result["swell_height_avg"] = sum(swell_heights) / len(swell_heights)
+        result["swell_height_max"] = max(swell_heights)
+    if ssts:
+        result["sst_avg"] = sum(ssts) / len(ssts)
+    if precips:
+        result["precip_sum"] = sum(precips)
+    return result
+
+
+def _get_tide(date_iso: str) -> dict:
+    """tide_moon.sqlite から潮汐・月齢データを取得。"""
+    if not os.path.exists(DB_TIDE):
+        return {}
+    try:
+        conn = sqlite3.connect(DB_TIDE)
+        row = conn.execute(
+            "SELECT tide_coeff, moon_age, tide_type FROM tide_moon WHERE date=?",
+            (date_iso,)
+        ).fetchone()
+        conn.close()
+    except Exception:
+        return {}
+    if not row:
+        return {}
+    tide_coeff, moon_age, tide_type = row
+    phase = moon_age / 29.5 * 2 * math.pi if moon_age is not None else 0.0
+    return {
+        "tide_range":  tide_coeff,
+        "moon_age":    moon_age,
+        "moon_sin":    math.sin(phase),
+        "moon_cos":    math.cos(phase),
+        "tide_type_n": TIDE_TYPE_MAP.get(tide_type, 2),
+    }
+
+
+def _apply_wx_correction(conn, fish: str, ship: str,
+                          target_date: str, baseline_cnt: float,
+                          lat: float, lon: float) -> float:
+    """
+    combo_wx_params の学習パラメータ + 当日気象から cnt_avg 補正値を計算。
+    補正できない場合は baseline_cnt をそのまま返す。
+    """
+    rows = conn.execute(
+        "SELECT factor, mean, std, r, alpha_scale, met_mean, met_std, lat, lon "
+        "FROM combo_wx_params WHERE fish=? AND ship=? AND metric='cnt_avg'",
+        (fish, ship)
+    ).fetchall()
+    if not rows:
+        return baseline_cnt
+
+    meta = None
+    factor_params = {}
+    wx_lat = lat; wx_lon = lon  # デフォルト: combo_meta の座標
+    for row in rows:
+        fac, mean, std, r, alpha_scale, met_mean, met_std, rlat, rlon = row
+        if fac == "_meta":
+            meta = (alpha_scale, met_mean, met_std)
+            if rlat and rlon:
+                wx_lat, wx_lon = rlat, rlon  # 学習時の最頻ポイント座標を優先
+        elif r is not None and abs(r) >= 0.10 and mean is not None and std is not None:
+            factor_params[fac] = (mean, std, r)
+
+    if meta is None or not factor_params:
+        return baseline_cnt
+
+    alpha_scale, met_mean, met_std = meta
+
+    # 当日・前日・7日前の気象を取得
+    d = datetime.strptime(target_date.replace("-", "/"), "%Y/%m/%d")
+    date_iso = d.strftime("%Y-%m-%d")
+    d1_iso   = (d - timedelta(days=1)).strftime("%Y-%m-%d")
+    d7_iso   = (d - timedelta(days=7)).strftime("%Y-%m-%d")
+
+    all_wx = {}
+
+    if os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0:
+        try:
+            conn_wx = sqlite3.connect(DB_WX)
+            wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)  # 最頻ポイント座標を使用
+            wx    = _get_daily_wx(conn_wx, wlat, wlon, date_iso)
+            wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso)
+            wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso)
+            conn_wx.close()
+            all_wx.update(wx)
+            if wx_d1:
+                all_wx["precip_sum1"] = wx_d1.get("precip_sum")
+            if wx.get("pressure_min") is not None and wx_d1.get("pressure_min") is not None:
+                all_wx["pressure_delta"] = wx["pressure_min"] - wx_d1["pressure_min"]
+            if wx.get("temp_avg") is not None and wx_d1.get("temp_avg") is not None:
+                all_wx["temp_delta"] = wx["temp_avg"] - wx_d1["temp_avg"]
+            if wx.get("sst_avg") is not None and wx_d7.get("sst_avg") is not None:
+                all_wx["sst_delta"] = wx["sst_avg"] - wx_d7["sst_avg"]
+        except Exception:
+            pass
+
+    # 潮汐・月齢（tide_moon.sqlite）
+    tide    = _get_tide(date_iso)
+    tide_d1 = _get_tide(d1_iso)
+    all_wx.update(tide)
+    if tide.get("tide_range") is not None and tide_d1.get("tide_range") is not None:
+        all_wx["tide_delta"] = tide["tide_range"] - tide_d1["tide_range"]
+
+    # 補正計算: Σ(r_i × z_i) / Σ|r_i| × met_std × alpha_scale
+    w_total = sum(abs(r) for _, _, r in factor_params.values())
+    if w_total == 0:
+        return baseline_cnt
+
+    num_wx = 0.0
+    used = 0
+    for fac, (mean, std, r) in factor_params.items():
+        val = all_wx.get(fac)
+        if val is None:
+            continue
+        z = (val - mean) / std
+        num_wx += r * z
+        used += 1
+
+    if used == 0:
+        return baseline_cnt
+
+    correction = (num_wx / w_total) * met_std * alpha_scale
+    return round(max(0.0, baseline_cnt + correction), 1)
 
 
 # ── 気象取得（表示用のみ・予測には使わない） ────────────────────────────────
@@ -109,7 +291,8 @@ def fetch_weather_context(lat: float, lon: float, date_str: str) -> dict:
 
 def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     """
-    旬別ベースライン ± MAE で予測する。気象補正なし（v1）。
+    旬別ベースライン + 天候補正で予測する。
+    combo_wx_params があれば気象補正を適用、なければベースラインのみ。
     データ不足なら None。
     """
     dekad = decade_of(target_date)
@@ -189,20 +372,30 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     if transition_risk > 0.3:
         stars = max(1, stars - 1)
 
+    # ── 天候補正 ──────────────────────────────────────────────────────────────
+    # combo_wx_params が存在すれば気象補正を適用し cnt_predicted を更新。
+    # weather_cache.sqlite にデータがない将来日は tide/moon のみの部分補正。
+    baseline_cnt = avg_cnt  # 旬別ベースライン（補正前）
+    if lat and lon:
+        cnt_predicted = _apply_wx_correction(conn, fish, ship, target_date, avg_cnt, lat, lon)
+    else:
+        cnt_predicted = round(avg_cnt, 1)
+
     # ── min/max 予測（初心者〜ベテランレンジ） ───────────────────────────────
-    # avg_cnt_min/max が旬別データにある場合: ratio法で予測（比率を cnt_predicted に適用）
+    # 補正後の cnt_predicted に min/max 比率を適用する。
+    # avg_cnt_min/max が旬別データにある場合: ratio法（旬別の比率を補正後中央値に適用）
     # ない場合: cnt_predicted ± cnt_mae で信頼区間フォールバック
     if avg_cnt_min is not None and avg_cnt > 0:
         min_ratio = avg_cnt_min / avg_cnt
-        cnt_lo    = round(max(0, avg_cnt * min_ratio), 1)
+        cnt_lo    = round(max(0, cnt_predicted * min_ratio), 1)
     else:
-        cnt_lo    = round(max(0, avg_cnt - cnt_mae), 1)
+        cnt_lo    = round(max(0, cnt_predicted - cnt_mae), 1)
 
     if avg_cnt_max is not None and avg_cnt > 0:
         max_ratio = avg_cnt_max / avg_cnt
-        cnt_hi    = round(avg_cnt * max_ratio, 1)
+        cnt_hi    = round(cnt_predicted * max_ratio, 1)
     else:
-        cnt_hi    = round(avg_cnt + cnt_mae, 1)
+        cnt_hi    = round(cnt_predicted + cnt_mae, 1)
 
     return {
         "fish":            fish,
@@ -211,7 +404,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
         "dekad":           dekad,
         "fallback_dekad":  fallback,
         # 予測
-        "cnt_predicted":   round(avg_cnt, 1),
+        "cnt_predicted":   cnt_predicted,
+        "baseline_cnt":    round(baseline_cnt, 1),  # 旬別ベースライン（補正前）
         "cnt_lo":          cnt_lo,   # 初心者釣果（旬別min_ratio または avg-MAE）
         "cnt_hi":          cnt_hi,   # ベテラン釣果（旬別max_ratio または avg+MAE）
         "size_predicted":  round(avg_size, 1) if avg_size else None,
