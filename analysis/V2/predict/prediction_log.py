@@ -116,6 +116,12 @@ def init_table(conn: sqlite3.Connection):
         actual_pct      REAL,
         actual_wave     REAL,
         actual_wind     REAL,
+        -- サイズ予測（有料表示用・データあり魚種のみ）
+        pred_size_lo    REAL,
+        pred_size_hi    REAL,
+        -- サイズ実績（match後）
+        actual_size_min REAL,
+        actual_size_max REAL,
         -- 精度評価
         wmape           REAL,
         mae             REAL,
@@ -126,6 +132,13 @@ def init_table(conn: sqlite3.Connection):
         UNIQUE(fish, ship, target_date, pred_date)
     )
     """)
+    # 既存テーブルへの列追加（テーブルが先に作られていた場合のマイグレーション）
+    for col, typ in [("pred_size_lo", "REAL"), ("pred_size_hi", "REAL"),
+                     ("actual_size_min", "REAL"), ("actual_size_max", "REAL")]:
+        try:
+            conn.execute(f"ALTER TABLE prediction_log ADD COLUMN {col} {typ}")
+        except sqlite3.OperationalError:
+            pass  # 既に存在する
     conn.commit()
 
 
@@ -274,13 +287,15 @@ def daily_predict(horizon: int = 7, min_stars: int = 3, dry_run: bool = False) -
                     (fish, ship, target_date, pred_date, horizon,
                      pred_cnt_avg, pred_cnt_min, pred_cnt_max, pred_stars,
                      baseline_cnt, pred_pct,
+                     pred_size_lo, pred_size_hi,
                      fcast_wave, fcast_wind, fcast_sst, fcast_temp,
                      created_at)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 fish, ship, target_date, pred_date, horizon,
                 pred["cnt_predicted"], pred["cnt_lo"], pred["cnt_hi"], stars,
                 baseline_cnt, pred_pct,
+                pred.get("size_lo"), pred.get("size_hi"),
                 fcast_wave, fcast_wind, fcast_sst, fcast_temp,
                 now_str
             ))
@@ -332,9 +347,11 @@ def _get_actual(csv_rows: list[dict], fish: str, ship: str) -> dict | None:
         return round(sum(v) / len(v), 1) if v else None
 
     return {
-        "cnt_avg": _avg([r.get("cnt_avg") for r in matched]),
-        "cnt_min": _avg([r.get("cnt_min") for r in matched]),
-        "cnt_max": _avg([r.get("cnt_max") for r in matched]),
+        "cnt_avg":  _avg([r.get("cnt_avg")  for r in matched]),
+        "cnt_min":  _avg([r.get("cnt_min")  for r in matched]),
+        "cnt_max":  _avg([r.get("cnt_max")  for r in matched]),
+        "size_min": _avg([r.get("size_min") for r in matched]),
+        "size_max": _avg([r.get("size_max") for r in matched]),
     }
 
 
@@ -414,10 +431,14 @@ def match_actuals(dry_run: bool = False) -> int:
         conn.execute("""
             UPDATE prediction_log
             SET actual_cnt_avg=?, actual_cnt_min=?, actual_cnt_max=?,
-                actual_pct=?, wmape=?, mae=?, is_good_hit=?, matched_at=?
+                actual_pct=?,
+                actual_size_min=?, actual_size_max=?,
+                wmape=?, mae=?, is_good_hit=?, matched_at=?
             WHERE id=?
         """, (act_avg, act_min, act_max,
-              actual_pct, wmape, mae, is_good_hit, now_str,
+              actual_pct,
+              actual.get("size_min"), actual.get("size_max"),
+              wmape, mae, is_good_hit, now_str,
               row_id))
         updated += 1
 
