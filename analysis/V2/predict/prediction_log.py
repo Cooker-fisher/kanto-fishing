@@ -144,7 +144,9 @@ def init_table(conn: sqlite3.Connection):
                      ("pred_kg_lo", "REAL"), ("pred_kg_hi", "REAL"),
                      ("actual_kg_min", "REAL"), ("actual_kg_max", "REAL"),
                      ("transition_risk", "REAL"),
-                     ("obs_kw_ratio", "REAL")]:  # OBSキーワード補正係数（1.0=補正なし）
+                     ("obs_kw_ratio", "REAL"),   # OBSキーワード補正係数（1.0=補正なし）
+                     ("time_slot",    "TEXT"),    # 実績照合時に検出したtime_slot（午前/午後/等）
+                     ("slot_ratio",   "REAL")]:   # スロット補正係数（combo_slot_ratioから）
         try:
             conn.execute(f"ALTER TABLE prediction_log ADD COLUMN {col} {typ}")
         except sqlite3.OperationalError:
@@ -422,7 +424,9 @@ def _load_csv_for_date(target_date: str) -> list[dict]:
 
 
 def _get_actual(csv_rows: list[dict], fish: str, ship: str) -> dict | None:
-    """CSV行から ship + tsuri_mono でメイン釣果を集計して返す。"""
+    """CSV行から ship + tsuri_mono でメイン釣果を集計して返す。
+    dominant_slot: 全行の過半数を占めるtime_slotがあれば返す（なければNone）。
+    """
     matched = [
         r for r in csv_rows
         if r.get("ship") == ship
@@ -437,14 +441,24 @@ def _get_actual(csv_rows: list[dict], fish: str, ship: str) -> dict | None:
         v = [float(x) for x in vals if x not in ("", None)]
         return round(sum(v) / len(v), 1) if v else None
 
+    # dominant_slot: 有効スロットの中で過半数を占めるものを検出
+    from collections import Counter
+    slot_counts = Counter(r.get("time_slot","") for r in matched if r.get("time_slot",""))
+    dominant_slot = None
+    if slot_counts:
+        top_slot, top_n = slot_counts.most_common(1)[0]
+        if top_n / len(matched) >= 0.6:  # 60%以上で dominant とみなす
+            dominant_slot = top_slot
+
     return {
-        "cnt_avg":  _avg([r.get("cnt_avg")  for r in matched]),
-        "cnt_min":  _avg([r.get("cnt_min")  for r in matched]),
-        "cnt_max":  _avg([r.get("cnt_max")  for r in matched]),
-        "size_min": _avg([r.get("size_min") for r in matched]),
-        "size_max": _avg([r.get("size_max") for r in matched]),
-        "kg_min":   _avg([r.get("kg_min")   for r in matched]),
-        "kg_max":   _avg([r.get("kg_max")   for r in matched]),
+        "cnt_avg":      _avg([r.get("cnt_avg")  for r in matched]),
+        "cnt_min":      _avg([r.get("cnt_min")  for r in matched]),
+        "cnt_max":      _avg([r.get("cnt_max")  for r in matched]),
+        "size_min":     _avg([r.get("size_min") for r in matched]),
+        "size_max":     _avg([r.get("size_max") for r in matched]),
+        "kg_min":       _avg([r.get("kg_min")   for r in matched]),
+        "kg_max":       _avg([r.get("kg_max")   for r in matched]),
+        "dominant_slot": dominant_slot,
     }
 
 
@@ -524,12 +538,25 @@ def match_actuals(dry_run: bool = False) -> int:
         act_min = actual["cnt_min"]
         act_max = actual["cnt_max"]
 
+        # ── スロット補正 ──────────────────────────────────────────────────────
+        dominant_slot = actual.get("dominant_slot")  # 実績の dominant time_slot
+        slot_ratio = None
+        pred_cnt_for_wmape = pred_cnt_avg  # wmape計算に使う予測値（補正後）
+        if dominant_slot:
+            row_sr = conn.execute(
+                "SELECT ratio FROM combo_slot_ratio WHERE fish=? AND ship=? AND time_slot=?",
+                (fish, ship, dominant_slot)
+            ).fetchone()
+            if row_sr:
+                slot_ratio = row_sr[0]
+                pred_cnt_for_wmape = round(pred_cnt_avg * slot_ratio, 1)
+
         # ベースライン比（ZONE B' 用）
         actual_pct = _pct_vs_baseline(act_avg, baseline_cnt)
 
-        # 精度計算
-        wmape = round(abs(pred_cnt_avg - act_avg) / act_avg * 100, 1) if act_avg > 0 else None
-        mae   = round(abs(pred_cnt_avg - act_avg), 2)
+        # 精度計算（スロット補正後の予測値を使用）
+        wmape = round(abs(pred_cnt_for_wmape - act_avg) / act_avg * 100, 1) if act_avg > 0 else None
+        mae   = round(abs(pred_cnt_for_wmape - act_avg), 2)
 
         # 3分類一致（的中バッジ）
         season = _get_season(target_date)
@@ -539,7 +566,7 @@ def match_actuals(dry_run: bool = False) -> int:
         )
         is_good_hit = None
         if p33 is not None and p67 is not None:
-            is_good_hit = 1 if _classify3(pred_cnt_avg, p33, p67) == _classify3(act_avg, p33, p67) else 0
+            is_good_hit = 1 if _classify3(pred_cnt_for_wmape, p33, p67) == _classify3(act_avg, p33, p67) else 0
 
         # 実績波高取得（FEC用）
         actual_wave_val = None
@@ -577,6 +604,7 @@ def match_actuals(dry_run: bool = False) -> int:
                 actual_size_min=?, actual_size_max=?,
                 actual_kg_min=?,  actual_kg_max=?,
                 actual_wave=?,
+                time_slot=?, slot_ratio=?,
                 wmape=?, mae=?, is_good_hit=?, matched_at=?
             WHERE id=?
         """, (act_avg, act_min, act_max,
@@ -584,6 +612,7 @@ def match_actuals(dry_run: bool = False) -> int:
               actual.get("size_min"), actual.get("size_max"),
               actual.get("kg_min"),   actual.get("kg_max"),
               actual_wave_val,
+              dominant_slot, slot_ratio,
               wmape, mae, is_good_hit, now_str,
               row_id))
         updated += 1
