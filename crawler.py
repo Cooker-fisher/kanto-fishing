@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-関東船釣り情報クローラー v5.22
+関東船釣り情報クローラー v5.23
+変更点(v5.23):
+- cnt_min > cnt_max / size_min > size_max を min()/max() で自動スワップ（データ記入ミス対策）
 変更点(v5.22):
 - export_csv_from_raw(): catches_raw_direct.json をマージ（忠彦丸・一之瀬丸・米元等）
   - trip_no を ship+date 内で連番付与（same_trip_records 分離）
@@ -3481,12 +3483,12 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 "main_sub":       main_sub,
                 "fish_raw":       r.get("fish_raw", ""),
                 "time_slot":      _extract_time_slot(r.get("fish_raw", "")),
-                "cnt_min":        cr["min"] if cr else "",
-                "cnt_max":        cr["max"] if cr else "",
+                "cnt_min":        (min(cr["min"], cr["max"]) if cr else ""),
+                "cnt_max":        (max(cr["min"], cr["max"]) if cr else ""),
                 "cnt_avg":        cnt_avg if cnt_avg is not None else "",
                 "is_boat":        1 if is_boat_rec else 0,
-                "size_min":       sc["min"] if sc else "",
-                "size_max":       sc["max"] if sc else "",
+                "size_min":       (min(sc["min"], sc["max"]) if sc else ""),
+                "size_max":       (max(sc["min"], sc["max"]) if sc else ""),
                 "kg_min":         wk["min"] if wk else "",
                 "kg_max":         wk["max"] if wk else "",
                 "tackle":         tackle,

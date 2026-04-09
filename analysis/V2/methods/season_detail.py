@@ -164,11 +164,17 @@ def aggregate_combo(records):
     for key, d in buckets.items():
         if len(d["cnt"]) < MIN_DECADE_N:
             continue
+        avg_cnt_val = sum(d["cnt"]) / len(d["cnt"])
+        raw_min = sum(d["cnt_min"]) / len(d["cnt_min"]) if len(d["cnt_min"]) >= 3 else None
+        raw_max = sum(d["cnt_max"]) / len(d["cnt_max"]) if len(d["cnt_max"]) >= 3 else None
+        # サブセット平均バイアス対策: avg_cnt_min <= avg_cnt <= avg_cnt_max にクランプ
+        clamped_min = min(raw_min, avg_cnt_val) if raw_min is not None else None
+        clamped_max = max(raw_max, avg_cnt_val) if raw_max is not None else None
         result[key] = {
             "n":          len(d["cnt"]),
-            "avg_cnt":    sum(d["cnt"]) / len(d["cnt"]),
-            "avg_cnt_min": sum(d["cnt_min"]) / len(d["cnt_min"]) if len(d["cnt_min"]) >= 3 else None,
-            "avg_cnt_max": sum(d["cnt_max"]) / len(d["cnt_max"]) if len(d["cnt_max"]) >= 3 else None,
+            "avg_cnt":    avg_cnt_val,
+            "avg_cnt_min": clamped_min,
+            "avg_cnt_max": clamped_max,
             "avg_size":   sum(d["size"]) / len(d["size"]) if d["size"] else None,
             "avg_kg":     sum(d["kg"])   / len(d["kg"])   if d["kg"]   else None,
         }

@@ -165,6 +165,9 @@ def predict_combo(conn, fish: str, ship: str, target_date: str) -> dict | None:
     lat     = meta[1] if meta else None
     lon     = meta[2] if meta else None
 
+    if n_total < 30:  # サンプル不足コンボは予測しない（統計的に意味ある下限）
+        return None
+
     stars = calc_stars(cnt_mape, n_total)
 
     # ── シーズン変動リスク（船長の知見: シーズンの変わり目はブレやすい） ────────

@@ -48,7 +48,7 @@ OBS_FIELDS_FILE = os.path.join(NORMALIZE_DIR, "obs_fields.json")
 
 TRAIN_END  = "2024/12/31"   # この日以前 = 学習データ
 HORIZONS   = [0, 1, 3, 7, 14, 21, 28]
-MIN_N_COMBO = 10            # 分析最小件数
+MIN_N_COMBO = 30            # 分析最小件数（統計的に意味ある予測を立てられる下限）
 
 # wave_clamp 閾値（モジュール変数。--wave-clamp 引数で上書き可）
 # 1.5m / 2.0m / 2.5m で比較検証するための可変定数
@@ -1479,7 +1479,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
         for H in HORIZONS:
             ps = all_preds[met][H]; acs = all_acts[met][H]
-            if len(acs) < 3:
+            if len(acs) < MIN_N_COMBO:  # テストセットが少なすぎるコンボは除外
                 continue
             rv, _, n = pearson(ps, acs)
             if rv is None:
