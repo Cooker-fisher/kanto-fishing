@@ -317,37 +317,37 @@ def fetch_weather_context(lat: float, lon: float, date_str: str) -> dict:
 def predict_combo(conn, fish: str, ship: str, target_date: str,
                   time_slot: str = "") -> dict | None:
     """
-    月別ベースライン + 天候補正 + time_slot補正で予測する。
+    旬別ベースライン + 天候補正 + time_slot補正で予測する。
     combo_wx_params があれば気象補正を適用、なければベースラインのみ。
     time_slot が指定され combo_slot_ratio に登録があれば ratio を乗じて補正。
     データ不足なら None。
     """
-    month = month_of(target_date)
-    if not month:
+    dekad = decade_of(target_date)
+    if not dekad:
         return None
 
-    # 月別ベースライン（combo_monthly: avg_cnt_min/max なし → MAEフォールバックで対応）
+    # 旬別ベースライン（avg_cnt_min/max も取得）
     row = conn.execute(
-        "SELECT avg_cnt, avg_size, avg_kg, n FROM combo_monthly "
-        "WHERE fish=? AND ship=? AND month=?",
-        (fish, ship, month)
+        "SELECT avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max FROM combo_decadal "
+        "WHERE fish=? AND ship=? AND decade_no=?",
+        (fish, ship, dekad)
     ).fetchone()
 
     if row:
-        avg_cnt, avg_size, avg_kg, n_month = row
-        avg_cnt_min, avg_cnt_max = None, None  # combo_monthly に min/max なし
+        avg_cnt, avg_size, avg_kg, n_dekad, avg_cnt_min, avg_cnt_max = row
         fallback = False
     else:
-        # 最近傍月（±2以内）にフォールバック
+        # 最近傍旬（±3以内）にフォールバック
         near = conn.execute(
-            "SELECT month, avg_cnt, avg_size, avg_kg, n FROM combo_monthly "
-            "WHERE fish=? AND ship=? ORDER BY ABS(month - ?) LIMIT 1",
-            (fish, ship, month)
+            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max "
+            "FROM combo_decadal "
+            "WHERE fish=? AND ship=? ORDER BY ABS(decade_no - ?) LIMIT 1",
+            (fish, ship, dekad)
         ).fetchone()
-        if not near or abs(near[0] - month) > 2:
+        if not near or abs(near[0] - dekad) > 3:
             return None
-        avg_cnt, avg_size, avg_kg, n_month = near[1], near[2], near[3], near[4]
-        avg_cnt_min, avg_cnt_max = None, None
+        avg_cnt, avg_size, avg_kg, n_dekad = near[1], near[2], near[3], near[4]
+        avg_cnt_min, avg_cnt_max = near[5], near[6]
         fallback = True
 
     if not avg_cnt or avg_cnt <= 0:
@@ -372,7 +372,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "SELECT n_records, lat, lon FROM combo_meta WHERE fish=? AND ship=?",
         (fish, ship)
     ).fetchone()
-    n_total = meta[0] if meta else n_month
+    n_total = meta[0] if meta else n_dekad
     lat     = meta[1] if meta else None
     lon     = meta[2] if meta else None
 
@@ -387,9 +387,9 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     # 対象月 ±1 の avg_cnt を集め、変動係数（std/mean）を計算する。
     # CV > 0.3 = 季節変わり目の可能性高 → 信頼性が落ちるため stars を1下げる。
     nearby = conn.execute(
-        "SELECT avg_cnt FROM combo_monthly WHERE fish=? AND ship=? "
-        "AND month BETWEEN ? AND ?",
-        (fish, ship, max(1, month - 1), min(12, month + 1))
+        "SELECT avg_cnt FROM combo_decadal WHERE fish=? AND ship=? "
+        "AND decade_no BETWEEN ? AND ?",
+        (fish, ship, max(1, dekad - 2), min(36, dekad + 2))
     ).fetchall()
     nearby_cnts = [r[0] for r in nearby if r[0] and r[0] > 0]
     if len(nearby_cnts) >= 2:
@@ -406,7 +406,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     # combo_wx_params が存在すれば気象補正を適用し cnt_predicted を更新。
     # weather_cache.sqlite にデータがない将来日は tide/moon のみの部分補正。
     # use_fallback=True のコンボ（気象補正がノイズ化するコンボ）は補正をスキップ。
-    baseline_cnt = avg_cnt  # 月別ベースライン（補正前）
+    baseline_cnt = avg_cnt  # 旬別ベースライン（補正前）
     if lat and lon and not _get_use_fallback(conn, fish, ship):
         cnt_predicted = _apply_wx_correction(conn, fish, ship, target_date, avg_cnt, lat, lon)
     else:
@@ -445,13 +445,13 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "fish":            fish,
         "ship":            ship,
         "target_date":     target_date,
-        "month":           month,
-        "fallback_month":  fallback,
+        "dekad":           dekad,
+        "fallback_dekad":  fallback,
         # 予測
         "cnt_predicted":   cnt_predicted,
-        "baseline_cnt":    round(baseline_cnt, 1),  # 月別ベースライン（補正前）
-        "cnt_lo":          cnt_lo,   # 初心者釣果（avg-MAE）
-        "cnt_hi":          cnt_hi,   # ベテラン釣果（avg+MAE）
+        "baseline_cnt":    round(baseline_cnt, 1),  # 旬別ベースライン（補正前）
+        "cnt_lo":          cnt_lo,   # 初心者釣果（旬別min_ratio または avg-MAE）
+        "cnt_hi":          cnt_hi,   # ベテラン釣果（旬別max_ratio または avg+MAE）
         "size_predicted":  round(avg_size, 1) if avg_size else None,
         "size_lo":         round(avg_size - size_mae, 1) if avg_size and size_mae else None,
         "size_hi":         round(avg_size + size_mae, 1) if avg_size and size_mae else None,
@@ -470,7 +470,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "slot_ratio":      round(slot_ratio, 3),
         # メタ
         "n_total":         n_total,
-        "n_month":         n_month,
+        "n_dekad":         n_dekad,
         "lat":             lat,
         "lon":             lon,
     }
@@ -491,12 +491,12 @@ def predict_all(fish: str = None, target_date: str = None,
     try:
         if fish:
             combos = conn.execute(
-                "SELECT DISTINCT fish, ship FROM combo_monthly WHERE fish=? ORDER BY ship",
+                "SELECT DISTINCT fish, ship FROM combo_decadal WHERE fish=? ORDER BY ship",
                 (fish,)
             ).fetchall()
         else:
             combos = conn.execute(
-                "SELECT DISTINCT fish, ship FROM combo_monthly ORDER BY fish, ship"
+                "SELECT DISTINCT fish, ship FROM combo_decadal ORDER BY fish, ship"
             ).fetchall()
 
         results = []
@@ -524,7 +524,7 @@ def main():
 
     target_date = args.date or next_saturday()
     if not args.json_out:
-        print(f"予測日: {target_date}  {month_of(target_date)}月")
+        print(f"予測日: {target_date}  旬{decade_of(target_date)}")
         print()
 
     results = predict_all(
@@ -560,7 +560,7 @@ def main():
         else:
             sz_str = "---"
         stars = "★" * r["stars"] + "☆" * (5 - r["stars"])
-        fb    = "~" if r["fallback_month"] else " "
+        fb    = "~" if r["fallback_dekad"] else " "
         print(f"{r['fish']:<10}{r['ship']:<14}{stars:<7}{cnt_str:>13}{sz_str:>11}"
               f"{r['n_total']:>6}  {r['cnt_mape']:.0f}%{fb}")
         if args.with_wx and r["lat"]:
