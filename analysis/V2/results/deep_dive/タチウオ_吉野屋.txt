@@ -25,6 +25,7 @@
   [cnt_avg]
     prev_week_cnt    r=+0.662**  p=0.000  n=39  ↑
     sst_avg          r=+0.426**  p=0.004  n=40  ↑
+    sst_gradient     r=-0.412**  p=0.005  n=40  ↓
     wind_speed_max   r=+0.380*  p=0.011  n=40  ↑
     wind_speed_avg   r=+0.371*  p=0.014  n=40  ↑
     temp_range       r=-0.349*  p=0.022  n=40  ↓
@@ -41,6 +42,7 @@
 
   [cnt_max]
     prev_week_cnt    r=+0.652**  p=0.000  n=39  ↑
+    sst_gradient     r=-0.446**  p=0.002  n=40  ↓
     sst_avg          r=+0.428**  p=0.004  n=40  ↑
     wind_speed_max   r=+0.410**  p=0.006  n=40  ↑
     wind_speed_avg   r=+0.377*  p=0.012  n=40  ↑
@@ -98,6 +100,7 @@
     sst_avg          r=-0.823**  p=0.000  n=12  ↓
     precip_sum       r=-0.800**  p=0.000  n=12  ↓
     is_holiday       r=-0.704**  p=0.002  n=12  ↓
+    sst_gradient     r=+0.614*  p=0.014  n=12  ↑
     temp_range       r=+0.596*  p=0.019  n=12  ↑
     temp_min         r=-0.526   p=0.051  n=12  ↓
     moon_age         r=+0.489   p=0.076  n=12  ↑

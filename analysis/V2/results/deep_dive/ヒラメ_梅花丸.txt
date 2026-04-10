@@ -84,6 +84,7 @@
     temp_max         r=+0.436*  p=0.030  n=22  ↑
     temp_avg         r=+0.429*  p=0.034  n=22  ↑
     temp_min         r=+0.422*  p=0.038  n=22  ↑
+    sst_gradient     r=-0.414*  p=0.042  n=22  ↓
     is_summer_vacation r=+0.384   p=0.063  n=22  ↑
     swell_height_avg r=-0.370   p=0.075  n=22  ↓
     pressure_min     r=+0.361   p=0.084  n=22  ↑
@@ -102,6 +103,7 @@
     pressure_min     r=+0.368   p=0.076  n=22  ↑
 
   [kg_avg]
+    sst_gradient     r=+0.443*  p=0.027  n=22  ↑
     is_summer_vacation r=-0.436*  p=0.030  n=22  ↓
     moon_age         r=+0.430*  p=0.033  n=22  ↑
     moon_cos         r=-0.412*  p=0.043  n=22  ↓
@@ -115,6 +117,7 @@
 
   [cnt_min]
     tide_delta       r=-0.686**  p=0.001  n=15  ↓
+    sst_gradient     r=-0.522*  p=0.027  n=15  ↓
     is_summer_vacation r=+0.497*  p=0.039  n=15  ↑
     temp_max         r=+0.496*  p=0.039  n=15  ↑
     moon_age         r=-0.482*  p=0.047  n=15  ↓

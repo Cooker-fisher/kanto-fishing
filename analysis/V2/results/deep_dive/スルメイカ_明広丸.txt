@@ -26,6 +26,7 @@
     temp_max         r=-0.297*  p=0.028  n=52  ↓
     wind_dir_mode    r=-0.264   p=0.053  n=52  ↓
     wind_dir_n       r=+0.256   p=0.061  n=52  ↑
+    sst_gradient     r=-0.232   p=0.092  n=52  ↓
     temp_avg         r=-0.227   p=0.099  n=52  ↓
 
   [cnt_min]
@@ -39,8 +40,10 @@
     temp_avg         r=-0.316*  p=0.018  n=52  ↓
     wind_dir_e       r=+0.275*  p=0.043  n=52  ↑
     temp_min         r=-0.263   p=0.054  n=52  ↓
+    sst_gradient     r=-0.243   p=0.076  n=52  ↓
 
   [size_avg]
+    sst_gradient     r=+0.370**  p=0.005  n=52  ↑
     pressure_avg     r=+0.332*  p=0.013  n=52  ↑
     pressure_min     r=+0.304*  p=0.024  n=52  ↑
     wave_period_min  r=+0.250   p=0.068  n=52  ↑
@@ -73,6 +76,7 @@
 
   [size_avg]
     is_holiday       r=-0.565**  p=0.004  n=20  ↓
+    sst_gradient     r=+0.557**  p=0.004  n=20  ↑
     precip_sum       r=+0.497*  p=0.015  n=20  ↑
     pressure_range   r=+0.462*  p=0.027  n=20  ↑
     wind_dir_e       r=+0.446*  p=0.035  n=20  ↑
@@ -117,6 +121,7 @@
   [size_avg]
     wind_speed_max   r=+0.572*  p=0.012  n=15  ↑
     sst_avg          r=+0.572*  p=0.012  n=15  ↑
+    sst_gradient     r=+0.538*  p=0.021  n=15  ↑
     wind_speed_avg   r=+0.521*  p=0.028  n=15  ↑
     is_holiday       r=-0.520*  p=0.028  n=15  ↓
     temp_range       r=-0.478*  p=0.050  n=15  ↓

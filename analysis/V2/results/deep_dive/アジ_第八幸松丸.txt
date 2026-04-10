@@ -61,6 +61,7 @@
     wave_period_min  r=+0.421**  p=0.001  n=49  ↑
     wave_period_avg  r=+0.392**  p=0.003  n=49  ↑
     precip_sum1      r=+0.354**  p=0.009  n=49  ↑
+    sst_gradient     r=-0.239   p=0.092  n=49  ↓
 
   [size_avg]
     temp_max         r=-0.523**  p=0.000  n=48  ↓
@@ -68,6 +69,7 @@
     temp_min         r=-0.511**  p=0.000  n=48  ↓
     typhoon_wind     r=-0.431   p=0.064  n=17  ↓
     sst_avg          r=-0.398**  p=0.003  n=48  ↓
+    sst_gradient     r=+0.370**  p=0.007  n=48  ↑
     moon_cos         r=+0.322*  p=0.021  n=48  ↑
     pressure_delta   r=+0.306*  p=0.029  n=48  ↑
     pressure_avg     r=+0.295*  p=0.036  n=48  ↑
@@ -110,6 +112,7 @@
     temp_min         r=+0.649**  p=0.000  n=25  ↑
     wave_period_min  r=+0.546**  p=0.002  n=25  ↑
     wave_period_avg  r=+0.525**  p=0.003  n=25  ↑
+    sst_gradient     r=-0.356   p=0.067  n=25  ↓
     prev_week_cnt    r=+0.338   p=0.092  n=24  ↑
 
   [size_avg]
@@ -119,6 +122,7 @@
     typhoon_dist     r=+0.564   p=0.071  n=9  ↑
     sst_avg          r=-0.462*  p=0.015  n=24  ↓
     wave_period_min  r=-0.445*  p=0.020  n=24  ↓
+    sst_gradient     r=+0.342   p=0.088  n=24  ↑
 
 【因子相関（旬集計: n=22旬）】
 
@@ -169,6 +173,7 @@
     temp_avg         r=-0.553**  p=0.004  n=21  ↓
     sst_avg          r=-0.419*  p=0.044  n=21  ↓
     wave_period_avg  r=-0.396   p=0.060  n=21  ↓
+    sst_gradient     r=+0.371   p=0.082  n=21  ↑
 
 【因子相関（月集計: n=13月）】
 

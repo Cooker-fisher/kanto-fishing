@@ -26,6 +26,7 @@
 
   [cnt_avg]
     sst_avg          r=-0.354**  p=0.001  n=76  ↓
+    sst_gradient     r=-0.338**  p=0.002  n=76  ↓
     wave_height_avg  r=-0.299**  p=0.007  n=76  ↓
     wave_clamp       r=-0.299**  p=0.007  n=76  ↓
     wave_period_avg  r=-0.259*  p=0.021  n=76  ↓
@@ -36,7 +37,6 @@
     temp_avg         r=+0.226*  p=0.046  n=76  ↑
     wind_speed_avg   r=-0.205   p=0.072  n=76  ↓
     wave_period_min  r=-0.198   p=0.083  n=76  ↓
-    wind_dir_n       r=-0.197   p=0.084  n=76  ↓
 
   [cnt_min]
     sst_avg          r=-0.328**  p=0.003  n=76  ↓
@@ -45,6 +45,7 @@
     wave_clamp       r=-0.200   p=0.079  n=76  ↓
 
   [cnt_max]
+    sst_gradient     r=-0.402**  p=0.000  n=76  ↓
     temp_avg         r=+0.309**  p=0.005  n=76  ↑
     sst_avg          r=-0.307**  p=0.006  n=76  ↓
     temp_min         r=+0.306**  p=0.006  n=76  ↑
@@ -56,7 +57,6 @@
     prev_week_cnt    r=+0.231*  p=0.043  n=75  ↑
     wave_period_avg  r=-0.215   p=0.058  n=76  ↓
     wind_dir_n       r=-0.205   p=0.072  n=76  ↓
-    moon_cos         r=-0.195   p=0.086  n=76  ↓
 
   [size_avg]
     sst_avg          r=+0.657**  p=0.000  n=76  ↑
@@ -76,6 +76,7 @@
 
   [cnt_avg]
     prev_week_cnt    r=+0.843**  p=0.000  n=13  ↑
+    sst_gradient     r=-0.794**  p=0.000  n=13  ↓
     precip_sum       r=+0.683**  p=0.002  n=13  ↑
     wind_dir_n       r=-0.622**  p=0.008  n=13  ↓
     precip_sum1      r=+0.486   p=0.065  n=13  ↑
@@ -86,6 +87,7 @@
     prev_week_cnt    r=+0.489   p=0.063  n=13  ↑
 
   [cnt_max]
+    sst_gradient     r=-0.898**  p=0.000  n=13  ↓
     precip_sum       r=+0.825**  p=0.000  n=13  ↑
     prev_week_cnt    r=+0.812**  p=0.000  n=13  ↑
     wind_dir_n       r=-0.709**  p=0.001  n=13  ↓
@@ -106,6 +108,7 @@
 
   [cnt_avg]
     prev_week_cnt    r=+0.912**  p=0.000  n=10  ↑
+    sst_gradient     r=-0.738**  p=0.002  n=10  ↓
     wind_dir_n       r=-0.655*  p=0.014  n=10  ↓
     pressure_range   r=+0.595*  p=0.036  n=10  ↑
     precip_sum       r=+0.592*  p=0.038  n=10  ↑
@@ -129,6 +132,7 @@
 
   [cnt_max]
     prev_week_cnt    r=+0.877**  p=0.000  n=10  ↑
+    sst_gradient     r=-0.829**  p=0.000  n=10  ↓
     temp_min         r=+0.729**  p=0.003  n=10  ↑
     wind_dir_n       r=-0.718**  p=0.003  n=10  ↓
     precip_sum       r=+0.692**  p=0.007  n=10  ↑

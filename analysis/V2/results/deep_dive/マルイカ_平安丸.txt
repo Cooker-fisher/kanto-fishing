@@ -29,6 +29,7 @@
     pressure_range   r=-0.266   p=0.098  n=38  ↓
 
   [size_avg]
+    sst_gradient     r=+0.544**  p=0.000  n=38  ↑
     temp_max         r=-0.439**  p=0.003  n=38  ↓
     temp_avg         r=-0.432**  p=0.004  n=38  ↓
     precip_sum2      r=-0.388*  p=0.012  n=38  ↓
@@ -53,6 +54,7 @@
     tide_range       r=+0.398   p=0.083  n=18  ↑
 
   [size_avg]
+    sst_gradient     r=+0.612**  p=0.002  n=18  ↑
     wave_period_min  r=-0.533*  p=0.012  n=18  ↓
     temp_max         r=-0.512*  p=0.017  n=18  ↓
     temp_avg         r=-0.499*  p=0.021  n=18  ↓
@@ -77,6 +79,7 @@
 
   [cnt_min]
     prev_week_cnt    r=+0.870**  p=0.000  n=12  ↑
+    sst_gradient     r=+0.526*  p=0.040  n=13  ↑
 
   [cnt_max]
     prev_week_cnt    r=+0.776**  p=0.000  n=12  ↑
@@ -87,6 +90,7 @@
     tide_type_n      r=+0.452   p=0.093  n=13  ↑
 
   [size_avg]
+    sst_gradient     r=+0.663**  p=0.003  n=13  ↑
     temp_avg         r=-0.591*  p=0.015  n=13  ↓
     temp_min         r=-0.591*  p=0.015  n=13  ↓
     temp_max         r=-0.578*  p=0.019  n=13  ↓

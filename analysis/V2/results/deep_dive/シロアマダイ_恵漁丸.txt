@@ -34,6 +34,7 @@
     wind_dir_e       r=+0.335*  p=0.047  n=33  ↑
     sst_avg          r=+0.311   p=0.069  n=33  ↑
     is_holiday       r=-0.286   p=0.097  n=33  ↓
+    sst_gradient     r=-0.284   p=0.099  n=33  ↓
 
   [cnt_min]
     typhoon_wind     r=-0.639**  p=0.009  n=12  ↓
@@ -42,6 +43,7 @@
     temp_min         r=+0.415*  p=0.011  n=33  ↑
     wind_dir_e       r=+0.393*  p=0.017  n=33  ↑
     sst_avg          r=+0.392*  p=0.018  n=33  ↑
+    sst_gradient     r=-0.384*  p=0.021  n=33  ↓
     wind_dir_mode    r=-0.377*  p=0.023  n=33  ↓
     is_summer_vacation r=+0.370*  p=0.027  n=33  ↑
 
@@ -54,6 +56,7 @@
   [size_avg]
     typhoon_dist     r=+0.762**  p=0.000  n=11  ↑
     is_summer_vacation r=+0.615**  p=0.000  n=31  ↑
+    sst_gradient     r=-0.353*  p=0.042  n=31  ↓
     sst_avg          r=+0.302   p=0.089  n=31  ↑
 
 【因子相関（週集計: n=21週）】
@@ -78,6 +81,7 @@
     sst_avg          r=+0.451*  p=0.028  n=21  ↑
     wind_dir_mode    r=-0.449*  p=0.029  n=21  ↓
     is_summer_vacation r=+0.442*  p=0.032  n=21  ↑
+    sst_gradient     r=-0.441*  p=0.032  n=21  ↓
 
   [cnt_max]
     typhoon_wind     r=-0.861**  p=0.000  n=8  ↓
@@ -91,6 +95,7 @@
   [size_avg]
     is_summer_vacation r=+0.755**  p=0.000  n=20  ↑
     typhoon_dist     r=+0.584   p=0.078  n=8  ↑
+    sst_gradient     r=-0.552**  p=0.005  n=20  ↓
     temp_max         r=+0.497*  p=0.015  n=20  ↑
     sst_avg          r=+0.478*  p=0.021  n=20  ↑
     temp_avg         r=+0.478*  p=0.021  n=20  ↑
@@ -104,6 +109,7 @@
     temp_avg         r=+0.572**  p=0.009  n=16  ↑
     temp_max         r=+0.566*  p=0.010  n=16  ↑
     sst_avg          r=+0.513*  p=0.025  n=16  ↑
+    sst_gradient     r=-0.503*  p=0.029  n=16  ↓
     wind_dir_mode    r=-0.420   p=0.083  n=16  ↓
     temp_range       r=-0.413   p=0.090  n=16  ↓
 
@@ -112,6 +118,7 @@
     temp_max         r=+0.704**  p=0.000  n=16  ↑
     sst_avg          r=+0.704**  p=0.000  n=16  ↑
     temp_min         r=+0.701**  p=0.000  n=16  ↑
+    sst_gradient     r=-0.674**  p=0.001  n=16  ↓
     is_summer_vacation r=+0.596**  p=0.005  n=16  ↑
     temp_range       r=-0.465*  p=0.049  n=16  ↓
     pressure_range   r=-0.452   p=0.058  n=16  ↓
@@ -126,6 +133,7 @@
   [size_avg]
     is_summer_vacation r=+0.775**  p=0.000  n=15  ↑
     precip_sum2      r=-0.477   p=0.051  n=15  ↓
+    sst_gradient     r=-0.448   p=0.071  n=15  ↓
     temp_max         r=+0.431   p=0.085  n=15  ↑
 
 【因子相関（月集計: n=9月）】

@@ -93,6 +93,7 @@
     is_holiday       r=+0.570**  p=0.007  n=17  ↑
     tide_delta       r=+0.537*  p=0.014  n=17  ↑
     prev_week_cnt    r=+0.521*  p=0.023  n=16  ↑
+    sst_gradient     r=-0.412   p=0.080  n=17  ↓
 
   [cnt_min]
     is_holiday       r=+0.589**  p=0.005  n=17  ↑
@@ -106,6 +107,7 @@
     is_holiday       r=+0.540*  p=0.013  n=17  ↑
     tide_delta       r=+0.500*  p=0.026  n=17  ↑
     prev_week_cnt    r=+0.477*  p=0.042  n=16  ↑
+    sst_gradient     r=-0.436   p=0.061  n=17  ↓
     moon_sin         r=-0.428   p=0.067  n=17  ↓
     wave_period_avg  r=+0.418   p=0.075  n=17  ↑
     wave_period_min  r=+0.412   p=0.080  n=17  ↑
@@ -124,6 +126,7 @@
     moon_age         r=+0.743**  p=0.000  n=12  ↑
     moon_sin         r=-0.626*  p=0.011  n=12  ↓
     tide_delta       r=+0.571*  p=0.028  n=12  ↑
+    sst_gradient     r=-0.566*  p=0.030  n=12  ↓
     prev_week_cnt    r=+0.484   p=0.097  n=11  ↑
 
   [cnt_min]
@@ -133,12 +136,14 @@
     moon_sin         r=-0.641**  p=0.008  n=12  ↓
     prev_week_cnt    r=+0.577*  p=0.034  n=11  ↑
     tide_delta       r=+0.573*  p=0.027  n=12  ↑
+    sst_gradient     r=-0.508   p=0.062  n=12  ↓
 
   [cnt_max]
     is_holiday       r=+0.721**  p=0.001  n=12  ↑
     moon_age         r=+0.716**  p=0.001  n=12  ↑
     moon_sin         r=-0.623*  p=0.012  n=12  ↓
     tide_delta       r=+0.585*  p=0.023  n=12  ↑
+    sst_gradient     r=-0.576*  p=0.026  n=12  ↓
 
   [size_avg]
     sst_delta        r=-0.600*  p=0.018  n=12  ↓

@@ -59,6 +59,7 @@
     wave_height_avg  r=+0.435*  p=0.035  n=21  ↑
     wave_clamp       r=+0.435*  p=0.035  n=21  ↑
     pressure_range   r=+0.397   p=0.059  n=21  ↑
+    sst_gradient     r=-0.392   p=0.063  n=21  ↓
     precip_sum1      r=+0.390   p=0.065  n=21  ↑
 
   [cnt_min]
@@ -77,6 +78,7 @@
   [cnt_max]
     prev_week_cnt    r=+0.814**  p=0.000  n=21  ↑
     swell_height_max r=+0.544**  p=0.005  n=21  ↑
+    sst_gradient     r=-0.479*  p=0.017  n=21  ↓
     is_holiday       r=-0.478*  p=0.018  n=21  ↓
     swell_height_avg r=+0.467*  p=0.021  n=21  ↑
     wave_height_max  r=+0.382   p=0.072  n=21  ↑
@@ -119,6 +121,7 @@
     is_holiday       r=-0.510*  p=0.032  n=15  ↓
     pressure_min     r=-0.464   p=0.059  n=15  ↓
     wave_height_max  r=+0.457   p=0.064  n=15  ↑
+    sst_gradient     r=-0.448   p=0.071  n=15  ↓
 
   [size_avg]
     wave_period_min  r=+0.447   p=0.072  n=15  ↑

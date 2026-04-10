@@ -27,6 +27,7 @@
     pressure_min     r=-0.392*  p=0.013  n=36  ↓
     sst_avg          r=+0.371*  p=0.020  n=36  ↑
     temp_min         r=+0.370*  p=0.020  n=36  ↑
+    sst_gradient     r=-0.328*  p=0.043  n=36  ↓
     tide_delta       r=+0.314   p=0.054  n=36  ↑
 
   [cnt_max]
@@ -39,11 +40,13 @@
     sst_avg          r=+0.394*  p=0.013  n=36  ↑
     sst_delta        r=+0.378*  p=0.017  n=36  ↑
     temp_min         r=+0.372*  p=0.019  n=36  ↑
+    sst_gradient     r=-0.368*  p=0.021  n=36  ↓
     tide_delta       r=+0.305   p=0.061  n=36  ↑
     wind_speed_max   r=+0.272   p=0.100  n=36  ↑
 
   [kg_avg]
     sst_avg          r=-0.321*  p=0.048  n=36  ↓
+    sst_gradient     r=+0.312   p=0.055  n=36  ↑
     tide_type_n      r=-0.298   p=0.068  n=36  ↓
     wind_speed_avg   r=-0.292   p=0.075  n=36  ↓
     moon_sin         r=+0.289   p=0.078  n=36  ↑

@@ -45,6 +45,7 @@
 
   [size_avg]
     sst_avg          r=+0.457*  p=0.016  n=24  ↑
+    sst_gradient     r=-0.381   p=0.054  n=24  ↓
     temp_max         r=+0.372   p=0.055  n=25  ↑
     temp_min         r=+0.371   p=0.055  n=25  ↑
     temp_avg         r=+0.369   p=0.057  n=25  ↑
@@ -88,6 +89,7 @@
   [size_avg]
     sst_avg          r=+0.510*  p=0.014  n=19  ↑
     pressure_avg     r=-0.445*  p=0.035  n=20  ↓
+    sst_gradient     r=-0.428   p=0.051  n=19  ↓
     moon_cos         r=-0.426*  p=0.046  n=20  ↓
     temp_min         r=+0.413   p=0.055  n=20  ↑
     temp_max         r=+0.407   p=0.058  n=20  ↑
@@ -126,6 +128,7 @@
     pressure_avg     r=-0.446*  p=0.035  n=20  ↓
     temp_avg         r=+0.438*  p=0.039  n=20  ↑
     temp_min         r=+0.433*  p=0.042  n=20  ↑
+    sst_gradient     r=-0.423   p=0.055  n=19  ↓
     moon_cos         r=-0.421*  p=0.049  n=20  ↓
     wind_dir_e       r=-0.375   p=0.086  n=20  ↓
     wind_dir_n       r=-0.372   p=0.089  n=20  ↓
@@ -172,6 +175,7 @@
     moon_cos         r=-0.645**  p=0.005  n=13  ↓
     pressure_avg     r=-0.638**  p=0.006  n=13  ↓
     pressure_min     r=-0.548*  p=0.030  n=13  ↓
+    sst_gradient     r=-0.509   p=0.050  n=13  ↓
     sst_avg          r=+0.501   p=0.055  n=13  ↑
 
   [kg_avg]

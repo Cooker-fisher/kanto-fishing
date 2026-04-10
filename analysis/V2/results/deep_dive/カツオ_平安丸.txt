@@ -48,6 +48,7 @@
     temp_max         r=-0.540**  p=0.000  n=35  ↓
     temp_min         r=-0.517**  p=0.001  n=35  ↓
     sst_avg          r=-0.336*  p=0.040  n=35  ↓
+    sst_gradient     r=+0.336*  p=0.041  n=35  ↑
     tide_type_n      r=+0.320   p=0.052  n=35  ↑
     pressure_range   r=+0.296   p=0.075  n=35  ↑
     wind_dir_mode    r=-0.293   p=0.078  n=35  ↓
@@ -62,11 +63,11 @@
     temp_min         r=-0.523**  p=0.000  n=35  ↓
     moon_sin         r=+0.464**  p=0.003  n=35  ↑
     wind_speed_max   r=-0.451**  p=0.004  n=35  ↓
+    sst_gradient     r=+0.448**  p=0.004  n=35  ↑
     wave_period_min  r=+0.446**  p=0.004  n=35  ↑
     moon_cos         r=+0.422**  p=0.007  n=35  ↑
     temp_avg         r=-0.376*  p=0.020  n=35  ↓
     wave_period_avg  r=+0.370*  p=0.022  n=35  ↑
-    moon_age         r=-0.337*  p=0.040  n=35  ↓
 
 【因子相関（週集計: n=21週）】
 
@@ -97,12 +98,14 @@
     pressure_range   r=+0.392   p=0.063  n=21  ↑
     wind_dir_n       r=+0.361   p=0.091  n=21  ↑
     sst_delta        r=-0.358   p=0.095  n=21  ↓
+    sst_gradient     r=+0.357   p=0.096  n=21  ↑
 
   [kg_avg]
     temp_range       r=+0.725**  p=0.000  n=21  ↑
     temp_min         r=-0.600**  p=0.001  n=21  ↓
     pressure_min     r=-0.519**  p=0.008  n=21  ↓
     pressure_avg     r=-0.515**  p=0.009  n=21  ↓
+    sst_gradient     r=+0.484*  p=0.016  n=21  ↑
     temp_avg         r=-0.478*  p=0.018  n=21  ↓
     moon_sin         r=+0.469*  p=0.021  n=21  ↑
     wave_period_min  r=+0.417*  p=0.046  n=21  ↑
@@ -120,6 +123,7 @@
     wind_dir_n       r=+0.495*  p=0.023  n=18  ↑
     pressure_range   r=+0.423   p=0.062  n=18  ↑
     tide_delta       r=+0.423   p=0.062  n=18  ↑
+    sst_gradient     r=+0.405   p=0.076  n=18  ↑
     sst_delta        r=-0.383   p=0.097  n=18  ↓
 
   [cnt_min]
@@ -140,6 +144,7 @@
     wind_dir_mode    r=-0.444*  p=0.048  n=18  ↓
     sst_delta        r=-0.441*  p=0.049  n=18  ↓
     tide_delta       r=+0.425   p=0.061  n=18  ↑
+    sst_gradient     r=+0.421   p=0.063  n=18  ↑
     wind_dir_n       r=+0.410   p=0.072  n=18  ↑
 
   [kg_avg]
@@ -150,6 +155,7 @@
     temp_avg         r=-0.454*  p=0.042  n=18  ↓
     pressure_min     r=-0.450*  p=0.044  n=18  ↓
     pressure_avg     r=-0.442*  p=0.049  n=18  ↓
+    sst_gradient     r=+0.437   p=0.052  n=18  ↑
     precip_sum2      r=+0.420   p=0.064  n=18  ↑
 
 【因子相関（月集計: n=12月）】
@@ -164,9 +170,9 @@
     swell_height_max r=-0.596*  p=0.019  n=12  ↓
     wave_height_avg  r=-0.590*  p=0.021  n=12  ↓
     wave_clamp       r=-0.590*  p=0.021  n=12  ↓
+    sst_gradient     r=+0.549*  p=0.038  n=12  ↑
     wind_dir_n       r=+0.539*  p=0.043  n=12  ↑
     pressure_delta   r=-0.537*  p=0.044  n=12  ↓
-    sst_delta        r=-0.528*  p=0.050  n=12  ↓
 
   [cnt_min]
     temp_max         r=-0.718**  p=0.001  n=12  ↓
@@ -192,13 +198,14 @@
     wave_clamp       r=-0.585*  p=0.022  n=12  ↓
     typhoon_wind     r=+0.582   p=0.080  n=8  ↑
     tide_delta       r=+0.580*  p=0.024  n=12  ↑
+    sst_gradient     r=+0.555*  p=0.035  n=12  ↑
     sst_delta        r=-0.519   p=0.055  n=12  ↓
     wind_dir_n       r=+0.502   p=0.066  n=12  ↑
-    swell_height_max r=-0.499   p=0.069  n=12  ↓
 
   [kg_avg]
     temp_min         r=-0.679**  p=0.003  n=12  ↓
     temp_range       r=+0.636**  p=0.009  n=12  ↑
+    sst_gradient     r=+0.624*  p=0.012  n=12  ↑
     temp_avg         r=-0.599*  p=0.018  n=12  ↓
     wave_height_avg  r=-0.540*  p=0.043  n=12  ↓
     wave_clamp       r=-0.540*  p=0.043  n=12  ↓

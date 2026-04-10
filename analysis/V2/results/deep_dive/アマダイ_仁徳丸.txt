@@ -65,6 +65,7 @@
   [cnt_max]
     moon_sin         r=+0.613*  p=0.010  n=13  ↑
     moon_age         r=-0.556*  p=0.026  n=13  ↓
+    sst_gradient     r=+0.479   p=0.070  n=13  ↑
 
   [size_avg]
     wave_period_min  r=+0.521*  p=0.043  n=13  ↑
@@ -77,6 +78,7 @@
     typhoon_dist     r=+0.707   p=0.083  n=5  ↑
     moon_age         r=-0.682**  p=0.008  n=10  ↓
     sst_delta        r=+0.564   p=0.053  n=10  ↑
+    sst_gradient     r=+0.556   p=0.059  n=10  ↑
 
   [cnt_min]
     typhoon_dist     r=+0.759*  p=0.043  n=5  ↑
@@ -88,6 +90,7 @@
   [cnt_max]
     moon_sin         r=+0.732**  p=0.002  n=10  ↑
     moon_age         r=-0.681**  p=0.009  n=10  ↓
+    sst_gradient     r=+0.586*  p=0.041  n=10  ↑
     sst_delta        r=+0.515   p=0.089  n=10  ↑
     is_summer_vacation r=-0.504   p=0.099  n=10  ↓
 

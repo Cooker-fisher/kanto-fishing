@@ -48,6 +48,7 @@
     temp_min         r=-0.355*  p=0.018  n=41  ↓
     tide_type_n      r=-0.338*  p=0.025  n=41  ↓
     sst_avg          r=-0.279   p=0.070  n=41  ↓
+    sst_gradient     r=+0.256   p=0.098  n=41  ↑
 
 【因子相関（週集計: n=29週）】
 
@@ -86,7 +87,7 @@
     wave_height_max  r=-0.341   p=0.059  n=29  ↓
     wave_clamp       r=-0.321   p=0.078  n=29  ↓
     wind_speed_max   r=+0.315   p=0.084  n=29  ↑
-    precip_sum       r=+0.305   p=0.097  n=29  ↑
+    sst_gradient     r=+0.313   p=0.087  n=29  ↑
 
 【因子相関（旬集計: n=24旬）】
 
@@ -120,6 +121,7 @@
     sst_avg          r=-0.492**  p=0.008  n=24  ↓
     wind_speed_max   r=+0.484**  p=0.010  n=24  ↑
     typhoon_dist     r=+0.482*  p=0.047  n=15  ↑
+    sst_gradient     r=+0.434*  p=0.024  n=24  ↑
     wind_speed_avg   r=+0.422*  p=0.029  n=24  ↑
     precip_sum       r=+0.403*  p=0.039  n=24  ↑
     temp_range       r=+0.398*  p=0.042  n=24  ↑
@@ -153,6 +155,7 @@
     temp_min         r=-0.650**  p=0.005  n=13  ↓
     temp_range       r=+0.564*  p=0.023  n=13  ↑
     tide_type_n      r=-0.552*  p=0.028  n=13  ↓
+    sst_gradient     r=+0.532*  p=0.037  n=13  ↑
     wave_period_avg  r=+0.511*  p=0.048  n=13  ↑
     sst_avg          r=-0.504   p=0.053  n=13  ↓
     moon_age         r=+0.499   p=0.056  n=13  ↑

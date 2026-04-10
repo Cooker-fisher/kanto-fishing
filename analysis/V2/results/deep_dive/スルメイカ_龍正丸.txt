@@ -95,9 +95,9 @@
     moon_sin         r=+0.611*  p=0.021  n=11  ↑
     moon_age         r=-0.597*  p=0.026  n=11  ↓
     sst_delta        r=+0.593*  p=0.027  n=11  ↑
+    sst_gradient     r=-0.588*  p=0.029  n=11  ↓
     swell_height_avg r=-0.581*  p=0.032  n=11  ↓
     swell_height_max r=-0.569*  p=0.038  n=11  ↓
-    temp_delta       r=-0.521   p=0.067  n=11  ↓
 
   [cnt_min]
     is_holiday       r=-0.729**  p=0.001  n=11  ↓
@@ -110,6 +110,7 @@
     prev_week_cnt    r=+0.605*  p=0.032  n=10  ↑
     temp_delta       r=-0.526   p=0.063  n=11  ↓
     typhoon_dist     r=+0.509   p=0.095  n=10  ↑
+    sst_gradient     r=-0.498   p=0.085  n=11  ↓
     temp_max         r=+0.485   p=0.096  n=11  ↑
 
   [cnt_max]
@@ -122,9 +123,9 @@
     moon_age         r=-0.606*  p=0.022  n=11  ↓
     wave_height_avg  r=-0.591*  p=0.028  n=11  ↓
     wave_clamp       r=-0.591*  p=0.028  n=11  ↓
+    sst_gradient     r=-0.574*  p=0.036  n=11  ↓
     swell_height_avg r=-0.521   p=0.067  n=11  ↓
     swell_height_max r=-0.516   p=0.071  n=11  ↓
-    temp_delta       r=-0.489   p=0.093  n=11  ↓
 
 【因子相関（月集計: n=5月）】
   (有意な相関なし)

@@ -109,6 +109,7 @@
     typhoon_wind     r=+0.605   p=0.090  n=7  ↑
     pressure_avg     r=-0.553**  p=0.008  n=18  ↓
     moon_sin         r=-0.524*  p=0.014  n=18  ↓
+    sst_gradient     r=+0.472*  p=0.032  n=18  ↑
     moon_age         r=+0.445*  p=0.047  n=18  ↑
 
   [cnt_min]
@@ -117,6 +118,7 @@
     precip_sum       r=+0.552**  p=0.008  n=18  ↑
     moon_age         r=+0.512*  p=0.017  n=18  ↑
     pressure_avg     r=-0.484*  p=0.027  n=18  ↓
+    sst_gradient     r=+0.426   p=0.060  n=18  ↑
     wind_dir_n       r=-0.398   p=0.083  n=18  ↓
 
   [cnt_max]
@@ -124,12 +126,14 @@
     pressure_min     r=-0.722**  p=0.000  n=18  ↓
     typhoon_wind     r=+0.652   p=0.055  n=7  ↑
     pressure_avg     r=-0.581**  p=0.004  n=18  ↓
+    sst_gradient     r=+0.480*  p=0.029  n=18  ↑
     wind_speed_max   r=-0.396   p=0.085  n=18  ↓
 
 【因子相関（月集計: n=11月）】
 
   [cnt_avg]
     pressure_min     r=-0.752**  p=0.001  n=11  ↓
+    sst_gradient     r=+0.683**  p=0.005  n=11  ↑
     pressure_delta   r=-0.672**  p=0.007  n=11  ↓
     precip_sum       r=+0.615*  p=0.019  n=11  ↑
     pressure_range   r=+0.614*  p=0.020  n=11  ↑
@@ -138,6 +142,7 @@
 
   [cnt_min]
     pressure_min     r=-0.680**  p=0.005  n=11  ↓
+    sst_gradient     r=+0.655**  p=0.009  n=11  ↑
     moon_sin         r=-0.651*  p=0.010  n=11  ↓
     pressure_range   r=+0.597*  p=0.026  n=11  ↑
     pressure_delta   r=-0.574*  p=0.036  n=11  ↓
@@ -148,6 +153,7 @@
     precip_sum       r=+0.757**  p=0.001  n=11  ↑
     pressure_min     r=-0.741**  p=0.001  n=11  ↓
     pressure_delta   r=-0.698**  p=0.003  n=11  ↓
+    sst_gradient     r=+0.626*  p=0.016  n=11  ↑
     temp_range       r=-0.622*  p=0.017  n=11  ↓
     pressure_range   r=+0.556*  p=0.045  n=11  ↑
     is_consec_holiday r=-0.532   p=0.060  n=11  ↓

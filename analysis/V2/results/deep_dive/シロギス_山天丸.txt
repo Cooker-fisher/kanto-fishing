@@ -48,6 +48,7 @@
     temp_avg         r=+0.304*  p=0.041  n=43  ↑
     pressure_delta   r=-0.283   p=0.059  n=43  ↓
     moon_sin         r=+0.279   p=0.063  n=43  ↑
+    sst_gradient     r=-0.275   p=0.067  n=43  ↓
     temp_min         r=+0.271   p=0.071  n=43  ↑
     pressure_avg     r=-0.255   p=0.091  n=43  ↓
 
@@ -73,6 +74,7 @@
     moon_age         r=-0.332   p=0.054  n=32  ↓
     temp_max         r=+0.331   p=0.055  n=32  ↑
     sst_avg          r=+0.314   p=0.070  n=32  ↑
+    sst_gradient     r=-0.300   p=0.085  n=32  ↓
     temp_avg         r=+0.292   p=0.094  n=32  ↑
 
   [size_avg]
@@ -93,6 +95,7 @@
 
   [cnt_max]
     prev_week_cnt    r=+0.400*  p=0.029  n=27  ↑
+    sst_gradient     r=-0.380*  p=0.040  n=27  ↓
     moon_age         r=-0.376*  p=0.043  n=27  ↓
     wind_dir_n       r=+0.348   p=0.063  n=27  ↑
     wind_dir_mode    r=-0.332   p=0.079  n=27  ↓
@@ -118,6 +121,7 @@
   [cnt_max]
     prev_week_cnt    r=+0.551*  p=0.029  n=13  ↑
     pressure_delta   r=-0.520*  p=0.043  n=13  ↓
+    sst_gradient     r=-0.472   p=0.076  n=13  ↓
 
   [size_avg]
     moon_cos         r=+0.514*  p=0.047  n=13  ↑

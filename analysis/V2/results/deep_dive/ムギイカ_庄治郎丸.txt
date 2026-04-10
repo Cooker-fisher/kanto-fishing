@@ -44,6 +44,7 @@
     typhoon_wind     r=-0.730**  p=0.000  n=17  ↓
     sst_avg          r=-0.313   p=0.058  n=35  ↓
     temp_max         r=-0.287   p=0.085  n=35  ↓
+    sst_gradient     r=-0.280   p=0.094  n=35  ↓
 
 【因子相関（週集計: n=17週）】
 
@@ -51,6 +52,7 @@
     pressure_min     r=-0.677**  p=0.000  n=17  ↓
     pressure_avg     r=-0.584**  p=0.005  n=17  ↓
     typhoon_wind     r=-0.544   p=0.086  n=9  ↓
+    sst_gradient     r=-0.542*  p=0.012  n=17  ↓
     is_consec_holiday r=+0.493*  p=0.028  n=17  ↑
     prev_week_cnt    r=+0.424   p=0.070  n=17  ↑
     swell_height_max r=+0.410   p=0.081  n=17  ↑
@@ -69,6 +71,7 @@
   [cnt_max]
     pressure_min     r=-0.660**  p=0.001  n=17  ↓
     pressure_avg     r=-0.599**  p=0.004  n=17  ↓
+    sst_gradient     r=-0.519*  p=0.019  n=17  ↓
     is_consec_holiday r=+0.490*  p=0.029  n=17  ↑
     swell_height_max r=+0.444   p=0.055  n=17  ↑
     prev_week_cnt    r=+0.407   p=0.084  n=17  ↑
@@ -85,6 +88,7 @@
   [cnt_avg]
     pressure_min     r=-0.670**  p=0.002  n=14  ↓
     pressure_avg     r=-0.622**  p=0.006  n=14  ↓
+    sst_gradient     r=-0.558*  p=0.020  n=14  ↓
     is_consec_holiday r=+0.529*  p=0.031  n=14  ↑
     prev_week_cnt    r=+0.457   p=0.075  n=14  ↑
 
@@ -101,6 +105,7 @@
     pressure_min     r=-0.647**  p=0.003  n=14  ↓
     pressure_avg     r=-0.619**  p=0.006  n=14  ↓
     is_consec_holiday r=+0.537*  p=0.027  n=14  ↑
+    sst_gradient     r=-0.522*  p=0.034  n=14  ↓
     tide_type_n      r=-0.518*  p=0.036  n=14  ↓
     wind_dir_e       r=-0.453   p=0.078  n=14  ↓
     tide_range       r=-0.452   p=0.080  n=14  ↓
