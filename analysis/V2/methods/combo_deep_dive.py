@@ -1382,7 +1382,14 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 _ols_num += _corr * (_act - _base)
                 _ols_den += _corr * _corr
                 _alpha_tr.append((_base, _corr, _bl2_p_tr, _act))
-            alpha_scale = max(0.1, min(2.0, _ols_num / _ols_den)) if _ols_den > 1e-9 else 0.5
+            _alpha_ols = (_ols_num / _ols_den) if _ols_den > 1e-9 else 0.5
+            # 感応度ベースのfloor: OLSが正の場合のみ適用（負=気象補正が逆に働く → 0.1のまま）
+            _max_r_fold = max((abs(rv) for rv in factor_r_m.values()), default=0)
+            if _alpha_ols > 0:
+                _alpha_floor = max(0.1, _max_r_fold * 1.0)  # max_r=0.3→floor=0.3, 0.5→0.5
+            else:
+                _alpha_floor = 0.1  # OLS負 = 気象補正が逆なのでfloor不要
+            alpha_scale = max(_alpha_floor, min(2.0, _alpha_ols))
             alpha_scales_by_met[met].append(alpha_scale)  # フォールドごとに収集
             # β: BL-2 ブレンド比（0〜0.5 にクリップ）
             _bt_num = 0.0; _bt_den = 0.0
