@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>船釣り予想 — 関東の船釣り釣果情報 v2</title>
+<meta name="description" content="関東（神奈川・東京・千葉・茨城・静岡）の船釣り釣果を毎日更新。今日釣れている魚・エリア別速報。">
+<style>
+:root{
+  --bg:#f5f7fa;--card:#fff;--border:#d0d8e0;
+  --text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;
+  --accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;
+  --pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;
+  --hdr:#0d2b4a;--nav:#f0f3f7;--line:#06c755;
+  --r:10px;--mx:900px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+header .domain{font-size:11px;opacity:.5}
+nav.gnav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav.gnav a:hover,nav.gnav a.on{background:var(--accent);color:#fff;text-decoration:none}
+nav.gnav a.prem{color:var(--prem)}
+nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;background:var(--prem);border-radius:50%;margin-right:4px;vertical-align:middle}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;text-align:center;padding:24px 14px 20px}
+.hero-sub{font-size:12px;color:rgba(255,255,255,.6)}
+.hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1.1}
+.hero .n u{font-size:16px;color:rgba(255,255,255,.7);font-weight:400;text-decoration:none;margin-left:3px}
+.hero .info{font-size:12px;color:rgba(255,255,255,.6);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
+.hero .dot{width:6px;height:6px;background:var(--pos);border-radius:50%;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero .updated{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+
+/* section title */
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.st.teaser-title{color:var(--prem);border-color:var(--prem)}
+.st .tag{font-size:9px;padding:2px 7px;border-radius:8px;color:#fff;font-weight:700}
+.st .tag.free{background:var(--pos)}
+.st .tag.coming{background:var(--prem)}
+
+/* ================ TEASER（カミングスーン共通）================ */
+.teaser{background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:1.5px dashed var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
+.teaser-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.teaser-badge{display:inline-block;font-size:10px;padding:3px 9px;background:var(--prem);color:#fff;border-radius:10px;font-weight:700;letter-spacing:.5px}
+.teaser-badge.soon{background:var(--cta)}
+.teaser-title{font-size:14px;font-weight:800;color:var(--prem)}
+.teaser-desc{font-size:12px;color:var(--sub);margin-bottom:12px;line-height:1.7}
+.teaser-desc strong{color:var(--accent)}
+
+/* ダミーカード（ブラー風）*/
+.teaser-dummy{background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:10px;position:relative;filter:blur(1.5px);opacity:.75;pointer-events:none;user-select:none}
+.teaser-dummy .td-fish{font-size:13px;font-weight:800;color:var(--accent)}
+.teaser-dummy .td-star{color:var(--warn);font-size:11px;margin-left:4px}
+.teaser-dummy .td-range{font-size:15px;font-weight:700;color:var(--cta);margin-top:3px}
+.teaser-dummy .td-reason{font-size:10px;color:var(--sub);margin-top:4px}
+
+/* カミングスーン オーバーレイ */
+.teaser-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.teaser-overlay-text{background:rgba(124,58,237,.92);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 12px rgba(124,58,237,.4)}
+
+/* CTA (LINE) */
+.teaser-cta-wrap{background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-top:10px;text-align:center}
+.teaser-cta-msg{font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.5}
+.teaser-cta-msg strong{color:var(--accent)}
+.teaser-cta-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cta-line{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--line);color:#fff;border-radius:22px;font-size:13px;font-weight:700;text-decoration:none}
+.cta-line:hover{opacity:.9;text-decoration:none}
+.cta-line .line-ic{width:16px;height:16px;background:#fff;color:var(--line);border-radius:4px;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.cta-x{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:#000;color:#fff;border-radius:22px;font-size:13px;font-weight:700;text-decoration:none;opacity:.5}
+.cta-x small{font-size:9px;font-weight:400}
+.teaser-price{font-size:10px;color:var(--muted);margin-top:8px}
+.teaser-price em{color:var(--cta);font-style:normal;font-weight:700}
+
+/* ================ ZONE B: 釣れている魚（無料）================ */
+.fish-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;transition:border-color .15s}
+.fc:hover{border-color:var(--cta);text-decoration:none}
+.fc .fn{font-size:14px;font-weight:800;color:var(--accent)}
+.fc .fr{font-size:18px;font-weight:800;color:var(--cta);margin-top:2px}
+.fc .fr small{font-size:11px;color:var(--muted);font-weight:400}
+.fc .fs{font-size:10px;color:var(--muted)}
+.fc .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
+.fc .bars{display:flex;align-items:flex-end;gap:1px;height:20px;margin-top:4px}
+.fc .bars .b{flex:1;background:var(--cta);border-radius:1px 1px 0 0;opacity:.6;min-width:4px}
+.fc .bars .b.today{opacity:1;background:var(--pos)}
+.fc .trend{font-size:9px;font-weight:700;margin-top:2px}
+.fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
+.fish-others{margin:12px 0 20px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.fo-title{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.fo-list{display:flex;flex-wrap:wrap;gap:4px}
+.fo-list a{font-size:12px;padding:3px 8px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
+.fo-list a:hover{background:var(--accent);color:#fff;text-decoration:none}
+
+/* 広告 */
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:22px;text-align:center;margin:16px 0;font-size:11px;color:#999}
+
+/* ================ ZONE C: 海況・出船リスク（無料）================ */
+.risk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.risk-day{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center}
+.risk-day.good{border-color:var(--pos);background:#f0fdf4}
+.risk-day.warn{border-color:var(--warn);background:#fffbeb}
+.risk-day.bad{border-color:var(--neg);background:#fef2f2}
+.rd-dow{font-size:10px;color:var(--muted);font-weight:600}
+.rd-date{font-size:11px;color:var(--sub);font-weight:600}
+.rd-icon{font-size:16px;margin:4px 0;font-weight:800}
+.risk-day.good .rd-icon{color:var(--pos)}
+.risk-day.warn .rd-icon{color:var(--warn)}
+.risk-day.bad .rd-icon{color:var(--neg)}
+.rd-label{font-size:9px;font-weight:700}
+
+.weather-list{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:16px}
+.wl-head{font-size:12px;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bg)}
+.wl-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:8px;font-size:12px}
+.wl-row:last-child{border-bottom:none}
+.wl-area{flex:0 0 90px;font-weight:700;color:var(--accent)}
+.wl-wave{flex:0 0 60px;color:var(--sub)}
+.wl-wind{flex:0 0 60px;color:var(--sub)}
+.wl-temp{flex:0 0 50px;color:var(--sub)}
+.wl-judge{flex:1;text-align:right;font-weight:700;font-size:11px}
+.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:var(--warn)}.wl-judge.bad{color:var(--neg)}
+
+/* ================ ZONE E: ナビ ================ */
+.nav-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.nav-section h3{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:10px}
+.nav-chips{display:flex;flex-wrap:wrap;gap:6px}
+.nav-chips a{font-size:12px;padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:16px;color:var(--accent);font-weight:600}
+.nav-chips a:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
+
+/* footer */
+footer{background:var(--hdr);color:rgba(255,255,255,.6);padding:20px 14px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.8)}
+footer .fl{margin-top:8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+footer .cp{margin-top:10px;display:block;opacity:.5}
+
+/* ================ ボトムナビ（SVGインライン） ================ */
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.bn a{flex:1;text-align:center;padding:8px 0 6px;font-size:10px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font-weight:600}
+.bn a svg{width:22px;height:22px;stroke:var(--muted);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bn a.on{color:var(--cta)}
+.bn a.on svg{stroke:var(--cta)}
+.bn a:hover{color:var(--cta)}
+.bn a:hover svg{stroke:var(--cta)}
+.bn a.prem.on{color:var(--prem)}
+.bn a.prem.on svg{stroke:var(--prem)}
+
+/* PC */
+@media(min-width:769px){
+  .bn{display:none}
+  body{padding-bottom:0}
+  .fish-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <h1>船釣り<span>予想</span></h1>
+    <span class="domain">funatsuri-yoso.com</span>
+  </div>
+</header>
+
+<nav class="gnav">
+  <a href="#" class="on">今日の釣果</a>
+  <a href="mockup-fish.html">魚種</a>
+  <a href="mockup-area.html">エリア</a>
+  <a href="#">カレンダー</a>
+  <a href="#" class="prem">有料プラン</a>
+</nav>
+
+<!-- ================ HERO ================ -->
+<div class="hero">
+  <div class="hero-sub">関東の船釣り 今日の釣果</div>
+  <div class="n">47<u>件</u></div>
+  <div class="info"><span class="dot"></span>8エリア・23船宿から報告</div>
+  <div class="updated">2026/04/10 16:30 更新</div>
+</div>
+
+<div class="c">
+
+<!-- ================ ZONE A: 今週の狙い目（ティザー）================ -->
+<h2 class="st teaser-title">今週の狙い目 <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser">
+  <div class="teaser-head">
+    <span class="teaser-badge soon">開発中</span>
+    <span class="teaser-title">AI分析による週末の狙い目魚種 TOP5</span>
+  </div>
+  <div class="teaser-desc">
+    <strong>84,757件</strong>の釣果データ × 気象・潮汐・水温データをAIが分析し、
+    今週末あなたに最適な<strong>狙い目の魚種と釣行エリア</strong>をランキング表示します。
+  </div>
+
+  <div style="position:relative">
+    <div class="teaser-dummy">
+      <div class="td-fish">アジ <span class="td-star">★★★★★</span></div>
+      <div class="td-range">25〜45匹 / 18〜25cm</div>
+      <div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div>
+    </div>
+    <div class="teaser-dummy">
+      <div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div>
+      <div class="td-range">0〜5匹 / 30〜55cm</div>
+      <div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div>
+    </div>
+    <div class="teaser-overlay">
+      <div class="teaser-overlay-text">COMING SOON</div>
+    </div>
+  </div>
+
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg"><strong>公開時にお知らせ</strong>します。LINEで友だち追加してお待ちください。</div>
+    <div class="teaser-cta-btns">
+      <a class="cta-line" href="#line-pending">
+        <span class="line-ic">L</span>
+        LINEで通知を受け取る
+      </a>
+      <a class="cta-x" href="#x-pending">
+        𝕏 <small>(準備中)</small>
+      </a>
+    </div>
+    <div class="teaser-price">※ 公開時は <em>月額500円 / 1回100円</em> で提供予定</div>
+  </div>
+</div>
+
+<!-- ================ ZONE B: 釣れている魚（無料）================ -->
+<h2 class="st">今日 釣れている魚 <span class="tag free">無料</span></h2>
+<div class="fish-grid">
+  <a class="fc" href="mockup-fish.html">
+    <div class="fn">アジ</div>
+    <div class="fr">20〜45匹 <small>(+32%)</small></div>
+    <div class="fs">18〜25cm | 23件・8船宿</div>
+    <div class="fb">◎忠彦丸 +52%</div>
+    <div class="bars"><div class="b" style="height:40%"></div><div class="b" style="height:65%"></div><div class="b" style="height:55%"></div><div class="b" style="height:80%"></div><div class="b" style="height:45%"></div><div class="b" style="height:70%"></div><div class="b today" style="height:90%"></div></div>
+    <div class="trend up">↑ 上昇中</div>
+  </a>
+  <a class="fc" href="#">
+    <div class="fn">マダイ</div>
+    <div class="fr">0〜5匹 <small>(+18%)</small></div>
+    <div class="fs">30〜55cm | 15件・6船宿</div>
+    <div class="fb">◎佐円丸 +35%</div>
+    <div class="bars"><div class="b" style="height:50%"></div><div class="b" style="height:30%"></div><div class="b" style="height:70%"></div><div class="b" style="height:20%"></div><div class="b" style="height:85%"></div><div class="b" style="height:40%"></div><div class="b today" style="height:60%"></div></div>
+    <div class="trend flat">→ 日ムラ大</div>
+  </a>
+  <a class="fc" href="#">
+    <div class="fn">タチウオ</div>
+    <div class="fr">5〜28匹 <small>(-12%)</small></div>
+    <div class="fs">70〜95cm | 11件・5船宿</div>
+    <div class="fb">◎山天丸 +22%</div>
+    <div class="bars"><div class="b" style="height:90%"></div><div class="b" style="height:75%"></div><div class="b" style="height:60%"></div><div class="b" style="height:50%"></div><div class="b" style="height:40%"></div><div class="b" style="height:35%"></div><div class="b today" style="height:30%"></div></div>
+    <div class="trend dn">↓ 下降中</div>
+  </a>
+  <a class="fc" href="#">
+    <div class="fn">カワハギ</div>
+    <div class="fr">5〜22匹 <small>(+8%)</small></div>
+    <div class="fs">15〜22cm | 9件・4船宿</div>
+    <div class="fb">◎巳之助丸 +28%</div>
+    <div class="bars"><div class="b" style="height:40%"></div><div class="b" style="height:50%"></div><div class="b" style="height:55%"></div><div class="b" style="height:60%"></div><div class="b" style="height:65%"></div><div class="b" style="height:60%"></div><div class="b today" style="height:70%"></div></div>
+    <div class="trend up">↑ 上昇中</div>
+  </a>
+  <a class="fc" href="#">
+    <div class="fn">シロギス</div>
+    <div class="fr">15〜52匹 <small>(+45%)</small></div>
+    <div class="fs">15〜23cm | 7件・3船宿</div>
+    <div class="fb">◎荒川屋 +60%</div>
+    <div class="bars"><div class="b" style="height:20%"></div><div class="b" style="height:30%"></div><div class="b" style="height:45%"></div><div class="b" style="height:55%"></div><div class="b" style="height:65%"></div><div class="b" style="height:75%"></div><div class="b today" style="height:90%"></div></div>
+    <div class="trend up">↑ 急上昇</div>
+  </a>
+  <a class="fc" href="#">
+    <div class="fn">フグ</div>
+    <div class="fr">3〜12匹 <small>(-5%)</small></div>
+    <div class="fs">25〜35cm | 5件・3船宿</div>
+    <div class="fb">◎正一丸 +15%</div>
+    <div class="bars"><div class="b" style="height:60%"></div><div class="b" style="height:55%"></div><div class="b" style="height:50%"></div><div class="b" style="height:55%"></div><div class="b" style="height:45%"></div><div class="b" style="height:50%"></div><div class="b today" style="height:45%"></div></div>
+    <div class="trend flat">→ 横ばい</div>
+  </a>
+</div>
+
+<div class="fish-others">
+  <div class="fo-title">その他の魚種（今日の報告あり）</div>
+  <div class="fo-list">
+    <a href="#">ヤリイカ 4件</a><a href="#">ヒラメ 3件</a><a href="#">マゴチ 3件</a>
+    <a href="#">アマダイ 3件</a><a href="#">イサキ 3件</a><a href="#">メバル 2件</a>
+    <a href="#">スミイカ 2件</a><a href="#">カサゴ 2件</a><a href="#">ワラサ 2件</a>
+  </div>
+</div>
+
+<!-- ================ ZONE B': 予測の答え合わせ（ティザー）================ -->
+<h2 class="st teaser-title">予測の答え合わせ <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser">
+  <div class="teaser-head">
+    <span class="teaser-badge soon">開発中</span>
+    <span class="teaser-title">予測 vs 実績 の答え合わせ</span>
+  </div>
+  <div class="teaser-desc">
+    <strong>前日に公開した予測</strong>が実際の釣果と一致したかを毎日公開します。
+    海況予報のズレまで○×で比較し、「なぜ当たった・外れたか」を正直にレポート。
+  </div>
+
+  <div style="position:relative">
+    <div class="teaser-dummy">
+      <div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div>
+      <div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div>
+      <div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div>
+    </div>
+    <div class="teaser-dummy">
+      <div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div>
+      <div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div>
+      <div class="td-reason">水温× 予報より1.5℃低下で活性低下</div>
+    </div>
+    <div class="teaser-overlay">
+      <div class="teaser-overlay-text">COMING SOON</div>
+    </div>
+  </div>
+
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg">毎日の<strong>的中率</strong>を公開予定。LINEで日次レポートをお届けします。</div>
+    <div class="teaser-cta-btns">
+      <a class="cta-line" href="#line-pending">
+        <span class="line-ic">L</span>
+        LINEで通知を受け取る
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- 広告① -->
+<div class="ad-slot">広告スペース ①（ZONE B' 後）</div>
+
+<!-- ================ ZONE C: 海況・出船リスク（無料）================ -->
+<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>
+<div class="risk-grid">
+  <div class="risk-day good"><div class="rd-dow">木</div><div class="rd-date">4/10</div><div class="rd-icon">○</div><div class="rd-label">好条件</div></div>
+  <div class="risk-day good"><div class="rd-dow">金</div><div class="rd-date">4/11</div><div class="rd-icon">○</div><div class="rd-label">好条件</div></div>
+  <div class="risk-day warn"><div class="rd-dow">土</div><div class="rd-date">4/12</div><div class="rd-icon">△</div><div class="rd-label">不漁注意</div></div>
+  <div class="risk-day bad"><div class="rd-dow">日</div><div class="rd-date">4/13</div><div class="rd-icon">×</div><div class="rd-label">欠航警戒</div></div>
+  <div class="risk-day warn"><div class="rd-dow">月</div><div class="rd-date">4/14</div><div class="rd-icon">△</div><div class="rd-label">うねり</div></div>
+  <div class="risk-day good"><div class="rd-dow">火</div><div class="rd-date">4/15</div><div class="rd-icon">○</div><div class="rd-label">好条件</div></div>
+  <div class="risk-day good"><div class="rd-dow">水</div><div class="rd-date">4/16</div><div class="rd-icon">○</div><div class="rd-label">好条件</div></div>
+</div>
+
+<h2 class="st">今週末の海況予報 <span class="tag free">無料</span></h2>
+<div class="weather-list">
+  <div class="wl-head">エリア別 土曜日の予報（波高 / 風速 / 気温）</div>
+  <div class="wl-row">
+    <span class="wl-area">金沢八景</span><span class="wl-wave">波 0.8m</span><span class="wl-wind">風 4m</span><span class="wl-temp">18℃</span><span class="wl-judge good">○ 出船可</span>
+  </div>
+  <div class="wl-row">
+    <span class="wl-area">走水</span><span class="wl-wave">波 1.0m</span><span class="wl-wind">風 5m</span><span class="wl-temp">18℃</span><span class="wl-judge good">○ 出船可</span>
+  </div>
+  <div class="wl-row">
+    <span class="wl-area">剣崎</span><span class="wl-wave">波 1.5m</span><span class="wl-wind">風 7m</span><span class="wl-temp">17℃</span><span class="wl-judge warn">△ 注意</span>
+  </div>
+  <div class="wl-row">
+    <span class="wl-area">大原</span><span class="wl-wave">波 2.2m</span><span class="wl-wind">風 9m</span><span class="wl-temp">16℃</span><span class="wl-judge bad">× 欠航リスク</span>
+  </div>
+  <div class="wl-row">
+    <span class="wl-area">久里浜</span><span class="wl-wave">波 0.9m</span><span class="wl-wind">風 4m</span><span class="wl-temp">18℃</span><span class="wl-judge good">○ 出船可</span>
+  </div>
+  <div class="wl-row">
+    <span class="wl-area">銚子</span><span class="wl-wave">波 2.5m</span><span class="wl-wind">風 10m</span><span class="wl-temp">15℃</span><span class="wl-judge bad">× 欠航リスク</span>
+  </div>
+</div>
+
+<!-- ================ ZONE D: 分析・予測ゾーン（ティザー集約）================ -->
+<h2 class="st teaser-title">分析・予測ゾーン <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser">
+  <div class="teaser-head">
+    <span class="teaser-badge soon">開発中</span>
+    <span class="teaser-title">注目コンボ・急落コンボ・日別釣果予測</span>
+  </div>
+  <div class="teaser-desc">
+    <strong>魚種×エリアの組合せ</strong>を独自スコアリングしてランキング表示。
+    さらに「来週のどの日に何が釣れるか」を日別で予測します。
+  </div>
+
+  <div style="position:relative">
+    <div class="teaser-dummy">
+      <div class="td-fish">注目コンボ: アジ × 金沢八景</div>
+      <div class="td-range">スコア 92 / 平年比 +38%</div>
+      <div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div>
+    </div>
+    <div class="teaser-dummy">
+      <div class="td-fish">4/12(土) 釣果予測: マダイ ★★★★☆</div>
+      <div class="td-range">2〜8匹 / 35〜55cm</div>
+      <div class="td-reason">剣崎・久里浜が狙い目。朝マズメが勝負</div>
+    </div>
+    <div class="teaser-dummy">
+      <div class="td-fish">急落警告: タチウオ × 走水</div>
+      <div class="td-range">先週比 -45%</div>
+      <div class="td-reason">水温急低下でベイトが抜けた模様</div>
+    </div>
+    <div class="teaser-overlay">
+      <div class="teaser-overlay-text">COMING SOON</div>
+    </div>
+  </div>
+
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg">全機能 <strong>まとめて月額500円</strong> で提供予定。LINE友だち追加で公開日をいち早くお知らせ。</div>
+    <div class="teaser-cta-btns">
+      <a class="cta-line" href="#line-pending">
+        <span class="line-ic">L</span>
+        LINEで通知を受け取る
+      </a>
+    </div>
+    <div class="teaser-price">※ <em>月額500円</em>（仕掛け1セット分）/ <em>1回100円</em> でスポット利用可</div>
+  </div>
+</div>
+
+<!-- 広告② -->
+<div class="ad-slot">広告スペース ②（ZONE D 後）</div>
+
+<!-- ================ ZONE E: ナビ ================ -->
+<div class="nav-section">
+  <h3>人気の魚種から探す</h3>
+  <div class="nav-chips">
+    <a href="#">アジ</a><a href="#">マダイ</a><a href="#">タチウオ</a><a href="#">カワハギ</a>
+    <a href="#">シロギス</a><a href="#">ヒラメ</a><a href="#">マゴチ</a><a href="#">アマダイ</a>
+    <a href="#">イサキ</a><a href="#">ヤリイカ</a><a href="#">スミイカ</a><a href="#">すべて見る →</a>
+  </div>
+</div>
+
+<div class="nav-section">
+  <h3>エリアから探す</h3>
+  <div class="nav-chips">
+    <a href="#">金沢八景</a><a href="#">走水</a><a href="#">剣崎</a><a href="#">久里浜</a>
+    <a href="#">三浦</a><a href="#">大原</a><a href="#">銚子</a><a href="#">洲崎</a>
+    <a href="#">すべて見る →</a>
+  </div>
+</div>
+
+</div><!-- /.c -->
+
+<footer>
+  <div>© 2026 船釣り予想 (funatsuri-yoso.com)</div>
+  <div class="fl">
+    <a href="#">サイトについて</a>
+    <a href="#">プライバシーポリシー</a>
+    <a href="#">利用規約</a>
+    <a href="#">お問い合わせ</a>
+  </div>
+  <div class="fl" style="margin-top:6px">
+    <a href="#">アジ</a><a href="#">マダイ</a><a href="#">タチウオ</a>
+    <a href="#">金沢八景</a><a href="#">走水</a><a href="#">剣崎</a>
+  </div>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/10 16:30</span>
+</footer>
+
+<!-- ================ ボトムナビ（SVGインライン 線画4アイコン）================ -->
+<nav class="bn">
+  <a href="#" class="on">
+    <svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>
+    釣果
+  </a>
+  <a href="mockup-fish.html">
+    <svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>
+    魚種
+  </a>
+  <a href="mockup-area.html">
+    <svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    エリア
+  </a>
+  <a href="#">
+    <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>
+    カレンダー
+  </a>
+  <a href="#" class="prem">
+    <svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>
+    有料
+  </a>
+</nav>
+
+</body>
+</html>
