@@ -85,7 +85,7 @@ def _nearest_wx_coord(conn_wx, lat, lon):
     return min(coords, key=lambda c: (c[0] - lat) ** 2 + (c[1] - lon) ** 2)
 
 
-def _get_daily_wx(conn_wx, lat, lon, date_iso):
+def _get_daily_wx(conn_wx, lat, lon, date_iso, wave_clamp_thr: float = 2.0):
     """日次気象集計。combo_deep_dive.get_daily_wx と同等ロジック。"""
     rows = conn_wx.execute("""
         SELECT wind_speed, wind_dir, temp, pressure,
@@ -126,7 +126,7 @@ def _get_daily_wx(conn_wx, lat, lon, date_iso):
     if wave_heights:
         result["wave_height_avg"] = sum(wave_heights) / len(wave_heights)
         result["wave_height_max"] = max(wave_heights)
-        result["wave_clamp"]      = min(result["wave_height_avg"], 2.0)
+        result["wave_clamp"]      = min(result["wave_height_avg"], wave_clamp_thr)
     if wave_periods:
         result["wave_period_avg"] = sum(wave_periods) / len(wave_periods)
         result["wave_period_min"] = min(wave_periods)
@@ -164,6 +164,16 @@ def _get_tide(date_iso: str) -> dict:
         "moon_cos":    math.cos(phase),
         "tide_type_n": TIDE_TYPE_MAP.get(tide_type, 2),
     }
+
+
+def _get_wave_clamp_thr(conn, fish: str, ship: str) -> float:
+    """combo_wx_params から per-combo wave_clamp 閾値を取得。未保存なら 2.0m デフォルト。"""
+    row = conn.execute(
+        "SELECT mean FROM combo_wx_params "
+        "WHERE fish=? AND ship=? AND metric='_combo' AND factor='_wave_clamp_thr'",
+        (fish, ship)
+    ).fetchone()
+    return row[0] if row and row[0] is not None else 2.0
 
 
 def _get_use_fallback(conn, fish: str, ship: str) -> bool:
@@ -219,13 +229,14 @@ def _apply_wx_correction(conn, fish: str, ship: str,
 
     all_wx = {}
 
+    wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
     if os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0:
         try:
             conn_wx = sqlite3.connect(DB_WX)
             wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)  # 最頻ポイント座標を使用
-            wx    = _get_daily_wx(conn_wx, wlat, wlon, date_iso)
-            wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso)
-            wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso)
+            wx    = _get_daily_wx(conn_wx, wlat, wlon, date_iso, wave_clamp_thr)
+            wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso, wave_clamp_thr)
+            wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso, wave_clamp_thr)
             conn_wx.close()
             all_wx.update(wx)
             if wx_d1:
@@ -440,6 +451,10 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         cnt_hi    = round(cnt_predicted * max_ratio, 1)
     else:
         cnt_hi    = round(cnt_predicted + cnt_mae, 1)
+
+    # ガード: 独立計算で min > max になるケースをswapで修正
+    if cnt_lo > cnt_hi:
+        cnt_lo, cnt_hi = cnt_hi, cnt_lo
 
     return {
         "fish":            fish,

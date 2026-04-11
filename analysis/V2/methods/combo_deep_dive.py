@@ -1276,6 +1276,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     """
     MIN_TRAIN_N = 15
     MIN_TRAIN_MONTHS = 4
+    WAVE_CLAMP_CANDIDATES = [1.0, 1.5, 2.0, 2.5, 3.0]
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < MIN_TRAIN_MONTHS + 1:
@@ -1310,6 +1311,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     bl2_acts  = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
     # フォールドごとの alpha_scale を収集 → 最終パラメータには中央値を使う
     alpha_scales_by_met = {met: [] for met in METRICS_LIST}
+    # フォールドごとの best_wave_clamp を収集 → 最終パラメータには中央値を使う
+    wave_clamp_thr_folds: list = []
 
     for test_month in months:
         train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] < test_month]
@@ -1340,6 +1343,80 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     _db[dn].append(val)
             metric_decadal_m[met] = {dn: sum(v)/len(v) for dn, v in _db.items()}
 
+        # ── wave_clamp コンボ別HPO（学習データのみで選択・テストに適用） ────────
+        # cnt_avg の wMAPE（alpha=0.5固定の簡易予測）で各候補を評価し、最良値を採用する。
+        # alpha/beta は候補ごとに再OLSせず固定。選択目的の評価のため十分。
+        _wc_scores = {}
+        _dec_avg = metric_decadal_m.get("cnt_avg", {})
+        for _wc in WAVE_CLAMP_CANDIDATES:
+            # wave_clamp だけ差し替えたコピー（wave_height_avg は既にenriched済み）
+            _tr = []
+            for _r in train_en_h0:
+                _rc = dict(_r)
+                if _rc.get("wave_height_avg") is not None:
+                    _rc["wave_clamp"] = min(_rc["wave_height_avg"], _wc)
+                _tr.append(_rc)
+            # wave_clamp の hist_params だけ再計算して hist_params_m にマージ
+            _wc_vals = [_r.get("wave_clamp") for _r in _tr if _r.get("wave_clamp") is not None]
+            _wc_m, _wc_s = mean_std(_wc_vals)
+            if _wc_m is None or not _wc_s:
+                continue
+            _hp = dict(hist_params_m)
+            _hp["wave_clamp"] = (_wc_m, _wc_s)
+            # cnt_avg の全因子相関（wave_clamp のみ新値で計算）
+            _tr_ys = [_r.get("cnt_avg") for _r in _tr]
+            _met_vals = [v for v in _tr_ys if v is not None]
+            _mm, _ms = mean_std(_met_vals)
+            if _mm is None or not _ms:
+                continue
+            _fr = {}
+            for _fac in ALL_FACTORS:
+                _xs2 = [_r.get(_fac) for _r in _tr]
+                _rv2, _, _ = pearson(_xs2, _tr_ys)
+                if _rv2 is not None and abs(_rv2) >= 0.10:
+                    _fr[_fac] = _rv2
+            if not _fr:
+                continue
+            _w2 = sum(abs(v) for v in _fr.values()) or 1.0
+            _preds2, _acts2 = [], []
+            for _r in _tr:
+                _a = _r.get("cnt_avg")
+                if _a is None:
+                    continue
+                _dn = _r.get("decade")
+                _base = _dec_avg.get(_dn, _mm)
+                _nx2 = 0.0
+                for _fac, _rv in _fr.items():
+                    _v = _r.get(_fac)
+                    if _v is None or _fac not in _hp:
+                        continue
+                    _fm2, _fs2 = _hp[_fac]
+                    _nx2 += _rv * (_v - _fm2) / _fs2
+                _pred2 = _base + (_nx2 / _w2) * _ms * 0.5
+                _preds2.append(_pred2)
+                _acts2.append(_a)
+            _sc = _wmape(_preds2, _acts2)
+            if _sc is not None:
+                _wc_scores[_wc] = _sc
+        fold_wc_thr = WAVE_CLAMP_THRESHOLD  # デフォルト（mini-sweep失敗時のフォールバック）
+        if _wc_scores:
+            _best_wc = min(_wc_scores, key=_wc_scores.get)
+            fold_wc_thr = _best_wc
+            wave_clamp_thr_folds.append(_best_wc)
+            # hist_params_m["wave_clamp"] を正しい閾値で更新
+            # → メトリクスループの正規化(z-score)がテストデータと一貫する
+            _upd_vals = [min(r["wave_height_avg"], _best_wc)
+                         for r in train_en_h0 if r.get("wave_height_avg") is not None]
+            _um, _us = mean_std(_upd_vals)
+            if _um is not None and _us:
+                hist_params_m["wave_clamp"] = (_um, _us)
+            # テスト fold の wave_clamp を上書き
+            for H in HORIZONS:
+                for _r in all_en_by_H[H]:
+                    if _r["date"][:7] == test_month and _r.get("wave_height_avg") is not None:
+                        _r["wave_clamp"] = min(_r["wave_height_avg"], _best_wc)
+        # ───────────────────────────────────────────────────────────────────────
+
         # train_sorted_m の日付リスト（bisect用）
         train_dates_m = [r["date"] for r in train_sorted_m]
 
@@ -1347,7 +1424,13 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             tr_ys = [r.get(met) for r in train_en_h0]
             factor_r_m = {}
             for fac in ALL_FACTORS:
-                xs = [r.get(fac) for r in train_en_h0]
+                # wave_clamp は fold_wc_thr で再計算（訓練データの相関もテストと一貫させる）
+                if fac == "wave_clamp" and fold_wc_thr != WAVE_CLAMP_THRESHOLD:
+                    xs = [min(r["wave_height_avg"], fold_wc_thr)
+                          if r.get("wave_height_avg") is not None else None
+                          for r in train_en_h0]
+                else:
+                    xs = [r.get(fac) for r in train_en_h0]
                 rv, _, _ = pearson(xs, tr_ys)
                 if rv is not None and abs(rv) >= 0.10:
                     factor_r_m[fac] = rv
@@ -1388,7 +1471,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     _base = m_dec.get(_dn, met_mean_m)
                 _nx = 0.0
                 for fac, rv in factor_r_m.items():
-                    _v = _r.get(fac)
+                    if fac == "wave_clamp" and fold_wc_thr != WAVE_CLAMP_THRESHOLD:
+                        _v = (min(_r["wave_height_avg"], fold_wc_thr)
+                              if _r.get("wave_height_avg") is not None else None)
+                    else:
+                        _v = _r.get(fac)
                     if _v is None or fac not in hist_params_m:
                         continue
                     _fm, _fs = hist_params_m[fac]
@@ -1698,6 +1785,16 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 "met_std": met_std_f,
             }
 
+    # wave_clamp_thr: foldごとの best 値の中央値をコンボ確定値とする
+    if wave_clamp_thr_folds:
+        _s = sorted(wave_clamp_thr_folds)
+        _mid = len(_s) // 2
+        best_wave_clamp_thr = _s[_mid] if len(_s) % 2 == 1 else (_s[_mid-1] + _s[_mid]) / 2
+    else:
+        best_wave_clamp_thr = WAVE_CLAMP_THRESHOLD  # デフォルト2.0mにフォールバック
+    # wx_params_data に wave_clamp_thr を追加（save_wx_params で _wave_clamp_thr として保存）
+    wx_params_data["_wave_clamp_thr"] = best_wave_clamp_thr
+
     return lines, bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
 
 
@@ -1760,6 +1857,11 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None, u
             conn.execute(f"ALTER TABLE combo_wx_params ADD COLUMN {col} {typ}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rows = []
+    # _wave_clamp_thr はコンボ全体に1行（metric='_combo', factor='_wave_clamp_thr'）
+    wave_clamp_thr = wx_params_data.pop("_wave_clamp_thr", None)
+    if wave_clamp_thr is not None:
+        rows.append((fish, ship, "_combo", "_wave_clamp_thr",
+                     wave_clamp_thr, None, None, None, None, None, None, None, now, 0))
     for met, params in wx_params_data.items():
         rows.append((fish, ship, met, "_meta",
                      None, None, None,
