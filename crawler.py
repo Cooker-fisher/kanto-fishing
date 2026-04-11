@@ -6333,30 +6333,72 @@ def _load_combo_predictions(target_date_str: str, min_stars: int = 3) -> list:
 
 
 def _pred_build_html(preds: list, target_date_str: str) -> str:
-    """予測リスト → 魚種ページ用HTML（★3以上のみ表示）"""
+    """予測リスト → 魚種ページ用HTML（★3以上のみ表示）
+    回遊魚（kaiyu_starsあり）: チャンス★ / 良日ライン表示
+    根魚・底もの（kaiyu_starsなし）: 従来の匹数レンジ表示
+    """
     visible = [p for p in preds if p["stars"] >= 3]
     if not visible:
         return ""
-    rows_html = ""
+
+    rows_normal = ""   # 根魚・底もの行
+    rows_kaiyu  = ""   # 回遊魚行
+
     for p in visible[:10]:
-        stars_str = "★" * p["stars"] + "☆" * (5 - p["stars"])
-        cnt_str   = f"{p['cnt_lo']:.0f}〜{p['cnt_hi']:.0f}匹"
-        if p.get("size_lo") and p.get("size_hi"):
-            sz_str = f"{p['size_lo']:.0f}〜{p['size_hi']:.0f}cm"
-        elif p.get("size_predicted"):
-            sz_str = f"{p['size_predicted']:.0f}cm"
+        ks = p.get("kaiyu_stars")
+        star_html = "★" * p["stars"] + "☆" * (5 - p["stars"])
+
+        if ks:
+            # ── 回遊魚モード ─────────────────────────────────
+            hit5  = ks.get("hit_rate5")
+            gl    = ks.get("good_line")
+            hit5s = f"{hit5:.0%}" if hit5 is not None else "---"
+            gls   = f"{gl:.0f}本以上" if gl else "---"
+            rows_kaiyu += f"""<tr>
+  <td style="font-weight:bold">{p['ship']}</td>
+  <td style="color:var(--cta);font-weight:bold;font-size:15px">{star_html}</td>
+  <td style="color:var(--positive)">{gls}で良日</td>
+  <td style="color:var(--text-secondary);font-size:11px">★5的中率 {hit5s}</td>
+</tr>"""
         else:
-            sz_str = "---"
-        rows_html += f"""<tr>
+            # ── 通常モード（レンジ予測）────────────────────────
+            cnt_str = f"{p['cnt_lo']:.0f}〜{p['cnt_hi']:.0f}匹"
+            if p.get("size_lo") and p.get("size_hi"):
+                sz_str = f"{p['size_lo']:.0f}〜{p['size_hi']:.0f}cm"
+            elif p.get("size_predicted"):
+                sz_str = f"{p['size_predicted']:.0f}cm"
+            else:
+                sz_str = "---"
+            rows_normal += f"""<tr>
   <td style="font-weight:bold">{p['ship']}</td>
   <td style="color:var(--positive);font-weight:bold">{cnt_str}</td>
   <td style="color:var(--accent)">{sz_str}</td>
-  <td style="color:var(--cta)">{"★" * p["stars"]}{"☆" * (5 - p["stars"])}</td>
+  <td style="color:var(--cta)">{star_html}</td>
   <td style="color:var(--text-secondary);font-size:11px">{p['cnt_mape']:.0f}%</td>
 </tr>"""
+
+    sections = []
+    if rows_kaiyu:
+        sections.append(f"""
+  <h3 style="margin:16px 0 6px;font-size:13px;color:#4db8ff">🐟 回遊魚チャンス予測</h3>
+  <div class="pred-note kaiyu-note">回遊魚は「いる確率」で評価。★5の日が過去{int((visible[0].get("kaiyu_stars") or {}).get("hit_rate5", 0.5)*100)}%の確率で良日でした。</div>
+  <div class="tbl-wrap"><table class="pred-table">
+    <thead><tr><th>船宿</th><th>チャンス</th><th>良日目安</th><th>実績精度</th></tr></thead>
+    <tbody>{rows_kaiyu}</tbody>
+  </table></div>""")
+    if rows_normal:
+        sections.append(f"""
+  <h3 style="margin:16px 0 6px;font-size:13px;color:#4db8ff">🎣 釣果予測（匹数レンジ）</h3>
+  <div class="pred-note">旬別過去実績に基づく予測。★が多いほど信頼度が高い（誤差率=過去実績との乖離幅）。</div>
+  <div class="tbl-wrap"><table class="pred-table">
+    <thead><tr><th>船宿</th><th>予測匹数レンジ</th><th>サイズ</th><th>信頼度</th><th>誤差率</th></tr></thead>
+    <tbody>{rows_normal}</tbody>
+  </table></div>""")
+
     return f"""<style>
 .pred-section{{margin:24px 0}}
 .pred-note{{font-size:11px;color:#5a8aaa;margin:4px 0 10px;padding:6px 10px;background:#081020;border-radius:4px;border-left:3px solid #1a4060}}
+.pred-note.kaiyu-note{{border-left-color:#f9c74f;color:#a0c0d8}}
 .pred-table{{width:100%;border-collapse:collapse;font-size:13px}}
 .pred-table th{{background:#0d2137;color:#4db8ff;padding:7px 10px;text-align:left;font-weight:normal}}
 .pred-table td{{padding:7px 10px;border-bottom:1px solid #0d2137}}
@@ -6364,11 +6406,7 @@ def _pred_build_html(preds: list, target_date_str: str) -> str:
 </style>
 <div class="pred-section">
   <h2>📈 来週末の予測（{target_date_str}）</h2>
-  <div class="pred-note">旬別過去実績に基づく予測です。★が多いほど信頼度が高い（誤差率=過去実績との乖離幅）。当日の海況・天候により変動します。</div>
-  <div class="tbl-wrap"><table class="pred-table">
-    <thead><tr><th>船宿</th><th>予測匹数レンジ</th><th>サイズ</th><th>信頼度</th><th>誤差率</th></tr></thead>
-    <tbody>{rows_html}</tbody>
-  </table></div>
+  {''.join(sections)}
 </div>"""
 
 
