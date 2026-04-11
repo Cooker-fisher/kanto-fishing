@@ -43,6 +43,13 @@ nav a:hover,nav a.on{background:var(--accent);color:#fff;text-decoration:none}
 .top3-cta{display:block;text-align:center;margin-top:8px;padding:8px;background:var(--prem);color:#fff;border-radius:16px;font-weight:700;font-size:12px}
 .top3-cta:hover{opacity:.85;text-decoration:none}
 
+/* Blur paywall */
+.blurred{position:relative;user-select:none}
+.blurred .blur-inner{filter:blur(5px);pointer-events:none}
+.blur-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(248,244,255,.55);border-radius:8px;cursor:pointer}
+.blur-overlay .lock-icon{font-size:20px}
+.blur-overlay .lock-label{font-size:10px;font-weight:700;color:var(--prem);text-align:center;line-height:1.3}
+
 /* Weekend recommended */
 .weekend{background:linear-gradient(135deg,#fef6ee,#fed7aa);border:1px solid #fb923c;border-radius:var(--r);padding:12px;margin-bottom:16px}
 .weekend h3{font-size:13px;color:var(--cta);font-weight:800;margin-bottom:8px}
@@ -317,7 +324,44 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 <div style="text-align:center;margin-bottom:20px"><a href="#" style="font-size:12px;color:var(--cta);font-weight:600">すべてのエリアを見る →</a></div>
 
-<!-- 答え合わせ (S: 1件フル、他ラベルのみ) (C: 的中定義+○×ドット) -->
+<!-- 有料誘導バナー（テイザー：予測カードをブラーで見せる） -->
+<div style="position:relative;border-radius:var(--r);overflow:hidden;margin-bottom:20px;border:1px solid #e0d6f5">
+  <!-- ブラーされた予測カード群 -->
+  <div style="filter:blur(4px);pointer-events:none;padding:12px;background:linear-gradient(135deg,#f8f4ff,#f0eafa)">
+    <div style="font-size:11px;font-weight:700;color:var(--prem);margin-bottom:8px">今週末（4/12〜13）の釣果予測</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="background:#fff;border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px;border:1px solid #e0d6f5">
+        <div style="font-size:16px;font-weight:800;color:var(--prem);width:20px;text-align:center">1</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:800;color:var(--accent)">アジ <span style="color:var(--warn);font-size:10px">★★★★★</span></div>
+          <div style="font-size:14px;font-weight:700;color:var(--cta);margin-top:2px">28〜50匹 <span style="font-size:10px;color:var(--muted);font-weight:400">| 18〜25cm | 金沢八景</span></div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px;border:1px solid #e0d6f5">
+        <div style="font-size:16px;font-weight:800;color:var(--prem);width:20px;text-align:center">2</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:800;color:var(--accent)">シロギス <span style="color:var(--warn);font-size:10px">★★★★☆</span></div>
+          <div style="font-size:14px;font-weight:700;color:var(--cta);margin-top:2px">22〜45匹 <span style="font-size:10px;color:var(--muted);font-weight:400">| 15〜20cm | 金沢八景</span></div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px;border:1px solid #e0d6f5">
+        <div style="font-size:16px;font-weight:800;color:var(--prem);width:20px;text-align:center">3</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:800;color:var(--accent)">マダイ <span style="color:var(--warn);font-size:10px">★★★☆☆</span></div>
+          <div style="font-size:14px;font-weight:700;color:var(--cta);margin-top:2px">1〜4匹 <span style="font-size:10px;color:var(--muted);font-weight:400">| 30〜55cm | 剣崎</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- オーバーレイ -->
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(248,244,255,.6)">
+    <div style="font-size:15px;font-weight:800;color:var(--prem)">今週末の釣果予測</div>
+    <div style="font-size:11px;color:var(--sub);text-align:center;line-height:1.5">匹数レンジ・最適船宿・欠航リスクを毎日更新</div>
+    <a href="mockup-premium.html" style="display:inline-block;padding:10px 28px;background:var(--prem);color:#fff;border-radius:20px;font-weight:700;font-size:13px;text-decoration:none">月額500円で見る →</a>
+  </div>
+</div>
+
+<!-- 答え合わせ (1件フル公開 + 有料部分ブラー) -->
 <h2 class="st">一昨日の予測 答え合わせ</h2>
 <div class="ans-section">
 <div class="ans-header">
@@ -327,24 +371,36 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="ans-dots">直近7日: <span style="color:var(--pos)">○○</span><span style="color:var(--neg)">×</span><span style="color:var(--pos)">○○○</span><span style="color:var(--neg)">×</span></div>
 <div class="ans-def">※ 的中 = 予測レンジ内に実績の中央値が収まった場合</div>
 
-<!-- 1件フル公開 (S: 数字=無料、因果は有料) -->
+<!-- 1件フル公開（前年比のみ無料） -->
 <div class="ans-card">
 <span class="ans-fish">アジ</span><span class="badge hit">的中</span>
 <div class="ans-row">
-<div class="ans-box p"><div class="lb">予測</div><div class="num">25〜42匹</div><div class="pct">(+20%)</div></div>
+<div class="ans-box p"><div class="lb">予測</div><div class="num">+20%</div></div>
 <div class="ans-arrow">→</div>
-<div class="ans-box a"><div class="lb">実績</div><div class="num">20〜48匹</div><div class="pct">(+25%)</div></div>
+<div class="ans-box a"><div class="lb">実績</div><div class="num">+25%</div></div>
+</div>
+<!-- 有料: 匹数レンジ＋サイズ（ブラー） -->
+<div class="blurred" style="margin-top:8px">
+<div class="blur-inner">
+<div class="ans-row">
+<div class="ans-box p"><div class="lb">予測 匹数</div><div class="num" style="font-size:13px">25〜42匹</div></div>
+<div class="ans-arrow">→</div>
+<div class="ans-box a"><div class="lb">実績 匹数</div><div class="num" style="font-size:13px">20〜48匹</div></div>
+</div>
+<div class="ans-cause" style="margin-top:6px">水温+1.2℃・大潮が後押し。波高1.2mで出船率◎。予測の上振れ要因は潮流の強さ。</div>
+</div>
+<div class="blur-overlay"><span class="lock-icon">🔒</span><span class="lock-label">匹数・サイズ・因果分析は有料</span></div>
 </div>
 </div>
 
-<!-- 他はラベルのみ (S: 詳細は有料) -->
+<!-- 他はラベルのみ -->
 <div class="ans-others">
 <span><span style="color:var(--neg)">×</span> マダイ</span>
 <span><span style="color:var(--pos)">○</span> タチウオ</span>
 <span><span style="color:var(--pos)">○</span> カワハギ</span>
 <span><span style="color:var(--pos)">○</span> シロギス</span>
 </div>
-<a class="ans-cta" href="#">全魚種の答え合わせ詳細を見る →</a>
+<a class="ans-cta" href="#">全魚種の詳細（匹数・サイズ・因果）を見る →</a>
 </div>
 
 <!-- 共有ボタン -->
