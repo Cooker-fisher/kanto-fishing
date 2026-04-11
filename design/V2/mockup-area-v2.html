@@ -106,6 +106,13 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .teaser-dummy .td-reason{font-size:10px;color:var(--sub);margin-top:4px}
 .teaser-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .teaser-overlay-text{background:rgba(124,58,237,.92);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 12px rgba(124,58,237,.4)}
+/* Coming Soon Panel（機能リスト付き）*/
+.coming-soon-panel{background:rgba(124,58,237,.92);color:#fff;padding:14px 18px;border-radius:12px;font-size:12px;box-shadow:0 4px 16px rgba(124,58,237,.4);min-width:180px;text-align:left}
+.cs-title{font-weight:800;font-size:13px;margin-bottom:8px;text-align:center;letter-spacing:.5px}
+.cs-features{list-style:none;padding:0;margin:0 0 8px 0}
+.cs-features li{padding:2px 0;font-size:11px;line-height:1.5}
+.cs-price{text-align:center;font-size:10px;opacity:.85;border-top:1px solid rgba(255,255,255,.3);padding-top:6px;margin-top:2px}
+.cs-price em{font-style:normal;font-weight:700}
 .teaser-cta-wrap{background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-top:10px;text-align:center}
 .teaser-cta-msg{font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.5}
 .teaser-cta-msg strong{color:var(--accent)}
@@ -247,6 +254,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
 </div>
 
+<!-- COMING_SOON_START: area-forecast -->
 <!-- ============ ティザー: エリア×予測 ============ -->
 <h2 class="st teaser-title">このエリアの予測・分析 <span class="tag coming">まもなく公開</span></h2>
 <div class="teaser">
@@ -270,7 +278,15 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
       <div class="td-reason">魚種別の最適ポイントマッチング</div>
     </div>
     <div class="teaser-overlay">
-      <div class="teaser-overlay-text">COMING SOON</div>
+      <div class="coming-soon-panel">
+        <div class="cs-title">🔒 準備中</div>
+        <ul class="cs-features">
+          <li>✓ エリア別日別予測（7日先）</li>
+          <li>✓ 全ポイント情報</li>
+          <li>✓ 欠航リスク予報</li>
+        </ul>
+        <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
+      </div>
     </div>
   </div>
   <div class="teaser-cta-wrap">
@@ -281,6 +297,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <div class="teaser-price">※ <em>月額500円</em> / <em>1回100円</em> で提供予定</div>
   </div>
 </div>
+<!-- COMING_SOON_END: area-forecast -->
 
 <!-- ============ 無料: 近隣エリア ============ -->
 <div class="related">
