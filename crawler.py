@@ -80,7 +80,7 @@
   → choka_box 単位で li.date から正しい出船日を取得
   → 全釣果に「今日の日付」が入る問題を修正
 """
-import re, json, time, os, csv, math, sqlite3, shutil
+import re, json, time, os, csv, math, sqlite3, shutil, html
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
@@ -4647,6 +4647,178 @@ def _v2_build_zone_c(risk_days, area_wx):
     if not risk_html and not wx_html:
         return ""
     return risk_html + wx_html
+
+
+def _v2_build_hero(today_count, area_count, ship_count, crawled_at):
+    """HERO: 件数・エリア数・船宿数・更新時刻のファーストビューバナー。
+
+    引数:
+        today_count : int  当日釣果レコード件数
+        area_count  : int  当日報告があったエリア数
+        ship_count  : int  当日報告があった船宿数
+        crawled_at  : str  更新日時文字列（例: "2026/04/11 16:30"）
+
+    返値:
+        HTML文字列（<div class="hero">〜</div>）
+    """
+    return (
+        f'<div class="hero">'
+        f'<div class="hero-sub">関東の船釣り 今日の釣果</div>'
+        f'<div class="n">{today_count}<u>件</u></div>'
+        f'<div class="info"><span class="dot"></span>{area_count}エリア・{ship_count}船宿から報告</div>'
+        f'<div class="updated">{crawled_at} 更新</div>'
+        f'</div>'
+    )
+
+
+def _v2_build_zone_a():
+    """ZONE A: 今週の狙い目 Coming Soon ティザー（静的・有料予告）。
+
+    返値:
+        HTML文字列（<h2>〜</div> まで）
+    """
+    return """<!-- COMING_SOON_START: weekly-target -->
+<h2 class="st teaser-title">今週の狙い目 <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser">
+  <div class="teaser-head">
+    <span class="teaser-badge soon">開発中</span>
+    <span class="teaser-title">釣果データ×気象×潮汐で週末の狙い目魚種をランキング表示</span>
+  </div>
+  <div class="teaser-desc">約10万件の釣果データと気象・潮汐データを分析し、今週末に狙うべき魚種・エリアを自動算出します。</div>
+  <div class="teaser-body">
+    <div class="teaser-dummy">
+      <div class="td-fish">魚種 A <span class="td-star">★★★★★</span></div>
+      <div class="td-range">〇〜〇匹 / 〇〇〜〇〇cm</div>
+      <div class="td-reason">潮汐×海況条件でベスト評価</div>
+    </div>
+    <div class="teaser-dummy">
+      <div class="td-fish">魚種 B <span class="td-star">★★★★☆</span></div>
+      <div class="td-range">〇〜〇匹 / 〇〇〜〇〇cm</div>
+      <div class="td-reason">旬ピーク×安定出船条件</div>
+    </div>
+    <div class="teaser-overlay">
+      <div class="coming-soon-panel">
+        <div class="cs-title">🔒 準備中</div>
+        <ul class="cs-features">
+          <li>✓ 今週 日毎の釣果予測</li>
+          <li>✓ 2・3・4週先の釣果予測</li>
+          <li>✓ 気象×潮汐で自動算出</li>
+        </ul>
+        <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
+      </div>
+    </div>
+  </div>
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg">公開時にお知らせします。LINEで友だち追加してお待ちください。</div>
+    <div class="teaser-cta-btns">
+      <a class="cta-line" href="#line-pending"><span class="line-ic">L</span>LINEで通知を受け取る</a>
+      <a class="cta-x" href="#x-pending">𝕏 <small>(準備中)</small></a>
+    </div>
+    <div class="teaser-price">※ 公開時は <em>月額500円</em> / <em>1回100円</em> でスポット利用可</div>
+  </div>
+</div>
+<!-- COMING_SOON_END: weekly-target -->
+"""
+
+
+def _v2_build_zone_d():
+    """ZONE D: 分析・予測ゾーン Coming Soon ティザー（静的・有料予告）。
+
+    返値:
+        HTML文字列（コメントタグ込み）
+    """
+    return """<!-- COMING_SOON_START: analysis-forecast -->
+<h2 class="st teaser-title">分析・予測ゾーン <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser">
+  <div class="teaser-head">
+    <span class="teaser-badge soon">開発中</span>
+    <span class="teaser-title">注目コンボ・急落コンボ・日別釣果予測</span>
+  </div>
+  <div class="teaser-desc">釣果×気象の相関分析から、<strong>急上昇・急落のコンボ</strong>と7日先の日別予測を提供します。</div>
+  <div class="teaser-body">
+    <div class="teaser-dummy">
+      <div class="td-fish">注目コンボ: 魚種 A × エリア X</div>
+      <div class="td-range">スコア XX / 平年比 +X%</div>
+      <div class="td-reason">潮汐×海況条件でベスト評価</div>
+    </div>
+    <div class="teaser-dummy">
+      <div class="td-fish">日別予測: 魚種 B × エリア Y <span class="td-star">★★★★☆</span></div>
+      <div class="td-range">予測 〇〜〇匹 / 〇〇〜〇〇cm</div>
+      <div class="td-reason">旬ピーク×海況安定期</div>
+    </div>
+    <div class="teaser-dummy">
+      <div class="td-fish">⚠ 急落コンボ: 魚種 C × エリア Z</div>
+      <div class="td-range">平年比 -X% / 先週比 -X%</div>
+      <div class="td-reason">海況変化で釣果急落傾向</div>
+    </div>
+    <div class="teaser-overlay">
+      <div class="coming-soon-panel">
+        <div class="cs-title">🔒 準備中</div>
+        <ul class="cs-features">
+          <li>✓ 日別釣果予測（7日先）</li>
+          <li>✓ 気象相関グラフ</li>
+          <li>✓ 急上昇・急落コンボ通知</li>
+        </ul>
+        <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
+      </div>
+    </div>
+  </div>
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg">全機能 <strong>まとめて月額500円</strong> で提供予定。公開時にLINEで通知します。</div>
+    <div class="teaser-cta-btns">
+      <a class="cta-line" href="#line-pending"><span class="line-ic">L</span>LINEで通知を受け取る</a>
+    </div>
+    <div class="teaser-price">※ <em>月額500円</em>（仕掛け1セット分）/ <em>1回100円</em> でスポット利用可</div>
+  </div>
+</div>
+<!-- COMING_SOON_END: analysis-forecast -->
+"""
+
+
+def _v2_ad_slot(n):
+    """広告スロットプレースホルダー。
+
+    引数:
+        n : int  スロット番号（1 or 2）
+
+    返値:
+        HTML文字列（<div class="ad-slot">）
+    """
+    return f'<div class="ad-slot">広告スペース {n}</div>\n'
+
+
+def _v2_build_zone_e(fish_list, area_list):
+    """ZONE E: 魚種・エリア ナビチップス。
+
+    引数:
+        fish_list : list[str]  表示する魚種名リスト（上位11件程度）
+        area_list : list[str]  表示するエリア名リスト
+
+    返値:
+        HTML文字列（2つの nav-section）
+    """
+    fish_chips = "".join(
+        f'<a href="{_fish_to_url(f)}">{html.escape(f)}</a>'
+        for f in fish_list
+    )
+    fish_chips += '<a href="/fish/">すべて見る →</a>'
+
+    area_chips = "".join(
+        f'<a href="/area/{quote(a, safe="")}.html">{html.escape(a)}</a>'
+        for a in area_list
+    )
+    area_chips += '<a href="/area/">すべて見る →</a>'
+
+    return (
+        f'<div class="nav-section">'
+        f'<h3>人気の魚種から探す</h3>'
+        f'<div class="nav-chips">{fish_chips}</div>'
+        f'</div>\n'
+        f'<div class="nav-section">'
+        f'<h3>エリアから探す</h3>'
+        f'<div class="nav-chips">{area_chips}</div>'
+        f'</div>\n'
+    )
 
 
 def _build_area_nav_html(catches, prefix=""):
