@@ -1276,7 +1276,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     """
     MIN_TRAIN_N = 15
     MIN_TRAIN_MONTHS = 4
-    WAVE_CLAMP_CANDIDATES = [1.0, 1.5, 2.0, 2.5, 3.0]
+    WAVE_CLAMP_CANDIDATES  = [1.0, 1.5, 2.0, 2.5, 3.0]
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < MIN_TRAIN_MONTHS + 1:
@@ -1417,6 +1417,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         _r["wave_clamp"] = min(_r["wave_height_avg"], _best_wc)
         # ───────────────────────────────────────────────────────────────────────
 
+        # 相関閾値・FAST_MAX_H は per-combo HPO を検証した結果、効果なし（H=0,7で±0.03pt）のため固定値を使用
+        # 検証結果: 同一187コンボ比較で中央値 -0.03pt（ランダム誤差範囲）。2026/04/11確定
+        fold_corr_thr  = 0.10       # 固定
+        fold_fast_max_h = FAST_MAX_H  # 固定（=7）
+
         # train_sorted_m の日付リスト（bisect用）
         train_dates_m = [r["date"] for r in train_sorted_m]
 
@@ -1432,7 +1437,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 else:
                     xs = [r.get(fac) for r in train_en_h0]
                 rv, _, _ = pearson(xs, tr_ys)
-                if rv is not None and abs(rv) >= 0.10:
+                if rv is not None and abs(rv) >= fold_corr_thr:
                     factor_r_m[fac] = rv
             if not factor_r_m:
                 continue
@@ -1520,7 +1525,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             for H in HORIZONS:
                 te_en_h = [r for r in all_en_by_H[H] if r["date"][:7] == test_month]
                 usable  = {fac: rv for fac, rv in factor_r_m.items()
-                           if fac in SLOW_FACTORS or H <= FAST_MAX_H}
+                           if fac in SLOW_FACTORS or H <= fold_fast_max_h}
                 w_h = sum(abs(rv) for rv in usable.values()) or 1.0
 
                 for r in te_en_h:
@@ -1640,7 +1645,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             acc3 = sum(1 for t, p in zip(ct, cp)
                        if t is not None and p is not None and t == p) / n_valid if n_valid else None
             n_f    = sum(1 for fac in ALL_FACTORS
-                         if fac in SLOW_FACTORS or H <= FAST_MAX_H)
+                         if fac in SLOW_FACTORS or H <= fold_fast_max_h)
             # ベースラインメトリクス（各H・各metで計算）
             def _bl_metrics(bps, bas):
                 if not bps:
@@ -1729,6 +1734,10 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         _modal_pair = max(set(_coord_pairs), key=_coord_pairs.count)
         _modal_lat, _modal_lon = _modal_pair
 
+    # corr_thr / fast_max_h は固定値（per-combo HPOは効果なしのため）
+    best_corr_thr   = 0.10
+    best_fast_max_h = FAST_MAX_H
+
     if len(final_train) >= MIN_TRAIN_N:
         # 因子の統計（mean/std）を全学習データから計算
         final_hist_params = {}
@@ -1754,7 +1763,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             for fac in ALL_FACTORS:
                 xs = [r.get(fac) for r in final_train]
                 rv, _, _ = pearson(xs, final_ys)
-                if rv is not None and abs(rv) >= 0.10:
+                if rv is not None and abs(rv) >= best_corr_thr:
                     final_factor_r[fac] = rv
             if not final_factor_r:
                 continue
@@ -1792,7 +1801,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         best_wave_clamp_thr = _s[_mid] if len(_s) % 2 == 1 else (_s[_mid-1] + _s[_mid]) / 2
     else:
         best_wave_clamp_thr = WAVE_CLAMP_THRESHOLD  # デフォルト2.0mにフォールバック
-    # wx_params_data に wave_clamp_thr を追加（save_wx_params で _wave_clamp_thr として保存）
+    # wx_params_data に _wave_clamp_thr を追加
     wx_params_data["_wave_clamp_thr"] = best_wave_clamp_thr
 
     return lines, bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
@@ -1857,7 +1866,7 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None, u
             conn.execute(f"ALTER TABLE combo_wx_params ADD COLUMN {col} {typ}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rows = []
-    # _wave_clamp_thr はコンボ全体に1行（metric='_combo', factor='_wave_clamp_thr'）
+    # _combo 行群: wave_clamp_thr / corr_thr / fast_max_h（コンボ全体に各1行）
     wave_clamp_thr = wx_params_data.pop("_wave_clamp_thr", None)
     if wave_clamp_thr is not None:
         rows.append((fish, ship, "_combo", "_wave_clamp_thr",
