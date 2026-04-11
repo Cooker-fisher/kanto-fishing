@@ -4414,6 +4414,180 @@ def _v2_page_footer(crawled_at=""):
 </nav>"""
 
 
+# ============================================================
+# V2 ZONE B: 釣れている魚 カードグリッド
+# ============================================================
+
+# ローマ字変換テーブル（ヘボン式・58魚種対応暫定版）
+_FISH_ROMAN = {
+    "アジ": "aji", "マダイ": "madai", "タチウオ": "tachiuo", "カワハギ": "kawahagi",
+    "シロギス": "shirogisu", "フグ": "fugu", "ヤリイカ": "yariika", "ヒラメ": "hirame",
+    "マゴチ": "magochi", "アマダイ": "amadai", "イサキ": "isaki", "メバル": "mebaru",
+    "スミイカ": "sumiika", "カサゴ": "kasago", "ワラサ": "warasa", "ブリ": "buri",
+    "イナダ": "inada", "サワラ": "sawara", "カンパチ": "kanpachi", "シイラ": "shiira",
+    "カツオ": "katsuo", "キハダマグロ": "kihada", "マサバ": "masaba", "ゴマサバ": "gomasaba",
+    "ハナダイ": "hanadai", "クロダイ": "kurodai", "スズキ": "suzuki", "シーバス": "suzuki",
+    "マコガレイ": "makogarei", "イシガレイ": "ishigarei",
+    "ムシガレイ": "mushigarei", "ホウボウ": "houbo", "オニカサゴ": "onikasago",
+    "クロムツ": "kuromutu", "アカムツ": "akamutu", "キンメダイ": "kinmedai",
+    "スルメイカ": "surumeika", "コウイカ": "kouika",
+    "ケンサキイカ": "kensakiika", "アオリイカ": "aoriika", "マルイカ": "maruika",
+    "カレイ": "karei", "ソイ": "soi", "アイナメ": "ainame", "オコゼ": "okoze",
+    "ハタ": "hata", "クエ": "kue", "マハタ": "mahata", "クロハタ": "kurohata",
+    "シマアジ": "shimaaji", "イシダイ": "ishidai", "タイ五目": "tai-gomoku",
+    "LTアジ": "lt-aji", "LT五目": "lt-gomoku", "五目": "gomoku",
+}
+
+def _fish_to_url(fish):
+    """魚種名 → URLスラグ（ローマ字テーブル優先、未登録はURLエンコード）"""
+    slug = _FISH_ROMAN.get(fish)
+    if slug:
+        return f"/fish/{slug}.html"
+    return f"/fish/{quote(fish, safe='')}.html"
+
+
+def _v2_build_zone_b(catches, history):
+    """ZONE B: 今日 釣れている魚 カードグリッド（事実のみ）。
+
+    引数:
+        catches  : 当日の釣果レコードリスト（in-memory形式）
+        history  : history dict（daily キーを参照）
+
+    返値:
+        HTML文字列（<h2>〜</div> まで）
+    """
+    # 当日釣果を魚種ごとに集計
+    fish_records: dict = {}  # fish -> list of catch records
+    for c in catches:
+        if c.get("is_cancellation"):
+            continue
+        for f in c.get("fish", []):
+            if f == "不明":
+                continue
+            fish_records.setdefault(f, []).append(c)
+
+    if not fish_records:
+        return ""
+
+    # 釣果件数降順でソート
+    ranked = sorted(fish_records.items(), key=lambda x: -len(x[1]))
+
+    # 過去7日分の日付リスト（今日含む）
+    daily = history.get("daily", {})
+    past_7_dates = [(datetime.now() - timedelta(days=i)).strftime("%Y/%m/%d") for i in range(6, -1, -1)]
+
+    def _bars_html(fish):
+        """7日間バーグラフHTML。今日を .today でマーク。"""
+        counts = []
+        for d in past_7_dates:
+            day_data = daily.get(d, {}).get(fish)
+            counts.append(day_data["ships"] if day_data else 0)
+        max_c = max(counts) if max(counts) > 0 else 1
+        bars = ""
+        for i, cnt in enumerate(counts):
+            pct = max(5, int(cnt / max_c * 100))
+            cls = "b today" if i == 6 else "b"
+            bars += f'<div class="{cls}" style="height:{pct}%"></div>'
+        return f'<div class="bars">{bars}</div>'
+
+    def _trend_html(fish):
+        """トレンド矢印: 直近3日 vs 前3日の件数比較（事実ベース）。"""
+        recent = past_7_dates[4:]   # 直近3日
+        before = past_7_dates[1:4]  # 前3日
+        r_sum = sum(
+            (daily.get(d, {}).get(fish) or {}).get("ships", 0)
+            for d in recent
+        )
+        b_sum = sum(
+            (daily.get(d, {}).get(fish) or {}).get("ships", 0)
+            for d in before
+        )
+        if b_sum == 0:
+            if r_sum > 0:
+                return '<div class="trend up">↑ 上昇中</div>'
+            return '<div class="trend flat">→ 情報少</div>'
+        ratio = r_sum / b_sum
+        if ratio >= 1.3:
+            return '<div class="trend up">↑ 上昇中</div>'
+        elif ratio <= 0.7:
+            return '<div class="trend dn">↓ 下降中</div>'
+        else:
+            return '<div class="trend flat">→ 横ばい</div>'
+
+    def _card_html(fish, records):
+        """魚種1枚分のカードHTML。"""
+        # 釣果レンジ（個人釣果のみ）
+        personal = [c for c in records if c.get("count_range") and not c["count_range"].get("is_boat")]
+        if personal:
+            cnt_min = min(c["count_range"]["min"] for c in personal)
+            cnt_max = max(c["count_range"]["max"] for c in personal)
+            fr = f'{cnt_min}〜{cnt_max}匹'
+        else:
+            fr = f'{len(records)}件'
+
+        # サイズ（cm）
+        sizes = [c["size_cm"] for c in records if c.get("size_cm") and c["size_cm"].get("min")]
+        if sizes:
+            s_min = min(s["min"] for s in sizes)
+            s_max = max(s["max"] for s in sizes)
+            fs = f'{s_min}〜{s_max}cm'
+        else:
+            fs = ""
+
+        # 出船船宿数
+        ship_set = {c["ship"] for c in records}
+        ship_count = len(ship_set)
+        fb_text = f'{ship_count}船宿'
+
+        # 最多件数の船宿（事実のみ・件数表示）
+        ship_cnt: dict = {}
+        for c in records:
+            ship_cnt[c["ship"]] = ship_cnt.get(c["ship"], 0) + 1
+        top_ship, top_cnt = max(ship_cnt.items(), key=lambda x: x[1])
+        fb = f'◎{top_ship} {top_cnt}件 / {fb_text}'
+
+        url = _fish_to_url(fish)
+        fs_html = f'<div class="fs">{fs}</div>' if fs else ""
+
+        return (
+            f'<a class="fc" href="{url}">'
+            f'<div class="fn">{fish}</div>'
+            f'<div class="fr">{fr}</div>'
+            f'{fs_html}'
+            f'<div class="fb">{fb}</div>'
+            f'{_bars_html(fish)}'
+            f'{_trend_html(fish)}'
+            f'</a>'
+        )
+
+    # 上位6件 → カードグリッド
+    top6 = ranked[:6]
+    others = ranked[6:]
+
+    cards_html = "\n".join(_card_html(fish, records) for fish, records in top6)
+    grid_html = f'<div class="fish-grid">\n{cards_html}\n</div>'
+
+    # 7件目以降 → fish-others タグリスト
+    others_html = ""
+    if others:
+        tags = "".join(
+            f'<a href="{_fish_to_url(fish)}">{fish} {len(records)}件</a>'
+            for fish, records in others
+        )
+        others_html = (
+            f'<div class="fish-others">'
+            f'<div class="fo-title">その他の魚種（今日の報告あり）</div>'
+            f'<div class="fo-list">{tags}</div>'
+            f'</div>'
+        )
+
+    return (
+        f'<h2 class="st">今日 釣れている魚 <span class="tag free">無料</span></h2>\n'
+        f'{grid_html}\n'
+        f'{others_html}'
+    )
+
+
 def _build_area_nav_html(catches, prefix=""):
     """エリアナビHTML生成（ヘッダーのドロップダウン用）。"""
     active_areas = set(c["area"] for c in catches) if catches else set()
