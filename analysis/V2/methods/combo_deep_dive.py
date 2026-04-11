@@ -50,6 +50,9 @@ TRAIN_END  = "2024/12/31"   # この日以前 = 学習データ
 HORIZONS   = [0, 1, 3, 7, 14, 21, 28]
 MIN_N_COMBO = 30            # 分析最小件数（統計的に意味ある予測を立てられる下限）
 
+# 回遊魚：レンジ予測の代わりに★（チャンス評価）を使う魚種
+KAIYU_FISH = {"シイラ", "カツオ", "キハダマグロ", "ブリ", "ワラサ", "イナダ", "サワラ", "カンパチ"}
+
 # wave_clamp 閾値（モジュール変数。--wave-clamp 引数で上書き可）
 # 1.5m / 2.0m / 2.5m で比較検証するための可変定数
 WAVE_CLAMP_THRESHOLD: float = 2.0
@@ -1266,7 +1269,7 @@ def _dir_acc(preds, acts):
             dt += 1
     return dc / dt if dt else None
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None):
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None):
     """ローリング月次クロスバリデーション
 
     各月をテスト期として、それ以前の全データを学習に使う拡張ウィンドウCV。
@@ -1280,7 +1283,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < MIN_TRAIN_MONTHS + 1:
-        return ["  データ不足（ローリングCV最低月数に達しない）"], [], [], {}, {}, None, None
+        return ["  データ不足（ローリングCV最低月数に達しない）"], [], [], [], {}, {}, None, None
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}
@@ -1315,6 +1318,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     wave_clamp_thr_folds: list = []
     # range_backtest 用: cnt_max/cnt_min の (pred, act) を日付キーで保存（Coverage/Winkler計算用）
     _range_by_key = {H: {} for H in HORIZONS}  # {H: {(test_month, date): {met: (pred, act)}}}
+    # star_backtest 用: cnt_avg の (pred, act, decade_avg) を保存（回遊魚★評価用）
+    _star_by_key  = {H: {} for H in HORIZONS}  # {H: {(test_month, date): (pred, act, base)}}
 
     for test_month in months:
         train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] < test_month]
@@ -1606,6 +1611,9 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         if _rk not in _range_by_key[H]:
                             _range_by_key[H][_rk] = {}
                         _range_by_key[H][_rk][met] = (pred, act)
+                    # star_backtest 用（cnt_avg × 回遊魚のみ）
+                    if met == "cnt_avg" and fish in KAIYU_FISH:
+                        _star_by_key[H][(test_month, r["date"])] = (pred, act, base)
 
     # 結果出力
     total_n = len(all_acts["cnt_avg"].get(0, []))
@@ -1786,6 +1794,87 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         range_bt_data.append((H, promise_break_rate, over_expect_rate, coverage,
                                bowzu_rate, winkler, n_r))
 
+    # ── star_backtest: 回遊魚★評価バックテスト ───────────────────────────────────
+    # ★割り当て: コンボ固有の予測値分位数（P80/P60/P40/P20）で切る
+    # → 固定比率(1.5/1.2...)より各コンボの実際の予測分布に合う
+    # 良日ライン: actual の P75（中央値=1.0 問題を回避）
+    def _quantile(vals, q):
+        if not vals: return 0.0
+        s = sorted(vals)
+        idx = min(int(len(s) * q), len(s) - 1)
+        return s[idx]
+
+    def _make_star_fn(preds):
+        p20 = _quantile(preds, 0.20)
+        p40 = _quantile(preds, 0.40)
+        p60 = _quantile(preds, 0.60)
+        p80 = _quantile(preds, 0.80)
+        def _fn(pred):
+            if pred >= p80: return 5
+            if pred >= p60: return 4
+            if pred >= p40: return 3
+            if pred >= p20: return 2
+            return 1
+        return _fn, (p20, p40, p60, p80)
+
+    star_bt_data = []
+    if fish in KAIYU_FISH:
+        lines.append("\n  ─ ★チャンス評価バックテスト（回遊魚モード・分位数閾値） ─")
+        lines.append(
+            f"  {'ホライズン':>10}  {'★5 hit%':>9}(n)  {'★4 hit%':>9}(n)"
+            f"  {'★3 hit%':>9}(n)  {'★2 hit%':>9}(n)  {'★1 hit%':>9}(n)  良日ライン"
+        )
+        lines.append("  " + "-"*93)
+        for H in HORIZONS:
+            entries = list(_star_by_key[H].values())
+            if len(entries) < MIN_N_COMBO:
+                continue
+
+            # 良日ライン: actual の P75（median=1.0 問題を回避）
+            acts_all = sorted(a for _, a, _ in entries if a is not None)
+            if not acts_all:
+                continue
+            good_line = _quantile(acts_all, 0.75)
+            if good_line <= 0:
+                good_line = 1.0  # フォールバック
+
+            # 予測値分位数でコンボ固有の★閾値を決定
+            preds_all = [pred for pred, _, _ in entries]
+            star_fn, (p20, p40, p60, p80) = _make_star_fn(preds_all)
+
+            # ★別に実績を分類
+            by_star = {s: [] for s in range(1, 6)}
+            for pred, act, _ in entries:
+                by_star[star_fn(pred)].append(act)
+
+            row_parts = []
+            row_data  = {}
+            for s in [5, 4, 3, 2, 1]:
+                grp = by_star[s]
+                if grp:
+                    hr = sum(1 for a in grp if a >= good_line) / len(grp)
+                    row_parts.append(f"{hr:>8.1%}({len(grp):>3})")
+                    row_data[s] = (hr, len(grp))
+                else:
+                    row_parts.append(f"{'N/A':>8}(  0)")
+                    row_data[s] = (None, 0)
+
+            lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
+            lines.append(
+                f"  {lh:>12}  {'  '.join(row_parts)}  {good_line:.1f}"
+                f"  [閾値:{p20:.1f}/{p40:.1f}/{p60:.1f}/{p80:.1f}]"
+            )
+
+            star_bt_data.append((
+                H,
+                row_data[5][0], row_data[5][1],
+                row_data[4][0], row_data[4][1],
+                row_data[3][0], row_data[3][1],
+                row_data[2][0], row_data[2][1],
+                row_data[1][0], row_data[1][1],
+                good_line, p20, p40, p60, p80,
+            ))
+
     # ── 全学習データ（TRAIN_END以前）での最終パラメータ確定 ─────────────────────────
     # バックテスト後に全学習データで因子統計・α・β を再計算し save_wx_params() で保存。
     # predict_count.py の天候補正で使用する。
@@ -1871,7 +1960,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     # wx_params_data に _wave_clamp_thr を追加
     wx_params_data["_wave_clamp_thr"] = best_wave_clamp_thr
 
-    return lines, bt_data, range_bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
+    return lines, bt_data, range_bt_data, star_bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
 
 
 def save_params(fish, ship, corr_results):
@@ -2098,6 +2187,53 @@ def save_range_backtest(fish, ship, range_bt_data):
     conn.close()
 
 
+def save_star_backtest(fish, ship, star_bt_data):
+    """★チャンス評価の精度を combo_star_backtest テーブルに保存（回遊魚専用）
+    hit_rateN: ★N をつけた日のうち実際に good_line(P75) 以上だった割合
+    p20〜p80: 予測値の分位数閾値（コンボ固有）
+    """
+    if not star_bt_data:
+        return
+    conn = sqlite3.connect(DB_ANA)
+    # スキーマ変更検知：旧列(median_cnt)のみでp20〜がなければ再作成
+    existing = {r[1] for r in conn.execute("PRAGMA table_info(combo_star_backtest)").fetchall()}
+    if existing and "p20" not in existing:
+        conn.execute("DROP TABLE combo_star_backtest")
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_star_backtest (
+            fish        TEXT,
+            ship        TEXT,
+            horizon     INTEGER,
+            hit_rate5   REAL,  n5  INTEGER,
+            hit_rate4   REAL,  n4  INTEGER,
+            hit_rate3   REAL,  n3  INTEGER,
+            hit_rate2   REAL,  n2  INTEGER,
+            hit_rate1   REAL,  n1  INTEGER,
+            good_line   REAL,
+            p20  REAL,  p40  REAL,  p60  REAL,  p80  REAL,
+            updated_at  TEXT,
+            PRIMARY KEY (fish, ship, horizon)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = [
+        (fish, ship, H,
+         hr5, n5, hr4, n4, hr3, n3, hr2, n2, hr1, n1,
+         gl, p20, p40, p60, p80, now)
+        for H, hr5, n5, hr4, n4, hr3, n3, hr2, n2, hr1, n1,
+            gl, p20, p40, p60, p80 in star_bt_data
+    ]
+    conn.executemany("""
+        INSERT OR REPLACE INTO combo_star_backtest
+        (fish, ship, horizon,
+         hit_rate5, n5, hit_rate4, n4, hit_rate3, n3, hit_rate2, n2, hit_rate1, n1,
+         good_line, p20, p40, p60, p80, updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """, rows)
+    conn.commit()
+    conn.close()
+
+
 def save_thresholds(fish, ship, season_thr_final):
     """季節別分類閾値を combo_thresholds テーブルに保存"""
     if not season_thr_final:
@@ -2185,7 +2321,7 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, range_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
+    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish)
     out += bt_lines
 
     if conn_wx is not None:
@@ -2204,6 +2340,7 @@ def deep_dive(fish, ship, verbose=True):
     save_keywords(fish, ship, kw_data)
     save_backtest(fish, ship, bt_data)
     save_range_backtest(fish, ship, range_bt_data)
+    save_star_backtest(fish, ship, star_bt_data)
     save_thresholds(fish, ship, season_thr_final)
 
     # auto_fallback: H=0 cnt_avg でモデルが BL-0（全体平均）より 10pt 以上悪い場合、
