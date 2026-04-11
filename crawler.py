@@ -5442,9 +5442,82 @@ def build_catch_table(catches):
     </table></div>"""
 
 # ============================================================
+# V2 index.html 組み立て
+# ============================================================
+def _v2_build_index_html(catches, crawled_at, history, weather_data=None):
+    """V2デザインで index.html を組み立てて返す。
+
+    _DESIGN_VER == "V2" のとき build_html() から呼ばれる。
+    各 _v2_* テンプレート関数を呼び出して組み立てるだけ。
+    """
+    # ── 集計値 ──────────────────────────────────────────────
+    active = [c for c in catches if not c.get("is_cancellation")]
+    today_count = len(active)
+    area_count  = len(set(c["area"] for c in active))
+    ship_count  = len(set(c["ship"] for c in active))
+
+    # ZONE E 用: 魚種ランキング上位11件
+    fish_cnt: dict = {}
+    for c in active:
+        for f in c.get("fish", []):
+            if f != "不明":
+                fish_cnt[f] = fish_cnt.get(f, 0) + 1
+    top_fish = [f for f, _ in sorted(fish_cnt.items(), key=lambda x: -x[1])[:11]]
+
+    # ZONE E 用: アクティブエリア（出船報告があった順）
+    area_seen: dict = {}
+    for c in active:
+        area_seen.setdefault(c["area"], 0)
+        area_seen[c["area"]] += 1
+    top_areas = [a for a, _ in sorted(area_seen.items(), key=lambda x: -x[1])[:8]]
+
+    # ── 各セクション組み立て ────────────────────────────────
+    head = _page_head(
+        title="関東船釣り釣果情報 | 今日何が釣れてる？",
+        description="関東エリア（神奈川・千葉・東京・茨城）の船宿釣果をリアルタイム集計。今日釣れている魚・出船リスク・釣果予測を毎日更新。",
+        canonical="https://funatsuri-yoso.com/",
+        og_title="関東船釣り釣果情報 | 船釣り予想",
+        og_desc="今日関東で何が釣れているか一目でわかる。出船リスク・魚種別ランキング毎日更新。",
+        og_url="https://funatsuri-yoso.com/",
+    )
+    header  = _v2_page_header(active_nav="catch")
+    hero    = _v2_build_hero(today_count, area_count, ship_count, crawled_at)
+    zone_a  = _v2_build_zone_a()
+    zone_b  = _v2_build_zone_b(active, history)
+    ad1     = _v2_ad_slot(1)
+    zone_c  = _v2_build_zone_c([], [])          # ZONE C: データ未接続（空=非表示）
+    zone_d  = _v2_build_zone_d()
+    ad2     = _v2_ad_slot(2)
+    zone_e  = _v2_build_zone_e(top_fish, top_areas)
+    footer  = _v2_page_footer(crawled_at)
+
+    return f"""{head}
+<body>
+{header}
+{hero}
+<div class="c">
+{zone_a}
+{zone_b}
+{ad1}
+{zone_c}
+{zone_d}
+{ad2}
+{zone_e}
+</div>
+{footer}
+<script src="main.js"></script>
+</body>
+</html>"""
+
+
+# ============================================================
 # index.html 生成
 # ============================================================
 def build_html(catches, crawled_at, history, weather_data=None):
+    # V2デザイン分岐
+    if _DESIGN_VER == "V2":
+        return _v2_build_index_html(catches, crawled_at, history, weather_data)
+
     now = datetime.now()
     current_month = now.month
     fish_summary = {}
