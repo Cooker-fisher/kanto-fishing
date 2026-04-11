@@ -60,6 +60,9 @@ def next_saturday() -> str:
     return (today + timedelta(days=days_ahead)).strftime("%Y/%m/%d")
 
 
+# 回遊魚: レンジ予測の代わりに★チャンス評価を使う魚種（combo_deep_dive.py と一致させる）
+KAIYU_FISH = {"シイラ", "カツオ", "キハダマグロ", "ブリ", "ワラサ", "イナダ", "サワラ", "カンパチ"}
+
 # ── ★評価 ────────────────────────────────────────────────────────────────────
 
 def calc_stars(wmape: float, n: int) -> int:
@@ -73,6 +76,36 @@ def calc_stars(wmape: float, n: int) -> int:
     elif wmape < 50 and n >= 20: return 3
     elif wmape < 65 and n >= 10: return 2
     else:                        return 1
+
+
+def calc_stars_kaiyu(conn, fish: str, ship: str, cnt_predicted: float) -> dict | None:
+    """回遊魚専用★評価: combo_star_backtest の分位数閾値で cnt_predicted を★に変換。
+    good_line <= 3 のコンボ（釣れない日が大半）は None を返して★非表示。
+    戻り値: {"stars": 1〜5, "hit_rate": float, "good_line": float} or None
+    """
+    row = conn.execute("""
+        SELECT p20, p40, p60, p80, hit_rate5, hit_rate1, good_line
+        FROM combo_star_backtest
+        WHERE fish=? AND ship=? AND horizon=7
+    """, (fish, ship)).fetchone()
+    if row is None:
+        return None
+    p20, p40, p60, p80, hr5, hr1, good_line = row
+    # 良日ラインが低すぎる（ほぼ常に釣れる or ほぼ釣れない）コンボは評価不能
+    if good_line is None or good_line <= 3:
+        return None
+    # 予測値 → ★
+    if   cnt_predicted >= p80: stars = 5
+    elif cnt_predicted >= p60: stars = 4
+    elif cnt_predicted >= p40: stars = 3
+    elif cnt_predicted >= p20: stars = 2
+    else:                      stars = 1
+    return {
+        "stars":     stars,
+        "hit_rate5": round(hr5, 3) if hr5 is not None else None,
+        "hit_rate1": round(hr1, 3) if hr1 is not None else None,
+        "good_line": round(good_line, 1),
+    }
 
 
 # ── 天候補正用 気象ユーティリティ ────────────────────────────────────────────
@@ -437,6 +470,10 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     if transition_risk > 0.3:
         stars = max(1, stars - 1)
 
+    # 回遊魚は後で cnt_predicted 確定後に★を上書きする（フラグだけ立てておく）
+    is_kaiyu = fish in KAIYU_FISH
+    kaiyu_star_info = None  # predict後に calc_stars_kaiyu() で設定
+
     # ── 天候補正 ──────────────────────────────────────────────────────────────
     # combo_wx_params が存在すれば気象補正を適用し cnt_predicted を更新。
     # weather_cache.sqlite にデータがない将来日は tide/moon のみの部分補正。
@@ -504,6 +541,12 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     if cnt_lo > cnt_hi:
         cnt_lo, cnt_hi = cnt_hi, cnt_lo
 
+    # 回遊魚★チャンス評価: cnt_predicted 確定後に分位数閾値で★を決定
+    if is_kaiyu:
+        kaiyu_star_info = calc_stars_kaiyu(conn, fish, ship, cnt_predicted)
+        if kaiyu_star_info is not None:
+            stars = kaiyu_star_info["stars"]  # wMAPEベースの★を上書き
+
     return {
         "fish":            fish,
         "ship":            ship,
@@ -527,6 +570,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "size_mape":       round(size_mape, 1) if size_mape else None,
         "kg_mape":         round(kg_mape, 1) if kg_mape else None,
         "stars":           stars,
+        # 回遊魚★チャンス評価（good_line<=3 のコンボは None）
+        "kaiyu_stars":     kaiyu_star_info,
         # シーズン変動リスク（0.0〜1.0+、0.3超で変動期判定）
         "transition_risk": transition_risk,
         # time_slot 補正（1.0 = 補正なし）
