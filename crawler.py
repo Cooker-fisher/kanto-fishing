@@ -6306,7 +6306,7 @@ def _load_combo_predictions(target_date_str: str, min_stars: int = 3) -> list:
     target_date_str: "YYYY/MM/DD"
     返り値: predict_combo() の辞書リスト（stars 降順）
     """
-    import subprocess
+    import subprocess, sys as _sys
     script = os.path.join(
         os.path.dirname(__file__),
         "analysis", "V2", "methods", "predict_count.py"
@@ -6315,7 +6315,7 @@ def _load_combo_predictions(target_date_str: str, min_stars: int = 3) -> list:
         return []
     try:
         result = subprocess.run(
-            [sys.executable, script,
+            [_sys.executable, script,
              "--date", target_date_str,
              "--min-stars", str(min_stars),
              "--json-out"],
