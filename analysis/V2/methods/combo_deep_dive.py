@@ -1280,7 +1280,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < MIN_TRAIN_MONTHS + 1:
-        return ["  データ不足（ローリングCV最低月数に達しない）"], [], {}, {}, None, None
+        return ["  データ不足（ローリングCV最低月数に達しない）"], [], [], {}, {}, None, None
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}
@@ -1313,6 +1313,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     alpha_scales_by_met = {met: [] for met in METRICS_LIST}
     # フォールドごとの best_wave_clamp を収集 → 最終パラメータには中央値を使う
     wave_clamp_thr_folds: list = []
+    # range_backtest 用: cnt_max/cnt_min の (pred, act) を日付キーで保存（Coverage/Winkler計算用）
+    _range_by_key = {H: {} for H in HORIZONS}  # {H: {(test_month, date): {met: (pred, act)}}}
 
     for test_month in months:
         train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] < test_month]
@@ -1598,6 +1600,12 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     # BL-2: 評価用（上で計算済みの _bl2_p を再利用）
                     bl2_preds[met][H].append(_bl2_p)
                     bl2_acts[met][H].append(act)
+                    # range_backtest 用アライメント（cnt_max/cnt_min/cnt_avg）
+                    if met in ("cnt_max", "cnt_min", "cnt_avg"):
+                        _rk = (test_month, r["date"])
+                        if _rk not in _range_by_key[H]:
+                            _range_by_key[H][_rk] = {}
+                        _range_by_key[H][_rk][met] = (pred, act)
 
     # 結果出力
     total_n = len(all_acts["cnt_avg"].get(0, []))
@@ -1719,6 +1727,65 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             lines.append(f"  {'BL-2 直近7件':>14}  {_fmt3(bl2w, bl2m, bl2r)}")
             lines.append("  " + "-"*60)
 
+    # ── range_backtest: actual_avg vs [pred_lo, pred_hi] ──────────────────────────
+    # 評価軸: ユーザーは「自分の釣果（≒actual_avg）が予測レンジ内に入ったか」で判断する
+    #
+    # PRIMARY KPI: 約束割れ率 = actual_avg < pred_lo（期待させといてダメだった）→ 解約リスク最大
+    # SECONDARY:   期待させすぎ率 = pred_hi / actual_avg > 2.5（上限が非現実的に高い）
+    # Coverage:    pred_lo <= actual_avg <= pred_hi の割合（典型的ユーザーが満足）
+    # ボウズ率:    actual_min=0 かつ pred_lo > hist_avg_min*0.3（ボウズが約束違反になるケース）
+    # Winkler:     非対称スコア（約束割れ=3倍ペナルティ / 嬉しい誤算=0.5倍 / 範囲内=幅のみ）
+
+    # ボウズ閾値: コンボ全体のhist_avg_minの30%（これ以下のpred_loはボウズ許容）
+    _hist_min_vals = [r.get("cnt_min") for r in all_en_by_H[0] if r.get("cnt_min") is not None]
+    hist_avg_min   = sum(_hist_min_vals) / len(_hist_min_vals) if _hist_min_vals else 1.0
+    bowzu_threshold = hist_avg_min * 0.3
+
+    range_bt_data = []
+    lines.append("\n  ─ レンジ評価（actual_avg vs [pred_lo, pred_hi]）─")
+    lines.append(
+        f"  {'ホライズン':>10}  {'約束割れ%':>9}  {'期待超え%':>9}  {'Coverage':>8}  "
+        f"{'ボウズ%':>7}  {'Winkler':>8}  {'n':>4}"
+    )
+    lines.append("  " + "-"*78)
+    for H in HORIZONS:
+        rows_r = []
+        for _rk, d in _range_by_key[H].items():
+            if "cnt_max" in d and "cnt_min" in d and "cnt_avg" in d:
+                pred_hi, _       = d["cnt_max"]
+                pred_lo, act_min = d["cnt_min"]
+                _,       act_avg = d["cnt_avg"]
+                rows_r.append((pred_hi, pred_lo, act_avg, act_min))
+        if len(rows_r) < MIN_N_COMBO:
+            continue
+        n_r = len(rows_r)
+
+        # PRIMARY: 約束割れ率（actual_avg < pred_lo）= 解約リスク最大
+        promise_break_rate = sum(1 for ph, pl, aa, ami in rows_r if aa < pl) / n_r
+        # SECONDARY: 期待させすぎ率（pred_hi / actual_avg > 2.5）
+        over_expect_rate   = sum(1 for ph, pl, aa, ami in rows_r
+                                 if aa > 0 and ph / aa > 2.5) / n_r
+        # Coverage: actual_avg ∈ [pred_lo, pred_hi]
+        coverage           = sum(1 for ph, pl, aa, ami in rows_r if pl <= aa <= ph) / n_r
+        # ボウズ率: actual_min=0 かつ pred_lo が閾値より高い
+        bowzu_rate         = sum(1 for ph, pl, aa, ami in rows_r
+                                 if ami == 0 and pl > bowzu_threshold) / n_r
+        # Winkler 非対称スコア
+        def _winkler_range(pl, ph, aa):
+            width = ph - pl
+            if aa < pl:   return width + (pl - aa) * 3.0   # 約束割れ: 3倍ペナルティ
+            elif aa > ph: return width + (aa - ph) * 0.5   # 嬉しい誤算: 0.5倍（軽い）
+            else:         return width                       # 範囲内: 幅のみ
+        winkler = sum(_winkler_range(pl, ph, aa) for ph, pl, aa, ami in rows_r) / n_r
+
+        lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
+        lines.append(
+            f"  {lh:>12}  {promise_break_rate:>8.1%}  {over_expect_rate:>8.1%}  "
+            f"{coverage:>7.1%}  {bowzu_rate:>6.1%}  {winkler:>7.2f}  {n_r:>4}"
+        )
+        range_bt_data.append((H, promise_break_rate, over_expect_rate, coverage,
+                               bowzu_rate, winkler, n_r))
+
     # ── 全学習データ（TRAIN_END以前）での最終パラメータ確定 ─────────────────────────
     # バックテスト後に全学習データで因子統計・α・β を再計算し save_wx_params() で保存。
     # predict_count.py の天候補正で使用する。
@@ -1804,7 +1871,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     # wx_params_data に _wave_clamp_thr を追加
     wx_params_data["_wave_clamp_thr"] = best_wave_clamp_thr
 
-    return lines, bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
+    return lines, bt_data, range_bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
 
 
 def save_params(fish, ship, corr_results):
@@ -1982,6 +2049,55 @@ def save_backtest(fish, ship, bt_data):
     conn.close()
 
 
+def save_range_backtest(fish, ship, range_bt_data):
+    """レンジ評価指標を combo_range_backtest テーブルに保存
+    PRIMARY KPI: 約束割れ率 = actual_avg < pred_lo（期待させといてダメだった）→ 解約リスク最大
+    SECONDARY:   期待させすぎ率 = pred_hi / actual_avg > 2.5
+    Coverage:    pred_lo <= actual_avg <= pred_hi の割合
+    ボウズ率:    actual_min=0 かつ pred_lo > hist_avg_min*0.3
+    Winkler:     非対称スコア（約束割れ=3倍ペナルティ / 嬉しい誤算=0.5倍 / 範囲内=幅のみ）
+    """
+    if not range_bt_data:
+        return
+    conn = sqlite3.connect(DB_ANA)
+
+    # スキーマ変更検知：旧列(max_over_rate)があればDROPして再作成
+    existing_cols = {row[1] for row in conn.execute(
+        "PRAGMA table_info(combo_range_backtest)"
+    ).fetchall()}
+    if existing_cols and "max_over_rate" in existing_cols:
+        conn.execute("DROP TABLE combo_range_backtest")
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_range_backtest (
+            fish               TEXT,
+            ship               TEXT,
+            horizon            INTEGER,
+            promise_break_rate REAL,
+            over_expect_rate   REAL,
+            coverage           REAL,
+            bowzu_rate         REAL,
+            winkler            REAL,
+            n                  INTEGER,
+            updated_at         TEXT,
+            PRIMARY KEY (fish, ship, horizon)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = [
+        (fish, ship, H, pbr, oer, cov, bzr, wkl, n, now)
+        for H, pbr, oer, cov, bzr, wkl, n in range_bt_data
+    ]
+    conn.executemany("""
+        INSERT OR REPLACE INTO combo_range_backtest
+        (fish, ship, horizon, promise_break_rate, over_expect_rate, coverage,
+         bowzu_rate, winkler, n, updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?)
+    """, rows)
+    conn.commit()
+    conn.close()
+
+
 def save_thresholds(fish, ship, season_thr_final):
     """季節別分類閾値を combo_thresholds テーブルに保存"""
     if not season_thr_final:
@@ -2069,7 +2185,7 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
+    bt_lines, bt_data, range_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
     out += bt_lines
 
     if conn_wx is not None:
@@ -2087,6 +2203,7 @@ def deep_dive(fish, ship, verbose=True):
     save_params(fish, ship, corr_results)
     save_keywords(fish, ship, kw_data)
     save_backtest(fish, ship, bt_data)
+    save_range_backtest(fish, ship, range_bt_data)
     save_thresholds(fish, ship, season_thr_final)
 
     # auto_fallback: H=0 cnt_avg でモデルが BL-0（全体平均）より 10pt 以上悪い場合、

@@ -213,15 +213,17 @@ def _get_use_fallback(conn, fish: str, ship: str) -> bool:
 
 def _apply_wx_correction(conn, fish: str, ship: str,
                           target_date: str, baseline_cnt: float,
-                          lat: float, lon: float) -> float:
+                          lat: float, lon: float,
+                          metric: str = 'cnt_avg') -> float:
     """
-    combo_wx_params の学習パラメータ + 当日気象から cnt_avg 補正値を計算。
+    combo_wx_params の学習パラメータ + 当日気象から補正値を計算。
+    metric: 'cnt_avg' / 'cnt_min' / 'cnt_max' を指定可能。
     補正できない場合は baseline_cnt をそのまま返す。
     """
     rows = conn.execute(
         "SELECT factor, mean, std, r, alpha_scale, met_mean, met_std, lat, lon "
-        "FROM combo_wx_params WHERE fish=? AND ship=? AND metric='cnt_avg'",
-        (fish, ship)
+        "FROM combo_wx_params WHERE fish=? AND ship=? AND metric=?",
+        (fish, ship, metric)
     ).fetchall()
     if not rows:
         return baseline_cnt
@@ -440,8 +442,10 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     # weather_cache.sqlite にデータがない将来日は tide/moon のみの部分補正。
     # use_fallback=True のコンボ（気象補正がノイズ化するコンボ）は補正をスキップ。
     baseline_cnt = avg_cnt  # 旬別ベースライン（補正前）
-    if lat and lon and not _get_use_fallback(conn, fish, ship):
-        cnt_predicted = _apply_wx_correction(conn, fish, ship, target_date, avg_cnt, lat, lon)
+    use_fb = _get_use_fallback(conn, fish, ship)
+    if lat and lon and not use_fb:
+        cnt_predicted = _apply_wx_correction(conn, fish, ship, target_date, avg_cnt, lat, lon,
+                                             metric='cnt_avg')
     else:
         # use_fallback=True: 気象補正がノイズ化するコンボ
         # BL-2（直近7件実績平均）を優先。取得できなければ旬別ベースライン(BL-1)
@@ -450,7 +454,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
 
     # ── time_slot 補正 ────────────────────────────────────────────────────────
     # combo_slot_ratio に登録がある場合のみ適用。
-    # 補正後 cnt_predicted に ratio を乗じる。min/max も同倍率で補正。
+    # 補正後 cnt_predicted に ratio を乗じる。
     slot_ratio = 1.0
     if time_slot:
         slot_row = conn.execute(
@@ -461,21 +465,40 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             slot_ratio = slot_row[0]
             cnt_predicted = round(cnt_predicted * slot_ratio, 1)
 
-    # ── min/max 予測（初心者〜ベテランレンジ） ───────────────────────────────
-    # 補正後の cnt_predicted に min/max 比率を適用する。
-    # avg_cnt_min/max が旬別データにある場合: ratio法（旬別の比率を補正後中央値に適用）
-    # ない場合: cnt_predicted ± cnt_mae で信頼区間フォールバック
-    if avg_cnt_min is not None and avg_cnt > 0:
-        min_ratio = avg_cnt_min / avg_cnt
-        cnt_lo    = round(max(0, cnt_predicted * min_ratio), 1)
-    else:
-        cnt_lo    = round(max(0, cnt_predicted - cnt_mae), 1)
+    # ── min/max 予測（直接モデル予測 → ratio フォールバック） ────────────────
+    # 優先: cnt_min / cnt_max モデルが combo_wx_params にある場合は直接予測
+    #       （ratio法より Coverage が良い可能性が高い）
+    # フォールバック: モデルなし または use_fallback=True
+    #       → avg_cnt_min/max の旬別比率を cnt_predicted に適用（従来方式）
+    #       → 旬別データもない場合は ±cnt_mae で信頼区間
+    cnt_lo = cnt_hi = None
 
-    if avg_cnt_max is not None and avg_cnt > 0:
-        max_ratio = avg_cnt_max / avg_cnt
-        cnt_hi    = round(cnt_predicted * max_ratio, 1)
-    else:
-        cnt_hi    = round(cnt_predicted + cnt_mae, 1)
+    if lat and lon and not use_fb:
+        # cnt_min モデルが存在するか確認してから直接予測
+        bl_min = avg_cnt_min if avg_cnt_min is not None else avg_cnt * 0.5
+        bl_max = avg_cnt_max if avg_cnt_max is not None else avg_cnt * 1.5
+        pred_lo_direct = _apply_wx_correction(conn, fish, ship, target_date, bl_min, lat, lon,
+                                              metric='cnt_min')
+        pred_hi_direct = _apply_wx_correction(conn, fish, ship, target_date, bl_max, lat, lon,
+                                              metric='cnt_max')
+        # _apply_wx_correction はパラメータなければ baseline をそのまま返す
+        # bl_min/bl_max と同値 = モデルなし（baseline返し）の判定は不要
+        # → 直接予測値をそのまま採用（cnt_avgモデルがあれば cnt_min/maxモデルもある）
+        cnt_lo = round(max(0, pred_lo_direct * slot_ratio), 1)
+        cnt_hi = round(pred_hi_direct * slot_ratio, 1)
+
+    if cnt_lo is None:
+        # フォールバック: ratio法 または ±MAE
+        if avg_cnt_min is not None and avg_cnt > 0:
+            cnt_lo = round(max(0, cnt_predicted * (avg_cnt_min / avg_cnt)), 1)
+        else:
+            cnt_lo = round(max(0, cnt_predicted - cnt_mae), 1)
+
+    if cnt_hi is None:
+        if avg_cnt_max is not None and avg_cnt > 0:
+            cnt_hi = round(cnt_predicted * (avg_cnt_max / avg_cnt), 1)
+        else:
+            cnt_hi = round(cnt_predicted + cnt_mae, 1)
 
     # ガード: 独立計算で min > max になるケースをswapで修正
     if cnt_lo > cnt_hi:
