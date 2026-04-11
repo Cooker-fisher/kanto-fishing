@@ -44,9 +44,9 @@
   <div class="stat-cards">
   <div class="stat-card"><div class="sv">2隻</div><div class="sl">出船数</div></div>
   <div class="stat-card"><div class="sv">2匹</div><div class="sl">平均釣果</div></div>
-  <div class="stat-card trend-down"><div class="sv">5匹</div><div class="sl">最高釣果</div></div>
+  <div class="stat-card"><div class="sv">5匹</div><div class="sl">最高釣果</div></div>
 </div>
-  <div style="background:var(--bg-card);border-left:3px solid var(--border);padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px;color:var(--text-secondary)">🏅 直近TOP船宿 (2026/04/09): <strong style="color:var(--accent)">山下丸</strong> 最高2匹</div>
+  <div style="background:var(--bg-card);border-left:3px solid var(--cta);padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px">🏅 本日のTOP船宿: <strong style="color:var(--accent)">山天丸</strong> 最高2匹 / 平均1匹</div>
   <h2>📅 年間シーズン</h2><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid " title="3月">3</div><div class="sb-cell mid now" title="4月">4</div><div class="sb-cell mid " title="5月">5</div><div class="sb-cell mid " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell peak-size " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell peak-size " title="12月">12</div></div>
   <div style="font-size:13px;color:var(--text-secondary);margin:4px 0 12px">シーズンスコア: <span style="color:var(--cta);font-size:15px">★★★☆☆</span> (3/5)</div>
   <div class="combo-comment">💬 神奈川・東京湾のアマダイはシーズン中盤。安定した釣果が期待できます。</div>
@@ -58,7 +58,7 @@
     var ctx = document.getElementById('dc_アマダイ_久比里港');
     if(!ctx) return;
     new Chart(ctx, {type:'line',data:{labels:["04/05", "04/06", "04/07", "04/08", "04/09", "04/10", "04/11"],datasets:[
-      {label:'今年',data:[null, 1.0, null, null, 1.0, null, null],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
+      {label:'今年',data:[null, 1.0, null, null, 1.0, null, 1.0],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
       {label:'昨年',data:[2.0, 2.0, 4.0, 1.0, null, null, null],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
     ]},options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8f0'}}},
       scales:{x:{ticks:{color:'#7a9bb5'}},y:{ticks:{color:'#7a9bb5'},beginAtZero:true,title:{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}
@@ -80,15 +80,15 @@
   <h2>📊 昨年同週との比較（第14週）</h2>
   <div class="tbl-wrap"><table class="yoy-table">
     <tr><th></th><th>今週 (2026/W14)</th><th>昨年同週 (2025/W14)</th><th>昨年比</th></tr>
-    <tr><td>平均釣果</td><td>3.0匹</td><td>3.0匹</td><td class="up">+0%</td></tr>
-    <tr><td>最高釣果</td><td>11匹</td><td>13匹</td><td class="down">-15%</td></tr>
-    <tr><td>平均サイズ/重さ</td><td>36.0cm</td><td>37.5cm</td><td class="down">-4%</td></tr>
-    <tr><td>出船数（関東全体）</td><td>7隻</td><td>4隻</td><td class="up">+75%</td></tr>
+    <tr><td>平均釣果</td><td>2.2匹</td><td>3.0匹</td><td class="down">-27%</td></tr>
+    <tr><td>最高釣果</td><td>5匹</td><td>13匹</td><td class="down">-62%</td></tr>
+    <tr><td>平均サイズ/重さ</td><td>34.8cm</td><td>37.5cm</td><td class="down">-7%</td></tr>
+    <tr><td>出船数（関東全体）</td><td>5隻</td><td>4隻</td><td class="up">+25%</td></tr>
   </table></div>
   <h2>🏆 船宿ランキング（今週）</h2>
-  <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">1</td><td><strong>山下丸</strong></td><td style="color:var(--positive)">3件</td><td style="color:var(--cta)">最高5匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:60%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">2</td><td><strong>山天丸</strong></td><td style="color:var(--positive)">2件</td><td style="color:var(--cta)">最高4匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40%"></div></div></td></tr></table></div>
+  <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">1</td><td><strong>山下丸</strong></td><td style="color:var(--positive)">3件</td><td style="color:var(--cta)">最高5匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:60%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">2</td><td><strong>山天丸</strong></td><td style="color:var(--positive)">2件</td><td style="color:var(--cta)">最高3匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40%"></div></div></td></tr></table></div>
   <h2>📋 最近の釣果 (5件)</h2>
-  <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/04/09</td><td>山下丸</td><td>0〜2</td><td>20〜30cm</td><td></td></tr><tr><td>2026/04/06</td><td>山下丸</td><td>0〜3</td><td>20〜30cm</td><td></td></tr><tr class="highlight"><td>2026/04/03</td><td>山下丸</td><td>3〜5</td><td>23〜36cm</td><td></td></tr><tr><td>2026/04/02</td><td>山天丸</td><td>2〜3</td><td>25〜36cm</td><td></td></tr><tr><td>2026/03/29</td><td>山天丸</td><td>0〜4</td><td>25〜41cm</td><td></td></tr></table></div>
+  <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/04/11</td><td>山天丸</td><td>0〜2</td><td>25〜35cm</td><td></td></tr><tr><td>2026/04/09</td><td>山下丸</td><td>0〜2</td><td>20〜30cm</td><td></td></tr><tr><td>2026/04/06</td><td>山下丸</td><td>0〜3</td><td>20〜30cm</td><td></td></tr><tr class="highlight"><td>2026/04/03</td><td>山下丸</td><td>3〜5</td><td>23〜36cm</td><td></td></tr><tr><td>2026/04/02</td><td>山天丸</td><td>2〜3</td><td>25〜36cm</td><td></td></tr></table></div>
 </div>
 <div class="data-note">
   <details>
@@ -104,7 +104,7 @@
 <footer>
   <p><a href="../pages/about.html">このサイトについて</a> | <a href="../pages/privacy.html">プライバシーポリシー</a> | <a href="../pages/terms.html">利用規約</a></p>
   <p style="margin-top:8px">&copy; 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/11 00:13</p>
+  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/11 09:28</p>
 </footer>
 <div class="bottom-nav">
   <div class="bottom-nav-inner">

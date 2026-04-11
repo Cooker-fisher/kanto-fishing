@@ -43,13 +43,13 @@
 <div class="wrap-narrow">
   <div class="stat-cards">
   <div class="stat-card"><div class="sv">1隻</div><div class="sl">出船数</div></div>
-  <div class="stat-card"><div class="sv">50匹</div><div class="sl">平均釣果</div></div>
-  <div class="stat-card"><div class="sv">104匹</div><div class="sl">最高釣果</div></div>
+  <div class="stat-card"><div class="sv">52匹</div><div class="sl">平均釣果</div></div>
+  <div class="stat-card trend-up"><div class="sv">104匹</div><div class="sl">最高釣果</div></div>
 </div>
-  <div style="background:var(--bg-card);border-left:3px solid var(--border);padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px;color:var(--text-secondary)">🏅 直近TOP船宿 (2026/04/09): <strong style="color:var(--accent)">吉野屋</strong> 最高104匹</div>
+  <div style="background:var(--bg-card);border-left:3px solid var(--cta);padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px">🏅 本日のTOP船宿: <strong style="color:var(--accent)">吉野屋</strong> 最高100匹 / 平均66匹</div>
   <h2>📅 年間シーズン</h2><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid " title="3月">3</div><div class="sb-cell peak-count now" title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
   <div style="font-size:13px;color:var(--text-secondary);margin:4px 0 12px">シーズンスコア: <span style="color:var(--cta);font-size:15px">★★★★☆</span> (4/5)</div>
-  <div class="combo-comment">💬 千葉・東京湾奥のアジは今月がシーズン本番。→ 横ばいの傾向です。</div>
+  <div class="combo-comment">💬 千葉・東京湾奥のアジは今月がシーズン本番。↑ 上昇中の傾向です。</div>
   
   <h2>📈 過去7日間の釣果推移</h2>
   <canvas id="dc_アジ_浦安" style="max-height:200px;margin-bottom:8px"></canvas>
@@ -58,7 +58,7 @@
     var ctx = document.getElementById('dc_アジ_浦安');
     if(!ctx) return;
     new Chart(ctx, {type:'line',data:{labels:["04/05", "04/06", "04/07", "04/08", "04/09", "04/10", "04/11"],datasets:[
-      {label:'今年',data:[null, 59.0, null, 43.0, 46.0, null, null],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
+      {label:'今年',data:[null, 59.0, null, 43.0, 46.0, null, 66.0],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
       {label:'昨年',data:[null, null, null, null, null, null, null],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
     ]},options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8f0'}}},
       scales:{x:{ticks:{color:'#7a9bb5'}},y:{ticks:{color:'#7a9bb5'},beginAtZero:true,title:{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}
@@ -80,15 +80,15 @@
   <h2>📊 昨年同週との比較（第14週）</h2>
   <div class="tbl-wrap"><table class="yoy-table">
     <tr><th></th><th>今週 (2026/W14)</th><th>昨年同週 (2025/W14)</th><th>昨年比</th></tr>
-    <tr><td>平均釣果</td><td>30.5匹</td><td>-</td><td>-</td></tr>
-    <tr><td>最高釣果</td><td>138匹</td><td>-</td><td>-</td></tr>
-    <tr><td>平均サイズ/重さ</td><td>34.7cm</td><td>-</td><td>-</td></tr>
-    <tr><td>出船数（関東全体）</td><td>47隻</td><td>1隻</td><td class="up">+4600%</td></tr>
+    <tr><td>平均釣果</td><td>25.7匹</td><td>-</td><td>-</td></tr>
+    <tr><td>最高釣果</td><td>130匹</td><td>-</td><td>-</td></tr>
+    <tr><td>平均サイズ/重さ</td><td>35.9cm</td><td>-</td><td>-</td></tr>
+    <tr><td>出船数（関東全体）</td><td>37隻</td><td>1隻</td><td class="up">+3600%</td></tr>
   </table></div>
   <h2>🏆 船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">1</td><td><strong>吉野屋</strong></td><td style="color:var(--positive)">7件</td><td style="color:var(--cta)">最高104匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
   <h2>📋 最近の釣果 (7件)</h2>
-  <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/04/09</td><td>吉野屋</td><td>11〜50</td><td>23〜38cm</td><td></td></tr><tr class="highlight"><td>2026/04/09</td><td>吉野屋</td><td>21〜104</td><td>15〜25cm</td><td></td></tr><tr><td>2026/04/08</td><td>吉野屋</td><td>20〜43</td><td>23〜35cm</td><td></td></tr><tr><td>2026/04/08</td><td>吉野屋</td><td>20〜91</td><td>15〜23cm</td><td></td></tr><tr><td>2026/04/06</td><td>吉野屋</td><td>68〜100</td><td>15〜25cm</td><td></td></tr><tr><td>2026/04/06</td><td>吉野屋</td><td>19〜50</td><td>23〜40cm</td><td></td></tr><tr><td>2026/04/04</td><td>吉野屋</td><td>14〜101</td><td>15〜25cm</td><td></td></tr></table></div>
+  <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/04/11</td><td>吉野屋</td><td>32〜100</td><td>15〜25cm</td><td></td></tr><tr><td>2026/04/09</td><td>吉野屋</td><td>11〜50</td><td>23〜38cm</td><td></td></tr><tr class="highlight"><td>2026/04/09</td><td>吉野屋</td><td>21〜104</td><td>15〜25cm</td><td></td></tr><tr><td>2026/04/08</td><td>吉野屋</td><td>20〜43</td><td>23〜35cm</td><td></td></tr><tr><td>2026/04/08</td><td>吉野屋</td><td>20〜91</td><td>15〜23cm</td><td></td></tr><tr><td>2026/04/06</td><td>吉野屋</td><td>68〜100</td><td>15〜25cm</td><td></td></tr><tr><td>2026/04/06</td><td>吉野屋</td><td>19〜50</td><td>23〜40cm</td><td></td></tr></table></div>
 </div>
 <div class="data-note">
   <details>
@@ -104,7 +104,7 @@
 <footer>
   <p><a href="../pages/about.html">このサイトについて</a> | <a href="../pages/privacy.html">プライバシーポリシー</a> | <a href="../pages/terms.html">利用規約</a></p>
   <p style="margin-top:8px">&copy; 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/11 00:13</p>
+  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/11 09:28</p>
 </footer>
 <div class="bottom-nav">
   <div class="bottom-nav-inner">
