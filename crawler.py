@@ -4349,6 +4349,71 @@ def _page_foot(crawled_at="", is_sub=False):
 </html>"""
 
 
+def _v2_page_header(title="関東船釣り釣果情報", active_nav=""):
+    """V2ヘッダー + GNav（5項目）を返す。
+    active_nav: "catch" / "fish" / "area" / "calendar" / "premium" のいずれか。
+    """
+    def _cls(key):
+        return ' class="on"' if active_nav == key else ""
+
+    return f"""<header>
+  <div class="inner">
+    <h1>船釣り<span>予想</span></h1>
+    <span class="domain">funatsuri-yoso.com</span>
+  </div>
+</header>
+
+<nav class="gnav">
+  <a href="/"{ _cls("catch")}>今日の釣果</a>
+  <a href="/fish/"{ _cls("fish")}>魚種</a>
+  <a href="/area/"{ _cls("area")}>エリア</a>
+  <a href="/calendar/"{ _cls("calendar")}>カレンダー</a>
+  <a href="/premium/" class="prem{' on' if active_nav == 'premium' else ''}">有料プラン</a>
+</nav>"""
+
+
+def _v2_page_footer(crawled_at=""):
+    """V2フッター + ボトムナビ（5アイコン・SVGインライン）を返す。"""
+    updated = f"最終更新: {crawled_at}" if crawled_at else ""
+    return f"""<footer>
+  <div>© 2026 船釣り予想 (funatsuri-yoso.com)</div>
+  <div class="fl">
+    <a href="/pages/about.html">サイトについて</a>
+    <a href="/pages/privacy.html">プライバシーポリシー</a>
+    <a href="/pages/terms.html">利用規約</a>
+    <a href="/pages/contact.html">お問い合わせ</a>
+  </div>
+  <div class="fl" style="margin-top:6px">
+    <a href="/fish/アジ.html">アジ</a><a href="/fish/マダイ.html">マダイ</a><a href="/fish/タチウオ.html">タチウオ</a>
+    <a href="/area/金沢八景.html">金沢八景</a><a href="/area/走水.html">走水</a><a href="/area/剣崎.html">剣崎</a>
+  </div>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿{(' | ' + updated) if updated else ''}</span>
+</footer>
+
+<nav class="bn">
+  <a href="/">
+    <svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>
+    釣果
+  </a>
+  <a href="/fish/">
+    <svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>
+    魚種
+  </a>
+  <a href="/area/">
+    <svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    エリア
+  </a>
+  <a href="/calendar/">
+    <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>
+    カレンダー
+  </a>
+  <a href="/premium/" class="prem">
+    <svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>
+    有料
+  </a>
+</nav>"""
+
+
 def _build_area_nav_html(catches, prefix=""):
     """エリアナビHTML生成（ヘッダーのドロップダウン用）。"""
     active_areas = set(c["area"] for c in catches) if catches else set()
