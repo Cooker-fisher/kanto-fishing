@@ -4588,6 +4588,67 @@ def _v2_build_zone_b(catches, history):
     )
 
 
+def _v2_build_zone_c(risk_days, area_wx):
+    """ZONE C: 出船リスク予報（7日グリッド）＋今週末の海況予報（エリアリスト）。
+
+    引数:
+        risk_days : list of dict, 7要素
+            {dow:str, date:str(M/D), variant:str(good/warn/bad),
+             icon:str(○/△/×), label:str}
+        area_wx   : list of dict
+            {area:str, wave:str, wind:str, temp:str,
+             variant:str(good/warn/bad), judge:str}
+
+    返値:
+        HTML文字列。どちらも空リストの場合は空文字。
+    """
+    # ── 出船リスク予報 ──────────────────────────────────
+    risk_html = ""
+    if risk_days:
+        cards = ""
+        for d in risk_days[:7]:
+            v = d.get("variant", "warn")
+            cards += (
+                f'<div class="risk-day {v}">'
+                f'<div class="rd-dow">{d["dow"]}</div>'
+                f'<div class="rd-date">{d["date"]}</div>'
+                f'<div class="rd-icon">{d["icon"]}</div>'
+                f'<div class="rd-label">{d["label"]}</div>'
+                f'</div>'
+            )
+        risk_html = (
+            f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>\n'
+            f'<div class="risk-grid">{cards}</div>\n'
+        )
+
+    # ── 今週末の海況予報 ────────────────────────────────
+    wx_html = ""
+    if area_wx:
+        rows = ""
+        for w in area_wx:
+            v = w.get("variant", "warn")
+            rows += (
+                f'<div class="wl-row">'
+                f'<span class="wl-area">{w["area"]}</span>'
+                f'<span class="wl-wave">波 {w["wave"]}</span>'
+                f'<span class="wl-wind">風 {w["wind"]}</span>'
+                f'<span class="wl-temp">{w["temp"]}</span>'
+                f'<span class="wl-judge {v}">{w["judge"]}</span>'
+                f'</div>'
+            )
+        wx_html = (
+            f'<h2 class="st">今週末の海況予報 <span class="tag free">無料</span></h2>\n'
+            f'<div class="weather-list">'
+            f'<div class="wl-head">エリア別 週末の予報（波高 / 風速 / 気温）</div>'
+            f'{rows}'
+            f'</div>\n'
+        )
+
+    if not risk_html and not wx_html:
+        return ""
+    return risk_html + wx_html
+
+
 def _build_area_nav_html(catches, prefix=""):
     """エリアナビHTML生成（ヘッダーのドロップダウン用）。"""
     active_areas = set(c["area"] for c in catches) if catches else set()
