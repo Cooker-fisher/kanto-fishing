@@ -166,6 +166,28 @@ def _get_tide(date_iso: str) -> dict:
     }
 
 
+def _get_bl2(fish: str, ship: str, before_date: str, n: int = 7) -> float | None:
+    """直近n件のcnt_avg平均（BL-2）をCSVから取得。before_date未満のレコードを対象。
+    use_fallback=True のコンボで旬別ベースラインの代わりに使う。"""
+    import csv, glob
+    records = []
+    for path in sorted(glob.glob(os.path.join(DATA_DIR, "*.csv"))):
+        with open(path, encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                if row.get("tsuri_mono") == fish and row.get("ship") == ship:
+                    d = row.get("date", "")
+                    v = row.get("cnt_avg", "")
+                    if d and v and d < before_date:
+                        try:
+                            records.append((d, float(v)))
+                        except ValueError:
+                            pass
+    if not records:
+        return None
+    recent = sorted(records, key=lambda x: x[0], reverse=True)[:n]
+    return sum(v for _, v in recent) / len(recent)
+
+
 def _get_wave_clamp_thr(conn, fish: str, ship: str) -> float:
     """combo_wx_params から per-combo wave_clamp 閾値を取得。未保存なら 2.0m デフォルト。"""
     row = conn.execute(
@@ -421,7 +443,10 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     if lat and lon and not _get_use_fallback(conn, fish, ship):
         cnt_predicted = _apply_wx_correction(conn, fish, ship, target_date, avg_cnt, lat, lon)
     else:
-        cnt_predicted = round(avg_cnt, 1)
+        # use_fallback=True: 気象補正がノイズ化するコンボ
+        # BL-2（直近7件実績平均）を優先。取得できなければ旬別ベースライン(BL-1)
+        bl2 = _get_bl2(fish, ship, target_date)
+        cnt_predicted = round(bl2, 1) if bl2 is not None else round(avg_cnt, 1)
 
     # ── time_slot 補正 ────────────────────────────────────────────────────────
     # combo_slot_ratio に登録がある場合のみ適用。
