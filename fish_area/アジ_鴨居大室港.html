@@ -57,9 +57,9 @@
   (function(){
     var ctx = document.getElementById('dc_アジ_鴨居大室港');
     if(!ctx) return;
-    new Chart(ctx, {type:'line',data:{labels:["04/04", "04/05", "04/06", "04/07", "04/08", "04/09", "04/10"],datasets:[
-      {label:'今年',data:[18.5, null, 26.5, null, 12.0, 24.0, null],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
-      {label:'昨年',data:[null, 36.5, 22.0, 24.0, 35.0, 25.0, 20.0],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
+    new Chart(ctx, {type:'line',data:{labels:["04/05", "04/06", "04/07", "04/08", "04/09", "04/10", "04/11"],datasets:[
+      {label:'今年',data:[null, 26.5, null, 12.0, 24.0, null, null],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
+      {label:'昨年',data:[36.5, 22.0, 24.0, 35.0, 25.0, 20.0, null],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
     ]},options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8f0'}}},
       scales:{x:{ticks:{color:'#7a9bb5'}},y:{ticks:{color:'#7a9bb5'},beginAtZero:true,title:{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}
     });
@@ -69,7 +69,7 @@
   <div style="position:relative;margin:0 0 24px">
     <div style="filter:blur(5px);pointer-events:none;background:var(--bg-card);border-radius:6px;padding:16px">
       <div style="display:flex;gap:6px;align-items:flex-end;height:80px"><div style="flex:1;background:var(--accent);height:55%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:70%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:45%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:80%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:60%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:75%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:50%;border-radius:3px 3px 0 0"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/04</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/05</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/06</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/07</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/08</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/09</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/10</span></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/05</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/06</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/07</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/08</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/09</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/10</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/11</span></div>
     </div>
     <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1">
       <a href="../forecast/index.html" style="display:inline-block;background:var(--cta);color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:14px;white-space:nowrap">📈 この魚の来週予測を見る →</a>
@@ -104,7 +104,7 @@
 <footer>
   <p><a href="../pages/about.html">このサイトについて</a> | <a href="../pages/privacy.html">プライバシーポリシー</a> | <a href="../pages/terms.html">利用規約</a></p>
   <p style="margin-top:8px">&copy; 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/10 10:38</p>
+  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/11 00:13</p>
 </footer>
 <div class="bottom-nav">
   <div class="bottom-nav-inner">
