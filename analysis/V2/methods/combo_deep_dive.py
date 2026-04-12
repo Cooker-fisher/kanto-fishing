@@ -1343,6 +1343,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     """
     MIN_TRAIN_N = 15
     MIN_TRAIN_MONTHS = 4
+    MIN_TEST_N = 15   # テストセット最低件数（MIN_N_COMBOより緩和: 季節魚は年3-4ヶ月しか釣れない）
     WAVE_CLAMP_CANDIDATES  = [1.0, 1.5, 2.0, 2.5, 3.0]
 
     months = sorted(set(r["date"][:7] for r in records))
@@ -1707,7 +1708,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
         for H in HORIZONS:
             ps = all_preds[met][H]; acs = all_acts[met][H]
-            if len(acs) < MIN_N_COMBO:  # テストセットが少なすぎるコンボは除外
+            if len(acs) < MIN_TEST_N:  # テストセットが少なすぎるコンボは除外
                 continue
             rv, _, n = pearson(ps, acs)
             if rv is None:
