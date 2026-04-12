@@ -42,6 +42,14 @@ DB_TIDE       = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
 DB_TYPHOON    = os.path.join(OCEAN_DIR, "typhoon.sqlite")
 DB_ANA        = os.path.join(RESULTS_DIR, "analysis.sqlite")
 OUT_DIR       = os.path.join(RESULTS_DIR, "deep_dive")
+
+def _open_ana(timeout: float = 30.0):
+    """analysis.sqlite を WAL モード・タイムアウト付きで開く（並列実行対応）。
+    WAL モードにより複数プロセスが同時に書き込んでも SQLITE_BUSY が発生しにくくなる。
+    """
+    conn = sqlite3.connect(DB_ANA, timeout=timeout)
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
 OVERRIDE_FILE  = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
 SHIPS_FILE     = os.path.join(ROOT_DIR, "crawl", "ships.json")
 OBS_FIELDS_FILE = os.path.join(NORMALIZE_DIR, "obs_fields.json")
@@ -537,7 +545,7 @@ def load_wx_overrides():
 
 def load_ship_coords():
     """combo_meta から avg lat/lon + オーバーライド適用（レコードに lat/lon がない場合の保険）"""
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     rows = conn.execute(
         "SELECT ship, AVG(lat), AVG(lon) FROM combo_meta WHERE lat IS NOT NULL GROUP BY ship"
     ).fetchall()
@@ -564,7 +572,7 @@ def nearest_coord(lat, lon, coords):
     return min(coords, key=lambda c: (c[0]-lat)**2 + (c[1]-lon)**2)
 
 def load_decadal(fish, ship):
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     rows = conn.execute(
         "SELECT decade_no, avg_cnt, avg_size, n FROM combo_decadal WHERE fish=? AND ship=?",
         (fish, ship)
@@ -1158,12 +1166,19 @@ def _season_of(month):
     return "冬"
 
 def _percentile(vals, p):
-    """vals（ソート済み想定なし）の p パーセンタイルを返す。線形補間なし。"""
+    """vals（ソート済み想定なし）の p パーセンタイルを返す（線形補間・NumPy互換）。
+    旧実装は int() 切り捨てのため P75 が系統的に低く出ていた（hit_rate 過大評価）。
+    """
     sv = sorted(v for v in vals if v is not None)
     if not sv:
         return None
-    idx = int(len(sv) * p / 100)
-    return sv[min(idx, len(sv)-1)]
+    n = len(sv)
+    if n == 1:
+        return sv[0]
+    pos = (n - 1) * p / 100.0
+    lo = int(pos)
+    hi = min(lo + 1, n - 1)
+    return sv[lo] + (pos - lo) * (sv[hi] - sv[lo])
 
 def _season_thresholds(records, metric):
     """records から季節別 (p33, p67) を計算。5件未満の季節は overall で補完。"""
@@ -1837,6 +1852,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             good_line = _quantile(acts_all, 0.75)
             if good_line <= 0:
                 good_line = 1.0  # フォールバック
+            if good_line <= 3:
+                continue  # 実質釣れないコンボは★評価しない（有料ページに無意味な★を出さない）
 
             # 予測値分位数でコンボ固有の★閾値を決定
             preds_all = [pred for pred, _, _ in entries]
@@ -1964,7 +1981,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
 
 def save_params(fish, ship, corr_results):
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_deep_params (
             fish    TEXT,
@@ -1995,7 +2012,7 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None, u
     """
     if not wx_params_data:
         return
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_wx_params (
             fish         TEXT,
@@ -2050,7 +2067,7 @@ def save_keywords(fish, ship, kw_data):
     """コメントキーワード解析結果を combo_keywords テーブルに保存"""
     if not kw_data:
         return
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_keywords (
             fish        TEXT,
@@ -2079,7 +2096,7 @@ def save_backtest(fish, ship, bt_data):
     """バックテスト結果を combo_backtest テーブルに保存"""
     if not bt_data:
         return
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_backtest (
             fish        TEXT,
@@ -2148,7 +2165,7 @@ def save_range_backtest(fish, ship, range_bt_data):
     """
     if not range_bt_data:
         return
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
 
     # スキーマ変更検知：旧列(max_over_rate)があればDROPして再作成
     existing_cols = {row[1] for row in conn.execute(
@@ -2156,6 +2173,7 @@ def save_range_backtest(fish, ship, range_bt_data):
     ).fetchall()}
     if existing_cols and "max_over_rate" in existing_cols:
         conn.execute("DROP TABLE combo_range_backtest")
+        conn.commit()  # DDL後に明示的 commit（並列実行時の一時消滅を防ぐ）
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_range_backtest (
@@ -2194,11 +2212,12 @@ def save_star_backtest(fish, ship, star_bt_data):
     """
     if not star_bt_data:
         return
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     # スキーマ変更検知：旧列(median_cnt)のみでp20〜がなければ再作成
     existing = {r[1] for r in conn.execute("PRAGMA table_info(combo_star_backtest)").fetchall()}
     if existing and "p20" not in existing:
         conn.execute("DROP TABLE combo_star_backtest")
+        conn.commit()  # DDL後に明示的 commit（並列実行時の一時消滅を防ぐ）
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_star_backtest (
             fish        TEXT,
@@ -2238,7 +2257,7 @@ def save_thresholds(fish, ship, season_thr_final):
     """季節別分類閾値を combo_thresholds テーブルに保存"""
     if not season_thr_final:
         return
-    conn = sqlite3.connect(DB_ANA)
+    conn = _open_ana()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS combo_thresholds (
             fish    TEXT,
@@ -2279,6 +2298,14 @@ def deep_dive(fish, ship, verbose=True):
     if len(records) < MIN_N_COMBO:
         print(f"  {fish} × {ship}: データ不足 ({len(records)}件)")
         return
+
+    # 乗合フィルタ: 仕立て(is_boat=1)の外れ値がモデルを汚染するのを防ぐ
+    # 乗合ユーザー向け予測には乗合データのみを使う
+    _noboat = [r for r in records if r.get("is_boat", 0) == 0]
+    _boat_filtered = len(_noboat) >= MIN_N_COMBO and len(_noboat) < len(records)
+    if _boat_filtered:
+        print(f"  [is_boat filter] {fish}×{ship}: {len(records)}件 → {len(_noboat)}件（仕立{len(records)-len(_noboat)}件除外）")
+        records = _noboat
 
     conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
     conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None

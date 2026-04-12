@@ -40,15 +40,34 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: weekly analysis
+      - name: init DB WAL mode
         run: |
-          python3 analysis/run.py season_analysis.py
-          python3 analysis/run.py season_detail.py
-          python3 analysis/run.py area_analysis.py
-          python3 analysis/run.py ship_peaks.py
-          python3 analysis/run.py weekly_analysis.py
-          python3 analysis/run.py cancel_threshold.py
+          python3 -c "
+          import sqlite3, json, os
+          cfg = json.load(open('config.json', encoding='utf-8'))
+          db  = os.path.join('analysis', cfg.get('active_version','V2'), 'results', 'analysis.sqlite')
+          if os.path.exists(db):
+              c = sqlite3.connect(db, timeout=30); c.execute('PRAGMA journal_mode=WAL'); c.close()
+              print(f'WAL enabled: {db}')
+          else:
+              print(f'DB not found (skip): {db}')
+          "
+      - name: weekly analysis batch-1 (parallel)
+        run: |
+          # 相互独立なスクリプトを並列実行。WAL モードにより analysis.sqlite への
+          # 同時書き込みは SQLite 側でシリアライズされる（デッドロックなし）。
+          python3 analysis/run.py season_analysis.py  &
+          python3 analysis/run.py season_detail.py    &
+          python3 analysis/run.py area_analysis.py    &
+          python3 analysis/run.py ship_peaks.py       &
+          python3 analysis/run.py weekly_analysis.py  &
+          python3 analysis/run.py cancel_threshold.py &
+          wait
+      - name: weekly analysis batch-2 (depends on batch-1)
+        run: |
+          # cancel_threshold の出力に依存 → batch-1 完了後に実行
           python3 analysis/run.py risk_predict.py
+          # weekly_analysis の出力（combo_weekly）に依存 → per-fish レポート生成
           python3 -c "
           import json, os, sqlite3, subprocess, sys
           with open('config.json', encoding='utf-8') as f: ver = json.load(f)['active_version']

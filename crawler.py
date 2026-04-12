@@ -3355,7 +3355,8 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
     """catches_raw.json を読み込み、data/V{n}/YYYY-MM.csv を全件上書き再生成。
     output_dir: 省略時は _DATA_DIR（config.json の active_version に連動）。
     ships_filter: リスト指定でその船宿のみ処理（テスト用）。
-    TSURI_MONO_MAP更新後に単体呼び出し可。"""
+    TSURI_MONO_MAP更新後に単体呼び出し可。
+    ships.json で exclude=true の船宿は自動的にスキップする。"""
     if output_dir is None:
         output_dir = _DATA_DIR
     if raw_path is None:
@@ -3395,10 +3396,16 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
         print(f"export_csv_from_raw: direct merge {len(_direct)}件")
 
     os.makedirs(output_dir, exist_ok=True)
+    # ships.json で exclude=true の船宿名セットを構築（重複データを CSV から除外）
+    _excluded_ships = {s["name"] for s in SHIPS if s.get("exclude")}
+    if _excluded_ships:
+        print(f"export_csv_from_raw: exclude 対象 {sorted(_excluded_ships)}")
     from collections import defaultdict as _dd
     by_month = _dd(list)
     for r in records:
         if ships_filter and r.get("ship") not in ships_filter:
+            continue
+        if r.get("ship") in _excluded_ships:
             continue
         try:
             ym = datetime.strptime(r["date"], "%Y/%m/%d").strftime("%Y-%m")
@@ -6914,9 +6921,12 @@ def _pred_build_html(preds: list, target_date_str: str) -> str:
                 sz_str = f"{p['size_predicted']:.0f}cm"
             else:
                 sz_str = "---"
+            # model_reliable=False: BL-0を上回れないコンボは「精度参考値」バッジを付与
+            reliable_badge = "" if p.get("model_reliable", True) else \
+                ' <span style="font-size:9px;color:var(--text-secondary);background:rgba(255,255,255,0.08);border-radius:3px;padding:1px 4px">精度参考値</span>'
             rows_normal += f"""<tr>
   <td style="font-weight:bold">{p['ship']}</td>
-  <td style="color:var(--positive);font-weight:bold">{cnt_str}</td>
+  <td style="color:var(--positive);font-weight:bold">{cnt_str}{reliable_badge}</td>
   <td style="color:var(--accent)">{sz_str}</td>
   <td style="color:var(--cta)">{star_html}</td>
   <td style="color:var(--text-secondary);font-size:11px">{p['cnt_mape']:.0f}%</td>

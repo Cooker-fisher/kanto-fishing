@@ -422,14 +422,22 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         return None
 
     # 精度メトリクス (H=7d)
-    bt = {r[0]: {"mae": r[1], "mape": r[2], "wmape": r[3]} for r in conn.execute(
-        "SELECT metric, mae, mape, wmape FROM combo_backtest WHERE fish=? AND ship=? AND horizon=7",
+    bt = {r[0]: {"mae": r[1], "mape": r[2], "wmape": r[3], "bl0_wmape": r[4]} for r in conn.execute(
+        "SELECT metric, mae, mape, wmape, bl0_wmape FROM combo_backtest WHERE fish=? AND ship=? AND horizon=7",
         (fish, ship)
     ).fetchall()}
 
-    cnt_mae   = (bt.get("cnt_avg")  or {}).get("mae")   or avg_cnt * 0.35
-    cnt_mape  = (bt.get("cnt_avg")  or {}).get("mape")  or 999.0
-    cnt_wmape = (bt.get("cnt_avg")  or {}).get("wmape")
+    cnt_mae      = (bt.get("cnt_avg")  or {}).get("mae")      or avg_cnt * 0.35
+    cnt_mape     = (bt.get("cnt_avg")  or {}).get("mape")     or 999.0
+    cnt_wmape    = (bt.get("cnt_avg")  or {}).get("wmape")
+    bl0_wmape_cnt = (bt.get("cnt_avg") or {}).get("bl0_wmape")
+
+    # モデル信頼性判定: H=7 で BL-0（旬別平均）を 1% 以上改善できていなければ不信頼
+    # 不信頼コンボは予測を表示するが「精度参考値」として明示する
+    if cnt_wmape is not None and bl0_wmape_cnt is not None:
+        model_reliable = cnt_wmape < bl0_wmape_cnt * 0.99
+    else:
+        model_reliable = cnt_wmape is None or cnt_wmape < 65.0  # BL不明時は wMAPE < 65% を信頼
     size_mae  = (bt.get("size_avg") or {}).get("mae")
     size_mape = (bt.get("size_avg") or {}).get("mape")
     kg_mae    = (bt.get("kg_avg")   or {}).get("mae")
@@ -564,7 +572,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "kg_predicted":    round(avg_kg, 2) if avg_kg else None,
         "kg_lo":           round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
         "kg_hi":           round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
-        # 精度
+        # 精度・信頼性
+        "model_reliable":  model_reliable,   # False = BL-0 を上回れない（HTML で「精度参考値」表示）
         "cnt_mape":        round(cnt_mape, 1),
         "cnt_wmape":       round(cnt_wmape, 1) if cnt_wmape is not None else None,
         "size_mape":       round(size_mape, 1) if size_mape else None,
