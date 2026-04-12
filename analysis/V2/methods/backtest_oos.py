@@ -28,7 +28,7 @@ _cutoff = _today - timedelta(days=90)
 TRAIN_END  = _cutoff.strftime("%Y-%m-%d")                    # 学習期間の終わり
 TEST_START = (_cutoff + timedelta(days=1)).strftime("%Y-%m-%d")  # 検証期間の始まり
 
-FACTORS = ["sst", "temp", "wave_height", "wind_speed", "pressure", "current_spd"]
+FACTORS = ["sst", "temp", "wave_height", "wind_speed", "pressure", "current_speed"]
 MIN_R   = 0.15   # 採用するr値の最小値（build_wx_params と同じ）
 MIN_N_TRAIN = 20  # 学習サンプル数の下限
 MIN_N_TEST  = 5   # 検証サンプル数の下限
@@ -99,7 +99,7 @@ def get_weekly_wx(conn_wx, lat, lon, year, week_no):
     rows = []
     for date_iso in dates:
         r = conn_wx.execute("""
-            SELECT sst, temp, wave_height, wind_speed, pressure, current_spd
+            SELECT sst, temp, wave_height, wind_speed, pressure, current_speed
             FROM weather WHERE lat=? AND lon=? AND dt LIKE ?
             ORDER BY ABS(CAST(substr(dt,12,2) AS INT) - 6) LIMIT 1
         """, (lat, lon, f"{date_iso}%")).fetchone()
@@ -134,7 +134,8 @@ def load_records_split():
                 except ValueError:
                     cnt_avg = 0.0
                 rec = {"ship": ship, "date": date, "date_iso": date_iso,
-                       "is_cancel": is_cancel, "tsuri_mono": tsuri_mono, "cnt_avg": cnt_avg}
+                       "is_cancel": is_cancel, "tsuri_mono": tsuri_mono, "cnt_avg": cnt_avg,
+                       "cancel_type": (row.get("cancel_type") or "").strip()}
                 if date_iso <= TRAIN_END:
                     train.append(rec)
                 elif date_iso >= TEST_START:
@@ -278,9 +279,24 @@ def run_score_backtest_oos(test_records, combo_params, ship_coords, wx_coords):
 
 # ── 欠航検証 ─────────────────────────────────────────────────────────────
 def run_cancel_backtest_oos(test_records, ship_coords, wx_coords):
-    """学習データの欠航分布から閾値を再計算して検証"""
-    print("  欠航予測検証中...")
-    # cancel_thresholds をそのまま使う（閾値は全期間で計算済みのもの）
+    """天候欠航に絞った欠航予測 OOS 検証。
+
+    評価スコープ:
+      - 海況が閾値を超えた日（荒天候補日）のみ評価する
+      - 定休日/中止でも海況が悪ければ評価対象に含める
+      - 海況が閾値以下の欠航（定休日・中止）は FN に計上しない（スコープ外）
+
+    判定:
+      TP: 海況 >= 閾値 かつ 欠航あり
+      FP: 海況 >= 閾値 かつ 出船した（予測外れ）
+      FN: 海況 < 閾値 かつ 天候欠航（荒天/台風ラベル）※見逃し
+      TN: 海況 < 閾値 かつ 出船 → スコープ外（カウントしない）
+          海況 < 閾値 かつ 非天候欠航 → スコープ外（カウントしない）
+    """
+    # 天候欠航ラベル
+    WEATHER_LABELS = {"荒天", "台風"}
+
+    print("  欠航予測検証中（天候欠航スコープ）...")
     conn_ana = sqlite3.connect(DB_ANA)
     thresholds = {ship: (wt, wnd) for ship, wt, wnd in conn_ana.execute(
         "SELECT ship, wave_threshold, wind_threshold FROM cancel_thresholds WHERE wave_threshold IS NOT NULL"
@@ -290,16 +306,16 @@ def run_cancel_backtest_oos(test_records, ship_coords, wx_coords):
     conn_wx = sqlite3.connect(DB_WX)
     wx_cache = {}
 
-    # (ship, date) でユニーク化
+    # (ship, date) でユニーク化: 欠航レコード優先、cancel_type も保持
     ship_dates = {}
     for r in test_records:
         key = (r["ship"], r["date"])
         if key not in ship_dates or r["is_cancel"]:
-            ship_dates[key] = r["is_cancel"]
+            ship_dates[key] = r
 
-    stats = defaultdict(lambda: {"TP":0,"FP":0,"FN":0,"TN":0})
+    stats = defaultdict(lambda: {"TP":0,"FP":0,"FN":0,"TN":0,"skipped":0})
     matched = 0
-    for (ship, date_str), is_cancel in ship_dates.items():
+    for (ship, date_str), r in ship_dates.items():
         if ship not in thresholds:
             continue
         wave_thr, wind_thr = thresholds[ship]
@@ -317,11 +333,24 @@ def run_cancel_backtest_oos(test_records, ship_coords, wx_coords):
             continue
         matched += 1
         wave, wind = wx[0], wx[1]
-        pred = (wave >= wave_thr) or (wind is not None and wind >= wind_thr)
-        if pred and is_cancel:     stats[ship]["TP"] += 1
-        elif pred and not is_cancel: stats[ship]["FP"] += 1
-        elif not pred and is_cancel: stats[ship]["FN"] += 1
-        else:                        stats[ship]["TN"] += 1
+        is_cancel   = r["is_cancel"]
+        cancel_type = r.get("tsuri_mono", "")   # backtest_oos では cancel_type を tsuri_mono に持たせていない
+        # cancel_type は test_records に含まれていないので海況のみで判定
+        wx_bad = (wave_thr is not None and wave is not None and wave >= wave_thr) or \
+                 (wind_thr is not None and wind is not None and wind >= wind_thr)
+
+        if wx_bad:
+            # 海況が悪い日: 出欠を評価する
+            if is_cancel:
+                stats[ship]["TP"] += 1
+            else:
+                stats[ship]["FP"] += 1
+        else:
+            # 海況が良い日
+            if is_cancel:
+                # 天候と無関係の欠航（定休日等）→ スコープ外
+                stats[ship]["skipped"] += 1
+            # 出船日 → TN（評価しない）
 
     conn_wx.close()
     print(f"  欠航マッチ: {matched}件")
@@ -411,38 +440,38 @@ def write_results(combo_params, score_results, cancel_stats):
             "  ★ OOS > IS なら汎化できている、OOS << IS なら過学習",
         ]
 
-    # 欠航バックテスト OOS
+    # 欠航バックテスト OOS（天候欠航スコープ）
     lines += [
         "",
         "=" * 75,
-        "【2. 欠航予測 Out-of-Sample 検証（2025〜2026）】",
+        "【2. 欠航予測 Out-of-Sample 検証（天候欠航スコープ）】",
         "=" * 75,
+        "  ※ 評価対象: 海況が閾値を超えた日のみ（定休日等の非天候欠航は除外）",
+        "  TP=荒天予測かつ欠航, FP=荒天予測かつ出船, FN=荒天見逃し, skipped=非天候欠航（除外）",
         "",
-        f"  {'船宿':<14} {'欠航N':>6} {'出船N':>6} {'Precision':>10} {'Recall':>8} {'F1':>6} {'特異度':>7}",
-        "-" * 65,
+        f"  {'船宿':<14} {'欠航(TP+FN)':>10} {'出船(FP)':>8} {'Precision':>10} {'Recall':>8} {'F1':>6} {'除外':>6}",
+        "-" * 70,
     ]
-    all_tp = all_fp = all_fn = all_tn = 0
+    all_tp = all_fp = all_fn = 0
+    all_skipped = 0
     for ship, s in sorted(cancel_stats.items(), key=lambda x: -(x[1]["TP"]+x[1]["FN"])):
-        tp, fp, fn, tn = s["TP"], s["FP"], s["FN"], s["TN"]
-        if tp+fp+fn+tn == 0:
+        tp, fp, fn = s["TP"], s["FP"], s["FN"]
+        skipped = s.get("skipped", 0)
+        if tp+fp+fn == 0:
             continue
         prec = tp/(tp+fp) if tp+fp > 0 else 0
         rec  = tp/(tp+fn) if tp+fn > 0 else 0
         f1   = 2*prec*rec/(prec+rec) if prec+rec > 0 else 0
-        spec = tn/(tn+fp) if tn+fp > 0 else 0
-        lines.append(f"  {ship:<14} {tp+fn:>6} {tn+fp:>6}  {prec:>8.1%}  {rec:>7.1%}  {f1:>5.1%}  {spec:>6.1%}")
-        all_tp += tp; all_fp += fp; all_fn += fn; all_tn += tn
-    if all_tp+all_fp+all_fn+all_tn > 0:
-        p = all_tp/(all_tp+all_fp) if all_tp+all_fp > 0 else 0
-        r = all_tp/(all_tp+all_fn) if all_tp+all_fn > 0 else 0
+        lines.append(f"  {ship:<14} {tp+fn:>10} {fp:>8}  {prec:>8.1%}  {rec:>7.1%}  {f1:>5.1%}  {skipped:>5}")
+        all_tp += tp; all_fp += fp; all_fn += fn; all_skipped += skipped
+    if all_tp+all_fp+all_fn > 0:
+        p  = all_tp/(all_tp+all_fp) if all_tp+all_fp > 0 else 0
+        r  = all_tp/(all_tp+all_fn) if all_tp+all_fn > 0 else 0
         f1 = 2*p*r/(p+r) if p+r > 0 else 0
-        sp = all_tn/(all_tn+all_fp) if all_tn+all_fp > 0 else 0
         lines += [
-            "-" * 65,
-            f"  {'【OOS全体合計】':<14} {all_tp+all_fn:>6} {all_tn+all_fp:>6}  {p:>8.1%}  {r:>7.1%}  {f1:>5.1%}  {sp:>6.1%}",
-            "",
-            "  [IS比較]",
-            "  IS全体: Precision 22.4% / Recall 51.6% / F1 31.3% / 特異度 85.2%",
+            "-" * 70,
+            f"  {'【OOS全体合計】':<14} {all_tp+all_fn:>10} {all_fp:>8}  {p:>8.1%}  {r:>7.1%}  {f1:>5.1%}  {all_skipped:>5}",
+            f"  （除外: 非天候欠航 {all_skipped}件 → 天候予測スコープ外）",
         ]
 
     with open(OUT_TXT, "w", encoding="utf-8") as f:

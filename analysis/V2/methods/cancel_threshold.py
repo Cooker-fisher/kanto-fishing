@@ -90,7 +90,17 @@ def get_daily_wx(conn_wx, lat, lon, date_str):
     """, (lat, lon, f"{date_str}%")).fetchone()
     return rows
 
+# 天候欠航とみなす cancel_type（これ以外の欠航は閾値計算から除外）
+WEATHER_CANCEL_TYPES = {"荒天", "台風"}
+
 def load_records():
+    """釣果CSVから船宿×日次レコードを読み込む。
+
+    欠航の扱い:
+      - cancel_type が 荒天/台風 → is_weather_cancel=True（閾値計算の欠航側に含める）
+      - cancel_type が 定休日/中止 → is_weather_cancel=False（閾値計算から除外）
+      - cancel_type が 不明 → is_weather_cancel=None（海況が閾値超えなら欠航側、以下なら除外）
+    """
     records = []
     for fn in sorted(os.listdir(DATA_DIR)):
         if not fn.endswith(".csv") or fn == "cancellations.csv":
@@ -104,13 +114,25 @@ def load_records():
                 if ship in EXCLUDE_SHIPS:
                     continue
                 is_cancel = row.get("is_cancellation") == "1"
+                cancel_type = (row.get("cancel_type") or "").strip()
                 try:
                     month = int(date.split("/")[1])
                 except Exception:
                     month = 0
+                # 天候欠航フラグ
+                if not is_cancel:
+                    is_weather_cancel = False
+                elif cancel_type in WEATHER_CANCEL_TYPES:
+                    is_weather_cancel = True
+                elif cancel_type in ("定休日", "中止"):
+                    is_weather_cancel = False   # 除外対象
+                else:
+                    is_weather_cancel = None    # 不明: 海況で判定
                 records.append({
                     "ship": ship, "date": date,
-                    "is_cancel": is_cancel, "month": month,
+                    "is_cancel": is_cancel,
+                    "is_weather_cancel": is_weather_cancel,
+                    "month": month,
                 })
     return records
 
@@ -157,31 +179,34 @@ def get_season(month):
 def main():
     print("=== cancel_threshold.py 開始 ===")
     print(f"  閾値定義: 欠航率 >= {MIN_CANCEL_RATE*100:.0f}% になる最低波高・風速")
+    print(f"  [2パス] 荒天+台風で初期閾値 → 定休日/中止/不明を海況で再分類")
 
     ship_coords = load_ship_coords()
     wx_coords   = load_wx_coords()
     records     = load_records()
     print(f"レコード: {len(records):,}件 / 座標あり船宿: {len(ship_coords)}件")
 
-    # 船宿×日付でユニーク化（欠航優先）
+    # 船宿×日付でユニーク化（天候欠航優先: True > None > False > 出船）
+    def _priority(r):
+        wc = r.get("is_weather_cancel")
+        if wc is True:  return 3
+        if wc is None and r["is_cancel"]: return 2
+        if r["is_cancel"]: return 1
+        return 0
     ship_dates = {}
     for r in records:
         key = (r["ship"], r["date"])
-        if key not in ship_dates or r["is_cancel"]:
-            ship_dates[key] = (r["is_cancel"], r["month"])
+        if key not in ship_dates or _priority(r) > _priority(ship_dates[key]):
+            ship_dates[key] = r
 
-    # 気象データ取得
+    # ── 気象データ一括取得 ────────────────────────────────────────────────
     conn_wx = sqlite3.connect(DB_WX)
     wx_cache = {}
+    # (ship, date) → (wave, wind, month, is_cancel, is_weather_cancel)
+    ship_day_wx = {}
 
-    # ship_data[ship] = {
-    #   "wave": [(wave, month, is_cancel), ...]
-    #   "wind": [(wind, month, is_cancel), ...]
-    # }
-    ship_data = defaultdict(lambda: {"wave": [], "wind": []})
-    matched = 0
-
-    for (ship, date_str), (is_cancel, month) in ship_dates.items():
+    for key, r in ship_dates.items():
+        ship, date_str = r["ship"], r["date"]
         if ship not in ship_coords:
             continue
         slat, slon = ship_coords[ship]
@@ -193,15 +218,94 @@ def main():
         wx = wx_cache[cache_key]
         if not wx or wx[0] is None:
             continue
-        matched += 1
-        wave, wind = wx[0], wx[1]
-        if wave is not None:
-            ship_data[ship]["wave"].append((wave, month, is_cancel))
-        if wind is not None:
-            ship_data[ship]["wind"].append((wind, month, is_cancel))
+        ship_day_wx[key] = (wx[0], wx[1], r["month"], r["is_cancel"], r["is_weather_cancel"])
 
     conn_wx.close()
-    print(f"海況マッチ: {matched}/{len(ship_dates)}件")
+    print(f"海況マッチ: {len(ship_day_wx)}/{len(ship_dates)}件")
+
+    # ── パス1: 荒天+台風のみで初期閾値を計算 ────────────────────────────
+    print("  [Pass 1] 荒天+台風のみで初期閾値を計算中...")
+    init_ship_data = defaultdict(lambda: {"wave": [], "wind": []})
+    for (ship, _), (wave, wind, month, is_cancel, is_wc) in ship_day_wx.items():
+        if is_cancel:
+            if is_wc is not True:   # 荒天/台風以外はスキップ
+                continue
+            flag = True
+        else:
+            flag = False
+        if wave is not None:
+            init_ship_data[ship]["wave"].append((wave, month, flag))
+        if wind is not None:
+            init_ship_data[ship]["wind"].append((wind, month, flag))
+
+    # 全cancel_type込みのフォールバック用データも同時構築
+    fallback_ship_data = defaultdict(lambda: {"wave": [], "wind": []})
+    for (ship, _), (wave, wind, month, is_cancel, is_wc) in ship_day_wx.items():
+        flag = is_cancel   # cancel_type問わず全欠航を欠航扱い
+        if wave is not None:
+            fallback_ship_data[ship]["wave"].append((wave, month, flag))
+        if wind is not None:
+            fallback_ship_data[ship]["wind"].append((wind, month, flag))
+
+    init_thresholds = {}   # ship -> (wave_thr, wind_thr)
+    fallback_used = 0
+    for ship in set(list(init_ship_data.keys()) + list(fallback_ship_data.keys())):
+        d = init_ship_data.get(ship, {"wave": [], "wind": []})
+        cw = [w for w, m, c in d["wave"] if c]
+        ow = [w for w, m, c in d["wave"] if not c]
+        cv = [w for w, m, c in d["wind"] if c]
+        ov = [w for w, m, c in d["wind"] if not c]
+        wt, _, _, _ = certainty_threshold(cw, ow)
+        vt, _, _, _ = certainty_threshold(cv, ov)
+        # 荒天/台風だけでは閾値が出なかった場合 → 全cancel_typeでフォールバック
+        if wt is None and vt is None:
+            fd = fallback_ship_data.get(ship, {"wave": [], "wind": []})
+            fcw = [w for w, m, c in fd["wave"] if c]
+            fow = [w for w, m, c in fd["wave"] if not c]
+            fcv = [w for w, m, c in fd["wind"] if c]
+            fov = [w for w, m, c in fd["wind"] if not c]
+            wt, _, _, _ = certainty_threshold(fcw, fow)
+            vt, _, _, _ = certainty_threshold(fcv, fov)
+            if wt is not None or vt is not None:
+                fallback_used += 1
+        init_thresholds[ship] = (wt, vt)
+    print(f"  初期閾値: {sum(1 for wt,vt in init_thresholds.values() if wt or vt)}船宿（うち全cancel_typeフォールバック: {fallback_used}件）")
+
+    # ── パス2: 定休日/中止/不明を初期閾値で再分類してship_dataを再構築 ──
+    print("  [Pass 2] 定休日/中止/不明を海況で再分類中...")
+    ship_data = defaultdict(lambda: {"wave": [], "wind": []})
+    reclassified = 0
+
+    for (ship, _), (wave, wind, month, is_cancel, is_wc) in ship_day_wx.items():
+        wave_thr, wind_thr = init_thresholds.get(ship, (None, None))
+
+        if is_cancel:
+            if is_wc is True:
+                # 明示的天候欠航 → そのまま
+                effective = True
+            elif is_wc is False:
+                # 定休日/中止: 海況が初期閾値を超えていれば天候欠航として格上げ
+                wx_bad = (wave_thr is not None and wave is not None and wave >= wave_thr) or \
+                         (wind_thr is not None and wind is not None and wind >= wind_thr)
+                if wx_bad:
+                    effective = True
+                    reclassified += 1
+                else:
+                    continue   # 天候と無関係 → 両側に含めない
+            else:
+                # 不明: 同様に海況で判定
+                wx_bad = (wave_thr is not None and wave is not None and wave >= wave_thr) or \
+                         (wind_thr is not None and wind is not None and wind >= wind_thr)
+                effective = wx_bad
+        else:
+            effective = False   # 出船日
+
+        if wave is not None:
+            ship_data[ship]["wave"].append((wave, month, effective))
+        if wind is not None:
+            ship_data[ship]["wind"].append((wind, month, effective))
+
+    print(f"  再分類された天候欠航: {reclassified}件（定休日/中止/不明 → 荒天格上げ）")
 
     # ── 全期間閾値 ──────────────────────────────────────────────────────────
     results = []
