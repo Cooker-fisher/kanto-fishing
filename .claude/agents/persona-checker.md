@@ -1,13 +1,15 @@
 ---
 name: persona-checker
-description: "6ペルソナ（釣り人・ガチ勢・AdSense審査・セールス・パクリ対策・予測マニア）でUIを検証する。
-  Use when: reviewing mockup HTML or implemented pages from user perspective,
-  checking free/paid boundary decisions, validating UX before commit."
+description: "6ペルソナでUIを検証する。実装agentのworktreeブランチ差分を、実装内容を知らない状態でユーザー目線でチェックする。
+  Use when: reviewing worktree branch HTML changes from user perspective before merging to main,
+  checking free/paid boundary in implemented pages, validating UX after implementation."
 tools:
   - Read
   - Glob
+  - Bash
 model: sonnet
 maxTurns: 10
+isolation: worktree
 ---
 
 # 釣り人訪問者（ペルソナ検証）

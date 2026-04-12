@@ -32,13 +32,20 @@ maxTurns: 20
 ## ワークフロー
 
 ```
-1. researcher → 現状把握・調査
+1. researcher     → 現状把握・調査（main repo・読み取りのみ）
 2. （ユーザーへ報告・確認）
 3. persona-checker → ユーザー視点で設計を検証（デザイン変更時）
-4. 実装（プログラマーが行う）
-5. reviewer → コミット前チェック
-6. （合格したらコミット）
+4. 実装agent      → isolation:worktree で別ブランチに実装
+                     ※ main repo は触らない
+5. reviewer       → worktreeブランチの差分を読んでレビュー
+                     ※ 実装agentと無関係な第三者目線
+6. 合格 → worktreeをmainにマージ＆コミット
+   不合格 → worktreeで修正 → reviewer再チェック → 合格後マージ
 ```
+
+### なぜworktreeが必要か
+実装agentとreviewerが同じmain repoで動くと「自分が書いたものを自分でレビュー」になる。
+worktreeで実装することで、reviewerは変更内容を知らない状態でdiffだけを見て判断できる。
 
 ---
 
@@ -74,26 +81,49 @@ maxTurns: 20
 
 ## 指示テンプレート
 
-### researcher への指示例
+全agentは「実装agentが何を書いたか事前に知らない」状態で動く。
+diffだけを渡す。実装内容の説明は添えない。
+
+### Phase 1: 実装前調査（researcher）
 ```
 researcher agentを使って以下を調査してください:
-- design/V2/mockup-index-v2.html のセクション構成とCSS変数使用状況
-- design/V2/90_決定ログ.md の最新確定事項
+- 仕様: design/V2/mockup-index-v2.html の [該当ZONE]
+- 確定事項: design/V2/90_決定ログ.md
+- crawler.py の影響範囲（関数名と行番号のみ）
 ```
 
-### reviewer への指示例
+### Phase 2: 実装（isolation:worktree 必須）
 ```
-reviewer agentを使って以下をチェックしてください:
-- 対象ファイル: crawler.py（_build_index_html関数の変更箇所）
-- コードレビュー基準で確認
+isolation:worktree を指定した general-purpose agentで実装してください:
+- タスク: [具体的な実装内容]
+- V1参照禁止。仕様はmockupと決定ログのみ
+- コミットしない。完了後にworktreeブランチ名と変更ファイルを報告
 ```
 
-### persona-checker への指示例
+### Phase 3: レビュー（3agent並列・worktree差分のみ渡す）
+
+3つのagentに同じdiffを渡して並列実行する。実装内容の説明は添えない。
+
 ```
-persona-checker agentを使って以下を検証してください:
-- 対象: design/V2/mockup-index-v2.html
-- 特にペルソナS（セールス）とG（AdSense審査）の観点で
+# researcher（事実確認）
+researcher agentで以下を確認してください:
+- git diff main...[ブランチ名] の出力（Bashで取得）
+- mockupの仕様と実装に差異がないか事実のみ確認
+
+# reviewer（コード品質）
+reviewer agentで以下をチェックしてください:
+- git diff main...[ブランチ名] の出力（Bashで取得）
+- コードレビュー基準で確認。実装内容は事前に知らない前提で
+
+# persona-checker（UX）
+persona-checker agentで以下を検証してください:
+- git diff main...[ブランチ名] の出力（Bashで取得）
+- 6ペルソナ視点でUXと無料/有料区分を確認
 ```
+
+### Phase 4: マージ
+全agent合格 → worktreeをmainにマージ＆コミット
+不合格あり → worktreeで修正 → Phase 3を再実行
 
 ---
 

@@ -1,8 +1,8 @@
 ---
 name: reviewer
-description: "コード・デザイン・調査レポートのレビュー担当。コミット前・プッシュ前・承認申請前に必ず通す門番。
+description: "コード・デザイン・調査レポートのレビュー担当。実装agentのworktreeブランチ差分を第三者目線でチェックする門番。
   旧テーマ色残存チェック、CSS変数一貫性、SEOタグ、レスポンシブ、無料/有料区分の確認を行う。
-  Use when: committing code changes to crawler.py/style.css/main.js/HTML, reviewing design proposals, checking research reports."
+  Use when: reviewing worktree branch diffs before merging to main, checking design proposals, checking research reports."
 tools:
   - Read
   - Grep
@@ -10,6 +10,7 @@ tools:
   - Bash
 model: sonnet
 maxTurns: 15
+isolation: worktree
 ---
 
 # レビューアー

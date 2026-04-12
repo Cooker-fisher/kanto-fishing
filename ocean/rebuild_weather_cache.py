@@ -4,21 +4,23 @@ rebuild_weather_cache.py — weather_cache.sqlite を Open-Meteo から全件再
 
 [データソース]
   Open-Meteo Archive API  → wind_speed, wind_dir, temp, pressure, precipitation
-  Open-Meteo Marine API   → wave_height, wave_period, swell_height, sst
+  Open-Meteo Marine API   → wave_height, wave_period, swell_height, sst,
+                             current_speed, current_dir
 
 [対象座標]
-  area_coords.json の58エリア
+  point_coords.json（152座標）+ area_coords.json（58エリア）重複排除
 
 [期間]
   2023-01-01 〜 今日
 
 [出力]
-  weather_cache.sqlite（3時間ごと × 58エリア × 3年 ≒ 50万行）
+  weather_cache.sqlite（3時間ごと × 153座標 × 3年 ≒ 145万行）
 
 [使い方]
-  python rebuild_weather_cache.py          # 全エリア取得（約30分）
-  python rebuild_weather_cache.py --test   # 最初の3エリアのみテスト
-  python rebuild_weather_cache.py --resume # 未取得エリアのみ取得（再開）
+  python rebuild_weather_cache.py                # 全座標取得（約30分）
+  python rebuild_weather_cache.py --test         # 最初の3座標のみテスト
+  python rebuild_weather_cache.py --resume       # 未取得座標のみ取得（再開）
+  python rebuild_weather_cache.py --update-current  # 潮流列のみ全座標再取得
 """
 
 import json, os, sqlite3, sys, time
@@ -90,12 +92,18 @@ def fetch_weather(lat, lon, start, end):
     return result
 
 
-def fetch_marine(lat, lon, start, end):
-    """Open-Meteo Marine → 海況データ（3時間ごと）"""
+def fetch_marine(lat, lon, start, end, current_only=False):
+    """Open-Meteo Marine → 海況データ（3時間ごと）
+    current_only=True の場合は潮流列のみ取得（--update-current 用）
+    """
+    if current_only:
+        fields = "ocean_current_velocity,ocean_current_direction"
+    else:
+        fields = "wave_height,wave_period,swell_wave_height,sea_surface_temperature,ocean_current_velocity,ocean_current_direction"
     url = (
         f"{MARINE_URL}?latitude={lat}&longitude={lon}"
         f"&start_date={start}&end_date={end}"
-        f"&hourly=wave_height,wave_period,swell_wave_height,sea_surface_temperature"
+        f"&hourly={fields}"
         f"&timezone=Asia%2FTokyo"
     )
     data = fetch(url)
@@ -107,6 +115,8 @@ def fetch_marine(lat, lon, start, end):
     wp     = hourly.get("wave_period", [])
     sw     = hourly.get("swell_wave_height", [])
     st     = hourly.get("sea_surface_temperature", [])
+    cv     = hourly.get("ocean_current_velocity", [])
+    cd     = hourly.get("ocean_current_direction", [])
 
     result = {}
     for i, t in enumerate(times):
@@ -115,10 +125,12 @@ def fetch_marine(lat, lon, start, end):
             continue
         dt = t[:16]
         result[dt] = {
-            "wave_height":  wh[i] if i < len(wh) else None,
-            "wave_period":  wp[i] if i < len(wp) else None,
-            "swell_height": sw[i] if i < len(sw) else None,
-            "sst":          st[i] if i < len(st) else None,
+            "wave_height":    wh[i] if i < len(wh) else None,
+            "wave_period":    wp[i] if i < len(wp) else None,
+            "swell_height":   sw[i] if i < len(sw) else None,
+            "sst":            st[i] if i < len(st) else None,
+            "current_speed":  cv[i] if i < len(cv) else None,
+            "current_dir":    cd[i] if i < len(cd) else None,
         }
     return result
 
@@ -126,21 +138,30 @@ def fetch_marine(lat, lon, start, end):
 def init_db(conn):
     conn.execute("""
         CREATE TABLE IF NOT EXISTS weather (
-            lat          REAL,
-            lon          REAL,
-            dt           TEXT,
-            wind_speed   REAL,
-            wind_dir     REAL,
-            temp         REAL,
-            pressure     REAL,
-            wave_height  REAL,
-            wave_period  REAL,
-            swell_height REAL,
-            sst          REAL,
+            lat           REAL,
+            lon           REAL,
+            dt            TEXT,
+            wind_speed    REAL,
+            wind_dir      REAL,
+            temp          REAL,
+            pressure      REAL,
+            wave_height   REAL,
+            wave_period   REAL,
+            swell_height  REAL,
+            sst           REAL,
             precipitation REAL,
+            current_speed REAL,
+            current_dir   REAL,
             PRIMARY KEY (lat, lon, dt)
         )
     """)
+    # 既存DBへの列追加（ALTER TABLE は列が存在する場合エラーになるのでtry/except）
+    for col, typ in [("current_speed", "REAL"), ("current_dir", "REAL")]:
+        try:
+            conn.execute(f"ALTER TABLE weather ADD COLUMN {col} {typ}")
+            print(f"  [schema] {col} 列を追加しました")
+        except Exception:
+            pass  # 既に存在する場合は無視
     conn.execute("CREATE INDEX IF NOT EXISTS idx_wx_latlon ON weather(lat, lon)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_wx_dt    ON weather(dt)")
     conn.commit()
@@ -172,20 +193,41 @@ def upsert_rows(conn, lat, lon, wx_dict, ma_dict):
             ma.get("swell_height"),
             ma.get("sst"),
             wx.get("precipitation"),
+            ma.get("current_speed"),
+            ma.get("current_dir"),
         ))
     conn.executemany("""
         INSERT OR REPLACE INTO weather
         (lat, lon, dt, wind_speed, wind_dir, temp, pressure,
-         wave_height, wave_period, swell_height, sst, precipitation)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+         wave_height, wave_period, swell_height, sst, precipitation,
+         current_speed, current_dir)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """, rows)
+    conn.commit()
+    return len(rows)
+
+
+def update_current_rows(conn, lat, lon, ma_dict):
+    """潮流列のみ UPDATE（--update-current 用）"""
+    rows = []
+    for dt, ma in ma_dict.items():
+        rows.append((
+            ma.get("current_speed"),
+            ma.get("current_dir"),
+            lat, lon, dt,
+        ))
+    conn.executemany("""
+        UPDATE weather SET current_speed=?, current_dir=?
+        WHERE lat=? AND lon=? AND dt=?
     """, rows)
     conn.commit()
     return len(rows)
 
 
 def main():
-    test_mode   = "--test"   in sys.argv
-    resume_mode = "--resume" in sys.argv
+    test_mode          = "--test"           in sys.argv
+    resume_mode        = "--resume"         in sys.argv
+    update_current     = "--update-current" in sys.argv
 
     # point_coords.json（152座標）+ area_coords.json（フォールバック）を結合
     unique_coords = {}
@@ -216,6 +258,10 @@ def main():
     if test_mode:
         coords = coords[:3]
         print(f"=== テストモード（{len(coords)}座標） ===")
+    elif update_current:
+        print(f"=== --update-current: 潮流列のみ追記（{len(coords)}座標）===")
+        print(f"  期間: {START_DATE} 〜 {END_DATE}")
+        print(f"  出力: {DB_PATH}")
     else:
         print(f"=== weather_cache.sqlite 再構築（{len(coords)}座標）===")
         print(f"  期間: {START_DATE} 〜 {END_DATE}")
@@ -233,6 +279,19 @@ def main():
             continue
 
         print(f"  [{idx}/{len(coords)}] ({lat},{lon}) {area_name}", end=" ... ", flush=True)
+
+        if update_current:
+            # 潮流のみ再取得（Marine APIのみ・current_only=True）
+            ma = fetch_marine(lat, lon, START_DATE, END_DATE, current_only=True)
+            time.sleep(0.8)
+            if not ma:
+                print("データ取得失敗")
+                failed.append((lat, lon, area_name))
+                continue
+            n = update_current_rows(conn, lat, lon, ma)
+            total_rows += n
+            print(f"{n}行更新")
+            continue
 
         wx = fetch_weather(lat, lon, START_DATE, END_DATE)
         time.sleep(0.8)

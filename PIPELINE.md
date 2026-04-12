@@ -156,8 +156,23 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 
 | スクリプト | 入力 | 出力 | 実行タイミング |
 |-----------|------|------|--------------|
-| analysis/V2/methods/combo_deep_dive.py | data/*.csv + ocean/*.sqlite | analysis/V2/results/analysis.sqlite | 手動（全51魚種） |
+| analysis/V2/methods/run_full_deepdive.py | data/*.csv + ocean/*.sqlite | analysis/V2/results/analysis.sqlite | **手動（全魚種 並列実行）← 必ずこれを使う** |
+| analysis/V2/methods/combo_deep_dive.py | data/*.csv + ocean/*.sqlite | analysis/V2/results/analysis.sqlite | 単体魚種のみ（デバッグ・個別再実行用） |
 | analysis/run.py {script} | — | — | crawl.yml 経由で自動 |
+
+> ⚠️ **全魚種実行は必ず `run_full_deepdive.py --workers 4` を使うこと**。逐次ループは禁止。
+> SQLite WAL モード + timeout=30s により並列書き込みは安全にシリアライズされる。
+>
+> ```bash
+> # 標準実行（ローカル・全魚種）
+> python analysis/V2/methods/run_full_deepdive.py --workers 4
+>
+> # 特定魚種のみ再実行
+> python analysis/V2/methods/run_full_deepdive.py アジ マダイ シーバス --workers 3
+>
+> # GitHub Actions（2CPU環境）
+> python analysis/V2/methods/run_full_deepdive.py --workers 2
+> ```
 
 ### analysis.sqlite テーブル一覧
 

@@ -3485,7 +3485,17 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                  extract_weight_kg(r.get("tokki_raw") or "")
             cnt_avg = None
             if cr and cr.get("min") is not None and cr.get("max") is not None:
-                cnt_avg = (cr["min"] + cr["max"]) // 2
+                cnt_avg = (cr["min"] + cr["max"]) / 2  # float: 0～1匹 → 0.5（整数切り捨てで除外されていたバグ修正）
+
+            # kanso_raw フォールバック: count_rawから取れない場合、kanso_rawの「船中X匹」から補完
+            # 例: ちがさき丸のマダイ「船中5匹でした！」→ cnt_avg=5, is_boat=True
+            if cnt_avg is None:
+                _kanso = r.get("kanso_raw") or ""
+                _m = re.search(r'船中\s*(\d+)\s*[匹枚尾本]', _kanso)
+                if _m:
+                    cnt_avg = int(_m.group(1))
+                    if cr is None:
+                        cr = {"min": cnt_avg, "max": cnt_avg, "is_boat": True}
 
             # 船中記録と個別記録が同一tripに混在する場合は個別記録を優先
             is_boat_rec = bool(cr and cr.get("is_boat"))

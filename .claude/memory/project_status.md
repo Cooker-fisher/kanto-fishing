@@ -1,24 +1,67 @@
 現行バージョン: crawler.py v5.24（回遊魚★チャンス評価表示追加）
-最終更新: 2026/04/11
-最新コミット: 18d62dc（_pred_build_html: 回遊魚★チャンス評価表示）
+最終更新: 2026/04/12
+最新コミット: 18d62dc（_pred_build_html: 回遊魚★チャンス評価表示）※未push
 
 ## ★ 次チャットでやること（優先度順）
 
-### 1. シイラ×庄治郎丸 combo_meta 欠損問題
-- predict_combo が None を返すのは combo_meta にエントリがないため
-- save_insights.py を実行するか、combo_meta なしでも 回遊魚★が動く経路を確認
-- （低優先: 今は表示があるコンボのみ機能する状態で問題なし）
+### 1. crawler.py 実行 → forecast HTML 確認
+- `python crawler.py` で forecast/index.html 再生成
+- カンパチ×龍正丸・カンパチ×佐衛美丸・キハダマグロ×平安丸・キハダマグロ×恒丸 が匹数レンジ表示になっているか確認
 
-### 2. crawler.py を実行して forecast HTML を実際に確認
-- `python crawler.py` を実行して forecast/index.html を再生成
-- ブラウザで回遊魚セクションの表示を確認
-
-### 3. git push（本番反映）
-- ローカルコミット4件まとめて push
+### 2. git push（本番反映）
+- 今回の全変更をまとめてコミット＆push
 
 ---
 
-## ✅ 今セッション完了（2026/04/11）
+## ✅ 今セッション完了（2026/04/12）
+
+### 潮流データ追加（超重要新特徴量）
+- **根拠**: 長崎屋のシーバスkanso「潮止まり近い時間帯は小型が主体」「バラシ多数」→ 潮流が釣果を直接左右する
+- **Open-Meteo Marine API** に `ocean_current_velocity`, `ocean_current_direction` が存在することを確認（東京湾で0.6m/s等リアルな値が返る）
+
+**`rebuild_weather_cache.py` 改修:**
+- `fetch_marine()` に `ocean_current_velocity`, `ocean_current_direction` 追加
+- `--update-current` フラグ新設（既存データに潮流列だけ追記する差分モード・約15分）
+- `init_db()` に ALTER TABLE マイグレーション（current_speed/current_dir列）
+- 153座標 × 3年分 = 約145万行を更新中（バックグラウンド実行中）
+
+**`combo_deep_dive.py` に潮流特徴量追加:**
+- `get_daily_wx()` のSELECT文に `current_speed, current_dir` 追加
+- `result["current_speed_avg"]`, `result["current_speed_max"]`, `result["current_dir_mode"]` 計算
+- `WX_FACTORS` に 3変数追加
+- `FAST_FACTORS` に分類（潮流は数時間で変化 → H>7 では無効化）
+
+### 乗っ込み・産卵期フラグ追加（SLOW因子）
+- **根拠**: シーバス乗っ込み（2〜4月）、マダイ乗っ込み（4〜6月）、サワラ（3〜5月東京湾接岸）等
+- `_spawn_season_n(date_str)`: 2〜5月 = 1, それ以外 = 0
+- `SLOW_FACTORS` に追加（カレンダー確定値 → 全ホライズン有効）
+- `CALENDAR_FACTORS` に追加
+- `load_records()` でレコードに自動付与
+
+### 回遊魚 KAIYU 自動昇格システム（実行完了・4コンボ昇格）
+- **根拠**: 潮流データ追加により、カツオ/ブリ/サワラ等は匹数予測に移行できる可能性がある
+- `KAIYU_PROMOTE_WMAPE_THR = 60.0`（60%以下 + BL-2勝ち で昇格。%値で保存）
+  - ⚠️ バグ修正: 初期値 0.60（分率）→ 60.0（%値）に修正
+- 昇格条件: H=7 cnt_avg wMAPE < 60% かつ BL-2 wMAPE を下回る
+- `combo_wx_params` テーブルに `kaiyu_promoted` 列追加（ALTER TABLE マイグレーション済み）
+- `deep_dive()` でバックテスト後に自動判定・保存
+- `predict_count.py` に `_get_kaiyu_promoted()` 追加
+  - `kaiyu_promoted=True` のコンボは `is_kaiyu=False` に切替 → 通常の cnt_lo/cnt_hi 予測
+  - ★チャンス評価をスキップして匹数レンジ表示へ
+- **昇格済み4コンボ（全55魚種実行後）**:
+  - カンパチ × 龍正丸 wMAPE=45.7%（r=+0.411, n=236）
+  - カンパチ × 佐衛美丸 wMAPE=57.5%（r=+0.437, n=31）
+  - キハダマグロ × 平安丸 wMAPE=58.9%（r=+0.386, n=56）
+  - キハダマグロ × 恒丸 wMAPE=59.8%（r=+0.121, n=30）
+
+### obs_fields.json 改善（kanso品質向上）
+- `tide_speed_n`: 「潮止まり」「潮止り」を -1.0 として明示追加（「止まり」との重複強化）
+- `activity_n`: 「バラシ多」-1.0, 「バラシが多」-1.0, 「バラシ」-0.5 追加
+  - 根拠: バラシ多数 = 食いが浅い / 掛かりにくい = 実釣果少ない（長崎屋実証）
+
+---
+
+## ✅ 前セッション完了（2026/04/11）
 
 ### 回遊魚★チャンス評価システム（全実装完了）
 - **combo_deep_dive.py**: `KAIYU_FISH` 定数追加、`_star_by_key` 蓄積、`combo_star_backtest` テーブル新設
@@ -48,11 +91,20 @@
 
 ## 確定した設計方針（変更不可）
 
-### 回遊魚★評価設計（2026/04/11確定）
+### 回遊魚評価設計（2026/04/12更新）
 - KAIYU_FISH: {"シイラ", "カツオ", "キハダマグロ", "ブリ", "ワラサ", "イナダ", "サワラ", "カンパチ"}
-- ★割当: 各コンボ予測値分布のP20/P40/P60/P80で分位
+- デフォルト: ★チャンス評価（P20/P40/P60/P80分位）
+- 昇格条件: H=7 wMAPE < 60% + BL-2勝ち → `kaiyu_promoted=True` → 匹数レンジ予測に切替
 - 良日ライン: actual P75（good_line ≤ 3 のコンボは kaiyu=None）
-- H=7 を本番ホライズンとして採用
+
+### 特徴量分類（2026/04/12更新）
+- **SLOW_FACTORS**（全H有効）: SST, 気温, 気圧, 潮汐, 月齢, 土日祝, 連休, 夏休み, **spawn_season_n（新規）**
+- **FAST_FACTORS**（H>7 無効）: 風, 波, うねり, 降水, 前週釣果, 台風, **current_speed/dir（新規）**
+- FAST_MAX_H = 7（デフォルト）。per-combo override: メバル×第三幸栄丸 = 3
+
+### weather_cache.sqlite スキーマ（2026/04/12更新）
+- 列: lat, lon, dt, wind_speed, wind_dir, temp, pressure, wave_height, wave_period, swell_height, sst, precipitation, **current_speed（新規）**, **current_dir（新規）**
+- 153座標 × 2023-01-01〜今日 × 3時間毎 ≒ 145万行
 
 ### 評価指標設計（2026/04/11確定）
 - pred_hi = cnt_maxモデル出力 → actual_maxと比較
@@ -69,9 +121,9 @@
 - `boat_only: true` → 青木丸（1件）
 - 有効船宿: 75件＋静岡エリア多数
 
-### データ収集状況（2026/04/03時点）
+### データ収集状況（2026/04/12時点）
 - catches_raw.json: **84,757件**（欠航893件含む）
-- data/YYYY-MM.csv: **82,481行**
+- data/YYYY-MM.csv: **64,112行**（幸栄丸・ふじや・山本・村松 除外後）
 - 期間: 2023/01/01〜2026/04/03
 
 ### ポイント解決（3段階フォールバック・完全実装済み）
@@ -93,3 +145,5 @@
 - [ ] AdSense審査結果待ち（2026/03/21申請済み）
 - [ ] X自動投稿（アカウントロック解除待ち）
 - [ ] crawl.ymlのNode.js 20→24アップグレード
+- [ ] ちがさき丸×マダイ/シーバス/メバル 個別改善（r=-0.17等・★候補）
+- [ ] 外道表示機能（by_catch × 旬別集計 → 予測ページへ追加）

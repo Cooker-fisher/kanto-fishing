@@ -46,7 +46,7 @@
   <div class="stat-card"><div class="sv">-匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card trend-up"><div class="sv">-匹</div><div class="sl">最高釣果</div></div>
 </div>
-  <div style="background:var(--bg-card);border-left:3px solid var(--cta);padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px">🏅 本日のTOP船宿: <strong style="color:var(--accent)">平安丸</strong> 最高0匹 / 平均0匹</div>
+  <div style="background:var(--bg-card);border-left:3px solid var(--border);padding:10px 14px;border-radius:4px;margin:12px 0;font-size:13px;color:var(--text-secondary)">🏅 直近TOP船宿 (2026/04/11): <strong style="color:var(--accent)">平安丸</strong> 最高0匹</div>
   <h2>📅 年間シーズン</h2><div class="season-bar"><div class="sb-cell low " title="1月">1</div><div class="sb-cell low " title="2月">2</div><div class="sb-cell mid " title="3月">3</div><div class="sb-cell peak-size now" title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-count " title="6月">6</div><div class="sb-cell mid " title="7月">7</div><div class="sb-cell mid " title="8月">8</div><div class="sb-cell mid " title="9月">9</div><div class="sb-cell peak-size " title="10月">10</div><div class="sb-cell peak-size " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
   <div style="font-size:13px;color:var(--text-secondary);margin:4px 0 12px">シーズンスコア: <span style="color:var(--cta);font-size:15px">★★★★★</span> (5/5)</div>
   <div class="combo-comment">💬 神奈川・相模湾のマダイは今月がシーズン本番。↑ 上昇中の傾向です。</div>
@@ -57,8 +57,8 @@
   (function(){
     var ctx = document.getElementById('dc_マダイ_小田原早川港');
     if(!ctx) return;
-    new Chart(ctx, {type:'line',data:{labels:["04/05", "04/06", "04/07", "04/08", "04/09", "04/10", "04/11"],datasets:[
-      {label:'今年',data:[null, null, 0.0, 0.0, null, null, 0.0],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
+    new Chart(ctx, {type:'line',data:{labels:["04/06", "04/07", "04/08", "04/09", "04/10", "04/11", "04/12"],datasets:[
+      {label:'今年',data:[null, 0.0, 0.0, null, null, 0.0, null],borderColor:'#4db8ff',backgroundColor:'rgba(77,184,255,0.08)',tension:0.3,spanGaps:true,pointRadius:4},
       {label:'昨年',data:[null, null, null, null, null, null, null],borderColor:'#3a5a7a',borderDash:[4,4],tension:0.3,spanGaps:true,pointRadius:3}
     ]},options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8f0'}}},
       scales:{x:{ticks:{color:'#7a9bb5'}},y:{ticks:{color:'#7a9bb5'},beginAtZero:true,title:{display:true,text:'平均釣果(匹)',color:'#7a9bb5'}}}}
@@ -69,7 +69,7 @@
   <div style="position:relative;margin:0 0 24px">
     <div style="filter:blur(5px);pointer-events:none;background:var(--bg-card);border-radius:6px;padding:16px">
       <div style="display:flex;gap:6px;align-items:flex-end;height:80px"><div style="flex:1;background:var(--accent);height:55%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:70%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:45%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:80%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:60%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:75%;border-radius:3px 3px 0 0"></div><div style="flex:1;background:var(--accent);height:50%;border-radius:3px 3px 0 0"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/05</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/06</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/07</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/08</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/09</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/10</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/11</span></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/06</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/07</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/08</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/09</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/10</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/11</span><span style="flex:1;text-align:center;font-size:10px;color:var(--text-secondary)">04/12</span></div>
     </div>
     <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1">
       <a href="../forecast/index.html" style="display:inline-block;background:var(--cta);color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:14px;white-space:nowrap">📈 この魚の来週予測を見る →</a>
@@ -80,10 +80,10 @@
   <h2>📊 昨年同週との比較（第14週）</h2>
   <div class="tbl-wrap"><table class="yoy-table">
     <tr><th></th><th>今週 (2026/W14)</th><th>昨年同週 (2025/W14)</th><th>昨年比</th></tr>
-    <tr><td>平均釣果</td><td>2.7匹</td><td>2.7匹</td><td class="up">+0%</td></tr>
-    <tr><td>最高釣果</td><td>19匹</td><td>13匹</td><td class="up">+46%</td></tr>
+    <tr><td>平均釣果</td><td>2.3匹</td><td>2.7匹</td><td class="down">-15%</td></tr>
+    <tr><td>最高釣果</td><td>12匹</td><td>13匹</td><td class="down">-8%</td></tr>
     <tr><td>平均サイズ/重さ</td><td>80.5cm</td><td>37.5cm</td><td class="up">+115%</td></tr>
-    <tr><td>出船数（関東全体）</td><td>33隻</td><td>17隻</td><td class="up">+94%</td></tr>
+    <tr><td>出船数（関東全体）</td><td>28隻</td><td>17隻</td><td class="up">+65%</td></tr>
   </table></div>
   <h2>🏆 船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">1</td><td><strong>平安丸</strong></td><td style="color:var(--positive)">5件</td><td style="color:var(--cta)">最高0匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr></table></div>
@@ -104,7 +104,7 @@
 <footer>
   <p><a href="../pages/about.html">このサイトについて</a> | <a href="../pages/privacy.html">プライバシーポリシー</a> | <a href="../pages/terms.html">利用規約</a></p>
   <p style="margin-top:8px">&copy; 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/11 20:28</p>
+  <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">最終更新: 2026/04/12 12:34</p>
 </footer>
 <div class="bottom-nav">
   <div class="bottom-nav-inner">

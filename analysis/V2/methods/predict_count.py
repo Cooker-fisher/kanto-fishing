@@ -244,6 +244,19 @@ def _get_use_fallback(conn, fish: str, ship: str) -> bool:
     return bool(row and row[0])
 
 
+def _get_kaiyu_promoted(conn, fish: str, ship: str) -> bool:
+    """combo_wx_params._meta の kaiyu_promoted フラグを返す。
+    kaiyu_promoted=True の回遊魚コンボは★評価をスキップして通常の匹数レンジ予測を使う。
+    条件: H=7 cnt_avg wMAPE < 60% かつ BL-2 勝ち（combo_deep_dive.py で自動判定）
+    """
+    row = conn.execute(
+        "SELECT kaiyu_promoted FROM combo_wx_params "
+        "WHERE fish=? AND ship=? AND metric='cnt_avg' AND factor='_meta'",
+        (fish, ship)
+    ).fetchone()
+    return bool(row and row[0])
+
+
 def _apply_wx_correction(conn, fish: str, ship: str,
                           target_date: str, baseline_cnt: float,
                           lat: float, lon: float,
@@ -448,9 +461,23 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "SELECT n_records, lat, lon FROM combo_meta WHERE fish=? AND ship=?",
         (fish, ship)
     ).fetchone()
-    n_total = meta[0] if meta else n_dekad
-    lat     = meta[1] if meta else None
-    lon     = meta[2] if meta else None
+    if meta:
+        n_total = meta[0]
+        lat     = meta[1]
+        lon     = meta[2]
+    else:
+        # combo_meta 未登録（save_insights.py 未実行コンボ）: combo_decadal の合計を使用
+        n_sum_row = conn.execute(
+            "SELECT SUM(n) FROM combo_decadal WHERE fish=? AND ship=?", (fish, ship)
+        ).fetchone()
+        n_total = n_sum_row[0] if n_sum_row and n_sum_row[0] else n_dekad
+        # lat/lon は combo_wx_params._meta から取得
+        wp = conn.execute(
+            "SELECT lat, lon FROM combo_wx_params WHERE fish=? AND ship=? AND factor='_meta' LIMIT 1",
+            (fish, ship)
+        ).fetchone()
+        lat = wp[0] if wp else None
+        lon = wp[1] if wp else None
 
     if n_total < 30:  # サンプル不足コンボは予測しない（統計的に意味ある下限）
         return None
@@ -479,7 +506,11 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         stars = max(1, stars - 1)
 
     # 回遊魚は後で cnt_predicted 確定後に★を上書きする（フラグだけ立てておく）
+    # ただし kaiyu_promoted=True のコンボは昇格済み → 通常の匹数レンジ予測を使う
     is_kaiyu = fish in KAIYU_FISH
+    kaiyu_promoted = _get_kaiyu_promoted(conn, fish, ship) if is_kaiyu else False
+    if kaiyu_promoted:
+        is_kaiyu = False  # 昇格コンボは通常の cnt_lo/cnt_hi 予測で処理
     kaiyu_star_info = None  # predict後に calc_stars_kaiyu() で設定
 
     # ── 天候補正 ──────────────────────────────────────────────────────────────

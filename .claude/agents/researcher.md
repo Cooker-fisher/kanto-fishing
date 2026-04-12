@@ -1,14 +1,17 @@
 ---
 name: researcher
-description: "設計前の調査担当。mockupファイルの読み取り・コンポーネント抽出・設計ドキュメントの整理を行う。
-  Use when: reading mockup HTML files to extract components, analyzing design/V2/ docs before implementation,
-  checking current crawler.py structure before making changes."
+description: "調査担当。実装前の仕様調査・実装後のworktreeブランチ差分の事実確認を行う。
+  実装agentが何を書いたか事前に知らない状態でdiffだけを読む。
+  Use when: reading mockup HTML files to extract components before implementation,
+  verifying facts in worktree branch diff after implementation (what was actually changed vs spec)."
 tools:
   - Read
   - Grep
   - Glob
+  - Bash
 model: sonnet
 maxTurns: 15
+isolation: worktree
 ---
 
 # 調査分析者
