@@ -298,10 +298,22 @@ def run_cancel_backtest_oos(test_records, ship_coords, wx_coords):
 
     print("  欠航予測検証中（天候欠航スコープ）...")
     conn_ana = sqlite3.connect(DB_ANA)
+    # 船宿レベル閾値（フォールバック用）
     thresholds = {ship: (wt, wnd) for ship, wt, wnd in conn_ana.execute(
         "SELECT ship, wave_threshold, wind_threshold FROM cancel_thresholds WHERE wave_threshold IS NOT NULL"
     ).fetchall()}
+    # コンボ（船宿×釣り物）閾値（優先使用）
+    try:
+        combo_thresholds = {
+            (ship, tsuri): (wt, wnd)
+            for ship, tsuri, wt, wnd in conn_ana.execute(
+                "SELECT ship, tsuri_mono, wave_threshold, wind_threshold FROM cancel_thresholds_combo"
+            ).fetchall()
+        }
+    except Exception:
+        combo_thresholds = {}
     conn_ana.close()
+    print(f"  船宿閾値: {len(thresholds)}件 / コンボ閾値: {len(combo_thresholds)}件")
 
     conn_wx = sqlite3.connect(DB_WX)
     wx_cache = {}
@@ -316,9 +328,14 @@ def run_cancel_backtest_oos(test_records, ship_coords, wx_coords):
     stats = defaultdict(lambda: {"TP":0,"FP":0,"FN":0,"TN":0,"skipped":0})
     matched = 0
     for (ship, date_str), r in ship_dates.items():
-        if ship not in thresholds:
+        # コンボ閾値を優先、なければ船宿レベルにフォールバック
+        tsuri_mono = r.get("tsuri_mono", "")
+        if (ship, tsuri_mono) in combo_thresholds:
+            wave_thr, wind_thr = combo_thresholds[(ship, tsuri_mono)]
+        elif ship in thresholds:
+            wave_thr, wind_thr = thresholds[ship]
+        else:
             continue
-        wave_thr, wind_thr = thresholds[ship]
         sc = ship_coords.get(ship)
         if not sc:
             continue
@@ -333,9 +350,7 @@ def run_cancel_backtest_oos(test_records, ship_coords, wx_coords):
             continue
         matched += 1
         wave, wind = wx[0], wx[1]
-        is_cancel   = r["is_cancel"]
-        cancel_type = r.get("tsuri_mono", "")   # backtest_oos では cancel_type を tsuri_mono に持たせていない
-        # cancel_type は test_records に含まれていないので海況のみで判定
+        is_cancel = r["is_cancel"]
         wx_bad = (wave_thr is not None and wave is not None and wave >= wave_thr) or \
                  (wind_thr is not None and wind is not None and wind >= wind_thr)
 

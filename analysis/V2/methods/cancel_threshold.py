@@ -130,6 +130,7 @@ def load_records():
                     is_weather_cancel = None    # 不明: 海況で判定
                 records.append({
                     "ship": ship, "date": date,
+                    "tsuri_mono": row.get("tsuri_mono", "").strip(),
                     "is_cancel": is_cancel,
                     "is_weather_cancel": is_weather_cancel,
                     "month": month,
@@ -307,6 +308,90 @@ def main():
 
     print(f"  再分類された天候欠航: {reclassified}件（定休日/中止/不明 → 荒天格上げ）")
 
+    # ── コンボ（船宿×釣り物）レベルのデータ構築 ─────────────────────────────
+    print("  [Combo] 船宿×釣り物レベルの閾値を計算中...")
+
+    # (ship, tsuri_mono, date) でユニーク化（同じ優先度ロジック）
+    combo_dates = {}
+    for r in records:
+        tsuri = r.get("tsuri_mono", "")
+        if not tsuri:
+            continue
+        key = (r["ship"], tsuri, r["date"])
+        if key not in combo_dates or _priority(r) > _priority(combo_dates[key]):
+            combo_dates[key] = r
+
+    # 気象データ紐付け（wx_cache を再利用、不足分は再クエリ）
+    conn_wx_c = sqlite3.connect(DB_WX)
+    combo_data = defaultdict(lambda: {"wave": [], "wind": []})
+    for (ship, tsuri, date_str), r in combo_dates.items():
+        if ship not in ship_coords:
+            continue
+        slat, slon = ship_coords[ship]
+        wlat, wlon = nearest_coord(slat, slon, wx_coords)
+        date_iso = date_str.replace("/", "-")
+        cache_key = (wlat, wlon, date_iso)
+        if cache_key not in wx_cache:
+            wx_cache[cache_key] = get_daily_wx(conn_wx_c, wlat, wlon, date_iso)
+        wx = wx_cache[cache_key]
+        if not wx or wx[0] is None:
+            continue
+        wave, wind = wx[0], wx[1]
+        wave_thr, wind_thr = init_thresholds.get(ship, (None, None))
+        is_cancel = r["is_cancel"]
+        is_wc     = r["is_weather_cancel"]
+
+        # Pass 2 と同じ再分類ロジック（船宿レベル初期閾値を使用）
+        if is_cancel:
+            if is_wc is True:
+                effective = True
+            elif is_wc is False:
+                wx_bad = (wave_thr is not None and wave is not None and wave >= wave_thr) or \
+                         (wind_thr is not None and wind is not None and wind >= wind_thr)
+                if wx_bad:
+                    effective = True
+                else:
+                    continue   # 天候と無関係 → 除外
+            else:
+                wx_bad = (wave_thr is not None and wave is not None and wave >= wave_thr) or \
+                         (wind_thr is not None and wind is not None and wind >= wind_thr)
+                effective = wx_bad
+        else:
+            effective = False
+
+        combo_key = (ship, tsuri)
+        if wave is not None:
+            combo_data[combo_key]["wave"].append((wave, r["month"], effective))
+        if wind is not None:
+            combo_data[combo_key]["wind"].append((wind, r["month"], effective))
+    conn_wx_c.close()
+    print(f"  コンボ海況マッチ: {sum(len(d['wave']) for d in combo_data.values())}件 / コンボ数: {len(combo_data)}件")
+
+    # コンボ閾値を計算
+    combo_results = []
+    for (ship, tsuri), d in combo_data.items():
+        cancel_wave = [w for w, m, c in d["wave"] if c]
+        ok_wave     = [w for w, m, c in d["wave"] if not c]
+        cancel_wind = [w for w, m, c in d["wind"] if c]
+        ok_wind     = [w for w, m, c in d["wind"] if not c]
+        nc = len(cancel_wave)
+        if nc < MIN_CANCEL_TOTAL:
+            continue
+        wave_thr2, wave_rate2, _, _ = certainty_threshold(cancel_wave, ok_wave)
+        wind_thr2, wind_rate2, _, _ = certainty_threshold(cancel_wind, ok_wind)
+        wave_cov2 = coverage(cancel_wave, wave_thr2)
+        combo_results.append({
+            "ship": ship, "tsuri_mono": tsuri,
+            "n_cancel": nc, "n_ok": len(ok_wave),
+            "wave_threshold":   round(wave_thr2, 2) if wave_thr2 else None,
+            "wave_cancel_rate": round(wave_rate2, 2) if wave_rate2 else None,
+            "wave_coverage":    round(wave_cov2, 2) if wave_cov2 else None,
+            "wind_threshold":   round(wind_thr2, 2) if wind_thr2 else None,
+            "wind_cancel_rate": round(wind_rate2, 2) if wind_rate2 else None,
+        })
+    combo_results.sort(key=lambda x: (-x["n_cancel"], x["ship"]))
+    print(f"  コンボ閾値: {len(combo_results)}件（うち波高閾値あり: {sum(1 for r in combo_results if r['wave_threshold'])}件）")
+
     # ── 全期間閾値 ──────────────────────────────────────────────────────────
     results = []
     for ship, d in ship_data.items():
@@ -400,6 +485,28 @@ def main():
             r["wind_threshold"], r["wind_cancel_rate"], r["wind_coverage"],
         ))
 
+    conn_ana.execute("DROP TABLE IF EXISTS cancel_thresholds_combo")
+    conn_ana.execute("""
+        CREATE TABLE cancel_thresholds_combo (
+            ship              TEXT,
+            tsuri_mono        TEXT,
+            n_cancel          INTEGER,
+            n_ok              INTEGER,
+            wave_threshold    REAL,
+            wave_cancel_rate  REAL,
+            wave_coverage     REAL,
+            wind_threshold    REAL,
+            wind_cancel_rate  REAL,
+            PRIMARY KEY (ship, tsuri_mono)
+        )
+    """)
+    for r in combo_results:
+        conn_ana.execute("INSERT INTO cancel_thresholds_combo VALUES (?,?,?,?,?,?,?,?,?)", (
+            r["ship"], r["tsuri_mono"], r["n_cancel"], r["n_ok"],
+            r["wave_threshold"], r["wave_cancel_rate"], r["wave_coverage"],
+            r["wind_threshold"], r["wind_cancel_rate"],
+        ))
+
     conn_ana.execute("DROP TABLE IF EXISTS cancel_thresholds_seasonal")
     conn_ana.execute("""
         CREATE TABLE cancel_thresholds_seasonal (
@@ -488,10 +595,36 @@ def main():
             f"  ※ カバー率 < 50% の船宿は海況以外の欠航理由が多い可能性あり",
         ]
 
+    # コンボ（船宿×釣り物）閾値のサマリー
+    if combo_results:
+        lines += ["", "=" * 80, "【船宿×釣り物 コンボ別閾値】",
+                  "  ※ 欠航率 >= 80% になる波高・風速閾値（釣り物ごとに異なる出漁エリア・季節を反映）",
+                  ""]
+        lines.append(
+            f"  {'船宿':<14} {'釣り物':<12} {'欠航':>5} {'出船':>6} {'波高閾値':>8} {'欠航率':>6} {'カバー率':>8}  {'風速閾値':>8} {'欠航率':>6}"
+        )
+        lines.append("-" * 100)
+        for r in combo_results:
+            wt  = f"{r['wave_threshold']}m"   if r['wave_threshold']   else "-"
+            wr  = f"{r['wave_cancel_rate']*100:.0f}%" if r['wave_cancel_rate'] else "-"
+            wc  = f"{r['wave_coverage']*100:.0f}%"   if r['wave_coverage']    else "-"
+            wnd = f"{r['wind_threshold']}m/s" if r['wind_threshold']   else "-"
+            wdr = f"{r['wind_cancel_rate']*100:.0f}%" if r['wind_cancel_rate'] else "-"
+            lines.append(
+                f"  {r['ship']:<14} {r['tsuri_mono']:<12} {r['n_cancel']:>5} {r['n_ok']:>6} "
+                f"  {wt:>7} {wr:>6} {wc:>8}   {wnd:>8} {wdr:>6}"
+            )
+        lines += [
+            "",
+            f"  コンボ閾値あり: {sum(1 for r in combo_results if r['wave_threshold'])}件 / 全{len(combo_results)}コンボ",
+            "  ※ コンボ閾値がない場合は船宿レベル閾値にフォールバック",
+        ]
+
     with open(OUT_TXT, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
     print(f"保存: {len(results)}船宿 → cancel_thresholds")
+    print(f"保存: {len(combo_results)}件 → cancel_thresholds_combo")
     print(f"保存: {len(seasonal_results)}件 → cancel_thresholds_seasonal")
     print(f"保存: {OUT_TXT}")
 
