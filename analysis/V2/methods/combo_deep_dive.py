@@ -2340,6 +2340,51 @@ def save_thresholds(fish, ship, season_thr_final):
     conn.close()
 
 
+def save_combo_meta(fish, ship, records, modal_lat, modal_lon):
+    """n_records / avg_cnt / lat / lon を combo_meta に保存する。
+    save_insights.py 非依存で predict_count.py が必要な最低限の情報を埋める。
+    既存行は UPDATE しない列（cv_pct 等）は NULL のまま残す。
+    """
+    if not records:
+        return
+    cnts = [r.get("cnt_avg") for r in records if r.get("cnt_avg") is not None]
+    n_records = len(records)
+    avg_cnt   = round(sum(cnts) / len(cnts), 3) if cnts else None
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_meta (
+            fish              TEXT,
+            ship              TEXT,
+            n_records         INTEGER,
+            avg_cnt           REAL,
+            lat               REAL,
+            lon               REAL,
+            updated_at        TEXT,
+            cv_pct            REAL,
+            seasonality_pct   REAL,
+            stock_type        TEXT,
+            avg_size          REAL,
+            size_cv_pct       REAL,
+            fish_type_tag     TEXT,
+            avg_size_cm       REAL,
+            PRIMARY KEY (fish, ship)
+        )
+    """)
+    conn.execute("""
+        INSERT INTO combo_meta (fish, ship, n_records, avg_cnt, lat, lon, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(fish, ship) DO UPDATE SET
+            n_records  = excluded.n_records,
+            avg_cnt    = excluded.avg_cnt,
+            lat        = excluded.lat,
+            lon        = excluded.lon,
+            updated_at = excluded.updated_at
+    """, (fish, ship, n_records, avg_cnt, modal_lat, modal_lon, now))
+    conn.commit()
+    conn.close()
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # メイン
 # ═══════════════════════════════════════════════════════════════════════════
@@ -2456,6 +2501,7 @@ def deep_dive(fish, ship, verbose=True):
 
     save_wx_params(fish, ship, wx_params_data, modal_lat=modal_lat, modal_lon=modal_lon,
                    use_fallback=use_fallback, kaiyu_promoted=kaiyu_promoted)
+    save_combo_meta(fish, ship, records, modal_lat, modal_lon)
 
     if verbose:
         _sys.stdout.buffer.write(text.encode("utf-8", errors="replace") + b"\n")
