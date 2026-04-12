@@ -14,7 +14,7 @@ backtest_oos.py — Out-of-Sample バックテスト
 """
 import csv, math, os, sqlite3
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
@@ -22,8 +22,11 @@ DB_ANA   = os.path.join(RESULTS_DIR, "analysis.sqlite")
 DB_WX    = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
 OUT_TXT  = os.path.join(RESULTS_DIR, "backtest_oos.txt")
 
-TRAIN_END = "2024-12-31"   # 学習期間の終わり（YYYY-MM-DD）
-TEST_START = "2025-01-01"  # 検証期間の始まり
+# 学習/検証の分割: 実行日から90日前を境界とする（データが増えるたびに自動拡大）
+_today = date.today()
+_cutoff = _today - timedelta(days=90)
+TRAIN_END  = _cutoff.strftime("%Y-%m-%d")                    # 学習期間の終わり
+TEST_START = (_cutoff + timedelta(days=1)).strftime("%Y-%m-%d")  # 検証期間の始まり
 
 FACTORS = ["sst", "temp", "wave_height", "wind_speed", "pressure", "current_spd"]
 MIN_R   = 0.15   # 採用するr値の最小値（build_wx_params と同じ）
@@ -348,7 +351,7 @@ def write_results(combo_params, score_results, cancel_stats):
         "# Out-of-Sample バックテスト結果",
         f"# 生成: {datetime.now().strftime('%Y/%m/%d %H:%M')}",
         f"# 学習期間: 2023-01-01 〜 {TRAIN_END}",
-        f"# 検証期間: {TEST_START} 〜 2026-04-02",
+        f"# 検証期間: {TEST_START} 〜 {_today.strftime('%Y-%m-%d')}",
         f"# 学習済みコンボ数: {len(combo_params)}",
         "",
         "=" * 75,
@@ -449,7 +452,7 @@ def write_results(combo_params, score_results, cancel_stats):
 def main():
     print("=== backtest_oos.py 開始 ===")
     print(f"  学習: 2023-01-01 〜 {TRAIN_END}")
-    print(f"  検証: {TEST_START} 〜 2026-04-02")
+    print(f"  検証: {TEST_START} 〜 {_today.strftime('%Y-%m-%d')}")
     ship_coords = load_ship_coords()
     wx_coords   = load_wx_coords()
     train, test = load_records_split()

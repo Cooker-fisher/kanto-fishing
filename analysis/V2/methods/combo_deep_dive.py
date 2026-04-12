@@ -54,7 +54,6 @@ OVERRIDE_FILE  = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
 SHIPS_FILE     = os.path.join(ROOT_DIR, "crawl", "ships.json")
 OBS_FIELDS_FILE = os.path.join(NORMALIZE_DIR, "obs_fields.json")
 
-TRAIN_END  = "2024/12/31"   # この日以前 = 学習データ
 HORIZONS   = [0, 1, 3, 7, 14, 21, 28]
 MIN_N_COMBO = 30            # 分析最小件数（統計的に意味ある予測を立てられる下限）
 
@@ -686,7 +685,6 @@ def load_records(fish, ship_filter=None):
                     "lon":     lon,
                     # 参照用（obs_fields.json 外）
                     "trip_no": int(row.get("trip_no") or 1),
-                    "is_train": date_str <= TRAIN_END,
                     # カレンダー因子（土日・祝日・連休・夏休み・乗っ込み）
                     "is_holiday":         _is_holiday(date_str),
                     "is_consec_holiday":  _is_consec_holiday(date_str),
