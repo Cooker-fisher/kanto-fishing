@@ -211,6 +211,11 @@ def _spawn_season_n(date_str: str) -> int:
 
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
+# 特徴量上限（過学習防止）: 相関上位 MAX_FACTORS 個のみ採用
+# 根拠: n/特徴量比 >= 10 を確保するため。中央値 n≈100 に対し 10個が妥当。
+# 旧設定では中央値 29個採用 → OOS r平均 -0.069（過学習）の主因
+MAX_FACTORS = 10
+
 # per-combo FAST_MAX_H オーバーライド
 # 月齢・潮汐が主要因子で fast因子がノイズになるコンボは低い値を設定
 # メバル×第三幸栄丸: moon_sin r=0.721(旬) が最強因子。H=7でfast因子が月齢を埋没させる
@@ -1490,10 +1495,12 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         _r["wave_clamp"] = min(_r["wave_height_avg"], _best_wc)
         # ───────────────────────────────────────────────────────────────────────
 
-        # 相関閾値・FAST_MAX_H は per-combo HPO を検証した結果、効果なし（H=0,7で±0.03pt）のため固定値を使用
-        # 検証結果: 同一187コンボ比較で中央値 -0.03pt（ランダム誤差範囲）。2026/04/11確定
+        # 相関閾値: 適応的閾値 max(0.15, 1.96/√n) で統計的有意な相関のみ採用
+        # 旧: 固定 0.10 → n=100 でも偽相関を大量採用し過学習の主因となっていた
+        # FAST_MAX_H は per-combo HPO を検証した結果、効果なし（H=0,7で±0.03pt）のため固定値を使用
         # ただし月齢が主要因子のコンボは _FAST_MAX_H_OVERRIDE で個別設定可
-        fold_corr_thr  = 0.10       # 固定
+        _n_fold = len([r for r in train_en_h0 if r.get("cnt_avg") is not None])
+        fold_corr_thr = max(0.15, 1.96 / (_n_fold ** 0.5)) if _n_fold > 0 else 0.20
         _combo_ship = records[0]["ship"] if records else ""
         fold_fast_max_h = _FAST_MAX_H_OVERRIDE.get((fish, _combo_ship), FAST_MAX_H)
 
@@ -1514,6 +1521,10 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, tr_ys)
                 if rv is not None and abs(rv) >= fold_corr_thr:
                     factor_r_m[fac] = rv
+            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（過学習防止）
+            if len(factor_r_m) > MAX_FACTORS:
+                factor_r_m = dict(sorted(factor_r_m.items(),
+                                         key=lambda x: abs(x[1]), reverse=True)[:MAX_FACTORS])
             if not factor_r_m:
                 continue
 
@@ -1586,7 +1597,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 _alpha_floor = max(0.1, _max_r_fold * 1.0)  # max_r=0.3→floor=0.3, 0.5→0.5
             else:
                 _alpha_floor = 0.1  # OLS負 = 気象補正が逆なのでfloor不要
-            alpha_scale = max(_alpha_floor, min(2.0, _alpha_ols))
+            alpha_scale = max(_alpha_floor, min(1.2, _alpha_ols))  # 上限 2.0→1.2（補正過大適用を防止）
             alpha_scales_by_met[met].append(alpha_scale)  # フォールドごとに収集
             # β: BL-2 ブレンド比（0〜0.5 にクリップ）
             _bt_num = 0.0; _bt_den = 0.0
@@ -1963,8 +1974,10 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         _modal_pair = max(set(_coord_pairs), key=_coord_pairs.count)
         _modal_lat, _modal_lon = _modal_pair
 
-    # corr_thr / fast_max_h は固定値（per-combo HPOは効果なしのため）
-    best_corr_thr   = 0.10
+    # corr_thr: 適応的閾値（CVフォールドと同じロジック）
+    # fast_max_h は固定値（per-combo HPOは効果なしのため）
+    _n_final = len([r for r in final_train if r.get("cnt_avg") is not None])
+    best_corr_thr   = max(0.15, 1.96 / (_n_final ** 0.5)) if _n_final > 0 else 0.20
     best_fast_max_h = FAST_MAX_H
 
     if len(final_train) >= MIN_TRAIN_N:
@@ -1994,6 +2007,10 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, final_ys)
                 if rv is not None and abs(rv) >= best_corr_thr:
                     final_factor_r[fac] = rv
+            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（CVフォールドと一貫させる）
+            if len(final_factor_r) > MAX_FACTORS:
+                final_factor_r = dict(sorted(final_factor_r.items(),
+                                             key=lambda x: abs(x[1]), reverse=True)[:MAX_FACTORS])
             if not final_factor_r:
                 continue
 
@@ -2100,6 +2117,8 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rows = []
     # _combo 行群: wave_clamp_thr / corr_thr / fast_max_h（コンボ全体に各1行）
+    # 旧因子行を削除してからINSERT（TOP-K変更後に旧因子が残らないよう）
+    conn.execute("DELETE FROM combo_wx_params WHERE fish=? AND ship=?", (fish, ship))
     wave_clamp_thr = wx_params_data.pop("_wave_clamp_thr", None)
     if wave_clamp_thr is not None:
         rows.append((fish, ship, "_combo", "_wave_clamp_thr",
