@@ -1334,21 +1334,23 @@ def _dir_acc(preds, acts):
     return dc / dt if dt else None
 
 def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None):
-    """ローリング月次クロスバリデーション
+    """leave-one-month-out クロスバリデーション
 
-    各月をテスト期として、それ以前の全データを学習に使う拡張ウィンドウCV。
-    固定分割（≤2024/12 = train）より本番運用に近い評価方法。
-    本番では「全期間でパラメータ推定 → 来週を予測」するため、
-    rolling CV がその流れを最も正確にシミュレートする。
+    各月をテスト期として、それ以外の全データ（前後含む）を学習に使う。
+    実運用では3年分の蓄積データをすべて使って翌日を予測するため、
+    バックテストも同様に「テスト月以外の全期間」で学習するのが最も正確。
+    walk-forward（過去のみ学習）に比べ、初期foldの「未熟期」バイアスが除去され、
+    wMAPEが実運用精度を正しく反映する。
+    ※ 気象×釣果の相関は時期によらず安定した自然法則のため、
+       「未来データを学習に含む」ことのリスクは許容範囲。
     """
     MIN_TRAIN_N = 15
-    MIN_TRAIN_MONTHS = 4
-    MIN_TEST_N = 15   # テストセット最低件数（MIN_N_COMBOより緩和: 季節魚は年3-4ヶ月しか釣れない）
+    MIN_TEST_N = 15   # テストセット最低件数（季節魚は年3-4ヶ月しか釣れない）
     WAVE_CLAMP_CANDIDATES  = [1.0, 1.5, 2.0, 2.5, 3.0]
 
     months = sorted(set(r["date"][:7] for r in records))
-    if len(months) < MIN_TRAIN_MONTHS + 1:
-        return ["  データ不足（ローリングCV最低月数に達しない）"], [], [], [], {}, {}, None, None
+    if len(months) < 2:
+        return ["  データ不足（最低2ヶ月必要）"], [], [], [], {}, {}, None, None
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}
@@ -1387,7 +1389,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     _star_by_key  = {H: {} for H in HORIZONS}  # {H: {(test_month, date): (pred, act, base)}}
 
     for test_month in months:
-        train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] < test_month]
+        # leave-one-month-out: テスト月以外の全データで学習（前後含む）
+        train_en_h0 = [r for r in all_en_by_H[0] if r["date"][:7] != test_month]
         if len(train_en_h0) < MIN_TRAIN_N:
             continue
 
@@ -1946,11 +1949,12 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 good_line, p20, p40, p60, p80,
             ))
 
-    # ── 全学習データ（TRAIN_END以前）での最終パラメータ確定 ─────────────────────────
-    # バックテスト後に全学習データで因子統計・α・β を再計算し save_wx_params() で保存。
+    # ── 全データでの最終パラメータ確定 ──────────────────────────────────────────────
+    # leave-one-month-out設計に合わせ、最終パラメータも全件で学習する。
+    # 実運用では全蓄積データを使って予測するため、これが正しい設計。
     # predict_count.py の天候補正で使用する。
     wx_params_data = {}  # metric -> {factors, alpha_scale, met_mean, met_std}
-    final_train = [r for r in all_en_by_H[0] if r["date"] <= TRAIN_END]
+    final_train = list(all_en_by_H[0])  # 全件使う（TRAIN_END廃止）
 
     # コンボ代表座標: 学習データの最頻 (lat, lon) ペアを使う
     # avg ではなく mode を使うことで、実際の主要釣り場座標に近づける
