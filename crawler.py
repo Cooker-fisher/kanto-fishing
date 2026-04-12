@@ -4605,6 +4605,83 @@ def _v2_build_zone_b(catches, history):
     )
 
 
+def _v2_weather_to_zone_c(weather_data):
+    """weather_data（load_weather_data() 戻り値）を ZONE C 用データに変換。
+
+    返値:
+        (risk_days, area_wx)
+        risk_days : 今日から7日分のリスト（_v2_build_zone_c の risk_days 形式）
+        area_wx   : 直近週末の各エリア海況（area_wx 形式）。週末データがなければ []
+    """
+    if not weather_data:
+        return [], []
+
+    forecasts = weather_data.get("forecast", {})
+    if not forecasts:
+        return [], []
+
+    _DOW_JA = ["月", "火", "水", "木", "金", "土", "日"]
+
+    # ── risk_days: 今日から7日間、全エリア最悪スコアで判定 ────────────────
+    today = datetime.now().date()
+    risk_days = []
+    for i in range(7):
+        d = today + timedelta(days=i)
+        d_str = d.strftime("%Y-%m-%d")
+        scores = []
+        for group in AREA_FORECAST_COORDS:
+            fcast = forecasts.get((group, d_str))
+            if fcast:
+                s = _fishing_ok_score(fcast.get("wave_height"), fcast.get("wind_speed"))
+                scores.append(s)
+        if not scores:
+            continue
+        # 最悪スコア（最も条件が悪いエリアで判定）
+        worst = min(scores)
+        if worst >= 60:
+            variant, icon, label = "good", "○", "好条件"
+        elif worst >= 40:
+            variant, icon, label = "warn", "△", "注意"
+        else:
+            variant, icon, label = "bad", "×", "欠航警戒"
+        risk_days.append({
+            "dow":     _DOW_JA[d.weekday()],
+            "date":    f"{d.month}/{d.day}",
+            "variant": variant,
+            "icon":    icon,
+            "label":   label,
+        })
+
+    # ── area_wx: 直近の土曜日データ ────────────────────────────────────
+    sat_str = weather_data.get("sat_date", "")
+    area_wx = []
+    if sat_str:
+        for group in AREA_FORECAST_COORDS:
+            fcast = forecasts.get((group, sat_str))
+            if not fcast:
+                continue
+            wave  = fcast.get("wave_height")
+            wind  = fcast.get("wind_speed")
+            sst   = fcast.get("sst")
+            score = _fishing_ok_score(wave, wind)
+            if score >= 60:
+                variant, judge = "good", "○ 出船可"
+            elif score >= 40:
+                variant, judge = "warn", "△ 注意"
+            else:
+                variant, judge = "bad", "× 欠航リスク"
+            area_wx.append({
+                "area":    group,
+                "wave":    f"{wave:.1f}m" if wave is not None else "-",
+                "wind":    f"{wind:.0f}m/s" if wind is not None else "-",
+                "temp":    f"{sst:.0f}℃" if sst is not None else "-",
+                "variant": variant,
+                "judge":   judge,
+            })
+
+    return risk_days, area_wx
+
+
 def _v2_build_zone_c(risk_days, area_wx):
     """ZONE C: 出船リスク予報（7日グリッド）＋今週末の海況予報（エリアリスト）。
 
@@ -5502,7 +5579,8 @@ def _v2_build_index_html(catches, crawled_at, history, weather_data=None):
     zone_a  = _v2_build_zone_a()
     zone_b  = _v2_build_zone_b(active, history)
     ad1     = _v2_ad_slot(1)
-    zone_c  = _v2_build_zone_c([], [])          # ZONE C: データ未接続（空=非表示）
+    _risk_days, _area_wx = _v2_weather_to_zone_c(weather_data)
+    zone_c  = _v2_build_zone_c(_risk_days, _area_wx)
     zone_d  = _v2_build_zone_d()
     ad2     = _v2_ad_slot(2)
     zone_e  = _v2_build_zone_e(top_fish, top_areas)
