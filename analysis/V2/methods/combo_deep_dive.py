@@ -1390,6 +1390,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     _range_by_key = {H: {} for H in HORIZONS}  # {H: {(test_month, date): {met: (pred, act)}}}
     # star_backtest 用: cnt_avg の (pred, act, decade_avg) を保存（回遊魚★評価用）
     _star_by_key  = {H: {} for H in HORIZONS}  # {H: {(test_month, date): (pred, act, base)}}
+    # ratio-based予測: cnt_avg予測を cnt_max/cnt_min に転用するためのストレージ
+    avg_pred_store = {H: {} for H in HORIZONS}  # {H: {date: pred_avg}}
 
     for test_month in months:
         # leave-one-month-out: テスト月以外の全データで学習（前後含む）
@@ -1420,6 +1422,47 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 if dn is not None and val is not None:
                     _db[dn].append(val)
             metric_decadal_m[met] = {dn: sum(v)/len(v) for dn, v in _db.items()}
+
+        # ratio-based予測用: cnt_max/cnt_min の旬別中央値比率を学習データから計算
+        # corr(actual_avg, actual_max)=0.976, ratio CV=0.18 の安定性を利用
+        decadal_ratio_m = {}
+        global_ratio_m  = {}
+        for _rm in ("cnt_max", "cnt_min"):
+            _rb: dict = defaultdict(list)
+            for _r in train_en_h0:
+                _av = _r.get("cnt_avg"); _val = _r.get(_rm); _dn = _r.get("decade")
+                if _av and _av > 0 and _val is not None and _dn is not None:
+                    _rb[_dn].append(_val / _av)
+            _all = sorted(v for vs in _rb.values() for v in vs)
+            global_ratio_m[_rm] = _all[len(_all)//2] if _all else (1.7 if _rm == "cnt_max" else 0.3)
+            decadal_ratio_m[_rm] = {dn: sorted(vs)[len(vs)//2] for dn, vs in _rb.items()}
+
+        # size_avg 改善 ①: ポイント×旬別サイズベースライン（コンボ内・訓練データから）
+        # 同一コンボでもポイントによってサイズが大きく異なる（例: 瀬の海74cm vs 大磯沖20cm）
+        _pds: dict = defaultdict(list)   # {(point, decade): [size]}
+        _ds:  dict = defaultdict(list)   # {decade: [size]} フォールバック用
+        for _r in train_en_h0:
+            _sz = _r.get("size_avg"); _dn = _r.get("decade"); _pt = _r.get("point", "")
+            if _sz is None or _dn is None: continue
+            _ds[_dn].append(_sz)
+            if _pt:
+                _pds[(_pt, _dn)].append(_sz)
+        size_global_dec  = {dn: sorted(vs)[len(vs)//2] for dn, vs in _ds.items()}
+        size_point_dec   = {k: sorted(vs)[len(vs)//2] for k, vs in _pds.items() if len(vs) >= 3}
+
+        # size_avg 改善 ②: コンボ内 cnt_avg → size_avg スロープ（OLS解析解）
+        # cnt_avg が多い日ほど小型 or 大型かを訓練データから推定（魚種・船宿で符号が変わる）
+        _sz_cnt_pairs = [(r.get("cnt_avg"), r.get("size_avg")) for r in train_en_h0
+                         if r.get("cnt_avg") is not None and r.get("size_avg") is not None]
+        if len(_sz_cnt_pairs) >= 10:
+            _xm = sum(x for x, _ in _sz_cnt_pairs) / len(_sz_cnt_pairs)
+            _ym = sum(y for _, y in _sz_cnt_pairs) / len(_sz_cnt_pairs)
+            _xv = sum((x-_xm)**2 for x, _ in _sz_cnt_pairs)
+            _cnt_size_slope = (sum((x-_xm)*(y-_ym) for x,y in _sz_cnt_pairs) / _xv
+                               if _xv > 1e-9 else 0.0)
+            _cnt_size_xm = _xm  # cnt_avg の訓練平均
+        else:
+            _cnt_size_slope = 0.0; _cnt_size_xm = 0.0
 
         # ── wave_clamp コンボ別HPO（学習データのみで選択・テストに適用） ────────
         # cnt_avg の wMAPE（alpha=0.5固定の簡易予測）で各候補を評価し、最良値を採用する。
@@ -1624,6 +1667,12 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     dn = r.get("decade")
                     if met == "cnt_avg" and decadal and dn in decadal:
                         base = decadal[dn].get("avg_cnt", met_mean_m)
+                    elif met == "size_avg":
+                        # ポイント×旬ベースライン優先、なければ旬ベースライン、なければ全体平均
+                        _pt = r.get("point", "")
+                        base = (size_point_dec.get((_pt, dn))
+                                or size_global_dec.get(dn)
+                                or met_mean_m)
                     else:
                         base = m_dec.get(dn, met_mean_m)
 
@@ -1666,8 +1715,23 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                             _bl2_recent.append(v)
                         _bi -= 1
                     _bl2_p = sum(_bl2_recent) / len(_bl2_recent) if _bl2_recent else met_mean_m
+                    # size_avg 補正: cnt_avg_pred を追加補正因子として利用
+                    # コンボ内の cnt→size スロープ（正/負どちらも）を適用
+                    if met == "size_avg" and _cnt_size_slope != 0.0:
+                        _cnt_p = avg_pred_store[H].get(r["date"])
+                        if _cnt_p is not None:
+                            pred += _cnt_size_slope * (_cnt_p - _cnt_size_xm)
+                    # ratio-based override: cnt_max/cnt_min は cnt_avg予測×旬別比率で上書き
+                    # 気象→cnt_max の直接相関(r≈0.15)より cnt_avg→cnt_max チェーン(r≈0.40)が優秀
+                    if met in ("cnt_max", "cnt_min"):
+                        _ap = avg_pred_store[H].get(r["date"])
+                        _ratio = decadal_ratio_m[met].get(dn, global_ratio_m[met])
+                        pred = (_ap if _ap is not None else base) * _ratio
                     # 案C: BL-2 ブレンド適用
                     pred = pred + beta_bl2 * (_bl2_p - pred)
+                    # cnt_avg予測を保存（次のmet=cnt_max/cnt_min のratio計算に使用）
+                    if met == "cnt_avg":
+                        avg_pred_store[H][r["date"]] = pred
 
                     all_preds[met][H].append(pred)
                     all_acts[met][H].append(act)
