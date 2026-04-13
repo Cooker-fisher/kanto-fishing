@@ -196,6 +196,7 @@ GYO_BASE_URL = "https://www.gyo.ne.jp/rep_tsuri_view%7CCID-{cid}.htm"
 USER_AGENT   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 SITE_URL = "https://funatsuri-yoso.com"
+WEB_DIR  = "docs"  # Web出力フォルダ（GitHub Pages /docs から配信）
 
 # Google AdSense
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
@@ -1970,21 +1971,21 @@ def build_forecast_pages(forecast_data, weather_data, catches=None, history=None
     if not forecast_data:
         return
 
-    os.makedirs("forecast", exist_ok=True)
-    os.makedirs("forecast/area", exist_ok=True)
+    os.makedirs(os.path.join(WEB_DIR, "forecast"), exist_ok=True)
+    os.makedirs(os.path.join(WEB_DIR, "forecast", "area"), exist_ok=True)
     page_count = 0
 
     # 日次ページ
     for date_str, day_data in forecast_data.get("days", {}).items():
         html = _build_daily_page(date_str, day_data, forecast_data, weather_data)
-        with open(f"forecast/{date_str}.html", "w", encoding="utf-8") as f:
+        with open(os.path.join(WEB_DIR, f"forecast/{date_str}.html"), "w", encoding="utf-8") as f:
             f.write(html)
         page_count += 1
 
     # 週次ページ
     for week_id, week_data in forecast_data.get("weeks", {}).items():
         html = _build_weekly_page(week_id, week_data, forecast_data)
-        with open(f"forecast/{week_id}.html", "w", encoding="utf-8") as f:
+        with open(os.path.join(WEB_DIR, f"forecast/{week_id}.html"), "w", encoding="utf-8") as f:
             f.write(html)
         page_count += 1
 
@@ -1992,13 +1993,13 @@ def build_forecast_pages(forecast_data, weather_data, catches=None, history=None
     for group in AREA_FORECAST_COORDS:
         html = _build_area_forecast_page(group, forecast_data)
         encoded = quote(group, safe="")
-        with open(f"forecast/area/{encoded}.html", "w", encoding="utf-8") as f:
+        with open(os.path.join(WEB_DIR, f"forecast/area/{encoded}.html"), "w", encoding="utf-8") as f:
             f.write(html)
         page_count += 1
 
     # ハブページ
     html = _build_forecast_hub(forecast_data, catches)
-    with open("forecast/index.html", "w", encoding="utf-8") as f:
+    with open(os.path.join(WEB_DIR, "forecast/index.html"), "w", encoding="utf-8") as f:
         f.write(html)
     page_count += 1
 
@@ -3980,7 +3981,7 @@ document.querySelectorAll('.filter-btn').forEach(el => {{
 # #6: 魚種別ページ
 # ============================================================
 def build_fish_pages(data, history, crawled_at=""):
-    os.makedirs("fish", exist_ok=True)
+    os.makedirs(os.path.join(WEB_DIR, "fish"), exist_ok=True)
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
@@ -4155,14 +4156,14 @@ def build_fish_pages(data, history, crawled_at=""):
   <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
 </footer>
 </body></html>"""
-        with open(f"fish/{fish}.html", "w", encoding="utf-8") as f:
+        with open(os.path.join(WEB_DIR, f"fish/{fish}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
 # ============================================================
 # #10: エリア別ページ
 # ============================================================
 def build_area_pages(data, history, crawled_at=""):
-    os.makedirs("area", exist_ok=True)
+    os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
@@ -4261,14 +4262,14 @@ def build_area_pages(data, history, crawled_at=""):
   <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
 </footer>
 </body></html>"""
-        with open(f"area/{area}.html", "w", encoding="utf-8") as f:
+        with open(os.path.join(WEB_DIR, f"area/{area}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
 # ============================================================
 # #11: 魚種×港ページ（fish_area/）
 # ============================================================
 def build_fish_area_pages(data, crawled_at="", history=None):
-    os.makedirs("fish_area", exist_ok=True)
+    os.makedirs(os.path.join(WEB_DIR, "fish_area"), exist_ok=True)
     fa_summary: dict = {}
     for c in data:
         for f in c["fish"]:
@@ -4431,7 +4432,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
 </footer>
 </body></html>"""
-        with open(f"fish_area/{fish}_{area}.html", "w", encoding="utf-8") as fp:
+        with open(os.path.join(WEB_DIR, f"fish_area/{fish}_{area}.html"), "w", encoding="utf-8") as fp:
             fp.write(html)
         count += 1
     print(f"魚種×港ページ: {count} 件生成 → fish_area/*.html")
@@ -4756,9 +4757,742 @@ def build_sitemap(data):
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {entries}
 </urlset>"""
-    with open("sitemap.xml", "w", encoding="utf-8") as f:
+    with open(os.path.join(WEB_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(xml)
-    print(f"sitemap.xml: {len(urls)} URLs 生成")
+    print(f"sitemap.xml: {len(urls)} URLs 生成 → docs/")
+
+
+# ============================================================
+# V2 共通インフラ: style.css / main.js / page構造
+# ============================================================
+
+def build_style_css():
+    """V2 style.css を docs/ に生成する（V1 CSS とは完全に独立）"""
+    css = """:root {
+  /* ── ベース ── */
+  --bg-primary:    #f5f7fa;
+  --bg-card:       #ffffff;
+  --bg-input:      #eef1f5;
+  --border:        #d0d8e0;
+
+  /* ── テキスト ── */
+  --text-primary:  #1a2332;
+  --text-secondary:#5a6a7a;
+  --text-muted:    #8a96a4;
+
+  /* ── アクセント（濃紺+オレンジ） ── */
+  --accent:        #0d2b4a;
+  --accent-hover:  #1a3d5c;
+  --cta:           #e85d04;
+  --cta-hover:     #d04e00;
+
+  /* ── セマンティック ── */
+  --positive:      #1a9d56;
+  --negative:      #d43333;
+  --warning:       #d4a017;
+  --premium:       #7c3aed;
+
+  /* ── ヘッダ・ナビ ── */
+  --header-bg:     #0d2b4a;
+  --header-text:   #ffffff;
+  --nav-bg:        #f0f3f7;
+
+  /* ── サイズ（2026/04/11 確定: --mx: 900px） ── */
+  --radius-sm:     6px;
+  --radius-md:     10px;
+  --radius-lg:     14px;
+  --mx:            900px;
+}
+
+/* ================================================================
+   リセット・ベース
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding-bottom: 64px;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+img { max-width: 100%; display: block; }
+
+/* ================================================================
+   レイアウト
+   ================================================================ */
+.container {
+  max-width: var(--mx);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ================================================================
+   ヘッダ
+   ================================================================ */
+.site-header {
+  background: var(--header-bg);
+  color: var(--header-text);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+}
+.site-logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--header-text);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.site-logo:hover { color: var(--header-text); text-decoration: none; opacity: 0.9; }
+.header-nav { display: none; gap: 24px; }
+.header-nav a {
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.header-nav a:hover { color: #fff; }
+.header-nav a.active { color: var(--cta); }
+@media (min-width: 769px) { .header-nav { display: flex; } }
+
+/* ================================================================
+   ボトムナビ（モバイル固定・5アイコン 2026/04/11 確定）
+   ================================================================ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 200;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+}
+.bottom-nav a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 500;
+  transition: color 0.15s;
+  min-height: 44px;
+}
+.bottom-nav a:hover,
+.bottom-nav a.active { color: var(--accent); text-decoration: none; }
+.bottom-nav svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bottom-nav a.premium-nav { color: var(--premium); }
+.bottom-nav a.premium-nav.active { color: var(--premium); }
+@media (min-width: 769px) {
+  .bottom-nav { display: none; }
+  body { padding-bottom: 0; }
+}
+
+/* ================================================================
+   ヒーローゾーン（HERO）
+   ================================================================ */
+.hero {
+  background: var(--accent);
+  color: #fff;
+  padding: 24px 0 20px;
+}
+.hero-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.hero-count {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--cta);
+  line-height: 1.1;
+}
+.hero-count span { font-size: 18px; font-weight: 400; opacity: 0.8; margin-left: 4px; }
+.hero-sub { font-size: 13px; opacity: 0.75; margin-top: 6px; }
+@media (min-width: 769px) {
+  .hero-title { font-size: 28px; }
+  .hero-count { font-size: 48px; }
+}
+
+/* ================================================================
+   セクション共通
+   ================================================================ */
+.section { padding: 24px 0; }
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--cta);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--positive);
+  color: #fff;
+}
+.section-badge.premium { background: var(--premium); }
+
+/* ================================================================
+   魚種カードグリッド（ZONE B）
+   ================================================================ */
+.fish-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media (min-width: 769px) { .fish-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+
+.fish-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.fish-card:hover {
+  box-shadow: 0 4px 16px rgba(13,43,74,0.12);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+.fish-card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.fish-card-count { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.fish-card-range { font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.fish-card-yoy {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.fish-card-yoy.up   { background: #e8f5ee; color: var(--positive); }
+.fish-card-yoy.down { background: #fde8e8; color: var(--negative); }
+.fish-card-yoy.flat { background: var(--bg-input); color: var(--text-secondary); }
+.fish-card-area { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+.season-bar { display: flex; gap: 2px; margin-bottom: 6px; }
+.season-bar span { flex: 1; height: 4px; border-radius: 2px; background: var(--bg-input); }
+.season-bar span.on   { background: var(--cta); }
+.season-bar span.peak { background: var(--accent); }
+
+/* ================================================================
+   釣果テーブル（ZONE B）
+   ================================================================ */
+.catch-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  background: var(--bg-card);
+}
+.catch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 480px;
+}
+.catch-table th {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.catch-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.catch-table tr:last-child td { border-bottom: none; }
+.catch-table tr:hover td { background: var(--bg-input); }
+.yoy-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+.yoy-badge.up   { background: #e8f5ee; color: var(--positive); }
+.yoy-badge.down { background: #fde8e8; color: var(--negative); }
+.yoy-badge.flat { background: var(--bg-input); color: var(--text-secondary); }
+
+/* ================================================================
+   海況予報（ZONE C）
+   ================================================================ */
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 769px) { .weather-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.weather-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  text-align: center;
+}
+.weather-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.weather-risk {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+.weather-risk.safe    { background: #e8f5ee; color: var(--positive); }
+.weather-risk.caution { background: #fff8e1; color: var(--warning); }
+.weather-risk.danger  { background: #fde8e8; color: var(--negative); }
+.weather-stat { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+.weather-stat strong  { color: var(--text-primary); font-weight: 600; }
+
+/* ================================================================
+   ペイウォール（有料チラ見せ 2026/04/04 確定）
+   ================================================================ */
+.premium-section { position: relative; }
+.premium-content-blurred {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+.premium-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11,24,41,0.5);
+  border-radius: var(--radius-md);
+  gap: 10px;
+}
+.premium-lock { font-size: 26px; line-height: 1; }
+.premium-cta-btn {
+  background: var(--cta);
+  color: #fff;
+  padding: 8px 22px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.15s;
+}
+.premium-cta-btn:hover { background: var(--cta-hover); color: #fff; text-decoration: none; }
+.premium-free-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: var(--positive);
+  color: #fff;
+}
+.premium-banner {
+  background: linear-gradient(135deg, #1a0a30, #0a1a3a);
+  border: 1px solid var(--premium);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  margin: 20px 0;
+  color: #fff;
+}
+.premium-banner p { margin-bottom: 12px; opacity: 0.85; font-size: 14px; }
+.cta-btn-main {
+  display: inline-block;
+  background: var(--cta);
+  color: #fff;
+  padding: 12px 32px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.cta-btn-main:hover { background: var(--cta-hover); color: #fff; text-decoration: none; }
+
+/* ================================================================
+   フッタ
+   ================================================================ */
+.site-footer {
+  background: var(--accent);
+  color: rgba(255,255,255,0.75);
+  padding: 32px 0 24px;
+  margin-top: 40px;
+  font-size: 13px;
+}
+.footer-links { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; }
+.footer-links a { color: rgba(255,255,255,0.75); text-decoration: none; }
+.footer-links a:hover { color: #fff; }
+.footer-copy { font-size: 12px; opacity: 0.5; }
+
+/* ================================================================
+   Analysis Overlay スピナー（D+F 2026/04/07 確定）
+   ================================================================ */
+.analysis-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.analysis-overlay.active { opacity: 1; pointer-events: auto; }
+.analysis-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 20px;
+  width: min(340px, 90vw);
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.analysis-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px; }
+.analysis-steps { text-align: left; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.step { display: flex; align-items: center; gap: 12px; opacity: 0.3; transition: opacity 0.4s; }
+.step.active { opacity: 1; }
+.step.done   { opacity: 0.55; }
+.step-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0; position: relative;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.step.active .step-dot { background: var(--cta); border-color: var(--cta); animation: pulse-dot 0.9s ease-in-out infinite; }
+.step.done .step-dot   { background: var(--positive); border-color: var(--positive); animation: none; }
+.step.done .step-dot::after {
+  content: ''; position: absolute;
+  top: 2px; left: 5px; width: 5px; height: 9px;
+  border: 2px solid #fff; border-top: none; border-left: none;
+  transform: rotate(45deg);
+}
+@keyframes pulse-dot {
+  0%,100% { box-shadow: 0 0 0 4px rgba(232,93,4,0.18); }
+  50%      { box-shadow: 0 0 0 7px rgba(232,93,4,0.08); }
+}
+.step-body { display: flex; flex-direction: column; gap: 2px; }
+.step-text { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.step-meta { font-size: 11px; color: var(--text-muted); }
+.analysis-progress-wrap { height: 4px; background: var(--bg-input); border-radius: 2px; overflow: hidden; margin-bottom: 12px; }
+.analysis-progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--cta));
+  border-radius: 2px; transition: width 0.7s ease;
+}
+.analysis-note { font-size: 11px; color: var(--text-muted); }
+.count-up-target { display: inline-block; font-variant-numeric: tabular-nums; }
+.forecast-result { opacity: 0; transform: translateY(6px); transition: opacity 0.4s, transform 0.4s; }
+.forecast-result.visible { opacity: 1; transform: translateY(0); }
+
+/* ================================================================
+   ユーティリティ
+   ================================================================ */
+.text-center { text-align: center; }
+.mt-8  { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-8  { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+"""
+    with open(os.path.join(WEB_DIR, "style.css"), "w", encoding="utf-8") as f:
+        f.write(css)
+    print("style.css: V2 共通スタイルシート生成 → docs/")
+
+
+def build_main_js():
+    """V2 main.js を docs/ に生成する"""
+    js = """/* main.js — V2 共通スクリプト */
+(function () {
+  'use strict';
+
+  /* ── テーブルフィルタ ── */
+  var filterInput = document.getElementById('catch-filter');
+  var filterRows  = document.querySelectorAll('.catch-table tbody tr');
+  if (filterInput && filterRows.length) {
+    filterInput.addEventListener('input', function () {
+      var q = this.value.trim().toLowerCase();
+      filterRows.forEach(function (tr) {
+        tr.style.display = (!q || tr.textContent.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ── エリアフィルタ ── */
+  var areaSelect = document.getElementById('area-filter');
+  if (areaSelect && filterRows.length) {
+    areaSelect.addEventListener('change', function () {
+      var area = this.value;
+      filterRows.forEach(function (tr) {
+        var td = tr.querySelector('.col-area');
+        tr.style.display = (!area || (td && td.textContent.trim() === area)) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ── テーブルソート ── */
+  document.querySelectorAll('.sortable').forEach(function (th) {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', function () {
+      var table = th.closest('table');
+      if (!table) return;
+      var idx = Array.from(th.parentNode.children).indexOf(th);
+      var asc = th.dataset.sortDir !== 'asc';
+      th.dataset.sortDir = asc ? 'asc' : 'desc';
+      var rows = Array.from(table.tBodies[0].rows);
+      rows.sort(function (a, b) {
+        var av = a.cells[idx].textContent.trim();
+        var bv = b.cells[idx].textContent.trim();
+        var an = parseFloat(av.replace(/[^\\d.-]/g, ''));
+        var bn = parseFloat(bv.replace(/[^\\d.-]/g, ''));
+        if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
+        return asc ? av.localeCompare(bv, 'ja') : bv.localeCompare(av, 'ja');
+      });
+      rows.forEach(function (r) { table.tBodies[0].appendChild(r); });
+    });
+  });
+
+  /* ── タブ切替 ── */
+  document.querySelectorAll('.tab-group').forEach(function (tg) {
+    var tabs   = tg.querySelectorAll('.tab-btn');
+    var panels = tg.querySelectorAll('.tab-panel');
+    tabs.forEach(function (btn, i) {
+      btn.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        panels.forEach(function (p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        if (panels[i]) panels[i].classList.add('active');
+      });
+    });
+  });
+
+  /* ── スムーススクロール ── */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  /* ── ボトムナビ active ── */
+  var path = location.pathname.replace(/\\/+$/, '') || '/';
+  document.querySelectorAll('.bottom-nav a').forEach(function (a) {
+    var href = (a.getAttribute('href') || '').replace(/\\/+$/, '') || '/';
+    if (path === href) a.classList.add('active');
+  });
+
+  /* ================================================================
+     Analysis Overlay スピナー（D+F 2026/04/07 確定）
+     ================================================================ */
+  function showAnalysis(onComplete, cacheKey) {
+    var overlay = document.getElementById('analysis-overlay');
+    if (!overlay) { if (onComplete) onComplete(); return; }
+    var steps  = overlay.querySelectorAll('.step');
+    var bar    = document.getElementById('analysis-progress-fill');
+    var cached = cacheKey && sessionStorage.getItem('spinner_' + cacheKey);
+
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    if (cached) {
+      if (bar) bar.style.width = '100%';
+      setTimeout(function () { _finishOverlay(overlay, onComplete); }, 500);
+      return;
+    }
+
+    function activateStep(i, pct, delay) {
+      setTimeout(function () {
+        if (i > 0) {
+          steps[i - 1].classList.remove('active');
+          steps[i - 1].classList.add('done');
+        }
+        steps[i].classList.add('active');
+        if (bar) bar.style.width = pct + '%';
+      }, delay);
+    }
+
+    activateStep(0, 35, 0);
+    activateStep(1, 70, 1200);
+    activateStep(2, 95, 2400);
+
+    setTimeout(function () {
+      steps[2].classList.remove('active');
+      steps[2].classList.add('done');
+      if (bar) bar.style.width = '100%';
+    }, 3200);
+
+    setTimeout(function () {
+      _finishOverlay(overlay, onComplete);
+      if (cacheKey) sessionStorage.setItem('spinner_' + cacheKey, '1');
+    }, 3600);
+  }
+
+  function _finishOverlay(overlay, onComplete) {
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.querySelectorAll('.step').forEach(function (s) { s.classList.remove('active', 'done'); });
+    var bar = document.getElementById('analysis-progress-fill');
+    if (bar) bar.style.width = '0%';
+    if (onComplete) onComplete();
+  }
+
+  function countUp(el, to, duration) {
+    var start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(to * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  window.showAnalysis       = showAnalysis;
+  window.countUp            = countUp;
+
+})();
+"""
+    with open(os.path.join(WEB_DIR, "main.js"), "w", encoding="utf-8") as f:
+        f.write(js)
+    print("main.js: V2 共通スクリプト生成 → docs/")
+
+
+def _page_head(title, desc="", canonical=""):
+    """V2 共通 <head>〜<body> 開きタグを返す"""
+    if not desc:
+        desc = "関東船釣りの最新釣果情報。今日何が釣れたか、エリア別・魚種別に一目でわかる。"
+    canon_tag = (
+        f'<link rel="canonical" href="{SITE_URL}/{canonical}">'
+        if canonical else ""
+    )
+    return f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title}</title>
+<meta name="description" content="{desc}">
+<link rel="stylesheet" href="/style.css">
+{canon_tag}
+</head>
+<body>"""
+
+
+def _page_nav(current_page=""):
+    """V2 ヘッダ + ボトムナビ（5アイコン SVG インライン）を返す"""
+    def act(page):
+        return ' class="active"' if current_page == page else ""
+
+    prem_cls = ('class="premium-nav active"'
+                if current_page == "premium"
+                else 'class="premium-nav"')
+
+    # SVG アイコン（線画・fill:none・CSS で stroke を管理）
+    svg_catch = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>'
+    svg_fish  = '<svg viewBox="0 0 24 24"><path d="M3 12c0 0 4-7 9-7s9 7 9 7-4 7-9 7-9-7-9-7z"/><circle cx="8.5" cy="11" r="1.2"/></svg>'
+    svg_area  = '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>'
+    svg_cal   = '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
+    svg_prem  = '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+
+    idx  = act('index')
+    fish = act('fish')
+    area = act('area')
+    cal  = act('calendar')
+    prem = act('premium')
+
+    return (
+        '<header class="site-header">'
+        '<div class="container">'
+        '<a href="/" class="site-logo">船釣り予想</a>'
+        '<nav class="header-nav" aria-label="メインナビゲーション">'
+        f'<a href="/"{idx}>今日の釣果</a>'
+        f'<a href="/fish/"{fish}>魚種</a>'
+        f'<a href="/area/"{area}>エリア</a>'
+        f'<a href="/calendar/"{cal}>カレンダー</a>'
+        f'<a href="/premium/"{prem}>有料</a>'
+        '</nav>'
+        '</div>'
+        '</header>'
+        '<nav class="bottom-nav" aria-label="ボトムナビゲーション">'
+        f'<a href="/"{idx}>{svg_catch}<span>釣果</span></a>'
+        f'<a href="/fish/"{fish}>{svg_fish}<span>魚種</span></a>'
+        f'<a href="/area/"{area}>{svg_area}<span>エリア</span></a>'
+        f'<a href="/calendar/"{cal}>{svg_cal}<span>カレンダー</span></a>'
+        f'<a href="/premium/" {prem_cls}>{svg_prem}<span>有料</span></a>'
+        '</nav>'
+    )
+
+
+def _page_foot():
+    """V2 共通フッタ + </body></html> を返す"""
+    return (
+        '<footer class="site-footer">'
+        '<div class="container">'
+        '<div class="footer-links">'
+        '<a href="/pages/about.html">サイトについて</a>'
+        '<a href="/pages/privacy.html">プライバシーポリシー</a>'
+        '<a href="/pages/terms.html">利用規約</a>'
+        '<a href="/pages/contact.html">お問い合わせ</a>'
+        '</div>'
+        '<p class="footer-copy">&copy; 2026 funatsuri-yoso.com</p>'
+        '</div>'
+        '</footer>'
+        '<script src="/main.js"></script>'
+        '</body>'
+        '</html>'
+    )
 
 
 def main():
@@ -4841,18 +5575,23 @@ def main():
             json.dump(forecast_data, f, ensure_ascii=False, indent=2)
         print(f"forecast.json: {len(forecast_data.get('days', {}))} 日分 + {len(forecast_data.get('weeks', {}))} 週分生成")
         build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history)
-    with open("index.html", "w", encoding="utf-8") as f:
+    os.makedirs(WEB_DIR, exist_ok=True)
+    with open(os.path.join(WEB_DIR, "CNAME"), "w", encoding="utf-8") as f:
+        f.write("funatsuri-yoso.com")
+    build_style_css()
+    build_main_js()
+    with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
     build_fish_pages(valid_catches, history, crawled_at)
     build_area_pages(valid_catches, history, crawled_at)
     build_fish_area_pages(valid_catches, crawled_at, history)
-    with open("calendar.html", "w", encoding="utf-8") as f:
+    with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
     print(f"\n=== 完了 ===")
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
     print(f"エラー: {errors or 'なし'}")
-    print(f"出力: catches.json / index.html / fish/*.html / area/*.html / fish_area/*.html / sitemap.xml")
+    print(f"出力: docs/ (index.html / fish/*.html / area/*.html / fish_area/*.html / sitemap.xml / CNAME)")
 
 if __name__ == "__main__":
     main()
