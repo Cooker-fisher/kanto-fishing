@@ -15,7 +15,7 @@ analysis.sqlite の旬別ベースライン + 天候補正から指定日の魚�
 """
 
 import argparse, json, math, os, sqlite3, sys, urllib.request
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date as _date
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -29,6 +29,9 @@ TIDE_TYPE_MAP = {"大潮": 4, "中潮": 3, "小潮": 2, "長潮": 1, "若潮": 1
 
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 MARINE_URL   = "https://marine-api.open-meteo.com/v1/marine"
+
+# 予測ログ出力先
+LOG_PATH = os.path.join(RESULTS_DIR, "predict_log.jsonl")
 
 
 # ── 旬番号 ───────────────────────────────────────────────────────────────────
@@ -173,6 +176,105 @@ def _get_daily_wx(conn_wx, lat, lon, date_iso, wave_clamp_thr: float = 2.0):
     return result
 
 
+def _fetch_forecast_wx(lat: float, lon: float, date_iso: str,
+                        wave_clamp_thr: float = 2.0) -> dict:
+    """Open-Meteo Forecast/Marine API から翌日〜16日先の気象を取得。
+    _get_daily_wx() と同じキー形式で返す。失敗時は空 dict。
+    対象: 今日以降の日付（weather_cache.sqlite に存在しない将来日）
+    """
+    result = {}
+    try:
+        params = "&".join([
+            f"latitude={lat}", f"longitude={lon}",
+            f"start_date={date_iso}", f"end_date={date_iso}",
+            "hourly=wind_speed_10m,wind_direction_10m,temperature_2m,"
+            "pressure_msl,precipitation",
+            "timezone=Asia%2FTokyo",
+        ])
+        with urllib.request.urlopen(f"{FORECAST_URL}?{params}", timeout=10) as resp:
+            data = json.loads(resp.read())
+        h = data.get("hourly", {})
+        # 釣り時間帯（5〜12時）に絞る
+        idxs = list(range(5, 13))
+        winds  = [h["wind_speed_10m"][i]      for i in idxs if i < len(h.get("wind_speed_10m", [])) and h["wind_speed_10m"][i] is not None]
+        wdirs  = [h["wind_direction_10m"][i]  for i in idxs if i < len(h.get("wind_direction_10m", [])) and h["wind_direction_10m"][i] is not None]
+        temps  = [h["temperature_2m"][i]      for i in idxs if i < len(h.get("temperature_2m", [])) and h["temperature_2m"][i] is not None]
+        press  = [h["pressure_msl"][i]        for i in idxs if i < len(h.get("pressure_msl", [])) and h["pressure_msl"][i] is not None]
+        prec   = [h["precipitation"][i]       for i in idxs if i < len(h.get("precipitation", [])) and h["precipitation"][i] is not None]
+        if winds:
+            result["wind_speed_avg"] = sum(winds) / len(winds)
+            result["wind_speed_max"] = max(winds)
+        if wdirs:
+            binned = [round(d / 22.5) % 16 * 22.5 for d in wdirs]
+            wdm = max(set(binned), key=binned.count)
+            result["wind_dir_mode"] = wdm
+            result["wind_dir_n"]    = math.cos(math.radians(wdm))
+            result["wind_dir_e"]    = math.sin(math.radians(wdm))
+        if temps:
+            result["temp_avg"]   = sum(temps) / len(temps)
+            result["temp_max"]   = max(temps)
+            result["temp_min"]   = min(temps)
+            result["temp_range"] = max(temps) - min(temps)
+        if press:
+            result["pressure_avg"]   = sum(press) / len(press)
+            result["pressure_min"]   = min(press)
+            result["pressure_range"] = max(press) - min(press)
+        if prec:
+            result["precip_sum"] = sum(prec)
+    except Exception as e:
+        result["_forecast_atmo_error"] = str(e)
+
+    try:
+        params = "&".join([
+            f"latitude={lat}", f"longitude={lon}",
+            f"start_date={date_iso}", f"end_date={date_iso}",
+            "hourly=wave_height,wave_period,swell_wave_height,"
+            "sea_surface_temperature,ocean_current_velocity,ocean_current_direction",
+            "timezone=Asia%2FTokyo",
+        ])
+        with urllib.request.urlopen(f"{MARINE_URL}?{params}", timeout=10) as resp:
+            data = json.loads(resp.read())
+        h = data.get("hourly", {})
+        idxs = list(range(5, 13))
+        waves  = [h["wave_height"][i]              for i in idxs if i < len(h.get("wave_height", [])) and h["wave_height"][i] is not None]
+        wpers  = [h["wave_period"][i]              for i in idxs if i < len(h.get("wave_period", [])) and h["wave_period"][i] is not None]
+        swels  = [h["swell_wave_height"][i]        for i in idxs if i < len(h.get("swell_wave_height", [])) and h["swell_wave_height"][i] is not None]
+        ssts   = [h["sea_surface_temperature"][i]  for i in idxs if i < len(h.get("sea_surface_temperature", [])) and h["sea_surface_temperature"][i] is not None]
+        curspd = [h["ocean_current_velocity"][i]   for i in idxs if i < len(h.get("ocean_current_velocity", [])) and h["ocean_current_velocity"][i] is not None]
+        curdir = [h["ocean_current_direction"][i]  for i in idxs if i < len(h.get("ocean_current_direction", [])) and h["ocean_current_direction"][i] is not None]
+        if waves:
+            result["wave_height_avg"] = sum(waves) / len(waves)
+            result["wave_height_max"] = max(waves)
+            result["wave_clamp"]      = min(result["wave_height_avg"], wave_clamp_thr)
+        if wpers:
+            result["wave_period_avg"] = sum(wpers) / len(wpers)
+            result["wave_period_min"] = min(wpers)
+        if swels:
+            result["swell_height_avg"] = sum(swels) / len(swels)
+            result["swell_height_max"] = max(swels)
+        if ssts:
+            result["sst_avg"] = sum(ssts) / len(ssts)
+        if curspd:
+            result["current_speed_avg"] = sum(curspd) / len(curspd)
+            result["current_speed_max"] = max(curspd)
+        if curdir:
+            binned = [round(d / 22.5) % 16 * 22.5 for d in curdir]
+            result["current_dir_mode"] = max(set(binned), key=binned.count)
+    except Exception as e:
+        result["_forecast_marine_error"] = str(e)
+
+    return result
+
+
+def _log_predict(entry: dict) -> None:
+    """予測ログを JSONL 形式で追記。失敗しても予測は止めない。"""
+    try:
+        with open(LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
 def _get_tide(date_iso: str) -> dict:
     """tide_moon.sqlite から潮汐・月齢データを取得。"""
     if not os.path.exists(DB_TIDE):
@@ -298,27 +400,57 @@ def _apply_wx_correction(conn, fish: str, ship: str,
     d7_iso   = (d - timedelta(days=7)).strftime("%Y-%m-%d")
 
     all_wx = {}
+    _wx_source = "none"  # ログ用: どのデータソースを使ったか
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    if os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0:
+    today_iso = datetime.today().strftime("%Y-%m-%d")
+    is_future = date_iso > today_iso  # 今日より未来 → Forecast API を使う
+
+    if is_future:
+        # ── 未来日: Open-Meteo Forecast API から取得 ────────────────────────
+        wx = _fetch_forecast_wx(wx_lat, wx_lon, date_iso, wave_clamp_thr)
+        all_wx.update({k: v for k, v in wx.items() if not k.startswith("_")})
+        # 前日（d1）は weather_cache または Forecast API で補完
+        wx_d1 = _fetch_forecast_wx(wx_lat, wx_lon, d1_iso, wave_clamp_thr) if d1_iso >= today_iso else {}
+        wx_d7 = {}  # 7日前は過去データなしでよい（SST変化は省略）
+        if not wx_d1 and os.path.exists(DB_WX):
+            try:
+                conn_wx = sqlite3.connect(DB_WX)
+                wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)
+                wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso, wave_clamp_thr)
+                wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso, wave_clamp_thr)
+                conn_wx.close()
+            except Exception:
+                pass
+        _wx_source = "forecast_api"
+        if wx.get("_forecast_atmo_error") or wx.get("_forecast_marine_error"):
+            _wx_source = "forecast_api_partial"
+    elif os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0:
+        # ── 過去日: weather_cache.sqlite から取得（従来通り） ────────────────
         try:
             conn_wx = sqlite3.connect(DB_WX)
-            wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)  # 最頻ポイント座標を使用
+            wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)
             wx    = _get_daily_wx(conn_wx, wlat, wlon, date_iso, wave_clamp_thr)
             wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso, wave_clamp_thr)
             wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso, wave_clamp_thr)
             conn_wx.close()
             all_wx.update(wx)
-            if wx_d1:
-                all_wx["precip_sum1"] = wx_d1.get("precip_sum")
-            if wx.get("pressure_min") is not None and wx_d1.get("pressure_min") is not None:
-                all_wx["pressure_delta"] = wx["pressure_min"] - wx_d1["pressure_min"]
-            if wx.get("temp_avg") is not None and wx_d1.get("temp_avg") is not None:
-                all_wx["temp_delta"] = wx["temp_avg"] - wx_d1["temp_avg"]
-            if wx.get("sst_avg") is not None and wx_d7.get("sst_avg") is not None:
-                all_wx["sst_delta"] = wx["sst_avg"] - wx_d7["sst_avg"]
+            _wx_source = "weather_cache"
         except Exception:
-            pass
+            wx_d1 = {}; wx_d7 = {}
+    else:
+        wx_d1 = {}; wx_d7 = {}
+
+    # 差分特徴量（ソースに関わらず共通計算）
+    if wx_d1:
+        if wx_d1.get("precip_sum") is not None:
+            all_wx["precip_sum1"] = wx_d1["precip_sum"]
+        if all_wx.get("pressure_min") is not None and wx_d1.get("pressure_min") is not None:
+            all_wx["pressure_delta"] = all_wx["pressure_min"] - wx_d1["pressure_min"]
+        if all_wx.get("temp_avg") is not None and wx_d1.get("temp_avg") is not None:
+            all_wx["temp_delta"] = all_wx["temp_avg"] - wx_d1["temp_avg"]
+    if wx_d7 and all_wx.get("sst_avg") is not None and wx_d7.get("sst_avg") is not None:
+        all_wx["sst_delta"] = all_wx["sst_avg"] - wx_d7["sst_avg"]
 
     # 潮汐・月齢（tide_moon.sqlite）
     tide    = _get_tide(date_iso)
@@ -346,7 +478,26 @@ def _apply_wx_correction(conn, fish: str, ship: str,
         return baseline_cnt
 
     correction = (num_wx / w_total) * met_std * alpha_scale
-    return round(max(0.0, baseline_cnt + correction), 1)
+    predicted  = round(max(0.0, baseline_cnt + correction), 1)
+
+    # 予測ログ
+    _log_predict({
+        "ts":          datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "fish":        fish,
+        "ship":        ship,
+        "target_date": target_date,
+        "metric":      metric,
+        "wx_source":   _wx_source,
+        "is_future":   is_future,
+        "baseline":    round(baseline_cnt, 2),
+        "correction":  round(correction, 2),
+        "predicted":   predicted,
+        "factors_used": used,
+        "factors_avail": len(factor_params),
+        "wx_keys":     [k for k in all_wx if not k.startswith("_")],
+    })
+
+    return predicted
 
 
 # ── 気象取得（表示用のみ・予測には使わない） ────────────────────────────────
