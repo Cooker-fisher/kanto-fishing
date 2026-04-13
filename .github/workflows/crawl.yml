@@ -79,6 +79,12 @@ jobs:
               subprocess.run([sys.executable, 'analysis/run.py', 'weekly_analysis.py', '--query', fish])
               subprocess.run([sys.executable, 'analysis/run.py', 'weekly_analysis.py', '--grid',  fish])
           "
+      - name: weekly analysis batch-3 (combo deep dive - 全魚種モデル再生成)
+        continue-on-error: true
+        run: |
+          # N>=30 に達したコンボが自動的にモデル生成される。
+          # GitHub Actions 2CPU 環境 → --workers 2（約30〜45分）
+          python3 analysis/V2/methods/run_full_deepdive.py --workers 2
       - name: push
         run: |
           git config user.name "github-actions[bot]"
