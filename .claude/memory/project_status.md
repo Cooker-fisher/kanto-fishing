@@ -1,13 +1,30 @@
-現行バージョン: crawler.py v5.25（潮流データ・KAIYU自動昇格・combo_meta fallback）
+現行バージョン: crawler.py v5.25 / predict_count.py（Forecast API統合済み）
 最終更新: 2026/04/13
-最新コミット: push済み
+最新コミット: 6cb8dba（Forecast API + 予測ログ）push済み
 
 ## ★ 次チャットでやること（優先度順）
 
 ### 1. 後回しタスク
 - [ ] ちがさき丸×マダイ/シーバス/メバル 個別改善（r=-0.17等）
 - [ ] 外道表示機能
-- [ ] OOS r がまだ -0.065（ほぼ過学習）→ 根本改善未達。要因: 季節性・非線形を線形モデルで捉えきれない可能性
+- [ ] predict_count.py: 同一座標のForecast API呼び出しキャッシュ（全魚種実行時に遅い）
+- [ ] 有料ページUI + 決済（Stripe）実装
+
+## ✅ 今セッション完了（2026/04/13 深夜）
+
+### 未来日予測に Forecast API 統合 + 予測ログ（predict_count.py）
+- **問題**: weather_cache.sqlite は過去のみ → 未来日はSLOW_FACTORSのみ補正
+- **修正**: 対象日 > 今日 → `_fetch_forecast_wx()` でForecast/Marine APIから取得
+  - 風速/向き・気温・気圧・降水量・波高/周期・うねり・SST・潮流（5-12時平均）
+- **ログ**: `analysis/V2/results/predict_log.jsonl` に JSONL 追記
+  - 記録: ts, fish, ship, target_date, wx_source, baseline, correction, predicted, factors_used, wx_keys
+
+### OOS r 改善（combo_deep_dive.py）
+- cnt_avg: +0.403（変化なし）
+- **cnt_max: +0.146 → +0.364**（ratio-based: cnt_avg_pred × 旬別比率）
+- **cnt_min: +0.085 → +0.142**（同上）
+- size_avg: +0.106 → +0.110（point×旬別ベースライン + cnt補正）
+- avg_pred_store[H][date] に cnt_avg 予測を蓄積し cnt_max/cnt_min/size に転用
 
 ---
 
