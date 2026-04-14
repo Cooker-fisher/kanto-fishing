@@ -18,6 +18,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add -- ':!.github/'
           git commit -m "prediction log $(date +'%Y/%m/%d')" || echo "nothing to commit"
-          git push --force
+          git pull --rebase origin main
+          git push origin main
