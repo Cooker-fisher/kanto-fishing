@@ -18,9 +18,6 @@ jobs:
         run: python3 crawl/discover_ships.py
       - name: run
         run: python3 crawler.py
-      - name: gyo direct crawl
-        continue-on-error: true
-        run: python3 direct-crawl/gyo_crawler.py
       - name: prediction log (predict + match)
         continue-on-error: true
         run: python3 analysis/run.py prediction_log.py --both
