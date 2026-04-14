@@ -1,0 +1,23 @@
+name: prediction_log
+on:
+  schedule:
+    - cron: '0 9 * * *'   # 毎日 18:00 JST（crawl完了後）
+  workflow_dispatch:
+jobs:
+  prediction_log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: predict + match
+        continue-on-error: true
+        run: python3 analysis/run.py prediction_log.py --both
+      - name: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "prediction log $(date +'%Y/%m/%d')" || echo "nothing to commit"
+          git push --force
