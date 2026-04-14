@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2週後 (4/27〜5/3) 釣果トレンド予測 - 船釣り予想</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}
+header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}
+header h1{font-size:22px;color:#4db8ff}
+header p{font-size:12px;color:#7a9bb5;margin-top:4px}
+nav{background:#081020;padding:8px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+nav a{color:#7a9bb5;text-decoration:none;font-size:13px}
+nav a:hover{color:#4db8ff}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
+h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}
+h3{font-size:14px;color:#c8d8e8;margin:16px 0 8px}
+.date-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.date-nav a{display:inline-block;padding:6px 12px;background:#0d2137;border:1px solid #1a4060;border-radius:6px;color:#7a9bb5;font-size:12px;text-decoration:none}
+.date-nav a:hover,.date-nav a.active{color:#4db8ff;border-color:#4db8ff}
+.date-nav a.weekend{font-weight:bold}
+.wx-dash{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.wx-panel{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px;text-align:center}
+.wx-panel-icon{font-size:18px}
+.wx-panel-value{display:block;font-size:16px;font-weight:bold;color:#fff;margin:4px 0 2px}
+.wx-panel-label{font-size:10px;color:#7a9bb5}
+.wx-panel-note{font-size:11px;color:#5a7a95}
+.area-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.area-chip{padding:6px 12px;border-radius:16px;font-size:12px;text-decoration:none;font-weight:bold;color:#fff}
+.area-chip.ok-good{background:#0d3320;border:1px solid #1a5535}
+.area-chip.ok-fair{background:#2a2000;border:1px solid #5a4010}
+.area-chip.ok-warn{background:#2a1000;border:1px solid #553020}
+.area-chip.ok-bad{background:#330d0d;border:1px solid #552020}
+.pick-card{background:linear-gradient(135deg,#0d2137,#132a40);border:1px solid #2a5a8a;border-top:3px solid #d4a853;border-radius:12px;padding:20px;margin-bottom:20px}
+.pick-label{font-size:10px;color:#d4a853;letter-spacing:2px;font-weight:bold;margin-bottom:8px}
+.pick-fish{font-size:20px;font-weight:bold;color:#fff}
+.pick-range{font-size:14px;color:#c8d8e8;margin:6px 0}
+.pick-analysis{font-size:13px;color:#7a9bb5;line-height:1.7;margin:10px 0;background:#081830;border-left:3px solid #d4a853;padding:10px 14px;border-radius:0 8px 8px 0}
+.pick-meta{font-size:11px;color:#5a7a95}
+.pred-table{width:100%;border-collapse:collapse;margin-bottom:16px}
+.pred-table th{background:#081020;color:#4db8ff;padding:8px;font-size:11px;text-align:left;border-bottom:1px solid #1a4060}
+.pred-table td{padding:10px 8px;border-bottom:1px solid #0d2137;font-size:13px}
+.pred-table tr:hover{background:#112a42}
+.conf-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold}
+.conf-A{background:#e85d04;color:#fff}
+.conf-B{background:#1a6ea8;color:#fff}
+.conf-C{background:#1a4060;color:#c8d8e8}
+.conf-D{background:#0d2137;color:#5a7a95;border:1px solid #1a4060}
+.trend-up{color:#4dcc88}.trend-down{color:#cc4d4d}.trend-flat{color:#7a9bb5}
+.detail-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:16px;margin-bottom:12px}
+.detail-card.high-conf{border-top:3px solid #4db8ff}
+.detail-card.low-conf{border-top:3px solid #5a7a95}
+.dc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dc-fish{font-size:16px;font-weight:bold;color:#fff}
+.dc-range{font-size:14px;color:#c8d8e8;margin-bottom:6px}
+.dc-factors{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.dc-factor{font-size:12px;padding:4px 8px;border-radius:4px}
+.dc-factor.good{background:#0d3320;color:#4dcc88}
+.dc-factor.warn{background:#2a2000;color:#f4a261}
+.dc-factor.bad{background:#2a1000;color:#cc4d4d}
+.dc-factor.neutral{background:#1a2a3a;color:#7a9bb5}
+.dc-analysis{font-size:13px;color:#7a9bb5;line-height:1.7;margin:10px 0;padding:10px;background:#081830;border-radius:6px}
+.dc-uncertainty{font-size:12px;color:#f4a261;margin:8px 0;padding:8px;background:#1a1800;border-left:3px solid #f4a261;border-radius:0 6px 6px 0}
+.dc-ships{font-size:12px;color:#5a7a95}
+.paywall{text-align:center;padding:30px;background:linear-gradient(transparent,#0a1628 40%);margin-top:10px}
+.paywall-btn{display:inline-block;background:#e85d04;color:#fff;padding:12px 32px;border-radius:24px;font-size:14px;font-weight:bold;text-decoration:none}
+.paywall-btn:hover{background:#f4a261}
+.paywall-sub{font-size:12px;color:#7a9bb5;margin-top:8px}
+.blur-text{filter:blur(6px);user-select:none}
+.section-note{font-size:12px;color:#5a7a95;margin-bottom:12px}
+@media(max-width:640px){.wx-dash{grid-template-columns:repeat(2,1fr)}.pred-table{font-size:12px}}
+</style>
+</head><body>
+<header><h1>🔮 船釣り予想 プレミアム</h1><p>2週後 (4/27〜5/3) 釣果トレンド予測</p></header>
+<nav><a href="/forecast/">予測トップ</a><a href="/">無料版トップ</a></nav>
+<div class="wrap"><div class="date-nav"><a href="2026-04-14.html" class="">4/14(火)</a><a href="2026-04-15.html" class="">4/15(水)</a><a href="2026-04-16.html" class="">4/16(木)</a><a href="2026-04-17.html" class="">4/17(金)</a><a href="2026-04-18.html" class="weekend">4/18(土)</a><a href="2026-04-19.html" class="weekend">4/19(日)</a><a href="2026-04-20.html" class="">4/20(月)</a><a href="2026-W18.html" class="active">2週後</a><a href="2026-W19.html" class="">3週後</a><a href="2026-W20.html" class="">4週後</a></div><h2>2週後 (4/27〜5/3) 釣果トレンド予測</h2><p style="color:#7a9bb5;margin-bottom:12px">🌙 中潮　⚠️ 海況予報なし（季節傾向＋潮汐で予測）</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">27(月) 中潮</span><span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">28(火) 若潮</span><span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">29(水) 中潮</span><span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">30(木) 中潮</span><span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">1(金) 大潮</span><span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">2(土) 大潮</span><span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">3(日) 大潮</span></div><table class="pred-table"><thead><tr><th>魚種</th><th>エリア</th><th>予測匹数</th><th>型</th><th>狙い</th><th>確信度</th></tr></thead><tbody><tr><td>アジ</td><td>神奈川・東京湾</td><td>40〜82匹</td><td>15〜40cm</td><td>数</td><td><span class="conf-badge conf-D">D</span></td></tr><tr><td>アジ</td><td>神奈川・相模湾</td><td>32〜77匹</td><td>12〜45cm</td><td>数</td><td><span class="conf-badge conf-D">D</span></td></tr></tbody></table></div>
+<footer style="text-align:center;padding:20px;font-size:11px;color:#5a7a95">
+© 船釣り予想 funatsuri-yoso.com | データ: 釣りビジョン・Open-Meteo
+</footer></body></html>
