@@ -5687,9 +5687,9 @@ def build_calendar_page(crawled_at=""):
 .cal-wrap td.fish-name{text-align:left;font-weight:700;min-width:80px;padding-left:4px;white-space:nowrap}
 .cal-wrap td.fish-name a{color:var(--text)}
 .cal-wrap td.fish-name a:hover{color:var(--cta)}
-.cal-wrap td.peak-count{background:var(--cta);color:#fff;font-weight:700}
-.cal-wrap td.peak-size{background:var(--prem);color:#fff;font-weight:700}
-.cal-wrap td.mid{background:var(--accent);color:#fff}
+.cal-wrap td.peak-count{background:#fde8d4;color:#b84500;font-weight:700}
+.cal-wrap td.peak-size{background:#ece5fd;color:#6d28d9;font-weight:700}
+.cal-wrap td.mid{background:#dfe8f4;color:#2c6ea8}
 .cal-wrap td.low{color:var(--muted)}
 .cal-wrap td.cur-month{outline:2px solid var(--cta);outline-offset:-2px}
 .legend{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 16px;font-size:11px;color:var(--sub)}
@@ -5712,9 +5712,9 @@ def build_calendar_page(crawled_at=""):
   <p class="bread"><a href="index.html">トップ</a> &rsaquo; 旬カレンダー</p>
   <h2 class="st">月別 釣りものカレンダー <span class="tag free">無料</span></h2>
   <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:var(--cta)"></div>数釣りピーク◎</div>
-    <div class="leg"><div class="leg-dot" style="background:var(--prem)"></div>型釣りピーク◎</div>
-    <div class="leg"><div class="leg-dot" style="background:var(--accent)"></div>シーズン中○</div>
+    <div class="leg"><div class="leg-dot" style="background:#fde8d4;border:1px solid #b84500"></div>数釣りピーク◎</div>
+    <div class="leg"><div class="leg-dot" style="background:#ece5fd;border:1px solid #6d28d9"></div>型釣りピーク◎</div>
+    <div class="leg"><div class="leg-dot" style="background:#dfe8f4;border:1px solid #2c6ea8"></div>シーズン中○</div>
     <div class="leg"><div class="leg-dot" style="background:var(--border)"></div>端境期</div>
   </div>
   <div class="cal-wrap tbl-wrap"><table><tr><th>魚種</th>{header_cells}</tr>{rows}</table></div>
