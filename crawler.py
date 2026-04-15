@@ -4934,7 +4934,7 @@ def build_fish_pages(data, history, crawled_at=""):
         ship_num_total = len(ship_counts)
         avg_cnt = round(this_w["avg"], 1) if this_w and this_w.get("avg") else None
         stat_cards_html = f"""<div class="stat-cards">
-  <div class="stat-card"><div class="sv">{ship_num_total}隻</div><div class="sl">今週の出船数</div></div>
+  <div class="stat-card"><div class="sv">{ship_num_total}船宿</div><div class="sl">今週の出船船宿数</div></div>
   <div class="stat-card"><div class="sv">{"%.0f" % avg_cnt if avg_cnt else "-"}匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card"><div class="sv">{max_cnt if max_cnt else "-"}匹</div><div class="sl">今週の最高釣果</div></div>
 </div>"""
@@ -5026,9 +5026,9 @@ def build_fish_pages(data, history, crawled_at=""):
     <div class="hf-name">{fish}</div>
     <div class="hf-sub">関東エリアの釣果情報</div>
     <div class="hf-stats">
-      <div class="hf-stat"><div class="v">{len(catches)}</div><div class="l">今週の件数</div></div>
+      <div class="hf-stat"><div class="v">{len(catches)}</div><div class="l">今週の釣果件数</div></div>
       <div class="hf-stat"><div class="v">{max_cnt if max_cnt else "-"}</div><div class="l">最高釣果(匹)</div></div>
-      <div class="hf-stat"><div class="v">{len(ship_counts)}</div><div class="l">出船船宿</div></div>
+      <div class="hf-stat"><div class="v">{len(ship_counts)}</div><div class="l">出船船宿数</div></div>
     </div>
   </div>
 </div>
@@ -5211,8 +5211,8 @@ def build_area_pages(data, history, crawled_at=""):
     <div class="ha-name">{area}</div>
     <div class="ha-sub">{group} の船釣り釣果情報</div>
     <div class="ha-stats">
-      <div class="ha-stat"><div class="v">{len(catches)}</div><div class="l">今週の件数</div></div>
-      <div class="ha-stat"><div class="v">{len(ship_counts)}</div><div class="l">船宿数</div></div>
+      <div class="ha-stat"><div class="v">{len(catches)}</div><div class="l">今週の釣果件数</div></div>
+      <div class="ha-stat"><div class="v">{len(ship_counts)}</div><div class="l">出船船宿数</div></div>
       <div class="ha-stat"><div class="v">{len(fish_counts)}</div><div class="l">魚種数</div></div>
     </div>
   </div>
@@ -5343,7 +5343,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
         trend_cls = {"up": " trend-up", "down": " trend-down"}.get(trend_fa, "")
         trend_label = {"up": "↑ 上昇中", "down": "↓ 減少", "flat": "→ 横ばい"}.get(trend_fa, "-")
         stat_cards_fa = f"""<div class="stat-cards">
-  <div class="stat-card"><div class="sv">{ship_num}隻</div><div class="sl">出船数</div></div>
+  <div class="stat-card"><div class="sv">{ship_num}船宿</div><div class="sl">出船船宿数</div></div>
   <div class="stat-card"><div class="sv">{"%.0f" % combo_avg if combo_avg else "-"}匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else "-"}匹</div><div class="sl">最高釣果</div></div>
 </div>"""
