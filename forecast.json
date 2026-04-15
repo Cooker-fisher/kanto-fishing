@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026/04/15 09:30",
+  "generated_at": "2026/04/15 20:26",
   "days": {
     "2026-04-15": {
       "wave": 0.7,
-      "wind": 3.3,
-      "sst": 16.4,
+      "wind": 3.4,
+      "sst": 16.5,
       "pressure": 1013.5,
       "weather_code": 2,
       "weather_text": "晴れ",
@@ -16,9 +16,9 @@
       "areas": {
         "茨城": {
           "wave": 1.0,
-          "wind": 5.0,
+          "wind": 4.9,
           "sst": 16.0,
-          "wind_dir": 30,
+          "wind_dir": 31,
           "weather_text": "曇り",
           "pressure": 1014.2,
           "score": 90,
@@ -26,19 +26,19 @@
         },
         "千葉・外房": {
           "wave": 1.3,
-          "wind": 3.8,
+          "wind": 3.9,
           "sst": 16.9,
-          "wind_dir": 59,
+          "wind_dir": 58,
           "weather_text": "晴れ",
-          "pressure": 1013.3,
+          "pressure": 1013.4,
           "score": 90,
           "ok": "◎ 出船日和"
         },
         "千葉・内房": {
           "wave": 0.7,
           "wind": 3.2,
-          "sst": 16.7,
-          "wind_dir": 125,
+          "sst": 16.8,
+          "wind_dir": 126,
           "weather_text": "晴れ",
           "pressure": 1013.1,
           "score": 100,
@@ -48,9 +48,9 @@
           "wave": 0.1,
           "wind": 1.8,
           "sst": 16.0,
-          "wind_dir": 233,
+          "wind_dir": 200,
           "weather_text": "曇り",
-          "pressure": 1013.6,
+          "pressure": 1013.7,
           "score": 100,
           "ok": "◎ 出船日和"
         },
@@ -58,7 +58,7 @@
           "wave": 0.2,
           "wind": 2.7,
           "sst": 15.8,
-          "wind_dir": 127,
+          "wind_dir": 92,
           "weather_text": "晴れ",
           "pressure": 1013.6,
           "score": 100,
@@ -66,11 +66,21 @@
         },
         "神奈川・東京湾": {
           "wave": 0.4,
-          "wind": 2.8,
+          "wind": 2.7,
           "sst": 16.2,
-          "wind_dir": 17,
+          "wind_dir": 18,
           "weather_text": "曇り",
           "pressure": 1013.5,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・相模湾": {
+          "wave": 0.9,
+          "wind": 4.6,
+          "sst": 17.5,
+          "wind_dir": 27,
+          "weather_text": "晴れ",
+          "pressure": 1013.2,
           "score": 100,
           "ok": "◎ 出船日和"
         },
@@ -78,7 +88,7 @@
           "wave": 1.0,
           "wind": 3.6,
           "sst": 16.9,
-          "wind_dir": 32,
+          "wind_dir": 33,
           "weather_text": "晴れ",
           "pressure": 1013.3,
           "score": 90,
@@ -106,7 +116,7 @@
             "忠彦丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+583%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -116,15 +126,46 @@
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 53.6,
+          "base_avg": 53.6,
+          "adjustment": 0.0,
+          "max": 77,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。北北東風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
         }
       ],
       "todays_pick": "アジ×神奈川・東京湾"
     },
     "2026-04-16": {
       "wave": 1.3,
-      "wind": 9.3,
-      "sst": 16.5,
-      "pressure": 1009.7,
+      "wind": 9.7,
+      "sst": 16.6,
+      "pressure": 1009.6,
       "weather_code": 0,
       "weather_text": "快晴",
       "tide_range": 115.3,
@@ -135,9 +176,9 @@
       "areas": {
         "茨城": {
           "wave": 2.1,
-          "wind": 13.3,
+          "wind": 14.7,
           "sst": 15.9,
-          "wind_dir": 54,
+          "wind_dir": 22,
           "weather_text": "快晴",
           "pressure": 1010.9,
           "score": 20,
@@ -145,31 +186,31 @@
         },
         "千葉・外房": {
           "wave": 2.6,
-          "wind": 14.7,
+          "wind": 15.5,
           "sst": 16.4,
-          "wind_dir": 182,
-          "weather_text": "霧雨",
-          "pressure": 1009.1,
+          "wind_dir": 116,
+          "weather_text": "快晴",
+          "pressure": 1009.3,
           "score": 0,
           "ok": "✕ 欠航リスク"
         },
         "千葉・内房": {
           "wave": 1.2,
-          "wind": 9.1,
+          "wind": 9.2,
           "sst": 17.3,
-          "wind_dir": 12,
+          "wind_dir": 45,
           "weather_text": "快晴",
-          "pressure": 1009.2,
+          "pressure": 1009.1,
           "score": 65,
           "ok": "○ 概ね良好"
         },
         "千葉・東京湾奥": {
           "wave": 0.3,
-          "wind": 6.4,
+          "wind": 6.3,
           "sst": 16.2,
-          "wind_dir": 160,
-          "weather_text": "晴れ",
-          "pressure": 1010.0,
+          "wind_dir": 122,
+          "weather_text": "快晴",
+          "pressure": 1010.1,
           "score": 90,
           "ok": "◎ 出船日和"
         },
@@ -177,7 +218,7 @@
           "wave": 0.5,
           "wind": 8.0,
           "sst": 16.0,
-          "wind_dir": 125,
+          "wind_dir": 122,
           "weather_text": "快晴",
           "pressure": 1009.9,
           "score": 75,
@@ -187,20 +228,30 @@
           "wave": 0.8,
           "wind": 7.7,
           "sst": 16.3,
-          "wind_dir": 22,
+          "wind_dir": 55,
           "weather_text": "快晴",
           "pressure": 1009.6,
           "score": 90,
           "ok": "◎ 出船日和"
         },
+        "神奈川・相模湾": {
+          "wave": 1.4,
+          "wind": 10.3,
+          "sst": 17.9,
+          "wind_dir": 30,
+          "weather_text": "快晴",
+          "pressure": 1009.0,
+          "score": 65,
+          "ok": "○ 概ね良好"
+        },
         "静岡": {
           "wave": 1.5,
-          "wind": 6.2,
+          "wind": 5.9,
           "sst": 17.2,
-          "wind_dir": 46,
+          "wind_dir": 43,
           "weather_text": "晴れ",
-          "pressure": 1009.2,
-          "score": 60,
+          "pressure": 1009.1,
+          "score": 70,
           "ok": "○ 概ね良好"
         }
       },
@@ -225,7 +276,7 @@
             "忠彦丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+583%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -235,14 +286,45 @@
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 53.6,
+          "base_avg": 53.6,
+          "adjustment": 0.0,
+          "max": 77,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。北北東風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "やや注意",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
         }
       ],
       "todays_pick": "ヒラメ×千葉・外房"
     },
     "2026-04-17": {
-      "wave": 1.3,
-      "wind": 4.8,
-      "sst": 16.0,
+      "wave": 1.4,
+      "wind": 5.0,
+      "sst": 16.3,
       "pressure": 1023.4,
       "weather_code": 0,
       "weather_text": "快晴",
@@ -254,7 +336,7 @@
       "areas": {
         "茨城": {
           "wave": 2.2,
-          "wind": 5.4,
+          "wind": 5.5,
           "sst": 15.6,
           "wind_dir": 47,
           "weather_text": "晴れ",
@@ -288,7 +370,7 @@
           "sst": 16.0,
           "wind_dir": 94,
           "weather_text": "快晴",
-          "pressure": 1023.3,
+          "pressure": 1023.4,
           "score": 100,
           "ok": "◎ 出船日和"
         },
@@ -304,7 +386,7 @@
         },
         "神奈川・東京湾": {
           "wave": 0.8,
-          "wind": 4.7,
+          "wind": 4.8,
           "sst": 15.8,
           "wind_dir": 22,
           "weather_text": "快晴",
@@ -312,9 +394,19 @@
           "score": 100,
           "ok": "◎ 出船日和"
         },
+        "神奈川・相模湾": {
+          "wave": 1.5,
+          "wind": 5.6,
+          "sst": 17.8,
+          "wind_dir": 60,
+          "weather_text": "快晴",
+          "pressure": 1023.3,
+          "score": 70,
+          "ok": "○ 概ね良好"
+        },
         "静岡": {
           "wave": 1.6,
-          "wind": 4.3,
+          "wind": 4.4,
           "sst": 16.9,
           "wind_dir": 70,
           "weather_text": "快晴",
@@ -329,7 +421,7 @@
           "group": "神奈川・東京湾",
           "avg": 65.8,
           "base_avg": 66.0,
-          "adjustment": -0.003,
+          "adjustment": -0.002,
           "max": 82,
           "samples": 5,
           "season_score": 4,
@@ -344,7 +436,7 @@
             "忠彦丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+583%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -354,14 +446,45 @@
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 53.6,
+          "base_avg": 53.6,
+          "adjustment": 0.0,
+          "max": 77,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
         }
       ],
       "todays_pick": "アジ×神奈川・東京湾"
     },
     "2026-04-18": {
-      "wave": 1.3,
+      "wave": 1.4,
       "wind": 2.2,
-      "sst": 16.7,
+      "sst": 16.9,
       "pressure": 1020.5,
       "weather_code": 1,
       "weather_text": "晴れ",
@@ -373,19 +496,19 @@
       "areas": {
         "茨城": {
           "wave": 2.0,
-          "wind": 3.4,
+          "wind": 3.2,
           "sst": 15.8,
-          "wind_dir": 212,
+          "wind_dir": 213,
           "weather_text": "晴れ",
-          "pressure": 1020.5,
+          "pressure": 1020.6,
           "score": 70,
           "ok": "○ 概ね良好"
         },
         "千葉・外房": {
           "wave": 2.9,
-          "wind": 3.5,
+          "wind": 3.6,
           "sst": 17.0,
-          "wind_dir": 22,
+          "wind_dir": 24,
           "weather_text": "晴れ",
           "pressure": 1020.6,
           "score": 40,
@@ -393,9 +516,9 @@
         },
         "千葉・内房": {
           "wave": 1.3,
-          "wind": 2.3,
+          "wind": 2.5,
           "sst": 19.0,
-          "wind_dir": 183,
+          "wind_dir": 162,
           "weather_text": "晴れ",
           "pressure": 1020.4,
           "score": 90,
@@ -405,7 +528,7 @@
           "wave": 0.2,
           "wind": 1.2,
           "sst": 16.1,
-          "wind_dir": 206,
+          "wind_dir": 205,
           "weather_text": "晴れ",
           "pressure": 1020.5,
           "score": 100,
@@ -415,27 +538,37 @@
           "wave": 0.4,
           "wind": 1.5,
           "sst": 15.8,
-          "wind_dir": 177,
+          "wind_dir": 176,
           "weather_text": "晴れ",
-          "pressure": 1020.5,
+          "pressure": 1020.6,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・東京湾": {
           "wave": 0.8,
-          "wind": 1.6,
+          "wind": 1.8,
           "sst": 15.7,
-          "wind_dir": 121,
+          "wind_dir": 116,
           "weather_text": "晴れ",
           "pressure": 1020.5,
           "score": 100,
           "ok": "◎ 出船日和"
         },
+        "神奈川・相模湾": {
+          "wave": 1.7,
+          "wind": 2.5,
+          "sst": 18.3,
+          "wind_dir": 64,
+          "weather_text": "晴れ",
+          "pressure": 1020.6,
+          "score": 70,
+          "ok": "○ 概ね良好"
+        },
         "静岡": {
           "wave": 1.8,
-          "wind": 1.6,
+          "wind": 1.5,
           "sst": 17.2,
-          "wind_dir": 76,
+          "wind_dir": 99,
           "weather_text": "晴れ",
           "pressure": 1020.5,
           "score": 70,
@@ -463,7 +596,7 @@
             "忠彦丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。出船数が前週から大幅増（+583%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -473,15 +606,46 @@
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 53.6,
+          "base_avg": 53.6,
+          "adjustment": 0.0,
+          "max": 77,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
         }
       ],
       "todays_pick": "ヒラメ×千葉・外房"
     },
     "2026-04-19": {
-      "wave": 1.2,
-      "wind": 3.7,
-      "sst": 17.2,
-      "pressure": 1013.0,
+      "wave": 1.3,
+      "wind": 3.1,
+      "sst": 17.3,
+      "pressure": 1014.8,
       "weather_code": 3,
       "weather_text": "曇り",
       "tide_range": 110.2,
@@ -492,71 +656,81 @@
       "areas": {
         "茨城": {
           "wave": 1.8,
-          "wind": 4.1,
+          "wind": 3.7,
           "sst": 16.1,
-          "wind_dir": 71,
+          "wind_dir": 90,
           "weather_text": "曇り",
-          "pressure": 1013.5,
+          "pressure": 1015.2,
           "score": 70,
           "ok": "○ 概ね良好"
         },
         "千葉・外房": {
-          "wave": 2.7,
-          "wind": 3.8,
+          "wave": 2.6,
+          "wind": 4.7,
           "sst": 18.6,
-          "wind_dir": 57,
-          "weather_text": "晴れ",
-          "pressure": 1012.9,
+          "wind_dir": 135,
+          "weather_text": "曇り",
+          "pressure": 1014.8,
           "score": 40,
           "ok": "△ やや不安"
         },
         "千葉・内房": {
           "wave": 1.2,
-          "wind": 3.7,
+          "wind": 3.0,
           "sst": 18.8,
-          "wind_dir": 29,
-          "weather_text": "晴れ",
-          "pressure": 1012.7,
+          "wind_dir": 48,
+          "weather_text": "曇り",
+          "pressure": 1014.6,
           "score": 90,
           "ok": "◎ 出船日和"
         },
         "千葉・東京湾奥": {
           "wave": 0.2,
-          "wind": 2.6,
-          "sst": 16.5,
-          "wind_dir": 137,
+          "wind": 2.0,
+          "sst": 16.4,
+          "wind_dir": 80,
           "weather_text": "曇り",
-          "pressure": 1013.2,
+          "pressure": 1014.8,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "東京": {
           "wave": 0.3,
-          "wind": 2.6,
+          "wind": 2.0,
           "sst": 16.2,
-          "wind_dir": 137,
+          "wind_dir": 80,
           "weather_text": "曇り",
-          "pressure": 1013.2,
+          "pressure": 1014.8,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・東京湾": {
           "wave": 0.7,
-          "wind": 4.2,
+          "wind": 3.3,
           "sst": 16.1,
-          "wind_dir": 41,
+          "wind_dir": 69,
           "weather_text": "曇り",
-          "pressure": 1013.0,
+          "pressure": 1014.7,
           "score": 100,
           "ok": "◎ 出船日和"
         },
+        "神奈川・相模湾": {
+          "wave": 1.6,
+          "wind": 3.2,
+          "sst": 18.5,
+          "wind_dir": 76,
+          "weather_text": "曇り",
+          "pressure": 1014.7,
+          "score": 70,
+          "ok": "○ 概ね良好"
+        },
         "静岡": {
           "wave": 1.7,
-          "wind": 5.1,
+          "wind": 3.1,
           "sst": 18.0,
-          "wind_dir": 78,
-          "weather_text": "晴れ",
-          "pressure": 1012.6,
+          "wind_dir": 85,
+          "weather_text": "曇り",
+          "pressure": 1014.7,
           "score": 70,
           "ok": "○ 概ね良好"
         }
@@ -565,9 +739,9 @@
         {
           "fish": "アジ",
           "group": "神奈川・東京湾",
-          "avg": 65.7,
+          "avg": 65.6,
           "base_avg": 66.0,
-          "adjustment": -0.004,
+          "adjustment": -0.006,
           "max": 82,
           "samples": 5,
           "season_score": 4,
@@ -582,7 +756,7 @@
             "忠彦丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+583%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。東北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -592,17 +766,48 @@
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 53.6,
+          "base_avg": 53.6,
+          "adjustment": 0.0,
+          "max": 77,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
         }
       ],
       "todays_pick": "アジ×神奈川・東京湾"
     },
     "2026-04-20": {
-      "wave": 1.0,
-      "wind": 2.7,
-      "sst": 17.1,
-      "pressure": 1015.3,
-      "weather_code": 1,
-      "weather_text": "晴れ",
+      "wave": 1.1,
+      "wind": 3.4,
+      "sst": 17.3,
+      "pressure": 1017.2,
+      "weather_code": 0,
+      "weather_text": "快晴",
       "tide_range": 98.0,
       "moon_age": 2.8,
       "moon_title": "中潮",
@@ -611,71 +816,81 @@
       "areas": {
         "茨城": {
           "wave": 1.7,
-          "wind": 3.3,
+          "wind": 3.6,
           "sst": 16.3,
-          "wind_dir": 93,
-          "weather_text": "晴れ",
-          "pressure": 1015.8,
+          "wind_dir": 187,
+          "weather_text": "快晴",
+          "pressure": 1017.0,
           "score": 70,
           "ok": "○ 概ね良好"
         },
         "千葉・外房": {
           "wave": 2.1,
-          "wind": 3.0,
+          "wind": 2.8,
           "sst": 18.0,
-          "wind_dir": 60,
-          "weather_text": "晴れ",
-          "pressure": 1015.4,
+          "wind_dir": 214,
+          "weather_text": "快晴",
+          "pressure": 1017.5,
           "score": 70,
           "ok": "○ 概ね良好"
         },
         "千葉・内房": {
           "wave": 0.9,
-          "wind": 3.3,
+          "wind": 3.2,
           "sst": 17.9,
-          "wind_dir": 82,
-          "weather_text": "晴れ",
-          "pressure": 1015.2,
+          "wind_dir": 164,
+          "weather_text": "快晴",
+          "pressure": 1017.4,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "千葉・東京湾奥": {
           "wave": 0.1,
-          "wind": 2.2,
+          "wind": 3.4,
           "sst": 16.7,
-          "wind_dir": 167,
-          "weather_text": "晴れ",
-          "pressure": 1015.2,
+          "wind_dir": 170,
+          "weather_text": "快晴",
+          "pressure": 1016.9,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "東京": {
           "wave": 0.2,
-          "wind": 2.2,
+          "wind": 3.4,
           "sst": 16.4,
-          "wind_dir": 167,
-          "weather_text": "晴れ",
-          "pressure": 1015.2,
+          "wind_dir": 170,
+          "weather_text": "快晴",
+          "pressure": 1016.9,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・東京湾": {
           "wave": 0.5,
-          "wind": 3.0,
+          "wind": 3.9,
           "sst": 16.3,
-          "wind_dir": 105,
+          "wind_dir": 156,
           "weather_text": "快晴",
-          "pressure": 1015.4,
+          "pressure": 1017.2,
           "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・相模湾": {
+          "wave": 1.4,
+          "wind": 4.2,
+          "sst": 18.4,
+          "wind_dir": 197,
+          "weather_text": "快晴",
+          "pressure": 1017.1,
+          "score": 90,
           "ok": "◎ 出船日和"
         },
         "静岡": {
           "wave": 1.5,
-          "wind": 2.2,
+          "wind": 2.7,
           "sst": 18.1,
-          "wind_dir": 122,
-          "weather_text": "晴れ",
-          "pressure": 1015.0,
+          "wind_dir": 231,
+          "weather_text": "快晴",
+          "pressure": 1017.4,
           "score": 70,
           "ok": "○ 概ね良好"
         }
@@ -684,9 +899,9 @@
         {
           "fish": "アジ",
           "group": "神奈川・東京湾",
-          "avg": 65.7,
+          "avg": 65.8,
           "base_avg": 66.0,
-          "adjustment": -0.004,
+          "adjustment": -0.003,
           "max": 82,
           "samples": 5,
           "season_score": 4,
@@ -701,7 +916,7 @@
             "忠彦丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。出船数が前週から大幅増（+583%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -711,14 +926,45 @@
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 53.6,
+          "base_avg": 53.6,
+          "adjustment": 0.0,
+          "max": 77,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
         }
       ],
       "todays_pick": "ヒラメ×千葉・外房"
     },
     "2026-04-21": {
       "wave": 1.1,
-      "wind": 5.3,
-      "sst": 17.1,
+      "wind": 5.6,
+      "sst": 17.3,
       "pressure": 1006.5,
       "weather_code": 3,
       "weather_text": "曇り",
@@ -788,6 +1034,16 @@
           "score": 90,
           "ok": "◎ 出船日和"
         },
+        "神奈川・相模湾": {
+          "wave": 1.2,
+          "wind": 7.6,
+          "sst": 18.4,
+          "wind_dir": 216,
+          "weather_text": "曇り",
+          "pressure": 1006.2,
+          "score": 80,
+          "ok": "◎ 出船日和"
+        },
         "静岡": {
           "wave": 1.3,
           "wind": 6.5,
@@ -820,7 +1076,7 @@
             "忠彦丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+583%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -830,6 +1086,37 @@
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 53.6,
+          "base_avg": 53.6,
+          "adjustment": 0.0,
+          "max": 77,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+575%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
         }
       ],
       "todays_pick": "アジ×神奈川・東京湾"
