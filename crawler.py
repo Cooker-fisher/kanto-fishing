@@ -621,11 +621,22 @@ def build_weather_section(weather_data):
 # 釣果予測エンジン（海況予報 × 過去実績）
 # ============================================================
 def _load_historical_catches():
-    """data/*.csv から全釣果を読み込み"""
-    base = os.path.dirname(__file__)
-    data_dir = os.path.join(base, "data")
+    """data/V2/*.csv から全釣果を読み込み（V2正規化済み、約82,000行）
+    修正 2026/04/16: data/*.csv (V1スタブ・数行のみ) ではなく
+    data/V2/*.csv (active_version=V2、正規化済み全件) を参照するよう変更。
+    V2はカラム名が tsuri_mono（旧: fish）。_build_catch_weather_index 側で吸収済み。
+    """
+    base = os.path.dirname(__file__) or "."
+    try:
+        with open(os.path.join(base, "config.json"), encoding="utf-8") as f:
+            cfg = json.load(f)
+        ver = cfg.get("active_version", "V2")
+    except Exception:
+        ver = "V2"
+    data_dir = os.path.join(base, "data", ver)
     if not os.path.isdir(data_dir):
-        return []
+        print(f"WARNING: data/{ver}/ が見つかりません。data/ にフォールバック")
+        data_dir = os.path.join(base, "data")
     rows = []
     for fname in sorted(os.listdir(data_dir)):
         if not fname.endswith(".csv"): continue
@@ -805,16 +816,20 @@ def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_d
     index = []
     for row in catches:
         dt = (row.get("date") or "").replace("/", "-")
-        fish = row.get("fish", "")
+        # V2カラム(tsuri_mono)とV1カラム(fish)の両方をサポート
+        fish = row.get("tsuri_mono") or row.get("fish", "")
         area = (row.get("area") or "").strip()
         ship = (row.get("ship") or "").strip()
         if not dt or not fish: continue
+        # V2ノイズ除外: tsuri_monoが数字のみ（パース失敗行 約2,700件）や「欠航」をスキップ
+        if fish.isdigit() or fish == "欠航": continue
         try: cnt = float(row.get("cnt_max", ""))
         except: continue
         month = int(dt[5:7]) if len(dt) >= 7 else None
         group = _area_to_group(area)
 
-        pp = (row.get("point_place") or "").strip()
+        # V2カラム(point_place1)とV1カラム(point_place)の両方をサポート
+        pp = (row.get("point_place1") or row.get("point_place") or "").strip()
         wx = None
 
         # Step 1: point_place が直接解決
@@ -5762,7 +5777,8 @@ def _split_depth(depth_str):
 
 def save_daily_csv(catches):
     """釣果をdata/YYYY-MM.csvに追記（重複スキップ）。
-    catches.json は pageID=1 で複数日分を含むため、今日分に限らず全件を保存する。
+    pageID=1 は複数日分を返すが、既存行との (ship, area, date, fish) キーで重複チェックするため
+    二重追記は発生しない。catches.json 側は当日分のみに絞って保存する（main参照）。
     """
     os.makedirs("data", exist_ok=True)
 
@@ -6811,9 +6827,20 @@ def main():
     if depth_fixed:
         print(f"CSV水深修復: {depth_fixed} 行修正")
 
+    # 問題2対応 (2026/04/16): catches.json は当日分のみに絞る
+    # save_daily_csv / repair_csv_depth はメモリ上の all_catches を使うため影響なし
+    _today_str_snap = datetime.now().strftime("%Y/%m/%d")
+    today_all = [c for c in all_catches if c.get("date") == _today_str_snap]
+    today_valid = [c for c in valid_catches if c.get("date") == _today_str_snap]
+    today_anomaly = sum(1 for c in today_all if c.get("anomaly"))
+    # 当日分が0件（クロール直後・翌0時前後等）は全件フォールバック
+    snap_data = today_all if today_all else all_catches
+    snap_valid = today_valid if today_all else valid_catches
+    snap_anomaly = today_anomaly if today_all else anomaly_count
     with open("catches.json", "w", encoding="utf-8") as f:
-        json.dump({"crawled_at": crawled_at, "total": len(all_catches), "valid": len(valid_catches),
-                   "anomaly": anomaly_count, "errors": errors, "data": all_catches}, f, ensure_ascii=False, indent=2)
+        json.dump({"crawled_at": crawled_at, "total": len(snap_data), "valid": len(snap_valid),
+                   "anomaly": snap_anomaly, "errors": errors, "data": snap_data,
+                   "_all_count": len(all_catches), "_today_only": bool(today_all)}, f, ensure_ascii=False, indent=2)
     weather_data = load_weather_data()
     fc_count = len(weather_data.get("forecast", {}))
     if fc_count:
@@ -6840,7 +6867,9 @@ def main():
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
     print(f"\n=== 完了 ===")
+    _today_label = f"当日: {len(today_all)} 件" if today_all else f"当日0件→全件フォールバック: {len(all_catches)} 件"
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
+    print(f"出力: {_today_label}（catches.json）")
     print(f"エラー: {errors or 'なし'}")
     print(f"出力: docs/ (index.html / fish/*.html / area/*.html / fish_area/*.html / sitemap.xml / CNAME)")
 

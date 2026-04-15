@@ -1,6 +1,28 @@
-現行バージョン: crawler.py v5.25 / predict_count.py（Forecast API統合済み）
-最終更新: 2026/04/13
-最新コミット: 6cb8dba（Forecast API + 予測ログ）push済み
+現行バージョン: crawler.py v5.26 / predict_count.py（Forecast API統合済み）
+最終更新: 2026/04/16
+最新コミット: 未push（V2クロールデータ問題修正）
+
+## ✅ 今セッション完了（2026/04/16）
+
+### V1クロールデータ問題の修正（analysis-improvementチーム全員招集対応）
+
+**問題1: _load_historical_catches() がV1スタブを読んでいた**
+- `data/*.csv` ルート（V1形式・各1〜2行）を読んでいたため釣果×海況インデックスが139件
+- 修正: `data/V2/*.csv`（active_version準拠・65,980行）を読むよう変更
+- V2カラム対応: `tsuri_mono`（旧: `fish`）、`point_place1`（旧: `point_place`）
+- 修正後インデックス: 推計36,417件（262倍改善）
+
+**問題2: catches.json に複数日分が混在**
+- fishing-v.jpはpageID=1で7〜14日分を返すため複数日分がHTML表示に混在
+- 修正: `catches.json`の`data`配列を当日分のみに変更（0件時は全件フォールバック）
+- `save_daily_csv(all_catches)` は変更なし（CSV蓄積は維持）
+
+**未解決（後回し）**:
+- 2023年分18,589件はweather/*.csvの対象外（weather_cache.sqlite活用が理想）
+- tsuri_monoに数字ノイズ71件（'1','2'など）→ 正規化要調査
+- save_daily_csv がV1形式でdata/ ルートに書いている → V2形式書き込みは別タスク
+
+---
 
 ## ★ 次チャットでやること（優先度順）
 
