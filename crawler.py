@@ -6339,6 +6339,16 @@ def build_main_js():
     with open(os.path.join(WEB_DIR, "main.js"), "w", encoding="utf-8") as f:
         f.write(js)
     print("main.js: V2 共通スクリプト生成 → docs/")
+    # pages/*.html を docs/pages/ にコピー（フッターリンク用）
+    import shutil
+    pages_src = "pages"
+    pages_dst = os.path.join(WEB_DIR, "pages")
+    if os.path.isdir(pages_src):
+        os.makedirs(pages_dst, exist_ok=True)
+        for fn in os.listdir(pages_src):
+            if fn.endswith(".html"):
+                shutil.copy2(os.path.join(pages_src, fn), os.path.join(pages_dst, fn))
+        print(f"pages/: {len([f for f in os.listdir(pages_src) if f.endswith('.html')])} ファイル → docs/pages/")
 
 
 def _page_head(title, desc="", canonical=""):
