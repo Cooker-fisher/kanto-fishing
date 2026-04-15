@@ -85,6 +85,15 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .teaser-price{font-size:10px;color:var(--muted);margin-top:8px}
 .teaser-price em{color:var(--cta);font-style:normal;font-weight:700}
 
+/* ================ TEASER ROTATOR ================ */
+.teaser-rotator{background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:1.5px dashed var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.tr-track{overflow:hidden}
+.tr-slide{display:none}
+.tr-slide.is-active{display:block}
+.tr-dots{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.tr-dot{width:8px;height:8px;border-radius:50%;background:#d4c4f5;border:none;cursor:pointer;padding:0;transition:background .2s}
+.tr-dot.is-active{background:var(--prem)}
+
 /* ================ ZONE B: 釣れている魚（無料）================ */
 .fish-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
 .fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;transition:border-color .15s}
@@ -107,6 +116,16 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 
 /* 広告 */
 .ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:22px;text-align:center;margin:16px 0;font-size:11px;color:#999}
+
+/* ================ ZONE B2: エリア別今日の釣果（無料）================ */
+.area-today{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
+.at-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:block;transition:border-color .15s}
+.at-card:hover{border-color:var(--cta);text-decoration:none}
+.at-name{font-size:12px;font-weight:700;color:var(--accent)}
+.at-count::before{content:"釣果報告";display:block;font-size:9px;font-weight:400;color:var(--sub);margin-bottom:1px}
+.at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px}
+.at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.at-fish span{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub)}
 
 /* ================ ZONE C: 海況・出船リスク（無料）================ */
 .risk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
@@ -192,59 +211,6 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 
 <div class="c">
 
-<!-- COMING_SOON_START: weekly-target -->
-<!-- ================ ZONE A: 今週の狙い目（ティザー）================ -->
-<h2 class="st teaser-title">今週の狙い目 <span class="tag coming">まもなく公開</span></h2>
-<div class="teaser">
-  <div class="teaser-head">
-    <span class="teaser-badge soon">開発中</span>
-    <span class="teaser-title">AI分析による週末の狙い目魚種 TOP5</span>
-  </div>
-  <div class="teaser-desc">
-    <strong>約10万件</strong>の釣果データ × 気象・潮汐・水温データをAIが分析し、
-    今週末あなたに最適な<strong>狙い目の魚種と釣行エリア</strong>をランキング表示します。
-  </div>
-
-  <div style="position:relative">
-    <div class="teaser-dummy">
-      <div class="td-fish">アジ <span class="td-star">★★★★★</span></div>
-      <div class="td-range">25〜45匹 / 18〜25cm</div>
-      <div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div>
-    </div>
-    <div class="teaser-dummy">
-      <div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div>
-      <div class="td-range">0〜5匹 / 30〜55cm</div>
-      <div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div>
-    </div>
-    <div class="teaser-overlay">
-      <div class="coming-soon-panel">
-        <div class="cs-title">🔒 準備中</div>
-        <ul class="cs-features">
-          <li>✓ 今週 日毎の釣果予測</li>
-          <li>✓ 2・3・4週先の釣果予測</li>
-          <li>✓ 気象×潮汐で自動算出</li>
-        </ul>
-        <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="teaser-cta-wrap">
-    <div class="teaser-cta-msg"><strong>公開時にお知らせ</strong>します。LINEで友だち追加してお待ちください。</div>
-    <div class="teaser-cta-btns">
-      <a class="cta-line" href="#line-pending">
-        <span class="line-ic">L</span>
-        LINEで通知を受け取る
-      </a>
-      <a class="cta-x" href="#x-pending">
-        𝕏 <small>(準備中)</small>
-      </a>
-    </div>
-    <div class="teaser-price">※ 公開時は <em>月額500円 / 1回100円</em> で提供予定</div>
-  </div>
-</div>
-<!-- COMING_SOON_END: weekly-target -->
-
 <!-- ================ ZONE B: 釣れている魚（無料）================ -->
 <h2 class="st">今日 釣れている魚 <span class="tag free">無料</span></h2>
 <div class="fish-grid">
@@ -307,54 +273,51 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
 </div>
 
-<!-- COMING_SOON_START: answer-check -->
-<!-- ================ ZONE B': 予測の答え合わせ（ティザー）================ -->
-<h2 class="st teaser-title">予測の答え合わせ <span class="tag coming">まもなく公開</span></h2>
-<div class="teaser">
-  <div class="teaser-head">
-    <span class="teaser-badge soon">開発中</span>
-    <span class="teaser-title">予測 vs 実績 の答え合わせ</span>
-  </div>
-  <div class="teaser-desc">
-    <strong>前日に公開した予測</strong>が実際の釣果と一致したかを毎日公開します。
-    海況予報のズレまで○×で比較し、「なぜ当たった・外れたか」を正直にレポート。
-  </div>
 
-  <div style="position:relative">
-    <div class="teaser-dummy">
-      <div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div>
-      <div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div>
-      <div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div>
-    </div>
-    <div class="teaser-dummy">
-      <div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div>
-      <div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div>
-      <div class="td-reason">水温× 予報より1.5℃低下で活性低下</div>
-    </div>
-    <div class="teaser-overlay">
-      <div class="coming-soon-panel">
-        <div class="cs-title">🔒 準備中</div>
-        <ul class="cs-features">
-          <li>✓ 先週の予測 vs 実績比較</li>
-          <li>✓ 予測精度スコア</li>
-          <li>✓ 外れた理由の解説</li>
-        </ul>
-        <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="teaser-cta-wrap">
-    <div class="teaser-cta-msg">毎日の<strong>的中率</strong>を公開予定。LINEで日次レポートをお届けします。</div>
-    <div class="teaser-cta-btns">
-      <a class="cta-line" href="#line-pending">
-        <span class="line-ic">L</span>
-        LINEで通知を受け取る
-      </a>
-    </div>
-  </div>
+<!-- ================ ZONE B2: エリア別今日の釣果（無料）================ -->
+<h2 class="st">エリア別 今日の釣果 <span class="tag free">無料</span></h2>
+<div class="area-today">
+  <a class="at-card" href="#">
+    <div class="at-name">金沢八景・野島</div>
+    <div class="at-count">12件</div>
+    <div class="at-fish"><span>アジ</span><span>タコ</span><span>シロギス</span></div>
+  </a>
+  <a class="at-card" href="#">
+    <div class="at-name">東京湾奥</div>
+    <div class="at-count">8件</div>
+    <div class="at-fish"><span>アジ</span><span>シーバス</span><span>カワハギ</span></div>
+  </a>
+  <a class="at-card" href="#">
+    <div class="at-name">久里浜・剣崎</div>
+    <div class="at-count">7件</div>
+    <div class="at-fish"><span>マダイ</span><span>アジ</span></div>
+  </a>
+  <a class="at-card" href="#">
+    <div class="at-name">走水</div>
+    <div class="at-count">5件</div>
+    <div class="at-fish"><span>タチウオ</span><span>マダコ</span></div>
+  </a>
+  <a class="at-card" href="#">
+    <div class="at-name">大原・勝浦</div>
+    <div class="at-count">6件</div>
+    <div class="at-fish"><span>ヒラメ</span><span>イサキ</span></div>
+  </a>
+  <a class="at-card" href="#">
+    <div class="at-name">鴨川・南房</div>
+    <div class="at-count">4件</div>
+    <div class="at-fish"><span>イサキ</span><span>マダイ</span></div>
+  </a>
+  <a class="at-card" href="#">
+    <div class="at-name">銚子・外房北部</div>
+    <div class="at-count">3件</div>
+    <div class="at-fish"><span>カレイ</span><span>ヒラメ</span></div>
+  </a>
+  <a class="at-card" href="#">
+    <div class="at-name">茨城・鹿島灘</div>
+    <div class="at-count">2件</div>
+    <div class="at-fish"><span>ヒラメ</span><span>カレイ</span></div>
+  </a>
 </div>
-<!-- COMING_SOON_END: answer-check -->
 
 <!-- 広告① -->
 <div class="ad-slot">広告スペース ①（ZONE B' 後）</div>
@@ -394,63 +357,127 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
 </div>
 
-<!-- COMING_SOON_START: analysis-forecast -->
-<!-- ================ ZONE D: 分析・予測ゾーン（ティザー集約）================ -->
-<h2 class="st teaser-title">分析・予測ゾーン <span class="tag coming">まもなく公開</span></h2>
-<div class="teaser">
-  <div class="teaser-head">
-    <span class="teaser-badge soon">開発中</span>
-    <span class="teaser-title">注目コンボ・急落コンボ・日別釣果予測</span>
-  </div>
-  <div class="teaser-desc">
-    <strong>魚種×エリアの組合せ</strong>を独自スコアリングしてランキング表示。
-    さらに「来週のどの日に何が釣れるか」を日別で予測します。
-  </div>
-
-  <div style="position:relative">
-    <div class="teaser-dummy">
-      <div class="td-fish">注目コンボ: アジ × 金沢八景</div>
-      <div class="td-range">スコア 92 / 平年比 +38%</div>
-      <div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div>
-    </div>
-    <div class="teaser-dummy">
-      <div class="td-fish">4/12(土) 釣果予測: マダイ ★★★★☆</div>
-      <div class="td-range">2〜8匹 / 35〜55cm</div>
-      <div class="td-reason">剣崎・久里浜が狙い目。朝マズメが勝負</div>
-    </div>
-    <div class="teaser-dummy">
-      <div class="td-fish">急落警告: タチウオ × 走水</div>
-      <div class="td-range">先週比 -45%</div>
-      <div class="td-reason">水温急低下でベイトが抜けた模様</div>
-    </div>
-    <div class="teaser-overlay">
-      <div class="coming-soon-panel">
-        <div class="cs-title">🔒 準備中</div>
-        <ul class="cs-features">
-          <li>✓ 日別釣果予測（7日先）</li>
-          <li>✓ 気象相関グラフ</li>
-          <li>✓ 急上昇・急落コンボ通知</li>
-        </ul>
-        <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="teaser-cta-wrap">
-    <div class="teaser-cta-msg">全機能 <strong>まとめて月額500円</strong> で提供予定。LINE友だち追加で公開日をいち早くお知らせ。</div>
-    <div class="teaser-cta-btns">
-      <a class="cta-line" href="#line-pending">
-        <span class="line-ic">L</span>
-        LINEで通知を受け取る
-      </a>
-    </div>
-    <div class="teaser-price">※ <em>月額500円</em>（仕掛け1セット分）/ <em>1回100円</em> でスポット利用可</div>
-  </div>
-</div>
-<!-- COMING_SOON_END: analysis-forecast -->
 
 <!-- 広告② -->
 <div class="ad-slot">広告スペース ②（ZONE D 後）</div>
+
+<!-- ================ TEASER ROTATOR: 有料機能プレビュー ================ -->
+<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser-rotator">
+  <div class="tr-track">
+
+    <!-- Slide 1: 今週の狙い目 -->
+    <div class="tr-slide is-active">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title">今週の狙い目 — 週末TOP5魚種</span>
+      </div>
+      <div class="teaser-desc">約10万件の釣果データ×気象×潮汐をAI分析。<strong>今週末の狙い目魚種・エリア</strong>をランキング表示。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy">
+          <div class="td-fish">アジ <span class="td-star">★★★★★</span></div>
+          <div class="td-range">25〜45匹 / 18〜25cm</div>
+          <div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div>
+        </div>
+        <div class="teaser-dummy">
+          <div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div>
+          <div class="td-range">0〜5匹 / 30〜55cm</div>
+          <div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div>
+        </div>
+        <div class="teaser-overlay">
+          <div class="coming-soon-panel">
+            <div class="cs-title">🔒 準備中</div>
+            <ul class="cs-features">
+              <li>✓ 今週 日毎の釣果予測</li>
+              <li>✓ 2・3・4週先の釣果予測</li>
+              <li>✓ 気象×潮汐で自動算出</li>
+            </ul>
+            <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: 予測の答え合わせ -->
+    <div class="tr-slide">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title">予測の答え合わせ — 予測 vs 実績</span>
+      </div>
+      <div class="teaser-desc"><strong>前日の予測</strong>が実際の釣果と一致したかを毎日公開。「なぜ当たった・外れたか」を正直レポート。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy">
+          <div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div>
+          <div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div>
+          <div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div>
+        </div>
+        <div class="teaser-dummy">
+          <div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div>
+          <div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div>
+          <div class="td-reason">水温× 予報より1.5℃低下で活性低下</div>
+        </div>
+        <div class="teaser-overlay">
+          <div class="coming-soon-panel">
+            <div class="cs-title">🔒 準備中</div>
+            <ul class="cs-features">
+              <li>✓ 先週の予測 vs 実績比較</li>
+              <li>✓ 予測精度スコア</li>
+              <li>✓ 外れた理由の解説</li>
+            </ul>
+            <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: 分析・予測ゾーン -->
+    <div class="tr-slide">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title">分析・予測 — 注目コンボ・急落コンボ</span>
+      </div>
+      <div class="teaser-desc"><strong>魚種×エリアの組合せ</strong>を独自スコアリング。「来週のどの日に何が釣れるか」を日別で予測。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy">
+          <div class="td-fish">注目: アジ × 金沢八景</div>
+          <div class="td-range">スコア 92 / 平年比 +38%</div>
+          <div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div>
+        </div>
+        <div class="teaser-dummy">
+          <div class="td-fish">急落: タチウオ × 走水</div>
+          <div class="td-range">先週比 -45%</div>
+          <div class="td-reason">水温急低下でベイトが抜けた模様</div>
+        </div>
+        <div class="teaser-overlay">
+          <div class="coming-soon-panel">
+            <div class="cs-title">🔒 準備中</div>
+            <ul class="cs-features">
+              <li>✓ 日別釣果予測（7日先）</li>
+              <li>✓ 気象相関グラフ</li>
+              <li>✓ 急上昇・急落コンボ通知</li>
+            </ul>
+            <div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ドット切替 -->
+  <div class="tr-dots">
+    <button class="tr-dot is-active" aria-label="スライド1"></button>
+    <button class="tr-dot" aria-label="スライド2"></button>
+    <button class="tr-dot" aria-label="スライド3"></button>
+  </div>
+  <!-- 共通CTA -->
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg">公開時に<strong>LINEでお知らせ</strong>します。友だち追加してお待ちください。</div>
+    <div class="teaser-cta-btns">
+      <a class="cta-line" href="#line-pending"><span class="line-ic">L</span>LINEで通知を受け取る</a>
+    </div>
+    <div class="teaser-price">※ 全機能まとめて <em>月額500円</em>（仕掛け1セット分）/ スポット <em>1回100円</em></div>
+  </div>
+</div>
 
 <!-- ================ ZONE E: ナビ ================ -->
 <div class="nav-section">
@@ -512,5 +539,24 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </a>
 </nav>
 
+<script>
+(function(){
+  var slides=document.querySelectorAll('.tr-slide');
+  var dots=document.querySelectorAll('.tr-dot');
+  if(!slides.length)return;
+  var cur=0;
+  function go(i){
+    slides[cur].classList.remove('is-active');
+    dots[cur].classList.remove('is-active');
+    cur=i;
+    slides[cur].classList.add('is-active');
+    dots[cur].classList.add('is-active');
+  }
+  dots.forEach(function(d,i){d.addEventListener('click',function(){go(i);clearInterval(timer);});});
+  var timer;
+  if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches)
+    timer=setInterval(function(){go((cur+1)%slides.length);},5000);
+})();
+</script>
 </body>
 </html>
