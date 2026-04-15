@@ -131,6 +131,58 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .teaser-price{font-size:10px;color:var(--muted);margin-top:8px}
 .teaser-price em{color:var(--cta);font-style:normal;font-weight:700}
 
+/* ===== Season heatmap ===== */
+.season-map{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.season-map h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.sm-wrap{overflow-x:auto}
+.sm-table{border-collapse:separate;border-spacing:3px;min-width:220px}
+.sm-table th{font-size:10px;color:var(--muted);font-weight:600;text-align:center;padding:2px 4px}
+.sm-th-mo{font-size:11px;font-weight:700;color:var(--sub);text-align:left;padding-right:8px;white-space:nowrap}
+.sm-cell{width:40px;height:24px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;vertical-align:middle}
+.sm-cell[data-v="0"]{background:#eef2f5;color:var(--muted)}
+.sm-cell[data-v="1"]{background:#c8e6c9;color:#2e7d32}
+.sm-cell[data-v="2"]{background:#66bb6a;color:#fff}
+.sm-cell[data-v="3"]{background:#388e3c;color:#fff}
+.sm-cell[data-v="4"]{background:#1b5e20;color:#fff}
+.sm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)}
+.sm-lc{width:14px;height:14px;border-radius:2px;display:inline-block}
+
+/* ===== Top points ===== */
+.points-list{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.points-list h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.pt{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:8px}
+.pt:last-child{border-bottom:none}
+.pt-rank{flex:0 0 20px;font-size:12px;font-weight:800;color:var(--muted);text-align:center}
+.pt-rank.t{color:var(--cta)}
+.pt-info{flex:1}
+.pt-name{font-size:13px;font-weight:700;color:var(--accent)}
+.pt-area{font-size:10px;color:var(--sub);margin-top:1px}
+.pt-cnt{font-size:12px;font-weight:700;color:var(--cta)}
+
+/* ===== Fish guide ===== */
+.fish-guide{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fish-guide>h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px}
+.fg-row{display:flex;gap:10px;line-height:1.75;padding:7px 0;border-bottom:1px solid var(--bg)}
+.fg-row:last-child{border-bottom:none}
+.fg-lbl{flex:0 0 68px;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.4px;padding-top:3px}
+.fg-val{flex:1;font-size:13px;color:var(--text)}
+.fg-val .sub{font-size:11px;color:var(--sub)}
+.tackle-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.tk{background:var(--bg);border-radius:6px;padding:6px 8px}
+.tk-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.tk-val{font-size:11px;color:var(--text);margin-top:1px;line-height:1.45}
+
+/* ===== FAQ ===== */
+.faq-list{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.faq-list>h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.faq-list details{border-bottom:1px solid var(--bg)}
+.faq-list details:last-child{border-bottom:none}
+.faq-list summary{font-size:13px;font-weight:600;color:var(--accent);padding:11px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:"+";font-size:16px;color:var(--muted);flex-shrink:0;line-height:1}
+.faq-list details[open]>summary::after{content:"−"}
+.faq-ans{font-size:12px;color:var(--sub);line-height:1.75;padding-bottom:12px}
+
 footer{background:var(--hdr);color:rgba(255,255,255,.6);padding:20px 14px;text-align:center;font-size:11px;margin-top:24px}
 footer a{color:rgba(255,255,255,.8)}
 footer .fl{margin-top:8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
@@ -145,6 +197,44 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .bn a.prem.on{color:var(--prem)}.bn a.prem.on svg{stroke:var(--prem)}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "アジの船釣りはどの季節が一番釣れますか？",
+      "acceptedAnswer": {"@type": "Answer", "text": "関東のアジ船釣りは6〜8月が最盛期です。4〜5月も上昇期で好釣果が期待できます。冬場（12〜2月）は数は少なめですが、大型の尺アジが狙えることがあります。"}
+    },
+    {
+      "@type": "Question",
+      "name": "初心者でもLTアジ（ライトタックルアジ）は楽しめますか？",
+      "acceptedAnswer": {"@type": "Answer", "text": "はい、LTアジは船釣り入門に最適な釣り物です。仕掛けがシンプルで操作が簡単、釣れるまでの時間が短く、1日20〜40匹の釣果も珍しくありません。竿・リールは船宿でレンタルできる場合がほとんどです。"}
+    },
+    {
+      "@type": "Question",
+      "name": "関東でアジ船釣りができる主なエリアはどこですか？",
+      "acceptedAnswer": {"@type": "Answer", "text": "神奈川県の金沢八景・横浜・走水、東京湾の浦賀・久里浜周辺が主要エリアです。金沢八景と走水は船宿数が多く、中ノ瀬・走水沖・猿島沖が代表的なポイントです。"}
+    },
+    {
+      "@type": "Question",
+      "name": "アジ船で一日何匹くらい釣れますか？",
+      "acceptedAnswer": {"@type": "Answer", "text": "1人あたり20〜45匹が標準的な目安です。好調時は60〜100匹超えの報告もあります。サイズは18〜25cmが中心で、大型は30cm以上になることもあります。"}
+    },
+    {
+      "@type": "Question",
+      "name": "LTアジに必要なタックルは何ですか？",
+      "acceptedAnswer": {"@type": "Answer", "text": "LT専用ロッド（1.8〜2.1m・錘負荷30〜40号）、小型両軸リール、PE1〜1.5号、コマセビシ40号＋ハリス1.5号＋金袖7号2本針が基本セットです。付けエサはアオイソメかイカタン。船宿でレンタルや仕掛け購入もできます。"}
+    },
+    {
+      "@type": "Question",
+      "name": "アジ船でよく釣れる外道（ゲスト）はどんな魚ですか？",
+      "acceptedAnswer": {"@type": "Answer", "text": "カサゴ・イシモチ・サバ・メバルが代表的な外道です。秋には良型サバが大量に混じることもあります。底付近を狙うためカサゴなどの根魚も外道として釣れ、食味も良好です。"}
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -192,17 +282,6 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <div class="chart-trend">↑ 上昇トレンド</div>
 </div>
 
-<!-- ============ 無料: 潮汐 ============ -->
-<div class="tide-box">
-  <h3>今日の潮汐 <span class="tide-sub">大潮 / 月齢12.8</span></h3>
-  <div class="tide-grid">
-    <div class="tide-item low"><div class="tt">干潮</div><div class="tv">05:12</div><div class="th">18cm</div></div>
-    <div class="tide-item high"><div class="tt">満潮</div><div class="tv">11:48</div><div class="th">172cm</div></div>
-    <div class="tide-item low"><div class="tt">干潮</div><div class="tv">17:55</div><div class="th">22cm</div></div>
-    <div class="tide-item high"><div class="tt">満潮</div><div class="tv">23:45</div><div class="th">168cm</div></div>
-  </div>
-</div>
-
 <!-- ============ 無料: エリア別 ============ -->
 <h2 class="st">エリア別の今日の釣果 <span class="tag free">無料</span></h2>
 <div class="area-cmp">
@@ -221,6 +300,17 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <span class="ar-range">15〜35匹</span>
     <span class="ar-sea">水温18.5℃ / 波0.3m</span>
   </a>
+</div>
+
+<!-- ============ 無料: 潮汐 ============ -->
+<div class="tide-box">
+  <h3>今日の潮汐 <span class="tide-sub">大潮 / 月齢12.8</span></h3>
+  <div class="tide-grid">
+    <div class="tide-item low"><div class="tt">干潮</div><div class="tv">05:12</div><div class="th">18cm</div></div>
+    <div class="tide-item high"><div class="tt">満潮</div><div class="tv">11:48</div><div class="th">172cm</div></div>
+    <div class="tide-item low"><div class="tt">干潮</div><div class="tv">17:55</div><div class="th">22cm</div></div>
+    <div class="tide-item high"><div class="tt">満潮</div><div class="tv">23:45</div><div class="th">168cm</div></div>
+  </div>
 </div>
 
 <!-- ============ 無料: 船宿ランキング ============ -->
@@ -293,19 +383,142 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
 </div>
 
+<!-- ============ 無料: 旬ヒートマップ ============ -->
+<h2 class="st">アジの旬カレンダー <span class="tag free">無料</span></h2>
+<div class="season-map">
+  <div class="sm-wrap">
+    <table class="sm-table">
+      <thead>
+        <tr>
+          <th class="sm-th-mo"></th>
+          <th>上旬</th><th>中旬</th><th>下旬</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th class="sm-th-mo">1月</th><td class="sm-cell" data-v="1">渋</td><td class="sm-cell" data-v="1">渋</td><td class="sm-cell" data-v="1">渋</td></tr>
+        <tr><th class="sm-th-mo">2月</th><td class="sm-cell" data-v="1">渋</td><td class="sm-cell" data-v="1">渋</td><td class="sm-cell" data-v="2">普</td></tr>
+        <tr><th class="sm-th-mo">3月</th><td class="sm-cell" data-v="2">普</td><td class="sm-cell" data-v="2">普</td><td class="sm-cell" data-v="3">良</td></tr>
+        <tr><th class="sm-th-mo">4月</th><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="4">◎</td></tr>
+        <tr><th class="sm-th-mo">5月</th><td class="sm-cell" data-v="4">◎</td><td class="sm-cell" data-v="4">◎</td><td class="sm-cell" data-v="4">◎</td></tr>
+        <tr><th class="sm-th-mo">6月</th><td class="sm-cell" data-v="4">◎</td><td class="sm-cell" data-v="4">◎</td><td class="sm-cell" data-v="4">◎</td></tr>
+        <tr><th class="sm-th-mo">7月</th><td class="sm-cell" data-v="4">◎</td><td class="sm-cell" data-v="4">◎</td><td class="sm-cell" data-v="4">◎</td></tr>
+        <tr><th class="sm-th-mo">8月</th><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="3">良</td></tr>
+        <tr><th class="sm-th-mo">9月</th><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="3">良</td></tr>
+        <tr><th class="sm-th-mo">10月</th><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="3">良</td></tr>
+        <tr><th class="sm-th-mo">11月</th><td class="sm-cell" data-v="3">良</td><td class="sm-cell" data-v="2">普</td><td class="sm-cell" data-v="2">普</td></tr>
+        <tr><th class="sm-th-mo">12月</th><td class="sm-cell" data-v="2">普</td><td class="sm-cell" data-v="1">渋</td><td class="sm-cell" data-v="1">渋</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sm-legend">
+    <span>釣れ具合：</span>
+    <span class="sm-lc" style="background:#eef2f5"></span>なし
+    <span class="sm-lc" style="background:#c8e6c9"></span>渋
+    <span class="sm-lc" style="background:#66bb6a"></span>普通
+    <span class="sm-lc" style="background:#388e3c"></span>良
+    <span class="sm-lc" style="background:#1b5e20"></span>◎
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
+</div>
+
+<!-- ============ 無料: 代表ポイント TOP5 ============ -->
+<h2 class="st">代表ポイント TOP5 <span class="tag free">無料</span></h2>
+<div class="points-list">
+  <div class="pt">
+    <span class="pt-rank t">1</span>
+    <div class="pt-info"><div class="pt-name">中ノ瀬</div><div class="pt-area">横浜・金沢八景エリア</div></div>
+    <span class="pt-cnt">25〜50匹</span>
+  </div>
+  <div class="pt">
+    <span class="pt-rank t">2</span>
+    <div class="pt-info"><div class="pt-name">走水沖</div><div class="pt-area">走水エリア</div></div>
+    <span class="pt-cnt">25〜45匹</span>
+  </div>
+  <div class="pt">
+    <span class="pt-rank t">3</span>
+    <div class="pt-info"><div class="pt-name">猿島沖</div><div class="pt-area">横須賀・浦賀エリア</div></div>
+    <span class="pt-cnt">20〜42匹</span>
+  </div>
+  <div class="pt">
+    <span class="pt-rank">4</span>
+    <div class="pt-info"><div class="pt-name">観音崎沖</div><div class="pt-area">横須賀エリア</div></div>
+    <span class="pt-cnt">18〜38匹</span>
+  </div>
+  <div class="pt">
+    <span class="pt-rank">5</span>
+    <div class="pt-info"><div class="pt-name">本牧沖</div><div class="pt-area">横浜エリア</div></div>
+    <span class="pt-cnt">15〜35匹</span>
+  </div>
+</div>
+
+<!-- ============ 無料: 魚種ガイド ============ -->
+<h2 class="st">アジ 船釣りガイド <span class="tag free">無料</span></h2>
+<div class="fish-guide">
+  <h3>アジの船釣り（関東）基本情報</h3>
+  <div class="fg-row">
+    <span class="fg-lbl">旬・釣期</span>
+    <span class="fg-val">通年。最盛期は<strong>6〜8月</strong>。4〜5月は上昇期で好釣果が続きやすい。冬（12〜2月）は数は少ないが大型の尺アジが混じる。</span>
+  </div>
+  <div class="fg-row">
+    <span class="fg-lbl">釣り方</span>
+    <span class="fg-val">LTアジ（ライトタックルコマセ釣り）が主流。ビシカゴにアミコマセを入れ、付けエサのアオイソメまたはイカタンで誘う。棚は底から2〜3mが基本。<br><span class="sub">反応によって1m単位で上下させ、アタリのあるタナを見つけるのがコツ。</span></span>
+  </div>
+  <div class="fg-row">
+    <span class="fg-lbl">タックル</span>
+    <span class="fg-val">
+      <div class="tackle-grid">
+        <div class="tk"><div class="tk-lbl">ROD</div><div class="tk-val">LT専用 1.8〜2.1m<br>錘負荷 30〜40号</div></div>
+        <div class="tk"><div class="tk-lbl">REEL</div><div class="tk-val">小型両軸<br>（バルケッタ BB150等）</div></div>
+        <div class="tk"><div class="tk-lbl">LINE</div><div class="tk-val">PE 1〜1.5号</div></div>
+        <div class="tk"><div class="tk-lbl">RIG</div><div class="tk-val">コマセビシ40号<br>ハリス1.5号 金袖7号2本</div></div>
+        <div class="tk" style="grid-column:span 2"><div class="tk-lbl">BAIT</div><div class="tk-val">アオイソメ / イカタン（どちらか一方でOK）</div></div>
+      </div>
+    </span>
+  </div>
+  <div class="fg-row">
+    <span class="fg-lbl">サイズ目安</span>
+    <span class="fg-val"><strong>18〜25cm</strong>が中心。尺アジ（30cm超）は秋〜冬に混じりやすい。最大で37〜40cmクラスの記録あり。</span>
+  </div>
+  <div class="fg-row">
+    <span class="fg-lbl">外道</span>
+    <span class="fg-val">カサゴ・イシモチ・サバ・メバル・ウマヅラハギ。秋はサバが大量に混じることがある。いずれも食味良好。</span>
+  </div>
+  <div class="fg-row">
+    <span class="fg-lbl">出船率</span>
+    <span class="fg-val">通年90%以上。冬（1〜2月）の荒天期は波高3m超で欠航になることも。前日の船宿SNS確認を推奨。</span>
+  </div>
+</div>
+
 <!-- 広告② -->
 <div class="ad-slot">広告スペース ②</div>
 
-<!-- ============ 無料: 魚種の解説 ============ -->
-<div class="desc">
-  <h3>アジの船釣り（関東）</h3>
-  <strong>釣り方:</strong> 関東のアジ船釣りはコマセ釣り（LTアジ）が主流。ビシカゴにコマセを入れ、付けエサのアオイソメやイカ短で釣る。棚は底から2〜3mを基本に、魚の反応を見て調整。<br><br>
-  <strong>旬:</strong> 6〜8月が盛期。4月は上昇期で期待大。<br>
-  <strong>エリア:</strong> 金沢八景・走水・横浜が主要。中ノ瀬・走水沖・猿島沖がメインポイント。<br>
-  <strong>匹数の目安:</strong> 1人20〜45匹が標準。好調時は60匹超え。<br>
-  <strong>サイズ:</strong> 18〜25cm中心。大型30cm以上も。<br>
-  <strong>外道:</strong> カサゴ・イシモチ・サバが混じることも。<br>
-  <strong>出船率:</strong> 通年90%以上（1〜2月は荒天注意）。
+<!-- ============ 無料: FAQ ============ -->
+<h2 class="st">アジ船釣り よくある質問 <span class="tag free">無料</span></h2>
+<div class="faq-list">
+  <details>
+    <summary>アジの船釣りはどの季節が一番釣れますか？</summary>
+    <p class="faq-ans">関東のアジ船釣りは<strong>6〜8月が最盛期</strong>です。4〜5月も上昇期で好釣果が期待できます。冬場（12〜2月）は数は少なめですが、大型の尺アジが狙えることがあります。</p>
+  </details>
+  <details>
+    <summary>初心者でもLTアジは楽しめますか？</summary>
+    <p class="faq-ans">はい、LTアジは<strong>船釣り入門に最適</strong>な釣り物です。仕掛けがシンプルで操作が簡単、釣れるまでの時間が短く、1日20〜40匹の釣果も珍しくありません。竿・リールは船宿でレンタルできる場合がほとんどです。</p>
+  </details>
+  <details>
+    <summary>関東でアジ船釣りができる主なエリアはどこですか？</summary>
+    <p class="faq-ans">神奈川県の<strong>金沢八景・横浜・走水</strong>、東京湾の浦賀・久里浜周辺が主要エリアです。金沢八景と走水は船宿数が多く、中ノ瀬・走水沖・猿島沖が代表的なポイントです。</p>
+  </details>
+  <details>
+    <summary>アジ船で一日何匹くらい釣れますか？</summary>
+    <p class="faq-ans">船宿の釣果情報では<strong>1人あたり20〜45匹が標準的な目安</strong>です。好調時は60〜100匹超えの報告もあります。サイズは18〜25cmが中心で、大型は30cm以上になることもあります。</p>
+  </details>
+  <details>
+    <summary>LTアジに必要なタックルは何ですか？</summary>
+    <p class="faq-ans">基本タックルはLT専用ロッド（1.8〜2.1m・錘負荷30〜40号）、小型両軸リール、PE1〜1.5号ライン、コマセビシ40号＋ハリス1.5号＋金袖7号2本針です。付けエサはアオイソメかイカタン。<strong>船宿でレンタルや仕掛け購入</strong>もできます。</p>
+  </details>
+  <details>
+    <summary>アジ船でよく釣れる外道（ゲスト）はどんな魚ですか？</summary>
+    <p class="faq-ans">カサゴ・イシモチ・サバ・メバルが代表的な外道です。秋には良型のサバが大量に混じることもあります。底付近を狙うためカサゴなどの根魚も外道として釣れ、<strong>どれも食味が良く持ち帰れる</strong>のが嬉しいポイントです。</p>
+  </details>
 </div>
 
 </div>
