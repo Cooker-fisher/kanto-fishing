@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://funatsuri-yoso.com/schema/area_description.schema.json",
+  "title": "Area Description Master",
+  "description": "手書きで維持する主要港の説明・アクセス・主要ポイント・FAQヒント情報。キーは area_coords.json と一致する日本語港名。",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": [
+      "display_name",
+      "prefecture",
+      "access",
+      "feature",
+      "major_points",
+      "representative_targets",
+      "faq_hints"
+    ],
+    "properties": {
+      "display_name":  { "type": "string", "minLength": 2 },
+      "prefecture":    { "type": "string", "minLength": 2 },
+      "city":          { "type": "string" },
+      "access": {
+        "type": "object",
+        "properties": {
+          "car":     { "type": "string" },
+          "train":   { "type": "string" },
+          "parking": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "feature": {
+        "type": "string",
+        "minLength": 60,
+        "maxLength": 500,
+        "description": "エリア特徴の自由散文（150〜250字推奨）"
+      },
+      "major_points": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 8,
+        "items": {
+          "type": "object",
+          "required": ["name", "target"],
+          "properties": {
+            "name":    { "type": "string", "minLength": 2 },
+            "depth_m": { "type": "string" },
+            "target":  {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1,
+              "maxItems": 8,
+              "description": "TSURI_MONO_MAP キーに一致する魚種名"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "ship_style": {
+        "type": "string",
+        "description": "定員制・ビシ支給などの船宿系統の特徴"
+      },
+      "representative_targets": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1,
+        "maxItems": 10,
+        "description": "TSURI_MONO_MAP キーに一致する代表釣り物"
+      },
+      "faq_hints": {
+        "type": "object",
+        "required": ["best_season", "beginner_ok", "typical_price", "sea_condition", "reservation"],
+        "properties": {
+          "best_season":    { "type": "string", "minLength": 5 },
+          "beginner_ok":    { "type": "string", "minLength": 5 },
+          "typical_price":  { "type": "string", "minLength": 5 },
+          "sea_condition":  { "type": "string", "minLength": 5 },
+          "reservation":    { "type": "string", "minLength": 5 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
+}

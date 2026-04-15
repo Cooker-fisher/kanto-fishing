@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://funatsuri-yoso.com/schema/fish_tackle.schema.json",
+  "title": "Fish Tackle Master",
+  "description": "手書きで維持する魚種別のタックル・釣法・サイズ・外道・席位置ヒント情報。T4/T5/T6 で魚種ガイド／FAQ 描画に使用する。キーは TSURI_MONO_MAP 最上位キーと一致する日本語魚種名。",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": [
+      "method_name",
+      "method_detail",
+      "tackle",
+      "bycatch",
+      "size_typical"
+    ],
+    "properties": {
+      "method_name": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 40,
+        "description": "短ラベル（例: LTアジ（ライトタックル・コマセ釣り））"
+      },
+      "method_detail": {
+        "type": "string",
+        "minLength": 30,
+        "maxLength": 600,
+        "description": "釣り方本文（棚・コマセワーク・合わせ方など）"
+      },
+      "tackle": {
+        "type": "object",
+        "required": ["rod", "rig", "bait"],
+        "properties": {
+          "rod":    { "type": "string", "minLength": 2 },
+          "weight": { "type": "string" },
+          "reel":   { "type": "string" },
+          "line":   { "type": "string" },
+          "rig":    { "type": "string", "minLength": 2 },
+          "bait":   { "type": "string", "minLength": 2 }
+        },
+        "additionalProperties": false
+      },
+      "bycatch": {
+        "type": "array",
+        "items": { "type": "string" },
+        "maxItems": 8,
+        "description": "TSURI_MONO_MAP キーに一致する外道魚種名"
+      },
+      "size_typical": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text":   { "type": "string", "minLength": 2 },
+          "min_cm": { "type": "number" },
+          "max_cm": { "type": "number" },
+          "min_kg": { "type": "number" },
+          "max_kg": { "type": "number" },
+          "unit":   { "enum": ["cm", "kg", "both"] }
+        },
+        "additionalProperties": false
+      },
+      "season_hint": {
+        "type": "array",
+        "items": { "enum": ["spring", "summer", "autumn", "winter"] },
+        "maxItems": 4
+      },
+      "seat_tips": {
+        "type": "object",
+        "description": "席位置ごとの有利不利・注意点。該当なしは null 可",
+        "properties": {
+          "dou":     { "type": ["string", "null"], "description": "胴の間" },
+          "miyoshi": { "type": ["string", "null"], "description": "ミヨシ（船首）" },
+          "tomo":    { "type": ["string", "null"], "description": "艫（船尾）" }
+        },
+        "additionalProperties": false
+      },
+      "notes": {
+        "type": "string",
+        "maxLength": 400,
+        "description": "地域差・時期特有の現象など"
+      }
+    },
+    "additionalProperties": false
+  }
+}
