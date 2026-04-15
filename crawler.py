@@ -4593,12 +4593,15 @@ def build_html(catches, crawled_at, history, weather_data=None):
         cnt = area_cnt_map.get(area, 0)
         top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
         fish_tags = "".join(f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">{f}</a>' for f, _ in top_fish)
+        # NOTE: <a> の中に <a> をネストすると HTML 違反 → div で囲い、上部のみ area リンク
         area_today_html += (
-            f'<a class="at-card" href="area/{area_slug(area)}.html">'
+            f'<div class="at-card">'
+            f'<a href="area/{area_slug(area)}.html" class="at-area-link">'
             f'<div class="at-name">{area}</div>'
             f'<div class="at-count">{cnt}件</div>'
-            f'<div class="at-fish">{fish_tags}</div>'
             f'</a>'
+            f'<div class="at-fish">{fish_tags}</div>'
+            f'</div>'
         )
     # V2 ZONE C: 出船リスク予報（7日間）
     risk_grid_html = ""
@@ -4708,8 +4711,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fo-list a{font-size:12px;padding:3px 8px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
 .fo-list a:hover{background:var(--accent);color:#fff;text-decoration:none}
 .area-today{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
-.at-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:block;transition:border-color .15s}
-.at-card:hover{border-color:var(--cta);text-decoration:none}
+.at-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;transition:border-color .15s}
+.at-card:hover{border-color:var(--cta)}
+.at-area-link{display:block;text-decoration:none;color:inherit}
+.at-area-link:hover{text-decoration:none}
 .at-name{font-size:12px;font-weight:700;color:var(--accent)}
 .at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px}
 .at-count::before{content:"釣果報告";display:block;font-size:9px;font-weight:400;color:var(--sub);margin-bottom:1px}
