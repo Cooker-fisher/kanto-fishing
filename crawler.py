@@ -4544,7 +4544,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         cards += (
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html">'
             f'<div class="fn">{fish}</div>'
-            f'<div class="fr">{cnt_range_str} <small>{len(cs)}件・{ship_num}隻</small></div>'
+            f'<div class="fr">{cnt_range_str} <small>釣果{len(cs)}件・{ship_num}船宿</small></div>'
             f'<div class="fs">{detail_str}</div>'
             f'{fb_tag}{mini_bars}{trend_tag}'
             f'</a>'
@@ -5066,13 +5066,12 @@ def build_fish_pages(data, history, crawled_at=""):
 
     # fish/index.html: 魚種一覧
     fish_index_cards = ""
-    for fish, cs in sorted(fish_summary.items()):
+    for fish, cs in sorted(fish_summary.items(), key=lambda x: -len(x[1])):
         cnt = len(cs)
-        cr_max = max((c.get("count_range") or {}).get("max") or 0 for c in cs)
         fish_index_cards += (
             f'<a class="fi-card" href="{fish_slug(fish)}.html">'
             f'<div class="fi-name">{fish}</div>'
-            f'<div class="fi-cnt">今週{cnt}件</div>'
+            f'<div class="fi-cnt">今週釣果{cnt}件</div>'
             f'</a>'
         )
     fish_index_css = """.fi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:16px 0}
@@ -5146,7 +5145,7 @@ def build_area_pages(data, history, crawled_at=""):
         top_fish   = sorted(fish_counts.items(), key=lambda x:-x[1])[:5]
         fish_cards = ""
         for fish, cnt in top_fish:
-            fish_cards += f'<a href="../fish/{fish_slug(fish)}.html" class="fish-chip"><div class="fc-name">{fish}</div><div class="fc-cnt">今週{cnt}件</div></a>'
+            fish_cards += f'<a href="../fish/{fish_slug(fish)}.html" class="fish-chip"><div class="fc-name">{fish}</div><div class="fc-cnt">今週釣果{cnt}件</div></a>'
         ship_rows = ""
         for i, (sn, cnt) in enumerate(sorted(ship_counts.items(), key=lambda x:-x[1])[:8], 1):
             ship_fish = {}
@@ -5256,7 +5255,7 @@ def build_area_pages(data, history, crawled_at=""):
             f'<div class="ai-name">{area}</div>'
             f'<div class="ai-grp">{grp}</div>'
             f'<div class="ai-fish">{"・".join(top_f)}</div>'
-            f'<div class="ai-cnt">今週{len(catches)}件</div>'
+            f'<div class="ai-cnt">今週釣果{len(catches)}件</div>'
             f'</a>'
         )
     area_index_css = """.ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:16px 0}
