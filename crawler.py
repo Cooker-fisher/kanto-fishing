@@ -4536,11 +4536,22 @@ def build_html(catches, crawled_at, history, weather_data=None):
         mini_bars = ""
         if _wmax > 0:
             _bar_parts = []
+            _label_parts = []
             for _i, _v in enumerate(_vals):
                 _h = max(8, int(_v / _wmax * 100)) if _v > 0 else 4
                 _cls = " today" if _i == 6 else ""
                 _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
-            mini_bars = f'<div class="bars">{"".join(_bar_parts)}</div>'
+                _d = _today - timedelta(days=6 - _i)
+                if _i == 6:
+                    _label_parts.append('<span class="bl today">今日</span>')
+                elif _i == 0:
+                    _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
+                else:
+                    _label_parts.append('<span class="bl"></span>')
+            mini_bars = (
+                f'<div class="bars">{"".join(_bar_parts)}</div>'
+                f'<div class="bar-labels">{"".join(_label_parts)}</div>'
+            )
         cards += (
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html">'
             f'<div class="fn">{fish}</div>'
@@ -4702,6 +4713,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fc .bars{display:flex;align-items:flex-end;gap:1px;height:20px;margin-top:4px}
 .fc .bars .b{flex:1;background:var(--cta);border-radius:1px 1px 0 0;opacity:.6;min-width:4px}
 .fc .bars .b.today{opacity:1;background:var(--pos)}
+.fc .bar-labels{display:flex;gap:1px;margin-top:1px}
+.fc .bar-labels .bl{flex:1;font-size:8px;color:var(--muted);text-align:center;min-width:4px}
+.fc .bar-labels .bl.today{color:var(--pos);font-weight:700}
 .fc .trend{font-size:9px;font-weight:700;margin-top:2px}
 .fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
 .fc.stale{opacity:.6}
@@ -6525,8 +6539,8 @@ def _page_nav(current_page=""):
         f'<a href="/"{idx}>今日の釣果</a>'
         f'<a href="/fish/"{fish}>魚種</a>'
         f'<a href="/area/"{area}>エリア</a>'
-        f'<a href="/calendar/"{cal}>カレンダー</a>'
-        f'<a href="/premium/"{prem}>有料</a>'
+        f'<a href="/calendar.html"{cal}>カレンダー</a>'
+        f'<a href="/forecast/index.html"{prem}>有料</a>'
         '</nav>'
         '</div>'
         '</header>'
@@ -6534,8 +6548,8 @@ def _page_nav(current_page=""):
         f'<a href="/"{idx}>{svg_catch}<span>釣果</span></a>'
         f'<a href="/fish/"{fish}>{svg_fish}<span>魚種</span></a>'
         f'<a href="/area/"{area}>{svg_area}<span>エリア</span></a>'
-        f'<a href="/calendar/"{cal}>{svg_cal}<span>カレンダー</span></a>'
-        f'<a href="/premium/" {prem_cls}>{svg_prem}<span>有料</span></a>'
+        f'<a href="/calendar.html"{cal}>{svg_cal}<span>カレンダー</span></a>'
+        f'<a href="/forecast/index.html" {prem_cls}>{svg_prem}<span>有料</span></a>'
         '</nav>'
     )
 
