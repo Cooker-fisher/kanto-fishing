@@ -152,6 +152,11 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .wl-judge{flex:1;text-align:right;font-weight:700;font-size:11px}
 .wl-judge.good{color:var(--pos)}.wl-judge.warn{color:var(--warn)}.wl-judge.bad{color:var(--neg)}
 
+/* ================ 概況テキスト ================ */
+.overview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.overview-title{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:6px}
+.overview-body{font-size:13px;color:var(--text);line-height:1.8}
+
 /* ================ ZONE E: ナビ ================ */
 .nav-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .nav-section h3{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:10px}
@@ -319,9 +324,6 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </a>
 </div>
 
-<!-- 広告① -->
-<div class="ad-slot">広告スペース ①（ZONE B' 後）</div>
-
 <!-- ================ ZONE C: 海況・出船リスク（無料）================ -->
 <h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>
 <div class="risk-grid">
@@ -357,9 +359,6 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
 </div>
 
-
-<!-- 広告② -->
-<div class="ad-slot">広告スペース ②（ZONE D 後）</div>
 
 <!-- ================ TEASER ROTATOR: 有料機能プレビュー ================ -->
 <h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
@@ -479,6 +478,16 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
 </div>
 
+<!-- 広告① -->
+<div class="ad-slot">広告スペース ①</div>
+
+<!-- ================ 概況テキスト ================ -->
+<h2 class="st">今日の関東船釣り概況 <span class="tag free">無料</span></h2>
+<div class="overview">
+  <div class="overview-title">2026/04/10 16:30 更新 — 8エリア・23船宿から集計</div>
+  <div class="overview-body">本日は関東全域で47件の釣果報告が寄せられました。アジは金沢八景・野島エリアを中心に好調で20〜45匹の釣果が続いており、先週比+32%と上昇傾向が続いています。水温上昇と大潮が重なった好条件が背景にあります。マダイは久里浜・剣崎エリアで0〜5匹とやや低調。銚子・外房では波2.5m・風10m予報のため欠航リスクが高まっています。今週末は金沢八景・久里浜エリアで穏やかな海況が予想され、アジ・マダイ狙いに好機が訪れそうです。</div>
+</div>
+
 <!-- ================ ZONE E: ナビ ================ -->
 <div class="nav-section">
   <h3>人気の魚種から探す</h3>
@@ -497,6 +506,9 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="#">すべて見る →</a>
   </div>
 </div>
+
+<!-- 広告② -->
+<div class="ad-slot">広告スペース ②</div>
 
 </div><!-- /.c -->
 
