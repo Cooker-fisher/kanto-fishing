@@ -563,7 +563,7 @@ def build_weather_section(weather_data):
         if not sat_fc and not sun_fc:
             continue
 
-        day_rows = ""
+        rows_html = ""
         for label, fc, date_str in [("土", sat_fc, sat_date), ("日", sun_fc, sun_date)]:
             if not fc:
                 continue
@@ -575,27 +575,24 @@ def build_weather_section(weather_data):
             icon   = _wave_icon(wave)
             wlabel = _wave_label(wave)
             wdir   = _wind_dir_text(wd)
-            wlbl   = _wind_label(wind)
             score  = _fishing_ok_score(wave, wind)
             ok_txt, ok_color = _ok_label(score)
+            ok_cls = "good" if score >= 80 else ("warn" if score >= 50 else "bad")
 
-            wave_txt = f"{wave}m" if wave is not None else "-"
-            wind_txt = f"{wind}m/s" if wind is not None else "-"
+            wave_txt = f"{icon} {wave}m {wlabel}" if wave is not None else "-"
+            wind_txt = f"{wdir}{wind}m/s" if wind is not None else "-"
             sst_txt  = f"{sst}℃" if sst is not None else "-"
 
-            day_rows += f"""
-          <div class="wx-day">
-            <div class="wx-day-label">{label}</div>
-            <div class="wx-ok" style="color:{ok_color}">{ok_txt}</div>
-            <div class="wx-metrics">
-              <span>{icon} {wave_txt} {wlabel}</span>
-              <span>💨 {wdir}{wind_txt} {wlbl}</span>
-              <span>🌡️ {sst_txt}</span>
-            </div>
-          </div>"""
+            rows_html += f"""<div class="wl-row">
+  <div class="wl-day">{label}</div>
+  <div class="wl-wave">{wave_txt}</div>
+  <div class="wl-wind">💨 {wind_txt}</div>
+  <div class="wl-temp">🌡️ {sst_txt}</div>
+  <div class="wl-judge {ok_cls}">{ok_txt}</div>
+</div>"""
 
         # 潮汐
-        tide_html = ""
+        tide_txt = ""
         tide_key = _TIDE_GROUP_MAP.get(group)
         if tide_key:
             trow = weather_data.get("tide", {}).get(tide_key)
@@ -603,21 +600,22 @@ def build_weather_section(weather_data):
                 tt = trow.get("tide_type", "")
                 ma = trow.get("moon_age", "")
                 if tt:
-                    tide_html = f'<span class="wx-tide">🌙 {tt}'
-                    if ma: tide_html += f'(月齢{ma})'
-                    tide_html += '</span>'
+                    tide_txt = f'🌙 {tt}'
+                    if ma: tide_txt += f'(月齢{ma})'
 
-        cards += f"""
-      <div class="wx-card">
-        <div class="wx-area">{group} {tide_html}</div>
-        {day_rows}
-      </div>"""
+        cards += f"""<div class="weather-card">
+  <div class="wc-head">
+    <span class="wc-area">{group}</span>
+    {f'<span class="wc-tide">{tide_txt}</span>' if tide_txt else ''}
+  </div>
+  {rows_html}
+</div>"""
 
     if not cards:
         return ""
-    return f"""<h2>🌊 今週末の海況予報 <span style="font-size:12px;font-weight:normal;color:#7a9bb5">{sat_m}/{sat_d}(土)・{sun_m}/{sun_d}(日) 釣り時間帯 6〜15時の予報</span></h2>
-    <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">波高・風速から出船可否を判定。データ: Open-Meteo Marine Forecast</p>
-    <div class="wx-grid">{cards}</div>"""
+    return f"""<h2 class="st">🌊 今週末の海況予報 <span class="st-sub">{sat_m}/{sat_d}(土)・{sun_m}/{sun_d}(日) 6〜15時</span></h2>
+<p class="note-text">波高・風速から出船可否を判定。データ: Open-Meteo Marine Forecast</p>
+<div class="wx-grid">{cards}</div>"""
 
 # ============================================================
 # 釣果予測エンジン（海況予報 × 過去実績）
@@ -3212,18 +3210,23 @@ def build_teaser_rotator_html():
 def build_index_overview_text(catches, history, crawled_at=""):
     """今日の関東船釣り概況テキスト（200〜300字）を生成"""
     now = datetime.now()
+    today_str = now.strftime("%Y/%m/%d")
     year, week_num = current_iso_week()
-    total = len(catches)
-    areas_set = set(c["area"] for c in catches)
-    ships_set = set(c["ship"] for c in catches)
-    # 主力魚種 TOP3
+    # 今日分のみで集計
+    today_catches = [c for c in catches if c.get("date") == today_str]
+    base = today_catches if today_catches else catches  # 今日データなければ全件フォールバック
+    label = "本日" if today_catches else "直近"
+    total = len(base)
+    areas_set = set(c["area"] for c in base)
+    ships_set = set(c["ship"] for c in base)
+    # 主力魚種 TOP3（今日 or 全件）
     fish_counts: dict = {}
-    for c in catches:
+    for c in base:
         for f in c["fish"]:
             if f != "不明": fish_counts[f] = fish_counts.get(f, 0) + 1
     top_fish = sorted(fish_counts.items(), key=lambda x: -x[1])[:3]
     top_names = "・".join(f for f, _ in top_fish)
-    # 昨年比（TOP魚種）
+    # 昨年比（TOP魚種・週次データなので全件から）
     yoy_text = ""
     if top_fish:
         f1 = top_fish[0][0]
@@ -3235,12 +3238,12 @@ def build_index_overview_text(catches, history, crawled_at=""):
             else:          yoy_text = "先週並みの釣果が続いています。"
     # 組み合わせ文
     body = (
-        f"本日は関東全域で{total}件の釣果報告が寄せられました（{len(areas_set)}エリア・{len(ships_set)}船宿）。"
+        f"{label}の関東全域で{total}件の釣果報告が寄せられました（{len(areas_set)}エリア・{len(ships_set)}船宿）。"
         f"主力魚種は{top_names}。"
     )
     if top_fish and yoy_text:
         f1 = top_fish[0][0]
-        top_areas = list(dict.fromkeys(c["area"] for c in catches if f1 in c["fish"]))[:2]
+        top_areas = list(dict.fromkeys(c["area"] for c in base if f1 in c["fish"]))[:2]
         area_str = "・".join(top_areas) if top_areas else "各エリア"
         body += f"{f1}は{area_str}を中心に{yoy_text}"
     body += "最新の釣果情報・船宿ランキングは各魚種・エリアページをご確認ください。"
@@ -4020,19 +4023,6 @@ footer a:hover{text-decoration:underline}
 .prob-bar-fill{height:5px;border-radius:3px}
 .prob-pct{font-weight:bold}
 .prob-wrap{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px}
-.wx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:16px}
-.wx-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px}
-.wx-area{font-size:14px;font-weight:bold;color:#4db8ff;margin-bottom:6px}
-.wx-wave{font-size:18px;font-weight:bold;color:#fff;margin-bottom:6px}
-.wx-label{font-size:11px;color:#7a9bb5;font-weight:normal}
-.wx-detail{font-size:12px;color:#c8d8e8;line-height:1.8}
-.wx-detail div{display:flex;align-items:center;gap:4px}
-.wx-day{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #1a3050}
-.wx-day-label{font-size:13px;font-weight:bold;color:#fff;min-width:20px}
-.wx-ok{font-size:12px;font-weight:bold;min-width:80px}
-.wx-metrics{font-size:11px;color:#c8d8e8;display:flex;gap:10px;flex-wrap:wrap}
-.wx-tide{font-size:11px;color:#7a9bb5;margin-left:8px}
-.wx-time{font-size:10px;color:#4a6a8a;margin-top:4px;text-align:right}
 .fc-date-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .fc-date-btn{background:#081020;border:1px solid #1a4060;color:#7a9bb5;padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s}
 .fc-date-btn:hover{border-color:#4db8ff;color:#4db8ff}
@@ -4602,7 +4592,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     for area in sorted(active_areas, key=lambda x: -area_cnt_map.get(x, 0))[:8]:
         cnt = area_cnt_map.get(area, 0)
         top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
-        fish_tags = "".join(f'<span>{f}</span>' for f, _ in top_fish)
+        fish_tags = "".join(f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">{f}</a>' for f, _ in top_fish)
         area_today_html += (
             f'<a class="at-card" href="area/{area_slug(area)}.html">'
             f'<div class="at-name">{area}</div>'
@@ -4683,10 +4673,13 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="fo-list">{other_links}</div>'
             f'</div>'
         )
-    # HERO 数値
-    hero_count = len(catches)
-    hero_ships = len(set(c["ship"] for c in catches))
-    hero_areas = len(active_areas)
+    # HERO 数値（今日分のみ）
+    today_str = now.strftime("%Y/%m/%d")
+    today_catches = [c for c in catches if c.get("date") == today_str]
+    hero_base = today_catches if today_catches else catches
+    hero_count = len(hero_base)
+    hero_ships = len(set(c["ship"] for c in hero_base))
+    hero_areas = len(set(c["area"] for c in hero_base))
     index_extra_css = """.hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;text-align:center;padding:24px 14px 20px}
 .hero-sub{font-size:12px;color:rgba(255,255,255,.6)}
 .hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1.1}
@@ -4721,7 +4714,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px}
 .at-count::before{content:"釣果報告";display:block;font-size:9px;font-weight:400;color:var(--sub);margin-bottom:1px}
 .at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
-.at-fish span{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub)}
+.at-ftag{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub);text-decoration:none}
+.at-ftag:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
 .risk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
 .risk-day{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center}
 .risk-day.good{border-color:var(--pos);background:#f0fdf4}
@@ -4739,7 +4733,21 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .nav-chips{display:flex;flex-wrap:wrap;gap:5px}
 .nav-chips a{font-size:12px;padding:5px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
 .nav-chips a:hover{background:var(--accent);color:#fff;text-decoration:none}
-@media(min-width:769px){.fish-grid{grid-template-columns:repeat(3,1fr)}}"""
+@media(min-width:769px){.fish-grid{grid-template-columns:repeat(3,1fr)}}
+.st-sub{font-size:12px;font-weight:400;color:var(--sub);margin-left:6px}
+.note-text{font-size:12px;color:var(--sub);margin-bottom:10px}
+.wx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.weather-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.wc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.wc-area{font-size:14px;font-weight:700;color:var(--accent)}
+.wc-tide{font-size:11px;color:var(--sub)}
+.wl-row{display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--border);font-size:11px;flex-wrap:wrap}
+.wl-day{font-weight:700;color:var(--text);min-width:16px}
+.wl-wave{flex:1 1 90px;color:var(--sub)}
+.wl-wind{flex:1 1 80px;color:var(--sub)}
+.wl-temp{flex:0 0 50px;color:var(--sub)}
+.wl-judge{font-size:12px;font-weight:700;flex:0 0 80px;text-align:right}
+.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:#f4a261}.wl-judge.bad{color:var(--neg)}"""
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
