@@ -28,16 +28,21 @@
       },
       "tackle": {
         "type": "object",
-        "required": ["rod", "rig", "bait"],
-        "properties": {
-          "rod":    { "type": "string", "minLength": 2 },
-          "weight": { "type": "string" },
-          "reel":   { "type": "string" },
-          "line":   { "type": "string" },
-          "rig":    { "type": "string", "minLength": 2 },
-          "bait":   { "type": "string", "minLength": 2 }
-        },
-        "additionalProperties": false
+        "description": "釣法ごとのタックルマップ。キーは釣法名（例: 'コマセ', '一つテンヤ', 'タイラバ'）。値は {rod, rig, bait} 必須のタックルオブジェクト",
+        "minProperties": 1,
+        "additionalProperties": {
+          "type": "object",
+          "required": ["rod", "rig", "bait"],
+          "properties": {
+            "rod":    { "type": "string", "minLength": 2 },
+            "weight": { "type": "string" },
+            "reel":   { "type": "string" },
+            "line":   { "type": "string" },
+            "rig":    { "type": "string", "minLength": 2 },
+            "bait":   { "type": "string", "minLength": 2 }
+          },
+          "additionalProperties": false
+        }
       },
       "bycatch": {
         "type": "array",

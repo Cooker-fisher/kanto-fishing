@@ -180,11 +180,18 @@ def validate_fish_tackle(data: dict, tsuri_keys: set[str], r: Reporter) -> None:
             if req not in entry or entry[req] in (None, "", []):
                 r.err(f"{label}: '{fish}' に {req} がない / 空")
 
-        # tackle 必須サブキー
+        # tackle: 釣法ごとのマップ {method_name: {rod, rig, bait, ...}}
         tackle = entry.get("tackle") or {}
-        for req in ("rod", "rig", "bait"):
-            if not tackle.get(req):
-                r.err(f"{label}: '{fish}'.tackle.{req} が空")
+        if not isinstance(tackle, dict) or not tackle:
+            r.err(f"{label}: '{fish}'.tackle が空または dict ではない")
+        else:
+            for method_key, tset in tackle.items():
+                if not isinstance(tset, dict):
+                    r.err(f"{label}: '{fish}'.tackle['{method_key}'] が dict ではない")
+                    continue
+                for req in ("rod", "rig", "bait"):
+                    if not tset.get(req):
+                        r.err(f"{label}: '{fish}'.tackle['{method_key}'].{req} が空")
 
         # size_typical 検査
         st = entry.get("size_typical") or {}
