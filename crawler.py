@@ -3434,7 +3434,8 @@ def build_fish_7day_chart_html(fish, catches):
             continue
         if d not in daily_max:
             daily_max[d] = 0
-        cnt = c.get("cnt_max") or c.get("cnt_avg") or 0
+        cr = c.get("count_range")
+        cnt = (cr["max"] if cr and not cr.get("is_boat") else 0) or 0
         if cnt and cnt > daily_max[d]:
             daily_max[d] = cnt
     values = [daily_max.get(d, 0) for d in days]
