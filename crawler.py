@@ -1726,8 +1726,7 @@ def _build_daily_page(date_str, day_data, forecast_data, weather_data):
         s = a.get("score", 0)
         cls = "ok-good" if s >= 70 else "ok-fair" if s >= 45 else "ok-warn" if s >= 20 else "ok-bad"
         ok_mark = a.get("ok", "")
-        encoded = quote(g, safe="")
-        html += f'<a href="area/{encoded}.html" class="area-chip {cls}">{g} {ok_mark}</a>'
+        html += f'<a href="area/{area_slug(g)}.html" class="area-chip {cls}">{g} {ok_mark}</a>'
     html += '</div>'
 
     preds = day_data.get("predictions", [])
@@ -1958,8 +1957,7 @@ def _build_forecast_hub(forecast_data, catches=None):
     html += '<h2>📍 エリアから探す</h2>'
     html += '<div class="area-chips">'
     for group in AREA_FORECAST_COORDS:
-        encoded = quote(group, safe="")
-        html += f'<a href="area/{encoded}.html" class="area-chip ok-good">{group}</a>'
+        html += f'<a href="area/{area_slug(group)}.html" class="area-chip ok-good">{group}</a>'
     html += '</div>'
 
     html += _forecast_page_foot()
@@ -2702,6 +2700,32 @@ def load_area_decadal():
     except Exception as e:
         print(f"load_area_decadal: {e}")
     return result
+
+def load_fish_romaji():
+    """normalize/fish_romaji_map.json → {日本語: slug}"""
+    p = os.path.join("normalize", "fish_romaji_map.json")
+    if not os.path.exists(p): return {}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+def load_area_romaji():
+    """normalize/area_romaji_map.json → {日本語: slug}"""
+    p = os.path.join("normalize", "area_romaji_map.json")
+    if not os.path.exists(p): return {}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+# モジュールレベルで1回だけロード
+_FISH_ROMAJI = load_fish_romaji()
+_AREA_ROMAJI = load_area_romaji()
+
+def fish_slug(fish: str) -> str:
+    """魚種名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
+    return _FISH_ROMAJI.get(fish, fish)
+
+def area_slug(area: str) -> str:
+    """エリア名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
+    return _AREA_ROMAJI.get(area, area)
 
 def current_iso_week():
     now = datetime.now()
@@ -4237,7 +4261,7 @@ def build_target_section(targets):
     tags_html = _render_tags(top.get("tags", []))
     prob_html  = _prob_bar(top.get("prob"), top.get("surge"))
     top_html = f"""
-    <a class="target-top" href="fish/{top['fish']}.html">
+    <a class="target-top" href="fish/{fish_slug(top['fish'])}.html">
       <div style="flex:1">
         <div class="tt-header">
           <span class="tt-label">今週イチ押し</span>
@@ -4258,7 +4282,7 @@ def build_target_section(targets):
         t_tags   = _render_tags(t.get("tags", []))
         t_prob   = _prob_bar(t.get("prob"), t.get("surge"))
         rest_html += f"""
-    <a class="target-card" href="fish/{t['fish']}.html">
+    <a class="target-card" href="fish/{fish_slug(t['fish'])}.html">
       <div class="tc-name-row">
         <span class="tc-fish-name">{t['fish']}</span>
         <span class="tc-stars">{t['stars']}</span>
@@ -4312,14 +4336,14 @@ def build_catch_table(catches):
     filter_btns = '<div class="filter-group"><button class="filter-btn active all-btn" onclick="filterArea(this,\'all\')">すべて</button></div>'
     covered = set()
     for group_label, group_areas in AREA_GROUPS.items():
-        links = [f'<a href="area/{a}.html" class="filter-btn">{a}</a>'
+        links = [f'<a href="area/{area_slug(a)}.html" class="filter-btn">{a}</a>'
                  for a in group_areas if a in active_areas]
         covered.update(group_areas)
         if links:
             filter_btns += (f'<div class="filter-group">'
                             f'<span class="filter-group-label">{group_label}</span>'
                             f'{"".join(links)}</div>')
-    others = [f'<a href="area/{a}.html" class="filter-btn">{a}</a>'
+    others = [f'<a href="area/{area_slug(a)}.html" class="filter-btn">{a}</a>'
               for a in sorted(active_areas - covered)]
     if others:
         filter_btns += (f'<div class="filter-group">'
@@ -4461,7 +4485,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
         fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
         cards += (
-            f'<a class="fc{stale_cls}" href="fish/{fish}.html">'
+            f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html">'
             f'<div class="fn">{fish}</div>'
             f'<div class="fr">{cnt_range_str} <small>{len(cs)}件・{ship_num}隻</small></div>'
             f'<div class="fs">{detail_str}</div>'
@@ -4481,7 +4505,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     area_nav_parts = []
     covered = set()
     for group_label, group_areas in AREA_GROUPS.items():
-        links = [f'<a href="area/{a}.html">{a}</a>' for a in group_areas if a in active_areas]
+        links = [f'<a href="area/{area_slug(a)}.html">{a}</a>' for a in group_areas if a in active_areas]
         covered.update(group_areas)
         if links:
             area_nav_parts.append(
@@ -4489,7 +4513,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 f'<div class="area-group-links">{"".join(links)}</div></div>'
             )
     # AREA_GROUPS未分類のエリアは「その他」にまとめる
-    others = [f'<a href="area/{a}.html">{a}</a>' for a in sorted(active_areas - covered)]
+    others = [f'<a href="area/{area_slug(a)}.html">{a}</a>' for a in sorted(active_areas - covered)]
     if others:
         area_nav_parts.append(
             f'<div class="area-group"><div class="area-group-label">その他</div>'
@@ -4503,18 +4527,18 @@ def build_html(catches, crawled_at, history, weather_data=None):
             if a in active_areas:
                 cnt = sum(1 for c in catches if c["area"] == a)
                 area_chips_html += (
-                    f'<a class="area-chip" href="area/{a}.html">'
+                    f'<a class="area-chip" href="area/{area_slug(a)}.html">'
                     f'<span class="ac-name">{a}</span>'
                     f'<span class="ac-cnt">{cnt}件</span>'
                     f'</a>'
                 )
     # V2 魚種ナビチップ（ZONE E）
     fish_nav_html = "".join(
-        f'<a href="fish/{f}.html">{f}</a>'
+        f'<a href="fish/{fish_slug(f)}.html">{f}</a>'
         for f in sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))[:12]
     )
     area_nav_html = "".join(
-        f'<a href="area/{a}.html">{a}</a>'
+        f'<a href="area/{area_slug(a)}.html">{a}</a>'
         for a in sorted(active_areas)[:12]
     )
     # V2 概況テキスト
@@ -4534,7 +4558,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     # カードをそのまま使う（分割せずに）
     fish_others_html = ""
     if other_fish:
-        other_links = "".join(f'<a href="fish/{f}.html">{f}</a>' for f in other_fish)
+        other_links = "".join(f'<a href="fish/{fish_slug(f)}.html">{f}</a>' for f in other_fish)
         fish_others_html = (
             f'<div class="fish-others">'
             f'<div class="fo-title">今日ほかに釣れている魚</div>'
@@ -4675,9 +4699,10 @@ def build_fish_pages(data, history, crawled_at=""):
     decadal_calendar = load_decadal_calendar()
     tackle_data = load_fish_tackle()
     fish_summary = {}
+    _SKIP_FISH = {"不明", "欠航"}
     for c in data:
         for f in c["fish"]:
-            if f != "不明": fish_summary.setdefault(f, []).append(c)
+            if f not in _SKIP_FISH: fish_summary.setdefault(f, []).append(c)
     for fish, catches in fish_summary.items():
         if len(catches) < 1: continue
         season_bar_html = build_season_bar(fish, current_month)
@@ -4740,7 +4765,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <td><div class="bar-wrap"><div class="bar-fill" style="width:{pct}%"></div></div></td>
 </tr>"""
         areas_this = list(dict.fromkeys(c["area"] for c in catches))
-        area_links = " / ".join(f'<a href="../area/{a}.html" style="color:#4db8ff;font-size:12px">{a}</a>' for a in areas_this[:5])
+        area_links = " / ".join(f'<a href="../area/{area_slug(a)}.html" style="color:#4db8ff;font-size:12px">{a}</a>' for a in areas_this[:5])
         yoy_html = ""
         if this_w and last_w:
             def fmt(v, unit=""): return f"{v}{unit}" if v else "-"
@@ -4767,8 +4792,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <div class="stat-card"><div class="sv">{"%.0f" % avg_cnt if avg_cnt else "-"}匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card"><div class="sv">{max_cnt if max_cnt else "-"}匹</div><div class="sl">今週の最高釣果</div></div>
 </div>"""
-        fish_encoded = quote(fish, safe='')
-        fish_url = f"{SITE_URL}/fish/{fish_encoded}.html"
+        fish_url = f"{SITE_URL}/fish/{fish_slug(fish)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
         # 同エリアで釣れる関連魚種
@@ -4780,7 +4804,7 @@ def build_fish_pages(data, history, crawled_at=""):
                     if _f != fish and _f != "不明":
                         _rel_counts[_f] = _rel_counts.get(_f, 0) + 1
         _rel_links = "".join(
-            '<a href="../fish/' + rf + '.html" class="chip-link">' + rf + '</a>'
+            '<a href="../fish/' + fish_slug(rf) + '.html" class="chip-link">' + rf + '</a>'
             for rf, _ in sorted(_rel_counts.items(), key=lambda x: -x[1])[:6]
         )
         related_section_html = (
@@ -4792,7 +4816,7 @@ def build_fish_pages(data, history, crawled_at=""):
         for _c in catches:
             _fa_counts[_c["area"]] = _fa_counts.get(_c["area"], 0) + 1
         _fa_links = "".join(
-            '<a href="../fish_area/' + fish + '_' + a + '.html" class="chip-link">'
+            '<a href="../fish_area/' + fish_slug(fish) + '-' + area_slug(a) + '.html" class="chip-link">'
             + a + f'（{c}件）</a>'
             for a, c in sorted(_fa_counts.items(), key=lambda x: -x[1])
             if c >= 5
@@ -4881,7 +4905,7 @@ def build_fish_pages(data, history, crawled_at=""):
 {_v2_footer(crawled_at)}
 {_v2_bottom_nav("fish")}
 </body></html>"""
-        with open(os.path.join(WEB_DIR, f"fish/{fish}.html"), "w", encoding="utf-8") as f:
+        with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
 # ============================================================
@@ -4923,7 +4947,7 @@ def build_area_pages(data, history, crawled_at=""):
         top_fish   = sorted(fish_counts.items(), key=lambda x:-x[1])[:5]
         fish_cards = ""
         for fish, cnt in top_fish:
-            fish_cards += f'<a href="../fish/{fish}.html" class="fish-chip"><div class="fc-name">{fish}</div><div class="fc-cnt">今週{cnt}件</div></a>'
+            fish_cards += f'<a href="../fish/{fish_slug(fish)}.html" class="fish-chip"><div class="fc-name">{fish}</div><div class="fc-cnt">今週{cnt}件</div></a>'
         ship_rows = ""
         for i, (sn, cnt) in enumerate(sorted(ship_counts.items(), key=lambda x:-x[1])[:8], 1):
             ship_fish = {}
@@ -4944,15 +4968,14 @@ def build_area_pages(data, history, crawled_at=""):
             dim_attr = ' class="dim"' if is_dim else ""
             rows += f"<tr{dim_attr}><td>{c['date'] or '-'}</td><td>{c['ship']}</td><td>{'・'.join(c['fish'])}</td><td>{cnt_str}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>"
         group   = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
-        area_encoded = quote(area, safe='')
-        area_url = f"{SITE_URL}/area/{area_encoded}.html"
+        area_url = f"{SITE_URL}/area/{area_slug(area)}.html"
         _top_fish_str = "・".join(f for f, _ in top_fish[:3])
         _area_desc_fish = f"{_top_fish_str}など" if _top_fish_str else ""
         area_desc = f"{area}（{group}）の船釣り釣果。今週{len(catches)}件。{_area_desc_fish}釣れている魚種と船宿ランキングを毎日更新。"
         # 同グループの近隣港リンク
         _group_areas = AREA_GROUPS.get(group, [])
         _nearby_links = "".join(
-            '<a href="../area/' + a + '.html" class="chip-link">' + a + '</a>'
+            '<a href="../area/' + area_slug(a) + '.html" class="chip-link">' + a + '</a>'
             for a in _group_areas if a != area and a in area_summary
         )
         nearby_section_html = (
@@ -5021,7 +5044,7 @@ def build_area_pages(data, history, crawled_at=""):
 {_v2_footer(crawled_at)}
 {_v2_bottom_nav("area")}
 </body></html>"""
-        with open(os.path.join(WEB_DIR, f"area/{area}.html"), "w", encoding="utf-8") as f:
+        with open(os.path.join(WEB_DIR, f"area/{area_slug(area)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
 # ============================================================
@@ -5143,9 +5166,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
     <tr><td>平均サイズ/重さ</td><td>{_fmt(this_w.get("size_avg"),"cm") if this_w.get("size_avg") else _fmt(this_w.get("weight_avg"),"kg")}</td><td>{_fmt(last_w.get("size_avg"),"cm") if last_w.get("size_avg") else _fmt(last_w.get("weight_avg"),"kg")}</td>{_diff(this_w.get("size_avg") or this_w.get("weight_avg"),last_w.get("size_avg") or last_w.get("weight_avg"))}</tr>
     <tr><td>出船数（関東全体）</td><td>{_fmt(this_w.get("ships"),"隻")}</td><td>{_fmt(last_w.get("ships"),"隻")}</td>{_diff(this_w.get("ships"),last_w.get("ships"))}</tr>
   </table></div>"""
-        fish_encoded = quote(fish, safe='')
-        area_encoded = quote(area, safe='')
-        page_url = f"{SITE_URL}/fish_area/{fish_encoded}_{area_encoded}.html"
+        page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         desc = f"{area}での{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
         html = f"""<!DOCTYPE html>
@@ -5159,7 +5180,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <meta property="og:url" content="{page_url}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
-  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_encoded}.html"}},{{"@type":"ListItem","position":3,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_slug(fish)}.html"}},{{"@type":"ListItem","position":3,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
   {GA_TAG}
   {ADSENSE_TAG}
   <style>{V2_COMMON_CSS}
@@ -5168,7 +5189,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 <body>
 {_v2_header_nav("")}
 <div class="c">
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_encoded}.html">{fish}</a> &rsaquo; {area}</p>
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}</p>
   <h2 class="st">{area}の{fish}釣果情報</h2>
   {stat_cards_fa}
   <h2 class="st">年間シーズン</h2>{season_bar_fa}
@@ -5183,7 +5204,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 {_v2_footer(crawled_at)}
 {_v2_bottom_nav("")}
 </body></html>"""
-        with open(os.path.join(WEB_DIR, f"fish_area/{fish}_{area}.html"), "w", encoding="utf-8") as fp:
+        with open(os.path.join(WEB_DIR, f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html"), "w", encoding="utf-8") as fp:
             fp.write(html)
         count += 1
     print(f"魚種×港ページ: {count} 件生成 → fish_area/*.html")
@@ -5206,7 +5227,7 @@ def build_calendar_page(crawled_at=""):
             cls    = ("peak-count" if tp == "数" else "peak-size") if sc >= 4 else ("mid" if sc == 3 else "low")
             label  = "◎" if sc >= 4 else ("○" if sc == 3 else "-")
             cells += f'<td class="{cls} {is_now}">{label}</td>'
-        rows += f"<tr><td class='fish-name'><a href='fish/{fish}.html'>{fish}</a></td>{cells}</tr>"
+        rows += f"<tr><td class='fish-name'><a href='fish/{fish_slug(fish)}.html'>{fish}</a></td>{cells}</tr>"
     return f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -5481,25 +5502,26 @@ def build_sitemap(data):
     ]
     # fish/*.html
     fish_set = set()
+    _SKIP = {"不明", "欠航"}
     for c in data:
         for f in c["fish"]:
-            if f != "不明":
+            if f not in _SKIP:
                 fish_set.add(f)
     for fish in sorted(fish_set):
-        urls.append((f"{SITE_URL}/fish/{_quote(fish, safe='')}.html", "0.8", "daily"))
+        urls.append((f"{SITE_URL}/fish/{fish_slug(fish)}.html", "0.8", "daily"))
     # area/*.html
     area_set = set(c["area"] for c in data)
     for area in sorted(area_set):
-        urls.append((f"{SITE_URL}/area/{_quote(area, safe='')}.html", "0.7", "daily"))
+        urls.append((f"{SITE_URL}/area/{area_slug(area)}.html", "0.7", "daily"))
     # fish_area/*.html（≥5件の組み合わせ）
     fa_counts: dict = {}
     for c in data:
         for f in c["fish"]:
-            if f != "不明":
+            if f not in _SKIP:
                 fa_counts[(f, c["area"])] = fa_counts.get((f, c["area"]), 0) + 1
     for (fish, area), cnt in sorted(fa_counts.items()):
         if cnt >= 5:
-            urls.append((f"{SITE_URL}/fish_area/{_quote(fish, safe='')}_{_quote(area, safe='')}.html", "0.7", "weekly"))
+            urls.append((f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html", "0.7", "weekly"))
     entries = "\n".join(
         f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
         for loc, pri, freq in urls
