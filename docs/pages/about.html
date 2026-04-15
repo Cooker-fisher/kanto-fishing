@@ -61,17 +61,16 @@ footer a{color:rgba(255,255,255,.8)}
   <a href="/index.html">今日の釣果</a>
   <a href="/fish/">魚種</a>
   <a href="/area/">エリア</a>
-  <a href="/calendar/index.html">カレンダー</a>
-  <a href="/premium/index.html" class="prem">有料プラン</a>
+  <a href="/calendar.html">カレンダー</a>
+  <a href="/forecast/index.html" class="prem">有料プラン</a>
 </nav>
 
 <div class="c">
   <h1 class="pg-title">このサイトについて</h1>
 
   <h2>船釣り予想とは</h2>
-  <p>「船釣り予想」は、関東・静岡エリア（神奈川・東京・千葉・茨城・静岡）の船宿釣果情報を毎日自動収集し、魚種・エリア・船宿を横断的に集計・分析するウェブサービスです。釣りビジョン（fishing-v.jp）に掲載されている釣果データをもとに、約71軒の船宿から51魚種・306ポイントの情報を毎日16:30 JSTに更新しています。</p>
-  <p>「今週どこで何を狙うか」「今年の旬はいつ始まるか」——こうした釣行の意思決定を、横断集計データとAI分析でサポートすることを目的としています。個別の船宿サイトを何件も確認する手間なく、関東全域の釣況を一画面で把握できます。</p>
-  <p>競合サービスとの違いは次のとおりです。釣りビジョンが個別船宿の詳細記録に特化しているのに対し、当サービスは横断集計と予測による意思決定支援に特化しています。船宿.jp（funaduri.jp）が船宿データベース・口コミに特化しているのに対し、当サービスはリアルタイムの釣果傾向と気象×釣果の相関分析が強みです。</p>
+  <p>「船釣り予想」は、関東・静岡エリア（神奈川・東京・千葉・茨城・静岡）の船宿釣果情報を毎日自動収集し、魚種・エリア・船宿を横断的に集計・分析するウェブサービスです。約71軒の船宿から51魚種・306ポイントの情報を毎日16:30 JSTに更新しています。</p>
+  <p>「今週どこで何を狙うか」「今年の旬はいつ始まるか」——こうした釣行の意思決定を、横断集計データと気象分析でサポートすることを目的としています。個別の船宿サイトを何件も確認する手間なく、関東全域の釣況を一画面で把握できます。</p>
 
   <h2>主な機能</h2>
   <div class="feat-grid">
@@ -86,7 +85,7 @@ footer a{color:rgba(255,255,255,.8)}
   <h2>編集方針・データ品質</h2>
   <div class="policy-block">
     <h3>魚種の正規化</h3>
-    <p>船宿によって「LTアジ」「コマセアジ」「大アジ」など表記が異なる場合も、独自の正規化マップ（58パターン）を用いて「アジ」に統一しています。ただし「アマダイ」を「マダイ」に含めるなどの過度な統合は行っておらず、魚種ごとに個別対応しています。</p>
+    <p>「LTアジ」「コマセアジ」「大アジ」など船宿によって異なる表記を、独自の正規化マップ（58パターン）で統一しています。</p>
   </div>
   <div class="policy-block">
     <h3>異常値の処理</h3>
@@ -103,7 +102,7 @@ footer a{color:rgba(255,255,255,.8)}
 
   <h2>データソース</h2>
   <ul>
-    <li><strong>釣果データ</strong>: <a href="https://www.fishing-v.jp/" target="_blank" rel="noopener">釣りビジョン（fishing-v.jp）</a>に掲載されている各船宿の公開釣果情報</li>
+    <li><strong>釣果データ</strong>: 関東・静岡エリアの各船宿が公開している釣果情報（自動収集）</li>
     <li><strong>気象・海況データ</strong>: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a>（波高・波周期・うねり・風速・気温・気圧・水温・潮流）</li>
     <li><strong>潮汐・月齢データ</strong>: 天文計算による算出（基準新月JD 2451550.26 / 朔望月 29.5306日）</li>
     <li><strong>台風トラックデータ</strong>: <a href="https://www.jma.go.jp/jma/jma-eng/jma-center/rsmc-hp-pub-eg/besttrack.html" target="_blank" rel="noopener">気象庁 BestTrack</a></li>
@@ -210,14 +209,14 @@ footer a{color:rgba(255,255,255,.8)}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿</span>
+  <span class="cp">データ収集: 関東・静岡エリア各船宿の公開情報</span>
 </footer>
 <nav class="bn">
   <a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a>
   <a href="/fish/"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a>
   <a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a>
-  <a href="/calendar/index.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a>
-  <a href="/premium/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a>
+  <a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a>
+  <a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a>
 </nav>
 </body>
 </html>
