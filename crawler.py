@@ -3451,7 +3451,7 @@ def build_fish_faq_html(fish, site_url=""):
         f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
         for q, a in faqs
     )
-    jsonld = f'{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{jsonld_items}]}}'
+    jsonld = f'<script type="application/ld+json">{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{jsonld_items}]}}</script>'
     return html, jsonld
 
 def build_area_guide_html(area, desc_data):
@@ -3515,7 +3515,7 @@ def build_area_faq_html(area, desc_data, area_coords=None):
         lon = area_coords[area].get("lon")
         if lat and lon:
             place_json = f',{{"@context":"https://schema.org","@type":"Place","name":{json.dumps(area, ensure_ascii=False)},"geo":{{"@type":"GeoCoordinates","latitude":{lat},"longitude":{lon}}}}}'
-    jsonld = f'[{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{faq_items}]}}{place_json}]'
+    jsonld = f'<script type="application/ld+json">[{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{faq_items}]}}{place_json}]</script>'
     return html, jsonld
 
 # ============================================================
