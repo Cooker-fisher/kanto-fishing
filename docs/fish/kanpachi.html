@@ -10,11 +10,11 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":2,"name":"カンパチの釣果情報","item":"https://funatsuri-yoso.com/fish/kanpachi.html"}]}</script>
-  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"カンパチの船釣りはどの季節が一番釣れますか？","acceptedAnswer":{"@type":"Answer","text":"関東のカンパチ船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"}},
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"カンパチの船釣りはどの季節が一番釣れますか？","acceptedAnswer":{"@type":"Answer","text":"関東のカンパチ船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"}},
 {"@type":"Question","name":"初心者でもカンパチ釣りは楽しめますか？","acceptedAnswer":{"@type":"Answer","text":"はい。カンパチは比較的タックルがシンプルで、船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"}},
 {"@type":"Question","name":"関東でカンパチの船釣りができる主なエリアはどこですか？","acceptedAnswer":{"@type":"Answer","text":"神奈川・東京湾エリアをはじめ、千葉・外房、茨城など幅広いエリアで船が出ています。エリア別釣果ページで各エリアの状況をご確認ください。"}},
 {"@type":"Question","name":"カンパチの船で一日どれくらい釣れますか？","acceptedAnswer":{"@type":"Answer","text":"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"}},
-{"@type":"Question","name":"カンパチ釣りに必要なタックルは何ですか？","acceptedAnswer":{"@type":"Answer","text":"竿・リール・仕掛けのセットが必要です。詳細はこのページの「魚種ガイド」セクションをご覧ください。"}}]}
+{"@type":"Question","name":"カンパチ釣りに必要なタックルは何ですか？","acceptedAnswer":{"@type":"Answer","text":"竿・リール・仕掛けのセットが必要です。詳細はこのページの「魚種ガイド」セクションをご覧ください。"}}]}</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>
   <style>:root{
@@ -183,7 +183,16 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .medal{font-size:16px;vertical-align:middle}
 .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
-.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}</style>
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
+.chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
+.chart-bars .cb.today{opacity:1;background:var(--pos)}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
+.chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}</style>
 </head>
 <body>
 <header>
@@ -196,8 +205,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <a href="/index.html">今日の釣果</a>
   <a href="/fish/" class="on">魚種</a>
   <a href="/area/">エリア</a>
-  <a href="/calendar/index.html">カレンダー</a>
-  <a href="/premium/index.html" class="prem">有料プラン</a>
+  <a href="/calendar.html">カレンダー</a>
+  <a href="/forecast/index.html" class="prem">有料プラン</a>
 </nav>
 <!-- HERO -->
 <div class="hero-fish">
@@ -219,8 +228,15 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <div class="stat-card"><div class="sv">-匹</div><div class="sl">今週の最高釣果</div></div>
 </div>
   
-  <div class="comment">💬 端境期。今のうちに釣っておきたい（今週1件）</div>
+  <div class="comment">💬 オフ入り前のラスト好機（今週1件）</div>
   
+  <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
+<div class="chart7">
+  <h3>匹数上限（上ヒゲ）の7日推移</h3>
+  <div class="chart-bars"><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb today" style="height:4%"></div></div>
+  <div class="chart-labels"><span>4/9</span><span>4/10</span><span>4/11</span><span>4/12</span><span>4/13</span><span>4/14</span><span>今日</span></div>
+  
+</div>
   <h2 class="st">船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr>
   <td style="width:36px;text-align:center"><span class="medal">🥇</span> </td>
@@ -261,7 +277,6 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
   
 </div>
-  <h2 class="st">魚種ガイド</h2>
   
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
@@ -294,7 +309,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/15 08:58</span>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/15 18:52</span>
 </footer>
-<nav class="bn"><a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/" class="on"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar/index.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/premium/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
+<nav class="bn"><a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/" class="on"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
 </body></html>
