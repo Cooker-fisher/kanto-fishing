@@ -2643,6 +2643,66 @@ def load_history():
         except: pass
     return {"weekly": {}, "monthly": {}}
 
+# ============================================================
+# V2 ローダー: fish_tackle / area_description / decadal / area_decadal
+# ============================================================
+ANALYSIS_DB = os.path.join("analysis", "V2", "results", "analysis.sqlite")
+
+def load_fish_tackle():
+    """normalize/fish_tackle.json を {fish: {...}} で返す"""
+    path = os.path.join("normalize", "fish_tackle.json")
+    if not os.path.exists(path): return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except: return {}
+
+def load_area_description():
+    """normalize/area_description.json を {area: {...}} で返す"""
+    path = os.path.join("normalize", "area_description.json")
+    if not os.path.exists(path): return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except: return {}
+
+def load_decadal_calendar():
+    """analysis.sqlite の decadal_calendar を {fish: {decade_no: {cnt_index, size_index}}} で返す"""
+    if not os.path.exists(ANALYSIS_DB): return {}
+    import sqlite3
+    result = {}
+    try:
+        con = sqlite3.connect(ANALYSIS_DB, timeout=10)
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("SELECT fish, decade_no, avg_cnt_index, avg_size_index FROM decadal_calendar")
+        for row in cur.fetchall():
+            result.setdefault(row["fish"], {})[row["decade_no"]] = {
+                "cnt_index":  row["avg_cnt_index"]  or 0,
+                "size_index": row["avg_size_index"] or 0,
+            }
+        con.close()
+    except Exception as e:
+        print(f"load_decadal_calendar: {e}")
+    return result
+
+def load_area_decadal():
+    """analysis.sqlite の area_decadal を {area: {fish: {decade_no: cnt_index}}} で返す"""
+    if not os.path.exists(ANALYSIS_DB): return {}
+    import sqlite3
+    result = {}
+    try:
+        con = sqlite3.connect(ANALYSIS_DB, timeout=10)
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("SELECT area, fish, decade_no, cnt_index FROM area_decadal")
+        for row in cur.fetchall():
+            result.setdefault(row["area"], {}).setdefault(row["fish"], {})[row["decade_no"]] = row["cnt_index"] or 0
+        con.close()
+    except Exception as e:
+        print(f"load_area_decadal: {e}")
+    return result
+
 def current_iso_week():
     now = datetime.now()
     return now.year, now.isocalendar()[1]
@@ -2857,6 +2917,582 @@ def yoy_badge(this_data, last_data):
     pct = round((t_val - l_val) / l_val * 100)
     if pct >= 0: return f'<span class="yoy up">↑昨年比+{pct}%</span>'
     else:        return f'<span class="yoy down">↓昨年比{pct}%</span>'
+
+# ============================================================
+# V2 デザイン共通 CSS
+# ============================================================
+V2_COMMON_CSS = """:root{
+  --bg:#f5f7fa;--card:#fff;--border:#d0d8e0;
+  --text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;
+  --accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;
+  --pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;
+  --hdr:#0d2b4a;--nav:#f0f3f7;--line:#06c755;
+  --r:10px;--mx:900px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+header .domain{font-size:11px;opacity:.5}
+nav.gnav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav.gnav a:hover,nav.gnav a.on{background:var(--accent);color:#fff;text-decoration:none}
+nav.gnav a.prem{color:var(--prem)}
+nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;background:var(--prem);border-radius:50%;margin-right:4px;vertical-align:middle}
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.st.teaser-title{color:var(--prem);border-color:var(--prem)}
+.st .tag{font-size:9px;padding:2px 7px;border-radius:8px;color:#fff;font-weight:700}
+.st .tag.free{background:var(--pos)}.st .tag.coming{background:var(--prem)}
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:22px;text-align:center;margin:16px 0;font-size:11px;color:#999}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--accent);color:#fff;padding:8px;text-align:left;font-size:12px}
+td{padding:8px;border-bottom:1px solid var(--border)}
+tbody tr:hover td{background:#f0f4f8}
+tr.highlight td{background:#e6f7ee}
+tr.dim td{opacity:.45}
+.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center}
+.stat-card .sv{font-size:22px;font-weight:800;color:var(--cta);line-height:1.2}
+.stat-card .sl{font-size:11px;color:var(--muted);margin-top:4px}
+.bar-wrap{background:#e0e8f0;border-radius:2px;height:8px;width:80px}
+.bar-fill{background:linear-gradient(90deg,var(--accent),#2c6ea8);height:8px;border-radius:2px}
+.yoy-table .up{color:var(--pos)}.yoy-table .down{color:var(--neg)}
+.data-note{max-width:var(--mx);margin:20px auto 0;padding:0 14px}
+.data-note details{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px}
+.data-note summary{color:var(--muted);font-size:12px;cursor:pointer;user-select:none}
+.data-note ul{margin-top:8px;padding-left:16px;color:var(--sub);font-size:11px;line-height:1.9}
+footer{background:var(--hdr);color:rgba(255,255,255,.6);padding:20px 14px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.8)}
+footer .fl{margin-top:8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+footer .cp{margin-top:10px;display:block;opacity:.5}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.bn a{flex:1;text-align:center;padding:8px 0 6px;font-size:10px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font-weight:600}
+.bn a svg{width:22px;height:22px;stroke:var(--muted);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bn a.on{color:var(--cta)}.bn a.on svg{stroke:var(--cta)}
+.bn a:hover{color:var(--cta)}.bn a:hover svg{stroke:var(--cta)}
+.bn a.prem.on{color:var(--prem)}.bn a.prem.on svg{stroke:var(--prem)}
+.teaser{background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:1.5px dashed var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
+.teaser-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.teaser-badge{display:inline-block;font-size:10px;padding:3px 9px;background:var(--cta);color:#fff;border-radius:10px;font-weight:700;letter-spacing:.5px}
+.teaser-badge.soon{background:var(--cta)}
+.teaser-title-in{font-size:14px;font-weight:800;color:var(--prem)}
+.teaser-desc{font-size:12px;color:var(--sub);margin-bottom:12px;line-height:1.7}
+.teaser-desc strong{color:var(--accent)}
+.teaser-dummy{background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px;position:relative;filter:blur(1.5px);opacity:.75;pointer-events:none;user-select:none}
+.teaser-dummy .td-fish{font-size:13px;font-weight:800;color:var(--accent)}
+.teaser-dummy .td-star{color:var(--warn);font-size:11px;margin-left:4px}
+.teaser-dummy .td-range{font-size:15px;font-weight:700;color:var(--cta);margin-top:3px}
+.teaser-dummy .td-reason{font-size:10px;color:var(--sub);margin-top:4px}
+.teaser-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.coming-soon-panel{background:rgba(124,58,237,.92);color:#fff;padding:14px 18px;border-radius:12px;font-size:12px;box-shadow:0 4px 16px rgba(124,58,237,.4);min-width:180px;text-align:left}
+.cs-title{font-weight:800;font-size:13px;margin-bottom:8px;text-align:center;letter-spacing:.5px}
+.cs-features{list-style:none;padding:0;margin:0 0 8px 0}
+.cs-features li{padding:2px 0;font-size:11px;line-height:1.5}
+.cs-price{text-align:center;font-size:10px;opacity:.85;border-top:1px solid rgba(255,255,255,.3);padding-top:6px;margin-top:2px}
+.cs-price em{font-style:normal;font-weight:700}
+.teaser-cta-wrap{background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-top:10px;text-align:center}
+.teaser-cta-msg{font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.5}
+.teaser-cta-msg strong{color:var(--accent)}
+.teaser-cta-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cta-line{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--line);color:#fff;border-radius:22px;font-size:13px;font-weight:700;text-decoration:none}
+.cta-line:hover{opacity:.9;text-decoration:none}
+.cta-line .line-ic{width:16px;height:16px;background:#fff;color:var(--line);border-radius:4px;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.teaser-price{font-size:10px;color:var(--muted);margin-top:8px}
+.teaser-price em{color:var(--cta);font-style:normal;font-weight:700}
+.teaser-rotator{background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:1.5px dashed var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.tr-track{overflow:hidden}
+.tr-slide{display:none}
+.tr-slide.is-active{display:block}
+.tr-dots{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.tr-dot{width:8px;height:8px;border-radius:50%;background:#d4c4f5;border:none;cursor:pointer;padding:0;transition:background .2s}
+.tr-dot.is-active{background:var(--prem)}
+.season-map{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.season-map h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.sm-wrap{overflow-x:auto}
+.sm-table{border-collapse:separate;border-spacing:3px;min-width:220px}
+.sm-table th{font-size:10px;color:var(--muted);font-weight:600;text-align:center;padding:2px 4px}
+.sm-th-mo{font-size:11px;font-weight:700;color:var(--sub);text-align:left;padding-right:8px;white-space:nowrap}
+.sm-cell{width:40px;height:24px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;vertical-align:middle}
+.sm-cell[data-v="0"]{background:#eef2f5;color:var(--muted)}
+.sm-cell[data-v="1"]{background:#c8e6c9;color:#2e7d32}
+.sm-cell[data-v="2"]{background:#66bb6a;color:#fff}
+.sm-cell[data-v="3"]{background:#388e3c;color:#fff}
+.sm-cell[data-v="4"]{background:#1b5e20;color:#fff}
+.sm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)}
+.sm-lc{width:14px;height:14px;border-radius:2px;display:inline-block}
+.area-season{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.as-wrap{overflow-x:auto}
+.as-table{border-collapse:separate;border-spacing:3px;min-width:220px}
+.as-table th{font-size:10px;color:var(--muted);font-weight:600;text-align:center;padding:2px 4px}
+.as-th-fish{font-size:11px;font-weight:700;color:var(--sub);text-align:left;padding-right:8px;white-space:nowrap}
+.as-cell{width:36px;height:22px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;vertical-align:middle}
+.as-cell[data-v="0"]{background:#eef2f5;color:var(--muted)}
+.as-cell[data-v="1"]{background:#c8e6c9;color:#2e7d32}
+.as-cell[data-v="2"]{background:#66bb6a;color:#fff}
+.as-cell[data-v="3"]{background:#388e3c;color:#fff}
+.as-cell[data-v="4"]{background:#1b5e20;color:#fff}
+.as-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)}
+.as-lc{width:14px;height:14px;border-radius:2px;display:inline-block}
+.fish-guide{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fish-guide>h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px}
+.fg-row{display:flex;gap:10px;line-height:1.75;padding:7px 0;border-bottom:1px solid var(--bg)}
+.fg-row:last-child{border-bottom:none}
+.fg-lbl{flex:0 0 68px;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.4px;padding-top:3px}
+.fg-val{flex:1;font-size:13px;color:var(--text)}
+.fg-val .sub{font-size:11px;color:var(--sub)}
+.tackle-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.tk{background:var(--bg);border-radius:6px;padding:6px 8px}
+.tk-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.tk-val{font-size:11px;color:var(--text);margin-top:1px;line-height:1.45}
+.area-guide{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.area-guide>h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px}
+.ag-row{display:flex;gap:10px;line-height:1.75;padding:7px 0;border-bottom:1px solid var(--bg)}
+.ag-row:last-child{border-bottom:none}
+.ag-lbl{flex:0 0 68px;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.4px;padding-top:3px}
+.ag-val{flex:1;font-size:13px;color:var(--text)}
+.access-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.ac{background:var(--bg);border-radius:6px;padding:6px 8px}
+.ac-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.ac-val{font-size:11px;color:var(--text);margin-top:1px;line-height:1.45}
+.faq-list{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.faq-list>h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.faq-list details{border-bottom:1px solid var(--bg)}
+.faq-list details:last-child{border-bottom:none}
+.faq-list summary{font-size:13px;font-weight:600;color:var(--accent);padding:11px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:"+";font-size:16px;color:var(--muted);flex-shrink:0;line-height:1}
+.faq-list details[open]>summary::after{content:"−"}
+.faq-ans{font-size:12px;color:var(--sub);line-height:1.75;padding-bottom:12px}
+.overview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.overview-title{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:6px}
+.overview-body{font-size:13px;color:var(--text);line-height:1.8}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+@media(max-width:640px){header{padding:10px 14px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}"""
+
+# ============================================================
+# V2 ビルダー関数
+# ============================================================
+
+def _v2_header_nav(active_page=""):
+    """V2共通ヘッダー + グローバルナビ"""
+    pages = [
+        ("今日の釣果", "index.html", ""),
+        ("魚種",       "fish/",      ""),
+        ("エリア",     "area/",      ""),
+        ("カレンダー", "calendar/index.html", ""),
+        ("有料プラン", "premium/index.html",  "prem"),
+    ]
+    links = ""
+    for label, href, cls in pages:
+        on = " on" if active_page in href or active_page == label else ""
+        links += f'<a href="/{href}" class="{cls}{on}".strip()>{label}</a>'
+    return f"""<header>
+  <div class="inner">
+    <h1>船釣り<span>予想</span></h1>
+    <span class="domain">funatsuri-yoso.com</span>
+  </div>
+</header>
+<nav class="gnav">
+  <a href="/index.html"{' class="on"' if active_page == 'index' else ''}>今日の釣果</a>
+  <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
+  <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
+  <a href="/calendar/index.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
+  <a href="/premium/index.html" class="prem{' on' if active_page == 'premium' else ''}">有料プラン</a>
+</nav>"""
+
+def _v2_footer(crawled_at=""):
+    return f"""<footer>
+  <div>© 2026 船釣り予想 (funatsuri-yoso.com)</div>
+  <div class="fl">
+    <a href="/pages/about.html">サイトについて</a>
+    <a href="/pages/privacy.html">プライバシーポリシー</a>
+    <a href="/pages/terms.html">利用規約</a>
+    <a href="/pages/contact.html">お問い合わせ</a>
+  </div>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿{' | 最終更新: ' + crawled_at if crawled_at else ''}</span>
+</footer>"""
+
+def _v2_bottom_nav(active_page=""):
+    icons = {
+        "index": '<svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>',
+        "fish":  '<svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>',
+        "area":  '<svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+        "cal":   '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>',
+        "prem":  '<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>',
+    }
+    items = [
+        ("index", "/index.html", "釣果", ""),
+        ("fish",  "/fish/",      "魚種", ""),
+        ("area",  "/area/",      "エリア", ""),
+        ("cal",   "/calendar/index.html", "カレンダー", ""),
+        ("prem",  "/premium/index.html",  "有料", "prem"),
+    ]
+    nav = '<nav class="bn">'
+    for key, href, label, cls in items:
+        on = " on" if active_page == key else ""
+        cls_attr = f'{cls}{on}'.strip()
+        nav += f'<a href="{href}"{" class=" + chr(34) + cls_attr + chr(34) if cls_attr else ""}>{icons[key]}{label}</a>'
+    nav += '</nav>'
+    return nav
+
+def build_teaser_rotator_html():
+    """有料機能プレビュー ローテーターパネル（index.html用）"""
+    return """<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser-rotator">
+  <div class="tr-track">
+    <div class="tr-slide is-active">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title-in">今週の狙い目 — 週末TOP5魚種</span>
+      </div>
+      <div class="teaser-desc">約10万件の釣果データ×気象×潮汐をAI分析。<strong>今週末の狙い目魚種・エリア</strong>をランキング表示。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy"><div class="td-fish">アジ <span class="td-star">★★★★★</span></div><div class="td-range">25〜45匹 / 18〜25cm</div><div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div></div>
+        <div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div><div class="td-range">0〜5匹 / 30〜55cm</div><div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 今週 日毎の釣果予測</li><li>✓ 2・3・4週先の釣果予測</li><li>✓ 気象×潮汐で自動算出</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+      </div>
+    </div>
+    <div class="tr-slide">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title-in">予測の答え合わせ — 予測 vs 実績</span>
+      </div>
+      <div class="teaser-desc"><strong>前日の予測</strong>が実際の釣果と一致したかを毎日公開。「なぜ当たった・外れたか」を正直レポート。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy"><div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div><div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div><div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div></div>
+        <div class="teaser-dummy"><div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div><div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div><div class="td-reason">水温× 予報より1.5℃低下で活性低下</div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 先週の予測 vs 実績比較</li><li>✓ 予測精度スコア</li><li>✓ 外れた理由の解説</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+      </div>
+    </div>
+    <div class="tr-slide">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title-in">分析・予測 — 注目コンボ・急落コンボ</span>
+      </div>
+      <div class="teaser-desc"><strong>魚種×エリアの組合せ</strong>を独自スコアリング。「来週のどの日に何が釣れるか」を日別で予測。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy"><div class="td-fish">注目: アジ × 金沢八景</div><div class="td-range">スコア 92 / 平年比 +38%</div><div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div></div>
+        <div class="teaser-dummy"><div class="td-fish">急落: タチウオ × 走水</div><div class="td-range">先週比 -45%</div><div class="td-reason">水温急低下でベイトが抜けた模様</div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 日別釣果予測（7日先）</li><li>✓ 気象相関グラフ</li><li>✓ 急上昇・急落コンボ通知</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="tr-dots">
+    <button class="tr-dot is-active" aria-label="スライド1"></button>
+    <button class="tr-dot" aria-label="スライド2"></button>
+    <button class="tr-dot" aria-label="スライド3"></button>
+  </div>
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg">公開時に<strong>LINEでお知らせ</strong>します。友だち追加してお待ちください。</div>
+    <div class="teaser-cta-btns"><a class="cta-line" href="#line-pending"><span class="line-ic">L</span>LINEで通知を受け取る</a></div>
+    <div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>
+  </div>
+</div>"""
+
+def build_index_overview_text(catches, history, crawled_at=""):
+    """今日の関東船釣り概況テキスト（200〜300字）を生成"""
+    now = datetime.now()
+    year, week_num = current_iso_week()
+    total = len(catches)
+    areas_set = set(c["area"] for c in catches)
+    ships_set = set(c["ship"] for c in catches)
+    # 主力魚種 TOP3
+    fish_counts: dict = {}
+    for c in catches:
+        for f in c["fish"]:
+            if f != "不明": fish_counts[f] = fish_counts.get(f, 0) + 1
+    top_fish = sorted(fish_counts.items(), key=lambda x: -x[1])[:3]
+    top_names = "・".join(f for f, _ in top_fish)
+    # 昨年比（TOP魚種）
+    yoy_text = ""
+    if top_fish:
+        f1 = top_fish[0][0]
+        this_w, last_w = get_yoy_data(history, f1, year, week_num)
+        if this_w and last_w and last_w.get("ships"):
+            pct = round((this_w.get("ships", 0) - last_w["ships"]) / last_w["ships"] * 100)
+            if pct > 0:   yoy_text = f"先週比+{pct}%と上昇傾向が続いています。"
+            elif pct < 0: yoy_text = f"先週比{pct}%とやや低調です。"
+            else:          yoy_text = "先週並みの釣果が続いています。"
+    # 組み合わせ文
+    body = (
+        f"本日は関東全域で{total}件の釣果報告が寄せられました（{len(areas_set)}エリア・{len(ships_set)}船宿）。"
+        f"主力魚種は{top_names}。"
+    )
+    if top_fish and yoy_text:
+        f1 = top_fish[0][0]
+        top_areas = list(dict.fromkeys(c["area"] for c in catches if f1 in c["fish"]))[:2]
+        area_str = "・".join(top_areas) if top_areas else "各エリア"
+        body += f"{f1}は{area_str}を中心に{yoy_text}"
+    body += "最新の釣果情報・船宿ランキングは各魚種・エリアページをご確認ください。"
+    title_str = crawled_at + " 更新" if crawled_at else now.strftime("%Y/%m/%d") + " 更新"
+    return (
+        f'<h2 class="st">今日の関東船釣り概況 <span class="tag free">無料</span></h2>'
+        f'<div class="overview">'
+        f'<div class="overview-title">{title_str} — {len(areas_set)}エリア・{len(ships_set)}船宿から集計</div>'
+        f'<div class="overview-body">{body}</div>'
+        f'</div>'
+    )
+
+def _decadal_to_monthly_index(fish_decades: dict) -> list:
+    """36旬のcnt_indexを12か月平均に変換して返す（0〜4スケール）"""
+    monthly = []
+    for m in range(1, 13):
+        d1 = (m - 1) * 3 + 1
+        d2 = d1 + 1
+        d3 = d1 + 2
+        vals = [fish_decades.get(d, {}).get("cnt_index", 100) for d in (d1, d2, d3)]
+        avg = sum(vals) / len(vals)
+        # 100を中央値として0〜4スケール
+        if avg >= 160:   lv = 4
+        elif avg >= 130: lv = 3
+        elif avg >= 90:  lv = 2
+        elif avg >= 50:  lv = 1
+        else:            lv = 0
+        monthly.append(lv)
+    return monthly
+
+def _decadal_to_monthly_size_index(fish_decades: dict) -> list:
+    """36旬のsize_indexを12か月平均に変換して返す（0〜4スケール）"""
+    monthly = []
+    for m in range(1, 13):
+        d1 = (m - 1) * 3 + 1
+        d2 = d1 + 1
+        d3 = d1 + 2
+        vals = [fish_decades.get(d, {}).get("size_index", 100) for d in (d1, d2, d3)]
+        avg = sum(vals) / len(vals)
+        if avg >= 110:   lv = 4
+        elif avg >= 103: lv = 3
+        elif avg >= 97:  lv = 2
+        elif avg >= 90:  lv = 1
+        else:            lv = 0
+        monthly.append(lv)
+    return monthly
+
+def build_fish_season_map_html(fish, decadal_calendar):
+    """魚種の旬カレンダー（12か月×数釣/型釣 ヒートマップ）"""
+    fish_decades = decadal_calendar.get(fish, {})
+    cnt_levels   = _decadal_to_monthly_index(fish_decades)
+    size_levels  = _decadal_to_monthly_size_index(fish_decades)
+    month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+    ths = "".join(f"<th>{m}</th>" for m in month_labels)
+    cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
+    size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
+    note = "" if fish_decades else f'<p style="font-size:11px;color:var(--muted)">※ {fish}のデータが不足しています</p>'
+    return f"""<div class="season-map">
+  <div class="sm-wrap">
+    <table class="sm-table">
+      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
+      <tbody>
+        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
+        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sm-legend">
+    <span>釣れ具合：</span>
+    <span class="sm-lc" style="background:#eef2f5"></span>なし
+    <span class="sm-lc" style="background:#c8e6c9"></span>渋
+    <span class="sm-lc" style="background:#66bb6a"></span>普通
+    <span class="sm-lc" style="background:#388e3c"></span>良
+    <span class="sm-lc" style="background:#1b5e20"></span>◎
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
+  <div style="margin-top:8px;padding:8px 10px;background:#f8f4ff;border:1px dashed var(--prem);border-radius:6px;font-size:11px;color:var(--prem);font-weight:600">
+    🔒 上旬/中旬/下旬の旬別詳細データは有料プランで公開予定
+  </div>
+  {note}
+</div>"""
+
+def build_area_season_map_html(area, area_decadal, top_fish_list):
+    """エリアの魚種別旬カレンダー（魚種×12か月 ヒートマップ）"""
+    area_data = area_decadal.get(area, {})
+    month_labels = ["1","2","3","4","5","6","7","8","9","10","11","12"]
+    ths = "".join(f"<th>{m}</th>" for m in month_labels)
+    rows = ""
+    for fish in top_fish_list[:6]:
+        fish_decades = area_data.get(fish, {})
+        # area_decadal は cnt_index のみ
+        cnt_levels = []
+        for m in range(1, 13):
+            d1 = (m - 1) * 3 + 1
+            d2 = d1 + 1
+            d3 = d1 + 2
+            vals = [fish_decades.get(d, 100) for d in (d1, d2, d3)]
+            avg = sum(vals) / 3
+            if avg >= 160:   lv = 4
+            elif avg >= 130: lv = 3
+            elif avg >= 90:  lv = 2
+            elif avg >= 50:  lv = 1
+            else:            lv = 0
+            cnt_levels.append(lv)
+        cells = "".join(f'<td class="as-cell" data-v="{lv}"></td>' for lv in cnt_levels)
+        rows += f'<tr><th class="as-th-fish">{fish}</th>{cells}</tr>\n'
+    if not rows:
+        return ""
+    return f"""<div class="area-season">
+  <div class="as-wrap">
+    <table class="as-table">
+      <thead><tr><th class="as-th-fish"></th>{ths}</tr></thead>
+      <tbody>{rows}</tbody>
+    </table>
+  </div>
+  <div class="as-legend">
+    <span>釣れ具合：</span>
+    <span class="as-lc" style="background:#eef2f5"></span>なし
+    <span class="as-lc" style="background:#c8e6c9"></span>渋
+    <span class="as-lc" style="background:#66bb6a"></span>普通
+    <span class="as-lc" style="background:#388e3c"></span>良
+    <span class="as-lc" style="background:#1b5e20"></span>◎
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の釣果データより集計（2023〜2025年）</p>
+</div>"""
+
+def build_fish_guide_html(fish, tackle_data):
+    """魚種ガイドセクション（釣り方・タックル・サイズ・外道・出船率）"""
+    td = tackle_data.get(fish) if tackle_data else None
+    if not td:
+        return ""
+    method = td.get("method_detail") or td.get("method_name") or ""
+    size_info = td.get("size_typical", {})
+    if isinstance(size_info, dict):
+        size_text = size_info.get("text", "")
+    else:
+        size_text = str(size_info)
+    bycatch = td.get("bycatch") or []
+    bycatch_text = "・".join(bycatch) if bycatch else ""
+    notes = td.get("notes") or ""
+    # タックル表示
+    tackle = td.get("tackle") or {}
+    tackle_html = ""
+    if isinstance(tackle, dict):
+        # タックルが複数釣法に分かれている場合は最初の一つだけ表示
+        first_key = next(iter(tackle), None)
+        if first_key:
+            t = tackle[first_key]
+            if isinstance(t, dict):
+                rod   = t.get("rod", "")
+                reel  = t.get("reel", "")
+                line  = t.get("line", "")
+                rig   = t.get("rig", "")
+                bait  = t.get("bait", "")
+                tackle_html = f"""<div class="tackle-grid">
+          <div class="tk"><div class="tk-lbl">竿</div><div class="tk-val">{rod}</div></div>
+          <div class="tk"><div class="tk-lbl">リール</div><div class="tk-val">{reel}</div></div>
+          <div class="tk"><div class="tk-lbl">ライン</div><div class="tk-val">{line}</div></div>
+          <div class="tk"><div class="tk-lbl">仕掛け</div><div class="tk-val">{rig}</div></div>
+          <div class="tk" style="grid-column:span 2"><div class="tk-lbl">エサ</div><div class="tk-val">{bait}</div></div>
+        </div>"""
+    rows = ""
+    if method:
+        rows += f'<div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">{method}</span></div>'
+    if tackle_html:
+        rows += f'<div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val">{tackle_html}</span></div>'
+    if size_text:
+        rows += f'<div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>{size_text}</strong></span></div>'
+    if bycatch_text:
+        rows += f'<div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">{bycatch_text}</span></div>'
+    if notes:
+        rows += f'<div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">{notes}</span></div>'
+    if not rows:
+        return ""
+    return f"""<div class="fish-guide">
+  <h3>{fish}の船釣り（関東）基本情報</h3>
+  {rows}
+</div>"""
+
+def build_fish_faq_html(fish, site_url=""):
+    """魚種別FAQ（デフォルト質問セット）＋ FAQPage JSON-LD を返す (html, jsonld) のタプル"""
+    faqs = [
+        (f"{fish}の船釣りはどの季節が一番釣れますか？",
+         f"関東の{fish}船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"),
+        (f"初心者でも{fish}釣りは楽しめますか？",
+         f"はい。{fish}は比較的タックルがシンプルで、船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"),
+        (f"関東で{fish}の船釣りができる主なエリアはどこですか？",
+         f"神奈川・東京湾エリアをはじめ、千葉・外房、茨城など幅広いエリアで船が出ています。エリア別釣果ページで各エリアの状況をご確認ください。"),
+        (f"{fish}の船で一日どれくらい釣れますか？",
+         f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"),
+        (f"{fish}釣りに必要なタックルは何ですか？",
+         f"竿・リール・仕掛けのセットが必要です。詳細はこのページの「魚種ガイド」セクションをご覧ください。"),
+    ]
+    html = '<div class="faq-list">\n'
+    for q, a in faqs:
+        html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}</p></details>\n'
+    html += '</div>'
+    jsonld_items = ",\n".join(
+        f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
+        for q, a in faqs
+    )
+    jsonld = f'{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{jsonld_items}]}}'
+    return html, jsonld
+
+def build_area_guide_html(area, desc_data):
+    """エリアガイドセクション（アクセス・特徴・主要ポイント・船宿系統・出船率）"""
+    ad = desc_data.get(area) if desc_data else None
+    if not ad:
+        return ""
+    rows = ""
+    if ad.get("feature"):
+        rows += f'<div class="ag-row"><span class="ag-lbl">エリア特徴</span><span class="ag-val">{ad["feature"]}</span></div>'
+    train = ad.get("access_train", "")
+    car   = ad.get("access_car", "")
+    if train or car:
+        ac_cells = ""
+        if train: ac_cells += f'<div class="ac"><div class="ac-lbl">電車</div><div class="ac-val">{train}</div></div>'
+        if car:   ac_cells += f'<div class="ac"><div class="ac-lbl">車</div><div class="ac-val">{car}</div></div>'
+        rows += f'<div class="ag-row"><span class="ag-lbl">アクセス</span><span class="ag-val"><div class="access-grid">{ac_cells}</div></span></div>'
+    if ad.get("key_points"):
+        rows += f'<div class="ag-row"><span class="ag-lbl">主要ポイント</span><span class="ag-val">{ad["key_points"]}</span></div>'
+    if ad.get("key_ships"):
+        rows += f'<div class="ag-row"><span class="ag-lbl">主力船宿</span><span class="ag-val">{ad["key_ships"]}</span></div>'
+    if ad.get("departure_rate"):
+        rows += f'<div class="ag-row"><span class="ag-lbl">出船率</span><span class="ag-val">{ad["departure_rate"]}</span></div>'
+    if not rows:
+        return ""
+    pref = ad.get("prefecture", "")
+    title_sub = f"（{pref}）" if pref else ""
+    return f"""<div class="area-guide">
+  <h3>{area}{title_sub}</h3>
+  {rows}
+</div>"""
+
+def build_area_faq_html(area, desc_data, area_coords=None):
+    """エリア別FAQ＋ FAQPage+Place JSON-LD を返す (html, jsonld) のタプル"""
+    ad = (desc_data.get(area) or {}) if desc_data else {}
+    top_fish_str = ad.get("top_fish_text", "複数の魚種")
+    faqs = [
+        (f"{area}で釣れる魚は何ですか？",
+         f"{top_fish_str}が主力です。季節によって釣れる魚が変わります。旬カレンダーで月別の状況をご確認ください。"),
+        (f"{area}エリアへのアクセス方法は？",
+         ad.get("access_summary") or f"{area}への詳細なアクセスは各船宿のウェブサイトをご確認ください。"),
+        (f"{area}は初心者向けですか？",
+         f"はい。タックルレンタルや仕掛け販売が充実した船宿があります。船宿スタッフのサポートも受けられるため初心者の方も安心して楽しめます。"),
+        (f"{area}でおすすめの時期はいつですか？",
+         f"魚種によって旬が異なります。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"),
+        (f"{area}の主要な釣りポイントはどこですか？",
+         ad.get("key_points") or f"{area}の主要ポイントは各船宿のページでご確認ください。"),
+    ]
+    html = '<div class="faq-list">\n'
+    for q, a in faqs:
+        html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}</p></details>\n'
+    html += '</div>'
+    # JSON-LD: FAQPage + Place
+    faq_items = ",\n".join(
+        f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
+        for q, a in faqs
+    )
+    place_json = ""
+    if area_coords and area in area_coords:
+        lat = area_coords[area].get("lat")
+        lon = area_coords[area].get("lon")
+        if lat and lon:
+            place_json = f',{{"@context":"https://schema.org","@type":"Place","name":{json.dumps(area, ensure_ascii=False)},"geo":{{"@type":"GeoCoordinates","latitude":{lat},"longitude":{lon}}}}}'
+    jsonld = f'[{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{faq_items}]}}{place_json}]'
+    return html, jsonld
 
 # ============================================================
 # シーズンデータ
@@ -3794,28 +4430,44 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 f'<div class="prob-bar-bg"><div class="prob-bar-fill" style="width:{prob}%;background:{color}"></div></div>'
                 f'<span class="prob-pct" style="color:{color};font-weight:bold">{label}</span></div>'
             )
-        stats_html = f'<div class="fc-stats-row">{yoy_html}{avg_html}{surge_badge}</div>{trend_html}{prob_html}'
-        stale_note = f'<div class="fc-stale">⚠️ 最終釣果: {latest_date or "不明"}（30日以上前）</div>' if is_stale else ""
-        fc_cls = ' stale' if is_stale else ''
-        cards += f"""
-    <div class="fc{fc_cls}">
-      <div class="fc-summary">
-        <div class="fn">{fish}{ships_html}</div>
-        <div class="fk">{len(cs)}件</div>
-        <div class="fa">{" / ".join(areas_list)}</div>
-        {stats_html}
-        {stale_note}
-      </div>
-      <a class="fc-link" href="fish/{fish}.html">詳細・船宿ランキング →</a>
-      <div class="fc-detail" style="display:none" id="detail-{fish_id}">
-        <div class="tab-wrap">
-          <button class="tab-btn active" onclick="switchTab(event,'daily-{fish_id}','weekly-{fish_id}')">デイリー</button>
-          <button class="tab-btn" onclick="switchTab(event,'weekly-{fish_id}','daily-{fish_id}')">ウィークリー</button>
-        </div>
-        <div id="daily-{fish_id}"><div class="tbl-wrap"><table class="rank-table"><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{daily_rows or '<tr><td colspan=6 style="color:#7a9bb5">データなし</td></tr>'}</table></div></div>
-        <div id="weekly-{fish_id}" style="display:none"><div class="tbl-wrap"><table class="rank-table"><tr><th>船宿</th><th>釣果数</th><th>割合</th></tr>{weekly_rows or '<tr><td colspan=3 style="color:#7a9bb5">データなし</td></tr>'}</table></div></div>
-      </div>
-    </div>"""
+        # V2 カード用データ計算
+        cnt_range_str = ""
+        if this_w:
+            mx = this_w.get("max") or 0
+            av = this_w.get("avg") or 0
+            if av and mx: cnt_range_str = f"{av:.0f}〜{mx}匹"
+            elif mx:       cnt_range_str = f"〜{mx}匹"
+            elif av:       cnt_range_str = f"平均{av:.0f}匹"
+        if not cnt_range_str: cnt_range_str = f"{len(cs)}件"
+        sz_val = (this_w.get("size_avg") or 0) if this_w else 0
+        sz_str = f"{sz_val:.0f}cm" if sz_val else ""
+        areas_str2 = "・".join(areas_list[:2])
+        detail_str = " | ".join(filter(None, [sz_str, f"{len(cs)}件・{ship_num}隻", areas_str2]))
+        top_ship_name = sorted(ship_counts.items(), key=lambda x: -x[1])[0][0] if ship_counts else ""
+        yoy_pct_str = ""
+        if this_w and last_w and last_w.get("ships"):
+            _p = round((this_w.get("ships", 0) - last_w["ships"]) / last_w["ships"] * 100)
+            if abs(_p) >= 5: yoy_pct_str = f"{'+'if _p>=0 else ''}{_p}%"
+        fb_text = " ".join(filter(None, [f"◎{top_ship_name}" if top_ship_name else "", yoy_pct_str]))
+        v2_trend_cls, v2_trend_txt = "", ""
+        if this_w and prev_w:
+            _ts = this_w.get("ships") or 0
+            _ps = prev_w.get("ships") or 0
+            if _ts and _ps:
+                if _ts/_ps > 1.2:   v2_trend_cls, v2_trend_txt = "up",   "↑ 先週より上昇"
+                elif _ts/_ps < 0.8: v2_trend_cls, v2_trend_txt = "dn",   "↓ 先週より減少"
+                else:                v2_trend_cls, v2_trend_txt = "flat", "→ 先週並み"
+        stale_cls = " stale" if is_stale else ""
+        trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
+        fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
+        cards += (
+            f'<a class="fc{stale_cls}" href="fish/{fish}.html">'
+            f'<div class="fn">{fish}</div>'
+            f'<div class="fr">{cnt_range_str} <small>{len(cs)}件・{ship_num}隻</small></div>'
+            f'<div class="fs">{detail_str}</div>'
+            f'{fb_tag}{trend_tag}'
+            f'</a>'
+        )
     targets      = calc_targets(catches, history)
     target_html  = build_target_section(targets)
     forecast     = build_forecast(targets)
@@ -3844,134 +4496,169 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="area-group-links">{"".join(others)}</div></div>'
         )
     area_nav = "".join(area_nav_parts)
+    # V2 エリアチップ（ZONE B2）
+    area_chips_html = ""
+    for group_label, group_areas in AREA_GROUPS.items():
+        for a in group_areas:
+            if a in active_areas:
+                cnt = sum(1 for c in catches if c["area"] == a)
+                area_chips_html += (
+                    f'<a class="area-chip" href="area/{a}.html">'
+                    f'<span class="ac-name">{a}</span>'
+                    f'<span class="ac-cnt">{cnt}件</span>'
+                    f'</a>'
+                )
+    # V2 魚種ナビチップ（ZONE E）
+    fish_nav_html = "".join(
+        f'<a href="fish/{f}.html">{f}</a>'
+        for f in sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))[:12]
+    )
+    area_nav_html = "".join(
+        f'<a href="area/{a}.html">{a}</a>'
+        for a in sorted(active_areas)[:12]
+    )
+    # V2 概況テキスト
+    overview_html = build_index_overview_text(catches, history, crawled_at)
+    # V2 ティザー
+    teaser_html = build_teaser_rotator_html()
+    # V2 その他魚種（fish_others）
+    sorted_fish = sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))
+    main_fish = sorted_fish[:10]
+    other_fish = sorted_fish[10:]
+    main_cards = "".join(
+        cards_part for f, cards_part in zip(
+            [f for f in sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))],
+            cards.split('</a><a ') if '</a><a ' in cards else [cards]
+        )
+    ) if cards else ""
+    # カードをそのまま使う（分割せずに）
+    fish_others_html = ""
+    if other_fish:
+        other_links = "".join(f'<a href="fish/{f}.html">{f}</a>' for f in other_fish)
+        fish_others_html = (
+            f'<div class="fish-others">'
+            f'<div class="fo-title">今日ほかに釣れている魚</div>'
+            f'<div class="fo-list">{other_links}</div>'
+            f'</div>'
+        )
+    # HERO 数値
+    hero_count = len(catches)
+    hero_ships = len(set(c["ship"] for c in catches))
+    hero_areas = len(active_areas)
+    index_extra_css = """.hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;text-align:center;padding:24px 14px 20px}
+.hero-sub{font-size:12px;color:rgba(255,255,255,.6)}
+.hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1.1}
+.hero .n u{font-size:16px;color:rgba(255,255,255,.7);font-weight:400;text-decoration:none;margin-left:3px}
+.hero .info{font-size:12px;color:rgba(255,255,255,.6);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
+.hero .dot{width:6px;height:6px;background:var(--pos);border-radius:50%;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero .updated{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+.fish-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;transition:border-color .15s}
+.fc:hover{border-color:var(--cta);text-decoration:none}
+.fc .fn{font-size:14px;font-weight:800;color:var(--accent)}
+.fc .fr{font-size:18px;font-weight:800;color:var(--cta);margin-top:2px}
+.fc .fr small{font-size:11px;color:var(--muted);font-weight:400}
+.fc .fs{font-size:10px;color:var(--muted)}
+.fc .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
+.fc .trend{font-size:9px;font-weight:700;margin-top:2px}
+.fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
+.fc.stale{opacity:.6}
+.fish-others{margin:12px 0 20px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.fo-title{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.fo-list{display:flex;flex-wrap:wrap;gap:4px}
+.fo-list a{font-size:12px;padding:3px 8px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
+.fo-list a:hover{background:var(--accent);color:#fff;text-decoration:none}
+.area-sec{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.area-sec h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.area-chips{display:flex;flex-wrap:wrap;gap:5px}
+.area-chip{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--bg);border-radius:8px;text-decoration:none}
+.area-chip:hover{background:var(--accent);text-decoration:none}
+.area-chip .ac-name{font-size:13px;font-weight:700;color:var(--accent)}
+.area-chip:hover .ac-name,.area-chip:hover .ac-cnt{color:#fff}
+.area-chip .ac-cnt{font-size:10px;color:var(--muted)}
+.nav-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.nav-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.nav-chips{display:flex;flex-wrap:wrap;gap:5px}
+.nav-chips a{font-size:12px;padding:5px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
+.nav-chips a:hover{background:var(--accent);color:#fff;text-decoration:none}"""
+    jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>関東船釣り釣果情報 | 今日何が釣れてる？</title>
-  <meta name="description" content="関東エリア（神奈川・千葉）の船宿釣果をリアルタイム集計。今週の狙い目魚種、釣れている船宿ランキングを毎日更新。">
+  <title>関東船釣り釣果情報 | 今日何が釣れてる？ | 船釣り予想</title>
+  <meta name="description" content="関東エリア（神奈川・東京・千葉・茨城）の船宿釣果を毎日更新。今日釣れている魚・エリア別速報・船宿ランキング。">
+  <link rel="canonical" href="{SITE_URL}/">
+  <meta property="og:title" content="関東船釣り釣果情報 | 今日何が釣れてる？">
+  <meta property="og:description" content="関東エリアの船宿釣果を毎日自動集計。今日釣れている魚・エリア別速報。">
+  <meta property="og:url" content="{SITE_URL}/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="船釣り予想">
+  <script type="application/ld+json">{jsonld_website}</script>
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{CSS}</style>
+  <style>{V2_COMMON_CSS}
+{index_extra_css}</style>
 </head>
 <body>
-<header>
-  <h1>🎣 関東船釣り釣果情報</h1>
-  <p>今日、何が釣れてる？ 関東エリアの船宿釣果をリアルタイム集計</p>
-  <p class="site-desc">神奈川・東京・千葉・茨城の船宿{len(SHIPS)}軒の釣果を毎日自動収集。魚種・エリア・船宿を横断比較して「今週どこへ行くか」の意思決定をサポートします。</p>
-</header>
-<nav>
-  <a href="index.html">🏠 トップ</a>
-  <a href="calendar.html">📅 釣りものカレンダー</a>
-  <span style="color:#1a4060">|</span>
-  <div class="area-dropdown">
-    <button class="area-btn" onclick="var m=document.getElementById('areaMenu');m.classList.toggle('open')">エリアから探す ▼</button>
-    <div class="area-menu" id="areaMenu">{area_nav}</div>
+{_v2_header_nav("index")}
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-sub">関東船釣り釣果情報</div>
+  <div class="n">{hero_count}<u>件</u></div>
+  <div class="info">
+    <span class="dot"></span>
+    <span>本日の釣果報告 — {hero_ships}船宿・{hero_areas}エリア</span>
   </div>
-</nav>
-<script>document.addEventListener('click',function(e){{if(!e.target.closest('.area-dropdown'))document.getElementById('areaMenu').classList.remove('open')}});</script>
-<div class="wrap">
-  <h2>🎯 今週の狙い目</h2>
-  {forecast}
-  {target_html}
-  {weather_html}
-  {forecast_html}
-  {combo_html}
-  <h2>🐟 釣れている魚</h2>
-  <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">タップで詳細表示 ／ 各カードの「詳細→」で船宿ランキングを確認</p>
-  <div class="grid">{cards}</div>
-  <h2>📋 最新の釣果</h2>
-  {catch_table}
-  <p class="note">最終更新: {crawled_at}<span id="new-badge"></span> ／ 総件数: {len(catches)} 件</p>
+  <div class="updated">最終更新: {crawled_at}</div>
 </div>
+<div class="c">
+<!-- ZONE B: 釣れている魚 -->
+<h2 class="st">今日釣れている魚 <span class="tag free">無料</span></h2>
+<div class="fish-grid">{cards}</div>
+{fish_others_html}
+<!-- ZONE B2: エリア別 -->
+<h2 class="st">エリア別の釣果 <span class="tag free">無料</span></h2>
+<div class="area-sec">
+  <div class="area-chips">{area_chips_html}</div>
+</div>
+<!-- 海況データ -->
+{weather_html}
+<!-- TEASER ROTATOR -->
+{teaser_html}
+<!-- 広告① -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
+<!-- 概況テキスト -->
+{overview_html}
+<!-- ZONE E: ナビ -->
+<div class="nav-section">
+  <h3>人気の魚種から探す</h3>
+  <div class="nav-chips">{fish_nav_html}<a href="calendar/index.html">すべて見る →</a></div>
+</div>
+<div class="nav-section">
+  <h3>エリアから探す</h3>
+  <div class="nav-chips">{area_nav_html}<a href="area/">すべて見る →</a></div>
+</div>
+<!-- 広告② -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
+</div><!-- /.c -->
 {DATA_NOTE_HTML}
-<footer>
-  <p><a href="contact.html">お問い合わせ</a> | <a href="privacy.html">プライバシーポリシー</a></p>
-  <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at} | v5.15</p>
-</footer>
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav("index")}
 <script>
-function filterArea(btn, area) {{
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('#catch-table tr[data-area]').forEach(tr => {{
-    tr.style.display = (area === 'all' || tr.dataset.area === area) ? '' : 'none';
-  }});
-}}
-function searchFish(val) {{
-  const q = val.trim().toLowerCase();
-  document.querySelectorAll('#catch-table tr[data-area]').forEach(tr => {{
-    const fish = tr.cells[3] ? tr.cells[3].textContent.toLowerCase() : '';
-    tr.style.display = (!q || fish.includes(q)) ? '' : 'none';
-  }});
-}}
-function sortTable(key, btn) {{
-  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const tbody = document.getElementById('catch-table');
-  const rows = Array.from(tbody.querySelectorAll('tr[data-area]'));
-  rows.sort((a, b) => {{
-    if (key === 'count') return parseInt(b.dataset.count||0) - parseInt(a.dataset.count||0);
-    return (b.dataset.date||'').localeCompare(a.dataset.date||'');
-  }});
-  rows.forEach(r => tbody.appendChild(r));
-}}
-(function() {{
-  const updated = "{crawled_at}";
-  const m = updated.match(/(\d{{4}})\/(\d{{2}})\/(\d{{2}}) (\d{{2}}):(\d{{2}})/);
-  if (m) {{
-    const t = new Date(m[1],m[2]-1,m[3],m[4],m[5]);
-    if (Date.now() - t.getTime() < 86400000) {{
-      document.getElementById('new-badge').innerHTML = '<span class="new-badge">NEW</span>';
-    }}
-  }}
-}})();
-function switchTab(e, showId, hideId) {{
-  e.stopPropagation();
-  document.getElementById(showId).style.display = 'block';
-  document.getElementById(hideId).style.display = 'none';
-  const w = e.target.closest('.tab-wrap');
-  w.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  e.target.classList.add('active');
-}}
-document.querySelectorAll('.fc').forEach(el => {{
-  el.addEventListener('click', function(e) {{
-    if (e.target.classList.contains('fc-link') || e.target.closest('.fc-link')) return;
-    const d = this.querySelector('.fc-detail');
-    if (d) {{
-      const opening = d.style.display === 'none';
-      d.style.display = opening ? 'block' : 'none';
-      if (opening && typeof gtag==='function') {{
-        const fn = this.querySelector('.fn');
-        gtag('event','fish_card_click',{{fish_name:fn?fn.textContent.trim():''}});
-      }}
-    }}
-  }});
-}});
-document.querySelectorAll('.target-top,.target-card').forEach(el => {{
-  el.addEventListener('click', function() {{
-    if (typeof gtag==='function') {{
-      const n = this.querySelector('.tt-fish,.tc-fish-name');
-      gtag('event','target_click',{{fish_name:n?n.textContent.trim():''}});
-    }}
-  }});
-}});
-document.querySelectorAll('.filter-btn').forEach(el => {{
-  el.addEventListener('click', function() {{
-    if (typeof gtag==='function') gtag('event','area_filter',{{area:this.textContent.trim()}});
-  }});
-}});
 (function(){{
-  const si = document.getElementById('fish-search');
-  if (si) {{
-    let _t;
-    si.addEventListener('input', function() {{
-      clearTimeout(_t);
-      _t = setTimeout(function() {{
-        if (si.value.trim() && typeof gtag==='function') gtag('event','fish_search',{{query:si.value.trim()}});
-      }}, 1000);
-    }});
-  }}
+  var slides=document.querySelectorAll('.tr-slide');
+  var dots=document.querySelectorAll('.tr-dot');
+  if(!slides.length)return;
+  var cur=0;
+  function go(i){{slides[cur].classList.remove('is-active');dots[cur].classList.remove('is-active');cur=i;slides[cur].classList.add('is-active');dots[cur].classList.add('is-active');}}
+  dots.forEach(function(d,i){{d.addEventListener('click',function(){{go(i);clearInterval(timer);}});}});
+  var timer;
+  if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches)
+    timer=setInterval(function(){{go((cur+1)%slides.length);}},5000);
 }})();
 </script>
 </body>
@@ -3985,6 +4672,8 @@ def build_fish_pages(data, history, crawled_at=""):
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
+    decadal_calendar = load_decadal_calendar()
+    tackle_data = load_fish_tackle()
     fish_summary = {}
     for c in data:
         for f in c["fish"]:
@@ -4091,29 +4780,46 @@ def build_fish_pages(data, history, crawled_at=""):
                     if _f != fish and _f != "不明":
                         _rel_counts[_f] = _rel_counts.get(_f, 0) + 1
         _rel_links = "".join(
-            '<a href="../fish/' + rf + '.html" style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;text-decoration:none;color:#4db8ff;font-size:13px;display:inline-block;margin:3px">' + rf + '</a>'
+            '<a href="../fish/' + rf + '.html" class="chip-link">' + rf + '</a>'
             for rf, _ in sorted(_rel_counts.items(), key=lambda x: -x[1])[:6]
         )
         related_section_html = (
-            '<h2>🐟 同じエリアで釣れる魚</h2>'
-            '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">' + _rel_links + '</div>'
+            '<h2 class="st">同じエリアで釣れる魚</h2>'
+            '<div class="chip-wrap">' + _rel_links + '</div>'
         ) if _rel_links else ""
         # エリア別釣果リンク（fish_area/）
         _fa_counts: dict = {}
         for _c in catches:
             _fa_counts[_c["area"]] = _fa_counts.get(_c["area"], 0) + 1
         _fa_links = "".join(
-            '<a href="../fish_area/' + fish + '_' + a + '.html" '
-            'style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;text-decoration:none;color:#4db8ff;font-size:13px;display:inline-block;margin:3px">'
+            '<a href="../fish_area/' + fish + '_' + a + '.html" class="chip-link">'
             + a + f'（{c}件）</a>'
             for a, c in sorted(_fa_counts.items(), key=lambda x: -x[1])
             if c >= 5
         )
         fish_area_section_html = (
-            '<h2>🗺️ エリア別の釣果</h2>'
-            '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">' + _fa_links + '</div>'
+            '<h2 class="st">エリア別の釣果</h2>'
+            '<div class="chip-wrap">' + _fa_links + '</div>'
         ) if _fa_links else ""
-        fish_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.stat-card .sv{font-size:22px;font-weight:bold;color:#4db8ff;line-height:1.2}.stat-card .sl{font-size:11px;color:#7a9bb5;margin-top:4px}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tbody tr:nth-child(even) td{background:#0b1c30}tbody tr:hover td{background:#112240}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:10px;width:80px}.bar-fill{background:linear-gradient(90deg,#1a6ea8,#4db8ff);height:10px;border-radius:2px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.boat-catch{color:#f0a040;font-size:11px}.medal{font-size:16px;vertical-align:middle}.season-entry{font-size:12px;color:#7a9bb5;margin:8px 0;padding:6px 10px;border-radius:4px;background:#0d2137}.season-entry.entry-early{border-left:3px solid #4dcc88}.season-entry.entry-late{border-left:3px solid #f4a261}.season-entry.entry-same{border-left:3px solid #4db8ff}.entry-trend{font-weight:bold;margin-left:6px}.prob-wrap{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px}.prob-label{color:#7a9bb5;white-space:nowrap}.prob-bar-bg{flex:1;max-width:120px;height:6px;background:#0a1628;border-radius:3px}.prob-bar-fill{height:6px;border-radius:3px;transition:width .3s}.prob-pct{font-weight:bold;white-space:nowrap}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px}.wrap{padding:14px 10px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}"
+        # V2 season map / guide / FAQ
+        season_map_html = build_fish_season_map_html(fish, decadal_calendar)
+        guide_html = build_fish_guide_html(fish, tackle_data)
+        faq_html, faq_jsonld = build_fish_faq_html(fish, SITE_URL)
+        fish_extra_css = """.hero-fish{background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0}
+.hero-fish .hf-name{font-size:28px;font-weight:800;letter-spacing:-0.5px}
+.hero-fish .hf-sub{font-size:12px;opacity:.7;margin-top:2px}
+.hero-fish .hf-stats{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+.hero-fish .hf-stat{background:rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;text-align:center;min-width:60px}
+.hero-fish .hf-stat .v{font-size:18px;font-weight:800;line-height:1.1}
+.hero-fish .hf-stat .l{font-size:9px;opacity:.7;margin-top:2px}
+.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
+.season-entry{font-size:12px;color:var(--sub);margin:8px 0;padding:6px 10px;border-radius:4px;background:var(--card);border:1px solid var(--border)}
+.season-entry.entry-early{border-left:3px solid var(--pos)}.season-entry.entry-late{border-left:3px solid var(--warn)}.season-entry.entry-same{border-left:3px solid var(--accent)}
+.entry-trend{font-weight:bold;margin-left:6px}
+.medal{font-size:16px;vertical-align:middle}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}"""
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -4126,35 +4832,54 @@ def build_fish_pages(data, history, crawled_at=""):
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果情報","item":"{fish_url}"}}]}}</script>
+  {faq_jsonld}
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{fish_css}</style>
-</head><body>
-<header><h1>🎣 関東の{fish}釣果・船宿ランキング</h1></header>
-<nav>
-  <a href="../index.html">← トップへ戻る</a>
-  <span style="color:#1a4060">|</span>
-  <span style="font-size:12px;color:#7a9bb5">釣れているエリア：</span>{area_links}
-</nav>
-<div class="wrap">
+  <style>{V2_COMMON_CSS}
+{fish_extra_css}</style>
+</head>
+<body>
+{_v2_header_nav("fish")}
+<!-- HERO -->
+<div class="hero-fish">
+  <div class="c">
+    <div class="hf-name">{fish}</div>
+    <div class="hf-sub">関東エリアの釣果情報</div>
+    <div class="hf-stats">
+      <div class="hf-stat"><div class="v">{len(catches)}</div><div class="l">今週の件数</div></div>
+      <div class="hf-stat"><div class="v">{max_cnt if max_cnt else "-"}</div><div class="l">最高釣果(匹)</div></div>
+      <div class="hf-stat"><div class="v">{len(ship_counts)}</div><div class="l">出船船宿</div></div>
+    </div>
+  </div>
+</div>
+<div class="c">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {stat_cards_html}
-  <h2>📅 年間シーズン</h2>{season_bar_html}
   {season_entry_html}
   <div class="comment">💬 {comment}</div>
   {yoy_html}
-  <h2>🏆 船宿ランキング（今週）</h2>
+  <h2 class="st">船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table></div>
-  <h2>📋 最近の釣果 ({len(catches)}件)</h2>
+  <h2 class="st">最近の釣果 （{len(catches)}件）</h2>
   <div class="tbl-wrap"><table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table></div>
+  <!-- 広告① -->
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   {related_section_html}
   {fish_area_section_html}
+  <h2 class="st">旬カレンダー</h2>
+  {season_map_html}
+  <h2 class="st">魚種ガイド</h2>
+  {guide_html}
+  <!-- 広告② -->
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
+  <h2 class="st">よくある質問</h2>
+  {faq_html}
 </div>
 {DATA_NOTE_HTML}
-<footer>
-  <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
-  <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
-</footer>
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav("fish")}
 </body></html>"""
         with open(os.path.join(WEB_DIR, f"fish/{fish}.html"), "w", encoding="utf-8") as f:
             f.write(html)
@@ -4167,9 +4892,26 @@ def build_area_pages(data, history, crawled_at=""):
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
+    area_desc_data = load_area_description()
+    area_decadal = load_area_decadal()
     area_summary = {}
     for c in data:
         area_summary.setdefault(c["area"], []).append(c)
+    area_extra_css = """.hero-area{background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0}
+.hero-area .ha-name{font-size:26px;font-weight:800}
+.hero-area .ha-sub{font-size:12px;opacity:.7;margin-top:2px}
+.hero-area .ha-stats{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+.hero-area .ha-stat{background:rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;text-align:center;min-width:60px}
+.hero-area .ha-stat .v{font-size:18px;font-weight:800;line-height:1.1}
+.hero-area .ha-stat .l{font-size:9px;opacity:.7;margin-top:2px}
+.fish-chip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.fish-chip{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;text-decoration:none;color:inherit;display:block}
+.fish-chip:hover{border-color:var(--cta);text-decoration:none}
+.fish-chip .fc-name{font-size:15px;font-weight:700;color:var(--accent)}
+.fish-chip .fc-cnt{font-size:11px;color:var(--sub);margin-top:3px}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}"""
     for area, catches in area_summary.items():
         if len(catches) < 2: continue
         fish_counts = {}
@@ -4181,14 +4923,7 @@ def build_area_pages(data, history, crawled_at=""):
         top_fish   = sorted(fish_counts.items(), key=lambda x:-x[1])[:5]
         fish_cards = ""
         for fish, cnt in top_fish:
-            score = get_season_score(fish, current_month)
-            score_bar = "█" * score + "░" * (5 - score)
-            fish_cards += f"""
-    <a href="../fish/{fish}.html" style="background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-decoration:none;color:inherit;display:block;transition:border-color .2s">
-      <div style="font-size:16px;font-weight:bold;color:#fff;margin-bottom:4px">{fish}</div>
-      <div style="font-size:13px;color:#e85d04;letter-spacing:2px;margin-bottom:4px">{score_bar}</div>
-      <div style="font-size:12px;color:#7a9bb5">今週{cnt}件</div>
-    </a>"""
+            fish_cards += f'<a href="../fish/{fish}.html" class="fish-chip"><div class="fc-name">{fish}</div><div class="fc-cnt">今週{cnt}件</div></a>'
         ship_rows = ""
         for i, (sn, cnt) in enumerate(sorted(ship_counts.items(), key=lambda x:-x[1])[:8], 1):
             ship_fish = {}
@@ -4199,7 +4934,7 @@ def build_area_pages(data, history, crawled_at=""):
             top_f    = sorted(ship_fish.items(), key=lambda x:-x[1])[:2]
             fish_str = "・".join(f for f,_ in top_f)
             pct      = int(cnt / len(catches) * 100) if catches else 0
-            ship_rows += f'<tr><td style="color:#4db8ff;font-weight:bold">{i}</td><td><strong>{sn}</strong><br><span style="font-size:11px;color:#7a9bb5">{fish_str}</span></td><td style="color:#4dcc88">{cnt}件</td><td><div style="background:#081020;border-radius:2px;height:8px;width:80px"><div style="background:#1a6ea8;height:8px;border-radius:2px;width:{pct}%"></div></div></td></tr>'
+            ship_rows += f'<tr><td style="font-weight:bold">{i}</td><td><strong>{sn}</strong><br><span style="font-size:11px;color:var(--sub)">{fish_str}</span></td><td style="color:var(--pos)">{cnt}件</td><td><div class="bar-wrap"><div class="bar-fill" style="width:{pct}%"></div></div></td></tr>'
         rows = ""
         for c in sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:15]:
             cnt_str = fmt_count(c)
@@ -4217,14 +4952,18 @@ def build_area_pages(data, history, crawled_at=""):
         # 同グループの近隣港リンク
         _group_areas = AREA_GROUPS.get(group, [])
         _nearby_links = "".join(
-            '<a href="../area/' + a + '.html" style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;text-decoration:none;color:#4db8ff;font-size:13px;display:inline-block;margin:3px">' + a + '</a>'
+            '<a href="../area/' + a + '.html" class="chip-link">' + a + '</a>'
             for a in _group_areas if a != area and a in area_summary
         )
         nearby_section_html = (
-            '<h2>🗺️ 同エリアの港</h2>'
-            '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">' + _nearby_links + '</div>'
+            '<h2 class="st">同エリアの港</h2>'
+            '<div class="chip-wrap">' + _nearby_links + '</div>'
         ) if _nearby_links else ""
-        area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:8px}.fish-grid a:hover{border-color:#4db8ff!important}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.dim td{opacity:0.45}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px}.wrap{padding:14px 10px}.fish-grid{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}}"
+        # V2 新セクション
+        top_fish_list = [f for f, _ in top_fish]
+        area_season_html = build_area_season_map_html(area, area_decadal, top_fish_list)
+        area_guide_html = build_area_guide_html(area, area_desc_data)
+        area_faq_html, area_faq_jsonld = build_area_faq_html(area, area_desc_data)
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -4237,30 +4976,50 @@ def build_area_pages(data, history, crawled_at=""):
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{group}","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":3,"name":"{area}の釣果","item":"{area_url}"}}]}}</script>
+  {area_faq_jsonld}
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{area_css}</style>
-</head><body>
-<header>
-  <h1>🚢 {area}の釣果速報・おすすめ船宿</h1>
-  <p>{group} ／ 今週の釣果: {len(catches)}件</p>
-</header>
-<nav><a href="../index.html">← トップへ戻る</a></nav>
-<div class="wrap">
-  <h2>🐟 今週釣れている魚</h2>
-  <div class="fish-grid">{fish_cards}</div>
-  <h2>🏆 船宿ランキング（今週）</h2>
+  <style>{V2_COMMON_CSS}
+{area_extra_css}</style>
+</head>
+<body>
+{_v2_header_nav("area")}
+<div class="hero-area">
+  <div class="c">
+    <div class="ha-name">{area}</div>
+    <div class="ha-sub">{group} の船釣り釣果情報</div>
+    <div class="ha-stats">
+      <div class="ha-stat"><div class="v">{len(catches)}</div><div class="l">今週の件数</div></div>
+      <div class="ha-stat"><div class="v">{len(ship_counts)}</div><div class="l">船宿数</div></div>
+      <div class="ha-stat"><div class="v">{len(fish_counts)}</div><div class="l">魚種数</div></div>
+    </div>
+  </div>
+</div>
+<div class="c">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
+  <h2 class="st">今週釣れている魚</h2>
+  <div class="fish-chip-grid">{fish_cards}</div>
+  <h2 class="st">船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果数</th><th>割合</th></tr>{ship_rows}</table></div>
-  <h2>📋 最新の釣果</h2>
+  <h2 class="st">最新の釣果</h2>
   <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>魚種</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table></div>
+  <!-- 広告① -->
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   {nearby_section_html}
+  <h2 class="st">この港の旬カレンダー</h2>
+  {area_season_html}
+  <h2 class="st">エリアガイド</h2>
+  {area_guide_html}
+  <!-- 広告② -->
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
+  <h2 class="st">よくある質問</h2>
+  {area_faq_html}
 </div>
 {DATA_NOTE_HTML}
-<footer>
-  <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
-  <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
-</footer>
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav("area")}
 </body></html>"""
         with open(os.path.join(WEB_DIR, f"area/{area}.html"), "w", encoding="utf-8") as f:
             f.write(html)
@@ -4276,7 +5035,8 @@ def build_fish_area_pages(data, crawled_at="", history=None):
             if f != "不明":
                 fa_summary.setdefault((f, c["area"]), []).append(c)
 
-    fish_area_css = "*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;background:#0a1628;color:#e0e8f0}header{background:#0d2137;padding:16px 24px;border-bottom:2px solid #1a6ea8}header h1{font-size:20px;color:#4db8ff}header p{font-size:12px;color:#7a9bb5;margin-top:4px}nav{background:#081020;padding:8px 24px;display:flex;gap:12px;flex-wrap:wrap}nav a{color:#7a9bb5;text-decoration:none;font-size:13px}nav a:hover{color:#4db8ff}.wrap{max-width:900px;margin:0 auto;padding:20px 16px}h2{font-size:15px;color:#4db8ff;border-left:4px solid #4db8ff;padding-left:10px;margin:24px 0 12px}.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px;text-align:center}.stat-card .sv{font-size:22px;font-weight:bold;color:#4db8ff;line-height:1.2}.stat-card .sl{font-size:11px;color:#7a9bb5;margin-top:4px}.stat-card.trend-up{border-color:#4dcc88}.stat-card.trend-down{border-color:#cc4d4d}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0d2137;color:#4db8ff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #0d2137}tr.highlight td{background:#1a2d10;color:#7ddd6f}tr.dim td{opacity:0.45}.bar-wrap{background:#081020;border-radius:2px;height:8px;width:80px}.bar-fill{background:#1a6ea8;height:8px;border-radius:2px}.boat-catch{color:#f0a040;font-size:11px}.yoy-table .up{color:#4dcc88}.yoy-table .down{color:#cc4d4d}.season-bar{display:flex;gap:2px;margin:12px 0;flex-wrap:wrap}.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}.sb-cell.peak-count{background:#e85d04}.sb-cell.peak-size{background:#7209b7}.sb-cell.mid{background:#1a6ea8}.sb-cell.low{background:#1a3050}.sb-cell.now{outline:2px solid #fff;outline-offset:1px}.sb-legend{font-size:9px;color:#7a9bb5;text-align:center;margin-top:3px}.leg-count{color:#e85d04}.leg-size{color:#7209b7;margin-left:6px}.combo-comment{background:#0d2137;border-left:3px solid #e85d04;padding:12px;border-radius:4px;font-size:14px;margin:12px 0}.data-note{max-width:900px;margin:20px auto 0;padding:0 16px}.data-note details{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:10px 14px}.data-note summary{color:#7a9bb5;font-size:12px;cursor:pointer;user-select:none}.data-note ul{margin-top:8px;padding-left:16px;color:#5a8aaa;font-size:11px;line-height:1.9}footer{background:#081020;border-top:1px solid #1a3050;padding:20px;text-align:center;font-size:12px;color:#7a9bb5;margin-top:40px}footer a{color:#4db8ff;text-decoration:none}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:640px){header{padding:12px 14px}header h1{font-size:18px}nav{padding:6px 12px;flex-wrap:wrap}.wrap{padding:14px 10px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}}"
+    fa_extra_css = """.combo-comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
+.stat-card.trend-up{border-color:var(--pos)}.stat-card.trend-down{border-color:var(--neg)}"""
 
     now_fa_global = datetime.now()
     current_month_fa = now_fa_global.month
@@ -4402,35 +5162,26 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_encoded}.html"}},{{"@type":"ListItem","position":3,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{fish_area_css}</style>
-</head><body>
-<header>
-  <h1>🎣 {area}の{fish}釣果情報</h1>
-  <p>今週の釣果: {len(catches)}件{max_cnt_str}</p>
-</header>
-<nav>
-  <a href="../index.html">← トップへ戻る</a>
-  <span style="color:#1a4060">|</span>
-  <a href="../fish/{fish}.html">{fish}の全釣果（関東）</a>
-  <span style="color:#1a4060">|</span>
-  <a href="../area/{area}.html">{area}の全魚種釣果</a>
-</nav>
-<div class="wrap">
+  <style>{V2_COMMON_CSS}
+{fa_extra_css}</style>
+</head>
+<body>
+{_v2_header_nav("")}
+<div class="c">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_encoded}.html">{fish}</a> &rsaquo; {area}</p>
+  <h2 class="st">{area}の{fish}釣果情報</h2>
   {stat_cards_fa}
-  <h2>📅 年間シーズン</h2>{season_bar_fa}
+  <h2 class="st">年間シーズン</h2>{season_bar_fa}
   {combo_comment_html}
   {yoy_html}
-  <h2>🏆 船宿ランキング（今週）</h2>
+  <h2 class="st">船宿ランキング（今週）</h2>
   <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr>{rank_rows}</table></div>
-  <h2>📋 最近の釣果 ({len(catches)}件)</h2>
+  <h2 class="st">最近の釣果 （{len(catches)}件）</h2>
   <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr>{rows}</table></div>
 </div>
 {DATA_NOTE_HTML}
-<footer>
-  <p><a href="../contact.html">お問い合わせ</a> | <a href="../privacy.html">プライバシーポリシー</a></p>
-  <p style="margin-top:8px">© 2026 船釣り予想. All rights reserved.</p>
-  <p style="margin-top:6px;font-size:11px;color:#4a6a8a">最終更新: {crawled_at}</p>
-</footer>
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav("")}
 </body></html>"""
         with open(os.path.join(WEB_DIR, f"fish_area/{fish}_{area}.html"), "w", encoding="utf-8") as fp:
             fp.write(html)
