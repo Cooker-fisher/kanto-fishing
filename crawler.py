@@ -5064,6 +5064,49 @@ def build_fish_pages(data, history, crawled_at=""):
         with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
+    # fish/index.html: 魚種一覧
+    fish_index_cards = ""
+    for fish, cs in sorted(fish_summary.items()):
+        cnt = len(cs)
+        cr_max = max((c.get("count_range") or {}).get("max") or 0 for c in cs)
+        fish_index_cards += (
+            f'<a class="fi-card" href="{fish_slug(fish)}.html">'
+            f'<div class="fi-name">{fish}</div>'
+            f'<div class="fi-cnt">今週{cnt}件</div>'
+            f'</a>'
+        )
+    fish_index_css = """.fi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:16px 0}
+.fi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;text-decoration:none;color:inherit;transition:border-color .15s}
+.fi-card:hover{border-color:var(--cta);text-decoration:none}
+.fi-name{font-size:14px;font-weight:700;color:var(--accent)}
+.fi-cnt{font-size:11px;color:var(--muted);margin-top:4px}"""
+    fish_index_html = f"""<!DOCTYPE html>
+<html lang="ja"><head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>魚種別釣果一覧 | 船釣り予想</title>
+  <meta name="description" content="関東の船釣り魚種別釣果一覧。アジ・マダイ・ヒラメ・タチウオなど今週釣れている魚種をまとめて確認できます。">
+  <link rel="canonical" href="{SITE_URL}/fish/">
+  {GA_TAG}{ADSENSE_TAG}
+  <style>{V2_COMMON_CSS}{fish_index_css}</style>
+</head>
+<body>
+{_v2_header_nav("fish")}
+<div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
+  <div class="c"><div style="font-size:26px;font-weight:800">魚種別 釣果一覧</div>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣れている魚種 {len(fish_summary)}種</div></div>
+</div>
+<div class="c">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; 魚種一覧</p>
+  <h2 class="st">今週釣れている魚種</h2>
+  <div class="fi-grid">{fish_index_cards}</div>
+</div>
+{DATA_NOTE_HTML}
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav("fish")}
+</body></html>"""
+    with open(os.path.join(WEB_DIR, "fish/index.html"), "w", encoding="utf-8") as f:
+        f.write(fish_index_html)
+
 # ============================================================
 # #10: エリア別ページ
 # ============================================================
@@ -5201,6 +5244,54 @@ def build_area_pages(data, history, crawled_at=""):
 </body></html>"""
         with open(os.path.join(WEB_DIR, f"area/{area_slug(area)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
+
+    # area/index.html: エリア一覧
+    area_index_cards = ""
+    for area, catches in sorted(area_summary.items(), key=lambda x: -len(x[1])):
+        if len(catches) < 2: continue
+        top_f = sorted({f for c in catches for f in c["fish"] if f != "不明"}, key=lambda f: -sum(1 for c in catches if f in c["fish"]))[:3]
+        grp = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
+        area_index_cards += (
+            f'<a class="ai-card" href="{area_slug(area)}.html">'
+            f'<div class="ai-name">{area}</div>'
+            f'<div class="ai-grp">{grp}</div>'
+            f'<div class="ai-fish">{"・".join(top_f)}</div>'
+            f'<div class="ai-cnt">今週{len(catches)}件</div>'
+            f'</a>'
+        )
+    area_index_css = """.ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:16px 0}
+.ai-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;text-decoration:none;color:inherit;transition:border-color .15s}
+.ai-card:hover{border-color:var(--cta);text-decoration:none}
+.ai-name{font-size:14px;font-weight:700;color:var(--accent)}
+.ai-grp{font-size:10px;color:var(--muted);margin-top:2px}
+.ai-fish{font-size:11px;color:var(--sub);margin-top:4px}
+.ai-cnt{font-size:11px;color:var(--cta);font-weight:600;margin-top:4px}"""
+    area_index_html = f"""<!DOCTYPE html>
+<html lang="ja"><head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>エリア別釣果一覧 | 船釣り予想</title>
+  <meta name="description" content="関東の船釣りエリア別釣果一覧。金沢八景・鹿島港・大原港など今週の釣果件数と釣れている魚種を確認できます。">
+  <link rel="canonical" href="{SITE_URL}/area/">
+  {GA_TAG}{ADSENSE_TAG}
+  <style>{V2_COMMON_CSS}{area_index_css}</style>
+</head>
+<body>
+{_v2_header_nav("area")}
+<div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
+  <div class="c"><div style="font-size:26px;font-weight:800">エリア別 釣果一覧</div>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {len([a for a,cs in area_summary.items() if len(cs)>=2])}エリア</div></div>
+</div>
+<div class="c">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; エリア一覧</p>
+  <h2 class="st">エリア別 今週の釣果</h2>
+  <div class="ai-grid">{area_index_cards}</div>
+</div>
+{DATA_NOTE_HTML}
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav("area")}
+</body></html>"""
+    with open(os.path.join(WEB_DIR, "area/index.html"), "w", encoding="utf-8") as f:
+        f.write(area_index_html)
 
 # ============================================================
 # #11: 魚種×港ページ（fish_area/）
