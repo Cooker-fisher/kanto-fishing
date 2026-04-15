@@ -181,6 +181,9 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .fc .fr small{font-size:11px;color:var(--muted);font-weight:400}
 .fc .fs{font-size:10px;color:var(--muted)}
 .fc .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
+.fc .bars{display:flex;align-items:flex-end;gap:1px;height:20px;margin-top:4px}
+.fc .bars .b{flex:1;background:var(--cta);border-radius:1px 1px 0 0;opacity:.6;min-width:4px}
+.fc .bars .b.today{opacity:1;background:var(--pos)}
 .fc .trend{font-size:9px;font-weight:700;margin-top:2px}
 .fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
 .fc.stale{opacity:.6}
@@ -189,19 +192,32 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .fo-list{display:flex;flex-wrap:wrap;gap:4px}
 .fo-list a{font-size:12px;padding:3px 8px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
 .fo-list a:hover{background:var(--accent);color:#fff;text-decoration:none}
-.area-sec{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
-.area-sec h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.area-chips{display:flex;flex-wrap:wrap;gap:5px}
-.area-chip{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--bg);border-radius:8px;text-decoration:none}
-.area-chip:hover{background:var(--accent);text-decoration:none}
-.area-chip .ac-name{font-size:13px;font-weight:700;color:var(--accent)}
-.area-chip:hover .ac-name,.area-chip:hover .ac-cnt{color:#fff}
-.area-chip .ac-cnt{font-size:10px;color:var(--muted)}
+.area-today{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.at-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:block;transition:border-color .15s}
+.at-card:hover{border-color:var(--cta);text-decoration:none}
+.at-name{font-size:12px;font-weight:700;color:var(--accent)}
+.at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px}
+.at-count::before{content:"釣果報告";display:block;font-size:9px;font-weight:400;color:var(--sub);margin-bottom:1px}
+.at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.at-fish span{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub)}
+.risk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.risk-day{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center}
+.risk-day.good{border-color:var(--pos);background:#f0fdf4}
+.risk-day.warn{border-color:var(--warn);background:#fffbeb}
+.risk-day.bad{border-color:var(--neg);background:#fef2f2}
+.rd-dow{font-size:10px;color:var(--muted);font-weight:600}
+.rd-date{font-size:11px;color:var(--sub);font-weight:600}
+.rd-icon{font-size:16px;margin:4px 0;font-weight:800}
+.risk-day.good .rd-icon{color:var(--pos)}
+.risk-day.warn .rd-icon{color:var(--warn)}
+.risk-day.bad .rd-icon{color:var(--neg)}
+.rd-label{font-size:9px;font-weight:700}
 .nav-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .nav-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .nav-chips{display:flex;flex-wrap:wrap;gap:5px}
 .nav-chips a{font-size:12px;padding:5px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
-.nav-chips a:hover{background:var(--accent);color:#fff;text-decoration:none}</style>
+.nav-chips a:hover{background:var(--accent);color:#fff;text-decoration:none}
+@media(min-width:769px){.fish-grid{grid-template-columns:repeat(3,1fr)}}</style>
 </head>
 <body>
 <header>
@@ -220,23 +236,22 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 <!-- HERO -->
 <div class="hero">
   <div class="hero-sub">関東船釣り釣果情報</div>
-  <div class="n">715<u>件</u></div>
+  <div class="n">714<u>件</u></div>
   <div class="info">
     <span class="dot"></span>
     <span>本日の釣果報告 — 77船宿・46エリア</span>
   </div>
-  <div class="updated">最終更新: 2026/04/15 18:52</div>
+  <div class="updated">最終更新: 2026/04/15 09:28</div>
 </div>
 <div class="c">
 <!-- ZONE B: 釣れている魚 -->
-<h2 class="st">今日釣れている魚 <span class="tag free">無料</span></h2>
-<div class="fish-grid"><a class="fc" href="fish/aji.html"><div class="fn">アジ</div><div class="fr">41〜148匹 <small>169件・32隻</small></div><div class="fs">32cm | 169件・32隻 | 飯岡港</div><div class="fb">◎弁天屋</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/madai.html"><div class="fn">マダイ</div><div class="fr">2〜18匹 <small>127件・32隻</small></div><div class="fs">42cm | 127件・32隻 | 日立久慈港</div><div class="fb">◎幸丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/maruika.html"><div class="fn">マルイカ</div><div class="fr">13〜69匹 <small>40件・10隻</small></div><div class="fs">30cm | 40件・10隻 | 天津港・久比里港</div><div class="fb">◎山天丸</div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/fugu.html"><div class="fn">フグ</div><div class="fr">1〜5匹 <small>36件・11隻</small></div><div class="fs">53cm | 36件・11隻 | 鹿島港</div><div class="fb">◎敷嶋丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/hirame.html"><div class="fn">ヒラメ</div><div class="fr">0〜2匹 <small>30件・10隻</small></div><div class="fs">30件・10隻 | 日立久慈港・鹿島港</div><div class="fb">◎第三松栄丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/shirogisu.html"><div class="fn">シロギス</div><div class="fr">63〜151匹 <small>29件・8隻</small></div><div class="fs">23cm | 29件・8隻 | 浦安</div><div class="fb">◎弁天屋</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/yariika.html"><div class="fn">ヤリイカ</div><div class="fr">6〜69匹 <small>28件・8隻</small></div><div class="fs">44cm | 28件・8隻 | 鹿島港・天津港</div><div class="fb">◎第八鶴丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/tachiuo.html"><div class="fn">タチウオ</div><div class="fr">1〜2匹 <small>24件・8隻</small></div><div class="fs">110cm | 24件・8隻 | 富津港・江戸川放水路･原木中山</div><div class="fb">◎一之瀬丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/mahata.html"><div class="fn">マハタ</div><div class="fr">0〜2匹 <small>20件・5隻</small></div><div class="fs">20件・5隻 | 大原港</div><div class="fb">◎明広丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/warasa.html"><div class="fn">ワラサ</div><div class="fr">6〜13匹 <small>15件・7隻</small></div><div class="fs">15件・7隻 | 波崎港・鹿島港</div><div class="fb">◎幸栄丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/isaki.html"><div class="fn">イサキ</div><div class="fr">17〜40匹 <small>15件・5隻</small></div><div class="fs">36cm | 15件・5隻 | 片貝港・片貝</div><div class="fb">◎佐衛美丸</div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/kuromutsu.html"><div class="fn">クロムツ</div><div class="fr">6〜15匹 <small>15件・6隻</small></div><div class="fs">38cm | 15件・6隻 | 天津港・小坪港</div><div class="fb">◎庄治郎丸</div><div class="trend up">↑ 先週より上昇</div></a><a class="fc" href="fish/amadai.html"><div class="fn">アマダイ</div><div class="fr">3〜6匹 <small>14件・8隻</small></div><div class="fs">42cm | 14件・8隻 | 日立久慈港</div><div class="fb">◎山下丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/kawahagi.html"><div class="fn">カワハギ</div><div class="fr">5〜13匹 <small>13件・5隻</small></div><div class="fs">28cm | 13件・5隻 | 金沢八景・久比里港</div><div class="fb">◎山下丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/kasago.html"><div class="fn">カサゴ</div><div class="fr">40〜51匹 <small>11件・7隻</small></div><div class="fs">27cm | 11件・7隻 | 外川港・飯岡港</div><div class="fb">◎山下丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/mebaru.html"><div class="fn">メバル</div><div class="fr">18〜25匹 <small>8件・4隻</small></div><div class="fs">32cm | 8件・4隻 | 鹿島港</div><div class="fb">◎幸栄丸</div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/surumeika.html"><div class="fn">スルメイカ</div><div class="fr">3〜6匹 <small>6件・3隻</small></div><div class="fs">40cm | 6件・3隻 | 天津港・長井新宿港</div><div class="fb">◎第八鶴丸</div><div class="trend up">↑ 先週より上昇</div></a><a class="fc" href="fish/medai.html"><div class="fn">メダイ</div><div class="fr">6〜10匹 <small>5件・3隻</small></div><div class="fs">44cm | 5件・3隻 | 大原港・小坪港</div><div class="fb">◎太郎丸</div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/magochi.html"><div class="fn">マゴチ</div><div class="fr">2〜4匹 <small>5件・3隻</small></div><div class="fs">61cm | 5件・3隻 | 江戸川放水路･原木中山・金沢八景</div><div class="fb">◎弁天屋</div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/kinmedai.html"><div class="fn">キンメダイ</div><div class="fr">6〜10匹 <small>4件・2隻</small></div><div class="fs">44cm | 4件・2隻 | 小坪港</div><div class="fb">◎太郎丸</div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/sawara.html"><div class="fn">サワラ</div><div class="fr">2件 <small>2件・2隻</small></div><div class="fs">2件・2隻 | 金沢八景・寒川港</div><div class="fb">◎弁天屋</div></a><a class="fc stale" href="fish/kanpachi.html"><div class="fn">カンパチ</div><div class="fr">1件 <small>1件・1隻</small></div><div class="fs">1件・1隻 | 宇佐美</div><div class="fb">◎秀正丸</div></a></div>
+<h2 class="st">今日 釣れている魚 <span class="tag free">無料</span></h2>
+<div class="fish-grid"><a class="fc" href="fish/aji.html"><div class="fn">アジ</div><div class="fr">41〜148匹 <small>168件・32隻</small></div><div class="fs">32cm | 168件・32隻 | 飯岡港</div><div class="fb">◎弁天屋</div><div class="bars"><div class="b" style="height:89%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:48%"></div><div class="b" style="height:54%"></div><div class="b" style="height:53%"></div><div class="b today" style="height:45%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/madai.html"><div class="fn">マダイ</div><div class="fr">2〜18匹 <small>127件・32隻</small></div><div class="fs">42cm | 127件・32隻 | 日立久慈港</div><div class="fb">◎幸丸</div><div class="bars"><div class="b" style="height:55%"></div><div class="b" style="height:4%"></div><div class="b" style="height:27%"></div><div class="b" style="height:94%"></div><div class="b" style="height:100%"></div><div class="b" style="height:27%"></div><div class="b today" style="height:50%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/maruika.html"><div class="fn">マルイカ</div><div class="fr">13〜69匹 <small>40件・10隻</small></div><div class="fs">30cm | 40件・10隻 | 天津港・久比里港</div><div class="fb">◎山天丸</div><div class="bars"><div class="b" style="height:37%"></div><div class="b" style="height:4%"></div><div class="b" style="height:81%"></div><div class="b" style="height:86%"></div><div class="b" style="height:98%"></div><div class="b" style="height:100%"></div><div class="b today" style="height:43%"></div></div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/fugu.html"><div class="fn">フグ</div><div class="fr">1〜5匹 <small>36件・11隻</small></div><div class="fs">53cm | 36件・11隻 | 鹿島港</div><div class="fb">◎敷嶋丸</div><div class="bars"><div class="b" style="height:100%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:86%"></div><div class="b" style="height:26%"></div><div class="b" style="height:13%"></div><div class="b today" style="height:33%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/hirame.html"><div class="fn">ヒラメ</div><div class="fr">0〜2匹 <small>30件・10隻</small></div><div class="fs">30件・10隻 | 日立久慈港・鹿島港</div><div class="fb">◎第三松栄丸</div><div class="bars"><div class="b" style="height:75%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:75%"></div><div class="b" style="height:25%"></div><div class="b" style="height:25%"></div><div class="b today" style="height:4%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/yariika.html"><div class="fn">ヤリイカ</div><div class="fr">6〜69匹 <small>28件・8隻</small></div><div class="fs">44cm | 28件・8隻 | 鹿島港・天津港</div><div class="fb">◎第八鶴丸</div><div class="bars"><div class="b" style="height:90%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:100%"></div><div class="b" style="height:100%"></div><div class="b today" style="height:30%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/shirogisu.html"><div class="fn">シロギス</div><div class="fr">63〜151匹 <small>28件・8隻</small></div><div class="fs">23cm | 28件・8隻 | 浦安</div><div class="fb">◎弁天屋</div><div class="bars"><div class="b" style="height:33%"></div><div class="b" style="height:4%"></div><div class="b" style="height:99%"></div><div class="b" style="height:86%"></div><div class="b" style="height:90%"></div><div class="b" style="height:100%"></div><div class="b today" style="height:73%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/tachiuo.html"><div class="fn">タチウオ</div><div class="fr">1〜2匹 <small>23件・8隻</small></div><div class="fs">110cm | 23件・8隻 | 富津港・江戸川放水路･原木中山</div><div class="fb">◎一之瀬丸</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:100%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b today" style="height:4%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/mahata.html"><div class="fn">マハタ</div><div class="fr">0〜2匹 <small>21件・5隻</small></div><div class="fs">21件・5隻 | 大原港</div><div class="fb">◎明広丸</div><div class="bars"><div class="b" style="height:66%"></div><div class="b" style="height:4%"></div><div class="b" style="height:66%"></div><div class="b" style="height:100%"></div><div class="b" style="height:33%"></div><div class="b" style="height:66%"></div><div class="b today" style="height:66%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/warasa.html"><div class="fn">ワラサ</div><div class="fr">6〜13匹 <small>16件・7隻</small></div><div class="fs">16件・7隻 | 波崎港</div><div class="fb">◎幸栄丸</div><div class="bars"><div class="b" style="height:73%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:100%"></div><div class="b" style="height:4%"></div><div class="b" style="height:86%"></div><div class="b today" style="height:86%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/isaki.html"><div class="fn">イサキ</div><div class="fr">17〜40匹 <small>15件・5隻</small></div><div class="fs">36cm | 15件・5隻 | 片貝港・片貝</div><div class="fb">◎佐衛美丸</div><div class="bars"><div class="b" style="height:100%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:91%"></div><div class="b" style="height:70%"></div><div class="b" style="height:42%"></div><div class="b today" style="height:85%"></div></div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/kuromutsu.html"><div class="fn">クロムツ</div><div class="fr">6〜15匹 <small>15件・6隻</small></div><div class="fs">38cm | 15件・6隻 | 天津港・小坪港</div><div class="fb">◎庄治郎丸</div><div class="bars"><div class="b" style="height:31%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:87%"></div><div class="b" style="height:93%"></div><div class="b today" style="height:81%"></div></div><div class="trend up">↑ 先週より上昇</div></a><a class="fc" href="fish/amadai.html"><div class="fn">アマダイ</div><div class="fr">3〜6匹 <small>14件・8隻</small></div><div class="fs">42cm | 14件・8隻 | 日立久慈港</div><div class="fb">◎山下丸</div><div class="bars"><div class="b" style="height:28%"></div><div class="b" style="height:4%"></div><div class="b" style="height:57%"></div><div class="b" style="height:100%"></div><div class="b" style="height:85%"></div><div class="b" style="height:4%"></div><div class="b today" style="height:42%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/kawahagi.html"><div class="fn">カワハギ</div><div class="fr">5〜13匹 <small>13件・5隻</small></div><div class="fs">28cm | 13件・5隻 | 金沢八景・久比里港</div><div class="fb">◎山下丸</div><div class="bars"><div class="b" style="height:42%"></div><div class="b" style="height:4%"></div><div class="b" style="height:85%"></div><div class="b" style="height:100%"></div><div class="b" style="height:92%"></div><div class="b" style="height:50%"></div><div class="b today" style="height:4%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/kasago.html"><div class="fn">カサゴ</div><div class="fr">40〜51匹 <small>11件・7隻</small></div><div class="fs">27cm | 11件・7隻 | 外川港・飯岡港</div><div class="fb">◎山下丸</div><div class="bars"><div class="b" style="height:64%"></div><div class="b" style="height:4%"></div><div class="b" style="height:74%"></div><div class="b" style="height:100%"></div><div class="b" style="height:79%"></div><div class="b" style="height:82%"></div><div class="b today" style="height:4%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/mebaru.html"><div class="fn">メバル</div><div class="fr">18〜25匹 <small>8件・4隻</small></div><div class="fs">32cm | 8件・4隻 | 鹿島港</div><div class="fb">◎幸栄丸</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:50%"></div><div class="b" style="height:45%"></div><div class="b" style="height:4%"></div><div class="b today" style="height:54%"></div></div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/surumeika.html"><div class="fn">スルメイカ</div><div class="fr">3〜6匹 <small>6件・3隻</small></div><div class="fs">40cm | 6件・3隻 | 天津港・長井新宿港</div><div class="fb">◎第八鶴丸</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:42%"></div><div class="b" style="height:85%"></div><div class="b today" style="height:85%"></div></div><div class="trend up">↑ 先週より上昇</div></a><a class="fc" href="fish/medai.html"><div class="fn">メダイ</div><div class="fr">6〜10匹 <small>5件・3隻</small></div><div class="fs">44cm | 5件・3隻 | 大原港・小坪港</div><div class="fb">◎太郎丸</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:4%"></div><div class="b" style="height:76%"></div><div class="b today" style="height:4%"></div></div><div class="trend dn">↓ 先週より減少</div></a><a class="fc" href="fish/magochi.html"><div class="fn">マゴチ</div><div class="fr">2〜4匹 <small>5件・3隻</small></div><div class="fs">61cm | 5件・3隻 | 江戸川放水路･原木中山・金沢八景</div><div class="fb">◎弁天屋</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:66%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b today" style="height:4%"></div></div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/kinmedai.html"><div class="fn">キンメダイ</div><div class="fr">6〜10匹 <small>4件・2隻</small></div><div class="fs">44cm | 4件・2隻 | 小坪港</div><div class="fb">◎太郎丸</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:4%"></div><div class="b" style="height:76%"></div><div class="b today" style="height:4%"></div></div><div class="trend flat">→ 先週並み</div></a><a class="fc" href="fish/sawara.html"><div class="fn">サワラ</div><div class="fr">2件 <small>2件・2隻</small></div><div class="fs">2件・2隻 | 金沢八景・寒川港</div><div class="fb">◎弁天屋</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:100%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b today" style="height:4%"></div></div></a><a class="fc stale" href="fish/kanpachi.html"><div class="fn">カンパチ</div><div class="fr">1件 <small>1件・1隻</small></div><div class="fs">1件・1隻 | 宇佐美</div><div class="fb">◎秀正丸</div><div class="bars"><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b" style="height:4%"></div><div class="b today" style="height:4%"></div></div></a></div>
 <div class="fish-others"><div class="fo-title">今日ほかに釣れている魚</div><div class="fo-list"><a href="fish/isaki.html">イサキ</a><a href="fish/kuromutsu.html">クロムツ</a><a href="fish/amadai.html">アマダイ</a><a href="fish/kawahagi.html">カワハギ</a><a href="fish/kasago.html">カサゴ</a><a href="fish/mebaru.html">メバル</a><a href="fish/surumeika.html">スルメイカ</a><a href="fish/medai.html">メダイ</a><a href="fish/magochi.html">マゴチ</a><a href="fish/kinmedai.html">キンメダイ</a><a href="fish/sawara.html">サワラ</a><a href="fish/kanpachi.html">カンパチ</a></div></div>
-<!-- ZONE B2: エリア別 -->
-<h2 class="st">エリア別の釣果 <span class="tag free">無料</span></h2>
-<div class="area-sec">
-  <div class="area-chips"><a class="area-chip" href="area/hitachi-kuji.html"><span class="ac-name">日立久慈港</span><span class="ac-cnt">31件</span></a><a class="area-chip" href="area/hasaki.html"><span class="ac-name">波崎港</span><span class="ac-cnt">19件</span></a><a class="area-chip" href="area/kashima.html"><span class="ac-name">鹿島港</span><span class="ac-cnt">42件</span></a><a class="area-chip" href="area/kashima-shinhama.html"><span class="ac-name">鹿島市新浜</span><span class="ac-cnt">8件</span></a><a class="area-chip" href="area/togawa.html"><span class="ac-name">外川港</span><span class="ac-cnt">16件</span></a><a class="area-chip" href="area/iioka.html"><span class="ac-name">飯岡港</span><span class="ac-cnt">36件</span></a><a class="area-chip" href="area/片貝.html"><span class="ac-name">片貝</span><span class="ac-cnt">7件</span></a><a class="area-chip" href="area/片貝港.html"><span class="ac-name">片貝港</span><span class="ac-cnt">8件</span></a><a class="area-chip" href="area/ohara.html"><span class="ac-name">大原港</span><span class="ac-cnt">54件</span></a><a class="area-chip" href="area/amatsu.html"><span class="ac-name">天津港</span><span class="ac-cnt">6件</span></a><a class="area-chip" href="area/katsuura-kawazu.html"><span class="ac-name">勝浦川津港</span><span class="ac-cnt">5件</span></a><a class="area-chip" href="area/hota.html"><span class="ac-name">保田港</span><span class="ac-cnt">18件</span></a><a class="area-chip" href="area/kanaya.html"><span class="ac-name">金谷港</span><span class="ac-cnt">15件</span></a><a class="area-chip" href="area/tomiura.html"><span class="ac-name">富浦港</span><span class="ac-cnt">8件</span></a><a class="area-chip" href="area/susaki.html"><span class="ac-name">洲崎港</span><span class="ac-cnt">5件</span></a><a class="area-chip" href="area/富津港.html"><span class="ac-name">富津港</span><span class="ac-cnt">6件</span></a><a class="area-chip" href="area/nagaura.html"><span class="ac-name">長浦</span><span class="ac-cnt">9件</span></a><a class="area-chip" href="area/urayasu.html"><span class="ac-name">浦安</span><span class="ac-cnt">26件</span></a><a class="area-chip" href="area/higashi-kasai.html"><span class="ac-name">東葛西</span><span class="ac-cnt">7件</span></a><a class="area-chip" href="area/edogawa.html"><span class="ac-name">江戸川放水路･原木中山</span><span class="ac-cnt">23件</span></a><a class="area-chip" href="area/haneda.html"><span class="ac-name">羽田</span><span class="ac-cnt">7件</span></a><a class="area-chip" href="area/heiwajima.html"><span class="ac-name">平和島</span><span class="ac-cnt">5件</span></a><a class="area-chip" href="area/yokohama-shinyamashita.html"><span class="ac-name">横浜港･新山下</span><span class="ac-cnt">13件</span></a><a class="area-chip" href="area/koshiba.html"><span class="ac-name">小柴港</span><span class="ac-cnt">7件</span></a><a class="area-chip" href="area/kanazawa-gyoko.html"><span class="ac-name">金沢漁港</span><span class="ac-cnt">22件</span></a><a class="area-chip" href="area/kanazawa-hakkei.html"><span class="ac-name">金沢八景</span><span class="ac-cnt">97件</span></a><a class="area-chip" href="area/新安浦港.html"><span class="ac-name">新安浦港</span><span class="ac-cnt">6件</span></a><a class="area-chip" href="area/yokohama-honmoku.html"><span class="ac-name">横浜本牧港</span><span class="ac-cnt">12件</span></a><a class="area-chip" href="area/isogo.html"><span class="ac-name">磯子港</span><span class="ac-cnt">5件</span></a><a class="area-chip" href="area/kubiri.html"><span class="ac-name">久比里港</span><span class="ac-cnt">29件</span></a><a class="area-chip" href="area/kamoi-omuro.html"><span class="ac-name">鴨居大室港</span><span class="ac-cnt">13件</span></a><a class="area-chip" href="area/kotsubo.html"><span class="ac-name">小坪港</span><span class="ac-cnt">7件</span></a><a class="area-chip" href="area/koajiro.html"><span class="ac-name">小網代港</span><span class="ac-cnt">10件</span></a><a class="area-chip" href="area/松輪.html"><span class="ac-name">松輪</span><span class="ac-cnt">8件</span></a><a class="area-chip" href="area/matsuwa-ena.html"><span class="ac-name">松輪江奈港</span><span class="ac-cnt">13件</span></a><a class="area-chip" href="area/nagai.html"><span class="ac-name">長井港</span><span class="ac-cnt">13件</span></a><a class="area-chip" href="area/nagai-shinjuku.html"><span class="ac-name">長井新宿港</span><span class="ac-cnt">6件</span></a><a class="area-chip" href="area/nagai-urushiyama.html"><span class="ac-name">長井漆山港</span><span class="ac-cnt">5件</span></a><a class="area-chip" href="area/葉山鐙摺.html"><span class="ac-name">葉山鐙摺</span><span class="ac-cnt">2件</span></a><a class="area-chip" href="area/hayama-abuzuri.html"><span class="ac-name">葉山あぶずり港</span><span class="ac-cnt">4件</span></a><a class="area-chip" href="area/chigasaki.html"><span class="ac-name">茅ヶ崎港</span><span class="ac-cnt">10件</span></a><a class="area-chip" href="area/hiratsuka.html"><span class="ac-name">平塚港</span><span class="ac-cnt">28件</span></a><a class="area-chip" href="area/oiso.html"><span class="ac-name">大磯港</span><span class="ac-cnt">12件</span></a><a class="area-chip" href="area/寒川港.html"><span class="ac-name">寒川港</span><span class="ac-cnt">9件</span></a><a class="area-chip" href="area/odawara-hayakawa.html"><span class="ac-name">小田原早川港</span><span class="ac-cnt">12件</span></a><a class="area-chip" href="area/宇佐美.html"><span class="ac-name">宇佐美</span><span class="ac-cnt">11件</span></a></div>
-</div>
+<!-- ZONE B2: エリア別今日の釣果 -->
+<h2 class="st">エリア別 今日の釣果 <span class="tag free">無料</span></h2>
+<div class="area-today"><a class="at-card" href="area/kanazawa-hakkei.html"><div class="at-name">金沢八景</div><div class="at-count">97件</div><div class="at-fish"><span>アジ</span><span>シロギス</span><span>マダイ</span><span>タチウオ</span></div></a><a class="at-card" href="area/ohara.html"><div class="at-name">大原港</div><div class="at-count">55件</div><div class="at-fish"><span>マハタ</span><span>ヒラメ</span><span>フグ</span><span>マダイ</span></div></a><a class="at-card" href="area/kashima.html"><div class="at-name">鹿島港</div><div class="at-count">42件</div><div class="at-fish"><span>マダイ</span><span>ワラサ</span><span>メバル</span><span>フグ</span></div></a><a class="at-card" href="area/iioka.html"><div class="at-name">飯岡港</div><div class="at-count">36件</div><div class="at-fish"><span>マダイ</span><span>アジ</span><span>カサゴ</span></div></a><a class="at-card" href="area/hitachi-kuji.html"><div class="at-name">日立久慈港</div><div class="at-count">31件</div><div class="at-fish"><span>マダイ</span><span>アマダイ</span><span>ヒラメ</span></div></a><a class="at-card" href="area/kubiri.html"><div class="at-name">久比里港</div><div class="at-count">29件</div><div class="at-fish"><span>カワハギ</span><span>マダイ</span><span>アマダイ</span><span>アジ</span></div></a><a class="at-card" href="area/hiratsuka.html"><div class="at-name">平塚港</div><div class="at-count">28件</div><div class="at-fish"><span>アジ</span><span>クロムツ</span><span>マルイカ</span><span>マダイ</span></div></a><a class="at-card" href="area/urayasu.html"><div class="at-name">浦安</div><div class="at-count">26件</div><div class="at-fish"><span>フグ</span><span>アジ</span><span>シロギス</span><span>カサゴ</span></div></a></div>
+
 <!-- 海況データ -->
 <h2>🌊 今週末の海況予報 <span style="font-size:12px;font-weight:normal;color:#7a9bb5">4/18(土)・4/19(日) 釣り時間帯 6〜15時の予報</span></h2>
     <p style="font-size:12px;color:#7a9bb5;margin-bottom:10px">波高・風速から出船可否を判定。データ: Open-Meteo Marine Forecast</p>
@@ -249,7 +264,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 2.0m 高波注意</span>
-              <span>💨 南南西3.4m/s 弱風</span>
+              <span>💨 南南西3.2m/s 弱風</span>
               <span>🌡️ 15.8℃</span>
             </div>
           </div>
@@ -258,7 +273,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 1.8m 高波注意</span>
-              <span>💨 東北東4.1m/s 弱風</span>
+              <span>💨 東3.7m/s 弱風</span>
               <span>🌡️ 16.1℃</span>
             </div>
           </div>
@@ -271,7 +286,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#e85d04">△ やや不安</div>
             <div class="wx-metrics">
               <span>🔴 2.9m 高波注意</span>
-              <span>💨 北北東3.5m/s 弱風</span>
+              <span>💨 北北東3.6m/s 弱風</span>
               <span>🌡️ 17.0℃</span>
             </div>
           </div>
@@ -280,7 +295,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#e85d04">△ やや不安</div>
             <div class="wx-metrics">
               <span>🔴 2.6m 高波注意</span>
-              <span>💨 東北東3.8m/s 弱風</span>
+              <span>💨 南東4.7m/s 弱風</span>
               <span>🌡️ 18.6℃</span>
             </div>
           </div>
@@ -293,7 +308,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
               <span>🟠 1.3m 波あり</span>
-              <span>💨 南2.3m/s 微風</span>
+              <span>💨 南南東2.5m/s 微風</span>
               <span>🌡️ 19.0℃</span>
             </div>
           </div>
@@ -302,7 +317,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
               <span>🟠 1.2m 波あり</span>
-              <span>💨 北北東3.7m/s 弱風</span>
+              <span>💨 北東3.0m/s 弱風</span>
               <span>🌡️ 18.8℃</span>
             </div>
           </div>
@@ -324,7 +339,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
               <span>🟢 0.2m 穏やか</span>
-              <span>💨 南東2.6m/s 微風</span>
+              <span>💨 東2.0m/s 微風</span>
               <span>🌡️ 16.4℃</span>
             </div>
           </div>
@@ -346,7 +361,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
               <span>🟢 0.3m 穏やか</span>
-              <span>💨 南東2.6m/s 微風</span>
+              <span>💨 東2.0m/s 微風</span>
               <span>🌡️ 16.2℃</span>
             </div>
           </div>
@@ -359,7 +374,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
               <span>🟡 0.8m やや波</span>
-              <span>💨 東南東1.6m/s 微風</span>
+              <span>💨 東南東1.8m/s 微風</span>
               <span>🌡️ 15.7℃</span>
             </div>
           </div>
@@ -368,7 +383,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#4dcc88">◎ 出船日和</div>
             <div class="wx-metrics">
               <span>🟡 0.7m やや波</span>
-              <span>💨 北東4.2m/s 弱風</span>
+              <span>💨 東北東3.3m/s 弱風</span>
               <span>🌡️ 16.1℃</span>
             </div>
           </div>
@@ -381,7 +396,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 1.7m 高波注意</span>
-              <span>💨 東北東2.2m/s 微風</span>
+              <span>💨 東北東2.5m/s 微風</span>
               <span>🌡️ 18.3℃</span>
             </div>
           </div>
@@ -390,7 +405,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 1.6m 高波注意</span>
-              <span>💨 北東4.2m/s 弱風</span>
+              <span>💨 東北東3.2m/s 弱風</span>
               <span>🌡️ 18.5℃</span>
             </div>
           </div>
@@ -403,7 +418,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 1.8m 高波注意</span>
-              <span>💨 東北東1.6m/s 微風</span>
+              <span>💨 東1.5m/s 微風</span>
               <span>🌡️ 17.2℃</span>
             </div>
           </div>
@@ -412,7 +427,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
             <div class="wx-ok" style="color:#f4a261">○ 概ね良好</div>
             <div class="wx-metrics">
               <span>🔴 1.7m 高波注意</span>
-              <span>💨 東北東5.1m/s 弱風</span>
+              <span>💨 東3.1m/s 弱風</span>
               <span>🌡️ 18.0℃</span>
             </div>
           </div>
@@ -473,11 +488,11 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 <!-- 概況テキスト -->
-<h2 class="st">今日の関東船釣り概況 <span class="tag free">無料</span></h2><div class="overview"><div class="overview-title">2026/04/15 18:52 更新 — 46エリア・77船宿から集計</div><div class="overview-body">本日は関東全域で715件の釣果報告が寄せられました（46エリア・77船宿）。主力魚種はアジ・マダイ・マルイカ。最新の釣果情報・船宿ランキングは各魚種・エリアページをご確認ください。</div></div>
+<h2 class="st">今日の関東船釣り概況 <span class="tag free">無料</span></h2><div class="overview"><div class="overview-title">2026/04/15 09:28 更新 — 46エリア・77船宿から集計</div><div class="overview-body">本日は関東全域で714件の釣果報告が寄せられました（46エリア・77船宿）。主力魚種はアジ・マダイ・マルイカ。最新の釣果情報・船宿ランキングは各魚種・エリアページをご確認ください。</div></div>
 <!-- ZONE E: ナビ -->
 <div class="nav-section">
   <h3>人気の魚種から探す</h3>
-  <div class="nav-chips"><a href="fish/aji.html">アジ</a><a href="fish/madai.html">マダイ</a><a href="fish/maruika.html">マルイカ</a><a href="fish/fugu.html">フグ</a><a href="fish/hirame.html">ヒラメ</a><a href="fish/shirogisu.html">シロギス</a><a href="fish/yariika.html">ヤリイカ</a><a href="fish/tachiuo.html">タチウオ</a><a href="fish/mahata.html">マハタ</a><a href="fish/warasa.html">ワラサ</a><a href="fish/isaki.html">イサキ</a><a href="fish/kuromutsu.html">クロムツ</a><a href="calendar/index.html">すべて見る →</a></div>
+  <div class="nav-chips"><a href="fish/aji.html">アジ</a><a href="fish/madai.html">マダイ</a><a href="fish/maruika.html">マルイカ</a><a href="fish/fugu.html">フグ</a><a href="fish/hirame.html">ヒラメ</a><a href="fish/yariika.html">ヤリイカ</a><a href="fish/shirogisu.html">シロギス</a><a href="fish/tachiuo.html">タチウオ</a><a href="fish/mahata.html">マハタ</a><a href="fish/warasa.html">ワラサ</a><a href="fish/isaki.html">イサキ</a><a href="fish/kuromutsu.html">クロムツ</a><a href="calendar.html">すべて見る →</a></div>
 </div>
 <div class="nav-section">
   <h3>エリアから探す</h3>
@@ -506,7 +521,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/15 18:52</span>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/15 09:28</span>
 </footer>
 <nav class="bn"><a href="/index.html" class="on"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
 <script>

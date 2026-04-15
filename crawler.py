@@ -4532,12 +4532,31 @@ def build_html(catches, crawled_at, history, weather_data=None):
         stale_cls = " stale" if is_stale else ""
         trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
         fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
+        # ミニバー（7日間）
+        _today = now.date()
+        _daily_max = {}
+        for c in cs:
+            try: _d = datetime.strptime(c["date"], "%Y/%m/%d").date()
+            except: continue
+            _cr = c.get("count_range")
+            _v = (_cr["max"] if _cr and not _cr.get("is_boat") else 0) or 0
+            if _v > _daily_max.get(_d, 0): _daily_max[_d] = _v
+        _vals = [_daily_max.get(_today - timedelta(days=i), 0) for i in range(6, -1, -1)]
+        _wmax = max(_vals) if any(v > 0 for v in _vals) else 1
+        mini_bars = ""
+        if _wmax > 0:
+            _bar_parts = []
+            for _i, _v in enumerate(_vals):
+                _h = max(8, int(_v / _wmax * 100)) if _v > 0 else 4
+                _cls = " today" if _i == 6 else ""
+                _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
+            mini_bars = f'<div class="bars">{"".join(_bar_parts)}</div>'
         cards += (
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html">'
             f'<div class="fn">{fish}</div>'
             f'<div class="fr">{cnt_range_str} <small>{len(cs)}件・{ship_num}隻</small></div>'
             f'<div class="fs">{detail_str}</div>'
-            f'{fb_tag}{trend_tag}'
+            f'{fb_tag}{mini_bars}{trend_tag}'
             f'</a>'
         )
     targets      = calc_targets(catches, history)
@@ -4568,18 +4587,69 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="area-group-links">{"".join(others)}</div></div>'
         )
     area_nav = "".join(area_nav_parts)
-    # V2 エリアチップ（ZONE B2）
-    area_chips_html = ""
-    for group_label, group_areas in AREA_GROUPS.items():
-        for a in group_areas:
-            if a in active_areas:
-                cnt = sum(1 for c in catches if c["area"] == a)
-                area_chips_html += (
-                    f'<a class="area-chip" href="area/{area_slug(a)}.html">'
-                    f'<span class="ac-name">{a}</span>'
-                    f'<span class="ac-cnt">{cnt}件</span>'
-                    f'</a>'
-                )
+    # V2 ZONE B2: エリア別今日の釣果カード
+    area_today_html = ""
+    area_fish_map = {}  # area -> {fish: count}
+    for c in catches:
+        for f in c["fish"]:
+            if f not in ("不明", "欠航"):
+                area_fish_map.setdefault(c["area"], {}).setdefault(f, 0)
+                area_fish_map[c["area"]][f] += 1
+    # エリアを件数降順でソート
+    area_cnt_map = {}
+    for c in catches:
+        area_cnt_map[c["area"]] = area_cnt_map.get(c["area"], 0) + 1
+    for area in sorted(active_areas, key=lambda x: -area_cnt_map.get(x, 0))[:8]:
+        cnt = area_cnt_map.get(area, 0)
+        top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
+        fish_tags = "".join(f'<span>{f}</span>' for f, _ in top_fish)
+        area_today_html += (
+            f'<a class="at-card" href="area/{area_slug(area)}.html">'
+            f'<div class="at-name">{area}</div>'
+            f'<div class="at-count">{cnt}件</div>'
+            f'<div class="at-fish">{fish_tags}</div>'
+            f'</a>'
+        )
+    # V2 ZONE C: 出船リスク予報（7日間）
+    risk_grid_html = ""
+    forecast_json_data_for_risk = weather_data.get("_forecast_data") if weather_data else None
+    if forecast_json_data_for_risk:
+        days_data = forecast_json_data_for_risk.get("days", {})
+        dow_jp = ["月","火","水","木","金","土","日"]
+        risk_days = ""
+        for date_str in sorted(days_data.keys())[:7]:
+            try:
+                dt = datetime.strptime(date_str, "%Y-%m-%d")
+                dow = dow_jp[dt.weekday()]
+                label_date = f"{dt.month}/{dt.day}"
+            except: continue
+            day_info = days_data[date_str]
+            # エリア別波高・風速の平均
+            areas_info = day_info.get("areas", {})
+            if areas_info:
+                waves = [v.get("wave_height", 0) or 0 for v in areas_info.values()]
+                winds = [v.get("wind_speed", 0) or 0 for v in areas_info.values()]
+                avg_wave = sum(waves) / len(waves) if waves else 0
+                avg_wind = sum(winds) / len(winds) if winds else 0
+            else:
+                avg_wave = day_info.get("wave_height") or 0
+                avg_wind = day_info.get("wind_speed") or 0
+            if avg_wave >= 2.0 or avg_wind >= 10:
+                cls, icon, lbl = "bad", "×", "欠航警戒"
+            elif avg_wave >= 1.2 or avg_wind >= 7:
+                cls, icon, lbl = "warn", "△", "注意"
+            else:
+                cls, icon, lbl = "good", "○", "好条件"
+            risk_days += (
+                f'<div class="risk-day {cls}">'
+                f'<div class="rd-dow">{dow}</div>'
+                f'<div class="rd-date">{label_date}</div>'
+                f'<div class="rd-icon">{icon}</div>'
+                f'<div class="rd-label">{lbl}</div>'
+                f'</div>'
+            )
+        if risk_days:
+            risk_grid_html = f'<div class="risk-grid">{risk_days}</div>'
     # V2 魚種ナビチップ（ZONE E）
     fish_nav_html = "".join(
         f'<a href="fish/{fish_slug(f)}.html">{f}</a>'
@@ -4633,6 +4703,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fc .fr small{font-size:11px;color:var(--muted);font-weight:400}
 .fc .fs{font-size:10px;color:var(--muted)}
 .fc .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
+.fc .bars{display:flex;align-items:flex-end;gap:1px;height:20px;margin-top:4px}
+.fc .bars .b{flex:1;background:var(--cta);border-radius:1px 1px 0 0;opacity:.6;min-width:4px}
+.fc .bars .b.today{opacity:1;background:var(--pos)}
 .fc .trend{font-size:9px;font-weight:700;margin-top:2px}
 .fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
 .fc.stale{opacity:.6}
@@ -4641,19 +4714,32 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fo-list{display:flex;flex-wrap:wrap;gap:4px}
 .fo-list a{font-size:12px;padding:3px 8px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
 .fo-list a:hover{background:var(--accent);color:#fff;text-decoration:none}
-.area-sec{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
-.area-sec h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.area-chips{display:flex;flex-wrap:wrap;gap:5px}
-.area-chip{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--bg);border-radius:8px;text-decoration:none}
-.area-chip:hover{background:var(--accent);text-decoration:none}
-.area-chip .ac-name{font-size:13px;font-weight:700;color:var(--accent)}
-.area-chip:hover .ac-name,.area-chip:hover .ac-cnt{color:#fff}
-.area-chip .ac-cnt{font-size:10px;color:var(--muted)}
+.area-today{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.at-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:block;transition:border-color .15s}
+.at-card:hover{border-color:var(--cta);text-decoration:none}
+.at-name{font-size:12px;font-weight:700;color:var(--accent)}
+.at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px}
+.at-count::before{content:"釣果報告";display:block;font-size:9px;font-weight:400;color:var(--sub);margin-bottom:1px}
+.at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.at-fish span{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub)}
+.risk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.risk-day{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center}
+.risk-day.good{border-color:var(--pos);background:#f0fdf4}
+.risk-day.warn{border-color:var(--warn);background:#fffbeb}
+.risk-day.bad{border-color:var(--neg);background:#fef2f2}
+.rd-dow{font-size:10px;color:var(--muted);font-weight:600}
+.rd-date{font-size:11px;color:var(--sub);font-weight:600}
+.rd-icon{font-size:16px;margin:4px 0;font-weight:800}
+.risk-day.good .rd-icon{color:var(--pos)}
+.risk-day.warn .rd-icon{color:var(--warn)}
+.risk-day.bad .rd-icon{color:var(--neg)}
+.rd-label{font-size:9px;font-weight:700}
 .nav-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .nav-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .nav-chips{display:flex;flex-wrap:wrap;gap:5px}
 .nav-chips a{font-size:12px;padding:5px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
-.nav-chips a:hover{background:var(--accent);color:#fff;text-decoration:none}"""
+.nav-chips a:hover{background:var(--accent);color:#fff;text-decoration:none}
+@media(min-width:769px){.fish-grid{grid-template-columns:repeat(3,1fr)}}"""
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -4687,14 +4773,13 @@ def build_html(catches, crawled_at, history, weather_data=None):
 </div>
 <div class="c">
 <!-- ZONE B: 釣れている魚 -->
-<h2 class="st">今日釣れている魚 <span class="tag free">無料</span></h2>
+<h2 class="st">今日 釣れている魚 <span class="tag free">無料</span></h2>
 <div class="fish-grid">{cards}</div>
 {fish_others_html}
-<!-- ZONE B2: エリア別 -->
-<h2 class="st">エリア別の釣果 <span class="tag free">無料</span></h2>
-<div class="area-sec">
-  <div class="area-chips">{area_chips_html}</div>
-</div>
+<!-- ZONE B2: エリア別今日の釣果 -->
+<h2 class="st">エリア別 今日の釣果 <span class="tag free">無料</span></h2>
+<div class="area-today">{area_today_html}</div>
+{f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>{risk_grid_html}' if risk_grid_html else ''}
 <!-- 海況データ -->
 {weather_html}
 <!-- TEASER ROTATOR -->
@@ -4707,7 +4792,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <!-- ZONE E: ナビ -->
 <div class="nav-section">
   <h3>人気の魚種から探す</h3>
-  <div class="nav-chips">{fish_nav_html}<a href="calendar/index.html">すべて見る →</a></div>
+  <div class="nav-chips">{fish_nav_html}<a href="calendar.html">すべて見る →</a></div>
 </div>
 <div class="nav-section">
   <h3>エリアから探す</h3>
