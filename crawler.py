@@ -4874,8 +4874,7 @@ def build_fish_pages(data, history, crawled_at=""):
                 f'今年の初釣果: 第{entry_this}週 ／ 昨年: 第{entry_last}週'
                 f'<span class="entry-trend">（{trend_txt}）</span></div>'
             )
-        elif entry_this and not entry_last:
-            season_entry_html = f'<div class="season-entry entry-early">今年の初釣果: 第{entry_this}週（昨年データなし）</div>'
+        # 昨年データなし → 比較できないので非表示
         rows = ""
         max_cnt = 0
         for c in catches:
