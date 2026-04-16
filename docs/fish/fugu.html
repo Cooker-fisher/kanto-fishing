@@ -169,18 +169,29 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .overview-body{font-size:13px;color:var(--text);line-height:1.8}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 @media(max-width:640px){header{padding:10px 14px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
-.hero-fish{background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0}
-.hero-fish .hf-name{font-size:28px;font-weight:800;letter-spacing:-0.5px}
-.hero-fish .hf-sub{font-size:12px;opacity:.7;margin-top:2px}
-.hero-fish .hf-stats{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
-.hero-fish .hf-stat{background:rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;text-align:center;min-width:60px}
-.hero-fish .hf-stat .v{font-size:18px;font-weight:800;line-height:1.1}
-.hero-fish .hf-stat .l{font-size:9px;opacity:.7;margin-top:2px}
+.fish-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:22px 14px 18px;text-align:center}
+.fish-hero h2{font-size:26px;font-weight:800;margin:0}
+.fish-hero .fh-r{font-size:30px;font-weight:800;color:var(--cta);margin-top:4px;line-height:1.1}
+.fish-hero .fh-s{font-size:18px;font-weight:700;color:#fff;margin-top:2px}
+.fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
+.area-cmp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.area-cmp h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;text-decoration:none;color:inherit}
+.ar:last-child{border-bottom:none}
+.ar .ar-name{flex:0 0 85px;font-size:13px;font-weight:700;color:var(--cta)}
+.ar .ar-range{flex:0 0 85px;font-size:14px;font-weight:700;color:var(--accent)}
+.ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
+.sr:last-child{border-bottom:none}
+.sr .sr-m{font-size:14px;font-weight:800;color:var(--cta);flex:0 0 22px;text-align:center}
+.sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
+.sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
+.sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
 .comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
 .season-entry{font-size:12px;color:var(--sub);margin:8px 0;padding:6px 10px;border-radius:4px;background:var(--card);border:1px solid var(--border)}
 .season-entry.entry-early{border-left:3px solid var(--pos)}.season-entry.entry-late{border-left:3px solid var(--warn)}.season-entry.entry-same{border-left:3px solid var(--accent)}
 .entry-trend{font-weight:bold;margin-left:6px}
-.medal{font-size:16px;vertical-align:middle}
 .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
 .chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
@@ -188,8 +199,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.today{opacity:1;background:var(--pos)}
-.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.today{opacity:1;background:var(--pos)}.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 .chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}</style>
@@ -208,105 +218,33 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <a href="/calendar.html">カレンダー</a>
   <a href="/forecast/index.html" class="prem">有料プラン</a>
 </nav>
-<!-- HERO -->
-<div class="hero-fish">
-  <div class="c">
-    <div class="hf-name">フグ</div>
-    <div class="hf-sub">関東エリアの釣果情報</div>
-    <div class="hf-stats">
-      <div class="hf-stat"><div class="v">36</div><div class="l">今週の釣果件数</div></div>
-      <div class="hf-stat"><div class="v">15</div><div class="l">最高釣果(匹)</div></div>
-      <div class="hf-stat"><div class="v">11</div><div class="l">出船船宿数</div></div>
-    </div>
-  </div>
+<div class="fish-hero">
+  <h2>フグ</h2>
+  <div class="fh-r">今週36件</div>
+  
+  <div class="fh-m">今日 2件・2船宿</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; フグ</p>
-  <div class="stat-cards">
-  <div class="stat-card"><div class="sv">11船宿</div><div class="sl">今週の出船船宿数</div></div>
-  <div class="stat-card"><div class="sv">1匹</div><div class="sl">平均釣果</div></div>
-  <div class="stat-card"><div class="sv">15匹</div><div class="sl">今週の最高釣果</div></div>
-</div>
   
   <div class="comment">💬 好シーズン中のまずまずの状況（今週36件）</div>
-  
+  <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
   <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
 <div class="chart7">
   <h3>匹数上限（上ヒゲ）の7日推移</h3>
-  <div class="chart-bars"><div class="cb" style="height:100%"></div><div class="cb" style="height:4%"></div><div class="cb weekend" style="height:100%"></div><div class="cb weekend" style="height:86%"></div><div class="cb" style="height:26%"></div><div class="cb" style="height:13%"></div><div class="cb today" style="height:33%"></div></div>
-  <div class="chart-labels"><span>4/9</span><span>4/10</span><span>4/11</span><span>4/12</span><span>4/13</span><span>4/14</span><span>今日</span></div>
+  <div class="chart-bars"><div class="cb" style="height:4%"></div><div class="cb weekend" style="height:100%"></div><div class="cb weekend" style="height:86%"></div><div class="cb" style="height:26%"></div><div class="cb" style="height:13%"></div><div class="cb" style="height:33%"></div><div class="cb today" style="height:33%"></div></div>
+  <div class="chart-labels"><span>4/10</span><span>4/11</span><span>4/12</span><span>4/13</span><span>4/14</span><span>4/15</span><span>今日</span></div>
   <div class="chart-trend down">↓ 下降トレンド</div>
 </div>
-  <h2 class="st">船宿ランキング（今週）</h2>
-  <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr>
-  <td style="width:36px;text-align:center"><span class="medal">🥇</span> </td>
-  <td><strong>敷嶋丸</strong><br><span style="font-size:11px;color:#7a9bb5">大原港</span></td>
-  <td style="color:#4dcc88">6件</td>
-  <td style="color:#e85d04">最高15匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:16%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span class="medal">🥈</span> </td>
-  <td><strong>野毛屋</strong><br><span style="font-size:11px;color:#7a9bb5">金沢八景</span></td>
-  <td style="color:#4dcc88">6件</td>
-  <td style="color:#e85d04">最高14匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:16%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span class="medal">🥉</span> </td>
-  <td><strong>光進丸</strong><br><span style="font-size:11px;color:#7a9bb5">金谷港</span></td>
-  <td style="color:#4dcc88">5件</td>
-  <td style="color:#e85d04">最高5匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:13%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span style="color:#4db8ff;font-weight:bold">4</span> </td>
-  <td><strong>吉久</strong><br><span style="font-size:11px;color:#7a9bb5">浦安</span></td>
-  <td style="color:#4dcc88">5件</td>
-  <td style="color:#e85d04">最高5匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:13%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span style="color:#4db8ff;font-weight:bold">5</span> </td>
-  <td><strong>吉野屋</strong><br><span style="font-size:11px;color:#7a9bb5">浦安</span></td>
-  <td style="color:#4dcc88">5件</td>
-  <td style="color:#e85d04">最高5匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:13%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span style="color:#4db8ff;font-weight:bold">6</span> </td>
-  <td><strong>豊丸</strong><br><span style="font-size:11px;color:#7a9bb5">鹿島港</span></td>
-  <td style="color:#4dcc88">4件</td>
-  <td style="color:#e85d04">最高12匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:11%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span style="color:#4db8ff;font-weight:bold">7</span> </td>
-  <td><strong>光佑丸</strong><br><span style="font-size:11px;color:#7a9bb5">外川港</span></td>
-  <td style="color:#4dcc88">1件</td>
-  <td style="color:#e85d04">最高0匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span style="color:#4db8ff;font-weight:bold">8</span> </td>
-  <td><strong>浜新丸</strong><br><span style="font-size:11px;color:#7a9bb5">富津港</span></td>
-  <td style="color:#4dcc88">1件</td>
-  <td style="color:#e85d04">最高14匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span style="color:#4db8ff;font-weight:bold">9</span> </td>
-  <td><strong>こなや丸</strong><br><span style="font-size:11px;color:#7a9bb5">長浦</span></td>
-  <td style="color:#4dcc88">1件</td>
-  <td style="color:#e85d04">最高0匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td>
-</tr><tr>
-  <td style="width:36px;text-align:center"><span style="color:#4db8ff;font-weight:bold">10</span> </td>
-  <td><strong>忠彦丸</strong><br><span style="font-size:11px;color:#7a9bb5">金沢漁港</span></td>
-  <td style="color:#4dcc88">1件</td>
-  <td style="color:#e85d04">最高5匹</td>
-  <td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td>
-</tr></table></div>
-  <h2 class="st">最近の釣果 （36件）</h2>
-  <div class="tbl-wrap"><table><tr><th>日付</th><th>エリア</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/04/15</td><td>浦安</td><td>吉久</td><td>0〜5</td><td>41〜64cm</td><td>4.8kg</td></tr><tr><td>2026/04/15</td><td>浦安</td><td>吉野屋</td><td>0〜3</td><td></td><td>1.8〜4.6kg</td></tr><tr><td>2026/04/14</td><td>大原港</td><td>敷嶋丸</td><td>0〜2</td><td>18〜33cm</td><td></td></tr><tr><td>2026/04/13</td><td>金谷港</td><td>光進丸</td><td>0〜3</td><td></td><td>1.1〜4.5kg</td></tr><tr><td>2026/04/13</td><td>浦安</td><td>吉久</td><td>0〜2</td><td>41〜62cm</td><td>3.5kg</td></tr><tr><td>2026/04/13</td><td>浦安</td><td>吉野屋</td><td>0〜4</td><td></td><td>1.8〜4.8kg</td></tr><tr class="dim"><td>2026/04/12</td><td>外川港</td><td>光佑丸</td><td></td><td></td><td></td></tr><tr><td>2026/04/12</td><td>大原港</td><td>敷嶋丸</td><td>2〜13</td><td>18〜43cm</td><td></td></tr><tr><td>2026/04/12</td><td>大原港</td><td>敷嶋丸</td><td>0〜4</td><td></td><td></td></tr><tr><td>2026/04/12</td><td>金谷港</td><td>光進丸</td><td><span class='boat-catch' title='船全体の合計数'>船中0〜4</span></td><td></td><td>1.1〜4.7kg</td></tr><tr><td>2026/04/12</td><td>長浦</td><td>こなや丸</td><td><span class='boat-catch' title='船全体の合計数'>船中1</span></td><td></td><td></td></tr><tr><td>2026/04/12</td><td>浦安</td><td>吉野屋</td><td>0〜4</td><td></td><td>1.8〜4.4kg</td></tr><tr><td>2026/04/11</td><td>鹿島港</td><td>豊丸</td><td>1〜12</td><td>22〜40cm</td><td></td></tr><tr class="highlight"><td>2026/04/11</td><td>大原港</td><td>敷嶋丸</td><td>1〜15</td><td>18〜35cm</td><td></td></tr><tr><td>2026/04/11</td><td>浦安</td><td>吉久</td><td><span class='boat-catch' title='船全体の合計数'>船中0〜4</span></td><td>42〜60cm</td><td>6.0kg</td></tr><tr><td>2026/04/11</td><td>浦安</td><td>吉野屋</td><td>0〜5</td><td></td><td>1.8〜5.3kg</td></tr><tr class="highlight"><td>2026/04/09</td><td>大原港</td><td>敷嶋丸</td><td>9〜15</td><td>18〜35cm</td><td></td></tr><tr><td>2026/04/09</td><td>金谷港</td><td>光進丸</td><td>0〜3</td><td></td><td>1.1〜4.4kg</td></tr><tr><td>2026/04/09</td><td>浦安</td><td>吉久</td><td>0〜4</td><td>42〜58cm</td><td>3.2kg</td></tr><tr><td>2026/04/09</td><td>浦安</td><td>吉野屋</td><td>0〜3</td><td></td><td>1.8〜3.6kg</td></tr></table></div>
+  <h2 class="st">今日の釣果 <span class="tag free">無料</span></h2>
+  <div class="area-cmp"><h3>エリア別の今日の釣果</h3><a class="ar" href="../area/urayasu.html"><span class="ar-name">浦安</span><span class="ar-range">—</span></a></div>
+  <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-m">◎</span><span class="sr-name">吉久</span><span class="sr-range">5匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">◎</span><span class="sr-name">吉野屋</span><span class="sr-range">5匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">敷嶋丸</span><span class="sr-range">15匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">野毛屋</span><span class="sr-range">14匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">光進丸</span><span class="sr-range">5匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">△</span><span class="sr-name">豊丸</span><span class="sr-range">12匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">△</span><span class="sr-name">光佑丸</span><span class="sr-range">1件</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">△</span><span class="sr-name">浜新丸</span><span class="sr-range">6〜14匹</span><span class="sr-pt"></span></div></div>
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   <h2 class="st">同じエリアで釣れる魚</h2><div class="chip-wrap"><a href="../fish/aji.html" class="chip-link">アジ</a><a href="../fish/madai.html" class="chip-link">マダイ</a><a href="../fish/hirame.html" class="chip-link">ヒラメ</a><a href="../fish/mahata.html" class="chip-link">マハタ</a><a href="../fish/shirogisu.html" class="chip-link">シロギス</a><a href="../fish/tachiuo.html" class="chip-link">タチウオ</a></div>
   <h2 class="st">エリア別の釣果</h2><div class="chip-wrap"><a href="../fish_area/fugu-urayasu.html" class="chip-link">浦安（10件）</a><a href="../fish_area/fugu-ohara.html" class="chip-link">大原港（6件）</a><a href="../fish_area/fugu-kanazawa-hakkei.html" class="chip-link">金沢八景（6件）</a><a href="../fish_area/fugu-kanaya.html" class="chip-link">金谷港（5件）</a></div>
-  <h2 class="st">旬カレンダー</h2>
+  <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   <div class="season-map">
   <div class="sm-wrap">
     <table class="sm-table">
@@ -332,6 +270,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   
 </div>
   
+  <h2 class="st teaser-title">フグが釣れる条件 <span class="tag coming">まもなく公開</span></h2><div class="teaser"><div class="teaser-head"><span class="teaser-badge">開発中</span><span class="teaser-title-in">気象相関分析 × 日別予測</span></div><div class="teaser-desc"><strong>約10万件</strong>の釣果データより分析した「<strong>フグが釣れる条件</strong>」と<strong>明日〜1週間後の予測</strong>を公開予定です。</div><div style="position:relative"><div class="teaser-dummy"><div class="td-fish">釣れる条件の傾向</div><div class="td-range">水温○ / 大潮○ / 波穏○</div><div class="td-reason">気象スコアより推定</div></div><div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 気象条件スコア</li><li>✓ 来週の釣れる日予測</li><li>✓ 船宿別おすすめ日</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div></div></div>
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
@@ -363,7 +302,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/15 21:43</span>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/16 08:59</span>
 </footer>
 <nav class="bn"><a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/" class="on"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
 </body></html>
