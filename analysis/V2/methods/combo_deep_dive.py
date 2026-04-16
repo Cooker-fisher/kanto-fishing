@@ -999,16 +999,22 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
 
         # 潮汐×季節 交互作用（方式C: 季節×3潮群 = 12因子）
         # 潮群: 大潮(type_n==4) / 中小潮(type_n 2-3) / 長若潮(type_n==1)
+        # tide_type_n 欠損時は None（相関計算から除外）
         _ttn = tide.get("tide_type_n")
-        _is_oshio   = 1 if _ttn == 4 else 0
-        _is_chusho  = 1 if _ttn in (2, 3) else 0
-        _is_chowaka = 1 if _ttn == 1 else 0
-        _ssn = _season_of(int(r["date"][5:7]))
-        for _grp, _flag in [("oshio", _is_oshio), ("chusho", _is_chusho), ("chowaka", _is_chowaka)]:
-            rec[f"tide_grp_{_grp}_spring"] = _flag if _ssn == "春" else 0
-            rec[f"tide_grp_{_grp}_summer"] = _flag if _ssn == "夏" else 0
-            rec[f"tide_grp_{_grp}_autumn"] = _flag if _ssn == "秋" else 0
-            rec[f"tide_grp_{_grp}_winter"] = _flag if _ssn == "冬" else 0
+        if _ttn is not None:
+            _is_oshio   = 1 if _ttn == 4 else 0
+            _is_chusho  = 1 if _ttn in (2, 3) else 0
+            _is_chowaka = 1 if _ttn == 1 else 0
+            _ssn = _season_of(int(r["date"][5:7]))
+            for _grp, _flag in [("oshio", _is_oshio), ("chusho", _is_chusho), ("chowaka", _is_chowaka)]:
+                rec[f"tide_grp_{_grp}_spring"] = _flag if _ssn == "春" else 0
+                rec[f"tide_grp_{_grp}_summer"] = _flag if _ssn == "夏" else 0
+                rec[f"tide_grp_{_grp}_autumn"] = _flag if _ssn == "秋" else 0
+                rec[f"tide_grp_{_grp}_winter"] = _flag if _ssn == "冬" else 0
+        else:
+            for _grp in ("oshio", "chusho", "chowaka"):
+                for _s in ("spring", "summer", "autumn", "winter"):
+                    rec[f"tide_grp_{_grp}_{_s}"] = None
 
         result.append(rec)
 
