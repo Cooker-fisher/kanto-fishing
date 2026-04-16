@@ -5457,7 +5457,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
   <h2 class="st">このエリアで{fish_label}釣れている魚 <span class="tag free">無料</span></h2>
-  <div class="fia-grid">{fia_cards if fia_cards else "<p style=\"color:var(--muted);font-size:13px\">本日の釣果はまだ集計中です</p>"}</div>
+  <div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">本日の釣果はまだ集計中です</p>'}</div>
   {sea_section_html}
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
