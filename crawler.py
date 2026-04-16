@@ -196,8 +196,11 @@ AREA_GROUPS = {
     "静岡":               ["宇佐美", "戸田"],
 }
 
-# ships.json が存在すれば上書き（discover_ships.py が月1回更新）
-_ships_json = os.path.join(os.path.dirname(__file__), "ships.json")
+# crawl/ships.json が正（discover_ships.py が月1回更新）
+# フォールバック: 旧位置 ships.json（ルート直下）
+_ships_json = os.path.join(os.path.dirname(__file__), "crawl", "ships.json")
+if not os.path.exists(_ships_json):
+    _ships_json = os.path.join(os.path.dirname(__file__), "ships.json")
 if os.path.exists(_ships_json):
     with open(_ships_json, encoding="utf-8") as _f:
         SHIPS = json.load(_f)
@@ -7417,12 +7420,14 @@ def main():
     now = datetime.now()
     crawled_at = now.strftime("%Y/%m/%d %H:%M")
     year = now.year
-    fv_count  = sum(1 for s in SHIPS if s.get("source", "fishing-v") == "fishing-v")
-    gyo_count = sum(1 for s in SHIPS if s.get("source") == "gyo")
+    # exclude / boat_only フラグを持つ船宿はクロール対象外
+    active_ships = [s for s in SHIPS if not s.get("exclude") and not s.get("boat_only")]
+    fv_count  = sum(1 for s in active_ships if s.get("source", "fishing-v") == "fishing-v")
+    gyo_count = sum(1 for s in active_ships if s.get("source") == "gyo")
     print(f"=== 関東船釣りクローラー v5.15 開始: {crawled_at} ===")
-    print(f"対象: {len(SHIPS)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
+    print(f"対象: {len(active_ships)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
-    for s in SHIPS:
+    for s in active_ships:
         source = s.get("source", "fishing-v")
         print(f"  [{s['area']}] {s['name']} ({source}) ...", end=" ", flush=True)
         if source == "gyo":
