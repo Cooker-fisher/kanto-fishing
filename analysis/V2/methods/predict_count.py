@@ -459,6 +459,19 @@ def _apply_wx_correction(conn, fish: str, ship: str,
     if tide.get("tide_range") is not None and tide_d1.get("tide_range") is not None:
         all_wx["tide_delta"] = tide["tide_range"] - tide_d1["tide_range"]
 
+    # 潮汐×季節 交互作用（方式C: 季節×3潮群 = 12因子）
+    _ttn = tide.get("tide_type_n")
+    _is_oshio   = 1 if _ttn == 4 else 0
+    _is_chusho  = 1 if _ttn in (2, 3) else 0
+    _is_chowaka = 1 if _ttn == 1 else 0
+    _m = int(target_date.replace("-", "/").split("/")[1])
+    _ssn = "春" if _m in (3,4,5) else ("夏" if _m in (6,7,8) else ("秋" if _m in (9,10,11) else "冬"))
+    for _grp, _flag in [("oshio", _is_oshio), ("chusho", _is_chusho), ("chowaka", _is_chowaka)]:
+        all_wx[f"tide_grp_{_grp}_spring"] = _flag if _ssn == "春" else 0
+        all_wx[f"tide_grp_{_grp}_summer"] = _flag if _ssn == "夏" else 0
+        all_wx[f"tide_grp_{_grp}_autumn"] = _flag if _ssn == "秋" else 0
+        all_wx[f"tide_grp_{_grp}_winter"] = _flag if _ssn == "冬" else 0
+
     # 補正計算: Σ(r_i × z_i) / Σ|r_i| × met_std × alpha_scale
     w_total = sum(abs(r) for _, _, r in factor_params.values())
     if w_total == 0:
