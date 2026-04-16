@@ -5130,12 +5130,12 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   {season_map_html}
   {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ''}
-  {fish_teaser_html}
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   <h2 class="st">よくある質問</h2>
   {faq_html}
+  {fish_teaser_html}
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
@@ -5464,7 +5464,6 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <h2 class="st">船宿一覧 <span class="tag free">無料</span></h2>
   <div class="sl-card">{ship_items_html}</div>
   {point_box_html}
-  {area_teaser_html}
   {nearby_section_html}
   <h2 class="st">魚種別 旬カレンダー <span class="tag free">無料</span></h2>
   {area_season_html}
@@ -5474,6 +5473,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   <h2 class="st">よくある質問</h2>
   {area_faq_html}
+  {area_teaser_html}
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
