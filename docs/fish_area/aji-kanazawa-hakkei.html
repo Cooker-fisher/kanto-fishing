@@ -26,7 +26,7 @@ a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
 header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}a.site-logo{text-decoration:none;color:inherit}a.site-logo:hover{opacity:.8;text-decoration:none}
 header .domain{font-size:11px;opacity:.5}
 nav.gnav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
 nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
@@ -165,12 +165,25 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 @media(max-width:640px){header{padding:10px 14px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 .combo-comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
-.stat-card.trend-up{border-color:var(--pos)}.stat-card.trend-down{border-color:var(--neg)}</style>
+.stat-card.trend-up{border-color:var(--pos)}.stat-card.trend-down{border-color:var(--neg)}
+.sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.sl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.sl-name{font-size:14px;font-weight:700;color:var(--accent)}
+.sl-date{font-size:11px;color:var(--muted)}
+.sl-sub{font-size:12px;color:var(--sub)}
+.ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
+.sr:last-child{border-bottom:none}
+.sr .sr-m{font-size:14px;font-weight:800;color:var(--cta);flex:0 0 22px;text-align:center}
+.sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
+.sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
+.sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}</style>
 </head>
 <body>
 <header>
   <div class="inner">
-    <h1>船釣り<span>予想</span></h1>
+    <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>
@@ -187,15 +200,14 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <div class="stat-cards">
   <div class="stat-card"><div class="sv">6船宿</div><div class="sl">出船船宿数</div></div>
   <div class="stat-card"><div class="sv">42匹</div><div class="sl">平均釣果</div></div>
-  <div class="stat-card trend-down"><div class="sv">171匹</div><div class="sl">最高釣果</div></div>
+  <div class="stat-card"><div class="sv">171匹</div><div class="sl">最高釣果</div></div>
 </div>
-  <h2 class="st">年間シーズン</h2><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid " title="3月">3</div><div class="sb-cell peak-count now" title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
-  <div class="combo-comment">💬 神奈川・東京湾のアジは今月がシーズン本番。↓ 減少の傾向です。</div>
-  
-  <h2 class="st">船宿ランキング（今週）</h2>
-  <div class="tbl-wrap"><table><tr><th>#</th><th>船宿</th><th>釣果件数</th><th>最高釣果</th><th>割合</th></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">1</td><td><strong>弁天屋</strong></td><td style="color:var(--pos)">15件</td><td style="color:var(--cta)">最高171匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:39%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">2</td><td><strong>一之瀬丸</strong></td><td style="color:var(--pos)">10件</td><td style="color:var(--cta)">最高86匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:26%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">3</td><td><strong>荒川屋</strong></td><td style="color:var(--pos)">6件</td><td style="color:var(--cta)">最高84匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">4</td><td><strong>米元釣船店</strong></td><td style="color:var(--pos)">5件</td><td style="color:var(--cta)">最高114匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:13%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">5</td><td><strong>野毛屋</strong></td><td style="color:var(--pos)">1件</td><td style="color:var(--cta)">最高59匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td></tr><tr><td style="color:var(--accent);font-weight:bold;width:24px">6</td><td><strong>小柴丸</strong></td><td style="color:var(--pos)">1件</td><td style="color:var(--cta)">最高26匹</td><td><div class="bar-wrap"><div class="bar-fill" style="width:2%"></div></div></td></tr></table></div>
-  <h2 class="st">最近の釣果 （38件）</h2>
-  <div class="tbl-wrap"><table><tr><th>日付</th><th>船宿</th><th>数量</th><th>大きさ</th><th>重量</th></tr><tr><td>2026/04/15</td><td>米元釣船店</td><td>22〜47</td><td>23〜33cm</td><td></td></tr><tr><td>2026/04/14</td><td>弁天屋</td><td>25〜133</td><td>18〜30cm</td><td></td></tr><tr><td>2026/04/14</td><td>弁天屋</td><td>4〜49</td><td>17〜28cm</td><td></td></tr><tr><td>2026/04/14</td><td>弁天屋</td><td>11〜46</td><td>18〜30cm</td><td></td></tr><tr><td>2026/04/13</td><td>米元釣船店</td><td>25〜83</td><td>18〜27cm</td><td></td></tr><tr><td>2026/04/13</td><td>荒川屋</td><td>32〜46</td><td>20〜30cm</td><td></td></tr><tr><td>2026/04/13</td><td>弁天屋</td><td>51〜148</td><td>17〜28cm</td><td></td></tr><tr><td>2026/04/13</td><td>弁天屋</td><td>20〜65</td><td>18〜26cm</td><td></td></tr><tr><td>2026/04/13</td><td>弁天屋</td><td>18〜51</td><td>18〜28cm</td><td></td></tr><tr><td>2026/04/12</td><td>米元釣船店</td><td>46〜83</td><td>18〜27cm</td><td></td></tr><tr><td>2026/04/12</td><td>荒川屋</td><td>8〜50</td><td>19〜26cm</td><td></td></tr><tr><td>2026/04/12</td><td>荒川屋</td><td>6〜58</td><td>20〜28cm</td><td></td></tr><tr><td>2026/04/12</td><td>弁天屋</td><td>30〜132</td><td>16〜28cm</td><td></td></tr><tr><td>2026/04/12</td><td>弁天屋</td><td>14〜60</td><td>17〜26cm</td><td></td></tr><tr><td>2026/04/12</td><td>弁天屋</td><td>8〜42</td><td>18〜28cm</td><td></td></tr><tr><td>2026/04/11</td><td>米元釣船店</td><td>24〜114</td><td>18〜27cm</td><td></td></tr><tr><td>2026/04/11</td><td>米元釣船店</td><td>20〜72</td><td>18〜27cm</td><td></td></tr><tr><td>2026/04/11</td><td>荒川屋</td><td>9〜47</td><td>19〜27cm</td><td></td></tr><tr><td>2026/04/11</td><td>荒川屋</td><td>20〜84</td><td>20〜28cm</td><td></td></tr><tr><td>2026/04/11</td><td>荒川屋</td><td>8〜53</td><td></td><td></td></tr></table></div>
+  <h2 class="st">年間シーズン <span class="tag free">無料</span></h2><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid " title="3月">3</div><div class="sb-cell peak-count now" title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
+  <div class="combo-comment">💬 神奈川・東京湾のアジは今月がシーズン本番。→ 横ばいの傾向です。</div>
+  <h2 class="st">船宿ランキング <span class="tag free">無料</span></h2>
+  <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-m">◎</span><span class="sr-name">弁天屋</span><span class="sr-range">最高171匹</span><span class="sr-pt">15件</span></div><div class="sr"><span class="sr-m">◎</span><span class="sr-name">一之瀬丸</span><span class="sr-range">最高86匹</span><span class="sr-pt">10件</span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">荒川屋</span><span class="sr-range">最高84匹</span><span class="sr-pt">6件</span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">米元釣船店</span><span class="sr-range">最高114匹</span><span class="sr-pt">5件</span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">野毛屋</span><span class="sr-range">最高59匹</span><span class="sr-pt">1件</span></div><div class="sr"><span class="sr-m">△</span><span class="sr-name">小柴丸</span><span class="sr-range">最高26匹</span><span class="sr-pt">1件</span></div></div>
+  <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
+  <div class="sl-card"><div class="sl-head"><span class="sl-name">米元釣船店</span><span class="sl-date">04/15</span></div><div class="sl-sub">22〜47 / 23〜33cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">弁天屋</span><span class="sl-date">04/14</span></div><div class="sl-sub">25〜133 / 18〜30cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">弁天屋</span><span class="sl-date">04/14</span></div><div class="sl-sub">4〜49 / 17〜28cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">弁天屋</span><span class="sl-date">04/14</span></div><div class="sl-sub">11〜46 / 18〜30cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">米元釣船店</span><span class="sl-date">04/13</span></div><div class="sl-sub">25〜83 / 18〜27cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">荒川屋</span><span class="sl-date">04/13</span></div><div class="sl-sub">32〜46 / 20〜30cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">弁天屋</span><span class="sl-date">04/13</span></div><div class="sl-sub">51〜148 / 17〜28cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">弁天屋</span><span class="sl-date">04/13</span></div><div class="sl-sub">20〜65 / 18〜26cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">弁天屋</span><span class="sl-date">04/13</span></div><div class="sl-sub">18〜51 / 18〜28cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">米元釣船店</span><span class="sl-date">04/12</span></div><div class="sl-sub">46〜83 / 18〜27cm</div></div>
 </div>
 <div class="data-note">
   <details>
@@ -216,7 +228,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/15 21:43</span>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/16 12:09</span>
 </footer>
 <nav class="bn"><a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
 </body></html>

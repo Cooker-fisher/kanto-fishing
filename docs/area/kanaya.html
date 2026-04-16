@@ -10,11 +10,10 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":2,"name":"千葉・内房","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":3,"name":"金谷港の釣果","item":"https://funatsuri-yoso.com/area/kanaya.html"}]}</script>
-  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"金谷港で釣れる魚は何ですか？","acceptedAnswer":{"@type":"Answer","text":"複数の魚種が主力です。季節によって釣れる魚が変わります。旬カレンダーで月別の状況をご確認ください。"}},
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"金谷港で釣れる魚は何ですか？","acceptedAnswer":{"@type":"Answer","text":"直近の釣果データではアジ（1件）が中心です。"}},
 {"@type":"Question","name":"金谷港エリアへのアクセス方法は？","acceptedAnswer":{"@type":"Answer","text":"金谷港への詳細なアクセスは各船宿のウェブサイトをご確認ください。"}},
-{"@type":"Question","name":"金谷港は初心者向けですか？","acceptedAnswer":{"@type":"Answer","text":"はい。タックルレンタルや仕掛け販売が充実した船宿があります。船宿スタッフのサポートも受けられるため初心者の方も安心して楽しめます。"}},
-{"@type":"Question","name":"金谷港でおすすめの時期はいつですか？","acceptedAnswer":{"@type":"Answer","text":"魚種によって旬が異なります。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"}},
-{"@type":"Question","name":"金谷港の主要な釣りポイントはどこですか？","acceptedAnswer":{"@type":"Answer","text":"金谷港の主要ポイントは各船宿のページでご確認ください。"}}]}]</script>
+{"@type":"Question","name":"金谷港でおすすめの釣り物と時期は？","acceptedAnswer":{"@type":"Answer","text":"直近データではアジの実績が最多です。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"}},
+{"@type":"Question","name":"金谷港でよく出船する船宿は？","acceptedAnswer":{"@type":"Answer","text":"直近の釣果では光進丸（10件）、勘次郎丸（5件）などの実績が確認されています。"}}]}]</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>
   <style>:root{
@@ -31,7 +30,7 @@ a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
 header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}a.site-logo{text-decoration:none;color:inherit}a.site-logo:hover{opacity:.8;text-decoration:none}
 header .domain{font-size:11px;opacity:.5}
 nav.gnav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
 nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
@@ -175,7 +174,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .area-hero .ah-m{font-size:20px;font-weight:800;color:var(--cta);margin-top:8px}
 .area-hero .ah-m small{font-size:12px;color:rgba(255,255,255,.6);font-weight:400}
 .area-hero .ah-sea{font-size:11px;color:rgba(255,255,255,.5);margin-top:6px}
-.fia-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.fia-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}
 .fia{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;text-decoration:none;color:inherit}
 .fia:hover{border-color:var(--cta);text-decoration:none}
 .fia .fn{font-size:14px;font-weight:800;color:var(--accent)}
@@ -211,7 +210,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 <body>
 <header>
   <div class="inner">
-    <h1>船釣り<span>予想</span></h1>
+    <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>
@@ -227,21 +226,20 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <h2>金谷港</h2>
     <div class="ah-sub">千葉・内房</div>
     <div class="ah-m">1件 <small>(1船宿・今日)</small></div>
-    
+    <div class="ah-sea">水温17.0℃ / 波1.2m / 北東7.6m/s / 115.3</div>
   </div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; 金谷港</p>
   <h2 class="st">このエリアで今日釣れている魚 <span class="tag free">無料</span></h2>
   <div class="fia-grid"><a class="fia" href="../fish/aji.html"><div class="fn">アジ</div><div class="fs">1件・1船宿</div><div class="fb">◎勘次郎丸</div></a></div>
-  
+  <h2 class="st">海況データ <span class="tag free">無料</span></h2><div class="sea-grid"><div class="sea-item"><div class="sv">17.0℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">1.2m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">北東7.6m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">115.3</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">28.3</div><div class="sl2">月齢</div></div><div class="sea-item"><div class="sv">1010hPa</div><div class="sl2">気圧</div></div></div>
   <!-- 広告① -->
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   <h2 class="st">船宿一覧 <span class="tag free">無料</span></h2>
   <div class="sl-card"><div class="sl-item"><div class="sl-top"><span class="sl-name">勘次郎丸</span><div class="sl-fish"><span class="g">アジ</span></div></div></div><div class="sl-item"><div class="sl-top"><span class="sl-name">光進丸</span><div class="sl-fish"><span class="g">アジ</span><span class="o">フグ</span></div></div></div></div>
   
-  <h2 class="st teaser-title">このエリアの予測・分析 <span class="tag coming">まもなく公開</span></h2><div class="teaser"><div class="teaser-head"><span class="teaser-badge">開発中</span><span class="teaser-title-in">エリア別 日別予測・全ポイント情報</span></div><div class="teaser-desc"><strong>金谷港</strong>の明日〜1週間後の魚種別予測、<strong>全ポイント一覧</strong>、海況相関の詳細分析を提供します。</div><div style="position:relative"><div class="teaser-dummy"><div class="td-fish">金谷港 予測</div><div class="td-range">アジ ★★★★☆</div><div class="td-reason">潮汐・SST・前週実績より推定</div></div><div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ エリア別日別予測（7日先）</li><li>✓ 全ポイント情報</li><li>✓ 欠航リスク予報</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div></div></div>
   <div class="related"><h3>近隣エリア</h3><div class="rl"><a href="../area/hota.html">保田港</a><a href="../area/tomiura.html">富浦港</a><a href="../area/susaki.html">洲崎港</a><a href="../area/富津港.html">富津港</a><a href="../area/nagaura.html">長浦</a></div></div>
   <h2 class="st">魚種別 旬カレンダー <span class="tag free">無料</span></h2>
   <div class="area-season">
@@ -264,16 +262,16 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 </div>
   
   <!-- 広告② -->
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   <h2 class="st">よくある質問</h2>
   <div class="faq-list">
-  <details><summary>金谷港で釣れる魚は何ですか？</summary><p class="faq-ans">複数の魚種が主力です。季節によって釣れる魚が変わります。旬カレンダーで月別の状況をご確認ください。</p></details>
+  <details><summary>金谷港で釣れる魚は何ですか？</summary><p class="faq-ans">直近の釣果データではアジ（1件）が中心です。</p></details>
   <details><summary>金谷港エリアへのアクセス方法は？</summary><p class="faq-ans">金谷港への詳細なアクセスは各船宿のウェブサイトをご確認ください。</p></details>
-  <details><summary>金谷港は初心者向けですか？</summary><p class="faq-ans">はい。タックルレンタルや仕掛け販売が充実した船宿があります。船宿スタッフのサポートも受けられるため初心者の方も安心して楽しめます。</p></details>
-  <details><summary>金谷港でおすすめの時期はいつですか？</summary><p class="faq-ans">魚種によって旬が異なります。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。</p></details>
-  <details><summary>金谷港の主要な釣りポイントはどこですか？</summary><p class="faq-ans">金谷港の主要ポイントは各船宿のページでご確認ください。</p></details>
+  <details><summary>金谷港でおすすめの釣り物と時期は？</summary><p class="faq-ans">直近データではアジの実績が最多です。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。</p></details>
+  <details><summary>金谷港でよく出船する船宿は？</summary><p class="faq-ans">直近の釣果では光進丸（10件）、勘次郎丸（5件）などの実績が確認されています。</p></details>
 </div>
+  <h2 class="st teaser-title">このエリアの予測・分析 <span class="tag coming">まもなく公開</span></h2><div class="teaser"><div class="teaser-head"><span class="teaser-badge">開発中</span><span class="teaser-title-in">エリア別 日別予測・全ポイント情報</span></div><div class="teaser-desc"><strong>金谷港</strong>の明日〜1週間後の魚種別予測、<strong>全ポイント一覧</strong>、海況相関の詳細分析を提供します。</div><div style="position:relative"><div class="teaser-dummy"><div class="td-fish">金谷港 予測</div><div class="td-range">アジ ★★★★☆</div><div class="td-reason">潮汐・SST・前週実績より推定</div></div><div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ エリア別日別予測（7日先）</li><li>✓ 全ポイント情報</li><li>✓ 欠航リスク予報</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div></div></div>
 </div>
 <div class="data-note">
   <details>
@@ -294,7 +292,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/15</span>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/16 12:09</span>
 </footer>
 <nav class="bn"><a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/" class="on"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
 </body></html>
