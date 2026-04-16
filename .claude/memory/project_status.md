@@ -1,26 +1,44 @@
-現行バージョン: crawler.py v5.26 / predict_count.py（Forecast API統合済み）
+現行バージョン: crawler.py v5.27 / predict_count.py（Forecast API統合済み）
 最終更新: 2026/04/16
-最新コミット: 未push（V2クロールデータ問題修正）
+最新コミット: 未push（D1〜D4 V2パイプライン統一）
 
-## ✅ 今セッション完了（2026/04/16）
+## ✅ 今セッション完了（2026/04/16 後半）
 
-### V1クロールデータ問題の修正（analysis-improvementチーム全員招集対応）
+### D1〜D4: V2パイプライン統一（全完了）
+
+**D1: save_daily_csv V2形式化（★★★最優先）✅**
+- PR#7マージで消失していた約480行（export_csv_from_raw + ヘルパー群）を git show 75e5a6d から復元
+- save_daily_csv() → data/V2/ に38列V2形式で書き込むよう書き換え
+- save_cancellations_csv() → data/V2/cancellations.csv に変更
+- `python crawler.py --export-csv` で catches_raw.json からの全再生成を実装
+- repair_csv_depth（V1専用）はmain()から無効化
+- 復元した関数: normalize_tsuri_mono, _extract_tsuri_mono, _classify_main_sub, _extract_time_slot, _extract_water_temp_range, _extract_water_color, _extract_wind_info, _extract_tide_info, _extract_wave_info, _extract_weather, _extract_by_catch, _classify_cancel_type, _extract_tackle, _split_point_places_depth, export_csv_from_raw, RAW_CSV_HEADER, TSURI_MONO_MAP等
+
+**D2: tsuri_monoノイズ根本修正 ✅**
+- `--export-csv` で全再生成 → 83,738行
+- normalize_tsuri_mono に `if raw.isdigit(): return ""` ガード追加
+- 数字ノイズ: 71件 → 0件
+
+**D3: 2023年weather/*.csv欠落対応 ✅**
+- ocean/export_weather_csv.py 新規作成
+- weather_cache.sqlite → weather/YYYY-MM.csv（2023-01〜2024-03の15ヶ月分、554,496行）
+- weather/ が40ファイル（2023-01〜2026-04）に完備
+
+**D4: data/ルートV1スタブ整理 ✅**
+- data/ 直下の V1 CSV（9ファイル + cancellations.csv）→ dustbox/data_v1_stubs/ に移動
+- data/ 直下には V2/ ディレクトリのみ
+
+---
+
+## ✅ 今セッション完了（2026/04/16 前半）
+
+### V1クロールデータ問題の修正
 
 **問題1: _load_historical_catches() がV1スタブを読んでいた**
-- `data/*.csv` ルート（V1形式・各1〜2行）を読んでいたため釣果×海況インデックスが139件
 - 修正: `data/V2/*.csv`（active_version準拠・65,980行）を読むよう変更
-- V2カラム対応: `tsuri_mono`（旧: `fish`）、`point_place1`（旧: `point_place`）
-- 修正後インデックス: 推計36,417件（262倍改善）
 
 **問題2: catches.json に複数日分が混在**
-- fishing-v.jpはpageID=1で7〜14日分を返すため複数日分がHTML表示に混在
 - 修正: `catches.json`の`data`配列を当日分のみに変更（0件時は全件フォールバック）
-- `save_daily_csv(all_catches)` は変更なし（CSV蓄積は維持）
-
-**未解決（後回し）**:
-- 2023年分18,589件はweather/*.csvの対象外（weather_cache.sqlite活用が理想）
-- tsuri_monoに数字ノイズ71件（'1','2'など）→ 正規化要調査
-- save_daily_csv がV1形式でdata/ ルートに書いている → V2形式書き込みは別タスク
 
 ---
 

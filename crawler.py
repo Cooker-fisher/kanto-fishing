@@ -64,6 +64,17 @@ from urllib.error import URLError
 from urllib.parse import quote
 from html.parser import HTMLParser
 
+# ── data/ バージョン管理 ───────────────────────────────────────────────────
+# config.json の active_version に連動して data/{ver}/ を DATA_DIR として使う。
+# バージョンアップ時（CSV列追加等）は config.json の active_version を上げるだけ。
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+try:
+    with open(os.path.join(_BASE_DIR, "config.json"), encoding="utf-8") as _f:
+        _ACTIVE_VER = json.load(_f)["active_version"]
+except Exception:
+    _ACTIVE_VER = "V2"
+_DATA_DIR = os.path.join(_BASE_DIR, "data", _ACTIVE_VER)
+
 SHIPS = [
     # ── 茨城 ──────────────────────────────────
     {"area": "日立久慈港",         "name": "日正丸",              "sid": 11},
@@ -769,6 +780,33 @@ _UNRESOLVABLE_RE = re.compile(r'^(航程|近場|浅場|深場|東京湾一帯|�
 
 def _is_unresolvable(pp):
     return not pp or bool(_UNRESOLVABLE_RE.match(pp))
+
+# kanso_raw からポイント名を抽出するための regex（遅延初期化）
+_KANSO_POINT_RE = None
+
+def _build_kanso_point_re():
+    """point_coords.json の座標あきポイント名を OR 結合した regex を返す（長い名前優先）"""
+    global _KANSO_POINT_RE
+    if _KANSO_POINT_RE is not None:
+        return _KANSO_POINT_RE
+    pc_path = os.path.join(os.path.dirname(__file__), "normalize", "point_coords.json")
+    try:
+        with open(pc_path, encoding="utf-8") as f:
+            pc = json.load(f)
+        # lat が None でなく 3文字以上 のポイント名のみ使用（短すぎると誤マッチ）
+        names = [k for k, v in pc.items()
+                 if len(k) >= 3 and v.get("lat") is not None]
+        names.sort(key=lambda x: -len(x))  # 長い名前を優先（部分マッチ防止）
+        _KANSO_POINT_RE = re.compile("|".join(re.escape(n) for n in names))
+    except Exception:
+        _KANSO_POINT_RE = re.compile(r'(?!)')  # never matches
+    return _KANSO_POINT_RE
+
+def _extract_point_from_kanso(comment):
+    """kanso_raw から既知ポイント名を検索して返す。見つからなければ空文字。"""
+    if not comment:
+        return ""
+    return (m := _build_kanso_point_re().search(comment)) and m.group(0) or ""
 
 # エリアグループ → weather/ 96地点の代表ポイント（エリアごとに異なる海況を反映）
 _GROUP_TO_WX_POINT = {
@@ -5740,6 +5778,465 @@ def build_calendar_page(crawled_at=""):
 </body></html>"""
 
 # ============================================================
+# Layer 2: catches_raw.json → data/YYYY-MM.csv 変換
+# ============================================================
+
+# tsuri_mono_map_draft.json から58種MAPを動的ロード
+_tmap_path = os.path.join(os.path.dirname(__file__), "normalize", "tsuri_mono_map_draft.json")
+with open(_tmap_path, encoding="utf-8") as _f:
+    _tmap_data = json.load(_f)
+TSURI_MONO_MAP = {
+    k: v for k, v in _tmap_data["TSURI_MONO_MAP"].items()
+    if isinstance(v, list) and not k.startswith("_")
+}
+
+# 船宿別イカ特例: fish_raw="イカ" の場合に船宿で判別
+SHIP_IKA_RULES = {
+    "吉久":       "スミイカ",
+    "ちがさき丸": "ヤリイカ",
+    "山下丸":     "スミイカ",
+}
+
+# 船宿別五目特例: fish_raw が五目系汎用表記の場合に船宿で判別
+SHIP_GOMOKU_RULES = {
+    "啓秀丸":       "タイ五目",
+    "大洗丸":       "タイ五目",
+    "大盛丸":       "タイ五目",
+    "庄治郎丸":     "タイ五目",
+    "なごみ丸":     "イサキ",
+    "ちがさき丸":   "タイ五目",
+    "あまさけや丸": "タイ五目",
+    "弘漁丸":       "ヒラメ",
+    "こなや丸":     "サワラ",
+    "林遊船":       "サワラ",
+}
+
+
+def normalize_tsuri_mono(raw, ship=""):
+    """釣りもの生テキスト → 正規化名（58種MAP）。マッチしなければ空文字を返す"""
+    if not raw:
+        return ""
+    # D2: 数字のみの場合はノイズ（HTMLパース失敗による列ズレ）
+    if raw.isdigit():
+        return ""
+    # 船宿別イカ特例
+    if raw == "イカ" and ship in SHIP_IKA_RULES:
+        return SHIP_IKA_RULES[ship]
+    # 船宿別五目特例（汎用五目系表記）
+    _gomoku_keys = ("五目", "LT五目", "タイ五目", "イナダ五目", "イサキ五目", "根魚五目", "青物")
+    if any(k in raw for k in _gomoku_keys) and ship in SHIP_GOMOKU_RULES:
+        return SHIP_GOMOKU_RULES[ship]
+    # 通常マッチ（58種MAP）: 優先順位を厳密に
+    # 1. キー完全一致（例: raw="アマダイ" → TSURI_MONO_MAP["アマダイ"]）
+    if raw in TSURI_MONO_MAP:
+        return raw
+    # 2. パターン完全一致（例: raw="LTアマダイ" → patterns["アマダイ"]に"LTアマダイ"あり）
+    for tsuri_mono, patterns in TSURI_MONO_MAP.items():
+        if raw in patterns:
+            return tsuri_mono
+    # 3. パターンがrawに含まれる（例: raw="大マダイ" → "マダイ" in "大マダイ"）
+    #    ※ raw in p（逆方向）は使わない → アマダイ→マダイ等の誤分類を防ぐ
+    for tsuri_mono, patterns in TSURI_MONO_MAP.items():
+        if any(p in raw for p in patterns):
+            return tsuri_mono
+    return ""
+
+
+def _extract_tsuri_mono(r, same_trip_records, ship):
+    """釣りもの名を導出（優先順: ①感想先頭ワード→MAP正規化 ②同一trip最初のfish_raw→MAP正規化）"""
+    comment = r.get("kanso_raw") or ""
+    # ① kanso_raw 先頭ワード（出番番号を除く）→ normalize
+    m = re.match(r'(?:[■□]?\d+\s+)?([^\s。、・]{2,12})[\s。、・]', comment.strip())
+    if m:
+        c = m.group(1)
+        if not re.match(r'^(他に|本日|今日|釣果|合計|出船)', c):
+            norm = normalize_tsuri_mono(c, ship)
+            if norm:
+                return norm
+    # ② 同一trip内のfish_rawを順に試す → normalize
+    for rec in same_trip_records:
+        fw = rec.get("fish_raw", "")
+        if fw:
+            norm = normalize_tsuri_mono(fw, ship)
+            if norm:
+                return norm
+    return ""
+
+
+def _classify_main_sub(fish_raw, tsuri_mono):
+    """メイン/サブを判定。fish_rawがtsuri_monoのMAPリストに含まれるかで判定"""
+    if not tsuri_mono or not fish_raw:
+        return "メイン"
+    if "五目" in tsuri_mono:
+        return "メイン"
+    target_list = TSURI_MONO_MAP.get(tsuri_mono, [])
+    for pattern in target_list:
+        if pattern in fish_raw or fish_raw in pattern:
+            return "メイン"
+    return "サブ"
+
+
+def _extract_water_temp_range(text):
+    """水温テキストから {min, max} を返す。例: "15〜17℃"→{min:15,max:17}, "18℃"→{min:18,max:18}"""
+    text = text.translate(Z2H)
+    m = re.search(r'(\d+(?:\.\d+)?)(?:[~〜](\d+(?:\.\d+)?))?\s*[℃度]', text)
+    if not m:
+        return {}
+    lo = float(m.group(1))
+    hi = float(m.group(2)) if m.group(2) else lo
+    return {"min": lo, "max": hi}
+
+
+def _extract_water_color(text):
+    """水色を正規化して返す"""
+    for word in ["青潮", "赤潮", "やや澄み", "やや濁り", "澄み", "濁り"]:
+        if word in text:
+            return word
+    return ""
+
+
+def _extract_wind_info(comment):
+    """風向と風速を分離して返す。例: "南風10m"→{direction:"南",speed:"10"}"""
+    comment = comment.translate(Z2H)
+    m = re.search(r'(北東|北西|南東|南西|北|南|東|西)?風\s*(?:が)?(?:(強|弱)|(\d+(?:\.\d+)?)m)?', comment)
+    if not m or not any([m.group(1), m.group(2), m.group(3)]):
+        return {}
+    direction = m.group(1) or ""
+    speed = m.group(3) if m.group(3) else (m.group(2) or "")
+    return {"direction": direction, "speed": speed}
+
+
+def _extract_tide_info(comment):
+    """潮況キーワードを抽出（カンマ区切り）。二枚潮・潮流れずは予測の重要特徴量"""
+    patterns = ["二枚潮", "潮流れず", "潮が速", "潮速い", "潮流れよく", "潮がよく",
+                "潮が緩", "潮止まり", "潮動かず", "上げ潮", "下げ潮", "大潮", "小潮"]
+    found = [p for p in patterns if p in comment]
+    return ",".join(found) if found else ""
+
+
+def _extract_wave_info(comment):
+    """波・うねり情報を抽出"""
+    comment = comment.translate(Z2H)
+    parts = []
+    m = re.search(r'波\s*(\d+(?:\.\d+)?)\s*m', comment)
+    if m:
+        parts.append(f"波{m.group(1)}m")
+    for word in ["ウネリあり", "うねりあり", "ウネリ", "うねり", "大波", "高波", "波が高", "穏やか"]:
+        if word in comment and word not in ",".join(parts):
+            parts.append(word)
+            break
+    return ",".join(parts) if parts else ""
+
+
+def _extract_weather(comment):
+    """天気キーワードを抽出（カンマ区切り）"""
+    keywords = ["台風後", "嵐後", "嵐", "雷", "豪雨後", "雨後", "小雨", "雨", "霧", "快晴", "晴れ", "曇り"]
+    found = [k for k in keywords if k in comment]
+    return ",".join(found) if found else ""
+
+
+def _extract_by_catch(comment):
+    """「他に〜」から外道魚種リストをカンマ区切りで返す（最大3件）"""
+    m = re.search(r'他に([^。]+?)(?:が釣れ|も釣れ|など|。|$)', comment)
+    if not m:
+        return ""
+    fish_names = re.split(r'[・、\s]+', m.group(1).strip())
+    valid = [f for f in fish_names if f][:3]
+    return ",".join(valid)
+
+
+def _classify_cancel_type(reason: str) -> str:
+    """欠航理由テキスト → 分類。定休日 / 荒天 / 台風 / 不漁 / 不明"""
+    if not reason:
+        return "不明"
+    if any(k in reason for k in ["定休", "定期休", "休業日", "お休み"]):
+        return "定休日"
+    if any(k in reason for k in ["台風"]):
+        return "台風"
+    if any(k in reason for k in ["強風", "風強", "荒天", "悪天", "しけ", "シケ",
+                                   "波高", "高波", "うねり", "大波", "雷", "霧",
+                                   "雨", "雪", "天候", "気象", "海況", "海が悪"]):
+        return "荒天"
+    if any(k in reason for k in ["中止", "欠航", "キャンセル", "休み", "お休"]):
+        return "中止"
+    return "不明"
+
+
+def _extract_time_slot(fish_raw: str) -> str:
+    """fish_raw から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'"""
+    if not fish_raw:
+        return ""
+    # 午前・午後 併記（例: 忠彦丸「午前・午後ライトアジ乗合船」）→ 時間帯不定
+    if "午前" in fish_raw and "午後" in fish_raw:
+        return ""
+    # 優先順位順にチェック（長いパターンを先に）
+    for pattern, slot in [
+        ("ショートショート", "ショート"),
+        ("午前半日",   "午前"),
+        ("午後半日",   "午後"),
+        ("ナイト",     "夜"),
+        ("デイゲーム", "昼"),
+        ("午前",       "午前"),
+        ("午後",       "午後"),
+        ("朝マヅメ",   "朝"),
+        ("夕マヅメ",   "夕"),
+        ("夜",         "夜"),
+        ("朝",         "朝"),
+        ("夕",         "夕"),
+        ("ショート",   "ショート"),
+        ("半日",       "午前"),
+    ]:
+        if pattern in fish_raw:
+            return slot
+    return ""
+
+
+def _extract_tackle(tokki):
+    """特記欄から仕掛けを抽出"""
+    for word in ["ルアー", "テンヤ", "コマセ", "ビシ", "胴付き", "泳がせ", "エサ"]:
+        if word in tokki:
+            return word
+    return ""
+
+
+def _split_point_places_depth(point_raw, comment=""):
+    """ポイント文字列から場所リスト（最大3）と水深 {min, max} を分離して返す。"""
+    point_raw = point_raw.translate(Z2H)
+    depth = {}
+    depth_patterns = [
+        r'(?:水深|タナ|棚)\s*(\d+(?:\.\d+)?)(?:[~〜](\d+(?:\.\d+)?))?\s*m?',
+        r'(\d+(?:\.\d+)?)[~〜](\d+(?:\.\d+)?)\s*m',
+        r'(?:水深|タナ|棚)\s*(\d+(?:\.\d+)?)\s*m',
+        r'(\d+(?:\.\d+)?)\s*m(?:\s|$|・|→)',
+    ]
+    for pat in depth_patterns:
+        dm = re.search(pat, point_raw, re.I)
+        if dm:
+            lo = float(dm.group(1))
+            hi = float(dm.group(2)) if dm.lastindex >= 2 and dm.group(2) else lo
+            depth = {"min": lo, "max": hi}
+            point_raw = (point_raw[:dm.start()] + point_raw[dm.end():]).strip("・→/ ")
+            break
+    places = [p.strip() for p in re.split(r'[・→/]', point_raw) if p.strip()]
+    if len(places) == 1 and '~' in places[0]:
+        sub = [p.strip() for p in places[0].split('~') if p.strip()]
+        if all(not re.match(r'^\d+\.?\d*$', p) for p in sub):
+            places = sub
+    if not places and comment:
+        m = re.search(r'(\S{2,10}[沖瀬根崎岬])[\s・。]', comment)
+        if m:
+            places = [m.group(1)]
+    return places[:3], depth
+
+
+RAW_CSV_HEADER = [
+    "ship", "area", "date",
+    "trip_no", "is_cancellation", "tsuri_mono_raw", "tsuri_mono", "main_sub",
+    "fish_raw", "time_slot",
+    "cnt_min", "cnt_max", "cnt_avg", "is_boat",
+    "size_min", "size_max", "kg_min", "kg_max",
+    "tackle",
+    "point_place1", "point_place2", "point_place3",
+    "depth_min", "depth_max",
+    "water_temp_min", "water_temp_max",
+    "water_color",
+    "wind_direction", "wind_speed",
+    "tide_info",
+    "wave_info",
+    "weather",
+    "by_catch",
+    "cancel_reason", "cancel_type",
+    "kanso_raw", "suion_raw", "suishoku_raw",
+]
+
+
+def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
+    """catches_raw.json を読み込み、data/V{n}/YYYY-MM.csv を全件上書き再生成。
+    output_dir: 省略時は _DATA_DIR（config.json の active_version に連動）。
+    ships_filter: リスト指定でその船宿のみ処理（テスト用）。
+    TSURI_MONO_MAP更新後に単体呼び出し可。"""
+    if output_dir is None:
+        output_dir = _DATA_DIR
+    if raw_path is None:
+        raw_path = os.path.join(os.path.dirname(__file__), "crawl", "catches_raw.json")
+    if not os.path.exists(raw_path):
+        print(f"export_csv_from_raw: {raw_path} が見つかりません")
+        return 0
+    with open(raw_path, encoding="utf-8") as f:
+        records = json.load(f)
+
+    # catches_raw_direct.json をマージ（忠彦丸・一之瀬丸・米元等の直接クロール分）
+    _direct_path = os.path.join(os.path.dirname(os.path.abspath(raw_path)),
+                                "direct-crawl", "catches_raw_direct.json")
+    if os.path.exists(_direct_path):
+        with open(_direct_path, encoding="utf-8") as _df:
+            _direct = json.load(_df)
+        for _r in _direct:
+            _c = (_r.get("count_raw") or "").translate(Z2H)
+            if not _r.get("size_raw"):
+                _sm = re.search(r'(\d+)[~〜～](\d+)\s*(?:cm|㎝|ｃｍ)', _c, re.I)
+                if _sm:
+                    _r["size_raw"] = f"{_sm.group(1)}～{_sm.group(2)} cm"
+                else:
+                    _sm = re.search(r'(\d+)\s*(?:cm|㎝|ｃｍ)', _c, re.I)
+                    if _sm:
+                        _r["size_raw"] = f"{_sm.group(1)} cm"
+            if not _r.get("weight_raw"):
+                _wm = re.search(r'(\d+\.?\d*)[~〜～](\d+\.?\d*)\s*(?:kg|ｋｇ)', _c, re.I)
+                if _wm:
+                    _r["weight_raw"] = f"{_wm.group(1)}～{_wm.group(2)} kg"
+                else:
+                    _wm = re.search(r'(\d+\.?\d*)\s*(?:kg|ｋｇ)', _c, re.I)
+                    if _wm:
+                        _r["weight_raw"] = f"{_wm.group(1)} kg"
+        records = _direct + records
+        print(f"export_csv_from_raw: direct merge {len(_direct)}件")
+
+    os.makedirs(output_dir, exist_ok=True)
+    from collections import defaultdict as _dd
+    by_month = _dd(list)
+    for r in records:
+        if ships_filter and r.get("ship") not in ships_filter:
+            continue
+        try:
+            ym = datetime.strptime(r["date"], "%Y/%m/%d").strftime("%Y-%m")
+            by_month[ym].append(r)
+        except Exception:
+            continue
+
+    total = 0
+    for ym, recs in sorted(by_month.items()):
+        trip_idx = _dd(list)
+        for r in recs:
+            trip_idx[(r["ship"], r["date"], r.get("trip_no"))].append(r)
+
+        rows = []
+        for r in recs:
+            if r.get("is_cancellation"):
+                rows.append({
+                    "ship":           r["ship"],
+                    "area":           r["area"],
+                    "date":           r["date"],
+                    "trip_no":        "",
+                    "is_cancellation": 1,
+                    "tsuri_mono_raw": "",
+                    "tsuri_mono":     "欠航",
+                    "main_sub":       "",
+                    "fish_raw":       "",
+                    "time_slot":      "",
+                    "cnt_min": "", "cnt_max": "", "cnt_avg": "", "is_boat": "",
+                    "size_min": "", "size_max": "", "kg_min": "", "kg_max": "",
+                    "tackle": "",
+                    "point_place1": "", "point_place2": "", "point_place3": "",
+                    "depth_min": "", "depth_max": "",
+                    "water_temp_min": "", "water_temp_max": "",
+                    "water_color": "", "wind_direction": "", "wind_speed": "",
+                    "tide_info": "", "wave_info": "", "weather": "", "by_catch": "",
+                    "cancel_reason":  r.get("reason_text", ""),
+                    "cancel_type":    _classify_cancel_type(r.get("reason_text", "")),
+                    "kanso_raw":      r.get("reason_text", ""),
+                    "suion_raw":      "",
+                    "suishoku_raw":   "",
+                })
+                continue
+
+            comment   = r.get("kanso_raw") or ""
+            trip_key  = (r["ship"], r["date"], r.get("trip_no"))
+            same_trip = trip_idx[trip_key]
+
+            tsuri_raw  = _extract_tsuri_mono(r, same_trip, r["ship"])
+            tsuri_norm = normalize_tsuri_mono(tsuri_raw, r["ship"])
+            main_sub   = _classify_main_sub(r.get("fish_raw", ""), tsuri_norm)
+
+            _parts = comment.split("。")
+            kanso_short = "。".join(_parts[:2]) + ("。" if len(_parts) > 1 else "")
+
+            wt          = _extract_water_temp_range(r.get("suion_raw") or comment)
+            water_color = _extract_water_color(r.get("suishoku_raw") or comment)
+            wind        = _extract_wind_info(comment)
+            tide_info   = _extract_tide_info(comment)
+            wave_info   = _extract_wave_info(comment)
+            weather     = _extract_weather(comment)
+            by_catch    = _extract_by_catch(comment)
+            tackle      = _extract_tackle(r.get("tokki_raw") or "")
+            places, depth = _split_point_places_depth(r.get("point_raw") or "", comment)
+
+            if not places or not places[0]:
+                pp_from_kanso = _extract_point_from_kanso(comment)
+                if pp_from_kanso:
+                    places = [pp_from_kanso] + list(places[1:])
+
+            cr = extract_count(r.get("count_raw") or "")
+            sc = extract_size_cm(r.get("size_raw") or "")
+            wk = extract_weight_kg(r.get("weight_raw") or "") or \
+                 extract_weight_kg(r.get("tokki_raw") or "")
+            cnt_avg = None
+            if cr and cr.get("min") is not None and cr.get("max") is not None:
+                cnt_avg = (cr["min"] + cr["max"]) // 2
+
+            is_boat_rec = bool(cr and cr.get("is_boat"))
+            if is_boat_rec:
+                has_individual = any(
+                    not (extract_count(x.get("count_raw") or "") or {}).get("is_boat")
+                    for x in same_trip if x.get("count_raw")
+                )
+                if has_individual:
+                    continue
+
+            rows.append({
+                "ship":           r["ship"],
+                "area":           r["area"],
+                "date":           r["date"],
+                "trip_no":        r.get("trip_no", ""),
+                "is_cancellation": 0,
+                "tsuri_mono_raw": tsuri_raw or "",
+                "tsuri_mono":     tsuri_norm,
+                "main_sub":       main_sub,
+                "fish_raw":       r.get("fish_raw", ""),
+                "time_slot":      _extract_time_slot(r.get("fish_raw", "")),
+                "cnt_min":        cr["min"] if cr else "",
+                "cnt_max":        cr["max"] if cr else "",
+                "cnt_avg":        cnt_avg if cnt_avg is not None else "",
+                "is_boat":        1 if is_boat_rec else 0,
+                "size_min":       sc["min"] if sc else "",
+                "size_max":       sc["max"] if sc else "",
+                "kg_min":         wk["min"] if wk else "",
+                "kg_max":         wk["max"] if wk else "",
+                "tackle":         tackle,
+                "point_place1":   places[0] if len(places) > 0 else "",
+                "point_place2":   places[1] if len(places) > 1 else "",
+                "point_place3":   places[2] if len(places) > 2 else "",
+                "depth_min":      depth.get("min", ""),
+                "depth_max":      depth.get("max", ""),
+                "water_temp_min": wt.get("min", ""),
+                "water_temp_max": wt.get("max", ""),
+                "water_color":    water_color,
+                "wind_direction": wind.get("direction", ""),
+                "wind_speed":     wind.get("speed", ""),
+                "tide_info":      tide_info,
+                "wave_info":      wave_info,
+                "weather":        weather,
+                "by_catch":       by_catch,
+                "cancel_reason":  "",
+                "cancel_type":    "",
+                "kanso_raw":      kanso_short,
+                "suion_raw":      r.get("suion_raw") or "",
+                "suishoku_raw":   r.get("suishoku_raw") or "",
+            })
+
+        filepath = os.path.join(output_dir, f"{ym}.csv")
+        with open(filepath, "w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=RAW_CSV_HEADER)
+            writer.writeheader()
+            writer.writerows(rows)
+        total += len(rows)
+        print(f"  {ym}.csv: {len(rows)}行")
+
+    print(f"export_csv_from_raw: 合計{total}行 → {output_dir}/")
+    return total
+
+
+# ============================================================
 # メイン
 # ============================================================
 CSV_HEADER = ["ship","area","date","fish","fish_raw","cnt_min","cnt_max","cnt_avg",
@@ -5776,18 +6273,19 @@ def _split_depth(depth_str):
     return "", ""
 
 def save_daily_csv(catches):
-    """釣果をdata/YYYY-MM.csvに追記（重複スキップ）。
-    pageID=1 は複数日分を返すが、既存行との (ship, area, date, fish) キーで重複チェックするため
-    二重追記は発生しない。catches.json 側は当日分のみに絞って保存する（main参照）。
+    """釣果を data/V2/YYYY-MM.csv に V2形式（38列）で追記（重複スキップ）。
+    pageID=1 は複数日分を返すが、既存行との (ship, area, date, fish_raw) キーで
+    重複チェックするため二重追記は発生しない。
+    注: in-memory catch dict にはテキスト抽出列（kanso_raw等）がないため空欄になる。
+    完全なV2 CSVは export_csv_from_raw() で catches_raw.json から全再生成する。
     """
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(_DATA_DIR, exist_ok=True)
 
-    # 日付ごとにグループ化（月をまたぐ可能性があるため）
     from collections import defaultdict
     by_month = defaultdict(list)
     for c in catches:
         if c.get("is_cancellation"):
-            continue  # 休船行はcancellations.csvへ
+            continue
         date_str = c.get("date", "")
         if not date_str:
             continue
@@ -5799,53 +6297,84 @@ def save_daily_csv(catches):
 
     total_added = 0
     for ym, month_catches in by_month.items():
-        filepath = os.path.join("data", f"{ym}.csv")
+        filepath = os.path.join(_DATA_DIR, f"{ym}.csv")
 
-        # 既存レコードのキーセットを読み込んで重複チェック
         existing_keys = set()
         if os.path.exists(filepath):
             with open(filepath, encoding="utf-8", newline="") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    key = (row["ship"], row["area"], row["date"], row["fish"])
+                    key = (row.get("ship",""), row.get("area",""),
+                           row.get("date",""), row.get("fish_raw",""))
                     existing_keys.add(key)
 
         new_rows = []
         for c in month_catches:
-            for fish in (c["fish"] or ["不明"]):
-                key = (c["ship"], c["area"], c["date"], fish)
-                if key in existing_keys:
-                    continue
-                cr = c.get("count_range") or {}
-                sc = c.get("size_cm")    or {}
-                wk = c.get("weight_kg") or {}
-                d_min, d_max = _split_depth(c.get("point_depth") or "")
-                new_rows.append({
-                    "ship":        c["ship"],
-                    "area":        c["area"],
-                    "date":        c["date"],
-                    "fish":        fish,
-                    "fish_raw":    c.get("fish_raw", ""),
-                    "cnt_min":     cr.get("min", ""),
-                    "cnt_max":     cr.get("max", ""),
-                    "cnt_avg":     c["count_avg"] if c.get("count_avg") is not None else "",
-                    "size_min":    sc.get("min", ""),
-                    "size_max":    sc.get("max", ""),
-                    "kg_min":      wk.get("min", ""),
-                    "kg_max":      wk.get("max", ""),
-                    "is_boat":     1 if cr.get("is_boat") else 0,
-                    "point_place": _split_place_pair(c.get("point_place") or "")[0],
-                    "point_place2": _split_place_pair(c.get("point_place") or "")[1],
-                    "point_depth_min": d_min,
-                    "point_depth_max": d_max,
-                })
+            fish_raw = c.get("fish_raw", "")
+            key = (c["ship"], c["area"], c["date"], fish_raw)
+            if key in existing_keys:
+                continue
+            existing_keys.add(key)
+
+            # V2 正規化
+            tsuri_norm = normalize_tsuri_mono(fish_raw, c["ship"])
+            main_sub   = _classify_main_sub(fish_raw, tsuri_norm)
+            time_slot  = _extract_time_slot(fish_raw)
+            pp1, pp2   = _split_place_pair(c.get("point_place") or "")
+            d_min, d_max = _split_depth(c.get("point_depth") or "")
+
+            cr = c.get("count_range") or {}
+            sc = c.get("size_cm")    or {}
+            wk = c.get("weight_kg") or {}
+            cnt_avg = c["count_avg"] if c.get("count_avg") is not None else ""
+
+            new_rows.append({
+                "ship":           c["ship"],
+                "area":           c["area"],
+                "date":           c["date"],
+                "trip_no":        "",
+                "is_cancellation": 0,
+                "tsuri_mono_raw": fish_raw,
+                "tsuri_mono":     tsuri_norm,
+                "main_sub":       main_sub,
+                "fish_raw":       fish_raw,
+                "time_slot":      time_slot,
+                "cnt_min":        cr.get("min", ""),
+                "cnt_max":        cr.get("max", ""),
+                "cnt_avg":        cnt_avg,
+                "is_boat":        1 if cr.get("is_boat") else 0,
+                "size_min":       sc.get("min", ""),
+                "size_max":       sc.get("max", ""),
+                "kg_min":         wk.get("min", ""),
+                "kg_max":         wk.get("max", ""),
+                "tackle":         "",
+                "point_place1":   pp1,
+                "point_place2":   pp2,
+                "point_place3":   "",
+                "depth_min":      d_min,
+                "depth_max":      d_max,
+                "water_temp_min": "",
+                "water_temp_max": "",
+                "water_color":    "",
+                "wind_direction": "",
+                "wind_speed":     "",
+                "tide_info":      "",
+                "wave_info":      "",
+                "weather":        "",
+                "by_catch":       "",
+                "cancel_reason":  "",
+                "cancel_type":    "",
+                "kanso_raw":      "",
+                "suion_raw":      "",
+                "suishoku_raw":   "",
+            })
 
         if not new_rows:
             continue
 
         write_header = not os.path.exists(filepath)
         with open(filepath, "a", encoding="utf-8", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=CSV_HEADER)
+            writer = csv.DictWriter(f, fieldnames=RAW_CSV_HEADER)
             if write_header:
                 writer.writeheader()
             writer.writerows(new_rows)
@@ -5857,13 +6386,13 @@ def save_daily_csv(catches):
 CANCELLATIONS_HEADER = ["date", "ship", "area", "reason_text"]
 
 def save_cancellations_csv(catches):
-    """休船・出船中止をdata/cancellations.csvに追記（重複スキップ）。"""
+    """休船・出船中止を data/V2/cancellations.csv に追記（重複スキップ）。"""
     cancels = [c for c in catches if c.get("is_cancellation")]
     if not cancels:
         return 0
 
-    os.makedirs("data", exist_ok=True)
-    filepath = os.path.join("data", "cancellations.csv")
+    os.makedirs(_DATA_DIR, exist_ok=True)
+    filepath = os.path.join(_DATA_DIR, "cancellations.csv")
 
     existing_keys = set()
     if os.path.exists(filepath):
@@ -6763,6 +7292,12 @@ def _page_foot():
 
 
 def main():
+    import sys as _sys
+    # --export-csv: catches_raw.json から data/V2/ を全再生成して終了
+    if "--export-csv" in _sys.argv:
+        export_csv_from_raw()
+        return
+
     all_catches = []
     errors = []
     now = datetime.now()
@@ -6812,23 +7347,20 @@ def main():
     history = load_history()
     history = update_history(valid_catches, history)
 
-    # 日次CSV蓄積
+    # 日次CSV蓄積（V2形式 → data/V2/）
     csv_added = save_daily_csv(all_catches)
     if csv_added:
-        print(f"CSV保存: {csv_added} 件追記 → data/")
+        print(f"CSV保存: {csv_added} 件追記 → {_DATA_DIR}/")
 
     # 休船・出船中止の記録
     cancel_added = save_cancellations_csv(all_catches)
     if cancel_added:
-        print(f"休船記録: {cancel_added} 件追記 → data/cancellations.csv")
+        print(f"休船記録: {cancel_added} 件追記 → {_DATA_DIR}/cancellations.csv")
 
-    # CSV水深データ修復（14列行の復元 + 空depth埋め）
-    depth_fixed = repair_csv_depth(all_catches)
-    if depth_fixed:
-        print(f"CSV水深修復: {depth_fixed} 行修正")
+    # repair_csv_depth: V1形式専用のため無効化（V2ではdepth_min/depth_maxで管理）
 
     # 問題2対応 (2026/04/16): catches.json は当日分のみに絞る
-    # save_daily_csv / repair_csv_depth はメモリ上の all_catches を使うため影響なし
+    # save_daily_csv はメモリ上の all_catches を使うため影響なし
     _today_str_snap = datetime.now().strftime("%Y/%m/%d")
     today_all = [c for c in all_catches if c.get("date") == _today_str_snap]
     today_valid = [c for c in valid_catches if c.get("date") == _today_str_snap]
