@@ -4548,7 +4548,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         sz_val = (this_w.get("size_avg") or 0) if this_w else 0
         sz_str = f"{sz_val:.0f}cm" if sz_val else ""
         areas_str2 = "・".join(areas_list[:2])
-        detail_str = " | ".join(filter(None, [sz_str, f"{len(cs)}件・{ship_num}隻", areas_str2]))
+        detail_str = " | ".join(filter(None, [sz_str, areas_str2]))
         top_ship_name = sorted(ship_counts.items(), key=lambda x: -x[1])[0][0] if ship_counts else ""
         yoy_pct_str = ""
         if this_w and last_w and last_w.get("ships"):
