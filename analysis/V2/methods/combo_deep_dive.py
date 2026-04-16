@@ -96,6 +96,12 @@ SLOW_FACTORS = {
     "pressure_avg", "pressure_min",        # 気圧水準（日次avg/min）
     "pressure_delta",                      # 気圧変化傾向（低気圧接近シグナル）
     "tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
+    # 潮汐×季節 交互作用（方式C: 季節×3潮群）── 12因子
+    # 潮群: 大潮 / 中小潮(中潮+小潮) / 長若潮(長潮+若潮)
+    # 大潮の影響が季節で反転（春OK / 夏冬NG）、長若潮も季節で変動
+    "tide_grp_oshio_spring", "tide_grp_oshio_summer", "tide_grp_oshio_autumn", "tide_grp_oshio_winter",
+    "tide_grp_chusho_spring", "tide_grp_chusho_summer", "tide_grp_chusho_autumn", "tide_grp_chusho_winter",
+    "tide_grp_chowaka_spring", "tide_grp_chowaka_summer", "tide_grp_chowaka_autumn", "tide_grp_chowaka_winter",
     "is_holiday",          # カレンダー因子：未来確定値 → 全ホライズン有効
     "is_consec_holiday",   # 連休フラグ（GW/盆/年末年始の3日以上連続休日）
     "is_summer_vacation",  # 夏休みフラグ（7/21〜8/31：家族・子供客増加シグナル）
@@ -268,7 +274,13 @@ WX_FACTORS = [
     "current_dir_mode",   # 日次最頻潮流方向[度]（流向の再現性）
 ]
 # 潮汐（tide テーブルから取る）
-TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta"]
+TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
+                # 潮汐×季節 交互作用（方式C: 季節×3潮群）── 12因子
+                # 潮群: 大潮 / 中小潮(中潮+小潮) / 長若潮(長潮+若潮)
+                # 両方とも確定値（潮汐=天文計算、季節=カレンダー）→ 全H有効
+                "tide_grp_oshio_spring", "tide_grp_oshio_summer", "tide_grp_oshio_autumn", "tide_grp_oshio_winter",
+                "tide_grp_chusho_spring", "tide_grp_chusho_summer", "tide_grp_chusho_autumn", "tide_grp_chusho_winter",
+                "tide_grp_chowaka_spring", "tide_grp_chowaka_summer", "tide_grp_chowaka_autumn", "tide_grp_chowaka_winter"]
 
 # 釣果自己相関因子（前週釣果 → H≤7で有効、H>7では2週以上前の情報で精度低下）
 CATCH_FACTORS = ["prev_week_cnt"]
@@ -984,6 +996,26 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         rec.update(wx)
         rec.update(tide)
         rec.update(typhoon_cache[wx_date])
+
+        # 潮汐×季節 交互作用（方式C: 季節×3潮群 = 12因子）
+        # 潮群: 大潮(type_n==4) / 中小潮(type_n 2-3) / 長若潮(type_n==1)
+        # tide_type_n 欠損時は None（相関計算から除外）
+        _ttn = tide.get("tide_type_n")
+        if _ttn is not None:
+            _is_oshio   = 1 if _ttn == 4 else 0
+            _is_chusho  = 1 if _ttn in (2, 3) else 0
+            _is_chowaka = 1 if _ttn == 1 else 0
+            _ssn = _season_of(int(r["date"][5:7]))
+            for _grp, _flag in [("oshio", _is_oshio), ("chusho", _is_chusho), ("chowaka", _is_chowaka)]:
+                rec[f"tide_grp_{_grp}_spring"] = _flag if _ssn == "春" else 0
+                rec[f"tide_grp_{_grp}_summer"] = _flag if _ssn == "夏" else 0
+                rec[f"tide_grp_{_grp}_autumn"] = _flag if _ssn == "秋" else 0
+                rec[f"tide_grp_{_grp}_winter"] = _flag if _ssn == "冬" else 0
+        else:
+            for _grp in ("oshio", "chusho", "chowaka"):
+                for _s in ("spring", "summer", "autumn", "winter"):
+                    rec[f"tide_grp_{_grp}_{_s}"] = None
+
         result.append(rec)
 
     return result
