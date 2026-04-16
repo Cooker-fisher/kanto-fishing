@@ -5321,7 +5321,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         if sst: sea_parts.append(f"水温{sst_str}")
         if wave: sea_parts.append(f"波{wave_str}")
         if wind_txt: sea_parts.append(wind_str)
-        if tide_range: sea_parts.append(tide_range)
+        if tide_range: sea_parts.append(str(tide_range))
         ah_sea_html = f'<div class="ah-sea">{" / ".join(sea_parts)}</div>' if sea_parts else ""
         sea_section_html = ""
         if sea_fc:
