@@ -6152,6 +6152,19 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
     with open(raw_path, encoding="utf-8") as f:
         records = json.load(f)
 
+    # ships.json の exclude/boat_only フラグを読み込んで除外リストを構築
+    _ships_json = os.path.join(os.path.dirname(__file__), "crawl", "ships.json")
+    _exclude_ships = set()
+    if os.path.exists(_ships_json):
+        with open(_ships_json, encoding="utf-8") as _sf:
+            for _s in json.load(_sf):
+                if _s.get("exclude") or _s.get("boat_only"):
+                    _exclude_ships.add(_s["name"])
+    if _exclude_ships:
+        before = len(records)
+        records = [r for r in records if r.get("ship") not in _exclude_ships]
+        print(f"export_csv_from_raw: exclude {before - len(records)}件 ({', '.join(sorted(_exclude_ships))})")
+
     # catches_raw_direct.json をマージ（忠彦丸・一之瀬丸・米元等の直接クロール分）
     _direct_path = os.path.join(os.path.dirname(os.path.abspath(raw_path)),
                                 "direct-crawl", "catches_raw_direct.json")
