@@ -16,6 +16,8 @@ jobs:
       - name: discover ships (月1日のみ)
         if: github.event.schedule == '0 7 1 * *'
         run: python3 crawl/discover_ships.py
+      - name: update tide_moon (天文計算・今日+90日)
+        run: python3 ocean/build_tide_moon.py
       - name: run
         run: python3 crawler.py
       - name: push

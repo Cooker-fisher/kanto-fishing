@@ -9,7 +9,7 @@ build_tide_moon.py — 月齢・潮汐区分を天文計算で算出し tide_moo
   ・月相 (moon_phase)      : 新月/上弦/満月/下弦
 
 [対象期間]
-  2023-01-01 〜 今日（日ベース）
+  2023-01-01 〜 今日+90日（日ベース・未来も天文計算で確定値）
 
 [外部ライブラリ不要]
   標準ライブラリの math / datetime のみ使用
@@ -132,7 +132,8 @@ def main():
 
     from datetime import datetime
     start = date.fromisoformat(args.start)
-    end   = date.fromisoformat(args.end) if args.end else date.today()
+    # 天文計算は確定値なので未来も生成可能 → 今日+90日まで（予測に必要）
+    end   = date.fromisoformat(args.end) if args.end else (date.today() + timedelta(days=90))
 
     conn = sqlite3.connect(DB_PATH)
     init_db(conn)
