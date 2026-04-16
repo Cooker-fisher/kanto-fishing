@@ -123,6 +123,12 @@ FAST_FACTORS = {
     "precip_sum",                          # 当日合計降水量
     "precip_sum1",                         # 前日合計（翌日の濁り）
     "precip_sum2",                         # 前々日合計（2日遅れ濁りピーク）
+    "precip_sum3",  # 3日前合計（濁りラグ3日）
+    "precip_sum4",  # 4日前合計（濁りラグ4日）
+    "precip_sum5",  # 5日前合計（分析: 水色変化への最大影響ラグ）
+    "precip_sum6",  # 6日前合計
+    "precip_sum7",  # 7日前合計（濁り影響限界・以降は自然回復）
+    "water_color_prev_n",  # 前日の実測水色スコア（近接補完込み・H≤7で有効）
     "prev_week_cnt",                       # 前週釣果（自己相関）H>7では2週以上前の情報になるため無効化
     "typhoon_dist", "typhoon_wind",        # 台風接近距離・最大風速（イベント変数 H≤5が有効限界）
     "current_speed_avg", "current_speed_max",  # 潮流速度（数時間で急変 → H>7は無効）
@@ -257,6 +263,17 @@ WX_FACTORS = [
     "precip_sum",    # 当日合計：低気圧通過シグナル（正相関の可能性）
     "precip_sum1",   # 前日合計：翌日の濁り（負相関の可能性）
     "precip_sum2",   # 前々日合計：2日遅れ濁りピーク（負相関 → 全魚種適用）
+    # 【重要】降水ラグ3〜7日: 分析で最大影響ラグ=5〜7日と判明
+    # 澄→濁遷移4.2日、濁→澄遷移3.7日 → 5〜7日前降水が当日水色に最も影響
+    # 水深・沖具合によりラグが異なる（浅場=短ラグ、深場/沖=長ラグ）
+    "precip_sum3",   # 3日前合計（濁りラグ3日）
+    "precip_sum4",   # 4日前合計
+    "precip_sum5",   # 5日前合計（水色変化の最大影響ラグ）
+    "precip_sum6",   # 6日前合計
+    "precip_sum7",   # 7日前合計（濁り影響限界）
+    # 前日実測水色（近接補完済み）: H=0/1で最強の水色入力
+    # 水色は3〜4日かけて遷移 → 前日値はH=0/1で高相関、H>3で急速に劣化
+    "water_color_prev_n",
     # 気温変化（前日比）
     "temp_delta",    # 当日avg - 前日avg（冬の急上昇 → 南風・表層暖水 → イカ不漁）
     # SST変化率（7日間）
@@ -746,6 +763,37 @@ def load_records(fish, ship_filter=None):
                 best = nb
         r["water_color_imp_n"] = best["water_color_n"] if best else None
 
+    # 前日水色 (water_color_prev_n): 前日の近接エリア（0.5度以内）の水色スコア
+    # H=0: 予測時点で前日の水色が確定 → 最も信頼できる水色入力
+    # H=1: 2日前の水色。水色遷移3.7〜4.2日 → まだ有効
+    # H>3: 急速に陳腐化。FAST_MAX_H=7 により H>7 で自動無効化
+    # 注意: バックテストでは全H共通でD-1水色を使用（H>1は若干の情報リーク）
+    from collections import defaultdict as _dd2
+    _date_loc_wc = _dd2(list)
+    for r in records:
+        wc = r.get("water_color_imp_n")
+        if wc is not None and r.get("lat") is not None and r.get("lon") is not None:
+            _date_loc_wc[r["date"]].append((r["lat"], r["lon"], wc))
+
+    for r in records:
+        try:
+            prev_d = (datetime.strptime(r["date"], "%Y/%m/%d") - timedelta(days=1)).strftime("%Y/%m/%d")
+        except Exception:
+            r["water_color_prev_n"] = None
+            continue
+        lat_r, lon_r = r.get("lat"), r.get("lon")
+        if lat_r is None or lon_r is None:
+            r["water_color_prev_n"] = None
+            continue
+        best_wc = None
+        best_dist = 999.0
+        for (lat_n, lon_n, wc) in _date_loc_wc.get(prev_d, []):
+            dist = ((lat_r - lat_n) ** 2 + (lon_r - lon_n) ** 2) ** 0.5
+            if dist < 0.5 and dist < best_dist:
+                best_dist = dist
+                best_wc = wc
+        r["water_color_prev_n"] = best_wc
+
     return records
 
 def get_daily_wx(conn_wx, lat, lon, date_iso):
@@ -947,6 +995,15 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             wx_cache[(wlat, wlon, prev_date2)] = get_daily_wx(conn_wx, wlat, wlon, prev_date2)
         dagg2 = wx_cache[(wlat, wlon, prev_date2)] or {}
         wx["precip_sum2"]      = dagg2.get("precip_sum")       # 前々日合計降水量
+
+        # precip_sum3〜7: 降水ラグ3〜7日（水色変化の最大影響ラグ）
+        # 分析: 澄→濁4.2日, 濁→澄3.7日 → 5〜7日前降水が当日水色に最大影響
+        for _lag in range(3, 8):
+            _pd_lag = (d - timedelta(days=horizon + _lag)).strftime("%Y-%m-%d")
+            _wk_lag = (wlat, wlon, _pd_lag)
+            if _wk_lag not in wx_cache:
+                wx_cache[_wk_lag] = get_daily_wx(conn_wx, wlat, wlon, _pd_lag)
+            wx[f"precip_sum{_lag}"] = (wx_cache[_wk_lag] or {}).get("precip_sum")
 
         # pressure_delta: 当日最低気圧 - 前日最低気圧（気圧変化の方向・速度）
         p_today = wx.get("pressure_min")
