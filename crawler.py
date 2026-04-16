@@ -3001,7 +3001,7 @@ a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
 header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}
+header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}a.site-logo{text-decoration:none;color:inherit}a.site-logo:hover{opacity:.8;text-decoration:none}
 header .domain{font-size:11px;opacity:.5}
 nav.gnav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
 nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
@@ -3159,7 +3159,7 @@ def _v2_header_nav(active_page=""):
         links += f'<a href="/{href}" class="{cls}{on}".strip()>{label}</a>'
     return f"""<header>
   <div class="inner">
-    <h1>船釣り<span>予想</span></h1>
+    <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>
