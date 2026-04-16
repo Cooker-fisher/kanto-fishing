@@ -3533,19 +3533,74 @@ def build_fish_7day_chart_html(fish, catches):
   {trend}
 </div>"""
 
-def build_fish_faq_html(fish, site_url=""):
-    """魚種別FAQ（デフォルト質問セット）＋ FAQPage JSON-LD を返す (html, jsonld) のタプル"""
+def build_fish_faq_html(fish, catches, decadal_calendar, site_url=""):
+    """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, jsonld) のタプル"""
+    # Q1: 旬はいつ？
+    fish_decades = decadal_calendar.get(fish, {})
+    if fish_decades:
+        monthly_scores = {}
+        for decade_no, data in fish_decades.items():
+            month = ((decade_no - 1) // 3) + 1
+            score = data.get("cnt_index", 0)
+            if month not in monthly_scores:
+                monthly_scores[month] = []
+            monthly_scores[month].append(score)
+        monthly_avg = {m: sum(s) / len(s) for m, s in monthly_scores.items()}
+        top_3_months = sorted(monthly_avg.items(), key=lambda x: -x[1])[:3]
+        if top_3_months:
+            month_names = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+            month_strs = [month_names[m - 1] for m, _ in sorted(top_3_months, key=lambda x: x[0])]
+            q1_ans = f"直近のデータでは{month_strs[0]}・{month_strs[1] if len(month_strs) > 1 else ''}・{month_strs[2] if len(month_strs) > 2 else ''}が実績が多い傾向です。旬カレンダーで詳しい月別推移をご確認ください。"
+        else:
+            q1_ans = f"関東の{fish}船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"
+    else:
+        q1_ans = f"関東の{fish}船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"
+
+    # Q2: 主なエリア
+    if catches:
+        area_counts = {}
+        for c in catches:
+            area = c.get("area", "")
+            if area:
+                area_counts[area] = area_counts.get(area, 0) + 1
+        top_3_areas = sorted(area_counts.items(), key=lambda x: -x[1])[:3]
+        if top_3_areas:
+            area_strs = "、".join(f"{a}（{n}件）" for a, n in top_3_areas)
+            q2_ans = f"直近の釣果データでは{area_strs}が主なエリアです。"
+        else:
+            q2_ans = f"神奈川・東京湾エリアをはじめ、千葉・外房、茨城など幅広いエリアで船が出ています。エリア別釣果ページで各エリアの状況をご確認ください。"
+    else:
+        q2_ans = f"神奈川・東京湾エリアをはじめ、千葉・外房、茨城など幅広いエリアで船が出ています。エリア別釣果ページで各エリアの状況をご確認ください。"
+
+    # Q3: 一日の釣果
+    if catches:
+        cnt_maxes = [c.get("cnt_max", 0) for c in catches if c.get("cnt_max")]
+        cnt_mins = [c.get("cnt_min", 0) for c in catches if c.get("cnt_min")]
+        if cnt_mins and cnt_maxes:
+            p25_val = sorted(cnt_mins)[int(len(cnt_mins) * 0.25)] if len(cnt_mins) >= 4 else min(cnt_mins)
+            p75_val = sorted(cnt_maxes)[int(len(cnt_maxes) * 0.75)] if len(cnt_maxes) >= 4 else max(cnt_maxes)
+            max_val = max(cnt_maxes)
+            q3_ans = f"直近{len(catches)}件のデータでは{p25_val}〜{p75_val}匹が標準的なレンジです。最高実績は{max_val}匹です。"
+        else:
+            q3_ans = f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"
+    else:
+        q3_ans = f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"
+
+    # Q4: 初心者向け
+    if catches:
+        ship_count = len(set(c.get("ship", "") for c in catches if c.get("ship")))
+        if ship_count > 0:
+            q4_ans = f"はい。現在{ship_count}船宿が出船実績があります。多くの船宿でレンタルタックルや仕掛けの購入が可能で、初心者でも安心して楽しめます。"
+        else:
+            q4_ans = f"はい。{fish}は比較的タックルがシンプルで、船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"
+    else:
+        q4_ans = f"はい。{fish}は比較的タックルがシンプルで、船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"
+
     faqs = [
-        (f"{fish}の船釣りはどの季節が一番釣れますか？",
-         f"関東の{fish}船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"),
-        (f"初心者でも{fish}釣りは楽しめますか？",
-         f"はい。{fish}は比較的タックルがシンプルで、船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"),
-        (f"関東で{fish}の船釣りができる主なエリアはどこですか？",
-         f"神奈川・東京湾エリアをはじめ、千葉・外房、茨城など幅広いエリアで船が出ています。エリア別釣果ページで各エリアの状況をご確認ください。"),
-        (f"{fish}の船で一日どれくらい釣れますか？",
-         f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"),
-        (f"{fish}釣りに必要なタックルは何ですか？",
-         f"竿・リール・仕掛けのセットが必要です。詳細はこのページの「魚種ガイド」セクションをご覧ください。"),
+        (f"{fish}の旬はいつですか？", q1_ans),
+        (f"関東で{fish}の船釣りができる主なエリアはどこですか？", q2_ans),
+        (f"{fish}の一日の釣果はどのくらいですか？", q3_ans),
+        (f"初心者でも{fish}釣りは楽しめますか？", q4_ans),
     ]
     html = '<div class="faq-list">\n'
     for q, a in faqs:
@@ -3588,21 +3643,54 @@ def build_area_guide_html(area, desc_data):
   {rows}
 </div>"""
 
-def build_area_faq_html(area, desc_data, area_coords=None):
-    """エリア別FAQ＋ FAQPage+Place JSON-LD を返す (html, jsonld) のタプル"""
+def build_area_faq_html(area, desc_data, area_coords=None, top_fish_items=None, area_catches=None):
+    """エリア別FAQ（データ駆動型）＋ FAQPage+Place JSON-LD を返す (html, jsonld) のタプル"""
     ad = (desc_data.get(area) or {}) if desc_data else {}
-    top_fish_str = ad.get("top_fish_text", "複数の魚種")
+
+    # Q1: 釣れる魚は何？
+    if top_fish_items:
+        top_3_str = "、".join(f"{f}（{r['records']}件）" for f, r in top_fish_items[:3])
+        q1_ans = f"直近の釣果データでは{top_3_str}が中心です。"
+    else:
+        top_fish_str = ad.get("top_fish_text", "複数の魚種")
+        q1_ans = f"{top_fish_str}が主力です。季節によって釣れる魚が変わります。旬カレンダーで月別の状況をご確認ください。"
+
+    # Q2: アクセス方法
+    if ad.get("access_summary"):
+        q2_ans = ad.get("access_summary")
+    elif ad.get("access_train") or ad.get("access_car"):
+        q2_ans = (ad.get("access_train") or "") + ("、" if ad.get("access_train") and ad.get("access_car") else "") + (ad.get("access_car") or "")
+    else:
+        q2_ans = f"{area}への詳細なアクセスは各船宿のウェブサイトをご確認ください。"
+
+    # Q3: おすすめの釣り物と時期
+    if top_fish_items and top_fish_items[0]:
+        top_f = top_fish_items[0][0]
+        q3_ans = f"直近データでは{top_f}の実績が最多です。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"
+    else:
+        q3_ans = f"魚種によって旬が異なります。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"
+
+    # Q4: よく出船する船宿
+    if area_catches:
+        ship_counts = {}
+        for c in area_catches:
+            ship = c.get("ship", "")
+            if ship:
+                ship_counts[ship] = ship_counts.get(ship, 0) + 1
+        top_3_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
+        if top_3_ships:
+            ship_strs = "、".join(f"{s}（{n}件）" for s, n in top_3_ships)
+            q4_ans = f"直近の釣果では{ship_strs}などの実績が確認されています。"
+        else:
+            q4_ans = f"{area}の船宿一覧はこのページでご確認ください。"
+    else:
+        q4_ans = f"{area}の船宿一覧はこのページでご確認ください。"
+
     faqs = [
-        (f"{area}で釣れる魚は何ですか？",
-         f"{top_fish_str}が主力です。季節によって釣れる魚が変わります。旬カレンダーで月別の状況をご確認ください。"),
-        (f"{area}エリアへのアクセス方法は？",
-         ad.get("access_summary") or f"{area}への詳細なアクセスは各船宿のウェブサイトをご確認ください。"),
-        (f"{area}は初心者向けですか？",
-         f"はい。タックルレンタルや仕掛け販売が充実した船宿があります。船宿スタッフのサポートも受けられるため初心者の方も安心して楽しめます。"),
-        (f"{area}でおすすめの時期はいつですか？",
-         f"魚種によって旬が異なります。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"),
-        (f"{area}の主要な釣りポイントはどこですか？",
-         ad.get("key_points") or f"{area}の主要ポイントは各船宿のページでご確認ください。"),
+        (f"{area}で釣れる魚は何ですか？", q1_ans),
+        (f"{area}エリアへのアクセス方法は？", q2_ans),
+        (f"{area}でおすすめの釣り物と時期は？", q3_ans),
+        (f"{area}でよく出船する船宿は？", q4_ans),
     ]
     html = '<div class="faq-list">\n'
     for q, a in faqs:
@@ -5051,7 +5139,7 @@ def build_fish_pages(data, history, crawled_at=""):
         # V2 season map / guide / FAQ / chart
         season_map_html = build_fish_season_map_html(fish, decadal_calendar)
         guide_html = build_fish_guide_html(fish, tackle_data)
-        faq_html, faq_jsonld = build_fish_faq_html(fish, SITE_URL)
+        faq_html, faq_jsonld = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
         chart7_html = build_fish_7day_chart_html(fish, catches)
         fish_extra_css = """\
 .fish-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:22px 14px 18px;text-align:center}
@@ -5396,7 +5484,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         top_fish_list = [f for f, _ in top_fish_items]
         area_season_html = build_area_season_map_html(area, area_decadal, top_fish_list)
         area_guide_html = build_area_guide_html(area, area_desc_data)
-        area_faq_html, area_faq_jsonld = build_area_faq_html(area, area_desc_data)
+        area_faq_html, area_faq_jsonld = build_area_faq_html(area, area_desc_data, top_fish_items=top_fish_items, area_catches=catches)
 
         # SEO
         area_url = f"{SITE_URL}/area/{area_slug(area)}.html"
