@@ -5123,7 +5123,7 @@ def build_fish_pages(data, history, crawled_at=""):
   {area_cmp_html if area_cmp_html else '<p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>'}
   {ship_rank_html}
   <!-- 広告① -->
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <ins class="adsbygoogle" style="display:block;min-height:0" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   {related_section_html}
   {fish_area_section_html}
@@ -5132,7 +5132,7 @@ def build_fish_pages(data, history, crawled_at=""):
   {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ''}
   {fish_teaser_html}
   <!-- 広告② -->
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <ins class="adsbygoogle" style="display:block;min-height:0" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   <h2 class="st">よくある質問</h2>
   {faq_html}
@@ -5459,7 +5459,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">本日の釣果はまだ集計中です</p>'}</div>
   {sea_section_html}
   <!-- 広告① -->
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <ins class="adsbygoogle" style="display:block;min-height:0" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   <h2 class="st">船宿一覧 <span class="tag free">無料</span></h2>
   <div class="sl-card">{ship_items_html}</div>
@@ -5470,7 +5470,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   {area_season_html}
   {('<h2 class="st">エリアガイド</h2>' + area_guide_html) if area_guide_html else ''}
   <!-- 広告② -->
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <ins class="adsbygoogle" style="display:block;min-height:0" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   <h2 class="st">よくある質問</h2>
   {area_faq_html}
