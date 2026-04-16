@@ -3872,7 +3872,7 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
             base += "（直近は急減傾向・注意）"
         elif comp_tier in ("low", "bottom") and wow_pct >= 50:
             base += "（ただし直近は急増中）"
-    suffix = f"（今週{count}件"
+    suffix = f"（釣果{count}件"
     if yoy_pct is not None:
         sign = "+" if yoy_pct >= 0 else ""
         suffix += f"・昨年比{sign}{yoy_pct}%"
@@ -4949,7 +4949,7 @@ def build_fish_pages(data, history, crawled_at=""):
         elif t_maxs:
             cnt_range_str = f"〜{int(max(t_maxs))}匹"
         else:
-            cnt_range_str = f"今週{len(catches)}件"
+            cnt_range_str = f"釣果{len(catches)}件"
         sz_str = f"{int(min(t_sz_lo))}〜{int(max(t_sz_hi))}cm" if t_sz_lo and t_sz_hi else ""
         # area-cmp（今日のエリア別）
         area_today_f: dict = {}
