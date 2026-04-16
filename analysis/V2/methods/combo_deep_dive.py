@@ -106,6 +106,10 @@ SLOW_FACTORS = {
     "is_consec_holiday",   # 連休フラグ（GW/盆/年末年始の3日以上連続休日）
     "is_summer_vacation",  # 夏休みフラグ（7/21〜8/31：家族・子供客増加シグナル）
     "spawn_season_n",      # 乗っ込み・産卵期（2〜5月=1）: シーバス/マダイ/ヒラメ/サワラ等
+    # 水色予測スコア: water_color_model.py が降水ラグ+波+潮流から推定
+    # 実測水色がないポイントも含む全点×全日で補完 → SLOW因子（H=28でも有効）
+    # ※ 実測 water_color_imp_n がある場合は obs_factor として別途使用
+    "water_color_pred_n",  # 予測水色スコア（water_color_daily テーブル）
 }
 # 速い変数（風・波・降水・急変動）：数日で激変 → H>7 では無効化
 FAST_FACTORS = {
@@ -289,6 +293,10 @@ WX_FACTORS = [
     "current_speed_avg",  # 日次平均潮流速度[m/s]（止まり≈0, 速潮≈1.5）
     "current_speed_max",  # 日次最大潮流速度[m/s]（急流ピーク）
     "current_dir_mode",   # 日次最頻潮流方向[度]（流向の再現性）
+    # 水色予測スコア（water_color_model.py 生成 → analysis.sqlite water_color_daily）
+    # 降水ラグ＋波高＋潮流から全点推定。実測水色なしコンボも補完される。
+    # SLOW因子（降水予報は14日先まで取得可能）→ 全H有効
+    "water_color_pred_n",
 ]
 # 潮汐（tide テーブルから取る）
 TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
@@ -643,6 +651,49 @@ def nearest_coord(lat, lon, coords):
     if not coords:
         return (lat, lon)
     return min(coords, key=lambda c: (c[0]-lat)**2 + (c[1]-lon)**2)
+
+# ── water_color_daily テーブル キャッシュ ──────────────────────────────────────
+# water_color_model.py が生成する全点×全日の水色予測スコアをメモリに展開する。
+# キー: (lat_rounded2, lon_rounded2, date_iso) → wc_pred
+# lat/lon は小数2桁丸め（最近傍 wx_coord に合わせるため）
+_WC_DAILY_CACHE: dict = {}
+_WC_DAILY_LOADED: bool = False
+_WC_DAILY_COORDS: list = []  # (lat, lon) のユニークリスト
+
+def _load_wc_daily_cache():
+    """analysis.sqlite の water_color_daily を一度だけメモリに展開する。"""
+    global _WC_DAILY_CACHE, _WC_DAILY_LOADED, _WC_DAILY_COORDS
+    if _WC_DAILY_LOADED:
+        return
+    _WC_DAILY_LOADED = True
+    if not os.path.exists(DB_ANA):
+        return
+    try:
+        conn = _open_ana()
+        rows = conn.execute("SELECT lat, lon, date, wc_pred FROM water_color_daily").fetchall()
+        conn.close()
+    except Exception:
+        return
+    coord_set = set()
+    for lat, lon, date, pred in rows:
+        k = (round(lat, 2), round(lon, 2), date)
+        _WC_DAILY_CACHE[k] = pred
+        coord_set.add((round(lat, 2), round(lon, 2)))
+    _WC_DAILY_COORDS = list(coord_set)
+
+def _lookup_wc_pred(lat, lon, date_iso):
+    """最近傍 wx_coord の当日 wc_pred を返す。テーブルがなければ None。"""
+    _load_wc_daily_cache()
+    if not _WC_DAILY_CACHE:
+        return None
+    # 最近傍座標を解決
+    if _WC_DAILY_COORDS:
+        wlat, wlon = min(_WC_DAILY_COORDS,
+                         key=lambda c: (c[0] - lat)**2 + (c[1] - lon)**2)
+    else:
+        wlat, wlon = round(lat, 2), round(lon, 2)
+    k = (round(wlat, 2), round(wlon, 2), date_iso)
+    return _WC_DAILY_CACHE.get(k)
 
 def load_decadal(fish, ship):
     conn = _open_ana()
@@ -1084,6 +1135,11 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         # 台風（wx_date = D-H の台風接近距離）
         if wx_date not in typhoon_cache:
             typhoon_cache[wx_date] = get_typhoon(conn_typhoon, wx_date)
+
+        # 水色予測スコア（water_color_daily テーブル: water_color_model.py 生成）
+        # 実測水色なしコンボも補完。SLOW因子なので horizon に関わらず当日の予測値を使用。
+        # wx_date ではなく tide_date（当日）を使う → 釣行当日の水色状態を知りたい
+        wx["water_color_pred_n"] = _lookup_wc_pred(wlat, wlon, tide_date)
 
         rec = dict(r)
         rec.update(wx)
