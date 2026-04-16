@@ -2369,6 +2369,20 @@ def parse_catches_from_html(html, ship, area, year):
         box_parser = TableParser()
         box_parser.feed(box_html)
         catches = _parse_tables(box_parser.tables, ship, area, date, month)
+
+        # 【水温】【水色】をテーブル下テキストから抽出してレコードに付与
+        box_text_plain = re.sub(r'<[^>]+>', ' ', box_html)
+        suion_m = re.search(r'【水温】\s*([^\s【】]{1,20})', box_text_plain)
+        suishoku_m = re.search(r'【水色】\s*([^\s【】]{1,20})', box_text_plain)
+        box_suion = suion_m.group(1).strip() if suion_m else ""
+        box_suishoku = suishoku_m.group(1).strip() if suishoku_m else ""
+        if box_suion or box_suishoku:
+            for c in catches:
+                if not c.get("suion_raw"):
+                    c["suion_raw"] = box_suion
+                if not c.get("suishoku_raw"):
+                    c["suishoku_raw"] = box_suishoku
+
         results.extend(catches)
 
         # テーブルが空 → 休船テキストを検出
@@ -6453,9 +6467,9 @@ def save_daily_csv(catches):
                 "point_place3":   "",
                 "depth_min":      d_min,
                 "depth_max":      d_max,
-                "water_temp_min": "",
-                "water_temp_max": "",
-                "water_color":    "",
+                "water_temp_min": _extract_water_temp_range(c.get("suion_raw") or "").get("min", ""),
+                "water_temp_max": _extract_water_temp_range(c.get("suion_raw") or "").get("max", ""),
+                "water_color":    _extract_water_color(c.get("suishoku_raw") or ""),
                 "wind_direction": "",
                 "wind_speed":     "",
                 "tide_info":      "",
@@ -6465,8 +6479,8 @@ def save_daily_csv(catches):
                 "cancel_reason":  "",
                 "cancel_type":    "",
                 "kanso_raw":      "",
-                "suion_raw":      "",
-                "suishoku_raw":   "",
+                "suion_raw":      c.get("suion_raw") or "",
+                "suishoku_raw":   c.get("suishoku_raw") or "",
             })
 
         if not new_rows:

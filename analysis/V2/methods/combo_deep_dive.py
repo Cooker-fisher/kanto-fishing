@@ -218,9 +218,9 @@ def _spawn_season_n(date_str: str) -> int:
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
 # 特徴量上限（過学習防止）: 相関上位 MAX_FACTORS 個のみ採用
-# 根拠: n/特徴量比 >= 10 を確保するため。中央値 n≈100 に対し 10個が妥当。
-# 旧設定では中央値 29個採用 → OOS r平均 -0.069（過学習）の主因
-MAX_FACTORS = 10
+# 根拠: tide×season 12因子(tide_grp_*)がMAX_FACTORS=10で moon_age 等を押し出していた
+# → 12に拡張してtide_grp + 伝統因子(SST/moon/wave)の共存を可能にする（2026/04/16）
+MAX_FACTORS = 12
 
 # per-combo FAST_MAX_H オーバーライド
 # 月齢・潮汐が主要因子で fast因子がノイズになるコンボは低い値を設定
