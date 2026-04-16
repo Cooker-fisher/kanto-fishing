@@ -309,10 +309,16 @@ def _get_obs_config():
     return _OBS_CONFIG_CACHE
 
 def _get_obs_factors():
-    """obs_fields.json の role=obs_factor なフィールド名リストを返す"""
+    """obs_fields.json の role=obs_factor なフィールド名リストを返す。
+    water_color_imp_n は load_records() で補完済みのため別途追加。
+    """
     cfg = _get_obs_config()
-    return [name for name, spec in cfg.get("fields", {}).items()
-            if spec.get("role") == "obs_factor"]
+    factors = [name for name, spec in cfg.get("fields", {}).items()
+               if spec.get("role") == "obs_factor"]
+    # 近接補完済み水色スコア（load_records()で付与）
+    if "water_color_imp_n" not in factors:
+        factors.append("water_color_imp_n")
+    return factors
 
 def _compute_obs_fields(row):
     """obs_fields.json の定義に従い CSV 行から全OBS/TEXTフィールドを計算する。
@@ -710,6 +716,36 @@ def load_records(fish, ship_filter=None):
                     **obs,   # OBS因子 + テキストフィールド + text_all
                 })
     records.sort(key=lambda r: r["date"])
+
+    # 水色補完: 同日・0.3度以内の近接船宿から water_color_imputed を付与
+    # 水色なしレコードに対し、同日・最近傍の水色ありレコードの値を補完する
+    from collections import defaultdict as _dd
+    _date_idx = _dd(list)
+    for r in records:
+        if r.get("water_color_n") is not None:
+            _date_idx[r["date"]].append(r)
+    for r in records:
+        if r.get("water_color_n") is not None:
+            r["water_color_imp_n"] = r["water_color_n"]
+            continue
+        best = None
+        best_dist = 999.0
+        lat_r, lon_r = r.get("lat"), r.get("lon")
+        if lat_r is None or lon_r is None:
+            r["water_color_imp_n"] = None
+            continue
+        for nb in _date_idx.get(r["date"], []):
+            if nb is r:
+                continue
+            lat_n, lon_n = nb.get("lat"), nb.get("lon")
+            if lat_n is None or lon_n is None:
+                continue
+            dist = ((lat_r - lat_n) ** 2 + (lon_r - lon_n) ** 2) ** 0.5
+            if dist < 0.3 and dist < best_dist:
+                best_dist = dist
+                best = nb
+        r["water_color_imp_n"] = best["water_color_n"] if best else None
+
     return records
 
 def get_daily_wx(conn_wx, lat, lon, date_iso):
