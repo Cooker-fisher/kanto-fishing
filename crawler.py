@@ -5118,7 +5118,6 @@ def build_fish_pages(data, history, crawled_at=""):
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {season_entry_html}
   <div class="comment">💬 {comment}</div>
-  <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
   {chart7_html}
   <h2 class="st">今日の釣果 <span class="tag free">無料</span></h2>
   {area_cmp_html if area_cmp_html else '<p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>'}
