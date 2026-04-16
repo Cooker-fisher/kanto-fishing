@@ -5130,7 +5130,7 @@ def build_fish_pages(data, history, crawled_at=""):
   {fish_area_section_html}
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   {season_map_html}
-  {"<h2 class='st'>魚種ガイド <span class=\\'tag free\\'>無料</span></h2>" + guide_html if guide_html else ""}
+  {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ""}
   {fish_teaser_html}
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
