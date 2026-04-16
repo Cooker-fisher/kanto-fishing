@@ -1639,7 +1639,7 @@ def _forecast_page_head(title):
 <style>{V2_COMMON_CSS}
 {_FORECAST_EXTRA_CSS}</style>
 </head><body>
-{_v2_header_nav("forecast")}
+{_v2_header_nav('forecast')}
 <div class="c">
 <p class="bread"><a href="/index.html">トップ</a> &rsaquo; <a href="/forecast/index.html">釣果予測</a> &rsaquo; {title}</p>"""
 
@@ -1647,7 +1647,7 @@ def _forecast_page_head(title):
 def _forecast_page_foot():
     return f"""</div>
 {_v2_footer()}
-{_v2_bottom_nav("prem")}
+{_v2_bottom_nav('prem')}
 </body></html>"""
 
 
@@ -4833,7 +4833,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 {index_extra_css}</style>
 </head>
 <body>
-{_v2_header_nav("index")}
+{_v2_header_nav('index')}
 <!-- HERO -->
 <div class="hero">
   <div class="hero-sub">関東船釣り釣果情報</div>
@@ -4875,7 +4875,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 </div><!-- /.c -->
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
-{_v2_bottom_nav("index")}
+{_v2_bottom_nav('index')}
 <script>
 (function(){{
   var slides=document.querySelectorAll('.tr-slide');
@@ -5107,12 +5107,12 @@ def build_fish_pages(data, history, crawled_at=""):
 {fish_extra_css}</style>
 </head>
 <body>
-{_v2_header_nav("fish")}
+{_v2_header_nav('fish')}
 <div class="fish-hero">
   <h2>{fish}</h2>
   {f'<div class="fh-r">{cnt_range_str}</div>' if cnt_range_str else ''}
   {f'<div class="fh-s">{sz_str}</div>' if sz_str else ''}
-  <div class="fh-m">今日 {len(today_catches_f)}件・{len(set(c["ship"] for c in today_catches_f))}船宿</div>
+  <div class="fh-m">今日 {len(today_catches_f)}件・{len(set(c['ship'] for c in today_catches_f))}船宿</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
@@ -5130,7 +5130,7 @@ def build_fish_pages(data, history, crawled_at=""):
   {fish_area_section_html}
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   {season_map_html}
-  {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ""}
+  {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ''}
   {fish_teaser_html}
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
@@ -5140,7 +5140,7 @@ def build_fish_pages(data, history, crawled_at=""):
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
-{_v2_bottom_nav("fish")}
+{_v2_bottom_nav('fish')}
 </body></html>"""
         with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
@@ -5170,7 +5170,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <style>{V2_COMMON_CSS}{fish_index_css}</style>
 </head>
 <body>
-{_v2_header_nav("fish")}
+{_v2_header_nav('fish')}
 <div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
   <div class="c"><div style="font-size:26px;font-weight:800">魚種別 釣果一覧</div>
   <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣れている魚種 {len(fish_summary)}種</div></div>
@@ -5182,7 +5182,7 @@ def build_fish_pages(data, history, crawled_at=""):
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
-{_v2_bottom_nav("fish")}
+{_v2_bottom_nav('fish')}
 </body></html>"""
     with open(os.path.join(WEB_DIR, "fish/index.html"), "w", encoding="utf-8") as f:
         f.write(fish_index_html)
@@ -5445,12 +5445,12 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 {area_extra_css}</style>
 </head>
 <body>
-{_v2_header_nav("area")}
+{_v2_header_nav('area')}
 <div class="area-hero">
   <div class="c">
     <h2>{area}</h2>
     <div class="ah-sub">{group}</div>
-    <div class="ah-m">{today_cnt}件 <small>({len(set(c["ship"] for c in today_catches))}船宿・今日)</small></div>
+    <div class="ah-m">{today_cnt}件 <small>({len(set(c['ship'] for c in today_catches))}船宿・今日)</small></div>
     {ah_sea_html}
   </div>
 </div>
@@ -5469,7 +5469,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   {nearby_section_html}
   <h2 class="st">魚種別 旬カレンダー <span class="tag free">無料</span></h2>
   {area_season_html}
-  {"<h2 class='st'>エリアガイド</h2>" + area_guide_html if area_guide_html else ""}
+  {('<h2 class="st">エリアガイド</h2>' + area_guide_html) if area_guide_html else ''}
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
@@ -5478,7 +5478,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
-{_v2_bottom_nav("area")}
+{_v2_bottom_nav('area')}
 </body></html>"""
         with open(os.path.join(WEB_DIR, f"area/{area_slug(area)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
@@ -5536,7 +5536,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <style>{V2_COMMON_CSS}{area_index_css}</style>
 </head>
 <body>
-{_v2_header_nav("area")}
+{_v2_header_nav('area')}
 <div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
   <div class="c"><div style="font-size:26px;font-weight:800">エリア別 釣果一覧</div>
   <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {len([a for a,cs in area_summary.items() if len(cs)>=2])}エリア</div></div>
@@ -5547,7 +5547,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
-{_v2_bottom_nav("area")}
+{_v2_bottom_nav('area')}
 </body></html>"""
     with open(os.path.join(WEB_DIR, "area/index.html"), "w", encoding="utf-8") as f:
         f.write(area_index_html)
@@ -5617,8 +5617,8 @@ def build_fish_area_pages(data, crawled_at="", history=None):
         trend_label = {"up": "↑ 上昇中", "down": "↓ 減少", "flat": "→ 横ばい"}.get(trend_fa, "-")
         stat_cards_fa = f"""<div class="stat-cards">
   <div class="stat-card"><div class="sv">{ship_num}船宿</div><div class="sl">出船船宿数</div></div>
-  <div class="stat-card"><div class="sv">{"%.0f" % combo_avg if combo_avg else "-"}匹</div><div class="sl">平均釣果</div></div>
-  <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else "-"}匹</div><div class="sl">最高釣果</div></div>
+  <div class="stat-card"><div class="sv">{'%.0f' % combo_avg if combo_avg else '-'}匹</div><div class="sl">平均釣果</div></div>
+  <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else '-'}匹</div><div class="sl">最高釣果</div></div>
 </div>"""
         # シーズンバー
         season_bar_fa = build_season_bar(fish, current_month_fa)
@@ -5692,7 +5692,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 {fa_extra_css}</style>
 </head>
 <body>
-{_v2_header_nav("")}
+{_v2_header_nav('')}
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}</p>
   <h2 class="st">{area}の{fish}釣果情報</h2>
@@ -5706,7 +5706,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
-{_v2_bottom_nav("")}
+{_v2_bottom_nav('')}
 </body></html>"""
         with open(os.path.join(WEB_DIR, f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html"), "w", encoding="utf-8") as fp:
             fp.write(html)
@@ -5760,7 +5760,7 @@ def build_calendar_page(crawled_at=""):
 {cal_extra_css}</style>
 </head>
 <body>
-{_v2_header_nav("calendar")}
+{_v2_header_nav('calendar')}
 <div class="c">
   <p class="bread"><a href="index.html">トップ</a> &rsaquo; 旬カレンダー</p>
   <h2 class="st">月別 釣りものカレンダー <span class="tag free">無料</span></h2>
@@ -5774,7 +5774,7 @@ def build_calendar_page(crawled_at=""):
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
-{_v2_bottom_nav("cal")}
+{_v2_bottom_nav('cal')}
 </body></html>"""
 
 # ============================================================
