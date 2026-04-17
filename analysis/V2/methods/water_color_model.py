@@ -666,7 +666,8 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
             wxd = get_wx_day(conn_wx, lat, lon, date_iso)
             r = {**pf, **wxd,
                  "month_n": m, "month_sin": month_sin, "month_cos": month_cos,
-                 "depth_grp": "unknown", "depth_bin_n": 1, "dist_shore": None}
+                 "depth_grp": "unknown", "depth_bin_n": 1,
+                 "dist_shore": _dist_from_bay_center(lat, lon)}
 
             # グローバルモデルで予測（深さ情報なし）
             pred = predict_wc(global_coeffs, global_fkeys, r)
