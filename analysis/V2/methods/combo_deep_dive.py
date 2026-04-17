@@ -2367,7 +2367,7 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
     wave_clamp_thr = wx_params_data.pop("_wave_clamp_thr", None)
     if wave_clamp_thr is not None:
         rows.append((fish, ship, "_combo", "_wave_clamp_thr",
-                     wave_clamp_thr, None, None, None, None, None, None, None, now, 0, 0))
+                     wave_clamp_thr, None, None, None, None, None, None, None, now, int(use_fallback), 0))
     for met, params in wx_params_data.items():
         rows.append((fish, ship, met, "_meta",
                      None, None, None,
