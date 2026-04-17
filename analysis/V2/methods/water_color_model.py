@@ -61,6 +61,14 @@ BAY_CENTER = (35.5, 139.9)
 
 CUTOFF = "2023/01/01"
 
+# 河口座標（weather_cache 最近傍格子点を直接使用）
+RIVER_MOUTHS = {
+    "tone":   (35.71, 140.87),  # 利根川（銚子）
+    "sagami": (35.30, 139.32),  # 相模川
+    "tama":   (35.55, 139.76),  # 多摩川
+}
+RIVER_PROXIMITY_SCALE = 0.4   # 指数減衰スケール（度数）≈ 40km at 35°N
+
 # ─── ユーティリティ ────────────────────────────────────────────────────────────
 def _float(v):
     try:
@@ -72,6 +80,23 @@ def _dist_from_bay_center(lat, lon):
     if lat is None or lon is None:
         return None
     return ((lat - BAY_CENTER[0])**2 + (lon - BAY_CENTER[1])**2) ** 0.5
+
+def _river_proximity(fishing_lat, fishing_lon, river_lat, river_lon,
+                     scale_deg=RIVER_PROXIMITY_SCALE):
+    """河口からの指数減衰プロキシ (0〜1)。scale_deg ≈ 40km at 35°N。"""
+    dist = ((fishing_lat - river_lat)**2 + (fishing_lon - river_lon)**2) ** 0.5
+    return math.exp(-dist / scale_deg)
+
+def _build_river_features(conn_wx, fishing_lat, fishing_lon, date_iso):
+    """3河口の降水量×距離減衰の特徴量。build_precip_features の _precip_cache を共有。
+    Returns: {"tone_impact": float, "sagami_impact": float, "tama_impact": float}
+    """
+    result = {}
+    for river_name, (rlat, rlon) in RIVER_MOUTHS.items():
+        rpf  = build_precip_features(conn_wx, rlat, rlon, date_iso)
+        prox = _river_proximity(fishing_lat, fishing_lon, rlat, rlon)
+        result[f"{river_name}_impact"] = prox * rpf.get("precip_cumW7", 0.0)
+    return result
 
 def _depth_group(depth_avg):
     if depth_avg is None:
@@ -294,10 +319,12 @@ def build_features(records, conn_wx, wx_coords):
 
         pf  = build_precip_features(conn_wx, wlat, wlon, date_iso)
         wxd = get_wx_day(conn_wx, wlat, wlon, date_iso)
+        riv = _build_river_features(conn_wx, lat, lon, date_iso)
 
         m = int(r["date"][5:7])
         feat = {
             **r, **pf, **wxd,
+            **riv,
             "dist_shore":  _dist_from_bay_center(lat, lon),
             "depth_grp":   _depth_group(r.get("depth_avg")),
             "depth_bin_n": _depth_bin_n(r.get("depth_avg")),
@@ -313,11 +340,14 @@ def build_features(records, conn_wx, wx_coords):
 # ─── 線形回帰（正規方程式; stdlib のみ） ──────────────────────────────────────
 BASE_FEATURES = (
     [f"precip_sum{i}" for i in PRECIP_LAGS]
-    + ["precip_cumW7", "days_since_rain",
+    + ["days_since_rain",
        "wind_speed_avg", "wave_height_avg", "current_speed_avg",
        "depth_bin_n", "dist_shore",
+       "tone_impact", "sagami_impact", "tama_impact",
        "month_sin", "month_cos"]
 )
+# NOTE: precip_cumW7 を削除（河口3特徴量に置き換え）。
+# precip_cumW7 ≈ tone/tama_impact / prox で多重共線性が発生するため。
 
 def fit_ols(records, target="water_color_n", features=None):
     """多変量 OLS（正規方程式）。係数ベクトル [bias, c1, ...] と特徴量リストを返す。"""
@@ -374,16 +404,19 @@ def fit_stratified_models(records):
     # 浅場は短ラグに重点、深場は長ラグ + 波・潮流が主因
     group_features = {
         "shallow": [f"precip_sum{i}" for i in [1,2,3,4,5,6]] +
-                   ["precip_cumW7", "days_since_rain",
+                   ["days_since_rain",
                     "wind_speed_avg", "wave_height_avg", "current_speed_avg",
+                    "tone_impact", "sagami_impact", "tama_impact",
                     "month_sin", "month_cos"],
         "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
-                   ["precip_cumW7", "days_since_rain",
+                   ["days_since_rain",
                     "wave_height_avg", "current_speed_avg",
+                    "tone_impact", "sagami_impact", "tama_impact",
                     "month_sin", "month_cos"],
         "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
-                   ["precip_cumW7", "days_since_rain",
+                   ["days_since_rain",
                     "wave_height_avg", "current_speed_avg",
+                    "tone_impact", "sagami_impact", "tama_impact",
                     "month_sin", "month_cos"],
         "unknown": BASE_FEATURES,
     }
@@ -436,14 +469,20 @@ def backtest(records, use_stratified=True):
                 if len(g_tr) < 30: continue
                 feats = {
                     "shallow": [f"precip_sum{i}" for i in [1,2,3,4,5,6]] +
-                               ["precip_cumW7","days_since_rain","wind_speed_avg",
-                                "wave_height_avg","current_speed_avg","month_sin","month_cos"],
+                               ["days_since_rain","wind_speed_avg",
+                                "wave_height_avg","current_speed_avg",
+                                "tone_impact","sagami_impact","tama_impact",
+                                "month_sin","month_cos"],
                     "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
-                               ["precip_cumW7","days_since_rain",
-                                "wave_height_avg","current_speed_avg","month_sin","month_cos"],
+                               ["days_since_rain",
+                                "wave_height_avg","current_speed_avg",
+                                "tone_impact","sagami_impact","tama_impact",
+                                "month_sin","month_cos"],
                     "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
-                               ["precip_cumW7","days_since_rain",
-                                "wave_height_avg","current_speed_avg","month_sin","month_cos"],
+                               ["days_since_rain",
+                                "wave_height_avg","current_speed_avg",
+                                "tone_impact","sagami_impact","tama_impact",
+                                "month_sin","month_cos"],
                 }.get(grp, BASE_FEATURES)
                 c, fk = fit_ols(g_tr, features=feats)
                 if c: s_models[grp] = (c, fk)
@@ -485,6 +524,7 @@ def factor_correlation_analysis(records):
     print("\n=== 因子別相関（水色スコアとの Pearson r） ===")
     groups = [
         ("降水ラグ",     [f"precip_sum{i}" for i in PRECIP_LAGS] + ["precip_cumW7", "days_since_rain"]),
+        ("河川影響",     ["tone_impact", "sagami_impact", "tama_impact"]),
         ("風・波・潮流", ["wind_speed_avg", "wind_speed_max", "wave_height_avg", "current_speed_avg"]),
         ("水深・沖合",   ["depth_avg", "depth_bin_n", "dist_shore"]),
         ("季節",         ["month_n", "month_sin", "month_cos"]),
@@ -661,10 +701,23 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
         month_sin = math.sin(2 * math.pi * m / 12)
         month_cos = math.cos(2 * math.pi * m / 12)
 
+        # 河口降水量: 日付単位で1回計算（153座標で共有）
+        river_precip_cumW7 = {}
+        for rname, (rlat, rlon) in RIVER_MOUTHS.items():
+            rpf = build_precip_features(conn_wx, rlat, rlon, date_iso)
+            river_precip_cumW7[rname] = rpf.get("precip_cumW7", 0.0)
+
         for (lat, lon) in wx_coords:
             pf  = build_precip_features(conn_wx, lat, lon, date_iso)
             wxd = get_wx_day(conn_wx, lat, lon, date_iso)
-            r = {**pf, **wxd,
+
+            # 近接度×降水量（座標ごとに計算）
+            riv = {}
+            for rname, (rlat, rlon) in RIVER_MOUTHS.items():
+                prox = _river_proximity(lat, lon, rlat, rlon)
+                riv[f"{rname}_impact"] = prox * river_precip_cumW7[rname]
+
+            r = {**pf, **wxd, **riv,
                  "month_n": m, "month_sin": month_sin, "month_cos": month_cos,
                  "depth_grp": "unknown", "depth_bin_n": 1,
                  "dist_shore": _dist_from_bay_center(lat, lon)}
