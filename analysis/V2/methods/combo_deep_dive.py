@@ -53,6 +53,7 @@ def _open_ana(timeout: float = 30.0):
 OVERRIDE_FILE  = os.path.join(NORMALIZE_DIR, "ship_wx_coord_override.json")
 SHIPS_FILE     = os.path.join(ROOT_DIR, "crawl", "ships.json")
 OBS_FIELDS_FILE = os.path.join(NORMALIZE_DIR, "obs_fields.json")
+OBS_FIELDS_COMBO_FILE = os.path.join(NORMALIZE_DIR, "obs_fields_combo.json")
 
 HORIZONS   = [0, 1, 3, 7, 14, 21, 28]
 MIN_N_COMBO = 30            # 分析最小件数（統計的に意味ある予測を立てられる下限）
@@ -332,6 +333,40 @@ def _get_obs_config():
         except Exception:
             _OBS_CONFIG_CACHE = {"fields": {}}
     return _OBS_CONFIG_CACHE
+
+_OBS_COMBO_CACHE = None
+def _get_combo_obs_config():
+    global _OBS_COMBO_CACHE
+    if _OBS_COMBO_CACHE is None:
+        try:
+            with open(OBS_FIELDS_COMBO_FILE, encoding="utf-8") as f:
+                _OBS_COMBO_CACHE = json.load(f)
+        except Exception:
+            _OBS_COMBO_CACHE = {}
+    return _OBS_COMBO_CACHE
+
+def _apply_combo_obs_overrides(obs, row, fish, ship):
+    """obs_fields_combo.json のコンボ固有キーワードスコアを obs に上書き適用する。
+
+    設計: 加算ではなく上書き。
+    - コンボ固有キーワードがマッチした場合、グローバルスコアを置き換える
+    - 同一フィールドに複数スコアが加算されると上限なく発散する懸念があるため
+    - 「コンボ固有キーワードが最も強いシグナル」として優先されることを意図する
+    """
+    cfg_global = _get_obs_config()
+    combo_cfg = _get_combo_obs_config()
+    key = f"{fish}×{ship}"
+    overrides = combo_cfg.get(key, {})
+    for field_name, scores in overrides.items():
+        spec = cfg_global.get("fields", {}).get(field_name, {})
+        srcs = spec.get("source", field_name)
+        srcs = [srcs] if isinstance(srcs, str) else list(srcs)
+        combined = " ".join((row.get(s) or "") for s in srcs)
+        for kw, score in scores.items():
+            if kw in combined:
+                obs[field_name] = score
+                break
+    return obs
 
 def _get_obs_factors():
     """obs_fields.json の role=obs_factor なフィールド名リストを返す。
@@ -758,8 +793,9 @@ def load_records(fish, ship_filter=None):
                     point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
                 )
 
-                # OBS/TEキストフィールドを obs_fields.json から一括計算
+                # OBS/TEキストフィールドを obs_fields.json から一括計算（コンボ固有スコアで上書き）
                 obs = _compute_obs_fields(row)
+                obs = _apply_combo_obs_overrides(obs, row, tsuri, ship)
 
                 records.append({
                     "ship":    ship,
