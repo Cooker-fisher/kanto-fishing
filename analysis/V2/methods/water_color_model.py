@@ -193,6 +193,42 @@ def get_wx_day(conn_wx, lat, lon, date_iso):
     return res
 
 
+# water_color_daily キャッシュ（AR(1)特徴量用）
+# キー: (lat_r2, lon_r2, date_iso) → wc_pred
+_WC_DAILY_CACHE: dict = {}
+_WC_DAILY_LOADED: bool = False
+
+def _load_wc_daily():
+    """water_color_daily テーブルをメモリに一括ロード（初回のみ）。"""
+    global _WC_DAILY_CACHE, _WC_DAILY_LOADED
+    if _WC_DAILY_LOADED:
+        return
+    _WC_DAILY_LOADED = True
+    if not os.path.exists(DB_ANA):
+        return
+    try:
+        conn = sqlite3.connect(DB_ANA, timeout=30)
+        rows = conn.execute(
+            "SELECT lat, lon, date, wc_pred FROM water_color_daily"
+        ).fetchall()
+        conn.close()
+        for lat, lon, date, wc_pred in rows:
+            _WC_DAILY_CACHE[(round(lat, 2), round(lon, 2), date)] = wc_pred
+        print(f"  water_color_daily キャッシュ: {len(_WC_DAILY_CACHE):,}件", flush=True)
+    except Exception as e:
+        print(f"  [WARN] water_color_daily ロード失敗: {e}")
+
+def _lookup_wc_prev(wlat, wlon, date_iso):
+    """weather_cache 格子点 (wlat, wlon) における前日の wc_pred を返す。
+    水色テーブルが未生成・前日が範囲外の場合は None を返す。
+    """
+    _load_wc_daily()
+    if not _WC_DAILY_CACHE:
+        return None
+    prev_date = (datetime.strptime(date_iso, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    return _WC_DAILY_CACHE.get((round(wlat, 2), round(wlon, 2), prev_date))
+
+
 def build_precip_features(conn_wx, lat, lon, date_iso):
     """降水ラグ特徴量を一括計算。
     - precip_sum1〜7: ラグN日合計
@@ -309,6 +345,7 @@ def load_water_color_records():
 
 # ─── 特徴量付与 ────────────────────────────────────────────────────────────────
 def build_features(records, conn_wx, wx_coords):
+    _load_wc_daily()   # water_color_daily を事前ロード（AR(1)用）
     enriched = []
     for i, r in enumerate(records):
         if i % 500 == 0:
@@ -325,6 +362,7 @@ def build_features(records, conn_wx, wx_coords):
         feat = {
             **r, **pf, **wxd,
             **riv,
+            "wc_prev1":    _lookup_wc_prev(wlat, wlon, date_iso),
             "dist_shore":  _dist_from_bay_center(lat, lon),
             "depth_grp":   _depth_group(r.get("depth_avg")),
             "depth_bin_n": _depth_bin_n(r.get("depth_avg")),
@@ -344,6 +382,7 @@ BASE_FEATURES = (
        "wind_speed_avg", "wave_height_avg", "current_speed_avg",
        "depth_bin_n", "dist_shore",
        "tone_impact", "sagami_impact", "tama_impact",
+       "wc_prev1",
        "month_sin", "month_cos"]
 )
 # NOTE: precip_cumW7 を削除（河口3特徴量に置き換え）。
@@ -407,17 +446,17 @@ def fit_stratified_models(records):
                    ["days_since_rain",
                     "wind_speed_avg", "wave_height_avg", "current_speed_avg",
                     "tone_impact", "sagami_impact", "tama_impact",
-                    "month_sin", "month_cos"],
+                    "wc_prev1", "month_sin", "month_cos"],
         "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
                    ["days_since_rain",
                     "wave_height_avg", "current_speed_avg",
                     "tone_impact", "sagami_impact", "tama_impact",
-                    "month_sin", "month_cos"],
+                    "wc_prev1", "month_sin", "month_cos"],
         "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
                    ["days_since_rain",
                     "wave_height_avg", "current_speed_avg",
                     "tone_impact", "sagami_impact", "tama_impact",
-                    "month_sin", "month_cos"],
+                    "wc_prev1", "month_sin", "month_cos"],
         "unknown": BASE_FEATURES,
     }
     models = {}
@@ -472,17 +511,17 @@ def backtest(records, use_stratified=True):
                                ["days_since_rain","wind_speed_avg",
                                 "wave_height_avg","current_speed_avg",
                                 "tone_impact","sagami_impact","tama_impact",
-                                "month_sin","month_cos"],
+                                "wc_prev1","month_sin","month_cos"],
                     "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
                                ["days_since_rain",
                                 "wave_height_avg","current_speed_avg",
                                 "tone_impact","sagami_impact","tama_impact",
-                                "month_sin","month_cos"],
+                                "wc_prev1","month_sin","month_cos"],
                     "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
                                ["days_since_rain",
                                 "wave_height_avg","current_speed_avg",
                                 "tone_impact","sagami_impact","tama_impact",
-                                "month_sin","month_cos"],
+                                "wc_prev1","month_sin","month_cos"],
                 }.get(grp, BASE_FEATURES)
                 c, fk = fit_ols(g_tr, features=feats)
                 if c: s_models[grp] = (c, fk)
@@ -525,6 +564,7 @@ def factor_correlation_analysis(records):
     groups = [
         ("降水ラグ",     [f"precip_sum{i}" for i in PRECIP_LAGS] + ["precip_cumW7", "days_since_rain"]),
         ("河川影響",     ["tone_impact", "sagami_impact", "tama_impact"]),
+        ("水色AR",       ["wc_prev1"]),
         ("風・波・潮流", ["wind_speed_avg", "wind_speed_max", "wave_height_avg", "current_speed_avg"]),
         ("水深・沖合",   ["depth_avg", "depth_bin_n", "dist_shore"]),
         ("季節",         ["month_n", "month_sin", "month_cos"]),
@@ -694,6 +734,9 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
     batch = []
     written = 0
     day_count = 0
+    # AR(1): 前日の予測値を座標ごとに保持 {(lat, lon): wc_pred}
+    # 初日は 0.0（全体平均の近似値）をデフォルトとする
+    prev_day_preds: dict = {}
 
     while d <= end:
         date_iso = d.strftime("%Y-%m-%d")
@@ -707,6 +750,8 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
             rpf = build_precip_features(conn_wx, rlat, rlon, date_iso)
             river_precip_cumW7[rname] = rpf.get("precip_cumW7", 0.0)
 
+        current_day_preds: dict = {}  # 当日の予測値を収集（翌日の wc_prev1 用）
+
         for (lat, lon) in wx_coords:
             pf  = build_precip_features(conn_wx, lat, lon, date_iso)
             wxd = get_wx_day(conn_wx, lat, lon, date_iso)
@@ -717,7 +762,11 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
                 prox = _river_proximity(lat, lon, rlat, rlon)
                 riv[f"{rname}_impact"] = prox * river_precip_cumW7[rname]
 
+            # AR(1): 前日予測値（なければ 0.0 = グローバル平均の近似）
+            wc_prev1 = prev_day_preds.get((lat, lon), 0.0)
+
             r = {**pf, **wxd, **riv,
+                 "wc_prev1": wc_prev1,
                  "month_n": m, "month_sin": month_sin, "month_cos": month_cos,
                  "depth_grp": "unknown", "depth_bin_n": 1,
                  "dist_shore": _dist_from_bay_center(lat, lon)}
@@ -727,7 +776,9 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
             if pred is None:
                 continue
             batch.append((lat, lon, date_iso, pred, "unknown"))
+            current_day_preds[(lat, lon)] = pred
 
+        prev_day_preds = current_day_preds  # 翌日の wc_prev1 として引き継ぐ
         day_count += 1
         if len(batch) >= 20000:
             conn_ana.executemany(
