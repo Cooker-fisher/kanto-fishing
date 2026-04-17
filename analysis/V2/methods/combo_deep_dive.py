@@ -2739,18 +2739,22 @@ def deep_dive(fish, ship, verbose=True):
     save_star_backtest(fish, ship, star_bt_data)
     save_thresholds(fish, ship, season_thr_final)
 
-    # auto_fallback: H=0 cnt_avg でモデルが BL-0（全体平均）より 10pt 以上悪い場合、
-    # predict_count.py で気象補正をスキップして旬別ベースラインをそのまま使う。
-    # 例: ヒラメ×つる丸（model=91.4% vs BL0=69.2%）→ use_fallback=True
+    # auto_fallback: 以下いずれかの場合、predict_count.py で気象補正をスキップ。
+    #   ① BL-0（全体平均）より 10pt 以上悪い
+    #   ② BL-2（直近7件実績平均）より 5pt 以上悪い
+    # → 再実行時も自動的に use_fallback=True が維持される
     use_fallback = False
     # bt_data row: (met, H, rv, mae, mape, smape, wmape, rmse, dacc,
     #               good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, 0.0,
     #               bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r)
-    # bl0_wmape は index 20
+    # bl0_wmape は index 20, bl2_wmape は index 26
     for row in bt_data:
-        met = row[0]; H = row[1]; wmape = row[6]; bl0w = row[20]  # row[20] = bl0_wmape
+        met = row[0]; H = row[1]; wmape = row[6]; bl0w = row[20]; bl2w = row[26]
         if met == "cnt_avg" and H == 0:
-            if wmape is not None and bl0w is not None and wmape > bl0w + 10:
+            if wmape is not None and (
+                (bl0w is not None and wmape > bl0w + 10) or
+                (bl2w is not None and wmape > bl2w + 5)
+            ):
                 use_fallback = True
             break
 
