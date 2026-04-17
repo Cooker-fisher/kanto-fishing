@@ -33,6 +33,9 @@ MARINE_URL   = "https://marine-api.open-meteo.com/v1/marine"
 # 予測ログ出力先
 LOG_PATH = os.path.join(RESULTS_DIR, "predict_log.jsonl")
 
+# Forecast API インメモリキャッシュ: (lat3, lon3, date_iso) -> wx_dict (wave_clamp除く)
+_FORECAST_CACHE: dict = {}
+
 
 # ── 旬番号 ───────────────────────────────────────────────────────────────────
 
@@ -182,6 +185,12 @@ def _fetch_forecast_wx(lat: float, lon: float, date_iso: str,
     _get_daily_wx() と同じキー形式で返す。失敗時は空 dict。
     対象: 今日以降の日付（weather_cache.sqlite に存在しない将来日）
     """
+    key = (round(lat, 3), round(lon, 3), date_iso)
+    if key in _FORECAST_CACHE:
+        out = dict(_FORECAST_CACHE[key])
+        out["wave_clamp"] = min(out.get("wave_height_avg", 0.0), wave_clamp_thr)
+        return out
+
     result = {}
     try:
         params = "&".join([
@@ -263,6 +272,7 @@ def _fetch_forecast_wx(lat: float, lon: float, date_iso: str,
     except Exception as e:
         result["_forecast_marine_error"] = str(e)
 
+    _FORECAST_CACHE[key] = {k: v for k, v in result.items() if k != "wave_clamp"}
     return result
 
 
@@ -786,6 +796,7 @@ def predict_all(fish: str = None, target_date: str = None,
     if not target_date:
         target_date = next_saturday()
 
+    _FORECAST_CACHE.clear()
     conn = sqlite3.connect(DB_PATH)
     try:
         if fish:
