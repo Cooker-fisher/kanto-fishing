@@ -70,8 +70,9 @@ DATASETS_SURFACE = {
 DATASETS_DEPTH = {
     "temp": {
         # GLORYS12 水温（potential temperature）
+        # NRT: thetao専用データセット（cmems_mod_glo_phy_anfc_* は thetao を含まない）
         "my":  "cmems_mod_glo_phy_my_0.083deg_P1D-m",
-        "nrt": "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+        "nrt": "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
         "var": "thetao",
     },
     "do": {
