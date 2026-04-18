@@ -12,8 +12,8 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":2,"name":"カワハギの釣果情報","item":"https://funatsuri-yoso.com/fish/kawahagi.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"カワハギの旬はいつですか？","acceptedAnswer":{"@type":"Answer","text":"直近のデータでは10月・11月・12月が実績が多い傾向です。旬カレンダーで詳しい月別推移をご確認ください。"}},
 {"@type":"Question","name":"関東でカワハギの船釣りができる主なエリアはどこですか？","acceptedAnswer":{"@type":"Answer","text":"直近の釣果データでは久比里港（10件）、長井港（2件）が主なエリアです。"}},
-{"@type":"Question","name":"カワハギの一日の釣果はどのくらいですか？","acceptedAnswer":{"@type":"Answer","text":"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"}},
-{"@type":"Question","name":"初心者でもカワハギ釣りは楽しめますか？","acceptedAnswer":{"@type":"Answer","text":"はい。現在4船宿が出船実績があります。多くの船宿でレンタルタックルや仕掛けの購入が可能で、初心者でも安心して楽しめます。"}}]}</script>
+{"@type":"Question","name":"カワハギの一日の釣果はどのくらいですか？","acceptedAnswer":{"@type":"Answer","text":"直近12件のデータでは1〜10匹が標準的なレンジです。最高実績は13匹です。"}},
+{"@type":"Question","name":"初心者でもカワハギ釣りは楽しめますか？","acceptedAnswer":{"@type":"Answer","text":"難易度は上級者向けの釣りです。エサ取りの名手相手の高度な駆け引きが醍醐味。腕の差が如実に出る釣りで、熟練者ほどはまります。関東では4船宿が出船実績あり。多くの船宿でレンタルタックルや仕掛けの購入が可能です。"}}]}</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>
   <style>:root{
@@ -126,6 +126,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .as-table th{font-size:10px;color:var(--muted);font-weight:600;text-align:center;padding:2px 4px}
 .as-th-fish{font-size:11px;font-weight:700;color:var(--sub);text-align:left;padding-right:8px;white-space:nowrap}
 .as-cell{width:36px;height:22px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;vertical-align:middle}
+.as-cell[data-v="-1"]{background:#f0f0f0;opacity:.4}
 .as-cell[data-v="0"]{background:#eef2f5;color:var(--muted)}
 .as-cell[data-v="1"]{background:#c8e6c9;color:#2e7d32}
 .as-cell[data-v="2"]{background:#66bb6a;color:#fff}
@@ -166,6 +167,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .overview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .overview-title{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:6px}
 .overview-body{font-size:13px;color:var(--text);line-height:1.8}
+ins.adsbygoogle{display:block;min-height:0 !important;height:auto !important}
+ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 @media(max-width:640px){header{padding:10px 14px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 .fish-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:22px 14px 18px;text-align:center}
@@ -183,11 +186,11 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
 .sr:last-child{border-bottom:none}
-.sr .sr-m{font-size:14px;font-weight:800;color:var(--cta);flex:0 0 22px;text-align:center}
+.sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
-.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
+.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text);white-space:pre-line}
 .season-entry{font-size:12px;color:var(--sub);margin:8px 0;padding:6px 10px;border-radius:4px;background:var(--card);border:1px solid var(--border)}
 .season-entry.entry-early{border-left:3px solid var(--pos)}.season-entry.entry-late{border-left:3px solid var(--warn)}.season-entry.entry-same{border-left:3px solid var(--accent)}
 .entry-trend{font-weight:bold;margin-left:6px}
@@ -219,14 +222,16 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 </nav>
 <div class="fish-hero">
   <h2>カワハギ</h2>
-  <div class="fh-r">釣果12件</div>
-  
+  <div class="fh-r">0〜9匹</div>
+  <div class="fh-s">18〜26cm</div>
   <div class="fh-m">今日 1件・1船宿</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; カワハギ</p>
   
-  <div class="comment">💬 端境期。今のうちに釣っておきたい（釣果12件）</div>
+  <div class="comment">💬 端境期。今のうちに釣っておきたい。
+今週は12件の釣果報告があり、平均5匹・最高13匹と型狙い主体の展開。平均サイズは27cmと標準的なサイズ感。
+そろそろ終わりに近い。今週が最後のチャンスかもしれない。</div>
   <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
 <div class="chart7">
   <h3>匹数上限（上ヒゲ）の7日推移</h3>
@@ -235,8 +240,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <div class="chart-trend">↑ 上昇トレンド</div>
 </div>
   <h2 class="st">今日の釣果 <span class="tag free">無料</span></h2>
-  <div class="area-cmp"><h3>エリア別の今日の釣果</h3><a class="ar" href="../area/kubiri.html"><span class="ar-name">久比里港</span><span class="ar-range">—</span></a></div>
-  <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-m">◎</span><span class="sr-name">山下丸</span><span class="sr-range">13匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">◎</span><span class="sr-name">巳之助丸</span><span class="sr-range">2〜11匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">儀兵衛丸</span><span class="sr-range">3匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-m">○</span><span class="sr-name">山天丸</span><span class="sr-range">1〜5匹</span><span class="sr-pt"></span></div></div>
+  <div class="area-cmp"><h3>エリア別の今日の釣果</h3><a class="ar" href="../area/kubiri.html"><span class="ar-name">久比里港</span><span class="ar-range">9匹</span></a></div>
+  <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name">山下丸</span><span class="sr-range">13匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">2</span><span class="sr-name">巳之助丸</span><span class="sr-range">2〜11匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">3</span><span class="sr-name">山天丸</span><span class="sr-range">1〜5匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">4</span><span class="sr-name">儀兵衛丸</span><span class="sr-range">3匹</span><span class="sr-pt"></span></div></div>
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
@@ -267,7 +272,16 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   </div>
   
 </div>
-  
+  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide">
+  <h3>カワハギの船釣り（関東）基本情報</h3>
+  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">東京湾・相模湾・内房が主漁場。通年釣れるが春〜初夏と秋〜初冬が旬。底に棲む魚で、天ビン仕掛けで底を細かく探る。肝パンが目標で、秋口（9〜11月）が最高峰。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tackle-grid">
+          <div class="tk"><div class="tk-lbl">竿</div><div class="tk-val">カワハギ専用 2.3〜2.6m、7:3〜8:2（感度最重視）</div></div>
+          <div class="tk"><div class="tk-lbl">リール</div><div class="tk-val">スピニング 2500〜3000番</div></div>
+          <div class="tk"><div class="tk-lbl">ライン</div><div class="tk-val">PE 1〜1.5号</div></div>
+          <div class="tk"><div class="tk-lbl">仕掛け</div><div class="tk-val">天ビン 40〜80号＋ハリス 3〜4号 1.5〜2m＋カワハギ針（小粒ムシ針 4号）＋エサ取り対策フック</div></div>
+          <div class="tk" style="grid-column:span 2"><div class="tk-lbl">エサ</div><div class="tk-val">小エビ・アサリ・ボイルオキアミ（身だけ）</div></div>
+        </div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>15〜25cm が標準、肝パンは 18cm 前後が最高品質、30cm超は稀</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">マダイ・ウマヅラハギ・イシダイ</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">肝が食用で高級魚扱い。秋口の肝パンが最高峰の味わい。オタフク（小型）も釣れることが多く、数釣りも期待できる。</span></div>
+</div>
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
@@ -275,8 +289,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <div class="faq-list">
   <details><summary>カワハギの旬はいつですか？</summary><p class="faq-ans">直近のデータでは10月・11月・12月が実績が多い傾向です。旬カレンダーで詳しい月別推移をご確認ください。</p></details>
   <details><summary>関東でカワハギの船釣りができる主なエリアはどこですか？</summary><p class="faq-ans">直近の釣果データでは久比里港（10件）、長井港（2件）が主なエリアです。</p></details>
-  <details><summary>カワハギの一日の釣果はどのくらいですか？</summary><p class="faq-ans">釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。</p></details>
-  <details><summary>初心者でもカワハギ釣りは楽しめますか？</summary><p class="faq-ans">はい。現在4船宿が出船実績があります。多くの船宿でレンタルタックルや仕掛けの購入が可能で、初心者でも安心して楽しめます。</p></details>
+  <details><summary>カワハギの一日の釣果はどのくらいですか？</summary><p class="faq-ans">直近12件のデータでは1〜10匹が標準的なレンジです。最高実績は13匹です。</p></details>
+  <details><summary>初心者でもカワハギ釣りは楽しめますか？</summary><p class="faq-ans">難易度は上級者向けの釣りです。エサ取りの名手相手の高度な駆け引きが醍醐味。腕の差が如実に出る釣りで、熟練者ほどはまります。関東では4船宿が出船実績あり。多くの船宿でレンタルタックルや仕掛けの購入が可能です。</p></details>
 </div>
   <h2 class="st teaser-title">カワハギが釣れる条件 <span class="tag coming">まもなく公開</span></h2><div class="teaser"><div class="teaser-head"><span class="teaser-badge">開発中</span><span class="teaser-title-in">気象相関分析 × 日別予測</span></div><div class="teaser-desc"><strong>約10万件</strong>の釣果データより分析した「<strong>カワハギが釣れる条件</strong>」と<strong>明日〜1週間後の予測</strong>を公開予定です。</div><div style="position:relative"><div class="teaser-dummy"><div class="td-fish">釣れる条件の傾向</div><div class="td-range">水温○ / 大潮○ / 波穏○</div><div class="td-reason">気象スコアより推定</div></div><div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 気象条件スコア</li><li>✓ 来週の釣れる日予測</li><li>✓ 船宿別おすすめ日</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div></div></div>
 </div>
@@ -299,7 +313,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/18 14:51</span>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/18 23:03</span>
 </footer>
 <nav class="bn"><a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/" class="on"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
 </body></html>

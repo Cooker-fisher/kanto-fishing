@@ -122,6 +122,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .as-table th{font-size:10px;color:var(--muted);font-weight:600;text-align:center;padding:2px 4px}
 .as-th-fish{font-size:11px;font-weight:700;color:var(--sub);text-align:left;padding-right:8px;white-space:nowrap}
 .as-cell{width:36px;height:22px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;vertical-align:middle}
+.as-cell[data-v="-1"]{background:#f0f0f0;opacity:.4}
 .as-cell[data-v="0"]{background:#eef2f5;color:var(--muted)}
 .as-cell[data-v="1"]{background:#c8e6c9;color:#2e7d32}
 .as-cell[data-v="2"]{background:#66bb6a;color:#fff}
@@ -162,6 +163,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .overview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .overview-title{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:6px}
 .overview-body{font-size:13px;color:var(--text);line-height:1.8}
+ins.adsbygoogle{display:block;min-height:0 !important;height:auto !important}
+ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 @media(max-width:640px){header{padding:10px 14px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}
 .combo-comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
@@ -175,7 +178,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
 .sr:last-child{border-bottom:none}
-.sr .sr-m{font-size:14px;font-weight:800;color:var(--cta);flex:0 0 22px;text-align:center}
+.sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}</style>
@@ -205,7 +208,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
   <h2 class="st">年間シーズン <span class="tag free">無料</span></h2><div class="season-bar"><div class="sb-cell mid " title="1月">1</div><div class="sb-cell mid " title="2月">2</div><div class="sb-cell mid " title="3月">3</div><div class="sb-cell peak-count now" title="4月">4</div><div class="sb-cell peak-size " title="5月">5</div><div class="sb-cell peak-size " title="6月">6</div><div class="sb-cell peak-size " title="7月">7</div><div class="sb-cell peak-count " title="8月">8</div><div class="sb-cell peak-count " title="9月">9</div><div class="sb-cell peak-count " title="10月">10</div><div class="sb-cell peak-count " title="11月">11</div><div class="sb-cell mid " title="12月">12</div></div><div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>
   <div class="combo-comment">💬 神奈川・東京湾のアジは今月がシーズン本番。↑ 上昇中の傾向です。</div>
   <h2 class="st">船宿ランキング <span class="tag free">無料</span></h2>
-  <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-m">◎</span><span class="sr-name">三喜丸釣船店</span><span class="sr-range">最高145匹</span><span class="sr-pt">5件</span></div></div>
+  <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name">三喜丸釣船店</span><span class="sr-range">最高145匹</span><span class="sr-pt">5件</span></div></div>
   <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
   <div class="sl-card"><div class="sl-head"><span class="sl-name">三喜丸釣船店</span><span class="sl-date">04/18</span></div><div class="sl-sub">30〜88 / 17〜27cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">三喜丸釣船店</span><span class="sl-date">04/17</span></div><div class="sl-sub">22〜115 / 17〜27cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">三喜丸釣船店</span><span class="sl-date">04/15</span></div><div class="sl-sub">41〜123 / 17〜27cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">三喜丸釣船店</span><span class="sl-date">04/14</span></div><div class="sl-sub">29〜145 / 17〜27cm</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name">三喜丸釣船店</span><span class="sl-date">04/13</span></div><div class="sl-sub">30〜99 / 17〜28cm</div></div>
 </div>
@@ -228,7 +231,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/18 14:51</span>
+  <span class="cp">データ提供: 釣りビジョン / 各船宿 | 最終更新: 2026/04/18 23:03</span>
 </footer>
 <nav class="bn"><a href="/index.html"><svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>釣果</a><a href="/fish/"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a><a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a><a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a><a href="/forecast/index.html" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a></nav>
 </body></html>
