@@ -5226,7 +5226,7 @@ def build_fish_pages(data, history, crawled_at=""):
         _sr_marks = ["◎", "◎", "○", "○", "○", "△", "△", "△"]
         sr_items = ""
         from collections import Counter as _CtrF
-        for i, (sn, sd) in enumerate(sorted(ship_data_f.items(), key=lambda x: (0 if x[1]["today"] else 1, -x[1]["cnt"]))[:8]):
+        for i, (sn, sd) in enumerate(sorted(ship_data_f.items(), key=lambda x: -max(x[1]["cnt_his"] or [0]))[:8]):
             mark = _sr_marks[i] if i < len(_sr_marks) else "△"
             s_lo = int(min(sd["cnt_los"])) if sd["cnt_los"] else None
             s_hi = int(max(sd["cnt_his"])) if sd["cnt_his"] else None
@@ -5889,7 +5889,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
                 d["today"] = True
         _sr_marks_fa = ["◎", "◎", "○", "○", "○", "△", "△", "△"]
         sr_items_fa = ""
-        for i, (sn, sd) in enumerate(sorted(ship_data_fa.items(), key=lambda x: (0 if x[1]["today"] else 1, -x[1]["cnt"]))[:8]):
+        for i, (sn, sd) in enumerate(sorted(ship_data_fa.items(), key=lambda x: -x[1]["max"])[:8]):
             mark = _sr_marks_fa[i] if i < len(_sr_marks_fa) else "△"
             mx = sd["max"]
             s_range = f"最高{mx}匹" if mx else f"{sd['cnt']}件"
