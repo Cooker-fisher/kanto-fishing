@@ -44,9 +44,10 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
 
-DB_WX   = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
-DB_TIDE = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
-DB_ANA  = os.path.join(RESULTS_DIR, "analysis.sqlite")
+DB_WX    = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
+DB_TIDE  = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
+DB_ANA   = os.path.join(RESULTS_DIR, "analysis.sqlite")
+DB_CMEMS = os.path.join(OCEAN_DIR, "cmems_data.sqlite")
 
 # ─── 定数 ────────────────────────────────────────────────────────────────────
 PRECIP_LAGS = [1, 2, 3, 4, 5, 6, 7]
@@ -200,6 +201,37 @@ def _ols_single(xs, ys):
 
 # ─── weather_cache アクセス ───────────────────────────────────────────────────
 _wx_coord_cache = None
+
+_cmems_wc_cache = {}
+
+def get_cmems_wc_day(conn_cmems, lat, lon, date_iso):
+    """水色モデル用 CMEMS 取得（no3_surface, do_surface）。0.25° 最近傍 + 0.5° フォールバック。"""
+    if conn_cmems is None:
+        return {}
+    k = (lat, lon, date_iso)
+    if k in _cmems_wc_cache:
+        return _cmems_wc_cache[k]
+    rl = round(round(lat / 0.25) * 0.25, 4)
+    rn = round(round(lon / 0.25) * 0.25, 4)
+    # BGC 0.25° グリッドから表層（最浅レコード）を取得
+    row = conn_cmems.execute(
+        "SELECT do, no3 FROM cmems_depth WHERE lat=? AND lon=? AND date=? ORDER BY depth_m LIMIT 1",
+        (rl, rn, date_iso),
+    ).fetchone()
+    if not row:
+        row = conn_cmems.execute(
+            """SELECT do, no3 FROM cmems_depth
+               WHERE date=? AND ABS(lat-?)<0.5 AND ABS(lon-?)<0.5
+               ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?), depth_m LIMIT 1""",
+            (date_iso, lat, lon, lat, lat, lon, lon),
+        ).fetchone()
+    result = {}
+    if row:
+        if row[0] is not None: result["do_surface"]  = row[0]
+        if row[1] is not None: result["no3_surface"] = row[1]
+    _cmems_wc_cache[k] = result
+    return result
+
 
 def load_wx_coords(conn_wx):
     global _wx_coord_cache
@@ -437,7 +469,7 @@ def load_water_color_records():
 
 
 # ─── 特徴量付与 ────────────────────────────────────────────────────────────────
-def build_features(records, conn_wx, wx_coords):
+def build_features(records, conn_wx, wx_coords, conn_cmems=None):
     _load_wc_daily()   # water_color_daily を事前ロード（AR(1)用）
     global _NEIGHBOR_MAP
     if not _NEIGHBOR_MAP:
@@ -451,15 +483,16 @@ def build_features(records, conn_wx, wx_coords):
         wlat, wlon = _nearest_wx_coord(lat, lon, wx_coords)
         date_iso = datetime.strptime(r["date"], "%Y/%m/%d").strftime("%Y-%m-%d")
 
-        pf   = build_precip_features(conn_wx, wlat, wlon, date_iso)
-        wxd  = get_wx_day(conn_wx, wlat, wlon, date_iso)
-        riv  = _build_river_features(conn_wx, lat, lon, date_iso)
-        tide = get_tide_day(date_iso)
+        pf    = build_precip_features(conn_wx, wlat, wlon, date_iso)
+        wxd   = get_wx_day(conn_wx, wlat, wlon, date_iso)
+        riv   = _build_river_features(conn_wx, lat, lon, date_iso)
+        tide  = get_tide_day(date_iso)
+        cmems = get_cmems_wc_day(conn_cmems, lat, lon, date_iso)
 
         m = int(r["date"][5:7])
         feat = {
             **r, **pf, **wxd,
-            **riv, **tide,
+            **riv, **tide, **cmems,
             "wc_prev1":         _lookup_wc_prev(wlat, wlon, date_iso),
             "wc_spatial_lag":   _lookup_wc_spatial_lag(wlat, wlon, date_iso),
             "cape_proximity_n": _cape_proximity(lat, lon),
@@ -486,7 +519,9 @@ BASE_FEATURES = (
        "tone_impact", "sagami_impact", "tama_impact",
        "wc_prev1", "wc_spatial_lag",
        "cape_proximity_n",
-       "month_sin", "month_cos"]
+       "month_sin", "month_cos",
+       # CMEMS 栄養塩・酸素: 高no3=植物プランクトン増→有機物分解→濁り、低do=貧酸素=青潮
+       "no3_surface", "do_surface"]
 )
 # NOTE: precip_cumW7 を削除（河口3特徴量に置き換え）。
 # precip_cumW7 ≈ tone/tama_impact / prox で多重共線性が発生するため。
@@ -989,6 +1024,13 @@ def main():
     conn_wx = sqlite3.connect(DB_WX, timeout=60.0)
     conn_wx.execute("PRAGMA journal_mode=WAL")
 
+    conn_cmems = None
+    if os.path.exists(DB_CMEMS) and os.path.getsize(DB_CMEMS) > 0:
+        conn_cmems = sqlite3.connect(DB_CMEMS, timeout=30.0)
+        print("CMEMS DB 接続済み（no3/do_surface 利用）", flush=True)
+    else:
+        print("CMEMS DB なし → no3/do_surface をスキップ", flush=True)
+
     print("weather_cache 座標取得 ...", flush=True)
     wx_coords = load_wx_coords(conn_wx)
     print(f"  {len(wx_coords)}座標")
@@ -1001,7 +1043,7 @@ def main():
         print("[ERROR] 水色実測データ不足"); sys.exit(1)
 
     print("\n特徴量付与 ...", flush=True)
-    records = build_features(raw_records, conn_wx, wx_coords)
+    records = build_features(raw_records, conn_wx, wx_coords, conn_cmems=conn_cmems)
 
     # ── 因子相関分析 ──
     factor_correlation_analysis(records)
