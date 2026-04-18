@@ -3188,6 +3188,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .overview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .overview-title{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:6px}
 .overview-body{font-size:13px;color:var(--text);line-height:1.8}
+ins.adsbygoogle{display:block;min-height:0 !important;height:auto !important}
+ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 @media(max-width:640px){header{padding:10px 14px}.stat-cards{grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:5px 4px}.bar-wrap{width:50px}}"""
 
@@ -5097,7 +5099,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <!-- TEASER ROTATOR -->
 {teaser_html}
 <!-- 広告① -->
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
 <!-- 概況テキスト -->
 {overview_html}
@@ -5111,7 +5113,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
   <div class="nav-chips">{area_nav_html}<a href="area/">すべて見る →</a></div>
 </div>
 <!-- 広告② -->
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
 </div><!-- /.c -->
 {DATA_NOTE_HTML}
