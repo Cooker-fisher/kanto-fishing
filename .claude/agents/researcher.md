@@ -28,6 +28,22 @@ isolation: worktree
 
 ## 主な調査対象
 
+### analysis/V2 分析結果の確認（新規）
+- `analysis/V2/results/analysis.sqlite` — combo_decadal・combo_backtest・combo_meta テーブルを確認
+  - どの魚種×船宿が高精度か（wMAPE・BL2勝率）
+  - 旬別ベースラインの傾向
+- `analysis/V2/results/deep_dive/` — 船宿別テキストサマリー
+- 確認結果を designer と programmer に渡す（「データ上こういう傾向がある」）
+
+### 現状データ棚卸し
+利用可能なデータとその規模を確認して整理する:
+
+| データ | ファイル | 確認方法 |
+|--------|---------|---------|
+| 釣果データ | catches_raw.json | 件数・期間をRead |
+| 分析結果 | analysis/V2/results/analysis.sqlite | SQLiteスキーマをBash確認 |
+| 船宿マスター | crawl/ships.json | 有効件数をRead |
+
 ### mockupファイル読み取り
 - `design/V2/mockup-*.html` を読んでコンポーネント一覧・HTML構造・CSS変数使用状況を抽出
 - セクション名・クラス名・データ構造を整理して報告

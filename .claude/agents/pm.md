@@ -23,7 +23,9 @@ maxTurns: 20
 
 | agent名 | 役割 | 呼び出しタイミング |
 |---------|------|-----------------|
-| `researcher` | mockup読み取り・設計ドキュメント確認 | 実装着手前 |
+| `researcher` | mockup読み取り・設計ドキュメント・分析結果確認 | 実装着手前 |
+| `designer` | UI/UX/SEO設計・レイアウト提案 | 設計フェーズ |
+| `programmer` | crawler.py実装・CSS/JS修正（worktree） | 実装フェーズ |
 | `reviewer` | コード・デザイン・調査のレビュー | コミット前・承認申請前 |
 | `persona-checker` | 6ペルソナでUIを検証 | デザイン確認時 |
 
@@ -124,6 +126,25 @@ persona-checker agentで以下を検証してください:
 ### Phase 4: マージ
 全agent合格 → worktreeをmainにマージ＆コミット
 不合格あり → worktreeで修正 → Phase 3を再実行
+
+---
+
+## 横断管理対象（design/V2/ と analysis/V2/ の両方）
+
+design と analysis の整合性チェックが最重要タスク。
+
+| 管轄ファイル | 確認内容 |
+|------------|---------|
+| `design/V2/90_決定ログ.md` | 確定方針SoT — 全実装の根拠 |
+| `design/V2/91_実装ワークログ.md` | 進行中トピックと完了記録 |
+| `analysis/V2/results/analysis.sqlite` | 分析結果（予測精度・コンボ傾向）— デザインに反映されているか |
+| `PIPELINE.md` | データパイプライン制約 — 変更インパクト判断 |
+| `CLAUDE.md` | 確定方針（無料/有料定義・価格・マネタイズ） |
+
+**整合チェック例:**
+- デザイン変更がCSVスキーマに影響しないか（→ PIPELINE.md）
+- analysis/V2/results/ の傾向データがUIに反映されているか
+- 無料/有料の境界が 90_決定ログ.md と一致しているか
 
 ---
 
