@@ -138,10 +138,10 @@ SLOW_FACTORS = {
     # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
-    # CMEMS 複合スコア（個別変数が弱いコンボでも複合で効く可能性）
-    "kuroshio_score",    # 黒潮近接総合指標（sla高・chl低 → 正）
-    "nutrient_score",    # 栄養環境総合指標（chl高・no3高 → 正）
-    "deepwater_score",   # 深海環境総合指標（do_bottom高・temp_100m適正 → 正）
+    # CMEMS 複合スコア（MAX_FACTORS競合問題のため一時除外中）
+    # "kuroshio_score",    # 黒潮近接総合指標（sla高・chl低 → 正）
+    # "nutrient_score",    # 栄養環境総合指標（chl高・no3高 → 正）
+    # "deepwater_score",   # 深海環境総合指標（do_bottom高・temp_100m適正 → 正）
 }
 # 速い変数（風・波・降水・急変動）：数日で激変 → H>7 では無効化
 FAST_FACTORS = {
@@ -349,10 +349,10 @@ WX_FACTORS = [
     # temp_100m × 季節交互作用
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
-    # CMEMS 複合スコア
-    "kuroshio_score",   # 黒潮近接総合指標
-    "nutrient_score",   # 栄養環境総合指標
-    "deepwater_score",  # 深海環境総合指標
+    # CMEMS 複合スコア（MAX_FACTORS競合問題のため一時除外中）
+    # "kuroshio_score",   # 黒潮近接総合指標
+    # "nutrient_score",   # 栄養環境総合指標
+    # "deepwater_score",  # 深海環境総合指標
 ]
 # 潮汐（tide テーブルから取る）
 TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
