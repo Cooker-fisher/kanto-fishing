@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>水色マップ（濁り推移）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; color: #e8eaf0; height: 100vh; display: flex; flex-direction: column; }
+
+#header {
+  padding: 10px 16px;
+  background: #111d35;
+  border-bottom: 1px solid #1e3a5f;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+#header h1 { font-size: 15px; font-weight: 600; color: #7ec8e3; white-space: nowrap; }
+
+#controls {
+  display: flex; align-items: center; gap: 12px; flex: 1; flex-wrap: wrap;
+}
+
+#date-display {
+  font-size: 18px; font-weight: 700; color: #fff; min-width: 110px;
+}
+
+#slider-wrap {
+  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;
+}
+#date-slider {
+  flex: 1; -webkit-appearance: none; height: 4px;
+  background: #1e3a5f; border-radius: 2px; outline: none; cursor: pointer;
+}
+#date-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: #7ec8e3; cursor: pointer; box-shadow: 0 0 6px rgba(126,200,227,0.6);
+}
+
+#play-btn {
+  background: #1e3a5f; border: 1px solid #7ec8e3; color: #7ec8e3;
+  padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 13px;
+  white-space: nowrap;
+}
+#play-btn:hover { background: #2a4f7a; }
+
+#speed-label { font-size: 12px; color: #9ab; white-space: nowrap; }
+#speed-select {
+  background: #1e3a5f; border: 1px solid #2a4f7a; color: #e8eaf0;
+  padding: 3px 6px; border-radius: 4px; font-size: 12px;
+}
+
+#map { flex: 1; }
+
+#legend {
+  position: absolute; bottom: 32px; right: 12px; z-index: 1000;
+  background: rgba(10,22,40,0.92); border: 1px solid #1e3a5f;
+  border-radius: 8px; padding: 12px 16px; min-width: 170px;
+}
+#legend h3 { font-size: 12px; color: #9ab; margin-bottom: 8px; }
+.legend-bar {
+  height: 14px; border-radius: 3px;
+  background: linear-gradient(to right, #3d1c02, #8b4513, #c8a04a, #e0d080, #b0e8b0, #40c8f0, #0060c0);
+  margin-bottom: 6px;
+}
+.legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: #9ab; }
+.legend-items { margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #ccd; margin-bottom: 4px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+#info-panel {
+  position: absolute; top: 70px; left: 12px; z-index: 1000;
+  background: rgba(10,22,40,0.9); border: 1px solid #1e3a5f;
+  border-radius: 8px; padding: 10px 14px; font-size: 12px;
+  max-width: 220px; display: none;
+}
+#info-panel .pt-name { font-size: 14px; font-weight: 600; color: #7ec8e3; margin-bottom: 6px; }
+#info-panel .pt-val { color: #e8eaf0; }
+#info-panel .pt-trend { margin-top: 6px; color: #9ab; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>🌊 水色マップ（濁り推移）</h1>
+  <div id="controls">
+    <div id="date-display">----/--/--</div>
+    <div id="slider-wrap">
+      <span style="font-size:11px;color:#9ab;">過去</span>
+      <input type="range" id="date-slider" min="0" value="0">
+      <span style="font-size:11px;color:#9ab;">最新</span>
+    </div>
+    <button id="play-btn">▶ 再生</button>
+    <span id="speed-label">速度:</span>
+    <select id="speed-select">
+      <option value="1200">遅い</option>
+      <option value="600" selected>普通</option>
+      <option value="300">速い</option>
+      <option value="150">最速</option>
+    </select>
+  </div>
+</div>
+
+<div style="position:relative; flex:1; display:flex; flex-direction:column;">
+  <div id="map"></div>
+
+  <div id="legend">
+    <h3>水色スコア</h3>
+    <div class="legend-bar"></div>
+    <div class="legend-labels">
+      <span>濁り強(-2)</span>
+      <span>普通(0)</span>
+      <span>澄み(+1)</span>
+    </div>
+    <div class="legend-items" style="margin-top:10px;">
+      <div class="legend-item"><div class="legend-dot" style="background:#3d1c02;border:1px solid #555"></div>強濁り (&lt;-1.5)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b4513;border:1px solid #555"></div>濁り (-1.5〜-1.0)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c8a04a;border:1px solid #555"></div>やや濁り (-1.0〜-0.3)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d0d080;border:1px solid #555"></div>普通 (-0.3〜+0.1)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#40c8f0;border:1px solid #555"></div>澄み (+0.1〜+0.6)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0060c0;border:1px solid #555"></div>澄み強 (&gt;+0.6)</div>
+    </div>
+  </div>
+
+  <div id="info-panel">
+    <div class="pt-name" id="info-name"></div>
+    <div class="pt-val" id="info-val"></div>
+    <div class="pt-trend" id="info-trend"></div>
+  </div>
+</div>
+
+<script>
+// ─── データ読み込み ────────────────────────────────────────────────
+fetch('tmp_wc_map_data.json')
+  .then(r => r.json())
+  .then(json => init(json))
+  .catch(e => {
+    document.body.innerHTML = '<div style="padding:40px;color:#f88">データ読み込み失敗: ' + e + '<br>ローカルサーバー (python -m http.server 8000) で開いてください。</div>';
+  });
+
+function init({ data, coord_to_name }) {
+  const dates = Object.keys(data).sort();
+  const slider = document.getElementById('date-slider');
+  slider.max = dates.length - 1;
+  slider.value = dates.length - 1;
+
+  // ─── 地図初期化 ────────────────────────────────────────────────
+  const map = L.map('map', {
+    center: [35.2, 139.6],
+    zoom: 9,
+    zoomControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    maxZoom: 14,
+  }).addTo(map);
+
+  // ─── 色スケール ────────────────────────────────────────────────
+  function wcColor(v) {
+    if (v < -1.5) return { fill: '#3d1c02', opacity: 0.88 };
+    if (v < -1.0) return { fill: '#8b4513', opacity: 0.82 };
+    if (v < -0.3) return { fill: '#c8a04a', opacity: 0.78 };
+    if (v <  0.1) return { fill: '#d0d080', opacity: 0.70 };
+    if (v <  0.6) return { fill: '#40c8f0', opacity: 0.72 };
+    return               { fill: '#0060c0', opacity: 0.80 };
+  }
+
+  function wcLabel(v) {
+    if (v < -1.5) return '強濁り';
+    if (v < -1.0) return '濁り';
+    if (v < -0.3) return 'やや濁り';
+    if (v <  0.1) return '普通';
+    if (v <  0.6) return '澄み';
+    return '澄み強';
+  }
+
+  // ─── マーカー生成 ────────────────────────────────────────────────
+  let circles = [];
+
+  const firstDate = dates[dates.length - 1];
+  const firstPoints = data[firstDate];
+
+  firstPoints.forEach(pt => {
+    const key = `${pt.lat},${pt.lon}`;
+    const name = coord_to_name[key] || `${pt.lat},${pt.lon}`;
+    const { fill, opacity } = wcColor(pt.v);
+
+    const circle = L.circleMarker([pt.lat, pt.lon], {
+      radius: 9,
+      fillColor: fill,
+      fillOpacity: opacity,
+      color: '#fff',
+      weight: 0.5,
+      opacity: 0.5,
+    }).addTo(map);
+
+    circle._wcName = name;
+    circle._wcLat = pt.lat;
+    circle._wcLon = pt.lon;
+
+    circle.on('click', () => showInfo(circle._wcName, circle._wcLat, circle._wcLon, data, dates, parseInt(slider.value)));
+    circle.on('mouseover', () => {
+      circle.setStyle({ weight: 2, color: '#fff' });
+      circle.bindTooltip(`<b>${name}</b><br>スコア: ${pt.v.toFixed(2)}<br>${wcLabel(pt.v)}`, { sticky: true }).openTooltip();
+    });
+    circle.on('mouseout', () => {
+      circle.setStyle({ weight: 0.5, color: '#fff' });
+      circle.closeTooltip();
+    });
+
+    circles.push({ circle, lat: pt.lat, lon: pt.lon });
+  });
+
+  // ─── 日付更新 ────────────────────────────────────────────────
+  function updateDate(idx) {
+    const date = dates[idx];
+    document.getElementById('date-display').textContent = date;
+    const points = data[date];
+    const ptMap = {};
+    points.forEach(p => { ptMap[`${p.lat},${p.lon}`] = p; });
+
+    circles.forEach(({ circle, lat, lon }) => {
+      const key = `${lat},${lon}`;
+      const pt = ptMap[key];
+      if (!pt) return;
+      const { fill, opacity } = wcColor(pt.v);
+      circle.setStyle({ fillColor: fill, fillOpacity: opacity });
+      circle._wcV = pt.v;
+      // tooltip更新
+      const name = circle._wcName;
+      circle.unbindTooltip();
+      circle.on('mouseover', () => {
+        circle.setStyle({ weight: 2, color: '#fff' });
+        circle.bindTooltip(`<b>${name}</b><br>スコア: ${pt.v.toFixed(2)}<br>${wcLabel(pt.v)}`, { sticky: true }).openTooltip();
+      });
+      circle.on('mouseout', () => {
+        circle.setStyle({ weight: 0.5, color: '#fff' });
+        circle.closeTooltip();
+      });
+    });
+  }
+
+  updateDate(parseInt(slider.value));
+
+  slider.addEventListener('input', () => {
+    updateDate(parseInt(slider.value));
+  });
+
+  // ─── 再生 ────────────────────────────────────────────────
+  let playing = false;
+  let timer = null;
+  const playBtn = document.getElementById('play-btn');
+
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    playBtn.textContent = playing ? '⏸ 停止' : '▶ 再生';
+    if (playing) tick();
+    else clearTimeout(timer);
+  });
+
+  function tick() {
+    if (!playing) return;
+    let idx = parseInt(slider.value);
+    idx = (idx + 1) % dates.length;
+    slider.value = idx;
+    updateDate(idx);
+    const speed = parseInt(document.getElementById('speed-select').value);
+    timer = setTimeout(tick, speed);
+  }
+
+  // ─── 情報パネル ────────────────────────────────────────────────
+  function showInfo(name, lat, lon, data, dates, curIdx) {
+    const panel = document.getElementById('info-panel');
+    panel.style.display = 'block';
+    document.getElementById('info-name').textContent = name;
+
+    const key = `${lat},${lon}`;
+    const curDate = dates[curIdx];
+    const pts = data[curDate];
+    const cur = pts.find(p => p.lat === lat && p.lon === lon);
+    const v = cur ? cur.v : null;
+
+    if (v !== null) {
+      document.getElementById('info-val').innerHTML =
+        `スコア: <b style="color:${wcColor(v).fill}">${v.toFixed(2)}</b>　${wcLabel(v)}`;
+    }
+
+    // トレンド（全日付の値）
+    const trend = dates.map(d => {
+      const pt = (data[d] || []).find(p => p.lat === lat && p.lon === lon);
+      return pt ? pt.v : null;
+    }).filter(v => v !== null);
+
+    if (trend.length >= 3) {
+      const delta = trend[trend.length - 1] - trend[0];
+      const arrow = delta > 0.1 ? '↑ 澄んできている' : delta < -0.1 ? '↓ 濁ってきている' : '→ ほぼ変化なし';
+      const min = Math.min(...trend).toFixed(2);
+      const max = Math.max(...trend).toFixed(2);
+      document.getElementById('info-trend').innerHTML =
+        `期間推移: ${arrow}<br>範囲: ${min} 〜 ${max}`;
+    }
+  }
+
+  map.on('click', () => {
+    document.getElementById('info-panel').style.display = 'none';
+  });
+}
+</script>
+</body>
+</html>

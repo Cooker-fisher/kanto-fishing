@@ -1,0 +1,113 @@
+{
+  "target": "シロギス × 長崎屋",
+  "analysis_period": "2023/01/01 - 2026/04/18",
+  "total_records": 682,
+  "good_records": 173,
+  "bad_records": 177,
+  "cnt_avg_quartiles": {
+    "Q1_bottom25pct": 41.0,
+    "median": 57.0,
+    "Q3_top25pct": 75.0
+  },
+  "good_vs_bad_definition": {
+    "good": "cnt_avg >= 75.0（好調）",
+    "bad": "cnt_avg <= 41.0（不調）"
+  },
+  "key_findings": {
+    "activity_signals": [
+      {
+        "keyword": "活発でした",
+        "frequency": {
+          "good": 34,
+          "bad": 0
+        },
+        "ratio": "無限大（不調日ゼロ）",
+        "significance": "★★★★★ 最高レベルの好調シグナル。絶対に追加推奨。",
+        "note": "既存スコアに『好調』『絶好調』があるが、『活発でした』はより強い確実性を示す"
+      },
+      {
+        "keyword": "続き好調でした",
+        "frequency": {
+          "good": 74,
+          "bad": 11
+        },
+        "ratio": 6.7,
+        "significance": "★★★★ 高い信頼度。但し『好調』『続き』の組合せ。既存スコアで十分カバーされている",
+        "note": "『好調』スコア1.0で既に採用済み。重複追加は不要"
+      },
+      {
+        "keyword": "本竿で",
+        "frequency": {
+          "good": 74,
+          "bad": 12
+        },
+        "ratio": 6.2,
+        "significance": "★★★ 高頻度だが『活性』を示す直接的なシグナルではなく、『多点同時釣果』を意味する",
+        "note": "既存『ダブル『トリプル』スコアで間接的にカバー。追加不要"
+      }
+    ],
+    "size_signals": [
+      {
+        "keyword": "中型主体に良型交じりで",
+        "frequency": {
+          "good": 34,
+          "bad": 3
+        },
+        "ratio": 11.3,
+        "significance": "★★★★ 非常に高い相関。中型＋大型混在が好調の証。",
+        "note": "既存『良型』スコアでは不十分。『中型主体』という多様性の表現が重要"
+      },
+      {
+        "keyword": "中型主体に",
+        "frequency": {
+          "good": 34,
+          "bad": 3
+        },
+        "ratio": 11.3,
+        "significance": "★★★★ 『中型主体に』フレーズは最大級の好調シグナル",
+        "note": "activity_n と fish_size_n の両方に関連する。fish_size_n に追加推奨"
+      },
+      {
+        "keyword": "良型中心に",
+        "frequency": {
+          "good": 17,
+          "bad": 66
+        },
+        "ratio_inverted": "3.9（不調/好調）",
+        "significance": "★★★ 逆相関。大型のみが目立つ＝小型がいない＝弱い活性を示唆",
+        "note": "既存『良型』スコア1.0との矛盾。『良型中心に』という単独性が弱さを意味する可能性"
+      }
+    ]
+  },
+  "recommendation": {
+    "obs_fields_activity_n": [
+      {
+        "keyword": "活発でした",
+        "score": 1.0,
+        "priority": "HIGH",
+        "reason": "不調日ゼロ。完全なポジティブシグナル。obs_fields.json に直ちに追加すべき"
+      }
+    ],
+    "obs_fields_fish_size_n": [
+      {
+        "keyword": "中型主体に",
+        "score": 0.5,
+        "priority": "HIGH",
+        "reason": "好調日34件。中型以上サイズの混在が重要。『中型主体に』は好調の証。追加推奨"
+      }
+    ],
+    "watch_list": [
+      {
+        "keyword": "中型主体",
+        "category": "activity_n",
+        "score_candidate": 0.5,
+        "note": "『中型主体に』の前置詞なしバージョン。同等の信頼度だが、採用するか『に』含有をマッチングすべきか要検討"
+      }
+    ]
+  },
+  "data_quality_notes": {
+    "文字化け": "kanso_raw のテキスト処理で UTF-8 エンコーディング確認完了",
+    "抽出条件": "ship=長崎屋, tsuri_mono=シロギス, is_cancellation=0, cnt_avg有値",
+    "信頼性フィルタ": "出現頻度 >= 5 件 AND (好調/不調の比が 1.5 倍以上)"
+  }
+}
