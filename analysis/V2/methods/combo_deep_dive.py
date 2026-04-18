@@ -77,6 +77,12 @@ WAVE_CLAMP_THRESHOLD: float = 2.0
 SST_GRAD_OFFSHORE = (35.65, 140.87)  # 外房沖（黒潮ライン上）
 SST_GRAD_INSHORE  = (35.3,  139.68)  # 東京湾内（沿岸代表）
 
+# SLA勾配（黒潮フロント強度指標）の固定参照座標
+# cmems_daily は 0.25° グリッドなので SST_GRAD_* とは別定数として丸め済み座標を使用
+# 正=外房沖SLA高（黒潮フロント強い）、負=黒潮後退
+SLA_GRAD_OFFSHORE = (35.75, 140.875)  # 外房沖（0.25°グリッド丸め済み）
+SLA_GRAD_INSHORE  = (35.25, 139.75)   # 東京湾内（0.25°グリッド丸め済み）
+
 # ── 変数の予報有効ホライズン ────────────────────────────────────────────
 # 「遅い変数」: 日々の変化が小さく、N日前の値≒当日値 → 長期予報でも有効
 # 「速い変数」: 数日で激変 → 短期予報（〜7日）以外は当日値と無関係
@@ -124,6 +130,18 @@ SLOW_FACTORS = {
     "temp_200m",         # 水深200m水温：沖合深場釣りの指標
     "thermocline_depth", # 躍層深度 (m)：表層-深層の温度差最大深度
     "no3_surface",       # 表層硝酸塩 (mmol/m³)：高=栄養塩豊富=プランクトン増加予兆
+    # CMEMS ラグ特徴量（黒潮の変化速度）
+    "sla_delta",         # SLA 7日間変化 (m)：正=黒潮北上中=澄み水進行シグナル
+    "chl_delta",         # クロロフィル 7日間変化 (mg/m³)：正=ベイト急増=回遊魚フロント形成
+    # CMEMS 空間勾配（黒潮フロント強度）
+    "sla_gradient",      # 外房沖SLA - 東京湾内SLA：黒潮フロント強度（sst_gradientのCMEMS版）
+    # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
+    "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
+    "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
+    # CMEMS 複合スコア（個別変数が弱いコンボでも複合で効く可能性）
+    "kuroshio_score",    # 黒潮近接総合指標（sla高・chl低 → 正）
+    "nutrient_score",    # 栄養環境総合指標（chl高・no3高 → 正）
+    "deepwater_score",   # 深海環境総合指標（do_bottom高・temp_100m適正 → 正）
 }
 # 速い変数（風・波・降水・急変動）：数日で激変 → H>7 では無効化
 FAST_FACTORS = {
@@ -323,6 +341,18 @@ WX_FACTORS = [
     "temp_200m",        # 水深200m水温: 沖合深場釣りの指標
     "thermocline_depth",# 躍層深度 (m): 表層-深層温度差最大深度
     "no3_surface",      # 表層硝酸塩 (mmol/m³): 高=栄養塩豊富=プランクトン増加予兆
+    # CMEMS ラグ特徴量（黒潮の変化速度）
+    "sla_delta",        # SLA 7日間変化 (m): 正=黒潮北上中シグナル
+    "chl_delta",        # クロロフィル 7日間変化: 正=ベイト急増シグナル
+    # CMEMS 空間勾配
+    "sla_gradient",     # 外房沖SLA - 東京湾内SLA: 黒潮フロント強度
+    # temp_100m × 季節交互作用
+    "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
+    "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
+    # CMEMS 複合スコア
+    "kuroshio_score",   # 黒潮近接総合指標
+    "nutrient_score",   # 栄養環境総合指標
+    "deepwater_score",  # 深海環境総合指標
 ]
 # 潮汐（tide テーブルから取る）
 TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
@@ -1047,6 +1077,29 @@ def get_cmems_day(conn_cmems, lat, lon, date_iso):
     return {}
 
 
+_sla_nearest_cache: dict = {}
+
+def _get_sla_nearest(conn_cmems, lat, lon, date_iso):
+    """固定座標のSLAを直接最近傍クエリで取得（0.25°丸めを介さない）。
+    sla_gradient 計算用。cmems_daily は 1/24° ≈ 0.042° グリッドのため
+    get_cmems_day() の 0.25° 丸めでは誤った座標にマッチする問題を回避する。
+    """
+    k = (lat, lon, date_iso)
+    if k in _sla_nearest_cache:
+        return _sla_nearest_cache[k]
+    row = conn_cmems.execute(
+        """SELECT sla FROM cmems_daily
+           WHERE date=? AND ABS(lat-?)<0.2 AND ABS(lon-?)<0.2
+             AND sla IS NOT NULL
+           ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?)
+           LIMIT 1""",
+        (date_iso, lat, lon, lat, lat, lon, lon),
+    ).fetchone()
+    val = row[0] if (row and row[0] is not None) else None
+    _sla_nearest_cache[k] = val
+    return val
+
+
 def _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, grid_deg, cols):
     """指定グリッド解像度で最近傍の深度列を取得。なければ 0.5° フォールバック。"""
     rl = round(round(lat / grid_deg) * grid_deg, 4)
@@ -1332,6 +1385,67 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             merged.update(depth)
             cmems_cache[_ck] = merged
         wx.update(cmems_cache[_ck])
+
+        # ── sla_delta / chl_delta: 当日 - 7日前（黒潮変化速度シグナル）────────
+        # SLOW因子なので horizon に依存せず当日基準の-7日を使用
+        if conn_cmems is not None:
+            _sla_now = cmems_cache[_ck].get("sla_avg")
+            _chl_now = cmems_cache[_ck].get("chl_avg")
+            _date7_iso = (d - timedelta(days=7)).strftime("%Y-%m-%d")
+            _ck7 = (wlat, wlon, _date7_iso)
+            if _ck7 not in cmems_cache:
+                _s7 = get_cmems_day(conn_cmems, wlat, wlon, _date7_iso)
+                _d7 = get_cmems_depth_day(conn_cmems, wlat, wlon, _date7_iso)
+                _m7 = {}; _m7.update(_s7); _m7.update(_d7)
+                cmems_cache[_ck7] = _m7
+            _sla_7d = cmems_cache[_ck7].get("sla_avg")
+            _chl_7d = cmems_cache[_ck7].get("chl_avg")
+            wx["sla_delta"] = (_sla_now - _sla_7d) if (_sla_now is not None and _sla_7d is not None) else None
+            wx["chl_delta"] = (_chl_now - _chl_7d) if (_chl_now is not None and _chl_7d is not None) else None
+
+            # ── sla_gradient: 外房沖SLA - 東京湾内SLA（黒潮フロント強度）────────
+            # cmems_daily は 1/24°≈0.042° グリッドのため get_cmems_day() の 0.25° 丸めを介さず
+            # _get_sla_nearest() で直接最近傍クエリ（±0.2° 以内）を使用
+            _sla_off = _get_sla_nearest(conn_cmems, SLA_GRAD_OFFSHORE[0], SLA_GRAD_OFFSHORE[1], tide_date)
+            _sla_in  = _get_sla_nearest(conn_cmems, SLA_GRAD_INSHORE[0],  SLA_GRAD_INSHORE[1],  tide_date)
+            wx["sla_gradient"] = (_sla_off - _sla_in) if (_sla_off is not None and _sla_in is not None) else None
+        else:
+            wx["sla_delta"] = wx["chl_delta"] = wx["sla_gradient"] = None
+
+        # ── temp_100m × 季節交互作用（深層水温の季節依存性）────────────────────
+        _t100 = wx.get("temp_100m")
+        _ssn  = _season_of(int(r["date"][5:7]))  # "春"/"夏"/"秋"/"冬"
+        if _t100 is not None:
+            wx["temp_100m_spring"] = _t100 if _ssn == "春" else 0.0
+            wx["temp_100m_summer"] = _t100 if _ssn == "夏" else 0.0
+            wx["temp_100m_autumn"] = _t100 if _ssn == "秋" else 0.0
+            wx["temp_100m_winter"] = _t100 if _ssn == "冬" else 0.0
+            wx["temp_100m_bin"] = 0 if _t100 < 8.0 else (1 if _t100 < 12.0 else 2)
+        else:
+            for _sfx in ("spring", "summer", "autumn", "winter"):
+                wx[f"temp_100m_{_sfx}"] = None
+            wx["temp_100m_bin"] = None
+
+        # ── CMEMS 複合スコア（個別変数が弱いコンボでも複合で効く可能性）─────────
+        _sla_v  = wx.get("sla_avg")
+        _chl_v  = wx.get("chl_avg")
+        _no3_v  = wx.get("no3_surface")
+        _dob_v  = wx.get("do_bottom")
+        if _sla_v is not None and _chl_v is not None:
+            # sla高（黒潮近接）かつchl低（澄み水）= 黒潮コア → 正スコア
+            wx["kuroshio_score"] = _sla_v - 0.5 * _chl_v
+        else:
+            wx["kuroshio_score"] = None
+        if _chl_v is not None and _no3_v is not None:
+            # chl高 + no3高 = 栄養塩豊富=ベイト環境良好
+            wx["nutrient_score"] = _chl_v + 0.3 * _no3_v
+        else:
+            wx["nutrient_score"] = None
+        if _t100 is not None and _dob_v is not None:
+            # do_bottom高（底層酸素）かつtemp_100m≈10℃（深場適水温）
+            wx["deepwater_score"] = _dob_v - abs(_t100 - 10.0)
+        else:
+            wx["deepwater_score"] = None
 
         rec = dict(r)
         rec.update(wx)
