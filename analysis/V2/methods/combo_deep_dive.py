@@ -40,6 +40,7 @@ from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
 DB_WX         = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
 DB_TIDE       = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
 DB_TYPHOON    = os.path.join(OCEAN_DIR, "typhoon.sqlite")
+DB_CMEMS      = os.path.join(OCEAN_DIR, "cmems_data.sqlite")
 DB_ANA        = os.path.join(RESULTS_DIR, "analysis.sqlite")
 OUT_DIR       = os.path.join(RESULTS_DIR, "deep_dive")
 
@@ -111,6 +112,18 @@ SLOW_FACTORS = {
     # 実測水色がないポイントも含む全点×全日で補完 → SLOW因子（H=28でも有効）
     # ※ 実測 water_color_imp_n がある場合は obs_factor として別途使用
     "water_color_pred_n",  # 予測水色スコア（water_color_daily テーブル）
+    # CMEMS 海洋データ（週単位で変化 → SLOW因子）
+    "sla_avg",   # SSH偏差平均 (m)：正=黒潮北上=澄み水=アジ・マダイ有利
+    "chl_avg",   # クロロフィルa平均 (mg/m³)：高=ベイト豊富=回遊魚集まる
+    "sss_avg",   # 塩分平均 (PSU)：高=黒潮水=マダイ・カツオ・キンメ有利
+    # CMEMS 深度別データ派生特徴量（週単位で変化 → SLOW因子）
+    "do_surface",        # 表層溶存酸素 (mmol/m³)：低=青潮リスク・貧酸素底層
+    "do_bottom",         # 深層溶存酸素（最深レコード）：底魚生息可否の直接指標
+    "temp_50m",          # 水深50m水温 (℃)：黒潮コア深度・底魚の生息適水温
+    "temp_100m",         # 水深100m水温：深海性魚種（キンメ・アコウダイ）の指標
+    "temp_200m",         # 水深200m水温：沖合深場釣りの指標
+    "thermocline_depth", # 躍層深度 (m)：表層-深層の温度差最大深度
+    "no3_surface",       # 表層硝酸塩 (mmol/m³)：高=栄養塩豊富=プランクトン増加予兆
 }
 # 速い変数（風・波・降水・急変動）：数日で激変 → H>7 では無効化
 FAST_FACTORS = {
@@ -298,6 +311,18 @@ WX_FACTORS = [
     # 降水ラグ＋波高＋潮流から全点推定。実測水色なしコンボも補完される。
     # SLOW因子（降水予報は14日先まで取得可能）→ 全H有効
     "water_color_pred_n",
+    # CMEMS 表層（黒潮SSH偏差・クロロフィル・塩分）: SLOW因子 → 全H有効
+    "sla_avg",          # SSH偏差 (m): 正=黒潮北上=澄み水
+    "chl_avg",          # クロロフィルa (mg/m³): 高=ベイト豊富
+    "sss_avg",          # 塩分 (PSU): 高=黒潮水
+    # CMEMS 深度別派生特徴量: SLOW因子 → 全H有効
+    "do_surface",       # 表層溶存酸素 (mmol/m³): 低=青潮リスク
+    "do_bottom",        # 深層溶存酸素: 底魚生息可否の直接指標
+    "temp_50m",         # 水深50m水温 (℃): 黒潮コア深度・底魚適水温
+    "temp_100m",        # 水深100m水温: キンメ・アコウダイ等深海性魚種
+    "temp_200m",        # 水深200m水温: 沖合深場釣りの指標
+    "thermocline_depth",# 躍層深度 (m): 表層-深層温度差最大深度
+    "no3_surface",      # 表層硝酸塩 (mmol/m³): 高=栄養塩豊富=プランクトン増加予兆
 ]
 # 潮汐（tide テーブルから取る）
 TIDE_FACTORS = ["tide_range", "moon_age", "moon_sin", "moon_cos", "tide_type_n", "tide_delta",
@@ -979,6 +1004,125 @@ def get_daily_wx(conn_wx, lat, lon, date_iso):
 
     return result
 
+def get_cmems_day(conn_cmems, lat, lon, date_iso):
+    """CMEMS 日次データを最近傍グリッド点から返す（0.25° グリッド）。
+    データがない場合は空 dict（graceful skip）。
+    """
+    if conn_cmems is None:
+        return {}
+    # 0.25° グリッドに丸めて最近傍点を探す
+    rounded_lat = round(round(lat / 0.25) * 0.25, 4)
+    rounded_lon = round(round(lon / 0.25) * 0.25, 4)
+    row = conn_cmems.execute(
+        "SELECT sla, chl, sss FROM cmems_daily WHERE lat=? AND lon=? AND date=?",
+        (rounded_lat, rounded_lon, date_iso),
+    ).fetchone()
+    if row:
+        result = {}
+        if row[0] is not None:
+            result["sla_avg"] = row[0]
+        if row[1] is not None:
+            result["chl_avg"] = row[1]
+        if row[2] is not None:
+            result["sss_avg"] = row[2]
+        return result
+    # 最近傍グリッド点が DB にない場合は近傍探索（0.5° 以内）
+    row2 = conn_cmems.execute(
+        """SELECT sla, chl, sss FROM cmems_daily
+           WHERE date=?
+             AND ABS(lat - ?) < 0.5 AND ABS(lon - ?) < 0.5
+           ORDER BY (lat - ?) * (lat - ?) + (lon - ?) * (lon - ?)
+           LIMIT 1""",
+        (date_iso, lat, lon, lat, lat, lon, lon),
+    ).fetchone()
+    if row2:
+        result = {}
+        if row2[0] is not None:
+            result["sla_avg"] = row2[0]
+        if row2[1] is not None:
+            result["chl_avg"] = row2[1]
+        if row2[2] is not None:
+            result["sss_avg"] = row2[2]
+        return result
+    return {}
+
+
+def _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, grid_deg, cols):
+    """指定グリッド解像度で最近傍の深度列を取得。なければ 0.5° フォールバック。"""
+    rl = round(round(lat / grid_deg) * grid_deg, 4)
+    rn = round(round(lon / grid_deg) * grid_deg, 4)
+    sel = ", ".join(["depth_m"] + cols)
+    rows = conn_cmems.execute(
+        f"SELECT {sel} FROM cmems_depth WHERE lat=? AND lon=? AND date=? ORDER BY depth_m",
+        (rl, rn, date_iso),
+    ).fetchall()
+    if not rows:
+        rows = conn_cmems.execute(
+            f"""SELECT {sel} FROM cmems_depth
+               WHERE date=? AND ABS(lat-?)<0.5 AND ABS(lon-?)<0.5
+               ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?), depth_m""",
+            (date_iso, lat, lon, lat, lat, lon, lon),
+        ).fetchall()
+    return rows
+
+
+def get_cmems_depth_day(conn_cmems, lat, lon, date_iso):
+    """CMEMS 深度別データ → 派生特徴量を返す（cmems_depth テーブル）。
+    temp は GLORYS12 (0.083°)、do/no3 は BGC (0.25°) として別クエリで取得。
+    データがない場合は空 dict（graceful skip）。
+    """
+    if conn_cmems is None:
+        return {}
+
+    # temp: GLORYS12 0.083° グリッド
+    temp_rows = _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, 0.0833, ["temp"])
+    # do/no3: BGC 0.25° グリッド
+    bgc_rows  = _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, 0.25,   ["do", "no3"])
+
+    if not temp_rows and not bgc_rows:
+        return {}
+
+    result = {}
+
+    # ── do / no3（BGC行から） ──────────────────────────────────────
+    if bgc_rows:
+        bgc_depths = [r[0] for r in bgc_rows]
+        dos  = [r[1] for r in bgc_rows]
+        no3s = [r[2] for r in bgc_rows]
+        # 表層（最浅）
+        if dos[0]  is not None: result["do_surface"]  = dos[0]
+        if no3s[0] is not None: result["no3_surface"] = no3s[0]
+        # 深層（最深・有効値）
+        for d, o in zip(reversed(bgc_depths), reversed(dos)):
+            if o is not None:
+                result["do_bottom"] = o
+                break
+
+    # ── temp（GLORYS12行から） ────────────────────────────────────
+    if temp_rows:
+        temp_depths = [r[0] for r in temp_rows]
+        temps = [r[1] for r in temp_rows]
+        for target_m, key in [(50, "temp_50m"), (100, "temp_100m"), (200, "temp_200m")]:
+            best_d, best_t = None, None
+            for d, t in zip(temp_depths, temps):
+                if t is None:
+                    continue
+                if best_d is None or abs(d - target_m) < abs(best_d - target_m):
+                    best_d, best_t = d, t
+            if best_t is not None:
+                result[key] = best_t
+
+        # 躍層深度（temp差が最大の隣接レイヤの上側深度）
+        valid_pairs = [(temp_depths[i], temps[i], temp_depths[i+1], temps[i+1])
+                       for i in range(len(temp_depths)-1)
+                       if temps[i] is not None and temps[i+1] is not None]
+        if valid_pairs:
+            best = max(valid_pairs, key=lambda x: abs(x[1] - x[3]))
+            result["thermocline_depth"] = best[0]
+
+    return result
+
+
 def get_tide(conn_tide, date_iso):
     """潮汐データを返す（tide_moon.sqlite から取得）"""
     if conn_tide is None:
@@ -1018,7 +1162,7 @@ def get_typhoon(conn_ty, date_iso):
     return {"typhoon_dist": None, "typhoon_wind": None}
 
 
-def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None, conn_typhoon=None):
+def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None, conn_typhoon=None, conn_cmems=None):
     """全レコードに海況・潮汐・前週釣果を付与（horizon 日前の weather を使用）。
 
     all_records: 前週釣果(prev_week_cnt)の参照用に全期間レコードを渡す。
@@ -1029,6 +1173,7 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
     wx_cache      = {}
     tide_cache    = {}
     typhoon_cache = {}
+    cmems_cache   = {}
     result = []
 
     # SST勾配用の固定参照座標（起動時に1回だけ最近傍を解決）
@@ -1176,6 +1321,17 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         # 実測水色なしコンボも補完。SLOW因子なので horizon に関わらず当日の予測値を使用。
         # wx_date ではなく tide_date（当日）を使う → 釣行当日の水色状態を知りたい
         wx["water_color_pred_n"] = _lookup_wc_pred(wlat, wlon, tide_date)
+
+        # CMEMS データ（黒潮SSH偏差・クロロフィル・塩分・深度別）: SLOW因子 → 当日を使用
+        _ck = (wlat, wlon, tide_date)
+        if _ck not in cmems_cache:
+            surf = get_cmems_day(conn_cmems, wlat, wlon, tide_date)
+            depth = get_cmems_depth_day(conn_cmems, wlat, wlon, tide_date)
+            merged = {}
+            merged.update(surf)
+            merged.update(depth)
+            cmems_cache[_ck] = merged
+        wx.update(cmems_cache[_ck])
 
         rec = dict(r)
         rec.update(wx)
@@ -1553,7 +1709,7 @@ def _dir_acc(preds, acts):
             dt += 1
     return dc / dt if dt else None
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None):
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None):
     """leave-one-month-out クロスバリデーション
 
     各月をテスト期として、それ以外の全データ（前後含む）を学習に使う。
@@ -1577,7 +1733,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     for H in HORIZONS:
         all_en_by_H[H] = enrich(
             records, ship_coords, wx_coords, conn_wx, ship_area,
-            horizon=H, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon
+            horizon=H, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon,
+            conn_cmems=conn_cmems,
         )
 
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
@@ -2715,7 +2872,8 @@ def deep_dive(fish, ship, verbose=True):
     conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
     conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
     conn_typhoon = sqlite3.connect(DB_TYPHOON) if (os.path.exists(DB_TYPHOON) and os.path.getsize(DB_TYPHOON) > 0) else None
-    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon)
+    conn_cmems   = sqlite3.connect(DB_CMEMS)   if (os.path.exists(DB_CMEMS)   and os.path.getsize(DB_CMEMS)   > 0) else None
+    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon, conn_cmems=conn_cmems)
     decadal = load_decadal(fish, ship)
 
     SEP  = "=" * 72
@@ -2753,7 +2911,7 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish)
+    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems)
     out += bt_lines
 
     if conn_wx is not None:

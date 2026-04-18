@@ -4,6 +4,7 @@ on:
     - cron: '30 7 * * *'   # 毎日 16:30 JST（釣果クロール）
     - cron: '0 7 1 * *'    # 毎月1日 16:00 JST（船宿SID自動更新）
     - cron: '0 8 * * 1'    # 毎週月曜 17:00 JST（週次分析再生成）
+    - cron: '0 9 * * 1'    # 毎週月曜 18:00 JST（CMEMS差分更新）
   workflow_dispatch:
 jobs:
   crawl:
@@ -83,3 +84,25 @@ jobs:
           git pull --rebase origin main
           git push origin main
 
+  update_cmems:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 9 * * 1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CMEMS dependencies
+        run: pip install copernicusmarine "xarray>=2024.7.0" netCDF4 pandas
+      - name: Download existing cmems_data.sqlite from cache
+        uses: actions/cache@v4
+        with:
+          path: ocean/cmems_data.sqlite
+          key: cmems-sqlite-${{ runner.os }}
+          restore-keys: cmems-sqlite-
+      - name: Update CMEMS data (差分: 直近10日)
+        env:
+          COPERNICUSMARINE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
+          COPERNICUSMARINE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
+        run: |
+          python3 ocean/build_cmems.py --start $(date -d '10 days ago' +%Y-%m-%d)

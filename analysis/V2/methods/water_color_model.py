@@ -45,6 +45,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
 
 DB_WX   = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
+DB_TIDE = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
 DB_ANA  = os.path.join(RESULTS_DIR, "analysis.sqlite")
 
 # ─── 定数 ────────────────────────────────────────────────────────────────────
@@ -69,6 +70,19 @@ RIVER_MOUTHS = {
 }
 RIVER_PROXIMITY_SCALE = 0.4   # 指数減衰スケール（度数）≈ 40km at 35°N
 
+# 主要岬座標（潮流衝突による地形起因の濁り）
+# 岬先端 = 異方向の潮流が衝突 → 上昇流で底質攪拌 → 構造的濁り（降水と無関係）
+CAPES = {
+    "inubozaki":  (35.71, 140.87),  # 犬吠埼（銚子）
+    "nojimakzaki":(34.90, 139.87),  # 野島崎（館山）
+    "irouzaki":   (34.60, 138.83),  # 石廊崎（南伊豆）
+    "omaezaki":   (34.60, 138.21),  # 御前崎（静岡）
+}
+CAPE_PROXIMITY_SCALE = 0.5   # 指数減衰スケール（度数）≈ 50km at 35°N
+
+# 空間ラグ: この半径（度）以内の近傍ポイントの水色を平均する
+SPATIAL_LAG_RADIUS = 0.3   # ≈ 30km
+
 # ─── ユーティリティ ────────────────────────────────────────────────────────────
 def _float(v):
     try:
@@ -86,6 +100,47 @@ def _river_proximity(fishing_lat, fishing_lon, river_lat, river_lon,
     """河口からの指数減衰プロキシ (0〜1)。scale_deg ≈ 40km at 35°N。"""
     dist = ((fishing_lat - river_lat)**2 + (fishing_lon - river_lon)**2) ** 0.5
     return math.exp(-dist / scale_deg)
+
+def _cape_proximity(lat, lon):
+    """主要岬への最近傍指数減衰スコア (0〜1)。岬に近いほど高スコア。
+    岬先端 = 潮流衝突による上昇流 → 底質攪拌 → 栄養塩豊富な「良い濁り」の代理変数。
+    """
+    if lat is None or lon is None:
+        return 0.0
+    return max(
+        math.exp(-((lat - clat)**2 + (lon - clon)**2)**0.5 / CAPE_PROXIMITY_SCALE)
+        for clat, clon in CAPES.values()
+    )
+
+def _build_neighbor_map(wx_coords):
+    """各座標の近傍座標リスト（SPATIAL_LAG_RADIUS 以内）を事前計算。O(n²)だがn=153なので即時。"""
+    neighbors = {}
+    for lat, lon in wx_coords:
+        nbrs = [
+            (nlat, nlon) for nlat, nlon in wx_coords
+            if (nlat, nlon) != (lat, lon)
+            and ((lat - nlat)**2 + (lon - nlon)**2)**0.5 <= SPATIAL_LAG_RADIUS
+        ]
+        neighbors[(lat, lon)] = nbrs
+    return neighbors
+
+# 近傍マップキャッシュ
+_NEIGHBOR_MAP: dict = {}
+
+def _lookup_wc_spatial_lag(lat, lon, date_iso):
+    """近傍ポイントの前日 wc_pred 平均（空間的慣性）。
+    近い海域が同じ水色状態を共有するパターンを捉える。
+    """
+    _load_wc_daily()
+    if not _WC_DAILY_CACHE or (lat, lon) not in _NEIGHBOR_MAP:
+        return None
+    prev_date = (datetime.strptime(date_iso, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    vals = [
+        _WC_DAILY_CACHE[(round(nlat, 2), round(nlon, 2), prev_date)]
+        for nlat, nlon in _NEIGHBOR_MAP[(lat, lon)]
+        if (round(nlat, 2), round(nlon, 2), prev_date) in _WC_DAILY_CACHE
+    ]
+    return sum(vals) / len(vals) if vals else None
 
 def _build_river_features(conn_wx, fishing_lat, fishing_lon, date_iso):
     """3河口の降水量×距離減衰の特徴量。build_precip_features の _precip_cache を共有。
@@ -174,14 +229,19 @@ def get_wx_day(conn_wx, lat, lon, date_iso):
     if k in _wx_day_cache:
         return _wx_day_cache[k]
     rows = conn_wx.execute("""
-        SELECT wind_speed, wind_dir, wave_height, current_speed
+        SELECT wind_speed, wind_dir, wave_height, current_speed,
+               sst, swell_height, temp, pressure
         FROM weather WHERE lat=? AND lon=? AND dt LIKE ?
     """, (lat, lon, f"{date_iso}%")).fetchall()
     res = {}
     if rows:
-        ws = [r[0] for r in rows if r[0] is not None]
-        wh = [r[2] for r in rows if r[2] is not None]
-        cs = [r[3] for r in rows if r[3] is not None]
+        ws   = [r[0] for r in rows if r[0] is not None]
+        wh   = [r[2] for r in rows if r[2] is not None]
+        cs   = [r[3] for r in rows if r[3] is not None]
+        ssts = [r[4] for r in rows if r[4] is not None]
+        sw   = [r[5] for r in rows if r[5] is not None]
+        tm   = [r[6] for r in rows if r[6] is not None]
+        pr   = [r[7] for r in rows if r[7] is not None]
         if ws:
             res["wind_speed_avg"] = _mean(ws)
             res["wind_speed_max"] = max(ws)
@@ -189,8 +249,41 @@ def get_wx_day(conn_wx, lat, lon, date_iso):
             res["wave_height_avg"] = _mean(wh)
         if cs:
             res["current_speed_avg"] = _mean(cs)
+        if ssts:
+            res["sst_avg"] = _mean(ssts)
+        if sw:
+            res["swell_height_avg"] = _mean(sw)
+        if tm:
+            res["temp_avg"] = _mean(tm)
+        if pr:
+            res["pressure_avg"] = _mean(pr)
     _wx_day_cache[k] = res
     return res
+
+
+# ─── 潮汐・月齢キャッシュ ────────────────────────────────────────────────────
+_tide_cache: dict = {}
+
+def _load_tide_data():
+    global _tide_cache
+    if _tide_cache:
+        return
+    if not os.path.exists(DB_TIDE):
+        print(f"  [WARN] tide_moon.sqlite が見つかりません: {DB_TIDE}")
+        return
+    conn = sqlite3.connect(DB_TIDE, timeout=10)
+    rows = conn.execute("SELECT date, tide_coeff, moon_age FROM tide_moon").fetchall()
+    conn.close()
+    for date, tc, ma in rows:
+        _tide_cache[date] = {
+            "tide_coeff": float(tc) if tc is not None else None,
+            "moon_age":   float(ma) if ma is not None else None,
+        }
+    print(f"  tide_moon キャッシュ: {len(_tide_cache)}日分", flush=True)
+
+def get_tide_day(date_iso):
+    _load_tide_data()
+    return _tide_cache.get(date_iso, {})
 
 
 # water_color_daily キャッシュ（AR(1)特徴量用）
@@ -346,6 +439,10 @@ def load_water_color_records():
 # ─── 特徴量付与 ────────────────────────────────────────────────────────────────
 def build_features(records, conn_wx, wx_coords):
     _load_wc_daily()   # water_color_daily を事前ロード（AR(1)用）
+    global _NEIGHBOR_MAP
+    if not _NEIGHBOR_MAP:
+        _NEIGHBOR_MAP = _build_neighbor_map(wx_coords)
+        print(f"  近傍マップ構築: {len(_NEIGHBOR_MAP)}座標", flush=True)
     enriched = []
     for i, r in enumerate(records):
         if i % 500 == 0:
@@ -354,21 +451,24 @@ def build_features(records, conn_wx, wx_coords):
         wlat, wlon = _nearest_wx_coord(lat, lon, wx_coords)
         date_iso = datetime.strptime(r["date"], "%Y/%m/%d").strftime("%Y-%m-%d")
 
-        pf  = build_precip_features(conn_wx, wlat, wlon, date_iso)
-        wxd = get_wx_day(conn_wx, wlat, wlon, date_iso)
-        riv = _build_river_features(conn_wx, lat, lon, date_iso)
+        pf   = build_precip_features(conn_wx, wlat, wlon, date_iso)
+        wxd  = get_wx_day(conn_wx, wlat, wlon, date_iso)
+        riv  = _build_river_features(conn_wx, lat, lon, date_iso)
+        tide = get_tide_day(date_iso)
 
         m = int(r["date"][5:7])
         feat = {
             **r, **pf, **wxd,
-            **riv,
-            "wc_prev1":    _lookup_wc_prev(wlat, wlon, date_iso),
-            "dist_shore":  _dist_from_bay_center(lat, lon),
-            "depth_grp":   _depth_group(r.get("depth_avg")),
-            "depth_bin_n": _depth_bin_n(r.get("depth_avg")),
-            "month_n":     m,
-            "month_sin":   math.sin(2 * math.pi * m / 12),
-            "month_cos":   math.cos(2 * math.pi * m / 12),
+            **riv, **tide,
+            "wc_prev1":         _lookup_wc_prev(wlat, wlon, date_iso),
+            "wc_spatial_lag":   _lookup_wc_spatial_lag(wlat, wlon, date_iso),
+            "cape_proximity_n": _cape_proximity(lat, lon),
+            "dist_shore":       _dist_from_bay_center(lat, lon),
+            "depth_grp":        _depth_group(r.get("depth_avg")),
+            "depth_bin_n":      _depth_bin_n(r.get("depth_avg")),
+            "month_n":          m,
+            "month_sin":        math.sin(2 * math.pi * m / 12),
+            "month_cos":        math.cos(2 * math.pi * m / 12),
         }
         enriched.append(feat)
     print(f"  特徴量付与完了: {len(enriched)}/{len(records)}件", flush=True)
@@ -379,10 +479,13 @@ def build_features(records, conn_wx, wx_coords):
 BASE_FEATURES = (
     [f"precip_sum{i}" for i in PRECIP_LAGS]
     + ["days_since_rain",
-       "wind_speed_avg", "wave_height_avg", "current_speed_avg",
+       "wind_speed_avg", "wave_height_avg", "swell_height_avg", "current_speed_avg",
+       "sst_avg", "temp_avg", "pressure_avg",
+       "tide_coeff", "moon_age",
        "depth_bin_n", "dist_shore",
        "tone_impact", "sagami_impact", "tama_impact",
-       "wc_prev1",
+       "wc_prev1", "wc_spatial_lag",
+       "cape_proximity_n",
        "month_sin", "month_cos"]
 )
 # NOTE: precip_cumW7 を削除（河口3特徴量に置き換え）。
@@ -444,19 +547,28 @@ def fit_stratified_models(records):
     group_features = {
         "shallow": [f"precip_sum{i}" for i in [1,2,3,4,5,6]] +
                    ["days_since_rain",
-                    "wind_speed_avg", "wave_height_avg", "current_speed_avg",
+                    "wind_speed_avg", "wave_height_avg", "swell_height_avg", "current_speed_avg",
+                    "sst_avg", "temp_avg", "pressure_avg",
+                    "tide_coeff", "moon_age",
                     "tone_impact", "sagami_impact", "tama_impact",
-                    "wc_prev1", "month_sin", "month_cos"],
+                    "wc_prev1", "wc_spatial_lag", "cape_proximity_n",
+                    "month_sin", "month_cos"],
         "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
                    ["days_since_rain",
-                    "wave_height_avg", "current_speed_avg",
+                    "wave_height_avg", "swell_height_avg", "current_speed_avg",
+                    "sst_avg", "temp_avg", "pressure_avg",
+                    "tide_coeff", "moon_age",
                     "tone_impact", "sagami_impact", "tama_impact",
-                    "wc_prev1", "month_sin", "month_cos"],
+                    "wc_prev1", "wc_spatial_lag", "cape_proximity_n",
+                    "month_sin", "month_cos"],
         "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
                    ["days_since_rain",
-                    "wave_height_avg", "current_speed_avg",
+                    "wave_height_avg", "swell_height_avg", "current_speed_avg",
+                    "sst_avg", "temp_avg", "pressure_avg",
+                    "tide_coeff", "moon_age",
                     "tone_impact", "sagami_impact", "tama_impact",
-                    "wc_prev1", "month_sin", "month_cos"],
+                    "wc_prev1", "wc_spatial_lag", "cape_proximity_n",
+                    "month_sin", "month_cos"],
         "unknown": BASE_FEATURES,
     }
     models = {}
@@ -509,19 +621,28 @@ def backtest(records, use_stratified=True):
                 feats = {
                     "shallow": [f"precip_sum{i}" for i in [1,2,3,4,5,6]] +
                                ["days_since_rain","wind_speed_avg",
-                                "wave_height_avg","current_speed_avg",
+                                "wave_height_avg","swell_height_avg","current_speed_avg",
+                                "sst_avg","temp_avg","pressure_avg",
+                                "tide_coeff","moon_age",
                                 "tone_impact","sagami_impact","tama_impact",
-                                "wc_prev1","month_sin","month_cos"],
+                                "wc_prev1","wc_spatial_lag","cape_proximity_n",
+                                "month_sin","month_cos"],
                     "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
                                ["days_since_rain",
-                                "wave_height_avg","current_speed_avg",
+                                "wave_height_avg","swell_height_avg","current_speed_avg",
+                                "sst_avg","temp_avg","pressure_avg",
+                                "tide_coeff","moon_age",
                                 "tone_impact","sagami_impact","tama_impact",
-                                "wc_prev1","month_sin","month_cos"],
+                                "wc_prev1","wc_spatial_lag","cape_proximity_n",
+                                "month_sin","month_cos"],
                     "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
                                ["days_since_rain",
-                                "wave_height_avg","current_speed_avg",
+                                "wave_height_avg","swell_height_avg","current_speed_avg",
+                                "sst_avg","temp_avg","pressure_avg",
+                                "tide_coeff","moon_age",
                                 "tone_impact","sagami_impact","tama_impact",
-                                "wc_prev1","month_sin","month_cos"],
+                                "wc_prev1","wc_spatial_lag","cape_proximity_n",
+                                "month_sin","month_cos"],
                 }.get(grp, BASE_FEATURES)
                 c, fk = fit_ols(g_tr, features=feats)
                 if c: s_models[grp] = (c, fk)
@@ -564,8 +685,11 @@ def factor_correlation_analysis(records):
     groups = [
         ("降水ラグ",     [f"precip_sum{i}" for i in PRECIP_LAGS] + ["precip_cumW7", "days_since_rain"]),
         ("河川影響",     ["tone_impact", "sagami_impact", "tama_impact"]),
-        ("水色AR",       ["wc_prev1"]),
-        ("風・波・潮流", ["wind_speed_avg", "wind_speed_max", "wave_height_avg", "current_speed_avg"]),
+        ("水色AR・空間", ["wc_prev1", "wc_spatial_lag"]),
+        ("岬接近度",    ["cape_proximity_n"]),
+        ("風・波・潮流", ["wind_speed_avg", "wind_speed_max", "wave_height_avg", "swell_height_avg", "current_speed_avg"]),
+        ("海面・気象",   ["sst_avg", "temp_avg", "pressure_avg"]),
+        ("潮汐・月齢",   ["tide_coeff", "moon_age"]),
         ("水深・沖合",   ["depth_avg", "depth_bin_n", "dist_shore"]),
         ("季節",         ["month_n", "month_sin", "month_cos"]),
     ]
@@ -752,6 +876,13 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
 
         current_day_preds: dict = {}  # 当日の予測値を収集（翌日の wc_prev1 用）
 
+        # 近傍マップ（初回のみ構築）
+        if not _NEIGHBOR_MAP:
+            _NEIGHBOR_MAP.update(_build_neighbor_map(wx_coords))
+
+        # 潮汐・月齢（日付単位で共通）
+        tide = get_tide_day(date_iso)
+
         for (lat, lon) in wx_coords:
             pf  = build_precip_features(conn_wx, lat, lon, date_iso)
             wxd = get_wx_day(conn_wx, lat, lon, date_iso)
@@ -765,8 +896,15 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
             # AR(1): 前日予測値（なければ 0.0 = グローバル平均の近似）
             wc_prev1 = prev_day_preds.get((lat, lon), 0.0)
 
-            r = {**pf, **wxd, **riv,
+            # 空間ラグ: 近傍ポイントの前日予測値平均（_WC_DAILY_CACHEではなくprev_day_predsを使う）
+            nbrs = _NEIGHBOR_MAP.get((lat, lon), [])
+            nbr_vals = [prev_day_preds.get(nb, 0.0) for nb in nbrs]
+            wc_spatial_lag_val = sum(nbr_vals) / len(nbr_vals) if nbr_vals else 0.0
+
+            r = {**pf, **wxd, **riv, **tide,
                  "wc_prev1": wc_prev1,
+                 "wc_spatial_lag": wc_spatial_lag_val,
+                 "cape_proximity_n": _cape_proximity(lat, lon),
                  "month_n": m, "month_sin": month_sin, "month_cos": month_cos,
                  "depth_grp": "unknown", "depth_bin_n": 1,
                  "dist_shore": _dist_from_bay_center(lat, lon)}
