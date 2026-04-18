@@ -2254,6 +2254,9 @@ def extract_count(t):
     if m: return {"min": int(m[1]), "max": int(m[2]), "is_boat": is_boat}
     m = re.search(r"(\d+)\s*[匹本尾枚杯]", t)
     if m: v = int(m[1]); return {"min": v, "max": v, "is_boat": is_boat}
+    # 「数匹」「数尾」等: 匹数欄に "数" + 単位 → 0〜2匹として扱う
+    if re.search(r'数[匹尾本頭]', t):
+        return {"min": 0, "max": 2, "is_boat": is_boat}
     return None
 
 def extract_weight_kg(t):
@@ -6476,6 +6479,16 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
             sc = extract_size_cm(r.get("size_raw") or "")
             wk = extract_weight_kg(r.get("weight_raw") or "") or \
                  extract_weight_kg(r.get("tokki_raw") or "")
+            # count_raw が空の場合、tokki_raw / weight_raw / size_raw に
+            # 「数匹」「数尾」等があれば 0〜2 匹として拾う
+            if not cr:
+                _sub = " ".join([
+                    r.get("tokki_raw") or "",
+                    r.get("weight_raw") or "",
+                    r.get("size_raw") or "",
+                ])
+                if re.search(r'数[匹尾本頭]', _sub):
+                    cr = {"min": 0, "max": 2}
             cnt_avg = None
             if cr and cr.get("min") is not None and cr.get("max") is not None:
                 cnt_avg = (cr["min"] + cr["max"]) // 2
