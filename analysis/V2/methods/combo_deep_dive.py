@@ -260,9 +260,10 @@ def _spawn_season_n(date_str: str) -> int:
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
 # 特徴量上限（過学習防止）: 相関上位 MAX_FACTORS 個のみ採用
-# 根拠: tide×season 12因子(tide_grp_*)がMAX_FACTORS=10で moon_age 等を押し出していた
-# → 12に拡張してtide_grp + 伝統因子(SST/moon/wave)の共存を可能にする（2026/04/16）
-MAX_FACTORS = 12
+# カテゴリ別上限でCMEMS/tide_grp_*の枠占有を防止（2026/04/18）
+MAX_FACTORS   = 12   # 全体上限
+MAX_CMEMS     = 0    # CMEMS変数: 0=完全除外（ベースライン復帰確認用）
+MAX_TIDE_GRP  = 99   # tide_grp_*: 制限なし（CMEMS前ベースラインと同条件）
 
 # per-combo FAST_MAX_H オーバーライド
 # 月齢・潮汐が主要因子で fast因子がノイズになるコンボは低い値を設定
@@ -374,6 +375,47 @@ CALENDAR_FACTORS = ["is_holiday", "is_consec_holiday", "is_summer_vacation", "sp
 
 # 全因子（相関計算対象）
 ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS + CALENDAR_FACTORS
+
+# カテゴリ別上限用セット（MAX_CMEMS / MAX_TIDE_GRP で枠を制御）
+CMEMS_FACTORS = {
+    "sla_avg", "chl_avg", "sss_avg",
+    "do_surface", "do_bottom", "temp_50m", "temp_100m", "temp_200m",
+    "thermocline_depth", "no3_surface",
+    "sla_delta", "chl_delta", "sla_gradient",
+    "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
+    "temp_100m_bin",
+    "kuroshio_score", "nutrient_score", "deepwater_score",
+}
+TIDE_GRP_FACTORS = {
+    "tide_grp_oshio_spring", "tide_grp_oshio_summer", "tide_grp_oshio_autumn", "tide_grp_oshio_winter",
+    "tide_grp_chusho_spring", "tide_grp_chusho_summer", "tide_grp_chusho_autumn", "tide_grp_chusho_winter",
+    "tide_grp_chowaka_spring", "tide_grp_chowaka_summer", "tide_grp_chowaka_autumn", "tide_grp_chowaka_winter",
+}
+
+def _apply_factor_caps(factor_r_dict: dict, max_total: int = MAX_FACTORS) -> dict:
+    """相関上位 max_total 個のみ採用。CMEMS/tide_grp_* はカテゴリ別上限を適用。"""
+    if len(factor_r_dict) <= max_total:
+        cmems_cnt = sum(1 for f in factor_r_dict if f in CMEMS_FACTORS)
+        tgrp_cnt  = sum(1 for f in factor_r_dict if f in TIDE_GRP_FACTORS)
+        if cmems_cnt <= MAX_CMEMS and tgrp_cnt <= MAX_TIDE_GRP:
+            return factor_r_dict
+    sorted_items = sorted(factor_r_dict.items(), key=lambda x: abs(x[1]), reverse=True)
+    selected = {}
+    cmems_cnt = 0
+    tgrp_cnt  = 0
+    for fac, rv in sorted_items:
+        if fac in CMEMS_FACTORS:
+            if cmems_cnt >= MAX_CMEMS:
+                continue
+            cmems_cnt += 1
+        elif fac in TIDE_GRP_FACTORS:
+            if tgrp_cnt >= MAX_TIDE_GRP:
+                continue
+            tgrp_cnt += 1
+        selected[fac] = rv
+        if len(selected) >= max_total:
+            break
+    return selected
 
 # 観測因子リストは normalize/obs_fields.json から動的に取得する。
 # → OBS_FACTORS は _get_obs_factors() で取得。新CSV列追加時は obs_fields.json だけ変更。
@@ -2052,10 +2094,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, tr_ys)
                 if rv is not None and abs(rv) >= fold_corr_thr:
                     factor_r_m[fac] = rv
-            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（過学習防止）
-            if len(factor_r_m) > MAX_FACTORS:
-                factor_r_m = dict(sorted(factor_r_m.items(),
-                                         key=lambda x: abs(x[1]), reverse=True)[:MAX_FACTORS])
+            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き）
+            factor_r_m = _apply_factor_caps(factor_r_m)
             if not factor_r_m:
                 continue
 
@@ -2559,10 +2599,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, final_ys)
                 if rv is not None and abs(rv) >= best_corr_thr:
                     final_factor_r[fac] = rv
-            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（CVフォールドと一貫させる）
-            if len(final_factor_r) > MAX_FACTORS:
-                final_factor_r = dict(sorted(final_factor_r.items(),
-                                             key=lambda x: abs(x[1]), reverse=True)[:MAX_FACTORS])
+            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き）
+            final_factor_r = _apply_factor_caps(final_factor_r)
             if not final_factor_r:
                 continue
 
