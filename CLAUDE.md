@@ -86,7 +86,7 @@ kanto-fishing/
 │   └── V2/                     # 現行分析（2026-04〜）
 │       ├── methods/            # 分析スクリプト群（16本）
 │       │   ├── _paths.py       # パス自動解決（CLAUDE.md を目印にルート検出）
-│       │   ├── combo_deep_dive.py  # 釣果×気象相関分析（手動実行・45魚種）
+│       │   ├── combo_deep_dive.py  # 釣果×気象相関分析（手動実行・55種実行/45種完了）
 │       │   └── ...
 │       └── results/            # 分析結果出力先
 │           ├── analysis.sqlite # 分析結果DB（combo_decadal等）
@@ -200,7 +200,7 @@ kanto-fishing/
 7. ✅ 気象・海況データ（weather_cache.sqlite・153座標×145万行）
 8. ✅ 台風トラックデータ（typhoon.sqlite・70台風・2,475ポイント）
 9. ✅ 月齢・潮汐データ（tide_moon.sqlite・1,190日分）
-10. ✅ 釣果×気象相関分析（combo_deep_dive.py・51魚種）
+10. ✅ 釣果×気象相関分析（combo_deep_dive.py・55種実行/45種完了）
 11. ✅ 欠航閾値計算（cancel_thresholds・cancel_thresholds_seasonal）
 12. ✅ 匹数・サイズの予測精度バックテスト（H=0,1,3,7,14,21,28）
 

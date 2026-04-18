@@ -37,7 +37,7 @@
 | 月別CSV | data/V2/YYYY-MM.csv | **64,991行**（38ファイル） | 毎日自動 |
 | 気象・海況 | ocean/weather_cache.sqlite（テーブル名:`weather`） | 153座標×1,456,560行 | 手動 |
 | CMEMSデータ | ocean/cmems_data.sqlite | cmems_daily 9.6M行・cmems_depth 4.1M行（〜2026-04-18） | 手動 |
-| 分析結果 | analysis/V2/results/analysis.sqlite | **45魚種・32テーブル** | 手動 |
+| 分析結果 | analysis/V2/results/analysis.sqlite | **55種実行・45種完了・32テーブル** | 手動 |
 | 船宿マスター | crawl/ships.json | **77件有効** | 月1自動 |
 
 ### 2. analysis/V2 分析結果の読み取り

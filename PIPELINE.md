@@ -176,7 +176,7 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | A5 weather/YYYY-MM.csv | ✅ 毎日更新 | 153地点×月別 |
 | A6 cmems_data.sqlite | ✅ 最新 | cmems_daily 9.6M行・cmems_depth 4.1M行（〜2026-04-18） |
 | B1 data/V2/*.csv | ✅ 最新 | **64,991行**（37ファイル + cancellations.csv） |
-| C1 analysis.sqlite | ✅ 最新（2026-04-19再実行） | 45魚種・32テーブル |
+| C1 analysis.sqlite | ✅ 最新（2026-04-19再実行） | 実行55種・バックテスト完了45種・32テーブル |
 | D1-4 予測モデル | 🔲 未実装 | - |
 | E デザイン | ✅ V2稼働中 | design_version: "V2" |
 
@@ -237,7 +237,7 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 |---------|------|------|
 | combo_decadal | 4,935 | 魚種×船宿×旬(10日)の平均値 ← **ベースライン** |
 | combo_backtest | 6,129 | H=0,1,3,7,14,21,28日前予測精度（r, MAE, wMAPE等） |
-| combo_meta | 246 | 座標・件数・精度サマリー（45魚種・246コンボ） |
+| combo_meta | 246 | 座標・件数・精度サマリー（45魚種・246コンボ）※MIN_N_COMBO=30件以上のコンボのみ |
 | combo_keywords | 1,513 | kanso_rawキーワード相関 |
 | combo_deep_params | 93,916 | 気象×釣果の回帰パラメータ（50魚種）※combo_metaの45魚種＋データ不足でmeta未生成の5魚種（アユ・コハダ・ハタ・ムツゴロウイカ・ムラソイ）を含む |
 | combo_wx_params | 8,434 | 採用気象因子・係数 |
@@ -278,10 +278,11 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
   test  = 全レコード の うち date[:7] == m
 ```
 
-**実績（2026/04/19, 全45魚種）:**
+**実績（2026/04/19, 実行55種・バックテスト完了45種）:**
 - H=0 wMAPE 中央値（コンボ単位P50）: **41.6%**
-- BL-2 勝率 H=0: **88.9%**
+- BL-2 勝率 H=0: **88.5%**
 - OOS r 平均 H=0: **+0.387**
+- ※ 残10種（ハタ・クロムツ・キメジ等）はMIN_N_COMBO=30件未満のコンボのみで分析対象外
 
 ### バックテスト：予報有効ホライズン分類
 
@@ -399,6 +400,9 @@ crawler.py 実行時
 - `_lookup_wc_pred()` に距離フィルター追加（0.3°超の外挿をNone化）
 - build_analysis_map.py 新規作成（CHL解像度比較・水色補間品質・4レイヤスナップショット）
 - design_version を V1 → V2 に切替済み
-- 分析対象魚種: 51種→45種（CSV上の58種のうち、コンボ件数不足・対象外魚種を除外した結果）
-  - combo_deep_params には50種（meta未生成の5種: アユ・コハダ・ハタ・ムツゴロウイカ・ムラソイ を含む）
+- 魚種数の整理:
+  - run_full_deepdive.py 実行対象: **55種**（ALL_FISHリスト）
+  - combo_meta/backtest 完了: **45種**（MIN_N_COMBO=30件以上のコンボが存在する種のみ）
+  - 除外10種（データ不足）: ハタ・キメジ・コハダ・ブリ・キンメ・アユ・モンゴウイカ・イシダイ・クロムツ・ホウボウ
+  - combo_deep_params: **50種**（コンボ不足でバックテスト未実施だがパラメータのみ存在する種を含む）
 - ※ CLAUDE.md の一部記述（catches_raw件数/CSV行数/design_version/魚種数）は旧値のまま。本ファイル（PIPELINE.md）の値が正。
