@@ -135,6 +135,10 @@ SLOW_FACTORS = {
     "chl_delta",         # クロロフィル 7日間変化 (mg/m³)：正=ベイト急増=回遊魚フロント形成
     "sla_monthly",       # ±30日平均SLA：月次黒潮状態（マダイ/カンパチ/アカムツ等に有効）
     "sla_lag30",         # 30日前SLA：ヒラメ等底魚の月次遅延反応
+    # 黒潮接岸指数（月次・広域）：大蛇行 vs 接岸のレジームを捉える
+    # avg_SLA(lat34-36,lon138-142) - avg_SLA(lat32-34,lon136-140)
+    # 正=接岸→シイラ↑  負=大蛇行→ワラサ↑・カツオ微増  r=0.46(シイラ),r=-0.29(ワラサ)
+    "sla_approach_idx",
     # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
@@ -353,6 +357,7 @@ WX_FACTORS = [
     "chl_delta",        # クロロフィル 7日間変化: 正=ベイト急増シグナル
     "sla_monthly",      # ±30日平均SLA: 月次黒潮状態（SLOW・全H有効）
     "sla_lag30",        # 30日前SLA: 底魚の月次遅延反応（SLOW・全H有効）
+    "sla_approach_idx", # 黒潮接岸指数（月次広域）: 正=接岸→シイラ↑ 負=大蛇行→ワラサ↑
     # temp_100m × 季節交互作用
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
@@ -798,6 +803,9 @@ def nearest_coord(lat, lon, coords):
 _WC_DAILY_CACHE: dict = {}
 _WC_DAILY_LOADED: bool = False
 _WC_DAILY_COORDS: list = []  # (lat, lon) のユニークリスト
+# 関東（北緯35°付近）で東西≒27km・南北≒33km の楕円フィルター。
+# 既存コードと同じ非補正ユークリッド近似で統一。
+_WC_MAX_DIST = 0.3
 
 def _load_wc_daily_cache():
     """analysis.sqlite の water_color_daily を一度だけメモリに展開する。"""
@@ -821,16 +829,17 @@ def _load_wc_daily_cache():
     _WC_DAILY_COORDS = list(coord_set)
 
 def _lookup_wc_pred(lat, lon, date_iso):
-    """最近傍 wx_coord の当日 wc_pred を返す。テーブルがなければ None。"""
+    """最近傍 wx_coord の当日 wc_pred を返す。テーブルがなければ None。
+    最近傍座標が _WC_MAX_DIST(°)より遠い場合は外挿とみなして None を返す。"""
     _load_wc_daily_cache()
     if not _WC_DAILY_CACHE:
         return None
-    # 最近傍座標を解決
-    if _WC_DAILY_COORDS:
-        wlat, wlon = min(_WC_DAILY_COORDS,
-                         key=lambda c: (c[0] - lat)**2 + (c[1] - lon)**2)
-    else:
-        wlat, wlon = round(lat, 2), round(lon, 2)
+    if not _WC_DAILY_COORDS:
+        return None
+    wlat, wlon = min(_WC_DAILY_COORDS,
+                     key=lambda c: (c[0] - lat)**2 + (c[1] - lon)**2)
+    if (wlat - lat)**2 + (wlon - lon)**2 > _WC_MAX_DIST**2:
+        return None
     k = (round(wlat, 2), round(wlon, 2), date_iso)
     return _WC_DAILY_CACHE.get(k)
 
@@ -1125,6 +1134,10 @@ _SLA_BY_MONTH:    dict = {}   # "YYYY-MM" -> [(lat_r3, lon_r3, avg), ...]  (fall
 _SLA_LOADED = False
 # cache for coord snapping result: (lat, lon, date/ym) -> nearest value
 _SLA_SNAP_CACHE: dict = {}
+# 黒潮接岸指数キャッシュ: "YYYY-MM" -> approach_idx
+# 定義: avg_SLA(北方 lat34-36,lon138-142) - avg_SLA(南方 lat32-34,lon136-140)
+# 正=黒潮が北上・接岸  負=黒潮が南に蛇行（大蛇行）
+_SLA_APPROACH_CACHE: dict = {}
 
 
 def _preload_sla_if_needed(conn_cmems):
@@ -1210,6 +1223,27 @@ def _get_sla_monthly_avg(conn_cmems, lat, lon, date_iso, window=30):
             best_v  = v
     _SLA_SNAP_CACHE[snap_key] = best_v
     return best_v
+
+
+def _get_sla_approach_idx(conn_cmems, date_iso):
+    """黒潮接岸指数（月次）= avg_SLA(北方) - avg_SLA(南方) を返す。
+    北方: lat34-36, lon138-142（関東沿岸）
+    南方: lat32-34, lon136-140（黒潮大蛇行時の蓄積域）
+    正値=接岸・負値=大蛇行。_SLA_BY_MONTHのin-memoryから計算（SQLなし）。
+    """
+    _preload_sla_if_needed(conn_cmems)
+    ym = date_iso[:7]
+    if ym in _SLA_APPROACH_CACHE:
+        return _SLA_APPROACH_CACHE[ym]
+    entries = _SLA_BY_MONTH.get(ym, [])
+    north = [v for la, lo, v in entries if 34 <= la <= 36 and 138 <= lo <= 142]
+    south = [v for la, lo, v in entries if 32 <= la <= 34 and 136 <= lo <= 140]
+    if not north or not south:
+        _SLA_APPROACH_CACHE[ym] = None
+        return None
+    idx = sum(north) / len(north) - sum(south) / len(south)
+    _SLA_APPROACH_CACHE[ym] = idx
+    return idx
 
 
 def _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, grid_deg, cols):
@@ -1536,8 +1570,11 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             else:
                 wx["sla_monthly"] = None
                 wx["sla_lag30"] = None
+            # ── sla_approach_idx: 黒潮接岸指数（月次・広域・座標非依存）────────────
+            wx["sla_approach_idx"] = _get_sla_approach_idx(conn_cmems, tide_date)
         else:
             wx["sla_delta"] = wx["chl_delta"] = wx["sla_monthly"] = wx["sla_lag30"] = None
+            wx["sla_approach_idx"] = None
 
         # ── temp_100m × 季節交互作用（深層水温の季節依存性）────────────────────
         _t100 = wx.get("temp_100m")

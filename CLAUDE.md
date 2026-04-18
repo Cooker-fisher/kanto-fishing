@@ -57,7 +57,7 @@ kanto-fishing/
 │   ├── tide_moon.sqlite          # 月齢・潮汐（1,190日分）
 │   └── typhoon.sqlite            # 台風トラック（70台風）
 ├── weather/                    # A5: E層向け海況CSV（crawler.py が毎日追記）
-│   └── YYYY-MM.csv             # 96地点×月別。HTML生成時の海況表示に使用
+│   └── YYYY-MM.csv             # 153地点×月別。HTML生成時の海況表示に使用
 │
 ├── # ── B層: 正規化マスターデータ ──
 ├── normalize/
@@ -69,11 +69,11 @@ kanto-fishing/
 │   └── ship_wx_coord_override.json # 気象座標上書き
 │
 ├── # ── B層: 釣果データ ──
-├── catches_raw.json            # 釣果生データ（84,757件・毎日更新）※バージョン管理なし
+├── catches_raw.json            # 釣果生データ（86,024件・毎日更新）※バージョン管理なし
 ├── catches.json                # 当日釣果スナップショット（index.html生成用）
 ├── history.json                # 週次・月次集計データ（蓄積）
 ├── data/
-│   └── V2/                    # 月別正規化CSV（YYYY-MM.csv・82,650行）
+│   └── V2/                    # 月別正規化CSV（YYYY-MM.csv・64,991行）
 │                               # config.json active_version に連動
 │                               # CSV列追加時は V3 に上げ全再生成
 │
@@ -86,7 +86,7 @@ kanto-fishing/
 │   └── V2/                     # 現行分析（2026-04〜）
 │       ├── methods/            # 分析スクリプト群（16本）
 │       │   ├── _paths.py       # パス自動解決（CLAUDE.md を目印にルート検出）
-│       │   ├── combo_deep_dive.py  # 釣果×気象相関分析（手動実行・51魚種）
+│       │   ├── combo_deep_dive.py  # 釣果×気象相関分析（手動実行・45魚種）
 │       │   └── ...
 │       └── results/            # 分析結果出力先
 │           ├── analysis.sqlite # 分析結果DB（combo_decadal等）
@@ -104,16 +104,16 @@ kanto-fishing/
 ├── forecast/                   # 予測ページ（毎日再生成）
 │
 ├── # ── デザイン管理 ──
-├── style.css                   # デプロイ中CSS（design/V1/ から自動同期）
-├── main.js                     # デプロイ中JS（design/V1/ から自動同期）
+├── style.css                   # デプロイ中CSS（design/V2/ から自動同期）
+├── main.js                     # デプロイ中JS（design/V2/ から自動同期）
 ├── pages/                      # 静的ページ（design/Vn/ から自動同期）
 │   ├── about.html / contact.html / privacy.html / terms.html
 ├── design/                     # デザインバージョン管理
 │   ├── README.md               # バージョン管理・デプロイ手順
-│   ├── V1/                     # 現行デプロイ中デザイン（アーカイブ＆同期元）
+│   ├── V1/                     # 旧デザイン（アーカイブ）
 │   │   ├── style.css / main.js
 │   │   └── about.html / contact.html / privacy.html / terms.html
-│   └── V2/                     # リデザイン作業中
+│   └── V2/                     # 現行デプロイ中デザイン（同期元・design_version: "V2"）
 │       ├── README.md（ロールシステム）
 │       ├── 00〜06_*.md（ロール定義）
 │       ├── 10〜20_*.md（設計ドキュメント）
@@ -144,12 +144,13 @@ kanto-fishing/
 
 | 層 | 主スクリプト | 出力 | タイミング |
 |----|------------|------|----------|
-| A1 釣果 | crawler.py | catches_raw.json | 毎日自動 |
-| A2 気象 | rebuild_weather_cache.py | weather_cache.sqlite | 手動（約30分） |
-| A3 台風 | build_typhoon.py | typhoon.sqlite | 手動（年次） |
-| A4 潮汐 | build_tide_moon.py | tide_moon.sqlite | 手動（5秒） |
-| B CSV化 | crawler.py | data/YYYY-MM.csv | A1後自動 |
-| C 分析 | analysis/V2/methods/combo_deep_dive.py | analysis/V2/results/analysis.sqlite | 手動 |
+| A1 釣果 | crawler.py | crawl/catches_raw.json | 毎日自動 |
+| A2 気象 | ocean/rebuild_weather_cache.py | ocean/weather_cache.sqlite | 手動（約30分） |
+| A3 台風 | ocean/build_typhoon.py | ocean/typhoon.sqlite | 手動（年次） |
+| A4 潮汐 | ocean/build_tide_moon.py | ocean/tide_moon.sqlite | 手動（5秒） |
+| A6 CMEMS | ocean/build_cmems.py | ocean/cmems_data.sqlite | 手動（随時） |
+| B CSV化 | crawler.py | data/V2/YYYY-MM.csv | A1後自動 |
+| C 分析 | analysis/V2/methods/run_full_deepdive.py | analysis/V2/results/analysis.sqlite | 手動（全魚種 --workers 4） |
 | D 予測 | 未実装 | - | - |
 | E 表示 | crawler.py | *.html | A1後自動 |
 

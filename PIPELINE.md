@@ -1,4 +1,4 @@
-# データパイプライン設計図 v2.2（2026/04/09）
+# データパイプライン設計図 v2.3（2026/04/19）
 
 このファイルはパイプラインの構造と変更インパクトを記録するリファレンスです。
 **何かを変更する前に必ずこのファイルを確認すること。**
@@ -50,8 +50,6 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 
 ---
 
----
-
 ## 全体構成
 
 ```
@@ -64,29 +62,60 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 
 | レイヤ | スクリプト | 出力ファイル | 実行タイミング |
 |--------|-----------|------------|--------------|
-| A1 釣果クロール | crawler.py | crawl/catches_raw.json (84,757件) | 毎日16:30 JST（GitHub Actions） |
+| A1 釣果クロール | crawler.py | crawl/catches_raw.json | 毎日16:30 JST（GitHub Actions） |
 | A1b 直接クロール | direct-crawl/gyo_crawler.py | direct-crawl/catches_raw_direct.json | 毎日（A1後・crawl.yml） |
 | A2 気象データ | ocean/rebuild_weather_cache.py | ocean/weather_cache.sqlite | 手動（約30分）|
 | A3 台風データ | ocean/build_typhoon.py | ocean/typhoon.sqlite | 手動（年次更新）|
 | A4 潮汐・月齢 | ocean/build_tide_moon.py | ocean/tide_moon.sqlite | 手動（5秒）|
-| A5 海況CSV | crawler.py (fetch_weather_csv) | weather/YYYY-MM.csv | 毎日自動（A1後）|
+| A5 海況CSV | crawler.py (fetch_weather_csv) | weather/YYYY-MM.csv（153座標＝weather_cache と同一） | 毎日自動（A1後）|
+| A6 CMEMSデータ | ocean/build_cmems.py | ocean/cmems_data.sqlite | 手動（随時）|
+| A7 海況マップJSON | ocean/build_ocean_map.py | ocean_map_data.json | 手動（随時）|
+| A8 分析可視化 | ocean/build_analysis_map.py | PNG（ローカル専用） | 手動（分析時）|
+| A9 潮汐詳細 | ocean/tide_fetch.py | tide/YYYY-MM.csv（4エリア毎時） | 手動 |
 
 ### A2 weather_cache.sqlite 詳細
 - **ソース**: Open-Meteo Archive API + Marine API
-- **対象**: 153座標 × 2023-01-01〜今日 × 3時間毎
-- **規模**: 約145万行
-- **スキーマ**: `(lat, lon, dt, wind_speed, wind_dir, temp, pressure, wave_height, wave_period, swell_height, sst, precipitation)`
+- **テーブル名**: `weather`（※`weather_cache`ではない）
+- **対象**: 153座標 × 2023-01-01〜2026-04-04 × 3時間毎
+- **規模**: 1,456,560行
+- **スキーマ**: `(lat, lon, dt, wind_speed, wind_dir, temp, pressure, wave_height, wave_period, swell_height, sst, precipitation, current_speed, current_dir)`
 - **座標ソース**: point_coords.json（152座標） + area_coords.json（フォールバック）
 
 ### A3 typhoon.sqlite 詳細
 - **ソース**: 気象庁 BestTrack (bst_all.zip / bst{YYYY}.txt)
-- **対象**: 2023〜現在 70台風 2,475トラックポイント（6時間毎）
+- **対象**: 2023〜2025年 70台風 2,475トラックポイント（6時間毎）
+- **期間**: 2023-04-19〜2025-12-03
 - **スキーマ**: `typhoons(ty_id, year, number, name)` + `typhoon_track(ty_id, dt, lat, lon, pressure, wind_kt, dist_ibaraki, dist_outer_boso, dist_tokyo_bay, dist_sagami_bay, min_dist)`
 
 ### A4 tide_moon.sqlite 詳細
 - **計算式**: 基準新月JD 2451550.259722 / 朔望月 29.530588853日
+- **規模**: 37,985行
+- **期間**: 2023-01-01〜2126-12-31（天文計算で超長期生成済み）
 - **出力**: 日ベース（tide_type, moon_age, tide_coeff 0〜100, moon_phase）
 - **潮汐区分**: 大潮/中潮/小潮/長潮/若潮
+
+### A6 cmems_data.sqlite 詳細
+- **ソース**: Copernicus Marine Service (CMEMS) API
+- **テーブル1**: `cmems_daily`
+  - **列**: `(lat, lon, date, sla, chl, sss)`
+  - **内容**: SLA（黒潮位置）・CHL（クロロフィル=ベイト密度）・SSS（塩分）
+  - **規模**: 9,651,712行
+  - **期間**: 2023-01-01〜2026-04-18
+- **テーブル2**: `cmems_depth`
+  - **列**: `(lat, lon, date, depth_m, temp, do, no3)`
+  - **内容**: 深度別水温・DO（溶存酸素=青潮リスク）・NO3（硝酸塩=栄養塩）
+  - **規模**: 4,158,088行
+  - **期間**: 2023-01-01〜2026-04-18
+
+### A7 build_ocean_map.py 詳細
+- **入力**: cmems_data.sqlite + weather_cache.sqlite + analysis.sqlite(water_color_daily)
+- **出力**: `ocean_map_data.json`（kuroshio_map.html 用データ）
+- **内容**: SLA/CHL/SST/水色 × 直近30日分
+- **GitHub Pages非対象**: ローカル分析ツール
+
+### A8 build_analysis_map.py 詳細
+- **目的**: 分析者向け3ショット専用ツール（CHL解像度比較・水色補間品質・4レイヤスナップショット）
+- **GitHub Pages非対象**: ローカル専用
 
 ---
 
@@ -97,10 +126,10 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 
 | スクリプト | 入力 | 出力 | 実行タイミング |
 |-----------|------|------|--------------|
-| crawler.py (save_daily_csv) | catches_raw.json | data/V2/YYYY-MM.csv | crawl後自動 |
-| crawler.py (export_csv_from_raw) | catches_raw.json | data/V2/YYYY-MM.csv | 全再生成時（手動） |
+| crawler.py (save_daily_csv) | crawl/catches_raw.json | data/V2/YYYY-MM.csv | crawl後自動 |
+| crawler.py (export_csv_from_raw) | crawl/catches_raw.json | data/V2/YYYY-MM.csv | 全再生成時（手動） |
 
-### CSV列一覧（B1）
+### CSV列一覧（B1・V2スキーマ・38列）
 
 | 列名 | 内容 | 正規化ロジック |
 |------|------|-------------|
@@ -110,18 +139,46 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | trip_no | 1日の何便目 | 整数 |
 | is_cancellation | 欠航フラグ | 0/1 |
 | tsuri_mono_raw | 釣り物生テキスト | そのまま（LTアジ等） |
-| tsuri_mono | 正規化魚種名 | tsuri_mono_map_draft.json (58種) |
+| tsuri_mono | 正規化魚種名 | tsuri_mono_map_draft.json |
 | main_sub | メイン/サブ/不明 | fish_raw中の順位 |
 | fish_raw | 釣果生テキスト全文 | そのまま |
 | time_slot | 午前/午後/夜/朝/夕/ショート | fish_rawから抽出 |
 | cnt_min/max/avg | 釣果数 | 数値抽出 |
+| is_boat | 乗合/仕立フラグ | 0/1 |
 | size_min/max | サイズ(cm) | 数値抽出 |
 | kg_min/max | 重量(kg) | 数値抽出 |
+| tackle | 仕掛け種別 | テキスト抽出 |
 | point_place1/2/3 | ポイント名 | kanso_rawから抽出 |
-| lat, lon | 座標 | ポイント解決（3段階フォールバック） |
+| depth_min/max | 水深(m) | 数値抽出 |
+| water_temp_min/max | 水温(℃) | 数値抽出 |
+| water_color | 水色テキスト | そのまま |
+| wind_direction | 風向 | テキスト抽出 |
+| wind_speed | 風速 | テキスト抽出 |
+| tide_info | 潮情報テキスト | そのまま |
+| wave_info | 波情報テキスト | そのまま |
+| weather | 天気テキスト | そのまま |
+| by_catch | 外道テキスト | そのまま |
 | cancel_reason | 欠航理由生テキスト | reason_textから |
 | cancel_type | 欠航種別 | 定休日/荒天/台風/中止/不明 |
 | kanso_raw | 感想生テキスト | そのまま |
+| suion_raw | 水温生テキスト | そのまま |
+| suishoku_raw | 水色生テキスト | そのまま |
+
+### 現在のデータ状態（2026/04/19）
+
+| レイヤ | 状態 | 件数・規模 |
+|--------|------|---------|
+| A1 crawl/catches_raw.json | ✅ 最新 | **86,024件** |
+| A1b catches_raw_direct.json | ✅ 稼働中 | 忠彦丸・一之瀬丸・米元 |
+| A2 weather_cache.sqlite | ✅ 完成 | 153座標×1,456,560行（〜2026-04-04） |
+| A3 typhoon.sqlite | ✅ 完成 | 70台風 2,475ポイント（〜2025-12） |
+| A4 tide_moon.sqlite | ✅ 完成 | 37,985行（〜2126年）|
+| A5 weather/YYYY-MM.csv | ✅ 毎日更新 | 153地点×月別 |
+| A6 cmems_data.sqlite | ✅ 最新 | cmems_daily 9.6M行・cmems_depth 4.1M行（〜2026-04-18） |
+| B1 data/V2/*.csv | ✅ 最新 | **64,991行**（37ファイル + cancellations.csv） |
+| C1 analysis.sqlite | ✅ 最新（2026-04-19再実行） | 45魚種・32テーブル |
+| D1-4 予測モデル | 🔲 未実装 | - |
+| E デザイン | ✅ V2稼働中 | design_version: "V2" |
 
 ### ポイント解決（3段階フォールバック）
 
@@ -174,16 +231,42 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 > python analysis/V2/methods/run_full_deepdive.py --workers 2
 > ```
 
-### analysis.sqlite テーブル一覧
+### analysis.sqlite テーブル一覧（32テーブル・2026/04/19現在）
 
-| テーブル | 内容 |
-|---------|------|
-| combo_decadal | 魚種×船宿×旬(10日)の平均値 ← **ベースライン** |
-| combo_backtest | H=0,1,3,7,14,21,28日前予測精度（r, MAE, MAPE） |
-| combo_meta | 座標・件数サマリー |
-| combo_keywords | kanso_rawキーワード相関 |
-| cancel_thresholds | 船宿別欠航波高・風速閾値 |
-| cancel_thresholds_seasonal | 季節別欠航閾値 |
+| テーブル | 行数 | 内容 |
+|---------|------|------|
+| combo_decadal | 4,935 | 魚種×船宿×旬(10日)の平均値 ← **ベースライン** |
+| combo_backtest | 6,129 | H=0,1,3,7,14,21,28日前予測精度（r, MAE, wMAPE等） |
+| combo_meta | 246 | 座標・件数・精度サマリー（45魚種・246コンボ） |
+| combo_keywords | 1,513 | kanso_rawキーワード相関 |
+| combo_deep_params | 93,916 | 気象×釣果の回帰パラメータ（50魚種）※combo_metaの45魚種＋データ不足でmeta未生成の5魚種（アユ・コハダ・ハタ・ムツゴロウイカ・ムラソイ）を含む |
+| combo_wx_params | 8,434 | 採用気象因子・係数 |
+| combo_range_backtest | 1,624 | cnt_min/max予測レンジ精度 |
+| combo_star_backtest | 77 | 回遊魚★チャンス評価バックテスト |
+| combo_thresholds | 4,720 | 欠航閾値・ベースライン閾値 |
+| combo_monthly | 1,909 | 月別集計 |
+| combo_weekly | 9,513 | 週別集計 |
+| combo_season | 282 | 季節別集計 |
+| combo_slot_ratio | 134 | 時間帯別釣果比率 |
+| combo_notes | 0 | メモ（未使用） |
+| cancel_thresholds | 11 | 船宿別欠航波高・風速閾値 |
+| cancel_thresholds_combo | 11 | 船宿×魚種別欠航閾値 |
+| cancel_thresholds_seasonal | 24 | 季節別欠航閾値 |
+| water_color_daily | 181,611 | 153座標×日別水色予測値（〜2026-04-04） |
+| wc_model_coeffs | 127 | 水色予測モデル係数 |
+| area_decadal | 2,340 | エリア×旬別集計 |
+| area_peaks | 126 | エリア別旬ピーク |
+| area_season | 881 | エリア別季節集計 |
+| ship_decadal | 5,056 | 船宿×旬別集計 |
+| ship_peaks | 424 | 船宿別旬ピーク |
+| ship_weekly_peaks | 682 | 船宿別週ピーク |
+| cooccurrence | 807 | 魚種共出現集計 |
+| decadal_calendar | 911 | 旬別カレンダー |
+| season_calendar | 406 | 季節カレンダー |
+| obs_keyword_corrections | 29 | キーワード補正テーブル |
+| prediction_log | 799 | 予測ログ（JSONL形式） |
+| retro_backtest | 10,540 | レトロスペクティブバックテスト |
+| sqlite_sequence | 1 | SQLite内部 |
 
 ### バックテスト CV 設計（2026/04/13 確定）
 
@@ -195,26 +278,10 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
   test  = 全レコード の うち date[:7] == m
 ```
 
-**採用理由:**
-- 実運用では3年分の蓄積データ全体で学習してから翌日を予測する
-- バックテストも同じ条件にすることで、実運用精度を正しく反映する
-- walk-forward（過去のみ学習）だと初期foldが「未熟期モデル」になり wMAPE が悲観的かつ不正確
-
-**「未来データを学習に含む」問題について:**
-- 気象×釣果の相関（SST高い日はアジが多い等）は時期によらず安定した自然法則
-- 金融データと異なり、2025年のデータが2023年の予測精度を歪めることはない
-- テスト月のアウトカムは train から除外されているため情報汚染なし
-
-**最低条件:** 全月数 ≥ 2（MIN_TRAIN_N=15件 も満たすこと）
-
-**最終パラメータ（wx_params）:** 全件で学習（TRAIN_END廃止）
-
-**実績（2026/04/13, 全55魚種）:**
-- H=0 wMAPE 中央値: **39.9%**（旧walk-forward比 -2.9pt）
-- BL-2 勝率: **90.8%**（旧 83%）
-- H=0 と H=7 の差: **2.0pt**（前後データで学習するため当然の縮小）
-
----
+**実績（2026/04/19, 全45魚種）:**
+- H=0 wMAPE 中央値（コンボ単位P50）: **41.6%**
+- BL-2 勝率 H=0: **88.9%**
+- OOS r 平均 H=0: **+0.387**
 
 ### バックテスト：予報有効ホライズン分類
 
@@ -222,8 +289,10 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 |------|------|-------|
 | SST, temp, pressure | 遅い変数（週単位で変化） | H≤28 |
 | tide_type, moon_age | 天文計算（確定値） | H≤∞ |
+| SLA, CHL（CMEMS） | 遅い変数（週〜月単位） | H≤14 |
 | wave_height, wave_period, swell | 速い変数（数日で急変） | H≤7 |
 | wind_speed, wind_dir | 速い変数 | H≤7 |
+| current_speed, current_dir | 速い変数 | H≤7 |
 | typhoon_dist | イベント変数 | H≤5（進路予報限界） |
 
 ---
@@ -232,13 +301,13 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 
 ### D1: 短期予測 H=1〜7日
 
-- **使用変数**: wave, wind, SST, tide_type, moon_age, typhoon_dist（全変数）
+- **使用変数**: wave, wind, SST, tide_type, moon_age, typhoon_dist, current_speed（全変数）
 - **ベースライン**: combo_decadal（旬別）
 - **出力**: 平年比±% + ★1〜5評価 + 理由テキスト
 
 ### D2: 中期予測 H=8〜14日
 
-- **使用変数**: SST, temp, pressure, tide_type, moon_age（速い変数は使わない）
+- **使用変数**: SST, temp, pressure, tide_type, moon_age, SLA, CHL（速い変数は使わない）
 - **ベースライン**: combo_decadal
 
 ### D3: 長期予測 H=15〜28日
@@ -259,7 +328,7 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 |--------|--------------|---------|
 | index.html | crawler.py: build_html | ✅ 毎日 |
 | calendar.html | crawler.py: build_calendar_page | ✅ 毎日 |
-| fish/*.html (51魚種) | crawler.py: build_fish_pages | ✅ 毎日 |
+| fish/*.html | crawler.py: build_fish_pages | ✅ 毎日 |
 | area/*.html | crawler.py: build_area_pages | ✅ 毎日 |
 | fish_area/*.html | crawler.py: build_fish_area_pages | ✅ 毎日 |
 | forecast/index.html | crawler.py: build_forecast | ✅ 毎日 |
@@ -271,17 +340,13 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 
 ```
 config.json
-  "design_version": "V1"  ← ここを V2 に変えるだけで全デザイン切替
+  "design_version": "V2"  ← ここを変えるだけで全デザイン切替
         ↓
 crawler.py 実行時
-  design/V1/*.html → pages/（about/contact/privacy/terms）
-  design/V1/style.css → ルート
-  design/V1/main.js   → ルート
+  design/V2/*.html → pages/（about/contact/privacy/terms）
+  design/V2/style.css → ルート
+  design/V2/main.js   → ルート
 ```
-
-- **HTML構造（fish/*.html等）**: crawler.py が毎日再生成 → design_version 変更で自動反映
-- **静的ページ（pages/）**: design/Vn/ からコピー → URL は `/pages/about.html` 等
-- **注意**: fish/ area/ 等の URL 構造変更は SEO リセットを伴う → V2 設計時に要決定
 
 ---
 
@@ -295,57 +360,45 @@ crawler.py 実行時
 | point_coords.json | B→C→D→E | CSV再生成 + C全実行 | ★★★ 高 |
 | ship_fish_point.json | B→C→D→E | CSV再生成 + C全実行 | ★★★ 高 |
 | weather_cache 座標追加 | A2→C→D1-2 | rebuild_weather_cache (30分) + C実行 | ★★ 中 |
+| cmems_data 更新 | A6→C→D1-2 | build_cmems + C実行 | ★★ 中 |
 | tide_moon 計算式変更 | A4→C→D3 | rebuild_tide_moon (5秒) + C実行 | ★ 低 |
 | 台風データ年次更新 | A3→D4 | build_typhoon のみ (1分) | ★ 低 |
 | cancel_threshold変更 | D4→E | D4再計算のみ | ★ 低 |
 | HTML/テンプレ変更 | E のみ | crawler.py再実行のみ | ★ 低 |
 | catches_raw.json更新（日次） | B→C→D→E | CSV再生成 + C増分実行 | ★★ 中（自動） |
-
----
-
-## 現在のデータ状態（2026/04/08）
-
-| レイヤ | 状態 | 件数・規模 |
-|--------|------|---------|
-| A1 catches_raw.json | ✅ 最新 | 84,757件 |
-| A1b catches_raw_direct.json | ✅ 稼働中 | 108件（忠彦丸・一之瀬丸・米元） |
-| A2 weather_cache.sqlite | ✅ 完成 | 153座標×145万行 |
-| A3 typhoon.sqlite | ✅ 完成 | 70台風 2,475ポイント |
-| A4 tide_moon.sqlite | ✅ 完成 | 1,190日分 |
-| A5 weather/YYYY-MM.csv | ✅ 毎日更新 | 96地点×月別 |
-| B1 data/V2/*.csv | ✅ 最新 | 82,650行 |
-| C1 analysis.sqlite | ⏳ 要再実行 | 51魚種 |
-| C2 deepdive_params.json | ⏳ C1後に実行 | - |
-| D1-4 予測モデル | 🔲 未実装 | - |
-| E デザイン | ✅ V1稼働中 | design_version: "V1" |
-
----
-
-## 変更インパクトマトリクス（追記）
-
-| 変更対象 | 影響する層 | 必要な再実行 | コスト |
-|---------|-----------|------------|------|
 | config.json design_version | E | crawler.py 実行のみ | ★ 低 |
 | design/Vn/*.html/css/js | E | crawler.py 実行のみ | ★ 低 |
 | fish/ area/ のURL構造変更 | E + SEO | crawler.py + 全インデックス再取得 | ★★★ 高（SEOリセット） |
-| weather/YYYY-MM.csv スキーマ変更 | E | 全CSV再生成 + crawler.py修正 | ★★ 中 |
-| direct-crawl/gyo_crawler.py | A1b→B | CSV再統合 | ★ 低 |
+| combo_deep_dive.py 特徴量追加 | C→D | run_full_deepdive.py 全魚種再実行 | ★★ 中 |
 
 ---
 
 ## ノート（意思決定ログ）
 
 ### 2026/04/04
-- normalize_tsuri_mono バグ修正（`raw in p` → `p in raw` のみ）。17,701件の誤分類を解消
-- time_slot / cancel_reason / cancel_type をCSVに追加
-- rebuild_weather_cache.py: 新規作成（point_coords.json 152座標ベース）
-- build_typhoon.py: 新規作成（JMA BestTrack、bst_all.zipから2023-2025年取得）
-- build_tide_moon.py: 新規作成（stdlib天文計算、tide_coeff = (cos+1)/2×100）
+- normalize_tsuri_mono バグ修正（`raw in p` → `p in raw` のみ）
+- rebuild_weather_cache.py, build_typhoon.py, build_tide_moon.py 新規作成
 
 ### 2026/04/08
-- フォルダ大掃除完了: crawl/ ocean/ normalize/ data/V2/ analysis/V2/ design/ pages/ dustbox/ 整備
-- config.json に design_version 追加（デザイン切替を1行で完結）
-- direct-crawl/ 新設: gyo_crawler.py（忠彦丸・一之瀬丸・米元）→ catches_raw_direct.json → CSV統合
-- pages/ 新設: 静的HTMLをルートから分離（about/contact/privacy/terms）
-- weather/ の位置: ルート直下に残留（A5: E層向け海況CSV、crawler.py が毎日追記）
-- fish/ forecast/ のURL構造: V2設計時に要決定（SEOリセット覚悟で英語URL化の方向）
+- フォルダ大掃除完了: crawl/ ocean/ normalize/ data/V2/ analysis/V2/ design/ pages/ dustbox/
+- config.json に design_version 追加
+
+### 2026/04/12
+- weather_cache.sqlite に current_speed/current_dir 列追加（Open-Meteo Marine API）
+- cmems_data.sqlite 新規作成（build_cmems.py）: SLA/CHL/SSS/水温/DO/NO3
+- combo_deep_dive.py に潮流・乗っ込みフラグ特徴量追加
+- 回遊魚KAIYU自動昇格システム実装
+
+### 2026/04/13
+- バックテスト方式を walk-forward → leave-one-month-out CV に変更
+- 過学習対策（適応的相関閾値・MAX_FACTORS=10）
+- 欠航予測をコンボレベル閾値に拡張（F1: 81.8% → 97.0%）
+
+### 2026/04/19
+- PIPELINE.md v2.3 に全面更新（researcher棚卸し結果反映）
+- `_lookup_wc_pred()` に距離フィルター追加（0.3°超の外挿をNone化）
+- build_analysis_map.py 新規作成（CHL解像度比較・水色補間品質・4レイヤスナップショット）
+- design_version を V1 → V2 に切替済み
+- 分析対象魚種: 51種→45種（CSV上の58種のうち、コンボ件数不足・対象外魚種を除外した結果）
+  - combo_deep_params には50種（meta未生成の5種: アユ・コハダ・ハタ・ムツゴロウイカ・ムラソイ を含む）
+- ※ CLAUDE.md の一部記述（catches_raw件数/CSV行数/design_version/魚種数）は旧値のまま。本ファイル（PIPELINE.md）の値が正。

@@ -28,23 +28,26 @@
 
 ## 担当領域
 
-### 1. 現状データ棚卸し
+### 1. 現状データ棚卸し（2026/04/19更新）
 
 | データ | ファイル | 規模 | 更新頻度 |
 |--------|---------|------|---------|
-| 釣果生データ | catches_raw.json | 84,757件 | 毎日自動 |
+| 釣果生データ | crawl/catches_raw.json | **86,024件** | 毎日自動 |
 | 当日スナップショット | catches.json | 当日分 | 毎日自動 |
-| 月別CSV | data/V2/YYYY-MM.csv | 82,650行 | 毎日自動 |
-| 気象・海況 | ocean/weather_cache.sqlite | 153座標×145万行 | 手動 |
-| 分析結果 | analysis/V2/results/analysis.sqlite | 51魚種 | 手動 |
-| 船宿マスター | crawl/ships.json | 75件有効 | 月1自動 |
+| 月別CSV | data/V2/YYYY-MM.csv | **64,991行**（38ファイル） | 毎日自動 |
+| 気象・海況 | ocean/weather_cache.sqlite（テーブル名:`weather`） | 153座標×1,456,560行 | 手動 |
+| CMEMSデータ | ocean/cmems_data.sqlite | cmems_daily 9.6M行・cmems_depth 4.1M行（〜2026-04-18） | 手動 |
+| 分析結果 | analysis/V2/results/analysis.sqlite | **45魚種・32テーブル** | 手動 |
+| 船宿マスター | crawl/ships.json | **77件有効** | 月1自動 |
 
 ### 2. analysis/V2 分析結果の読み取り
 
-起動時は `analysis/V2/results/analysis.sqlite` を確認する:
+起動時は `analysis/V2/results/analysis.sqlite` を確認する（32テーブル存在）:
 - `combo_decadal` — 魚種×船宿×旬の平均ベースライン
-- `combo_backtest` — 予測精度（wMAPE・BL2勝率）
-- `combo_meta` — コンボ座標・件数サマリー
+- `combo_backtest` — 予測精度（wMAPE・BL2勝率・H=0,1,3,7,14,21,28）
+- `combo_meta` — コンボ座標・件数サマリー（45魚種・246コンボ）
+- `combo_wx_params` — 採用気象因子・回帰係数
+- `water_color_daily` — 153座標×日別水色予測値
 
 確認結果を designer と programmer に渡す（どの魚種が高精度か等）。
 
