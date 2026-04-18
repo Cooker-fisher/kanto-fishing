@@ -2743,6 +2743,39 @@ def load_decadal_calendar():
         print(f"load_decadal_calendar: {e}")
     return result
 
+_GROUP_TO_ANALYSIS_REGION = {
+    "茨城":           "外房・茨城",
+    "千葉・外房":     "外房・茨城",
+    "千葉・内房":     "東京湾中部",
+    "千葉・東京湾奥": "東京湾中部",
+    "東京":           "東京湾中部",
+    "神奈川・東京湾": "金沢八景・久里浜",
+    "神奈川・相模湾": "相模湾東・三浦",
+    "静岡":           "相模湾西",
+}
+
+def _port_to_analysis_region(area):
+    """港名 → area_analysis の座標ベース地域名に変換"""
+    coords_path = os.path.join("normalize", "area_coords.json")
+    if os.path.exists(coords_path):
+        try:
+            with open(coords_path, encoding="utf-8") as f:
+                area_coords = json.load(f)
+            # 名称ゆれ対応: "久比里" → "久比里港" も試す
+            coord = area_coords.get(area) or area_coords.get(area + "港")
+            if coord:
+                lat, lon = coord["lat"], coord["lon"]
+                if lon >= 140.0:                                  return "外房・茨城"
+                if 35.35 < lat <= 35.5 and lon < 140.0:          return "東京湾中部"
+                if 35.2 < lat <= 35.35 and 139.5 <= lon < 140.0: return "金沢八景・久里浜"
+                if lat <= 35.35 and lon < 139.5:                  return "相模湾西"
+                if lat <= 35.35 and 139.5 <= lon < 140.0:        return "相模湾東・三浦"
+        except Exception:
+            pass
+    # 座標で解決できなければ AREA_GROUPS グループ名経由でフォールバック
+    group = _area_to_group(area)
+    return _GROUP_TO_ANALYSIS_REGION.get(group)
+
 def load_area_decadal():
     """analysis.sqlite の area_decadal を {area: {fish: {decade_no: cnt_index}}} で返す"""
     if not os.path.exists(ANALYSIS_DB): return {}
@@ -3114,6 +3147,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .as-table th{font-size:10px;color:var(--muted);font-weight:600;text-align:center;padding:2px 4px}
 .as-th-fish{font-size:11px;font-weight:700;color:var(--sub);text-align:left;padding-right:8px;white-space:nowrap}
 .as-cell{width:36px;height:22px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;vertical-align:middle}
+.as-cell[data-v="-1"]{background:#f0f0f0;opacity:.4}
 .as-cell[data-v="0"]{background:#eef2f5;color:var(--muted)}
 .as-cell[data-v="1"]{background:#c8e6c9;color:#2e7d32}
 .as-cell[data-v="2"]{background:#66bb6a;color:#fff}
@@ -3398,7 +3432,11 @@ def build_fish_season_map_html(fish, decadal_calendar):
 
 def build_area_season_map_html(area, area_decadal, top_fish_list):
     """エリアの魚種別旬カレンダー（魚種×12か月 ヒートマップ）"""
-    area_data = area_decadal.get(area, {})
+    # 港名で直接引けなければ座標→分析地域名に変換してlookup
+    area_data = area_decadal.get(area)
+    if area_data is None:
+        region = _port_to_analysis_region(area)
+        area_data = area_decadal.get(region, {}) if region else {}
     month_labels = ["1","2","3","4","5","6","7","8","9","10","11","12"]
     ths = "".join(f"<th>{m}</th>" for m in month_labels)
     rows = ""
@@ -3410,13 +3448,17 @@ def build_area_season_map_html(area, area_decadal, top_fish_list):
             d1 = (m - 1) * 3 + 1
             d2 = d1 + 1
             d3 = d1 + 2
-            vals = [fish_decades.get(d, 100) for d in (d1, d2, d3)]
-            avg = sum(vals) / 3
-            if avg >= 160:   lv = 4
-            elif avg >= 130: lv = 3
-            elif avg >= 90:  lv = 2
-            elif avg >= 50:  lv = 1
-            else:            lv = 0
+            raw_vals = [fish_decades.get(d) for d in (d1, d2, d3)]
+            present = [v for v in raw_vals if v is not None]
+            if not present:
+                lv = -1  # データなし
+            else:
+                avg = sum(present) / len(present)
+                if avg >= 160:   lv = 4
+                elif avg >= 130: lv = 3
+                elif avg >= 90:  lv = 2
+                elif avg >= 50:  lv = 1
+                else:            lv = 0
             cnt_levels.append(lv)
         cells = "".join(f'<td class="as-cell" data-v="{lv}"></td>' for lv in cnt_levels)
         rows += f'<tr><th class="as-th-fish">{fish}</th>{cells}</tr>\n'
@@ -3927,7 +3969,7 @@ _COMMENTS = {
 }
 
 def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, composite=50):
-    """100パターン対応のコメント生成"""
+    """100パターン対応のコメント生成（2文構成）"""
     comp_tier = (
         "top"    if composite >= 75 else
         "high"   if composite >= 60 else
@@ -3964,28 +4006,110 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
         _COMMENTS.get((comp_tier, "mid", "na")) or
         ["安定した釣果が続いている", "コンスタントに釣れている"]
     )
-    base = pool[hash(fish) % len(pool)]
-    # 先週比チェック（コメント本文との矛盾を防ぐ注記）
+    sentence1 = pool[hash(fish) % len(pool)]
+    # 句点で終わっていなければ補完
+    if sentence1 and sentence1[-1] not in ("。", "！", "…", "）"):
+        sentence1 += "。"
+
+    # 先週比
     wow_pct = None
     if this_w and prev_w:
         t_s = this_w.get("ships") or 0
         p_s = prev_w.get("ships") or 0
         if t_s and p_s:
             wow_pct = round((t_s - p_s) / p_s * 100)
+
+    avg_v  = (this_w or {}).get("avg")      or 0
+    max_v  = (this_w or {}).get("max")      or 0
+    size_v = (this_w or {}).get("size_avg") or 0
+
+    # 先週比
+    wow_pct = None
+    if this_w and prev_w:
+        t_s = this_w.get("ships") or 0
+        p_s = prev_w.get("ships") or 0
+        if t_s and p_s:
+            wow_pct = round((t_s - p_s) / p_s * 100)
+
+    # 矛盾注記（sentence1 末尾に付与）
     if wow_pct is not None:
         if comp_tier in ("top", "high") and wow_pct <= -30:
-            base += "（直近は急減傾向・注意）"
+            sentence1 = sentence1.rstrip("。") + "（直近は急減傾向・注意）。"
         elif comp_tier in ("low", "bottom") and wow_pct >= 50:
-            base += "（ただし直近は急増中）"
-    suffix = f"（釣果{count}件"
+            sentence1 = sentence1.rstrip("。") + "（ただし直近は急増中）。"
+
+    # ── 2文目: 釣果データの文章化 ─────────────────────────────
+    s2 = f"今週は{count}件の釣果報告"
+    if avg_v:
+        s2 += f"があり、平均{avg_v:.0f}匹"
+        if max_v:
+            s2 += f"・最高{max_v}匹"
+        s2 += "と"
+        # 釣れ具合の評価
+        if avg_v >= 30:   s2 += "数釣りが楽しめる水準"
+        elif avg_v >= 15: s2 += "まずまずの釣れ具合"
+        else:             s2 += "型狙い主体の展開"
+        if size_v:
+            s2 += f"。平均サイズは{size_v:.0f}cmと"
+            s2 += "良型揃い" if size_v >= 40 else "標準的なサイズ感"
+        s2 += "。"
+    else:
+        s2 += "。"
+
+    # 昨年比
     if yoy_pct is not None:
         sign = "+" if yoy_pct >= 0 else ""
-        suffix += f"・昨年比{sign}{yoy_pct}%"
-    if wow_pct is not None and abs(wow_pct) <= 150:
+        if yoy_pct >= 20:
+            s2 += f"昨年同期比{sign}{yoy_pct}%と好調をキープしており、例年以上の期待が持てる。"
+        elif yoy_pct <= -20:
+            s2 += f"昨年同期比{yoy_pct}%とやや低調で、全体的に厳しい状況が続いている。"
+        else:
+            s2 += f"昨年同期比{sign}{yoy_pct}%と概ね例年並みで安定した水準を維持している。"
+
+    # 先週比
+    if wow_pct is not None and abs(wow_pct) >= 10:
         sign2 = "+" if wow_pct >= 0 else ""
-        suffix += f"・先週比{sign2}{wow_pct}%"
-    suffix += "）"
-    return base + suffix
+        if wow_pct >= 30:
+            s2 += f"先週比{sign2}{wow_pct}%と出船数が急増しており、魚影の濃さが伺える。"
+        elif wow_pct >= 10:
+            s2 += f"先週比{sign2}{wow_pct}%と出船数は増加傾向にある。"
+        elif wow_pct <= -30:
+            s2 += f"先週比{wow_pct}%と出船数が急減しており、注意が必要だ。"
+        else:
+            s2 += f"先週比{wow_pct}%と出船数はやや減少傾向にある。"
+
+    # ── 3文目: comp_tier × season_tier による釣行アドバイス ──
+    _advice = {
+        ("top",    "peak"):   ["今が最高のタイミング。迷わず予約を入れたい。",    "ピーク×高スコアの組み合わせは年に数度。逃す手はない。"],
+        ("top",    "good"):   ["好シーズン中の高水準。数・型ともに期待できる。",   "安定した好シーズン。数狙いも型狙いも成立する絶好機。"],
+        ("top",    "mid"):    ["総合トップだが旬はこれから。今から狙い始めると吉。", "今週の全魚種中トップ。コンスタントな釣果が見込める。"],
+        ("top",    "off"):    ["終盤戦ながら今週は高スコア。ラストチャンスかもしれない。", "端境期にもかかわらずトップスコア。貴重な機会を活かしたい。"],
+        ("top",    "dead"):   ["オフシーズン中でも驚異的な好釣果。狙ってみる価値あり。", "季節外れの大チャンス。今だけの特別な状況を見逃すな。"],
+        ("high",   "peak"):   ["旬のピーク期で安定した釣果。積極的に狙いたい。",    "数釣りも型釣りも成立するシーズン。今週も期待できる。"],
+        ("high",   "good"):   ["好シーズン中の安定株。外しにくい一手。",           "コンスタントに釣れる時期。確実に釣果を重ねたい。"],
+        ("high",   "mid"):    ["全体的に安定して釣れている。選択肢に入れやすい。",  "高スコアで安定感あり。初心者から上級者まで楽しめる。"],
+        ("high",   "off"):    ["端境期だがまだ粘れる。今週中に狙っておきたい。",   "残り少ない好機。今のうちに釣っておくのが賢明。"],
+        ("high",   "dead"):   ["オフ中でも意外な好釣果。狙う価値あり。",          "厳しい季節でも健闘。腕試しにはいい機会かもしれない。"],
+        ("mid",    "peak"):   ["型狙いに絞ると満足度が高まりそう。丁寧な釣りが鍵。", "数より型を意識した釣りにシフトするとよい結果が得られやすい。"],
+        ("mid",    "good"):   ["安定感はある。確実に釣果を出すなら腕と場所選びが重要。", "まずまずの水準。丁寧な釣りで十分楽しめる。"],
+        ("mid",    "mid"):    ["可もなく不可もなく。腕の見せどころでもある。",      "平均的な状況。腕次第で差が出る時期だ。"],
+        ("mid",    "off"):    ["端境期。今のうちに釣っておくのが賢明。",           "そろそろ終わりに近い。今週が最後のチャンスかもしれない。"],
+        ("mid",    "dead"):   ["難しい季節だが可能性はゼロではない。",             "厳しい状況。数より型狙いに絞るのが現実的。"],
+        ("low",    "peak"):   ["旬の割に厳しい展開。場所と時間帯を慎重に選びたい。", "苦戦気味だが、丁寧な釣りで型を絞り出せる可能性はある。"],
+        ("low",    "good"):   ["好シーズンにしては厳しい。他の魚種との併用も一手。", "期待より低い水準が続く。事前に船宿に問い合わせてから出船したい。"],
+        ("low",    "mid"):    ["やや厳しい状況が続く。腕と釣法の工夫が必要だ。",   "確実に釣りたいなら他の魚種の選択も視野に入れたい。"],
+        ("bottom", "peak"):   ["旬にもかかわらず全魚種中で苦戦中。今週は他を優先しても。", "厳しい状況が続いている。腕に自信があるなら挑戦してみてもいい。"],
+        ("bottom", "mid"):    ["今週は別の魚種を優先する方が賢明かもしれない。",   "全体的に厳しい週。状況の好転を待って出船判断したい。"],
+    }
+    advice_key = (comp_tier, season_tier)
+    advice_pool = (
+        _advice.get(advice_key) or
+        _advice.get((comp_tier, "mid")) or
+        ["今週の状況を参考に出船計画を立てたい。", "船宿に最新状況を確認してから出船判断を。"]
+    )
+    sentence3 = advice_pool[hash(fish + "adv") % len(advice_pool)]
+
+    return sentence1 + "\n" + s2 + "\n" + sentence3
 
 def composite_to_stars(score):
     """複合スコア(0-100) → ★1〜5"""
@@ -4591,7 +4715,19 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 fish_summary.setdefault(f, []).append(c)
     areas = sorted(set(c["area"] for c in catches))
     cards = ""
-    for fish, cs in sorted(fish_summary.items(), key=lambda x: -len(x[1])):
+
+    def _trend_key(fish):
+        tw = get_yoy_data(history, fish, year, week_num)[0]
+        pw = get_prev_week_data(history, fish, year, week_num)
+        if tw and pw:
+            ts = tw.get("ships") or 0
+            ps = pw.get("ships") or 0
+            if ts and ps:
+                if ts / ps > 1.2: return 0
+                if ts / ps < 0.8: return 2
+        return 1
+
+    for fish, cs in sorted(fish_summary.items(), key=lambda x: (_trend_key(x[0]), -len(x[1]))):
         areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))
         fish_id     = re.sub(r'[^\w]', '_', fish)
         latest_date = max((c.get("date") or "" for c in cs), default="")
@@ -5178,7 +5314,7 @@ def build_fish_pages(data, history, crawled_at=""):
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
-.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
+.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text);white-space:pre-line}
 .season-entry{font-size:12px;color:var(--sub);margin:8px 0;padding:6px 10px;border-radius:4px;background:var(--card);border:1px solid var(--border)}
 .season-entry.entry-early{border-left:3px solid var(--pos)}.season-entry.entry-late{border-left:3px solid var(--warn)}.season-entry.entry-same{border-left:3px solid var(--accent)}
 .entry-trend{font-weight:bold;margin-left:6px}
@@ -5563,11 +5699,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <h2 class="st">このエリアで{fish_label}釣れている魚 <span class="tag free">無料</span></h2>
   <div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">本日の釣果はまだ集計中です</p>'}</div>
   {sea_section_html}
+  <h2 class="st">船宿一覧 <span class="tag free">無料</span></h2>
+  <div class="sl-card">{ship_items_html}</div>
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
-  <h2 class="st">船宿一覧 <span class="tag free">無料</span></h2>
-  <div class="sl-card">{ship_items_html}</div>
   {point_box_html}
   {nearby_section_html}
   <h2 class="st">魚種別 旬カレンダー <span class="tag free">無料</span></h2>
