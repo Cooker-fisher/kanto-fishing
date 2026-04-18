@@ -31,7 +31,7 @@ combo_deep_dive.py — 船宿×魚種ペア 深掘り分析
   insights/analysis.sqlite  → combo_deep_params テーブル
 """
 
-import argparse, bisect, csv, json, math, os, re, sqlite3, sys
+import argparse, bisect, csv, json, math, os, re, sqlite3, sys, time
 from collections import defaultdict
 from datetime import datetime, timedelta
 
@@ -1117,45 +1117,99 @@ def get_cmems_day(conn_cmems, lat, lon, date_iso):
 _sla_nearest_cache:  dict = {}
 _sla_monthly_cache:  dict = {}
 
+# In-memory SLA store: populated once on first call to _preload_sla_if_needed()
+_SLA_POINT_DATE:  dict = {}   # (lat_r3, lon_r3, date_str) -> sla
+_SLA_BY_DATE:     dict = {}   # date_str -> [(lat_r3, lon_r3, sla), ...]  (fallback index)
+_SLA_MONTHLY_AGG: dict = {}   # (lat_r3, lon_r3, "YYYY-MM") -> monthly_avg
+_SLA_BY_MONTH:    dict = {}   # "YYYY-MM" -> [(lat_r3, lon_r3, avg), ...]  (fallback index)
+_SLA_LOADED = False
+# cache for coord snapping result: (lat, lon, date/ym) -> nearest value
+_SLA_SNAP_CACHE: dict = {}
+
+
+def _preload_sla_if_needed(conn_cmems):
+    """cmems_daily の SLA 非NULL行を一括ロードして dict に展開する（初回のみ）。"""
+    global _SLA_LOADED, _SLA_POINT_DATE, _SLA_BY_DATE, _SLA_MONTHLY_AGG, _SLA_BY_MONTH
+    if _SLA_LOADED:
+        return
+    if conn_cmems is None:
+        _SLA_LOADED = True
+        return
+    t0 = time.time()
+    rows = conn_cmems.execute(
+        "SELECT lat, lon, date, sla FROM cmems_daily WHERE sla IS NOT NULL"
+    ).fetchall()
+    by_month: dict = {}
+    for lat, lon, date_str, sla in rows:
+        lr = round(lat, 3)
+        nr = round(lon, 3)
+        _SLA_POINT_DATE[(lr, nr, date_str)] = sla
+        if date_str not in _SLA_BY_DATE:
+            _SLA_BY_DATE[date_str] = []
+        _SLA_BY_DATE[date_str].append((lr, nr, sla))
+        ym = date_str[:7]
+        mk = (lr, nr, ym)
+        if mk not in by_month:
+            by_month[mk] = []
+        by_month[mk].append(sla)
+    for mk, vals in by_month.items():
+        avg = sum(vals) / len(vals)
+        _SLA_MONTHLY_AGG[mk] = avg
+        ym = mk[2]
+        if ym not in _SLA_BY_MONTH:
+            _SLA_BY_MONTH[ym] = []
+        _SLA_BY_MONTH[ym].append((mk[0], mk[1], avg))
+    elapsed = time.time() - t0
+    print(f"  [CMEMS SLA preload] {len(rows):,}行 → {len(_SLA_POINT_DATE):,}point×date, "
+          f"{len(_SLA_MONTHLY_AGG):,}monthly ({elapsed:.1f}s)", flush=True)
+    _SLA_LOADED = True
+
+
 def _get_sla_nearest(conn_cmems, lat, lon, date_iso):
-    """固定座標のSLAを直接最近傍クエリで取得（0.25°丸めを介さない）。
-    sla_gradient 計算用。cmems_daily は 1/24° ≈ 0.042° グリッドのため
-    get_cmems_day() の 0.25° 丸めでは誤った座標にマッチする問題を回避する。
-    """
-    k = (lat, lon, date_iso)
-    if k in _sla_nearest_cache:
-        return _sla_nearest_cache[k]
-    row = conn_cmems.execute(
-        """SELECT sla FROM cmems_daily
-           WHERE date=? AND ABS(lat-?)<0.2 AND ABS(lon-?)<0.2
-             AND sla IS NOT NULL
-           ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?)
-           LIMIT 1""",
-        (date_iso, lat, lon, lat, lat, lon, lon),
-    ).fetchone()
-    val = row[0] if (row and row[0] is not None) else None
-    _sla_nearest_cache[k] = val
-    return val
+    """in-memory dict で最近傍 SLA を返す（SQL クエリなし）。"""
+    _preload_sla_if_needed(conn_cmems)
+    lr = round(lat, 3)
+    nr = round(lon, 3)
+    val = _SLA_POINT_DATE.get((lr, nr, date_iso))
+    if val is not None:
+        return val
+    # 座標スナップが合わない場合: 日付別インデックスで最近傍（~600エントリ）
+    snap_key = (lat, lon, date_iso)
+    if snap_key in _SLA_SNAP_CACHE:
+        return _SLA_SNAP_CACHE[snap_key]
+    best_d2 = 0.04
+    best_v  = None
+    for la, lo, v in _SLA_BY_DATE.get(date_iso, []):
+        d2 = (la - lat) ** 2 + (lo - lon) ** 2
+        if d2 < best_d2:
+            best_d2 = d2
+            best_v  = v
+    _SLA_SNAP_CACHE[snap_key] = best_v
+    return best_v
 
 
 def _get_sla_monthly_avg(conn_cmems, lat, lon, date_iso, window=30):
-    """±window日の平均SLA。月次黒潮状態を平滑化して返す。SLOW因子用。"""
-    k = (round(lat, 4), round(lon, 4), date_iso, window)
-    if k in _sla_monthly_cache:
-        return _sla_monthly_cache[k]
-    d_obj = datetime.strptime(date_iso, "%Y-%m-%d")
-    start = (d_obj - timedelta(days=window)).strftime("%Y-%m-%d")
-    end   = (d_obj + timedelta(days=window)).strftime("%Y-%m-%d")
-    row = conn_cmems.execute(
-        """SELECT AVG(sla) FROM cmems_daily
-           WHERE date BETWEEN ? AND ?
-             AND ABS(lat - ?) < 0.15 AND ABS(lon - ?) < 0.15
-             AND sla IS NOT NULL""",
-        (start, end, lat, lon),
-    ).fetchone()
-    val = row[0] if (row and row[0] is not None) else None
-    _sla_monthly_cache[k] = val
-    return val
+    """in-memory dict で月平均 SLA を返す（SQL クエリなし）。"""
+    _preload_sla_if_needed(conn_cmems)
+    lr = round(lat, 3)
+    nr = round(lon, 3)
+    ym = date_iso[:7]
+    val = _SLA_MONTHLY_AGG.get((lr, nr, ym))
+    if val is not None:
+        return val
+    # 座標スナップが合わない場合: 月別インデックスで最近傍
+    snap_key = (lat, lon, ym)
+    if snap_key in _SLA_SNAP_CACHE:
+        return _SLA_SNAP_CACHE[snap_key]
+    best_d2 = 0.04
+    best_v  = None
+    for la, lo, v in _SLA_BY_MONTH.get(ym, []):
+        d2 = (la - lat) ** 2 + (lo - lon) ** 2
+        if d2 < best_d2:
+            best_d2 = d2
+            best_v  = v
+    _SLA_SNAP_CACHE[snap_key] = best_v
+    return best_v
 
 
 def _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, grid_deg, cols):
@@ -1472,12 +1526,16 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             _sla_lat = SLA_PELAGIC_COORD[0] if fish in SLA_PELAGIC_FISH else wlat
             _sla_lon = SLA_PELAGIC_COORD[1] if fish in SLA_PELAGIC_FISH else wlon
 
-            # ── sla_monthly: ±30日平均SLA（月次黒潮状態・マダイ/カンパチ/アカムツ等）──
-            wx["sla_monthly"] = _get_sla_monthly_avg(conn_cmems, _sla_lat, _sla_lon, tide_date)
-
-            # ── sla_lag30: 30日前SLA（ヒラメ等底魚の月次遅延反応）────────────────
-            _date30_iso = (d - timedelta(days=30)).strftime("%Y-%m-%d")
-            wx["sla_lag30"] = _get_sla_nearest(conn_cmems, _sla_lat, _sla_lon, _date30_iso)
+            # ── sla_monthly / sla_lag30: SLAデータが存在する座標のみ計算 ──────────
+            # sla_avg が None = この座標はSLAグリッド外 → 月次クエリも常にNULLなのでスキップ
+            _sla_available = (wx.get("sla_avg") is not None) or (fish in SLA_PELAGIC_FISH)
+            if _sla_available:
+                wx["sla_monthly"] = _get_sla_monthly_avg(conn_cmems, _sla_lat, _sla_lon, tide_date)
+                _date30_iso = (d - timedelta(days=30)).strftime("%Y-%m-%d")
+                wx["sla_lag30"] = _get_sla_nearest(conn_cmems, _sla_lat, _sla_lon, _date30_iso)
+            else:
+                wx["sla_monthly"] = None
+                wx["sla_lag30"] = None
         else:
             wx["sla_delta"] = wx["chl_delta"] = wx["sla_monthly"] = wx["sla_lag30"] = None
 
