@@ -77,11 +77,11 @@ WAVE_CLAMP_THRESHOLD: float = 2.0
 SST_GRAD_OFFSHORE = (35.65, 140.87)  # 外房沖（黒潮ライン上）
 SST_GRAD_INSHORE  = (35.3,  139.68)  # 東京湾内（沿岸代表）
 
-# SLA勾配（黒潮フロント強度指標）の固定参照座標
-# cmems_daily は 1/24°≈0.042° グリッド → 最近傍クエリで取得（0.25°丸めは不要）
-# 正=外房沖SLA高（黒潮フロント強い）、負=黒潮後退
-SLA_GRAD_OFFSHORE = (35.7292, 140.8542)  # 外房沖（1/24°最近傍）
-SLA_GRAD_INSHORE  = (35.2292, 139.7292)  # 東京湾内（1/24°最近傍）
+# カツオ・キハダマグロ用 沖合SLA座標
+# 船籍港（沿岸）ではなく実際の釣り場（外房沖〜犬吠埼沖）の黒潮状態を使う
+# lon=141.4°が cmems_daily の東限のため 141.3 を使用（34-36°N, 141-143°E 指定の上限）
+SLA_PELAGIC_FISH  = {"カツオ", "キハダマグロ"}
+SLA_PELAGIC_COORD = (35.5, 141.3)  # 銚子沖〜外房沖（cmems_daily 東端付近）
 
 # ── 変数の予報有効ホライズン ────────────────────────────────────────────
 # 「遅い変数」: 日々の変化が小さく、N日前の値≒当日値 → 長期予報でも有効
@@ -130,11 +130,11 @@ SLOW_FACTORS = {
     "temp_200m",         # 水深200m水温：沖合深場釣りの指標
     "thermocline_depth", # 躍層深度 (m)：表層-深層の温度差最大深度
     "no3_surface",       # 表層硝酸塩 (mmol/m³)：高=栄養塩豊富=プランクトン増加予兆
-    # CMEMS ラグ特徴量（黒潮の変化速度）
+    # CMEMS ラグ特徴量（黒潮の変化速度・遅延反応）
     "sla_delta",         # SLA 7日間変化 (m)：正=黒潮北上中=澄み水進行シグナル
     "chl_delta",         # クロロフィル 7日間変化 (mg/m³)：正=ベイト急増=回遊魚フロント形成
-    # CMEMS 空間勾配（黒潮フロント強度）
-    "sla_gradient",      # 外房沖SLA - 東京湾内SLA：黒潮フロント強度（sst_gradientのCMEMS版）
+    "sla_monthly",       # ±30日平均SLA：月次黒潮状態（マダイ/カンパチ/アカムツ等に有効）
+    "sla_lag30",         # 30日前SLA：ヒラメ等底魚の月次遅延反応
     # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
@@ -347,8 +347,8 @@ WX_FACTORS = [
     # CMEMS ラグ特徴量（黒潮の変化速度）
     "sla_delta",        # SLA 7日間変化 (m): 正=黒潮北上中シグナル
     "chl_delta",        # クロロフィル 7日間変化: 正=ベイト急増シグナル
-    # CMEMS 空間勾配
-    "sla_gradient",     # 外房沖SLA - 東京湾内SLA: 黒潮フロント強度
+    "sla_monthly",      # ±30日平均SLA: 月次黒潮状態（SLOW・全H有効）
+    "sla_lag30",        # 30日前SLA: 底魚の月次遅延反応（SLOW・全H有効）
     # temp_100m × 季節交互作用
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
@@ -383,7 +383,7 @@ CMEMS_FACTORS = {
     "sla_avg", "chl_avg", "sss_avg",
     "do_surface", "do_bottom", "temp_50m", "temp_100m", "temp_200m",
     "thermocline_depth", "no3_surface",
-    "sla_delta", "chl_delta", "sla_gradient",
+    "sla_delta", "chl_delta", "sla_monthly", "sla_lag30",
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",
     "kuroshio_score", "nutrient_score", "deepwater_score",
@@ -1110,7 +1110,8 @@ def get_cmems_day(conn_cmems, lat, lon, date_iso):
     return result
 
 
-_sla_nearest_cache: dict = {}
+_sla_nearest_cache:  dict = {}
+_sla_monthly_cache:  dict = {}
 
 def _get_sla_nearest(conn_cmems, lat, lon, date_iso):
     """固定座標のSLAを直接最近傍クエリで取得（0.25°丸めを介さない）。
@@ -1130,6 +1131,26 @@ def _get_sla_nearest(conn_cmems, lat, lon, date_iso):
     ).fetchone()
     val = row[0] if (row and row[0] is not None) else None
     _sla_nearest_cache[k] = val
+    return val
+
+
+def _get_sla_monthly_avg(conn_cmems, lat, lon, date_iso, window=30):
+    """±window日の平均SLA。月次黒潮状態を平滑化して返す。SLOW因子用。"""
+    k = (round(lat, 4), round(lon, 4), date_iso, window)
+    if k in _sla_monthly_cache:
+        return _sla_monthly_cache[k]
+    d_obj = datetime.strptime(date_iso, "%Y-%m-%d")
+    start = (d_obj - timedelta(days=window)).strftime("%Y-%m-%d")
+    end   = (d_obj + timedelta(days=window)).strftime("%Y-%m-%d")
+    row = conn_cmems.execute(
+        """SELECT AVG(sla) FROM cmems_daily
+           WHERE date BETWEEN ? AND ?
+             AND ABS(lat - ?) < 0.15 AND ABS(lon - ?) < 0.15
+             AND sla IS NOT NULL""",
+        (start, end, lat, lon),
+    ).fetchone()
+    val = row[0] if (row and row[0] is not None) else None
+    _sla_monthly_cache[k] = val
     return val
 
 
@@ -1248,7 +1269,7 @@ def get_typhoon(conn_ty, date_iso):
     return {"typhoon_dist": None, "typhoon_wind": None}
 
 
-def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None, conn_typhoon=None, conn_cmems=None):
+def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None, conn_typhoon=None, conn_cmems=None, fish=None):
     """全レコードに海況・潮汐・前週釣果を付与（horizon 日前の weather を使用）。
 
     all_records: 前週釣果(prev_week_cnt)の参照用に全期間レコードを渡す。
@@ -1436,14 +1457,25 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             wx["sla_delta"] = (_sla_now - _sla_7d) if (_sla_now is not None and _sla_7d is not None) else None
             wx["chl_delta"] = (_chl_now - _chl_7d) if (_chl_now is not None and _chl_7d is not None) else None
 
-            # ── sla_gradient: 外房沖SLA - 東京湾内SLA（黒潮フロント強度）────────
-            # cmems_daily は 1/24°≈0.042° グリッドのため get_cmems_day() の 0.25° 丸めを介さず
-            # _get_sla_nearest() で直接最近傍クエリ（±0.2° 以内）を使用
-            _sla_off = _get_sla_nearest(conn_cmems, SLA_GRAD_OFFSHORE[0], SLA_GRAD_OFFSHORE[1], tide_date)
-            _sla_in  = _get_sla_nearest(conn_cmems, SLA_GRAD_INSHORE[0],  SLA_GRAD_INSHORE[1],  tide_date)
-            wx["sla_gradient"] = (_sla_off - _sla_in) if (_sla_off is not None and _sla_in is not None) else None
+            # ── カツオ・キハダマグロ: 沖合SLA（SLA_PELAGIC_COORD）で上書き ────────
+            # 船籍港（沿岸）ではなく実際の釣り場（銚子沖〜外房沖）の黒潮状態を使う
+            if fish in SLA_PELAGIC_FISH:
+                _sla_off = _get_sla_nearest(conn_cmems, SLA_PELAGIC_COORD[0], SLA_PELAGIC_COORD[1], tide_date)
+                if _sla_off is not None:
+                    wx["sla_avg"] = _sla_off
+
+            # SLA座標: 沖合回遊魚は SLA_PELAGIC_COORD、それ以外はコンボ座標
+            _sla_lat = SLA_PELAGIC_COORD[0] if fish in SLA_PELAGIC_FISH else wlat
+            _sla_lon = SLA_PELAGIC_COORD[1] if fish in SLA_PELAGIC_FISH else wlon
+
+            # ── sla_monthly: ±30日平均SLA（月次黒潮状態・マダイ/カンパチ/アカムツ等）──
+            wx["sla_monthly"] = _get_sla_monthly_avg(conn_cmems, _sla_lat, _sla_lon, tide_date)
+
+            # ── sla_lag30: 30日前SLA（ヒラメ等底魚の月次遅延反応）────────────────
+            _date30_iso = (d - timedelta(days=30)).strftime("%Y-%m-%d")
+            wx["sla_lag30"] = _get_sla_nearest(conn_cmems, _sla_lat, _sla_lon, _date30_iso)
         else:
-            wx["sla_delta"] = wx["chl_delta"] = wx["sla_gradient"] = None
+            wx["sla_delta"] = wx["chl_delta"] = wx["sla_monthly"] = wx["sla_lag30"] = None
 
         # ── temp_100m × 季節交互作用（深層水温の季節依存性）────────────────────
         _t100 = wx.get("temp_100m")
@@ -1881,7 +1913,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         all_en_by_H[H] = enrich(
             records, ship_coords, wx_coords, conn_wx, ship_area,
             horizon=H, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon,
-            conn_cmems=conn_cmems,
+            conn_cmems=conn_cmems, fish=fish,
         )
 
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
@@ -3018,7 +3050,7 @@ def deep_dive(fish, ship, verbose=True):
     conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
     conn_typhoon = sqlite3.connect(DB_TYPHOON) if (os.path.exists(DB_TYPHOON) and os.path.getsize(DB_TYPHOON) > 0) else None
     conn_cmems   = sqlite3.connect(DB_CMEMS)   if (os.path.exists(DB_CMEMS)   and os.path.getsize(DB_CMEMS)   > 0) else None
-    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon, conn_cmems=conn_cmems)
+    en0     = enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon, conn_cmems=conn_cmems, fish=fish)
     decadal = load_decadal(fish, ship)
 
     SEP  = "=" * 72

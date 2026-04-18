@@ -100,9 +100,9 @@ jobs:
           path: ocean/cmems_data.sqlite
           key: cmems-sqlite-${{ runner.os }}
           restore-keys: cmems-sqlite-
-      - name: Update CMEMS data (差分: 直近10日)
+      - name: Update CMEMS data (差分: 直近20日, Phase1のみ)
         env:
           COPERNICUSMARINE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
           COPERNICUSMARINE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
         run: |
-          python3 ocean/build_cmems.py --start $(date -d '10 days ago' +%Y-%m-%d)
+          python3 ocean/build_cmems.py --phase 1 --start $(date -d '20 days ago' +%Y-%m-%d)
