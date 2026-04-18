@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>黒潮・海洋環境マップ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; color: #e8eaf0; height: 100vh; display: flex; flex-direction: column; }
+
+#header {
+  padding: 10px 16px;
+  background: #111d35;
+  border-bottom: 1px solid #1e3a5f;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+#header h1 { font-size: 15px; font-weight: 600; color: #7ec8e3; white-space: nowrap; }
+
+#layer-tabs {
+  display: flex; gap: 6px;
+}
+.layer-tab {
+  background: #1e3a5f; border: 1px solid #2a4f7a; color: #9ab;
+  padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;
+  white-space: nowrap; transition: all 0.15s;
+}
+.layer-tab.active { background: #2a6496; border-color: #7ec8e3; color: #fff; font-weight: 600; }
+.layer-tab:hover:not(.active) { background: #1a3050; color: #cdd; }
+
+#controls {
+  display: flex; align-items: center; gap: 12px; flex: 1; flex-wrap: wrap;
+}
+#date-display {
+  font-size: 18px; font-weight: 700; color: #fff; min-width: 110px;
+}
+#slider-wrap {
+  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;
+}
+#date-slider {
+  flex: 1; -webkit-appearance: none; height: 4px;
+  background: #1e3a5f; border-radius: 2px; outline: none; cursor: pointer;
+}
+#date-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: #7ec8e3; cursor: pointer; box-shadow: 0 0 6px rgba(126,200,227,0.6);
+}
+#play-btn {
+  background: #1e3a5f; border: 1px solid #7ec8e3; color: #7ec8e3;
+  padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 13px;
+  white-space: nowrap;
+}
+#play-btn:hover { background: #2a4f7a; }
+#speed-label { font-size: 12px; color: #9ab; white-space: nowrap; }
+#speed-select {
+  background: #1e3a5f; border: 1px solid #2a4f7a; color: #e8eaf0;
+  padding: 3px 6px; border-radius: 4px; font-size: 12px;
+}
+#map { flex: 1; }
+
+/* 凡例 */
+#legend {
+  position: absolute; bottom: 32px; right: 12px; z-index: 1000;
+  background: rgba(10,22,40,0.92); border: 1px solid #1e3a5f;
+  border-radius: 8px; padding: 12px 16px; min-width: 180px;
+}
+#legend h3 { font-size: 12px; color: #9ab; margin-bottom: 8px; }
+.legend-bar { height: 14px; border-radius: 3px; margin-bottom: 6px; }
+.legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: #9ab; }
+.legend-items { margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #ccd; margin-bottom: 4px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+#info-panel {
+  position: absolute; top: 70px; left: 12px; z-index: 1000;
+  background: rgba(10,22,40,0.9); border: 1px solid #1e3a5f;
+  border-radius: 8px; padding: 10px 14px; font-size: 12px;
+  max-width: 230px; display: none;
+}
+#info-panel .pt-val { color: #e8eaf0; line-height: 1.7; }
+
+#stats-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 999;
+  background: rgba(10,22,40,0.85); padding: 4px 16px;
+  font-size: 11px; color: #9ab; display: flex; gap: 20px;
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>🌊 黒潮・海洋環境マップ</h1>
+  <div id="layer-tabs">
+    <button class="layer-tab active" data-layer="sla">SLA（黒潮）</button>
+    <button class="layer-tab" data-layer="chl">CHL（ベイト）</button>
+    <button class="layer-tab" data-layer="sst">SST（水温）</button>
+    <button class="layer-tab" data-layer="wc">水色（濁り）</button>
+  </div>
+  <div id="controls">
+    <div id="date-display">----/--/--</div>
+    <div id="slider-wrap">
+      <span style="font-size:11px;color:#9ab;">過去</span>
+      <input type="range" id="date-slider" min="0" value="0">
+      <span style="font-size:11px;color:#9ab;">最新</span>
+    </div>
+    <button id="play-btn">▶ 再生</button>
+    <span id="speed-label">速度:</span>
+    <select id="speed-select">
+      <option value="1200">遅い</option>
+      <option value="600" selected>普通</option>
+      <option value="300">速い</option>
+      <option value="150">最速</option>
+    </select>
+  </div>
+</div>
+
+<div style="position:relative; flex:1; display:flex; flex-direction:column;">
+  <div id="map"></div>
+  <div id="legend"></div>
+  <div id="info-panel"><div class="pt-val" id="info-val"></div></div>
+  <div id="stats-bar">
+    <span id="stats-min">最小: --</span>
+    <span id="stats-max">最大: --</span>
+    <span id="stats-mean">平均: --</span>
+    <span id="stats-cnt">地点数: --</span>
+  </div>
+</div>
+
+<script>
+fetch('ocean_map_data.json')
+  .then(r => r.json())
+  .then(json => init(json))
+  .catch(e => {
+    document.body.innerHTML = '<div style="padding:40px;color:#f88">データ読み込み失敗: ' + e + '<br>ローカルサーバー (python -m http.server 8000) で開いてください。</div>';
+  });
+
+// ─── レイヤ設定 ────────────────────────────────────────────────────────
+const LAYERS = {
+  sla: {
+    label: 'SLA 海面高度偏差 (m)',
+    unit: 'm',
+    color: v => {
+      // 黒潮: 高SLA = 黒潮接近 = 青
+      if (v >  0.3) return ['#0040ff', 0.85];
+      if (v >  0.1) return ['#3399ff', 0.78];
+      if (v > -0.1) return ['#99ccff', 0.65];
+      if (v > -0.3) return ['#ffcc44', 0.72];
+      return               ['#cc3300', 0.80];
+    },
+    legendBar: 'linear-gradient(to right, #cc3300, #ffcc44, #99ccff, #3399ff, #0040ff)',
+    legendMin: '南側(-0.3)', legendMax: '黒潮(+0.3)',
+    items: [
+      ['#0040ff', '黒潮中核 (>+0.3m)'],
+      ['#3399ff', '黒潮接近 (+0.1〜+0.3m)'],
+      ['#99ccff', '中立 (-0.1〜+0.1m)'],
+      ['#ffcc44', 'やや南側 (-0.3〜-0.1m)'],
+      ['#cc3300', '黒潮南側 (<-0.3m)'],
+    ],
+  },
+  chl: {
+    label: 'CHL クロロフィル (mg/m³)',
+    unit: 'mg/m³',
+    color: v => {
+      if (v >  2.0) return ['#00aa00', 0.88];
+      if (v >  1.0) return ['#55cc44', 0.80];
+      if (v >  0.5) return ['#aadd44', 0.74];
+      if (v >  0.2) return ['#eedd44', 0.70];
+      return               ['#2266aa', 0.65];
+    },
+    legendBar: 'linear-gradient(to right, #2266aa, #eedd44, #aadd44, #55cc44, #00aa00)',
+    legendMin: '低(<0.2)', legendMax: '高(>2.0)',
+    items: [
+      ['#00aa00', 'ベイト豊富 (>2.0)'],
+      ['#55cc44', '多め (1.0〜2.0)'],
+      ['#aadd44', '普通 (0.5〜1.0)'],
+      ['#eedd44', 'やや少 (0.2〜0.5)'],
+      ['#2266aa', '少 (<0.2)'],
+    ],
+  },
+  sst: {
+    label: 'SST 海面水温 (°C)',
+    unit: '°C',
+    color: v => {
+      if (v > 26) return ['#ff2200', 0.82];
+      if (v > 22) return ['#ff8800', 0.78];
+      if (v > 18) return ['#ffcc00', 0.74];
+      if (v > 14) return ['#44cc88', 0.74];
+      if (v > 10) return ['#2299dd', 0.76];
+      return             ['#0055aa', 0.82];
+    },
+    legendBar: 'linear-gradient(to right, #0055aa, #2299dd, #44cc88, #ffcc00, #ff8800, #ff2200)',
+    legendMin: '低温(<10°C)', legendMax: '高温(>26°C)',
+    items: [
+      ['#ff2200', '>26°C（夏季）'],
+      ['#ff8800', '22〜26°C'],
+      ['#ffcc00', '18〜22°C（最適）'],
+      ['#44cc88', '14〜18°C'],
+      ['#2299dd', '10〜14°C'],
+      ['#0055aa', '<10°C（冬季）'],
+    ],
+  },
+  wc: {
+    label: '水色スコア（濁り）',
+    unit: '',
+    color: v => {
+      if (v < -1.5) return ['#3d1c02', 0.88];
+      if (v < -1.0) return ['#8b4513', 0.82];
+      if (v < -0.3) return ['#c8a04a', 0.78];
+      if (v <  0.1) return ['#d0d080', 0.70];
+      if (v <  0.6) return ['#40c8f0', 0.72];
+      return               ['#0060c0', 0.80];
+    },
+    legendBar: 'linear-gradient(to right, #3d1c02, #8b4513, #c8a04a, #d0d080, #40c8f0, #0060c0)',
+    legendMin: '強濁り(-2)', legendMax: '澄み(+1)',
+    items: [
+      ['#0060c0', '澄み強 (>+0.6)'],
+      ['#40c8f0', '澄み (+0.1〜+0.6)'],
+      ['#d0d080', '普通 (-0.3〜+0.1)'],
+      ['#c8a04a', 'やや濁り (-1.0〜-0.3)'],
+      ['#8b4513', '濁り (-1.5〜-1.0)'],
+      ['#3d1c02', '強濁り (<-1.5)'],
+    ],
+  },
+};
+
+// ─── 地図初期化 ────────────────────────────────────────────────────────
+function init(json) {
+  const map = L.map('map', { center: [35.2, 139.8], zoom: 8, zoomControl: true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO', maxZoom: 14,
+  }).addTo(map);
+
+  let currentLayer = 'sla';
+  let circles = [];
+  let isPlaying = false;
+  let playTimer = null;
+
+  // ─── 日付リスト（全レイヤのunion）─────────────────────────────────
+  const allDates = new Set();
+  for (const lk of Object.keys(json.layers)) {
+    Object.keys(json.layers[lk].daily).forEach(d => allDates.add(d));
+  }
+  const dates = [...allDates].sort();
+  const slider = document.getElementById('date-slider');
+  slider.max = dates.length - 1;
+  slider.value = dates.length - 1;
+
+  // ─── 凡例描画 ─────────────────────────────────────────────────────
+  function updateLegend(lk) {
+    const cfg = LAYERS[lk];
+    const el = document.getElementById('legend');
+    el.innerHTML = `<h3>${cfg.label}</h3>
+      <div class="legend-bar" style="background:${cfg.legendBar}"></div>
+      <div class="legend-labels"><span>${cfg.legendMin}</span><span>${cfg.legendMax}</span></div>
+      <div class="legend-items">${cfg.items.map(([c, t]) =>
+        `<div class="legend-item"><div class="legend-dot" style="background:${c}"></div>${t}</div>`
+      ).join('')}</div>`;
+  }
+
+  // ─── マーカー更新 ─────────────────────────────────────────────────
+  function updateMarkers(lk, dateStr) {
+    circles.forEach(c => map.removeLayer(c));
+    circles = [];
+
+    const layer = json.layers[lk];
+    if (!layer) return;
+    const vals = layer.daily[dateStr];
+    if (!vals) return;
+    const coords = layer.coords;
+    const cfg = LAYERS[lk];
+
+    const visVals = [];
+    coords.forEach((coord, i) => {
+      const v = vals[i];
+      if (v === null || v === undefined) return;
+      visVals.push(v);
+      const [fill, opacity] = cfg.color(v);
+      const c = L.circleMarker([coord[0], coord[1]], {
+        radius: lk === 'chl' ? 5 : 8,
+        fillColor: fill, fillOpacity: opacity,
+        color: '#fff', weight: 0.3, opacity: 0.3,
+      }).addTo(map);
+
+      c.on('mouseover', () => {
+        document.getElementById('info-panel').style.display = 'block';
+        document.getElementById('info-val').innerHTML =
+          `<b>${lk.toUpperCase()}</b>: ${v.toFixed(3)} ${cfg.unit}<br>` +
+          `緯度: ${coord[0].toFixed(4)} / 経度: ${coord[1].toFixed(4)}`;
+      });
+      c.on('mouseout', () => {
+        document.getElementById('info-panel').style.display = 'none';
+      });
+      circles.push(c);
+    });
+
+    // 統計バー更新
+    if (visVals.length > 0) {
+      const mn = Math.min(...visVals), mx = Math.max(...visVals);
+      const avg = visVals.reduce((a, b) => a + b, 0) / visVals.length;
+      document.getElementById('stats-min').textContent = `最小: ${mn.toFixed(3)}`;
+      document.getElementById('stats-max').textContent = `最大: ${mx.toFixed(3)}`;
+      document.getElementById('stats-mean').textContent = `平均: ${avg.toFixed(3)}`;
+      document.getElementById('stats-cnt').textContent = `地点数: ${visVals.length}`;
+    }
+  }
+
+  // ─── 日付表示更新 ─────────────────────────────────────────────────
+  function setDate(idx) {
+    const d = dates[idx];
+    document.getElementById('date-display').textContent = d ? d.replace(/-/g, '/') : '---';
+    if (d) updateMarkers(currentLayer, d);
+  }
+
+  // ─── スライダー操作 ────────────────────────────────────────────────
+  slider.addEventListener('input', () => setDate(+slider.value));
+
+  // ─── レイヤ切替 ────────────────────────────────────────────────────
+  document.querySelectorAll('.layer-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.layer-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLayer = btn.dataset.layer;
+      updateLegend(currentLayer);
+      setDate(+slider.value);
+    });
+  });
+
+  // ─── 再生 ─────────────────────────────────────────────────────────
+  const playBtn = document.getElementById('play-btn');
+  playBtn.addEventListener('click', () => {
+    if (isPlaying) {
+      clearInterval(playTimer); isPlaying = false;
+      playBtn.textContent = '▶ 再生';
+    } else {
+      isPlaying = true; playBtn.textContent = '⏸ 停止';
+      const speed = +document.getElementById('speed-select').value;
+      playTimer = setInterval(() => {
+        let v = +slider.value;
+        if (v >= dates.length - 1) { v = 0; } else { v++; }
+        slider.value = v; setDate(v);
+      }, speed);
+    }
+  });
+
+  // ─── 初期表示 ─────────────────────────────────────────────────────
+  updateLegend(currentLayer);
+  setDate(dates.length - 1);
+}
+</script>
+</body>
+</html>
