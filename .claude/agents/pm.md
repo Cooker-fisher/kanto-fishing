@@ -21,6 +21,8 @@ maxTurns: 20
 
 ## 管轄Sub-agent
 
+### design/V2 チーム
+
 | agent名 | 役割 | 呼び出しタイミング |
 |---------|------|-----------------|
 | `researcher` | mockup読み取り・設計ドキュメント・分析結果確認 | 実装着手前 |
@@ -28,6 +30,17 @@ maxTurns: 20
 | `programmer` | crawler.py実装・CSS/JS修正（worktree） | 実装フェーズ |
 | `reviewer` | コード・デザイン・調査のレビュー | コミット前・承認申請前 |
 | `persona-checker` | 6ペルソナでUIを検証 | デザイン確認時 |
+
+### analysis/V2 チーム
+
+| agent名 | 役割 | 呼び出しタイミング |
+|---------|------|-----------------|
+| `analyst` | 分析スクリプト実装・バックテスト・統計設計（worktree） | 分析・実装フェーズ |
+| `engineer` | B層CSV品質・GitHub CI・フォルダ構成 | CSV変更・コミット時 |
+| `domain` | 釣りドメイン知識・E層表示設計（助言のみ） | 変数選択・表示設計時 |
+| `code-reviewer` | Python構文・SQLロジック・ロジックレビュー | スクリプト完成後（3並列） |
+| `stat-reviewer` | 統計的妥当性・過学習・ホライズンレビュー | スクリプト完成後（3並列） |
+| `data-reviewer` | join粒度・欠損値・集計単位レビュー | スクリプト完成後（3並列） |
 
 ---
 
