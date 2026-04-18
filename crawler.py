@@ -3635,27 +3635,60 @@ def build_fish_faq_html(fish, catches, decadal_calendar, site_url=""):
 
     # Q3: 一日の釣果
     if catches:
-        cnt_maxes = [c.get("cnt_max", 0) for c in catches if c.get("cnt_max")]
-        cnt_mins = [c.get("cnt_min", 0) for c in catches if c.get("cnt_min")]
+        _q3_crs = [c.get("count_range") for c in catches if c.get("count_range") and not c["count_range"].get("is_boat")]
+        cnt_maxes = [cr["max"] for cr in _q3_crs if cr.get("max") is not None]
+        cnt_mins  = [cr["min"] for cr in _q3_crs if cr.get("min") is not None]
         if cnt_mins and cnt_maxes:
             p25_val = sorted(cnt_mins)[int(len(cnt_mins) * 0.25)] if len(cnt_mins) >= 4 else min(cnt_mins)
             p75_val = sorted(cnt_maxes)[int(len(cnt_maxes) * 0.75)] if len(cnt_maxes) >= 4 else max(cnt_maxes)
             max_val = max(cnt_maxes)
-            q3_ans = f"直近{len(catches)}件のデータでは{p25_val}〜{p75_val}匹が標準的なレンジです。最高実績は{max_val}匹です。"
+            q3_ans = f"直近{len(catches)}件のデータでは{int(p25_val)}〜{int(p75_val)}匹が標準的なレンジです。最高実績は{int(max_val)}匹です。"
+        elif cnt_maxes:
+            max_val = max(cnt_maxes)
+            q3_ans = f"直近データでは最高{int(max_val)}匹の実績があります。釣果は潮回り・季節によって変動します。"
         else:
             q3_ans = f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"
     else:
         q3_ans = f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"
 
-    # Q4: 初心者向け
-    if catches:
-        ship_count = len(set(c.get("ship", "") for c in catches if c.get("ship")))
-        if ship_count > 0:
-            q4_ans = f"はい。現在{ship_count}船宿が出船実績があります。多くの船宿でレンタルタックルや仕掛けの購入が可能で、初心者でも安心して楽しめます。"
-        else:
-            q4_ans = f"はい。{fish}は比較的タックルがシンプルで、船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"
+    # Q4: 初心者向け（魚種別）
+    _FISH_BEGINNER = {
+        "アジ":       ("入門魚の定番", "ライトな仕掛けで数釣りを楽しめる入門向きの魚。食いが立てば初心者でもツ抜けが狙えます"),
+        "サバ":       ("入門向け", "コマセ釣りで豪快な数釣りが楽しめます。引きも強く、釣りの醍醐味を存分に味わえます"),
+        "キス":       ("入門〜中級", "天ぷらネタとして人気の魚。シンプルな仕掛けで楽しめますが、アタリを取る繊細さも醍醐味です"),
+        "タコ":       ("入門向け", "底を叩くだけのシンプルな釣り。ファミリーフィッシングにも人気で、道具も比較的手軽です"),
+        "マダイ":     ("中級者向け", "コマセを使ったビシ釣りが主流。繊細なアタリを取る楽しさがあり、釣れたときの達成感は格別です"),
+        "ヒラメ":     ("中級者向け", "泳がせ釣りで大物を狙います。アタリからの「一呼吸」をおいてから合わせるのがコツです"),
+        "マルイカ":   ("上級者向け", "直結仕掛けの操作が独特でテクニカルな釣り。習得に時間がかかりますが、釣れると病みつきになります"),
+        "スルメイカ": ("入門〜中級", "ブランコ仕掛けならビギナーでも数釣りが楽しめます。夜釣りでの豪快な多点掛けが醍醐味です"),
+        "カツオ":     ("入門〜中級", "コマセ釣りで豪快な引きを楽しめます。口切れしやすいので走られても慌てず一定のテンションを保つのがポイントです"),
+        "キハダマグロ": ("上級者向け", "大型青物との長期戦。専用の強靭なタックルが必要で、体力・経験が問われる上級者向けの釣りです"),
+        "シーバス":   ("中級者向け", "ルアーとエサ釣り両方が楽しめます。河川〜沖合まで幅広いフィールドで狙えるのも魅力です"),
+        "カサゴ":     ("入門向け", "根魚の定番。底を丁寧に探るだけで釣れることも多く、初心者にも優しい魚です"),
+        "メバル":     ("初級〜中級", "食い込みを待つ繊細な釣り。活性が高い時間帯を読むのが釣果を伸ばすコツです"),
+        "アマダイ":   ("中級者向け", "深場を狙う高級魚。丁寧な底取りとゆっくりした誘い上げが重要で、釣れたときの喜びは大きいです"),
+        "ワラサ":     ("中級者向け", "ブリの若魚で引きが豪快。体力勝負になる場面もあり、タックルはある程度しっかりしたものが必要です"),
+        "ブリ":       ("中〜上級", "強烈な引きに耐えるタックル選びが重要。大型を仕留めたときの達成感は格別ですが、初心者には難易度高めです"),
+        "サワラ":     ("中級者向け", "鋭い歯と独特の食い込み方が特徴。合わせのタイミングが難しいですが、スピード感あふれる引きが魅力です"),
+        "タチウオ":   ("中級者向け", "テンヤ・コマセなど釣り方の幅が広い魚。銀色に輝く魚体と独特のアタリが病みつきになります"),
+        "カワハギ":   ("上級者向け", "エサ取りの名手相手の高度な駆け引きが醍醐味。腕の差が如実に出る釣りで、熟練者ほどはまります"),
+        "イサキ":     ("入門〜中級", "コマセ釣りで安定した釣果が期待でき、食味も抜群。数釣りと型釣りを両立できる人気ターゲットです"),
+        "ハナダイ":   ("入門〜中級", "マダイより口が小さく繊細な食い込み。コマセ釣りで狙い、食味の良さも人気の理由です"),
+        "クロダイ":   ("中級者向け", "警戒心が強く難易度は高め。潮の変わり目など時合いを読む経験が釣果に直結します"),
+        "イナダ":     ("入門向け", "青物入門として最適。コマセで群れを引き寄せ、豪快な引きを楽しめます"),
+        "カンパチ":   ("中〜上級", "パワフルな引きと根に潜る習性への対応が重要。大型を狙うほど難易度が上がります"),
+        "シイラ":     ("中級者向け", "派手なジャンプと強烈な引きが特徴的なゲームフィッシュ。夏場の人気ターゲットです"),
+    }
+    ship_count = len(set(c.get("ship", "") for c in catches if c.get("ship"))) if catches else 0
+    fish_info = _FISH_BEGINNER.get(fish)
+    if fish_info:
+        level, desc = fish_info
+        ship_str = f"関東では{ship_count}船宿が出船実績あり。" if ship_count > 0 else ""
+        q4_ans = f"難易度は{level}の釣りです。{desc}。{ship_str}多くの船宿でレンタルタックルや仕掛けの購入が可能です。"
+    elif ship_count > 0:
+        q4_ans = f"はい。現在{ship_count}船宿が出船実績があります。多くの船宿でレンタルタックルや仕掛けの購入が可能で、初心者でも安心して楽しめます。"
     else:
-        q4_ans = f"はい。{fish}は比較的タックルがシンプルで、船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"
+        q4_ans = f"はい。船宿スタッフのサポートも受けられます。竿・リールのレンタルができる船宿も多くあります。"
 
     faqs = [
         (f"{fish}の旬はいつですか？", q1_ans),
@@ -5183,10 +5216,10 @@ def build_fish_pages(data, history, crawled_at=""):
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"): max_cnt = max(max_cnt, cr["max"])
         # fish-hero 数値
-        t_maxs = [c["cnt_max"] for c in today_catches_f if c.get("cnt_max") is not None]
-        t_mins = [c["cnt_min"] for c in today_catches_f if c.get("cnt_min") is not None]
-        t_sz_lo = [c["size_min"] for c in today_catches_f if c.get("size_min") is not None]
-        t_sz_hi = [c["size_max"] for c in today_catches_f if c.get("size_max") is not None]
+        t_maxs = [c["count_range"]["max"] for c in today_catches_f if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("max") is not None]
+        t_mins = [c["count_range"]["min"] for c in today_catches_f if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("min") is not None]
+        t_sz_lo = [c["size_cm"]["min"] for c in today_catches_f if c.get("size_cm") and c["size_cm"].get("min") is not None]
+        t_sz_hi = [c["size_cm"]["max"] for c in today_catches_f if c.get("size_cm") and c["size_cm"].get("max") is not None]
         if t_mins and t_maxs:
             cnt_range_str = f"{int(min(t_mins))}〜{int(max(t_maxs))}匹"
         elif t_maxs:
@@ -5198,8 +5231,10 @@ def build_fish_pages(data, history, crawled_at=""):
         area_today_f: dict = {}
         for c in today_catches_f:
             d = area_today_f.setdefault(c["area"], {"hi": [], "lo": []})
-            if c.get("cnt_max") is not None: d["hi"].append(c["cnt_max"])
-            if c.get("cnt_min") is not None: d["lo"].append(c["cnt_min"])
+            cr = c.get("count_range")
+            if cr and not cr.get("is_boat"):
+                if cr.get("max") is not None: d["hi"].append(cr["max"])
+                if cr.get("min") is not None: d["lo"].append(cr["min"])
         area_cmp_rows = ""
         for aname, ad in sorted(area_today_f.items(), key=lambda x: -(max(x[1]["hi"] or [0])))[:5]:
             a_lo = int(min(ad["lo"])) if ad["lo"] else None
@@ -5223,17 +5258,16 @@ def build_fish_pages(data, history, crawled_at=""):
                 d["cnt_los"].append(cr.get("min", cr["max"]))
             if c.get("point_place1"): d["pts"].append(c["point_place1"])
             if c.get("date") == today_str_f: d["today"] = True
-        _sr_marks = ["◎", "◎", "○", "○", "○", "△", "△", "△"]
         sr_items = ""
         from collections import Counter as _CtrF
         for i, (sn, sd) in enumerate(sorted(ship_data_f.items(), key=lambda x: -max(x[1]["cnt_his"] or [0]))[:8]):
-            mark = _sr_marks[i] if i < len(_sr_marks) else "△"
             s_lo = int(min(sd["cnt_los"])) if sd["cnt_los"] else None
             s_hi = int(max(sd["cnt_his"])) if sd["cnt_his"] else None
             s_range = f"{s_lo}〜{s_hi}匹" if s_lo and s_hi and s_lo != s_hi else (f"{s_hi}匹" if s_hi else f"{sd['cnt']}件")
             top_pt = _CtrF(sd["pts"]).most_common(1)[0][0] if sd["pts"] else ""
             sr_items += (
-                f'<div class="sr"><span class="sr-m">{mark}</span>'
+                f'<div class="sr">'
+                f'<span class="sr-rank">{i+1}</span>'
                 f'<span class="sr-name">{sn}</span>'
                 f'<span class="sr-range">{s_range}</span>'
                 f'<span class="sr-pt">{top_pt}</span></div>'
@@ -5312,7 +5346,7 @@ def build_fish_pages(data, history, crawled_at=""):
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
 .sr:last-child{border-bottom:none}
-.sr .sr-m{font-size:14px;font-weight:800;color:var(--cta);flex:0 0 22px;text-align:center}
+.sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
@@ -5817,7 +5851,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
 .sr:last-child{border-bottom:none}
-.sr .sr-m{font-size:14px;font-weight:800;color:var(--cta);flex:0 0 22px;text-align:center}
+.sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}"""
@@ -5887,14 +5921,13 @@ def build_fish_area_pages(data, crawled_at="", history=None):
                 d["max"] = max(d["max"], cr["max"])
             if c.get("date") == today_str_fa:
                 d["today"] = True
-        _sr_marks_fa = ["◎", "◎", "○", "○", "○", "△", "△", "△"]
         sr_items_fa = ""
         for i, (sn, sd) in enumerate(sorted(ship_data_fa.items(), key=lambda x: -x[1]["max"])[:8]):
-            mark = _sr_marks_fa[i] if i < len(_sr_marks_fa) else "△"
             mx = sd["max"]
             s_range = f"最高{mx}匹" if mx else f"{sd['cnt']}件"
             sr_items_fa += (
-                f'<div class="sr"><span class="sr-m">{mark}</span>'
+                f'<div class="sr">'
+                f'<span class="sr-rank">{i+1}</span>'
                 f'<span class="sr-name">{sn}</span>'
                 f'<span class="sr-range">{s_range}</span>'
                 f'<span class="sr-pt">{sd["cnt"]}件</span></div>'

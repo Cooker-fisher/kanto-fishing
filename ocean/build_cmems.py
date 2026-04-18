@@ -406,7 +406,7 @@ def main():
                 else:
                     print(f"  [{key.upper()}] データなし（スキップ）")
 
-        # ── Phase 2: 深度別データ（並列） ─────────────────────────────────
+        # ── Phase 2: 深度別データ（並列・月ごと即時upsert） ─────────────────
         if run_phase2:
             print("\n=== Phase 2: 深度別データ取得（並列） ===", flush=True)
             tasks = []
@@ -415,19 +415,21 @@ def main():
                     tasks.append((key, cfg, cs, ce, tmp_dir))
 
             print(f"チャンク数: {len(tasks)}  workers: {args.workers}", flush=True)
-            all_rows = {k: [] for k in DATASETS_DEPTH}
 
             with ThreadPoolExecutor(max_workers=args.workers) as ex:
                 futures = {ex.submit(_worker_depth, t): t for t in tasks}
                 for fut in as_completed(futures):
-                    key, rows = fut.result()
-                    all_rows[key].extend(rows)
-
-            for key, rows in all_rows.items():
-                if rows:
-                    upsert_depth(conn, key, rows)
-                else:
-                    print(f"  [{key.upper()}] データなし（スキップ）")
+                    try:
+                        key, rows = fut.result()
+                    except Exception as e:
+                        task_info = futures[fut]
+                        print(f"  [ERROR] {task_info[0]} {task_info[2]}〜{task_info[3]}: {e}", flush=True)
+                        continue
+                    if rows:
+                        upsert_depth(conn, key, rows)
+                    else:
+                        task_info = futures[fut]
+                        print(f"  [{key.upper()}] {task_info[2]}〜{task_info[3]}: データなし", flush=True)
 
     # 最終確認
     r1 = conn.execute("SELECT COUNT(*), MIN(date), MAX(date) FROM cmems_daily").fetchone()
