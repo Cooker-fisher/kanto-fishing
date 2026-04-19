@@ -111,16 +111,56 @@ conn.close()
 
 ## ★ 次セッションでやること（優先度順）
 
-### 精度改善候補
+### 【最優先】ローカルでCMEMS実験を実行する
+
+コードは修正済み・push済み。weather_cache.sqlite + cmems_data.sqlite がある環境（ローカルWindows）でのみ実行可能。
+
+```bash
+# ブランチ取得
+git fetch origin claude/max-factor-cmems-analysis-ahUYr
+git checkout claude/max-factor-cmems-analysis-ahUYr
+
+TEST="マダイ カワハギ フグ アカムツ キンメダイ イナダ サワラ アジ ヒラメ"
+
+# Config A（現状ベースライン）→ まず実行して数字を記録
+python analysis/V2/methods/run_full_deepdive.py $TEST --workers 4
+
+# Config B（CMEMS上限 2→4）
+python analysis/V2/methods/run_full_deepdive.py $TEST --max-cmems 4 --max-cmems-ocean 5 --workers 4
+
+# Config C（MAX_FACTORS 12→14 + CMEMS 4）
+python analysis/V2/methods/run_full_deepdive.py $TEST --max-factors 14 --max-cmems 4 --max-cmems-ocean 5 --workers 4
+
+# Config D（MAX_FACTORS 14 + CMEMS 3・中間値）
+python analysis/V2/methods/run_full_deepdive.py $TEST --max-factors 14 --max-cmems 3 --max-cmems-ocean 5 --workers 4
+```
+
+各Config実行直後に集計（上書きされる前に）:
+```bash
+python3 -c "
+import sqlite3; conn = sqlite3.connect('analysis/V2/results/analysis.sqlite')
+f = \"'マダイ','カワハギ','フグ','アカムツ','キンメダイ','イナダ','サワラ','アジ','ヒラメ'\"
+r = conn.execute(f'''SELECT ROUND(AVG(CASE WHEN horizon=0 AND metric='cnt_avg' THEN wmape END),1), ROUND(AVG(CASE WHEN horizon=7 AND metric='cnt_avg' THEN wmape END),1), ROUND(SUM(CASE WHEN horizon=0 AND metric='cnt_avg' AND wmape<bl2_wmape THEN 1.0 ELSE 0 END)/COUNT(CASE WHEN horizon=0 AND metric='cnt_avg' THEN 1 END)*100,1), ROUND(SUM(CASE WHEN horizon=7 AND metric='cnt_avg' AND wmape<bl2_wmape THEN 1.0 ELSE 0 END)/COUNT(CASE WHEN horizon=7 AND metric='cnt_avg' THEN 1 END)*100,1) FROM combo_backtest WHERE fish IN ({f})''').fetchone()
+print(f'wMAPE H0={r[0]}% H7={r[1]}%  BL2勝率 H0={r[2]}% H7={r[3]}%')
+"
+```
+
+**判定基準:**
+- wMAPE が A より +1%以上悪化 → 却下
+- BL-2勝率が -1pt以上低下 → 却下（過学習）
+- 改善 or 同等 → 採用。最良Configで全55魚種再実行
+
+**実験後（良いConfigが決まったら）:**
+- `CMEMS_ALLOWED_FISH` にマダイ・トラフグ・カワハギ・カンパチを追加して再実験
+- 全55魚種 run_full_deepdive.py で本番精度を更新
+
+---
+
+### その他の精度改善候補
 - [ ] サワラ（wMAPE 78%）・イナダ（75%）・タイ五目（70%）の診断
 - [ ] ムギイカ（69%）・クロムツ（68%）の特徴量見直し
-- [ ] マルイカ（57%）: ヤリイカ誤分類解消後の再評価
-- [ ] ブリ: 全船宿30件未満のまま → data蓄積待ち
+- [ ] tsuri_mono空 363件の正規化失敗レコード調査・修正
 - [ ] ちがさき丸×マダイ/シーバス/メバル 個別改善（r=-0.17等）
-
-### データ
-- [ ] tsuri_mono空 363件の正規化失敗レコート調査・修正
-- [ ] カツオ×幸丸（29件）・たいぞう丸（28件）: 30件突破待ち
 
 ### 未実装
 - [ ] 有料ページUI + 決済（Stripe）実装
