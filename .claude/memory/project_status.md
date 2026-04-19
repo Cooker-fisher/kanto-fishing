@@ -1,6 +1,5 @@
 現行バージョン: crawler.py v5.28 / predict_count.py（Forecast API統合済み）
 最終更新: 2026/04/19
-<<<<<<< HEAD
 最新コミット: 3a82f55（CMEMS実験REVERT・決定ログ整形）
 
 ## ✅ 今セッション完了（2026/04/19 後半）

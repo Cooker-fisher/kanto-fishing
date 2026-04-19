@@ -1,0 +1,416 @@
+# wMAPE > 60% コンボ個別分析レポート (2026-04-19)
+# 対象コンボ数: 28
+
+## イサキ x 勘栄丸
+  wMAPE=96.6%  r=0.077  BL0=94.2%  BL2=93.4%  n=69  use_fallback=None
+  旬別: peak=29.75  low=8.67  比率=3.4
+  BL0-model=-2.4pt
+  分類: [相関弱型]
+  特徴量(deep_params(全因子), 上位5):
+    do_bottom: r=0.173
+    wave_period: r=0.158
+    wave_period_avg: r=0.143
+    sla_lag30: r=-0.14
+    precip_sum1: r=-0.136
+
+## タイ五目 x 大盛丸
+  wMAPE=88.3%  r=0.355  BL0=96.7%  BL2=97.3%  n=170  use_fallback=0
+  旬別: peak=38.33  low=1.20  比率=31.9
+  BL0-model=+8.4pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    prev_week_cnt: r=0.355
+    tide_grp_chowaka_autumn: r=0.267
+    typhoon_dist: r=0.245
+    precip_sum6: r=0.224
+    temp_100m: r=0.216
+
+## シイラ x 庄治郎丸
+  wMAPE=85.3%  r=0.476  BL0=113.3%  BL2=89.7%  n=237  use_fallback=0
+  旬別: peak=106.35  low=5.90  比率=18.0
+  BL0-model=+28.0pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    prev_week_cnt: r=0.751
+    kuroshio_sla_monthly: r=-0.479
+    sla_approach_idx: r=0.379
+    sla_monthly: r=-0.359
+    typhoon_dist: r=0.247
+
+## カサゴ x 北山丸
+  wMAPE=83.1%  r=0.306  BL0=83.5%  BL2=83.4%  n=152  use_fallback=0
+  旬別: peak=7.00  low=2.33  比率=3.0
+  BL0-model=+0.4pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    do_bottom: r=-0.434
+    sla_lag30: r=-0.333
+    kuroshio_sla_monthly: r=-0.271
+    sst_avg: r=-0.256
+    spawn_season_n: r=0.254
+
+## タイ五目 x ちがさき丸
+  wMAPE=82.8%  r=0.366  BL0=95.5%  BL2=91.1%  n=646  use_fallback=0
+  旬別: peak=21.12  low=1.00  比率=21.1
+  BL0-model=+12.7pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    do_surface: r=-0.609
+    is_summer_vacation: r=0.382
+    temp_avg: r=0.382
+    temp_min: r=0.38
+    no3_surface: r=-0.374
+
+## カツオ x 幸丸
+  wMAPE=80.4%  r=0.46  BL0=98.7%  BL2=115.2%  n=0  use_fallback=0
+  旬別: peak=8.20  low=2.83  比率=2.9
+  BL0-model=+18.3pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    is_summer_vacation: r=0.445
+    moon_sin: r=0.386
+    _meta: r=None  alpha=0.440
+
+## イナダ x 庄治郎丸
+  wMAPE=77.6%  r=0.603  BL0=108.9%  BL2=106.5%  n=121  use_fallback=0
+  旬別: peak=15.77  low=1.00  比率=15.8
+  BL0-model=+31.3pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    sla_monthly: r=-0.632
+    kuroshio_sla_monthly: r=-0.632
+    sst_gradient: r=-0.596
+    temp_min: r=0.575
+    temp_avg: r=0.57
+
+## タイ五目 x 庄治郎丸
+  wMAPE=77.6%  r=0.305  BL0=80.7%  BL2=85.5%  n=1419  use_fallback=0
+  旬別: peak=23.00  low=1.17  比率=19.7
+  BL0-model=+3.1pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    is_summer_vacation: r=0.348
+    temp_100m_summer: r=0.329
+    prev_week_cnt: r=0.319
+    temp_100m_spring: r=-0.316
+    tide_grp_chusho_summer: r=0.25
+
+## ムギイカ x 平安丸
+  wMAPE=76.9%  r=0.056  BL0=79.2%  BL2=68.0%  n=52  use_fallback=0
+  旬別: peak=24.65  low=8.00  比率=3.1
+  BL0-model=+2.3pt
+  分類: [相関弱型]
+  特徴量(wx_params(採用因子), 上位5):
+    water_color_pred_n: r=0.41
+    wave_clamp: r=-0.407
+    sla_pelagic_monthly: r=-0.385
+    typhoon_wind: r=-0.34
+    wave_height_avg: r=-0.339
+
+## サワラ x 吉久
+  wMAPE=76.2%  r=0.26  BL0=79.7%  BL2=61.7%  n=74  use_fallback=0
+  旬別: peak=16.44  low=1.43  比率=11.5
+  BL0-model=+3.5pt
+  分類: [高分散型]
+  特徴量(wx_params(採用因子), 上位5):
+    spawn_season_n: r=0.618
+    sla_pelagic_monthly: r=-0.593
+    tide_grp_chusho_spring: r=0.557
+    typhoon_dist: r=0.552
+    kuroshio_sla_monthly: r=-0.529
+
+## イナダ x 平安丸
+  wMAPE=74.5%  r=0.38  BL0=81.7%  BL2=81.0%  n=170  use_fallback=0
+  旬別: peak=14.30  low=1.00  比率=14.3
+  BL0-model=+7.2pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    prev_week_cnt: r=0.469
+    water_color_pred_n: r=-0.442
+    sst_avg: r=0.417
+    temp_avg: r=0.385
+    temp_max: r=0.382
+
+## キハダマグロ x 庄治郎丸
+  wMAPE=71.5%  r=-0.314  BL0=82.4%  BL2=126.3%  n=39  use_fallback=0
+  旬別: peak=2.46  low=1.00  比率=2.5
+  BL0-model=+10.9pt
+  分類: [改善余地型]
+  特徴量(wx_params(採用因子), 上位5):
+    precip_sum3: r=0.549
+    precip_sum: r=0.328
+    _meta: r=None  alpha=0.100
+
+## シイラ x 共栄丸
+  wMAPE=70.4%  r=0.372  BL0=88.4%  BL2=100.2%  n=41  use_fallback=0
+  旬別: peak=37.00  low=4.25  比率=8.7
+  BL0-model=+18.0pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    temp_100m: r=0.492
+    temp_100m_summer: r=0.492
+    typhoon_wind: r=-0.484
+    precip_sum2: r=0.453
+    sst_avg: r=0.452
+
+## アジ x なごみ丸
+  wMAPE=69.0%  r=0.749  BL0=91.3%  BL2=94.0%  n=36  use_fallback=0
+  旬別: peak=18.00  low=1.44  比率=12.5
+  BL0-model=+22.3pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    precip_sum2: r=0.619
+    tide_grp_chowaka_spring: r=0.541
+    spawn_season_n: r=0.449
+    water_color_pred_n: r=-0.4
+    sst_avg: r=-0.379
+
+## クロムツ x 第八鶴丸
+  wMAPE=68.5%  r=0.183  BL0=67.4%  BL2=70.3%  n=64  use_fallback=0
+  旬別: peak=18.50  low=3.00  比率=6.2
+  BL0-model=-1.1pt
+  分類: [高分散型]
+  特徴量(wx_params(採用因子), 上位5):
+    do_bottom: r=0.717
+    temp_100m_spring: r=0.429
+    prev_week_cnt: r=0.326
+    kuroshio_sla_monthly: r=0.291
+    tide_grp_oshio_autumn: r=0.278
+
+## マルイカ x 秀丸
+  wMAPE=67.8%  r=0.282  BL0=74.4%  BL2=70.9%  n=950  use_fallback=0
+  旬別: peak=30.13  low=7.38  比率=4.1
+  BL0-model=+6.6pt
+  分類: [分類不定]
+  特徴量(wx_params(採用因子), 上位5):
+    do_surface: r=-0.41
+    temp_100m: r=0.36
+    temp_50m: r=0.33
+    prev_week_cnt: r=0.308
+    temp_200m: r=0.298
+
+## ヤリイカ x 幸栄丸
+  wMAPE=67.2%  r=0.194  BL0=72.2%  BL2=69.3%  n=99  use_fallback=0
+  旬別: peak=0.00  low=0.00  比率=999.0
+  BL0-model=+5.0pt
+  分類: [高分散型]
+  特徴量(wx_params(採用因子), 上位5):
+    temp_100m: r=-0.376
+    temp_100m_spring: r=-0.376
+    tide_grp_chusho_spring: r=0.31
+    sst_gradient: r=-0.298
+    moon_cos: r=-0.274
+
+## シーバス x 林遊船
+  wMAPE=66.6%  r=0.384  BL0=75.3%  BL2=81.5%  n=293  use_fallback=0
+  旬別: peak=15.44  low=1.50  比率=10.3
+  BL0-model=+8.7pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    temp_200m: r=-0.454
+    temp_50m: r=-0.454
+    tide_grp_chusho_winter: r=0.243
+    prev_week_cnt: r=0.225
+    sst_avg: r=-0.215
+
+## マルイカ x 幸栄丸
+  wMAPE=65.6%  r=0.133  BL0=71.0%  BL2=65.5%  n=74  use_fallback=0
+  旬別: peak=0.00  low=0.00  比率=999.0
+  BL0-model=+5.4pt
+  分類: [改善余地型]
+  特徴量(wx_params(採用因子), 上位5):
+    water_color_prev_n: r=-0.837
+    prev_week_cnt: r=0.539
+    sst_delta: r=0.5
+    is_summer_vacation: r=0.441
+    temp_avg: r=0.374
+
+## マルイカ x 第八鶴丸
+  wMAPE=65.6%  r=0.341  BL0=67.1%  BL2=62.6%  n=119  use_fallback=0
+  旬別: peak=42.89  low=6.00  比率=7.1
+  BL0-model=+1.5pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    temp_100m: r=-0.41
+    temp_200m: r=0.303
+    temp_range: r=-0.284
+    tide_grp_chowaka_winter: r=0.265
+    sla_pelagic_monthly: r=0.248
+
+## ヤリイカ x 幸丸
+  wMAPE=65.4%  r=0.298  BL0=67.9%  BL2=67.3%  n=75  use_fallback=0
+  旬別: peak=27.33  low=5.83  比率=4.7
+  BL0-model=+2.5pt
+  分類: [分類不定]
+  特徴量(wx_params(採用因子), 上位5):
+    temp_200m: r=-0.532
+    temp_100m: r=-0.401
+    prev_week_cnt: r=0.379
+    temp_min: r=0.378
+    water_color_pred_n: r=-0.343
+
+## シマアジ x つる丸
+  wMAPE=65.4%  r=0.324  BL0=67.9%  BL2=73.1%  n=84  use_fallback=0
+  旬別: peak=15.25  low=3.00  比率=5.1
+  BL0-model=+2.5pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    current_speed_max: r=0.303
+    current_speed_avg: r=0.294
+    sla_approach_idx: r=0.29
+    pressure_range: r=0.275
+    _meta: r=None  alpha=0.407
+
+## ショウサイフグ x ちがさき丸
+  wMAPE=65.2%  r=0.307  BL0=65.2%  BL2=63.8%  n=72  use_fallback=0
+  旬別: peak=10.50  low=2.75  比率=3.8
+  BL0-model=+0.0pt
+  分類: [分類不定]
+  特徴量(wx_params(採用因子), 上位5):
+    temp_100m_spring: r=-0.386
+    temp_100m_summer: r=0.381
+    temp_min: r=0.319
+    spawn_season_n: r=-0.318
+    tide_grp_chusho_summer: r=0.316
+
+## フグ x ちがさき丸
+  wMAPE=64.1%  r=0.544  BL0=73.0%  BL2=65.0%  n=68  use_fallback=0
+  旬別: peak=11.00  low=1.00  比率=11.0
+  BL0-model=+8.9pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    precip_sum7: r=0.473
+    sst_avg: r=0.403
+    kuroshio_sla_monthly: r=0.387
+    sla_pelagic_monthly: r=0.374
+    typhoon_dist: r=-0.36
+
+## キハダマグロ x たいぞう丸
+  wMAPE=63.4%  r=0.302  BL0=71.5%  BL2=75.7%  n=80  use_fallback=0
+  旬別: peak=3.25  low=1.00  比率=3.2
+  BL0-model=+8.1pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    wave_period_avg: r=0.335
+    sla_approach_idx: r=0.305
+    wave_period_min: r=0.303
+    kuroshio_sla_monthly: r=-0.287
+    prev_week_cnt: r=0.273
+
+## フグ x 敷嶋丸
+  wMAPE=63.3%  r=0.467  BL0=72.7%  BL2=85.3%  n=354  use_fallback=0
+  旬別: peak=31.64  low=4.57  比率=6.9
+  BL0-model=+9.4pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    do_surface: r=0.873
+    no3_surface: r=-0.817
+    prev_week_cnt: r=0.545
+    water_color_pred_n: r=0.268
+    wave_height_avg: r=-0.248
+
+## カツオ x 庄治郎丸
+  wMAPE=62.9%  r=0.287  BL0=63.9%  BL2=75.9%  n=41  use_fallback=0
+  旬別: peak=4.50  low=1.00  比率=4.5
+  BL0-model=+1.0pt
+  分類: [分類不定]
+  特徴量(wx_params(採用因子), 上位5):
+    sst_delta: r=-0.453
+    temp_range: r=0.362
+    moon_cos: r=0.318
+    _meta: r=None  alpha=0.469
+
+## アジ x 第八幸松丸
+  wMAPE=60.1%  r=0.524  BL0=65.9%  BL2=64.9%  n=48  use_fallback=0
+  旬別: peak=7.33  low=1.83  比率=4.0
+  BL0-model=+5.8pt
+  分類: [モデル有効型]
+  特徴量(wx_params(採用因子), 上位5):
+    typhoon_dist: r=-0.741
+    wave_period_min: r=0.517
+    precip_sum1: r=0.488
+    sst_avg: r=0.477
+    wave_period_avg: r=0.47
+
+
+==============================================================================================================
+## サマリー表
+魚種             船宿                 wMAPE       r     BL0     BL2      n 分類              BL0-mdl     比率
+--------------------------------------------------------------------------------------------------------------
+イサキ            勘栄丸                 96.6   0.077    94.2    93.4     69 相関弱型               -2.4    3.4
+タイ五目           大盛丸                 88.3   0.355    96.7    97.3    170 モデル有効型             +8.4   31.9
+シイラ            庄治郎丸                85.3   0.476   113.3    89.7    237 モデル有効型            +28.0   18.0
+カサゴ            北山丸                 83.1   0.306    83.5    83.4    152 モデル有効型             +0.4    3.0
+タイ五目           ちがさき丸               82.8   0.366    95.5    91.1    646 モデル有効型            +12.7   21.1
+カツオ            幸丸                  80.4   0.460    98.7   115.2      0 モデル有効型            +18.3    2.9
+イナダ            庄治郎丸                77.6   0.603   108.9   106.5    121 モデル有効型            +31.3   15.8
+タイ五目           庄治郎丸                77.6   0.305    80.7    85.5   1419 モデル有効型             +3.1   19.7
+ムギイカ           平安丸                 76.9   0.056    79.2    68.0     52 相関弱型               +2.3    3.1
+サワラ            吉久                  76.2   0.260    79.7    61.7     74 高分散型               +3.5   11.5
+イナダ            平安丸                 74.5   0.380    81.7    81.0    170 モデル有効型             +7.2   14.3
+キハダマグロ         庄治郎丸                71.5  -0.314    82.4   126.3     39 改善余地型             +10.9    2.5
+シイラ            共栄丸                 70.4   0.372    88.4   100.2     41 モデル有効型            +18.0    8.7
+アジ             なごみ丸                69.0   0.749    91.3    94.0     36 モデル有効型            +22.3   12.5
+クロムツ           第八鶴丸                68.5   0.183    67.4    70.3     64 高分散型               -1.1    6.2
+マルイカ           秀丸                  67.8   0.282    74.4    70.9    950 分類不定               +6.6    4.1
+ヤリイカ           幸栄丸                 67.2   0.194    72.2    69.3     99 高分散型               +5.0  999.0
+シーバス           林遊船                 66.6   0.384    75.3    81.5    293 モデル有効型             +8.7   10.3
+マルイカ           幸栄丸                 65.6   0.133    71.0    65.5     74 改善余地型              +5.4  999.0
+マルイカ           第八鶴丸                65.6   0.341    67.1    62.6    119 モデル有効型             +1.5    7.1
+ヤリイカ           幸丸                  65.4   0.298    67.9    67.3     75 分類不定               +2.5    4.7
+シマアジ           つる丸                 65.4   0.324    67.9    73.1     84 モデル有効型             +2.5    5.1
+ショウサイフグ        ちがさき丸               65.2   0.307    65.2    63.8     72 分類不定               +0.0    3.8
+フグ             ちがさき丸               64.1   0.544    73.0    65.0     68 モデル有効型             +8.9   11.0
+キハダマグロ         たいぞう丸               63.4   0.302    71.5    75.7     80 モデル有効型             +8.1    3.2
+フグ             敷嶋丸                 63.3   0.467    72.7    85.3    354 モデル有効型             +9.4    6.9
+カツオ            庄治郎丸                62.9   0.287    63.9    75.9     41 分類不定               +1.0    4.5
+アジ             第八幸松丸               60.1   0.524    65.9    64.9     48 モデル有効型             +5.8    4.0
+
+## 分類別件数
+  モデル有効型: 17件
+  分類不定: 4件
+  改善余地型: 2件
+  相関弱型: 2件
+  高分散型: 3件
+
+## 改善余地型（use_fallback=1 候補）
+  キハダマグロ x 庄治郎丸: wMAPE=71.5%  r=-0.314  BL0=82.4%  BL0-model=+10.9pt
+    -> BL0の方が 10.9pt 良い + r=-0.314（負相関）のためモデル逆効き → fallback推奨
+    -> 注意: 自動fallbackが発動しない理由 = bl0_is_better判定は「BL0 <= wMAPE」
+       BL0=82.4 > wMAPE=71.5 → モデルがBL0に勝っているため自動fallbackが発動しない
+       ただし r が負（-0.314）であり、補正が逆方向に働いている可能性が高い
+       対処: combo_deep_dive.py の OOS_R_FALLBACK_THR を負値にも対応させる変更が必要
+  マルイカ x 幸栄丸: wMAPE=65.6%  r=0.133  BL0=71.0%  BL0-model=+5.4pt
+    -> BL0の方が 5.4pt 良い + r<0.15 のためモデル効果が薄い → fallback推奨
+    -> 注意: BL2=65.5% でほぼ同値。自動fallback条件（BL0-model>10 or BL2-model>5）未達
+       現在の自動fallback条件は BL2-model > 5pt が必要（65.5-65.6=-0.1pt で未達）
+
+## 自動fallback発動状況（再実行後）
+  キハダマグロ x 庄治郎丸: use_fallback=0（未発動）
+    理由: モデルがBL0より良いため bl0_is_better=False → OOS_R条件のトリガーなし
+  マルイカ x 幸栄丸: use_fallback=0（未発動）
+    理由: BL2-model=0.1pt（閾値5pt未達）
+
+## コード変更なしでの暫定措置
+  両コンボとも現在のuse_fallback=0を維持（自動fallbackの設計上の仕様）
+  改善するにはコード変更が必要:
+    [案] OOS_R_FALLBACK_THR を絶対値で判定（|r| < 0.15）に変更する
+    [案] 負相関コンボ（r < -0.1）は無条件でfallback対象とする
+
+## 考察メモ
+
+### モデル有効型（17件）の構造
+  wMAPE>60% だがモデルがBL0を下回る。BL0自体が高いため限界がある。
+  → データ量増加（蓄積待ち）が主な改善手段。特徴量変更は不要。
+
+### 高分散型（3件）の構造
+  旬間のピーク/最低比 > 5 かつ r < 0.3。
+  旬別ベースラインの精度が上がれば改善余地あり。月次効果を追加特徴量に検討。
+
+### 相関弱型（2件）の構造
+  r < 0.2 で気象との相関が薄い。魚種固有の要因（遊漁船出船頻度・漁場移動等）が支配。
+  → モデル改善困難。BL0もBL2も高い場合はfallbackを検討。
+
+### 分類不定（4件）の構造
+  モデルがBL0に勝っていないが改善余地型の閾値も満たさないグレーゾーン。
+  個別診断が必要。
