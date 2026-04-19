@@ -404,6 +404,8 @@ CMEMS_FACTORS = {
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",
     "kuroshio_score", "nutrient_score", "deepwater_score",
+    # 注: sla_approach_idx / kuroshio_sla_monthly / sla_pelagic_monthly は
+    # 広域指数扱いのため CMEMS_FACTORS に含めない（cap管理外・自由競合）
 }
 TIDE_GRP_FACTORS = {
     "tide_grp_oshio_spring", "tide_grp_oshio_summer", "tide_grp_oshio_autumn", "tide_grp_oshio_winter",
@@ -412,8 +414,12 @@ TIDE_GRP_FACTORS = {
 }
 
 def _apply_factor_caps(factor_r_dict: dict, max_total: int = MAX_FACTORS,
-                       max_cmems: int = MAX_CMEMS_DEFAULT) -> dict:
-    """相関上位 max_total 個のみ採用。CMEMS/tide_grp_* はカテゴリ別上限を適用。"""
+                       max_cmems: int = MAX_CMEMS_DEFAULT,
+                       corr_thr: float = 0.10) -> dict:
+    """相関上位 max_total 個のみ採用。CMEMS/tide_grp_* はカテゴリ別上限を適用。
+    CMEMS上限(max_cmems): 相互に相関が高いCMEMS変数が過剰採用されて過学習するのを防ぐ。
+    上限撤廃実験（2026/04/19）: wMAPE+0.3%・BL2-0.9pt 悪化 → 上限は必要と確認。
+    """
     if len(factor_r_dict) <= max_total:
         cmems_cnt = sum(1 for f in factor_r_dict if f in CMEMS_FACTORS)
         tgrp_cnt  = sum(1 for f in factor_r_dict if f in TIDE_GRP_FACTORS)
@@ -2263,9 +2269,9 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, tr_ys)
                 if rv is not None and abs(rv) >= fold_corr_thr:
                     factor_r_m[fac] = rv
-            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き）
+            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き・CMEMS保証枠あり）
             _mc = MAX_CMEMS_OCEAN if (fish in CMEMS_ALLOWED_FISH) else MAX_CMEMS_DEFAULT
-            factor_r_m = _apply_factor_caps(factor_r_m, max_cmems=_mc)
+            factor_r_m = _apply_factor_caps(factor_r_m, max_cmems=_mc, corr_thr=fold_corr_thr)
             if not factor_r_m:
                 continue
 
@@ -2769,9 +2775,9 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, final_ys)
                 if rv is not None and abs(rv) >= best_corr_thr:
                     final_factor_r[fac] = rv
-            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き）
+            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き・CMEMS保証枠あり）
             _mc_f = MAX_CMEMS_OCEAN if (fish in CMEMS_ALLOWED_FISH) else MAX_CMEMS_DEFAULT
-            final_factor_r = _apply_factor_caps(final_factor_r, max_cmems=_mc_f)
+            final_factor_r = _apply_factor_caps(final_factor_r, max_cmems=_mc_f, corr_thr=best_corr_thr)
             if not final_factor_r:
                 continue
 
