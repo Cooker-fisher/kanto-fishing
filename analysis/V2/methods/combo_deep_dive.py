@@ -139,6 +139,12 @@ SLOW_FACTORS = {
     # avg_SLA(lat34-36,lon138-142) - avg_SLA(lat32-34,lon136-140)
     # 正=接岸→シイラ↑  負=大蛇行→ワラサ↑・カツオ微増  r=0.46(シイラ),r=-0.29(ワラサ)
     "sla_approach_idx",
+    # 黒潮回廊月次SLA絶対レベル（33-37°N,139-142°E）: 接岸指数との違い＝差分でなく絶対水準
+    # マダイr=+0.75、カワハギr=+0.61、カンパチr=+0.54、アカムツr=-0.48（2026/04/18分析）
+    "kuroshio_sla_monthly",
+    # 沖合回遊魚用月次SLA（34-36°N,141-143°E）: 黒潮本流の絶対水準
+    # カツオ/キハダ: 沿岸ポイントSLAと独立した外洋シグナル（沿岸はr≈0.0→沖合で再評価）
+    "sla_pelagic_monthly",
     # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
@@ -358,6 +364,8 @@ WX_FACTORS = [
     "sla_monthly",      # ±30日平均SLA: 月次黒潮状態（SLOW・全H有効）
     "sla_lag30",        # 30日前SLA: 底魚の月次遅延反応（SLOW・全H有効）
     "sla_approach_idx", # 黒潮接岸指数（月次広域）: 正=接岸→シイラ↑ 負=大蛇行→ワラサ↑
+    "kuroshio_sla_monthly", # 黒潮回廊SLA絶対水準（33-37°N,139-142°E）: マダイr=+0.75
+    "sla_pelagic_monthly",  # 沖合月次SLA（34-36°N,141-143°E）: カツオ/キハダ外洋シグナル
     # temp_100m × 季節交互作用
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
@@ -1138,6 +1146,8 @@ _SLA_SNAP_CACHE: dict = {}
 # 定義: avg_SLA(北方 lat34-36,lon138-142) - avg_SLA(南方 lat32-34,lon136-140)
 # 正=黒潮が北上・接岸  負=黒潮が南に蛇行（大蛇行）
 _SLA_APPROACH_CACHE: dict = {}
+_KUROSHIO_SLA_MONTHLY_CACHE: dict = {}
+_PELAGIC_SLA_MONTHLY_CACHE: dict = {}
 
 
 def _preload_sla_if_needed(conn_cmems):
@@ -1244,6 +1254,37 @@ def _get_sla_approach_idx(conn_cmems, date_iso):
     idx = sum(north) / len(north) - sum(south) / len(south)
     _SLA_APPROACH_CACHE[ym] = idx
     return idx
+
+
+def _get_kuroshio_sla_monthly(conn_cmems, date_iso):
+    """黒潮回廊月次SLA絶対水準（33-37°N, 139-142°E）を返す。
+    sla_approach_idxとの違い: 差分ではなく絶対値水準。
+    マダイr=+0.75、カワハギr=+0.61、カンパチr=+0.54（2026/04/18分析）。
+    """
+    _preload_sla_if_needed(conn_cmems)
+    ym = date_iso[:7]
+    if ym in _KUROSHIO_SLA_MONTHLY_CACHE:
+        return _KUROSHIO_SLA_MONTHLY_CACHE[ym]
+    entries = _SLA_BY_MONTH.get(ym, [])
+    vals = [v for la, lo, v in entries if 33 <= la <= 37 and 139 <= lo <= 142]
+    result = sum(vals) / len(vals) if vals else None
+    _KUROSHIO_SLA_MONTHLY_CACHE[ym] = result
+    return result
+
+
+def _get_sla_pelagic_monthly(conn_cmems, date_iso):
+    """沖合回遊魚用月次SLA平均（34-36°N, 141-143°E）を返す。
+    カツオ/キハダマグロの黒潮本流評価に使用。沿岸ポイントSLAと独立した外洋シグナル。
+    """
+    _preload_sla_if_needed(conn_cmems)
+    ym = date_iso[:7]
+    if ym in _PELAGIC_SLA_MONTHLY_CACHE:
+        return _PELAGIC_SLA_MONTHLY_CACHE[ym]
+    entries = _SLA_BY_MONTH.get(ym, [])
+    vals = [v for la, lo, v in entries if 34 <= la <= 36 and 141 <= lo <= 143]
+    result = sum(vals) / len(vals) if vals else None
+    _PELAGIC_SLA_MONTHLY_CACHE[ym] = result
+    return result
 
 
 def _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, grid_deg, cols):
@@ -1572,9 +1613,15 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
                 wx["sla_lag30"] = None
             # ── sla_approach_idx: 黒潮接岸指数（月次・広域・座標非依存）────────────
             wx["sla_approach_idx"] = _get_sla_approach_idx(conn_cmems, tide_date)
+            # ── kuroshio_sla_monthly: 黒潮回廊SLA絶対水準（全魚種向け）───────────
+            wx["kuroshio_sla_monthly"] = _get_kuroshio_sla_monthly(conn_cmems, tide_date)
+            # ── sla_pelagic_monthly: 沖合回遊魚用月次SLA（全魚種で計算、選択はモデル任せ）
+            wx["sla_pelagic_monthly"] = _get_sla_pelagic_monthly(conn_cmems, tide_date)
         else:
             wx["sla_delta"] = wx["chl_delta"] = wx["sla_monthly"] = wx["sla_lag30"] = None
             wx["sla_approach_idx"] = None
+            wx["kuroshio_sla_monthly"] = None
+            wx["sla_pelagic_monthly"] = None
 
         # ── temp_100m × 季節交互作用（深層水温の季節依存性）────────────────────
         _t100 = wx.get("temp_100m")
