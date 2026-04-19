@@ -1185,11 +1185,20 @@ def _preload_chl_if_needed(conn_cmems):
         _CHL_LOADED = True
         return
     t0 = time.time()
-    rows = conn_cmems.execute(
-        """SELECT lat, lon, SUBSTR(date, 1, 7) AS ym, AVG(chl)
-           FROM cmems_daily WHERE chl IS NOT NULL
-           GROUP BY lat, lon, ym"""
-    ).fetchall()
+    # chl_monthly_agg が存在すれば高速読み出し（事前集計テーブル）
+    tables = [r[0] for r in conn_cmems.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='chl_monthly_agg'"
+    ).fetchall()]
+    if tables:
+        rows = conn_cmems.execute(
+            "SELECT lat, lon, ym, avg_chl FROM chl_monthly_agg"
+        ).fetchall()
+    else:
+        rows = conn_cmems.execute(
+            """SELECT lat, lon, SUBSTR(date, 1, 7) AS ym, AVG(chl)
+               FROM cmems_daily WHERE chl IS NOT NULL
+               GROUP BY lat, lon, ym"""
+        ).fetchall()
     for lat, lon, ym, avg_chl in rows:
         lr = round(lat, 3)
         nr = round(lon, 3)
