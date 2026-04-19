@@ -392,7 +392,7 @@ CMEMS_FACTORS = {
     "sla_avg", "chl_avg", "sss_avg",
     "do_surface", "do_bottom", "temp_50m", "temp_100m", "temp_200m",
     "thermocline_depth", "no3_surface",
-    "sla_delta", "chl_delta", "sla_monthly", "sla_lag30",
+    "sla_delta", "chl_delta", "sla_monthly", "sla_lag30", "sla_approach_idx",
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",
     "kuroshio_score", "nutrient_score", "deepwater_score",
@@ -2218,7 +2218,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     factor_r_m[fac] = rv
             # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き）
             _mc = MAX_CMEMS_OCEAN if (fish in CMEMS_ALLOWED_FISH) else MAX_CMEMS_DEFAULT
-            factor_r_m = _apply_factor_caps(factor_r_m, max_cmems=_mc)
+            factor_r_m = _apply_factor_caps(factor_r_m, max_total=MAX_FACTORS, max_cmems=_mc)
             if not factor_r_m:
                 continue
 
@@ -2724,7 +2724,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     final_factor_r[fac] = rv
             # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き）
             _mc_f = MAX_CMEMS_OCEAN if (fish in CMEMS_ALLOWED_FISH) else MAX_CMEMS_DEFAULT
-            final_factor_r = _apply_factor_caps(final_factor_r, max_cmems=_mc_f)
+            final_factor_r = _apply_factor_caps(final_factor_r, max_total=MAX_FACTORS, max_cmems=_mc_f)
             if not final_factor_r:
                 continue
 
@@ -3256,6 +3256,12 @@ def main():
     parser.add_argument("--ship",       default=None,   help="船宿名（省略時は全船宿）")
     parser.add_argument("--wave-clamp", type=float, default=None,
                         help="wave_clamp 閾値（例: 1.5, 2.0, 2.5。省略時はデフォルト2.0m）")
+    parser.add_argument("--max-factors", type=int, default=None,
+                        help="全体因子上限（デフォルト: MAX_FACTORS=12）")
+    parser.add_argument("--max-cmems", type=int, default=None,
+                        help="CMEMS変数上限・一般魚種（デフォルト: MAX_CMEMS_DEFAULT=2）")
+    parser.add_argument("--max-cmems-ocean", type=int, default=None,
+                        help="CMEMS変数上限・CMEMS_ALLOWED_FISH（デフォルト: MAX_CMEMS_OCEAN=4）")
     args = parser.parse_args()
 
     if args.wave_clamp is not None:
@@ -3264,6 +3270,21 @@ def main():
         global WAVE_CLAMP_THRESHOLD
         WAVE_CLAMP_THRESHOLD = args.wave_clamp
         print(f"[wave_clamp] 閾値を {args.wave_clamp}m に設定")
+
+    if args.max_factors is not None:
+        global MAX_FACTORS
+        MAX_FACTORS = args.max_factors
+        print(f"[max_factors] {MAX_FACTORS} に設定")
+
+    if args.max_cmems is not None:
+        global MAX_CMEMS_DEFAULT
+        MAX_CMEMS_DEFAULT = args.max_cmems
+        print(f"[max_cmems] DEFAULT={MAX_CMEMS_DEFAULT} に設定")
+
+    if args.max_cmems_ocean is not None:
+        global MAX_CMEMS_OCEAN
+        MAX_CMEMS_OCEAN = args.max_cmems_ocean
+        print(f"[max_cmems_ocean] OCEAN={MAX_CMEMS_OCEAN} に設定")
 
     if args.ship:
         deep_dive(args.fish, args.ship)

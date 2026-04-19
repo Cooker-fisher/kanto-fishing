@@ -1,6 +1,82 @@
 現行バージョン: crawler.py v5.28 / predict_count.py（Forecast API統合済み）
 最終更新: 2026/04/19
-最新コミット: push済み（combo_meta正規化・CSV正規化修正）
+最新コミット: push済み（MAX_FACTORS/CMEMS実験CLIオプション追加・バグ修正）
+作業ブランチ: claude/max-factor-cmems-analysis-ahUYr
+
+## ✅ 今セッション完了（2026/04/19 後半）— MAX_FACTORS/CMEMS融合実験準備
+
+### 調査・設計完了（ローカルで実験実行待ち）
+
+**判明した現状:**
+- `MAX_FACTORS = 12`（全体上限）/ `MAX_CMEMS_DEFAULT = 2`（一般魚種CMEMS上限）
+- **バグ**: `sla_approach_idx`（最多採用249件）が `CMEMS_FACTORS` セットに未登録 → CMEMS上限管理から漏れていた
+- **設定ミス**: マダイ(r=+0.754)/トラフグ(r=+0.652)/カワハギ(r=+0.614) が `CMEMS_ALLOWED_FISH` 未登録
+- **バグ**: `_apply_factor_caps()` 呼び出し時に `max_total` を渡していなかった（デフォルト引数が定義時固定）
+- `|r|>0.20` なのに未採用のCMEMS変数: sla_avg=74件・sla_monthly=53件・sla_lag30=45件（損失大）
+
+**コード修正済み（push済み・ブランチ: claude/max-factor-cmems-analysis-ahUYr）:**
+1. `CMEMS_FACTORS` に `sla_approach_idx` を追加（バグ修正）
+2. `_apply_factor_caps()` の呼び出しを `max_total=MAX_FACTORS` 明示渡しに修正
+3. `combo_deep_dive.py` に `--max-factors/--max-cmems/--max-cmems-ocean` CLIオプション追加
+4. `run_full_deepdive.py` に `extra_args` 対応（CLIオプションをsubprocessに転送）
+
+**⚠️ ローカルで実験実行が必要（weather_cache.sqlite + cmems_data.sqlite が必要）:**
+この環境では両ファイルが未存在のため実験不可。ローカルで下記を実行すること。
+
+### ★ ローカルでやること: 4Config実験
+
+```bash
+TEST="マダイ カワハギ フグ アカムツ キンメダイ イナダ サワラ アジ ヒラメ"
+
+# まずブランチを取得
+git fetch origin claude/max-factor-cmems-analysis-ahUYr
+git checkout claude/max-factor-cmems-analysis-ahUYr
+
+# Config A（現状ベースライン）
+python analysis/V2/methods/run_full_deepdive.py $TEST --workers 4
+
+# Config B（バグ修正＋CMEMS枠 2→4）
+python analysis/V2/methods/run_full_deepdive.py $TEST \
+  --max-cmems 4 --max-cmems-ocean 5 --workers 4
+
+# Config C（B＋MAX_FACTORS 12→14）
+python analysis/V2/methods/run_full_deepdive.py $TEST \
+  --max-factors 14 --max-cmems 4 --max-cmems-ocean 5 --workers 4
+
+# Config D（中間: MAX=14, CMEMS=3）
+python analysis/V2/methods/run_full_deepdive.py $TEST \
+  --max-factors 14 --max-cmems 3 --max-cmems-ocean 5 --workers 4
+```
+
+各Config実行後に以下で集計:
+```bash
+python3 -c "
+import sqlite3
+conn = sqlite3.connect('analysis/V2/results/analysis.sqlite')
+in_str = \"'マダイ','カワハギ','フグ','アカムツ','キンメダイ','イナダ','サワラ','アジ','ヒラメ'\"
+r = conn.execute(f'''SELECT
+  ROUND(AVG(CASE WHEN horizon=0 AND metric='cnt_avg' THEN wmape END),1),
+  ROUND(AVG(CASE WHEN horizon=7 AND metric='cnt_avg' THEN wmape END),1),
+  ROUND(SUM(CASE WHEN horizon=0 AND metric='cnt_avg' AND wmape<bl2_wmape THEN 1.0 ELSE 0 END)
+        /COUNT(CASE WHEN horizon=0 AND metric='cnt_avg' THEN 1 END)*100,1),
+  ROUND(SUM(CASE WHEN horizon=7 AND metric='cnt_avg' AND wmape<bl2_wmape THEN 1.0 ELSE 0 END)
+        /COUNT(CASE WHEN horizon=7 AND metric='cnt_avg' THEN 1 END)*100,1)
+  FROM combo_backtest WHERE fish IN ({in_str})''').fetchone()
+print(f'wMAPE H0={r[0]}% H7={r[1]}%  BL2勝率 H0={r[2]}% H7={r[3]}%')
+conn.close()
+"
+```
+
+**判定基準:**
+- wMAPE が Config A より +1%以上悪化 → そのConfig却下
+- BL-2勝率が -1pt以上低下 → 過学習の兆候として却下
+- 両方改善 or 同等 → 採用。さらに良ければ全55魚種再実行
+
+**その後の追加検討（実験結果次第）:**
+- 最良Configで `CMEMS_ALLOWED_FISH` にマダイ/トラフグ/カワハギ/カンパチを追加して再実験
+- 全55魚種 run_full_deepdive.py 実行で本番精度を更新
+
+---
 
 ## ✅ 今セッション完了（2026/04/19）
 

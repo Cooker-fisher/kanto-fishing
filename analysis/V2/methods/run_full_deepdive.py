@@ -38,11 +38,11 @@ ALL_FISH = [
     "キメジ","カレイ","メヌケ","アラ","モンゴウイカ","イシダイ","モロコ","ホウボウ"
 ]
 
-def _run_one(fish: str) -> tuple[str, int, float, str]:
+def _run_one(fish: str, extra_args: list[str] = []) -> tuple[str, int, float, str]:
     """1魚種を subprocess で実行。(fish, returncode, elapsed_sec, stderr) を返す。"""
     t0 = time.time()
     r = subprocess.run(
-        [sys.executable, SCRIPT, "--fish", fish],
+        [sys.executable, SCRIPT, "--fish", fish] + extra_args,
         capture_output=True, text=True, encoding="utf-8", errors="replace"
     )
     return fish, r.returncode, time.time() - t0, r.stderr
@@ -53,12 +53,26 @@ def main():
     parser.add_argument("fish_list", nargs="*", help="魚種名（省略で全55種）")
     parser.add_argument("--workers", type=int, default=4,
                         help="並列ワーカー数（default: 4）")
+    parser.add_argument("--max-factors", type=int, default=None,
+                        help="全体因子上限（combo_deep_dive.py に転送）")
+    parser.add_argument("--max-cmems", type=int, default=None,
+                        help="CMEMS変数上限・一般魚種（combo_deep_dive.py に転送）")
+    parser.add_argument("--max-cmems-ocean", type=int, default=None,
+                        help="CMEMS変数上限・CMEMS_ALLOWED_FISH（combo_deep_dive.py に転送）")
     args = parser.parse_args()
 
     fish_list = args.fish_list if args.fish_list else ALL_FISH
     workers   = args.workers
 
-    print(f"対象: {len(fish_list)}種 先頭3: {fish_list[:3]} workers={workers}")
+    extra_args: list[str] = []
+    if args.max_factors is not None:
+        extra_args += ["--max-factors", str(args.max_factors)]
+    if args.max_cmems is not None:
+        extra_args += ["--max-cmems", str(args.max_cmems)]
+    if args.max_cmems_ocean is not None:
+        extra_args += ["--max-cmems-ocean", str(args.max_cmems_ocean)]
+
+    print(f"対象: {len(fish_list)}種 先頭3: {fish_list[:3]} workers={workers} extra={extra_args}")
 
     ok: list[str] = []
     ng: list[str] = []
@@ -66,7 +80,7 @@ def main():
     done = 0
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-        future_to_fish = {executor.submit(_run_one, fish): fish for fish in fish_list}
+        future_to_fish = {executor.submit(_run_one, fish, extra_args): fish for fish in fish_list}
 
         for future in concurrent.futures.as_completed(future_to_fish):
             done += 1
