@@ -2852,7 +2852,7 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
     lat/lon は学習データの最頻ポイント座標（avg ではなく mode）
     kaiyu_promoted: KAIYU_FISH で H=7 wMAPE < 60% + BL-2勝ち → 匹数予測に昇格
     """
-    if not wx_params_data:
+    if not wx_params_data and not use_fallback:
         return
     conn = _open_ana()
     conn.execute("""
@@ -2890,6 +2890,11 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
     if wave_clamp_thr is not None:
         rows.append((fish, ship, "_combo", "_wave_clamp_thr",
                      wave_clamp_thr, None, None, None, None, None, None, None, now, int(use_fallback), 0))
+    # wx_params_data が空でも use_fallback=True なら cnt_avg の _meta 行だけ保存
+    if not wx_params_data and use_fallback:
+        rows.append((fish, ship, "cnt_avg", "_meta",
+                     None, None, None, 0.0, None, None,
+                     modal_lat, modal_lon, now, 1, 0))
     for met, params in wx_params_data.items():
         rows.append((fish, ship, met, "_meta",
                      None, None, None,
@@ -3273,9 +3278,11 @@ def deep_dive(fish, ship, verbose=True):
     #               bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r)
     # rv は index 2, bl0_wmape は index 20, bl2_wmape は index 26
     OOS_R_FALLBACK_THR = 0.15  # OOS r がこの値未満なら気象補正はノイズ→フォールバック
+    cnt_avg_h0_found = False
     for row in bt_data:
         met = row[0]; H = row[1]; rv = row[2]; wmape = row[6]; bl0w = row[20]; bl2w = row[26]
         if met == "cnt_avg" and H == 0:
+            cnt_avg_h0_found = True
             bl0_is_better = (bl0w is not None and wmape is not None and bl0w <= wmape)
             if wmape is not None and bl0_is_better and (
                 (bl0w is not None and wmape > bl0w + 10) or
@@ -3285,6 +3292,28 @@ def deep_dive(fish, ship, verbose=True):
             if rv is not None and rv < OOS_R_FALLBACK_THR and bl0_is_better:
                 use_fallback = True
             break
+    # cnt_avg のバックテストが 0件（季節偏重コンボ等）の場合は DB の前回値で判定
+    if not cnt_avg_h0_found:
+        try:
+            _conn_fb = _open_ana()
+            _row_fb = _conn_fb.execute(
+                "SELECT r, wmape, bl0_wmape, bl2_wmape FROM combo_backtest "
+                "WHERE fish=? AND ship=? AND metric='cnt_avg' AND horizon=0",
+                (fish, ship)
+            ).fetchone()
+            _conn_fb.close()
+            if _row_fb:
+                rv_fb, wmape_fb, bl0w_fb, bl2w_fb = _row_fb
+                bl0_is_better_fb = (bl0w_fb is not None and wmape_fb is not None and bl0w_fb <= wmape_fb)
+                if wmape_fb is not None and bl0_is_better_fb and (
+                    (bl0w_fb is not None and wmape_fb > bl0w_fb + 10) or
+                    (bl2w_fb is not None and wmape_fb > bl2w_fb + 5)
+                ):
+                    use_fallback = True
+                if rv_fb is not None and rv_fb < OOS_R_FALLBACK_THR and bl0_is_better_fb:
+                    use_fallback = True
+        except Exception:
+            pass
 
     # kaiyu_promoted: 回遊魚で H=7 cnt_avg wMAPE < 60% かつ BL-2 を下回れば匹数予測に昇格
     # 潮流・のっこみ因子追加後に達成できるコンボが出てくることを期待
