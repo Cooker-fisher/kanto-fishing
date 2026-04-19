@@ -2053,11 +2053,14 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     """
     MIN_TRAIN_N = 15
     MIN_TEST_N = 15   # テストセット最低件数（季節魚は年3-4ヶ月しか釣れない）
+    MIN_MONTHS = 6    # バックテスト実施の最低月数。これ未満は leave-one-month-out CV が機能しない
     WAVE_CLAMP_CANDIDATES  = [1.0, 1.5, 2.0, 2.5, 3.0]
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < 2:
         return ["  データ不足（最低2ヶ月必要）"], [], [], [], {}, {}, None, None
+    if len(months) < MIN_MONTHS:
+        return [f"  バックテストスキップ（期間不足: {len(months)}ヶ月 < MIN_MONTHS={MIN_MONTHS}）"], [], [], [], {}, {}, None, None
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}
