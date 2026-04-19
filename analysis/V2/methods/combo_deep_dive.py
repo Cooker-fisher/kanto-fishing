@@ -278,17 +278,21 @@ MAX_FACTORS        = 12   # 全体上限
 MAX_CMEMS_DEFAULT  = 2    # 全魚種デフォルト: CMEMS最大2個
 MAX_TIDE_GRP       = 99   # tide_grp_*: 制限なし
 
-# 魚種別CMEMS上限 (未登録魚種 → MAX_CMEMS_DEFAULT=2)
-# 深層DO・SLA相関が |r|≥0.5 で確認済みの魚種は上限を4に設定
-CMEMS_FISH_LIMIT: dict = {
-    # オリジナル7種: 深場・底物・回遊少ない魚
-    "マルイカ": 4, "シマアジ": 4, "アジ": 4, "ヒラメ": 4,
-    "キンメダイ": 4, "アカムツ": 4, "アマダイ": 4,
-    # 深層DO・NO3相関が強い魚（|r|=0.7以上確認済み）
-    "タチウオ": 4,   # do_surface |r|=0.751, no3_surface |r|=0.762
-    "フグ": 4,       # sla_monthly |r|=0.844, no3_surface |r|=0.705
-    "ヤリイカ": 4,   # do_bottom |r|=0.888（全変数中最強クラス）
-}
+# 2階建て因子設計（2026/04/19）
+# Tier1 BASE_FACTORS: 常時使用・競合から保護（CMEMS追加で押し出されない）
+BASE_FACTORS: frozenset = frozenset({
+    # 潮汐・月齢（天文確定値）
+    "tide_type_n", "tide_coeff", "tide_delta",
+    "moon_age", "moon_sin", "moon_cos",
+    # 旬・カレンダー（決定論的）
+    "decade_no", "is_holiday", "is_weekend",
+    "is_long_holiday", "is_summer_vacation",
+    # 乗っ込み（季節構造）
+    "spawn_season_n",
+    # 基本気象（ほぼ全コンボで有効）
+    "sst_avg", "temp_avg", "pressure_avg",
+})
+MAX_TIER2 = 8   # Tier2（非BASE因子）から最大採用数
 
 # per-combo FAST_MAX_H オーバーライド
 # 月齢・潮汐が主要因子で fast因子がノイズになるコンボは低い値を設定
@@ -428,32 +432,92 @@ TIDE_GRP_FACTORS = {
 def _apply_factor_caps(factor_r_dict: dict, max_total: int = MAX_FACTORS,
                        max_cmems: int = MAX_CMEMS_DEFAULT,
                        corr_thr: float = 0.10) -> dict:
-    """相関上位 max_total 個のみ採用。CMEMS/tide_grp_* はカテゴリ別上限を適用。
-    CMEMS上限(max_cmems): 相互に相関が高いCMEMS変数が過剰採用されて過学習するのを防ぐ。
-    上限撤廃実験（2026/04/19）: wMAPE+0.3%・BL2-0.9pt 悪化 → 上限は必要と確認。
+    """2階建て因子設計（2026/04/19）:
+    Tier1 BASE_FACTORS: corr_thr 通過済みなら常に採用・競合から保護。
+    Tier2 残り因子: |r|降順で MAX_TIER2 個まで・CMEMS上限 max_cmems 付き。
+    CMEMS上限はコンボ別自動最適化（_find_best_cmems）で決定。
     """
-    if len(factor_r_dict) <= max_total:
-        cmems_cnt = sum(1 for f in factor_r_dict if f in CMEMS_FACTORS)
-        tgrp_cnt  = sum(1 for f in factor_r_dict if f in TIDE_GRP_FACTORS)
-        if cmems_cnt <= max_cmems and tgrp_cnt <= MAX_TIDE_GRP:
-            return factor_r_dict
-    sorted_items = sorted(factor_r_dict.items(), key=lambda x: abs(x[1]), reverse=True)
-    selected = {}
+    # Tier1: BASE_FACTORSはCMEMS競合から保護して全確保
+    base_selected = {f: r for f, r in factor_r_dict.items() if f in BASE_FACTORS}
+    tier2_cands   = {f: r for f, r in factor_r_dict.items() if f not in BASE_FACTORS}
+
+    # Tier2: |r|降順・CMEMS上限付きでMAX_TIER2個まで採用
+    tier2_sorted = sorted(tier2_cands.items(), key=lambda x: abs(x[1]), reverse=True)
+    tier2_selected: dict = {}
     cmems_cnt = 0
-    tgrp_cnt  = 0
-    for fac, rv in sorted_items:
+    for fac, rv in tier2_sorted:
         if fac in CMEMS_FACTORS:
             if cmems_cnt >= max_cmems:
                 continue
             cmems_cnt += 1
-        elif fac in TIDE_GRP_FACTORS:
-            if tgrp_cnt >= MAX_TIDE_GRP:
-                continue
-            tgrp_cnt += 1
-        selected[fac] = rv
-        if len(selected) >= max_total:
+        tier2_selected[fac] = rv
+        if len(tier2_selected) >= MAX_TIER2:
             break
-    return selected
+
+    return {**base_selected, **tier2_selected}
+
+
+def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
+                     fold_corr_thr: float) -> int:
+    """CMEMS上限のコンボ別最適化。0/2/4/6の4パターンを軽量LOO-CVで評価し最良を返す。
+    cnt_avg H=0 のみ評価（他メトリクスは主指標に追随するため省略）。
+    """
+    CMEMS_CANDIDATES = [0, 2, 4, 6]
+    cmems_wmape: dict = {}
+
+    for mc in CMEMS_CANDIDATES:
+        preds: list = []; acts: list = []
+        for test_month in months:
+            train = [r for r in all_en_h0 if r["date"][:7] != test_month]
+            test  = [r for r in all_en_h0 if r["date"][:7] == test_month]
+            if len(train) < 15 or not test:
+                continue
+            tr_ys = [r.get("cnt_avg") for r in train]
+            tr_met = [v for v in tr_ys if v is not None]
+            mm, ms = mean_std(tr_met)
+            if mm is None or not ms:
+                continue
+            # 因子相関（fold学習データ）
+            fr: dict = {}
+            for fac in ALL_FACTORS:
+                xs = [r.get(fac) for r in train]
+                rv, _, _ = pearson(xs, tr_ys)
+                if rv is not None and abs(rv) >= fold_corr_thr:
+                    fr[fac] = rv
+            fr = _apply_factor_caps(fr, max_cmems=mc, corr_thr=fold_corr_thr)
+            if not fr:
+                continue
+            # hist_params（fold学習データ）
+            hp: dict = {}
+            for fac in ALL_FACTORS:
+                vs = [r.get(fac) for r in train if r.get(fac) is not None]
+                m2, s2 = mean_std(vs)
+                if m2 is not None and s2:
+                    hp[fac] = (m2, s2)
+            w = sum(abs(v) for v in fr.values()) or 1.0
+            for r in test:
+                act = r.get("cnt_avg")
+                if act is None:
+                    continue
+                dn = r.get("decade")
+                base = decadal.get(dn, {}).get("avg_cnt", mm) if decadal else mm
+                nx = 0.0
+                for fac, rv in fr.items():
+                    v = r.get(fac)
+                    if v is None or fac not in hp:
+                        continue
+                    fm, fs = hp[fac]
+                    nx += rv * (v - fm) / fs
+                preds.append(base + (nx / w) * ms * 0.5)
+                acts.append(act)
+        sc = _wmape(preds, acts)
+        if sc is not None:
+            cmems_wmape[mc] = sc
+
+    if not cmems_wmape:
+        return MAX_CMEMS_DEFAULT
+    return min(cmems_wmape, key=cmems_wmape.get)
+
 
 # 観測因子リストは normalize/obs_fields.json から動的に取得する。
 # → OBS_FACTORS は _get_obs_factors() で取得。新CSV列追加時は obs_fields.json だけ変更。
@@ -2143,9 +2207,9 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
     months = sorted(set(r["date"][:7] for r in records))
     if len(months) < 2:
-        return ["  データ不足（最低2ヶ月必要）"], [], [], [], {}, {}, None, None
+        return ["  データ不足（最低2ヶ月必要）"], [], [], [], {}, {}, None, None, MAX_CMEMS_DEFAULT
     if len(months) < MIN_MONTHS:
-        return [f"  バックテストスキップ（期間不足: {len(months)}ヶ月 < MIN_MONTHS={MIN_MONTHS}）"], [], [], [], {}, {}, None, None
+        return [f"  バックテストスキップ（期間不足: {len(months)}ヶ月 < MIN_MONTHS={MIN_MONTHS}）"], [], [], [], {}, {}, None, None, MAX_CMEMS_DEFAULT
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}
@@ -2155,6 +2219,13 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             horizon=H, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon,
             conn_cmems=conn_cmems, fish=fish,
         )
+
+    # CMEMS上限のコンボ別最適化（_find_best_cmemsで軽量LOO-CVを実行）
+    _n_all = len([r for r in all_en_by_H.get(0, []) if r.get("cnt_avg") is not None])
+    _fold_corr_init = max(0.15, 1.96 / (_n_all ** 0.5)) if _n_all > 0 else 0.20
+    best_cmems = _find_best_cmems(all_en_by_H.get(0, []), months, decadal, _fold_corr_init)
+    if len(months) >= 6:
+        print(f"    [CMEMS最適化] best_cmems={best_cmems} (候補: 0/2/4/6)", flush=True)
 
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
     # 各月・各ホライズンの予測と実測を蓄積
@@ -2357,9 +2428,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, tr_ys)
                 if rv is not None and abs(rv) >= fold_corr_thr:
                     factor_r_m[fac] = rv
-            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き・CMEMS保証枠あり）
-            _mc = CMEMS_FISH_LIMIT.get(fish, MAX_CMEMS_DEFAULT)
-            factor_r_m = _apply_factor_caps(factor_r_m, max_cmems=_mc, corr_thr=fold_corr_thr)
+            # TOP-K: Tier1/Tier2分割・コンボ別最適化CMEMSキャップ適用
+            factor_r_m = _apply_factor_caps(factor_r_m, max_cmems=best_cmems, corr_thr=fold_corr_thr)
             if not factor_r_m:
                 continue
 
@@ -2863,9 +2933,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 rv, _, _ = pearson(xs, final_ys)
                 if rv is not None and abs(rv) >= best_corr_thr:
                     final_factor_r[fac] = rv
-            # TOP-K: 相関上位 MAX_FACTORS 個のみ採用（カテゴリ別上限付き・CMEMS保証枠あり）
-            _mc_f = CMEMS_FISH_LIMIT.get(fish, MAX_CMEMS_DEFAULT)
-            final_factor_r = _apply_factor_caps(final_factor_r, max_cmems=_mc_f, corr_thr=best_corr_thr)
+            # TOP-K: Tier1/Tier2分割・コンボ別最適化CMEMSキャップ適用
+            final_factor_r = _apply_factor_caps(final_factor_r, max_cmems=best_cmems, corr_thr=best_corr_thr)
             if not final_factor_r:
                 continue
 
@@ -2905,7 +2974,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     # wx_params_data に _wave_clamp_thr を追加
     wx_params_data["_wave_clamp_thr"] = best_wave_clamp_thr
 
-    return lines, bt_data, range_bt_data, star_bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon
+    return lines, bt_data, range_bt_data, star_bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon, best_cmems
 
 
 def save_params(fish, ship, corr_results):
@@ -2932,13 +3001,15 @@ def save_params(fish, ship, corr_results):
 
 
 def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
-                   use_fallback=False, kaiyu_promoted=False):
+                   use_fallback=False, kaiyu_promoted=False,
+                   best_h0_wmape=None, best_cmems=None, reset_best=False):
     """天候補正パラメータを combo_wx_params テーブルに保存。
     predict_count.py が天候補正時に参照する。
-    factor='_meta' 行: alpha_scale / met_mean / met_std / lat / lon（コンボ代表座標）
+    factor='_meta' 行: alpha_scale / met_mean / met_std / lat / lon / best_h0_wmape / best_cmems
     factor=<因子名> 行: 因子の mean / std / r
     lat/lon は学習データの最頻ポイント座標（avg ではなく mode）
     kaiyu_promoted: KAIYU_FISH で H=7 wMAPE < 60% + BL-2勝ち → 匹数予測に昇格
+    Challenger model: prev best_h0_wmape より 2pt 以上改善しなければ wx_params は更新しない。
     """
     if not wx_params_data and not use_fallback:
         return
@@ -2960,46 +3031,77 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
             updated_at      TEXT,
             use_fallback    INTEGER DEFAULT 0,
             kaiyu_promoted  INTEGER DEFAULT 0,
+            best_h0_wmape   REAL,
+            best_cmems      INTEGER DEFAULT 2,
             PRIMARY KEY (fish, ship, metric, factor)
         )
     """)
     # 既存テーブルへの列追加（マイグレーション）
     existing = {r[1] for r in conn.execute("PRAGMA table_info(combo_wx_params)").fetchall()}
     for col, typ in [("lat", "REAL"), ("lon", "REAL"),
-                     ("use_fallback", "INTEGER"), ("kaiyu_promoted", "INTEGER")]:
+                     ("use_fallback", "INTEGER"), ("kaiyu_promoted", "INTEGER"),
+                     ("best_h0_wmape", "REAL"), ("best_cmems", "INTEGER")]:
         if col not in existing:
             conn.execute(f"ALTER TABLE combo_wx_params ADD COLUMN {col} {typ}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Challenger model: 前回の best_h0_wmape と比較（use_fallback=True は常に更新）
+    MIN_IMPROVEMENT = 2.0  # wMAPE 2pt 以上改善なければ更新しない
+    if not reset_best and best_h0_wmape is not None and not use_fallback:
+        prev_row = conn.execute(
+            "SELECT best_h0_wmape FROM combo_wx_params "
+            "WHERE fish=? AND ship=? AND metric='cnt_avg' AND factor='_meta'",
+            (fish, ship)
+        ).fetchone()
+        prev_best = prev_row[0] if prev_row and prev_row[0] is not None else None
+        if prev_best is not None and best_h0_wmape >= prev_best - MIN_IMPROVEMENT:
+            # 却下: 既存パラメータを保持（updated_at のみ更新）
+            conn.execute(
+                "UPDATE combo_wx_params SET updated_at=? WHERE fish=? AND ship=?",
+                (now, fish, ship)
+            )
+            conn.commit()
+            conn.close()
+            print(f"    [Challenger] スキップ: new={best_h0_wmape:.1f}% prev={prev_best:.1f}% (改善<{MIN_IMPROVEMENT}pt)", flush=True)
+            return
+
     rows = []
-    # _combo 行群: wave_clamp_thr / corr_thr / fast_max_h（コンボ全体に各1行）
     # 旧因子行を削除してからINSERT（TOP-K変更後に旧因子が残らないよう）
     conn.execute("DELETE FROM combo_wx_params WHERE fish=? AND ship=?", (fish, ship))
     wave_clamp_thr = wx_params_data.pop("_wave_clamp_thr", None)
     if wave_clamp_thr is not None:
         rows.append((fish, ship, "_combo", "_wave_clamp_thr",
-                     wave_clamp_thr, None, None, None, None, None, None, None, now, int(use_fallback), 0))
+                     wave_clamp_thr, None, None, None, None, None, None, None, now,
+                     int(use_fallback), 0, None, None))
     # wx_params_data が空でも use_fallback=True なら cnt_avg の _meta 行だけ保存
     if not wx_params_data and use_fallback:
         rows.append((fish, ship, "cnt_avg", "_meta",
                      None, None, None, 0.0, None, None,
-                     modal_lat, modal_lon, now, 1, 0))
+                     modal_lat, modal_lon, now, 1, 0, best_h0_wmape, best_cmems))
     for met, params in wx_params_data.items():
+        _bwmape = best_h0_wmape if met == "cnt_avg" else None
+        _bcmems = best_cmems if met == "cnt_avg" else None
         rows.append((fish, ship, met, "_meta",
                      None, None, None,
                      params["alpha_scale"], params["met_mean"], params["met_std"],
-                     modal_lat, modal_lon, now, int(use_fallback), int(kaiyu_promoted)))
+                     modal_lat, modal_lon, now, int(use_fallback), int(kaiyu_promoted),
+                     _bwmape, _bcmems))
         for fac, (mean, std, r) in params["factors"].items():
-            rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None, now, 0, 0))
+            rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None,
+                         now, 0, 0, None, None))
     # 列名を明示して列順ずれを防ぐ（ALTER TABLE でカラム追加した場合の位置ズレ対策）
     conn.executemany(
         """INSERT OR REPLACE INTO combo_wx_params
            (fish, ship, metric, factor, mean, std, r,
-            alpha_scale, met_mean, met_std, lat, lon, updated_at, use_fallback, kaiyu_promoted)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            alpha_scale, met_mean, met_std, lat, lon, updated_at,
+            use_fallback, kaiyu_promoted, best_h0_wmape, best_cmems)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         rows
     )
     conn.commit()
     conn.close()
+    if best_h0_wmape is not None:
+        print(f"    [Challenger] 採用: new={best_h0_wmape:.1f}% best_cmems={best_cmems}", flush=True)
 
 
 def save_keywords(fish, ship, kw_data):
@@ -3271,7 +3373,7 @@ def save_combo_meta(fish, ship, records, modal_lat, modal_lon):
 # メイン
 # ═══════════════════════════════════════════════════════════════════════════
 
-def deep_dive(fish, ship, verbose=True):
+def deep_dive(fish, ship, verbose=True, reset_best=False):
     os.makedirs(OUT_DIR, exist_ok=True)
 
     ship_coords = load_ship_coords()
@@ -3333,7 +3435,7 @@ def deep_dive(fish, ship, verbose=True):
     out += section_points(records)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems)
+    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems)
     out += bt_lines
 
     if conn_wx is not None:
@@ -3415,8 +3517,16 @@ def deep_dive(fish, ship, verbose=True):
                     kaiyu_promoted = True
                 break
 
+    # H=0 cnt_avg の wMAPE を Challenger model 用に抽出
+    _best_wmape_h0 = None
+    for row in bt_data:
+        if row[0] == "cnt_avg" and row[1] == 0:
+            _best_wmape_h0 = row[6]  # wmape は index 6
+            break
     save_wx_params(fish, ship, wx_params_data, modal_lat=modal_lat, modal_lon=modal_lon,
-                   use_fallback=use_fallback, kaiyu_promoted=kaiyu_promoted)
+                   use_fallback=use_fallback, kaiyu_promoted=kaiyu_promoted,
+                   best_h0_wmape=_best_wmape_h0, best_cmems=best_cmems,
+                   reset_best=reset_best)
     save_combo_meta(fish, ship, records, modal_lat, modal_lon)
 
     if verbose:
@@ -3439,6 +3549,8 @@ def main():
                         help="CMEMS変数上限・CMEMS_ALLOWED_FISH（デフォルト: MAX_CMEMS_OCEAN=4）")
     parser.add_argument("--db", default=None,
                         help="analysis.sqlite の出力先パス（省略時はデフォルト）")
+    parser.add_argument("--reset-best", action="store_true",
+                        help="Challenger model を無視して強制更新（3ヶ月ごとのフルリセット用）")
     args = parser.parse_args()
 
     if args.wave_clamp is not None:
@@ -3468,8 +3580,9 @@ def main():
         DB_ANA = args.db
         print(f"[db] 出力先を {DB_ANA} に設定")
 
+    _reset = getattr(args, "reset_best", False)
     if args.ship:
-        deep_dive(args.fish, args.ship)
+        deep_dive(args.fish, args.ship, reset_best=_reset)
     else:
         recs_all = load_records(args.fish)
         counts = defaultdict(int)
@@ -3478,7 +3591,7 @@ def main():
         ships = sorted(s for s, n in counts.items() if n >= MIN_N_COMBO)
         print(f"{args.fish}: {len(ships)}船宿（各{MIN_N_COMBO}件以上）\n")
         for ship in ships:
-            deep_dive(args.fish, ship, verbose=False)
+            deep_dive(args.fish, ship, verbose=False, reset_best=_reset)
 
 
 if __name__ == "__main__":

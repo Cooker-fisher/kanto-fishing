@@ -61,6 +61,8 @@ def main():
                         help="CMEMS変数上限・CMEMS_ALLOWED_FISH（combo_deep_dive.py に転送）")
     parser.add_argument("--db", default=None,
                         help="analysis.sqlite 出力先パス（combo_deep_dive.py に転送）")
+    parser.add_argument("--reset-best", action="store_true",
+                        help="Challenger model の best_h0_wmape を無視して全コンボ強制更新（3ヶ月ごと推奨）")
     args = parser.parse_args()
 
     fish_list = args.fish_list if args.fish_list else ALL_FISH
@@ -75,6 +77,8 @@ def main():
         extra_args += ["--max-cmems-ocean", str(args.max_cmems_ocean)]
     if args.db is not None:
         extra_args += ["--db", args.db]
+    if args.reset_best:
+        extra_args += ["--reset-best"]
 
     print(f"対象: {len(fish_list)}種 先頭3: {fish_list[:3]} workers={workers} extra={extra_args}")
 
