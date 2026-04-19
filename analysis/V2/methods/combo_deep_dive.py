@@ -292,7 +292,7 @@ BASE_FACTORS: frozenset = frozenset({
     # 基本気象（ほぼ全コンボで有効）
     "sst_avg", "temp_avg", "pressure_avg",
 })
-MAX_TIER2 = 8   # Tier2（非BASE因子）から最大採用数
+MAX_TIER2 = 12  # Tier2（非BASE因子）から最大採用数（BASE常時確保に加えてCMEMS・海況から最大12因子）
 
 # per-combo FAST_MAX_H オーバーライド
 # 月齢・潮汐が主要因子で fast因子がノイズになるコンボは低い値を設定
@@ -459,10 +459,12 @@ def _apply_factor_caps(factor_r_dict: dict, max_total: int = MAX_FACTORS,
 
 def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
                      fold_corr_thr: float) -> int:
-    """CMEMS上限のコンボ別最適化。0/2/4/6の4パターンを軽量LOO-CVで評価し最良を返す。
-    cnt_avg H=0 のみ評価（他メトリクスは主指標に追随するため省略）。
+    """CMEMS上限のコンボ別最適化。0/2/4/6の4パターンを LOO-CV wMAPE で評価し最良を返す。
+    cnt_avg H=0 のみ評価。alpha は OLS で推定（本番モデルとの乖離を抑制）。
+    BASE_FACTORS は corr_thr スキップ（常時確保・本番モデルと同一条件）。
     """
     CMEMS_CANDIDATES = [0, 2, 4, 6]
+    MIN_TRAIN_MONTHS_CMEMS = 6  # full backtest の MIN_MONTHS と揃える
     cmems_wmape: dict = {}
 
     for mc in CMEMS_CANDIDATES:
@@ -470,19 +472,20 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
         for test_month in months:
             train = [r for r in all_en_h0 if r["date"][:7] != test_month]
             test  = [r for r in all_en_h0 if r["date"][:7] == test_month]
-            if len(train) < 15 or not test:
+            # 月数ベースでガード（行数ではなく月数で揃える）
+            if len({r["date"][:7] for r in train}) < MIN_TRAIN_MONTHS_CMEMS or not test:
                 continue
             tr_ys = [r.get("cnt_avg") for r in train]
             tr_met = [v for v in tr_ys if v is not None]
             mm, ms = mean_std(tr_met)
             if mm is None or not ms:
                 continue
-            # 因子相関（fold学習データ）
+            # 因子相関（BASE_FACTORSはcorr_thrスキップ・本番モデルと同一条件）
             fr: dict = {}
             for fac in ALL_FACTORS:
                 xs = [r.get(fac) for r in train]
                 rv, _, _ = pearson(xs, tr_ys)
-                if rv is not None and abs(rv) >= fold_corr_thr:
+                if rv is not None and (abs(rv) >= fold_corr_thr or fac in BASE_FACTORS):
                     fr[fac] = rv
             fr = _apply_factor_caps(fr, max_cmems=mc, corr_thr=fold_corr_thr)
             if not fr:
@@ -495,6 +498,26 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
                 if m2 is not None and s2:
                     hp[fac] = (m2, s2)
             w = sum(abs(v) for v in fr.values()) or 1.0
+            # OLS alpha 推定: α = Σ(correction * (act - base)) / Σ(correction²)
+            # 本番の alpha_scale OLS と同一ロジック（clip [0, 1.2]）
+            ols_num = 0.0; ols_den = 0.0
+            for r in train:
+                act = r.get("cnt_avg")
+                if act is None:
+                    continue
+                dn = r.get("decade")
+                base = decadal.get(dn, {}).get("avg_cnt", mm) if decadal else mm
+                nx = 0.0
+                for fac, rv in fr.items():
+                    v = r.get(fac)
+                    if v is None or fac not in hp:
+                        continue
+                    fm, fs = hp[fac]
+                    nx += rv * (v - fm) / fs
+                corr = (nx / w) * ms
+                ols_num += corr * (act - base)
+                ols_den += corr ** 2
+            alpha = min(1.2, max(0.0, ols_num / ols_den)) if ols_den > 1e-10 else 0.5
             for r in test:
                 act = r.get("cnt_avg")
                 if act is None:
@@ -508,7 +531,7 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
                         continue
                     fm, fs = hp[fac]
                     nx += rv * (v - fm) / fs
-                preds.append(base + (nx / w) * ms * 0.5)
+                preds.append(base + (nx / w) * ms * alpha)
                 acts.append(act)
         sc = _wmape(preds, acts)
         if sc is not None:
@@ -2426,7 +2449,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 else:
                     xs = [r.get(fac) for r in train_en_h0]
                 rv, _, _ = pearson(xs, tr_ys)
-                if rv is not None and abs(rv) >= fold_corr_thr:
+                # BASE_FACTORSはcorr_thrスキップ（常時確保）。ただしデータがありrが計算できる場合のみ
+                if rv is not None and (abs(rv) >= fold_corr_thr or fac in BASE_FACTORS):
                     factor_r_m[fac] = rv
             # TOP-K: Tier1/Tier2分割・コンボ別最適化CMEMSキャップ適用
             factor_r_m = _apply_factor_caps(factor_r_m, max_cmems=best_cmems, corr_thr=fold_corr_thr)
@@ -2931,7 +2955,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             for fac in ALL_FACTORS:
                 xs = [r.get(fac) for r in final_train]
                 rv, _, _ = pearson(xs, final_ys)
-                if rv is not None and abs(rv) >= best_corr_thr:
+                # BASE_FACTORSはcorr_thrスキップ（常時確保）。ただしrが計算できる場合のみ
+                if rv is not None and (abs(rv) >= best_corr_thr or fac in BASE_FACTORS):
                     final_factor_r[fac] = rv
             # TOP-K: Tier1/Tier2分割・コンボ別最適化CMEMSキャップ適用
             final_factor_r = _apply_factor_caps(final_factor_r, max_cmems=best_cmems, corr_thr=best_corr_thr)
