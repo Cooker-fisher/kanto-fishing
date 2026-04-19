@@ -301,6 +301,14 @@ _FAST_MAX_H_OVERRIDE: dict = {
     ("メバル", "第三幸栄丸"): 3,  # H>3でfast因子無効化 → 月齢シグナルのみ使用
 }
 
+# per-combo 除外因子ブラックリスト
+# 座標ミスマッチ・疑似相関が確認されたコンボ×因子を明示的に除外する
+# ちがさき丸×タイ五目: do_surface は東京湾DO値が相模湾コンボに適用された疑似相関
+#   （相模湾は外洋型で青潮が発生しにくく、DO低下と釣果の因果関係なし）
+FACTOR_BLACKLIST: dict[tuple, set] = {
+    ("タイ五目", "ちがさき丸"): {"do_surface"},
+}
+
 # ── 全因子リスト（相関計算・バックテスト対象）──────────────────────────────
 # 06:00スナップショットを廃止し、全変数を日次集計（min/max/avg）に統一。
 WX_FACTORS = [
@@ -2433,6 +2441,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         fold_corr_thr = max(0.15, 1.96 / (_n_fold ** 0.5)) if _n_fold > 0 else 0.20
         _combo_ship = records[0]["ship"] if records else ""
         fold_fast_max_h = _FAST_MAX_H_OVERRIDE.get((fish, _combo_ship), FAST_MAX_H)
+        _factor_blacklist = FACTOR_BLACKLIST.get((fish, _combo_ship), set())
 
         # train_sorted_m の日付リスト（bisect用）
         train_dates_m = [r["date"] for r in train_sorted_m]
@@ -2441,6 +2450,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             tr_ys = [r.get(met) for r in train_en_h0]
             factor_r_m = {}
             for fac in ALL_FACTORS:
+                if fac in _factor_blacklist:
+                    continue
                 # wave_clamp は fold_wc_thr で再計算（訓練データの相関もテストと一貫させる）
                 if fac == "wave_clamp" and fold_wc_thr != WAVE_CLAMP_THRESHOLD:
                     xs = [min(r["wave_height_avg"], fold_wc_thr)
@@ -2953,6 +2964,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             final_ys = [r.get(met) for r in final_train]
             final_factor_r = {}
             for fac in ALL_FACTORS:
+                if fac in _factor_blacklist:
+                    continue
                 xs = [r.get(fac) for r in final_train]
                 rv, _, _ = pearson(xs, final_ys)
                 # BASE_FACTORSはcorr_thrスキップ（常時確保）。ただしrが計算できる場合のみ
