@@ -59,6 +59,8 @@ def main():
                         help="CMEMS変数上限・一般魚種（combo_deep_dive.py に転送）")
     parser.add_argument("--max-cmems-ocean", type=int, default=None,
                         help="CMEMS変数上限・CMEMS_ALLOWED_FISH（combo_deep_dive.py に転送）")
+    parser.add_argument("--db", default=None,
+                        help="analysis.sqlite 出力先パス（combo_deep_dive.py に転送）")
     args = parser.parse_args()
 
     fish_list = args.fish_list if args.fish_list else ALL_FISH
@@ -71,6 +73,8 @@ def main():
         extra_args += ["--max-cmems", str(args.max_cmems)]
     if args.max_cmems_ocean is not None:
         extra_args += ["--max-cmems-ocean", str(args.max_cmems_ocean)]
+    if args.db is not None:
+        extra_args += ["--db", args.db]
 
     print(f"対象: {len(fish_list)}種 先頭3: {fish_list[:3]} workers={workers} extra={extra_args}")
 

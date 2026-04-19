@@ -3265,19 +3265,24 @@ def deep_dive(fish, ship, verbose=True):
     # auto_fallback: 以下いずれかの場合、predict_count.py で気象補正をスキップ。
     #   ① BL-0（全体平均）より 10pt 以上悪い
     #   ② BL-2（直近7件実績平均）より 5pt 以上悪い
+    #   ③ OOS r < 0.10（モデルが事実上無相関 or 逆効き）
     # → 再実行時も自動的に use_fallback=True が維持される
     use_fallback = False
     # bt_data row: (met, H, rv, mae, mape, smape, wmape, rmse, dacc,
     #               good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, 0.0,
     #               bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r)
-    # bl0_wmape は index 20, bl2_wmape は index 26
+    # rv は index 2, bl0_wmape は index 20, bl2_wmape は index 26
+    OOS_R_FALLBACK_THR = 0.15  # OOS r がこの値未満なら気象補正はノイズ→フォールバック
     for row in bt_data:
-        met = row[0]; H = row[1]; wmape = row[6]; bl0w = row[20]; bl2w = row[26]
+        met = row[0]; H = row[1]; rv = row[2]; wmape = row[6]; bl0w = row[20]; bl2w = row[26]
         if met == "cnt_avg" and H == 0:
-            if wmape is not None and (
+            bl0_is_better = (bl0w is not None and wmape is not None and bl0w <= wmape)
+            if wmape is not None and bl0_is_better and (
                 (bl0w is not None and wmape > bl0w + 10) or
                 (bl2w is not None and wmape > bl2w + 5)
             ):
+                use_fallback = True
+            if rv is not None and rv < OOS_R_FALLBACK_THR and bl0_is_better:
                 use_fallback = True
             break
 
@@ -3315,6 +3320,8 @@ def main():
                         help="CMEMS変数上限・一般魚種（デフォルト: MAX_CMEMS_DEFAULT=2）")
     parser.add_argument("--max-cmems-ocean", type=int, default=None,
                         help="CMEMS変数上限・CMEMS_ALLOWED_FISH（デフォルト: MAX_CMEMS_OCEAN=4）")
+    parser.add_argument("--db", default=None,
+                        help="analysis.sqlite の出力先パス（省略時はデフォルト）")
     args = parser.parse_args()
 
     if args.wave_clamp is not None:
@@ -3338,6 +3345,11 @@ def main():
         global MAX_CMEMS_OCEAN
         MAX_CMEMS_OCEAN = args.max_cmems_ocean
         print(f"[max_cmems_ocean] OCEAN={MAX_CMEMS_OCEAN} に設定")
+
+    if args.db is not None:
+        global DB_ANA
+        DB_ANA = args.db
+        print(f"[db] 出力先を {DB_ANA} に設定")
 
     if args.ship:
         deep_dive(args.fish, args.ship)
