@@ -1,5 +1,6 @@
 ---
-description: "design/V2チームのワークフローを開始する。pmエージェントが90_決定ログを確認してテーマ選択を促す。"
+name: デザイン
+description: "design/V2チームのワークフローを開始する。pmエージェントが90_決定ログを確認してテーマ選択を促す。Use when: starting design/V2 team session, UI/UX implementation, crawler.py HTML changes."
 ---
 
 design/V2 チームのセッションを開始します。

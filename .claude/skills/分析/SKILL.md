@@ -1,5 +1,6 @@
 ---
-description: "analysis/V2チームのワークフローを開始する。pmエージェントが決定ログを確認してテーマ選択を促す。"
+name: 分析
+description: "analysis/V2チームのワークフローを開始する。pmエージェントが決定ログを確認してテーマ選択を促す。Use when: starting analysis/V2 team session, improving MAPE, running backtest, fixing combo_deep_dive.py."
 ---
 
 analysis/V2 分析改善チームのセッションを開始します。
@@ -27,8 +28,6 @@ analysis/V2 分析改善チームのセッションを開始します。
 
 **SoT（唯一の真実）:** `analysis/V2/analysis-improvement/90_決定ログ.md`
 
-**現行精度（PIPELINE.md 2026/04/19時点）:**
-- H=0 wMAPE中央値: 41.6%
-- BL-2勝率 H=0: 88.5%
-- OOS r平均 H=0: +0.387
+**現行精度（2026/04/19時点）:**
+- H=0 wMAPE中央値: 41.6% / BL-2勝率: 88.5% / OOS r: +0.387
 - 実行55種・バックテスト完了45種
