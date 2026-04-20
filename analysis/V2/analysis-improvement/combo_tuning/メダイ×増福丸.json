@@ -1,0 +1,163 @@
+{
+  "fish": "メダイ",
+  "ship": "増福丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 34.3,
+    "bl0_wmape": 47.8,
+    "bl2_wmape": 55.1,
+    "oos_r": 0.582,
+    "n_records": 33,
+    "alpha_scale": 0.549,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 64,
+      "pct": 67
+    },
+    {
+      "name": "金洲沖～180m",
+      "n": 13,
+      "pct": 14
+    },
+    {
+      "name": "金洲沖～120m",
+      "n": 6,
+      "pct": 6
+    },
+    {
+      "name": "金洲沖～150m",
+      "n": 5,
+      "pct": 5
+    },
+    {
+      "name": "金洲沖～100m",
+      "n": 3,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.57,
+    "lon": 138.22
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "moon_age",
+      "corr": 0.553,
+      "n_valid": 33
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.426,
+      "n_valid": 33
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.396,
+      "n_valid": 33
+    },
+    {
+      "factor": "precip_sum3",
+      "corr": -0.377,
+      "n_valid": 33
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.372,
+      "n_valid": 33
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.365,
+      "n_valid": 33
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.353,
+      "n_valid": 31
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.346,
+      "n_valid": 33
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "満月・新月付近に釣果が上がる傾向",
+    "うねり周期が長い安定した波の日に釣果が上がる傾向",
+    "潮汐変化が大きい日に釣果が上がる傾向",
+    "前3日の降水量が多い時に釣果が上がる傾向",
+    "最小周期が長い安定した波の日に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wave_period",
+      "corr": 0.486,
+      "n_valid": 34,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum5",
+      "corr": 0.339,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.336,
+      "n_valid": 34,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.31,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.306,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.297,
+      "n_valid": 11,
+      "reason": "low_n"
+    },
+    {
+      "factor": "precip_sum6",
+      "corr": 0.283,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.235,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.228,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.219,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

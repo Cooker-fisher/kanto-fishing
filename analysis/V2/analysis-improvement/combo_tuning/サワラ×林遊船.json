@@ -1,0 +1,128 @@
+{
+  "fish": "サワラ",
+  "ship": "林遊船",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 56.5,
+    "bl0_wmape": 59.7,
+    "bl2_wmape": 66.0,
+    "oos_r": 0.174,
+    "n_records": 438,
+    "alpha_scale": 0.46,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 1088,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.61,
+    "lon": 140.05
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.319,
+      "n_valid": 437
+    },
+    {
+      "factor": "tide_grp_chowaka_summer",
+      "corr": 0.191,
+      "n_valid": 438
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.179,
+      "n_valid": 438
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": 0.165,
+      "n_valid": 438
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.151,
+      "n_valid": 438
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "夏の長潮・若潮に釣果が上がる傾向",
+    "黒潮が離岸している月に釣果が上がる傾向",
+    "春の中潮に釣果が上がる傾向",
+    "夏休み期間（7〜8月）に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.364,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.358,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.157,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "thermocline_depth",
+      "corr": -0.139,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.134,
+      "n_valid": 438,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.116,
+      "n_valid": 270,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.111,
+      "n_valid": 438,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": 0.108,
+      "n_valid": 438,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.1,
+      "n_valid": 438,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.098,
+      "n_valid": 438,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

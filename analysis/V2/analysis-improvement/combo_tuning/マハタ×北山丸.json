@@ -1,0 +1,173 @@
+{
+  "fish": "マハタ",
+  "ship": "北山丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 19.8,
+    "bl0_wmape": 19.7,
+    "bl2_wmape": 19.8,
+    "oos_r": -0.074,
+    "n_records": 46,
+    "alpha_scale": 0.1,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 85,
+      "pct": 55
+    },
+    {
+      "name": "洲崎沖～平砂浦沖～70m",
+      "n": 8,
+      "pct": 5
+    },
+    {
+      "name": "洲崎沖～平砂浦沖～69m",
+      "n": 6,
+      "pct": 4
+    },
+    {
+      "name": "洲崎沖～川名沖～70m",
+      "n": 6,
+      "pct": 4
+    },
+    {
+      "name": "洲崎沖～平砂浦沖～71m",
+      "n": 5,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.94,
+    "lon": 139.8
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "tide_grp_chowaka_autumn",
+      "corr": 0.541,
+      "n_valid": 46
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.366,
+      "n_valid": 46
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.359,
+      "n_valid": 46
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.358,
+      "n_valid": 46
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.355,
+      "n_valid": 46
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.298,
+      "n_valid": 6
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": -0.258,
+      "n_valid": 46
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.217,
+      "n_valid": 46
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.176,
+      "n_valid": 46
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.118,
+      "n_valid": 46
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "秋の長潮・若潮に釣果が上がる傾向",
+    "最低気温が高い日ほど釣果が上がる傾向",
+    "最高気温が高い日ほど釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.363,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.344,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.291,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": -0.24,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.226,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": -0.203,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.2,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.188,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.179,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.169,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "fish": "サワラ",
+  "ship": "こなや丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 104.5,
+    "bl0_wmape": 103.5,
+    "bl2_wmape": 104.9,
+    "oos_r": 0.13,
+    "n_records": 205,
+    "alpha_scale": 0.499,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 363,
+      "pct": 91
+    },
+    {
+      "name": "千葉沖",
+      "n": 16,
+      "pct": 4
+    },
+    {
+      "name": "木更津沖",
+      "n": 15,
+      "pct": 4
+    },
+    {
+      "name": "長浦沖",
+      "n": 2,
+      "pct": 1
+    },
+    {
+      "name": "横浜沖",
+      "n": 1,
+      "pct": 0
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.37,
+    "lon": 139.84
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.275,
+      "n_valid": 204
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.158,
+      "n_valid": 205
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.157,
+      "n_valid": 205
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.106,
+      "n_valid": 205
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.095,
+      "n_valid": 205
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.078,
+      "n_valid": 205
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.057,
+      "n_valid": 205
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.055,
+      "n_valid": 205
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.055,
+      "n_valid": 205
+    },
+    {
+      "factor": "is_holiday",
+      "corr": 0.048,
+      "n_valid": 205
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "黒潮が離岸している月に釣果が上がる傾向",
+    "潮流が弱い時に釣果が上がる傾向",
+    "高気圧優勢な日に釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "chl_monthly",
+      "corr": -0.56,
+      "n_valid": 11,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.477,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "no3_surface",
+      "corr": -0.424,
+      "n_valid": 11,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.402,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.402,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.392,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.356,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.35,
+      "n_valid": 11,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.278,
+      "n_valid": 205,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "do_surface",
+      "corr": 0.22,
+      "n_valid": 11,
+      "reason": "low_n"
+    }
+  ]
+}

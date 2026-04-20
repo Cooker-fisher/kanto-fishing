@@ -1,0 +1,158 @@
+{
+  "fish": "アジ",
+  "ship": "野毛屋釣船店",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 38.1,
+    "bl0_wmape": 45.4,
+    "bl2_wmape": 45.0,
+    "oos_r": 0.499,
+    "n_records": 274,
+    "alpha_scale": 0.286,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "八景沖",
+      "n": 273,
+      "pct": 100
+    },
+    {
+      "name": "小柴沖",
+      "n": 1,
+      "pct": 0
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.37,
+    "lon": 139.62
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "is_holiday",
+      "corr": -0.284,
+      "n_valid": 274
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.275,
+      "n_valid": 274
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.253,
+      "n_valid": 273
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.242,
+      "n_valid": 274
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.239,
+      "n_valid": 100
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.233,
+      "n_valid": 274
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.228,
+      "n_valid": 43
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.226,
+      "n_valid": 274
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.224,
+      "n_valid": 43
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.22,
+      "n_valid": 43
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "平日の方が釣果が上がる傾向",
+    "冬の中潮に釣果が上がる傾向",
+    "水温が低い日ほど釣果が上がる傾向",
+    "最低気温が低い日ほど釣果が上がる傾向",
+    "台風が遠い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": -0.255,
+      "n_valid": 273,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.237,
+      "n_valid": 274,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.186,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": -0.152,
+      "n_valid": 274,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.141,
+      "n_valid": 272,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.136,
+      "n_valid": 274,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.134,
+      "n_valid": 274,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum5",
+      "corr": 0.126,
+      "n_valid": 274,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.124,
+      "n_valid": 274,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.115,
+      "n_valid": 274,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

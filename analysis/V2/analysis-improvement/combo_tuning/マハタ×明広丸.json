@@ -1,0 +1,155 @@
+{
+  "fish": "マハタ",
+  "ship": "明広丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 49.6,
+    "bl0_wmape": 57.9,
+    "bl2_wmape": 60.6,
+    "oos_r": 0.01,
+    "n_records": 59,
+    "alpha_scale": 0.1,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "岩和田沖",
+      "n": 23,
+      "pct": 19
+    },
+    {
+      "name": "岩和田沖航程18～20分～60m",
+      "n": 12,
+      "pct": 10
+    },
+    {
+      "name": "岩和田沖航程18～20分～40m",
+      "n": 7,
+      "pct": 6
+    },
+    {
+      "name": "部原沖",
+      "n": 6,
+      "pct": 5
+    },
+    {
+      "name": "岩和田沖～勝浦灯台沖航程18～20分～60m",
+      "n": 4,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.11,
+    "lon": 140.34
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.896,
+      "n_valid": 59
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.388,
+      "n_valid": 59
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.302,
+      "n_valid": 18
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": 0.282,
+      "n_valid": 59
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": 0.267,
+      "n_valid": 59
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "秋の大潮に釣果が上がる傾向",
+    "うねりが小さい穏やかな日に釣果が上がる傾向",
+    "50m深水温が低い時に釣果が上がる傾向",
+    "最大うねりが小さい日に釣果が上がる傾向",
+    "波が穏やかな日ほど釣果が上がる傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "use_fallback=1",
+      "effect": "BL2負け",
+      "reason": "r=0.010 事実上無相関"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "swell_height",
+      "corr": 0.326,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": 0.277,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.248,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.211,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.204,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.192,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": 0.183,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.175,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.174,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.159,
+      "n_valid": 21,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

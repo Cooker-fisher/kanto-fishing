@@ -1,0 +1,122 @@
+{
+  "fish": "ヒラメ",
+  "ship": "第八幸松丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 30.0,
+    "bl0_wmape": 30.5,
+    "bl2_wmape": 34.7,
+    "oos_r": 0.076,
+    "n_records": 47,
+    "alpha_scale": 0.903,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 120,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.04,
+    "lon": 138.83
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.903,
+      "n_valid": 7
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.45,
+      "n_valid": 47
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.353,
+      "n_valid": 47
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.349,
+      "n_valid": 47
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風接近時でも釣果が上がる傾向",
+    "秋の大潮に釣果が上がる傾向",
+    "大潮・中潮で釣果が上がる傾向",
+    "潮差が大きい日に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "tide_delta",
+      "corr": 0.248,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.208,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.203,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.186,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.169,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": -0.159,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.156,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": 0.152,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.148,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.147,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

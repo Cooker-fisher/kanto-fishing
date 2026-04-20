@@ -1,0 +1,130 @@
+{
+  "fish": "アジ",
+  "ship": "勘次郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 30.3,
+    "bl0_wmape": 37.2,
+    "bl2_wmape": 34.3,
+    "oos_r": 0.617,
+    "n_records": 510,
+    "alpha_scale": 0.603,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "金谷沖",
+      "n": 251,
+      "pct": 45
+    },
+    {
+      "name": "金谷沖～80m",
+      "n": 66,
+      "pct": 12
+    },
+    {
+      "name": "金谷沖～50m",
+      "n": 49,
+      "pct": 9
+    },
+    {
+      "name": "竹岡沖",
+      "n": 49,
+      "pct": 9
+    },
+    {
+      "name": "竹岡沖～金谷沖",
+      "n": 41,
+      "pct": 7
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.19,
+    "lon": 139.77
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.601,
+      "n_valid": 509
+    },
+    {
+      "factor": "is_holiday",
+      "corr": 0.166,
+      "n_valid": 510
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "休日・祝日に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "no3_surface",
+      "corr": 0.602,
+      "n_valid": 9,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.358,
+      "n_valid": 63,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.34,
+      "n_valid": 510,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "do_surface",
+      "corr": 0.327,
+      "n_valid": 9,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.273,
+      "n_valid": 63,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.248,
+      "n_valid": 63,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.143,
+      "n_valid": 510,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.136,
+      "n_valid": 510,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.136,
+      "n_valid": 510,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.124,
+      "n_valid": 496,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

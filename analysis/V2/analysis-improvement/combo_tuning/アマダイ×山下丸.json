@@ -1,0 +1,173 @@
+{
+  "fish": "アマダイ",
+  "ship": "山下丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 42.9,
+    "bl0_wmape": 42.0,
+    "bl2_wmape": 52.9,
+    "oos_r": 0.066,
+    "n_records": 362,
+    "alpha_scale": 0.608,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "剣崎沖～90m",
+      "n": 88,
+      "pct": 23
+    },
+    {
+      "name": "剣崎沖～100m",
+      "n": 63,
+      "pct": 17
+    },
+    {
+      "name": "剣崎沖～95m",
+      "n": 61,
+      "pct": 16
+    },
+    {
+      "name": "剣崎沖～80m",
+      "n": 13,
+      "pct": 3
+    },
+    {
+      "name": "剣崎沖～下浦沖～90m",
+      "n": 13,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.24,
+    "lon": 139.71
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.606,
+      "n_valid": 362
+    },
+    {
+      "factor": "tide_grp_oshio_summer",
+      "corr": 0.606,
+      "n_valid": 362
+    },
+    {
+      "factor": "precip_sum3",
+      "corr": 0.186,
+      "n_valid": 362
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.083,
+      "n_valid": 362
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.065,
+      "n_valid": 362
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.048,
+      "n_valid": 362
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.04,
+      "n_valid": 362
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.036,
+      "n_valid": 362
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.029,
+      "n_valid": 356
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.025,
+      "n_valid": 362
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "夏休み期間（7〜8月）に釣果が上がる傾向",
+    "夏の大潮に釣果が上がる傾向",
+    "前3日の降水量が少ない時に釣果が上がる傾向",
+    "平日の方が釣果が上がる傾向",
+    "大潮・中潮で釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "nutrient_score",
+      "corr": -0.53,
+      "n_valid": 6,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.439,
+      "n_valid": 14,
+      "reason": "low_n"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.415,
+      "n_valid": 14,
+      "reason": "low_n"
+    },
+    {
+      "factor": "no3_surface",
+      "corr": 0.397,
+      "n_valid": 10,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.357,
+      "n_valid": 14,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.326,
+      "n_valid": 14,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.326,
+      "n_valid": 14,
+      "reason": "low_n"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.237,
+      "n_valid": 19,
+      "reason": "low_n"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": -0.128,
+      "n_valid": 354,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": -0.118,
+      "n_valid": 362,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "fish": "マダイ",
+  "ship": "あまさけや丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 46.7,
+    "bl0_wmape": 50.8,
+    "bl2_wmape": 52.1,
+    "oos_r": 0.266,
+    "n_records": 446,
+    "alpha_scale": 0.383,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 429,
+      "pct": 62
+    },
+    {
+      "name": "剣崎沖",
+      "n": 251,
+      "pct": 36
+    },
+    {
+      "name": "久里浜沖",
+      "n": 14,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.14,
+    "lon": 139.65
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "chl_monthly",
+      "corr": -0.282,
+      "n_valid": 13
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.275,
+      "n_valid": 13
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.213,
+      "n_valid": 13
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.177,
+      "n_valid": 446
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.177,
+      "n_valid": 92
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.176,
+      "n_valid": 442
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": -0.172,
+      "n_valid": 446
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.158,
+      "n_valid": 442
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.158,
+      "n_valid": 446
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "月次クロロフィルが低い時に釣果が上がる傾向",
+    "クロロフィル（餌密度）が高い時に釣果が上がる傾向",
+    "クロロフィル増加時に釣果が上がる傾向",
+    "最大潮流が弱い時に釣果が上がる傾向",
+    "底層酸素が豊富な時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": -0.189,
+      "n_valid": 448,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.155,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.142,
+      "n_valid": 446,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": 0.138,
+      "n_valid": 446,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.127,
+      "n_valid": 452,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.126,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.124,
+      "n_valid": 452,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": -0.122,
+      "n_valid": 446,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_moon_interact",
+      "corr": -0.115,
+      "n_valid": 453,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": -0.11,
+      "n_valid": 446,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

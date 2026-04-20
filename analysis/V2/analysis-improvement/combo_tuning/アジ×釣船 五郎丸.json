@@ -1,0 +1,130 @@
+{
+  "fish": "アジ",
+  "ship": "釣船 五郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 36.2,
+    "bl0_wmape": 41.3,
+    "bl2_wmape": 43.2,
+    "oos_r": 0.472,
+    "n_records": 741,
+    "alpha_scale": 0.497,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "観音崎沖前後",
+      "n": 132,
+      "pct": 18
+    },
+    {
+      "name": "観音崎沖～60m",
+      "n": 82,
+      "pct": 11
+    },
+    {
+      "name": "鴨居沖～観音崎沖～50m",
+      "n": 72,
+      "pct": 10
+    },
+    {
+      "name": "観音崎沖～70m",
+      "n": 66,
+      "pct": 9
+    },
+    {
+      "name": "鴨居沖前後",
+      "n": 54,
+      "pct": 7
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.34,
+    "lon": 139.64
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.442,
+      "n_valid": 739
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.272,
+      "n_valid": 741
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "平日の方が釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "no3_surface",
+      "corr": -0.358,
+      "n_valid": 18,
+      "reason": "low_n"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.169,
+      "n_valid": 155,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.167,
+      "n_valid": 737,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.149,
+      "n_valid": 741,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.146,
+      "n_valid": 741,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.134,
+      "n_valid": 106,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.132,
+      "n_valid": 106,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.116,
+      "n_valid": 106,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.105,
+      "n_valid": 245,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.094,
+      "n_valid": 155,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "fish": "マダコ",
+  "ship": "大洗丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 36.4,
+    "bl0_wmape": 48.6,
+    "bl2_wmape": 52.9,
+    "oos_r": 0.604,
+    "n_records": 104,
+    "alpha_scale": 0.634,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 97,
+      "pct": 92
+    },
+    {
+      "name": "大洗沖",
+      "n": 5,
+      "pct": 5
+    },
+    {
+      "name": "～30m",
+      "n": 2,
+      "pct": 2
+    },
+    {
+      "name": "大洗沖～30m",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "～25m",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 36.31,
+    "lon": 140.57
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.638,
+      "n_valid": 103
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.471,
+      "n_valid": 101
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.426,
+      "n_valid": 104
+    },
+    {
+      "factor": "precip_sum2",
+      "corr": 0.358,
+      "n_valid": 104
+    },
+    {
+      "factor": "precip_sum4",
+      "corr": 0.342,
+      "n_valid": 104
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.285,
+      "n_valid": 47
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.278,
+      "n_valid": 104
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": 0.276,
+      "n_valid": 104
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.242,
+      "n_valid": 104
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.213,
+      "n_valid": 104
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "濁り・赤潮傾向の日に釣果が上がる傾向",
+    "沖合の海面水位が低い月に釣果が上がる傾向",
+    "前2日の降水量が少ない時に釣果が上がる傾向",
+    "前4日の降水量が少ない時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": -0.473,
+      "n_valid": 104,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.443,
+      "n_valid": 104,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.362,
+      "n_valid": 104,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": -0.257,
+      "n_valid": 94,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.243,
+      "n_valid": 104,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": -0.239,
+      "n_valid": 104,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": 0.209,
+      "n_valid": 101,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.209,
+      "n_valid": 101,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_summer",
+      "corr": 0.202,
+      "n_valid": 104,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.196,
+      "n_valid": 104,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

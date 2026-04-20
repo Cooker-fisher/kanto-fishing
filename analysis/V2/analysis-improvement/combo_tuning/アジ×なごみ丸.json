@@ -1,0 +1,163 @@
+{
+  "fish": "アジ",
+  "ship": "なごみ丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 68.4,
+    "bl0_wmape": 91.3,
+    "bl2_wmape": 94.0,
+    "oos_r": 0.759,
+    "n_records": 36,
+    "alpha_scale": 0.62,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 97,
+      "pct": 60
+    },
+    {
+      "name": "松崎沖～75m",
+      "n": 27,
+      "pct": 17
+    },
+    {
+      "name": "松崎沖",
+      "n": 12,
+      "pct": 7
+    },
+    {
+      "name": "松崎沖～90m",
+      "n": 6,
+      "pct": 4
+    },
+    {
+      "name": "松崎沖～35m",
+      "n": 3,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.77,
+    "lon": 138.78
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "precip_sum2",
+      "corr": 0.619,
+      "n_valid": 36
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": 0.541,
+      "n_valid": 36
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.449,
+      "n_valid": 36
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.4,
+      "n_valid": 36
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.379,
+      "n_valid": 35
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.366,
+      "n_valid": 36
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.347,
+      "n_valid": 36
+    },
+    {
+      "factor": "pressure_min",
+      "corr": -0.336,
+      "n_valid": 36
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前2日の降水量が少ない時に釣果が上がる傾向",
+    "春の長潮・若潮に釣果が上がる傾向",
+    "乗っ込み・産卵期に釣果が上がる傾向",
+    "濁り・赤潮傾向の日に釣果が上がる傾向",
+    "水温が低い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": -0.393,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.387,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum5",
+      "corr": 0.314,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.297,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.277,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.265,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.248,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": 0.247,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": 0.246,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.244,
+      "n_valid": 36,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

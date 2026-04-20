@@ -1,0 +1,173 @@
+{
+  "fish": "マダイ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 36.8,
+    "bl0_wmape": 41.2,
+    "bl2_wmape": 42.5,
+    "oos_r": 0.342,
+    "n_records": 123,
+    "alpha_scale": 0.461,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "小田原沖",
+      "n": 163,
+      "pct": 58
+    },
+    {
+      "name": "小田原沖～二宮沖",
+      "n": 52,
+      "pct": 18
+    },
+    {
+      "name": "other",
+      "n": 43,
+      "pct": 15
+    },
+    {
+      "name": "二宮沖",
+      "n": 20,
+      "pct": 7
+    },
+    {
+      "name": "二宮沖～小田原沖",
+      "n": 4,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.23,
+    "lon": 139.12
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.461,
+      "n_valid": 15
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.442,
+      "n_valid": 15
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.335,
+      "n_valid": 15
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.251,
+      "n_valid": 7
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.247,
+      "n_valid": 7
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.24,
+      "n_valid": 15
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.22,
+      "n_valid": 123
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.212,
+      "n_valid": 116
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.209,
+      "n_valid": 123
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.182,
+      "n_valid": 116
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "夏季の100m深水温が高い時に釣果が上がる傾向",
+    "春季の100m深水温が低い時に釣果が上がる傾向",
+    "200m深水温が高い時に釣果が上がる傾向",
+    "クロロフィル増加時に釣果が上がる傾向",
+    "月次クロロフィルが低い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": -0.18,
+      "n_valid": 116,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.173,
+      "n_valid": 16,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.168,
+      "n_valid": 123,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.157,
+      "n_valid": 123,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.156,
+      "n_valid": 123,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.155,
+      "n_valid": 114,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.138,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.13,
+      "n_valid": 123,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.127,
+      "n_valid": 123,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": -0.126,
+      "n_valid": 123,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

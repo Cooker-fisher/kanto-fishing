@@ -1,0 +1,173 @@
+{
+  "fish": "ヤリイカ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 50.0,
+    "bl0_wmape": 53.8,
+    "bl2_wmape": 52.8,
+    "oos_r": 0.413,
+    "n_records": 205,
+    "alpha_scale": 0.461,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "二宮沖",
+      "n": 65,
+      "pct": 31
+    },
+    {
+      "name": "真鶴沖",
+      "n": 60,
+      "pct": 29
+    },
+    {
+      "name": "南沖",
+      "n": 35,
+      "pct": 17
+    },
+    {
+      "name": "東沖",
+      "n": 16,
+      "pct": 8
+    },
+    {
+      "name": "南沖～真鶴沖",
+      "n": 9,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.23,
+    "lon": 139.12
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": 0.461,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.418,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.418,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.33,
+      "n_valid": 5
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.267,
+      "n_valid": 205
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.265,
+      "n_valid": 205
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.256,
+      "n_valid": 205
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.221,
+      "n_valid": 205
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.213,
+      "n_valid": 200
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.19,
+      "n_valid": 205
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "200m深水温が高い時に釣果が上がる傾向",
+    "100m深水温が高い時に釣果が上がる傾向",
+    "春季の100m深水温が高い時に釣果が上がる傾向",
+    "50m深水温が高い時に釣果が上がる傾向",
+    "沖合の海面水位が高い月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.212,
+      "n_valid": 200,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.18,
+      "n_valid": 205,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.174,
+      "n_valid": 204,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.171,
+      "n_valid": 204,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.14,
+      "n_valid": 205,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.14,
+      "n_valid": 205,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.139,
+      "n_valid": 205,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.134,
+      "n_valid": 205,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": -0.13,
+      "n_valid": 205,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.127,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "fish": "スジイカ",
+  "ship": "幸栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 62.3,
+    "bl0_wmape": 56.7,
+    "bl2_wmape": 75.0,
+    "oos_r": 0.165,
+    "n_records": 92,
+    "alpha_scale": 0.639,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 102,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.97,
+    "lon": 140.7
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "deepwater_score",
+      "corr": 0.639,
+      "n_valid": 22
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.633,
+      "n_valid": 22
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.633,
+      "n_valid": 22
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.596,
+      "n_valid": 22
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.412,
+      "n_valid": 91
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.344,
+      "n_valid": 92
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.283,
+      "n_valid": 22
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.279,
+      "n_valid": 92
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.243,
+      "n_valid": 92
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.242,
+      "n_valid": 92
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "深層水条件が良い時に釣果が上がる傾向",
+    "100m深水温が低い時に釣果が上がる傾向",
+    "夏季の100m深水温が低い時に釣果が上がる傾向",
+    "底層酸素が豊富な時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "tide_range",
+      "corr": -0.223,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": 0.205,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.192,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.184,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.181,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_summer",
+      "corr": -0.174,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.163,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.15,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.137,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_delta",
+      "corr": 0.134,
+      "n_valid": 92,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

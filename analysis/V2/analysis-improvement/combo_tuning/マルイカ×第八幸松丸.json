@@ -1,0 +1,158 @@
+{
+  "fish": "マルイカ",
+  "ship": "第八幸松丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 54.0,
+    "bl0_wmape": 67.0,
+    "bl2_wmape": 74.1,
+    "oos_r": 0.621,
+    "n_records": 67,
+    "alpha_scale": 0.751,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 66,
+      "pct": 99
+    },
+    {
+      "name": "沼津沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.05,
+    "lon": 138.87
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.751,
+      "n_valid": 7
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": 0.7,
+      "n_valid": 7
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.558,
+      "n_valid": 67
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.539,
+      "n_valid": 67
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.51,
+      "n_valid": 67
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.491,
+      "n_valid": 67
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.457,
+      "n_valid": 66
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.441,
+      "n_valid": 67
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.417,
+      "n_valid": 67
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.365,
+      "n_valid": 67
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風接近時でも釣果が上がる傾向",
+    "台風の影響が弱い時に釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向",
+    "最低気温が低い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "do_surface",
+      "corr": -0.852,
+      "n_valid": 6,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.49,
+      "n_valid": 67,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.488,
+      "n_valid": 67,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.469,
+      "n_valid": 61,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.453,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.448,
+      "n_valid": 67,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.419,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.36,
+      "n_valid": 8,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.354,
+      "n_valid": 67,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.248,
+      "n_valid": 67,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

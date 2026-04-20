@@ -1,0 +1,158 @@
+{
+  "fish": "ヒラメ",
+  "ship": "弘漁丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 40.2,
+    "bl0_wmape": 43.4,
+    "bl2_wmape": 43.1,
+    "oos_r": 0.303,
+    "n_records": 112,
+    "alpha_scale": 0.775,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 113,
+      "pct": 92
+    },
+    {
+      "name": "日立沖",
+      "n": 10,
+      "pct": 8
+    }
+  ],
+  "modal_coord": {
+    "lat": 36.6,
+    "lon": 140.67
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.71,
+      "n_valid": 7
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.365,
+      "n_valid": 112
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.339,
+      "n_valid": 112
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.317,
+      "n_valid": 112
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.284,
+      "n_valid": 110
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.228,
+      "n_valid": 7
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.228,
+      "n_valid": 112
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": -0.206,
+      "n_valid": 112
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.205,
+      "n_valid": 112
+    },
+    {
+      "factor": "tide_delta",
+      "corr": -0.198,
+      "n_valid": 112
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風接近時でも釣果が上がる傾向",
+    "うねり周期が短い不安定な波の日に釣果が上がる傾向",
+    "最小周期が短い日に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wave_period",
+      "corr": -0.32,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.318,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.216,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.198,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.192,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.188,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.18,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.166,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.161,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.159,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

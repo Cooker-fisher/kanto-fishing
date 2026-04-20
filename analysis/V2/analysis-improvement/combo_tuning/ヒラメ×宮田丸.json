@@ -1,0 +1,143 @@
+{
+  "fish": "ヒラメ",
+  "ship": "宮田丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 46.1,
+    "bl0_wmape": 45.7,
+    "bl2_wmape": 42.4,
+    "oos_r": 0.258,
+    "n_records": 55,
+    "alpha_scale": 0.691,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 62,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 36.6,
+    "lon": 140.67
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.691,
+      "n_valid": 5
+    },
+    {
+      "factor": "precip_sum4",
+      "corr": 0.451,
+      "n_valid": 55
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.334,
+      "n_valid": 55
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.317,
+      "n_valid": 55
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.311,
+      "n_valid": 55
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.299,
+      "n_valid": 55
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.286,
+      "n_valid": 55
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.265,
+      "n_valid": 55
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風接近時でも釣果が上がる傾向",
+    "前4日の降水量が少ない時に釣果が上がる傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "潮流が弱い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_lag30",
+      "corr": 0.34,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.323,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.255,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.247,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.24,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.221,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": -0.216,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.201,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_delta",
+      "corr": -0.189,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum6",
+      "corr": -0.18,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

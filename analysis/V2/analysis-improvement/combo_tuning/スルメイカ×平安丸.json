@@ -1,0 +1,173 @@
+{
+  "fish": "スルメイカ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 51.7,
+    "bl0_wmape": 64.0,
+    "bl2_wmape": 61.4,
+    "oos_r": 0.475,
+    "n_records": 179,
+    "alpha_scale": 0.51,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "西沖",
+      "n": 49,
+      "pct": 27
+    },
+    {
+      "name": "南沖",
+      "n": 41,
+      "pct": 23
+    },
+    {
+      "name": "南沖～西沖",
+      "n": 26,
+      "pct": 15
+    },
+    {
+      "name": "南沖～真鶴沖",
+      "n": 23,
+      "pct": 13
+    },
+    {
+      "name": "真鶴沖",
+      "n": 16,
+      "pct": 9
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.23,
+    "lon": 139.12
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.509,
+      "n_valid": 178
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.293,
+      "n_valid": 179
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.277,
+      "n_valid": 179
+    },
+    {
+      "factor": "precip_sum6",
+      "corr": 0.247,
+      "n_valid": 179
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.243,
+      "n_valid": 179
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.242,
+      "n_valid": 179
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.225,
+      "n_valid": 179
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.223,
+      "n_valid": 179
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.208,
+      "n_valid": 96
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.205,
+      "n_valid": 179
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "夏休み期間以外に釣果が上がる傾向",
+    "最小周期が短い日に釣果が上がる傾向",
+    "前6日の降水量が少ない時に釣果が上がる傾向",
+    "水温が低い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_100m",
+      "corr": -0.491,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.462,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.314,
+      "n_valid": 25,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": -0.25,
+      "n_valid": 179,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.248,
+      "n_valid": 179,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.231,
+      "n_valid": 25,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.194,
+      "n_valid": 179,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.175,
+      "n_valid": 179,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.172,
+      "n_valid": 179,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.169,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

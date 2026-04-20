@@ -1,0 +1,148 @@
+{
+  "fish": "アオリイカ",
+  "ship": "佐衛美丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 45.4,
+    "bl0_wmape": 48.7,
+    "bl2_wmape": 53.9,
+    "oos_r": 0.246,
+    "n_records": 41,
+    "alpha_scale": 0.552,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "洲崎沖",
+      "n": 15,
+      "pct": 34
+    },
+    {
+      "name": "洲崎沖～30m",
+      "n": 13,
+      "pct": 30
+    },
+    {
+      "name": "洲崎沖～35m",
+      "n": 9,
+      "pct": 20
+    },
+    {
+      "name": "洲崎沖～40m",
+      "n": 4,
+      "pct": 9
+    },
+    {
+      "name": "洲崎沖～32m",
+      "n": 1,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.94,
+    "lon": 139.8
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.421,
+      "n_valid": 40
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.37,
+      "n_valid": 41
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.362,
+      "n_valid": 41
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.339,
+      "n_valid": 9
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.31,
+      "n_valid": 41
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "黒潮接岸時に釣果が上がる傾向",
+    "月次クロロフィルが高い時に釣果が上がる傾向",
+    "台風が遠い時に釣果が上がる傾向",
+    "クロロフィル（餌密度）が高い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.285,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.223,
+      "n_valid": 42,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.223,
+      "n_valid": 42,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.213,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.203,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": 0.202,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.197,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.193,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": 0.179,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.175,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

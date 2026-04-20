@@ -1,0 +1,148 @@
+{
+  "fish": "シロアマダイ",
+  "ship": "恵漁丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 43.8,
+    "bl0_wmape": 37.8,
+    "bl2_wmape": 41.3,
+    "oos_r": 0.216,
+    "n_records": 33,
+    "alpha_scale": 0.866,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 30,
+      "pct": 91
+    },
+    {
+      "name": "近場～相良沖",
+      "n": 1,
+      "pct": 3
+    },
+    {
+      "name": "御前崎沖～85m",
+      "n": 1,
+      "pct": 3
+    },
+    {
+      "name": "大井川沖",
+      "n": 1,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.73,
+    "lon": 138.23
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.75,
+      "n_valid": 12
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.471,
+      "n_valid": 33
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.384,
+      "n_valid": 33
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.376,
+      "n_valid": 33
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": -0.366,
+      "n_valid": 33
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.349,
+      "n_valid": 33
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風影響が強い時でも釣果が上がる傾向",
+    "夏の中潮に釣果が上がる傾向",
+    "最高気温が高い日ほど釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向",
+    "その他の風向で釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": 0.362,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.309,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.3,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.29,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.286,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.264,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.25,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.231,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.231,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.231,
+      "n_valid": 33,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

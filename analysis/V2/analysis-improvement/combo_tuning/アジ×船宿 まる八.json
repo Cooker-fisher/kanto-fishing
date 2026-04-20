@@ -1,0 +1,173 @@
+{
+  "fish": "アジ",
+  "ship": "船宿 まる八",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 22.4,
+    "bl0_wmape": 28.2,
+    "bl2_wmape": 24.8,
+    "oos_r": 0.586,
+    "n_records": 598,
+    "alpha_scale": 0.478,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "木更津沖～20m",
+      "n": 123,
+      "pct": 20
+    },
+    {
+      "name": "木更津沖",
+      "n": 92,
+      "pct": 15
+    },
+    {
+      "name": "木更津沖～25m",
+      "n": 91,
+      "pct": 15
+    },
+    {
+      "name": "川崎沖～横浜沖～20m",
+      "n": 37,
+      "pct": 6
+    },
+    {
+      "name": "木更津沖～15m",
+      "n": 28,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.55,
+    "lon": 139.76
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.477,
+      "n_valid": 597
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.437,
+      "n_valid": 596
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.384,
+      "n_valid": 594
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.357,
+      "n_valid": 593
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.309,
+      "n_valid": 598
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.309,
+      "n_valid": 598
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.307,
+      "n_valid": 598
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.3,
+      "n_valid": 598
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.297,
+      "n_valid": 598
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.244,
+      "n_valid": 598
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "潮目（水温勾配）がある時に釣果が上がる傾向",
+    "水温低下時に釣果が上がる傾向",
+    "沖合の海面水位が高い月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": -0.332,
+      "n_valid": 597,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.255,
+      "n_valid": 591,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.249,
+      "n_valid": 598,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.223,
+      "n_valid": 597,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.213,
+      "n_valid": 593,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.204,
+      "n_valid": 598,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.2,
+      "n_valid": 77,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.195,
+      "n_valid": 77,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.189,
+      "n_valid": 583,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_winter",
+      "corr": 0.186,
+      "n_valid": 598,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

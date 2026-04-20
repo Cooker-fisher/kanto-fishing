@@ -1,0 +1,173 @@
+{
+  "fish": "アジ",
+  "ship": "石田丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 43.3,
+    "bl0_wmape": 55.9,
+    "bl2_wmape": 54.5,
+    "oos_r": 0.607,
+    "n_records": 241,
+    "alpha_scale": 0.491,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 1094,
+      "pct": 98
+    },
+    {
+      "name": "青山沖",
+      "n": 5,
+      "pct": 0
+    },
+    {
+      "name": "富士山根",
+      "n": 4,
+      "pct": 0
+    },
+    {
+      "name": "した。大アジはがれば根",
+      "n": 4,
+      "pct": 0
+    },
+    {
+      "name": "。アジポイント、青山沖",
+      "n": 3,
+      "pct": 0
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.29,
+    "lon": 139.66
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_min",
+      "corr": -0.49,
+      "n_valid": 241
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.483,
+      "n_valid": 241
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.46,
+      "n_valid": 241
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.448,
+      "n_valid": 240
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.44,
+      "n_valid": 241
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.438,
+      "n_valid": 237
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.4,
+      "n_valid": 241
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.375,
+      "n_valid": 241
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.37,
+      "n_valid": 237
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.367,
+      "n_valid": 241
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "最低気温が低い日ほど釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "澄んだ水色の日に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": -0.49,
+      "n_valid": 250,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.36,
+      "n_valid": 246,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": -0.299,
+      "n_valid": 241,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.298,
+      "n_valid": 233,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.281,
+      "n_valid": 250,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.277,
+      "n_valid": 241,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.277,
+      "n_valid": 236,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.277,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.276,
+      "n_valid": 241,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.276,
+      "n_valid": 241,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "fish": "スルメイカ",
+  "ship": "明広丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 41.1,
+    "bl0_wmape": 39.3,
+    "bl2_wmape": 50.3,
+    "oos_r": 0.176,
+    "n_records": 52,
+    "alpha_scale": 1.2,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "御宿沖航程30分～170m",
+      "n": 10,
+      "pct": 19
+    },
+    {
+      "name": "御宿沖航程30分～180m",
+      "n": 4,
+      "pct": 8
+    },
+    {
+      "name": "御宿沖航程30分～200m",
+      "n": 4,
+      "pct": 8
+    },
+    {
+      "name": "御宿沖航程30分～160m",
+      "n": 4,
+      "pct": 8
+    },
+    {
+      "name": "勝浦灯台沖航程35～40分～210m",
+      "n": 2,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.11,
+    "lon": 140.34
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_100m",
+      "corr": 0.945,
+      "n_valid": 6
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.945,
+      "n_valid": 6
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.832,
+      "n_valid": 6
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.351,
+      "n_valid": 52
+    },
+    {
+      "factor": "precip_sum5",
+      "corr": 0.339,
+      "n_valid": 52
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.301,
+      "n_valid": 52
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.288,
+      "n_valid": 52
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.273,
+      "n_valid": 52
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "100m深水温が高い時に釣果が上がる傾向",
+    "夏季の100m深水温が高い時に釣果が上がる傾向",
+    "200m深水温が高い時に釣果が上がる傾向",
+    "濁り・赤潮傾向の日に釣果が上がる傾向",
+    "前5日の降水量が少ない時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": -0.415,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.249,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_summer",
+      "corr": -0.228,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.21,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.187,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.185,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.183,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.176,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.171,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.169,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

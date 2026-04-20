@@ -1,0 +1,163 @@
+{
+  "fish": "ヒラメ",
+  "ship": "明広丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 38.7,
+    "bl0_wmape": 42.2,
+    "bl2_wmape": 41.0,
+    "oos_r": 0.332,
+    "n_records": 348,
+    "alpha_scale": 0.433,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "岩和田沖～部原沖航程5～12分～15m",
+      "n": 47,
+      "pct": 11
+    },
+    {
+      "name": "部原沖",
+      "n": 36,
+      "pct": 8
+    },
+    {
+      "name": "部原沖～岩和田沖航程5～12分～15m",
+      "n": 29,
+      "pct": 7
+    },
+    {
+      "name": "岩和田沖航程5～12分～15m",
+      "n": 20,
+      "pct": 5
+    },
+    {
+      "name": "岩船沖～岩和田沖航程5～15分～15m",
+      "n": 20,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.11,
+    "lon": 140.34
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "water_color_prev_n",
+      "corr": 0.285,
+      "n_valid": 64
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.241,
+      "n_valid": 348
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.211,
+      "n_valid": 347
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.174,
+      "n_valid": 348
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.173,
+      "n_valid": 348
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.173,
+      "n_valid": 348
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.167,
+      "n_valid": 348
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.161,
+      "n_valid": 348
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前回澄んだ水色の時に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "うねりが大きい日に釣果が上がる傾向",
+    "特定の潮流方向で釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": 0.212,
+      "n_valid": 16,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.178,
+      "n_valid": 16,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.178,
+      "n_valid": 16,
+      "reason": "low_n"
+    },
+    {
+      "factor": "swell_height",
+      "corr": -0.175,
+      "n_valid": 348,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.158,
+      "n_valid": 342,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": -0.157,
+      "n_valid": 347,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.154,
+      "n_valid": 348,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.153,
+      "n_valid": 16,
+      "reason": "low_n"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.143,
+      "n_valid": 348,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.142,
+      "n_valid": 338,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "fish": "アジ",
+  "ship": "鶴丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 45.9,
+    "bl0_wmape": 67.1,
+    "bl2_wmape": 81.6,
+    "oos_r": 0.571,
+    "n_records": 43,
+    "alpha_scale": 0.1,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 152,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.15,
+    "lon": 138.65
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "sst_delta",
+      "corr": 0.428,
+      "n_valid": 43
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.425,
+      "n_valid": 42
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.396,
+      "n_valid": 43
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.357,
+      "n_valid": 43
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.351,
+      "n_valid": 43
+    },
+    {
+      "factor": "precip_sum5",
+      "corr": 0.334,
+      "n_valid": 43
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.324,
+      "n_valid": 43
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.317,
+      "n_valid": 43
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.303,
+      "n_valid": 43
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "水温上昇時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "濁り・赤潮傾向の日に釣果が上がる傾向",
+    "夏の中潮に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": 0.344,
+      "n_valid": 45,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": -0.301,
+      "n_valid": 42,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum4",
+      "corr": 0.298,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_delta",
+      "corr": -0.291,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.281,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.279,
+      "n_valid": 45,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": -0.278,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": -0.264,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_autumn",
+      "corr": -0.257,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.246,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

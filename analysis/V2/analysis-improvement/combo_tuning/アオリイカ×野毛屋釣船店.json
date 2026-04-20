@@ -1,0 +1,158 @@
+{
+  "fish": "アオリイカ",
+  "ship": "野毛屋釣船店",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 40.1,
+    "bl0_wmape": 41.4,
+    "bl2_wmape": 43.7,
+    "oos_r": 0.35,
+    "n_records": 76,
+    "alpha_scale": 0.528,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "竹岡沖",
+      "n": 78,
+      "pct": 99
+    },
+    {
+      "name": "剣崎沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.22,
+    "lon": 139.79
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.344,
+      "n_valid": 76
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.332,
+      "n_valid": 76
+    },
+    {
+      "factor": "chl_delta",
+      "corr": -0.314,
+      "n_valid": 75
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.294,
+      "n_valid": 76
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.287,
+      "n_valid": 76
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.253,
+      "n_valid": 76
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.251,
+      "n_valid": 76
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.243,
+      "n_valid": 76
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.239,
+      "n_valid": 75
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": -0.234,
+      "n_valid": 76
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "黒潮が接近している月に釣果が上がる傾向",
+    "上弦・下弦周辺に釣果が上がる傾向",
+    "クロロフィル減少時に釣果が上がる傾向",
+    "降水量が少ない時に釣果が上がる傾向",
+    "沖合の海面水位が高い月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wave_period",
+      "corr": 0.31,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.244,
+      "n_valid": 75,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.225,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.22,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.215,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.214,
+      "n_valid": 75,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.198,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.193,
+      "n_valid": 75,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.184,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.175,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

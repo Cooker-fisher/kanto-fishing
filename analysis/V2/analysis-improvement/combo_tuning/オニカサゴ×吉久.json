@@ -1,0 +1,132 @@
+{
+  "fish": "オニカサゴ",
+  "ship": "吉久",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 32.4,
+    "bl0_wmape": 36.2,
+    "bl2_wmape": 37.9,
+    "oos_r": 0.399,
+    "n_records": 30,
+    "alpha_scale": 0.472,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "湾内",
+      "n": 28,
+      "pct": 93
+    },
+    {
+      "name": "深場",
+      "n": 2,
+      "pct": 7
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.65,
+    "lon": 139.9
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_max",
+      "corr": 0.406,
+      "n_valid": 30
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": 0.406,
+      "n_valid": 30
+    },
+    {
+      "factor": "precip_sum4",
+      "corr": 0.404,
+      "n_valid": 30
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": 0.371,
+      "n_valid": 30
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": 0.371,
+      "n_valid": 30
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "最高気温が高い日ほど釣果が上がる傾向",
+    "特定の卓越風向で釣果が上がる傾向",
+    "前4日の降水量が少ない時に釣果が上がる傾向",
+    "波が穏やかな日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.333,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": 0.301,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_delta",
+      "corr": 0.299,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": -0.298,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.286,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": 0.274,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.252,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.25,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum2",
+      "corr": 0.241,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.219,
+      "n_valid": 30,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

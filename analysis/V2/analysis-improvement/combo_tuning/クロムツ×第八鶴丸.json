@@ -1,0 +1,160 @@
+{
+  "fish": "クロムツ",
+  "ship": "第八鶴丸",
+  "last_reviewed": "2026-04-20",
+  "status": "structural_limit",
+  "metrics": {
+    "wmape_h0": 65.2,
+    "bl0_wmape": 67.4,
+    "bl2_wmape": 70.3,
+    "oos_r": 0.238,
+    "n_records": 64,
+    "alpha_scale": 0.717,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 158,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.17,
+    "lon": 140.38
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "do_bottom",
+      "corr": 0.717,
+      "n_valid": 11
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.458,
+      "n_valid": 10
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.429,
+      "n_valid": 10
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.399,
+      "n_valid": 10
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.326,
+      "n_valid": 62
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.291,
+      "n_valid": 64
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.278,
+      "n_valid": 64
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.274,
+      "n_valid": 64
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.256,
+      "n_valid": 64
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.247,
+      "n_valid": 64
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "底層酸素が豊富な時に釣果が上がる傾向",
+    "深層水条件が良い時に釣果が上がる傾向",
+    "春季の100m深水温が高い時に釣果が上がる傾向",
+    "夏季の100m深水温が低い時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし",
+      "effect": "66.0%",
+      "reason": "CV=86%・データ量不足の構造的限界"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.288,
+      "n_valid": 61,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.275,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.249,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.235,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.218,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.204,
+      "n_valid": 62,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.201,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": -0.188,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": -0.181,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.181,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "fish": "タチウオ",
+  "ship": "吉野屋",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 404.6,
+    "bl0_wmape": 79.9,
+    "bl2_wmape": 69.1,
+    "oos_r": -0.521,
+    "n_records": 40,
+    "alpha_scale": 0.0,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "本牧沖",
+      "n": 13,
+      "pct": 31
+    },
+    {
+      "name": "観音崎沖～80m",
+      "n": 7,
+      "pct": 17
+    },
+    {
+      "name": "走水沖～80m",
+      "n": 5,
+      "pct": 12
+    },
+    {
+      "name": "走水沖",
+      "n": 4,
+      "pct": 10
+    },
+    {
+      "name": "久里浜沖",
+      "n": 4,
+      "pct": 10
+    }
+  ],
+  "modal_coord": {
+    "lat": null,
+    "lon": null
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.662,
+      "n_valid": 39,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.58,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.562,
+      "n_valid": 40,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.559,
+      "n_valid": 40,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.559,
+      "n_valid": 40,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.412,
+      "n_valid": 40,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.396,
+      "n_valid": 40,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.305,
+      "n_valid": 22,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.301,
+      "n_valid": 40,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": 0.261,
+      "n_valid": 40,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

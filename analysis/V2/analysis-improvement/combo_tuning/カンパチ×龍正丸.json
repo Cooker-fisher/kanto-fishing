@@ -1,0 +1,163 @@
+{
+  "fish": "カンパチ",
+  "ship": "龍正丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 38.8,
+    "bl0_wmape": 46.7,
+    "bl2_wmape": 47.2,
+    "oos_r": 0.427,
+    "n_records": 196,
+    "alpha_scale": 0.482,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 356,
+      "pct": 57
+    },
+    {
+      "name": "銭洲沖～100m",
+      "n": 135,
+      "pct": 22
+    },
+    {
+      "name": "銭洲沖～70m",
+      "n": 37,
+      "pct": 6
+    },
+    {
+      "name": "銭洲沖～85m",
+      "n": 32,
+      "pct": 5
+    },
+    {
+      "name": "銭洲沖～75m",
+      "n": 16,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.65,
+    "lon": 138.95
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.482,
+      "n_valid": 21
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.453,
+      "n_valid": 21
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.424,
+      "n_valid": 21
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": 0.246,
+      "n_valid": 196
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.184,
+      "n_valid": 196
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.175,
+      "n_valid": 195
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.17,
+      "n_valid": 196
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.165,
+      "n_valid": 21
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "夏季の100m深水温が低い時に釣果が上がる傾向",
+    "50m深水温が低い時に釣果が上がる傾向",
+    "春季の100m深水温が高い時に釣果が上がる傾向",
+    "春の長潮・若潮に釣果が上がる傾向",
+    "乗っ込み・産卵期に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": -0.199,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.149,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.147,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.129,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.129,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.121,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.121,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.119,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.103,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": -0.102,
+      "n_valid": 196,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "fish": "キンメダイ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 58.9,
+    "bl0_wmape": 60.8,
+    "bl2_wmape": 62.2,
+    "oos_r": 0.363,
+    "n_records": 373,
+    "alpha_scale": 0.1,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "小田原沖",
+      "n": 171,
+      "pct": 43
+    },
+    {
+      "name": "other",
+      "n": 143,
+      "pct": 36
+    },
+    {
+      "name": "真鶴沖",
+      "n": 51,
+      "pct": 13
+    },
+    {
+      "name": "真鶴沖～小田原沖",
+      "n": 16,
+      "pct": 4
+    },
+    {
+      "name": "小田原沖～真鶴沖",
+      "n": 9,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.23,
+    "lon": 139.12
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": 0.287,
+      "n_valid": 41
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.253,
+      "n_valid": 362
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.245,
+      "n_valid": 372
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.218,
+      "n_valid": 48
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.217,
+      "n_valid": 48
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.196,
+      "n_valid": 373
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.189,
+      "n_valid": 373
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.173,
+      "n_valid": 373
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.169,
+      "n_valid": 373
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "200m深水温が高い時に釣果が上がる傾向",
+    "水温低下時に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "クロロフィルが低い時に釣果が上がる傾向",
+    "月次クロロフィルが低い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": -0.149,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.147,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.142,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.138,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.138,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.129,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_winter",
+      "corr": 0.127,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.126,
+      "n_valid": 370,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.125,
+      "n_valid": 366,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.117,
+      "n_valid": 373,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

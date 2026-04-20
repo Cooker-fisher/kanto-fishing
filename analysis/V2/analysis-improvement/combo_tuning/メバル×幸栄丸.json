@@ -1,0 +1,153 @@
+{
+  "fish": "メバル",
+  "ship": "幸栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 40.2,
+    "bl0_wmape": 42.9,
+    "bl2_wmape": 42.2,
+    "oos_r": 0.334,
+    "n_records": 50,
+    "alpha_scale": 1.165,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 54,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.97,
+    "lon": 140.7
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "wind_speed_avg",
+      "corr": 0.373,
+      "n_valid": 50
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.364,
+      "n_valid": 50
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.328,
+      "n_valid": 50
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": 0.32,
+      "n_valid": 50
+    },
+    {
+      "factor": "precip_sum6",
+      "corr": -0.312,
+      "n_valid": 50
+    },
+    {
+      "factor": "precip_sum2",
+      "corr": -0.286,
+      "n_valid": 50
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.263,
+      "n_valid": 50
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.201,
+      "n_valid": 50
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.177,
+      "n_valid": 50
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.151,
+      "n_valid": 50
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "弱風時に釣果が上がる傾向",
+    "降水量が少ない時に釣果が上がる傾向",
+    "月齢サイクル前半に釣果が上がる傾向",
+    "最大風速が弱い日に釣果が上がる傾向",
+    "前6日の降水量が多い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wind_dir_mode",
+      "corr": 0.205,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": -0.198,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.198,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": -0.191,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.181,
+      "n_valid": 49,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.161,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": 0.15,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_delta",
+      "corr": 0.131,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": 0.131,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.131,
+      "n_valid": 50,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

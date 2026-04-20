@@ -1,0 +1,180 @@
+{
+  "fish": "キハダマグロ",
+  "ship": "ちがさき丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 41.0,
+    "bl0_wmape": 31.7,
+    "bl2_wmape": 24.3,
+    "oos_r": -0.101,
+    "n_records": 48,
+    "alpha_scale": 0.974,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "相模湾内",
+      "n": 90,
+      "pct": 63
+    },
+    {
+      "name": "other",
+      "n": 26,
+      "pct": 18
+    },
+    {
+      "name": "茅ヶ崎西沖",
+      "n": 17,
+      "pct": 12
+    },
+    {
+      "name": "茅ヶ崎沖",
+      "n": 5,
+      "pct": 3
+    },
+    {
+      "name": "相模湾沖",
+      "n": 2,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.39
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.382,
+      "n_valid": 48
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.333,
+      "n_valid": 48
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.188,
+      "n_valid": 48
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.161,
+      "n_valid": 48
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.089,
+      "n_valid": 48
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.087,
+      "n_valid": 48
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.079,
+      "n_valid": 48
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.042,
+      "n_valid": 48
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.032,
+      "n_valid": 48
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.018,
+      "n_valid": 48
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "黒潮接岸時に釣果が上がる傾向",
+    "黒潮が離岸している月に釣果が上がる傾向",
+    "平日の方が釣果が上がる傾向",
+    "月齢サイクル後半に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし（精査済み）",
+      "effect": "-",
+      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "precip_sum7",
+      "corr": 0.226,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.21,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.202,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "kuroshio_score",
+      "corr": 0.177,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.171,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.163,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": -0.14,
+      "n_valid": 41,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.132,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.12,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.119,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "fish": "ムギイカ",
+  "ship": "秀丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 57.5,
+    "bl0_wmape": 85.0,
+    "bl2_wmape": 86.1,
+    "oos_r": 0.605,
+    "n_records": 203,
+    "alpha_scale": 0.454,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "沼津沖",
+      "n": 204,
+      "pct": 89
+    },
+    {
+      "name": "other",
+      "n": 26,
+      "pct": 11
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.05,
+    "lon": 138.87
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.454,
+      "n_valid": 203
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.453,
+      "n_valid": 56
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.405,
+      "n_valid": 203
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.395,
+      "n_valid": 56
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.387,
+      "n_valid": 56
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.373,
+      "n_valid": 200
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.368,
+      "n_valid": 203
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.311,
+      "n_valid": 203
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.201,
+      "n_valid": 203
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.189,
+      "n_valid": 203
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "沖合の海面水位が低い月に釣果が上がる傾向",
+    "50m深水温が低い時に釣果が上がる傾向",
+    "月次クロロフィルが高い時に釣果が上がる傾向",
+    "深層水条件が悪い時に釣果が上がる傾向",
+    "底層酸素が少ない時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": -0.36,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.251,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": -0.244,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.234,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": -0.234,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.223,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.205,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.187,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.18,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": 0.178,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "fish": "ヒラメ",
+  "ship": "幸丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 30.8,
+    "bl0_wmape": 37.6,
+    "bl2_wmape": 39.0,
+    "oos_r": 0.505,
+    "n_records": 652,
+    "alpha_scale": 0.56,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 510,
+      "pct": 76
+    },
+    {
+      "name": "～30m",
+      "n": 37,
+      "pct": 5
+    },
+    {
+      "name": "～10m",
+      "n": 34,
+      "pct": 5
+    },
+    {
+      "name": "～20m",
+      "n": 27,
+      "pct": 4
+    },
+    {
+      "name": "～50m",
+      "n": 22,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.72,
+    "lon": 140.77
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": 0.56,
+      "n_valid": 111
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.544,
+      "n_valid": 111
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.4,
+      "n_valid": 652
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.315,
+      "n_valid": 647
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.291,
+      "n_valid": 253
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.233,
+      "n_valid": 652
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.221,
+      "n_valid": 652
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": -0.201,
+      "n_valid": 14
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.169,
+      "n_valid": 652
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.151,
+      "n_valid": 652
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "200m深水温が高い時に釣果が上がる傾向",
+    "50m深水温が高い時に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "台風が遠い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_monthly",
+      "corr": 0.4,
+      "n_valid": 652,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.34,
+      "n_valid": 639,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.285,
+      "n_valid": 621,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": -0.192,
+      "n_valid": 670,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.184,
+      "n_valid": 652,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.17,
+      "n_valid": 670,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.163,
+      "n_valid": 670,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": -0.162,
+      "n_valid": 652,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.162,
+      "n_valid": 645,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.15,
+      "n_valid": 652,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

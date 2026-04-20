@@ -1,0 +1,163 @@
+{
+  "fish": "アジ",
+  "ship": "長崎屋",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 28.0,
+    "bl0_wmape": 34.3,
+    "bl2_wmape": 32.6,
+    "oos_r": 0.547,
+    "n_records": 360,
+    "alpha_scale": 0.45,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "航程3～10分位",
+      "n": 215,
+      "pct": 58
+    },
+    {
+      "name": "航程3～15分位",
+      "n": 128,
+      "pct": 35
+    },
+    {
+      "name": "other",
+      "n": 27,
+      "pct": 7
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.41,
+    "lon": 139.67
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.45,
+      "n_valid": 359
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.392,
+      "n_valid": 360
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.35,
+      "n_valid": 360
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.339,
+      "n_valid": 360
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.321,
+      "n_valid": 360
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.311,
+      "n_valid": 360
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.301,
+      "n_valid": 360
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.292,
+      "n_valid": 360
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.287,
+      "n_valid": 53
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.287,
+      "n_valid": 360
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "産卵期以外に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "特定風向（北寄り）時に釣果が上がる傾向",
+    "月次クロロフィルが低い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": 0.294,
+      "n_valid": 360,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.28,
+      "n_valid": 359,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.249,
+      "n_valid": 352,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.24,
+      "n_valid": 360,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.238,
+      "n_valid": 360,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": -0.192,
+      "n_valid": 360,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.191,
+      "n_valid": 360,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.169,
+      "n_valid": 360,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.147,
+      "n_valid": 360,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.144,
+      "n_valid": 53,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "fish": "アカムツ",
+  "ship": "仁徳丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 37.7,
+    "bl0_wmape": 47.2,
+    "bl2_wmape": 46.4,
+    "oos_r": 0.531,
+    "n_records": 322,
+    "alpha_scale": 0.393,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "波崎沖～140m",
+      "n": 191,
+      "pct": 51
+    },
+    {
+      "name": "犬吠沖前後",
+      "n": 50,
+      "pct": 13
+    },
+    {
+      "name": "波崎沖前後",
+      "n": 40,
+      "pct": 11
+    },
+    {
+      "name": "other",
+      "n": 39,
+      "pct": 10
+    },
+    {
+      "name": "犬吠沖～250m",
+      "n": 18,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.73,
+    "lon": 140.84
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.394,
+      "n_valid": 321
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.218,
+      "n_valid": 322
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.198,
+      "n_valid": 322
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.195,
+      "n_valid": 315
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": -0.162,
+      "n_valid": 143
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "平日の方が釣果が上がる傾向",
+    "秋の中潮に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "前回濁り傾向の時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": 0.209,
+      "n_valid": 317,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.206,
+      "n_valid": 314,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.16,
+      "n_valid": 322,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.132,
+      "n_valid": 322,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.131,
+      "n_valid": 45,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.128,
+      "n_valid": 322,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_bin",
+      "corr": 0.121,
+      "n_valid": 45,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.119,
+      "n_valid": 317,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": -0.117,
+      "n_valid": 322,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.107,
+      "n_valid": 322,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "fish": "アマダイ",
+  "ship": "あまさけや丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 35.9,
+    "bl0_wmape": 47.9,
+    "bl2_wmape": 49.9,
+    "oos_r": 0.529,
+    "n_records": 38,
+    "alpha_scale": 0.561,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 35,
+      "pct": 80
+    },
+    {
+      "name": "剣崎沖",
+      "n": 8,
+      "pct": 18
+    },
+    {
+      "name": "久里浜沖",
+      "n": 1,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.14,
+    "lon": 139.65
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.559,
+      "n_valid": 38
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.412,
+      "n_valid": 38
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.403,
+      "n_valid": 38
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.392,
+      "n_valid": 38
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.385,
+      "n_valid": 38
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.378,
+      "n_valid": 38
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.367,
+      "n_valid": 38
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.35,
+      "n_valid": 38
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.34,
+      "n_valid": 37
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.335,
+      "n_valid": 38
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "うねり周期が短い不安定な波の日に釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "特定の潮流方向で釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向",
+    "月齢サイクル後半に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wave_period",
+      "corr": -0.469,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.358,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.34,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.327,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.273,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": -0.267,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.266,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum2",
+      "corr": 0.263,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.254,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.222,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

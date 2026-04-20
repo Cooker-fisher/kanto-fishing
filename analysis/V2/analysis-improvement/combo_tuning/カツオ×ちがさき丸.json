@@ -1,0 +1,180 @@
+{
+  "fish": "カツオ",
+  "ship": "ちがさき丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 54.8,
+    "bl0_wmape": 62.3,
+    "bl2_wmape": 65.5,
+    "oos_r": 0.426,
+    "n_records": 58,
+    "alpha_scale": 0.525,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "相模湾内",
+      "n": 46,
+      "pct": 45
+    },
+    {
+      "name": "other",
+      "n": 27,
+      "pct": 26
+    },
+    {
+      "name": "茅ヶ崎西沖",
+      "n": 13,
+      "pct": 13
+    },
+    {
+      "name": "茅ヶ崎沖",
+      "n": 9,
+      "pct": 9
+    },
+    {
+      "name": "瀬ノ海沖",
+      "n": 4,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.39
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.522,
+      "n_valid": 58
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.36,
+      "n_valid": 58
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.35,
+      "n_valid": 58
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.343,
+      "n_valid": 58
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.304,
+      "n_valid": 58
+    },
+    {
+      "factor": "tide_grp_oshio_winter",
+      "corr": 0.296,
+      "n_valid": 58
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.281,
+      "n_valid": 58
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.273,
+      "n_valid": 58
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.26,
+      "n_valid": 58
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.16,
+      "n_valid": 58
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "冬の中潮に釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "最低気温が低い日ほど釣果が上がる傾向",
+    "大潮・中潮で釣果が上がる傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし（精査済み）",
+      "effect": "-",
+      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": -0.297,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.269,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.224,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.183,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_summer",
+      "corr": 0.18,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.174,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.172,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.169,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum7",
+      "corr": -0.166,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.158,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "fish": "カワハギ",
+  "ship": "釣船 五郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 34.7,
+    "bl0_wmape": 40.4,
+    "bl2_wmape": 44.1,
+    "oos_r": 0.434,
+    "n_records": 261,
+    "alpha_scale": 0.352,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "鴨居沖～竹岡沖～30m",
+      "n": 78,
+      "pct": 30
+    },
+    {
+      "name": "鴨居沖～35m",
+      "n": 48,
+      "pct": 18
+    },
+    {
+      "name": "鴨居沖～竹岡沖～35m",
+      "n": 43,
+      "pct": 16
+    },
+    {
+      "name": "鴨居沖～30m",
+      "n": 37,
+      "pct": 14
+    },
+    {
+      "name": "鴨居沖～竹岡沖～25m",
+      "n": 23,
+      "pct": 9
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.34,
+    "lon": 139.64
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.254,
+      "n_valid": 261
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.246,
+      "n_valid": 261
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.231,
+      "n_valid": 261
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.226,
+      "n_valid": 261
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.22,
+      "n_valid": 260
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.217,
+      "n_valid": 261
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": 0.202,
+      "n_valid": 261
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.2,
+      "n_valid": 260
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": 0.161,
+      "n_valid": 261
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "秋の中潮に釣果が上がる傾向",
+    "最小周期が長い安定した波の日に釣果が上がる傾向",
+    "うねりが小さい穏やかな日に釣果が上がる傾向",
+    "冬の中潮以外に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "swell_height",
+      "corr": 0.225,
+      "n_valid": 262,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.215,
+      "n_valid": 261,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.197,
+      "n_valid": 261,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.167,
+      "n_valid": 261,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.145,
+      "n_valid": 261,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": 0.141,
+      "n_valid": 261,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": 0.141,
+      "n_valid": 261,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": -0.139,
+      "n_valid": 261,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.138,
+      "n_valid": 262,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.136,
+      "n_valid": 262,
+      "reason": "low_corr"
+    }
+  ]
+}

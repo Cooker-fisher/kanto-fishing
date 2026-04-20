@@ -1,0 +1,148 @@
+{
+  "fish": "タチウオ",
+  "ship": "恵漁丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 24.5,
+    "bl0_wmape": 27.4,
+    "bl2_wmape": 29.6,
+    "oos_r": 0.546,
+    "n_records": 60,
+    "alpha_scale": 0.525,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 40,
+      "pct": 59
+    },
+    {
+      "name": "吉田沖",
+      "n": 26,
+      "pct": 38
+    },
+    {
+      "name": "焼津沖",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "安倍川沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.73,
+    "lon": 138.23
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "pressure_min",
+      "corr": 0.434,
+      "n_valid": 60
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.411,
+      "n_valid": 60
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.403,
+      "n_valid": 60
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.367,
+      "n_valid": 60
+    },
+    {
+      "factor": "precip_sum3",
+      "corr": 0.277,
+      "n_valid": 60
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.267,
+      "n_valid": 60
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "気圧が高い日ほど釣果が上がる傾向",
+    "高気圧優勢な日に釣果が上がる傾向",
+    "月齢サイクル後半に釣果が上がる傾向",
+    "満月・新月付近に釣果が上がる傾向",
+    "前3日の降水量が少ない時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "pressure",
+      "corr": 0.417,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.248,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.221,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.22,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.218,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_delta",
+      "corr": 0.211,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.205,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.204,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.203,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.195,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

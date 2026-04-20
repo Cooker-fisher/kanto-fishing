@@ -1,0 +1,116 @@
+{
+  "fish": "クロダイ",
+  "ship": "林遊船",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 54.9,
+    "bl0_wmape": 63.3,
+    "bl2_wmape": 69.9,
+    "oos_r": 0.38,
+    "n_records": 471,
+    "alpha_scale": 0.256,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 505,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.65,
+    "lon": 139.9
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.256,
+      "n_valid": 161
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.184,
+      "n_valid": 469
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.165,
+      "n_valid": 469
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風が遠い時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "水温上昇時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": -0.179,
+      "n_valid": 464,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.178,
+      "n_valid": 471,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": -0.163,
+      "n_valid": 466,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.137,
+      "n_valid": 91,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.113,
+      "n_valid": 471,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": -0.097,
+      "n_valid": 471,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": -0.091,
+      "n_valid": 471,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.09,
+      "n_valid": 471,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.087,
+      "n_valid": 471,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.085,
+      "n_valid": 91,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

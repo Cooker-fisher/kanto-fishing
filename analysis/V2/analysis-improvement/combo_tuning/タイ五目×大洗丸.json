@@ -1,0 +1,153 @@
+{
+  "fish": "タイ五目",
+  "ship": "大洗丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 31.6,
+    "bl0_wmape": 36.1,
+    "bl2_wmape": 41.5,
+    "oos_r": 0.529,
+    "n_records": 52,
+    "alpha_scale": 0.523,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 60,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 36.31,
+    "lon": 140.57
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "is_holiday",
+      "corr": -0.494,
+      "n_valid": 52
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.484,
+      "n_valid": 52
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.421,
+      "n_valid": 51
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.419,
+      "n_valid": 51
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.415,
+      "n_valid": 52
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.41,
+      "n_valid": 52
+    },
+    {
+      "factor": "tide_grp_oshio_winter",
+      "corr": -0.365,
+      "n_valid": 52
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.336,
+      "n_valid": 48
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.318,
+      "n_valid": 52
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.316,
+      "n_valid": 52
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "平日の方が釣果が上がる傾向",
+    "黒潮離岸時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "月次の海面水位が低い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_min",
+      "corr": 0.314,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.307,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.305,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": 0.275,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.263,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": 0.227,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.218,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.21,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.203,
+      "n_valid": 51,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.201,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

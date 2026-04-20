@@ -1,0 +1,121 @@
+{
+  "fish": "タチウオ",
+  "ship": "鶴丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 50.4,
+    "bl0_wmape": 58.2,
+    "bl2_wmape": 50.1,
+    "oos_r": 0.293,
+    "n_records": 62,
+    "alpha_scale": 0.459,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 96,
+      "pct": 99
+    },
+    {
+      "name": "田子の浦沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.15,
+    "lon": 138.65
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.459,
+      "n_valid": 62
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.344,
+      "n_valid": 61
+    },
+    {
+      "factor": "temp_delta",
+      "corr": 0.286,
+      "n_valid": 62
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "黒潮が接近している月に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "気温上昇時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.396,
+      "n_valid": 62,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.291,
+      "n_valid": 61,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "thermocline_depth",
+      "corr": -0.255,
+      "n_valid": 10,
+      "reason": "low_n"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.216,
+      "n_valid": 62,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.209,
+      "n_valid": 62,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.209,
+      "n_valid": 62,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.208,
+      "n_valid": 62,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.205,
+      "n_valid": 62,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.199,
+      "n_valid": 62,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "tide_moon_interact",
+      "corr": -0.199,
+      "n_valid": 62,
+      "reason": "low_corr"
+    }
+  ]
+}

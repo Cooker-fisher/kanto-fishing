@@ -1,0 +1,142 @@
+{
+  "fish": "アジ",
+  "ship": "光進丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 30.7,
+    "bl0_wmape": 36.4,
+    "bl2_wmape": 33.7,
+    "oos_r": 0.572,
+    "n_records": 678,
+    "alpha_scale": 0.599,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "金谷沖",
+      "n": 544,
+      "pct": 78
+    },
+    {
+      "name": "金谷沖浅場",
+      "n": 101,
+      "pct": 14
+    },
+    {
+      "name": "金谷沖超浅場",
+      "n": 41,
+      "pct": 6
+    },
+    {
+      "name": "other",
+      "n": 10,
+      "pct": 1
+    },
+    {
+      "name": "金谷沖浅場～前後",
+      "n": 2,
+      "pct": 0
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.19,
+    "lon": 139.77
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.553,
+      "n_valid": 677
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": -0.271,
+      "n_valid": 12
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.263,
+      "n_valid": 678
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.158,
+      "n_valid": 678
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "前回濁り傾向の時に釣果が上がる傾向",
+    "黒潮が離岸している月に釣果が上がる傾向",
+    "平日の方が釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_100m",
+      "corr": -0.913,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.913,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.678,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.473,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.457,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.371,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "do_surface",
+      "corr": 0.363,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "no3_surface",
+      "corr": -0.345,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.278,
+      "n_valid": 678,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "nutrient_score",
+      "corr": 0.212,
+      "n_valid": 12,
+      "reason": "low_n"
+    }
+  ]
+}

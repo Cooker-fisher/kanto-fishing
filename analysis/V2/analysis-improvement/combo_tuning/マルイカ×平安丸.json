@@ -1,0 +1,173 @@
+{
+  "fish": "マルイカ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 64.3,
+    "bl0_wmape": 63.9,
+    "bl2_wmape": 69.0,
+    "oos_r": 0.278,
+    "n_records": 38,
+    "alpha_scale": 0.367,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "真鶴沖",
+      "n": 25,
+      "pct": 64
+    },
+    {
+      "name": "小田原沖",
+      "n": 11,
+      "pct": 28
+    },
+    {
+      "name": "西沖",
+      "n": 1,
+      "pct": 3
+    },
+    {
+      "name": "二宮沖",
+      "n": 1,
+      "pct": 3
+    },
+    {
+      "name": "other",
+      "n": 1,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.16,
+    "lon": 139.13
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "is_holiday",
+      "corr": 0.326,
+      "n_valid": 38
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.217,
+      "n_valid": 38
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.209,
+      "n_valid": 38
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.208,
+      "n_valid": 38
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.172,
+      "n_valid": 38
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.115,
+      "n_valid": 38
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.079,
+      "n_valid": 38
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.056,
+      "n_valid": 38
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.042,
+      "n_valid": 38
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.023,
+      "n_valid": 38
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "休日・祝日に釣果が上がる傾向",
+    "水温が低い日ほど釣果が上がる傾向",
+    "大潮・中潮で釣果が上がる傾向",
+    "潮汐変化が大きい日に釣果が上がる傾向",
+    "上弦・下弦周辺に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wind_dir",
+      "corr": -0.296,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": 0.243,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.223,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": -0.219,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.217,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.204,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.202,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.193,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.185,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.166,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

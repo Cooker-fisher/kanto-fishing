@@ -1,0 +1,175 @@
+{
+  "fish": "ハタ",
+  "ship": "北山丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 53.6,
+    "bl0_wmape": 58.5,
+    "bl2_wmape": 66.4,
+    "oos_r": 0.03,
+    "n_records": 32,
+    "alpha_scale": 0.1,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 67,
+      "pct": 74
+    },
+    {
+      "name": "洲崎沖～川名沖～60m",
+      "n": 2,
+      "pct": 2
+    },
+    {
+      "name": "洲崎沖～川名沖～66m",
+      "n": 2,
+      "pct": 2
+    },
+    {
+      "name": "洲崎沖～70m",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "洲崎沖～平砂浦沖～73m",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.94,
+    "lon": 139.8
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.641,
+      "n_valid": 32
+    },
+    {
+      "factor": "sss_avg",
+      "corr": 0.441,
+      "n_valid": 32
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.428,
+      "n_valid": 32
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.408,
+      "n_valid": 31
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": 0.393,
+      "n_valid": 32
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.385,
+      "n_valid": 32
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.367,
+      "n_valid": 32
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.358,
+      "n_valid": 32
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.353,
+      "n_valid": 32
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "冬の中潮に釣果が上がる傾向",
+    "塩分が高い時（外洋水）に釣果が上がる傾向",
+    "高気圧優勢な日に釣果が上がる傾向",
+    "水温低下時に釣果が上がる傾向",
+    "気圧上昇時に釣果が上がる傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "use_fallback=1",
+      "effect": "BL2負け",
+      "reason": "r=0.030 事実上無相関"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "wind_dir",
+      "corr": -0.434,
+      "n_valid": 13,
+      "reason": "low_n"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.427,
+      "n_valid": 13,
+      "reason": "low_n"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.329,
+      "n_valid": 13,
+      "reason": "low_n"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.303,
+      "n_valid": 9,
+      "reason": "low_n"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.302,
+      "n_valid": 13,
+      "reason": "low_n"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.299,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.283,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": -0.277,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": 0.272,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.268,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "fish": "カツオ",
+  "ship": "庄治郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 63.9,
+    "bl0_wmape": 63.9,
+    "bl2_wmape": 75.9,
+    "oos_r": 0.336,
+    "n_records": 41,
+    "alpha_scale": 0.469,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 122,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.32
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "sst_delta",
+      "corr": -0.453,
+      "n_valid": 41
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.362,
+      "n_valid": 41
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.318,
+      "n_valid": 41
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "水温低下時に釣果が上がる傾向",
+    "寒暖差が大きい日に釣果が上がる傾向",
+    "新月・満月周辺に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.267,
+      "n_valid": 40,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": -0.264,
+      "n_valid": 41,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.254,
+      "n_valid": 44,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.253,
+      "n_valid": 41,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.247,
+      "n_valid": 41,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.241,
+      "n_valid": 39,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.239,
+      "n_valid": 44,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.235,
+      "n_valid": 41,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "precip_sum7",
+      "corr": 0.235,
+      "n_valid": 41,
+      "reason": "low_corr"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.229,
+      "n_valid": 41,
+      "reason": "low_corr"
+    }
+  ]
+}

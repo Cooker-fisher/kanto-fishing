@@ -1,0 +1,158 @@
+{
+  "fish": "タチウオ",
+  "ship": "秀丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 66.1,
+    "bl0_wmape": 57.1,
+    "bl2_wmape": 66.6,
+    "oos_r": -0.026,
+    "n_records": 95,
+    "alpha_scale": 0.852,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "沼津沖",
+      "n": 97,
+      "pct": 85
+    },
+    {
+      "name": "other",
+      "n": 17,
+      "pct": 15
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.05,
+    "lon": 138.87
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "is_holiday",
+      "corr": -0.287,
+      "n_valid": 95
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.277,
+      "n_valid": 95
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.259,
+      "n_valid": 95
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.25,
+      "n_valid": 95
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": 0.245,
+      "n_valid": 95
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.22,
+      "n_valid": 95
+    },
+    {
+      "factor": "precip_sum5",
+      "corr": -0.211,
+      "n_valid": 95
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.211,
+      "n_valid": 95
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.208,
+      "n_valid": 95
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.201,
+      "n_valid": 95
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "平日の方が釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "黒潮が接近している月に釣果が上がる傾向",
+    "潮流が強い時に釣果が上がる傾向",
+    "最大潮流が強い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "chl_monthly",
+      "corr": -0.287,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.233,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.206,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": -0.196,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.187,
+      "n_valid": 94,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.187,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.183,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.183,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_delta",
+      "corr": 0.182,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum7",
+      "corr": -0.169,
+      "n_valid": 95,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

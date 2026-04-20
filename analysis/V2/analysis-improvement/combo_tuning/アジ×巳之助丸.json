@@ -1,0 +1,163 @@
+{
+  "fish": "アジ",
+  "ship": "巳之助丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 29.3,
+    "bl0_wmape": 34.8,
+    "bl2_wmape": 34.7,
+    "oos_r": 0.39,
+    "n_records": 71,
+    "alpha_scale": 1.194,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "久里浜沖～90m",
+      "n": 17,
+      "pct": 21
+    },
+    {
+      "name": "観音崎沖～60m",
+      "n": 6,
+      "pct": 7
+    },
+    {
+      "name": "観音崎沖～80m",
+      "n": 6,
+      "pct": 7
+    },
+    {
+      "name": "久里浜沖～観音崎沖～100m",
+      "n": 5,
+      "pct": 6
+    },
+    {
+      "name": "久里浜沖",
+      "n": 5,
+      "pct": 6
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.24,
+    "lon": 139.71
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.939,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.831,
+      "n_valid": 5
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.784,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.776,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.617,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.617,
+      "n_valid": 5
+    },
+    {
+      "factor": "nutrient_score",
+      "corr": 0.512,
+      "n_valid": 10
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.454,
+      "n_valid": 5
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風接近時でも釣果が上がる傾向",
+    "200m深水温が高い時に釣果が上がる傾向",
+    "台風影響が強い時でも釣果が上がる傾向",
+    "50m深水温が高い時に釣果が上がる傾向",
+    "100m深水温が高い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": 0.225,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.224,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_winter",
+      "corr": -0.212,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": -0.199,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.187,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.187,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.185,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.185,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.184,
+      "n_valid": 71,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.177,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

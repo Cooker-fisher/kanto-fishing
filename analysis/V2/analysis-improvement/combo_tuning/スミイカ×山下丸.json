@@ -1,0 +1,142 @@
+{
+  "fish": "スミイカ",
+  "ship": "山下丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 40.8,
+    "bl0_wmape": 45.7,
+    "bl2_wmape": 50.8,
+    "oos_r": 0.319,
+    "n_records": 90,
+    "alpha_scale": 0.318,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "下浦沖",
+      "n": 43,
+      "pct": 47
+    },
+    {
+      "name": "久里浜沖",
+      "n": 39,
+      "pct": 42
+    },
+    {
+      "name": "竹岡沖",
+      "n": 4,
+      "pct": 4
+    },
+    {
+      "name": "久里浜沖～竹岡沖",
+      "n": 2,
+      "pct": 2
+    },
+    {
+      "name": "竹岡沖～鴨居沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.24,
+    "lon": 139.71
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.279,
+      "n_valid": 90
+    },
+    {
+      "factor": "precip_sum5",
+      "corr": -0.271,
+      "n_valid": 90
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.239,
+      "n_valid": 90
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": -0.225,
+      "n_valid": 90
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "澄んだ水色の日に釣果が上がる傾向",
+    "前5日の降水量が多い時に釣果が上がる傾向",
+    "新月・満月周辺に釣果が上がる傾向",
+    "春の大潮以外に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_monthly",
+      "corr": 0.296,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.21,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.177,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.159,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum7",
+      "corr": -0.149,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.148,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.137,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": 0.132,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_delta",
+      "corr": -0.129,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.127,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

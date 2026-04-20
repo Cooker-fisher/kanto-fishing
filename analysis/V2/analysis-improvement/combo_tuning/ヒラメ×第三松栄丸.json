@@ -1,0 +1,173 @@
+{
+  "fish": "ヒラメ",
+  "ship": "第三松栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 34.6,
+    "bl0_wmape": 47.9,
+    "bl2_wmape": 48.4,
+    "oos_r": 0.6,
+    "n_records": 97,
+    "alpha_scale": 0.602,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 23,
+      "pct": 18
+    },
+    {
+      "name": "太東沖",
+      "n": 13,
+      "pct": 10
+    },
+    {
+      "name": "大原沖～10m",
+      "n": 10,
+      "pct": 8
+    },
+    {
+      "name": "大原沖",
+      "n": 9,
+      "pct": 7
+    },
+    {
+      "name": "太東沖～大原沖～15m",
+      "n": 5,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.27,
+    "lon": 140.4
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "chl_delta",
+      "corr": -0.602,
+      "n_valid": 11
+    },
+    {
+      "factor": "no3_surface",
+      "corr": -0.465,
+      "n_valid": 12
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": 0.456,
+      "n_valid": 12
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.444,
+      "n_valid": 11
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.442,
+      "n_valid": 97
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.441,
+      "n_valid": 12
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.434,
+      "n_valid": 12
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.419,
+      "n_valid": 97
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.401,
+      "n_valid": 97
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.373,
+      "n_valid": 97
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "クロロフィル減少時に釣果が上がる傾向",
+    "硝酸塩が低い時に釣果が上がる傾向",
+    "台風の影響が弱い時に釣果が上がる傾向",
+    "月次クロロフィルが高い時に釣果が上がる傾向",
+    "秋の大潮に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.445,
+      "n_valid": 85,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.412,
+      "n_valid": 100,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.37,
+      "n_valid": 97,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.315,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.198,
+      "n_valid": 97,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.192,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.189,
+      "n_valid": 97,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.183,
+      "n_valid": 97,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.176,
+      "n_valid": 97,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum6",
+      "corr": -0.172,
+      "n_valid": 97,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "fish": "スルメイカ",
+  "ship": "不動丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 40.5,
+    "bl0_wmape": 45.1,
+    "bl2_wmape": 47.1,
+    "oos_r": 0.449,
+    "n_records": 251,
+    "alpha_scale": 0.393,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "勝浦沖～200m前後",
+      "n": 56,
+      "pct": 21
+    },
+    {
+      "name": "勝浦沖前後",
+      "n": 27,
+      "pct": 10
+    },
+    {
+      "name": "勝浦沖～180m前後",
+      "n": 21,
+      "pct": 8
+    },
+    {
+      "name": "勝浦沖～160m前後",
+      "n": 21,
+      "pct": 8
+    },
+    {
+      "name": "勝浦沖～220m前後",
+      "n": 18,
+      "pct": 7
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.17,
+    "lon": 140.38
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.385,
+      "n_valid": 249
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.25,
+      "n_valid": 251
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.221,
+      "n_valid": 251
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.185,
+      "n_valid": 137
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.182,
+      "n_valid": 251
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.156,
+      "n_valid": 251
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "沖合の海面水位が高い月に釣果が上がる傾向",
+    "台風接近時でも釣果が上がる傾向",
+    "産卵期以外に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": -0.252,
+      "n_valid": 21,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.226,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.221,
+      "n_valid": 21,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.22,
+      "n_valid": 21,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.219,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.203,
+      "n_valid": 21,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.183,
+      "n_valid": 251,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.174,
+      "n_valid": 243,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum3",
+      "corr": -0.147,
+      "n_valid": 251,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum4",
+      "corr": -0.145,
+      "n_valid": 251,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "fish": "ショウサイフグ",
+  "ship": "ちがさき丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 65.1,
+    "bl0_wmape": 65.2,
+    "bl2_wmape": 63.8,
+    "oos_r": 0.305,
+    "n_records": 72,
+    "alpha_scale": 0.1,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 49,
+      "pct": 60
+    },
+    {
+      "name": "other",
+      "n": 27,
+      "pct": 33
+    },
+    {
+      "name": "茅ヶ崎沖～西沖",
+      "n": 2,
+      "pct": 2
+    },
+    {
+      "name": "茅ヶ崎西沖",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "腰越沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.39
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "temp_min",
+      "corr": 0.319,
+      "n_valid": 72
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.318,
+      "n_valid": 72
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.316,
+      "n_valid": 72
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.311,
+      "n_valid": 72
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.303,
+      "n_valid": 72
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.289,
+      "n_valid": 72
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.201,
+      "n_valid": 72
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.146,
+      "n_valid": 72
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.142,
+      "n_valid": 72
+    },
+    {
+      "factor": "tide_delta",
+      "corr": -0.131,
+      "n_valid": 72
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "最低気温が高い日ほど釣果が上がる傾向",
+    "産卵期以外に釣果が上がる傾向",
+    "夏の中潮に釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向",
+    "最高気温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし（精査済み）",
+      "effect": "-",
+      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.386,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.381,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.341,
+      "n_valid": 73,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.335,
+      "n_valid": 72,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.335,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.326,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.3,
+      "n_valid": 73,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.214,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": 0.197,
+      "n_valid": 73,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.194,
+      "n_valid": 72,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

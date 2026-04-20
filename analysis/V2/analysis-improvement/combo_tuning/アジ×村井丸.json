@@ -1,0 +1,163 @@
+{
+  "fish": "アジ",
+  "ship": "村井丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 35.2,
+    "bl0_wmape": 42.8,
+    "bl2_wmape": 37.7,
+    "oos_r": 0.468,
+    "n_records": 226,
+    "alpha_scale": 0.932,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "保田沖",
+      "n": 83,
+      "pct": 32
+    },
+    {
+      "name": "保田沖～90m",
+      "n": 48,
+      "pct": 18
+    },
+    {
+      "name": "other",
+      "n": 33,
+      "pct": 13
+    },
+    {
+      "name": "保田沖～100m",
+      "n": 30,
+      "pct": 11
+    },
+    {
+      "name": "保田沖～80m",
+      "n": 24,
+      "pct": 9
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.08,
+    "lon": 139.73
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "no3_surface",
+      "corr": -0.498,
+      "n_valid": 8
+    },
+    {
+      "factor": "nutrient_score",
+      "corr": 0.371,
+      "n_valid": 8
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.36,
+      "n_valid": 35
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.337,
+      "n_valid": 225
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.317,
+      "n_valid": 40
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.273,
+      "n_valid": 226
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.179,
+      "n_valid": 226
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.165,
+      "n_valid": 226
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "硝酸塩が低い時に釣果が上がる傾向",
+    "栄養塩（クロロフィル+硝酸）が高い時に釣果が上がる傾向",
+    "50m深水温が高い時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "底層酸素が豊富な時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "deepwater_score",
+      "corr": 0.291,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.249,
+      "n_valid": 226,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.235,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.216,
+      "n_valid": 218,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.147,
+      "n_valid": 226,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.143,
+      "n_valid": 226,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.142,
+      "n_valid": 226,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.14,
+      "n_valid": 223,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.137,
+      "n_valid": 220,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.133,
+      "n_valid": 216,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

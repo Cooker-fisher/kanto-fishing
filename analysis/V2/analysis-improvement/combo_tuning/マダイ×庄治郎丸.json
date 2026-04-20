@@ -1,0 +1,148 @@
+{
+  "fish": "マダイ",
+  "ship": "庄治郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 57.0,
+    "bl0_wmape": 59.9,
+    "bl2_wmape": 67.7,
+    "oos_r": 0.292,
+    "n_records": 60,
+    "alpha_scale": 0.849,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 182,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.32
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.64,
+      "n_valid": 11
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": 0.613,
+      "n_valid": 11
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.392,
+      "n_valid": 58
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.35,
+      "n_valid": 58
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.326,
+      "n_valid": 59
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.319,
+      "n_valid": 59
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.308,
+      "n_valid": 60
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.301,
+      "n_valid": 60
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.292,
+      "n_valid": 60
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風接近時でも釣果が上がる傾向",
+    "台風の影響が弱い時に釣果が上がる傾向",
+    "30日前の黒潮水位が高い時に釣果が上がる傾向",
+    "水温低下時に釣果が上がる傾向",
+    "海面水位が高い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.249,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_delta",
+      "corr": 0.208,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.203,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.177,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_moon_interact",
+      "corr": 0.177,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.171,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.171,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.171,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.166,
+      "n_valid": 60,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": 0.162,
+      "n_valid": 64,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

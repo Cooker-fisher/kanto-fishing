@@ -1,0 +1,173 @@
+{
+  "fish": "ヤリイカ",
+  "ship": "幸栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 68.2,
+    "bl0_wmape": 72.2,
+    "bl2_wmape": 69.3,
+    "oos_r": 0.171,
+    "n_records": 99,
+    "alpha_scale": 0.529,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 92,
+      "pct": 92
+    },
+    {
+      "name": "～70m前後",
+      "n": 5,
+      "pct": 5
+    },
+    {
+      "name": "鹿島沖～70m前後",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "～70m",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "～80m",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.97,
+    "lon": 140.7
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_100m",
+      "corr": -0.376,
+      "n_valid": 26
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.376,
+      "n_valid": 26
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": 0.31,
+      "n_valid": 99
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.298,
+      "n_valid": 93
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.274,
+      "n_valid": 99
+    },
+    {
+      "factor": "pressure_range",
+      "corr": 0.261,
+      "n_valid": 99
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": 0.241,
+      "n_valid": 99
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.236,
+      "n_valid": 93
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.234,
+      "n_valid": 98
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.213,
+      "n_valid": 99
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "100m深水温が低い時に釣果が上がる傾向",
+    "春季の100m深水温が低い時に釣果が上がる傾向",
+    "春の中潮に釣果が上がる傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "上弦・下弦周辺に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": -0.322,
+      "n_valid": 26,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.31,
+      "n_valid": 99,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.3,
+      "n_valid": 26,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.289,
+      "n_valid": 99,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.209,
+      "n_valid": 26,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.202,
+      "n_valid": 99,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum3",
+      "corr": -0.185,
+      "n_valid": 99,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.163,
+      "n_valid": 99,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.158,
+      "n_valid": 99,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.155,
+      "n_valid": 26,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

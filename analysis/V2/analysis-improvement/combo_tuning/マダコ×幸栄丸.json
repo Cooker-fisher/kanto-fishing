@@ -1,0 +1,158 @@
+{
+  "fish": "マダコ",
+  "ship": "幸栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 37.7,
+    "bl0_wmape": 50.2,
+    "bl2_wmape": 49.9,
+    "oos_r": 0.529,
+    "n_records": 268,
+    "alpha_scale": 0.604,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 273,
+      "pct": 100
+    },
+    {
+      "name": "鹿島沖",
+      "n": 1,
+      "pct": 0
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.97,
+    "lon": 140.7
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.599,
+      "n_valid": 267
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.447,
+      "n_valid": 266
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.429,
+      "n_valid": 268
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.399,
+      "n_valid": 268
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.396,
+      "n_valid": 268
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.389,
+      "n_valid": 268
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.383,
+      "n_valid": 268
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.38,
+      "n_valid": 268
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.324,
+      "n_valid": 266
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.318,
+      "n_valid": 266
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "夏の中潮に釣果が上がる傾向",
+    "うねり周期が短い不安定な波の日に釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_lag30",
+      "corr": -0.469,
+      "n_valid": 256,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.438,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.324,
+      "n_valid": 264,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.272,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.267,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.249,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.249,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.246,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": 0.237,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": -0.233,
+      "n_valid": 268,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

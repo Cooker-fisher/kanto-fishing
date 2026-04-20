@@ -1,0 +1,168 @@
+{
+  "fish": "イサキ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 33.3,
+    "bl0_wmape": 42.0,
+    "bl2_wmape": 52.1,
+    "oos_r": 0.601,
+    "n_records": 48,
+    "alpha_scale": 0.655,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "小田原沖",
+      "n": 33,
+      "pct": 60
+    },
+    {
+      "name": "二宮沖",
+      "n": 12,
+      "pct": 22
+    },
+    {
+      "name": "other",
+      "n": 7,
+      "pct": 13
+    },
+    {
+      "name": "小田原沖～二宮沖",
+      "n": 3,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.23,
+    "lon": 139.12
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.649,
+      "n_valid": 48
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.621,
+      "n_valid": 48
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.55,
+      "n_valid": 48
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.527,
+      "n_valid": 48
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.501,
+      "n_valid": 48
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.485,
+      "n_valid": 48
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.446,
+      "n_valid": 18
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.427,
+      "n_valid": 48
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.423,
+      "n_valid": 47
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": -0.416,
+      "n_valid": 48
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "夏休み期間（7〜8月）に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "最低気温が高い日ほど釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向",
+    "黒潮が接近している月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.742,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.738,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.62,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.566,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.559,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.387,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.365,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.335,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum6",
+      "corr": -0.318,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.295,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

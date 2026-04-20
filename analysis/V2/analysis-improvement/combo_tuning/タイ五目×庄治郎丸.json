@@ -1,0 +1,153 @@
+{
+  "fish": "タイ五目",
+  "ship": "庄治郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 77.4,
+    "bl0_wmape": 80.7,
+    "bl2_wmape": 85.5,
+    "oos_r": 0.305,
+    "n_records": 1411,
+    "alpha_scale": 0.349,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 2391,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.32
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.348,
+      "n_valid": 1411
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.329,
+      "n_valid": 126
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.319,
+      "n_valid": 1410
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.316,
+      "n_valid": 126
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.25,
+      "n_valid": 1411
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.224,
+      "n_valid": 1411
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.223,
+      "n_valid": 1411
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.216,
+      "n_valid": 1411
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.207,
+      "n_valid": 126
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.205,
+      "n_valid": 1397
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "夏休み期間（7〜8月）に釣果が上がる傾向",
+    "夏季の100m深水温が高い時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "春季の100m深水温が低い時に釣果が上がる傾向",
+    "夏の中潮に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": 0.219,
+      "n_valid": 1426,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.173,
+      "n_valid": 1407,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.165,
+      "n_valid": 1408,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.156,
+      "n_valid": 1411,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.149,
+      "n_valid": 443,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": 0.146,
+      "n_valid": 1408,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.13,
+      "n_valid": 1411,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.128,
+      "n_valid": 1411,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.121,
+      "n_valid": 1411,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.119,
+      "n_valid": 1408,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "fish": "タチウオ",
+  "ship": "福よし丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 48.7,
+    "bl0_wmape": 60.0,
+    "bl2_wmape": 59.0,
+    "oos_r": 0.52,
+    "n_records": 356,
+    "alpha_scale": 0.475,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 366,
+      "pct": 49
+    },
+    {
+      "name": "観音崎沖～60m",
+      "n": 133,
+      "pct": 18
+    },
+    {
+      "name": "観音崎沖～70m",
+      "n": 51,
+      "pct": 7
+    },
+    {
+      "name": "観音崎沖～50m",
+      "n": 38,
+      "pct": 5
+    },
+    {
+      "name": "観音崎沖～65m",
+      "n": 19,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.34,
+    "lon": 139.64
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.41,
+      "n_valid": 355
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.337,
+      "n_valid": 40
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.333,
+      "n_valid": 40
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.299,
+      "n_valid": 356
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.254,
+      "n_valid": 40
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.238,
+      "n_valid": 351
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.232,
+      "n_valid": 356
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.215,
+      "n_valid": 40
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.211,
+      "n_valid": 40
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.194,
+      "n_valid": 356
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "深層水条件が悪い時に釣果が上がる傾向",
+    "底層酸素が少ない時に釣果が上がる傾向",
+    "黒潮接岸時に釣果が上がる傾向",
+    "200m深水温が低い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.277,
+      "n_valid": 347,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.257,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.25,
+      "n_valid": 351,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.171,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.152,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.146,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": -0.145,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": -0.14,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": -0.133,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.132,
+      "n_valid": 356,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

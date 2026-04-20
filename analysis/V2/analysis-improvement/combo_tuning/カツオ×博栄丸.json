@@ -1,0 +1,96 @@
+{
+  "fish": "カツオ",
+  "ship": "博栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 34.9,
+    "bl0_wmape": 30.3,
+    "bl2_wmape": 34.3,
+    "oos_r": 0.071,
+    "n_records": 32,
+    "alpha_scale": 0.0,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 349,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": null,
+    "lon": null
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": -0.834,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.826,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.826,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.795,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.786,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "do_bottom",
+      "corr": 0.661,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.431,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.418,
+      "n_valid": 19,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.361,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.352,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

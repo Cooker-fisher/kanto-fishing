@@ -1,0 +1,153 @@
+{
+  "fish": "フグ",
+  "ship": "幸栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 84.8,
+    "bl0_wmape": 70.1,
+    "bl2_wmape": 76.5,
+    "oos_r": -0.266,
+    "n_records": 238,
+    "alpha_scale": 0.846,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 257,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.97,
+    "lon": 140.7
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.335,
+      "n_valid": 237
+    },
+    {
+      "factor": "tide_grp_chowaka_autumn",
+      "corr": 0.236,
+      "n_valid": 238
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.232,
+      "n_valid": 78
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.213,
+      "n_valid": 235
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.203,
+      "n_valid": 238
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.199,
+      "n_valid": 238
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.189,
+      "n_valid": 238
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.152,
+      "n_valid": 238
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.148,
+      "n_valid": 238
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.116,
+      "n_valid": 238
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "秋の長潮・若潮に釣果が上がる傾向",
+    "台風が遠い時に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "黒潮が接近している月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": 0.23,
+      "n_valid": 237,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.147,
+      "n_valid": 236,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.136,
+      "n_valid": 238,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": 0.102,
+      "n_valid": 238,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.086,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.086,
+      "n_valid": 238,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.08,
+      "n_valid": 236,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.077,
+      "n_valid": 38,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": -0.069,
+      "n_valid": 238,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.061,
+      "n_valid": 235,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

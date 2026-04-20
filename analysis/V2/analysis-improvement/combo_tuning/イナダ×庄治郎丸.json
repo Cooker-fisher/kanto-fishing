@@ -1,0 +1,153 @@
+{
+  "fish": "イナダ",
+  "ship": "庄治郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 77.6,
+    "bl0_wmape": 108.9,
+    "bl2_wmape": 106.5,
+    "oos_r": 0.603,
+    "n_records": 121,
+    "alpha_scale": 0.603,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 282,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": null,
+    "lon": null
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "sla_monthly",
+      "corr": -0.632,
+      "n_valid": 107
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.632,
+      "n_valid": 121
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.596,
+      "n_valid": 121
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.575,
+      "n_valid": 121
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.57,
+      "n_valid": 121
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.548,
+      "n_valid": 107
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.546,
+      "n_valid": 121
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.517,
+      "n_valid": 121
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.512,
+      "n_valid": 121
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.448,
+      "n_valid": 121
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "月次の海面水位が低い時に釣果が上がる傾向",
+    "黒潮が離岸している月に釣果が上がる傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "最低気温が高い日ほど釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": 0.568,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.501,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.4,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": 0.349,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.314,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.301,
+      "n_valid": 107,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.293,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.269,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.242,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.239,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

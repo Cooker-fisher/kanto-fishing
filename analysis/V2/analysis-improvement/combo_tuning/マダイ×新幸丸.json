@@ -1,0 +1,173 @@
+{
+  "fish": "マダイ",
+  "ship": "新幸丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 42.3,
+    "bl0_wmape": 57.5,
+    "bl2_wmape": 47.8,
+    "oos_r": 0.627,
+    "n_records": 688,
+    "alpha_scale": 0.564,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "大原沖前後",
+      "n": 38,
+      "pct": 5
+    },
+    {
+      "name": "太東沖前後",
+      "n": 30,
+      "pct": 4
+    },
+    {
+      "name": "大原沖～20m",
+      "n": 30,
+      "pct": 4
+    },
+    {
+      "name": "other",
+      "n": 24,
+      "pct": 3
+    },
+    {
+      "name": "太東沖～10m",
+      "n": 18,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.27,
+    "lon": 140.4
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.564,
+      "n_valid": 90
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.564,
+      "n_valid": 90
+    },
+    {
+      "factor": "do_surface",
+      "corr": 0.559,
+      "n_valid": 8
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.502,
+      "n_valid": 687
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.47,
+      "n_valid": 688
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": 0.46,
+      "n_valid": 9
+    },
+    {
+      "factor": "no3_surface",
+      "corr": -0.459,
+      "n_valid": 8
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.45,
+      "n_valid": 688
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.427,
+      "n_valid": 688
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.347,
+      "n_valid": 681
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "夏季の100m深水温が高い時に釣果が上がる傾向",
+    "春季の100m深水温が低い時に釣果が上がる傾向",
+    "表層酸素が豊富な時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "沖合の海面水位が高い月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.417,
+      "n_valid": 679,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.349,
+      "n_valid": 694,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.289,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.26,
+      "n_valid": 688,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.249,
+      "n_valid": 90,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.241,
+      "n_valid": 688,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": -0.2,
+      "n_valid": 688,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.199,
+      "n_valid": 688,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.171,
+      "n_valid": 683,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.164,
+      "n_valid": 683,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "fish": "マダコ",
+  "ship": "長崎屋",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 40.1,
+    "bl0_wmape": 45.6,
+    "bl2_wmape": 47.5,
+    "oos_r": 0.341,
+    "n_records": 575,
+    "alpha_scale": 0.584,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "航程1～25分位",
+      "n": 451,
+      "pct": 78
+    },
+    {
+      "name": "航程1～20分位",
+      "n": 125,
+      "pct": 22
+    },
+    {
+      "name": "富岡沖航程1～25分位",
+      "n": 2,
+      "pct": 0
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.41,
+    "lon": 139.67
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.585,
+      "n_valid": 573
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.443,
+      "n_valid": 70
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.443,
+      "n_valid": 70
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.382,
+      "n_valid": 575
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.367,
+      "n_valid": 575
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.353,
+      "n_valid": 575
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.332,
+      "n_valid": 575
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.33,
+      "n_valid": 575
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.326,
+      "n_valid": 575
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.322,
+      "n_valid": 70
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "100m深水温が高い時に釣果が上がる傾向",
+    "夏季の100m深水温が高い時に釣果が上がる傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "最低気温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": -0.429,
+      "n_valid": 566,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.362,
+      "n_valid": 575,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.328,
+      "n_valid": 575,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.216,
+      "n_valid": 575,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.209,
+      "n_valid": 575,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": -0.205,
+      "n_valid": 388,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.194,
+      "n_valid": 575,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": -0.185,
+      "n_valid": 575,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.161,
+      "n_valid": 337,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": 0.147,
+      "n_valid": 337,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

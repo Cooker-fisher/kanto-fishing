@@ -1,0 +1,153 @@
+{
+  "fish": "マゴチ",
+  "ship": "林遊船",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 56.6,
+    "bl0_wmape": 60.4,
+    "bl2_wmape": 65.9,
+    "oos_r": 0.358,
+    "n_records": 115,
+    "alpha_scale": 0.42,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 130,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.65,
+    "lon": 139.9
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_100m",
+      "corr": 0.42,
+      "n_valid": 33
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.386,
+      "n_valid": 33
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.288,
+      "n_valid": 33
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.281,
+      "n_valid": 115
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.265,
+      "n_valid": 114
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.252,
+      "n_valid": 115
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.233,
+      "n_valid": 113
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.223,
+      "n_valid": 115
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.222,
+      "n_valid": 115
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.206,
+      "n_valid": 115
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "100m深水温が高い時に釣果が上がる傾向",
+    "50m深水温が高い時に釣果が上がる傾向",
+    "夏季の100m深水温が高い時に釣果が上がる傾向",
+    "夏休み期間（7〜8月）に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.306,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": -0.209,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.206,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.186,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.169,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.167,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.166,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.164,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.154,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.133,
+      "n_valid": 115,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

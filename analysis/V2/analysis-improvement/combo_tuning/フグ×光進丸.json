@@ -1,0 +1,143 @@
+{
+  "fish": "フグ",
+  "ship": "光進丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 29.2,
+    "bl0_wmape": 39.3,
+    "bl2_wmape": 45.6,
+    "oos_r": 0.541,
+    "n_records": 29,
+    "alpha_scale": 0.349,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "富浦沖",
+      "n": 25,
+      "pct": 49
+    },
+    {
+      "name": "金谷沖～富浦沖",
+      "n": 25,
+      "pct": 49
+    },
+    {
+      "name": "金谷～富浦沖",
+      "n": 1,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": null,
+    "lon": null
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "do_surface",
+      "corr": -0.757,
+      "n_valid": 11
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.547,
+      "n_valid": 29
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.497,
+      "n_valid": 11
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.458,
+      "n_valid": 28
+    },
+    {
+      "factor": "precip_sum6",
+      "corr": 0.435,
+      "n_valid": 29
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.386,
+      "n_valid": 29
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "表層酸素が少ない時に釣果が上がる傾向",
+    "上弦・下弦周辺に釣果が上がる傾向",
+    "底層酸素が少ない時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "前6日の降水量が少ない時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "pressure",
+      "corr": -0.475,
+      "n_valid": 34,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "nutrient_score",
+      "corr": -0.468,
+      "n_valid": 11,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.386,
+      "n_valid": 18,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.347,
+      "n_valid": 29,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.339,
+      "n_valid": 29,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.336,
+      "n_valid": 34,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.333,
+      "n_valid": 29,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": -0.331,
+      "n_valid": 29,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "no3_surface",
+      "corr": -0.317,
+      "n_valid": 11,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.307,
+      "n_valid": 29,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

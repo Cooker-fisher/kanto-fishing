@@ -1,0 +1,158 @@
+{
+  "fish": "マダイ",
+  "ship": "第八幸松丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 43.6,
+    "bl0_wmape": 56.5,
+    "bl2_wmape": 60.1,
+    "oos_r": 0.495,
+    "n_records": 44,
+    "alpha_scale": 0.536,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 130,
+      "pct": 99
+    },
+    {
+      "name": "沼津沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.05,
+    "lon": 138.87
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_wind",
+      "corr": 0.536,
+      "n_valid": 5
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.343,
+      "n_valid": 43
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.338,
+      "n_valid": 5
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.327,
+      "n_valid": 44
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.237,
+      "n_valid": 44
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.234,
+      "n_valid": 44
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.221,
+      "n_valid": 44
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.19,
+      "n_valid": 44
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.185,
+      "n_valid": 43
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.17,
+      "n_valid": 44
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風の影響が弱い時に釣果が上がる傾向",
+    "水温低下時に釣果が上がる傾向",
+    "台風接近時でも釣果が上がる傾向",
+    "秋の中潮に釣果が上がる傾向",
+    "産卵期以外に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.284,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.271,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": 0.262,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": 0.262,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.241,
+      "n_valid": 42,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.238,
+      "n_valid": 12,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.227,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": 0.212,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_winter",
+      "corr": 0.207,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.195,
+      "n_valid": 44,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

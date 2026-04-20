@@ -1,0 +1,173 @@
+{
+  "fish": "マダイ",
+  "ship": "日正丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 47.7,
+    "bl0_wmape": 58.3,
+    "bl2_wmape": 49.9,
+    "oos_r": 0.537,
+    "n_records": 517,
+    "alpha_scale": 0.415,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "～30m",
+      "n": 109,
+      "pct": 18
+    },
+    {
+      "name": "～25m",
+      "n": 73,
+      "pct": 12
+    },
+    {
+      "name": "～35m",
+      "n": 65,
+      "pct": 11
+    },
+    {
+      "name": "～28m",
+      "n": 57,
+      "pct": 10
+    },
+    {
+      "name": "other",
+      "n": 54,
+      "pct": 9
+    }
+  ],
+  "modal_coord": {
+    "lat": 36.6,
+    "lon": 140.67
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.413,
+      "n_valid": 517
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.401,
+      "n_valid": 516
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.386,
+      "n_valid": 83
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.382,
+      "n_valid": 83
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.375,
+      "n_valid": 83
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.35,
+      "n_valid": 87
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.33,
+      "n_valid": 517
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.293,
+      "n_valid": 83
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.279,
+      "n_valid": 517
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.194,
+      "n_valid": 517
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "黒潮が接近している月に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "深層水条件が悪い時に釣果が上がる傾向",
+    "春季の100m深水温が低い時に釣果が上がる傾向",
+    "夏季の100m深水温が高い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.386,
+      "n_valid": 502,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "do_surface",
+      "corr": 0.24,
+      "n_valid": 9,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.234,
+      "n_valid": 511,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.212,
+      "n_valid": 517,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "no3_surface",
+      "corr": -0.202,
+      "n_valid": 9,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.201,
+      "n_valid": 517,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.197,
+      "n_valid": 517,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.191,
+      "n_valid": 83,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_bin",
+      "corr": 0.179,
+      "n_valid": 83,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": -0.156,
+      "n_valid": 517,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "fish": "アマダイ",
+  "ship": "山天丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 33.9,
+    "bl0_wmape": 34.2,
+    "bl2_wmape": 40.0,
+    "oos_r": 0.349,
+    "n_records": 492,
+    "alpha_scale": 0.753,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "剣崎沖～100m",
+      "n": 145,
+      "pct": 29
+    },
+    {
+      "name": "剣崎沖～110m",
+      "n": 115,
+      "pct": 23
+    },
+    {
+      "name": "剣崎沖～105m",
+      "n": 33,
+      "pct": 7
+    },
+    {
+      "name": "下浦沖～剣崎沖～100m",
+      "n": 26,
+      "pct": 5
+    },
+    {
+      "name": "剣崎沖～90m",
+      "n": 24,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.24,
+    "lon": 139.71
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "no3_surface",
+      "corr": -0.753,
+      "n_valid": 8
+    },
+    {
+      "factor": "nutrient_score",
+      "corr": 0.538,
+      "n_valid": 8
+    },
+    {
+      "factor": "do_surface",
+      "corr": 0.316,
+      "n_valid": 8
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.259,
+      "n_valid": 46
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.245,
+      "n_valid": 42
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.224,
+      "n_valid": 42
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.198,
+      "n_valid": 492
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.197,
+      "n_valid": 491
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.186,
+      "n_valid": 492
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.18,
+      "n_valid": 487
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "硝酸塩が低い時に釣果が上がる傾向",
+    "栄養塩（クロロフィル+硝酸）が高い時に釣果が上がる傾向",
+    "表層酸素が豊富な時に釣果が上がる傾向",
+    "底層酸素が少ない時に釣果が上がる傾向",
+    "200m深水温が低い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_max",
+      "corr": 0.181,
+      "n_valid": 492,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.178,
+      "n_valid": 493,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.178,
+      "n_valid": 487,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.134,
+      "n_valid": 493,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": -0.131,
+      "n_valid": 492,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_summer",
+      "corr": 0.124,
+      "n_valid": 492,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.116,
+      "n_valid": 483,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.113,
+      "n_valid": 493,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.111,
+      "n_valid": 492,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.11,
+      "n_valid": 492,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

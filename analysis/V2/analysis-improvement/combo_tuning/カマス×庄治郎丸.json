@@ -1,0 +1,153 @@
+{
+  "fish": "カマス",
+  "ship": "庄治郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 54.6,
+    "bl0_wmape": 83.9,
+    "bl2_wmape": 59.5,
+    "oos_r": 0.658,
+    "n_records": 46,
+    "alpha_scale": 0.66,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 76,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.32
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "sst_avg",
+      "corr": 0.669,
+      "n_valid": 43
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.66,
+      "n_valid": 46
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.658,
+      "n_valid": 46
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.647,
+      "n_valid": 46
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": 0.583,
+      "n_valid": 46
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.565,
+      "n_valid": 46
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.542,
+      "n_valid": 46
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.513,
+      "n_valid": 46
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": 0.504,
+      "n_valid": 46
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": 0.504,
+      "n_valid": 46
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "水温が高い日ほど釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向",
+    "最低気温が高い日ほど釣果が上がる傾向",
+    "最高気温が高い日ほど釣果が上がる傾向",
+    "最大潮流が強い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.677,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.654,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.576,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.546,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.483,
+      "n_valid": 43,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": 0.481,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.444,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.442,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": 0.435,
+      "n_valid": 46,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": 0.428,
+      "n_valid": 47,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "fish": "マルイカ",
+  "ship": "秀丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 66.4,
+    "bl0_wmape": 74.4,
+    "bl2_wmape": 70.9,
+    "oos_r": 0.332,
+    "n_records": 943,
+    "alpha_scale": 0.547,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "沼津沖",
+      "n": 952,
+      "pct": 85
+    },
+    {
+      "name": "other",
+      "n": 174,
+      "pct": 15
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.05,
+    "lon": 138.87
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "do_surface",
+      "corr": -0.41,
+      "n_valid": 19
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.36,
+      "n_valid": 83
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.308,
+      "n_valid": 942
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "表層酸素が少ない時に釣果が上がる傾向",
+    "100m深水温が高い時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "FACTOR_BLACKLIST: do_surface追加",
+      "effect": "65.0→58.3%",
+      "reason": "相模湾座標ミスマッチ疑い"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "temp_50m",
+      "corr": 0.33,
+      "n_valid": 83,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.298,
+      "n_valid": 83,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.181,
+      "n_valid": 83,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.132,
+      "n_valid": 943,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.125,
+      "n_valid": 83,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.12,
+      "n_valid": 943,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.119,
+      "n_valid": 939,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.115,
+      "n_valid": 83,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "nutrient_score",
+      "corr": -0.113,
+      "n_valid": 19,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.109,
+      "n_valid": 942,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

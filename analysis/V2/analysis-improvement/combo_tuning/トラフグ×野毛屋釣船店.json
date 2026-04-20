@@ -1,0 +1,163 @@
+{
+  "fish": "トラフグ",
+  "ship": "野毛屋釣船店",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 42.5,
+    "bl0_wmape": 51.4,
+    "bl2_wmape": 59.4,
+    "oos_r": 0.469,
+    "n_records": 79,
+    "alpha_scale": 0.728,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "横須賀沖",
+      "n": 62,
+      "pct": 73
+    },
+    {
+      "name": "久里浜沖",
+      "n": 15,
+      "pct": 18
+    },
+    {
+      "name": "中ノ瀬",
+      "n": 8,
+      "pct": 9
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.28,
+    "lon": 139.68
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "deepwater_score",
+      "corr": 0.728,
+      "n_valid": 9
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.453,
+      "n_valid": 79
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.437,
+      "n_valid": 79
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.433,
+      "n_valid": 79
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.403,
+      "n_valid": 79
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.401,
+      "n_valid": 9
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.4,
+      "n_valid": 6
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.321,
+      "n_valid": 9
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.311,
+      "n_valid": 79
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.283,
+      "n_valid": 79
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "深層水条件が良い時に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "産卵期以外に釣果が上がる傾向",
+    "黒潮が接近している月に釣果が上がる傾向",
+    "沖合の海面水位が高い月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.298,
+      "n_valid": 77,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": -0.28,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.28,
+      "n_valid": 81,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.263,
+      "n_valid": 77,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum4",
+      "corr": -0.226,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.222,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.221,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.204,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.199,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.191,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "fish": "タチウオ",
+  "ship": "庄治郎丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 48.0,
+    "bl0_wmape": 59.2,
+    "bl2_wmape": 60.4,
+    "oos_r": 0.564,
+    "n_records": 243,
+    "alpha_scale": 0.877,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 277,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.32
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": -0.877,
+      "n_valid": 5
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.58,
+      "n_valid": 5
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.409,
+      "n_valid": 242
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.245,
+      "n_valid": 243
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.239,
+      "n_valid": 243
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.23,
+      "n_valid": 243
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": -0.223,
+      "n_valid": 243
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.211,
+      "n_valid": 243
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.211,
+      "n_valid": 243
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.21,
+      "n_valid": 243
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "200m深水温が低い時に釣果が上がる傾向",
+    "100m深水温が低い時に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "特定風向（北寄り）時に釣果が上がる傾向",
+    "潮目（水温勾配）がある時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp_100m_summer",
+      "corr": -0.233,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.204,
+      "n_valid": 247,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.202,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.194,
+      "n_valid": 247,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.185,
+      "n_valid": 243,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.174,
+      "n_valid": 243,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.17,
+      "n_valid": 247,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.165,
+      "n_valid": 247,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": 0.161,
+      "n_valid": 243,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.154,
+      "n_valid": 243,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "fish": "ヤリイカ",
+  "ship": "喜平治丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 46.3,
+    "bl0_wmape": 52.7,
+    "bl2_wmape": 52.5,
+    "oos_r": 0.469,
+    "n_records": 269,
+    "alpha_scale": 0.623,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "洲の崎沖～230m",
+      "n": 24,
+      "pct": 9
+    },
+    {
+      "name": "洲の崎沖～220m",
+      "n": 18,
+      "pct": 6
+    },
+    {
+      "name": "剣崎沖",
+      "n": 17,
+      "pct": 6
+    },
+    {
+      "name": "other",
+      "n": 15,
+      "pct": 5
+    },
+    {
+      "name": "洲の崎沖～200m",
+      "n": 13,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.14,
+    "lon": 139.65
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "chl_monthly",
+      "corr": 0.623,
+      "n_valid": 10
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.591,
+      "n_valid": 8
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.41,
+      "n_valid": 52
+    },
+    {
+      "factor": "chl_avg",
+      "corr": 0.325,
+      "n_valid": 10
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.304,
+      "n_valid": 10
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.284,
+      "n_valid": 15
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.282,
+      "n_valid": 8
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.264,
+      "n_valid": 268
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.234,
+      "n_valid": 269
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.219,
+      "n_valid": 264
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "月次クロロフィルが高い時に釣果が上がる傾向",
+    "月次の海面水位が高い時に釣果が上がる傾向",
+    "台風接近時でも釣果が上がる傾向",
+    "クロロフィル（餌密度）が高い時に釣果が上がる傾向",
+    "クロロフィル増加時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": 0.239,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.226,
+      "n_valid": 264,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.222,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.221,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.218,
+      "n_valid": 263,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": 0.208,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.182,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.158,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": 0.157,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": 0.157,
+      "n_valid": 269,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "fish": "タチウオ",
+  "ship": "かめだや",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 45.9,
+    "bl0_wmape": 56.1,
+    "bl2_wmape": 57.8,
+    "oos_r": 0.506,
+    "n_records": 124,
+    "alpha_scale": 0.463,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "走水沖～70m",
+      "n": 24,
+      "pct": 19
+    },
+    {
+      "name": "走水沖～75m",
+      "n": 6,
+      "pct": 5
+    },
+    {
+      "name": "横須賀沖～55m",
+      "n": 5,
+      "pct": 4
+    },
+    {
+      "name": "富津沖～走水沖～60m",
+      "n": 5,
+      "pct": 4
+    },
+    {
+      "name": "走水沖～80m",
+      "n": 4,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.55,
+    "lon": 139.76
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.464,
+      "n_valid": 122
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.385,
+      "n_valid": 122
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.363,
+      "n_valid": 122
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.317,
+      "n_valid": 124
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.302,
+      "n_valid": 124
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.283,
+      "n_valid": 124
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.277,
+      "n_valid": 124
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.274,
+      "n_valid": 124
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.266,
+      "n_valid": 124
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.24,
+      "n_valid": 124
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "最低気温が高い日ほど釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.364,
+      "n_valid": 121,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.335,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.223,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.217,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": 0.196,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.186,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": 0.185,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_delta",
+      "corr": -0.183,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": -0.18,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.171,
+      "n_valid": 124,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

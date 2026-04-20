@@ -1,0 +1,168 @@
+{
+  "fish": "カンパチ",
+  "ship": "佐衛美丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 56.9,
+    "bl0_wmape": 64.9,
+    "bl2_wmape": 62.1,
+    "oos_r": 0.476,
+    "n_records": 31,
+    "alpha_scale": 0.834,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 39,
+      "pct": 40
+    },
+    {
+      "name": "平砂浦沖",
+      "n": 37,
+      "pct": 38
+    },
+    {
+      "name": "平砂浦沖～25m",
+      "n": 8,
+      "pct": 8
+    },
+    {
+      "name": "平砂浦沖～20m",
+      "n": 4,
+      "pct": 4
+    },
+    {
+      "name": "平砂浦沖～30m",
+      "n": 4,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.95,
+    "lon": 139.92
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "chl_avg",
+      "corr": 0.834,
+      "n_valid": 8
+    },
+    {
+      "factor": "kuroshio_score",
+      "corr": -0.815,
+      "n_valid": 7
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.804,
+      "n_valid": 8
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.462,
+      "n_valid": 31
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.415,
+      "n_valid": 31
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.399,
+      "n_valid": 31
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.396,
+      "n_valid": 31
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.379,
+      "n_valid": 31
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.375,
+      "n_valid": 31
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "クロロフィル（餌密度）が高い時に釣果が上がる傾向",
+    "黒潮スコアが低い時に釣果が上がる傾向",
+    "クロロフィル増加時に釣果が上がる傾向",
+    "水温低下時に釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "pressure",
+      "corr": 0.62,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.415,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.338,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": -0.329,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.309,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.294,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.284,
+      "n_valid": 22,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.277,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.263,
+      "n_valid": 26,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.261,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

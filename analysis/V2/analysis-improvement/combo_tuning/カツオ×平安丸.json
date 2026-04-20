@@ -1,0 +1,148 @@
+{
+  "fish": "カツオ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 49.1,
+    "bl0_wmape": 62.2,
+    "bl2_wmape": 60.6,
+    "oos_r": 0.265,
+    "n_records": 35,
+    "alpha_scale": 0.603,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "小田原沖",
+      "n": 38,
+      "pct": 52
+    },
+    {
+      "name": "湾内",
+      "n": 21,
+      "pct": 29
+    },
+    {
+      "name": "other",
+      "n": 12,
+      "pct": 16
+    },
+    {
+      "name": "東沖",
+      "n": 2,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.23,
+    "lon": 139.12
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.603,
+      "n_valid": 35
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.476,
+      "n_valid": 35
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.475,
+      "n_valid": 35
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.431,
+      "n_valid": 35
+    },
+    {
+      "factor": "tide_grp_oshio_summer",
+      "corr": 0.403,
+      "n_valid": 35
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.335,
+      "n_valid": 35
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "冬の中潮に釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向",
+    "最低気温が低い日ほど釣果が上がる傾向",
+    "夏の大潮に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": -0.481,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.283,
+      "n_valid": 27,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.28,
+      "n_valid": 14,
+      "reason": "low_n"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.277,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.277,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.264,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.24,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.233,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": 0.23,
+      "n_valid": 35,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.207,
+      "n_valid": 34,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

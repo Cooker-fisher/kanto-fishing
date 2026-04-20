@@ -1,0 +1,172 @@
+{
+  "fish": "ムギイカ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 71.1,
+    "bl0_wmape": 79.2,
+    "bl2_wmape": 68.0,
+    "oos_r": 0.064,
+    "n_records": 52,
+    "alpha_scale": 1.2,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "真鶴沖",
+      "n": 22,
+      "pct": 42
+    },
+    {
+      "name": "西沖",
+      "n": 11,
+      "pct": 21
+    },
+    {
+      "name": "小田原沖",
+      "n": 10,
+      "pct": 19
+    },
+    {
+      "name": "小田原沖～西沖",
+      "n": 7,
+      "pct": 13
+    },
+    {
+      "name": "小田原沖～真鶴沖",
+      "n": 1,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.23,
+    "lon": 139.12
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.41,
+      "n_valid": 51
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.339,
+      "n_valid": 52
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.385,
+      "n_valid": 52
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.34,
+      "n_valid": 11
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.339,
+      "n_valid": 52
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.329,
+      "n_valid": 51
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.321,
+      "n_valid": 52
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.301,
+      "n_valid": 52
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.285,
+      "n_valid": 52
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.279,
+      "n_valid": 52
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "澄んだ水色の日に釣果が上がる傾向",
+    "波が高い日ほど釣果が上がる傾向",
+    "沖合の海面水位が低い月に釣果が上がる傾向",
+    "台風影響が強い時でも釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "pressure",
+      "corr": 0.283,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": -0.281,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.266,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.255,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": -0.246,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.241,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": 0.227,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.227,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.225,
+      "n_valid": 15,
+      "reason": "low_n"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": 0.215,
+      "n_valid": 52,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

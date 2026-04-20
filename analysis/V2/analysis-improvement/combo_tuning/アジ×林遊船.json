@@ -1,0 +1,153 @@
+{
+  "fish": "アジ",
+  "ship": "林遊船",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 36.1,
+    "bl0_wmape": 45.2,
+    "bl2_wmape": 44.4,
+    "oos_r": 0.588,
+    "n_records": 428,
+    "alpha_scale": 0.479,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 448,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.65,
+    "lon": 139.9
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.478,
+      "n_valid": 427
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.435,
+      "n_valid": 427
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.243,
+      "n_valid": 424
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.242,
+      "n_valid": 421
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.234,
+      "n_valid": 428
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.212,
+      "n_valid": 428
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.208,
+      "n_valid": 428
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.198,
+      "n_valid": 428
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.192,
+      "n_valid": 428
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.185,
+      "n_valid": 428
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "潮目（水温勾配）がある時に釣果が上がる傾向",
+    "水温低下時に釣果が上がる傾向",
+    "特定風向（北寄り）時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.289,
+      "n_valid": 412,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.223,
+      "n_valid": 438,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.219,
+      "n_valid": 422,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.195,
+      "n_valid": 438,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.167,
+      "n_valid": 428,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.159,
+      "n_valid": 427,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.15,
+      "n_valid": 428,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.15,
+      "n_valid": 434,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.146,
+      "n_valid": 428,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.142,
+      "n_valid": 424,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

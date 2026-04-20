@@ -1,0 +1,168 @@
+{
+  "fish": "スルメイカ",
+  "ship": "喜平治丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 45.8,
+    "bl0_wmape": 54.7,
+    "bl2_wmape": 53.7,
+    "oos_r": 0.534,
+    "n_records": 195,
+    "alpha_scale": 0.535,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "剣崎沖",
+      "n": 10,
+      "pct": 5
+    },
+    {
+      "name": "洲の崎沖",
+      "n": 10,
+      "pct": 5
+    },
+    {
+      "name": "剣崎沖～200m",
+      "n": 10,
+      "pct": 5
+    },
+    {
+      "name": "剣崎沖～城ヶ島沖",
+      "n": 9,
+      "pct": 5
+    },
+    {
+      "name": "城ヶ島沖",
+      "n": 8,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.14,
+    "lon": 139.65
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.405,
+      "n_valid": 194
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.315,
+      "n_valid": 195
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.244,
+      "n_valid": 195
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.24,
+      "n_valid": 195
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.198,
+      "n_valid": 117
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.168,
+      "n_valid": 195
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": -0.166,
+      "n_valid": 195
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.151,
+      "n_valid": 195
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.151,
+      "n_valid": 195
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "水温が均一な時に釣果が上がる傾向",
+    "黒潮が離岸している月に釣果が上がる傾向",
+    "水温上昇時に釣果が上がる傾向",
+    "台風影響が強い時でも釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "kuroshio_score",
+      "corr": 0.713,
+      "n_valid": 10,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.687,
+      "n_valid": 10,
+      "reason": "low_n"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.604,
+      "n_valid": 9,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sss_avg",
+      "corr": -0.584,
+      "n_valid": 10,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": -0.407,
+      "n_valid": 195,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.34,
+      "n_valid": 195,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.324,
+      "n_valid": 9,
+      "reason": "low_n"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.306,
+      "n_valid": 18,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_delta",
+      "corr": -0.271,
+      "n_valid": 10,
+      "reason": "low_n"
+    },
+    {
+      "factor": "chl_delta",
+      "corr": 0.207,
+      "n_valid": 18,
+      "reason": "low_n"
+    }
+  ]
+}

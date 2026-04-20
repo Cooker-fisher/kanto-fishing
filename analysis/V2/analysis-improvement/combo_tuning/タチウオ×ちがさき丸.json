@@ -1,0 +1,180 @@
+{
+  "fish": "タチウオ",
+  "ship": "ちがさき丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 51.4,
+    "bl0_wmape": 65.6,
+    "bl2_wmape": 70.1,
+    "oos_r": 0.39,
+    "n_records": 31,
+    "alpha_scale": 0.774,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "国府津沖",
+      "n": 19,
+      "pct": 59
+    },
+    {
+      "name": "二ノ宮沖",
+      "n": 6,
+      "pct": 19
+    },
+    {
+      "name": "茅ヶ崎沖",
+      "n": 5,
+      "pct": 16
+    },
+    {
+      "name": "二宮沖～茅ヶ崎沖",
+      "n": 1,
+      "pct": 3
+    },
+    {
+      "name": "腰越沖",
+      "n": 1,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.25,
+    "lon": 139.18
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "sst_avg",
+      "corr": -0.42,
+      "n_valid": 31
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.396,
+      "n_valid": 31
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": 0.381,
+      "n_valid": 31
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.366,
+      "n_valid": 31
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.355,
+      "n_valid": 31
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.322,
+      "n_valid": 31
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.316,
+      "n_valid": 31
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.312,
+      "n_valid": 31
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.254,
+      "n_valid": 31
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.249,
+      "n_valid": 31
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "水温が低い日ほど釣果が上がる傾向",
+    "乗っ込み・産卵期に釣果が上がる傾向",
+    "春の大潮に釣果が上がる傾向",
+    "濁り・赤潮傾向の日に釣果が上がる傾向",
+    "降水量が少ない時に釣果が上がる傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし（精査済み）",
+      "effect": "-",
+      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": -0.431,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_moon_interact",
+      "corr": 0.32,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.31,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.304,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": -0.304,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": 0.296,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.294,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.279,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": 0.268,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": 0.26,
+      "n_valid": 31,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

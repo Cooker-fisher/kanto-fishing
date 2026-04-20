@@ -1,0 +1,173 @@
+{
+  "fish": "キンメダイ",
+  "ship": "龍正丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 51.9,
+    "bl0_wmape": 52.6,
+    "bl2_wmape": 63.6,
+    "oos_r": 0.321,
+    "n_records": 59,
+    "alpha_scale": 1.2,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 18,
+      "pct": 18
+    },
+    {
+      "name": "新島沖～500m",
+      "n": 17,
+      "pct": 17
+    },
+    {
+      "name": "新島沖～550m",
+      "n": 17,
+      "pct": 17
+    },
+    {
+      "name": "新島沖～520m",
+      "n": 15,
+      "pct": 15
+    },
+    {
+      "name": "新島沖～600m",
+      "n": 12,
+      "pct": 12
+    }
+  ],
+  "modal_coord": {
+    "lat": 34.65,
+    "lon": 138.95
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.927,
+      "n_valid": 7
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.919,
+      "n_valid": 7
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.601,
+      "n_valid": 59
+    },
+    {
+      "factor": "chl_delta",
+      "corr": -0.466,
+      "n_valid": 57
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.345,
+      "n_valid": 59
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.332,
+      "n_valid": 59
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.328,
+      "n_valid": 59
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.318,
+      "n_valid": 59
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.264,
+      "n_valid": 59
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": -0.256,
+      "n_valid": 59
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "春季の100m深水温が低い時に釣果が上がる傾向",
+    "夏季の100m深水温が高い時に釣果が上がる傾向",
+    "冬の長潮・若潮に釣果が上がる傾向",
+    "クロロフィル減少時に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.496,
+      "n_valid": 10,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.366,
+      "n_valid": 56,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.26,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.228,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.225,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.219,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.192,
+      "n_valid": 94,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.19,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.181,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": 0.175,
+      "n_valid": 59,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

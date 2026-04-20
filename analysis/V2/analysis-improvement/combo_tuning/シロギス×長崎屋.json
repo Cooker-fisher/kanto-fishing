@@ -1,0 +1,168 @@
+{
+  "fish": "シロギス",
+  "ship": "長崎屋",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 25.8,
+    "bl0_wmape": 33.6,
+    "bl2_wmape": 27.7,
+    "oos_r": 0.594,
+    "n_records": 734,
+    "alpha_scale": 0.649,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "航程10～25分位",
+      "n": 239,
+      "pct": 32
+    },
+    {
+      "name": "航程5～25分位",
+      "n": 207,
+      "pct": 28
+    },
+    {
+      "name": "航程15～30分位",
+      "n": 164,
+      "pct": 22
+    },
+    {
+      "name": "航程10～15分位",
+      "n": 101,
+      "pct": 14
+    },
+    {
+      "name": "航程10～20分位",
+      "n": 12,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.4,
+    "lon": 139.78
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.612,
+      "n_valid": 733
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.41,
+      "n_valid": 734
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.3,
+      "n_valid": 732
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.292,
+      "n_valid": 98
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.266,
+      "n_valid": 734
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.213,
+      "n_valid": 734
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.206,
+      "n_valid": 728
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.205,
+      "n_valid": 734
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": 0.197,
+      "n_valid": 734
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "黒潮接岸時に釣果が上がる傾向",
+    "澄んだ水色の日に釣果が上がる傾向",
+    "200m深水温が高い時に釣果が上がる傾向",
+    "産卵期以外に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": 0.373,
+      "n_valid": 713,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.239,
+      "n_valid": 98,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.224,
+      "n_valid": 733,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.208,
+      "n_valid": 98,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.174,
+      "n_valid": 734,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.173,
+      "n_valid": 734,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.173,
+      "n_valid": 734,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": 0.165,
+      "n_valid": 437,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": -0.164,
+      "n_valid": 734,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.155,
+      "n_valid": 734,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

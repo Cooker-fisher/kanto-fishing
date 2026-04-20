@@ -1,0 +1,173 @@
+{
+  "fish": "タチウオ",
+  "ship": "吉久",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 33.5,
+    "bl0_wmape": 40.8,
+    "bl2_wmape": 38.8,
+    "oos_r": 0.55,
+    "n_records": 716,
+    "alpha_scale": 0.595,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "走水沖",
+      "n": 178,
+      "pct": 25
+    },
+    {
+      "name": "猿島沖",
+      "n": 131,
+      "pct": 18
+    },
+    {
+      "name": "湾奥",
+      "n": 99,
+      "pct": 14
+    },
+    {
+      "name": "観音崎沖",
+      "n": 72,
+      "pct": 10
+    },
+    {
+      "name": "大貫沖",
+      "n": 58,
+      "pct": 8
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.28,
+    "lon": 139.73
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.594,
+      "n_valid": 715
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.468,
+      "n_valid": 64
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.467,
+      "n_valid": 64
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.406,
+      "n_valid": 706
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.397,
+      "n_valid": 131
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.395,
+      "n_valid": 716
+    },
+    {
+      "factor": "temp_200m",
+      "corr": 0.368,
+      "n_valid": 64
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.317,
+      "n_valid": 131
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.316,
+      "n_valid": 716
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.308,
+      "n_valid": 716
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "深層水条件が悪い時に釣果が上がる傾向",
+    "底層酸素が少ない時に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "月次の海面水位が高い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.352,
+      "n_valid": 705,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.294,
+      "n_valid": 716,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_delta",
+      "corr": -0.243,
+      "n_valid": 131,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": -0.219,
+      "n_valid": 716,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.174,
+      "n_valid": 716,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": 0.166,
+      "n_valid": 716,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.165,
+      "n_valid": 713,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": -0.161,
+      "n_valid": 716,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.157,
+      "n_valid": 279,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": 0.155,
+      "n_valid": 713,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "fish": "アカメフグ",
+  "ship": "吉久",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 31.3,
+    "bl0_wmape": 31.9,
+    "bl2_wmape": 38.4,
+    "oos_r": 0.193,
+    "n_records": 209,
+    "alpha_scale": 0.337,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "湾内",
+      "n": 208,
+      "pct": 100
+    },
+    {
+      "name": "港内",
+      "n": 1,
+      "pct": 0
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.65,
+    "lon": 139.9
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.227,
+      "n_valid": 208
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.189,
+      "n_valid": 209
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.183,
+      "n_valid": 209
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.169,
+      "n_valid": 209
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "黒潮離岸時に釣果が上がる傾向",
+    "黒潮が接近している月に釣果が上がる傾向",
+    "水温が均一な時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": 0.125,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_autumn",
+      "corr": 0.12,
+      "n_valid": 209,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.109,
+      "n_valid": 203,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": 0.098,
+      "n_valid": 123,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.076,
+      "n_valid": 209,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.074,
+      "n_valid": 209,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.073,
+      "n_valid": 209,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_e",
+      "corr": -0.071,
+      "n_valid": 209,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.066,
+      "n_valid": 209,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": -0.064,
+      "n_valid": 209,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

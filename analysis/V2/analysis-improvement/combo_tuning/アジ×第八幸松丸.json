@@ -1,0 +1,158 @@
+{
+  "fish": "アジ",
+  "ship": "第八幸松丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 59.3,
+    "bl0_wmape": 65.9,
+    "bl2_wmape": 64.9,
+    "oos_r": 0.519,
+    "n_records": 48,
+    "alpha_scale": 0.741,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 114,
+      "pct": 99
+    },
+    {
+      "name": "湾内",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.05,
+    "lon": 138.87
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.741,
+      "n_valid": 17
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.517,
+      "n_valid": 48
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": 0.488,
+      "n_valid": 48
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.477,
+      "n_valid": 48
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.47,
+      "n_valid": 48
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.453,
+      "n_valid": 48
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.445,
+      "n_valid": 48
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.443,
+      "n_valid": 48
+    },
+    {
+      "factor": "tide_grp_oshio_autumn",
+      "corr": 0.389,
+      "n_valid": 48
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.386,
+      "n_valid": 48
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "台風接近時でも釣果が上がる傾向",
+    "最小周期が長い安定した波の日に釣果が上がる傾向",
+    "前1日の降水量が少ない時に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "うねり周期が長い安定した波の日に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.476,
+      "n_valid": 49,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.394,
+      "n_valid": 49,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.341,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.298,
+      "n_valid": 49,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height",
+      "corr": 0.294,
+      "n_valid": 49,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.282,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.279,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": 0.269,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": 0.25,
+      "n_valid": 48,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": 0.245,
+      "n_valid": 49,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

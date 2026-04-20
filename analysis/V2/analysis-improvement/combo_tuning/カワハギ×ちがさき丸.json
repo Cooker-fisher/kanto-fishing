@@ -1,0 +1,165 @@
+{
+  "fish": "カワハギ",
+  "ship": "ちがさき丸",
+  "last_reviewed": "2026-04-20",
+  "status": "reviewed",
+  "metrics": {
+    "wmape_h0": 39.0,
+    "bl0_wmape": 51.3,
+    "bl2_wmape": 48.4,
+    "oos_r": 0.499,
+    "n_records": 37,
+    "alpha_scale": 0.507,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 37,
+      "pct": 97
+    },
+    {
+      "name": "江の島沖",
+      "n": 1,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.3,
+    "lon": 139.39
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "swell_height_max",
+      "corr": 0.52,
+      "n_valid": 37
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.453,
+      "n_valid": 37
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": 0.373,
+      "n_valid": 37
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.299,
+      "n_valid": 37
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.214,
+      "n_valid": 37
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.14,
+      "n_valid": 37
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.112,
+      "n_valid": 37
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.038,
+      "n_valid": 37
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.036,
+      "n_valid": 37
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.034,
+      "n_valid": 37
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "最大うねりが小さい日に釣果が上がる傾向",
+    "平日の方が釣果が上がる傾向",
+    "最大波高が低い穏やかな日に釣果が上がる傾向",
+    "産卵期以外に釣果が上がる傾向",
+    "潮汐変化が大きい日に釣果が上がる傾向"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし（精査済み）",
+      "effect": "-",
+      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    }
+  ],
+  "rejected_factors": [
+    {
+      "factor": "sla_avg",
+      "corr": -0.501,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.484,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.315,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": 0.296,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": 0.283,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.255,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": 0.239,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": 0.239,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_delta",
+      "corr": -0.213,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.211,
+      "n_valid": 37,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

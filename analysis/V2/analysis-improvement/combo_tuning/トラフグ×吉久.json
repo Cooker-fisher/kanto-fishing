@@ -1,0 +1,173 @@
+{
+  "fish": "トラフグ",
+  "ship": "吉久",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 43.3,
+    "bl0_wmape": 51.9,
+    "bl2_wmape": 49.8,
+    "oos_r": 0.437,
+    "n_records": 135,
+    "alpha_scale": 0.383,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "湾内",
+      "n": 148,
+      "pct": 84
+    },
+    {
+      "name": "富浦沖",
+      "n": 25,
+      "pct": 14
+    },
+    {
+      "name": "湾内～80m",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "富津沖",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "観音崎沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.65,
+    "lon": 139.9
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.386,
+      "n_valid": 134
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.318,
+      "n_valid": 135
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.316,
+      "n_valid": 135
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.306,
+      "n_valid": 135
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.296,
+      "n_valid": 135
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.294,
+      "n_valid": 135
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.292,
+      "n_valid": 135
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.283,
+      "n_valid": 135
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.281,
+      "n_valid": 135
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.2,
+      "n_valid": 125
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "前週好調が継続しやすい傾向",
+    "気温が低い日ほど釣果が上がる傾向",
+    "冬の長潮・若潮に釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "黒潮が接近している月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "chl_monthly",
+      "corr": -0.345,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.327,
+      "n_valid": 7,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.285,
+      "n_valid": 135,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.28,
+      "n_valid": 137,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.194,
+      "n_valid": 126,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.191,
+      "n_valid": 135,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.169,
+      "n_valid": 16,
+      "reason": "low_n"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.143,
+      "n_valid": 135,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": -0.137,
+      "n_valid": 135,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.125,
+      "n_valid": 137,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

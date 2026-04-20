@@ -1,0 +1,163 @@
+{
+  "fish": "キハダマグロ",
+  "ship": "たいぞう丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 61.3,
+    "bl0_wmape": 71.5,
+    "bl2_wmape": 75.7,
+    "oos_r": 0.295,
+    "n_records": 80,
+    "alpha_scale": 0.69,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 81,
+      "pct": 40
+    },
+    {
+      "name": "相模湾",
+      "n": 55,
+      "pct": 27
+    },
+    {
+      "name": "相模湾～40m",
+      "n": 31,
+      "pct": 15
+    },
+    {
+      "name": "相模湾～30m",
+      "n": 15,
+      "pct": 7
+    },
+    {
+      "name": "相模湾～50m",
+      "n": 9,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.27,
+    "lon": 139.56
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "wave_period_avg",
+      "corr": 0.335,
+      "n_valid": 80
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.305,
+      "n_valid": 80
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": 0.303,
+      "n_valid": 80
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.287,
+      "n_valid": 80
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.273,
+      "n_valid": 79
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.262,
+      "n_valid": 80
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": -0.244,
+      "n_valid": 80
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": -0.232,
+      "n_valid": 43
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "うねり周期が長い安定した波の日に釣果が上がる傾向",
+    "黒潮接岸時に釣果が上がる傾向",
+    "最小周期が長い安定した波の日に釣果が上がる傾向",
+    "黒潮が離岸している月に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wave_period",
+      "corr": 0.24,
+      "n_valid": 116,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": -0.205,
+      "n_valid": 80,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.178,
+      "n_valid": 80,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": -0.176,
+      "n_valid": 72,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_range",
+      "corr": 0.175,
+      "n_valid": 80,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": 0.165,
+      "n_valid": 80,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.16,
+      "n_valid": 66,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": -0.152,
+      "n_valid": 80,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.148,
+      "n_valid": 80,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height",
+      "corr": -0.144,
+      "n_valid": 116,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

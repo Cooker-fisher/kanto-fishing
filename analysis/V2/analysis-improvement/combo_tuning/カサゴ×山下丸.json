@@ -1,0 +1,173 @@
+{
+  "fish": "カサゴ",
+  "ship": "山下丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 27.3,
+    "bl0_wmape": 30.1,
+    "bl2_wmape": 30.6,
+    "oos_r": 0.441,
+    "n_records": 224,
+    "alpha_scale": 0.395,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "久里浜沖",
+      "n": 112,
+      "pct": 48
+    },
+    {
+      "name": "鴨居沖",
+      "n": 71,
+      "pct": 30
+    },
+    {
+      "name": "久里浜沖～鴨居沖",
+      "n": 6,
+      "pct": 3
+    },
+    {
+      "name": "鴨居沖～25m",
+      "n": 6,
+      "pct": 3
+    },
+    {
+      "name": "鴨居沖～久里浜沖",
+      "n": 5,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.24,
+    "lon": 139.71
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.39,
+      "n_valid": 224
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.382,
+      "n_valid": 223
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.37,
+      "n_valid": 68
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.368,
+      "n_valid": 224
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.361,
+      "n_valid": 69
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": -0.359,
+      "n_valid": 68
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.356,
+      "n_valid": 224
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.355,
+      "n_valid": 68
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.341,
+      "n_valid": 224
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.335,
+      "n_valid": 68
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "産卵期以外に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向",
+    "100m深水温が低い時に釣果が上がる傾向",
+    "最高気温が高い日ほど釣果が上がる傾向",
+    "底層酸素が少ない時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": 0.356,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.334,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.266,
+      "n_valid": 79,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_spring",
+      "corr": -0.249,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_summer",
+      "corr": 0.243,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.243,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.241,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.241,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.238,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.229,
+      "n_valid": 224,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

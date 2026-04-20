@@ -1,0 +1,168 @@
+{
+  "fish": "シロギス",
+  "ship": "須原屋",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 25.5,
+    "bl0_wmape": 47.2,
+    "bl2_wmape": 32.3,
+    "oos_r": 0.777,
+    "n_records": 119,
+    "alpha_scale": 0.1,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "木更津沖",
+      "n": 93,
+      "pct": 77
+    },
+    {
+      "name": "中ノ瀬",
+      "n": 26,
+      "pct": 21
+    },
+    {
+      "name": "中の瀬",
+      "n": 1,
+      "pct": 1
+    },
+    {
+      "name": "富津沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.37,
+    "lon": 139.88
+  },
+  "multi_point_risk": "high",
+  "adopted_factors": [
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.689,
+      "n_valid": 119
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.686,
+      "n_valid": 119
+    },
+    {
+      "factor": "temp_max",
+      "corr": 0.67,
+      "n_valid": 119
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.657,
+      "n_valid": 119
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.644,
+      "n_valid": 119
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.587,
+      "n_valid": 118
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.545,
+      "n_valid": 119
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.543,
+      "n_valid": 119
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": -0.435,
+      "n_valid": 119
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.422,
+      "n_valid": 119
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "産卵期以外に釣果が上がる傾向",
+    "水温が高い日ほど釣果が上がる傾向",
+    "最高気温が高い日ほど釣果が上がる傾向",
+    "気温が高い日ほど釣果が上がる傾向",
+    "最低気温が高い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sst",
+      "corr": 0.706,
+      "n_valid": 119,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": 0.648,
+      "n_valid": 119,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.636,
+      "n_valid": 119,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": 0.409,
+      "n_valid": 112,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.381,
+      "n_valid": 28,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_avg",
+      "corr": -0.341,
+      "n_valid": 28,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.283,
+      "n_valid": 119,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.276,
+      "n_valid": 119,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_mode",
+      "corr": 0.242,
+      "n_valid": 119,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": -0.233,
+      "n_valid": 119,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

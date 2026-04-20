@@ -1,0 +1,158 @@
+{
+  "fish": "マダイ",
+  "ship": "たいぞう丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 38.1,
+    "bl0_wmape": 41.2,
+    "bl2_wmape": 39.4,
+    "oos_r": 0.359,
+    "n_records": 397,
+    "alpha_scale": 0.902,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 123,
+      "pct": 25
+    },
+    {
+      "name": "葉山沖～100m",
+      "n": 33,
+      "pct": 7
+    },
+    {
+      "name": "葉山沖～120m",
+      "n": 27,
+      "pct": 6
+    },
+    {
+      "name": "葉山沖～城ヶ島沖～100m",
+      "n": 25,
+      "pct": 5
+    },
+    {
+      "name": "葉山沖～三戸輪沖～100m",
+      "n": 22,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.27,
+    "lon": 139.56
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "deepwater_score",
+      "corr": -0.902,
+      "n_valid": 6
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.879,
+      "n_valid": 6
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.787,
+      "n_valid": 6
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.783,
+      "n_valid": 6
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": -0.783,
+      "n_valid": 6
+    },
+    {
+      "factor": "do_bottom",
+      "corr": -0.709,
+      "n_valid": 8
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.187,
+      "n_valid": 396
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "深層水条件が悪い時に釣果が上がる傾向",
+    "50m深水温が低い時に釣果が上がる傾向",
+    "200m深水温が低い時に釣果が上がる傾向",
+    "100m深水温が低い時に釣果が上がる傾向",
+    "春季の100m深水温が低い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "do_surface",
+      "corr": 0.201,
+      "n_valid": 5,
+      "reason": "low_n"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.154,
+      "n_valid": 395,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_max",
+      "corr": 0.131,
+      "n_valid": 397,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": -0.131,
+      "n_valid": 397,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.119,
+      "n_valid": 404,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": 0.114,
+      "n_valid": 228,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": 0.112,
+      "n_valid": 397,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.11,
+      "n_valid": 397,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": 0.109,
+      "n_valid": 397,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": -0.097,
+      "n_valid": 397,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

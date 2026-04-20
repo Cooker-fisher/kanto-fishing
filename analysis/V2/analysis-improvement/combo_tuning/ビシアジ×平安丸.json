@@ -1,0 +1,148 @@
+{
+  "fish": "ビシアジ",
+  "ship": "平安丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 30.0,
+    "bl0_wmape": 35.7,
+    "bl2_wmape": 45.5,
+    "oos_r": 0.571,
+    "n_records": 102,
+    "alpha_scale": 0.29,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "二宮沖",
+      "n": 88,
+      "pct": 81
+    },
+    {
+      "name": "小田原沖",
+      "n": 15,
+      "pct": 14
+    },
+    {
+      "name": "二宮沖～小田原沖",
+      "n": 3,
+      "pct": 3
+    },
+    {
+      "name": "other",
+      "n": 2,
+      "pct": 2
+    },
+    {
+      "name": "小田原沖～二宮沖",
+      "n": 1,
+      "pct": 1
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.29,
+    "lon": 139.27
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "pressure_min",
+      "corr": 0.286,
+      "n_valid": 102
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": -0.282,
+      "n_valid": 32
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.278,
+      "n_valid": 102
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.254,
+      "n_valid": 102
+    },
+    {
+      "factor": "wind_speed_avg",
+      "corr": -0.227,
+      "n_valid": 102
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "気圧が高い日ほど釣果が上がる傾向",
+    "台風接近時でも釣果が上がる傾向",
+    "高気圧優勢な日に釣果が上がる傾向",
+    "夏休み期間以外に釣果が上がる傾向",
+    "強風時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "wind_speed_max",
+      "corr": -0.192,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.175,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "is_consec_holiday",
+      "corr": -0.173,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_speed",
+      "corr": -0.17,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.169,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": -0.168,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_summer",
+      "corr": -0.156,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.143,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.143,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.143,
+      "n_valid": 102,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

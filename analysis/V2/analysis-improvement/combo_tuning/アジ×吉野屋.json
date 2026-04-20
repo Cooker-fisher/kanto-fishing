@@ -1,0 +1,172 @@
+{
+  "fish": "アジ",
+  "ship": "吉野屋",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 34.6,
+    "bl0_wmape": 39.9,
+    "bl2_wmape": 35.8,
+    "oos_r": 0.454,
+    "n_records": 76,
+    "alpha_scale": 0.589,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "本牧沖",
+      "n": 37,
+      "pct": 41
+    },
+    {
+      "name": "久里浜沖",
+      "n": 16,
+      "pct": 18
+    },
+    {
+      "name": "木更津沖",
+      "n": 10,
+      "pct": 11
+    },
+    {
+      "name": "観音崎沖",
+      "n": 7,
+      "pct": 8
+    },
+    {
+      "name": "横須賀沖",
+      "n": 7,
+      "pct": 8
+    }
+  ],
+  "modal_coord": {
+    "lat": null,
+    "lon": null
+  },
+  "multi_point_risk": "medium",
+  "adopted_factors": [
+    {
+      "factor": "sst_gradient",
+      "corr": -0.338,
+      "n_valid": 76
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.302,
+      "n_valid": 76
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.272,
+      "n_valid": 76
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.272,
+      "n_valid": 76
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.25,
+      "n_valid": 76
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.246,
+      "n_valid": 76
+    },
+    {
+      "factor": "wave_period_avg",
+      "corr": -0.23,
+      "n_valid": 76
+    },
+    {
+      "factor": "temp_min",
+      "corr": 0.229,
+      "n_valid": 76
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.228,
+      "n_valid": 76
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.227,
+      "n_valid": 75
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "水温が均一な時に釣果が上がる傾向",
+    "水温が低い日ほど釣果が上がる傾向",
+    "波が高い日ほど釣果が上がる傾向",
+    "黒潮が接近している月に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "sla_gradient",
+      "corr": 0.365,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.307,
+      "n_valid": 75,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "chl_monthly",
+      "corr": 0.303,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.297,
+      "n_valid": 75,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": -0.199,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period_min",
+      "corr": -0.177,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.172,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum",
+      "corr": 0.166,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.159,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.158,
+      "n_valid": 76,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

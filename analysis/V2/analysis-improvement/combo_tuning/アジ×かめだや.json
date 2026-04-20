@@ -1,0 +1,173 @@
+{
+  "fish": "アジ",
+  "ship": "かめだや",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 26.8,
+    "bl0_wmape": 29.4,
+    "bl2_wmape": 30.5,
+    "oos_r": 0.419,
+    "n_records": 499,
+    "alpha_scale": 0.367,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "横浜沖～20m",
+      "n": 92,
+      "pct": 18
+    },
+    {
+      "name": "横浜沖～本牧沖～27m",
+      "n": 32,
+      "pct": 6
+    },
+    {
+      "name": "横浜沖～本牧沖～28m",
+      "n": 26,
+      "pct": 5
+    },
+    {
+      "name": "川崎沖～横浜沖～20m",
+      "n": 24,
+      "pct": 5
+    },
+    {
+      "name": "富岡沖～20m",
+      "n": 21,
+      "pct": 4
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.55,
+    "lon": 139.76
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "is_holiday",
+      "corr": -0.367,
+      "n_valid": 499
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.29,
+      "n_valid": 499
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.284,
+      "n_valid": 499
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.282,
+      "n_valid": 499
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.278,
+      "n_valid": 499
+    },
+    {
+      "factor": "sst_gradient",
+      "corr": 0.249,
+      "n_valid": 493
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.248,
+      "n_valid": 493
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.205,
+      "n_valid": 497
+    },
+    {
+      "factor": "temp_200m",
+      "corr": -0.179,
+      "n_valid": 66
+    },
+    {
+      "factor": "temp_50m",
+      "corr": -0.175,
+      "n_valid": 66
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "平日の方が釣果が上がる傾向",
+    "特定風向（北寄り）時に釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "最低気温が低い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": -0.283,
+      "n_valid": 498,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.251,
+      "n_valid": 492,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.192,
+      "n_valid": 494,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": 0.175,
+      "n_valid": 494,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": -0.155,
+      "n_valid": 499,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_oshio_winter",
+      "corr": 0.151,
+      "n_valid": 499,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.147,
+      "n_valid": 498,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.144,
+      "n_valid": 164,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_winter",
+      "corr": 0.137,
+      "n_valid": 499,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.131,
+      "n_valid": 66,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

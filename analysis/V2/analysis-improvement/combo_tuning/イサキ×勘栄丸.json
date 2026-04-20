@@ -1,0 +1,173 @@
+{
+  "fish": "イサキ",
+  "ship": "勘栄丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 79.1,
+    "bl0_wmape": 77.7,
+    "bl2_wmape": 77.8,
+    "oos_r": 0.094,
+    "n_records": 69,
+    "alpha_scale": 0.1,
+    "use_fallback": true
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 97,
+      "pct": 70
+    },
+    {
+      "name": "大原沖～30m",
+      "n": 6,
+      "pct": 4
+    },
+    {
+      "name": "太東沖～32m",
+      "n": 4,
+      "pct": 3
+    },
+    {
+      "name": "太東沖～33m",
+      "n": 3,
+      "pct": 2
+    },
+    {
+      "name": "大原沖～25m",
+      "n": 3,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.31,
+    "lon": 140.49
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "pressure_avg",
+      "corr": 0.119,
+      "n_valid": 69
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.112,
+      "n_valid": 69
+    },
+    {
+      "factor": "is_holiday",
+      "corr": 0.111,
+      "n_valid": 69
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.104,
+      "n_valid": 69
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.102,
+      "n_valid": 69
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.074,
+      "n_valid": 69
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.073,
+      "n_valid": 69
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.064,
+      "n_valid": 69
+    },
+    {
+      "factor": "tide_delta",
+      "corr": -0.031,
+      "n_valid": 69
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.027,
+      "n_valid": 69
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "高気圧優勢な日に釣果が上がる傾向",
+    "夏休み期間（7〜8月）に釣果が上がる傾向",
+    "休日・祝日に釣果が上がる傾向",
+    "半月付近に釣果が上がる傾向",
+    "気温が低い日ほど釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "do_bottom",
+      "corr": 0.173,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.17,
+      "n_valid": 32,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_period",
+      "corr": 0.158,
+      "n_valid": 69,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_lag30",
+      "corr": -0.14,
+      "n_valid": 69,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": -0.136,
+      "n_valid": 69,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_summer",
+      "corr": -0.135,
+      "n_valid": 69,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.13,
+      "n_valid": 69,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chowaka_spring",
+      "corr": 0.121,
+      "n_valid": 69,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": -0.12,
+      "n_valid": 68,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst_delta",
+      "corr": 0.117,
+      "n_valid": 69,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

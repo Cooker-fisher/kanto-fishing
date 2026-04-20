@@ -1,0 +1,153 @@
+{
+  "fish": "イサキ",
+  "ship": "つる丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 31.7,
+    "bl0_wmape": 46.5,
+    "bl2_wmape": 56.4,
+    "oos_r": 0.667,
+    "n_records": 141,
+    "alpha_scale": 0.563,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 183,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.27,
+    "lon": 140.4
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_avg",
+      "corr": -0.566,
+      "n_valid": 141
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.557,
+      "n_valid": 141
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.554,
+      "n_valid": 141
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.527,
+      "n_valid": 141
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.497,
+      "n_valid": 140
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": -0.483,
+      "n_valid": 141
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": -0.449,
+      "n_valid": 138
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": 0.431,
+      "n_valid": 141
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.423,
+      "n_valid": 141
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": -0.417,
+      "n_valid": 141
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "気温が低い日ほど釣果が上がる傾向",
+    "最低気温が低い日ほど釣果が上がる傾向",
+    "最高気温が低い日ほど釣果が上がる傾向",
+    "夏休み期間以外に釣果が上がる傾向",
+    "前週好調が継続しやすい傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "temp",
+      "corr": -0.537,
+      "n_valid": 140,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_monthly",
+      "corr": -0.527,
+      "n_valid": 140,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_avg",
+      "corr": -0.426,
+      "n_valid": 140,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": -0.41,
+      "n_valid": 140,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": 0.353,
+      "n_valid": 141,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.298,
+      "n_valid": 65,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m_spring",
+      "corr": 0.29,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp_100m",
+      "corr": -0.276,
+      "n_valid": 55,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": -0.268,
+      "n_valid": 138,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.236,
+      "n_valid": 140,
+      "reason": "topk_cutoff"
+    }
+  ]
+}

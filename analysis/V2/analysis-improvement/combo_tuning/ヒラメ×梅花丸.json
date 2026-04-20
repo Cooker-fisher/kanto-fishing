@@ -1,0 +1,153 @@
+{
+  "fish": "ヒラメ",
+  "ship": "梅花丸",
+  "last_reviewed": null,
+  "status": "pending",
+  "metrics": {
+    "wmape_h0": 30.8,
+    "bl0_wmape": 37.6,
+    "bl2_wmape": 33.4,
+    "oos_r": 0.469,
+    "n_records": 58,
+    "alpha_scale": 0.424,
+    "use_fallback": false
+  },
+  "points": [
+    {
+      "name": "other",
+      "n": 59,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.72,
+    "lon": 140.77
+  },
+  "multi_point_risk": "low",
+  "adopted_factors": [
+    {
+      "factor": "temp_200m",
+      "corr": 0.401,
+      "n_valid": 31
+    },
+    {
+      "factor": "sla_approach_idx",
+      "corr": -0.386,
+      "n_valid": 58
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.314,
+      "n_valid": 32
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.313,
+      "n_valid": 58
+    },
+    {
+      "factor": "temp_100m",
+      "corr": 0.301,
+      "n_valid": 31
+    },
+    {
+      "factor": "temp_100m_summer",
+      "corr": 0.301,
+      "n_valid": 31
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.294,
+      "n_valid": 58
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.288,
+      "n_valid": 58
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.281,
+      "n_valid": 58
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.277,
+      "n_valid": 58
+    }
+  ],
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null
+  },
+  "insights": [
+    "200m深水温が高い時に釣果が上がる傾向",
+    "黒潮離岸時に釣果が上がる傾向",
+    "台風が遠い時に釣果が上がる傾向",
+    "最大うねりが大きい日に釣果が上がる傾向",
+    "100m深水温が高い時に釣果が上がる傾向"
+  ],
+  "history": [],
+  "rejected_factors": [
+    {
+      "factor": "swell_height",
+      "corr": -0.275,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sst",
+      "corr": 0.272,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure",
+      "corr": 0.258,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "temp",
+      "corr": 0.257,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.244,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.231,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "wind_dir",
+      "corr": -0.228,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "tide_delta",
+      "corr": -0.221,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "pressure_range",
+      "corr": -0.218,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    },
+    {
+      "factor": "sla_gradient",
+      "corr": 0.212,
+      "n_valid": 58,
+      "reason": "topk_cutoff"
+    }
+  ]
+}
