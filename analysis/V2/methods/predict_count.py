@@ -369,6 +369,95 @@ def _get_kaiyu_promoted(conn, fish: str, ship: str) -> bool:
     return bool(row and row[0])
 
 
+def _build_all_wx(wx_lat: float, wx_lon: float, target_date: str,
+                   wave_clamp_thr: float) -> tuple[dict, bool, str]:
+    """当日・前日・7日前の気象データを構築して返す。
+    戻り値: (all_wx dict, is_future bool, wx_source str)
+    combo/ポイント両モデルで共用する。
+    """
+    d = datetime.strptime(target_date.replace("-", "/"), "%Y/%m/%d")
+    date_iso = d.strftime("%Y-%m-%d")
+    d1_iso   = (d - timedelta(days=1)).strftime("%Y-%m-%d")
+    d7_iso   = (d - timedelta(days=7)).strftime("%Y-%m-%d")
+
+    all_wx = {}
+    wx_source = "none"
+    today_iso = datetime.today().strftime("%Y-%m-%d")
+    is_future = date_iso > today_iso
+
+    if is_future:
+        wx = _fetch_forecast_wx(wx_lat, wx_lon, date_iso, wave_clamp_thr)
+        all_wx.update({k: v for k, v in wx.items() if not k.startswith("_")})
+        wx_d1 = _fetch_forecast_wx(wx_lat, wx_lon, d1_iso, wave_clamp_thr) if d1_iso >= today_iso else {}
+        wx_d7 = {}
+        if not wx_d1 and os.path.exists(DB_WX):
+            try:
+                conn_wx = sqlite3.connect(DB_WX)
+                wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)
+                wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso, wave_clamp_thr)
+                wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso, wave_clamp_thr)
+                conn_wx.close()
+            except Exception:
+                pass
+        wx_source = "forecast_api"
+        if wx.get("_forecast_atmo_error") or wx.get("_forecast_marine_error"):
+            wx_source = "forecast_api_partial"
+    elif os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0:
+        try:
+            conn_wx = sqlite3.connect(DB_WX)
+            wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)
+            wx    = _get_daily_wx(conn_wx, wlat, wlon, date_iso, wave_clamp_thr)
+            wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso, wave_clamp_thr)
+            wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso, wave_clamp_thr)
+            conn_wx.close()
+            all_wx.update(wx)
+            wx_source = "weather_cache"
+        except Exception:
+            wx_d1 = {}; wx_d7 = {}
+    else:
+        wx_d1 = {}; wx_d7 = {}
+
+    if wx_d1:
+        if wx_d1.get("precip_sum") is not None:
+            all_wx["precip_sum1"] = wx_d1["precip_sum"]
+        if all_wx.get("pressure_min") is not None and wx_d1.get("pressure_min") is not None:
+            all_wx["pressure_delta"] = all_wx["pressure_min"] - wx_d1["pressure_min"]
+        if all_wx.get("temp_avg") is not None and wx_d1.get("temp_avg") is not None:
+            all_wx["temp_delta"] = all_wx["temp_avg"] - wx_d1["temp_avg"]
+    if wx_d7 and all_wx.get("sst_avg") is not None and wx_d7.get("sst_avg") is not None:
+        all_wx["sst_delta"] = all_wx["sst_avg"] - wx_d7["sst_avg"]
+
+    tide    = _get_tide(date_iso)
+    tide_d1 = _get_tide(d1_iso)
+    all_wx.update(tide)
+    if tide.get("tide_range") is not None and tide_d1.get("tide_range") is not None:
+        all_wx["tide_delta"] = tide["tide_range"] - tide_d1["tide_range"]
+
+    return all_wx, is_future, wx_source
+
+
+def _apply_correction_from_params(factor_params: dict, meta: tuple,
+                                   all_wx: dict, baseline_cnt: float) -> float | None:
+    """factor_params + meta から気象補正値を計算。因子が0件なら None を返す。"""
+    alpha_scale, met_mean, met_std = meta
+    w_total = sum(abs(r) for _, _, r in factor_params.values())
+    if w_total == 0:
+        return None
+    num_wx = 0.0
+    used = 0
+    for fac, (mean, std, r) in factor_params.items():
+        val = all_wx.get(fac)
+        if val is None:
+            continue
+        z = (val - mean) / std
+        num_wx += r * z
+        used += 1
+    if used == 0:
+        return None
+    correction = (num_wx / w_total) * met_std * alpha_scale
+    return round(max(0.0, baseline_cnt + correction), 1)
+
+
 def _apply_wx_correction(conn, fish: str, ship: str,
                           target_date: str, baseline_cnt: float,
                           lat: float, lon: float,
@@ -388,126 +477,111 @@ def _apply_wx_correction(conn, fish: str, ship: str,
 
     meta = None
     factor_params = {}
-    wx_lat = lat; wx_lon = lon  # デフォルト: combo_meta の座標
+    wx_lat = lat; wx_lon = lon
     for row in rows:
         fac, mean, std, r, alpha_scale, met_mean, met_std, rlat, rlon = row
         if fac == "_meta":
             meta = (alpha_scale, met_mean, met_std)
             if rlat and rlon:
-                wx_lat, wx_lon = rlat, rlon  # 学習時の最頻ポイント座標を優先
+                wx_lat, wx_lon = rlat, rlon
         elif r is not None and abs(r) >= 0.10 and mean is not None and std is not None:
             factor_params[fac] = (mean, std, r)
 
     if meta is None or not factor_params:
         return baseline_cnt
 
-    alpha_scale, met_mean, met_std = meta
-
-    # 当日・前日・7日前の気象を取得
-    d = datetime.strptime(target_date.replace("-", "/"), "%Y/%m/%d")
-    date_iso = d.strftime("%Y-%m-%d")
-    d1_iso   = (d - timedelta(days=1)).strftime("%Y-%m-%d")
-    d7_iso   = (d - timedelta(days=7)).strftime("%Y-%m-%d")
-
-    all_wx = {}
-    _wx_source = "none"  # ログ用: どのデータソースを使ったか
-
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    today_iso = datetime.today().strftime("%Y-%m-%d")
-    is_future = date_iso > today_iso  # 今日より未来 → Forecast API を使う
+    all_wx, is_future, wx_source = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
 
-    if is_future:
-        # ── 未来日: Open-Meteo Forecast API から取得 ────────────────────────
-        wx = _fetch_forecast_wx(wx_lat, wx_lon, date_iso, wave_clamp_thr)
-        all_wx.update({k: v for k, v in wx.items() if not k.startswith("_")})
-        # 前日（d1）は weather_cache または Forecast API で補完
-        wx_d1 = _fetch_forecast_wx(wx_lat, wx_lon, d1_iso, wave_clamp_thr) if d1_iso >= today_iso else {}
-        wx_d7 = {}  # 7日前は過去データなしでよい（SST変化は省略）
-        if not wx_d1 and os.path.exists(DB_WX):
-            try:
-                conn_wx = sqlite3.connect(DB_WX)
-                wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)
-                wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso, wave_clamp_thr)
-                wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso, wave_clamp_thr)
-                conn_wx.close()
-            except Exception:
-                pass
-        _wx_source = "forecast_api"
-        if wx.get("_forecast_atmo_error") or wx.get("_forecast_marine_error"):
-            _wx_source = "forecast_api_partial"
-    elif os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0:
-        # ── 過去日: weather_cache.sqlite から取得（従来通り） ────────────────
-        try:
-            conn_wx = sqlite3.connect(DB_WX)
-            wlat, wlon = _nearest_wx_coord(conn_wx, wx_lat, wx_lon)
-            wx    = _get_daily_wx(conn_wx, wlat, wlon, date_iso, wave_clamp_thr)
-            wx_d1 = _get_daily_wx(conn_wx, wlat, wlon, d1_iso, wave_clamp_thr)
-            wx_d7 = _get_daily_wx(conn_wx, wlat, wlon, d7_iso, wave_clamp_thr)
-            conn_wx.close()
-            all_wx.update(wx)
-            _wx_source = "weather_cache"
-        except Exception:
-            wx_d1 = {}; wx_d7 = {}
-    else:
-        wx_d1 = {}; wx_d7 = {}
-
-    # 差分特徴量（ソースに関わらず共通計算）
-    if wx_d1:
-        if wx_d1.get("precip_sum") is not None:
-            all_wx["precip_sum1"] = wx_d1["precip_sum"]
-        if all_wx.get("pressure_min") is not None and wx_d1.get("pressure_min") is not None:
-            all_wx["pressure_delta"] = all_wx["pressure_min"] - wx_d1["pressure_min"]
-        if all_wx.get("temp_avg") is not None and wx_d1.get("temp_avg") is not None:
-            all_wx["temp_delta"] = all_wx["temp_avg"] - wx_d1["temp_avg"]
-    if wx_d7 and all_wx.get("sst_avg") is not None and wx_d7.get("sst_avg") is not None:
-        all_wx["sst_delta"] = all_wx["sst_avg"] - wx_d7["sst_avg"]
-
-    # 潮汐・月齢（tide_moon.sqlite）
-    tide    = _get_tide(date_iso)
-    tide_d1 = _get_tide(d1_iso)
-    all_wx.update(tide)
-    if tide.get("tide_range") is not None and tide_d1.get("tide_range") is not None:
-        all_wx["tide_delta"] = tide["tide_range"] - tide_d1["tide_range"]
-
-    # 補正計算: Σ(r_i × z_i) / Σ|r_i| × met_std × alpha_scale
-    w_total = sum(abs(r) for _, _, r in factor_params.values())
-    if w_total == 0:
+    predicted = _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+    if predicted is None:
         return baseline_cnt
-
-    num_wx = 0.0
-    used = 0
-    for fac, (mean, std, r) in factor_params.items():
-        val = all_wx.get(fac)
-        if val is None:
-            continue
-        z = (val - mean) / std
-        num_wx += r * z
-        used += 1
-
-    if used == 0:
-        return baseline_cnt
-
-    correction = (num_wx / w_total) * met_std * alpha_scale
-    predicted  = round(max(0.0, baseline_cnt + correction), 1)
 
     # 予測ログ
+    alpha_scale, met_mean, met_std = meta
+    w_total = sum(abs(r) for _, _, r in factor_params.values())
+    num_wx = sum(r * (all_wx[fac] - mean) / std
+                 for fac, (mean, std, r) in factor_params.items()
+                 if all_wx.get(fac) is not None)
+    correction = (num_wx / w_total) * met_std * alpha_scale if w_total else 0.0
     _log_predict({
-        "ts":          datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-        "fish":        fish,
-        "ship":        ship,
-        "target_date": target_date,
-        "metric":      metric,
-        "wx_source":   _wx_source,
-        "is_future":   is_future,
-        "baseline":    round(baseline_cnt, 2),
-        "correction":  round(correction, 2),
-        "predicted":   predicted,
-        "factors_used": used,
+        "ts":           datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "fish":         fish,
+        "ship":         ship,
+        "target_date":  target_date,
+        "metric":       metric,
+        "wx_source":    wx_source,
+        "is_future":    is_future,
+        "baseline":     round(baseline_cnt, 2),
+        "correction":   round(correction, 2),
+        "predicted":    predicted,
+        "factors_used": sum(1 for fac in factor_params if all_wx.get(fac) is not None),
         "factors_avail": len(factor_params),
-        "wx_keys":     [k for k in all_wx if not k.startswith("_")],
+        "wx_keys":      [k for k in all_wx if not k.startswith("_")],
     })
 
     return predicted
+
+
+def _predict_point(conn, fish: str, ship: str, month: int) -> str | None:
+    """combo_point_events の月別集計から最頻ポイントを返す。登録なければ None。"""
+    try:
+        row = conn.execute(
+            "SELECT point_normalized FROM combo_point_events "
+            "WHERE fish=? AND ship=? AND month=? AND is_named=1 "
+            "GROUP BY point_normalized ORDER BY COUNT(*) DESC LIMIT 1",
+            (fish, ship, month)
+        ).fetchone()
+        if row:
+            return row[0]
+        # 月別データなし → 全体で最多ポイント
+        row = conn.execute(
+            "SELECT point_normalized FROM combo_point_events "
+            "WHERE fish=? AND ship=? AND is_named=1 "
+            "GROUP BY point_normalized ORDER BY COUNT(*) DESC LIMIT 1",
+            (fish, ship)
+        ).fetchone()
+        return row[0] if row else None
+    except Exception:
+        return None
+
+
+def _apply_point_wx_correction(conn, fish: str, ship: str, point: str,
+                                 target_date: str, baseline_cnt: float,
+                                 lat: float, lon: float,
+                                 metric: str = 'cnt_avg') -> float | None:
+    """combo_point_wx_params のポイント別モデルで補正を計算。
+    パラメータなし or 因子0件なら None を返す（呼び出し側で combo モデルにフォールバック）。
+    """
+    try:
+        rows = conn.execute(
+            "SELECT factor, mean, std, r, alpha_scale, met_mean, met_std, lat, lon "
+            "FROM combo_point_wx_params WHERE fish=? AND ship=? AND point=? AND metric=?",
+            (fish, ship, point, metric)
+        ).fetchall()
+    except Exception:
+        return None
+    if not rows:
+        return None
+
+    meta = None
+    factor_params = {}
+    wx_lat = lat; wx_lon = lon
+    for row in rows:
+        fac, mean, std, r, alpha_scale, met_mean, met_std, rlat, rlon = row
+        if fac == "_meta":
+            meta = (alpha_scale, met_mean, met_std)
+            if rlat and rlon:
+                wx_lat, wx_lon = rlat, rlon
+        elif r is not None and abs(r) >= 0.10 and mean is not None and std is not None:
+            factor_params[fac] = (mean, std, r)
+
+    if meta is None or not factor_params:
+        return None
+
+    wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
 
 
 # ── 気象取得（表示用のみ・予測には使わない） ────────────────────────────────
@@ -689,6 +763,18 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         bl2 = _get_bl2(fish, ship, target_date)
         cnt_predicted = round(bl2, 1) if bl2 is not None else round(avg_cnt, 1)
 
+    # ── ポイント別補正（combo_point_wx_params があれば優先） ──────────────────
+    # 月 → 最頻ポイント → ポイント別モデルで補正。モデルなければ combo モデルを維持。
+    predicted_point = None
+    if lat and lon and not use_fb:
+        predicted_point = _predict_point(conn, fish, ship, month_of(target_date))
+        if predicted_point:
+            pt_cnt = _apply_point_wx_correction(
+                conn, fish, ship, predicted_point, target_date, avg_cnt, lat, lon, 'cnt_avg'
+            )
+            if pt_cnt is not None:
+                cnt_predicted = pt_cnt
+
     # ── time_slot 補正 ────────────────────────────────────────────────────────
     # combo_slot_ratio に登録がある場合のみ適用。
     # 補正後 cnt_predicted に ratio を乗じる。
@@ -782,6 +868,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "n_dekad":         n_dekad,
         "lat":             lat,
         "lon":             lon,
+        "predicted_point": predicted_point,
     }
 
 

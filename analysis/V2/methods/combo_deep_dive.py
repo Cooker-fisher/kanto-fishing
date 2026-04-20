@@ -998,6 +998,25 @@ def load_decadal(fish, ship):
     return {r[0]: {"avg_cnt": r[1], "avg_size": r[2], "n": r[3]} for r in rows}
 
 
+def _build_decadal_from_records(records):
+    """records から旬別ベースライン dict を構築（DB 不要・ポイント別 decadal 計算用）"""
+    buckets = defaultdict(list)
+    size_b  = defaultdict(list)
+    for r in records:
+        if r.get("decade") is not None and r.get("cnt_avg"):
+            buckets[r["decade"]].append(r["cnt_avg"])
+        if r.get("decade") is not None and r.get("size_avg"):
+            size_b[r["decade"]].append(r["size_avg"])
+    return {
+        d: {
+            "avg_cnt":  sum(v) / len(v),
+            "avg_size": sum(size_b[d]) / len(size_b[d]) if size_b.get(d) else None,
+            "n": len(v),
+        }
+        for d, v in buckets.items()
+    }
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # データ読み込み（CSV + weather + tide）
 # ═══════════════════════════════════════════════════════════════════════════
@@ -3301,6 +3320,78 @@ def save_backtest(fish, ship, bt_data):
     conn.close()
 
 
+def save_point_backtest(fish, ship, point, bt_data):
+    """ポイント別バックテスト結果を combo_point_backtest テーブルに保存"""
+    if not bt_data:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_point_backtest (
+            fish TEXT, ship TEXT, point TEXT,
+            metric TEXT, horizon INTEGER,
+            r REAL, mae REAL, mape REAL, smape REAL, wmape REAL,
+            dir_acc REAL, n INTEGER, rmse REAL,
+            bl0_wmape REAL, bl1_wmape REAL, bl2_wmape REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, point, metric, horizon)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("DELETE FROM combo_point_backtest WHERE fish=? AND ship=? AND point=?",
+                 (fish, ship, point))
+    rows = [
+        (fish, ship, point, metric, H, rv, mae, mape, smape, wmape, dacc, n, rmse,
+         bl0w, bl1w, bl2w, now)
+        for metric, H, rv, mae, mape, smape, wmape, rmse, dacc,
+            good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own,
+            bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r in bt_data
+    ]
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_point_backtest VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_point_wx_params(fish, ship, point, wx_params_data, modal_lat=None, modal_lon=None):
+    """ポイント別気象パラメータを combo_point_wx_params テーブルに保存"""
+    if not wx_params_data:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_point_wx_params (
+            fish TEXT, ship TEXT, point TEXT,
+            metric TEXT, factor TEXT,
+            mean REAL, std REAL, r REAL, alpha_scale REAL,
+            met_mean REAL, met_std REAL, lat REAL, lon REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, point, metric, factor)
+        )
+    """)
+    conn.execute("DELETE FROM combo_point_wx_params WHERE fish=? AND ship=? AND point=?",
+                 (fish, ship, point))
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = []
+    for met, params in wx_params_data.items():
+        if met.startswith("_"):
+            continue
+        rows.append((fish, ship, point, met, "_meta",
+                     None, None, None,
+                     params.get("alpha_scale"), params.get("met_mean"), params.get("met_std"),
+                     modal_lat, modal_lon, now))
+        for fac, (mean, std, r) in params.get("factors", {}).items():
+            rows.append((fish, ship, point, met, fac,
+                         mean, std, r, None, None, None, None, None, now))
+    if rows:
+        conn.executemany(
+            "INSERT OR REPLACE INTO combo_point_wx_params VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            rows
+        )
+    conn.commit()
+    conn.close()
+
+
 def save_range_backtest(fish, ship, range_bt_data):
     """レンジ評価指標を combo_range_backtest テーブルに保存
     PRIMARY KPI: 約束割れ率 = actual_avg < pred_lo（期待させといてダメだった）→ 解約リスク最大
@@ -3442,7 +3533,8 @@ def save_point_stats(fish, ship, records):
         if not pt_raw:
             continue
         pt_norm = _normalize_point_name(pt_raw)
-        b = buckets[pt_norm]
+        pt_base = _strip_depth_suffix(pt_norm)
+        b = buckets[pt_base]
         if r.get("cnt_avg") is not None:
             b["cnts"].append(r["cnt_avg"])
         b["raw_names"].append(pt_raw)
@@ -3456,12 +3548,12 @@ def save_point_stats(fish, ship, records):
 
     rows = []
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    for pt_norm, b in buckets.items():
+    for pt_base, b in buckets.items():
         cnts = b["cnts"]
         if len(cnts) < MIN_N:
             continue
         rep_raw = Counter(b["raw_names"]).most_common(1)[0][0]
-        is_named = 0 if _is_航程系(pt_norm) else 1
+        is_named = 0 if _is_航程系(pt_base) else 1
         n = len(cnts)
         n_s = len(b["seasons"])
         pct_s = b["seasons"].count("春") / n_s * 100 if n_s else None
@@ -3471,15 +3563,13 @@ def save_point_stats(fish, ship, records):
         wc_vals = b["wc"]
         wc_mean   = sum(wc_vals) / len(wc_vals) if wc_vals else None
         wc_median = _percentile(wc_vals, 50)    if wc_vals else None
-        pt_base = _strip_depth_suffix(pt_norm)
-        entry = (point_coords.get(rep_raw) or point_coords.get(pt_norm)
-                 or (point_coords.get(pt_base) if pt_base != pt_norm else None))
+        entry = (point_coords.get(rep_raw) or point_coords.get(pt_base))
         lat = entry.get("lat") if entry else None
         lon = entry.get("lon") if entry else None
         if lat is not None and lon is not None and (lat == 0 and lon == 0):
             lat = lon = None
         rows.append((
-            fish, ship, rep_raw, pt_norm, is_named, n,
+            fish, ship, rep_raw, pt_base, is_named, n,
             round(sum(cnts) / n, 3),
             _percentile(cnts, 25), _percentile(cnts, 50), _percentile(cnts, 75),
             round(pct_s, 1) if pct_s is not None else None,
@@ -3506,6 +3596,7 @@ def save_point_stats(fish, ship, records):
             PRIMARY KEY (fish, ship, point_normalized)
         )
     """)
+    conn.execute("DELETE FROM combo_point_stats WHERE fish=? AND ship=?", (fish, ship))
     conn.executemany(
         "INSERT OR REPLACE INTO combo_point_stats VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         rows
@@ -3524,7 +3615,7 @@ def save_point_events(fish, ship, en0):
         pt_raw = r.get("point", "") or ""
         if not pt_raw:
             continue
-        pt_norm = _normalize_point_name(pt_raw)
+        pt_norm = _strip_depth_suffix(_normalize_point_name(pt_raw))
         is_named = 0 if _is_航程系(pt_norm) else 1
         try:
             month = int(r["date"][5:7])
@@ -3565,6 +3656,79 @@ def save_point_events(fish, ship, en0):
     """)
     conn.executemany(
         "INSERT OR REPLACE INTO combo_point_events VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_decadal(fish, ship, records):
+    """deepdive 実行時に combo_decadal を直接更新する。
+    season_detail.py の実行タイミングに依存せず常に最新 CSV と同期させる。
+    """
+    if not records:
+        return
+    buckets = defaultdict(lambda: {"cnt": [], "cnt_min": [], "cnt_max": [], "size": [], "kg": []})
+    for r in records:
+        dec = r.get("decade")
+        if dec is None:
+            continue
+        cnt = r.get("cnt_avg")
+        if not cnt or cnt <= 0:
+            continue
+        buckets[dec]["cnt"].append(cnt)
+        cm = r.get("cnt_min"); cx = r.get("cnt_max")
+        if cm is not None and cx is not None and cm < cnt and cx > cnt:
+            buckets[dec]["cnt_min"].append(cm)
+            buckets[dec]["cnt_max"].append(cx)
+        if r.get("size_avg") is not None:
+            buckets[dec]["size"].append(r["size_avg"])
+        if r.get("kg_avg") is not None:
+            buckets[dec]["kg"].append(r["kg_avg"])
+
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    rows = []
+    for dec, d in buckets.items():
+        if not d["cnt"]:
+            continue
+        avg_cnt = sum(d["cnt"]) / len(d["cnt"])
+        avg_size = sum(d["size"]) / len(d["size"]) if d["size"] else None
+        avg_kg   = sum(d["kg"])   / len(d["kg"])   if d["kg"]   else None
+        raw_min  = sum(d["cnt_min"]) / len(d["cnt_min"]) if len(d["cnt_min"]) >= 3 else None
+        raw_max  = sum(d["cnt_max"]) / len(d["cnt_max"]) if len(d["cnt_max"]) >= 3 else None
+        cnt_min  = min(raw_min, avg_cnt) if raw_min is not None else None
+        cnt_max  = max(raw_max, avg_cnt) if raw_max is not None else None
+        rows.append((
+            fish, ship, dec, len(d["cnt"]),
+            round(avg_cnt, 2),
+            round(avg_size, 2) if avg_size else None,
+            round(avg_kg, 3)   if avg_kg   else None,
+            now,
+            round(cnt_min, 2) if cnt_min else None,
+            round(cnt_max, 2) if cnt_max else None,
+        ))
+
+    if not rows:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_decadal (
+            fish TEXT, ship TEXT, decade_no INTEGER,
+            n INTEGER, avg_cnt REAL, avg_size REAL, avg_kg REAL,
+            updated_at TEXT, avg_cnt_min REAL, avg_cnt_max REAL,
+            PRIMARY KEY (fish, ship, decade_no)
+        )
+    """)
+    for col in ("avg_cnt_min", "avg_cnt_max"):
+        try:
+            conn.execute(f"ALTER TABLE combo_decadal ADD COLUMN {col} REAL")
+        except Exception:
+            pass
+    conn.execute("DELETE FROM combo_decadal WHERE fish=? AND ship=?", (fish, ship))
+    conn.executemany(
+        "INSERT INTO combo_decadal "
+        "(fish, ship, decade_no, n, avg_cnt, avg_size, avg_kg, updated_at, avg_cnt_min, avg_cnt_max) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?)",
         rows
     )
     conn.commit()
@@ -3614,6 +3778,85 @@ def save_combo_meta(fish, ship, records, modal_lat, modal_lon):
     """, (fish, ship, n_records, avg_cnt, modal_lat, modal_lon, now))
     conn.commit()
     conn.close()
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ポイント別最適化
+# ═══════════════════════════════════════════════════════════════════════════
+
+def deep_dive_by_point(fish, ship):
+    """N>=MIN_N_COMBO の各ポイントに対して独立した気象最適化＋バックテストを実行。
+    結果を combo_point_backtest / combo_point_wx_params に保存する。
+    """
+    import collections as _col
+
+    all_records = load_records(fish, ship_filter=ship)
+    if not all_records:
+        return
+
+    # 乗合フィルタ（deep_dive と同じロジック）
+    _noboat = [r for r in all_records if r.get("is_boat", 0) == 0]
+    if len(_noboat) >= MIN_N_COMBO and len(_noboat) < len(all_records):
+        all_records = _noboat
+
+    pt_counts = _col.Counter(r.get("point", "") for r in all_records)
+    viable_points = [pt for pt, n in pt_counts.most_common() if pt and n >= MIN_N_COMBO]
+
+    if not viable_points:
+        return
+
+    print(f"  [point_opt] {fish}×{ship}: {len(viable_points)}ポイント最適化開始 {viable_points}", flush=True)
+
+    ship_coords  = load_ship_coords()
+    wx_coords    = load_wx_coords_list()
+    ship_area    = load_ship_area()
+    conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
+    conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
+    conn_typhoon = sqlite3.connect(DB_TYPHOON) if (os.path.exists(DB_TYPHOON) and os.path.getsize(DB_TYPHOON) > 0) else None
+    conn_cmems   = sqlite3.connect(DB_CMEMS)   if (os.path.exists(DB_CMEMS)   and os.path.getsize(DB_CMEMS)   > 0) else None
+
+    # 全体デカダルはベースライン流用（ポイント別サンプルが少ない場合に安定）
+    decadal_global = load_decadal(fish, ship)
+
+    for pt in viable_points:
+        pt_records = [r for r in all_records if r.get("point", "") == pt]
+        n = len(pt_records)
+        print(f"    ポイント: {pt!r}  N={n}", flush=True)
+
+        # ポイント固有デカダル（N>=10旬分あれば使う、足りなければ全体で補完）
+        pt_decadal = _build_decadal_from_records(pt_records)
+        decadal = pt_decadal if len(pt_decadal) >= 6 else decadal_global
+
+        try:
+            bt_lines, bt_data, range_bt_data, star_bt_data, season_thr, wx_params_data, modal_lat, modal_lon, best_cmems = \
+                section_backtest_rolling(
+                    pt_records, ship_coords, wx_coords, conn_wx, ship_area, decadal,
+                    conn_tide=conn_tide, conn_typhoon=conn_typhoon,
+                    fish=fish, conn_cmems=conn_cmems
+                )
+        except Exception as e:
+            print(f"    [point_opt] ERROR {pt!r}: {e}", flush=True)
+            continue
+
+        if bt_data:
+            save_point_backtest(fish, ship, pt, bt_data)
+        if wx_params_data:
+            save_point_wx_params(fish, ship, pt, wx_params_data, modal_lat, modal_lon)
+
+        # H=0 cnt_avg 結果を表示
+        for row in bt_data:
+            if row[0] == "cnt_avg" and row[1] == 0:
+                print(f"    → H=0 wMAPE={row[6]:.1f}%  r={row[2]:+.3f}  BL2={row[26]}", flush=True)
+                break
+
+    for c in [conn_wx, conn_tide, conn_typhoon, conn_cmems]:
+        if c is not None:
+            try:
+                c.close()
+            except Exception:
+                pass
+
+    print(f"  [point_opt] {fish}×{ship}: 完了", flush=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -3776,7 +4019,9 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
                    use_fallback=use_fallback, kaiyu_promoted=kaiyu_promoted,
                    best_h0_wmape=_best_wmape_h0, best_cmems=best_cmems,
                    reset_best=reset_best)
+    save_decadal(fish, ship, records)
     save_combo_meta(fish, ship, records, modal_lat, modal_lon)
+    deep_dive_by_point(fish, ship)
 
     if verbose:
         _sys.stdout.buffer.write(text.encode("utf-8", errors="replace") + b"\n")

@@ -110,6 +110,7 @@ def main():
     if ng:
         print("NG魚種を再実行するには:")
         print(f"  python {os.path.relpath(SCRIPT)} " + " ".join(ng))
+
     return 0 if not ng else 1
 
 

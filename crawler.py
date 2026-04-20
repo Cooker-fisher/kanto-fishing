@@ -2389,6 +2389,15 @@ def parse_catches_from_html(html, ship, area, year):
                 if not c.get("suishoku_raw"):
                     c["suishoku_raw"] = box_suishoku
 
+        # 感想テキストを trip_no で紐付け → kanso_raw に設定
+        trip_comments = _extract_trip_comments(box_html)
+        for c in catches:
+            t = c.get("trip_no")
+            if t is not None and t in trip_comments:
+                c["trip_comment"] = trip_comments[t]["comment"]
+            if not c.get("kanso_raw"):
+                c["kanso_raw"] = c.get("trip_comment") or ""
+
         results.extend(catches)
 
         # テーブルが空 → 休船テキストを検出
@@ -2421,6 +2430,33 @@ def parse_catches_from_html(html, ship, area, year):
     return results
 
 
+def _extract_trip_comments(box_html):
+    """choka_boxのHTMLからテーブル外の感想テキストを抽出。
+    Returns: {1: {"comment": "LT五目。他に...", "trip_type": "LT五目"}, ...}
+    """
+    cm = re.search(r'<div[^>]+class="[^"]*choka_comment[^"]*"[^>]*>([\s\S]*?)</div>', box_html, re.I)
+    if cm:
+        source = cm.group(1)
+    else:
+        source = re.sub(r'<table[\s\S]*?</table>', '', box_html, flags=re.I)
+    plain = re.sub(r'<[^>]+>', ' ', source)
+    plain = ' '.join(plain.split())
+
+    comments = {}
+    for m in re.finditer(r'[■□]?(\d+)\s+([^■□\d][^■□]*?)(?=[■□]?\d+\s+[^■□\d]|$)', plain):
+        trip_no = int(m.group(1))
+        text = m.group(2).strip()
+        if not text or len(text) <= 2:
+            continue
+        trip_type = None
+        if not text.startswith("他に"):
+            type_m = re.match(r'^([^\s。、・]{2,10})[\s。、]', text)
+            if type_m:
+                trip_type = type_m.group(1)
+        comments[trip_no] = {"comment": text, "trip_type": trip_type}
+    return comments
+
+
 def _parse_tables(tables, ship, area, date, month):
     """テーブルリストから釣果を抽出（日付は呼び出し元から受け取る）"""
     results = []
@@ -2434,15 +2470,23 @@ def _parse_tables(tables, ship, area, date, month):
         count_idx  = next((i for i,h in enumerate(header) if "匹数" in h), 2)
         size_idx   = next((i for i,h in enumerate(header) if "大きさ" in h), 3)
         weight_idx = next((i for i,h in enumerate(header) if "重さ" in h), 4)
+        tokki_idx  = next((i for i,h in enumerate(header) if "特記" in h), None)
         point_idx  = next((i for i,h in enumerate(header) if "ポイント" in h), None)
+        trip_no_idx = 0 if fish_idx >= 1 else None
 
+        current_trip_no = None
         for row in table[1:]:
             if len(row) <= fish_idx: continue
+            if trip_no_idx is not None and trip_no_idx < len(row):
+                tn_m = re.search(r'(\d+)', row[trip_no_idx])
+                if tn_m:
+                    current_trip_no = int(tn_m.group(1))
             fish_name = row[fish_idx].strip()
             if not fish_name or fish_name in ("魚種", "-", "－", ""): continue
             count_str  = row[count_idx].strip()  if count_idx  < len(row) else ""
             size_str   = row[size_idx].strip()   if size_idx   < len(row) else ""
             weight_str = row[weight_idx].strip() if weight_idx < len(row) else ""
+            tokki_str  = row[tokki_idx].strip()  if tokki_idx is not None and tokki_idx < len(row) else ""
             point_str  = row[point_idx].strip()  if point_idx is not None and point_idx < len(row) else ""
             cr = extract_count(count_str)
             # fish_name に「船中」が含まれる場合も is_boat フラグを立てる
@@ -2463,6 +2507,14 @@ def _parse_tables(tables, ship, area, date, month):
                 "weight_kg":   extract_weight_kg(weight_str) or extract_weight_kg(size_str),
                 "point_place": _pp,
                 "point_depth": _pd,
+                "trip_no":     current_trip_no,
+                "trip_comment": None,
+                # V2 生文字列フィールド
+                "count_raw":   count_str,
+                "size_raw":    size_str,
+                "weight_raw":  weight_str,
+                "tokki_raw":   tokki_str,
+                "point_raw":   point_str,
             })
     return results
 
@@ -6297,12 +6349,13 @@ def _extract_tackle(tokki):
 
 def _split_point_places_depth(point_raw, comment=""):
     """ポイント文字列から場所リスト（最大3）と水深 {min, max} を分離して返す。"""
-    point_raw = point_raw.translate(Z2H)
+    point_raw = point_raw.translate(Z2H).replace('\uff5e', '~').replace('\u301c', '~')
     depth = {}
     depth_patterns = [
-        r'(?:水深|タナ|棚)\s*(\d+(?:\.\d+)?)(?:[~〜](\d+(?:\.\d+)?))?\s*m?',
-        r'(\d+(?:\.\d+)?)[~〜](\d+(?:\.\d+)?)\s*m',
-        r'(?:水深|タナ|棚)\s*(\d+(?:\.\d+)?)\s*m',
+        # 「水深/タナ/棚 数字[~数字] m [前後/付近]」を一括除去
+        r'(?:水深|タナ|棚)\s*(\d+(?:\.\d+)?)(?:[~](\d+(?:\.\d+)?))?\s*m?\s*(?:前後|付近)?',
+        r'(\d+(?:\.\d+)?)[~](\d+(?:\.\d+)?)\s*m',
+        r'(?:水深|タナ|棚)\s*(\d+(?:\.\d+)?)\s*m?\s*(?:前後|付近)?',
         r'(\d+(?:\.\d+)?)\s*m(?:\s|$|・|→)',
     ]
     for pat in depth_patterns:
@@ -6311,13 +6364,24 @@ def _split_point_places_depth(point_raw, comment=""):
             lo = float(dm.group(1))
             hi = float(dm.group(2)) if dm.lastindex >= 2 and dm.group(2) else lo
             depth = {"min": lo, "max": hi}
-            point_raw = (point_raw[:dm.start()] + point_raw[dm.end():]).strip("・→/ ")
+            point_raw = (point_raw[:dm.start()] + point_raw[dm.end():]).strip("・→/~ ")
             break
     places = [p.strip() for p in re.split(r'[・→/]', point_raw) if p.strip()]
     if len(places) == 1 and '~' in places[0]:
         sub = [p.strip() for p in places[0].split('~') if p.strip()]
         if all(not re.match(r'^\d+\.?\d*$', p) for p in sub):
             places = sub
+    # 各place名から残余の水深表現・前後・付近・他・末尾数字mを除去し、数字のみ項目を除外
+    cleaned = []
+    for p in places:
+        p = re.sub(r'(?:水深|タナ|棚)\s*[\d.]+(?:[~][\d.]+)?\s*m?\s*(?:前後|付近)?', '', p, flags=re.I).strip()
+        p = re.sub(r'\s*(?:前後|付近|他)\s*$', '', p).strip('・→/~ ')
+        p = re.sub(r'\s*\d+(?:[~]\d+)?\s*m$', '', p, flags=re.I).strip()
+        if re.match(r'^[\d.~m]+$', p, re.I):
+            continue
+        if p:
+            cleaned.append(p)
+    places = cleaned
     if not places and comment:
         m = re.search(r'(\S{2,10}[沖瀬根崎岬])[\s・。]', comment)
         if m:
