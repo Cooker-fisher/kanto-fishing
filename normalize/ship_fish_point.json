@@ -1,6 +1,14 @@
 {
   "_comment": "ポイント特定不可な船宿の fish×point マッピング。point_place が空/航程/近場/浅場/不明 の場合にフォールバック参照する。",
   "_structure": "ship -> fish -> { point1, point2 } / ship -> _default -> { point1, point2 }（魚種未登録時のフォールバック）",
+  "利一丸": {
+    "_area": "網代港",
+    "_note": "静岡県熱海市網代港。主漁場は網代沖",
+    "_default": {
+      "point1": "網代沖",
+      "point2": null
+    }
+  },
   "長崎屋": {
     "_area": "横浜本牧港",
     "_note": "全ポイントが航程表記のため全魚種を手動設定",
