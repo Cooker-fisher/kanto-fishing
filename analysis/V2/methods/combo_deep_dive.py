@@ -32,7 +32,7 @@ combo_deep_dive.py — 船宿×魚種ペア 深掘り分析
 """
 
 import argparse, bisect, csv, json, math, os, re, sqlite3, sys, time
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 
 import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -817,6 +817,17 @@ _UNRESOLVABLE_POINT_RE = re.compile(
 def _is_航程系(pp):
     return not pp or bool(_UNRESOLVABLE_POINT_RE.match(pp))
 
+_DEPTH_SUFFIX_RE = re.compile(r'[～〜~]\s*\d+(?:\.\d+)?\s*m\s*$', re.IGNORECASE)
+
+def _normalize_point_name(pt: str) -> str:
+    """末尾の深度サフィックス（例: ～60m）を除去して正規化する。
+    「赤灯沖～60m」→「赤灯沖」。除去後に空になれば元の文字列を返す。
+    """
+    if not pt:
+        return pt
+    normalized = _DEPTH_SUFFIX_RE.sub("", pt).strip()
+    return normalized if normalized else pt
+
 def _load_point_coords():
     path = os.path.join(NORMALIZE_DIR, "point_coords.json")
     try:
@@ -1048,6 +1059,8 @@ def load_records(fish, ship_filter=None):
                     "size_avg": size_avg,
                     "kg_avg":  kg_avg,
                     "point":   point_place1,
+                    "point2":  row.get("point_place2", "").strip(),
+                    "point3":  row.get("point_place3", "").strip(),
                     "lat":     lat,
                     "lon":     lon,
                     # 参照用（obs_fields.json 外）
@@ -2082,23 +2095,55 @@ def section_obs_corr(records):
     return lines
 
 def section_points(records):
-    buckets = defaultdict(list)
+    """ポイント別集計（正規化ポイント名でグループ化）。
+    季節分布・水色スコア平均を追加。固有地名(固)/相対呼称(相)を区別。
+    """
+    buckets = defaultdict(lambda: {"cnts": [], "raw_names": [], "seasons": [], "wc": []})
     for r in records:
-        pt = r["point"]
-        if pt:
-            buckets[pt].append(r["cnt_avg"])
+        seen_norms = set()
+        for field in ("point", "point2", "point3"):
+            pt_raw = r.get(field, "") or ""
+            if not pt_raw:
+                continue
+            pt_norm = _normalize_point_name(pt_raw)
+            b = buckets[pt_norm]
+            if field == "point" and r.get("cnt_avg") is not None:
+                b["cnts"].append(r["cnt_avg"])
+            b["raw_names"].append(pt_raw)
+            if pt_norm not in seen_norms:
+                seen_norms.add(pt_norm)
+                try:
+                    b["seasons"].append(_season_of(int(r["date"][5:7])))
+                except Exception:
+                    pass
+                wc = r.get("water_color_n")
+                if wc is not None:
+                    b["wc"].append(wc)
+
     if not buckets:
         return ["  (ポイントデータなし)"]
-    lines = [f"  {'ポイント':<22}  {'n':>4}  {'平均':>7}  {'最大':>7}  {'最小':>7}"]
-    lines.append("  " + "-"*55)
-    for pt, cnts in sorted(buckets.items(), key=lambda x: -sum(x[1])/len(x[1])):
+
+    header = (f"  {'種':<2}  {'ポイント':<22}  {'n':>4}  {'平均':>7}  {'最大':>7}  {'最小':>7}"
+              f"  {'春%':>4}{'夏%':>4}{'秋%':>4}{'冬%':>4}  {'水色':>5}")
+    lines = [header, "  " + "-" * 80]
+
+    for pt_norm, b in sorted(buckets.items(),
+            key=lambda x: -(sum(x[1]["cnts"]) / len(x[1]["cnts"]) if x[1]["cnts"] else 0)):
+        cnts = b["cnts"]
         if len(cnts) < 2:
             continue
-        avg = sum(cnts)/len(cnts)
+        kind = "固" if not _is_航程系(pt_norm) else "相"
+        rep_name = Counter(b["raw_names"]).most_common(1)[0][0]
+        display = pt_norm if pt_norm != rep_name else rep_name
+        avg = sum(cnts) / len(cnts)
+        n_s = len(b["seasons"])
+        pct = {s: round(b["seasons"].count(s) / n_s * 100) for s in ("春","夏","秋","冬")} if n_s else {s: 0 for s in ("春","夏","秋","冬")}
+        wc_str = f"{sum(b['wc'])/len(b['wc']):>5.2f}" if b["wc"] else "    -"
         lines.append(
-            f"  {pt:<22}  {len(cnts):>4}  {avg:>7.1f}  {max(cnts):>7.0f}  {min(cnts):>7.0f}"
+            f"  {kind:<2}  {display:<22}  {len(cnts):>4}  {avg:>7.1f}  {max(cnts):>7.0f}  {min(cnts):>7.0f}"
+            f"  {pct['春']:>3}%{pct['夏']:>3}%{pct['秋']:>3}%{pct['冬']:>3}%  {wc_str}"
         )
-    return lines[:16]
+    return lines[:22]
 
 def _season_of(month):
     """月 → 季節（春/夏/秋/冬）"""
@@ -3368,6 +3413,146 @@ def save_thresholds(fish, ship, season_thr_final):
     conn.close()
 
 
+def save_point_stats(fish, ship, records):
+    """ポイント別統計を combo_point_stats テーブルに保存（MIN_N=10）。
+    lat/lon は point_coords.json の直接解決のみ（フォールバック座標は混入しない）。
+    """
+    MIN_N = 10
+    point_coords = _load_point_coords()
+
+    buckets = defaultdict(lambda: {"cnts": [], "raw_names": [], "seasons": [], "wc": []})
+    for r in records:
+        pt_raw = r.get("point", "") or ""
+        if not pt_raw:
+            continue
+        pt_norm = _normalize_point_name(pt_raw)
+        b = buckets[pt_norm]
+        if r.get("cnt_avg") is not None:
+            b["cnts"].append(r["cnt_avg"])
+        b["raw_names"].append(pt_raw)
+        try:
+            b["seasons"].append(_season_of(int(r["date"][5:7])))
+        except Exception:
+            pass
+        wc = r.get("water_color_n")
+        if wc is not None:
+            b["wc"].append(wc)
+
+    rows = []
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for pt_norm, b in buckets.items():
+        cnts = b["cnts"]
+        if len(cnts) < MIN_N:
+            continue
+        rep_raw = Counter(b["raw_names"]).most_common(1)[0][0]
+        is_named = 0 if _is_航程系(pt_norm) else 1
+        n = len(cnts)
+        n_s = len(b["seasons"])
+        pct_s = b["seasons"].count("春") / n_s * 100 if n_s else None
+        pct_u = b["seasons"].count("夏") / n_s * 100 if n_s else None
+        pct_a = b["seasons"].count("秋") / n_s * 100 if n_s else None
+        pct_w = b["seasons"].count("冬") / n_s * 100 if n_s else None
+        wc_vals = b["wc"]
+        wc_mean   = sum(wc_vals) / len(wc_vals) if wc_vals else None
+        wc_median = _percentile(wc_vals, 50)    if wc_vals else None
+        entry = point_coords.get(rep_raw) or point_coords.get(pt_norm)
+        lat = entry.get("lat") if entry else None
+        lon = entry.get("lon") if entry else None
+        if lat is not None and lon is not None and (lat == 0 and lon == 0):
+            lat = lon = None
+        rows.append((
+            fish, ship, rep_raw, pt_norm, is_named, n,
+            round(sum(cnts) / n, 3),
+            _percentile(cnts, 25), _percentile(cnts, 50), _percentile(cnts, 75),
+            round(pct_s, 1) if pct_s is not None else None,
+            round(pct_u, 1) if pct_u is not None else None,
+            round(pct_a, 1) if pct_a is not None else None,
+            round(pct_w, 1) if pct_w is not None else None,
+            round(wc_mean,   3) if wc_mean   is not None else None,
+            round(wc_median, 3) if wc_median is not None else None,
+            lat, lon, now,
+        ))
+    if not rows:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_point_stats (
+            fish TEXT, ship TEXT,
+            point TEXT, point_normalized TEXT,
+            is_named INTEGER,
+            n INTEGER,
+            cnt_avg_mean REAL, cnt_avg_p25 REAL, cnt_avg_median REAL, cnt_avg_p75 REAL,
+            pct_spring REAL, pct_summer REAL, pct_autumn REAL, pct_winter REAL,
+            water_color_n_mean REAL, water_color_n_median REAL,
+            lat REAL, lon REAL, updated_at TEXT,
+            PRIMARY KEY (fish, ship, point_normalized)
+        )
+    """)
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_point_stats VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_point_events(fish, ship, en0):
+    """ポイント選択の行レベルイベントを combo_point_events に保存。
+    将来の「どのポイントに行くか」予測モデルの学習データ。en0（enriched records）を使用。
+    """
+    rows = []
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for r in en0:
+        pt_raw = r.get("point", "") or ""
+        if not pt_raw:
+            continue
+        pt_norm = _normalize_point_name(pt_raw)
+        is_named = 0 if _is_航程系(pt_norm) else 1
+        try:
+            month = int(r["date"][5:7])
+            season = _season_of(month)
+        except Exception:
+            season = None
+            month = None
+        rows.append((
+            fish, ship, r["date"], pt_norm, is_named,
+            season, month,
+            r.get("wind_speed_avg"),
+            r.get("wind_dir_mode"),
+            r.get("wave_height_avg"),
+            r.get("water_color_n"),
+            r.get("water_color_pred_n"),
+            r.get("sst_avg"),
+            r.get("tide_type_n"),
+            r.get("moon_age"),
+            r.get("cnt_avg"),
+            now,
+        ))
+    if not rows:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_point_events (
+            fish TEXT, ship TEXT, date TEXT, point_normalized TEXT,
+            is_named INTEGER,
+            season TEXT, month INTEGER,
+            wind_speed_avg REAL, wind_dir_mode REAL,
+            wave_height_avg REAL,
+            water_color_n REAL, water_color_pred_n REAL,
+            sst_avg REAL, tide_type_n REAL, moon_age REAL,
+            cnt_avg REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, date, point_normalized)
+        )
+    """)
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_point_events VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        rows
+    )
+    conn.commit()
+    conn.close()
+
+
 def save_combo_meta(fish, ship, records, modal_lat, modal_lon):
     """n_records / avg_cnt / lat / lon を combo_meta に保存する。
     save_insights.py 非依存で predict_count.py が必要な最低限の情報を埋める。
@@ -3477,6 +3662,8 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
 
     out.append("\n【ポイント別集計】")
     out += section_points(records)
+    save_point_stats(fish, ship, records)
+    save_point_events(fish, ship, en0)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
     bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems)
