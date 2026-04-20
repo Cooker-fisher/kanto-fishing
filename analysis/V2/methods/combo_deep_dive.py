@@ -817,16 +817,21 @@ _UNRESOLVABLE_POINT_RE = re.compile(
 def _is_航程系(pp):
     return not pp or bool(_UNRESOLVABLE_POINT_RE.match(pp))
 
-_DEPTH_SUFFIX_RE = re.compile(r'[～〜~]\s*\d+(?:\.\d+)?\s*m\s*$', re.IGNORECASE)
+_DEPTH_TILDE_RE = re.compile(r'\s*[～〜~]\s*(\d+(?:\.\d+)?\s*m)\s*$', re.IGNORECASE)
+_DEPTH_TRAIL_RE = re.compile(r'\s+\d+(?:\.\d+)?\s*m\s*$', re.IGNORECASE)
 
 def _normalize_point_name(pt: str) -> str:
-    """末尾の深度サフィックス（例: ～60m）を除去して正規化する。
-    「赤灯沖～60m」→「赤灯沖」。除去後に空になれば元の文字列を返す。
+    """チルダ区切りの深度表記をスペース区切りに正規化（深度値は保持）。
+    「赤灯沖～60m」→「赤灯沖 60m」。チルダのないものは変更しない。
     """
     if not pt:
         return pt
-    normalized = _DEPTH_SUFFIX_RE.sub("", pt).strip()
+    normalized = _DEPTH_TILDE_RE.sub(r' \1', pt).strip()
     return normalized if normalized else pt
+
+def _strip_depth_suffix(pt: str) -> str:
+    """座標解決用: 末尾の「 60m」「 80m」等を除去して基底ポイント名を返す。"""
+    return _DEPTH_TRAIL_RE.sub("", pt).strip() or pt
 
 def _load_point_coords():
     path = os.path.join(NORMALIZE_DIR, "point_coords.json")
@@ -3455,7 +3460,9 @@ def save_point_stats(fish, ship, records):
         wc_vals = b["wc"]
         wc_mean   = sum(wc_vals) / len(wc_vals) if wc_vals else None
         wc_median = _percentile(wc_vals, 50)    if wc_vals else None
-        entry = point_coords.get(rep_raw) or point_coords.get(pt_norm)
+        pt_base = _strip_depth_suffix(pt_norm)
+        entry = (point_coords.get(rep_raw) or point_coords.get(pt_norm)
+                 or (point_coords.get(pt_base) if pt_base != pt_norm else None))
         lat = entry.get("lat") if entry else None
         lon = entry.get("lon") if entry else None
         if lat is not None and lon is not None and (lat == 0 and lon == 0):
