@@ -1,56 +1,98 @@
 {
   "fish": "タチウオ",
   "ship": "吉野屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-20",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 404.6,
+    "wmape_h0": 44.7,
     "bl0_wmape": 79.9,
     "bl2_wmape": 69.1,
     "oos_r": -0.521,
-    "n_records": 40,
+    "n_records": 609,
     "alpha_scale": 0.0,
     "use_fallback": true
   },
+  "point_models": [
+    {
+      "name": "走水沖",
+      "n": 259,
+      "wmape_h0": 35.8,
+      "oos_r": 0.516,
+      "improvement_pt": -8.9
+    },
+    {
+      "name": "観音崎沖",
+      "n": 98,
+      "wmape_h0": 35.4,
+      "oos_r": 0.756,
+      "improvement_pt": -9.3
+    },
+    {
+      "name": "猿島沖",
+      "n": 83,
+      "wmape_h0": 28.9,
+      "oos_r": 0.713,
+      "improvement_pt": -15.8
+    }
+  ],
+  "point_selection": {
+    "method": "combo_point_events月別最頻",
+    "accuracy": "75-90%",
+    "patterns": [
+      {"condition": "7〜10月 SST≥22.7℃", "point": "走水沖", "prob": 0.75},
+      {"condition": "冬春 tide_coeff高（大潮偏重）", "point": "観音崎沖"},
+      {"condition": "冬春 tide_coeff低（小潮偏重）", "point": "猿島沖"}
+    ]
+  },
   "points": [
+    {
+      "name": "走水沖",
+      "n": 259,
+      "pct": 43
+    },
+    {
+      "name": "観音崎沖",
+      "n": 98,
+      "pct": 16
+    },
+    {
+      "name": "猿島沖",
+      "n": 83,
+      "pct": 14
+    },
     {
       "name": "本牧沖",
       "n": 13,
-      "pct": 31
-    },
-    {
-      "name": "観音崎沖～80m",
-      "n": 7,
-      "pct": 17
-    },
-    {
-      "name": "走水沖～80m",
-      "n": 5,
-      "pct": 12
-    },
-    {
-      "name": "走水沖",
-      "n": 4,
-      "pct": 10
+      "pct": 2
     },
     {
       "name": "久里浜沖",
       "n": 4,
-      "pct": 10
+      "pct": 1
     }
   ],
   "modal_coord": {
     "lat": 35.65,
     "lon": 139.9
   },
-  "multi_point_risk": "medium",
+  "multi_point_risk": "resolved_by_point_model",
   "adopted_factors": [],
   "overrides": {
     "factor_blacklist": [],
     "wave_clamp": null
   },
-  "insights": [],
-  "history": [],
+  "insights": [
+    "全体混合モデルwMAPE=44.7%がポイント別で28.9〜35.8%に大幅改善（平均-11.3pt）",
+    "use_fallback=trueはコンボ全体モデルの問題。ポイント別モデルは正常に動作（r=0.5〜0.8）",
+    "季節バイアスと気象相関の混同が混合モデルでの逆効き(r=-0.521)の原因"
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "action": "deep_dive_by_point実装・実証完了",
+      "result": "走水沖35.8% / 観音崎沖35.4% / 猿島沖28.9%。全コンボ展開待ち"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "prev_week_cnt",
