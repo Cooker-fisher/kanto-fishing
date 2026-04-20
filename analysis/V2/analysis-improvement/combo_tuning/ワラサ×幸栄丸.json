@@ -1,8 +1,8 @@
 {
   "fish": "ワラサ",
   "ship": "幸栄丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-20",
+  "status": "done",
   "metrics": {
     "wmape_h0": 83.9,
     "bl0_wmape": 69.1,
@@ -87,7 +87,12 @@
     "水温が低い日ほど釣果が上がる傾向",
     "深層水条件が悪い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "note": "r=-0.290逆相関。temp_50m n=14件のみで過学習。use_fallback=true維持。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "tide_grp_chusho_autumn",

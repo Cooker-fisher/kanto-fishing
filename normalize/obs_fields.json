@@ -10,7 +10,8 @@
     "   map          : 文字列 → 数値の辞書変換（完全一致）",
     "   keyword_score: テキスト内のキーワードにスコアを割り当てる（先頭一致が優先）",
     "   split_count  : カンマ/スラッシュ等で分割した要素数を数える",
-    "   text_concat  : 複数列を結合してテキストとして扱う"
+    "   text_concat  : 複数列を結合してテキストとして扱う",
+    "   nonempty     : ソース列が空でなければ1.0、空なら0.0"
   ],
   "fields": {
     "depth_avg": {
@@ -212,6 +213,22 @@
       },
       "role": "obs_factor",
       "desc": "魚サイズスコア（良型/大型=+1, いい型=+1, 小型/豆=-0.5, 型が小=-1）"
+    },
+    "has_point_n": {
+      "source": "point_place1",
+      "compute": "nonempty",
+      "role": "obs_factor",
+      "desc": "ポイント記録有無（1=記録あり, 0=記録なし）釣れない日はポイントを書かない傾向"
+    },
+    "point_range_n": {
+      "source": "point_place1",
+      "compute": "keyword_score",
+      "scores": {
+        "川名沖": -1.0,
+        "平砂浦": -0.5
+      },
+      "role": "obs_factor",
+      "desc": "ポイント移動スコア（川名沖まで流す=-1, 平砂浦方面=-0.5）うろうろ＝食いが悪い日"
     }
   }
 }

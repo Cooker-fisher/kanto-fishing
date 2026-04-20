@@ -1,8 +1,8 @@
 {
   "fish": "シイラ",
   "ship": "庄治郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-20",
+  "status": "done",
   "metrics": {
     "wmape_h0": 86.4,
     "bl0_wmape": 113.3,
@@ -87,7 +87,12 @@
     "月次の海面水位が低い時に釣果が上がる傾向",
     "海面水位が低い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "note": "追加因子(sst_delta/temp_max)はwMAPE変化なし(86.4%)。best_cmems=6で既に計算済み。現状維持。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_gradient",

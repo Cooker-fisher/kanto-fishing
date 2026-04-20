@@ -6465,6 +6465,9 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                     tsuri_raw, tsuri_norm = "泳がせ五目", "泳がせ五目"
                 else:
                     tsuri_raw, tsuri_norm = "", ""
+            # 幸栄丸専用: フグ便でfish_rawがカワハギの場合はカワハギに再分類
+            if r.get("ship") == "幸栄丸" and tsuri_norm == "フグ" and r.get("fish_raw", "").strip() == "カワハギ":
+                tsuri_raw, tsuri_norm = "カワハギ", "カワハギ"
             main_sub   = _classify_main_sub(r.get("fish_raw", ""), tsuri_norm)
 
             _parts = comment.split("。")

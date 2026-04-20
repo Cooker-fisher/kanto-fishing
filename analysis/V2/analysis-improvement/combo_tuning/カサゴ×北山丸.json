@@ -1,8 +1,8 @@
 {
   "fish": "カサゴ",
   "ship": "北山丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-20",
+  "status": "done",
   "metrics": {
     "wmape_h0": 83.3,
     "bl0_wmape": 83.5,
@@ -107,7 +107,12 @@
     "前5日の降水量が少ない時に釣果が上がる傾向",
     "沖合の海面水位が低い月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "note": "has_point_n r=+0.328（ポイント記録=良日）。prev_week_cnt r=0.09で連鎖弱し。obs_factorとして記録のみ。alpha_scale=0.1で気象補正ほぼ無効、現状維持。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "deepwater_score",

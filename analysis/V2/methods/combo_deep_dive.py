@@ -650,6 +650,8 @@ def _compute_obs_fields(row):
                 if kw in combined:
                     val = score
                     break
+        elif compute == "nonempty":
+            val = 1.0 if (row.get(srcs[0]) or "").strip() else 0.0
         elif compute == "split_count":
             raw = (row.get(srcs[0]) or "").strip()
             if raw:
@@ -2293,10 +2295,19 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     WAVE_CLAMP_CANDIDATES  = [1.0, 1.5, 2.0, 2.5, 3.0]
 
     months = sorted(set(r["date"][:7] for r in records))
+
+    # コンボ代表座標: records から最頻 (lat, lon) を先に計算（バックテストスキップ時も使う）
+    _early_modal_lat = None; _early_modal_lon = None
+    _early_pairs = [(round(r.get("lat", 0) or 0, 3), round(r.get("lon", 0) or 0, 3))
+                    for r in records if r.get("lat") and r.get("lon")]
+    if _early_pairs:
+        _early_modal_pair = max(set(_early_pairs), key=_early_pairs.count)
+        _early_modal_lat, _early_modal_lon = _early_modal_pair
+
     if len(months) < 2:
-        return ["  データ不足（最低2ヶ月必要）"], [], [], [], {}, {}, None, None, MAX_CMEMS_DEFAULT
+        return ["  データ不足（最低2ヶ月必要）"], [], [], [], {}, {}, _early_modal_lat, _early_modal_lon, MAX_CMEMS_DEFAULT
     if len(months) < MIN_MONTHS:
-        return [f"  バックテストスキップ（期間不足: {len(months)}ヶ月 < MIN_MONTHS={MIN_MONTHS}）"], [], [], [], {}, {}, None, None, MAX_CMEMS_DEFAULT
+        return [f"  バックテストスキップ（期間不足: {len(months)}ヶ月 < MIN_MONTHS={MIN_MONTHS}）"], [], [], [], {}, {}, _early_modal_lat, _early_modal_lon, MAX_CMEMS_DEFAULT
 
     # 全ホライズン分を一括 enrich（SQL クエリを事前に全発行してキャッシュ活用）
     all_en_by_H = {}

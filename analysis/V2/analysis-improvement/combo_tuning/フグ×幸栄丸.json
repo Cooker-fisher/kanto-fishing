@@ -1,8 +1,8 @@
 {
   "fish": "フグ",
   "ship": "幸栄丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-20",
+  "status": "done",
   "metrics": {
     "wmape_h0": 84.8,
     "bl0_wmape": 70.1,
@@ -87,7 +87,12 @@
     "澄んだ水色の日に釣果が上がる傾向",
     "黒潮が接近している月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "note": "カワハギ4件をカワハギに再分類(crawler.py補正)。水色は薄濁り一種類のみで使えず。r=-0.266逆相関のためuse_fallback=true維持。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_gradient",
