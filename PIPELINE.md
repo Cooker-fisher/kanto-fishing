@@ -176,7 +176,7 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | A5 weather/YYYY-MM.csv | ✅ 毎日更新 | 153地点×月別 |
 | A6 cmems_data.sqlite | ✅ 最新 | cmems_daily 9.6M行・cmems_depth 4.1M行（〜2026-04-18） |
 | B1 data/V2/*.csv | ✅ 最新 | **64,991行**（37ファイル + cancellations.csv） |
-| C1 analysis.sqlite | ✅ 最新（2026-04-19再実行） | 実行55種・バックテスト完了45種・32テーブル |
+| C1 analysis.sqlite | ✅ 最新（2026-04-20再実行） | 実行55種・バックテスト完了45種・36テーブル |
 | D1-4 予測モデル | 🔲 未実装 | - |
 | E デザイン | ✅ V2稼働中 | design_version: "V2" |
 
@@ -231,15 +231,15 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 > python analysis/V2/methods/run_full_deepdive.py --workers 2
 > ```
 
-### analysis.sqlite テーブル一覧（32テーブル・2026/04/19現在）
+### analysis.sqlite テーブル一覧（36テーブル・2026/04/20現在）
 
 | テーブル | 行数 | 内容 |
 |---------|------|------|
-| combo_decadal | 4,935 | 魚種×船宿×旬(10日)の平均値 ← **ベースライン** |
+| combo_decadal | 4,935+ | 魚種×船宿×旬(10日)の平均値 ← **ベースライン**。`deep_dive()` が直接更新（season_detail.py 非依存） |
 | combo_backtest | 6,129 | H=0,1,3,7,14,21,28日前予測精度（r, MAE, wMAPE等） |
 | combo_meta | 246 | 座標・件数・精度サマリー（45魚種・246コンボ）※MIN_N_COMBO=30件以上のコンボのみ |
 | combo_keywords | 1,513 | kanso_rawキーワード相関 |
-| combo_deep_params | 93,916 | 気象×釣果の回帰パラメータ（50魚種）※combo_metaの45魚種＋データ不足でmeta未生成の5魚種（アユ・コハダ・ハタ・ムツゴロウイカ・ムラソイ）を含む |
+| combo_deep_params | 93,916 | 気象×釣果の回帰パラメータ（50魚種） |
 | combo_wx_params | 8,434 | 採用気象因子・係数 |
 | combo_range_backtest | 1,624 | cnt_min/max予測レンジ精度 |
 | combo_star_backtest | 77 | 回遊魚★チャンス評価バックテスト |
@@ -249,6 +249,10 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 | combo_season | 282 | 季節別集計 |
 | combo_slot_ratio | 134 | 時間帯別釣果比率 |
 | combo_notes | 0 | メモ（未使用） |
+| combo_point_stats | — | ポイント別件数・avg_cnt（`deep_dive()` が更新） |
+| combo_point_events | — | ポイント選択の行レベルイベント（日付・気象・潮汐付き）。点予測の学習データ |
+| combo_point_backtest | — | ポイント別バックテスト精度（H=0,1,3,7,14,21,28） |
+| combo_point_wx_params | — | ポイント別採用気象因子・係数（predict_count.py がコンボモデルより優先参照） |
 | cancel_thresholds | 11 | 船宿別欠航波高・風速閾値 |
 | cancel_thresholds_combo | 11 | 船宿×魚種別欠航閾値 |
 | cancel_thresholds_seasonal | 24 | 季節別欠航閾値 |
@@ -394,6 +398,14 @@ crawler.py 実行時
 - バックテスト方式を walk-forward → leave-one-month-out CV に変更
 - 過学習対策（適応的相関閾値・MAX_FACTORS=10）
 - 欠航予測をコンボレベル閾値に拡張（F1: 81.8% → 97.0%）
+
+### 2026/04/20
+- ポイント別最適化実装（`deep_dive_by_point()` / `combo_point_backtest` / `combo_point_wx_params`）
+- `predict_count.py`: `_predict_point()` / `_apply_point_wx_correction()` 追加。ポイント別モデルをコンボモデルより優先適用
+- `combo_decadal` の更新元を `season_detail.py` から `deep_dive()` 内の `save_decadal()` に変更（CSV再生成後の同期漏れを根本解消）
+- `_split_point_places_depth()` バグ修正: `水深Xm前後` の `前後` 残存・数値のみ項目の地名混入を修正
+- CSV全再生成（67,937行）・ポイント抽出精度向上
+- テーブル数: 32 → 36（combo_point_stats / combo_point_events / combo_point_backtest / combo_point_wx_params 追加）
 
 ### 2026/04/19
 - PIPELINE.md v2.3 に全面更新（researcher棚卸し結果反映）
