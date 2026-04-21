@@ -1,16 +1,15 @@
 {
   "fish": "タイ五目",
   "ship": "庄治郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 77.4,
-    "bl0_wmape": 80.7,
-    "bl2_wmape": 85.5,
-    "oos_r": 0.305,
+    "wmape_h0": 73.83,
+    "bl2_wmape": 85.47,
+    "oos_r": 0.408,
     "n_records": 1411,
-    "alpha_scale": 0.349,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "春季の100m深水温が低い時に釣果が上がる傾向",
     "夏の中潮に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=59.8% imp=13.99pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -149,5 +154,21 @@
       "n_valid": 1408,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "平塚沖",
+      "n": 432,
+      "wmape_h0": 59.8,
+      "bl2_wmape": 70.3,
+      "oos_r": 0.482,
+      "improvement_pt": 13.99
+    }
+  ],
+  "best_point": {
+    "name": "平塚沖",
+    "wmape_h0": 59.8,
+    "improvement_pt": 13.99
+  },
+  "improvement_pt": 13.99
 }

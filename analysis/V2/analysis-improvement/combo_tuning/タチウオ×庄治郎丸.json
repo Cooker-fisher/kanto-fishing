@@ -1,16 +1,15 @@
 {
   "fish": "タチウオ",
   "ship": "庄治郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 48.0,
-    "bl0_wmape": 59.2,
-    "bl2_wmape": 60.4,
-    "oos_r": 0.564,
+    "wmape_h0": 48.26,
+    "bl2_wmape": 60.42,
+    "oos_r": 0.562,
     "n_records": 243,
-    "alpha_scale": 0.877,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "特定風向（北寄り）時に釣果が上がる傾向",
     "潮目（水温勾配）がある時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=37.3% imp=10.99pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_100m_summer",
@@ -149,5 +154,21 @@
       "n_valid": 243,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "平塚沖",
+      "n": 37,
+      "wmape_h0": 37.3,
+      "bl2_wmape": 73.9,
+      "oos_r": 0.78,
+      "improvement_pt": 10.99
+    }
+  ],
+  "best_point": {
+    "name": "平塚沖",
+    "wmape_h0": 37.3,
+    "improvement_pt": 10.99
+  },
+  "improvement_pt": 10.99
 }

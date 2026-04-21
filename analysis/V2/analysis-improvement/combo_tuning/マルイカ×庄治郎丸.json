@@ -1,16 +1,15 @@
 {
   "fish": "マルイカ",
   "ship": "庄治郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 56.7,
-    "bl0_wmape": 67.3,
-    "bl2_wmape": 63.6,
-    "oos_r": 0.436,
+    "wmape_h0": 56.44,
+    "bl2_wmape": 63.61,
+    "oos_r": 0.453,
     "n_records": 230,
-    "alpha_scale": 0.699,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "50m深水温が高い時に釣果が上がる傾向",
     "寒暖差が小さい日に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_updated",
+      "note": "best=平塚東沖 wmape=45.5% imp=10.92pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_approach_idx",
@@ -149,5 +154,29 @@
       "n_valid": 228,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "平塚東沖",
+      "n": 34,
+      "wmape_h0": 45.5,
+      "bl2_wmape": 83.3,
+      "oos_r": 0.304,
+      "improvement_pt": 10.92
+    },
+    {
+      "name": "平塚沖",
+      "n": 39,
+      "wmape_h0": 51.5,
+      "bl2_wmape": 78.0,
+      "oos_r": 0.697,
+      "improvement_pt": 4.98
+    }
+  ],
+  "best_point": {
+    "name": "平塚東沖",
+    "wmape_h0": 45.5,
+    "improvement_pt": 10.92
+  },
+  "improvement_pt": 10.92
 }
