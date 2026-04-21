@@ -1,32 +1,38 @@
 {
   "fish": "アジ",
   "ship": "長崎屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 28.0,
-    "bl0_wmape": 34.3,
-    "bl2_wmape": 32.6,
-    "oos_r": 0.547,
+    "wmape_h0": 28.02,
+    "bl2_wmape": 32.55,
+    "oos_r": 0.546,
     "n_records": 360,
-    "alpha_scale": 0.45,
-    "use_fallback": false
+    "alpha_scale": 0.4501,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "航程3",
+      "n": 343,
+      "wmape_h0": 28.3,
+      "bl2_wmape": 32.9,
+      "oos_r": 0.548,
+      "improvement_pt": -0.28
+    }
+  ],
+  "best_point": {
+    "name": "航程3",
+    "wmape_h0": 28.3,
+    "improvement_pt": -0.28
+  },
+  "improvement_pt": -0.28,
   "points": [
     {
-      "name": "航程3～10分位",
-      "n": 215,
-      "pct": 58
-    },
-    {
-      "name": "航程3～15分位",
-      "n": 128,
-      "pct": 35
-    },
-    {
-      "name": "other",
-      "n": 27,
-      "pct": 7
+      "name": "航程3",
+      "n": 343,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -97,7 +103,6 @@
     "特定風向（北寄り）時に釣果が上がる傾向",
     "月次クロロフィルが低い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_gradient",
@@ -158,6 +163,13 @@
       "corr": 0.144,
       "n_valid": 53,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=航程3 wmape=28.27% combo=28.02% diff=-0.25pt"
     }
   ]
 }

@@ -1,16 +1,16 @@
 {
   "fish": "シロギス",
   "ship": "須原屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 25.5,
-    "bl0_wmape": 47.2,
-    "bl2_wmape": 32.3,
+    "wmape_h0": 25.42,
+    "bl2_wmape": 32.32,
     "oos_r": 0.777,
     "n_records": 119,
     "alpha_scale": 0.1,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -102,7 +102,13 @@
     "気温が高い日ほど釣果が上がる傾向",
     "最低気温が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=木更津沖 wmape=25.9% imp=-0.48pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -164,5 +170,21 @@
       "n_valid": 119,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "木更津沖",
+      "n": 91,
+      "wmape_h0": 25.9,
+      "bl2_wmape": 31.2,
+      "oos_r": 0.749,
+      "improvement_pt": -0.48
+    }
+  ],
+  "best_point": {
+    "name": "木更津沖",
+    "wmape_h0": 25.9,
+    "improvement_pt": -0.48
+  },
+  "improvement_pt": -0.48
 }

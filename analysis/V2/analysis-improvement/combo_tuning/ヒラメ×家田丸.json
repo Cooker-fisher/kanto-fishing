@@ -1,37 +1,43 @@
 {
   "fish": "ヒラメ",
   "ship": "家田丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.7,
-    "bl0_wmape": 42.9,
-    "bl2_wmape": 46.8,
+    "wmape_h0": 37.66,
+    "bl2_wmape": 46.82,
     "oos_r": 0.42,
     "n_records": 200,
-    "alpha_scale": 0.485,
-    "use_fallback": false
+    "alpha_scale": 0.4849,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "外川沖",
+      "n": 185,
+      "wmape_h0": 36.2,
+      "bl2_wmape": 47.1,
+      "oos_r": 0.465,
+      "improvement_pt": 1.46
+    }
+  ],
+  "best_point": {
+    "name": "外川沖",
+    "wmape_h0": 36.2,
+    "improvement_pt": 1.46
+  },
+  "improvement_pt": 1.46,
   "points": [
     {
       "name": "外川沖",
-      "n": 186,
-      "pct": 90
+      "n": 185,
+      "pct": 93
     },
     {
       "name": "大根",
       "n": 13,
-      "pct": 6
-    },
-    {
-      "name": "other",
-      "n": 6,
-      "pct": 3
-    },
-    {
-      "name": "川前沖",
-      "n": 1,
-      "pct": 0
+      "pct": 7
     }
   ],
   "modal_coord": {
@@ -92,7 +98,6 @@
     "黒潮が接近している月に釣果が上がる傾向",
     "台風が遠い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -153,6 +158,13 @@
       "corr": 0.141,
       "n_valid": 200,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=外川沖 wmape=36.24% combo=37.66% diff=1.42pt"
     }
   ]
 }

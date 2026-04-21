@@ -1,0 +1,54 @@
+{
+  "fish": "フグ",
+  "ship": "吉野屋",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 43.49,
+    "bl2_wmape": 42.49,
+    "oos_r": 0.438,
+    "n_records": 522,
+    "alpha_scale": 0.9601,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "大貫沖",
+      "n": 476,
+      "wmape_h0": 39.6,
+      "bl2_wmape": 42.6,
+      "oos_r": 0.538,
+      "improvement_pt": 3.89
+    }
+  ],
+  "best_point": {
+    "name": "大貫沖",
+    "wmape_h0": 39.6,
+    "improvement_pt": 3.89
+  },
+  "improvement_pt": 3.89,
+  "points": [
+    {
+      "name": "大貫沖",
+      "n": 476,
+      "pct": 95
+    },
+    {
+      "name": "横浜沖",
+      "n": 27,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.27,
+    "lon": 139.79
+  },
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=大貫沖 wmape=39.64% combo=43.49% diff=3.85pt"
+    }
+  ]
+}

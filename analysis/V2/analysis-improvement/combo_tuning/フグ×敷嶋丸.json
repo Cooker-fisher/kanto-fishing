@@ -1,42 +1,51 @@
 {
   "fish": "フグ",
   "ship": "敷嶋丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 63.0,
-    "bl0_wmape": 72.7,
-    "bl2_wmape": 85.3,
-    "oos_r": 0.467,
+    "wmape_h0": 63.58,
+    "bl2_wmape": 85.32,
+    "oos_r": 0.456,
     "n_records": 349,
-    "alpha_scale": 1.049,
-    "use_fallback": false
+    "alpha_scale": 1.0486,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "大原沖",
+      "n": 77,
+      "wmape_h0": 49.0,
+      "bl2_wmape": 74.6,
+      "oos_r": 0.566,
+      "improvement_pt": 14.58
+    },
+    {
+      "name": "太東沖",
+      "n": 258,
+      "wmape_h0": 60.8,
+      "bl2_wmape": 89.6,
+      "oos_r": 0.53,
+      "improvement_pt": 2.78
+    }
+  ],
+  "best_point": {
+    "name": "大原沖",
+    "wmape_h0": 49.0,
+    "improvement_pt": 14.58
+  },
+  "improvement_pt": 14.58,
   "points": [
     {
       "name": "太東沖",
-      "n": 214,
-      "pct": 57
+      "n": 262,
+      "pct": 77
     },
     {
       "name": "大原沖",
-      "n": 42,
-      "pct": 11
-    },
-    {
-      "name": "大原沖～太東沖",
-      "n": 22,
-      "pct": 6
-    },
-    {
-      "name": "other",
-      "n": 21,
-      "pct": 6
-    },
-    {
-      "name": "太東沖～大原沖",
-      "n": 19,
-      "pct": 5
+      "n": 77,
+      "pct": 23
     }
   ],
   "modal_coord": {
@@ -97,7 +106,6 @@
     "底層酸素が少ない時に釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp_50m",
@@ -158,6 +166,13 @@
       "corr": -0.151,
       "n_valid": 350,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=大原沖 wmape=48.96% combo=63.58% diff=14.62pt"
     }
   ]
 }

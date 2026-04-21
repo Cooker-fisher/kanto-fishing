@@ -1,16 +1,15 @@
 {
   "fish": "キンメダイ",
   "ship": "龍正丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 51.9,
-    "bl0_wmape": 52.6,
-    "bl2_wmape": 63.6,
-    "oos_r": 0.321,
+    "wmape_h0": 51.67,
+    "bl2_wmape": 63.59,
+    "oos_r": 0.416,
     "n_records": 59,
-    "alpha_scale": 1.2,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +106,13 @@
     "クロロフィル減少時に釣果が上がる傾向",
     "澄んだ水色の日に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=新島沖 imp=-4.83pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "typhoon_wind",
@@ -169,5 +174,21 @@
       "n_valid": 59,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "新島沖",
+      "n": 48,
+      "wmape_h0": 56.5,
+      "bl2_wmape": 59.8,
+      "oos_r": 0.306,
+      "improvement_pt": -4.83
+    }
+  ],
+  "best_point": {
+    "name": "新島沖",
+    "wmape_h0": 56.5,
+    "improvement_pt": -4.83
+  },
+  "improvement_pt": -4.83
 }

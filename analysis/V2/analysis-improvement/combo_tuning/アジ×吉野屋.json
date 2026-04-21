@@ -1,47 +1,109 @@
 {
   "fish": "アジ",
   "ship": "吉野屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 34.6,
-    "bl0_wmape": 39.9,
-    "bl2_wmape": 35.8,
-    "oos_r": 0.454,
-    "n_records": 76,
-    "alpha_scale": 0.589,
-    "use_fallback": false
+    "wmape_h0": 37.87,
+    "bl2_wmape": 38.02,
+    "oos_r": 0.388,
+    "n_records": 876,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
-      "name": "本牧沖",
-      "n": 37,
-      "pct": 41
-    },
-    {
-      "name": "久里浜沖",
-      "n": 16,
-      "pct": 18
-    },
-    {
-      "name": "木更津沖",
-      "n": 10,
-      "pct": 11
+      "name": "横須賀沖",
+      "n": 39,
+      "wmape_h0": 16.5,
+      "bl2_wmape": 31.0,
+      "oos_r": 0.788,
+      "improvement_pt": 21.41
     },
     {
       "name": "観音崎沖",
-      "n": 7,
-      "pct": 8
+      "n": 104,
+      "wmape_h0": 19.3,
+      "bl2_wmape": 28.1,
+      "oos_r": 0.558,
+      "improvement_pt": 18.58
+    },
+    {
+      "name": "本牧沖",
+      "n": 48,
+      "wmape_h0": 22.5,
+      "bl2_wmape": 33.9,
+      "oos_r": 0.614,
+      "improvement_pt": 15.4
+    },
+    {
+      "name": "木更津沖",
+      "n": 475,
+      "wmape_h0": 30.4,
+      "bl2_wmape": 34.7,
+      "oos_r": 0.493,
+      "improvement_pt": 7.47
+    },
+    {
+      "name": "横浜沖",
+      "n": 82,
+      "wmape_h0": 31.3,
+      "bl2_wmape": 37.8,
+      "oos_r": 0.639,
+      "improvement_pt": 6.6
+    }
+  ],
+  "best_point": {
+    "name": "横須賀沖",
+    "wmape_h0": 16.5,
+    "improvement_pt": 21.41
+  },
+  "improvement_pt": 21.41,
+  "points": [
+    {
+      "name": "木更津沖",
+      "n": 477,
+      "pct": 57
+    },
+    {
+      "name": "観音崎沖",
+      "n": 105,
+      "pct": 13
+    },
+    {
+      "name": "横浜沖",
+      "n": 83,
+      "pct": 10
+    },
+    {
+      "name": "本牧沖",
+      "n": 53,
+      "pct": 6
     },
     {
       "name": "横須賀沖",
-      "n": 7,
-      "pct": 8
+      "n": 44,
+      "pct": 5
+    },
+    {
+      "name": "富岡沖",
+      "n": 37,
+      "pct": 4
+    },
+    {
+      "name": "久里浜沖",
+      "n": 25,
+      "pct": 3
+    },
+    {
+      "name": "富津沖",
+      "n": 14,
+      "pct": 2
     }
   ],
   "modal_coord": {
-    "lat": 35.41,
-    "lon": 139.67
+    "lat": 35.37,
+    "lon": 139.88
   },
   "multi_point_risk": "medium",
   "adopted_factors": [
@@ -106,7 +168,6 @@
     "波が高い日ほど釣果が上がる傾向",
     "黒潮が接近している月に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_gradient",
@@ -167,6 +228,13 @@
       "corr": -0.158,
       "n_valid": 76,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=横須賀沖 wmape=16.46% combo=37.87% diff=21.41pt"
     }
   ]
 }

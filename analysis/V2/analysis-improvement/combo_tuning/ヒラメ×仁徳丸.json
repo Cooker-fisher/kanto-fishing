@@ -1,16 +1,15 @@
 {
   "fish": "ヒラメ",
   "ship": "仁徳丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 35.4,
-    "bl0_wmape": 44.7,
-    "bl2_wmape": 45.2,
+    "wmape_h0": 35.41,
+    "bl2_wmape": 45.22,
     "oos_r": 0.534,
     "n_records": 71,
-    "alpha_scale": 0.667,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +106,13 @@
     "春の中潮に釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=波崎沖 imp=4.61pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "wind_speed",
@@ -169,5 +174,21 @@
       "n_valid": 71,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "波崎沖",
+      "n": 65,
+      "wmape_h0": 30.8,
+      "bl2_wmape": 40.8,
+      "oos_r": 0.55,
+      "improvement_pt": 4.61
+    }
+  ],
+  "best_point": {
+    "name": "波崎沖",
+    "wmape_h0": 30.8,
+    "improvement_pt": 4.61
+  },
+  "improvement_pt": 4.61
 }

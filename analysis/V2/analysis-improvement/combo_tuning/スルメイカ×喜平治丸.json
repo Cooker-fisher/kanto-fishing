@@ -1,16 +1,16 @@
 {
   "fish": "スルメイカ",
   "ship": "喜平治丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 45.8,
-    "bl0_wmape": 54.7,
-    "bl2_wmape": 53.7,
-    "oos_r": 0.534,
+    "wmape_h0": 46.06,
+    "bl2_wmape": 53.68,
+    "oos_r": 0.533,
     "n_records": 195,
-    "alpha_scale": 0.535,
-    "use_fallback": false
+    "alpha_scale": 0.5355,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -102,7 +102,13 @@
     "水温上昇時に釣果が上がる傾向",
     "台風影響が強い時でも釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=洲の崎沖 wmape=35.1% imp=10.96pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "kuroshio_score",
@@ -164,5 +170,37 @@
       "n_valid": 18,
       "reason": "low_n"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "洲の崎沖",
+      "n": 36,
+      "wmape_h0": 35.1,
+      "bl2_wmape": 66.9,
+      "oos_r": 0.637,
+      "improvement_pt": 10.96
+    },
+    {
+      "name": "城ヶ島沖",
+      "n": 48,
+      "wmape_h0": 38.2,
+      "bl2_wmape": 53.1,
+      "oos_r": 0.63,
+      "improvement_pt": 7.86
+    },
+    {
+      "name": "剣崎沖",
+      "n": 99,
+      "wmape_h0": 41.7,
+      "bl2_wmape": 54.3,
+      "oos_r": 0.577,
+      "improvement_pt": 4.36
+    }
+  ],
+  "best_point": {
+    "name": "洲の崎沖",
+    "wmape_h0": 35.1,
+    "improvement_pt": 10.96
+  },
+  "improvement_pt": 10.96
 }

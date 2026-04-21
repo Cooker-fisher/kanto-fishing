@@ -1,16 +1,16 @@
 {
   "fish": "ショウサイフグ",
   "ship": "吉久",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.7,
-    "bl0_wmape": 47.8,
-    "bl2_wmape": 47.9,
+    "wmape_h0": 41.74,
+    "bl2_wmape": 47.89,
     "oos_r": 0.452,
     "n_records": 101,
-    "alpha_scale": 0.559,
-    "use_fallback": false
+    "alpha_scale": 0.5594,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +92,13 @@
     "満月・新月付近に釣果が上がる傾向",
     "月齢サイクル後半に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=大貫沖 wmape=41.3% imp=0.44pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "deepwater_score",
@@ -154,5 +160,21 @@
       "n_valid": 101,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "大貫沖",
+      "n": 93,
+      "wmape_h0": 41.3,
+      "bl2_wmape": 50.1,
+      "oos_r": 0.488,
+      "improvement_pt": 0.44
+    }
+  ],
+  "best_point": {
+    "name": "大貫沖",
+    "wmape_h0": 41.3,
+    "improvement_pt": 0.44
+  },
+  "improvement_pt": 0.44
 }

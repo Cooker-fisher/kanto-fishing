@@ -1,21 +1,45 @@
 {
   "fish": "アジ",
   "ship": "須原屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 19.0,
-    "bl0_wmape": 30.3,
-    "bl2_wmape": 22.1,
+    "wmape_h0": 18.98,
+    "bl2_wmape": 22.09,
     "oos_r": 0.738,
     "n_records": 276,
-    "alpha_scale": 0.608,
-    "use_fallback": false
+    "alpha_scale": 0.6079,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "木更津沖",
+      "n": 70,
+      "wmape_h0": 12.4,
+      "bl2_wmape": 16.8,
+      "oos_r": 0.722,
+      "improvement_pt": 6.58
+    },
+    {
+      "name": "横浜沖",
+      "n": 206,
+      "wmape_h0": 19.9,
+      "bl2_wmape": 23.4,
+      "oos_r": 0.713,
+      "improvement_pt": -0.92
+    }
+  ],
+  "best_point": {
+    "name": "木更津沖",
+    "wmape_h0": 12.4,
+    "improvement_pt": 6.58
+  },
+  "improvement_pt": 6.58,
   "points": [
     {
       "name": "横浜沖",
-      "n": 215,
+      "n": 211,
       "pct": 75
     },
     {
@@ -92,7 +116,6 @@
     "気温が低い日ほど釣果が上がる傾向",
     "潮目（水温勾配）がある時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -153,6 +176,13 @@
       "corr": 0.218,
       "n_valid": 276,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=木更津沖 wmape=12.37% combo=18.98% diff=6.61pt"
     }
   ]
 }

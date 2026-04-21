@@ -1,16 +1,16 @@
 {
   "fish": "マダイ",
   "ship": "平安丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 36.8,
-    "bl0_wmape": 41.2,
-    "bl2_wmape": 42.5,
-    "oos_r": 0.342,
+    "wmape_h0": 36.86,
+    "bl2_wmape": 42.51,
+    "oos_r": 0.34,
     "n_records": 123,
-    "alpha_scale": 0.461,
-    "use_fallback": false
+    "alpha_scale": 0.4608,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +107,13 @@
     "クロロフィル増加時に釣果が上がる傾向",
     "月次クロロフィルが低い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=小田原沖 wmape=37.3% imp=-0.44pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -169,5 +175,21 @@
       "n_valid": 123,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "小田原沖",
+      "n": 114,
+      "wmape_h0": 37.3,
+      "bl2_wmape": 44.8,
+      "oos_r": 0.352,
+      "improvement_pt": -0.44
+    }
+  ],
+  "best_point": {
+    "name": "小田原沖",
+    "wmape_h0": 37.3,
+    "improvement_pt": -0.44
+  },
+  "improvement_pt": -0.44
 }

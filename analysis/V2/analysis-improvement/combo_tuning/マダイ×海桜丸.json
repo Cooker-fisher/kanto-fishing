@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "海桜丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 51.7,
-    "bl0_wmape": 63.2,
-    "bl2_wmape": 66.0,
-    "oos_r": 0.371,
+    "wmape_h0": 50.81,
+    "bl2_wmape": 66.04,
+    "oos_r": 0.412,
     "n_records": 74,
-    "alpha_scale": 0.775,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -97,7 +96,13 @@
     "春季の100m深水温が高い時に釣果が上がる傾向",
     "冬の中潮に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=三保沖 imp=10.81pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_approach_idx",
@@ -159,5 +164,21 @@
       "n_valid": 74,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "三保沖",
+      "n": 50,
+      "wmape_h0": 40.0,
+      "bl2_wmape": 55.6,
+      "oos_r": 0.572,
+      "improvement_pt": 10.81
+    }
+  ],
+  "best_point": {
+    "name": "三保沖",
+    "wmape_h0": 40.0,
+    "improvement_pt": 10.81
+  },
+  "improvement_pt": 10.81
 }

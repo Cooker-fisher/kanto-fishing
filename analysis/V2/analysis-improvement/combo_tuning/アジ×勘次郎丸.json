@@ -1,42 +1,51 @@
 {
   "fish": "アジ",
   "ship": "勘次郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 30.3,
-    "bl0_wmape": 37.2,
+    "wmape_h0": 30.33,
     "bl2_wmape": 34.3,
-    "oos_r": 0.617,
+    "oos_r": 0.618,
     "n_records": 510,
-    "alpha_scale": 0.603,
-    "use_fallback": false
+    "alpha_scale": 0.6029,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
       "name": "金谷沖",
-      "n": 251,
-      "pct": 45
-    },
-    {
-      "name": "金谷沖～80m",
-      "n": 66,
-      "pct": 12
-    },
-    {
-      "name": "金谷沖～50m",
-      "n": 49,
-      "pct": 9
+      "n": 391,
+      "wmape_h0": 28.6,
+      "bl2_wmape": 31.7,
+      "oos_r": 0.491,
+      "improvement_pt": 1.73
     },
     {
       "name": "竹岡沖",
-      "n": 49,
-      "pct": 9
+      "n": 107,
+      "wmape_h0": 34.5,
+      "bl2_wmape": 39.1,
+      "oos_r": 0.599,
+      "improvement_pt": -4.17
+    }
+  ],
+  "best_point": {
+    "name": "金谷沖",
+    "wmape_h0": 28.6,
+    "improvement_pt": 1.73
+  },
+  "improvement_pt": 1.73,
+  "points": [
+    {
+      "name": "金谷沖",
+      "n": 395,
+      "pct": 79
     },
     {
-      "name": "竹岡沖～金谷沖",
-      "n": 41,
-      "pct": 7
+      "name": "竹岡沖",
+      "n": 107,
+      "pct": 21
     }
   ],
   "modal_coord": {
@@ -64,7 +73,6 @@
     "前週好調が継続しやすい傾向",
     "休日・祝日に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "no3_surface",
@@ -125,6 +133,13 @@
       "corr": 0.124,
       "n_valid": 496,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=金谷沖 wmape=28.65% combo=30.33% diff=1.68pt"
     }
   ]
 }

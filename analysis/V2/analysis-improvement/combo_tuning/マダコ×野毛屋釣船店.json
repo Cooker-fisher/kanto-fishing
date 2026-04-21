@@ -1,16 +1,15 @@
 {
   "fish": "マダコ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 43.6,
-    "bl0_wmape": 56.8,
-    "bl2_wmape": 50.7,
+    "bl2_wmape": 50.69,
     "oos_r": 0.391,
     "n_records": 57,
-    "alpha_scale": 0.76,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "高気圧優勢な日に釣果が上がる傾向",
     "気圧が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=八景沖 imp=-6.5pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "wind_speed",
@@ -154,5 +159,21 @@
       "n_valid": 57,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "八景沖",
+      "n": 49,
+      "wmape_h0": 50.1,
+      "bl2_wmape": 54.5,
+      "oos_r": 0.186,
+      "improvement_pt": -6.5
+    }
+  ],
+  "best_point": {
+    "name": "八景沖",
+    "wmape_h0": 50.1,
+    "improvement_pt": -6.5
+  },
+  "improvement_pt": -6.5
 }

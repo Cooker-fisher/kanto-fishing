@@ -1,47 +1,53 @@
 {
   "fish": "スルメイカ",
   "ship": "不動丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 40.5,
-    "bl0_wmape": 45.1,
-    "bl2_wmape": 47.1,
-    "oos_r": 0.449,
+    "wmape_h0": 40.14,
+    "bl2_wmape": 47.09,
+    "oos_r": 0.451,
     "n_records": 251,
-    "alpha_scale": 0.393,
-    "use_fallback": false
+    "alpha_scale": 0.3931,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "勝浦沖",
+      "n": 212,
+      "wmape_h0": 39.5,
+      "bl2_wmape": 47.8,
+      "oos_r": 0.467,
+      "improvement_pt": 0.64
+    }
+  ],
+  "best_point": {
+    "name": "勝浦沖",
+    "wmape_h0": 39.5,
+    "improvement_pt": 0.64
+  },
+  "improvement_pt": 0.64,
   "points": [
     {
-      "name": "勝浦沖～200m前後",
-      "n": 56,
-      "pct": 21
+      "name": "勝浦沖",
+      "n": 212,
+      "pct": 88
     },
     {
-      "name": "勝浦沖前後",
-      "n": 27,
-      "pct": 10
-    },
-    {
-      "name": "勝浦沖～180m前後",
-      "n": 21,
-      "pct": 8
-    },
-    {
-      "name": "勝浦沖～160m前後",
-      "n": 21,
-      "pct": 8
-    },
-    {
-      "name": "勝浦沖～220m前後",
-      "n": 18,
+      "name": "太海沖",
+      "n": 17,
       "pct": 7
+    },
+    {
+      "name": "鴨川沖",
+      "n": 12,
+      "pct": 5
     }
   ],
   "modal_coord": {
-    "lat": 35.17,
-    "lon": 140.38
+    "lat": 35.16,
+    "lon": 140.32
   },
   "multi_point_risk": "medium",
   "adopted_factors": [
@@ -87,7 +93,6 @@
     "台風接近時でも釣果が上がる傾向",
     "産卵期以外に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp_200m",
@@ -148,6 +153,13 @@
       "corr": -0.145,
       "n_valid": 251,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=勝浦沖 wmape=39.54% combo=40.14% diff=0.6pt"
     }
   ]
 }

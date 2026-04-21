@@ -1,42 +1,38 @@
 {
   "fish": "タイ五目",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 82.7,
-    "bl0_wmape": 95.5,
-    "bl2_wmape": 91.1,
+    "wmape_h0": 82.74,
+    "bl2_wmape": 91.11,
     "oos_r": 0.364,
     "n_records": 643,
-    "alpha_scale": 0.605,
-    "use_fallback": false
+    "alpha_scale": 0.6054,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 492,
+      "wmape_h0": 80.0,
+      "bl2_wmape": 93.4,
+      "oos_r": 0.5,
+      "improvement_pt": 2.74
+    }
+  ],
+  "best_point": {
+    "name": "茅ヶ崎沖",
+    "wmape_h0": 80.0,
+    "improvement_pt": 2.74
+  },
+  "improvement_pt": 2.74,
   "points": [
     {
       "name": "茅ヶ崎沖",
-      "n": 762,
-      "pct": 70
-    },
-    {
-      "name": "other",
-      "n": 254,
-      "pct": 23
-    },
-    {
-      "name": "茅ヶ崎沖～東沖",
-      "n": 26,
-      "pct": 2
-    },
-    {
-      "name": "茅ヶ崎沖～二宮沖",
-      "n": 19,
-      "pct": 2
-    },
-    {
-      "name": "茅ヶ崎沖～西沖",
-      "n": 9,
-      "pct": 1
+      "n": 495,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -107,14 +103,6 @@
     "最低気温が高い日ほど釣果が上がる傾向",
     "硝酸塩が低い時に釣果が上がる傾向"
   ],
-  "history": [
-    {
-      "date": "2026-04-20",
-      "change": "変更なし（精査済み）",
-      "effect": "-",
-      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
-    }
-  ],
   "rejected_factors": [
     {
       "factor": "do_surface",
@@ -175,6 +163,19 @@
       "corr": 0.203,
       "n_valid": 639,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし（精査済み）",
+      "effect": "-",
+      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=茅ヶ崎沖 wmape=80.01% combo=82.74% diff=2.73pt"
     }
   ]
 }

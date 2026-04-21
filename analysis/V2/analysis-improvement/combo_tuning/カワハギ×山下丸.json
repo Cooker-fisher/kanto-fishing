@@ -1,47 +1,95 @@
 {
   "fish": "カワハギ",
   "ship": "山下丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.2,
-    "bl0_wmape": 43.0,
-    "bl2_wmape": 41.5,
-    "oos_r": 0.633,
+    "wmape_h0": 32.98,
+    "bl2_wmape": 41.53,
+    "oos_r": 0.635,
     "n_records": 747,
     "alpha_scale": 0.604,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
-      "name": "竹岡沖",
-      "n": 153,
-      "pct": 20
+      "name": "下浦沖",
+      "n": 34,
+      "wmape_h0": 22.8,
+      "bl2_wmape": 33.0,
+      "oos_r": 0.469,
+      "improvement_pt": 10.18
+    },
+    {
+      "name": "久里浜沖",
+      "n": 180,
+      "wmape_h0": 26.1,
+      "bl2_wmape": 38.5,
+      "oos_r": 0.722,
+      "improvement_pt": 6.88
     },
     {
       "name": "剣崎沖",
-      "n": 45,
-      "pct": 6
+      "n": 65,
+      "wmape_h0": 31.1,
+      "bl2_wmape": 34.2,
+      "oos_r": 0.417,
+      "improvement_pt": 1.88
     },
     {
       "name": "鴨居沖",
-      "n": 45,
-      "pct": 6
+      "n": 190,
+      "wmape_h0": 31.2,
+      "bl2_wmape": 42.5,
+      "oos_r": 0.664,
+      "improvement_pt": 1.78
     },
     {
-      "name": "竹岡沖～30m",
-      "n": 44,
-      "pct": 6
+      "name": "竹岡沖",
+      "n": 274,
+      "wmape_h0": 32.5,
+      "bl2_wmape": 45.2,
+      "oos_r": 0.61,
+      "improvement_pt": 0.48
+    }
+  ],
+  "best_point": {
+    "name": "下浦沖",
+    "wmape_h0": 22.8,
+    "improvement_pt": 10.18
+  },
+  "improvement_pt": 10.18,
+  "points": [
+    {
+      "name": "竹岡沖",
+      "n": 275,
+      "pct": 37
     },
     {
-      "name": "久里浜沖～20m",
-      "n": 21,
-      "pct": 3
+      "name": "鴨居沖",
+      "n": 192,
+      "pct": 26
+    },
+    {
+      "name": "久里浜沖",
+      "n": 183,
+      "pct": 24
+    },
+    {
+      "name": "剣崎沖",
+      "n": 65,
+      "pct": 9
+    },
+    {
+      "name": "下浦沖",
+      "n": 34,
+      "pct": 5
     }
   ],
   "modal_coord": {
-    "lat": 35.24,
-    "lon": 139.71
+    "lat": 35.22,
+    "lon": 139.79
   },
   "multi_point_risk": "low",
   "adopted_factors": [
@@ -107,7 +155,6 @@
     "沖合の海面水位が高い月に釣果が上がる傾向",
     "産卵期以外に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_monthly",
@@ -168,6 +215,13 @@
       "corr": 0.194,
       "n_valid": 91,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=下浦沖 wmape=22.84% combo=32.98% diff=10.14pt"
     }
   ]
 }

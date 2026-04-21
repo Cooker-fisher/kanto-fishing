@@ -1,16 +1,15 @@
 {
   "fish": "キハダマグロ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 41.0,
-    "bl0_wmape": 31.7,
+    "wmape_h0": 41.04,
     "bl2_wmape": 24.3,
     "oos_r": -0.101,
     "n_records": 48,
-    "alpha_scale": 0.974,
-    "use_fallback": true
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -113,6 +112,11 @@
       "change": "変更なし（精査済み）",
       "effect": "-",
       "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=相模湾内 imp=40.44pt"
     }
   ],
   "rejected_factors": [
@@ -176,5 +180,21 @@
       "n_valid": 48,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "相模湾内",
+      "n": 34,
+      "wmape_h0": 0.6,
+      "bl2_wmape": 3.6,
+      "oos_r": null,
+      "improvement_pt": 40.44
+    }
+  ],
+  "best_point": {
+    "name": "相模湾内",
+    "wmape_h0": 0.6,
+    "improvement_pt": 40.44
+  },
+  "improvement_pt": 40.44
 }

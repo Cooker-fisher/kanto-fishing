@@ -1,27 +1,38 @@
 {
   "fish": "マルイカ",
   "ship": "秀丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 66.4,
-    "bl0_wmape": 74.4,
-    "bl2_wmape": 70.9,
-    "oos_r": 0.332,
+    "wmape_h0": 66.53,
+    "bl2_wmape": 70.94,
+    "oos_r": 0.33,
     "n_records": 943,
-    "alpha_scale": 0.547,
-    "use_fallback": false
+    "alpha_scale": 0.5474,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "沼津沖",
+      "n": 933,
+      "wmape_h0": 66.7,
+      "bl2_wmape": 70.9,
+      "oos_r": 0.331,
+      "improvement_pt": -0.17
+    }
+  ],
+  "best_point": {
+    "name": "沼津沖",
+    "wmape_h0": 66.7,
+    "improvement_pt": -0.17
+  },
+  "improvement_pt": -0.17,
   "points": [
     {
       "name": "沼津沖",
-      "n": 952,
-      "pct": 85
-    },
-    {
-      "name": "other",
-      "n": 174,
-      "pct": 15
+      "n": 940,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -54,14 +65,6 @@
     "表層酸素が少ない時に釣果が上がる傾向",
     "100m深水温が高い時に釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
-  ],
-  "history": [
-    {
-      "date": "2026-04-20",
-      "change": "FACTOR_BLACKLIST: do_surface追加",
-      "effect": "65.0→58.3%",
-      "reason": "相模湾座標ミスマッチ疑い"
-    }
   ],
   "rejected_factors": [
     {
@@ -123,6 +126,19 @@
       "corr": -0.109,
       "n_valid": 942,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "FACTOR_BLACKLIST: do_surface追加",
+      "effect": "65.0→58.3%",
+      "reason": "相模湾座標ミスマッチ疑い"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=沼津沖 wmape=66.71% combo=66.53% diff=-0.18pt"
     }
   ]
 }

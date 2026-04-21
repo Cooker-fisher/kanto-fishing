@@ -1,47 +1,74 @@
 {
   "fish": "マルイカ",
   "ship": "たいぞう丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 43.4,
-    "bl0_wmape": 57.9,
-    "bl2_wmape": 51.3,
-    "oos_r": 0.631,
+    "wmape_h0": 44.93,
+    "bl2_wmape": 51.29,
+    "oos_r": 0.606,
     "n_records": 352,
-    "alpha_scale": 0.883,
-    "use_fallback": false
+    "alpha_scale": 0.8827,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
       "name": "城ヶ島沖",
-      "n": 27,
-      "pct": 7
+      "n": 41,
+      "wmape_h0": 33.5,
+      "bl2_wmape": 45.7,
+      "oos_r": 0.726,
+      "improvement_pt": 11.43
     },
     {
-      "name": "亀城根～50m",
-      "n": 15,
-      "pct": 4
+      "name": "亀城根",
+      "n": 156,
+      "wmape_h0": 40.8,
+      "bl2_wmape": 60.9,
+      "oos_r": 0.518,
+      "improvement_pt": 4.13
     },
     {
-      "name": "亀城根～90m",
-      "n": 15,
-      "pct": 4
+      "name": "葉山沖",
+      "n": 128,
+      "wmape_h0": 41.6,
+      "bl2_wmape": 51.3,
+      "oos_r": 0.681,
+      "improvement_pt": 3.33
+    }
+  ],
+  "best_point": {
+    "name": "城ヶ島沖",
+    "wmape_h0": 33.5,
+    "improvement_pt": 11.43
+  },
+  "improvement_pt": 11.43,
+  "points": [
+    {
+      "name": "亀城根",
+      "n": 156,
+      "pct": 46
     },
     {
-      "name": "葉山沖～20m",
-      "n": 15,
-      "pct": 4
+      "name": "葉山沖",
+      "n": 128,
+      "pct": 38
     },
     {
-      "name": "亀城根～城ヶ島沖～70m",
-      "n": 14,
+      "name": "城ヶ島沖",
+      "n": 44,
+      "pct": 13
+    },
+    {
+      "name": "烏帽子沖",
+      "n": 12,
       "pct": 4
     }
   ],
   "modal_coord": {
-    "lat": 35.27,
-    "lon": 139.56
+    "lat": 35.65,
+    "lon": 140.9
   },
   "multi_point_risk": "low",
   "adopted_factors": [
@@ -107,7 +134,6 @@
     "底層酸素が少ない時に釣果が上がる傾向",
     "前回濁り傾向の時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_monthly",
@@ -168,6 +194,13 @@
       "corr": -0.116,
       "n_valid": 350,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=城ヶ島沖 wmape=33.47% combo=44.93% diff=11.46pt"
     }
   ]
 }

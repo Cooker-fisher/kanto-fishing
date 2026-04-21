@@ -1,16 +1,15 @@
 {
   "fish": "カワハギ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 39.0,
-    "bl0_wmape": 51.3,
-    "bl2_wmape": 48.4,
+    "bl2_wmape": 48.37,
     "oos_r": 0.499,
     "n_records": 37,
-    "alpha_scale": 0.507,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -98,6 +97,11 @@
       "change": "変更なし（精査済み）",
       "effect": "-",
       "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=茅ヶ崎沖 imp=1.8pt"
     }
   ],
   "rejected_factors": [
@@ -161,5 +165,21 @@
       "n_valid": 37,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 36,
+      "wmape_h0": 37.2,
+      "bl2_wmape": 40.8,
+      "oos_r": 0.538,
+      "improvement_pt": 1.8
+    }
+  ],
+  "best_point": {
+    "name": "茅ヶ崎沖",
+    "wmape_h0": 37.2,
+    "improvement_pt": 1.8
+  },
+  "improvement_pt": 1.8
 }

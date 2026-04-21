@@ -1,16 +1,16 @@
 {
   "fish": "カワハギ",
   "ship": "巳之助丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 31.8,
-    "bl0_wmape": 54.2,
-    "bl2_wmape": 43.0,
-    "oos_r": 0.711,
+    "wmape_h0": 29.2,
+    "bl2_wmape": 42.95,
+    "oos_r": 0.745,
     "n_records": 97,
     "alpha_scale": 0.1,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +107,13 @@
     "水温が高い日ほど釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=竹岡沖 wmape=38.9% imp=-9.7pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_monthly",
@@ -169,5 +175,21 @@
       "n_valid": 97,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "竹岡沖",
+      "n": 54,
+      "wmape_h0": 38.9,
+      "bl2_wmape": 36.3,
+      "oos_r": 0.776,
+      "improvement_pt": -9.7
+    }
+  ],
+  "best_point": {
+    "name": "竹岡沖",
+    "wmape_h0": 38.9,
+    "improvement_pt": -9.7
+  },
+  "improvement_pt": -9.7
 }

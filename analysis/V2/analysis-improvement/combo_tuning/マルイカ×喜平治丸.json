@@ -1,42 +1,51 @@
 {
   "fish": "マルイカ",
   "ship": "喜平治丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.6,
-    "bl0_wmape": 47.0,
-    "bl2_wmape": 49.8,
-    "oos_r": 0.484,
+    "wmape_h0": 39.52,
+    "bl2_wmape": 49.82,
+    "oos_r": 0.488,
     "n_records": 391,
     "alpha_scale": 0.422,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 329,
+      "wmape_h0": 37.9,
+      "bl2_wmape": 52.9,
+      "oos_r": 0.538,
+      "improvement_pt": 1.62
+    },
+    {
+      "name": "城ヶ島沖",
+      "n": 58,
+      "wmape_h0": 40.1,
+      "bl2_wmape": 49.0,
+      "oos_r": 0.525,
+      "improvement_pt": -0.58
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 37.9,
+    "improvement_pt": 1.62
+  },
+  "improvement_pt": 1.62,
   "points": [
     {
-      "name": "剣崎沖～50m",
-      "n": 44,
-      "pct": 11
+      "name": "剣崎沖",
+      "n": 332,
+      "pct": 84
     },
     {
-      "name": "剣崎沖～城ヶ島沖～90m",
-      "n": 28,
-      "pct": 7
-    },
-    {
-      "name": "剣崎沖～城ヶ島沖～100m",
-      "n": 23,
-      "pct": 6
-    },
-    {
-      "name": "剣崎沖～城ヶ島沖～95m",
-      "n": 21,
-      "pct": 5
-    },
-    {
-      "name": "剣崎沖～45m",
-      "n": 18,
-      "pct": 4
+      "name": "城ヶ島沖",
+      "n": 61,
+      "pct": 16
     }
   ],
   "modal_coord": {
@@ -87,7 +96,6 @@
     "濁り・赤潮傾向の日に釣果が上がる傾向",
     "前1日の降水量が少ない時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "no3_surface",
@@ -148,6 +156,13 @@
       "corr": 0.125,
       "n_valid": 92,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=剣崎沖 wmape=37.87% combo=39.52% diff=1.65pt"
     }
   ]
 }

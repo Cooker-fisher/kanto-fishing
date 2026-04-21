@@ -1,47 +1,74 @@
 {
   "fish": "ヤリイカ",
   "ship": "平安丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 50.0,
-    "bl0_wmape": 53.8,
-    "bl2_wmape": 52.8,
-    "oos_r": 0.413,
+    "wmape_h0": 49.97,
+    "bl2_wmape": 52.84,
+    "oos_r": 0.414,
     "n_records": 205,
-    "alpha_scale": 0.461,
-    "use_fallback": false
+    "alpha_scale": 0.4611,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
+    {
+      "name": "南沖",
+      "n": 45,
+      "wmape_h0": 43.4,
+      "bl2_wmape": 49.1,
+      "oos_r": 0.477,
+      "improvement_pt": 6.57
+    },
     {
       "name": "二宮沖",
-      "n": 65,
-      "pct": 31
+      "n": 69,
+      "wmape_h0": 46.9,
+      "bl2_wmape": 56.2,
+      "oos_r": 0.513,
+      "improvement_pt": 3.07
     },
     {
       "name": "真鶴沖",
-      "n": 60,
-      "pct": 29
+      "n": 63,
+      "wmape_h0": 49.5,
+      "bl2_wmape": 58.8,
+      "oos_r": 0.469,
+      "improvement_pt": 0.47
+    }
+  ],
+  "best_point": {
+    "name": "南沖",
+    "wmape_h0": 43.4,
+    "improvement_pt": 6.57
+  },
+  "improvement_pt": 6.57,
+  "points": [
+    {
+      "name": "二宮沖",
+      "n": 71,
+      "pct": 34
+    },
+    {
+      "name": "真鶴沖",
+      "n": 63,
+      "pct": 31
     },
     {
       "name": "南沖",
-      "n": 35,
-      "pct": 17
+      "n": 45,
+      "pct": 22
     },
     {
       "name": "東沖",
-      "n": 16,
-      "pct": 8
-    },
-    {
-      "name": "南沖～真鶴沖",
-      "n": 9,
-      "pct": 4
+      "n": 27,
+      "pct": 13
     }
   ],
   "modal_coord": {
-    "lat": 35.23,
-    "lon": 139.12
+    "lat": 35.29,
+    "lon": 139.27
   },
   "multi_point_risk": "high",
   "adopted_factors": [
@@ -107,7 +134,6 @@
     "50m深水温が高い時に釣果が上がる傾向",
     "沖合の海面水位が高い月に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -168,6 +194,13 @@
       "corr": 0.127,
       "n_valid": 203,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=南沖 wmape=43.4% combo=49.97% diff=6.57pt"
     }
   ]
 }

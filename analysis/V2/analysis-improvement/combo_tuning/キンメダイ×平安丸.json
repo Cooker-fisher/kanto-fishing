@@ -1,42 +1,51 @@
 {
   "fish": "キンメダイ",
   "ship": "平安丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 58.9,
-    "bl0_wmape": 60.8,
-    "bl2_wmape": 62.2,
-    "oos_r": 0.363,
+    "wmape_h0": 58.93,
+    "bl2_wmape": 62.22,
+    "oos_r": 0.361,
     "n_records": 373,
     "alpha_scale": 0.1,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
       "name": "小田原沖",
-      "n": 171,
-      "pct": 43
-    },
-    {
-      "name": "other",
-      "n": 143,
-      "pct": 36
+      "n": 181,
+      "wmape_h0": 45.0,
+      "bl2_wmape": 57.9,
+      "oos_r": 0.591,
+      "improvement_pt": 13.93
     },
     {
       "name": "真鶴沖",
-      "n": 51,
-      "pct": 13
+      "n": 64,
+      "wmape_h0": 61.1,
+      "bl2_wmape": 78.4,
+      "oos_r": 0.557,
+      "improvement_pt": -2.17
+    }
+  ],
+  "best_point": {
+    "name": "小田原沖",
+    "wmape_h0": 45.0,
+    "improvement_pt": 13.93
+  },
+  "improvement_pt": 13.93,
+  "points": [
+    {
+      "name": "小田原沖",
+      "n": 181,
+      "pct": 74
     },
     {
-      "name": "真鶴沖～小田原沖",
-      "n": 16,
-      "pct": 4
-    },
-    {
-      "name": "小田原沖～真鶴沖",
-      "n": 9,
-      "pct": 2
+      "name": "真鶴沖",
+      "n": 65,
+      "pct": 26
     }
   ],
   "modal_coord": {
@@ -102,7 +111,6 @@
     "クロロフィルが低い時に釣果が上がる傾向",
     "月次クロロフィルが低い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -163,6 +171,13 @@
       "corr": 0.117,
       "n_valid": 373,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=小田原沖 wmape=44.99% combo=58.93% diff=13.94pt"
     }
   ]
 }

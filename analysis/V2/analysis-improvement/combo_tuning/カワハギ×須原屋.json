@@ -1,16 +1,16 @@
 {
   "fish": "カワハギ",
   "ship": "須原屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 42.4,
-    "bl0_wmape": 42.9,
-    "bl2_wmape": 44.0,
+    "wmape_h0": 42.41,
+    "bl2_wmape": 43.97,
     "oos_r": 0.404,
     "n_records": 133,
-    "alpha_scale": 0.572,
-    "use_fallback": false
+    "alpha_scale": 0.5723,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +87,13 @@
     "沖合の海面水位が高い月に釣果が上がる傾向",
     "気温が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=竹岡沖 wmape=42.8% imp=-0.39pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_monthly",
@@ -149,5 +155,21 @@
       "n_valid": 133,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "竹岡沖",
+      "n": 133,
+      "wmape_h0": 42.8,
+      "bl2_wmape": 44.0,
+      "oos_r": 0.406,
+      "improvement_pt": -0.39
+    }
+  ],
+  "best_point": {
+    "name": "竹岡沖",
+    "wmape_h0": 42.8,
+    "improvement_pt": -0.39
+  },
+  "improvement_pt": -0.39
 }

@@ -1,16 +1,16 @@
 {
   "fish": "タチウオ",
   "ship": "かめだや",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 45.9,
-    "bl0_wmape": 56.1,
-    "bl2_wmape": 57.8,
-    "oos_r": 0.506,
+    "wmape_h0": 45.59,
+    "bl2_wmape": 57.85,
+    "oos_r": 0.511,
     "n_records": 124,
-    "alpha_scale": 0.463,
-    "use_fallback": false
+    "alpha_scale": 0.4629,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +107,13 @@
     "最低気温が高い日ほど釣果が上がる傾向",
     "気温が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=走水沖 wmape=36.7% imp=8.89pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -169,5 +175,21 @@
       "n_valid": 124,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "走水沖",
+      "n": 42,
+      "wmape_h0": 36.7,
+      "bl2_wmape": 44.2,
+      "oos_r": 0.413,
+      "improvement_pt": 8.89
+    }
+  ],
+  "best_point": {
+    "name": "走水沖",
+    "wmape_h0": 36.7,
+    "improvement_pt": 8.89
+  },
+  "improvement_pt": 8.89
 }

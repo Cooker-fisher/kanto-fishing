@@ -1,42 +1,38 @@
 {
   "fish": "マダイ",
   "ship": "たいぞう丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.1,
-    "bl0_wmape": 41.2,
-    "bl2_wmape": 39.4,
-    "oos_r": 0.359,
+    "wmape_h0": 38.3,
+    "bl2_wmape": 39.41,
+    "oos_r": 0.343,
     "n_records": 397,
-    "alpha_scale": 0.902,
-    "use_fallback": false
+    "alpha_scale": 0.9024,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "葉山沖",
+      "n": 322,
+      "wmape_h0": 37.6,
+      "bl2_wmape": 40.1,
+      "oos_r": 0.378,
+      "improvement_pt": 0.7
+    }
+  ],
+  "best_point": {
+    "name": "葉山沖",
+    "wmape_h0": 37.6,
+    "improvement_pt": 0.7
+  },
+  "improvement_pt": 0.7,
   "points": [
     {
-      "name": "other",
-      "n": 123,
-      "pct": 25
-    },
-    {
-      "name": "葉山沖～100m",
-      "n": 33,
-      "pct": 7
-    },
-    {
-      "name": "葉山沖～120m",
-      "n": 27,
-      "pct": 6
-    },
-    {
-      "name": "葉山沖～城ヶ島沖～100m",
-      "n": 25,
-      "pct": 5
-    },
-    {
-      "name": "葉山沖～三戸輪沖～100m",
-      "n": 22,
-      "pct": 5
+      "name": "葉山沖",
+      "n": 322,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -92,7 +88,6 @@
     "100m深水温が低い時に釣果が上がる傾向",
     "春季の100m深水温が低い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "do_surface",
@@ -153,6 +148,13 @@
       "corr": -0.097,
       "n_valid": 397,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=葉山沖 wmape=37.63% combo=38.3% diff=0.67pt"
     }
   ]
 }

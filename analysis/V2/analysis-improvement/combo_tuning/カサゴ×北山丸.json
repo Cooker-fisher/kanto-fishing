@@ -1,16 +1,16 @@
 {
   "fish": "カサゴ",
   "ship": "北山丸",
-  "last_reviewed": "2026-04-20",
-  "status": "done",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 83.3,
-    "bl0_wmape": 83.5,
-    "bl2_wmape": 83.4,
-    "oos_r": 0.296,
+    "wmape_h0": 63.94,
+    "bl2_wmape": 83.36,
+    "oos_r": 0.511,
     "n_records": 152,
-    "alpha_scale": 0.1,
-    "use_fallback": false
+    "alpha_scale": 0.4582,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -111,6 +111,11 @@
     {
       "date": "2026-04-20",
       "note": "has_point_n r=+0.328（ポイント記録=良日）。prev_week_cnt r=0.09で連鎖弱し。obs_factorとして記録のみ。alpha_scale=0.1で気象補正ほぼ無効、現状維持。"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=洲崎沖 wmape=48.9% imp=15.04pt"
     }
   ],
   "rejected_factors": [
@@ -174,5 +179,21 @@
       "n_valid": 60,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "洲崎沖",
+      "n": 78,
+      "wmape_h0": 48.9,
+      "bl2_wmape": 71.1,
+      "oos_r": 0.618,
+      "improvement_pt": 15.04
+    }
+  ],
+  "best_point": {
+    "name": "洲崎沖",
+    "wmape_h0": 48.9,
+    "improvement_pt": 15.04
+  },
+  "improvement_pt": 15.04
 }

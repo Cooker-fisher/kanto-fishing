@@ -1,16 +1,16 @@
 {
   "fish": "トラフグ",
   "ship": "吉久",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.3,
-    "bl0_wmape": 51.9,
-    "bl2_wmape": 49.8,
-    "oos_r": 0.437,
+    "wmape_h0": 43.29,
+    "bl2_wmape": 49.79,
+    "oos_r": 0.438,
     "n_records": 135,
-    "alpha_scale": 0.383,
-    "use_fallback": false
+    "alpha_scale": 0.3832,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +107,13 @@
     "最高気温が低い日ほど釣果が上がる傾向",
     "黒潮が接近している月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=湾内 wmape=42.8% imp=0.49pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "chl_monthly",
@@ -169,5 +175,21 @@
       "n_valid": 137,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "湾内",
+      "n": 128,
+      "wmape_h0": 42.8,
+      "bl2_wmape": 50.5,
+      "oos_r": 0.443,
+      "improvement_pt": 0.49
+    }
+  ],
+  "best_point": {
+    "name": "湾内",
+    "wmape_h0": 42.8,
+    "improvement_pt": 0.49
+  },
+  "improvement_pt": 0.49
 }

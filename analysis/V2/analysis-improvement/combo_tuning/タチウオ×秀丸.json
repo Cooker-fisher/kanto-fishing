@@ -1,16 +1,15 @@
 {
   "fish": "タチウオ",
   "ship": "秀丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 66.1,
-    "bl0_wmape": 57.1,
-    "bl2_wmape": 66.6,
-    "oos_r": -0.026,
+    "wmape_h0": 63.88,
+    "bl2_wmape": 66.61,
+    "oos_r": 0.024,
     "n_records": 95,
-    "alpha_scale": 0.852,
-    "use_fallback": true
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "潮流が強い時に釣果が上がる傾向",
     "最大潮流が強い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=沼津沖 imp=1.28pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "chl_monthly",
@@ -154,5 +159,21 @@
       "n_valid": 95,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "沼津沖",
+      "n": 94,
+      "wmape_h0": 62.6,
+      "bl2_wmape": 66.8,
+      "oos_r": 0.081,
+      "improvement_pt": 1.28
+    }
+  ],
+  "best_point": {
+    "name": "沼津沖",
+    "wmape_h0": 62.6,
+    "improvement_pt": 1.28
+  },
+  "improvement_pt": 1.28
 }

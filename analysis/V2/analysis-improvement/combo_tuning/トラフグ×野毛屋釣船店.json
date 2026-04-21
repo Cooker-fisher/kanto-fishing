@@ -1,16 +1,15 @@
 {
   "fish": "トラフグ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 42.5,
-    "bl0_wmape": 51.4,
-    "bl2_wmape": 59.4,
-    "oos_r": 0.469,
+    "wmape_h0": 42.52,
+    "bl2_wmape": 59.36,
+    "oos_r": 0.468,
     "n_records": 79,
-    "alpha_scale": 0.728,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -97,7 +96,13 @@
     "黒潮が接近している月に釣果が上がる傾向",
     "沖合の海面水位が高い月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=横須賀沖 imp=5.62pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -159,5 +164,21 @@
       "n_valid": 79,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "横須賀沖",
+      "n": 58,
+      "wmape_h0": 36.9,
+      "bl2_wmape": 59.2,
+      "oos_r": 0.569,
+      "improvement_pt": 5.62
+    }
+  ],
+  "best_point": {
+    "name": "横須賀沖",
+    "wmape_h0": 36.9,
+    "improvement_pt": 5.62
+  },
+  "improvement_pt": 5.62
 }

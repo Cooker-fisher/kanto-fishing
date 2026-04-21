@@ -1,42 +1,38 @@
 {
   "fish": "アマダイ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.5,
-    "bl0_wmape": 42.1,
-    "bl2_wmape": 41.5,
+    "wmape_h0": 36.49,
+    "bl2_wmape": 41.52,
     "oos_r": 0.422,
     "n_records": 386,
-    "alpha_scale": 0.743,
-    "use_fallback": false
+    "alpha_scale": 0.7426,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 370,
+      "wmape_h0": 35.9,
+      "bl2_wmape": 40.7,
+      "oos_r": 0.427,
+      "improvement_pt": 0.59
+    }
+  ],
+  "best_point": {
+    "name": "茅ヶ崎沖",
+    "wmape_h0": 35.9,
+    "improvement_pt": 0.59
+  },
+  "improvement_pt": 0.59,
   "points": [
     {
       "name": "茅ヶ崎沖",
-      "n": 350,
-      "pct": 88
-    },
-    {
-      "name": "茅ヶ崎沖～二宮沖",
-      "n": 18,
-      "pct": 5
-    },
-    {
-      "name": "other",
-      "n": 8,
-      "pct": 2
-    },
-    {
-      "name": "西沖",
-      "n": 5,
-      "pct": 1
-    },
-    {
-      "name": "二宮沖",
-      "n": 4,
-      "pct": 1
+      "n": 370,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -107,14 +103,6 @@
     "前週好調が継続しやすい傾向",
     "硝酸塩が低い時に釣果が上がる傾向"
   ],
-  "history": [
-    {
-      "date": "2026-04-20",
-      "change": "変更なし（精査済み）",
-      "effect": "-",
-      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
-    }
-  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -175,6 +163,19 @@
       "corr": 0.123,
       "n_valid": 386,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-20",
+      "change": "変更なし（精査済み）",
+      "effect": "-",
+      "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=茅ヶ崎沖 wmape=35.91% combo=36.49% diff=0.58pt"
     }
   ]
 }

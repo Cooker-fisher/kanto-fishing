@@ -1,16 +1,15 @@
 {
   "fish": "マダコ",
   "ship": "こなや丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.7,
-    "bl0_wmape": 39.7,
-    "bl2_wmape": 37.1,
-    "oos_r": 0.258,
+    "wmape_h0": 37.77,
+    "bl2_wmape": 37.07,
+    "oos_r": 0.253,
     "n_records": 66,
-    "alpha_scale": 0.849,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "底層酸素が少ない時に釣果が上がる傾向",
     "深層水条件が悪い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=長浦沖 imp=3.87pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_gradient",
@@ -154,5 +159,21 @@
       "n_valid": 66,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "長浦沖",
+      "n": 41,
+      "wmape_h0": 33.9,
+      "bl2_wmape": 43.1,
+      "oos_r": 0.505,
+      "improvement_pt": 3.87
+    }
+  ],
+  "best_point": {
+    "name": "長浦沖",
+    "wmape_h0": 33.9,
+    "improvement_pt": 3.87
+  },
+  "improvement_pt": 3.87
 }

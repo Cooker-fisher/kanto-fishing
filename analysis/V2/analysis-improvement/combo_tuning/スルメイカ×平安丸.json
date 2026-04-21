@@ -1,16 +1,16 @@
 {
   "fish": "スルメイカ",
   "ship": "平安丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 51.7,
-    "bl0_wmape": 64.0,
-    "bl2_wmape": 61.4,
-    "oos_r": 0.475,
+    "wmape_h0": 51.8,
+    "bl2_wmape": 61.39,
+    "oos_r": 0.472,
     "n_records": 179,
     "alpha_scale": 0.51,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +107,13 @@
     "前6日の降水量が少ない時に釣果が上がる傾向",
     "水温が低い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=南沖 wmape=44.2% imp=7.6pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_100m",
@@ -169,5 +175,29 @@
       "n_valid": 44,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "南沖",
+      "n": 92,
+      "wmape_h0": 44.2,
+      "bl2_wmape": 62.1,
+      "oos_r": 0.664,
+      "improvement_pt": 7.6
+    },
+    {
+      "name": "西沖",
+      "n": 49,
+      "wmape_h0": 46.0,
+      "bl2_wmape": 57.2,
+      "oos_r": 0.514,
+      "improvement_pt": 5.8
+    }
+  ],
+  "best_point": {
+    "name": "南沖",
+    "wmape_h0": 44.2,
+    "improvement_pt": 7.6
+  },
+  "improvement_pt": 7.6
 }

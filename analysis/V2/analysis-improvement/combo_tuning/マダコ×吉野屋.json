@@ -1,0 +1,85 @@
+{
+  "fish": "マダコ",
+  "ship": "吉野屋",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 43.2,
+    "bl2_wmape": 48.14,
+    "oos_r": 0.434,
+    "n_records": 273,
+    "alpha_scale": 0.6292,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "横浜沖",
+      "n": 47,
+      "wmape_h0": 38.6,
+      "bl2_wmape": 64.6,
+      "oos_r": 0.705,
+      "improvement_pt": 4.6
+    },
+    {
+      "name": "川崎沖",
+      "n": 100,
+      "wmape_h0": 40.4,
+      "bl2_wmape": 50.4,
+      "oos_r": 0.544,
+      "improvement_pt": 2.8
+    },
+    {
+      "name": "木更津沖",
+      "n": 59,
+      "wmape_h0": 45.5,
+      "bl2_wmape": 64.1,
+      "oos_r": 0.433,
+      "improvement_pt": -2.3
+    }
+  ],
+  "best_point": {
+    "name": "横浜沖",
+    "wmape_h0": 38.6,
+    "improvement_pt": 4.6
+  },
+  "improvement_pt": 4.6,
+  "points": [
+    {
+      "name": "川崎沖",
+      "n": 100,
+      "pct": 42
+    },
+    {
+      "name": "木更津沖",
+      "n": 59,
+      "pct": 25
+    },
+    {
+      "name": "横浜沖",
+      "n": 47,
+      "pct": 20
+    },
+    {
+      "name": "長浦沖",
+      "n": 20,
+      "pct": 8
+    },
+    {
+      "name": "千葉沖",
+      "n": 11,
+      "pct": 5
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.5,
+    "lon": 139.73
+  },
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=横浜沖 wmape=38.64% combo=43.2% diff=4.56pt"
+    }
+  ]
+}

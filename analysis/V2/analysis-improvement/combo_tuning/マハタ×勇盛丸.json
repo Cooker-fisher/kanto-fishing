@@ -1,16 +1,15 @@
 {
   "fish": "マハタ",
   "ship": "勇盛丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 27.3,
-    "bl0_wmape": 29.2,
-    "bl2_wmape": 27.3,
-    "oos_r": 0.322,
+    "wmape_h0": 27.25,
+    "bl2_wmape": 27.29,
+    "oos_r": 0.326,
     "n_records": 72,
-    "alpha_scale": 0.1,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -70,7 +69,13 @@
     "前週好調が継続しやすい傾向",
     "冬の大潮に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=大原沖 imp=6.75pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "precip_sum3",
@@ -132,5 +137,21 @@
       "n_valid": 72,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "大原沖",
+      "n": 54,
+      "wmape_h0": 20.5,
+      "bl2_wmape": 27.1,
+      "oos_r": 0.636,
+      "improvement_pt": 6.75
+    }
+  ],
+  "best_point": {
+    "name": "大原沖",
+    "wmape_h0": 20.5,
+    "improvement_pt": 6.75
+  },
+  "improvement_pt": 6.75
 }

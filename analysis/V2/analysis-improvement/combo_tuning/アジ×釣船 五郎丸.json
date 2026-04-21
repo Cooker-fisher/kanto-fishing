@@ -1,47 +1,69 @@
 {
   "fish": "アジ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.2,
-    "bl0_wmape": 41.3,
-    "bl2_wmape": 43.2,
-    "oos_r": 0.472,
+    "wmape_h0": 35.91,
+    "bl2_wmape": 43.22,
+    "oos_r": 0.479,
     "n_records": 741,
-    "alpha_scale": 0.497,
-    "use_fallback": false
+    "alpha_scale": 0.4974,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 39,
+      "wmape_h0": 30.3,
+      "bl2_wmape": 35.5,
+      "oos_r": 0.095,
+      "improvement_pt": 5.61
+    },
+    {
+      "name": "観音崎沖",
+      "n": 370,
+      "wmape_h0": 36.1,
+      "bl2_wmape": 41.4,
+      "oos_r": 0.408,
+      "improvement_pt": -0.19
+    },
+    {
+      "name": "鴨居沖",
+      "n": 327,
+      "wmape_h0": 37.5,
+      "bl2_wmape": 47.3,
+      "oos_r": 0.527,
+      "improvement_pt": -1.59
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 30.3,
+    "improvement_pt": 5.61
+  },
+  "improvement_pt": 5.61,
   "points": [
     {
-      "name": "観音崎沖前後",
-      "n": 132,
-      "pct": 18
+      "name": "観音崎沖",
+      "n": 370,
+      "pct": 50
     },
     {
-      "name": "観音崎沖～60m",
-      "n": 82,
-      "pct": 11
+      "name": "鴨居沖",
+      "n": 336,
+      "pct": 45
     },
     {
-      "name": "鴨居沖～観音崎沖～50m",
-      "n": 72,
-      "pct": 10
-    },
-    {
-      "name": "観音崎沖～70m",
-      "n": 66,
-      "pct": 9
-    },
-    {
-      "name": "鴨居沖前後",
-      "n": 54,
-      "pct": 7
+      "name": "久里浜沖",
+      "n": 40,
+      "pct": 5
     }
   ],
   "modal_coord": {
-    "lat": 35.34,
-    "lon": 139.64
+    "lat": 35.28,
+    "lon": 139.73
   },
   "multi_point_risk": "medium",
   "adopted_factors": [
@@ -64,7 +86,6 @@
     "前週好調が継続しやすい傾向",
     "平日の方が釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "no3_surface",
@@ -125,6 +146,13 @@
       "corr": 0.094,
       "n_valid": 155,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=久里浜沖 wmape=30.34% combo=35.91% diff=5.57pt"
     }
   ]
 }

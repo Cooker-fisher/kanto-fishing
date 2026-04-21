@@ -1,47 +1,63 @@
 {
   "fish": "トラフグ",
   "ship": "吉野屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 32.9,
-    "bl0_wmape": 49.2,
-    "bl2_wmape": 53.3,
-    "oos_r": 0.558,
-    "n_records": 44,
-    "alpha_scale": 0.507,
-    "use_fallback": false
+    "wmape_h0": 51.86,
+    "bl2_wmape": 61.91,
+    "oos_r": 0.05,
+    "n_records": 127,
+    "alpha_scale": 0.8868,
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
-  "points": [
-    {
-      "name": "久里浜沖",
-      "n": 18,
-      "pct": 26
-    },
+  "point_models": [
     {
       "name": "富浦沖",
-      "n": 18,
-      "pct": 26
+      "n": 32,
+      "wmape_h0": 52.5,
+      "bl2_wmape": 54.8,
+      "oos_r": -0.011,
+      "improvement_pt": -0.64
+    }
+  ],
+  "best_point": {
+    "name": "富浦沖",
+    "wmape_h0": 52.5,
+    "improvement_pt": -0.64
+  },
+  "improvement_pt": -0.64,
+  "points": [
+    {
+      "name": "富浦沖",
+      "n": 40,
+      "pct": 33
     },
     {
-      "name": "木更津沖～30m",
-      "n": 9,
+      "name": "久里浜沖",
+      "n": 32,
+      "pct": 27
+    },
+    {
+      "name": "大貫沖",
+      "n": 17,
+      "pct": 14
+    },
+    {
+      "name": "木更津沖",
+      "n": 16,
       "pct": 13
     },
     {
-      "name": "木更津沖～40m",
-      "n": 7,
-      "pct": 10
-    },
-    {
-      "name": "中の瀬",
-      "n": 4,
-      "pct": 6
+      "name": "横浜沖",
+      "n": 15,
+      "pct": 12
     }
   ],
   "modal_coord": {
-    "lat": 35.65,
-    "lon": 139.9
+    "lat": 34.97,
+    "lon": 139.74
   },
   "multi_point_risk": "high",
   "adopted_factors": [
@@ -107,7 +123,6 @@
     "最高気温が低い日ほど釣果が上がる傾向",
     "冬の中潮に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -168,6 +183,13 @@
       "corr": -0.217,
       "n_valid": 35,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=富浦沖 wmape=52.52% combo=51.86% diff=-0.66pt"
     }
   ]
 }

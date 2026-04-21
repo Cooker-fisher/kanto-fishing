@@ -1,0 +1,80 @@
+{
+  "fish": "シロギス",
+  "ship": "吉野屋",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 36.22,
+    "bl2_wmape": 37.94,
+    "oos_r": 0.58,
+    "n_records": 554,
+    "alpha_scale": 0.5221,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "富津沖",
+      "n": 40,
+      "wmape_h0": 25.9,
+      "bl2_wmape": 32.7,
+      "oos_r": 0.509,
+      "improvement_pt": 10.32
+    },
+    {
+      "name": "中ノ瀬",
+      "n": 35,
+      "wmape_h0": 28.9,
+      "bl2_wmape": 38.0,
+      "oos_r": 0.543,
+      "improvement_pt": 7.32
+    },
+    {
+      "name": "木更津沖",
+      "n": 396,
+      "wmape_h0": 31.3,
+      "bl2_wmape": 36.7,
+      "oos_r": 0.634,
+      "improvement_pt": 4.92
+    }
+  ],
+  "best_point": {
+    "name": "富津沖",
+    "wmape_h0": 25.9,
+    "improvement_pt": 10.32
+  },
+  "improvement_pt": 10.32,
+  "points": [
+    {
+      "name": "木更津沖",
+      "n": 405,
+      "pct": 83
+    },
+    {
+      "name": "富津沖",
+      "n": 40,
+      "pct": 8
+    },
+    {
+      "name": "中ノ瀬",
+      "n": 35,
+      "pct": 7
+    },
+    {
+      "name": "中の瀬",
+      "n": 10,
+      "pct": 2
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.37,
+    "lon": 139.88
+  },
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=富津沖 wmape=25.95% combo=36.22% diff=10.27pt"
+    }
+  ]
+}

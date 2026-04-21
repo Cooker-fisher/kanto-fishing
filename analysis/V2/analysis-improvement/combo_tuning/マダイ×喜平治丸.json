@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "喜平治丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 45.8,
-    "bl0_wmape": 48.8,
-    "bl2_wmape": 53.5,
-    "oos_r": 0.284,
+    "wmape_h0": 43.68,
+    "bl2_wmape": 53.52,
+    "oos_r": 0.377,
     "n_records": 87,
-    "alpha_scale": 0.47,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -82,7 +81,13 @@
     "気圧低下時に釣果が上がる傾向",
     "上弦・下弦周辺に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=剣崎沖 imp=1.18pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_lag30",
@@ -144,5 +149,21 @@
       "n_valid": 87,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 65,
+      "wmape_h0": 42.5,
+      "bl2_wmape": 47.4,
+      "oos_r": 0.328,
+      "improvement_pt": 1.18
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 42.5,
+    "improvement_pt": 1.18
+  },
+  "improvement_pt": 1.18
 }

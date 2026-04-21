@@ -1,16 +1,15 @@
 {
   "fish": "カンパチ",
   "ship": "佐衛美丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 56.9,
-    "bl0_wmape": 64.9,
-    "bl2_wmape": 62.1,
-    "oos_r": 0.476,
+    "wmape_h0": 57.52,
+    "bl2_wmape": 62.13,
+    "oos_r": 0.499,
     "n_records": 31,
-    "alpha_scale": 0.834,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -102,7 +101,13 @@
     "水温低下時に釣果が上がる傾向",
     "最高気温が低い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=平砂浦沖 imp=0.92pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "pressure",
@@ -164,5 +169,21 @@
       "n_valid": 31,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "平砂浦沖",
+      "n": 30,
+      "wmape_h0": 56.6,
+      "bl2_wmape": 62.8,
+      "oos_r": 0.566,
+      "improvement_pt": 0.92
+    }
+  ],
+  "best_point": {
+    "name": "平砂浦沖",
+    "wmape_h0": 56.6,
+    "improvement_pt": 0.92
+  },
+  "improvement_pt": 0.92
 }

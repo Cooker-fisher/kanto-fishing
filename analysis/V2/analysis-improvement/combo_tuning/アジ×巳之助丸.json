@@ -1,16 +1,15 @@
 {
   "fish": "アジ",
   "ship": "巳之助丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
-    "wmape_h0": 29.3,
-    "bl0_wmape": 34.8,
+    "wmape_h0": 30.16,
     "bl2_wmape": 34.7,
-    "oos_r": 0.39,
+    "oos_r": 0.348,
     "n_records": 71,
-    "alpha_scale": 1.194,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -97,7 +96,13 @@
     "50m深水温が高い時に釣果が上がる傾向",
     "100m深水温が高い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=久里浜沖 imp=-2.64pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -159,5 +164,21 @@
       "n_valid": 64,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 50,
+      "wmape_h0": 32.8,
+      "bl2_wmape": 30.6,
+      "oos_r": 0.024,
+      "improvement_pt": -2.64
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 32.8,
+    "improvement_pt": -2.64
+  },
+  "improvement_pt": -2.64
 }

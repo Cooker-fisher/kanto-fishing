@@ -1,47 +1,66 @@
 {
   "fish": "タチウオ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.1,
-    "bl0_wmape": 54.8,
-    "bl2_wmape": 55.7,
-    "oos_r": 0.514,
+    "wmape_h0": 45.88,
+    "bl2_wmape": 55.68,
+    "oos_r": 0.518,
     "n_records": 582,
-    "alpha_scale": 0.559,
-    "use_fallback": false
+    "alpha_scale": 0.5589,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "猿島沖",
+      "n": 162,
+      "wmape_h0": 37.4,
+      "bl2_wmape": 56.1,
+      "oos_r": 0.62,
+      "improvement_pt": 8.48
+    },
+    {
+      "name": "観音崎沖",
+      "n": 363,
+      "wmape_h0": 42.3,
+      "bl2_wmape": 55.2,
+      "oos_r": 0.583,
+      "improvement_pt": 3.58
+    }
+  ],
+  "best_point": {
+    "name": "猿島沖",
+    "wmape_h0": 37.4,
+    "improvement_pt": 8.48
+  },
+  "improvement_pt": 8.48,
   "points": [
     {
-      "name": "観音崎沖～猿島沖～60m",
-      "n": 209,
-      "pct": 35
+      "name": "観音崎沖",
+      "n": 364,
+      "pct": 65
     },
     {
-      "name": "猿島沖～60m",
-      "n": 123,
-      "pct": 21
+      "name": "猿島沖",
+      "n": 162,
+      "pct": 29
     },
     {
-      "name": "観音崎沖～70m",
-      "n": 44,
-      "pct": 7
+      "name": "第二海堡沖周辺",
+      "n": 17,
+      "pct": 3
     },
     {
-      "name": "観音崎沖～猿島沖～70m",
-      "n": 44,
-      "pct": 7
-    },
-    {
-      "name": "観音崎沖～60m",
-      "n": 32,
-      "pct": 5
+      "name": "大貫沖",
+      "n": 17,
+      "pct": 3
     }
   ],
   "modal_coord": {
-    "lat": 35.34,
-    "lon": 139.64
+    "lat": 35.28,
+    "lon": 139.73
   },
   "multi_point_risk": "high",
   "adopted_factors": [
@@ -107,7 +126,6 @@
     "産卵期以外に釣果が上がる傾向",
     "深層水条件が悪い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -168,6 +186,13 @@
       "corr": -0.12,
       "n_valid": 582,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=猿島沖 wmape=37.43% combo=45.88% diff=8.45pt"
     }
   ]
 }

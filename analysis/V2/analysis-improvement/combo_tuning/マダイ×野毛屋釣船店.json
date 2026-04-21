@@ -1,16 +1,16 @@
 {
   "fish": "マダイ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 42.2,
-    "bl0_wmape": 48.4,
-    "bl2_wmape": 42.6,
+    "wmape_h0": 42.22,
+    "bl2_wmape": 42.62,
     "oos_r": 0.291,
     "n_records": 114,
-    "alpha_scale": 0.523,
-    "use_fallback": false
+    "alpha_scale": 0.5227,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -56,7 +56,13 @@
     "秋の中潮に釣果が上がる傾向",
     "50m深水温が低い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=横須賀沖 wmape=39.5% imp=2.72pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "wind_dir_e",
@@ -118,5 +124,21 @@
       "n_valid": 114,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "横須賀沖",
+      "n": 114,
+      "wmape_h0": 39.5,
+      "bl2_wmape": 42.6,
+      "oos_r": 0.323,
+      "improvement_pt": 2.72
+    }
+  ],
+  "best_point": {
+    "name": "横須賀沖",
+    "wmape_h0": 39.5,
+    "improvement_pt": 2.72
+  },
+  "improvement_pt": 2.72
 }

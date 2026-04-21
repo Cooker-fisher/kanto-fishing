@@ -1,42 +1,56 @@
 {
   "fish": "カサゴ",
   "ship": "山下丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 27.3,
-    "bl0_wmape": 30.1,
-    "bl2_wmape": 30.6,
-    "oos_r": 0.441,
+    "wmape_h0": 27.17,
+    "bl2_wmape": 30.63,
+    "oos_r": 0.443,
     "n_records": 224,
     "alpha_scale": 0.395,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "鴨居沖",
+      "n": 84,
+      "wmape_h0": 21.1,
+      "bl2_wmape": 25.5,
+      "oos_r": 0.517,
+      "improvement_pt": 6.07
+    },
+    {
+      "name": "久里浜沖",
+      "n": 125,
+      "wmape_h0": 26.1,
+      "bl2_wmape": 30.5,
+      "oos_r": 0.608,
+      "improvement_pt": 1.07
+    }
+  ],
+  "best_point": {
+    "name": "鴨居沖",
+    "wmape_h0": 21.1,
+    "improvement_pt": 6.07
+  },
+  "improvement_pt": 6.07,
   "points": [
     {
       "name": "久里浜沖",
-      "n": 112,
-      "pct": 48
+      "n": 128,
+      "pct": 57
     },
     {
       "name": "鴨居沖",
-      "n": 71,
-      "pct": 30
+      "n": 87,
+      "pct": 39
     },
     {
-      "name": "久里浜沖～鴨居沖",
-      "n": 6,
-      "pct": 3
-    },
-    {
-      "name": "鴨居沖～25m",
-      "n": 6,
-      "pct": 3
-    },
-    {
-      "name": "鴨居沖～久里浜沖",
-      "n": 5,
-      "pct": 2
+      "name": "観音崎沖",
+      "n": 10,
+      "pct": 4
     }
   ],
   "modal_coord": {
@@ -107,7 +121,6 @@
     "最高気温が高い日ほど釣果が上がる傾向",
     "底層酸素が少ない時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -168,6 +181,13 @@
       "corr": -0.229,
       "n_valid": 224,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=鴨居沖 wmape=21.09% combo=27.17% diff=6.08pt"
     }
   ]
 }

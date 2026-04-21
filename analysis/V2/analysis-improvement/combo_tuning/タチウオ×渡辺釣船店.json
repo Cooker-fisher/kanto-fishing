@@ -1,42 +1,79 @@
 {
   "fish": "タチウオ",
   "ship": "渡辺釣船店",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.1,
-    "bl0_wmape": 49.0,
-    "bl2_wmape": 43.7,
-    "oos_r": 0.671,
+    "wmape_h0": 32.96,
+    "bl2_wmape": 43.73,
+    "oos_r": 0.674,
     "n_records": 209,
-    "alpha_scale": 0.756,
-    "use_fallback": false
+    "alpha_scale": 0.7565,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
-      "name": "猿島沖",
-      "n": 60,
-      "pct": 28
+      "name": "大貫沖",
+      "n": 31,
+      "wmape_h0": 16.7,
+      "bl2_wmape": 38.9,
+      "oos_r": 0.842,
+      "improvement_pt": 16.26
     },
     {
       "name": "走水沖",
       "n": 30,
-      "pct": 14
+      "wmape_h0": 24.7,
+      "bl2_wmape": 49.7,
+      "oos_r": 0.766,
+      "improvement_pt": 8.26
+    },
+    {
+      "name": "猿島沖",
+      "n": 60,
+      "wmape_h0": 27.3,
+      "bl2_wmape": 47.8,
+      "oos_r": 0.743,
+      "improvement_pt": 5.66
+    }
+  ],
+  "best_point": {
+    "name": "大貫沖",
+    "wmape_h0": 16.7,
+    "improvement_pt": 16.26
+  },
+  "improvement_pt": 16.26,
+  "points": [
+    {
+      "name": "猿島沖",
+      "n": 61,
+      "pct": 35
     },
     {
       "name": "大貫沖",
+      "n": 31,
+      "pct": 18
+    },
+    {
+      "name": "走水沖",
       "n": 30,
-      "pct": 14
+      "pct": 17
     },
     {
       "name": "横浜沖",
-      "n": 23,
-      "pct": 11
+      "n": 24,
+      "pct": 14
     },
     {
       "name": "観音崎沖",
       "n": 18,
-      "pct": 8
+      "pct": 10
+    },
+    {
+      "name": "湾奥",
+      "n": 10,
+      "pct": 6
     }
   ],
   "modal_coord": {
@@ -107,7 +144,6 @@
     "最低気温が高い日ほど釣果が上がる傾向",
     "水温が均一な時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -168,6 +204,13 @@
       "corr": 0.249,
       "n_valid": 209,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=大貫沖 wmape=16.68% combo=32.96% diff=16.28pt"
     }
   ]
 }

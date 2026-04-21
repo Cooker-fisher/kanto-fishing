@@ -1,16 +1,16 @@
 {
   "fish": "ヤリイカ",
   "ship": "不動丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 54.5,
-    "bl0_wmape": 65.4,
-    "bl2_wmape": 69.6,
-    "oos_r": 0.473,
+    "wmape_h0": 54.32,
+    "bl2_wmape": 69.65,
+    "oos_r": 0.469,
     "n_records": 136,
-    "alpha_scale": 0.467,
-    "use_fallback": false
+    "alpha_scale": 0.4669,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +107,13 @@
     "月次クロロフィルが高い時に釣果が上がる傾向",
     "表層酸素が豊富な時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=勝浦沖 wmape=43.8% imp=10.52pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -169,5 +175,21 @@
       "n_valid": 136,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "勝浦沖",
+      "n": 42,
+      "wmape_h0": 43.8,
+      "bl2_wmape": 51.6,
+      "oos_r": 0.334,
+      "improvement_pt": 10.52
+    }
+  ],
+  "best_point": {
+    "name": "勝浦沖",
+    "wmape_h0": 43.8,
+    "improvement_pt": 10.52
+  },
+  "improvement_pt": 10.52
 }

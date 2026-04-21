@@ -1,16 +1,15 @@
 {
   "fish": "カツオ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 54.8,
-    "bl0_wmape": 62.3,
-    "bl2_wmape": 65.5,
+    "wmape_h0": 54.79,
+    "bl2_wmape": 65.46,
     "oos_r": 0.426,
     "n_records": 58,
-    "alpha_scale": 0.525,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -113,6 +112,11 @@
       "change": "変更なし（精査済み）",
       "effect": "-",
       "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=相模湾内 imp=9.09pt"
     }
   ],
   "rejected_factors": [
@@ -176,5 +180,21 @@
       "n_valid": 58,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "相模湾内",
+      "n": 38,
+      "wmape_h0": 45.7,
+      "bl2_wmape": 68.1,
+      "oos_r": 0.653,
+      "improvement_pt": 9.09
+    }
+  ],
+  "best_point": {
+    "name": "相模湾内",
+    "wmape_h0": 45.7,
+    "improvement_pt": 9.09
+  },
+  "improvement_pt": 9.09
 }

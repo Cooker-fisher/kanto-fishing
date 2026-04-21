@@ -1,32 +1,38 @@
 {
   "fish": "マダコ",
   "ship": "長崎屋",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 40.1,
-    "bl0_wmape": 45.6,
-    "bl2_wmape": 47.5,
+    "bl2_wmape": 47.53,
     "oos_r": 0.341,
     "n_records": 575,
-    "alpha_scale": 0.584,
-    "use_fallback": false
+    "alpha_scale": 0.5842,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "航程1",
+      "n": 573,
+      "wmape_h0": 40.0,
+      "bl2_wmape": 47.3,
+      "oos_r": 0.345,
+      "improvement_pt": 0.1
+    }
+  ],
+  "best_point": {
+    "name": "航程1",
+    "wmape_h0": 40.0,
+    "improvement_pt": 0.1
+  },
+  "improvement_pt": 0.1,
   "points": [
     {
-      "name": "航程1～25分位",
-      "n": 451,
-      "pct": 78
-    },
-    {
-      "name": "航程1～20分位",
-      "n": 125,
-      "pct": 22
-    },
-    {
-      "name": "富岡沖航程1～25分位",
-      "n": 2,
-      "pct": 0
+      "name": "航程1",
+      "n": 573,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -97,7 +103,6 @@
     "水温が均一な時に釣果が上がる傾向",
     "最低気温が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_gradient",
@@ -158,6 +163,13 @@
       "corr": 0.147,
       "n_valid": 337,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=航程1 wmape=39.96% combo=40.1% diff=0.14pt"
     }
   ]
 }

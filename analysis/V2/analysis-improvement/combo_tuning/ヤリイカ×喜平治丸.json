@@ -1,47 +1,71 @@
 {
   "fish": "ヤリイカ",
   "ship": "喜平治丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 46.3,
-    "bl0_wmape": 52.7,
-    "bl2_wmape": 52.5,
-    "oos_r": 0.469,
+    "wmape_h0": 46.37,
+    "bl2_wmape": 52.46,
+    "oos_r": 0.47,
     "n_records": 269,
-    "alpha_scale": 0.623,
-    "use_fallback": false
+    "alpha_scale": 0.6234,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
-      "name": "洲の崎沖～230m",
-      "n": 24,
-      "pct": 9
-    },
-    {
-      "name": "洲の崎沖～220m",
-      "n": 18,
-      "pct": 6
+      "name": "洲の崎沖",
+      "n": 117,
+      "wmape_h0": 42.7,
+      "bl2_wmape": 58.2,
+      "oos_r": 0.549,
+      "improvement_pt": 3.67
     },
     {
       "name": "剣崎沖",
-      "n": 17,
-      "pct": 6
+      "n": 90,
+      "wmape_h0": 44.1,
+      "bl2_wmape": 64.0,
+      "oos_r": 0.552,
+      "improvement_pt": 2.27
+    }
+  ],
+  "best_point": {
+    "name": "洲の崎沖",
+    "wmape_h0": 42.7,
+    "improvement_pt": 3.67
+  },
+  "improvement_pt": 3.67,
+  "points": [
+    {
+      "name": "洲の崎沖",
+      "n": 117,
+      "pct": 45
     },
     {
-      "name": "other",
-      "n": 15,
-      "pct": 5
+      "name": "剣崎沖",
+      "n": 90,
+      "pct": 35
     },
     {
-      "name": "洲の崎沖～200m",
-      "n": 13,
+      "name": "城ヶ島沖",
+      "n": 22,
+      "pct": 8
+    },
+    {
+      "name": "沖の瀬",
+      "n": 18,
+      "pct": 7
+    },
+    {
+      "name": "館山沖",
+      "n": 12,
       "pct": 5
     }
   ],
   "modal_coord": {
-    "lat": 35.14,
-    "lon": 139.65
+    "lat": 34.94,
+    "lon": 139.8
   },
   "multi_point_risk": "low",
   "adopted_factors": [
@@ -107,7 +131,6 @@
     "クロロフィル（餌密度）が高い時に釣果が上がる傾向",
     "クロロフィル増加時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -168,6 +191,13 @@
       "corr": 0.157,
       "n_valid": 269,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=洲の崎沖 wmape=42.73% combo=46.37% diff=3.64pt"
     }
   ]
 }

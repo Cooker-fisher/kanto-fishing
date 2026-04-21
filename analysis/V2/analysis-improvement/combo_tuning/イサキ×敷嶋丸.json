@@ -1,16 +1,15 @@
 {
   "fish": "イサキ",
   "ship": "敷嶋丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 37.4,
-    "bl0_wmape": 40.8,
-    "bl2_wmape": 39.1,
+    "wmape_h0": 37.44,
+    "bl2_wmape": 39.13,
     "oos_r": 0.207,
     "n_records": 51,
-    "alpha_scale": 1.134,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -97,7 +96,13 @@
     "50m深水温が低い時に釣果が上がる傾向",
     "クロロフィル減少時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=大原沖 imp=5.64pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "is_summer_vacation",
@@ -159,5 +164,21 @@
       "n_valid": 51,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "大原沖",
+      "n": 38,
+      "wmape_h0": 31.8,
+      "bl2_wmape": 39.9,
+      "oos_r": 0.598,
+      "improvement_pt": 5.64
+    }
+  ],
+  "best_point": {
+    "name": "大原沖",
+    "wmape_h0": 31.8,
+    "improvement_pt": 5.64
+  },
+  "improvement_pt": 5.64
 }

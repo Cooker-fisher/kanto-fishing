@@ -1,47 +1,61 @@
 {
   "fish": "アマダイ",
   "ship": "山下丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 42.9,
-    "bl0_wmape": 42.0,
-    "bl2_wmape": 52.9,
-    "oos_r": 0.066,
+    "wmape_h0": 43.23,
+    "bl2_wmape": 52.93,
+    "oos_r": 0.045,
     "n_records": 362,
-    "alpha_scale": 0.608,
-    "use_fallback": true
+    "alpha_scale": 0.6084,
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "岩井沖",
+      "n": 32,
+      "wmape_h0": 37.1,
+      "bl2_wmape": 40.3,
+      "oos_r": 0.386,
+      "improvement_pt": 6.13
+    },
+    {
+      "name": "剣崎沖",
+      "n": 287,
+      "wmape_h0": 37.6,
+      "bl2_wmape": 39.4,
+      "oos_r": 0.333,
+      "improvement_pt": 5.63
+    }
+  ],
+  "best_point": {
+    "name": "岩井沖",
+    "wmape_h0": 37.1,
+    "improvement_pt": 6.13
+  },
+  "improvement_pt": 6.13,
   "points": [
     {
-      "name": "剣崎沖～90m",
-      "n": 88,
-      "pct": 23
+      "name": "剣崎沖",
+      "n": 291,
+      "pct": 85
     },
     {
-      "name": "剣崎沖～100m",
-      "n": 63,
-      "pct": 17
+      "name": "岩井沖",
+      "n": 32,
+      "pct": 9
     },
     {
-      "name": "剣崎沖～95m",
-      "n": 61,
-      "pct": 16
-    },
-    {
-      "name": "剣崎沖～80m",
-      "n": 13,
-      "pct": 3
-    },
-    {
-      "name": "剣崎沖～下浦沖～90m",
-      "n": 13,
-      "pct": 3
+      "name": "下浦沖",
+      "n": 19,
+      "pct": 6
     }
   ],
   "modal_coord": {
-    "lat": 35.24,
-    "lon": 139.71
+    "lat": 35.14,
+    "lon": 139.65
   },
   "multi_point_risk": "medium",
   "adopted_factors": [
@@ -107,7 +121,6 @@
     "平日の方が釣果が上がる傾向",
     "大潮・中潮で釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "nutrient_score",
@@ -168,6 +181,13 @@
       "corr": -0.118,
       "n_valid": 362,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=岩井沖 wmape=37.08% combo=43.23% diff=6.15pt"
     }
   ]
 }

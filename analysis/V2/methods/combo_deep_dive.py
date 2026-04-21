@@ -3857,6 +3857,138 @@ def deep_dive_by_point(fish, ship):
                 pass
 
     print(f"  [point_opt] {fish}×{ship}: 完了", flush=True)
+    _save_combo_tuning_json(fish, ship)
+
+
+def _save_combo_tuning_json(fish, ship):
+    """ポイント別最適化後にcombo_tuning JSONを更新する。
+    改善があった場合（best_point_wmape < combo_wmape）のみ更新。
+    """
+    import json as _json
+    from datetime import datetime as _dt
+    from collections import defaultdict as _dd
+
+    tuning_dir = os.path.join(ROOT_DIR, "analysis", "V2", "analysis-improvement", "combo_tuning")
+    os.makedirs(tuning_dir, exist_ok=True)
+    fname = os.path.join(tuning_dir, f"{fish}×{ship}.json")
+    now = _dt.now().strftime("%Y-%m-%d")
+
+    try:
+        conn = sqlite3.connect(DB_ANA)
+
+        # combo_backtest から全体モデルのwMAPE取得
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT wmape, bl2_wmape, r, n FROM combo_backtest "
+            "WHERE fish=? AND ship=? AND metric='cnt_avg' AND horizon=0",
+            (fish, ship)
+        )
+        row = cur.fetchone()
+        if not row:
+            conn.close()
+            return
+        combo_wmape, combo_bl2, combo_r, combo_n = row
+
+        # combo_point_backtest から各ポイントのwMAPE取得
+        cur.execute(
+            "SELECT point, wmape, bl2_wmape, r, n FROM combo_point_backtest "
+            "WHERE fish=? AND ship=? AND metric='cnt_avg' AND horizon=0 "
+            "ORDER BY wmape",
+            (fish, ship)
+        )
+        pt_rows = cur.fetchall()
+
+        # use_fallback / kaiyu_promoted
+        cur.execute(
+            "SELECT use_fallback, kaiyu_promoted FROM combo_wx_params "
+            "WHERE fish=? AND ship=? LIMIT 1",
+            (fish, ship)
+        )
+        wp = cur.fetchone()
+        use_fallback   = bool(wp[0]) if wp else False
+        kaiyu_promoted = bool(wp[1]) if wp else False
+
+        conn.close()
+    except Exception as e:
+        print(f"  [tuning_json] ERROR {fish}×{ship}: {e}", flush=True)
+        return
+
+    if not pt_rows:
+        return
+
+    # 最良ポイント特定
+    best = pt_rows[0]  # ORDER BY wmape なので先頭が最良
+    best_wmape = best[1]
+    improvement_pt = round(combo_wmape - best_wmape, 2)
+
+    # 改善がない場合はスキップ
+    if improvement_pt <= 0:
+        return
+
+    # point_models リスト構築
+    pt_models = []
+    for pt_name, pt_wmape, pt_bl2, pt_r, pt_n in pt_rows:
+        pt_models.append({
+            "name": pt_name,
+            "n": pt_n,
+            "wmape_h0": round(pt_wmape, 1),
+            "bl2_wmape": round(pt_bl2, 1) if pt_bl2 else None,
+            "oos_r": round(pt_r, 3) if pt_r else None,
+            "improvement_pt": round(combo_wmape - pt_wmape, 2),
+        })
+
+    # status 判定
+    if improvement_pt > 5:
+        status = "point_model_applied"
+    else:
+        status = "point_model_marginal"
+
+    # 既存JSON読み込み
+    existing = {}
+    if os.path.exists(fname):
+        try:
+            with open(fname, encoding="utf-8") as f:
+                existing = _json.load(f)
+        except Exception:
+            existing = {}
+
+    # history 追記（当日重複防止）
+    history = existing.get("history", [])
+    if not any(h.get("date") == now for h in history):
+        history.append({
+            "date": now,
+            "action": "point_backtest_updated",
+            "note": f"best={best[0]} wmape={best_wmape:.1f}% imp={improvement_pt}pt"
+        })
+
+    d = dict(existing)
+    d.update({
+        "fish": fish,
+        "ship": ship,
+        "last_reviewed": now,
+        "status": status,
+        "metrics": {
+            "wmape_h0": round(combo_wmape, 2),
+            "bl2_wmape": round(combo_bl2, 2) if combo_bl2 else None,
+            "oos_r": round(combo_r, 3) if combo_r else None,
+            "n_records": combo_n,
+            "use_fallback": use_fallback,
+            "kaiyu_promoted": kaiyu_promoted,
+        },
+        "point_models": pt_models,
+        "best_point": {
+            "name": best[0],
+            "wmape_h0": round(best_wmape, 1),
+            "improvement_pt": improvement_pt,
+        },
+        "improvement_pt": improvement_pt,
+        "history": history,
+    })
+
+    with open(fname, "w", encoding="utf-8") as f:
+        _json.dump(d, f, ensure_ascii=False, indent=2)
+
+    print(f"  [tuning_json] 更新: {fish}×{ship} imp={improvement_pt:+.1f}pt → {fname}", flush=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════

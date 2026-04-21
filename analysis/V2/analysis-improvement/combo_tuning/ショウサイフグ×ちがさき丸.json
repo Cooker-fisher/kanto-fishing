@@ -1,16 +1,15 @@
 {
   "fish": "ショウサイフグ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 65.1,
-    "bl0_wmape": 65.2,
-    "bl2_wmape": 63.8,
+    "wmape_h0": 65.14,
+    "bl2_wmape": 63.78,
     "oos_r": 0.305,
     "n_records": 72,
-    "alpha_scale": 0.1,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -113,6 +112,11 @@
       "change": "変更なし（精査済み）",
       "effect": "-",
       "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=茅ヶ崎沖 imp=23.54pt"
     }
   ],
   "rejected_factors": [
@@ -176,5 +180,21 @@
       "n_valid": 72,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 49,
+      "wmape_h0": 41.6,
+      "bl2_wmape": 58.5,
+      "oos_r": 0.695,
+      "improvement_pt": 23.54
+    }
+  ],
+  "best_point": {
+    "name": "茅ヶ崎沖",
+    "wmape_h0": 41.6,
+    "improvement_pt": 23.54
+  },
+  "improvement_pt": 23.54
 }

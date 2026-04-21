@@ -1,42 +1,38 @@
 {
   "fish": "カワハギ",
   "ship": "光進丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 31.7,
-    "bl0_wmape": 38.1,
-    "bl2_wmape": 44.6,
+    "bl2_wmape": 44.64,
     "oos_r": 0.562,
     "n_records": 264,
-    "alpha_scale": 0.574,
-    "use_fallback": false
+    "alpha_scale": 0.5744,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "金谷沖",
+      "n": 243,
+      "wmape_h0": 31.8,
+      "bl2_wmape": 47.6,
+      "oos_r": 0.561,
+      "improvement_pt": -0.1
+    }
+  ],
+  "best_point": {
+    "name": "金谷沖",
+    "wmape_h0": 31.8,
+    "improvement_pt": -0.1
+  },
+  "improvement_pt": -0.1,
   "points": [
     {
       "name": "金谷沖",
-      "n": 244,
-      "pct": 92
-    },
-    {
-      "name": "竹岡沖～金谷沖",
-      "n": 9,
-      "pct": 3
-    },
-    {
-      "name": "金谷沖航程3分近場",
-      "n": 8,
-      "pct": 3
-    },
-    {
-      "name": "金谷沖航程5分",
-      "n": 3,
-      "pct": 1
-    },
-    {
-      "name": "金谷沖航程3分",
-      "n": 1,
-      "pct": 0
+      "n": 243,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -107,7 +103,6 @@
     "台風が遠い時に釣果が上がる傾向",
     "冬の中潮以外に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_monthly",
@@ -168,6 +163,13 @@
       "corr": -0.122,
       "n_valid": 264,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=金谷沖 wmape=31.81% combo=31.7% diff=-0.11pt"
     }
   ]
 }

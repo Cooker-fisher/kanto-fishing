@@ -1,42 +1,56 @@
 {
   "fish": "アジ",
   "ship": "光進丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 30.7,
-    "bl0_wmape": 36.4,
-    "bl2_wmape": 33.7,
+    "wmape_h0": 30.78,
+    "bl2_wmape": 33.75,
     "oos_r": 0.572,
     "n_records": 678,
-    "alpha_scale": 0.599,
-    "use_fallback": false
+    "alpha_scale": 0.5988,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
       "name": "金谷沖",
-      "n": 544,
-      "pct": 78
+      "n": 533,
+      "wmape_h0": 30.2,
+      "bl2_wmape": 33.2,
+      "oos_r": 0.609,
+      "improvement_pt": 0.58
     },
     {
       "name": "金谷沖浅場",
-      "n": 101,
-      "pct": 14
+      "n": 103,
+      "wmape_h0": 31.7,
+      "bl2_wmape": 49.2,
+      "oos_r": 0.483,
+      "improvement_pt": -0.92
+    }
+  ],
+  "best_point": {
+    "name": "金谷沖",
+    "wmape_h0": 30.2,
+    "improvement_pt": 0.58
+  },
+  "improvement_pt": 0.58,
+  "points": [
+    {
+      "name": "金谷沖",
+      "n": 540,
+      "pct": 79
+    },
+    {
+      "name": "金谷沖浅場",
+      "n": 103,
+      "pct": 15
     },
     {
       "name": "金谷沖超浅場",
       "n": 41,
       "pct": 6
-    },
-    {
-      "name": "other",
-      "n": 10,
-      "pct": 1
-    },
-    {
-      "name": "金谷沖浅場～前後",
-      "n": 2,
-      "pct": 0
     }
   ],
   "modal_coord": {
@@ -76,7 +90,6 @@
     "黒潮が離岸している月に釣果が上がる傾向",
     "平日の方が釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp_100m",
@@ -137,6 +150,13 @@
       "corr": 0.212,
       "n_valid": 12,
       "reason": "low_n"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=金谷沖 wmape=30.15% combo=30.78% diff=0.63pt"
     }
   ]
 }

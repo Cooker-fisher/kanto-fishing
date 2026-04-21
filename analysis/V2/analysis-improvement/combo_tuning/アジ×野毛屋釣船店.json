@@ -1,27 +1,38 @@
 {
   "fish": "アジ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.1,
-    "bl0_wmape": 45.4,
-    "bl2_wmape": 45.0,
+    "wmape_h0": 38.12,
+    "bl2_wmape": 45.03,
     "oos_r": 0.499,
     "n_records": 274,
-    "alpha_scale": 0.286,
-    "use_fallback": false
+    "alpha_scale": 0.2857,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "八景沖",
+      "n": 273,
+      "wmape_h0": 37.7,
+      "bl2_wmape": 45.1,
+      "oos_r": 0.513,
+      "improvement_pt": 0.42
+    }
+  ],
+  "best_point": {
+    "name": "八景沖",
+    "wmape_h0": 37.7,
+    "improvement_pt": 0.42
+  },
+  "improvement_pt": 0.42,
   "points": [
     {
       "name": "八景沖",
       "n": 273,
       "pct": 100
-    },
-    {
-      "name": "小柴沖",
-      "n": 1,
-      "pct": 0
     }
   ],
   "modal_coord": {
@@ -92,7 +103,6 @@
     "最低気温が低い日ほど釣果が上がる傾向",
     "台風が遠い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -153,6 +163,13 @@
       "corr": -0.115,
       "n_valid": 274,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=八景沖 wmape=37.65% combo=38.12% diff=0.47pt"
     }
   ]
 }

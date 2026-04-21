@@ -1,42 +1,51 @@
 {
   "fish": "マルイカ",
   "ship": "山天丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 35.8,
-    "bl0_wmape": 43.2,
-    "bl2_wmape": 45.4,
-    "oos_r": 0.51,
+    "wmape_h0": 35.49,
+    "bl2_wmape": 45.35,
+    "oos_r": 0.521,
     "n_records": 222,
-    "alpha_scale": 0.462,
-    "use_fallback": false
+    "alpha_scale": 0.4615,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 102,
+      "wmape_h0": 32.6,
+      "bl2_wmape": 43.2,
+      "oos_r": 0.538,
+      "improvement_pt": 2.89
+    },
+    {
+      "name": "久里浜沖",
+      "n": 109,
+      "wmape_h0": 38.3,
+      "bl2_wmape": 51.7,
+      "oos_r": 0.438,
+      "improvement_pt": -2.81
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 32.6,
+    "improvement_pt": 2.89
+  },
+  "improvement_pt": 2.89,
   "points": [
     {
-      "name": "剣崎沖～60m",
-      "n": 22,
-      "pct": 10
+      "name": "久里浜沖",
+      "n": 110,
+      "pct": 51
     },
     {
-      "name": "剣崎沖～50m",
-      "n": 19,
-      "pct": 8
-    },
-    {
-      "name": "久里浜沖～90m",
-      "n": 18,
-      "pct": 8
-    },
-    {
-      "name": "剣崎沖～55m",
-      "n": 13,
-      "pct": 6
-    },
-    {
-      "name": "久里浜沖～剣崎沖～60m",
-      "n": 9,
-      "pct": 4
+      "name": "剣崎沖",
+      "n": 106,
+      "pct": 49
     }
   ],
   "modal_coord": {
@@ -87,7 +96,6 @@
     "夏休み期間以外に釣果が上がる傾向",
     "前4日の降水量が少ない時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "do_surface",
@@ -148,6 +156,13 @@
       "corr": 0.137,
       "n_valid": 66,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=剣崎沖 wmape=32.63% combo=35.49% diff=2.86pt"
     }
   ]
 }

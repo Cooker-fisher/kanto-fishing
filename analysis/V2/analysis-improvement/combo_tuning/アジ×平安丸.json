@@ -1,16 +1,15 @@
 {
   "fish": "アジ",
   "ship": "平安丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 30.4,
-    "bl0_wmape": 36.4,
-    "bl2_wmape": 35.7,
-    "oos_r": 0.519,
+    "wmape_h0": 28.28,
+    "bl2_wmape": 35.73,
+    "oos_r": 0.611,
     "n_records": 95,
-    "alpha_scale": 0.365,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +106,13 @@
     "気温が低い日ほど釣果が上がる傾向",
     "秋の中潮以外に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=二宮沖 imp=1.08pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -169,5 +174,21 @@
       "n_valid": 94,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "二宮沖",
+      "n": 79,
+      "wmape_h0": 27.2,
+      "bl2_wmape": 35.9,
+      "oos_r": 0.579,
+      "improvement_pt": 1.08
+    }
+  ],
+  "best_point": {
+    "name": "二宮沖",
+    "wmape_h0": 27.2,
+    "improvement_pt": 1.08
+  },
+  "improvement_pt": 1.08
 }

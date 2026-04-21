@@ -1,16 +1,16 @@
 {
   "fish": "アジ",
   "ship": "吉久",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 27.4,
-    "bl0_wmape": 32.1,
-    "bl2_wmape": 32.0,
+    "wmape_h0": 27.43,
+    "bl2_wmape": 31.98,
     "oos_r": 0.464,
     "n_records": 115,
-    "alpha_scale": 0.42,
-    "use_fallback": false
+    "alpha_scale": 0.4197,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -102,7 +102,13 @@
     "水温低下時に釣果が上がる傾向",
     "黒潮が接近している月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=木更津沖 wmape=19.7% imp=7.73pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "thermocline_depth",
@@ -164,5 +170,29 @@
       "n_valid": 115,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "木更津沖",
+      "n": 47,
+      "wmape_h0": 19.7,
+      "bl2_wmape": 31.7,
+      "oos_r": 0.637,
+      "improvement_pt": 7.73
+    },
+    {
+      "name": "横浜沖",
+      "n": 43,
+      "wmape_h0": 21.2,
+      "bl2_wmape": 31.0,
+      "oos_r": 0.702,
+      "improvement_pt": 6.23
+    }
+  ],
+  "best_point": {
+    "name": "木更津沖",
+    "wmape_h0": 19.7,
+    "improvement_pt": 7.73
+  },
+  "improvement_pt": 7.73
 }

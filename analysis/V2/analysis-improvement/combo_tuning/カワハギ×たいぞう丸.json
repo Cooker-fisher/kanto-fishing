@@ -1,16 +1,15 @@
 {
   "fish": "カワハギ",
   "ship": "たいぞう丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 29.5,
-    "bl0_wmape": 36.1,
-    "bl2_wmape": 44.9,
-    "oos_r": 0.543,
+    "wmape_h0": 29.47,
+    "bl2_wmape": 44.87,
+    "oos_r": 0.546,
     "n_records": 89,
-    "alpha_scale": 0.397,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +106,13 @@
     "黒潮が接近している月に釣果が上がる傾向",
     "気圧が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=葉山沖 imp=4.67pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -169,5 +174,21 @@
       "n_valid": 89,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "葉山沖",
+      "n": 72,
+      "wmape_h0": 24.8,
+      "bl2_wmape": 46.8,
+      "oos_r": 0.693,
+      "improvement_pt": 4.67
+    }
+  ],
+  "best_point": {
+    "name": "葉山沖",
+    "wmape_h0": 24.8,
+    "improvement_pt": 4.67
+  },
+  "improvement_pt": 4.67
 }

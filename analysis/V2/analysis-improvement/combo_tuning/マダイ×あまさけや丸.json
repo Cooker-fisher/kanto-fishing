@@ -1,32 +1,43 @@
 {
   "fish": "マダイ",
   "ship": "あまさけや丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.7,
-    "bl0_wmape": 50.8,
-    "bl2_wmape": 52.1,
-    "oos_r": 0.266,
+    "wmape_h0": 46.5,
+    "bl2_wmape": 52.08,
+    "oos_r": 0.269,
     "n_records": 446,
-    "alpha_scale": 0.383,
-    "use_fallback": false
+    "alpha_scale": 0.3825,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
-    {
-      "name": "other",
-      "n": 429,
-      "pct": 62
-    },
+  "point_models": [
     {
       "name": "剣崎沖",
-      "n": 251,
-      "pct": 36
+      "n": 185,
+      "wmape_h0": 36.7,
+      "bl2_wmape": 55.8,
+      "oos_r": 0.501,
+      "improvement_pt": 9.8
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 36.7,
+    "improvement_pt": 9.8
+  },
+  "improvement_pt": 9.8,
+  "points": [
+    {
+      "name": "剣崎沖",
+      "n": 185,
+      "pct": 93
     },
     {
       "name": "久里浜沖",
-      "n": 14,
-      "pct": 2
+      "n": 13,
+      "pct": 7
     }
   ],
   "modal_coord": {
@@ -92,7 +103,6 @@
     "最大潮流が弱い時に釣果が上がる傾向",
     "底層酸素が豊富な時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -153,6 +163,13 @@
       "corr": -0.11,
       "n_valid": 446,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=剣崎沖 wmape=36.68% combo=46.5% diff=9.82pt"
     }
   ]
 }

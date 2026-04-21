@@ -1,16 +1,15 @@
 {
   "fish": "フグ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 62.4,
-    "bl0_wmape": 73.0,
-    "bl2_wmape": 65.0,
+    "wmape_h0": 62.44,
+    "bl2_wmape": 65.01,
     "oos_r": 0.563,
     "n_records": 68,
-    "alpha_scale": 0.491,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -108,6 +107,11 @@
       "change": "変更なし（精査済み）",
       "effect": "-",
       "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=茅ヶ崎沖 imp=13.04pt"
     }
   ],
   "rejected_factors": [
@@ -171,5 +175,21 @@
       "n_valid": 69,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 58,
+      "wmape_h0": 49.4,
+      "bl2_wmape": 65.5,
+      "oos_r": 0.705,
+      "improvement_pt": 13.04
+    }
+  ],
+  "best_point": {
+    "name": "茅ヶ崎沖",
+    "wmape_h0": 49.4,
+    "improvement_pt": 13.04
+  },
+  "improvement_pt": 13.04
 }

@@ -1,37 +1,38 @@
 {
   "fish": "サワラ",
   "ship": "吉久",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 76.3,
-    "bl0_wmape": 79.7,
-    "bl2_wmape": 61.7,
+    "wmape_h0": 76.25,
+    "bl2_wmape": 61.75,
     "oos_r": 0.248,
     "n_records": 74,
-    "alpha_scale": 0.714,
-    "use_fallback": true
+    "alpha_scale": 0.7136,
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "湾内",
+      "n": 70,
+      "wmape_h0": 39.4,
+      "bl2_wmape": 62.3,
+      "oos_r": 0.813,
+      "improvement_pt": 36.85
+    }
+  ],
+  "best_point": {
+    "name": "湾内",
+    "wmape_h0": 39.4,
+    "improvement_pt": 36.85
+  },
+  "improvement_pt": 36.85,
   "points": [
     {
       "name": "湾内",
-      "n": 205,
-      "pct": 73
-    },
-    {
-      "name": "other",
-      "n": 69,
-      "pct": 25
-    },
-    {
-      "name": "湾奥",
-      "n": 5,
-      "pct": 2
-    },
-    {
-      "name": "大貫沖",
-      "n": 2,
-      "pct": 1
+      "n": 70,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -102,7 +103,6 @@
     "台風が遠い時に釣果が上がる傾向",
     "黒潮が離岸している月に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp_max",
@@ -163,6 +163,13 @@
       "corr": 0.136,
       "n_valid": 74,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=湾内 wmape=39.4% combo=76.25% diff=36.85pt"
     }
   ]
 }

@@ -1,42 +1,82 @@
 {
   "fish": "ヒラメ",
   "ship": "明広丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.7,
-    "bl0_wmape": 42.2,
-    "bl2_wmape": 41.0,
-    "oos_r": 0.332,
+    "wmape_h0": 39.0,
+    "bl2_wmape": 40.99,
+    "oos_r": 0.333,
     "n_records": 348,
-    "alpha_scale": 0.433,
-    "use_fallback": false
+    "alpha_scale": 0.4332,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
-  "points": [
+  "point_models": [
     {
-      "name": "岩和田沖～部原沖航程5～12分～15m",
-      "n": 47,
-      "pct": 11
+      "name": "岩和田沖",
+      "n": 86,
+      "wmape_h0": 35.7,
+      "bl2_wmape": 41.9,
+      "oos_r": 0.391,
+      "improvement_pt": 3.3
+    },
+    {
+      "name": "岩船沖",
+      "n": 65,
+      "wmape_h0": 36.8,
+      "bl2_wmape": 39.4,
+      "oos_r": 0.379,
+      "improvement_pt": 2.2
+    },
+    {
+      "name": "岩和田沖航程5",
+      "n": 54,
+      "wmape_h0": 39.0,
+      "bl2_wmape": 57.5,
+      "oos_r": 0.48,
+      "improvement_pt": -0.0
     },
     {
       "name": "部原沖",
-      "n": 36,
+      "n": 72,
+      "wmape_h0": 39.6,
+      "bl2_wmape": 48.5,
+      "oos_r": 0.435,
+      "improvement_pt": -0.6
+    }
+  ],
+  "best_point": {
+    "name": "岩和田沖",
+    "wmape_h0": 35.7,
+    "improvement_pt": 3.3
+  },
+  "improvement_pt": 3.3,
+  "points": [
+    {
+      "name": "岩和田沖",
+      "n": 86,
+      "pct": 28
+    },
+    {
+      "name": "部原沖",
+      "n": 72,
+      "pct": 24
+    },
+    {
+      "name": "岩船沖",
+      "n": 65,
+      "pct": 22
+    },
+    {
+      "name": "岩和田沖航程5",
+      "n": 54,
+      "pct": 18
+    },
+    {
+      "name": "川津沖",
+      "n": 25,
       "pct": 8
-    },
-    {
-      "name": "部原沖～岩和田沖航程5～12分～15m",
-      "n": 29,
-      "pct": 7
-    },
-    {
-      "name": "岩和田沖航程5～12分～15m",
-      "n": 20,
-      "pct": 5
-    },
-    {
-      "name": "岩船沖～岩和田沖航程5～15分～15m",
-      "n": 20,
-      "pct": 5
     }
   ],
   "modal_coord": {
@@ -97,7 +137,6 @@
     "うねりが大きい日に釣果が上がる傾向",
     "特定の潮流方向で釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp_200m",
@@ -158,6 +197,13 @@
       "corr": 0.142,
       "n_valid": 338,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=岩和田沖 wmape=35.7% combo=39.0% diff=3.3pt"
     }
   ]
 }

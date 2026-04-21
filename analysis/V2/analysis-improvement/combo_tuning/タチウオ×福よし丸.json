@@ -1,47 +1,53 @@
 {
   "fish": "タチウオ",
   "ship": "福よし丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 48.7,
-    "bl0_wmape": 60.0,
-    "bl2_wmape": 59.0,
-    "oos_r": 0.52,
+    "wmape_h0": 49.21,
+    "bl2_wmape": 59.01,
+    "oos_r": 0.508,
     "n_records": 356,
-    "alpha_scale": 0.475,
-    "use_fallback": false
+    "alpha_scale": 0.4746,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "観音崎沖",
+      "n": 317,
+      "wmape_h0": 47.6,
+      "bl2_wmape": 57.3,
+      "oos_r": 0.521,
+      "improvement_pt": 1.61
+    }
+  ],
+  "best_point": {
+    "name": "観音崎沖",
+    "wmape_h0": 47.6,
+    "improvement_pt": 1.61
+  },
+  "improvement_pt": 1.61,
   "points": [
     {
-      "name": "other",
-      "n": 366,
-      "pct": 49
+      "name": "観音崎沖",
+      "n": 317,
+      "pct": 90
     },
     {
-      "name": "観音崎沖～60m",
-      "n": 133,
-      "pct": 18
+      "name": "横須賀沖",
+      "n": 22,
+      "pct": 6
     },
     {
-      "name": "観音崎沖～70m",
-      "n": 51,
-      "pct": 7
-    },
-    {
-      "name": "観音崎沖～50m",
-      "n": 38,
-      "pct": 5
-    },
-    {
-      "name": "観音崎沖～65m",
-      "n": 19,
+      "name": "久里浜沖",
+      "n": 12,
       "pct": 3
     }
   ],
   "modal_coord": {
-    "lat": 35.34,
-    "lon": 139.64
+    "lat": 35.28,
+    "lon": 139.73
   },
   "multi_point_risk": "medium",
   "adopted_factors": [
@@ -107,7 +113,6 @@
     "黒潮接岸時に釣果が上がる傾向",
     "200m深水温が低い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -168,6 +173,13 @@
       "corr": -0.132,
       "n_valid": 356,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=観音崎沖 wmape=47.58% combo=49.21% diff=1.63pt"
     }
   ]
 }

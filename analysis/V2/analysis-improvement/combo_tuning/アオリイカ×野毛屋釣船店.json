@@ -1,16 +1,15 @@
 {
   "fish": "アオリイカ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 40.1,
-    "bl0_wmape": 41.4,
-    "bl2_wmape": 43.7,
+    "wmape_h0": 40.09,
+    "bl2_wmape": 43.69,
     "oos_r": 0.35,
     "n_records": 76,
-    "alpha_scale": 0.528,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "降水量が少ない時に釣果が上がる傾向",
     "沖合の海面水位が高い月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=竹岡沖 imp=4.59pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "wave_period",
@@ -154,5 +159,21 @@
       "n_valid": 76,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "竹岡沖",
+      "n": 75,
+      "wmape_h0": 35.5,
+      "bl2_wmape": 43.4,
+      "oos_r": 0.511,
+      "improvement_pt": 4.59
+    }
+  ],
+  "best_point": {
+    "name": "竹岡沖",
+    "wmape_h0": 35.5,
+    "improvement_pt": 4.59
+  },
+  "improvement_pt": 4.59
 }

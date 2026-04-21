@@ -1,42 +1,43 @@
 {
   "fish": "カワハギ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 34.7,
-    "bl0_wmape": 40.4,
-    "bl2_wmape": 44.1,
-    "oos_r": 0.434,
+    "wmape_h0": 34.69,
+    "bl2_wmape": 44.11,
+    "oos_r": 0.433,
     "n_records": 261,
     "alpha_scale": 0.352,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "鴨居沖",
+      "n": 244,
+      "wmape_h0": 33.4,
+      "bl2_wmape": 42.3,
+      "oos_r": 0.447,
+      "improvement_pt": 1.29
+    }
+  ],
+  "best_point": {
+    "name": "鴨居沖",
+    "wmape_h0": 33.4,
+    "improvement_pt": 1.29
+  },
+  "improvement_pt": 1.29,
   "points": [
     {
-      "name": "鴨居沖～竹岡沖～30m",
-      "n": 78,
-      "pct": 30
+      "name": "鴨居沖",
+      "n": 244,
+      "pct": 95
     },
     {
-      "name": "鴨居沖～35m",
-      "n": 48,
-      "pct": 18
-    },
-    {
-      "name": "鴨居沖～竹岡沖～35m",
-      "n": 43,
-      "pct": 16
-    },
-    {
-      "name": "鴨居沖～30m",
-      "n": 37,
-      "pct": 14
-    },
-    {
-      "name": "鴨居沖～竹岡沖～25m",
-      "n": 23,
-      "pct": 9
+      "name": "竹岡沖",
+      "n": 14,
+      "pct": 5
     }
   ],
   "modal_coord": {
@@ -102,7 +103,6 @@
     "冬の中潮以外に釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "swell_height",
@@ -163,6 +163,13 @@
       "corr": -0.136,
       "n_valid": 262,
       "reason": "low_corr"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=鴨居沖 wmape=33.41% combo=34.69% diff=1.28pt"
     }
   ]
 }

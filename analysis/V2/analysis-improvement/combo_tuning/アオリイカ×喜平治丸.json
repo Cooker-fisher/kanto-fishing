@@ -1,42 +1,38 @@
 {
   "fish": "アオリイカ",
   "ship": "喜平治丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 47.1,
-    "bl0_wmape": 52.1,
-    "bl2_wmape": 71.6,
+    "bl2_wmape": 71.58,
     "oos_r": 0.365,
     "n_records": 443,
-    "alpha_scale": 0.359,
-    "use_fallback": false
+    "alpha_scale": 0.3593,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 327,
+      "wmape_h0": 47.4,
+      "bl2_wmape": 73.0,
+      "oos_r": 0.415,
+      "improvement_pt": -0.3
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 47.4,
+    "improvement_pt": -0.3
+  },
+  "improvement_pt": -0.3,
   "points": [
     {
       "name": "剣崎沖",
-      "n": 516,
-      "pct": 78
-    },
-    {
-      "name": "other",
-      "n": 139,
-      "pct": 21
-    },
-    {
-      "name": "洲の崎沖",
-      "n": 3,
-      "pct": 0
-    },
-    {
-      "name": "館山沖",
-      "n": 3,
-      "pct": 0
-    },
-    {
-      "name": "剣崎沖～200m",
-      "n": 1,
-      "pct": 0
+      "n": 327,
+      "pct": 100
     }
   ],
   "modal_coord": {
@@ -107,7 +103,6 @@
     "最高気温が高い日ほど釣果が上がる傾向",
     "沖合の海面水位が高い月に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -168,6 +163,13 @@
       "corr": 0.119,
       "n_valid": 443,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=剣崎沖 wmape=47.36% combo=47.1% diff=-0.26pt"
     }
   ]
 }

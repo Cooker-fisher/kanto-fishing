@@ -1,42 +1,51 @@
 {
   "fish": "アカムツ",
   "ship": "仁徳丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.7,
-    "bl0_wmape": 47.2,
-    "bl2_wmape": 46.4,
+    "wmape_h0": 37.68,
+    "bl2_wmape": 46.36,
     "oos_r": 0.531,
     "n_records": 322,
-    "alpha_scale": 0.393,
-    "use_fallback": false
+    "alpha_scale": 0.3934,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "波崎沖",
+      "n": 240,
+      "wmape_h0": 36.0,
+      "bl2_wmape": 45.4,
+      "oos_r": 0.562,
+      "improvement_pt": 1.68
+    },
+    {
+      "name": "犬吠沖",
+      "n": 75,
+      "wmape_h0": 40.8,
+      "bl2_wmape": 47.4,
+      "oos_r": 0.42,
+      "improvement_pt": -3.12
+    }
+  ],
+  "best_point": {
+    "name": "波崎沖",
+    "wmape_h0": 36.0,
+    "improvement_pt": 1.68
+  },
+  "improvement_pt": 1.68,
   "points": [
     {
-      "name": "波崎沖～140m",
-      "n": 191,
-      "pct": 51
+      "name": "波崎沖",
+      "n": 240,
+      "pct": 76
     },
     {
-      "name": "犬吠沖前後",
-      "n": 50,
-      "pct": 13
-    },
-    {
-      "name": "波崎沖前後",
-      "n": 40,
-      "pct": 11
-    },
-    {
-      "name": "other",
-      "n": 39,
-      "pct": 10
-    },
-    {
-      "name": "犬吠沖～250m",
-      "n": 18,
-      "pct": 5
+      "name": "犬吠沖",
+      "n": 75,
+      "pct": 24
     }
   ],
   "modal_coord": {
@@ -82,7 +91,6 @@
     "水温が高い日ほど釣果が上がる傾向",
     "前回濁り傾向の時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_gradient",
@@ -143,6 +151,13 @@
       "corr": 0.107,
       "n_valid": 322,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=波崎沖 wmape=35.99% combo=37.68% diff=1.69pt"
     }
   ]
 }

@@ -1,0 +1,49 @@
+{
+  "fish": "アオリイカ",
+  "ship": "吉野屋",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 39.06,
+    "bl2_wmape": 39.59,
+    "oos_r": 0.079,
+    "n_records": 74,
+    "alpha_scale": 0.5385,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 53,
+      "wmape_h0": 37.4,
+      "bl2_wmape": 40.3,
+      "oos_r": 0.318,
+      "improvement_pt": 1.66
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 37.4,
+    "improvement_pt": 1.66
+  },
+  "improvement_pt": 1.66,
+  "points": [
+    {
+      "name": "久里浜沖",
+      "n": 53,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.24,
+    "lon": 139.71
+  },
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=久里浜沖 wmape=37.35% combo=39.06% diff=1.71pt"
+    }
+  ]
+}

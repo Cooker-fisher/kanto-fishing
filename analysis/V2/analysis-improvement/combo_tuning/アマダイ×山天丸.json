@@ -1,47 +1,61 @@
 {
   "fish": "アマダイ",
   "ship": "山天丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.9,
-    "bl0_wmape": 34.2,
-    "bl2_wmape": 40.0,
-    "oos_r": 0.349,
+    "wmape_h0": 35.32,
+    "bl2_wmape": 39.98,
+    "oos_r": 0.298,
     "n_records": 492,
-    "alpha_scale": 0.753,
-    "use_fallback": false
+    "alpha_scale": 0.7527,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "下浦沖",
+      "n": 81,
+      "wmape_h0": 27.2,
+      "bl2_wmape": 36.6,
+      "oos_r": 0.59,
+      "improvement_pt": 8.12
+    },
+    {
+      "name": "剣崎沖",
+      "n": 370,
+      "wmape_h0": 33.6,
+      "bl2_wmape": 39.2,
+      "oos_r": 0.326,
+      "improvement_pt": 1.72
+    }
+  ],
+  "best_point": {
+    "name": "下浦沖",
+    "wmape_h0": 27.2,
+    "improvement_pt": 8.12
+  },
+  "improvement_pt": 8.12,
   "points": [
     {
-      "name": "剣崎沖～100m",
-      "n": 145,
-      "pct": 29
+      "name": "剣崎沖",
+      "n": 372,
+      "pct": 78
     },
     {
-      "name": "剣崎沖～110m",
-      "n": 115,
-      "pct": 23
+      "name": "下浦沖",
+      "n": 81,
+      "pct": 17
     },
     {
-      "name": "剣崎沖～105m",
-      "n": 33,
-      "pct": 7
-    },
-    {
-      "name": "下浦沖～剣崎沖～100m",
-      "n": 26,
-      "pct": 5
-    },
-    {
-      "name": "剣崎沖～90m",
-      "n": 24,
-      "pct": 5
+      "name": "久里浜沖",
+      "n": 21,
+      "pct": 4
     }
   ],
   "modal_coord": {
-    "lat": 35.24,
-    "lon": 139.71
+    "lat": 35.14,
+    "lon": 139.65
   },
   "multi_point_risk": "high",
   "adopted_factors": [
@@ -107,7 +121,6 @@
     "底層酸素が少ない時に釣果が上がる傾向",
     "200m深水温が低い時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp_max",
@@ -168,6 +181,13 @@
       "corr": -0.11,
       "n_valid": 492,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=下浦沖 wmape=27.2% combo=35.32% diff=8.12pt"
     }
   ]
 }

@@ -1,47 +1,95 @@
 {
   "fish": "カワハギ",
   "ship": "山天丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 34.0,
-    "bl0_wmape": 43.5,
-    "bl2_wmape": 40.8,
-    "oos_r": 0.552,
+    "wmape_h0": 34.06,
+    "bl2_wmape": 40.78,
+    "oos_r": 0.555,
     "n_records": 320,
-    "alpha_scale": 0.425,
-    "use_fallback": false
+    "alpha_scale": 0.4246,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 33,
+      "wmape_h0": 19.8,
+      "bl2_wmape": 61.9,
+      "oos_r": 0.883,
+      "improvement_pt": 14.26
+    },
+    {
+      "name": "久里浜沖",
+      "n": 34,
+      "wmape_h0": 22.4,
+      "bl2_wmape": 38.1,
+      "oos_r": 0.735,
+      "improvement_pt": 11.66
+    },
+    {
+      "name": "下浦沖",
+      "n": 32,
+      "wmape_h0": 22.6,
+      "bl2_wmape": 51.5,
+      "oos_r": 0.81,
+      "improvement_pt": 11.46
+    },
+    {
+      "name": "竹岡沖",
+      "n": 132,
+      "wmape_h0": 29.6,
+      "bl2_wmape": 46.8,
+      "oos_r": 0.723,
+      "improvement_pt": 4.46
+    },
+    {
+      "name": "鴨居沖",
+      "n": 84,
+      "wmape_h0": 33.7,
+      "bl2_wmape": 44.8,
+      "oos_r": 0.454,
+      "improvement_pt": 0.36
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 19.8,
+    "improvement_pt": 14.26
+  },
+  "improvement_pt": 14.26,
   "points": [
     {
-      "name": "竹岡沖～25m",
-      "n": 36,
+      "name": "竹岡沖",
+      "n": 133,
+      "pct": 42
+    },
+    {
+      "name": "鴨居沖",
+      "n": 84,
+      "pct": 27
+    },
+    {
+      "name": "久里浜沖",
+      "n": 34,
       "pct": 11
     },
     {
-      "name": "竹岡沖～30m",
-      "n": 36,
-      "pct": 11
+      "name": "剣崎沖",
+      "n": 33,
+      "pct": 10
     },
     {
-      "name": "鴨居沖～30m",
-      "n": 23,
-      "pct": 7
-    },
-    {
-      "name": "竹岡沖～35m",
-      "n": 18,
-      "pct": 6
-    },
-    {
-      "name": "剣崎沖～35m",
-      "n": 12,
-      "pct": 4
+      "name": "下浦沖",
+      "n": 32,
+      "pct": 10
     }
   ],
   "modal_coord": {
-    "lat": 35.24,
-    "lon": 139.71
+    "lat": 35.22,
+    "lon": 139.79
   },
   "multi_point_risk": "medium",
   "adopted_factors": [
@@ -107,7 +155,6 @@
     "秋の中潮に釣果が上がる傾向",
     "水温低下時に釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "sla_monthly",
@@ -168,6 +215,13 @@
       "corr": -0.134,
       "n_valid": 23,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=剣崎沖 wmape=19.82% combo=34.06% diff=14.24pt"
     }
   ]
 }

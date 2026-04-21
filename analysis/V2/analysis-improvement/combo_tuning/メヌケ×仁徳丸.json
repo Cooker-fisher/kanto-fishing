@@ -1,16 +1,15 @@
 {
   "fish": "メヌケ",
   "ship": "仁徳丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 52.0,
-    "bl0_wmape": 59.4,
-    "bl2_wmape": 60.0,
-    "oos_r": 0.123,
+    "wmape_h0": 51.24,
+    "bl2_wmape": 59.98,
+    "oos_r": 0.116,
     "n_records": 55,
-    "alpha_scale": 0.629,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -102,7 +101,13 @@
     "台風の影響が弱い時に釣果が上がる傾向",
     "台風接近時でも釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=犬吠沖 imp=10.44pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "wind_speed",
@@ -164,5 +169,21 @@
       "n_valid": 55,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "犬吠沖",
+      "n": 51,
+      "wmape_h0": 40.8,
+      "bl2_wmape": 59.8,
+      "oos_r": 0.614,
+      "improvement_pt": 10.44
+    }
+  ],
+  "best_point": {
+    "name": "犬吠沖",
+    "wmape_h0": 40.8,
+    "improvement_pt": 10.44
+  },
+  "improvement_pt": 10.44
 }

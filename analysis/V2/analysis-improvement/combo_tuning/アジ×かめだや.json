@@ -1,47 +1,87 @@
 {
   "fish": "アジ",
   "ship": "かめだや",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 26.8,
-    "bl0_wmape": 29.4,
-    "bl2_wmape": 30.5,
-    "oos_r": 0.419,
+    "wmape_h0": 26.87,
+    "bl2_wmape": 30.53,
+    "oos_r": 0.412,
     "n_records": 499,
-    "alpha_scale": 0.367,
-    "use_fallback": false
+    "alpha_scale": 0.3674,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
+  "point_models": [
+    {
+      "name": "本牧沖",
+      "n": 59,
+      "wmape_h0": 20.5,
+      "bl2_wmape": 34.1,
+      "oos_r": 0.661,
+      "improvement_pt": 6.37
+    },
+    {
+      "name": "横浜沖",
+      "n": 275,
+      "wmape_h0": 23.8,
+      "bl2_wmape": 28.4,
+      "oos_r": 0.484,
+      "improvement_pt": 3.07
+    },
+    {
+      "name": "川崎沖",
+      "n": 54,
+      "wmape_h0": 23.9,
+      "bl2_wmape": 30.6,
+      "oos_r": 0.566,
+      "improvement_pt": 2.97
+    },
+    {
+      "name": "富岡沖",
+      "n": 68,
+      "wmape_h0": 24.7,
+      "bl2_wmape": 29.1,
+      "oos_r": 0.463,
+      "improvement_pt": 2.17
+    }
+  ],
+  "best_point": {
+    "name": "本牧沖",
+    "wmape_h0": 20.5,
+    "improvement_pt": 6.37
+  },
+  "improvement_pt": 6.37,
   "points": [
     {
-      "name": "横浜沖～20m",
-      "n": 92,
-      "pct": 18
+      "name": "横浜沖",
+      "n": 275,
+      "pct": 57
     },
     {
-      "name": "横浜沖～本牧沖～27m",
-      "n": 32,
-      "pct": 6
+      "name": "富岡沖",
+      "n": 69,
+      "pct": 14
     },
     {
-      "name": "横浜沖～本牧沖～28m",
-      "n": 26,
+      "name": "本牧沖",
+      "n": 59,
+      "pct": 12
+    },
+    {
+      "name": "川崎沖",
+      "n": 54,
+      "pct": 11
+    },
+    {
+      "name": "木更津沖",
+      "n": 23,
       "pct": 5
-    },
-    {
-      "name": "川崎沖～横浜沖～20m",
-      "n": 24,
-      "pct": 5
-    },
-    {
-      "name": "富岡沖～20m",
-      "n": 21,
-      "pct": 4
     }
   ],
   "modal_coord": {
-    "lat": 35.55,
-    "lon": 139.76
+    "lat": 35.42,
+    "lon": 139.65
   },
   "multi_point_risk": "low",
   "adopted_factors": [
@@ -107,7 +147,6 @@
     "最高気温が低い日ほど釣果が上がる傾向",
     "最低気温が低い日ほど釣果が上がる傾向"
   ],
-  "history": [],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -168,6 +207,13 @@
       "corr": -0.131,
       "n_valid": 66,
       "reason": "topk_cutoff"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "deep_dive_by_point実行",
+      "result": "best=本牧沖 wmape=20.5% combo=26.87% diff=6.37pt"
     }
   ]
 }

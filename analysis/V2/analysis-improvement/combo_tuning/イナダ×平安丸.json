@@ -1,16 +1,16 @@
 {
   "fish": "イナダ",
   "ship": "平安丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 73.5,
-    "bl0_wmape": 81.7,
-    "bl2_wmape": 81.0,
+    "wmape_h0": 73.45,
+    "bl2_wmape": 80.99,
     "oos_r": 0.383,
     "n_records": 170,
-    "alpha_scale": 0.468,
-    "use_fallback": false
+    "alpha_scale": 0.4681,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +107,13 @@
     "気温が高い日ほど釣果が上がる傾向",
     "最高気温が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "combo_point_backtest登録。best=小田原沖 wmape=67.9% imp=5.55pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -169,5 +175,21 @@
       "n_valid": 170,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "小田原沖",
+      "n": 148,
+      "wmape_h0": 67.9,
+      "bl2_wmape": 80.4,
+      "oos_r": 0.453,
+      "improvement_pt": 5.55
+    }
+  ],
+  "best_point": {
+    "name": "小田原沖",
+    "wmape_h0": 67.9,
+    "improvement_pt": 5.55
+  },
+  "improvement_pt": 5.55
 }

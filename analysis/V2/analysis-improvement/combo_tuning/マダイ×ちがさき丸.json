@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-20",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-21",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 45.2,
-    "bl0_wmape": 49.8,
-    "bl2_wmape": 53.3,
-    "oos_r": 0.081,
+    "wmape_h0": 45.23,
+    "bl2_wmape": 53.35,
+    "oos_r": 0.075,
     "n_records": 49,
-    "alpha_scale": 1.135,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -113,6 +112,11 @@
       "change": "変更なし（精査済み）",
       "effect": "-",
       "reason": "BL0/BL2両勝ち or use_fallback設定済み"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_added",
+      "note": "best=茅ヶ崎沖 imp=8.43pt"
     }
   ],
   "rejected_factors": [
@@ -176,5 +180,21 @@
       "n_valid": 49,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "茅ヶ崎沖",
+      "n": 47,
+      "wmape_h0": 36.8,
+      "bl2_wmape": 52.9,
+      "oos_r": 0.577,
+      "improvement_pt": 8.43
+    }
+  ],
+  "best_point": {
+    "name": "茅ヶ崎沖",
+    "wmape_h0": 36.8,
+    "improvement_pt": 8.43
+  },
+  "improvement_pt": 8.43
 }
