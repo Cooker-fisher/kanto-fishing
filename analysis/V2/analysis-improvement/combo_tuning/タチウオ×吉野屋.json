@@ -1,47 +1,59 @@
 {
   "fish": "タチウオ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-20",
+  "last_reviewed": "2026-04-21",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 44.7,
-    "bl0_wmape": 79.9,
-    "bl2_wmape": 69.1,
-    "oos_r": -0.521,
+    "wmape_h0": 41.94,
+    "bl2_wmape": 48.57,
+    "oos_r": 0.507,
     "n_records": 609,
-    "alpha_scale": 0.0,
-    "use_fallback": true
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "走水沖",
-      "n": 259,
-      "wmape_h0": 35.8,
-      "oos_r": 0.516,
-      "improvement_pt": -8.9
+      "name": "猿島沖",
+      "n": 83,
+      "wmape_h0": 28.9,
+      "bl2_wmape": 39.9,
+      "oos_r": 0.713,
+      "improvement_pt": 13.05
     },
     {
       "name": "観音崎沖",
       "n": 98,
       "wmape_h0": 35.4,
+      "bl2_wmape": 57.3,
       "oos_r": 0.756,
-      "improvement_pt": -9.3
+      "improvement_pt": 6.51
     },
     {
-      "name": "猿島沖",
-      "n": 83,
-      "wmape_h0": 28.9,
-      "oos_r": 0.713,
-      "improvement_pt": -15.8
+      "name": "走水沖",
+      "n": 259,
+      "wmape_h0": 35.8,
+      "bl2_wmape": 46.1,
+      "oos_r": 0.516,
+      "improvement_pt": 6.13
     }
   ],
   "point_selection": {
     "method": "combo_point_events月別最頻",
     "accuracy": "75-90%",
     "patterns": [
-      {"condition": "7〜10月 SST≥22.7℃", "point": "走水沖", "prob": 0.75},
-      {"condition": "冬春 tide_coeff高（大潮偏重）", "point": "観音崎沖"},
-      {"condition": "冬春 tide_coeff低（小潮偏重）", "point": "猿島沖"}
+      {
+        "condition": "7〜10月 SST≥22.7℃",
+        "point": "走水沖",
+        "prob": 0.75
+      },
+      {
+        "condition": "冬春 tide_coeff高（大潮偏重）",
+        "point": "観音崎沖"
+      },
+      {
+        "condition": "冬春 tide_coeff低（小潮偏重）",
+        "point": "猿島沖"
+      }
     ]
   },
   "points": [
@@ -91,6 +103,11 @@
       "date": "2026-04-20",
       "action": "deep_dive_by_point実装・実証完了",
       "result": "走水沖35.8% / 観音崎沖35.4% / 猿島沖28.9%。全コンボ展開待ち"
+    },
+    {
+      "date": "2026-04-21",
+      "action": "point_backtest_updated",
+      "note": "best=猿島沖 wmape=28.9% imp=13.05pt"
     }
   ],
   "rejected_factors": [
@@ -154,5 +171,11 @@
       "n_valid": 40,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "best_point": {
+    "name": "猿島沖",
+    "wmape_h0": 28.9,
+    "improvement_pt": 13.05
+  },
+  "improvement_pt": 13.05
 }

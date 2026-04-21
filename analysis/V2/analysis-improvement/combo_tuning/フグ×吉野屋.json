@@ -4,12 +4,11 @@
   "last_reviewed": "2026-04-21",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.49,
+    "wmape_h0": 39.95,
     "bl2_wmape": 42.49,
-    "oos_r": 0.438,
+    "oos_r": 0.528,
     "n_records": 522,
-    "alpha_scale": 0.9601,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
@@ -19,15 +18,15 @@
       "wmape_h0": 39.6,
       "bl2_wmape": 42.6,
       "oos_r": 0.538,
-      "improvement_pt": 3.89
+      "improvement_pt": 0.31
     }
   ],
   "best_point": {
     "name": "大貫沖",
     "wmape_h0": 39.6,
-    "improvement_pt": 3.89
+    "improvement_pt": 0.31
   },
-  "improvement_pt": 3.89,
+  "improvement_pt": 0.31,
   "points": [
     {
       "name": "大貫沖",

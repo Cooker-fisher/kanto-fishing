@@ -815,20 +815,43 @@ def decade_of(date_str):
 _UNRESOLVABLE_POINT_RE = re.compile(
     r'^(航程|近場|浅場|深場|東京湾一帯|湾内|湾奥|港前|南沖|東沖|西沖|北沖|赤灯沖|観音沖|水深\d|^[0-9]+$|前後$)'
 )
+# 純粋な数値・深度のみ（例: "25m", "30", "42m"）→ load_records で depth_min に転記してクリア
+_DEPTH_ONLY_RE = re.compile(r'^\d+(\.\d+)?m?$')
+# 埋め込み航程サフィックス（例: "岩和田沖航程5分" → "岩和田沖"）
+_KOUTEIRE_SUFFIX_RE = re.compile(r'\s*航程\d+\s*(分|時間|h)?\s*$')
 
 def _is_航程系(pp):
-    return not pp or bool(_UNRESOLVABLE_POINT_RE.match(pp))
+    if not pp:
+        return True
+    if _UNRESOLVABLE_POINT_RE.match(pp):
+        return True
+    return False
+
+def _strip_kouteire_suffix(pt: str) -> str:
+    """「岩和田沖航程5」→「岩和田沖」。航程サフィックスがなければそのまま返す。"""
+    return _KOUTEIRE_SUFFIX_RE.sub("", pt).strip() or pt
 
 _DEPTH_TILDE_RE = re.compile(r'\s*[～〜~]\s*(\d+(?:\.\d+)?\s*m)\s*$', re.IGNORECASE)
 _DEPTH_TRAIL_RE = re.compile(r'\s+\d+(?:\.\d+)?\s*m\s*$', re.IGNORECASE)
+# ポイント名の表記ゆれ統合（固有名詞は変えない）
+# 「中ノ瀬」「中の瀬」は同一ポイント。ヶ・ノは地名固有名詞に使われるため一律変換は禁止。
+_POINT_ALIAS = {
+    '中ノ瀬': '中の瀬',
+    '二ノ宮沖': '二宮沖',
+    '洲の崎沖': '洲崎沖',
+}
 
 def _normalize_point_name(pt: str) -> str:
-    """チルダ区切りの深度表記をスペース区切りに正規化（深度値は保持）。
-    「赤灯沖～60m」→「赤灯沖 60m」。チルダのないものは変更しない。
+    """ポイント名を正規化。
+    - 航程サフィックス除去 「岩和田沖航程5」→「岩和田沖」（バケット統合用）
+    - チルダ深度表記 「赤灯沖～60m」→「赤灯沖 60m」
+    - 表記ゆれ統合（_POINT_ALIAS で個別対応）
     """
     if not pt:
         return pt
-    normalized = _DEPTH_TILDE_RE.sub(r' \1', pt).strip()
+    normalized = _strip_kouteire_suffix(pt)
+    normalized = _DEPTH_TILDE_RE.sub(r' \1', normalized).strip()
+    normalized = _POINT_ALIAS.get(normalized, normalized)
     return normalized if normalized else pt
 
 def _strip_depth_suffix(pt: str) -> str:
@@ -863,9 +886,11 @@ def _load_area_coords():
 def _resolve_point(point_place1, ship, tsuri_mono, sfp, ship_area_map, point_coords, area_coords):
     """point_place1 + 船宿 + 魚種 → (lat, lon)。解決不能なら (None, None)。"""
     pp = (point_place1 or "").strip()
-    # ① point_place1 直接解決
-    if pp and not _is_航程系(pp):
-        entry = point_coords.get(pp)
+    # 航程サフィックスを除去して基底ポイント名を取得（座標解決用）
+    pp_base = _strip_kouteire_suffix(pp)
+    # ① point_place1 直接解決（基底名で試みる）
+    if pp_base and not _is_航程系(pp_base):
+        entry = point_coords.get(pp_base)
         if entry and entry.get("lat") is not None:
             return entry["lat"], entry["lon"]
     # ② ship_fish_point フォールバック
@@ -1066,6 +1091,13 @@ def load_records(fish, ship_filter=None):
 
                 # per-record 座標解決（3段階フォールバック）
                 point_place1 = row.get("point_place1", "").strip()
+                # 深度のみのポイント名（"25m","30m"等）→ depth_min に転記してポイント名クリア
+                if point_place1 and _DEPTH_ONLY_RE.match(point_place1):
+                    depth_val = _float(point_place1.rstrip('mM'))
+                    if depth_val and not _float(row.get("depth_min")):
+                        row = dict(row)
+                        row["depth_min"] = depth_val
+                    point_place1 = ""
                 lat, lon = _resolve_point(
                     point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
                 )
