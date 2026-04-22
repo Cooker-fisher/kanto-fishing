@@ -67,7 +67,7 @@ def next_saturday() -> str:
 
 
 # 回遊魚: レンジ予測の代わりに★チャンス評価を使う魚種（combo_deep_dive.py と一致させる）
-KAIYU_FISH = {"シイラ", "カツオ", "キハダマグロ", "ブリ", "ワラサ", "イナダ", "サワラ", "カンパチ"}
+KAIYU_FISH = {"シイラ", "カツオ", "キハダマグロ", "ブリ", "ワラサ", "イナダ", "サワラ", "カンパチ", "ムギイカ"}
 
 # ── ★評価 ────────────────────────────────────────────────────────────────────
 
@@ -691,6 +691,60 @@ def _apply_point_wx_correction(conn, fish: str, ship: str, point: str,
     return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
 
 
+def _predict_point_depth(conn, fish: str, ship: str) -> str | None:
+    """best-improvement の point_depth_key を返す。BL2比改善 < 5pt なら None。"""
+    try:
+        row = conn.execute(
+            "SELECT point_depth_key, (bl2_wmape - wmape) as imp "
+            "FROM combo_point_depth_backtest "
+            "WHERE fish=? AND ship=? AND horizon=0 AND metric='cnt_avg' "
+            "AND bl2_wmape IS NOT NULL AND wmape IS NOT NULL "
+            "ORDER BY imp DESC LIMIT 1",
+            (fish, ship)
+        ).fetchone()
+        if row and row[1] is not None and row[1] >= 5.0:
+            return row[0]
+        return None
+    except Exception:
+        return None
+
+
+def _apply_point_depth_wx_correction(conn, fish: str, ship: str, point_depth_key: str,
+                                      target_date: str, baseline_cnt: float,
+                                      lat: float, lon: float,
+                                      metric: str = 'cnt_avg') -> float | None:
+    """combo_point_depth_wx_params のポイント×水深帯モデルで補正を計算。パラメータなければ None。"""
+    try:
+        rows = conn.execute(
+            "SELECT factor, mean, std, r, alpha_scale, met_mean, met_std, lat, lon "
+            "FROM combo_point_depth_wx_params WHERE fish=? AND ship=? AND point_depth_key=? AND metric=?",
+            (fish, ship, point_depth_key, metric)
+        ).fetchall()
+    except Exception:
+        return None
+    if not rows:
+        return None
+
+    meta = None
+    factor_params = {}
+    wx_lat = lat; wx_lon = lon
+    for row in rows:
+        fac, mean, std, r, alpha_scale, met_mean, met_std, rlat, rlon = row
+        if fac == "_meta":
+            meta = (alpha_scale, met_mean, met_std)
+            if rlat and rlon:
+                wx_lat, wx_lon = rlat, rlon
+        elif r is not None and abs(r) >= 0.10 and mean is not None and std is not None:
+            factor_params[fac] = (mean, std, r)
+
+    if meta is None or not factor_params:
+        return None
+
+    wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+
+
 # ── 気象取得（表示用のみ・予測には使わない） ────────────────────────────────
 
 def fetch_weather_context(lat: float, lon: float, date_str: str) -> dict:
@@ -894,6 +948,19 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             if wc_cnt is not None:
                 cnt_predicted = wc_cnt
 
+    # ── ポイント×水深帯別補正（combo_point_depth_wx_params があれば優先） ───────
+    # BL2比 5pt 以上改善する point_depth_key があれば、water_color モデルを上書き。
+    # 優先チェーン: combo < point < water_color < point_depth < trip（最高優先）
+    predicted_point_depth = None
+    if lat and lon and not use_fb:
+        predicted_point_depth = _predict_point_depth(conn, fish, ship)
+        if predicted_point_depth:
+            pd_cnt = _apply_point_depth_wx_correction(
+                conn, fish, ship, predicted_point_depth, target_date, avg_cnt, lat, lon, 'cnt_avg'
+            )
+            if pd_cnt is not None:
+                cnt_predicted = pd_cnt
+
     # ── 便別補正（trip_no 指定時に combo_trip_wx_params があれば最優先） ─────────
     # 便番号が判明している場合（予約情報等）に便別モデルを適用。最も高精度なため最優先。
     predicted_trip_no = None
@@ -999,6 +1066,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "lat":                    lat,
         "lon":                    lon,
         "predicted_point":        predicted_point,
+        "predicted_point_depth":  predicted_point_depth,   # {point}_{depth_band} or None
         "predicted_water_color":  predicted_water_color,   # 澄み/濁り/"" (water_color_daily予測)
         "predicted_trip_no":      predicted_trip_no,       # trip_no指定時のみ
     }
