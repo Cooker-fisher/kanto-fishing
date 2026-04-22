@@ -2,7 +2,7 @@
 
 **対象ロール**: analyst / stat-reviewer / engineer  
 **最終更新**: 2026/04/22  
-**ステータス**: 実装完了（全55種展開済み）。predict_count.py への統合も実装完了（2026/04/22・コミット 16b0c7f0）
+**ステータス**: 実装完了（全55種展開済み）。predict_count.py への統合完了（trip/water_color: 16b0c7f0、point_depth: 6512ebc0）
 
 ---
 
@@ -238,9 +238,9 @@ def deep_dive(fish, ship):
 
 ## predict_count.py への統合（実装完了・2026/04/22）
 
-**コミット: 16b0c7f0**
+**コミット: 16b0c7f0（trip/water_color）+ 6512ebc0（point_depth・KAIYU_FISH修正）**
 
-trip_no と water_color の2軸を `predict_combo()` に統合した。
+全4軸のセグメントモデルを `predict_combo()` に統合した。
 
 ### 実装済み関数
 
@@ -249,12 +249,14 @@ trip_no と water_color の2軸を `predict_combo()` に統合した。
 | `_apply_trip_wx_correction()` | `combo_trip_wx_params` を参照して便別補正を計算 |
 | `_predict_water_color_cat()` | `water_color_daily` から澄み/濁り/"" を分類 |
 | `_apply_water_color_wx_correction()` | `combo_water_color_wx_params` を参照して水色別補正を計算 |
+| `_predict_point_depth()` | `combo_point_depth_backtest` からBL2比5pt以上改善のpoint_depth_keyを選択 |
+| `_apply_point_depth_wx_correction()` | `combo_point_depth_wx_params` を参照してポイント×水深帯別補正を計算 |
 
 ### predict_combo() の変更点
 
 - `trip_no: int = 0` パラメータを追加
-- 優先チェーン（確定）: **trip > water_color > point > combo**
-- 戻り値に `predicted_water_color`・`predicted_trip_no` を追加
+- 優先チェーン（確定）: **trip > point_depth > water_color > point > combo**
+- 戻り値に `predicted_water_color`・`predicted_trip_no`・`predicted_point_depth` を追加
 
 ### water_color FAST変数ガード
 
@@ -281,15 +283,19 @@ trip_no と water_color の2軸を `predict_combo()` に統合した。
 | Critical | 距離閾値をcombo_deep_dive.pyと統一すべき | 対応済み（`_WC_MAX_DIST=0.3`） |
 | High | セグメントベースラインの非対称（avg_cnt がコンボ全体平均） | **保留**。修正コスト高のため現行設計を維持。将来的にはセグメント別avg_cntへの変更を検討 |
 
-### ポイント×水深帯（未統合）
+### ポイント×水深帯（2026/04/22 統合完了・コミット 6512ebc0）
 
-`combo_point_depth_wx_params` はDBに保存済みだが、`predict_combo()` への統合は未実装。ポイント予測（`_predict_point()`）が成功した場合に depth_band を掛け合わせて参照する設計を将来実装予定。
+**選択ロジック**: `combo_point_depth_backtest` の H=0 改善幅（BL2-wMAPE）が最大かつ ≥5pt の `point_depth_key` を自動選択。有効コンボ114件（全74コンボ中）が対象。
+
+**known TODO: FAST変数のhorizonフィルタ未実装** — H>7の予測で波高・風速等のFAST変数を使用している。`_apply_wx_correction`（通常モデル）と共通の既存設計課題。全correction関数をまとめて修正する別PRで対応予定。
+
+**KAIYU_FISH修正**: `predict_count.py` の `KAIYU_FISH` に `"ムギイカ"` が未追加だった問題を同コミットで修正（ムギイカ×秀丸等の kaiyu_promoted ルートが機能しなかった）。
 
 ---
 
 ## 参照先
 
 - `analysis/V2/methods/combo_deep_dive.py` — `deep_dive_by_trip()`, `deep_dive_by_point_depth()`, `deep_dive_by_water_color()`
-- `analysis/V2/methods/predict_count.py` — セグメント統合済み（trip/water_color 2軸・コミット 16b0c7f0）
+- `analysis/V2/methods/predict_count.py` — セグメント統合済み（全4軸: trip/water_color: 16b0c7f0、point_depth: 6512ebc0）
 - `10_point_optimization.md` — ポイント別モデル（元祖・4軸の起点）
 - `90_決定ログ.md` — 2026/04/22 セグメント別モデル3軸の実装確定
