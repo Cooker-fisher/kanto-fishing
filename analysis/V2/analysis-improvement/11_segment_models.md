@@ -2,7 +2,7 @@
 
 **対象ロール**: analyst / stat-reviewer / engineer  
 **最終更新**: 2026/04/22  
-**ステータス**: 実装完了（全55種展開済み）。predict_count.py への統合は未実装（TODO）
+**ステータス**: 実装完了（全55種展開済み）。predict_count.py への統合も実装完了（2026/04/22・コミット 16b0c7f0）
 
 ---
 
@@ -236,42 +236,60 @@ def deep_dive(fish, ship):
 
 ---
 
-## predict_count.py への統合（未実装・TODO）
+## predict_count.py への統合（実装完了・2026/04/22）
 
-現時点では分析DB（`analysis.sqlite`）にバックテスト結果が保存されているのみ。実際の予測時に各セグメントモデルを適用するには以下が必要:
+**コミット: 16b0c7f0**
 
-### 便別
+trip_no と water_color の2軸を `predict_combo()` に統合した。
 
-```python
-# predict_count.py 追加予定
-def _predict_by_trip(conn, fish, ship, trip_no, target_date, avg_cnt, lat, lon):
-    """trip_noが既知の場合にcombo_trip_wx_paramsを参照して補正"""
-    params = conn.execute(
-        "SELECT * FROM combo_trip_wx_params WHERE fish=? AND ship=? AND trip_no=?",
-        (fish, ship, trip_no)
-    ).fetchall()
-    ...
-```
+### 実装済み関数
 
-### 水色別
+| 関数名 | 役割 |
+|--------|------|
+| `_apply_trip_wx_correction()` | `combo_trip_wx_params` を参照して便別補正を計算 |
+| `_predict_water_color_cat()` | `water_color_daily` から澄み/濁り/"" を分類 |
+| `_apply_water_color_wx_correction()` | `combo_water_color_wx_params` を参照して水色別補正を計算 |
 
-```python
-# predict_count.py 追加予定
-def _predict_by_water_color(conn, fish, ship, wc_cat, target_date, avg_cnt, lat, lon):
-    """水色カテゴリが推定できる場合にcombo_water_color_wx_paramsを参照"""
-    # water_color_daily テーブルから当日の予測水色を取得
-    ...
-```
+### predict_combo() の変更点
 
-### ポイント×水深帯
+- `trip_no: int = 0` パラメータを追加
+- 優先チェーン（確定）: **trip > water_color > point > combo**
+- 戻り値に `predicted_water_color`・`predicted_trip_no` を追加
 
-ポイント予測（`_predict_point()`）が成功した場合に、depth_band を掛け合わせて `combo_point_depth_wx_params` を参照する。
+### water_color FAST変数ガード
+
+| 定数 | 値 | 理由 |
+|------|---|------|
+| `_WC_MAX_DAYS` | 7 | 水色遷移の時定数3.7日。7日超は情報価値なし |
+| `_WC_MAX_DIST` | 0.3 | `combo_deep_dive.py` の距離閾値と統一。0.3度超の外挿はNone化 |
+
+7日超の target_date に対しては `_predict_water_color_cat()` が `""` を返し、水色補正はスキップされる。
+
+### 動作例（2026/04/10、アジ×吉野屋）
+
+| 呼び出し条件 | cnt予測 | water_color | trip_used |
+|-------------|---------|-------------|-----------|
+| trip=0（デフォルト） | 64.28 | 濁り | — |
+| trip=6 | 64.5 | 濁り | 6 |
+| 将来日 2026/05/03（target_date 11日後）、trip=6 | 50.5 | ""（7日超でブロック） | 6 |
+
+### stat-reviewer 指摘と対応状況
+
+| 重要度 | 指摘内容 | 対応状況 |
+|--------|---------|---------|
+| Critical | water_color はFAST変数。7日超の予測に使うべきでない | 対応済み（`_WC_MAX_DAYS=7` ガード） |
+| Critical | 距離閾値をcombo_deep_dive.pyと統一すべき | 対応済み（`_WC_MAX_DIST=0.3`） |
+| High | セグメントベースラインの非対称（avg_cnt がコンボ全体平均） | **保留**。修正コスト高のため現行設計を維持。将来的にはセグメント別avg_cntへの変更を検討 |
+
+### ポイント×水深帯（未統合）
+
+`combo_point_depth_wx_params` はDBに保存済みだが、`predict_combo()` への統合は未実装。ポイント予測（`_predict_point()`）が成功した場合に depth_band を掛け合わせて参照する設計を将来実装予定。
 
 ---
 
 ## 参照先
 
 - `analysis/V2/methods/combo_deep_dive.py` — `deep_dive_by_trip()`, `deep_dive_by_point_depth()`, `deep_dive_by_water_color()`
-- `analysis/V2/methods/predict_count.py` — セグメント統合予定箇所
+- `analysis/V2/methods/predict_count.py` — セグメント統合済み（trip/water_color 2軸・コミット 16b0c7f0）
 - `10_point_optimization.md` — ポイント別モデル（元祖・4軸の起点）
 - `90_決定ログ.md` — 2026/04/22 セグメント別モデル3軸の実装確定
