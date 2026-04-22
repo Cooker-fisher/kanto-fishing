@@ -1,0 +1,37 @@
+{
+  "fish": "モンゴウイカ",
+  "ship": "さえむ丸",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 129.82,
+    "bl2_wmape": 106.71,
+    "oos_r": -0.084,
+    "n_records": 26,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "金谷沖",
+      "n": 26,
+      "wmape_h0": 126.9,
+      "bl2_wmape": 106.7,
+      "oos_r": 0.054,
+      "improvement_pt": 2.96
+    }
+  ],
+  "best_point": {
+    "name": "金谷沖",
+    "wmape_h0": 126.9,
+    "improvement_pt": 2.96
+  },
+  "improvement_pt": 2.96,
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=金谷沖 wmape=126.9% imp=2.96pt"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "fish": "ハナダイ",
+  "ship": "大盛丸",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 36.22,
+    "bl2_wmape": 47.17,
+    "oos_r": 0.543,
+    "n_records": 57,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "外川沖",
+      "n": 40,
+      "wmape_h0": 30.2,
+      "bl2_wmape": 44.8,
+      "oos_r": 0.58,
+      "improvement_pt": 6.03
+    }
+  ],
+  "best_point": {
+    "name": "外川沖",
+    "wmape_h0": 30.2,
+    "improvement_pt": 6.03
+  },
+  "improvement_pt": 6.03,
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=外川沖 wmape=30.2% imp=6.03pt"
+    }
+  ]
+}

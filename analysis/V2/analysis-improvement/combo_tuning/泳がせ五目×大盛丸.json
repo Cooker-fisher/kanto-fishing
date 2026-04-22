@@ -1,0 +1,37 @@
+{
+  "fish": "泳がせ五目",
+  "ship": "大盛丸",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 50.41,
+    "bl2_wmape": 50.12,
+    "oos_r": 0.248,
+    "n_records": 86,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "外川沖",
+      "n": 62,
+      "wmape_h0": 37.1,
+      "bl2_wmape": 54.0,
+      "oos_r": 0.567,
+      "improvement_pt": 13.34
+    }
+  ],
+  "best_point": {
+    "name": "外川沖",
+    "wmape_h0": 37.1,
+    "improvement_pt": 13.34
+  },
+  "improvement_pt": 13.34,
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=外川沖 wmape=37.1% imp=13.34pt"
+    }
+  ]
+}
