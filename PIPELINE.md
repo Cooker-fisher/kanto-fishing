@@ -130,9 +130,14 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
   - **期間**: 2023-01-01〜2026-04-18
 
 ### A7 build_ocean_map.py 詳細
-- **入力**: cmems_data.sqlite + weather_cache.sqlite + analysis.sqlite(water_color_daily)
+- **入力**: cmems_data.sqlite + weather_cache.sqlite + analysis.sqlite(water_color_daily, combo_meta, combo_wx_params, combo_decadal) + data/V2/*.csv
 - **出力**: `ocean_map_data.json`（kuroshio_map.html 用データ）
-- **内容**: SLA/CHL/SST/水色 × 直近30日分
+- **内容**:
+  - `layers`: SLA/CHL/SST/水色 × 直近30日分
+  - `catches`: 直近30日 × (ship, fish, date) → `{lat, lon, cnt_avg, cnt_min, cnt_max, trip_label, top_factor, r, layer, anomaly}`
+    - 採用条件: `combo_wx_params.metric='cnt_avg' AND |r|≥0.30` かつ `factor` が海況系（SLA/CHL/SST/WC 関連）
+    - 船宿→座標は `combo_meta.(lat, lon)`、平年比 `anomaly = cnt_avg / combo_decadal.avg_cnt(旬)`
+    - 同日複数便は `cnt_avg` 最大便を採用（`trip_label` 保持）、魚種ハッシュで ±0.002° ジッタ付与
 - **GitHub Pages非対象**: ローカル分析ツール
 
 ### A8 build_analysis_map.py 詳細
