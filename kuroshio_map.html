@@ -85,6 +85,38 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
   background: rgba(10,22,40,0.85); padding: 4px 16px;
   font-size: 11px; color: #9ab; display: flex; gap: 20px;
 }
+
+/* 釣果ドット関連 */
+#catch-controls {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 4px 8px; border-left: 1px solid #2a4f7a; margin-left: 4px;
+}
+#fish-filter {
+  background: #1e3a5f; border: 1px solid #2a4f7a; color: #e8eaf0;
+  padding: 3px 6px; border-radius: 4px; font-size: 12px; max-width: 140px;
+}
+#auto-layer-label {
+  font-size: 11px; color: #9ab; display: flex; align-items: center; gap: 4px;
+  cursor: pointer; user-select: none;
+}
+#auto-layer-switch { cursor: pointer; }
+.catch-tooltip {
+  font-size: 11px; line-height: 1.6;
+  background: rgba(10,22,40,0.95) !important;
+  color: #e8eaf0 !important; border: 1px solid #1e3a5f !important;
+}
+.catch-tooltip b { color: #7ec8e3; }
+
+#catch-legend {
+  position: absolute; bottom: 32px; left: 12px; z-index: 1000;
+  background: rgba(10,22,40,0.92); border: 1px solid #1e3a5f;
+  border-radius: 8px; padding: 12px 14px; min-width: 180px;
+}
+#catch-legend h3 { font-size: 12px; color: #9ab; margin-bottom: 8px; }
+#catch-legend .legend-item { display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: #ccd; margin-bottom: 4px; }
+#catch-legend .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+#catch-legend .legend-note { font-size: 10px; color: #89a; margin-top: 6px; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -96,6 +128,13 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
     <button class="layer-tab" data-layer="chl">CHL（ベイト）</button>
     <button class="layer-tab" data-layer="sst">SST（水温）</button>
     <button class="layer-tab" data-layer="wc">水色（濁り）</button>
+    <button id="catch-toggle" class="layer-tab active">🎣 釣果ドット</button>
+  </div>
+  <div id="catch-controls">
+    <select id="fish-filter"><option value="">全魚種</option></select>
+    <label id="auto-layer-label">
+      <input type="checkbox" id="auto-layer-switch"> レイヤ自動切替
+    </label>
   </div>
   <div id="controls">
     <div id="date-display">----/--/--</div>
@@ -118,6 +157,7 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
 <div style="position:relative; flex:1; display:flex; flex-direction:column;">
   <div id="map"></div>
   <div id="legend"></div>
+  <div id="catch-legend"></div>
   <div id="info-panel"><div class="pt-val" id="info-val"></div></div>
   <div id="stats-bar">
     <span id="stats-min">最小: --</span>
@@ -224,6 +264,18 @@ const LAYERS = {
   },
 };
 
+// ─── 釣果ドット色分け ───────────────────────────────────────────────────
+function catchFill(rec) {
+  // ボウズ (cnt_avg=0) は anomaly より優先して薄グレー表示
+  if (rec.cnt_avg === 0) return ['#bbbbbb', 0.70];
+  const a = rec.anomaly;
+  if (a === null || a === undefined) return ['#888888', 0.70];
+  if (a >= 1.5) return ['#e040fb', 0.92];   // 好漁日（マゼンタ）
+  if (a >= 1.1) return ['#ffaa33', 0.82];
+  if (a >= 0.9) return ['#cccc44', 0.75];
+  return ['#668899', 0.70];
+}
+
 // ─── 地図初期化 ────────────────────────────────────────────────────────
 function init(json) {
   const map = L.map('map', { center: [35.2, 139.8], zoom: 8, zoomControl: true });
@@ -233,14 +285,21 @@ function init(json) {
 
   let currentLayer = 'sla';
   let circles = [];
+  let catchCircles = [];
+  let catchEnabled = true;
+  let currentFish = '';
+  let autoLayerSwitch = false;
   let isPlaying = false;
   let playTimer = null;
 
-  // ─── 日付リスト（全レイヤのunion）─────────────────────────────────
+  const hasCatches = json.catches && Object.keys(json.catches).length > 0;
+
+  // ─── 日付リスト（全レイヤ + 釣果のunion）──────────────────────────
   const allDates = new Set();
   for (const lk of Object.keys(json.layers)) {
     Object.keys(json.layers[lk].daily).forEach(d => allDates.add(d));
   }
+  if (json.catches) Object.keys(json.catches).forEach(d => allDates.add(d));
   const dates = [...allDates].sort();
   const slider = document.getElementById('date-slider');
   slider.max = dates.length - 1;
@@ -305,26 +364,161 @@ function init(json) {
     }
   }
 
+  // ─── 釣果ドット描画 ────────────────────────────────────────────────
+  function updateCatchMarkers(dateStr) {
+    catchCircles.forEach(c => map.removeLayer(c));
+    catchCircles = [];
+    if (!catchEnabled || !hasCatches) return;
+    const recs = json.catches[dateStr];
+    if (!recs) return;
+
+    recs.forEach(rec => {
+      if (currentFish && rec.fish !== currentFish) return;
+      const [fill, opacity] = catchFill(rec);
+      const radius = 6 + Math.min(8, rec.cnt_avg * 0.4);
+      const isHigh = rec.anomaly !== null && rec.anomaly !== undefined && rec.anomaly >= 1.5;
+      const c = L.circleMarker([rec.lat, rec.lon], {
+        radius, fillColor: fill, fillOpacity: opacity,
+        color: isHigh ? '#ffffff' : '#111',
+        weight: isHigh ? 3 : 1, opacity: 0.9,
+        pane: 'markerPane',
+      }).addTo(map);
+
+      // ホバー ツールチップ
+      const anomalyText = rec.anomaly === null || rec.anomaly === undefined
+        ? '平年比: データ不足'
+        : `平年比: ${rec.anomaly >= 1 ? '+' : ''}${Math.round((rec.anomaly - 1) * 100)}% (旬別平均比)`;
+      const cntText = rec.cnt_avg === 0
+        ? 'ボウズ（実釣0匹）'
+        : `${rec.cnt_avg}匹 (${rec.cnt_min}〜${rec.cnt_max})${rec.trip_label ? ' / ' + rec.trip_label : ''}`;
+      const factorText = rec.top_factor
+        ? `主因子: ${rec.top_factor} (r=${rec.r >= 0 ? '+' : ''}${rec.r})`
+        : '主因子: 該当なし（|r|<0.3）';
+      const tooltipHtml =
+        `<b>${rec.fish} × ${rec.ship}</b><br>` +
+        `${cntText}<br>${anomalyText}<br>${factorText}` +
+        `<div style="font-size:10px;color:#89a;margin-top:4px;">座標は表示用に微調整済み</div>`;
+      c.bindTooltip(tooltipHtml, { className: 'catch-tooltip', direction: 'top', sticky: true });
+
+      // クリック時固定ポップアップ（将来拡張フック）
+      c.on('click', () => onCatchClick(rec));
+      catchCircles.push(c);
+    });
+  }
+
+  // 将来拡張: クリック時固定ポップアップ（combo_point_events 連動等）
+  function onCatchClick(rec) {
+    // 現状はツールチップで十分なのでno-op。実装余地だけ確保。
+  }
+
   // ─── 日付表示更新 ─────────────────────────────────────────────────
   function setDate(idx) {
     const d = dates[idx];
     document.getElementById('date-display').textContent = d ? d.replace(/-/g, '/') : '---';
-    if (d) updateMarkers(currentLayer, d);
+    if (d) {
+      updateMarkers(currentLayer, d);
+      updateCatchMarkers(d);
+    }
   }
 
   // ─── スライダー操作 ────────────────────────────────────────────────
   slider.addEventListener('input', () => setDate(+slider.value));
 
   // ─── レイヤ切替 ────────────────────────────────────────────────────
-  document.querySelectorAll('.layer-tab').forEach(btn => {
+  document.querySelectorAll('.layer-tab[data-layer]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.layer-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.layer-tab[data-layer]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentLayer = btn.dataset.layer;
       updateLegend(currentLayer);
       setDate(+slider.value);
     });
   });
+
+  // ─── 釣果ドット制御 ────────────────────────────────────────────────
+  const catchToggle  = document.getElementById('catch-toggle');
+  const fishFilterEl = document.getElementById('fish-filter');
+  const autoSwitchEl = document.getElementById('auto-layer-switch');
+
+  if (!hasCatches) {
+    // JSON に catches が無ければ釣果機能をグレーアウト（後方互換）
+    catchEnabled = false;
+    catchToggle.classList.remove('active');
+    catchToggle.disabled = true;
+    catchToggle.style.opacity = '0.4';
+    catchToggle.style.cursor = 'not-allowed';
+    document.getElementById('catch-controls').style.display = 'none';
+    document.getElementById('catch-legend').style.display = 'none';
+  } else {
+    // 魚種オプション生成（釣果頻度降順）
+    const fishCount = {};
+    const fishLayers = {};   // fish -> {layer: count}
+    Object.values(json.catches).forEach(list => list.forEach(r => {
+      fishCount[r.fish] = (fishCount[r.fish] || 0) + 1;
+      if (r.layer) {
+        fishLayers[r.fish] = fishLayers[r.fish] || {};
+        fishLayers[r.fish][r.layer] = (fishLayers[r.fish][r.layer] || 0) + 1;
+      }
+    }));
+    const sortedFish = Object.keys(fishCount).sort((a, b) => fishCount[b] - fishCount[a]);
+    sortedFish.forEach(f => {
+      const o = document.createElement('option');
+      o.value = f; o.textContent = `${f} (${fishCount[f]})`;
+      fishFilterEl.appendChild(o);
+    });
+
+    // 魚種 → 最頻レイヤ
+    const fishTopLayer = {};
+    for (const f in fishLayers) {
+      const entries = Object.entries(fishLayers[f]);
+      entries.sort((a, b) => b[1] - a[1]);
+      fishTopLayer[f] = entries[0][0];
+    }
+
+    function maybeSwitchLayer() {
+      if (!autoLayerSwitch) return;
+      if (!currentFish) return;
+      const lk = fishTopLayer[currentFish];
+      if (!lk || lk === currentLayer) return;
+      const btn = document.querySelector(`.layer-tab[data-layer="${lk}"]`);
+      if (btn) btn.click();
+    }
+
+    catchToggle.addEventListener('click', () => {
+      catchEnabled = !catchEnabled;
+      catchToggle.classList.toggle('active', catchEnabled);
+      if (!catchEnabled) {
+        catchCircles.forEach(c => map.removeLayer(c));
+        catchCircles = [];
+        document.getElementById('catch-legend').style.display = 'none';
+      } else {
+        document.getElementById('catch-legend').style.display = '';
+        setDate(+slider.value);
+      }
+    });
+
+    fishFilterEl.addEventListener('change', () => {
+      currentFish = fishFilterEl.value;
+      maybeSwitchLayer();
+      setDate(+slider.value);
+    });
+
+    autoSwitchEl.addEventListener('change', () => {
+      autoLayerSwitch = autoSwitchEl.checked;
+      if (autoLayerSwitch) maybeSwitchLayer();
+    });
+
+    // 釣果凡例
+    const clegend = document.getElementById('catch-legend');
+    clegend.innerHTML = `<h3>🎣 釣果ドット（平年比）</h3>
+      <div class="legend-item"><div class="legend-dot" style="background:#e040fb;border:2px solid #fff"></div>好漁日（平年比+50%以上）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffaa33"></div>やや好調（+10〜+50%）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#cccc44"></div>平年並（-10〜+10%）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#668899"></div>不調（-10%未満）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#bbbbbb"></div>ボウズ記録（実釣0匹）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#888"></div>旬別平均データなし</div>
+      <div class="legend-note">大きさ＝釣果匹数。ホバーで相関因子と平年比を表示。</div>`;
+  }
 
   // ─── 再生 ─────────────────────────────────────────────────────────
   const playBtn = document.getElementById('play-btn');
