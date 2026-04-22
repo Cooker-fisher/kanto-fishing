@@ -1673,7 +1673,9 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         if wk not in wx_cache:
             wx_cache[wk] = get_daily_wx(conn_wx, wlat, wlon, wx_date)
         wx = wx_cache[wk]
-        if not wx:
+        # wx=None は「DB にその日のデータなし」→ スキップ
+        # wx={} は「conn_wx=None（weather_cache 未整備）」→ tide/CMEMS/カレンダー因子だけで継続
+        if wx is None:
             continue
         wx = dict(wx)  # 元キャッシュを破壊しないようコピー
 
