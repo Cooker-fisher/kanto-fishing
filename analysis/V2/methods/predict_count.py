@@ -69,6 +69,37 @@ def next_saturday() -> str:
 # 回遊魚: レンジ予測の代わりに★チャンス評価を使う魚種（combo_deep_dive.py と一致させる）
 KAIYU_FISH = {"シイラ", "カツオ", "キハダマグロ", "ブリ", "ワラサ", "イナダ", "サワラ", "カンパチ", "ムギイカ"}
 
+# ── FAST変数 horizon フィルタ ─────────────────────────────────────────────────
+# combo_deep_dive.py の FAST_FACTORS と一致させること（変更時は両方更新）
+# H>7 の予測では Forecast API の速い変数（風・波・潮流等）が気候値に収束するため補正に使わない。
+# ※ temp_range/pressure_range は「日較差・日内変動幅」であり、絶対値（temp_avg/pressure_avg）
+#   とは別の短期変動指標。後者は SLOW 扱い（H=28 まで有効）。
+FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして補正に使わない
+_FAST_FACTORS: frozenset = frozenset({
+    "wind_speed_avg", "wind_speed_max", "wind_dir_mode", "wind_dir_n", "wind_dir_e",
+    "wave_height_avg", "wave_height_max", "wave_clamp",
+    "wave_period_avg", "wave_period_min",
+    "swell_height_avg", "swell_height_max",
+    "temp_range", "temp_delta", "pressure_range",   # 日較差・変化量 = 短期指標
+    "precip_sum", "precip_sum1", "precip_sum2", "precip_sum3",
+    "precip_sum4", "precip_sum5", "precip_sum6", "precip_sum7",
+    "water_color_prev_n", "prev_week_cnt",
+    "typhoon_dist", "typhoon_wind",
+    "current_speed_avg", "current_speed_max", "current_dir_mode",
+})
+
+
+def _h_days(target_date: str) -> int:
+    """target_date（YYYY/MM/DD or YYYY-MM-DD）から今日までの差分日数を返す。当日=0。
+    過去日付は負値（例: 昨日=-1）を返す。負値は FAST_MAX_H を超えないため、
+    過去日付の呼び出しでは FAST変数が除外されない（意図通り: 過去検証では実測値が使える）。
+    """
+    try:
+        td = datetime.strptime(target_date.replace("-", "/"), "%Y/%m/%d").date()
+        return (td - datetime.today().date()).days
+    except Exception:
+        return 0
+
 # ── ★評価 ────────────────────────────────────────────────────────────────────
 
 def calc_stars(wmape: float, n: int) -> int:
@@ -437,8 +468,14 @@ def _build_all_wx(wx_lat: float, wx_lon: float, target_date: str,
 
 
 def _apply_correction_from_params(factor_params: dict, meta: tuple,
-                                   all_wx: dict, baseline_cnt: float) -> float | None:
-    """factor_params + meta から気象補正値を計算。因子が0件なら None を返す。"""
+                                   all_wx: dict, baseline_cnt: float,
+                                   h_days: int = 0) -> float | None:
+    """factor_params + meta から気象補正値を計算。因子が0件なら None を返す。
+    h_days > FAST_MAX_H の場合は FAST変数を除外する（Forecast API の精度限界）。"""
+    # H>7 の場合 FAST変数を factor_params から除外
+    if h_days > FAST_MAX_H:
+        factor_params = {k: v for k, v in factor_params.items()
+                         if k not in _FAST_FACTORS}
     alpha_scale, met_mean, met_std = meta
     w_total = sum(abs(r) for _, _, r in factor_params.values())
     if w_total == 0:
@@ -492,16 +529,19 @@ def _apply_wx_correction(conn, fish: str, ship: str,
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
     all_wx, is_future, wx_source = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    h_days = _h_days(target_date)
 
-    predicted = _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+    predicted = _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, h_days)
     if predicted is None:
         return baseline_cnt
 
-    # 予測ログ
+    # 予測ログ（H>7 の場合 FAST変数を除外した後の factor_params で計算）
+    log_fps = ({k: v for k, v in factor_params.items() if k not in _FAST_FACTORS}
+               if h_days > FAST_MAX_H else factor_params)
     alpha_scale, met_mean, met_std = meta
-    w_total = sum(abs(r) for _, _, r in factor_params.values())
+    w_total = sum(abs(r) for _, _, r in log_fps.values())
     num_wx = sum(r * (all_wx[fac] - mean) / std
-                 for fac, (mean, std, r) in factor_params.items()
+                 for fac, (mean, std, r) in log_fps.items()
                  if all_wx.get(fac) is not None)
     correction = (num_wx / w_total) * met_std * alpha_scale if w_total else 0.0
     _log_predict({
@@ -515,8 +555,8 @@ def _apply_wx_correction(conn, fish: str, ship: str,
         "baseline":     round(baseline_cnt, 2),
         "correction":   round(correction, 2),
         "predicted":    predicted,
-        "factors_used": sum(1 for fac in factor_params if all_wx.get(fac) is not None),
-        "factors_avail": len(factor_params),
+        "factors_used": sum(1 for fac in log_fps if all_wx.get(fac) is not None),
+        "factors_avail": len(log_fps),
         "wx_keys":      [k for k in all_wx if not k.startswith("_")],
     })
 
@@ -579,7 +619,7 @@ def _apply_trip_wx_correction(conn, fish: str, ship: str, trip_no: int,
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
     all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
-    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
 _WC_MAX_DAYS = 7   # water_color は FAST 変数（遷移3.7〜4.2日）。7日超は情報価値なし
@@ -650,7 +690,7 @@ def _apply_water_color_wx_correction(conn, fish: str, ship: str, wc_cat: str,
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
     all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
-    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
 def _apply_point_wx_correction(conn, fish: str, ship: str, point: str,
@@ -688,7 +728,7 @@ def _apply_point_wx_correction(conn, fish: str, ship: str, point: str,
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
     all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
-    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
 def _predict_point_depth(conn, fish: str, ship: str) -> str | None:
@@ -742,7 +782,7 @@ def _apply_point_depth_wx_correction(conn, fish: str, ship: str, point_depth_key
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
     all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
-    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
 # ── 気象取得（表示用のみ・予測には使わない） ────────────────────────────────

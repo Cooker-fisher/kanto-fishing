@@ -1,6 +1,19 @@
-現行バージョン: crawler.py v5.28 / predict_count.py（Forecast API統合済み）
-最終更新: 2026/04/19
-最新コミット: c80cf3a（ムギイカ KAIYU_FISH追加 + KAIYU_PROMOTE閾値 60→62%）
+現行バージョン: crawler.py v5.28 / predict_count.py（Forecast API統合済み・FAST変数horizonフィルタ実装済み）
+最終更新: 2026/04/22
+最新コミット: （今セッション: FAST変数 horizon フィルタ）
+
+## ✅ 今セッション完了（2026/04/22）
+
+### FAST変数 horizon フィルタ実装（predict_count.py）
+
+- **問題**: 全 correction 関数が H>7 の予測でも波高・風速・潮流等の FAST変数を適用していた
+- **修正**: `_FAST_FACTORS` frozenset + `FAST_MAX_H=7` + `_h_days()` を predict_count.py に追加
+- `_apply_correction_from_params(h_days)` が H>7 の場合 FAST変数を factor_params から除外
+- 対象 5関数: `_apply_wx_correction` / `_apply_trip_wx_correction` / `_apply_water_color_wx_correction` / `_apply_point_wx_correction` / `_apply_point_depth_wx_correction`
+- logging バグも同時修正（H>7 のログで correction/factors_used がフィルタ前参照になっていた → `log_fps` で修正）
+- data-reviewer: `_FAST_FACTORS` と DB の全 factor 名が完全一致確認済み
+
+---
 
 ## ✅ 今セッション完了（2026/04/19 夜）
 
