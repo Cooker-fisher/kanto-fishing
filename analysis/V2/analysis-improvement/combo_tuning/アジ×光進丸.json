@@ -4,37 +4,45 @@
   "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 30.78,
-    "bl2_wmape": 33.75,
-    "oos_r": 0.572,
-    "n_records": 678,
+    "wmape_h0": 31.22,
+    "bl2_wmape": 34.16,
+    "oos_r": 0.568,
+    "n_records": 890,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "金谷沖",
-      "n": 533,
-      "wmape_h0": 30.2,
-      "bl2_wmape": 33.2,
-      "oos_r": 0.609,
-      "improvement_pt": 0.63
+      "name": "金谷沖超浅場",
+      "n": 114,
+      "wmape_h0": 27.9,
+      "bl2_wmape": 33.3,
+      "oos_r": 0.431,
+      "improvement_pt": 3.28
     },
     {
       "name": "金谷沖浅場",
-      "n": 103,
-      "wmape_h0": 31.7,
-      "bl2_wmape": 49.2,
-      "oos_r": 0.483,
-      "improvement_pt": -0.89
+      "n": 213,
+      "wmape_h0": 30.4,
+      "bl2_wmape": 42.9,
+      "oos_r": 0.498,
+      "improvement_pt": 0.85
+    },
+    {
+      "name": "金谷沖",
+      "n": 558,
+      "wmape_h0": 31.0,
+      "bl2_wmape": 34.0,
+      "oos_r": 0.614,
+      "improvement_pt": 0.17
     }
   ],
   "best_point": {
-    "name": "金谷沖",
-    "wmape_h0": 30.2,
-    "improvement_pt": 0.63
+    "name": "金谷沖超浅場",
+    "wmape_h0": 27.9,
+    "improvement_pt": 3.28
   },
-  "improvement_pt": 0.63,
+  "improvement_pt": 3.28,
   "points": [
     {
       "name": "金谷沖",

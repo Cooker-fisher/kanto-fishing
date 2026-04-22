@@ -1,0 +1,45 @@
+{
+  "fish": "スルメイカ",
+  "ship": "はら丸",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 56.77,
+    "bl2_wmape": 56.19,
+    "oos_r": 0.027,
+    "n_records": 229,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "沖の瀬",
+      "n": 44,
+      "wmape_h0": 43.5,
+      "bl2_wmape": 50.3,
+      "oos_r": 0.459,
+      "improvement_pt": 13.29
+    },
+    {
+      "name": "城ヶ島沖",
+      "n": 89,
+      "wmape_h0": 45.9,
+      "bl2_wmape": 54.5,
+      "oos_r": 0.425,
+      "improvement_pt": 10.91
+    }
+  ],
+  "best_point": {
+    "name": "沖の瀬",
+    "wmape_h0": 43.5,
+    "improvement_pt": 13.29
+  },
+  "improvement_pt": 13.29,
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=沖の瀬 wmape=43.5% imp=13.29pt"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "fish": "マダイ",
+  "ship": "三次郎丸",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 52.18,
+    "bl2_wmape": 52.36,
+    "oos_r": 0.291,
+    "n_records": 348,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "飯岡沖",
+      "n": 346,
+      "wmape_h0": 45.2,
+      "bl2_wmape": 52.2,
+      "oos_r": 0.485,
+      "improvement_pt": 7.03
+    }
+  ],
+  "best_point": {
+    "name": "飯岡沖",
+    "wmape_h0": 45.2,
+    "improvement_pt": 7.03
+  },
+  "improvement_pt": 7.03,
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=飯岡沖 wmape=45.2% imp=7.03pt"
+    }
+  ]
+}

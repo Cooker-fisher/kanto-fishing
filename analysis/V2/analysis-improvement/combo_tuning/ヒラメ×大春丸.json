@@ -1,0 +1,37 @@
+{
+  "fish": "ヒラメ",
+  "ship": "大春丸",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 42.21,
+    "bl2_wmape": 40.67,
+    "oos_r": -0.191,
+    "n_records": 171,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "鹿島沖",
+      "n": 169,
+      "wmape_h0": 34.3,
+      "bl2_wmape": 40.6,
+      "oos_r": 0.301,
+      "improvement_pt": 7.91
+    }
+  ],
+  "best_point": {
+    "name": "鹿島沖",
+    "wmape_h0": 34.3,
+    "improvement_pt": 7.91
+  },
+  "improvement_pt": 7.91,
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島沖 wmape=34.3% imp=7.91pt"
+    }
+  ]
+}

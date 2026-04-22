@@ -1,0 +1,37 @@
+{
+  "fish": "ヒラメ",
+  "ship": "太幸丸",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 41.47,
+    "bl2_wmape": 42.45,
+    "oos_r": 0.353,
+    "n_records": 357,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "浅場(~40m)",
+      "n": 67,
+      "wmape_h0": 27.5,
+      "bl2_wmape": 37.1,
+      "oos_r": 0.665,
+      "improvement_pt": 13.93
+    }
+  ],
+  "best_point": {
+    "name": "浅場(~40m)",
+    "wmape_h0": 27.5,
+    "improvement_pt": 13.93
+  },
+  "improvement_pt": 13.93,
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=27.5% imp=13.93pt"
+    }
+  ]
+}
