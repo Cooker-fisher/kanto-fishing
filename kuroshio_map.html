@@ -6,117 +6,158 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap">
 <style>
+:root {
+  --ink-900: #0a1628;
+  --ink-800: #0d2b4a;
+  --ink-700: #163d5c;
+  --ink-600: #2c6ea8;
+  --ink-400: #7ec8e3;
+  --text-on-dark: #e8eef5;
+  --text-sub-on-dark: #9ab3c9;
+  --glass-dark: rgba(13,43,74,0.82);
+  --glass-dark-strong: rgba(10,22,40,0.92);
+  --glass-border: rgba(126,200,227,0.15);
+  --font-body: 'Noto Sans JP', system-ui, 'Hiragino Sans', 'Yu Gothic Medium', 'Meiryo', sans-serif;
+  --font-num: 'Inter', var(--font-body);
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; color: #e8eaf0; height: 100vh; display: flex; flex-direction: column; }
+body { font-family: var(--font-body); background: var(--ink-900); color: var(--text-on-dark); height: 100vh; display: flex; flex-direction: column; }
 
 #header {
-  padding: 10px 16px;
-  background: #111d35;
-  border-bottom: 1px solid #1e3a5f;
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 8px 14px;
+  background: var(--glass-dark-strong);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
 }
-#header h1 { font-size: 15px; font-weight: 600; color: #7ec8e3; white-space: nowrap; }
+#header h1 {
+  font-size: 14px; font-weight: 700; color: var(--ink-400); white-space: nowrap; letter-spacing: .02em;
+}
 
+/* セグメント型レイヤータブ */
 #layer-tabs {
-  display: flex; gap: 6px;
+  display: inline-flex; border: 1px solid rgba(255,255,255,.1); border-radius: 6px; overflow: hidden; background: rgba(10,22,40,.4);
 }
 .layer-tab {
-  background: #1e3a5f; border: 1px solid #2a4f7a; color: #9ab;
-  padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;
-  white-space: nowrap; transition: all 0.15s;
+  background: transparent; border: none; border-right: 1px solid rgba(255,255,255,.08);
+  color: var(--text-sub-on-dark); padding: 5px 11px; cursor: pointer; font-size: 11px;
+  font-family: var(--font-body); font-weight: 600; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: background 120ms, color 120ms; letter-spacing: .03em;
 }
-.layer-tab.active { background: #2a6496; border-color: #7ec8e3; color: #fff; font-weight: 600; }
-.layer-tab:hover:not(.active) { background: #1a3050; color: #cdd; }
+.layer-tab:last-child { border-right: none; }
+.layer-tab .sw { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+.layer-tab.active { background: var(--ink-800); color: #fff; }
+.layer-tab:hover:not(.active) { background: rgba(44,110,168,.3); color: #e0ecf5; }
 
 #controls {
-  display: flex; align-items: center; gap: 12px; flex: 1; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: wrap;
 }
 #date-display {
-  font-size: 18px; font-weight: 700; color: #fff; min-width: 110px;
+  font-family: var(--font-num); font-variant-numeric: tabular-nums;
+  font-size: 20px; font-weight: 800; color: #fff; min-width: 110px; letter-spacing: -.01em;
 }
 #slider-wrap {
-  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;
+  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px;
 }
 #date-slider {
-  flex: 1; -webkit-appearance: none; height: 4px;
-  background: #1e3a5f; border-radius: 2px; outline: none; cursor: pointer;
+  flex: 1; -webkit-appearance: none; height: 3px;
+  background: rgba(126,200,227,.2); border-radius: 2px; outline: none; cursor: pointer;
 }
 #date-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-  background: #7ec8e3; cursor: pointer; box-shadow: 0 0 6px rgba(126,200,227,0.6);
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--ink-400); cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(126,200,227,.3);
 }
 #play-btn {
-  background: #1e3a5f; border: 1px solid #7ec8e3; color: #7ec8e3;
-  padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 13px;
-  white-space: nowrap;
+  background: var(--ink-800); border: 1px solid var(--glass-border); color: var(--ink-400);
+  padding: 5px 13px; border-radius: 6px; cursor: pointer; font-size: 12px;
+  font-family: var(--font-body); font-weight: 600; white-space: nowrap;
+  transition: background 120ms;
 }
-#play-btn:hover { background: #2a4f7a; }
-#speed-label { font-size: 12px; color: #9ab; white-space: nowrap; }
+#play-btn:hover { background: var(--ink-700); }
+#speed-label { font-size: 11px; color: var(--text-sub-on-dark); white-space: nowrap; }
 #speed-select {
-  background: #1e3a5f; border: 1px solid #2a4f7a; color: #e8eaf0;
-  padding: 3px 6px; border-radius: 4px; font-size: 12px;
+  background: rgba(10,22,40,.6); border: 1px solid rgba(255,255,255,.1); color: var(--text-on-dark);
+  padding: 3px 6px; border-radius: 4px; font-size: 11px; font-family: var(--font-body);
 }
 #map { flex: 1; }
+
+/* ガラスパネル共通 */
+.glass-panel {
+  background: var(--glass-dark);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.32);
+}
+.panel-eyebrow {
+  font-family: monospace; font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ink-400); margin-bottom: 8px; font-weight: 600;
+  display: flex; align-items: center; gap: 5px;
+}
+.panel-eyebrow::before { content: ""; width: 4px; height: 4px; background: var(--ink-400); border-radius: 50%; }
 
 /* 凡例 */
 #legend {
   position: absolute; bottom: 32px; right: 12px; z-index: 1000;
-  background: rgba(10,22,40,0.92); border: 1px solid #1e3a5f;
-  border-radius: 8px; padding: 12px 16px; min-width: 180px;
+  padding: 12px 14px; min-width: 180px;
 }
-#legend h3 { font-size: 12px; color: #9ab; margin-bottom: 8px; }
-.legend-bar { height: 14px; border-radius: 3px; margin-bottom: 6px; }
-.legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: #9ab; }
-.legend-items { margin-top: 10px; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #ccd; margin-bottom: 4px; }
-.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+#legend h3 { font-size: 11px; color: var(--ink-400); margin-bottom: 8px; font-weight: 600; letter-spacing: .04em; }
+.legend-bar { height: 12px; border-radius: 3px; margin-bottom: 5px; }
+.legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-sub-on-dark); font-family: monospace; }
+.legend-items { margin-top: 9px; }
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #cfdcea; margin-bottom: 5px; }
+.legend-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
 
 #info-panel {
   position: absolute; top: 70px; left: 12px; z-index: 1000;
-  background: rgba(10,22,40,0.9); border: 1px solid #1e3a5f;
-  border-radius: 8px; padding: 10px 14px; font-size: 12px;
-  max-width: 230px; display: none;
+  padding: 10px 13px; font-size: 12px; max-width: 230px; display: none;
 }
-#info-panel .pt-val { color: #e8eaf0; line-height: 1.7; }
+#info-panel .pt-val { color: var(--text-on-dark); line-height: 1.7; }
 
 #stats-bar {
   position: absolute; bottom: 0; left: 0; right: 0; z-index: 999;
-  background: rgba(10,22,40,0.85); padding: 4px 16px;
-  font-size: 11px; color: #9ab; display: flex; gap: 20px;
+  background: rgba(10,22,40,.88); padding: 4px 16px;
+  font-size: 10px; font-family: monospace; color: var(--text-sub-on-dark);
+  display: flex; gap: 20px; letter-spacing: .04em;
 }
 
 /* 釣果ドット関連 */
 #catch-controls {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  padding: 4px 8px; border-left: 1px solid #2a4f7a; margin-left: 4px;
+  padding: 3px 8px; border-left: 1px solid rgba(255,255,255,.08); margin-left: 2px;
 }
 #fish-filter {
-  background: #1e3a5f; border: 1px solid #2a4f7a; color: #e8eaf0;
-  padding: 3px 6px; border-radius: 4px; font-size: 12px; max-width: 140px;
+  background: rgba(10,22,40,.6); border: 1px solid rgba(255,255,255,.1); color: var(--text-on-dark);
+  padding: 3px 6px; border-radius: 4px; font-size: 11px; max-width: 140px; font-family: var(--font-body);
 }
 #auto-layer-label {
-  font-size: 11px; color: #9ab; display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: var(--text-sub-on-dark); display: flex; align-items: center; gap: 4px;
   cursor: pointer; user-select: none;
 }
 #auto-layer-switch { cursor: pointer; }
 .catch-tooltip {
-  font-size: 11px; line-height: 1.6;
-  background: rgba(10,22,40,0.95) !important;
-  color: #e8eaf0 !important; border: 1px solid #1e3a5f !important;
+  font-size: 11px; line-height: 1.6; font-family: var(--font-body);
+  background: rgba(10,22,40,0.96) !important;
+  color: var(--text-on-dark) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
 }
-.catch-tooltip b { color: #7ec8e3; }
+.catch-tooltip b { color: var(--ink-400); }
 
 #catch-legend {
   position: absolute; bottom: 32px; left: 12px; z-index: 1000;
-  background: rgba(10,22,40,0.92); border: 1px solid #1e3a5f;
-  border-radius: 8px; padding: 12px 14px; min-width: 180px;
+  padding: 12px 14px; min-width: 190px;
 }
-#catch-legend h3 { font-size: 12px; color: #9ab; margin-bottom: 8px; }
-#catch-legend .legend-item { display: flex; align-items: center; gap: 6px;
-  font-size: 11px; color: #ccd; margin-bottom: 4px; }
-#catch-legend .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-#catch-legend .legend-note { font-size: 10px; color: #89a; margin-top: 6px; line-height: 1.4; }
+#catch-legend h3 { font-size: 11px; color: var(--ink-400); margin-bottom: 9px; font-weight: 600; letter-spacing: .04em; }
+#catch-legend .legend-item { display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: #cfdcea; margin-bottom: 5px; }
+#catch-legend .legend-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+#catch-legend .legend-note { font-size: 10px; color: var(--text-sub-on-dark); margin-top: 6px; line-height: 1.5; font-family: monospace; }
 </style>
 </head>
 <body>
@@ -124,11 +165,11 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
 <div id="header">
   <h1>🌊 黒潮・海洋環境マップ</h1>
   <div id="layer-tabs">
-    <button class="layer-tab active" data-layer="sla">SLA（黒潮）</button>
-    <button class="layer-tab" data-layer="chl">CHL（ベイト）</button>
-    <button class="layer-tab" data-layer="sst">SST（水温）</button>
-    <button class="layer-tab" data-layer="wc">水色（濁り）</button>
-    <button id="catch-toggle" class="layer-tab active">🎣 釣果ドット</button>
+    <button class="layer-tab active" data-layer="sla"><span class="sw" style="background:#0a3a8a"></span>SLA</button>
+    <button class="layer-tab" data-layer="chl"><span class="sw" style="background:#1f7a3a"></span>CHL</button>
+    <button class="layer-tab" data-layer="sst"><span class="sw" style="background:#c43a18"></span>SST</button>
+    <button class="layer-tab" data-layer="wc"><span class="sw" style="background:#0060c0"></span>水色</button>
+    <button id="catch-toggle" class="layer-tab active"><span class="sw" style="background:#e63946"></span>釣果ドット</button>
   </div>
   <div id="catch-controls">
     <select id="fish-filter"><option value="">全魚種</option></select>
@@ -156,9 +197,9 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
 
 <div style="position:relative; flex:1; display:flex; flex-direction:column;">
   <div id="map"></div>
-  <div id="legend"></div>
-  <div id="catch-legend"></div>
-  <div id="info-panel"><div class="pt-val" id="info-val"></div></div>
+  <div id="legend" class="glass-panel"></div>
+  <div id="catch-legend" class="glass-panel"></div>
+  <div id="info-panel" class="glass-panel"><div class="pt-val" id="info-val"></div></div>
   <div id="stats-bar">
     <span id="stats-min">最小: --</span>
     <span id="stats-max">最大: --</span>
@@ -181,75 +222,74 @@ const LAYERS = {
     label: 'SLA 海面高度偏差 (m)',
     unit: 'm',
     color: v => {
-      // 黒潮: 高SLA = 黒潮接近 = 青
-      if (v >  0.3) return ['#0040ff', 0.85];
-      if (v >  0.1) return ['#3399ff', 0.78];
-      if (v > -0.1) return ['#99ccff', 0.65];
-      if (v > -0.3) return ['#ffcc44', 0.72];
-      return               ['#cc3300', 0.80];
+      if (v >  0.3) return ['#0a3a8a', 0.88];
+      if (v >  0.1) return ['#3a7fd6', 0.80];
+      if (v > -0.1) return ['#b8d6ea', 0.68];
+      if (v > -0.3) return ['#f2c86a', 0.75];
+      return               ['#c94a2a', 0.82];
     },
-    legendBar: 'linear-gradient(to right, #cc3300, #ffcc44, #99ccff, #3399ff, #0040ff)',
+    legendBar: 'linear-gradient(to right, #c94a2a, #f2c86a, #b8d6ea, #3a7fd6, #0a3a8a)',
     legendMin: '南側(-0.3)', legendMax: '黒潮(+0.3)',
     items: [
-      ['#0040ff', '黒潮中核 (>+0.3m)'],
-      ['#3399ff', '黒潮接近 (+0.1〜+0.3m)'],
-      ['#99ccff', '中立 (-0.1〜+0.1m)'],
-      ['#ffcc44', 'やや南側 (-0.3〜-0.1m)'],
-      ['#cc3300', '黒潮南側 (<-0.3m)'],
+      ['#0a3a8a', '黒潮中核 (>+0.3m)'],
+      ['#3a7fd6', '黒潮接近 (+0.1〜+0.3m)'],
+      ['#b8d6ea', '中立 (-0.1〜+0.1m)'],
+      ['#f2c86a', 'やや南側 (-0.3〜-0.1m)'],
+      ['#c94a2a', '黒潮南側 (<-0.3m)'],
     ],
   },
   chl: {
     label: 'CHL クロロフィル (mg/m³)',
     unit: 'mg/m³',
     color: v => {
-      if (v >  2.0) return ['#00aa00', 0.88];
-      if (v >  1.0) return ['#55cc44', 0.80];
-      if (v >  0.5) return ['#aadd44', 0.74];
-      if (v >  0.2) return ['#eedd44', 0.70];
-      return               ['#2266aa', 0.65];
+      if (v >  2.0) return ['#1f7a3a', 0.88];
+      if (v >  1.0) return ['#5cb85c', 0.82];
+      if (v >  0.5) return ['#a8d661', 0.76];
+      if (v >  0.2) return ['#ecd96a', 0.72];
+      return               ['#2a5a88', 0.68];
     },
-    legendBar: 'linear-gradient(to right, #2266aa, #eedd44, #aadd44, #55cc44, #00aa00)',
+    legendBar: 'linear-gradient(to right, #2a5a88, #ecd96a, #a8d661, #5cb85c, #1f7a3a)',
     legendMin: '低(<0.2)', legendMax: '高(>2.0)',
     items: [
-      ['#00aa00', 'ベイト豊富 (>2.0)'],
-      ['#55cc44', '多め (1.0〜2.0)'],
-      ['#aadd44', '普通 (0.5〜1.0)'],
-      ['#eedd44', 'やや少 (0.2〜0.5)'],
-      ['#2266aa', '少 (<0.2)'],
+      ['#1f7a3a', 'ベイト豊富 (>2.0)'],
+      ['#5cb85c', '多め (1.0〜2.0)'],
+      ['#a8d661', '普通 (0.5〜1.0)'],
+      ['#ecd96a', 'やや少 (0.2〜0.5)'],
+      ['#2a5a88', '少 (<0.2)'],
     ],
   },
   sst: {
     label: 'SST 海面水温 (°C)',
     unit: '°C',
     color: v => {
-      if (v > 26) return ['#ff2200', 0.82];
-      if (v > 22) return ['#ff8800', 0.78];
-      if (v > 18) return ['#ffcc00', 0.74];
-      if (v > 14) return ['#44cc88', 0.74];
-      if (v > 10) return ['#2299dd', 0.76];
-      return             ['#0055aa', 0.82];
+      if (v > 26) return ['#c43a18', 0.84];
+      if (v > 22) return ['#ef7a2c', 0.80];
+      if (v > 18) return ['#f0c64b', 0.76];
+      if (v > 14) return ['#4bb890', 0.76];
+      if (v > 10) return ['#2e8ac4', 0.78];
+      return             ['#1a4a88', 0.84];
     },
-    legendBar: 'linear-gradient(to right, #0055aa, #2299dd, #44cc88, #ffcc00, #ff8800, #ff2200)',
+    legendBar: 'linear-gradient(to right, #1a4a88, #2e8ac4, #4bb890, #f0c64b, #ef7a2c, #c43a18)',
     legendMin: '低温(<10°C)', legendMax: '高温(>26°C)',
     items: [
-      ['#ff2200', '>26°C（夏季）'],
-      ['#ff8800', '22〜26°C'],
-      ['#ffcc00', '18〜22°C（最適）'],
-      ['#44cc88', '14〜18°C'],
-      ['#2299dd', '10〜14°C'],
-      ['#0055aa', '<10°C（冬季）'],
+      ['#c43a18', '>26°C（夏季）'],
+      ['#ef7a2c', '22〜26°C'],
+      ['#f0c64b', '18〜22°C（最適）'],
+      ['#4bb890', '14〜18°C'],
+      ['#2e8ac4', '10〜14°C'],
+      ['#1a4a88', '<10°C（冬季）'],
     ],
   },
   wc: {
     label: '水色スコア（濁り）',
     unit: '',
     color: v => {
-      if (v < -1.5) return ['#3d1c02', 0.88];
-      if (v < -1.0) return ['#8b4513', 0.82];
-      if (v < -0.3) return ['#c8a04a', 0.78];
-      if (v <  0.1) return ['#d0d080', 0.70];
-      if (v <  0.6) return ['#40c8f0', 0.72];
-      return               ['#0060c0', 0.80];
+      if (v < -1.5) return ['#3d1c02', 0.90];
+      if (v < -1.0) return ['#8b4513', 0.84];
+      if (v < -0.3) return ['#c8a04a', 0.80];
+      if (v <  0.1) return ['#d0d080', 0.72];
+      if (v <  0.6) return ['#40c8f0', 0.74];
+      return               ['#0060c0', 0.82];
     },
     legendBar: 'linear-gradient(to right, #3d1c02, #8b4513, #c8a04a, #d0d080, #40c8f0, #0060c0)',
     legendMin: '強濁り(-2)', legendMax: '澄み(+1)',
@@ -266,14 +306,13 @@ const LAYERS = {
 
 // ─── 釣果ドット色分け ───────────────────────────────────────────────────
 function catchFill(rec) {
-  // ボウズ (cnt_avg=0) は anomaly より優先して薄グレー表示
-  if (rec.cnt_avg === 0) return ['#bbbbbb', 0.70];
+  if (rec.cnt_avg === 0) return ['#aab5bf', 0.65];   // ボウズ — stone
   const a = rec.anomaly;
-  if (a === null || a === undefined) return ['#888888', 0.70];
-  if (a >= 1.5) return ['#e040fb', 0.92];   // 好漁日（マゼンタ）
-  if (a >= 1.1) return ['#ffaa33', 0.82];
-  if (a >= 0.9) return ['#cccc44', 0.75];
-  return ['#668899', 0.70];
+  if (a === null || a === undefined) return ['#7a8a96', 0.60]; // データなし
+  if (a >= 1.5) return ['#e63946', 0.92];   // 好漁 +50%以上
+  if (a >= 1.1) return ['#f08a3e', 0.85];   // やや好調 +10〜+50%
+  if (a >= 0.9) return ['#d4b363', 0.80];   // 平年並
+  return ['#5d7a8c', 0.72];                 // 不調
 }
 
 // ─── 地図初期化 ────────────────────────────────────────────────────────
@@ -520,13 +559,13 @@ function init(json) {
 
     // 釣果凡例
     const clegend = document.getElementById('catch-legend');
-    clegend.innerHTML = `<h3>🎣 釣果ドット（平年比）</h3>
-      <div class="legend-item"><div class="legend-dot" style="background:#e040fb;border:2px solid #fff"></div>好漁日（平年比+50%以上）</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#ffaa33"></div>やや好調（+10〜+50%）</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#cccc44"></div>平年並（-10〜+10%）</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#668899"></div>不調（-10%未満）</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#bbbbbb"></div>ボウズ記録（実釣0匹）</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#888"></div>旬別平均データなし</div>
+    clegend.innerHTML = `<h3>釣果ドット（平年比）</h3>
+      <div class="legend-item"><div class="legend-dot" style="background:#e63946;box-shadow:0 0 0 1.5px #fff"></div>好漁（+50%以上）</div>
+      <div class="legend-item"><div class="legend-dot" style="width:11px;height:11px;background:#f08a3e"></div>やや好調（+10〜+50%）</div>
+      <div class="legend-item"><div class="legend-dot" style="width:9px;height:9px;background:#d4b363"></div>平年並（±10%）</div>
+      <div class="legend-item"><div class="legend-dot" style="width:8px;height:8px;background:#5d7a8c"></div>不調（-10%未満）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#aab5bf"></div>ボウズ（実釣0匹）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7a8a96"></div>旬別平均データなし</div>
       <div class="legend-note">大きさ＝釣果匹数。ホバーで相関因子と平年比を表示。</div>`;
   }
 
