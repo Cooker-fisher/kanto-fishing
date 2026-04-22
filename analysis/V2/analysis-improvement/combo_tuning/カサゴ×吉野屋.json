@@ -1,7 +1,7 @@
 {
   "fish": "カサゴ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 27.79,
@@ -61,6 +61,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=横浜沖 wmape=20.76% combo=31.9% diff=11.14pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=横浜沖 wmape=20.8% imp=7.03pt"
     }
   ]
 }

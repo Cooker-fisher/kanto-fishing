@@ -1,7 +1,7 @@
 {
   "fish": "カサゴ",
   "ship": "山下丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 27.09,
@@ -187,6 +187,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=鴨居沖 wmape=21.09% combo=27.17% diff=6.08pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=鴨居沖 wmape=21.1% imp=6.01pt"
     }
   ]
 }

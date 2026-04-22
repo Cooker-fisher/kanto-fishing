@@ -1,7 +1,7 @@
 {
   "fish": "アマダイ",
   "ship": "山下丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 46.43,
@@ -187,6 +187,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=岩井沖 wmape=37.08% combo=43.23% diff=6.15pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=岩井沖 wmape=37.1% imp=9.36pt"
     }
   ]
 }

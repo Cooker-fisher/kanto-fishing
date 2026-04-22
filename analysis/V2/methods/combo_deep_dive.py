@@ -1227,6 +1227,17 @@ def load_records(fish, ship_filter=None):
                 best_wc = wc
         r["water_color_prev_n"] = best_wc
 
+    # water_color_cat: 観測水色カテゴリ（澄み / 濁り）セグメント軸
+    # water_color_n は obs_fields.json 経由の観測スコア（澄み=1.0, 濁り=-1.0付近）
+    for r in records:
+        wc_n = r.get("water_color_n")
+        if wc_n is not None and wc_n >= 0.3:
+            r["water_color_cat"] = "澄み"
+        elif wc_n is not None and wc_n <= -0.3:
+            r["water_color_cat"] = "濁り"
+        else:
+            r["water_color_cat"] = ""
+
     return records
 
 def get_daily_wx(conn_wx, lat, lon, date_iso):
@@ -4237,6 +4248,167 @@ def deep_dive_by_point_depth(fish, ship):
     print(f"  [point_depth_opt] {fish}×{ship}: 完了", flush=True)
 
 
+# ───────────────────────────────────────────────
+# 実装③: 水色セグメントモデル（water_color_cat 軸）
+# ───────────────────────────────────────────────
+
+def save_water_color_backtest(fish, ship, wc_cat, bt_data):
+    """水色カテゴリ別バックテスト結果を combo_water_color_backtest テーブルに保存"""
+    if not bt_data:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_water_color_backtest (
+            fish TEXT, ship TEXT, water_color_cat TEXT,
+            metric TEXT, horizon INTEGER,
+            r REAL, mae REAL, mape REAL, smape REAL, wmape REAL,
+            dir_acc REAL, n INTEGER, rmse REAL,
+            bl0_wmape REAL, bl1_wmape REAL, bl2_wmape REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, water_color_cat, metric, horizon)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute(
+        "DELETE FROM combo_water_color_backtest WHERE fish=? AND ship=? AND water_color_cat=?",
+        (fish, ship, wc_cat)
+    )
+    rows = [
+        (fish, ship, wc_cat, metric, H, rv, mae, mape, smape, wmape, dacc, n, rmse,
+         bl0w, bl1w, bl2w, now)
+        for metric, H, rv, mae, mape, smape, wmape, rmse, dacc,
+            good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own,
+            bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r in bt_data
+    ]
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_water_color_backtest VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_water_color_wx_params(fish, ship, wc_cat, wx_params_data, modal_lat=None, modal_lon=None):
+    """水色カテゴリ別気象パラメータを combo_water_color_wx_params テーブルに保存"""
+    if not wx_params_data:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_water_color_wx_params (
+            fish TEXT, ship TEXT, water_color_cat TEXT,
+            metric TEXT, factor TEXT,
+            mean REAL, std REAL, r REAL, alpha_scale REAL,
+            met_mean REAL, met_std REAL, lat REAL, lon REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, water_color_cat, metric, factor)
+        )
+    """)
+    conn.execute(
+        "DELETE FROM combo_water_color_wx_params WHERE fish=? AND ship=? AND water_color_cat=?",
+        (fish, ship, wc_cat)
+    )
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = []
+    for met, params in wx_params_data.items():
+        if met.startswith("_"):
+            continue
+        rows.append((fish, ship, wc_cat, met, "_meta",
+                     None, None, None,
+                     params.get("alpha_scale"), params.get("met_mean"), params.get("met_std"),
+                     modal_lat, modal_lon, now))
+        for fac, (mean, std, r) in params.get("factors", {}).items():
+            rows.append((fish, ship, wc_cat, met, fac,
+                         mean, std, r, None, None, None, None, None, now))
+    if rows:
+        conn.executemany(
+            "INSERT OR REPLACE INTO combo_water_color_wx_params VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            rows
+        )
+    conn.commit()
+    conn.close()
+
+
+def deep_dive_by_water_color(fish, ship):
+    """澄み / 濁り の各水色カテゴリに対して独立した気象最適化＋バックテストを実行。
+    water_color_pred_n >= 0.3 → 澄み / <= -0.3 → 濁り。
+    両カテゴリとも N>=MIN_N_COMBO かつ MIN_MONTHS>=6 が必要。
+    結果を combo_water_color_backtest / combo_water_color_wx_params に保存する。
+    """
+    import collections as _col
+
+    all_records = load_records(fish, ship_filter=ship)
+    if not all_records:
+        return
+
+    _noboat = [r for r in all_records if r.get("is_boat", 0) == 0]
+    if len(_noboat) >= MIN_N_COMBO and len(_noboat) < len(all_records):
+        all_records = _noboat
+
+    wc_counts = _col.Counter(r.get("water_color_cat", "") for r in all_records)
+    viable_cats = []
+    for cat, n in wc_counts.most_common():
+        if not cat or n < MIN_N_COMBO:
+            continue
+        cat_months = {r["date"][:7] for r in all_records if r.get("water_color_cat", "") == cat}
+        if len(cat_months) < 6:
+            print(f"    [wc_opt] skip {cat}: months={len(cat_months)} < 6", flush=True)
+            continue
+        viable_cats.append(cat)
+
+    if not viable_cats:
+        return
+
+    print(f"  [wc_opt] {fish}×{ship}: {len(viable_cats)}カテゴリ最適化開始 {viable_cats}", flush=True)
+
+    ship_coords  = load_ship_coords()
+    wx_coords    = load_wx_coords_list()
+    ship_area    = load_ship_area()
+    conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
+    conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
+    conn_typhoon = sqlite3.connect(DB_TYPHOON) if (os.path.exists(DB_TYPHOON) and os.path.getsize(DB_TYPHOON) > 0) else None
+    conn_cmems   = sqlite3.connect(DB_CMEMS)   if (os.path.exists(DB_CMEMS)   and os.path.getsize(DB_CMEMS)   > 0) else None
+
+    decadal_global = load_decadal(fish, ship)
+
+    for cat in viable_cats:
+        cat_records = [r for r in all_records if r.get("water_color_cat", "") == cat]
+        n = len(cat_records)
+        print(f"    水色カテゴリ: {cat}  N={n}", flush=True)
+
+        pt_decadal = _build_decadal_from_records(cat_records)
+        decadal = pt_decadal if len(pt_decadal) >= 6 else decadal_global
+
+        try:
+            bt_lines, bt_data, range_bt_data, star_bt_data, season_thr, wx_params_data, modal_lat, modal_lon, best_cmems = \
+                section_backtest_rolling(
+                    cat_records, ship_coords, wx_coords, conn_wx, ship_area, decadal,
+                    conn_tide=conn_tide, conn_typhoon=conn_typhoon,
+                    fish=fish, conn_cmems=conn_cmems
+                )
+        except Exception as e:
+            print(f"    [wc_opt] ERROR {cat}: {e}", flush=True)
+            continue
+
+        if bt_data:
+            save_water_color_backtest(fish, ship, cat, bt_data)
+        if wx_params_data:
+            save_water_color_wx_params(fish, ship, cat, wx_params_data, modal_lat, modal_lon)
+
+        for row in bt_data:
+            if row[0] == "cnt_avg" and row[1] == 0:
+                print(f"    → H=0 wMAPE={row[6]:.1f}%  r={row[2]:+.3f}  BL2={row[26]}", flush=True)
+                break
+
+    for c in [conn_wx, conn_tide, conn_typhoon, conn_cmems]:
+        if c is not None:
+            try:
+                c.close()
+            except Exception:
+                pass
+
+    print(f"  [wc_opt] {fish}×{ship}: 完了", flush=True)
+
+
 def _save_combo_tuning_json(fish, ship):
     """ポイント別最適化後にcombo_tuning JSONを更新する。
     改善があった場合（best_point_wmape < combo_wmape）のみ更新。
@@ -4533,6 +4705,7 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     deep_dive_by_point(fish, ship)
     deep_dive_by_trip(fish, ship)
     deep_dive_by_point_depth(fish, ship)
+    deep_dive_by_water_color(fish, ship)
 
     if verbose:
         _sys.stdout.buffer.write(text.encode("utf-8", errors="replace") + b"\n")

@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 37.67,
@@ -169,6 +169,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=八景沖 wmape=37.65% combo=38.12% diff=0.47pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=八景沖 wmape=37.7% imp=0.02pt"
     }
   ]
 }

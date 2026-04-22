@@ -1,7 +1,7 @@
 {
   "fish": "カワハギ",
   "ship": "山天丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 33.86,
@@ -221,6 +221,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=剣崎沖 wmape=19.82% combo=34.06% diff=14.24pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=19.8% imp=14.03pt"
     }
   ]
 }

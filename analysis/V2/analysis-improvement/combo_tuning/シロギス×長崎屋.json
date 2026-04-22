@@ -1,7 +1,7 @@
 {
   "fish": "シロギス",
   "ship": "長崎屋",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 25.74,
@@ -190,6 +190,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=航程15 wmape=19.96% combo=25.74% diff=5.78pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=航程15 wmape=20.0% imp=5.79pt"
     }
   ]
 }

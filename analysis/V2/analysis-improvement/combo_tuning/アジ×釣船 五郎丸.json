@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 35.91,
@@ -152,6 +152,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=久里浜沖 wmape=30.34% combo=35.91% diff=5.57pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=30.3% imp=5.57pt"
     }
   ]
 }

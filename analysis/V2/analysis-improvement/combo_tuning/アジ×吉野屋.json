@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 36.58,
@@ -235,6 +235,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=横須賀沖 wmape=16.46% combo=37.87% diff=21.41pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=横須賀沖 wmape=16.5% imp=20.12pt"
     }
   ]
 }

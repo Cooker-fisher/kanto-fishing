@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "渡辺釣船店",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 32.9,
@@ -210,6 +210,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=大貫沖 wmape=16.68% combo=32.96% diff=16.28pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=大貫沖 wmape=16.7% imp=16.22pt"
     }
   ]
 }
