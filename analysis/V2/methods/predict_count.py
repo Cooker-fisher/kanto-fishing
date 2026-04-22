@@ -546,6 +546,113 @@ def _predict_point(conn, fish: str, ship: str, month: int) -> str | None:
         return None
 
 
+def _apply_trip_wx_correction(conn, fish: str, ship: str, trip_no: int,
+                               target_date: str, baseline_cnt: float,
+                               lat: float, lon: float,
+                               metric: str = 'cnt_avg') -> float | None:
+    """combo_trip_wx_params の便別モデルで補正を計算。パラメータなければ None。"""
+    try:
+        rows = conn.execute(
+            "SELECT factor, mean, std, r, alpha_scale, met_mean, met_std, lat, lon "
+            "FROM combo_trip_wx_params WHERE fish=? AND ship=? AND trip_no=? AND metric=?",
+            (fish, ship, trip_no, metric)
+        ).fetchall()
+    except Exception:
+        return None
+    if not rows:
+        return None
+
+    meta = None
+    factor_params = {}
+    wx_lat = lat; wx_lon = lon
+    for row in rows:
+        fac, mean, std, r, alpha_scale, met_mean, met_std, rlat, rlon = row
+        if fac == "_meta":
+            meta = (alpha_scale, met_mean, met_std)
+            if rlat and rlon:
+                wx_lat, wx_lon = rlat, rlon
+        elif r is not None and abs(r) >= 0.10 and mean is not None and std is not None:
+            factor_params[fac] = (mean, std, r)
+
+    if meta is None or not factor_params:
+        return None
+
+    wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+
+
+_WC_MAX_DAYS = 7   # water_color は FAST 変数（遷移3.7〜4.2日）。7日超は情報価値なし
+_WC_MAX_DIST  = 0.3  # combo_deep_dive.py の _WC_MAX_DIST と統一
+
+def _predict_water_color_cat(conn, lat: float, lon: float, target_date: str) -> str:
+    """water_color_daily から予測水色カテゴリ（澄み/濁り/""）を返す。
+    water_color は FAST 変数（遷移3.7日）のため 7 日以内のデータのみ使用。
+    データなし・距離 0.3 度超・7 日超の場合は ""（予測不可）を返す。
+    """
+    if lat is None or lon is None:
+        return ""
+    date_iso = target_date.replace("/", "-")
+    try:
+        row = conn.execute(
+            "SELECT wc_pred, date FROM water_color_daily "
+            "WHERE date <= ? AND date >= date(?, ?) "
+            "AND ABS(lat - ?) < ? AND ABS(lon - ?) < ? "
+            "ORDER BY (ABS(lat - ?) + ABS(lon - ?)) ASC, date DESC LIMIT 1",
+            (date_iso, date_iso, f"-{_WC_MAX_DAYS} days",
+             lat, _WC_MAX_DIST, lon, _WC_MAX_DIST,
+             lat, lon)
+        ).fetchone()
+        if not row:
+            return ""
+        wc = row[0]
+        if wc >= 0.3:
+            return "澄み"
+        elif wc <= -0.3:
+            return "濁り"
+        return ""
+    except Exception:
+        return ""
+
+
+def _apply_water_color_wx_correction(conn, fish: str, ship: str, wc_cat: str,
+                                      target_date: str, baseline_cnt: float,
+                                      lat: float, lon: float,
+                                      metric: str = 'cnt_avg') -> float | None:
+    """combo_water_color_wx_params の水色別モデルで補正を計算。パラメータなければ None。"""
+    if not wc_cat:
+        return None
+    try:
+        rows = conn.execute(
+            "SELECT factor, mean, std, r, alpha_scale, met_mean, met_std, lat, lon "
+            "FROM combo_water_color_wx_params WHERE fish=? AND ship=? AND water_color_cat=? AND metric=?",
+            (fish, ship, wc_cat, metric)
+        ).fetchall()
+    except Exception:
+        return None
+    if not rows:
+        return None
+
+    meta = None
+    factor_params = {}
+    wx_lat = lat; wx_lon = lon
+    for row in rows:
+        fac, mean, std, r, alpha_scale, met_mean, met_std, rlat, rlon = row
+        if fac == "_meta":
+            meta = (alpha_scale, met_mean, met_std)
+            if rlat and rlon:
+                wx_lat, wx_lon = rlat, rlon
+        elif r is not None and abs(r) >= 0.10 and mean is not None and std is not None:
+            factor_params[fac] = (mean, std, r)
+
+    if meta is None or not factor_params:
+        return None
+
+    wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt)
+
+
 def _apply_point_wx_correction(conn, fish: str, ship: str, point: str,
                                  target_date: str, baseline_cnt: float,
                                  lat: float, lon: float,
@@ -631,7 +738,7 @@ def fetch_weather_context(lat: float, lon: float, date_str: str) -> dict:
 # ── 1コンボ予測 ───────────────────────────────────────────────────────────────
 
 def predict_combo(conn, fish: str, ship: str, target_date: str,
-                  time_slot: str = "") -> dict | None:
+                  time_slot: str = "", trip_no: int = 0) -> dict | None:
     """
     旬別ベースライン + 天候補正 + time_slot補正で予測する。
     combo_wx_params があれば気象補正を適用、なければベースラインのみ。
@@ -775,6 +882,29 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             if pt_cnt is not None:
                 cnt_predicted = pt_cnt
 
+    # ── 水色別補正（water_color_daily → 澄み/濁り → combo_water_color_wx_params） ─
+    # water_color_daily から予測水色カテゴリを取得。モデルがあれば現在の予測を上書き。
+    predicted_water_color = ""
+    if lat and lon and not use_fb:
+        predicted_water_color = _predict_water_color_cat(conn, lat, lon, target_date)
+        if predicted_water_color:
+            wc_cnt = _apply_water_color_wx_correction(
+                conn, fish, ship, predicted_water_color, target_date, avg_cnt, lat, lon, 'cnt_avg'
+            )
+            if wc_cnt is not None:
+                cnt_predicted = wc_cnt
+
+    # ── 便別補正（trip_no 指定時に combo_trip_wx_params があれば最優先） ─────────
+    # 便番号が判明している場合（予約情報等）に便別モデルを適用。最も高精度なため最優先。
+    predicted_trip_no = None
+    if lat and lon and not use_fb and trip_no:
+        trip_cnt = _apply_trip_wx_correction(
+            conn, fish, ship, trip_no, target_date, avg_cnt, lat, lon, 'cnt_avg'
+        )
+        if trip_cnt is not None:
+            cnt_predicted = trip_cnt
+            predicted_trip_no = trip_no
+
     # ── time_slot 補正 ────────────────────────────────────────────────────────
     # combo_slot_ratio に登録がある場合のみ適用。
     # 補正後 cnt_predicted に ratio を乗じる。
@@ -866,9 +996,11 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         # メタ
         "n_total":         n_total,
         "n_dekad":         n_dekad,
-        "lat":             lat,
-        "lon":             lon,
-        "predicted_point": predicted_point,
+        "lat":                    lat,
+        "lon":                    lon,
+        "predicted_point":        predicted_point,
+        "predicted_water_color":  predicted_water_color,   # 澄み/濁り/"" (water_color_daily予測)
+        "predicted_trip_no":      predicted_trip_no,       # trip_no指定時のみ
     }
 
 
