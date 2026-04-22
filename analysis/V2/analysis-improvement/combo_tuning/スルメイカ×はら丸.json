@@ -4,21 +4,29 @@
   "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 56.77,
+    "wmape_h0": 44.35,
     "bl2_wmape": 56.19,
-    "oos_r": 0.027,
+    "oos_r": 0.436,
     "n_records": 229,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
+    {
+      "name": "長井沖",
+      "n": 34,
+      "wmape_h0": 39.3,
+      "bl2_wmape": 49.0,
+      "oos_r": 0.591,
+      "improvement_pt": 5.04
+    },
     {
       "name": "沖の瀬",
       "n": 44,
       "wmape_h0": 43.5,
       "bl2_wmape": 50.3,
       "oos_r": 0.459,
-      "improvement_pt": 13.29
+      "improvement_pt": 0.86
     },
     {
       "name": "城ヶ島沖",
@@ -26,15 +34,15 @@
       "wmape_h0": 45.9,
       "bl2_wmape": 54.5,
       "oos_r": 0.425,
-      "improvement_pt": 10.91
+      "improvement_pt": -1.51
     }
   ],
   "best_point": {
-    "name": "沖の瀬",
-    "wmape_h0": 43.5,
-    "improvement_pt": 13.29
+    "name": "長井沖",
+    "wmape_h0": 39.3,
+    "improvement_pt": 5.04
   },
-  "improvement_pt": 13.29,
+  "improvement_pt": 5.04,
   "history": [
     {
       "date": "2026-04-22",

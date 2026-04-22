@@ -44,9 +44,10 @@ DB_CMEMS      = os.path.join(OCEAN_DIR, "cmems_data.sqlite")
 DB_ANA        = os.path.join(RESULTS_DIR, "analysis.sqlite")
 OUT_DIR       = os.path.join(RESULTS_DIR, "deep_dive")
 
-def _open_ana(timeout: float = 30.0):
+def _open_ana(timeout: float = 120.0):
     """analysis.sqlite を WAL モード・タイムアウト付きで開く（並列実行対応）。
     WAL モードにより複数プロセスが同時に書き込んでも SQLITE_BUSY が発生しにくくなる。
+    timeout=120s: workers=4 並列実行時の書き込み競合でも確実に解消できる値。
     """
     conn = sqlite3.connect(DB_ANA, timeout=timeout)
     conn.execute("PRAGMA journal_mode=WAL")
@@ -1098,10 +1099,11 @@ def load_records(fish, ship_filter=None):
                         row = dict(row)
                         row["depth_min"] = depth_val
                     point_place1 = ""
-                # point_place1 が空で depth_min がある場合 → 水深帯を仮想ポイントとして設定
+                # point_place1 が空 → 3段階フォールバックでポイント名を確定
                 if not point_place1:
                     d_min = _float(row.get("depth_min"))
                     if d_min:
+                        # ① 水深帯仮想ポイント
                         if d_min <= 40:
                             point_place1 = "浅場(~40m)"
                         elif d_min <= 80:
@@ -1110,6 +1112,21 @@ def load_records(fish, ship_filter=None):
                             point_place1 = "深場(81-150m)"
                         else:
                             point_place1 = "超深場(150m+)"
+                    if not point_place1:
+                        # ② ship_fish_point フォールバック（ポイント名を point に割当）
+                        ship_data = sfp.get(ship, {})
+                        fish_entry = ship_data.get(tsuri) or ship_data.get("_default")
+                        if fish_entry and isinstance(fish_entry, dict):
+                            for _key in ("point1", "point2"):
+                                _pname = fish_entry.get(_key, "") or ""
+                                if _pname:
+                                    point_place1 = _pname
+                                    break
+                    if not point_place1:
+                        # ③ area_coords フォールバック（エリア名を point に割当）
+                        _area = ship_area.get(ship, "")
+                        if _area:
+                            point_place1 = _area
                 lat, lon = _resolve_point(
                     point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
                 )
@@ -4729,6 +4746,8 @@ def main():
                         help="analysis.sqlite の出力先パス（省略時はデフォルト）")
     parser.add_argument("--reset-best", action="store_true",
                         help="Challenger model を無視して強制更新（3ヶ月ごとのフルリセット用）")
+    parser.add_argument("--point-only", action="store_true",
+                        help="セグメント最適化のみ実行（Phase2用・SQLite競合回避）")
     args = parser.parse_args()
 
     if args.wave_clamp is not None:
@@ -4759,7 +4778,25 @@ def main():
         print(f"[db] 出力先を {DB_ANA} に設定")
 
     _reset = getattr(args, "reset_best", False)
-    if args.ship:
+    _point_only = getattr(args, "point_only", False)
+
+    if _point_only:
+        # Phase2: セグメント最適化のみ（deep_dive() は呼ばない）
+        recs_all = load_records(args.fish)
+        counts = defaultdict(int)
+        for r in recs_all:
+            counts[r["ship"]] += 1
+        if args.ship:
+            ships = [args.ship] if counts.get(args.ship, 0) >= MIN_N_COMBO else []
+        else:
+            ships = sorted(s for s, n in counts.items() if n >= MIN_N_COMBO)
+        print(f"[point-only] {args.fish}: {len(ships)}船宿 先頭3: {ships[:3]}")
+        for ship in ships:
+            deep_dive_by_point(args.fish, ship)
+            deep_dive_by_point_depth(args.fish, ship)
+            deep_dive_by_trip(args.fish, ship)
+            deep_dive_by_water_color(args.fish, ship)
+    elif args.ship:
         deep_dive(args.fish, args.ship, reset_best=_reset)
     else:
         recs_all = load_records(args.fish)

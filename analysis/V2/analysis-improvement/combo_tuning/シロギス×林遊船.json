@@ -2,15 +2,14 @@
   "fish": "シロギス",
   "ship": "林遊船",
   "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.9,
-    "bl0_wmape": 51.2,
-    "bl2_wmape": 46.6,
-    "oos_r": 0.457,
+    "wmape_h0": 41.35,
+    "bl2_wmape": 46.63,
+    "oos_r": 0.53,
     "n_records": 70,
-    "alpha_scale": 0.952,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "200m深水温が高い時に釣果が上がる傾向",
     "最低気温が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=41.3% imp=0.1pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -155,5 +160,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "浦安沖",
+      "n": 70,
+      "wmape_h0": 41.3,
+      "bl2_wmape": 46.6,
+      "oos_r": 0.53,
+      "improvement_pt": 0.1
+    }
+  ],
+  "best_point": {
+    "name": "浦安沖",
+    "wmape_h0": 41.3,
+    "improvement_pt": 0.1
+  },
+  "improvement_pt": 0.1
 }

@@ -2,15 +2,14 @@
   "fish": "マダイ",
   "ship": "庄治郎丸",
   "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 57.0,
-    "bl0_wmape": 59.9,
+    "wmape_h0": 48.98,
     "bl2_wmape": 67.7,
-    "oos_r": 0.292,
+    "oos_r": 0.471,
     "n_records": 60,
-    "alpha_scale": 0.849,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -82,7 +81,13 @@
     "水温低下時に釣果が上がる傾向",
     "海面水位が高い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=49.0% imp=0.01pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -150,5 +155,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "平塚沖",
+      "n": 60,
+      "wmape_h0": 49.0,
+      "bl2_wmape": 67.7,
+      "oos_r": 0.471,
+      "improvement_pt": 0.01
+    }
+  ],
+  "best_point": {
+    "name": "平塚沖",
+    "wmape_h0": 49.0,
+    "improvement_pt": 0.01
+  },
+  "improvement_pt": 0.01
 }

@@ -106,11 +106,10 @@ def main():
 
     total = time.time() - t0
     mins, secs = divmod(int(total), 60)
-    print(f"\n完了: {len(ok)}/{len(fish_list)} OK  NG={ng}  所要時間 {mins}m{secs:02d}s")
+    print(f"\n[完了] {len(ok)}/{len(fish_list)} OK  NG={ng}  所要時間 {mins}m{secs:02d}s")
     if ng:
         print("NG魚種を再実行するには:")
         print(f"  python {os.path.relpath(SCRIPT)} " + " ".join(ng))
-
     return 0 if not ng else 1
 
 

@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 32.68,
+    "wmape_h0": 31.56,
     "bl2_wmape": 34.58,
-    "oos_r": 0.675,
+    "oos_r": 0.686,
     "n_records": 285,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -182,7 +182,7 @@
       "wmape_h0": 24.4,
       "bl2_wmape": 30.1,
       "oos_r": 0.578,
-      "improvement_pt": 8.32
+      "improvement_pt": 7.21
     },
     {
       "name": "富津沖",
@@ -190,23 +190,23 @@
       "wmape_h0": 25.5,
       "bl2_wmape": 36.0,
       "oos_r": 0.652,
-      "improvement_pt": 7.17
+      "improvement_pt": 6.05
     },
     {
       "name": "木更津沖",
       "n": 128,
-      "wmape_h0": 28.7,
+      "wmape_h0": 28.8,
       "bl2_wmape": 34.7,
-      "oos_r": 0.739,
-      "improvement_pt": 4.0
+      "oos_r": 0.738,
+      "improvement_pt": 2.77
     }
   ],
   "best_point": {
     "name": "中ノ瀬",
     "wmape_h0": 24.4,
-    "improvement_pt": 8.32
+    "improvement_pt": 7.21
   },
-  "improvement_pt": 8.32,
+  "improvement_pt": 7.21,
   "trip_models": [
     {
       "trip_no": 2,

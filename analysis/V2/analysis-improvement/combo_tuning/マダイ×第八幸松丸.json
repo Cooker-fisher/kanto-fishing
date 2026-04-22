@@ -2,15 +2,14 @@
   "fish": "マダイ",
   "ship": "第八幸松丸",
   "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.6,
-    "bl0_wmape": 56.5,
-    "bl2_wmape": 60.1,
-    "oos_r": 0.495,
+    "wmape_h0": 38.5,
+    "bl2_wmape": 60.14,
+    "oos_r": 0.622,
     "n_records": 44,
-    "alpha_scale": 0.536,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "秋の中潮に釣果が上がる傾向",
     "産卵期以外に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=38.5% imp=0.17pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_pelagic_monthly",
@@ -168,5 +173,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "沼津沖",
+      "n": 44,
+      "wmape_h0": 38.5,
+      "bl2_wmape": 60.1,
+      "oos_r": 0.622,
+      "improvement_pt": 0.01
+    }
+  ],
+  "best_point": {
+    "name": "沼津沖",
+    "wmape_h0": 38.5,
+    "improvement_pt": 0.01
+  },
+  "improvement_pt": 0.01
 }

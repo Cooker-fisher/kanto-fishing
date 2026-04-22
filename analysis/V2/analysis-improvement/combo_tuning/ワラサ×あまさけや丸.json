@@ -4,13 +4,12 @@
   "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 44.36,
+    "wmape_h0": 39.79,
     "bl2_wmape": 57.58,
-    "oos_r": 0.248,
+    "oos_r": 0.365,
     "n_records": 127,
-    "alpha_scale": 0.294,
     "use_fallback": false,
-    "kaiyu_promoted": true
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -60,6 +59,11 @@
       "date": "2026-04-21",
       "action": "point_backtest_added",
       "note": "combo_point_backtest登録。best=剣崎沖 wmape=41.0% imp=3.36pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=39.7% imp=0.05pt"
     }
   ],
   "rejected_factors": [
@@ -127,19 +131,19 @@
   "point_models": [
     {
       "name": "剣崎沖",
-      "n": 73,
-      "wmape_h0": 41.0,
-      "bl2_wmape": 54.8,
-      "oos_r": 0.409,
-      "improvement_pt": 3.36
+      "n": 127,
+      "wmape_h0": 39.7,
+      "bl2_wmape": 57.6,
+      "oos_r": 0.365,
+      "improvement_pt": 0.05
     }
   ],
   "best_point": {
     "name": "剣崎沖",
-    "wmape_h0": 41.0,
-    "improvement_pt": 3.36
+    "wmape_h0": 39.7,
+    "improvement_pt": 0.05
   },
-  "improvement_pt": 3.36,
+  "improvement_pt": 0.05,
   "trip_models": [
     {
       "trip_no": 1,

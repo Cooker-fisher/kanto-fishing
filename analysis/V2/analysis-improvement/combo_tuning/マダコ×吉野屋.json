@@ -2,7 +2,7 @@
   "fish": "マダコ",
   "ship": "吉野屋",
   "last_reviewed": "2026-04-22",
-  "status": "point_model_marginal",
+  "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 40.64,
     "bl2_wmape": 48.14,
@@ -12,6 +12,14 @@
     "kaiyu_promoted": false
   },
   "point_models": [
+    {
+      "name": "浦安沖",
+      "n": 34,
+      "wmape_h0": 24.1,
+      "bl2_wmape": 41.0,
+      "oos_r": 0.779,
+      "improvement_pt": 16.5
+    },
     {
       "name": "横浜沖",
       "n": 47,
@@ -38,11 +46,11 @@
     }
   ],
   "best_point": {
-    "name": "横浜沖",
-    "wmape_h0": 38.6,
-    "improvement_pt": 1.99
+    "name": "浦安沖",
+    "wmape_h0": 24.1,
+    "improvement_pt": 16.5
   },
-  "improvement_pt": 1.99,
+  "improvement_pt": 16.5,
   "points": [
     {
       "name": "川崎沖",

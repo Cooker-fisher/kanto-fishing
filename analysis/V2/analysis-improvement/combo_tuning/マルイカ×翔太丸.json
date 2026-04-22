@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 44.89,
+    "wmape_h0": 40.98,
     "bl2_wmape": 47.57,
-    "oos_r": 0.464,
+    "oos_r": 0.574,
     "n_records": 288,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -14,27 +14,27 @@
   "point_models": [
     {
       "name": "城ヶ島沖",
-      "n": 63,
-      "wmape_h0": 34.7,
-      "bl2_wmape": 52.0,
-      "oos_r": 0.662,
-      "improvement_pt": 10.19
+      "n": 64,
+      "wmape_h0": 34.6,
+      "bl2_wmape": 52.8,
+      "oos_r": 0.664,
+      "improvement_pt": 6.41
     },
     {
       "name": "小網代沖",
       "n": 159,
       "wmape_h0": 38.9,
       "bl2_wmape": 47.8,
-      "oos_r": 0.605,
-      "improvement_pt": 6.0
+      "oos_r": 0.604,
+      "improvement_pt": 2.1
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
-    "wmape_h0": 34.7,
-    "improvement_pt": 10.19
+    "wmape_h0": 34.6,
+    "improvement_pt": 6.41
   },
-  "improvement_pt": 10.19,
+  "improvement_pt": 6.41,
   "history": [
     {
       "date": "2026-04-22",

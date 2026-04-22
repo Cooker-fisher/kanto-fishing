@@ -2,15 +2,14 @@
   "fish": "クロダイ",
   "ship": "林遊船",
   "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.9,
-    "bl0_wmape": 63.3,
-    "bl2_wmape": 69.9,
-    "oos_r": 0.38,
+    "wmape_h0": 54.84,
+    "bl2_wmape": 69.88,
+    "oos_r": 0.379,
     "n_records": 471,
-    "alpha_scale": 0.256,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -50,7 +49,13 @@
     "前週好調が継続しやすい傾向",
     "水温上昇時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=54.8% imp=0.05pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -158,5 +163,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "浦安沖",
+      "n": 471,
+      "wmape_h0": 54.8,
+      "bl2_wmape": 69.9,
+      "oos_r": 0.375,
+      "improvement_pt": 0.05
+    }
+  ],
+  "best_point": {
+    "name": "浦安沖",
+    "wmape_h0": 54.8,
+    "improvement_pt": 0.05
+  },
+  "improvement_pt": 0.05
 }

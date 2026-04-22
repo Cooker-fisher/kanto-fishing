@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 32.38,
+    "wmape_h0": 30.46,
     "bl2_wmape": 33.63,
-    "oos_r": 0.196,
+    "oos_r": 0.308,
     "n_records": 613,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -177,23 +177,23 @@
       "wmape_h0": 25.4,
       "bl2_wmape": 28.1,
       "oos_r": 0.448,
-      "improvement_pt": 6.98
+      "improvement_pt": 5.05
     },
     {
       "name": "久里浜沖",
-      "n": 364,
+      "n": 365,
       "wmape_h0": 31.4,
       "bl2_wmape": 35.1,
-      "oos_r": 0.321,
-      "improvement_pt": 0.95
+      "oos_r": 0.318,
+      "improvement_pt": -0.97
     }
   ],
   "best_point": {
     "name": "観音崎沖",
     "wmape_h0": 25.4,
-    "improvement_pt": 6.98
+    "improvement_pt": 5.05
   },
-  "improvement_pt": 6.98,
+  "improvement_pt": 5.05,
   "trip_models": [
     {
       "trip_no": 2,

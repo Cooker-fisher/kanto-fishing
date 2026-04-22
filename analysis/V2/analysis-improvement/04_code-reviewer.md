@@ -36,6 +36,13 @@
 - [ ] サブクエリ内の集計が正しいか
 - [ ] `is_cancellation = 0` フィルタが抜けていないか
 
+### ポイント処理（必須チェック）
+
+- [ ] **`load_records()` 内で `r["point"]` が空文字列になるレコードがないか**
+  - `point_place1` が空 → depth_min → ship_fish_point → area の順にフォールバックを経由しているか
+  - `deep_dive_by_point()` の `viable_points` は `if pt and n >= MIN_N_COMBO` で空文字列を除外するため、フォールバックなしだと大量のレコードが最適化対象から脱落する
+  - 詳細は `10_point_optimization.md` の「⚠️ 重要: フォールバックルール」参照
+
 ### 条件分岐
 
 - [ ] off-by-one（`<` vs `<=`、`>=` の使い分け）

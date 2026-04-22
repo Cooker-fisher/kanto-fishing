@@ -2,9 +2,9 @@
   "fish": "ヒラメ",
   "ship": "第三松栄丸",
   "last_reviewed": "2026-04-22",
-  "status": "point_model_applied",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 32.78,
+    "wmape_h0": 32.79,
     "bl2_wmape": 48.39,
     "oos_r": 0.614,
     "n_records": 97,
@@ -183,11 +183,11 @@
   "point_models": [
     {
       "name": "大原沖",
-      "n": 45,
-      "wmape_h0": 23.6,
-      "bl2_wmape": 46.9,
-      "oos_r": 0.753,
-      "improvement_pt": 9.17
+      "n": 50,
+      "wmape_h0": 28.3,
+      "bl2_wmape": 43.4,
+      "oos_r": 0.659,
+      "improvement_pt": 4.54
     },
     {
       "name": "太東沖",
@@ -195,15 +195,15 @@
       "wmape_h0": 36.5,
       "bl2_wmape": 49.1,
       "oos_r": 0.659,
-      "improvement_pt": -3.76
+      "improvement_pt": -3.75
     }
   ],
   "best_point": {
     "name": "大原沖",
-    "wmape_h0": 23.6,
-    "improvement_pt": 9.17
+    "wmape_h0": 28.3,
+    "improvement_pt": 4.54
   },
-  "improvement_pt": 9.17,
+  "improvement_pt": 4.54,
   "trip_models": [
     {
       "trip_no": 1,

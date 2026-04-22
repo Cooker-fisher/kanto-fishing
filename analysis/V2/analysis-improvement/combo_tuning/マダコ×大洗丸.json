@@ -2,15 +2,14 @@
   "fish": "マダコ",
   "ship": "大洗丸",
   "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.4,
-    "bl0_wmape": 48.6,
-    "bl2_wmape": 52.9,
+    "wmape_h0": 36.35,
+    "bl2_wmape": 52.93,
     "oos_r": 0.604,
     "n_records": 104,
-    "alpha_scale": 0.634,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +106,13 @@
     "前2日の降水量が少ない時に釣果が上がる傾向",
     "前4日の降水量が少ない時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=大洗沖 wmape=35.9% imp=0.46pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -187,5 +192,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "大洗沖",
+      "n": 101,
+      "wmape_h0": 35.9,
+      "bl2_wmape": 52.4,
+      "oos_r": 0.602,
+      "improvement_pt": 0.46
+    }
+  ],
+  "best_point": {
+    "name": "大洗沖",
+    "wmape_h0": 35.9,
+    "improvement_pt": 0.46
+  },
+  "improvement_pt": 0.46
 }

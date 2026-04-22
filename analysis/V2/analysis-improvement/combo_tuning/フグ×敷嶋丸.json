@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 63.54,
+    "wmape_h0": 63.61,
     "bl2_wmape": 85.32,
-    "oos_r": 0.454,
+    "oos_r": 0.453,
     "n_records": 349,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -14,27 +14,27 @@
   "point_models": [
     {
       "name": "大原沖",
-      "n": 77,
-      "wmape_h0": 49.0,
-      "bl2_wmape": 74.6,
-      "oos_r": 0.566,
-      "improvement_pt": 14.58
+      "n": 84,
+      "wmape_h0": 50.7,
+      "bl2_wmape": 80.7,
+      "oos_r": 0.587,
+      "improvement_pt": 12.88
     },
     {
       "name": "太東沖",
       "n": 258,
-      "wmape_h0": 60.8,
+      "wmape_h0": 60.9,
       "bl2_wmape": 89.6,
       "oos_r": 0.53,
-      "improvement_pt": 2.71
+      "improvement_pt": 2.74
     }
   ],
   "best_point": {
     "name": "大原沖",
-    "wmape_h0": 49.0,
-    "improvement_pt": 14.58
+    "wmape_h0": 50.7,
+    "improvement_pt": 12.88
   },
-  "improvement_pt": 14.58,
+  "improvement_pt": 12.88,
   "points": [
     {
       "name": "太東沖",

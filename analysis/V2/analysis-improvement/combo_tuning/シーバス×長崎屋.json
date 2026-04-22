@@ -2,15 +2,14 @@
   "fish": "シーバス",
   "ship": "長崎屋",
   "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.2,
-    "bl0_wmape": 60.2,
-    "bl2_wmape": 65.5,
-    "oos_r": 0.37,
+    "wmape_h0": 54.34,
+    "bl2_wmape": 65.49,
+    "oos_r": 0.365,
     "n_records": 156,
-    "alpha_scale": 0.829,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -82,7 +81,13 @@
     "潮汐変化が小さい日に釣果が上がる傾向",
     "特定風向（北寄り）時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=本牧沖 wmape=51.9% imp=2.33pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_50m",
@@ -188,5 +193,21 @@
     "cat": "濁り",
     "wmape_h0": 48.8,
     "improvement_pt": 5.5
-  }
+  },
+  "point_models": [
+    {
+      "name": "本牧沖",
+      "n": 58,
+      "wmape_h0": 51.9,
+      "bl2_wmape": 60.1,
+      "oos_r": 0.471,
+      "improvement_pt": 2.39
+    }
+  ],
+  "best_point": {
+    "name": "本牧沖",
+    "wmape_h0": 51.9,
+    "improvement_pt": 2.39
+  },
+  "improvement_pt": 2.39
 }
