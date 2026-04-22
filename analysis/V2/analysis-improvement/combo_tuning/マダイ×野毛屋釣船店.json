@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 42.22,
@@ -140,5 +140,23 @@
     "wmape_h0": 39.5,
     "improvement_pt": 2.72
   },
-  "improvement_pt": 2.72
+  "improvement_pt": 2.72,
+  "trip_models": [
+    {
+      "trip_no": 3,
+      "n": 65,
+      "wmape_h0": 27.5,
+      "bl2_wmape": 43.1,
+      "improvement_pt": 12.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 27.5,
+    "improvement_pt": 12.0
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

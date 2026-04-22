@@ -168,5 +168,68 @@
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=32.6% imp=2.64pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 217,
+      "wmape_h0": 35.2,
+      "bl2_wmape": 45.2,
+      "improvement_pt": 0.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 35.2,
+    "improvement_pt": 0.1
+  },
+  "point_depth_models": [
+    {
+      "key": "剣崎沖_浅場(~40m)",
+      "n": 69,
+      "wmape_h0": 27.8,
+      "bl2_wmape": 45.7,
+      "improvement_pt": 7.5
+    },
+    {
+      "key": "久里浜沖_中深場(41-80m)",
+      "n": 47,
+      "wmape_h0": 34.3,
+      "bl2_wmape": 50.5,
+      "improvement_pt": 1.0
+    },
+    {
+      "key": "剣崎沖_中深場(41-80m)",
+      "n": 33,
+      "wmape_h0": 35.4,
+      "bl2_wmape": 49.9,
+      "improvement_pt": -0.1
+    },
+    {
+      "key": "久里浜沖_浅場(~40m)",
+      "n": 61,
+      "wmape_h0": 38.6,
+      "bl2_wmape": 58.8,
+      "improvement_pt": -3.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "剣崎沖_浅場(~40m)",
+    "wmape_h0": 27.8,
+    "improvement_pt": 7.5
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 192,
+      "wmape_h0": 33.8,
+      "bl2_wmape": 42.0,
+      "improvement_pt": 1.5
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 33.8,
+    "improvement_pt": 1.5
+  }
 }

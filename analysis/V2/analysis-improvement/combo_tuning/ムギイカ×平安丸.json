@@ -1,7 +1,7 @@
 {
   "fish": "ムギイカ",
   "ship": "平安丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 71.1,
@@ -168,5 +168,23 @@
       "n_valid": 52,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 33,
+      "wmape_h0": 51.9,
+      "bl2_wmape": 51.8,
+      "improvement_pt": 17.4
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 51.9,
+    "improvement_pt": 17.4
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

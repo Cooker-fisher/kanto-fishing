@@ -1,7 +1,7 @@
 {
   "fish": "ショウサイフグ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 41.74,
@@ -176,5 +176,39 @@
     "wmape_h0": 41.3,
     "improvement_pt": 0.44
   },
-  "improvement_pt": 0.44
+  "improvement_pt": 0.44,
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 57,
+      "wmape_h0": 37.0,
+      "bl2_wmape": 45.7,
+      "improvement_pt": 2.8
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 37.0,
+    "improvement_pt": 2.8
+  },
+  "point_depth_models": [
+    {
+      "key": "大貫沖_浅場(~40m)",
+      "n": 93,
+      "wmape_h0": 41.3,
+      "bl2_wmape": 50.1,
+      "improvement_pt": -1.5
+    }
+  ],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 96,
+      "wmape_h0": 40.3,
+      "bl2_wmape": 47.5,
+      "improvement_pt": -0.5
+    }
+  ],
+  "best_water_color": null
 }

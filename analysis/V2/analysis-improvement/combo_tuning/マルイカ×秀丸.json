@@ -1,7 +1,7 @@
 {
   "fish": "マルイカ",
   "ship": "秀丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 66.53,
@@ -140,5 +140,37 @@
       "action": "deep_dive_by_point実行",
       "result": "best=沼津沖 wmape=66.71% combo=66.53% diff=-0.18pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 519,
+      "wmape_h0": 61.7,
+      "bl2_wmape": 70.4,
+      "improvement_pt": 4.6
+    },
+    {
+      "trip_no": 2,
+      "n": 321,
+      "wmape_h0": 69.0,
+      "bl2_wmape": 88.6,
+      "improvement_pt": -2.7
+    },
+    {
+      "trip_no": 3,
+      "n": 70,
+      "wmape_h0": 66.7,
+      "bl2_wmape": 78.6,
+      "improvement_pt": -0.4
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 61.7,
+    "improvement_pt": 4.6
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

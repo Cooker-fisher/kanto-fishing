@@ -195,5 +195,50 @@
     "wmape_h0": 24.8,
     "improvement_pt": 2.77
   },
-  "improvement_pt": 2.77
+  "improvement_pt": 2.77,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 37,
+      "wmape_h0": 29.6,
+      "bl2_wmape": 52.9,
+      "improvement_pt": -2.0
+    },
+    {
+      "trip_no": 2,
+      "n": 52,
+      "wmape_h0": 26.7,
+      "bl2_wmape": 33.2,
+      "improvement_pt": 0.9
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 26.7,
+    "improvement_pt": 0.9
+  },
+  "point_depth_models": [
+    {
+      "key": "葉山沖_浅場(~40m)",
+      "n": 72,
+      "wmape_h0": 24.8,
+      "bl2_wmape": 46.8,
+      "improvement_pt": 2.8
+    }
+  ],
+  "best_point_depth": {
+    "key": "葉山沖_浅場(~40m)",
+    "wmape_h0": 24.8,
+    "improvement_pt": 2.8
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 76,
+      "wmape_h0": 28.3,
+      "bl2_wmape": 35.4,
+      "improvement_pt": -0.7
+    }
+  ],
+  "best_water_color": null
 }

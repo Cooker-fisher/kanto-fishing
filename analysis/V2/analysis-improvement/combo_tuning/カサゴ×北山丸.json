@@ -199,5 +199,35 @@
     "wmape_h0": 48.9,
     "improvement_pt": 14.01
   },
-  "improvement_pt": 14.01
+  "improvement_pt": 14.01,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 152,
+      "wmape_h0": 63.0,
+      "bl2_wmape": 83.4,
+      "improvement_pt": -0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 63.0,
+    "improvement_pt": -0.0
+  },
+  "point_depth_models": [
+    {
+      "key": "洲崎沖_浅場(~40m)",
+      "n": 69,
+      "wmape_h0": 49.0,
+      "bl2_wmape": 74.0,
+      "improvement_pt": 14.0
+    }
+  ],
+  "best_point_depth": {
+    "key": "洲崎沖_浅場(~40m)",
+    "wmape_h0": 49.0,
+    "improvement_pt": 14.0
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

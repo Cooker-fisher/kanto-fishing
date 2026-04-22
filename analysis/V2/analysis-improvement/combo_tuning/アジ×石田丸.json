@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "石田丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 43.3,
@@ -169,5 +169,23 @@
       "n_valid": 241,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 241,
+      "wmape_h0": 43.0,
+      "bl2_wmape": 54.5,
+      "improvement_pt": -0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 43.0,
+    "improvement_pt": -0.0
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

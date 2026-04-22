@@ -170,5 +170,35 @@
       "action": "point_backtest_updated",
       "note": "best=外川沖 wmape=36.2% imp=0.76pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 200,
+      "wmape_h0": 37.0,
+      "bl2_wmape": 46.8,
+      "improvement_pt": 0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 37.0,
+    "improvement_pt": 0.0
+  },
+  "point_depth_models": [
+    {
+      "key": "外川沖_浅場(~40m)",
+      "n": 185,
+      "wmape_h0": 36.2,
+      "bl2_wmape": 47.1,
+      "improvement_pt": 0.8
+    }
+  ],
+  "best_point_depth": {
+    "key": "外川沖_浅場(~40m)",
+    "wmape_h0": 36.2,
+    "improvement_pt": 0.8
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

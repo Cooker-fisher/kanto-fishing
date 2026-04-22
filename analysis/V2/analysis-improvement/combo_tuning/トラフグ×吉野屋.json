@@ -1,7 +1,7 @@
 {
   "fish": "トラフグ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 51.86,
@@ -191,5 +191,27 @@
       "action": "deep_dive_by_point実行",
       "result": "best=富浦沖 wmape=52.52% combo=51.86% diff=-0.66pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 87,
+      "wmape_h0": 46.7,
+      "bl2_wmape": 68.9,
+      "improvement_pt": -0.3
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [
+    {
+      "key": "富浦沖_中深場(41-80m)",
+      "n": 32,
+      "wmape_h0": 52.5,
+      "bl2_wmape": 54.8,
+      "improvement_pt": -6.1
+    }
+  ],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

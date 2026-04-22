@@ -1,7 +1,7 @@
 {
   "fish": "シロギス",
   "ship": "須原屋",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 25.42,
@@ -186,5 +186,31 @@
     "wmape_h0": 25.9,
     "improvement_pt": -0.48
   },
-  "improvement_pt": -0.48
+  "improvement_pt": -0.48,
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 101,
+      "wmape_h0": 21.9,
+      "bl2_wmape": 32.1,
+      "improvement_pt": 3.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 21.9,
+    "improvement_pt": 3.2
+  },
+  "point_depth_models": [
+    {
+      "key": "木更津沖_浅場(~40m)",
+      "n": 91,
+      "wmape_h0": 25.9,
+      "bl2_wmape": 31.2,
+      "improvement_pt": -0.8
+    }
+  ],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

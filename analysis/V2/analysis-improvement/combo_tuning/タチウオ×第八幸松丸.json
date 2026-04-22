@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "第八幸松丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 36.8,
@@ -159,5 +159,30 @@
       "n_valid": 251,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 148,
+      "wmape_h0": 34.2,
+      "bl2_wmape": 42.9,
+      "improvement_pt": 1.9
+    },
+    {
+      "trip_no": 2,
+      "n": 100,
+      "wmape_h0": 30.5,
+      "bl2_wmape": 42.8,
+      "improvement_pt": 5.6
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 30.5,
+    "improvement_pt": 5.6
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

@@ -1,7 +1,7 @@
 {
   "fish": "シーバス",
   "ship": "林遊船",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 65.4,
@@ -149,5 +149,30 @@
       "n_valid": 285,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 145,
+      "wmape_h0": 71.0,
+      "bl2_wmape": 91.5,
+      "improvement_pt": -5.7
+    },
+    {
+      "trip_no": 2,
+      "n": 65,
+      "wmape_h0": 40.2,
+      "bl2_wmape": 70.0,
+      "improvement_pt": 25.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 40.2,
+    "improvement_pt": 25.1
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

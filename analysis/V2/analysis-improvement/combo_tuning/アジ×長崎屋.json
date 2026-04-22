@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "長崎屋",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 28.02,
@@ -171,5 +171,56 @@
       "action": "deep_dive_by_point実行",
       "result": "best=航程3 wmape=28.27% combo=28.02% diff=-0.25pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 45,
+      "wmape_h0": 22.4,
+      "bl2_wmape": 27.9,
+      "improvement_pt": 5.6
+    },
+    {
+      "trip_no": 2,
+      "n": 182,
+      "wmape_h0": 26.0,
+      "bl2_wmape": 30.5,
+      "improvement_pt": 2.0
+    },
+    {
+      "trip_no": 3,
+      "n": 132,
+      "wmape_h0": 25.7,
+      "bl2_wmape": 37.1,
+      "improvement_pt": 2.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 22.4,
+    "improvement_pt": 5.6
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 103,
+      "wmape_h0": 23.4,
+      "bl2_wmape": 32.3,
+      "improvement_pt": 4.6
+    },
+    {
+      "cat": "濁り",
+      "n": 214,
+      "wmape_h0": 28.7,
+      "bl2_wmape": 35.7,
+      "improvement_pt": -0.7
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 23.4,
+    "improvement_pt": 4.6
+  }
 }

@@ -1,7 +1,7 @@
 {
   "fish": "キンメダイ",
   "ship": "龍正丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 51.67,
@@ -190,5 +190,31 @@
     "wmape_h0": 56.5,
     "improvement_pt": -4.83
   },
-  "improvement_pt": -4.83
+  "improvement_pt": -4.83,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 41,
+      "wmape_h0": 50.7,
+      "bl2_wmape": 55.8,
+      "improvement_pt": 1.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 50.7,
+    "improvement_pt": 1.0
+  },
+  "point_depth_models": [
+    {
+      "key": "新島沖_超深場(150m+)",
+      "n": 46,
+      "wmape_h0": 53.0,
+      "bl2_wmape": 59.2,
+      "improvement_pt": -1.3
+    }
+  ],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

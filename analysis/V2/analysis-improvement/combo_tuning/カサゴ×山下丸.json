@@ -193,5 +193,61 @@
       "action": "point_backtest_updated",
       "note": "best=鴨居沖 wmape=21.1% imp=6.01pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 162,
+      "wmape_h0": 26.2,
+      "bl2_wmape": 30.1,
+      "improvement_pt": 0.9
+    },
+    {
+      "trip_no": 3,
+      "n": 60,
+      "wmape_h0": 27.2,
+      "bl2_wmape": 34.6,
+      "improvement_pt": -0.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 26.2,
+    "improvement_pt": 0.9
+  },
+  "point_depth_models": [
+    {
+      "key": "鴨居沖_浅場(~40m)",
+      "n": 84,
+      "wmape_h0": 21.1,
+      "bl2_wmape": 25.5,
+      "improvement_pt": 6.0
+    },
+    {
+      "key": "久里浜沖_浅場(~40m)",
+      "n": 125,
+      "wmape_h0": 26.1,
+      "bl2_wmape": 30.5,
+      "improvement_pt": 1.0
+    }
+  ],
+  "best_point_depth": {
+    "key": "鴨居沖_浅場(~40m)",
+    "wmape_h0": 21.1,
+    "improvement_pt": 6.0
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 94,
+      "wmape_h0": 25.1,
+      "bl2_wmape": 30.9,
+      "improvement_pt": 2.0
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 25.1,
+    "improvement_pt": 2.0
+  }
 }

@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "鶴丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 44.3,
@@ -129,5 +129,19 @@
       "n_valid": 167,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 164,
+      "wmape_h0": 41.5,
+      "bl2_wmape": 49.1,
+      "improvement_pt": -0.1
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

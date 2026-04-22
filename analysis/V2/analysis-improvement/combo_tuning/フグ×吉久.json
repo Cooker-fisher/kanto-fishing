@@ -1,7 +1,7 @@
 {
   "fish": "フグ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 47.84,
@@ -181,5 +181,50 @@
     "wmape_h0": 48.2,
     "improvement_pt": -0.36
   },
-  "improvement_pt": -0.36
+  "improvement_pt": -0.36,
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 81,
+      "wmape_h0": 38.7,
+      "bl2_wmape": 50.6,
+      "improvement_pt": 9.1
+    },
+    {
+      "trip_no": 3,
+      "n": 55,
+      "wmape_h0": 49.6,
+      "bl2_wmape": 54.3,
+      "improvement_pt": -1.8
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 38.7,
+    "improvement_pt": 9.1
+  },
+  "point_depth_models": [
+    {
+      "key": "大貫沖_浅場(~40m)",
+      "n": 122,
+      "wmape_h0": 48.2,
+      "bl2_wmape": 50.7,
+      "improvement_pt": -0.4
+    }
+  ],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 139,
+      "wmape_h0": 46.9,
+      "bl2_wmape": 48.2,
+      "improvement_pt": 0.9
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 46.9,
+    "improvement_pt": 0.9
+  }
 }

@@ -227,5 +227,96 @@
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=19.8% imp=14.03pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 33,
+      "wmape_h0": 22.9,
+      "bl2_wmape": 38.4,
+      "improvement_pt": 11.0
+    },
+    {
+      "trip_no": 2,
+      "n": 239,
+      "wmape_h0": 33.3,
+      "bl2_wmape": 41.1,
+      "improvement_pt": 0.6
+    },
+    {
+      "trip_no": 3,
+      "n": 46,
+      "wmape_h0": 34.2,
+      "bl2_wmape": 38.6,
+      "improvement_pt": -0.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 22.9,
+    "improvement_pt": 11.0
+  },
+  "point_depth_models": [
+    {
+      "key": "剣崎沖_浅場(~40m)",
+      "n": 33,
+      "wmape_h0": 19.8,
+      "bl2_wmape": 61.9,
+      "improvement_pt": 14.1
+    },
+    {
+      "key": "久里浜沖_浅場(~40m)",
+      "n": 34,
+      "wmape_h0": 22.4,
+      "bl2_wmape": 38.1,
+      "improvement_pt": 11.5
+    },
+    {
+      "key": "下浦沖_浅場(~40m)",
+      "n": 32,
+      "wmape_h0": 22.6,
+      "bl2_wmape": 51.5,
+      "improvement_pt": 11.3
+    },
+    {
+      "key": "竹岡沖_浅場(~40m)",
+      "n": 132,
+      "wmape_h0": 29.6,
+      "bl2_wmape": 46.8,
+      "improvement_pt": 4.3
+    },
+    {
+      "key": "鴨居沖_浅場(~40m)",
+      "n": 84,
+      "wmape_h0": 33.7,
+      "bl2_wmape": 44.8,
+      "improvement_pt": 0.2
+    }
+  ],
+  "best_point_depth": {
+    "key": "剣崎沖_浅場(~40m)",
+    "wmape_h0": 19.8,
+    "improvement_pt": 14.1
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 46,
+      "wmape_h0": 24.4,
+      "bl2_wmape": 44.9,
+      "improvement_pt": 9.5
+    },
+    {
+      "cat": "濁り",
+      "n": 268,
+      "wmape_h0": 34.2,
+      "bl2_wmape": 40.1,
+      "improvement_pt": -0.3
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 24.4,
+    "improvement_pt": 9.5
+  }
 }

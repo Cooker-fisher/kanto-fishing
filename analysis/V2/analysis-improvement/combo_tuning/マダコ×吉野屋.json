@@ -85,5 +85,84 @@
       "action": "point_backtest_updated",
       "note": "best=横浜沖 wmape=38.6% imp=1.99pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 35,
+      "wmape_h0": 22.6,
+      "bl2_wmape": 36.8,
+      "improvement_pt": 18.0
+    },
+    {
+      "trip_no": 2,
+      "n": 35,
+      "wmape_h0": 23.7,
+      "bl2_wmape": 59.6,
+      "improvement_pt": 16.9
+    },
+    {
+      "trip_no": 3,
+      "n": 49,
+      "wmape_h0": 39.2,
+      "bl2_wmape": 47.7,
+      "improvement_pt": 1.4
+    },
+    {
+      "trip_no": 4,
+      "n": 60,
+      "wmape_h0": 33.4,
+      "bl2_wmape": 43.9,
+      "improvement_pt": 7.2
+    },
+    {
+      "trip_no": 5,
+      "n": 45,
+      "wmape_h0": 39.7,
+      "bl2_wmape": 49.8,
+      "improvement_pt": 0.9
+    },
+    {
+      "trip_no": 6,
+      "n": 47,
+      "wmape_h0": 25.4,
+      "bl2_wmape": 35.3,
+      "improvement_pt": 15.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 22.6,
+    "improvement_pt": 18.0
+  },
+  "point_depth_models": [
+    {
+      "key": "横浜沖_浅場(~40m)",
+      "n": 45,
+      "wmape_h0": 39.6,
+      "bl2_wmape": 67.5,
+      "improvement_pt": 1.0
+    },
+    {
+      "key": "川崎沖_浅場(~40m)",
+      "n": 100,
+      "wmape_h0": 40.4,
+      "bl2_wmape": 50.4,
+      "improvement_pt": 0.2
+    },
+    {
+      "key": "木更津沖_浅場(~40m)",
+      "n": 58,
+      "wmape_h0": 46.0,
+      "bl2_wmape": 62.3,
+      "improvement_pt": -5.4
+    }
+  ],
+  "best_point_depth": {
+    "key": "横浜沖_浅場(~40m)",
+    "wmape_h0": 39.6,
+    "improvement_pt": 1.0
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

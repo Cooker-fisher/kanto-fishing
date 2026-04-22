@@ -198,5 +198,50 @@
     "wmape_h0": 19.7,
     "improvement_pt": 2.84
   },
-  "improvement_pt": 2.84
+  "improvement_pt": 2.84,
+  "trip_models": [
+    {
+      "trip_no": 3,
+      "n": 70,
+      "wmape_h0": 25.4,
+      "bl2_wmape": 36.4,
+      "improvement_pt": -2.9
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [
+    {
+      "key": "木更津沖_浅場(~40m)",
+      "n": 47,
+      "wmape_h0": 19.7,
+      "bl2_wmape": 31.7,
+      "improvement_pt": 2.8
+    },
+    {
+      "key": "横浜沖_浅場(~40m)",
+      "n": 43,
+      "wmape_h0": 21.2,
+      "bl2_wmape": 31.0,
+      "improvement_pt": 1.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "木更津沖_浅場(~40m)",
+    "wmape_h0": 19.7,
+    "improvement_pt": 2.8
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 106,
+      "wmape_h0": 21.7,
+      "bl2_wmape": 32.2,
+      "improvement_pt": 0.8
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 21.7,
+    "improvement_pt": 0.8
+  }
 }

@@ -1,7 +1,7 @@
 {
   "fish": "カワハギ",
   "ship": "光進丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 31.7,
@@ -171,5 +171,23 @@
       "action": "deep_dive_by_point実行",
       "result": "best=金谷沖 wmape=31.81% combo=31.7% diff=-0.11pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 215,
+      "wmape_h0": 30.4,
+      "bl2_wmape": 43.7,
+      "improvement_pt": 1.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 30.4,
+    "improvement_pt": 1.3
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

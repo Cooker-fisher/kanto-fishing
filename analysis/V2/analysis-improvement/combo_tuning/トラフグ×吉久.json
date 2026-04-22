@@ -1,7 +1,7 @@
 {
   "fish": "トラフグ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 43.29,
@@ -191,5 +191,57 @@
     "wmape_h0": 42.8,
     "improvement_pt": 0.49
   },
-  "improvement_pt": 0.49
+  "improvement_pt": 0.49,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 42,
+      "wmape_h0": 41.3,
+      "bl2_wmape": 39.7,
+      "improvement_pt": 1.4
+    },
+    {
+      "trip_no": 2,
+      "n": 84,
+      "wmape_h0": 42.9,
+      "bl2_wmape": 53.2,
+      "improvement_pt": -0.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 41.3,
+    "improvement_pt": 1.4
+  },
+  "point_depth_models": [
+    {
+      "key": "湾内_中深場(41-80m)",
+      "n": 95,
+      "wmape_h0": 38.4,
+      "bl2_wmape": 50.5,
+      "improvement_pt": 4.3
+    },
+    {
+      "key": "湾内_浅場(~40m)",
+      "n": 32,
+      "wmape_h0": 45.3,
+      "bl2_wmape": 51.1,
+      "improvement_pt": -2.6
+    }
+  ],
+  "best_point_depth": {
+    "key": "湾内_中深場(41-80m)",
+    "wmape_h0": 38.4,
+    "improvement_pt": 4.3
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 117,
+      "wmape_h0": 44.0,
+      "bl2_wmape": 49.4,
+      "improvement_pt": -1.3
+    }
+  ],
+  "best_water_color": null
 }

@@ -1,7 +1,7 @@
 {
   "fish": "ムギイカ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-20",
+  "last_reviewed": "2026-04-22",
   "status": "done",
   "metrics": {
     "wmape_h0": 79.8,
@@ -154,5 +154,23 @@
       "n_valid": 36,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 30,
+      "wmape_h0": 50.6,
+      "bl2_wmape": 59.0,
+      "improvement_pt": 5.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 50.6,
+    "improvement_pt": 5.1
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

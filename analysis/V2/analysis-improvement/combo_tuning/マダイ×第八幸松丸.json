@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "第八幸松丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 43.6,
@@ -154,5 +154,19 @@
       "n_valid": 44,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 41,
+      "wmape_h0": 39.1,
+      "bl2_wmape": 60.2,
+      "improvement_pt": -0.4
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

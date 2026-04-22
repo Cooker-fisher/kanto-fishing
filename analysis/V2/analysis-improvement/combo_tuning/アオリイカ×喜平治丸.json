@@ -1,7 +1,7 @@
 {
   "fish": "アオリイカ",
   "ship": "喜平治丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 47.1,
@@ -171,5 +171,37 @@
       "action": "deep_dive_by_point実行",
       "result": "best=剣崎沖 wmape=47.36% combo=47.1% diff=-0.26pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 263,
+      "wmape_h0": 44.5,
+      "bl2_wmape": 68.8,
+      "improvement_pt": 2.3
+    },
+    {
+      "trip_no": 2,
+      "n": 141,
+      "wmape_h0": 39.1,
+      "bl2_wmape": 59.5,
+      "improvement_pt": 7.7
+    },
+    {
+      "trip_no": 3,
+      "n": 39,
+      "wmape_h0": 36.3,
+      "bl2_wmape": 69.1,
+      "improvement_pt": 10.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 36.3,
+    "improvement_pt": 10.5
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

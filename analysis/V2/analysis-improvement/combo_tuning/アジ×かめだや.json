@@ -219,5 +219,82 @@
       "action": "point_backtest_updated",
       "note": "best=本牧沖 wmape=20.5% imp=6.36pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 379,
+      "wmape_h0": 23.8,
+      "bl2_wmape": 28.1,
+      "improvement_pt": 3.1
+    },
+    {
+      "trip_no": 2,
+      "n": 101,
+      "wmape_h0": 19.9,
+      "bl2_wmape": 32.0,
+      "improvement_pt": 7.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 19.9,
+    "improvement_pt": 7.0
+  },
+  "point_depth_models": [
+    {
+      "key": "本牧沖_浅場(~40m)",
+      "n": 59,
+      "wmape_h0": 20.5,
+      "bl2_wmape": 34.1,
+      "improvement_pt": 6.4
+    },
+    {
+      "key": "横浜沖_浅場(~40m)",
+      "n": 275,
+      "wmape_h0": 23.8,
+      "bl2_wmape": 28.4,
+      "improvement_pt": 3.1
+    },
+    {
+      "key": "川崎沖_浅場(~40m)",
+      "n": 54,
+      "wmape_h0": 23.9,
+      "bl2_wmape": 30.6,
+      "improvement_pt": 3.0
+    },
+    {
+      "key": "富岡沖_浅場(~40m)",
+      "n": 68,
+      "wmape_h0": 24.7,
+      "bl2_wmape": 29.1,
+      "improvement_pt": 2.2
+    }
+  ],
+  "best_point_depth": {
+    "key": "本牧沖_浅場(~40m)",
+    "wmape_h0": 20.5,
+    "improvement_pt": 6.4
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 277,
+      "wmape_h0": 26.0,
+      "bl2_wmape": 30.9,
+      "improvement_pt": 0.9
+    },
+    {
+      "cat": "濁り",
+      "n": 194,
+      "wmape_h0": 26.1,
+      "bl2_wmape": 31.2,
+      "improvement_pt": 0.8
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 26.0,
+    "improvement_pt": 0.9
+  }
 }

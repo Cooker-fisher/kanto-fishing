@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "渡辺釣船店",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 26.97,
@@ -166,5 +166,54 @@
       "action": "deep_dive_by_point実行",
       "result": "best=横浜沖 wmape=27.02% combo=26.97% diff=-0.05pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 193,
+      "wmape_h0": 22.8,
+      "bl2_wmape": 26.4,
+      "improvement_pt": 4.2
+    },
+    {
+      "trip_no": 3,
+      "n": 185,
+      "wmape_h0": 26.1,
+      "bl2_wmape": 31.6,
+      "improvement_pt": 0.9
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 22.8,
+    "improvement_pt": 4.2
+  },
+  "point_depth_models": [
+    {
+      "key": "横浜沖_浅場(~40m)",
+      "n": 415,
+      "wmape_h0": 26.8,
+      "bl2_wmape": 30.9,
+      "improvement_pt": 0.2
+    }
+  ],
+  "best_point_depth": {
+    "key": "横浜沖_浅場(~40m)",
+    "wmape_h0": 26.8,
+    "improvement_pt": 0.2
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 417,
+      "wmape_h0": 26.5,
+      "bl2_wmape": 30.4,
+      "improvement_pt": 0.5
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 26.5,
+    "improvement_pt": 0.5
+  }
 }

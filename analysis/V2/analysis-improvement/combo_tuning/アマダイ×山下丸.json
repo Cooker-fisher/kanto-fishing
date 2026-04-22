@@ -193,5 +193,75 @@
       "action": "point_backtest_updated",
       "note": "best=岩井沖 wmape=37.1% imp=9.36pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 312,
+      "wmape_h0": 46.2,
+      "bl2_wmape": 72.2,
+      "improvement_pt": 0.2
+    },
+    {
+      "trip_no": 3,
+      "n": 49,
+      "wmape_h0": 37.4,
+      "bl2_wmape": 43.7,
+      "improvement_pt": 9.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 37.4,
+    "improvement_pt": 9.0
+  },
+  "point_depth_models": [
+    {
+      "key": "剣崎沖_深場(81-150m)",
+      "n": 35,
+      "wmape_h0": 27.3,
+      "bl2_wmape": 35.1,
+      "improvement_pt": 19.1
+    },
+    {
+      "key": "剣崎沖_中深場(41-80m)",
+      "n": 251,
+      "wmape_h0": 37.3,
+      "bl2_wmape": 39.8,
+      "improvement_pt": 9.1
+    },
+    {
+      "key": "岩井沖_中深場(41-80m)",
+      "n": 31,
+      "wmape_h0": 38.8,
+      "bl2_wmape": 40.2,
+      "improvement_pt": 7.6
+    }
+  ],
+  "best_point_depth": {
+    "key": "剣崎沖_深場(81-150m)",
+    "wmape_h0": 27.3,
+    "improvement_pt": 19.1
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 37,
+      "wmape_h0": 30.7,
+      "bl2_wmape": 37.3,
+      "improvement_pt": 15.7
+    },
+    {
+      "cat": "濁り",
+      "n": 186,
+      "wmape_h0": 39.5,
+      "bl2_wmape": 42.4,
+      "improvement_pt": 6.9
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 30.7,
+    "improvement_pt": 15.7
+  }
 }

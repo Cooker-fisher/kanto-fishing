@@ -203,5 +203,63 @@
       "action": "point_backtest_updated",
       "note": "best=洲の崎沖 wmape=42.7% imp=3.45pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 63,
+      "wmape_h0": 46.5,
+      "bl2_wmape": 48.1,
+      "improvement_pt": -0.3
+    },
+    {
+      "trip_no": 2,
+      "n": 160,
+      "wmape_h0": 43.4,
+      "bl2_wmape": 62.6,
+      "improvement_pt": 2.8
+    },
+    {
+      "trip_no": 3,
+      "n": 46,
+      "wmape_h0": 40.0,
+      "bl2_wmape": 48.9,
+      "improvement_pt": 6.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 40.0,
+    "improvement_pt": 6.2
+  },
+  "point_depth_models": [
+    {
+      "key": "洲の崎沖_超深場(150m+)",
+      "n": 73,
+      "wmape_h0": 42.2,
+      "bl2_wmape": 55.5,
+      "improvement_pt": 4.0
+    },
+    {
+      "key": "剣崎沖_深場(81-150m)",
+      "n": 71,
+      "wmape_h0": 43.4,
+      "bl2_wmape": 53.4,
+      "improvement_pt": 2.8
+    },
+    {
+      "key": "洲の崎沖_深場(81-150m)",
+      "n": 44,
+      "wmape_h0": 49.3,
+      "bl2_wmape": 68.7,
+      "improvement_pt": -3.1
+    }
+  ],
+  "best_point_depth": {
+    "key": "洲の崎沖_超深場(150m+)",
+    "wmape_h0": 42.2,
+    "improvement_pt": 4.0
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

@@ -181,5 +181,44 @@
       "action": "point_backtest_updated",
       "note": "best=茅ヶ崎沖 wmape=80.0% imp=1.51pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 199,
+      "wmape_h0": 78.9,
+      "bl2_wmape": 98.5,
+      "improvement_pt": 2.6
+    },
+    {
+      "trip_no": 2,
+      "n": 213,
+      "wmape_h0": 69.9,
+      "bl2_wmape": 94.8,
+      "improvement_pt": 11.6
+    },
+    {
+      "trip_no": 3,
+      "n": 157,
+      "wmape_h0": 72.1,
+      "bl2_wmape": 90.2,
+      "improvement_pt": 9.4
+    },
+    {
+      "trip_no": 4,
+      "n": 70,
+      "wmape_h0": 63.2,
+      "bl2_wmape": 85.1,
+      "improvement_pt": 18.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 4,
+    "wmape_h0": 63.2,
+    "improvement_pt": 18.3
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

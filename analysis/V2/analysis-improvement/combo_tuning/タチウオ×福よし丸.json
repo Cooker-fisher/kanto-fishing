@@ -185,5 +185,42 @@
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=47.6% imp=1.62pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 356,
+      "wmape_h0": 49.2,
+      "bl2_wmape": 59.0,
+      "improvement_pt": 0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 49.2,
+    "improvement_pt": 0.0
+  },
+  "point_depth_models": [
+    {
+      "key": "観音崎沖_中深場(41-80m)",
+      "n": 211,
+      "wmape_h0": 43.9,
+      "bl2_wmape": 58.4,
+      "improvement_pt": 5.3
+    },
+    {
+      "key": "観音崎沖_浅場(~40m)",
+      "n": 106,
+      "wmape_h0": 44.9,
+      "bl2_wmape": 64.3,
+      "improvement_pt": 4.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "観音崎沖_中深場(41-80m)",
+    "wmape_h0": 43.9,
+    "improvement_pt": 5.3
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

@@ -1,7 +1,7 @@
 {
   "fish": "マダコ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 43.6,
@@ -175,5 +175,23 @@
     "wmape_h0": 50.1,
     "improvement_pt": -6.5
   },
-  "improvement_pt": -6.5
+  "improvement_pt": -6.5,
+  "trip_models": [
+    {
+      "trip_no": 3,
+      "n": 37,
+      "wmape_h0": 38.6,
+      "bl2_wmape": 49.5,
+      "improvement_pt": 0.9
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 38.6,
+    "improvement_pt": 0.9
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

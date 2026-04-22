@@ -175,5 +175,42 @@
       "action": "point_backtest_updated",
       "note": "best=鴨居沖 wmape=33.4% imp=1.3pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 116,
+      "wmape_h0": 31.3,
+      "bl2_wmape": 49.1,
+      "improvement_pt": 3.4
+    },
+    {
+      "trip_no": 3,
+      "n": 125,
+      "wmape_h0": 41.1,
+      "bl2_wmape": 42.8,
+      "improvement_pt": -6.4
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 31.3,
+    "improvement_pt": 3.4
+  },
+  "point_depth_models": [
+    {
+      "key": "鴨居沖_浅場(~40m)",
+      "n": 244,
+      "wmape_h0": 33.4,
+      "bl2_wmape": 42.3,
+      "improvement_pt": 1.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "鴨居沖_浅場(~40m)",
+    "wmape_h0": 33.4,
+    "improvement_pt": 1.3
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

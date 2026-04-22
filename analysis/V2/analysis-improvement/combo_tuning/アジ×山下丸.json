@@ -160,5 +160,61 @@
       "action": "point_backtest_updated",
       "note": "best=久里浜沖 wmape=28.9% imp=0.19pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 125,
+      "wmape_h0": 27.8,
+      "bl2_wmape": 33.9,
+      "improvement_pt": 1.3
+    },
+    {
+      "trip_no": 3,
+      "n": 154,
+      "wmape_h0": 26.8,
+      "bl2_wmape": 32.4,
+      "improvement_pt": 2.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 26.8,
+    "improvement_pt": 2.3
+  },
+  "point_depth_models": [
+    {
+      "key": "久里浜沖_中深場(41-80m)",
+      "n": 61,
+      "wmape_h0": 25.0,
+      "bl2_wmape": 35.1,
+      "improvement_pt": 4.1
+    },
+    {
+      "key": "久里浜沖_浅場(~40m)",
+      "n": 208,
+      "wmape_h0": 28.2,
+      "bl2_wmape": 30.6,
+      "improvement_pt": 0.9
+    }
+  ],
+  "best_point_depth": {
+    "key": "久里浜沖_中深場(41-80m)",
+    "wmape_h0": 25.0,
+    "improvement_pt": 4.1
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 134,
+      "wmape_h0": 26.4,
+      "bl2_wmape": 31.5,
+      "improvement_pt": 2.7
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 26.4,
+    "improvement_pt": 2.7
+  }
 }

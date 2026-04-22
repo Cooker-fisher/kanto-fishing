@@ -1,7 +1,7 @@
 {
   "fish": "シイラ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-20",
+  "last_reviewed": "2026-04-22",
   "status": "done",
   "metrics": {
     "wmape_h0": 86.4,
@@ -154,5 +154,30 @@
       "n_valid": 237,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 130,
+      "wmape_h0": 79.4,
+      "bl2_wmape": 91.9,
+      "improvement_pt": 7.0
+    },
+    {
+      "trip_no": 3,
+      "n": 78,
+      "wmape_h0": 66.3,
+      "bl2_wmape": 77.7,
+      "improvement_pt": 20.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 66.3,
+    "improvement_pt": 20.1
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

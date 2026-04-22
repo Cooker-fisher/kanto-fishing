@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "弘漁丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 40.2,
@@ -154,5 +154,30 @@
       "n_valid": 279,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 240,
+      "wmape_h0": 37.1,
+      "bl2_wmape": 48.6,
+      "improvement_pt": 3.1
+    },
+    {
+      "trip_no": 2,
+      "n": 39,
+      "wmape_h0": 41.3,
+      "bl2_wmape": 57.1,
+      "improvement_pt": -1.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 37.1,
+    "improvement_pt": 3.1
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

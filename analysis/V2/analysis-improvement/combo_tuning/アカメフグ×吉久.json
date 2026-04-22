@@ -1,7 +1,7 @@
 {
   "fish": "アカメフグ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 31.32,
@@ -140,5 +140,50 @@
       "action": "deep_dive_by_point実行",
       "result": "best=湾内 wmape=31.17% combo=31.32% diff=0.15pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 112,
+      "wmape_h0": 26.6,
+      "bl2_wmape": 32.9,
+      "improvement_pt": 4.5
+    },
+    {
+      "trip_no": 3,
+      "n": 87,
+      "wmape_h0": 25.9,
+      "bl2_wmape": 30.7,
+      "improvement_pt": 5.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 25.9,
+    "improvement_pt": 5.2
+  },
+  "point_depth_models": [
+    {
+      "key": "湾内_浅場(~40m)",
+      "n": 208,
+      "wmape_h0": 31.2,
+      "bl2_wmape": 38.7,
+      "improvement_pt": -0.1
+    }
+  ],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 204,
+      "wmape_h0": 30.6,
+      "bl2_wmape": 37.8,
+      "improvement_pt": 0.5
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 30.6,
+    "improvement_pt": 0.5
+  }
 }

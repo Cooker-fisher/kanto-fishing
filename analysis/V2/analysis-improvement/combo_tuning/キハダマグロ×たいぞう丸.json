@@ -185,5 +185,39 @@
     "wmape_h0": 46.9,
     "improvement_pt": 21.7
   },
-  "improvement_pt": 21.7
+  "improvement_pt": 21.7,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 67,
+      "wmape_h0": 76.5,
+      "bl2_wmape": 77.8,
+      "improvement_pt": -7.9
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [
+    {
+      "key": "相模湾_浅場(~40m)",
+      "n": 37,
+      "wmape_h0": 50.6,
+      "bl2_wmape": 62.1,
+      "improvement_pt": 18.0
+    }
+  ],
+  "best_point_depth": {
+    "key": "相模湾_浅場(~40m)",
+    "wmape_h0": 50.6,
+    "improvement_pt": 18.0
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 73,
+      "wmape_h0": 70.5,
+      "bl2_wmape": 73.5,
+      "improvement_pt": -1.9
+    }
+  ],
+  "best_water_color": null
 }

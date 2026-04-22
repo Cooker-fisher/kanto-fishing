@@ -183,5 +183,30 @@
     "wmape_h0": 45.5,
     "improvement_pt": 10.92
   },
-  "improvement_pt": 10.92
+  "improvement_pt": 10.92,
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 100,
+      "wmape_h0": 53.3,
+      "bl2_wmape": 60.0,
+      "improvement_pt": 3.1
+    },
+    {
+      "trip_no": 3,
+      "n": 91,
+      "wmape_h0": 45.8,
+      "bl2_wmape": 83.9,
+      "improvement_pt": 10.6
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 45.8,
+    "improvement_pt": 10.6
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

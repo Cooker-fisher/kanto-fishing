@@ -216,5 +216,47 @@
       "action": "point_backtest_updated",
       "note": "best=大貫沖 wmape=16.7% imp=16.22pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 175,
+      "wmape_h0": 28.9,
+      "bl2_wmape": 37.3,
+      "improvement_pt": 4.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 28.9,
+    "improvement_pt": 4.0
+  },
+  "point_depth_models": [
+    {
+      "key": "猿島沖_中深場(41-80m)",
+      "n": 36,
+      "wmape_h0": 27.2,
+      "bl2_wmape": 47.1,
+      "improvement_pt": 5.7
+    }
+  ],
+  "best_point_depth": {
+    "key": "猿島沖_中深場(41-80m)",
+    "wmape_h0": 27.2,
+    "improvement_pt": 5.7
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 205,
+      "wmape_h0": 32.3,
+      "bl2_wmape": 44.3,
+      "improvement_pt": 0.6
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 32.3,
+    "improvement_pt": 0.6
+  }
 }

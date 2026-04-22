@@ -165,5 +165,56 @@
       "action": "point_backtest_updated",
       "note": "best=保田沖 wmape=34.2% imp=0.94pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 138,
+      "wmape_h0": 30.7,
+      "bl2_wmape": 32.6,
+      "improvement_pt": 4.4
+    },
+    {
+      "trip_no": 2,
+      "n": 69,
+      "wmape_h0": 28.0,
+      "bl2_wmape": 42.0,
+      "improvement_pt": 7.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 28.0,
+    "improvement_pt": 7.1
+  },
+  "point_depth_models": [
+    {
+      "key": "保田沖_中深場(41-80m)",
+      "n": 67,
+      "wmape_h0": 24.7,
+      "bl2_wmape": 34.2,
+      "improvement_pt": 10.4
+    },
+    {
+      "key": "保田沖_深場(81-150m)",
+      "n": 97,
+      "wmape_h0": 27.4,
+      "bl2_wmape": 32.4,
+      "improvement_pt": 7.7
+    },
+    {
+      "key": "保田沖_浅場(~40m)",
+      "n": 56,
+      "wmape_h0": 32.6,
+      "bl2_wmape": 48.0,
+      "improvement_pt": 2.5
+    }
+  ],
+  "best_point_depth": {
+    "key": "保田沖_中深場(41-80m)",
+    "wmape_h0": 24.7,
+    "improvement_pt": 10.4
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

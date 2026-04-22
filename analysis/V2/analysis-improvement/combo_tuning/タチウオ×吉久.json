@@ -242,5 +242,82 @@
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=21.8% imp=11.61pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 644,
+      "wmape_h0": 32.6,
+      "bl2_wmape": 38.2,
+      "improvement_pt": 0.8
+    },
+    {
+      "trip_no": 2,
+      "n": 55,
+      "wmape_h0": 23.3,
+      "bl2_wmape": 34.6,
+      "improvement_pt": 10.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 23.3,
+    "improvement_pt": 10.1
+  },
+  "point_depth_models": [
+    {
+      "key": "観音崎沖_中深場(41-80m)",
+      "n": 74,
+      "wmape_h0": 18.9,
+      "bl2_wmape": 50.3,
+      "improvement_pt": 14.5
+    },
+    {
+      "key": "猿島沖_中深場(41-80m)",
+      "n": 127,
+      "wmape_h0": 23.9,
+      "bl2_wmape": 43.0,
+      "improvement_pt": 9.5
+    },
+    {
+      "key": "走水沖_中深場(41-80m)",
+      "n": 209,
+      "wmape_h0": 24.5,
+      "bl2_wmape": 28.9,
+      "improvement_pt": 8.9
+    },
+    {
+      "key": "大貫沖_浅場(~40m)",
+      "n": 73,
+      "wmape_h0": 28.6,
+      "bl2_wmape": 42.0,
+      "improvement_pt": 4.8
+    },
+    {
+      "key": "湾奥_浅場(~40m)",
+      "n": 102,
+      "wmape_h0": 40.9,
+      "bl2_wmape": 44.8,
+      "improvement_pt": -7.5
+    }
+  ],
+  "best_point_depth": {
+    "key": "観音崎沖_中深場(41-80m)",
+    "wmape_h0": 18.9,
+    "improvement_pt": 14.5
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 683,
+      "wmape_h0": 33.2,
+      "bl2_wmape": 38.3,
+      "improvement_pt": 0.2
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 33.2,
+    "improvement_pt": 0.2
+  }
 }

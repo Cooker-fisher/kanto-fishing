@@ -241,5 +241,98 @@
       "action": "point_backtest_updated",
       "note": "best=横須賀沖 wmape=16.5% imp=20.12pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 213,
+      "wmape_h0": 29.9,
+      "bl2_wmape": 37.0,
+      "improvement_pt": 6.7
+    },
+    {
+      "trip_no": 2,
+      "n": 181,
+      "wmape_h0": 36.2,
+      "bl2_wmape": 44.9,
+      "improvement_pt": 0.4
+    },
+    {
+      "trip_no": 3,
+      "n": 151,
+      "wmape_h0": 38.1,
+      "bl2_wmape": 46.3,
+      "improvement_pt": -1.5
+    },
+    {
+      "trip_no": 4,
+      "n": 158,
+      "wmape_h0": 29.7,
+      "bl2_wmape": 43.1,
+      "improvement_pt": 6.9
+    },
+    {
+      "trip_no": 5,
+      "n": 134,
+      "wmape_h0": 33.1,
+      "bl2_wmape": 36.4,
+      "improvement_pt": 3.5
+    },
+    {
+      "trip_no": 6,
+      "n": 34,
+      "wmape_h0": 25.7,
+      "bl2_wmape": 56.2,
+      "improvement_pt": 10.9
+    }
+  ],
+  "best_trip": {
+    "trip_no": 6,
+    "wmape_h0": 25.7,
+    "improvement_pt": 10.9
+  },
+  "point_depth_models": [
+    {
+      "key": "横須賀沖_中深場(41-80m)",
+      "n": 37,
+      "wmape_h0": 16.7,
+      "bl2_wmape": 30.6,
+      "improvement_pt": 19.9
+    },
+    {
+      "key": "観音崎沖_中深場(41-80m)",
+      "n": 94,
+      "wmape_h0": 16.8,
+      "bl2_wmape": 30.0,
+      "improvement_pt": 19.8
+    },
+    {
+      "key": "本牧沖_浅場(~40m)",
+      "n": 48,
+      "wmape_h0": 22.5,
+      "bl2_wmape": 33.9,
+      "improvement_pt": 14.1
+    },
+    {
+      "key": "木更津沖_浅場(~40m)",
+      "n": 474,
+      "wmape_h0": 30.3,
+      "bl2_wmape": 34.7,
+      "improvement_pt": 6.3
+    },
+    {
+      "key": "横浜沖_浅場(~40m)",
+      "n": 82,
+      "wmape_h0": 31.3,
+      "bl2_wmape": 37.8,
+      "improvement_pt": 5.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "横須賀沖_中深場(41-80m)",
+    "wmape_h0": 16.7,
+    "improvement_pt": 19.9
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

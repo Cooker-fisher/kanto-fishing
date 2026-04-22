@@ -206,5 +206,78 @@
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=33.5% imp=11.27pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 320,
+      "wmape_h0": 45.3,
+      "bl2_wmape": 51.4,
+      "improvement_pt": -0.6
+    },
+    {
+      "trip_no": 2,
+      "n": 32,
+      "wmape_h0": 55.3,
+      "bl2_wmape": 75.3,
+      "improvement_pt": -10.6
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [
+    {
+      "key": "城ヶ島沖_中深場(41-80m)",
+      "n": 35,
+      "wmape_h0": 32.8,
+      "bl2_wmape": 45.8,
+      "improvement_pt": 11.9
+    },
+    {
+      "key": "亀城根_中深場(41-80m)",
+      "n": 81,
+      "wmape_h0": 37.8,
+      "bl2_wmape": 48.5,
+      "improvement_pt": 6.9
+    },
+    {
+      "key": "葉山沖_浅場(~40m)",
+      "n": 127,
+      "wmape_h0": 39.9,
+      "bl2_wmape": 49.8,
+      "improvement_pt": 4.8
+    },
+    {
+      "key": "亀城根_浅場(~40m)",
+      "n": 69,
+      "wmape_h0": 46.5,
+      "bl2_wmape": 68.8,
+      "improvement_pt": -1.8
+    }
+  ],
+  "best_point_depth": {
+    "key": "城ヶ島沖_中深場(41-80m)",
+    "wmape_h0": 32.8,
+    "improvement_pt": 11.9
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 180,
+      "wmape_h0": 36.1,
+      "bl2_wmape": 53.6,
+      "improvement_pt": 8.6
+    },
+    {
+      "cat": "濁り",
+      "n": 162,
+      "wmape_h0": 40.4,
+      "bl2_wmape": 54.3,
+      "improvement_pt": 4.3
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 36.1,
+    "improvement_pt": 8.6
+  }
 }

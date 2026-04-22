@@ -206,5 +206,49 @@
     "wmape_h0": 35.1,
     "improvement_pt": 9.95
   },
-  "improvement_pt": 9.95
+  "improvement_pt": 9.95,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 92,
+      "wmape_h0": 36.0,
+      "bl2_wmape": 52.5,
+      "improvement_pt": 9.0
+    },
+    {
+      "trip_no": 2,
+      "n": 95,
+      "wmape_h0": 40.8,
+      "bl2_wmape": 61.5,
+      "improvement_pt": 4.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 36.0,
+    "improvement_pt": 9.0
+  },
+  "point_depth_models": [
+    {
+      "key": "城ヶ島沖_超深場(150m+)",
+      "n": 32,
+      "wmape_h0": 37.6,
+      "bl2_wmape": 53.9,
+      "improvement_pt": 7.4
+    },
+    {
+      "key": "剣崎沖_深場(81-150m)",
+      "n": 74,
+      "wmape_h0": 41.0,
+      "bl2_wmape": 54.1,
+      "improvement_pt": 4.0
+    }
+  ],
+  "best_point_depth": {
+    "key": "城ヶ島沖_超深場(150m+)",
+    "wmape_h0": 37.6,
+    "improvement_pt": 7.4
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

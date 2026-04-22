@@ -163,5 +163,68 @@
       "action": "point_backtest_updated",
       "note": "best=波崎沖 wmape=36.0% imp=1.49pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 262,
+      "wmape_h0": 35.2,
+      "bl2_wmape": 42.3,
+      "improvement_pt": 2.3
+    },
+    {
+      "trip_no": 2,
+      "n": 60,
+      "wmape_h0": 28.2,
+      "bl2_wmape": 50.9,
+      "improvement_pt": 9.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 28.2,
+    "improvement_pt": 9.3
+  },
+  "point_depth_models": [
+    {
+      "key": "波崎沖_深場(81-150m)",
+      "n": 227,
+      "wmape_h0": 35.8,
+      "bl2_wmape": 46.4,
+      "improvement_pt": 1.7
+    },
+    {
+      "key": "犬吠沖_超深場(150m+)",
+      "n": 72,
+      "wmape_h0": 41.1,
+      "bl2_wmape": 47.5,
+      "improvement_pt": -3.6
+    }
+  ],
+  "best_point_depth": {
+    "key": "波崎沖_深場(81-150m)",
+    "wmape_h0": 35.8,
+    "improvement_pt": 1.7
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 162,
+      "wmape_h0": 35.8,
+      "bl2_wmape": 44.3,
+      "improvement_pt": 1.7
+    },
+    {
+      "cat": "濁り",
+      "n": 156,
+      "wmape_h0": 36.1,
+      "bl2_wmape": 47.7,
+      "improvement_pt": 1.4
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 35.8,
+    "improvement_pt": 1.7
+  }
 }

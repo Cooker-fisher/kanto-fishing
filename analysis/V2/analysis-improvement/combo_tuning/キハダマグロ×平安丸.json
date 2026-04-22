@@ -1,7 +1,7 @@
 {
   "fish": "キハダマグロ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-20",
+  "last_reviewed": "2026-04-22",
   "status": "reviewed",
   "metrics": {
     "wmape_h0": 62.3,
@@ -133,5 +133,23 @@
       "n_valid": 45,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 38,
+      "wmape_h0": 53.4,
+      "bl2_wmape": 55.2,
+      "improvement_pt": 5.9
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 53.4,
+    "improvement_pt": 5.9
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

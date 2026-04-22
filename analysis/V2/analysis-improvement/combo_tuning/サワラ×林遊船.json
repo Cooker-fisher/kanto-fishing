@@ -1,7 +1,7 @@
 {
   "fish": "サワラ",
   "ship": "林遊船",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 56.5,
@@ -124,5 +124,44 @@
       "n_valid": 438,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 79,
+      "wmape_h0": 58.5,
+      "bl2_wmape": 59.0,
+      "improvement_pt": -3.7
+    },
+    {
+      "trip_no": 2,
+      "n": 124,
+      "wmape_h0": 55.0,
+      "bl2_wmape": 65.4,
+      "improvement_pt": -0.2
+    },
+    {
+      "trip_no": 3,
+      "n": 121,
+      "wmape_h0": 65.9,
+      "bl2_wmape": 54.5,
+      "improvement_pt": -11.1
+    },
+    {
+      "trip_no": 4,
+      "n": 78,
+      "wmape_h0": 54.6,
+      "bl2_wmape": 78.3,
+      "improvement_pt": 0.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 4,
+    "wmape_h0": 54.6,
+    "improvement_pt": 0.2
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

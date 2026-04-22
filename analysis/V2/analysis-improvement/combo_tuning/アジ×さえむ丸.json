@@ -185,5 +185,42 @@
     "wmape_h0": 37.0,
     "improvement_pt": 7.61
   },
-  "improvement_pt": 7.61
+  "improvement_pt": 7.61,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 52,
+      "wmape_h0": 45.3,
+      "bl2_wmape": 69.0,
+      "improvement_pt": -0.7
+    },
+    {
+      "trip_no": 2,
+      "n": 53,
+      "wmape_h0": 30.8,
+      "bl2_wmape": 57.6,
+      "improvement_pt": 13.8
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 30.8,
+    "improvement_pt": 13.8
+  },
+  "point_depth_models": [
+    {
+      "key": "金谷沖_浅場(~40m)",
+      "n": 94,
+      "wmape_h0": 34.8,
+      "bl2_wmape": 52.5,
+      "improvement_pt": 9.8
+    }
+  ],
+  "best_point_depth": {
+    "key": "金谷沖_浅場(~40m)",
+    "wmape_h0": 34.8,
+    "improvement_pt": 9.8
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

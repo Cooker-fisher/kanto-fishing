@@ -175,5 +175,37 @@
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=36.7% imp=8.96pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 273,
+      "wmape_h0": 50.2,
+      "bl2_wmape": 56.9,
+      "improvement_pt": -4.6
+    },
+    {
+      "trip_no": 2,
+      "n": 130,
+      "wmape_h0": 33.3,
+      "bl2_wmape": 40.1,
+      "improvement_pt": 12.3
+    },
+    {
+      "trip_no": 3,
+      "n": 34,
+      "wmape_h0": 33.0,
+      "bl2_wmape": 38.5,
+      "improvement_pt": 12.6
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 33.0,
+    "improvement_pt": 12.6
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

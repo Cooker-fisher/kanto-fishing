@@ -67,5 +67,42 @@
       "action": "point_backtest_updated",
       "note": "best=横浜沖 wmape=20.8% imp=7.03pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 3,
+      "n": 33,
+      "wmape_h0": 22.3,
+      "bl2_wmape": 31.7,
+      "improvement_pt": 5.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 22.3,
+    "improvement_pt": 5.5
+  },
+  "point_depth_models": [
+    {
+      "key": "横浜沖_浅場(~40m)",
+      "n": 41,
+      "wmape_h0": 20.4,
+      "bl2_wmape": 26.3,
+      "improvement_pt": 7.4
+    },
+    {
+      "key": "川崎沖_浅場(~40m)",
+      "n": 39,
+      "wmape_h0": 22.6,
+      "bl2_wmape": 38.5,
+      "improvement_pt": 5.2
+    }
+  ],
+  "best_point_depth": {
+    "key": "横浜沖_浅場(~40m)",
+    "wmape_h0": 20.4,
+    "improvement_pt": 7.4
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

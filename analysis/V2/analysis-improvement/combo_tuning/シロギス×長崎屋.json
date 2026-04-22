@@ -196,5 +196,56 @@
       "action": "point_backtest_updated",
       "note": "best=航程15 wmape=20.0% imp=5.79pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 580,
+      "wmape_h0": 25.8,
+      "bl2_wmape": 27.8,
+      "improvement_pt": -0.1
+    },
+    {
+      "trip_no": 2,
+      "n": 109,
+      "wmape_h0": 19.3,
+      "bl2_wmape": 29.0,
+      "improvement_pt": 6.4
+    },
+    {
+      "trip_no": 3,
+      "n": 45,
+      "wmape_h0": 13.5,
+      "bl2_wmape": 20.4,
+      "improvement_pt": 12.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 3,
+    "wmape_h0": 13.5,
+    "improvement_pt": 12.2
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 460,
+      "wmape_h0": 23.4,
+      "bl2_wmape": 27.7,
+      "improvement_pt": 2.3
+    },
+    {
+      "cat": "澄み",
+      "n": 196,
+      "wmape_h0": 28.6,
+      "bl2_wmape": 34.0,
+      "improvement_pt": -2.9
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 23.4,
+    "improvement_pt": 2.3
+  }
 }

@@ -160,5 +160,68 @@
       "action": "point_backtest_updated",
       "note": "best=葉山沖 wmape=37.6% imp=0.48pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 263,
+      "wmape_h0": 34.6,
+      "bl2_wmape": 38.4,
+      "improvement_pt": 3.5
+    },
+    {
+      "trip_no": 2,
+      "n": 134,
+      "wmape_h0": 41.6,
+      "bl2_wmape": 43.6,
+      "improvement_pt": -3.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 34.6,
+    "improvement_pt": 3.5
+  },
+  "point_depth_models": [
+    {
+      "key": "葉山沖_浅場(~40m)",
+      "n": 125,
+      "wmape_h0": 32.7,
+      "bl2_wmape": 54.6,
+      "improvement_pt": 5.4
+    },
+    {
+      "key": "葉山沖_中深場(41-80m)",
+      "n": 194,
+      "wmape_h0": 32.9,
+      "bl2_wmape": 36.0,
+      "improvement_pt": 5.2
+    }
+  ],
+  "best_point_depth": {
+    "key": "葉山沖_浅場(~40m)",
+    "wmape_h0": 32.7,
+    "improvement_pt": 5.4
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 124,
+      "wmape_h0": 35.6,
+      "bl2_wmape": 38.5,
+      "improvement_pt": 2.5
+    },
+    {
+      "cat": "澄み",
+      "n": 257,
+      "wmape_h0": 36.8,
+      "bl2_wmape": 40.5,
+      "improvement_pt": 1.3
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 35.6,
+    "improvement_pt": 2.5
+  }
 }

@@ -1,7 +1,7 @@
 {
   "fish": "シーバス",
   "ship": "長崎屋",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 54.2,
@@ -144,5 +144,49 @@
       "n_valid": 156,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 31,
+      "wmape_h0": 42.8,
+      "bl2_wmape": 55.9,
+      "improvement_pt": 11.5
+    },
+    {
+      "trip_no": 2,
+      "n": 80,
+      "wmape_h0": 55.7,
+      "bl2_wmape": 62.9,
+      "improvement_pt": -1.4
+    },
+    {
+      "trip_no": 3,
+      "n": 45,
+      "wmape_h0": 48.1,
+      "bl2_wmape": 76.3,
+      "improvement_pt": 6.2
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 42.8,
+    "improvement_pt": 11.5
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 131,
+      "wmape_h0": 48.8,
+      "bl2_wmape": 59.2,
+      "improvement_pt": 5.5
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 48.8,
+    "improvement_pt": 5.5
+  }
 }

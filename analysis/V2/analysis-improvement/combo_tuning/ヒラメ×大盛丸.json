@@ -160,5 +160,35 @@
       "action": "point_backtest_updated",
       "note": "best=外川前 wmape=31.0% imp=6.46pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 248,
+      "wmape_h0": 36.6,
+      "bl2_wmape": 43.0,
+      "improvement_pt": 0.9
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 36.6,
+    "improvement_pt": 0.9
+  },
+  "point_depth_models": [
+    {
+      "key": "外川前_浅場(~40m)",
+      "n": 74,
+      "wmape_h0": 31.0,
+      "bl2_wmape": 51.8,
+      "improvement_pt": 6.5
+    }
+  ],
+  "best_point_depth": {
+    "key": "外川前_浅場(~40m)",
+    "wmape_h0": 31.0,
+    "improvement_pt": 6.5
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

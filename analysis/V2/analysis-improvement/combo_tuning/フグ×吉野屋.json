@@ -54,5 +54,63 @@
       "action": "point_backtest_updated",
       "note": "best=大貫沖 wmape=39.6% imp=0.31pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 116,
+      "wmape_h0": 32.9,
+      "bl2_wmape": 37.0,
+      "improvement_pt": 7.0
+    },
+    {
+      "trip_no": 2,
+      "n": 144,
+      "wmape_h0": 34.8,
+      "bl2_wmape": 42.8,
+      "improvement_pt": 5.1
+    },
+    {
+      "trip_no": 3,
+      "n": 111,
+      "wmape_h0": 32.0,
+      "bl2_wmape": 50.3,
+      "improvement_pt": 7.9
+    },
+    {
+      "trip_no": 4,
+      "n": 85,
+      "wmape_h0": 31.1,
+      "bl2_wmape": 45.6,
+      "improvement_pt": 8.8
+    },
+    {
+      "trip_no": 5,
+      "n": 52,
+      "wmape_h0": 30.8,
+      "bl2_wmape": 48.3,
+      "improvement_pt": 9.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 5,
+    "wmape_h0": 30.8,
+    "improvement_pt": 9.1
+  },
+  "point_depth_models": [
+    {
+      "key": "大貫沖_浅場(~40m)",
+      "n": 475,
+      "wmape_h0": 39.5,
+      "bl2_wmape": 42.4,
+      "improvement_pt": 0.4
+    }
+  ],
+  "best_point_depth": {
+    "key": "大貫沖_浅場(~40m)",
+    "wmape_h0": 39.5,
+    "improvement_pt": 0.4
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

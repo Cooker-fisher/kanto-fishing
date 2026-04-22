@@ -54,5 +54,70 @@
       "action": "point_backtest_updated",
       "note": "best=竹岡沖 wmape=51.0% imp=4.64pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 33,
+      "wmape_h0": 94.6,
+      "bl2_wmape": 100.1,
+      "improvement_pt": -39.0
+    },
+    {
+      "trip_no": 2,
+      "n": 41,
+      "wmape_h0": 30.7,
+      "bl2_wmape": 68.6,
+      "improvement_pt": 24.9
+    },
+    {
+      "trip_no": 3,
+      "n": 76,
+      "wmape_h0": 38.4,
+      "bl2_wmape": 57.2,
+      "improvement_pt": 17.2
+    },
+    {
+      "trip_no": 4,
+      "n": 97,
+      "wmape_h0": 55.5,
+      "bl2_wmape": 75.5,
+      "improvement_pt": 0.1
+    },
+    {
+      "trip_no": 5,
+      "n": 54,
+      "wmape_h0": 50.0,
+      "bl2_wmape": 58.3,
+      "improvement_pt": 5.6
+    },
+    {
+      "trip_no": 6,
+      "n": 34,
+      "wmape_h0": 25.8,
+      "bl2_wmape": 46.9,
+      "improvement_pt": 29.8
+    }
+  ],
+  "best_trip": {
+    "trip_no": 6,
+    "wmape_h0": 25.8,
+    "improvement_pt": 29.8
+  },
+  "point_depth_models": [
+    {
+      "key": "竹岡沖_浅場(~40m)",
+      "n": 285,
+      "wmape_h0": 50.4,
+      "bl2_wmape": 64.2,
+      "improvement_pt": 5.2
+    }
+  ],
+  "best_point_depth": {
+    "key": "竹岡沖_浅場(~40m)",
+    "wmape_h0": 50.4,
+    "improvement_pt": 5.2
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

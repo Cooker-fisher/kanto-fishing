@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "梅花丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 43.3,
@@ -149,5 +149,56 @@
       "n_valid": 754,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 418,
+      "wmape_h0": 44.7,
+      "bl2_wmape": 50.7,
+      "improvement_pt": -1.4
+    },
+    {
+      "trip_no": 2,
+      "n": 189,
+      "wmape_h0": 39.7,
+      "bl2_wmape": 50.2,
+      "improvement_pt": 3.6
+    },
+    {
+      "trip_no": 3,
+      "n": 91,
+      "wmape_h0": 34.4,
+      "bl2_wmape": 55.1,
+      "improvement_pt": 8.9
+    },
+    {
+      "trip_no": 4,
+      "n": 55,
+      "wmape_h0": 25.2,
+      "bl2_wmape": 53.9,
+      "improvement_pt": 18.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 4,
+    "wmape_h0": 25.2,
+    "improvement_pt": 18.1
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 35,
+      "wmape_h0": 36.6,
+      "bl2_wmape": 69.8,
+      "improvement_pt": 6.7
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 36.6,
+    "improvement_pt": 6.7
+  }
 }

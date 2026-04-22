@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "共栄丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 41.0,
@@ -144,5 +144,19 @@
       "n_valid": 202,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 178,
+      "wmape_h0": 40.8,
+      "bl2_wmape": 47.5,
+      "improvement_pt": -0.6
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

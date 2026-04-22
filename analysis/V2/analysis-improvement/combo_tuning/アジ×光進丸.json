@@ -162,5 +162,30 @@
       "action": "point_backtest_updated",
       "note": "best=金谷沖 wmape=30.2% imp=0.63pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 542,
+      "wmape_h0": 28.3,
+      "bl2_wmape": 30.6,
+      "improvement_pt": 2.5
+    },
+    {
+      "trip_no": 2,
+      "n": 133,
+      "wmape_h0": 27.3,
+      "bl2_wmape": 31.9,
+      "improvement_pt": 3.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 27.3,
+    "improvement_pt": 3.5
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

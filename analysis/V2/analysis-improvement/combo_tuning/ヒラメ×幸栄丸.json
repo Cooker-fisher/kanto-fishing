@@ -170,5 +170,49 @@
     "wmape_h0": 33.4,
     "improvement_pt": 0.16
   },
-  "improvement_pt": 0.16
+  "improvement_pt": 0.16,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 146,
+      "wmape_h0": 17.3,
+      "bl2_wmape": 31.0,
+      "improvement_pt": 16.2
+    },
+    {
+      "trip_no": 2,
+      "n": 96,
+      "wmape_h0": 39.9,
+      "bl2_wmape": 52.5,
+      "improvement_pt": -6.4
+    },
+    {
+      "trip_no": 3,
+      "n": 48,
+      "wmape_h0": 38.0,
+      "bl2_wmape": 53.1,
+      "improvement_pt": -4.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 17.3,
+    "improvement_pt": 16.2
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 101,
+      "wmape_h0": 30.9,
+      "bl2_wmape": 51.1,
+      "improvement_pt": 2.6
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 30.9,
+    "improvement_pt": 2.6
+  }
 }

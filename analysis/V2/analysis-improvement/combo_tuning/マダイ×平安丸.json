@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 36.86,
@@ -191,5 +191,30 @@
     "wmape_h0": 37.3,
     "improvement_pt": -0.44
   },
-  "improvement_pt": -0.44
+  "improvement_pt": -0.44,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 34,
+      "wmape_h0": 33.2,
+      "bl2_wmape": 36.7,
+      "improvement_pt": 2.7
+    },
+    {
+      "trip_no": 2,
+      "n": 63,
+      "wmape_h0": 39.2,
+      "bl2_wmape": 45.6,
+      "improvement_pt": -3.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 33.2,
+    "improvement_pt": 2.7
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

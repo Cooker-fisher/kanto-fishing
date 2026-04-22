@@ -145,5 +145,49 @@
       "action": "point_backtest_updated",
       "note": "best=金谷沖 wmape=28.6% imp=1.69pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 509,
+      "wmape_h0": 30.3,
+      "bl2_wmape": 34.1,
+      "improvement_pt": 0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 30.3,
+    "improvement_pt": 0.0
+  },
+  "point_depth_models": [
+    {
+      "key": "金谷沖_中深場(41-80m)",
+      "n": 189,
+      "wmape_h0": 23.9,
+      "bl2_wmape": 30.6,
+      "improvement_pt": 6.4
+    },
+    {
+      "key": "金谷沖_浅場(~40m)",
+      "n": 129,
+      "wmape_h0": 28.6,
+      "bl2_wmape": 34.6,
+      "improvement_pt": 1.7
+    },
+    {
+      "key": "竹岡沖_浅場(~40m)",
+      "n": 48,
+      "wmape_h0": 45.4,
+      "bl2_wmape": 54.8,
+      "improvement_pt": -15.1
+    }
+  ],
+  "best_point_depth": {
+    "key": "金谷沖_中深場(41-80m)",
+    "wmape_h0": 23.9,
+    "improvement_pt": 6.4
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

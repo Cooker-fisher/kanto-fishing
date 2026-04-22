@@ -209,5 +209,68 @@
       "action": "point_backtest_updated",
       "note": "best=岩和田沖 wmape=35.7% imp=3.9pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 348,
+      "wmape_h0": 39.6,
+      "bl2_wmape": 41.0,
+      "improvement_pt": -0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 39.6,
+    "improvement_pt": -0.0
+  },
+  "point_depth_models": [
+    {
+      "key": "岩和田沖_浅場(~40m)",
+      "n": 85,
+      "wmape_h0": 31.8,
+      "bl2_wmape": 39.6,
+      "improvement_pt": 7.8
+    },
+    {
+      "key": "部原沖_浅場(~40m)",
+      "n": 61,
+      "wmape_h0": 32.4,
+      "bl2_wmape": 43.2,
+      "improvement_pt": 7.2
+    },
+    {
+      "key": "岩船沖_浅場(~40m)",
+      "n": 64,
+      "wmape_h0": 35.5,
+      "bl2_wmape": 39.6,
+      "improvement_pt": 4.1
+    },
+    {
+      "key": "岩和田沖航程5_浅場(~40m)",
+      "n": 54,
+      "wmape_h0": 39.0,
+      "bl2_wmape": 57.5,
+      "improvement_pt": 0.6
+    }
+  ],
+  "best_point_depth": {
+    "key": "岩和田沖_浅場(~40m)",
+    "wmape_h0": 31.8,
+    "improvement_pt": 7.8
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 92,
+      "wmape_h0": 32.3,
+      "bl2_wmape": 41.4,
+      "improvement_pt": 7.3
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 32.3,
+    "improvement_pt": 7.3
+  }
 }

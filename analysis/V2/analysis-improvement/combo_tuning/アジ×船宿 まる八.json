@@ -214,5 +214,75 @@
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=19.7% imp=2.64pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 584,
+      "wmape_h0": 21.9,
+      "bl2_wmape": 24.3,
+      "improvement_pt": 0.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 21.9,
+    "improvement_pt": 0.5
+  },
+  "point_depth_models": [
+    {
+      "key": "木更津沖_浅場(~40m)",
+      "n": 357,
+      "wmape_h0": 19.7,
+      "bl2_wmape": 23.9,
+      "improvement_pt": 2.7
+    },
+    {
+      "key": "川崎沖_浅場(~40m)",
+      "n": 120,
+      "wmape_h0": 22.2,
+      "bl2_wmape": 26.4,
+      "improvement_pt": 0.2
+    },
+    {
+      "key": "横浜沖_浅場(~40m)",
+      "n": 55,
+      "wmape_h0": 23.2,
+      "bl2_wmape": 26.4,
+      "improvement_pt": -0.8
+    },
+    {
+      "key": "本牧沖_浅場(~40m)",
+      "n": 35,
+      "wmape_h0": 24.7,
+      "bl2_wmape": 28.5,
+      "improvement_pt": -2.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "木更津沖_浅場(~40m)",
+    "wmape_h0": 19.7,
+    "improvement_pt": 2.7
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 182,
+      "wmape_h0": 17.9,
+      "bl2_wmape": 23.7,
+      "improvement_pt": 4.5
+    },
+    {
+      "cat": "濁り",
+      "n": 407,
+      "wmape_h0": 24.3,
+      "bl2_wmape": 26.9,
+      "improvement_pt": -1.9
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 17.9,
+    "improvement_pt": 4.5
+  }
 }

@@ -168,5 +168,56 @@
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=37.9% imp=1.4pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 326,
+      "wmape_h0": 35.2,
+      "bl2_wmape": 45.3,
+      "improvement_pt": 4.1
+    },
+    {
+      "trip_no": 2,
+      "n": 59,
+      "wmape_h0": 36.4,
+      "bl2_wmape": 61.7,
+      "improvement_pt": 2.9
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 35.2,
+    "improvement_pt": 4.1
+  },
+  "point_depth_models": [
+    {
+      "key": "剣崎沖_浅場(~40m)",
+      "n": 176,
+      "wmape_h0": 35.6,
+      "bl2_wmape": 52.5,
+      "improvement_pt": 3.7
+    },
+    {
+      "key": "城ヶ島沖_中深場(41-80m)",
+      "n": 44,
+      "wmape_h0": 37.4,
+      "bl2_wmape": 49.2,
+      "improvement_pt": 1.9
+    },
+    {
+      "key": "剣崎沖_中深場(41-80m)",
+      "n": 146,
+      "wmape_h0": 42.5,
+      "bl2_wmape": 53.2,
+      "improvement_pt": -3.2
+    }
+  ],
+  "best_point_depth": {
+    "key": "剣崎沖_浅場(~40m)",
+    "wmape_h0": 35.6,
+    "improvement_pt": 3.7
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

@@ -1,7 +1,7 @@
 {
   "fish": "アマダイ",
   "ship": "明進丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 27.1,
@@ -139,5 +139,23 @@
       "n_valid": 42,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 42,
+      "wmape_h0": 25.2,
+      "bl2_wmape": 38.4,
+      "improvement_pt": 0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 25.2,
+    "improvement_pt": 0.0
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

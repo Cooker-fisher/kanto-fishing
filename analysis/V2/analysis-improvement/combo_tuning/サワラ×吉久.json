@@ -175,5 +175,39 @@
       "action": "point_backtest_updated",
       "note": "best=湾内 wmape=39.4% imp=11.64pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 40,
+      "wmape_h0": 60.0,
+      "bl2_wmape": 63.8,
+      "improvement_pt": -9.0
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [
+    {
+      "key": "湾内_浅場(~40m)",
+      "n": 70,
+      "wmape_h0": 39.4,
+      "bl2_wmape": 62.3,
+      "improvement_pt": 11.6
+    }
+  ],
+  "best_point_depth": {
+    "key": "湾内_浅場(~40m)",
+    "wmape_h0": 39.4,
+    "improvement_pt": 11.6
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 72,
+      "wmape_h0": 52.0,
+      "bl2_wmape": 62.1,
+      "improvement_pt": -1.0
+    }
+  ],
+  "best_water_color": null
 }

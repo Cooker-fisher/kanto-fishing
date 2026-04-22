@@ -180,5 +180,30 @@
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=33.0% imp=0.63pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 300,
+      "wmape_h0": 33.1,
+      "bl2_wmape": 40.4,
+      "improvement_pt": 0.5
+    },
+    {
+      "trip_no": 2,
+      "n": 110,
+      "wmape_h0": 27.9,
+      "bl2_wmape": 42.9,
+      "improvement_pt": 5.7
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 27.9,
+    "improvement_pt": 5.7
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

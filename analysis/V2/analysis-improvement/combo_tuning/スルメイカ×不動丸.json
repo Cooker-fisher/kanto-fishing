@@ -165,5 +165,42 @@
       "action": "point_backtest_updated",
       "note": "best=勝浦沖 wmape=39.5% imp=0.03pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 251,
+      "wmape_h0": 39.6,
+      "bl2_wmape": 47.1,
+      "improvement_pt": -0.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 39.6,
+    "improvement_pt": -0.0
+  },
+  "point_depth_models": [
+    {
+      "key": "勝浦沖_超深場(150m+)",
+      "n": 96,
+      "wmape_h0": 37.1,
+      "bl2_wmape": 49.4,
+      "improvement_pt": 2.5
+    },
+    {
+      "key": "勝浦沖_深場(81-150m)",
+      "n": 116,
+      "wmape_h0": 40.0,
+      "bl2_wmape": 42.0,
+      "improvement_pt": -0.4
+    }
+  ],
+  "best_point_depth": {
+    "key": "勝浦沖_超深場(150m+)",
+    "wmape_h0": 37.1,
+    "improvement_pt": 2.5
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

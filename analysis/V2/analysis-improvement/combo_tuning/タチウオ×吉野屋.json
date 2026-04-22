@@ -182,5 +182,77 @@
     "wmape_h0": 28.9,
     "improvement_pt": 13.05
   },
-  "improvement_pt": 13.05
+  "improvement_pt": 13.05,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 95,
+      "wmape_h0": 27.3,
+      "bl2_wmape": 43.1,
+      "improvement_pt": 14.6
+    },
+    {
+      "trip_no": 2,
+      "n": 150,
+      "wmape_h0": 38.8,
+      "bl2_wmape": 57.2,
+      "improvement_pt": 3.1
+    },
+    {
+      "trip_no": 3,
+      "n": 161,
+      "wmape_h0": 31.2,
+      "bl2_wmape": 45.5,
+      "improvement_pt": 10.7
+    },
+    {
+      "trip_no": 4,
+      "n": 100,
+      "wmape_h0": 41.5,
+      "bl2_wmape": 60.6,
+      "improvement_pt": 0.4
+    },
+    {
+      "trip_no": 5,
+      "n": 69,
+      "wmape_h0": 38.4,
+      "bl2_wmape": 54.2,
+      "improvement_pt": 3.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 27.3,
+    "improvement_pt": 14.6
+  },
+  "point_depth_models": [
+    {
+      "key": "猿島沖_中深場(41-80m)",
+      "n": 67,
+      "wmape_h0": 27.6,
+      "bl2_wmape": 37.7,
+      "improvement_pt": 14.3
+    },
+    {
+      "key": "観音崎沖_中深場(41-80m)",
+      "n": 85,
+      "wmape_h0": 33.7,
+      "bl2_wmape": 56.4,
+      "improvement_pt": 8.2
+    },
+    {
+      "key": "走水沖_中深場(41-80m)",
+      "n": 235,
+      "wmape_h0": 35.6,
+      "bl2_wmape": 45.8,
+      "improvement_pt": 6.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "猿島沖_中深場(41-80m)",
+    "wmape_h0": 27.6,
+    "improvement_pt": 14.3
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

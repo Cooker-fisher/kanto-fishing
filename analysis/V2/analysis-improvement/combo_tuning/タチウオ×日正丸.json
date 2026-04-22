@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "日正丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 49.2,
@@ -154,5 +154,19 @@
       "n_valid": 58,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 48,
+      "wmape_h0": 46.7,
+      "bl2_wmape": 59.6,
+      "improvement_pt": -0.1
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

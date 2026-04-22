@@ -178,5 +178,42 @@
       "action": "point_backtest_updated",
       "note": "best=大原沖 wmape=49.0% imp=14.58pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 335,
+      "wmape_h0": 62.4,
+      "bl2_wmape": 85.3,
+      "improvement_pt": 1.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 62.4,
+    "improvement_pt": 1.1
+  },
+  "point_depth_models": [
+    {
+      "key": "大原沖_浅場(~40m)",
+      "n": 77,
+      "wmape_h0": 49.0,
+      "bl2_wmape": 74.6,
+      "improvement_pt": 14.5
+    },
+    {
+      "key": "太東沖_浅場(~40m)",
+      "n": 257,
+      "wmape_h0": 60.7,
+      "bl2_wmape": 89.3,
+      "improvement_pt": 2.8
+    }
+  ],
+  "best_point_depth": {
+    "key": "大原沖_浅場(~40m)",
+    "wmape_h0": 49.0,
+    "improvement_pt": 14.5
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

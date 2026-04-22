@@ -1,7 +1,7 @@
 {
   "fish": "アオリイカ",
   "ship": "佐衛美丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 45.41,
@@ -165,5 +165,31 @@
     "wmape_h0": 42.1,
     "improvement_pt": 3.31
   },
-  "improvement_pt": 3.31
+  "improvement_pt": 3.31,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 35,
+      "wmape_h0": 37.6,
+      "bl2_wmape": 47.9,
+      "improvement_pt": 4.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 37.6,
+    "improvement_pt": 4.5
+  },
+  "point_depth_models": [
+    {
+      "key": "洲崎沖_浅場(~40m)",
+      "n": 40,
+      "wmape_h0": 42.8,
+      "bl2_wmape": 56.5,
+      "improvement_pt": -0.7
+    }
+  ],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

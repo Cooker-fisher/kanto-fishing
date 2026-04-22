@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "林遊船",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 36.1,
@@ -149,5 +149,37 @@
       "n_valid": 424,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 88,
+      "wmape_h0": 28.5,
+      "bl2_wmape": 43.1,
+      "improvement_pt": 7.6
+    },
+    {
+      "trip_no": 2,
+      "n": 207,
+      "wmape_h0": 33.5,
+      "bl2_wmape": 47.8,
+      "improvement_pt": 2.6
+    },
+    {
+      "trip_no": 3,
+      "n": 105,
+      "wmape_h0": 33.4,
+      "bl2_wmape": 44.4,
+      "improvement_pt": 2.7
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 28.5,
+    "improvement_pt": 7.6
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

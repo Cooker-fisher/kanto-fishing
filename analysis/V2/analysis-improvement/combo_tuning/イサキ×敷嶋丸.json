@@ -185,5 +185,31 @@
     "wmape_h0": 31.8,
     "improvement_pt": 0.33
   },
-  "improvement_pt": 0.33
+  "improvement_pt": 0.33,
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 46,
+      "wmape_h0": 34.2,
+      "bl2_wmape": 40.1,
+      "improvement_pt": -2.1
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [
+    {
+      "key": "大原沖_浅場(~40m)",
+      "n": 38,
+      "wmape_h0": 31.8,
+      "bl2_wmape": 39.9,
+      "improvement_pt": 0.3
+    }
+  ],
+  "best_point_depth": {
+    "key": "大原沖_浅場(~40m)",
+    "wmape_h0": 31.8,
+    "improvement_pt": 0.3
+  },
+  "water_color_models": [],
+  "best_water_color": null
 }

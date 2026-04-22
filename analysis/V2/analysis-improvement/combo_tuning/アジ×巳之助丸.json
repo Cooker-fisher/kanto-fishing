@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "巳之助丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_no_improvement",
   "metrics": {
     "wmape_h0": 30.16,
@@ -180,5 +180,43 @@
     "wmape_h0": 32.8,
     "improvement_pt": -2.64
   },
-  "improvement_pt": -2.64
+  "improvement_pt": -2.64,
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 67,
+      "wmape_h0": 28.6,
+      "bl2_wmape": 34.3,
+      "improvement_pt": 1.6
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 28.6,
+    "improvement_pt": 1.6
+  },
+  "point_depth_models": [
+    {
+      "key": "久里浜沖_中深場(41-80m)",
+      "n": 32,
+      "wmape_h0": 27.2,
+      "bl2_wmape": 32.5,
+      "improvement_pt": 3.0
+    }
+  ],
+  "best_point_depth": {
+    "key": "久里浜沖_中深場(41-80m)",
+    "wmape_h0": 27.2,
+    "improvement_pt": 3.0
+  },
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 62,
+      "wmape_h0": 32.0,
+      "bl2_wmape": 36.5,
+      "improvement_pt": -1.8
+    }
+  ],
+  "best_water_color": null
 }

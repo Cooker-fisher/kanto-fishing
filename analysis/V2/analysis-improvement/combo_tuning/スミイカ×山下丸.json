@@ -1,7 +1,7 @@
 {
   "fish": "スミイカ",
   "ship": "山下丸",
-  "last_reviewed": null,
+  "last_reviewed": "2026-04-22",
   "status": "pending",
   "metrics": {
     "wmape_h0": 40.8,
@@ -138,5 +138,38 @@
       "n_valid": 90,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 42,
+      "wmape_h0": 39.5,
+      "bl2_wmape": 47.2,
+      "improvement_pt": 0.0
+    },
+    {
+      "trip_no": 3,
+      "n": 47,
+      "wmape_h0": 40.0,
+      "bl2_wmape": 56.7,
+      "improvement_pt": -0.5
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 39.5,
+    "improvement_pt": 0.0
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 63,
+      "wmape_h0": 44.8,
+      "bl2_wmape": 51.0,
+      "improvement_pt": -5.3
+    }
+  ],
+  "best_water_color": null
 }

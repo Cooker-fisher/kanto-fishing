@@ -1,7 +1,7 @@
 {
   "fish": "ワラサ",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-04-20",
+  "last_reviewed": "2026-04-22",
   "status": "done",
   "metrics": {
     "wmape_h0": 83.9,
@@ -154,5 +154,31 @@
       "n_valid": 108,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 2,
+      "n": 68,
+      "wmape_h0": 66.8,
+      "bl2_wmape": 71.1,
+      "improvement_pt": -2.5
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [
+    {
+      "cat": "濁り",
+      "n": 63,
+      "wmape_h0": 52.9,
+      "bl2_wmape": 64.7,
+      "improvement_pt": 11.4
+    }
+  ],
+  "best_water_color": {
+    "cat": "濁り",
+    "wmape_h0": 52.9,
+    "improvement_pt": 11.4
+  }
 }

@@ -206,5 +206,30 @@
       "action": "point_backtest_updated",
       "note": "best=南沖 wmape=43.4% imp=5.5pt"
     }
-  ]
+  ],
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 131,
+      "wmape_h0": 41.5,
+      "bl2_wmape": 45.2,
+      "improvement_pt": 7.4
+    },
+    {
+      "trip_no": 2,
+      "n": 62,
+      "wmape_h0": 33.8,
+      "bl2_wmape": 53.9,
+      "improvement_pt": 15.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 2,
+    "wmape_h0": 33.8,
+    "improvement_pt": 15.1
+  },
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }
