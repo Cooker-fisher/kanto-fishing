@@ -1,4 +1,4 @@
-# データパイプライン設計図 v2.3（2026/04/19）
+# データパイプライン設計図 v2.4（2026/04/22）
 
 このファイルはパイプラインの構造と変更インパクトを記録するリファレンスです。
 **何かを変更する前に必ずこのファイルを確認すること。**
@@ -63,7 +63,9 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | レイヤ | スクリプト | 出力ファイル | 実行タイミング |
 |--------|-----------|------------|--------------|
 | A1 釣果クロール | crawler.py | crawl/catches_raw.json | 毎日16:30 JST（GitHub Actions） |
-| A1b 直接クロール | direct-crawl/gyo_crawler.py | direct-crawl/catches_raw_direct.json | 毎日（A1後・crawl.yml） |
+| A1b 直接クロール（釣りビジョン外） | direct-crawl/gyo_crawler.py | direct-crawl/catches_raw_direct.json | 毎日（A1後・crawl.yml） |
+| A1b 直接クロール（庄治郎丸） | direct-crawl/shojiro_crawler.py | catches_raw.json の point_raw 補完 | **手動**（⚠ crawl.yml 未組込） |
+| A1b 直接クロール（幸栄丸） | direct-crawl/koueimaru_crawler.py | catches_raw.json の point_raw 補完 | **手動**（⚠ crawl.yml 未組込・③気象推定はローカル専用） |
 | A2 気象データ | ocean/rebuild_weather_cache.py | ocean/weather_cache.sqlite | 手動（約30分）|
 | A3 台風データ | ocean/build_typhoon.py | ocean/typhoon.sqlite | 手動（年次更新）|
 | A4 潮汐・月齢 | ocean/build_tide_moon.py | ocean/tide_moon.sqlite | 手動（5秒）|
@@ -72,6 +74,26 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | A7 海況マップJSON | ocean/build_ocean_map.py | ocean_map_data.json | 手動（随時）|
 | A8 分析可視化 | ocean/build_analysis_map.py | PNG（ローカル専用） | 手動（分析時）|
 | A9 潮汐詳細 | ocean/tide_fetch.py | tide/YYYY-MM.csv（4エリア毎時） | 手動 |
+
+### A1b 直接クロール詳細
+
+**gyo_crawler.py**（既存・crawl.yml 組込済み）
+- 対象: 忠彦丸・一之瀬丸・米元
+- 出力: direct-crawl/catches_raw_direct.json → crawler.py が CSV に統合
+
+**shojiro_crawler.py**（2026/04/22 追加・手動実行のみ）
+- ソース: shojiromaru.net → chowari.jp API（jsonget.php POST）
+- ship_name フィールドでポイント取得、(date, tsuri_mono) で catches_raw.json と突合
+- 出力: catches_raw.json の庄治郎丸レコード point_raw を補完（1,634件）
+- 実行: `python direct-crawl/shojiro_crawler.py [--dry-run]`
+
+**koueimaru_crawler.py**（2026/04/22 追加・手動実行のみ）
+- ソース: koueimaru-f.jp → chowari.jp API（SiteNo=272）
+- 3段階補完: ①コメントキーワード → ②魚種デフォルト → ③気象推定（weather_cache.sqlite 使用）
+- 出力: catches_raw.json の幸栄丸レコード point_raw を補完（2,052件、カバー率 5%→81%）
+- 実行: `python direct-crawl/koueimaru_crawler.py [--dry-run]`
+- ⚠️ ③気象推定は weather_cache.sqlite が必要なためローカル専用。GitHub Actions には組み込み不可。
+- ⚠️ crawl.yml には gyo_crawler.py も shojiro_crawler.py も koueimaru_crawler.py も現在未組込。自動化する場合は weather_cache.sqlite の扱い（キャッシュ戦略）を先に検討すること。
 
 ### A2 weather_cache.sqlite 詳細
 - **ソース**: Open-Meteo Archive API + Marine API
@@ -183,7 +205,7 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 ### ポイント解決（3段階フォールバック）
 
 ```
-① point_place1 → point_coords.json（306ポイント）→ lat/lon
+① point_place1 → point_coords.json（328ポイント）→ lat/lon
 ② 空/航程系    → ship_fish_point.json（73船宿）→ ポイント名 → lat/lon
 ③ ② も未登録  → area_coords.json（58エリア）→ lat/lon
 解決率: 94.9%（除外船宿を除く）
@@ -375,6 +397,7 @@ crawler.py 実行時
 | design/Vn/*.html/css/js | E | crawler.py 実行のみ | ★ 低 |
 | fish/ area/ のURL構造変更 | E + SEO | crawler.py + 全インデックス再取得 | ★★★ 高（SEOリセット） |
 | combo_deep_dive.py 特徴量追加 | C→D | run_full_deepdive.py 全魚種再実行 | ★★ 中 |
+| direct-crawl/*.py 追加実行 | A1b→B→C | CSV再生成（--export-csv）+ C増分実行 | ★★ 中 |
 
 ---
 
@@ -406,6 +429,13 @@ crawler.py 実行時
 - `_split_point_places_depth()` バグ修正: `水深Xm前後` の `前後` 残存・数値のみ項目の地名混入を修正
 - CSV全再生成（67,937行）・ポイント抽出精度向上
 - テーブル数: 32 → 36（combo_point_stats / combo_point_events / combo_point_backtest / combo_point_wx_params 追加）
+
+### 2026/04/22
+- shojiro_crawler.py 追加: 庄治郎丸 chowari.jp API 直接クロール（point_raw 補完 1,634件）
+- koueimaru_crawler.py 追加: 幸栄丸 3段階ポイント補完（①コメントキーワード→②魚種デフォルト→③気象推定）カバー率 5%→81%
+- point_coords.json: 306→328エントリ（鹿島北沖・鹿島真沖・鹿島南沖・鹿島魚礁 追加）
+- combo_deep_dive.py: 水深帯仮想ポイント追加（point_place1 空 + depth_min あり → 「浅場(~40m)」等を割当。幸丸 depth_min 93%カバーで有効）
+- crawl.yml 確認: direct-crawl/ スクリプト（gyo_crawler.py 含む）は一切組み込まれていない。shojiro/koueimaru は手動実行扱い。koueimaru の③気象推定は weather_cache.sqlite 依存のためローカル専用。
 
 ### 2026/04/19
 - PIPELINE.md v2.3 に全面更新（researcher棚卸し結果反映）
