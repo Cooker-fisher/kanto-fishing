@@ -15,6 +15,7 @@ from datetime import datetime
 RAW_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                         "crawl", "catches_raw.json")
 BASE_URL = "https://www.fishing-v.jp/choka/choka_detail.php?s={sid}&pageID={page}"
+CUTOFF = "2023/04/04"  # 他船宿と同じV2取得下限
 
 V2_KEYS = ("ship", "area", "date", "trip_no", "is_cancellation", "reason_text",
            "fish_raw", "count_raw", "size_raw", "weight_raw", "tokki_raw",
@@ -48,7 +49,7 @@ def main():
     ap.add_argument("--name",      required=True)
     ap.add_argument("--area",      required=True)
     ap.add_argument("--max-pages", type=int, default=200)
-    ap.add_argument("--start-page",type=int, default=2, help="取得開始ページ（デフォルト2）")
+    ap.add_argument("--start-page",type=int, default=1, help="取得開始ページ（デフォルト1）")
     ap.add_argument("--sleep",     type=float, default=1.0)
     args = ap.parse_args()
 
@@ -101,15 +102,16 @@ def main():
         oldest = min(dates) if dates else "?"
         print(f"  page {page}: {len(catches)}件取得 / {added}件新規 / 最古={oldest}")
 
+        # カットオフ到達で終了（新規あり・なし問わず）
+        if oldest != "?" and oldest < CUTOFF:
+            print(f"  最古={oldest} < {CUTOFF}、カットオフ到達 → 終了")
+            break
+
         if added == 0:
             consecutive_zero += 1
-            # 最古日付が既存V2範囲より前になっていれば完了
-            if oldest != "?" and oldest < "2026/01/06":
-                print(f"  最古={oldest}、既存範囲外まで到達 → 終了")
-                break
             if consecutive_zero >= MAX_CONSECUTIVE_ZERO:
                 print(f"  {MAX_CONSECUTIVE_ZERO}ページ連続重複 → 通過中（既存範囲）")
-                consecutive_zero = 0  # リセットして継続
+                consecutive_zero = 0
         else:
             consecutive_zero = 0
 
