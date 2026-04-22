@@ -1,7 +1,7 @@
 {
   "fish": "マダコ",
   "ship": "長崎屋",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 40.1,
@@ -169,6 +169,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=航程1 wmape=39.96% combo=40.1% diff=0.14pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=航程1 wmape=40.0% imp=0.14pt"
     }
   ]
 }

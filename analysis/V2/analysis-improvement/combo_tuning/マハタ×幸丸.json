@@ -1,16 +1,15 @@
 {
   "fish": "マハタ",
   "ship": "幸丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 40.7,
-    "bl0_wmape": 48.4,
-    "bl2_wmape": 43.8,
-    "oos_r": 0.269,
+    "wmape_h0": 31.94,
+    "bl2_wmape": 43.85,
+    "oos_r": 0.879,
     "n_records": 85,
-    "alpha_scale": 0.403,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -60,9 +59,21 @@
     "沖合の海面水位が低い月に釣果が上がる傾向",
     "黒潮接岸時に釣果が上がる傾向",
     "台風が遠い時に釣果が上がる傾向",
-    "平日の方が釣果が上がる傾向"
+    "平日の方が釣果が上がる傾向",
+    "水深帯を仮想ポイントとして使用（depth_min→浅場/中深場/深場/超深場）: 浅場(~40m)が有効、BL2比+11.0pt改善"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=31.0% imp=0.99pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "depth_band_point_adoption",
+      "note": "水深帯ポイント採用: 浅場(~40m) (N=55, wMAPE=31.0% vs BL2=42.0%, BL2比+11.0pt改善)"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst_avg",
@@ -124,5 +135,21 @@
       "n_valid": 85,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "浅場(~40m)",
+      "n": 55,
+      "wmape_h0": 31.0,
+      "bl2_wmape": 42.0,
+      "oos_r": 0.936,
+      "improvement_pt": 0.99
+    }
+  ],
+  "best_point": {
+    "name": "浅場(~40m)",
+    "wmape_h0": 31.0,
+    "improvement_pt": 0.99
+  },
+  "improvement_pt": 0.99
 }

@@ -1,16 +1,15 @@
 {
   "fish": "ヤリイカ",
   "ship": "幸丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 62.7,
-    "bl0_wmape": 67.9,
-    "bl2_wmape": 67.3,
-    "oos_r": 0.288,
+    "wmape_h0": 54.62,
+    "bl2_wmape": 67.33,
+    "oos_r": 0.446,
     "n_records": 75,
-    "alpha_scale": 0.398,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -90,9 +89,21 @@
     "最低気温が高い日ほど釣果が上がる傾向",
     "濁り・赤潮傾向の日に釣果が上がる傾向",
     "水温が高い日ほど釣果が上がる傾向",
-    "春の中潮に釣果が上がる傾向"
+    "春の中潮に釣果が上がる傾向",
+    "水深帯を仮想ポイントとして使用（depth_min→浅場/中深場/深場/超深場）: 深場(81-150m)が有効、BL2比+11.2pt改善"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=深場(81-150m) wmape=51.3% imp=3.32pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "depth_band_point_adoption",
+      "note": "水深帯ポイント採用: 深場(81-150m) (N=57, wMAPE=51.3% vs BL2=62.5%, BL2比+11.2pt改善)"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_200m",
@@ -154,5 +165,21 @@
       "n_valid": 75,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "深場(81-150m)",
+      "n": 57,
+      "wmape_h0": 51.3,
+      "bl2_wmape": 62.5,
+      "oos_r": 0.316,
+      "improvement_pt": 3.32
+    }
+  ],
+  "best_point": {
+    "name": "深場(81-150m)",
+    "wmape_h0": 51.3,
+    "improvement_pt": 3.32
+  },
+  "improvement_pt": 3.32
 }

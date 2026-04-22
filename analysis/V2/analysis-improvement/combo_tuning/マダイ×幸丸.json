@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "幸丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 42.9,
-    "bl0_wmape": 56.9,
-    "bl2_wmape": 47.4,
+    "wmape_h0": 42.87,
+    "bl2_wmape": 47.36,
     "oos_r": 0.627,
     "n_records": 974,
-    "alpha_scale": 0.499,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -105,9 +104,21 @@
     "最低気温が低い日ほど釣果が上がる傾向",
     "気温が低い日ほど釣果が上がる傾向",
     "最高気温が低い日ほど釣果が上がる傾向",
-    "台風が遠い時に釣果が上がる傾向"
+    "台風が遠い時に釣果が上がる傾向",
+    "水深帯を仮想ポイントとして使用（depth_min→浅場/中深場/深場/超深場）: 浅場(~40m)が有効、BL2比+4.6pt改善"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=42.4% imp=0.48pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "depth_band_point_adoption",
+      "note": "水深帯ポイント採用: 浅場(~40m) (N=939, wMAPE=42.4% vs BL2=47.0%, BL2比+4.6pt改善)"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -169,5 +180,21 @@
       "n_valid": 974,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "浅場(~40m)",
+      "n": 939,
+      "wmape_h0": 42.4,
+      "bl2_wmape": 47.0,
+      "oos_r": 0.623,
+      "improvement_pt": 0.48
+    }
+  ],
+  "best_point": {
+    "name": "浅場(~40m)",
+    "wmape_h0": 42.4,
+    "improvement_pt": 0.48
+  },
+  "improvement_pt": 0.48
 }

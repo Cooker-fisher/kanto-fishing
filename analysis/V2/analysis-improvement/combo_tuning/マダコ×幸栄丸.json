@@ -1,16 +1,15 @@
 {
   "fish": "マダコ",
   "ship": "幸栄丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.7,
-    "bl0_wmape": 50.2,
-    "bl2_wmape": 49.9,
-    "oos_r": 0.529,
+    "wmape_h0": 31.27,
+    "bl2_wmape": 49.86,
+    "oos_r": 0.756,
     "n_records": 268,
-    "alpha_scale": 0.604,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "うねり周期が短い不安定な波の日に釣果が上がる傾向",
     "気温が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島真沖 wmape=31.2% imp=0.12pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_lag30",
@@ -154,5 +159,21 @@
       "n_valid": 268,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "鹿島真沖",
+      "n": 266,
+      "wmape_h0": 31.2,
+      "bl2_wmape": 49.8,
+      "oos_r": 0.756,
+      "improvement_pt": 0.12
+    }
+  ],
+  "best_point": {
+    "name": "鹿島真沖",
+    "wmape_h0": 31.2,
+    "improvement_pt": 0.12
+  },
+  "improvement_pt": 0.12
 }

@@ -1,16 +1,15 @@
 {
   "fish": "ヒラメ",
   "ship": "幸栄丸",
-  "last_reviewed": null,
-  "status": "pending",
+  "last_reviewed": "2026-04-22",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.1,
-    "bl0_wmape": 40.5,
-    "bl2_wmape": 40.2,
-    "oos_r": 0.214,
+    "wmape_h0": 33.51,
+    "bl2_wmape": 40.16,
+    "oos_r": 0.446,
     "n_records": 308,
-    "alpha_scale": 0.433,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "夏の中潮以外に釣果が上がる傾向",
     "最高気温が低い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島北沖 wmape=33.4% imp=0.16pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "nutrient_score",
@@ -149,5 +154,21 @@
       "n_valid": 308,
       "reason": "topk_cutoff"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "鹿島北沖",
+      "n": 301,
+      "wmape_h0": 33.4,
+      "bl2_wmape": 40.3,
+      "oos_r": 0.419,
+      "improvement_pt": 0.16
+    }
+  ],
+  "best_point": {
+    "name": "鹿島北沖",
+    "wmape_h0": 33.4,
+    "improvement_pt": 0.16
+  },
+  "improvement_pt": 0.16
 }

@@ -1098,6 +1098,18 @@ def load_records(fish, ship_filter=None):
                         row = dict(row)
                         row["depth_min"] = depth_val
                     point_place1 = ""
+                # point_place1 が空で depth_min がある場合 → 水深帯を仮想ポイントとして設定
+                if not point_place1:
+                    d_min = _float(row.get("depth_min"))
+                    if d_min:
+                        if d_min <= 40:
+                            point_place1 = "浅場(~40m)"
+                        elif d_min <= 80:
+                            point_place1 = "中深場(41-80m)"
+                        elif d_min <= 150:
+                            point_place1 = "深場(81-150m)"
+                        else:
+                            point_place1 = "超深場(150m+)"
                 lat, lon = _resolve_point(
                     point_place1, ship, tsuri, sfp, ship_area, point_coords, area_coords
                 )

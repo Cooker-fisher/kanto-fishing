@@ -1,7 +1,7 @@
 {
   "fish": "フグ",
   "ship": "敷嶋丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 63.54,
@@ -172,6 +172,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=大原沖 wmape=48.96% combo=63.58% diff=14.62pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=49.0% imp=14.58pt"
     }
   ]
 }

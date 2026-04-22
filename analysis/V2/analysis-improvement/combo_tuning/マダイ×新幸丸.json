@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "新幸丸",
-  "last_reviewed": "2026-04-21",
+  "last_reviewed": "2026-04-22",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 41.79,
@@ -208,6 +208,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=太東沖 wmape=37.58% combo=42.32% diff=4.74pt"
+    },
+    {
+      "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=太東沖 wmape=37.6% imp=4.21pt"
     }
   ]
 }
