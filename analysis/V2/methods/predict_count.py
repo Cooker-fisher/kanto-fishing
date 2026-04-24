@@ -408,6 +408,37 @@ def _get_multi_point_factors(fish: str, ship: str) -> list:
         return []
 
 
+def _get_multi_point_context(fish: str, ship: str) -> dict:
+    """
+    combo_multi_point_context から good/bad 両方向の因子を取得。
+    {"bad": [...], "good": [...]} を返す。
+    テーブルがなければ / 該当行なければ空リストを含む dict を返す。
+    """
+    result = {"bad": [], "good": []}
+    if not os.path.exists(DB_PATH):
+        return result
+    try:
+        con = sqlite3.connect(DB_PATH)
+        rows = con.execute(
+            """SELECT factor, r_bad, r_good, threshold_bad, threshold_good,
+                      dir_bad, dir_good, n_multi_bad, n_multi_good, n_single
+               FROM combo_multi_point_context
+               WHERE fish=? AND ship=?
+               ORDER BY ABS(r_bad) DESC""",
+            (fish, ship)
+        ).fetchall()
+        con.close()
+        for r in rows:
+            base = {"factor": r[0], "n_bad": r[7], "n_good": r[8], "n_single": r[9]}
+            if r[1] is not None and r[3] is not None and r[5] is not None:
+                result["bad"].append({**base, "r": r[1], "threshold": r[3], "direction": r[5]})
+            if r[2] is not None and r[4] is not None and r[6] is not None:
+                result["good"].append({**base, "r": r[2], "threshold": r[4], "direction": r[6]})
+    except Exception:
+        pass
+    return result
+
+
 def _calc_multi_point_risk(wx_vals: dict, factors: list) -> tuple:
     """
     予報値 wx_vals と combo_multi_point_factors を照合し、
@@ -457,6 +488,56 @@ def _calc_multi_point_risk(wx_vals: dict, factors: list) -> tuple:
         correction = 0.75 - (risk - 0.6) / 0.4 * 0.20  # 0.75→0.55
 
     return max(0.55, correction), risk
+
+
+def _calc_multi_point_context_correction(wx_vals: dict, context: dict) -> tuple:
+    """
+    combo_multi_point_context の good/bad 両方向因子から補正係数を算出。
+
+    bad方向: 複数移動 = 不漁探索 → 下方補正 (0.55〜1.0)
+    good方向: 複数移動 = 積極追い → 上方補正 (1.0〜1.25)
+    最終補正 = bad補正 × good補正、上限1.4 / 下限0.55
+
+    戻り値: (最終補正係数, bad_risk, good_risk)
+    """
+    def _score(factors, high_key: str, low_key: str):
+        if not factors or not wx_vals:
+            return 0.0
+        hits, weights = [], []
+        for f in factors:
+            val = wx_vals.get(f["factor"])
+            if val is None:
+                continue
+            thr = f["threshold"]
+            is_hit = (f["direction"] == high_key and val >= thr) or \
+                     (f["direction"] == low_key   and val <= thr)
+            hits.append(1.0 if is_hit else 0.0)
+            weights.append(abs(f["r"]))
+        if not hits:
+            return 0.0
+        return sum(h * w for h, w in zip(hits, weights)) / sum(weights)
+
+    bad_risk  = _score(context.get("bad",  []), "high_is_bad",  "low_is_bad")
+    good_risk = _score(context.get("good", []), "high_is_good", "low_is_good")
+
+    # bad補正: risk<0.3→1.0, 0.3〜0.6→1.0〜0.75, 0.6〜1.0→0.75〜0.55
+    if bad_risk < 0.3:
+        bad_corr = 1.0
+    elif bad_risk < 0.6:
+        bad_corr = 1.0 - (bad_risk - 0.3) / 0.3 * 0.25
+    else:
+        bad_corr = 0.75 - (bad_risk - 0.6) / 0.4 * 0.20
+
+    # good補正: risk<0.3→1.0, 0.3〜0.6→1.0〜1.15, 0.6〜1.0→1.15〜1.25
+    if good_risk < 0.3:
+        good_corr = 1.0
+    elif good_risk < 0.6:
+        good_corr = 1.0 + (good_risk - 0.3) / 0.3 * 0.15
+    else:
+        good_corr = 1.15 + (good_risk - 0.6) / 0.4 * 0.10
+
+    final_corr = max(0.55, min(1.40, bad_corr * good_corr))
+    return final_corr, round(bad_risk, 3), round(good_risk, 3)
 
 
 def _get_kaiyu_promoted(conn, fish: str, ship: str) -> bool:
@@ -1097,22 +1178,37 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             slot_ratio = slot_row[0]
             cnt_predicted = round(cnt_predicted * slot_ratio, 1)
 
-    # ── 複数ポイント移動リスク補正 ────────────────────────────────────────────
-    # combo_multi_point_factors に登録がある場合、当日気象からリスクスコアを算出し
-    # cnt_avg を下方補正する。「複数ポイント日 = 魚がいなくて移動した日」= 不漁シグナル。
-    # use_fallback=True のコンボはスキップ（補正自体がノイズ化するコンボのため）。
-    multi_point_risk  = 0.0
-    multi_point_corr  = 1.0
+    # ── 複数ポイント移動補正（bad下方 + good上方）────────────────────────────
+    # combo_multi_point_context に登録がある場合:
+    #   bad方向: 不漁探索移動パターン → 下方補正 (最小0.55)
+    #   good方向: 積極追い移動パターン → 上方補正 (最大1.25)
+    # use_fallback=True のコンボはスキップ。
+    multi_point_risk      = 0.0
+    multi_point_good_risk = 0.0
+    multi_point_corr      = 1.0
     if lat and lon and not use_fb:
-        mp_factors = _get_multi_point_factors(fish, ship)
-        if mp_factors:
+        mp_context = _get_multi_point_context(fish, ship)
+        if mp_context["bad"] or mp_context["good"]:
             wave_clamp_thr_mp = _get_wave_clamp_thr(conn, fish, ship)
             all_wx_mp, _, _ = _build_all_wx(lat, lon, target_date, wave_clamp_thr_mp)
-            mp_correction, mp_risk = _calc_multi_point_risk(all_wx_mp, mp_factors)
-            if mp_correction < 1.0:
+            mp_correction, mp_bad_risk, mp_good_risk = _calc_multi_point_context_correction(
+                all_wx_mp, mp_context)
+            if mp_correction != 1.0:
                 cnt_predicted = round(cnt_predicted * mp_correction, 1)
-                multi_point_risk = round(mp_risk, 3)
-                multi_point_corr = round(mp_correction, 3)
+                multi_point_risk      = mp_bad_risk
+                multi_point_good_risk = mp_good_risk
+                multi_point_corr      = round(mp_correction, 3)
+        else:
+            # context テーブルなし → 旧テーブル（bad のみ）にフォールバック
+            mp_factors = _get_multi_point_factors(fish, ship)
+            if mp_factors:
+                wave_clamp_thr_mp = _get_wave_clamp_thr(conn, fish, ship)
+                all_wx_mp, _, _ = _build_all_wx(lat, lon, target_date, wave_clamp_thr_mp)
+                mp_correction, mp_risk = _calc_multi_point_risk(all_wx_mp, mp_factors)
+                if mp_correction < 1.0:
+                    cnt_predicted = round(cnt_predicted * mp_correction, 1)
+                    multi_point_risk = round(mp_risk, 3)
+                    multi_point_corr = round(mp_correction, 3)
 
     # ── min/max 予測（直接モデル予測 → ratio フォールバック） ────────────────
     # 優先: cnt_min / cnt_max モデルが combo_wx_params にある場合は直接予測
@@ -1189,9 +1285,10 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "transition_risk": transition_risk,
         # time_slot 補正（1.0 = 補正なし）
         "slot_ratio":      round(slot_ratio, 3),
-        # 複数ポイント移動リスク（0.0=なし / 1.0=全因子がmulti方向。補正係数1.0=補正なし）
-        "multi_point_risk":        multi_point_risk,       # 0.0〜1.0 リスクスコア
-        "multi_point_correction":  multi_point_corr,       # 0.55〜1.0 補正係数
+        # 複数ポイント移動補正（bad下方 / good上方。補正係数1.0=補正なし）
+        "multi_point_risk":        multi_point_risk,       # 0.0〜1.0 bad方向リスクスコア
+        "multi_point_good_risk":   multi_point_good_risk,  # 0.0〜1.0 good方向チャンススコア
+        "multi_point_correction":  multi_point_corr,       # 0.55〜1.40 統合補正係数
         # メタ
         "n_total":         n_total,
         "n_dekad":         n_dekad,
