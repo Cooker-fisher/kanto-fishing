@@ -387,6 +387,78 @@ def _get_use_fallback(conn, fish: str, ship: str) -> bool:
     return bool(row and row[0])
 
 
+def _get_multi_point_factors(fish: str, ship: str) -> list:
+    """combo_multi_point_factors から有意因子を取得。なければ空リスト。"""
+    if not os.path.exists(DB_PATH):
+        return []
+    try:
+        con = sqlite3.connect(DB_PATH)
+        rows = con.execute(
+            """SELECT factor, r, threshold, direction, n_multi, n_single
+               FROM combo_multi_point_factors
+               WHERE fish=? AND ship=?
+               ORDER BY ABS(r) DESC""",
+            (fish, ship)
+        ).fetchall()
+        con.close()
+        return [{"factor": r[0], "r": r[1], "threshold": r[2],
+                 "direction": r[3], "n_multi": r[4], "n_single": r[5]}
+                for r in rows]
+    except Exception:
+        return []
+
+
+def _calc_multi_point_risk(wx_vals: dict, factors: list) -> tuple:
+    """
+    予報値 wx_vals と combo_multi_point_factors を照合し、
+    複数ポイント移動リスクスコア（0.0〜1.0）と補正係数を返す。
+
+    ロジック:
+      各因子について、threshold を越えているか判定:
+        high_is_multi: wx_val >= threshold → multi寄り
+        low_is_multi:  wx_val <= threshold → multi寄り
+      ヒット数と |r| の加重平均でスコアを算出。
+      スコア 0.0=リスクなし / 1.0=全因子がmulti方向。
+
+    返す補正係数:
+      risk < 0.3  → 1.0（補正なし）
+      0.3〜0.6   → 線形補間 1.0〜0.75
+      0.6〜1.0   → 線形補間 0.75〜0.55
+
+    戻り値: (補正係数 float, リスクスコア float)
+    """
+    if not factors or not wx_vals:
+        return 1.0, 0.0
+
+    hits = []
+    weights = []
+    for f in factors:
+        val = wx_vals.get(f["factor"])
+        if val is None:
+            continue
+        thr = f["threshold"]
+        is_multi = (f["direction"] == "high_is_multi" and val >= thr) or \
+                   (f["direction"] == "low_is_multi"  and val <= thr)
+        hits.append(1.0 if is_multi else 0.0)
+        weights.append(abs(f["r"]))
+
+    if not hits:
+        return 1.0, 0.0
+
+    # 加重平均リスクスコア
+    risk = sum(h * w for h, w in zip(hits, weights)) / sum(weights)
+
+    # 補正係数
+    if risk < 0.3:
+        correction = 1.0
+    elif risk < 0.6:
+        correction = 1.0 - (risk - 0.3) / 0.3 * 0.25   # 1.0→0.75
+    else:
+        correction = 0.75 - (risk - 0.6) / 0.4 * 0.20  # 0.75→0.55
+
+    return max(0.55, correction), risk
+
+
 def _get_kaiyu_promoted(conn, fish: str, ship: str) -> bool:
     """combo_wx_params._meta の kaiyu_promoted フラグを返す。
     kaiyu_promoted=True の回遊魚コンボは★評価をスキップして通常の匹数レンジ予測を使う。
@@ -1025,6 +1097,23 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             slot_ratio = slot_row[0]
             cnt_predicted = round(cnt_predicted * slot_ratio, 1)
 
+    # ── 複数ポイント移動リスク補正 ────────────────────────────────────────────
+    # combo_multi_point_factors に登録がある場合、当日気象からリスクスコアを算出し
+    # cnt_avg を下方補正する。「複数ポイント日 = 魚がいなくて移動した日」= 不漁シグナル。
+    # use_fallback=True のコンボはスキップ（補正自体がノイズ化するコンボのため）。
+    multi_point_risk  = 0.0
+    multi_point_corr  = 1.0
+    if lat and lon and not use_fb:
+        mp_factors = _get_multi_point_factors(fish, ship)
+        if mp_factors:
+            wave_clamp_thr_mp = _get_wave_clamp_thr(conn, fish, ship)
+            all_wx_mp, _, _ = _build_all_wx(lat, lon, target_date, wave_clamp_thr_mp)
+            mp_correction, mp_risk = _calc_multi_point_risk(all_wx_mp, mp_factors)
+            if mp_correction < 1.0:
+                cnt_predicted = round(cnt_predicted * mp_correction, 1)
+                multi_point_risk = round(mp_risk, 3)
+                multi_point_corr = round(mp_correction, 3)
+
     # ── min/max 予測（直接モデル予測 → ratio フォールバック） ────────────────
     # 優先: cnt_min / cnt_max モデルが combo_wx_params にある場合は直接予測
     #       （ratio法より Coverage が良い可能性が高い）
@@ -1100,6 +1189,9 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "transition_risk": transition_risk,
         # time_slot 補正（1.0 = 補正なし）
         "slot_ratio":      round(slot_ratio, 3),
+        # 複数ポイント移動リスク（0.0=なし / 1.0=全因子がmulti方向。補正係数1.0=補正なし）
+        "multi_point_risk":        multi_point_risk,       # 0.0〜1.0 リスクスコア
+        "multi_point_correction":  multi_point_corr,       # 0.55〜1.0 補正係数
         # メタ
         "n_total":         n_total,
         "n_dekad":         n_dekad,
