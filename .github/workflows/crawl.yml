@@ -19,6 +19,13 @@ jobs:
         run: python3 crawl/discover_ships.py
       - name: run
         run: python3 crawler.py
+      - name: direct-crawl shojiro (庄治郎丸 point_raw 補完)
+        continue-on-error: true
+        run: python3 direct-crawl/shojiro_crawler.py
+      - name: re-export CSV (direct-crawl 反映)
+        if: success()
+        continue-on-error: true
+        run: python3 crawler.py --export-csv
       - name: push
         run: |
           git config user.name "github-actions[bot]"

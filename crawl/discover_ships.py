@@ -65,6 +65,14 @@ def discover_pref(pref_id, pref_name):
         time.sleep(SLEEP)
     return list(found.values())
 
+PRESERVE_KEYS = ("exclude", "boat_only", "note")
+
+def load_existing():
+    if not os.path.exists(OUTPUT):
+        return {}
+    with open(OUTPUT, encoding="utf-8") as f:
+        return {s["sid"]: s for s in json.load(f)}
+
 def main():
     dry = "--dry" in sys.argv
     all_ships = {}
@@ -72,12 +80,21 @@ def main():
         for s in discover_pref(pref_id, pref_name):
             all_ships[s["sid"]] = s
 
+    existing = load_existing()
+    for sid, s in all_ships.items():
+        prev = existing.get(sid, {})
+        for k in PRESERVE_KEYS:
+            if k in prev:
+                s[k] = prev[k]
+
     result = sorted(all_ships.values(), key=lambda x: (x["area"], x["name"]))
-    print(f"\n合計: {len(result)}隻発見", flush=True)
+    preserved = sum(1 for s in result if any(k in s for k in PRESERVE_KEYS))
+    print(f"\n合計: {len(result)}隻発見（exclude/boat_only保持: {preserved}件）", flush=True)
 
     if dry:
         for s in result:
-            print(f'  {s["area"]:20} {s["name"]:20} sid={s["sid"]}')
+            mark = " ".join(f"{k}={s[k]}" for k in PRESERVE_KEYS if k in s)
+            print(f'  {s["area"]:20} {s["name"]:20} sid={s["sid"]} {mark}')
         return
 
     with open(OUTPUT, "w", encoding="utf-8") as f:
