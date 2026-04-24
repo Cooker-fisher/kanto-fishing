@@ -2606,7 +2606,76 @@ def _dir_acc(preds, acts):
             dt += 1
     return dc / dt if dt else None
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None):
+def _load_mp_factors(fish, ship):
+    """combo_multi_point_factors テーブルから fish×ship の因子リストを取得。
+    バックテスト内で multi_point リスク補正に使用する。
+    DBアクセス失敗や登録なしの場合は [] を返す。
+
+    フィルタ条件（過学習・逆効きを防ぐ）:
+      1. |r| <= 0.60: r>0.6 は少数サンプルの過学習疑い（n_multi<15 等）
+      2. n_multi >= 15 かつ n_single >= 15: 両群が統計的に信頼できる規模
+      3. 因子が FAST_FACTORS or SLOW_FACTORS に含まれる: 複合スコア等を除外
+    """
+    _VALID_FACTORS = FAST_FACTORS | SLOW_FACTORS
+    try:
+        conn = _open_ana()
+        rows = conn.execute(
+            """SELECT factor, r, threshold, direction, n_multi, n_single
+               FROM combo_multi_point_factors
+               WHERE fish=? AND ship=?
+               AND ABS(r) BETWEEN 0.15 AND 0.60
+               AND n_multi >= 15 AND n_single >= 15""",
+            (fish, ship)
+        ).fetchall()
+        conn.close()
+        result = []
+        for r in rows:
+            factor = r[0]
+            if factor not in _VALID_FACTORS:
+                continue
+            result.append({"factor": factor, "r": r[1], "threshold": r[2], "direction": r[3]})
+        return result
+    except Exception:
+        return []
+
+
+def _calc_multi_point_risk_inline(record, mp_factors):
+    """バックテスト用 multi_point リスク計算。
+    record の気象値（実績）と mp_factors の threshold を照合してリスクスコアと補正係数を返す。
+    predict_count.py の _calc_multi_point_risk と同ロジック。
+
+    リスクスコア: 0=リスクなし → 1=最大リスク
+    補正係数:
+      risk < 0.3  → 1.0（補正なし）
+      risk 0.3-0.6 → 1.0 → 0.75（線形低下）
+      risk 0.6-1.0 → 0.75 → 0.55（線形低下）
+      最小値: 0.55（下げすぎ防止）
+    """
+    if not mp_factors:
+        return 1.0, 0.0
+    hits, weights = [], []
+    for f in mp_factors:
+        val = record.get(f["factor"])
+        if val is None:
+            continue
+        thr = f["threshold"]
+        is_multi = (f["direction"] == "high_is_multi" and val >= thr) or \
+                   (f["direction"] == "low_is_multi" and val <= thr)
+        hits.append(1.0 if is_multi else 0.0)
+        weights.append(abs(f["r"]))
+    if not hits:
+        return 1.0, 0.0
+    risk = sum(h * w for h, w in zip(hits, weights)) / sum(weights)
+    if risk < 0.3:
+        correction = 1.0
+    elif risk < 0.6:
+        correction = 1.0 - (risk - 0.3) / 0.3 * 0.25
+    else:
+        correction = 0.75 - (risk - 0.6) / 0.4 * 0.20
+    return max(0.55, correction), risk
+
+
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None, mp_factors=None):
     """leave-one-month-out クロスバリデーション
 
     各月をテスト期として、それ以外の全データ（前後含む）を学習に使う。
@@ -3021,6 +3090,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         pred = (_ap if _ap is not None else base) * _ratio
                     # 案C: BL-2 ブレンド適用
                     pred = pred + beta_bl2 * (_bl2_p - pred)
+                    # multi_point 補正: cnt_avg のみ。リスクが高い日の予測値を下げる（上方補正なし）
+                    if met == "cnt_avg" and mp_factors:
+                        _mp_corr, _ = _calc_multi_point_risk_inline(r, mp_factors)
+                        if _mp_corr < 1.0:
+                            pred = pred * _mp_corr
                     # cnt_avg予測を保存（次のmet=cnt_max/cnt_min のratio計算に使用）
                     if met == "cnt_avg":
                         avg_pred_store[H][r["date"]] = pred
@@ -3447,26 +3521,58 @@ def _pb_corr(binary_y, x_vals):
 def section_multi_point_wx(records, fish, ship,
                            conn_wx, conn_tide, conn_typhoon, conn_cmems,
                            ship_coords=None, wx_coords=None, ship_area=None):
-    """複数ポイント移動日（n_points_visited>=2）と気象因子の point-biserial 相関を計算。
+    """複数ポイント移動日を釣果で good_multi / bad_multi に分類し、
+    各気象因子との point-biserial 相関をコンボ別に学習する。
 
-    「魚がいなくて複数ポイントを移動した日」を不漁シグナルとして捉え、
-    どの気象条件がマルチポイント日を引き起こしやすいかをコンボ別に学習する。
+    グループ分け:
+      cnt_median = そのコンボの全レコードの cnt_avg 中央値
+      single     = n_points_visited < 2
+      good_multi = n_points_visited >= 2 AND cnt_avg >= cnt_median  （積極移動: 魚を追う）
+      bad_multi  = n_points_visited >= 2 AND cnt_avg < cnt_median   （探し回り: 魚がいない）
 
-    実装: H=0 の enrich() を呼んで全気象因子を付与してから point-biserial 相関を計算。
-    ship_coords / wx_coords / ship_area が None の場合はカレンダー因子のみで計算。
+    各因子について:
+      r_bad  = _pb_corr([1 if bad_multi else 0], factor_vals)
+      r_good = _pb_corr([1 if good_multi else 0], factor_vals)
 
-    戻り値: {factor: {r, threshold, direction, mean_multi, mean_single, n_multi, n_single}}
-    |r| >= 0.15 の因子のみ返す。
-    どちらか < 10 の場合は {} を返す。
+    ガード条件: n_multi_good >= 8 AND n_multi_bad >= 8 AND n_single >= 10
+
+    戻り値: (factors_result, context_result)
+      factors_result: {factor: {r, threshold, direction, mean_multi, mean_single, n_multi, n_single}}
+                      既存 combo_multi_point_factors 互換（bad 方向のみ・|r_bad|>=0.15）
+      context_result: {factor: {r_bad, r_good, threshold_bad, threshold_good, dir_bad, dir_good,
+                                 mean_single, mean_multi_good, mean_multi_bad,
+                                 n_single, n_multi_good, n_multi_bad}}
+                      |r_bad| or |r_good| >= 0.15 の因子のみ
     """
-    multi_flag = [1 if r.get("n_points_visited", 1) >= 2 else 0 for r in records]
-    n_multi  = sum(multi_flag)
-    n_single = len(multi_flag) - n_multi
+    # cnt_median 計算
+    cnt_vals = [r.get("cnt_avg") for r in records if r.get("cnt_avg") is not None]
+    if len(cnt_vals) < 20:
+        return {}, {}
+    cnt_vals_sorted = sorted(cnt_vals)
+    cnt_median = cnt_vals_sorted[len(cnt_vals_sorted) // 2]
 
-    if n_multi < 10 or n_single < 10:
-        return {}
+    # 3グループに分類（enrich 前に n_points_visited を取得）
+    _get_npv = lambda r: r.get("n_points_visited", 1)
+    single_dates     = {r["date"] + r.get("ship", "") for r in records if _get_npv(r) < 2}
+    good_multi_dates = {r["date"] + r.get("ship", "")
+                        for r in records
+                        if _get_npv(r) >= 2
+                        and r.get("cnt_avg") is not None
+                        and r["cnt_avg"] >= cnt_median}
+    bad_multi_dates  = {r["date"] + r.get("ship", "")
+                        for r in records
+                        if _get_npv(r) >= 2
+                        and r.get("cnt_avg") is not None
+                        and r["cnt_avg"] < cnt_median}
 
-    # enrich() で H=0 の気象因子を付与（ship_coords 等が渡されている場合のみ）
+    n_single = len(single_dates)
+    n_good   = len(good_multi_dates)
+    n_bad    = len(bad_multi_dates)
+
+    if n_good < 8 or n_bad < 8 or n_single < 10:
+        return {}, {}
+
+    # enrich() で H=0 の気象因子を付与
     if ship_coords is not None and wx_coords is not None and ship_area is not None:
         enriched = enrich(
             records, ship_coords, wx_coords, conn_wx, ship_area,
@@ -3474,52 +3580,98 @@ def section_multi_point_wx(records, fish, ship,
             conn_tide=conn_tide, conn_typhoon=conn_typhoon,
             conn_cmems=conn_cmems, fish=fish,
         )
-        # enrich() はフィルタ（lat/lon なし等）で件数が減る場合あり
-        # n_points_visited を enriched に引き継ぐため元 records と日付で突合
-        date_to_npv = {r["date"] + r["ship"]: r.get("n_points_visited", 1) for r in records}
+        # n_points_visited / cnt_avg を enriched に引き継ぐ
+        date_to_rec = {r["date"] + r.get("ship", ""): r for r in records}
         for er in enriched:
-            key = er["date"] + er["ship"]
-            er.setdefault("n_points_visited", date_to_npv.get(key, 1))
+            key = er["date"] + er.get("ship", "")
+            orig = date_to_rec.get(key, {})
+            er.setdefault("n_points_visited", orig.get("n_points_visited", 1))
+            if er.get("cnt_avg") is None:
+                er["cnt_avg"] = orig.get("cnt_avg")
         target_records = enriched
-        # multi_flag を enriched の並びに合わせて再構築
-        multi_flag = [1 if r.get("n_points_visited", 1) >= 2 else 0 for r in target_records]
-        n_multi  = sum(multi_flag)
-        n_single = len(multi_flag) - n_multi
-        if n_multi < 10 or n_single < 10:
-            return {}
     else:
-        # フォールバック: カレンダー因子のみ（CALENDAR_FACTORS + TIDE_FACTORS）
         target_records = records
 
-    result = {}
+    # target_records でフラグを構築
+    def _classify(r):
+        key = r["date"] + r.get("ship", "")
+        if key in bad_multi_dates:
+            return "bad"
+        if key in good_multi_dates:
+            return "good"
+        return "single"
+
+    classified = [_classify(r) for r in target_records]
+    bad_flag  = [1 if c == "bad"  else 0 for c in classified]
+    good_flag = [1 if c == "good" else 0 for c in classified]
+
+    n_bad_eff  = sum(bad_flag)
+    n_good_eff = sum(good_flag)
+    n_sing_eff = sum(1 for c in classified if c == "single")
+
+    if n_good_eff < 8 or n_bad_eff < 8 or n_sing_eff < 10:
+        return {}, {}
+
+    context_result = {}
+    factors_result = {}
     MIN_R = 0.15
 
-    for factor in ALL_FACTORS:
-        x_vals = [r.get(factor) for r in target_records]
-        r_val = _pb_corr(multi_flag, x_vals)
-        if r_val is None or abs(r_val) < MIN_R:
+    for factor in WX_FACTORS:
+        vals = [r.get(factor) for r in target_records]
+        r_bad  = _pb_corr(bad_flag,  vals)
+        r_good = _pb_corr(good_flag, vals)
+
+        if (r_bad is None or abs(r_bad) < MIN_R) and (r_good is None or abs(r_good) < MIN_R):
             continue
-        # multi日とsingle日の平均を計算
-        paired = [(b, x) for b, x in zip(multi_flag, x_vals) if x is not None]
-        m1_cnt = sum(1 for y, _ in paired if y == 1)
-        m0_cnt = sum(1 for y, _ in paired if y == 0)
-        if m1_cnt == 0 or m0_cnt == 0:
+
+        # グループ別平均
+        v_bad  = [v for b, v in zip(bad_flag,  vals) if b == 1 and v is not None]
+        v_good = [v for g, v in zip(good_flag, vals) if g == 1 and v is not None]
+        v_sing = [v for b, g, v in zip(bad_flag, good_flag, vals)
+                  if b == 0 and g == 0 and v is not None]
+
+        if not v_bad or not v_good or not v_sing:
             continue
-        m1 = sum(x for y, x in paired if y == 1) / m1_cnt
-        m0 = sum(x for y, x in paired if y == 0) / m0_cnt
-        threshold = (m1 + m0) / 2.0
-        direction = "high_is_multi" if m1 > m0 else "low_is_multi"
-        result[factor] = {
-            "r":           r_val,
-            "threshold":   threshold,
-            "direction":   direction,
-            "mean_multi":  m1,
-            "mean_single": m0,
-            "n_multi":     m1_cnt,
-            "n_single":    m0_cnt,
+        if len(v_bad) < 5 or len(v_good) < 5 or len(v_sing) < 5:
+            continue
+
+        mean_bad  = sum(v_bad)  / len(v_bad)
+        mean_good = sum(v_good) / len(v_good)
+        mean_sing = sum(v_sing) / len(v_sing)
+
+        thr_bad  = (mean_bad  + mean_sing) / 2.0
+        thr_good = (mean_good + mean_sing) / 2.0
+        dir_bad  = "high_is_bad"  if mean_bad  > mean_sing else "low_is_bad"
+        dir_good = "high_is_good" if mean_good > mean_sing else "low_is_good"
+
+        context_result[factor] = {
+            "r_bad":         r_bad,
+            "r_good":        r_good,
+            "threshold_bad": thr_bad,
+            "threshold_good":thr_good,
+            "dir_bad":       dir_bad,
+            "dir_good":      dir_good,
+            "mean_single":   mean_sing,
+            "mean_multi_good": mean_good,
+            "mean_multi_bad":  mean_bad,
+            "n_single":      n_sing_eff,
+            "n_multi_good":  n_good_eff,
+            "n_multi_bad":   n_bad_eff,
         }
 
-    return result
+        # 既存 combo_multi_point_factors 互換（bad 方向のみ保存）
+        if r_bad is not None and abs(r_bad) >= MIN_R:
+            factors_result[factor] = {
+                "r":          r_bad,
+                "threshold":  thr_bad,
+                "direction":  dir_bad,
+                "mean_multi": mean_bad,
+                "mean_single":mean_sing,
+                "n_multi":    n_bad_eff,
+                "n_single":   n_sing_eff,
+            }
+
+    return factors_result, context_result
 
 
 def save_multi_point_factors(fish, ship, result_dict):
@@ -3557,6 +3709,61 @@ def save_multi_point_factors(fish, ship, result_dict):
         ))
     conn.executemany(
         "INSERT OR REPLACE INTO combo_multi_point_factors VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        rows,
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_multi_point_context(fish, ship, context_result):
+    """combo_multi_point_context テーブルへ UPSERT。
+    good_multi / bad_multi それぞれの相関・閾値・平均を保存する。
+    """
+    if not context_result:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_multi_point_context (
+            fish              TEXT,
+            ship              TEXT,
+            factor            TEXT,
+            r_bad             REAL,
+            r_good            REAL,
+            threshold_bad     REAL,
+            threshold_good    REAL,
+            dir_bad           TEXT,
+            dir_good          TEXT,
+            mean_single       REAL,
+            mean_multi_good   REAL,
+            mean_multi_bad    REAL,
+            n_single          INTEGER,
+            n_multi_good      INTEGER,
+            n_multi_bad       INTEGER,
+            updated_at        TEXT,
+            PRIMARY KEY (fish, ship, factor)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("DELETE FROM combo_multi_point_context WHERE fish=? AND ship=?",
+                 (fish, ship))
+    rows = []
+    for factor, d in context_result.items():
+        rows.append((
+            fish, ship, factor,
+            d.get("r_bad"), d.get("r_good"),
+            d.get("threshold_bad"), d.get("threshold_good"),
+            d.get("dir_bad"), d.get("dir_good"),
+            d.get("mean_single"),
+            d.get("mean_multi_good"),
+            d.get("mean_multi_bad"),
+            d.get("n_single"),
+            d.get("n_multi_good"),
+            d.get("n_multi_bad"),
+            now,
+        ))
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_multi_point_context VALUES "
+        "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         rows,
     )
     conn.commit()
@@ -4313,19 +4520,28 @@ def deep_dive_by_point(fish, ship):
 
     # multi_point_wx 分析（全レコード対象・DB接続クローズ前に実行）
     try:
-        mp_result = section_multi_point_wx(
+        factors_result, context_result = section_multi_point_wx(
             all_records, fish, ship,
             conn_wx, conn_tide, conn_typhoon, conn_cmems,
             ship_coords=ship_coords, wx_coords=wx_coords, ship_area=ship_area,
         )
-        if mp_result:
-            save_multi_point_factors(fish, ship, mp_result)
-            top2 = sorted(mp_result.items(), key=lambda x: -abs(x[1]["r"]))[:2]
-            print(f"  [multi_pt] {fish}×{ship}: {len(mp_result)}因子 top={top2}", flush=True)
+        if factors_result:
+            save_multi_point_factors(fish, ship, factors_result)
+            top2 = sorted(factors_result.items(), key=lambda x: -abs(x[1]["r"]))[:2]
+            print(f"  [multi_pt] {fish}×{ship}: {len(factors_result)}因子 top={top2}", flush=True)
         else:
-            print(f"  [multi_pt] {fish}×{ship}: 有意因子なし（n_multi={sum(1 for r in all_records if r.get('n_points_visited',1)>=2)}, n_single={sum(1 for r in all_records if r.get('n_points_visited',1)<2)}）", flush=True)
+            print(f"  [multi_pt] {fish}×{ship}: 有意因子なし（n_multi_bad={sum(1 for r in all_records if r.get('n_points_visited',1)>=2)}, n_single={sum(1 for r in all_records if r.get('n_points_visited',1)<2)}）", flush=True)
+        if context_result:
+            save_multi_point_context(fish, ship, context_result)
+            top_bad  = sorted([(f, v["r_bad"])  for f, v in context_result.items() if v.get("r_bad")],
+                               key=lambda x: -abs(x[1]))[:2]
+            top_good = sorted([(f, v["r_good"]) for f, v in context_result.items() if v.get("r_good")],
+                               key=lambda x: -abs(x[1]))[:2]
+            print(f"  [multi_ctx] {fish}×{ship}: bad={top_bad} good={top_good}", flush=True)
     except Exception as _mp_e:
+        import traceback
         print(f"  [multi_pt] {fish}×{ship}: ERROR {_mp_e}", flush=True)
+        traceback.print_exc()
 
     for c in [conn_wx, conn_tide, conn_typhoon, conn_cmems]:
         if c is not None:
@@ -5008,7 +5224,12 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     save_point_events(fish, ship, en0)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems)
+    # multi_point 補正: 現在は無効化。
+    # combo_multi_point_factors の因子相関は「どの気象でポイント移動が多いか」であり
+    # 「どの気象で釣果が少ないか」とは一致しない（wave low_is_multi 等の逆相関問題）。
+    # バックテストへの組み込みには「ポイント移動=不漁」の因果検証が別途必要。
+    # _load_mp_factors / _calc_multi_point_risk_inline の実装は保持（将来利用可能）。
+    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems, mp_factors=None)
     out += bt_lines
 
     if conn_wx is not None:
