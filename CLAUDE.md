@@ -37,7 +37,7 @@ kanto-fishing/
 │
 ├── config.json                 # バージョン管理（active_version: "V2" / design_version: "V1"）
 │                               #   active_version  → data/Vn/ と analysis/Vn/ に連動
-│                               #   design_version  → design/Vn/ からルート・pages/ に自動同期
+│                               #   design_version  → design/Vn/ から docs/・docs/pages/ に自動同期
 │
 ├── # ── メインスクリプト ──
 ├── crawler.py                  # A1クロール＋B CSV生成＋E HTML生成（毎日自動実行）
@@ -69,11 +69,11 @@ kanto-fishing/
 │   └── ship_wx_coord_override.json # 気象座標上書き
 │
 ├── # ── B層: 釣果データ ──
-├── catches_raw.json            # 釣果生データ（86,024件・毎日更新）※バージョン管理なし
+├── catches_raw.json            # 釣果生データ（96,697件・毎日更新）※バージョン管理なし
 ├── catches.json                # 当日釣果スナップショット（index.html生成用）
 ├── history.json                # 週次・月次集計データ（蓄積）
 ├── data/
-│   └── V2/                    # 月別正規化CSV（YYYY-MM.csv・64,991行）
+│   └── V2/                    # 月別正規化CSV（YYYY-MM.csv・75,553行）
 │                               # config.json active_version に連動
 │                               # CSV列追加時は V3 に上げ全再生成
 │
@@ -93,21 +93,25 @@ kanto-fishing/
 │           ├── risk_weekend.txt # 来週末リスクサマリー
 │           └── deep_dive/      # 船宿別テキストサマリー
 │
-├── # ── E層: 自動生成HTML（GitHub Pages 配信） ──
-├── index.html                  # トップページ（毎日再生成）
-├── calendar.html               # 釣りものカレンダー（毎日再生成）
-├── sitemap.xml                 # サイトマップ（毎日再生成）
-├── robots.txt                  # クローラー制御
-├── fish/                       # 魚種別ページ（51魚種・毎日再生成）
-├── area/                       # エリア別ページ（毎日再生成）
-├── fish_area/                  # 魚種×エリア別ページ（毎日再生成）
-├── forecast/                   # 予測ページ（毎日再生成）
+├── # ── E層: 自動生成HTML（GitHub Pages 配信 = docs/ 配下） ──
+├── docs/                       # ⚠ GitHub Pages の公開ディレクトリ（Settings→Pages: /docs）
+│   ├── CNAME                   # funatsuri-yoso.com
+│   ├── index.html              # トップページ（毎日再生成）
+│   ├── calendar.html           # 釣りものカレンダー（毎日再生成）
+│   ├── sitemap.xml             # サイトマップ（毎日再生成）
+│   ├── robots.txt              # クローラー制御
+│   ├── fish/                   # 魚種別ページ（51魚種・毎日再生成）
+│   ├── area/                   # エリア別ページ（毎日再生成）
+│   ├── fish_area/              # 魚種×エリア別ページ（毎日再生成）
+│   ├── forecast/               # 予測ページ（毎日再生成）
+│   ├── style.css               # デプロイ中CSS（design/V2/ から自動同期）
+│   ├── main.js                 # デプロイ中JS（design/V2/ から自動同期）
+│   └── pages/                  # 静的ページ（design/Vn/ から自動同期）
+│       └── about.html / contact.html / privacy.html / terms.html
+├── kuroshio_map.html           # 黒潮マップ（ルート直下・分析ツール）
+├── water_color_map.html        # 水色マップ（ルート直下・分析ツール）
 │
 ├── # ── デザイン管理 ──
-├── style.css                   # デプロイ中CSS（design/V2/ から自動同期）
-├── main.js                     # デプロイ中JS（design/V2/ から自動同期）
-├── pages/                      # 静的ページ（design/Vn/ から自動同期）
-│   ├── about.html / contact.html / privacy.html / terms.html
 ├── design/                     # デザインバージョン管理
 │   ├── README.md               # バージョン管理・デプロイ手順
 │   ├── V1/                     # 旧デザイン（アーカイブ）
@@ -125,7 +129,6 @@ kanto-fishing/
 ├── dustbox/                    # 退避ファイル置き場（削除せず保管）
 ├── 大掃除/                     # フォルダ整理プロジェクト管理（ロール定義・Phase記録）
 │
-├── CNAME                       # funatsuri-yoso.com
 ├── .github/workflows/
 │   └── crawl.yml               # GitHub Actions定義（毎日16:30 JST + 月1日）
 └── .claude/

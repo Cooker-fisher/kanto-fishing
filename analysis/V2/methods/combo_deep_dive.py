@@ -143,9 +143,24 @@ SLOW_FACTORS = {
     # 黒潮回廊月次SLA絶対レベル（33-37°N,139-142°E）: 接岸指数との違い＝差分でなく絶対水準
     # マダイr=+0.75、カワハギr=+0.61、カンパチr=+0.54、アカムツr=-0.48（2026/04/18分析）
     "kuroshio_sla_monthly",
+    # 黒潮回廊月次SLA変化率（当月 - 前月）: 絶対水準ではなく変化速度を捉える
+    # 黒潮北上中（正値）= 澄み水進行・青物活性↑  南下中（負値）= 濁り水進行・青物活性↓
+    "kuroshio_sla_delta_1m",
     # 沖合回遊魚用月次SLA（34-36°N,141-143°E）: 黒潮本流の絶対水準
     # カツオ/キハダ: 沿岸ポイントSLAと独立した外洋シグナル（沿岸はr≈0.0→沖合で再評価）
     "sla_pelagic_monthly",
+    # SST 3日変化率（当日 - 3日前）: 7日差分(sst_delta)より短周期の温度変化を捉える
+    # 急冷（負値）= 冬アジ接岸・カレイ活性↑  急暖（正値）= 夏型移行・底魚活性↓
+    # sst_delta(7日)より反応が早い → 短期予測(H≤7)で補完的に機能
+    "sst_delta_3d",
+    # SSS 7日変化率（当日 - 7日前）: 塩分急変は黒潮フロント通過シグナル
+    # 正値=塩分上昇（黒潮水流入）= 澄み水・マダイ/カツオ活性↑
+    # 負値=塩分低下（淡水流入・湾水が優勢）= 濁り・底魚活性↓
+    "sss_delta_7d",
+    # 旬内残り日数（1〜10: 旬末に向かうにつれ増加）
+    # 旬頭 vs 旬末で釣果パターンが異なる魚種（産卵期移行、回遊盛期/終期）
+    # カレンダー確定値 → 全ホライズン有効（CALENDAR_FACTORS と同分類）
+    "day_of_decade",
     # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
@@ -170,6 +185,7 @@ FAST_FACTORS = {
     "temp_range",                          # 日較差（晴天シグナル、急変しやすい）
     "temp_delta",                          # 前日比気温変化（冬の南風警告: 急上昇→不漁）
     "pressure_range",                      # 日内変動幅（前線通過強度）
+    "pressure_delta_48h",  # 48時間気圧変化（2日前との差分）: 低気圧接近の予兆（swell先行）
     "precip_sum",                          # 当日合計降水量
     "precip_sum1",                         # 前日合計（翌日の濁り）
     "precip_sum2",                         # 前々日合計（2日遅れ濁りピーク）
@@ -271,6 +287,23 @@ def _spawn_season_n(date_str: str) -> int:
     except Exception:
         return 0
 
+
+def _day_of_decade(date_str: str) -> int:
+    """旬内日数（1〜11）を返す。
+    上旬=day 1-10、中旬=day 11-20、下旬=day 21-末日（月末まで）。
+    旬頭（1）と旬末（10/11）でポイント消耗・魚の学習行動が異なる前提。
+    """
+    try:
+        d = int(date_str[8:10])
+        if d <= 10:
+            return d            # 上旬 1-10
+        elif d <= 20:
+            return d - 10       # 中旬 1-10
+        else:
+            return d - 20       # 下旬 1-11
+    except Exception:
+        return 0
+
 FAST_MAX_H = 7   # 速い変数は H>7 では予報精度ゼロとみなして使わない
 
 # 特徴量上限（過学習防止）: 相関上位 MAX_FACTORS 個のみ採用
@@ -326,6 +359,7 @@ WX_FACTORS = [
     # 気圧（日次 avg/min + 変化 + 変動幅）
     "pressure_avg", "pressure_min",
     "pressure_delta",   # 当日min - 前日min（低気圧接近/通過シグナル）
+    "pressure_delta_48h",  # 当日min - 2日前min（swell先行シグナル）
     "pressure_range",   # 日内変動幅（前線通過強度 → 全魚種で活性化）
     # 風（日次 avg/max + 最頻風向）
     "wind_speed_avg", "wind_speed_max",
@@ -357,9 +391,10 @@ WX_FACTORS = [
     "water_color_prev_n",
     # 気温変化（前日比）
     "temp_delta",    # 当日avg - 前日avg（冬の急上昇 → 南風・表層暖水 → イカ不漁）
-    # SST変化率（7日間）
+    # SST変化率（7日間 / 3日間）
     # 【重要】回遊アジは水温変化で到来/離脱 → SST急落時に大アジ回遊開始シグナル
     "sst_delta",     # 当日SST - 7日前SST（降下=冬型アジ到来、上昇=夏型移行シグナル）
+    "sst_delta_3d",  # 当日SST - 3日前SST（sst_deltaより短周期・急変捕捉）
     # SST勾配（黒潮近接指標）
     # 【重要】外房沖SST - 東京湾内SST → 黒潮が岸に近いほど勾配大 → 青物・マダイ高活性シグナル
     "sst_gradient",  # 外房沖(35.65N/140.87E) - 東京湾内(35.3N/139.68E) SST差
@@ -393,7 +428,10 @@ WX_FACTORS = [
     "sla_lag30",        # 30日前SLA: 底魚の月次遅延反応（SLOW・全H有効）
     "sla_approach_idx", # 黒潮接岸指数（月次広域）: 正=接岸→シイラ↑ 負=大蛇行→ワラサ↑
     "kuroshio_sla_monthly", # 黒潮回廊SLA絶対水準（33-37°N,139-142°E）: マダイr=+0.75
+    "kuroshio_sla_delta_1m", # 黒潮回廊SLA当月-前月: 変化速度シグナル
     "sla_pelagic_monthly",  # 沖合月次SLA（34-36°N,141-143°E）: カツオ/キハダ外洋シグナル
+    # SSS変化率（7日間）: 塩分急変=黒潮フロント通過シグナル
+    "sss_delta_7d",  # 当日SSS - 7日前SSS: 正=黒潮水流入, 負=淡水流入
     # temp_100m × 季節交互作用
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
@@ -420,7 +458,8 @@ CATCH_FACTORS = ["prev_week_cnt"]
 TYPHOON_FACTORS = ["typhoon_dist", "typhoon_wind"]
 
 # カレンダー因子（土日・祝日 → 全ホライズンで有効）
-CALENDAR_FACTORS = ["is_holiday", "is_consec_holiday", "is_summer_vacation", "spawn_season_n"]
+CALENDAR_FACTORS = ["is_holiday", "is_consec_holiday", "is_summer_vacation", "spawn_season_n",
+                    "day_of_decade"]  # 旬内残り日数（1〜10: カレンダー確定値 → 全H有効）
 
 # 全因子（相関計算対象）
 ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS + CALENDAR_FACTORS
@@ -435,8 +474,9 @@ CMEMS_FACTORS = {
     "temp_100m_bin",
     "chl_monthly",
     "kuroshio_score", "nutrient_score", "deepwater_score",
-    # 注: sla_approach_idx / kuroshio_sla_monthly / sla_pelagic_monthly は
-    # 広域指数扱いのため CMEMS_FACTORS に含めない（cap管理外・自由競合）
+    "sss_delta_7d",  # SSS 7日変化率: 塩分急変=黒潮フロント通過シグナル
+    # 注: sla_approach_idx / kuroshio_sla_monthly / sla_pelagic_monthly /
+    #     kuroshio_sla_delta_1m は広域指数扱いのため CMEMS_FACTORS に含めない（cap管理外）
 }
 TIDE_GRP_FACTORS = {
     "tide_grp_oshio_spring", "tide_grp_oshio_summer", "tide_grp_oshio_autumn", "tide_grp_oshio_winter",
@@ -1180,6 +1220,7 @@ def load_records(fish, ship_filter=None):
                     "is_consec_holiday":  _is_consec_holiday(date_str),
                     "is_summer_vacation": _is_summer_vacation(date_str),
                     "spawn_season_n":     _spawn_season_n(date_str),
+                    "day_of_decade":      _day_of_decade(date_str),
                     **obs,   # OBS因子 + テキストフィールド + text_all
                 })
     records.sort(key=lambda r: r["date"])
@@ -1606,6 +1647,74 @@ def _get_sla_pelagic_monthly(conn_cmems, date_iso):
     return result
 
 
+def _get_kuroshio_sla_delta_1m(conn_cmems, date_iso):
+    """黒潮回廊月次SLA の前月差分（当月 - 前月）を返す。
+    絶対水準（kuroshio_sla_monthly）と独立した「変化速度」シグナル。
+    正=黒潮北上中・澄み水進行、負=黒潮南下・濁り水進行。
+    """
+    cur = _get_kuroshio_sla_monthly(conn_cmems, date_iso)
+    if cur is None:
+        return None
+    try:
+        y, m = int(date_iso[:4]), int(date_iso[5:7])
+        pm = m - 1 or 12
+        py = y if m > 1 else y - 1
+        prev_iso = f"{py:04d}-{pm:02d}-15"
+    except Exception:
+        return None
+    prev = _get_kuroshio_sla_monthly(conn_cmems, prev_iso)
+    if prev is None:
+        return None
+    return cur - prev
+
+
+_sss_nearest_cache: dict = {}
+
+
+def _get_sss_nearest(conn_cmems, lat, lon, date_iso):
+    """指定日・座標の近傍グリッドから SSS 非NULLの値を返す。
+    get_cmems_day は最近傍1件のみなので NULL が返ることがある（SSS はCHL/SLAと独立の欠損パターン）。
+    これは SSS 非NULL 行のみを対象に最近傍を取得する専用クエリ。
+    """
+    if conn_cmems is None:
+        return None
+    k = (round(lat, 4), round(lon, 4), date_iso)
+    if k in _sss_nearest_cache:
+        return _sss_nearest_cache[k]
+    row = conn_cmems.execute(
+        """SELECT sss FROM cmems_daily
+           WHERE date=? AND sss IS NOT NULL
+             AND ABS(lat - ?) < 0.25 AND ABS(lon - ?) < 0.25
+           ORDER BY (lat - ?) * (lat - ?) + (lon - ?) * (lon - ?)
+           LIMIT 1""",
+        (date_iso, lat, lon, lat, lat, lon, lon),
+    ).fetchone()
+    v = row[0] if row else None
+    _sss_nearest_cache[k] = v
+    return v
+
+
+def _get_sss_delta_7d(conn_cmems, lat, lon, date_iso):
+    """SSS の 7日前との差分を返す。
+    正=塩分上昇（黒潮水流入）、負=塩分低下（淡水・湾水流入）。
+    """
+    if conn_cmems is None:
+        return None
+    try:
+        from datetime import date, timedelta
+        d = date.fromisoformat(date_iso)
+        d7 = (d - timedelta(days=7)).isoformat()
+    except Exception:
+        return None
+    s_now = _get_sss_nearest(conn_cmems, lat, lon, date_iso)
+    if s_now is None:
+        return None
+    s_prev = _get_sss_nearest(conn_cmems, lat, lon, d7)
+    if s_prev is None:
+        return None
+    return s_now - s_prev
+
+
 def _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, grid_deg, cols):
     """指定グリッド解像度で最近傍の深度列を取得。なければ 0.5° フォールバック。"""
     rl = round(round(lat / grid_deg) * grid_deg, 4)
@@ -1801,6 +1910,11 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         p_prev  = wx.get("pressure_min1")
         wx["pressure_delta"] = (p_today - p_prev) if (p_today and p_prev) else None
 
+        # pressure_delta_48h: 当日最低気圧 - 2日前最低気圧（48h気圧変化）
+        # swell は気圧変化の2日後に到達することが多い → 低気圧接近の早期シグナル
+        p_prev2 = dagg2.get("pressure_min")
+        wx["pressure_delta_48h"] = (p_today - p_prev2) if (p_today and p_prev2) else None
+
         # 潮汐（当日）: tide_moon.sqlite から日付ベースで取得
         tk = tide_date
         if tk not in tide_cache:
@@ -1841,6 +1955,14 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         sst_now  = wx.get("sst_avg")
         sst_prev7 = dagg7.get("sst_avg")
         wx["sst_delta"] = (sst_now - sst_prev7) if (sst_now is not None and sst_prev7 is not None) else None
+
+        # sst_delta_3d: 当日SST - 3日前SST（短周期の水温変化・sst_deltaより早期シグナル）
+        prev_date3 = (d - timedelta(days=horizon+3)).strftime("%Y-%m-%d")
+        if (wlat, wlon, prev_date3) not in wx_cache:
+            wx_cache[(wlat, wlon, prev_date3)] = get_daily_wx(conn_wx, wlat, wlon, prev_date3)
+        dagg3 = wx_cache[(wlat, wlon, prev_date3)] or {}
+        sst_prev3 = dagg3.get("sst_avg")
+        wx["sst_delta_3d"] = (sst_now - sst_prev3) if (sst_now is not None and sst_prev3 is not None) else None
 
         # sst_gradient: 外房沖SST - 東京湾内SST（黒潮近接指標）
         # 正=外房が暖かい（黒潮近接）、負=東京湾が暖かい（黒潮遠い）
@@ -1934,8 +2056,12 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             wx["sla_approach_idx"] = _get_sla_approach_idx(conn_cmems, tide_date)
             # ── kuroshio_sla_monthly: 黒潮回廊SLA絶対水準（全魚種向け）───────────
             wx["kuroshio_sla_monthly"] = _get_kuroshio_sla_monthly(conn_cmems, tide_date)
+            # ── kuroshio_sla_delta_1m: 黒潮回廊SLA当月-前月（変化速度シグナル）─────
+            wx["kuroshio_sla_delta_1m"] = _get_kuroshio_sla_delta_1m(conn_cmems, tide_date)
             # ── sla_pelagic_monthly: 沖合回遊魚用月次SLA（全魚種で計算、選択はモデル任せ）
             wx["sla_pelagic_monthly"] = _get_sla_pelagic_monthly(conn_cmems, tide_date)
+            # ── sss_delta_7d: SSS 7日変化率（塩分急変＝黒潮フロント通過）──────────
+            wx["sss_delta_7d"] = _get_sss_delta_7d(conn_cmems, wlat, wlon, tide_date)
             # ── chl_monthly: 当月CHL平均（ベイト密度の月次シグナル）──────────────
             _chl_available = wx.get("chl_avg") is not None
             if _chl_available:
@@ -1946,7 +2072,9 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             wx["sla_delta"] = wx["chl_delta"] = wx["sla_monthly"] = wx["sla_lag30"] = None
             wx["sla_approach_idx"] = None
             wx["kuroshio_sla_monthly"] = None
+            wx["kuroshio_sla_delta_1m"] = None
             wx["sla_pelagic_monthly"] = None
+            wx["sss_delta_7d"] = None
             wx["chl_monthly"] = None
 
         # ── temp_100m × 季節交互作用（深層水温の季節依存性）────────────────────

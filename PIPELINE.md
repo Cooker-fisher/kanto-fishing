@@ -195,14 +195,14 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 
 | レイヤ | 状態 | 件数・規模 |
 |--------|------|---------|
-| A1 crawl/catches_raw.json | ✅ 最新 | **86,024件** |
+| A1 crawl/catches_raw.json | ✅ 最新 | **96,697件** |
 | A1b catches_raw_direct.json | ✅ 稼働中 | 忠彦丸・一之瀬丸・米元 |
 | A2 weather_cache.sqlite | ✅ 完成 | 153座標×1,456,560行（〜2026-04-04） |
 | A3 typhoon.sqlite | ✅ 完成 | 70台風 2,475ポイント（〜2025-12） |
 | A4 tide_moon.sqlite | ✅ 完成 | 37,985行（〜2126年）|
 | A5 weather/YYYY-MM.csv | ✅ 毎日更新 | 153地点×月別 |
 | A6 cmems_data.sqlite | ✅ 最新 | cmems_daily 9.6M行・cmems_depth 4.1M行（〜2026-04-18） |
-| B1 data/V2/*.csv | ✅ 最新 | **64,991行**（37ファイル + cancellations.csv） |
+| B1 data/V2/*.csv | ✅ 最新 | **75,553行**（37ファイル + cancellations.csv） |
 | C1 analysis.sqlite | ✅ 最新（2026-04-20再実行） | 実行55種・バックテスト完了45種・36テーブル |
 | D1-4 予測モデル | 🔲 未実装 | - |
 | E デザイン | ✅ V2稼働中 | design_version: "V2" |
@@ -356,17 +356,19 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 
 ## E: 表示・配信層
 
-| ページ | 生成スクリプト | 自動更新 |
-|--------|--------------|---------|
-| index.html | crawler.py: build_html | ✅ 毎日 |
-| calendar.html | crawler.py: build_calendar_page | ✅ 毎日 |
-| fish/*.html | crawler.py: build_fish_pages | ✅ 毎日 |
-| area/*.html | crawler.py: build_area_pages | ✅ 毎日 |
-| fish_area/*.html | crawler.py: build_fish_area_pages | ✅ 毎日 |
-| forecast/index.html | crawler.py: build_forecast | ✅ 毎日 |
-| sitemap.xml | crawler.py: build_sitemap | ✅ 毎日 |
-| pages/*.html | crawler.py: design sync | ✅ 毎日（design/Vn/ から自動コピー） |
-| style.css / main.js | crawler.py: design sync | ✅ 毎日（design/Vn/ から自動コピー） |
+> **公開ディレクトリは `docs/`**。GitHub Pages Settings で `/docs` をソースに設定。`docs/CNAME` = `funatsuri-yoso.com`。ルート直下に公開HTMLは置かれない（`kuroshio_map.html` / `water_color_map.html` はローカル分析ツール）。
+
+| ページ | 生成スクリプト | 出力先 | 自動更新 |
+|--------|--------------|------|---------|
+| index.html | crawler.py: build_html | docs/index.html | ✅ 毎日 |
+| calendar.html | crawler.py: build_calendar_page | docs/calendar.html | ✅ 毎日 |
+| fish/*.html | crawler.py: build_fish_pages | docs/fish/ | ✅ 毎日 |
+| area/*.html | crawler.py: build_area_pages | docs/area/ | ✅ 毎日 |
+| fish_area/*.html | crawler.py: build_fish_area_pages | docs/fish_area/ | ✅ 毎日 |
+| forecast/index.html | crawler.py: build_forecast | docs/forecast/ | ✅ 毎日 |
+| sitemap.xml | crawler.py: build_sitemap | docs/sitemap.xml | ✅ 毎日 |
+| pages/*.html | crawler.py: design sync | docs/pages/ | ✅ 毎日（design/Vn/ から自動コピー） |
+| style.css / main.js | crawler.py: design sync | docs/style.css / docs/main.js | ✅ 毎日（design/Vn/ から自動コピー） |
 
 ### デザインバージョン管理（E層）
 
@@ -375,9 +377,9 @@ config.json
   "design_version": "V2"  ← ここを変えるだけで全デザイン切替
         ↓
 crawler.py 実行時
-  design/V2/*.html → pages/（about/contact/privacy/terms）
-  design/V2/style.css → ルート
-  design/V2/main.js   → ルート
+  design/V2/*.html → docs/pages/（about/contact/privacy/terms）
+  design/V2/style.css → docs/style.css
+  design/V2/main.js   → docs/main.js
 ```
 
 ---
@@ -453,3 +455,14 @@ crawler.py 実行時
   - 除外10種（データ不足）: ハタ・キメジ・コハダ・ブリ・キンメ・アユ・モンゴウイカ・イシダイ・クロムツ・ホウボウ
   - combo_deep_params: **50種**（コンボ不足でバックテスト未実施だがパラメータのみ存在する種を含む）
 - ※ CLAUDE.md の一部記述（catches_raw件数/CSV行数/design_version/魚種数）は旧値のまま。本ファイル（PIPELINE.md）の値が正。
+
+### 2026/04/24
+- フォルダ点検（folder_audit_2026-04-23.md）:
+  - CLAUDE.md のファイル構成ツリー / PIPELINE.md E層表 を `docs/` 配下構造に修正
+  - 件数更新: catches_raw 86,024→96,697件、CSV 64,991→75,553行
+  - `tmp_shojiro.html`（開発残骸）削除
+- combo_deep_dive.py に新特徴量5件の計算ロジックを追加実装（analyst の宣言のみ実装を補完）:
+  - `sst_delta_3d` / `pressure_delta_48h` / `kuroshio_sla_delta_1m` / `sss_delta_7d` / `day_of_decade`
+  - `pressure_delta_48h` が WX_FACTORS 未登録で N=0 だった不具合を修正
+  - `sss_delta_7d` は NULL 回避のため専用 nearest クエリ `_get_sss_nearest()` を新設
+  - アジ×こなや丸で単体動作確認済み（deep_params N=4・H=0 wMAPE 33.7%）
