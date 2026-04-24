@@ -1226,6 +1226,8 @@ def load_records(fish, ship_filter=None):
                     "lon":     lon,
                     # 参照用（obs_fields.json 外）
                     "trip_no": int(row.get("trip_no") or 0),
+                    # 複数ポイント移動フラグ（魚探し不漁シグナル）
+                    "n_points_visited": int(row.get("n_points_visited") or 1),
                     # カレンダー因子（土日・祝日・連休・夏休み・乗っ込み）
                     "is_holiday":         _is_holiday(date_str),
                     "is_consec_holiday":  _is_consec_holiday(date_str),
@@ -3408,6 +3410,159 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     return lines, bt_data, range_bt_data, star_bt_data, season_thr, wx_params_data, _modal_lat, _modal_lon, best_cmems
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# 複数ポイント移動日分析（魚探し不漁シグナル × 気象相関）
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _pb_corr(binary_y, x_vals):
+    """Point-biserial 相関を標準ライブラリのみで計算。
+    binary_y: 0/1のリスト（1=multi_point日）
+    x_vals: 気象因子値リスト（Noneは除外）
+    戻り値: r値 or None（有効N<10 または n1<5 or n0<5）
+    """
+    valid = [(b, x) for b, x in zip(binary_y, x_vals) if x is not None]
+    if len(valid) < 10:
+        return None
+    ys = [v[0] for v in valid]
+    xs = [v[1] for v in valid]
+    n = len(xs)
+    n1 = sum(ys)   # multi_point 日数
+    n0 = n - n1    # single_point 日数
+    if n0 < 5 or n1 < 5:
+        return None
+    mean_x = sum(xs) / n
+    var_x  = sum((x - mean_x) ** 2 for x in xs) / n
+    sd_x   = var_x ** 0.5
+    if sd_x == 0:
+        return None
+    # multi日のx平均 / single日のx平均
+    m1 = sum(x for y, x in valid if y == 1) / n1
+    m0 = sum(x for y, x in valid if y == 0) / n0
+    # point-biserial: r = (m1 - m0) / sd_full * sqrt(n1*n0/n^2)
+    r = (m1 - m0) / sd_x * math.sqrt(n1 * n0 / (n * n))
+    r = max(-1.0, min(1.0, r))
+    return r
+
+
+def section_multi_point_wx(records, fish, ship,
+                           conn_wx, conn_tide, conn_typhoon, conn_cmems,
+                           ship_coords=None, wx_coords=None, ship_area=None):
+    """複数ポイント移動日（n_points_visited>=2）と気象因子の point-biserial 相関を計算。
+
+    「魚がいなくて複数ポイントを移動した日」を不漁シグナルとして捉え、
+    どの気象条件がマルチポイント日を引き起こしやすいかをコンボ別に学習する。
+
+    実装: H=0 の enrich() を呼んで全気象因子を付与してから point-biserial 相関を計算。
+    ship_coords / wx_coords / ship_area が None の場合はカレンダー因子のみで計算。
+
+    戻り値: {factor: {r, threshold, direction, mean_multi, mean_single, n_multi, n_single}}
+    |r| >= 0.15 の因子のみ返す。
+    どちらか < 10 の場合は {} を返す。
+    """
+    multi_flag = [1 if r.get("n_points_visited", 1) >= 2 else 0 for r in records]
+    n_multi  = sum(multi_flag)
+    n_single = len(multi_flag) - n_multi
+
+    if n_multi < 10 or n_single < 10:
+        return {}
+
+    # enrich() で H=0 の気象因子を付与（ship_coords 等が渡されている場合のみ）
+    if ship_coords is not None and wx_coords is not None and ship_area is not None:
+        enriched = enrich(
+            records, ship_coords, wx_coords, conn_wx, ship_area,
+            horizon=0, all_records=records,
+            conn_tide=conn_tide, conn_typhoon=conn_typhoon,
+            conn_cmems=conn_cmems, fish=fish,
+        )
+        # enrich() はフィルタ（lat/lon なし等）で件数が減る場合あり
+        # n_points_visited を enriched に引き継ぐため元 records と日付で突合
+        date_to_npv = {r["date"] + r["ship"]: r.get("n_points_visited", 1) for r in records}
+        for er in enriched:
+            key = er["date"] + er["ship"]
+            er.setdefault("n_points_visited", date_to_npv.get(key, 1))
+        target_records = enriched
+        # multi_flag を enriched の並びに合わせて再構築
+        multi_flag = [1 if r.get("n_points_visited", 1) >= 2 else 0 for r in target_records]
+        n_multi  = sum(multi_flag)
+        n_single = len(multi_flag) - n_multi
+        if n_multi < 10 or n_single < 10:
+            return {}
+    else:
+        # フォールバック: カレンダー因子のみ（CALENDAR_FACTORS + TIDE_FACTORS）
+        target_records = records
+
+    result = {}
+    MIN_R = 0.15
+
+    for factor in ALL_FACTORS:
+        x_vals = [r.get(factor) for r in target_records]
+        r_val = _pb_corr(multi_flag, x_vals)
+        if r_val is None or abs(r_val) < MIN_R:
+            continue
+        # multi日とsingle日の平均を計算
+        paired = [(b, x) for b, x in zip(multi_flag, x_vals) if x is not None]
+        m1_cnt = sum(1 for y, _ in paired if y == 1)
+        m0_cnt = sum(1 for y, _ in paired if y == 0)
+        if m1_cnt == 0 or m0_cnt == 0:
+            continue
+        m1 = sum(x for y, x in paired if y == 1) / m1_cnt
+        m0 = sum(x for y, x in paired if y == 0) / m0_cnt
+        threshold = (m1 + m0) / 2.0
+        direction = "high_is_multi" if m1 > m0 else "low_is_multi"
+        result[factor] = {
+            "r":           r_val,
+            "threshold":   threshold,
+            "direction":   direction,
+            "mean_multi":  m1,
+            "mean_single": m0,
+            "n_multi":     m1_cnt,
+            "n_single":    m0_cnt,
+        }
+
+    return result
+
+
+def save_multi_point_factors(fish, ship, result_dict):
+    """combo_multi_point_factors テーブルへ UPSERT"""
+    if not result_dict:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_multi_point_factors (
+            fish         TEXT,
+            ship         TEXT,
+            factor       TEXT,
+            r            REAL,
+            threshold    REAL,
+            direction    TEXT,
+            mean_multi   REAL,
+            mean_single  REAL,
+            n_multi      INTEGER,
+            n_single     INTEGER,
+            updated_at   TEXT,
+            PRIMARY KEY (fish, ship, factor)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("DELETE FROM combo_multi_point_factors WHERE fish=? AND ship=?",
+                 (fish, ship))
+    rows = []
+    for factor, d in result_dict.items():
+        rows.append((
+            fish, ship, factor,
+            d["r"], d["threshold"], d["direction"],
+            d["mean_multi"], d["mean_single"],
+            d["n_multi"], d["n_single"],
+            now,
+        ))
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_multi_point_factors VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        rows,
+    )
+    conn.commit()
+    conn.close()
+
+
 def save_params(fish, ship, corr_results):
     conn = _open_ana()
     conn.execute("""
@@ -4155,6 +4310,22 @@ def deep_dive_by_point(fish, ship):
             if row[0] == "cnt_avg" and row[1] == 0:
                 print(f"    → H=0 wMAPE={row[6]:.1f}%  r={row[2]:+.3f}  BL2={row[26]}", flush=True)
                 break
+
+    # multi_point_wx 分析（全レコード対象・DB接続クローズ前に実行）
+    try:
+        mp_result = section_multi_point_wx(
+            all_records, fish, ship,
+            conn_wx, conn_tide, conn_typhoon, conn_cmems,
+            ship_coords=ship_coords, wx_coords=wx_coords, ship_area=ship_area,
+        )
+        if mp_result:
+            save_multi_point_factors(fish, ship, mp_result)
+            top2 = sorted(mp_result.items(), key=lambda x: -abs(x[1]["r"]))[:2]
+            print(f"  [multi_pt] {fish}×{ship}: {len(mp_result)}因子 top={top2}", flush=True)
+        else:
+            print(f"  [multi_pt] {fish}×{ship}: 有意因子なし（n_multi={sum(1 for r in all_records if r.get('n_points_visited',1)>=2)}, n_single={sum(1 for r in all_records if r.get('n_points_visited',1)<2)}）", flush=True)
+    except Exception as _mp_e:
+        print(f"  [multi_pt] {fish}×{ship}: ERROR {_mp_e}", flush=True)
 
     for c in [conn_wx, conn_tide, conn_typhoon, conn_cmems]:
         if c is not None:
