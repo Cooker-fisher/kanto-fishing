@@ -1,16 +1,15 @@
 {
   "fish": "マゴチ",
   "ship": "林遊船",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 56.6,
-    "bl0_wmape": 60.4,
-    "bl2_wmape": 65.9,
-    "oos_r": 0.358,
-    "n_records": 115,
-    "alpha_scale": 0.42,
-    "use_fallback": false
+    "wmape_h0": 56.74,
+    "bl2_wmape": 65.76,
+    "oos_r": 0.341,
+    "n_records": 116,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "夏休み期間（7〜8月）に釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=56.7% imp=0.08pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -163,5 +168,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "浦安沖",
+      "n": 116,
+      "wmape_h0": 56.7,
+      "bl2_wmape": 65.8,
+      "oos_r": 0.355,
+      "improvement_pt": 0.08
+    }
+  ],
+  "best_point": {
+    "name": "浦安沖",
+    "wmape_h0": 56.7,
+    "improvement_pt": 0.08
+  },
+  "improvement_pt": 0.08
 }

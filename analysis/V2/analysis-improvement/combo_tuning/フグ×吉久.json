@@ -1,14 +1,13 @@
 {
   "fish": "フグ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_no_improvement",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.84,
+    "wmape_h0": 47.33,
     "bl2_wmape": 49.05,
-    "oos_r": 0.565,
+    "oos_r": 0.578,
     "n_records": 148,
-    "alpha_scale": 0.5443,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -102,6 +101,11 @@
       "date": "2026-04-21",
       "action": "point_backtest_added",
       "note": "combo_point_backtest登録。best=大貫沖 wmape=48.2% imp=-0.36pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=大貫沖 wmape=47.1% imp=0.28pt"
     }
   ],
   "rejected_factors": [
@@ -170,18 +174,18 @@
     {
       "name": "大貫沖",
       "n": 122,
-      "wmape_h0": 48.2,
+      "wmape_h0": 47.1,
       "bl2_wmape": 50.7,
-      "oos_r": 0.544,
-      "improvement_pt": -0.36
+      "oos_r": 0.565,
+      "improvement_pt": 0.28
     }
   ],
   "best_point": {
     "name": "大貫沖",
-    "wmape_h0": 48.2,
-    "improvement_pt": -0.36
+    "wmape_h0": 47.1,
+    "improvement_pt": 0.28
   },
-  "improvement_pt": -0.36,
+  "improvement_pt": 0.28,
   "trip_models": [
     {
       "trip_no": 2,

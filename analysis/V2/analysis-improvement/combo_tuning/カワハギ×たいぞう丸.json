@@ -1,10 +1,10 @@
 {
   "fish": "カワハギ",
   "ship": "たいぞう丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 27.6,
+    "wmape_h0": 27.43,
     "bl2_wmape": 44.87,
     "oos_r": 0.631,
     "n_records": 89,
@@ -116,6 +116,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=葉山沖 wmape=24.8% imp=2.77pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=葉山沖 wmape=24.5% imp=2.94pt"
     }
   ],
   "rejected_factors": [
@@ -184,18 +189,18 @@
     {
       "name": "葉山沖",
       "n": 73,
-      "wmape_h0": 24.9,
+      "wmape_h0": 24.5,
       "bl2_wmape": 46.7,
-      "oos_r": 0.69,
-      "improvement_pt": 2.69
+      "oos_r": 0.699,
+      "improvement_pt": 2.94
     }
   ],
   "best_point": {
     "name": "葉山沖",
-    "wmape_h0": 24.9,
-    "improvement_pt": 2.69
+    "wmape_h0": 24.5,
+    "improvement_pt": 2.94
   },
-  "improvement_pt": 2.69,
+  "improvement_pt": 2.94,
   "trip_models": [
     {
       "trip_no": 1,

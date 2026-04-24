@@ -1,13 +1,13 @@
 {
   "fish": "ビシアジ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 25.82,
-    "bl2_wmape": 45.51,
-    "oos_r": 0.662,
-    "n_records": 102,
+    "wmape_h0": 26.39,
+    "bl2_wmape": 45.76,
+    "oos_r": 0.647,
+    "n_records": 109,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -91,6 +91,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=二宮沖 wmape=25.1% imp=0.7pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=二宮沖 wmape=26.1% imp=0.33pt"
     }
   ],
   "rejected_factors": [
@@ -158,19 +163,19 @@
   "point_models": [
     {
       "name": "二宮沖",
-      "n": 89,
-      "wmape_h0": 25.1,
-      "bl2_wmape": 40.3,
-      "oos_r": 0.668,
-      "improvement_pt": 0.67
+      "n": 93,
+      "wmape_h0": 26.1,
+      "bl2_wmape": 41.2,
+      "oos_r": 0.657,
+      "improvement_pt": 0.33
     }
   ],
   "best_point": {
     "name": "二宮沖",
-    "wmape_h0": 25.1,
-    "improvement_pt": 0.67
+    "wmape_h0": 26.1,
+    "improvement_pt": 0.33
   },
-  "improvement_pt": 0.67,
+  "improvement_pt": 0.33,
   "trip_models": [
     {
       "trip_no": 1,

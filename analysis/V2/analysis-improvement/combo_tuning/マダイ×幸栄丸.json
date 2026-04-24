@@ -1,13 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.05,
-    "bl2_wmape": 59.34,
-    "oos_r": 0.398,
-    "n_records": 513,
+    "wmape_h0": 47.07,
+    "bl2_wmape": 59.14,
+    "oos_r": 0.391,
+    "n_records": 519,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -71,6 +71,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=鹿島南沖 wmape=47.0% imp=0.03pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島南沖 wmape=47.0% imp=0.04pt"
     }
   ],
   "rejected_factors": [
@@ -189,17 +194,17 @@
   "point_models": [
     {
       "name": "鹿島南沖",
-      "n": 512,
+      "n": 514,
       "wmape_h0": 47.0,
       "bl2_wmape": 59.4,
-      "oos_r": 0.397,
-      "improvement_pt": 0.03
+      "oos_r": 0.396,
+      "improvement_pt": 0.04
     }
   ],
   "best_point": {
     "name": "鹿島南沖",
     "wmape_h0": 47.0,
-    "improvement_pt": 0.03
+    "improvement_pt": 0.04
   },
-  "improvement_pt": 0.03
+  "improvement_pt": 0.04
 }

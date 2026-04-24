@@ -1,13 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "第八幸松丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.5,
-    "bl2_wmape": 60.14,
-    "oos_r": 0.622,
-    "n_records": 44,
+    "wmape_h0": 38.08,
+    "bl2_wmape": 59.22,
+    "oos_r": 0.631,
+    "n_records": 46,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -96,6 +96,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=沼津沖 wmape=38.5% imp=0.17pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=37.9% imp=0.13pt"
     }
   ],
   "rejected_factors": [
@@ -177,17 +182,17 @@
   "point_models": [
     {
       "name": "沼津沖",
-      "n": 44,
-      "wmape_h0": 38.5,
-      "bl2_wmape": 60.1,
-      "oos_r": 0.622,
-      "improvement_pt": 0.01
+      "n": 46,
+      "wmape_h0": 37.9,
+      "bl2_wmape": 59.2,
+      "oos_r": 0.631,
+      "improvement_pt": 0.13
     }
   ],
   "best_point": {
     "name": "沼津沖",
-    "wmape_h0": 38.5,
-    "improvement_pt": 0.01
+    "wmape_h0": 37.9,
+    "improvement_pt": 0.13
   },
-  "improvement_pt": 0.01
+  "improvement_pt": 0.13
 }

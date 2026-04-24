@@ -1,12 +1,12 @@
 {
   "fish": "カワハギ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 55.61,
+    "wmape_h0": 55.2,
     "bl2_wmape": 68.79,
-    "oos_r": 0.494,
+    "oos_r": 0.496,
     "n_records": 337,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "竹岡沖",
       "n": 287,
-      "wmape_h0": 51.0,
+      "wmape_h0": 51.1,
       "bl2_wmape": 65.2,
-      "oos_r": 0.523,
-      "improvement_pt": 4.64
+      "oos_r": 0.522,
+      "improvement_pt": 4.11
     }
   ],
   "best_point": {
     "name": "竹岡沖",
-    "wmape_h0": 51.0,
-    "improvement_pt": 4.64
+    "wmape_h0": 51.1,
+    "improvement_pt": 4.11
   },
-  "improvement_pt": 4.64,
+  "improvement_pt": 4.11,
   "points": [
     {
       "name": "竹岡沖",
@@ -53,6 +53,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=竹岡沖 wmape=51.0% imp=4.64pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=竹岡沖 wmape=51.1% imp=4.11pt"
     }
   ],
   "trip_models": [

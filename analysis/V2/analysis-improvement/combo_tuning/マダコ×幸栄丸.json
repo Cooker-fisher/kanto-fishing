@@ -1,12 +1,12 @@
 {
   "fish": "マダコ",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.27,
+    "wmape_h0": 31.11,
     "bl2_wmape": 49.86,
-    "oos_r": 0.756,
+    "oos_r": 0.759,
     "n_records": 268,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -96,6 +96,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=鹿島真沖 wmape=31.2% imp=0.12pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島真沖 wmape=30.9% imp=0.24pt"
     }
   ],
   "rejected_factors": [
@@ -164,18 +169,18 @@
     {
       "name": "鹿島真沖",
       "n": 266,
-      "wmape_h0": 31.2,
+      "wmape_h0": 30.9,
       "bl2_wmape": 49.8,
-      "oos_r": 0.756,
-      "improvement_pt": 0.12
+      "oos_r": 0.763,
+      "improvement_pt": 0.24
     }
   ],
   "best_point": {
     "name": "鹿島真沖",
-    "wmape_h0": 31.2,
-    "improvement_pt": 0.12
+    "wmape_h0": 30.9,
+    "improvement_pt": 0.24
   },
-  "improvement_pt": 0.12,
+  "improvement_pt": 0.24,
   "trip_models": [
     {
       "trip_no": 1,

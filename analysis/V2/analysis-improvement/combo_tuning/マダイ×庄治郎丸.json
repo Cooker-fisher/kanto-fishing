@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 48.98,
+    "wmape_h0": 50.89,
     "bl2_wmape": 67.7,
-    "oos_r": 0.471,
+    "oos_r": 0.458,
     "n_records": 60,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -86,6 +86,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=平塚沖 wmape=49.0% imp=0.01pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=50.9% imp=0.01pt"
     }
   ],
   "rejected_factors": [
@@ -160,15 +165,15 @@
     {
       "name": "平塚沖",
       "n": 60,
-      "wmape_h0": 49.0,
+      "wmape_h0": 50.9,
       "bl2_wmape": 67.7,
-      "oos_r": 0.471,
+      "oos_r": 0.458,
       "improvement_pt": 0.01
     }
   ],
   "best_point": {
     "name": "平塚沖",
-    "wmape_h0": 49.0,
+    "wmape_h0": 50.9,
     "improvement_pt": 0.01
   },
   "improvement_pt": 0.01

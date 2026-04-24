@@ -1,48 +1,48 @@
 {
   "fish": "マルイカ",
   "ship": "たいぞう丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 44.74,
-    "bl2_wmape": 51.29,
-    "oos_r": 0.609,
-    "n_records": 352,
+    "wmape_h0": 44.04,
+    "bl2_wmape": 51.69,
+    "oos_r": 0.605,
+    "n_records": 361,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "城ヶ島沖",
-      "n": 41,
-      "wmape_h0": 33.5,
-      "bl2_wmape": 45.7,
-      "oos_r": 0.726,
-      "improvement_pt": 11.28
+      "n": 44,
+      "wmape_h0": 31.6,
+      "bl2_wmape": 46.8,
+      "oos_r": 0.723,
+      "improvement_pt": 12.4
     },
     {
       "name": "亀城根",
-      "n": 156,
-      "wmape_h0": 41.3,
-      "bl2_wmape": 60.9,
-      "oos_r": 0.508,
-      "improvement_pt": 3.46
+      "n": 160,
+      "wmape_h0": 40.4,
+      "bl2_wmape": 59.7,
+      "oos_r": 0.511,
+      "improvement_pt": 3.64
     },
     {
       "name": "葉山沖",
       "n": 129,
-      "wmape_h0": 41.6,
+      "wmape_h0": 41.9,
       "bl2_wmape": 51.2,
-      "oos_r": 0.677,
-      "improvement_pt": 3.19
+      "oos_r": 0.67,
+      "improvement_pt": 2.15
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
-    "wmape_h0": 33.5,
-    "improvement_pt": 11.28
+    "wmape_h0": 31.6,
+    "improvement_pt": 12.4
   },
-  "improvement_pt": 11.28,
+  "improvement_pt": 12.4,
   "points": [
     {
       "name": "亀城根",
@@ -205,6 +205,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=33.5% imp=11.27pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=31.6% imp=12.4pt"
     }
   ],
   "trip_models": [

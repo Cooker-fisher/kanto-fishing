@@ -1,13 +1,13 @@
 {
   "fish": "クロダイ",
   "ship": "林遊船",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.84,
-    "bl2_wmape": 69.88,
-    "oos_r": 0.379,
-    "n_records": 471,
+    "wmape_h0": 56.1,
+    "bl2_wmape": 69.94,
+    "oos_r": 0.364,
+    "n_records": 481,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -54,6 +54,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=54.8% imp=0.05pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=55.7% imp=0.37pt"
     }
   ],
   "rejected_factors": [
@@ -167,17 +172,17 @@
   "point_models": [
     {
       "name": "浦安沖",
-      "n": 471,
-      "wmape_h0": 54.8,
+      "n": 481,
+      "wmape_h0": 55.7,
       "bl2_wmape": 69.9,
-      "oos_r": 0.375,
-      "improvement_pt": 0.05
+      "oos_r": 0.367,
+      "improvement_pt": 0.37
     }
   ],
   "best_point": {
     "name": "浦安沖",
-    "wmape_h0": 54.8,
-    "improvement_pt": 0.05
+    "wmape_h0": 55.7,
+    "improvement_pt": 0.37
   },
-  "improvement_pt": 0.05
+  "improvement_pt": 0.37
 }

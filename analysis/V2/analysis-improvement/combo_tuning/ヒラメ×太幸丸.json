@@ -1,12 +1,12 @@
 {
   "fish": "ヒラメ",
   "ship": "太幸丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.29,
+    "wmape_h0": 36.26,
     "bl2_wmape": 42.45,
-    "oos_r": 0.544,
+    "oos_r": 0.545,
     "n_records": 357,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,31 +15,36 @@
     {
       "name": "浅場(~40m)",
       "n": 67,
-      "wmape_h0": 27.5,
+      "wmape_h0": 27.6,
       "bl2_wmape": 37.1,
-      "oos_r": 0.665,
-      "improvement_pt": 8.76
+      "oos_r": 0.662,
+      "improvement_pt": 8.63
     },
     {
       "name": "飯岡沖",
       "n": 279,
       "wmape_h0": 37.5,
       "bl2_wmape": 45.8,
-      "oos_r": 0.516,
-      "improvement_pt": -1.22
+      "oos_r": 0.515,
+      "improvement_pt": -1.28
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
-    "wmape_h0": 27.5,
-    "improvement_pt": 8.76
+    "wmape_h0": 27.6,
+    "improvement_pt": 8.63
   },
-  "improvement_pt": 8.76,
+  "improvement_pt": 8.63,
   "history": [
     {
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=浅場(~40m) wmape=27.5% imp=13.93pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=27.6% imp=8.63pt"
     }
   ]
 }

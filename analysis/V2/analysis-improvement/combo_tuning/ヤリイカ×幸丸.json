@@ -1,12 +1,12 @@
 {
   "fish": "ヤリイカ",
   "ship": "幸丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.62,
+    "wmape_h0": 55.02,
     "bl2_wmape": 67.33,
-    "oos_r": 0.446,
+    "oos_r": 0.447,
     "n_records": 75,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -102,6 +102,11 @@
       "date": "2026-04-22",
       "action": "depth_band_point_adoption",
       "note": "水深帯ポイント採用: 深場(81-150m) (N=57, wMAPE=51.3% vs BL2=62.5%, BL2比+11.2pt改善)"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=深場(81-150m) wmape=51.3% imp=3.73pt"
     }
   ],
   "rejected_factors": [
@@ -173,15 +178,15 @@
       "wmape_h0": 51.3,
       "bl2_wmape": 62.5,
       "oos_r": 0.316,
-      "improvement_pt": 3.32
+      "improvement_pt": 3.73
     }
   ],
   "best_point": {
     "name": "深場(81-150m)",
     "wmape_h0": 51.3,
-    "improvement_pt": 3.32
+    "improvement_pt": 3.73
   },
-  "improvement_pt": 3.32,
+  "improvement_pt": 3.73,
   "trip_models": [],
   "best_trip": null,
   "point_depth_models": [],

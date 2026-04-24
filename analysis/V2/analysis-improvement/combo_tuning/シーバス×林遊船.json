@@ -1,13 +1,13 @@
 {
   "fish": "シーバス",
   "ship": "林遊船",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 65.35,
-    "bl2_wmape": 81.51,
+    "wmape_h0": 64.88,
+    "bl2_wmape": 82.16,
     "oos_r": 0.405,
-    "n_records": 285,
+    "n_records": 296,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -91,6 +91,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=65.3% imp=0.02pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=64.8% imp=0.04pt"
     }
   ],
   "rejected_factors": [
@@ -183,17 +188,17 @@
   "point_models": [
     {
       "name": "浦安沖",
-      "n": 285,
-      "wmape_h0": 65.3,
-      "bl2_wmape": 81.5,
+      "n": 296,
+      "wmape_h0": 64.8,
+      "bl2_wmape": 82.2,
       "oos_r": 0.405,
-      "improvement_pt": 0.02
+      "improvement_pt": 0.04
     }
   ],
   "best_point": {
     "name": "浦安沖",
-    "wmape_h0": 65.3,
-    "improvement_pt": 0.02
+    "wmape_h0": 64.8,
+    "improvement_pt": 0.04
   },
-  "improvement_pt": 0.02
+  "improvement_pt": 0.04
 }

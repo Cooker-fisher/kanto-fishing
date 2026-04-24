@@ -1,16 +1,15 @@
 {
   "fish": "シロアマダイ",
   "ship": "恵漁丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.8,
-    "bl0_wmape": 37.8,
-    "bl2_wmape": 41.3,
-    "oos_r": 0.216,
+    "wmape_h0": 31.12,
+    "bl2_wmape": 41.28,
+    "oos_r": 0.618,
     "n_records": 33,
-    "alpha_scale": 0.866,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -82,7 +81,13 @@
     "気温が高い日ほど釣果が上がる傾向",
     "その他の風向で釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=吉田沖 wmape=31.1% imp=0.02pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -162,5 +167,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "吉田沖",
+      "n": 30,
+      "wmape_h0": 31.1,
+      "bl2_wmape": 38.6,
+      "oos_r": 0.593,
+      "improvement_pt": 0.02
+    }
+  ],
+  "best_point": {
+    "name": "吉田沖",
+    "wmape_h0": 31.1,
+    "improvement_pt": 0.02
+  },
+  "improvement_pt": 0.02
 }

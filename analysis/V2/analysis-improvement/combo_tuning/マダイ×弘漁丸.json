@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "弘漁丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 40.2,
-    "bl0_wmape": 47.4,
-    "bl2_wmape": 53.2,
-    "oos_r": 0.495,
-    "n_records": 279,
-    "alpha_scale": 0.644,
-    "use_fallback": false
+    "wmape_h0": 43.77,
+    "bl2_wmape": 53.3,
+    "oos_r": 0.406,
+    "n_records": 294,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "栄養塩（クロロフィル+硝酸）が高い時に釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=日立沖 wmape=43.0% imp=0.77pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -179,5 +184,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "日立沖",
+      "n": 294,
+      "wmape_h0": 43.0,
+      "bl2_wmape": 53.3,
+      "oos_r": 0.416,
+      "improvement_pt": 0.77
+    }
+  ],
+  "best_point": {
+    "name": "日立沖",
+    "wmape_h0": 43.0,
+    "improvement_pt": 0.77
+  },
+  "improvement_pt": 0.77
 }

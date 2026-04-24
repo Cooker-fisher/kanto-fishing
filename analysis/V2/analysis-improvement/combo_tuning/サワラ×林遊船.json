@@ -1,12 +1,12 @@
 {
   "fish": "サワラ",
   "ship": "林遊船",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.81,
+    "wmape_h0": 54.87,
     "bl2_wmape": 66.02,
-    "oos_r": 0.341,
+    "oos_r": 0.344,
     "n_records": 438,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -66,6 +66,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=千葉沖 wmape=54.8% imp=0.02pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=千葉沖 wmape=54.9% imp=0.02pt"
     }
   ],
   "rejected_factors": [
@@ -173,15 +178,15 @@
     {
       "name": "千葉沖",
       "n": 438,
-      "wmape_h0": 54.8,
+      "wmape_h0": 54.9,
       "bl2_wmape": 66.0,
-      "oos_r": 0.341,
+      "oos_r": 0.344,
       "improvement_pt": 0.02
     }
   ],
   "best_point": {
     "name": "千葉沖",
-    "wmape_h0": 54.8,
+    "wmape_h0": 54.9,
     "improvement_pt": 0.02
   },
   "improvement_pt": 0.02

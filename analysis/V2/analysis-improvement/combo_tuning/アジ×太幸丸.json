@@ -1,37 +1,42 @@
 {
   "fish": "アジ",
   "ship": "太幸丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 40.4,
-    "bl2_wmape": 52.06,
-    "oos_r": 0.568,
-    "n_records": 65,
+    "wmape_h0": 42.51,
+    "bl2_wmape": 55.06,
+    "oos_r": 0.51,
+    "n_records": 67,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "飯岡沖",
-      "n": 46,
-      "wmape_h0": 34.0,
-      "bl2_wmape": 54.4,
-      "oos_r": 0.751,
-      "improvement_pt": 6.44
+      "n": 48,
+      "wmape_h0": 34.5,
+      "bl2_wmape": 58.2,
+      "oos_r": 0.693,
+      "improvement_pt": 8.01
     }
   ],
   "best_point": {
     "name": "飯岡沖",
-    "wmape_h0": 34.0,
-    "improvement_pt": 6.44
+    "wmape_h0": 34.5,
+    "improvement_pt": 8.01
   },
-  "improvement_pt": 6.44,
+  "improvement_pt": 8.01,
   "history": [
     {
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=飯岡沖 wmape=34.0% imp=6.43pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=飯岡沖 wmape=34.5% imp=8.01pt"
     }
   ]
 }

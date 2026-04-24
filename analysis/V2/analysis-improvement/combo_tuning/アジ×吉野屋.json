@@ -1,72 +1,72 @@
 {
   "fish": "アジ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.58,
-    "bl2_wmape": 38.02,
-    "oos_r": 0.456,
-    "n_records": 876,
+    "wmape_h0": 36.59,
+    "bl2_wmape": 38.06,
+    "oos_r": 0.451,
+    "n_records": 893,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "横須賀沖",
-      "n": 39,
-      "wmape_h0": 16.5,
-      "bl2_wmape": 31.0,
-      "oos_r": 0.788,
-      "improvement_pt": 20.13
+      "n": 44,
+      "wmape_h0": 16.4,
+      "bl2_wmape": 30.0,
+      "oos_r": 0.789,
+      "improvement_pt": 20.21
     },
     {
       "name": "観音崎沖",
-      "n": 104,
-      "wmape_h0": 19.3,
-      "bl2_wmape": 28.1,
-      "oos_r": 0.558,
-      "improvement_pt": 17.32
+      "n": 106,
+      "wmape_h0": 18.9,
+      "bl2_wmape": 27.8,
+      "oos_r": 0.557,
+      "improvement_pt": 17.7
     },
     {
       "name": "浦安沖",
       "n": 30,
-      "wmape_h0": 21.1,
+      "wmape_h0": 21.0,
       "bl2_wmape": 53.2,
       "oos_r": 0.836,
-      "improvement_pt": 15.48
+      "improvement_pt": 15.54
     },
     {
       "name": "本牧沖",
-      "n": 48,
-      "wmape_h0": 22.5,
-      "bl2_wmape": 33.9,
-      "oos_r": 0.614,
-      "improvement_pt": 14.11
+      "n": 54,
+      "wmape_h0": 21.1,
+      "bl2_wmape": 33.2,
+      "oos_r": 0.605,
+      "improvement_pt": 15.48
     },
     {
       "name": "木更津沖",
-      "n": 475,
-      "wmape_h0": 30.4,
+      "n": 477,
+      "wmape_h0": 30.3,
       "bl2_wmape": 34.7,
-      "oos_r": 0.493,
-      "improvement_pt": 6.18
+      "oos_r": 0.492,
+      "improvement_pt": 6.24
     },
     {
       "name": "横浜沖",
-      "n": 82,
-      "wmape_h0": 31.3,
-      "bl2_wmape": 37.8,
-      "oos_r": 0.639,
-      "improvement_pt": 5.31
+      "n": 83,
+      "wmape_h0": 30.6,
+      "bl2_wmape": 37.6,
+      "oos_r": 0.642,
+      "improvement_pt": 5.97
     }
   ],
   "best_point": {
     "name": "横須賀沖",
-    "wmape_h0": 16.5,
-    "improvement_pt": 20.13
+    "wmape_h0": 16.4,
+    "improvement_pt": 20.21
   },
-  "improvement_pt": 20.13,
+  "improvement_pt": 20.21,
   "points": [
     {
       "name": "木更津沖",
@@ -248,6 +248,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=横須賀沖 wmape=16.5% imp=20.12pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=横須賀沖 wmape=16.4% imp=20.21pt"
     }
   ],
   "trip_models": [

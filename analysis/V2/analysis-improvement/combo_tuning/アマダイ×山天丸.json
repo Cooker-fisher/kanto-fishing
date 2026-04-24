@@ -1,13 +1,13 @@
 {
   "fish": "アマダイ",
   "ship": "山天丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 35.35,
-    "bl2_wmape": 39.98,
-    "oos_r": 0.297,
-    "n_records": 492,
+    "wmape_h0": 34.01,
+    "bl2_wmape": 40.11,
+    "oos_r": 0.351,
+    "n_records": 495,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -17,24 +17,24 @@
       "n": 81,
       "wmape_h0": 27.2,
       "bl2_wmape": 36.6,
-      "oos_r": 0.59,
-      "improvement_pt": 8.14
+      "oos_r": 0.595,
+      "improvement_pt": 6.81
     },
     {
       "name": "剣崎沖",
-      "n": 370,
-      "wmape_h0": 33.6,
-      "bl2_wmape": 39.2,
-      "oos_r": 0.324,
-      "improvement_pt": 1.73
+      "n": 373,
+      "wmape_h0": 32.8,
+      "bl2_wmape": 39.3,
+      "oos_r": 0.378,
+      "improvement_pt": 1.2
     }
   ],
   "best_point": {
     "name": "下浦沖",
     "wmape_h0": 27.2,
-    "improvement_pt": 8.14
+    "improvement_pt": 6.81
   },
-  "improvement_pt": 8.14,
+  "improvement_pt": 6.81,
   "points": [
     {
       "name": "剣崎沖",
@@ -192,6 +192,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=27.2% imp=8.11pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=27.2% imp=6.81pt"
     }
   ],
   "trip_models": [

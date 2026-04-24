@@ -1,13 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "梅花丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.33,
-    "bl2_wmape": 49.97,
-    "oos_r": 0.61,
-    "n_records": 753,
+    "wmape_h0": 43.0,
+    "bl2_wmape": 49.81,
+    "oos_r": 0.617,
+    "n_records": 768,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -91,6 +91,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=飯岡沖 wmape=43.3% imp=0.02pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=飯岡沖 wmape=43.0% imp=0.03pt"
     }
   ],
   "rejected_factors": [
@@ -209,17 +214,17 @@
   "point_models": [
     {
       "name": "飯岡沖",
-      "n": 753,
-      "wmape_h0": 43.3,
-      "bl2_wmape": 50.0,
-      "oos_r": 0.611,
-      "improvement_pt": 0.02
+      "n": 768,
+      "wmape_h0": 43.0,
+      "bl2_wmape": 49.8,
+      "oos_r": 0.617,
+      "improvement_pt": 0.03
     }
   ],
   "best_point": {
     "name": "飯岡沖",
-    "wmape_h0": 43.3,
-    "improvement_pt": 0.02
+    "wmape_h0": 43.0,
+    "improvement_pt": 0.03
   },
-  "improvement_pt": 0.02
+  "improvement_pt": 0.03
 }

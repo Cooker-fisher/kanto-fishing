@@ -1,10 +1,10 @@
 {
   "fish": "マハタ",
   "ship": "勇盛丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 22.03,
+    "wmape_h0": 22.04,
     "bl2_wmape": 27.29,
     "oos_r": 0.578,
     "n_records": 72,
@@ -79,6 +79,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=大原沖 wmape=20.5% imp=1.55pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=21.6% imp=0.43pt"
     }
   ],
   "rejected_factors": [
@@ -150,15 +155,15 @@
       "wmape_h0": 21.6,
       "bl2_wmape": 27.2,
       "oos_r": 0.586,
-      "improvement_pt": 0.42
+      "improvement_pt": 0.43
     }
   ],
   "best_point": {
     "name": "大原沖",
     "wmape_h0": 21.6,
-    "improvement_pt": 0.42
+    "improvement_pt": 0.43
   },
-  "improvement_pt": 0.42,
+  "improvement_pt": 0.43,
   "trip_models": [
     {
       "trip_no": 1,

@@ -1,7 +1,7 @@
 {
   "fish": "キハダマグロ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 59.25,
@@ -74,6 +74,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=小田原沖 wmape=56.7% imp=2.56pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=小田原沖 wmape=56.7% imp=2.55pt"
     }
   ],
   "rejected_factors": [
@@ -162,14 +167,14 @@
       "n": 39,
       "wmape_h0": 56.7,
       "bl2_wmape": 59.1,
-      "oos_r": 0.331,
-      "improvement_pt": 2.56
+      "oos_r": 0.317,
+      "improvement_pt": 2.55
     }
   ],
   "best_point": {
     "name": "小田原沖",
     "wmape_h0": 56.7,
-    "improvement_pt": 2.56
+    "improvement_pt": 2.55
   },
-  "improvement_pt": 2.56
+  "improvement_pt": 2.55
 }

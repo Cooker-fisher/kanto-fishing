@@ -1,32 +1,32 @@
 {
   "fish": "ヒラメ",
   "ship": "明広丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.59,
-    "bl2_wmape": 40.99,
+    "wmape_h0": 39.35,
+    "bl2_wmape": 40.95,
     "oos_r": 0.369,
-    "n_records": 348,
+    "n_records": 349,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "岩和田沖",
-      "n": 86,
-      "wmape_h0": 35.7,
-      "bl2_wmape": 41.9,
-      "oos_r": 0.388,
-      "improvement_pt": 3.9
+      "n": 87,
+      "wmape_h0": 36.1,
+      "bl2_wmape": 41.7,
+      "oos_r": 0.381,
+      "improvement_pt": 3.3
     },
     {
       "name": "岩船沖",
       "n": 65,
-      "wmape_h0": 36.8,
+      "wmape_h0": 37.0,
       "bl2_wmape": 39.4,
-      "oos_r": 0.379,
-      "improvement_pt": 2.83
+      "oos_r": 0.372,
+      "improvement_pt": 2.39
     },
     {
       "name": "岩和田沖航程5",
@@ -34,23 +34,23 @@
       "wmape_h0": 39.0,
       "bl2_wmape": 57.5,
       "oos_r": 0.48,
-      "improvement_pt": 0.55
+      "improvement_pt": 0.31
     },
     {
       "name": "部原沖",
       "n": 72,
-      "wmape_h0": 39.6,
+      "wmape_h0": 39.4,
       "bl2_wmape": 48.5,
-      "oos_r": 0.435,
-      "improvement_pt": -0.03
+      "oos_r": 0.426,
+      "improvement_pt": -0.05
     }
   ],
   "best_point": {
     "name": "岩和田沖",
-    "wmape_h0": 35.7,
-    "improvement_pt": 3.9
+    "wmape_h0": 36.1,
+    "improvement_pt": 3.3
   },
-  "improvement_pt": 3.9,
+  "improvement_pt": 3.3,
   "points": [
     {
       "name": "岩和田沖",
@@ -208,6 +208,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=岩和田沖 wmape=35.7% imp=3.9pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=岩和田沖 wmape=36.1% imp=3.3pt"
     }
   ],
   "trip_models": [

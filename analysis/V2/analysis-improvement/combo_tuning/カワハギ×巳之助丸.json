@@ -1,13 +1,13 @@
 {
   "fish": "カワハギ",
   "ship": "巳之助丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 31.17,
-    "bl2_wmape": 37.09,
-    "oos_r": 0.607,
-    "n_records": 747,
+    "wmape_h0": 30.64,
+    "bl2_wmape": 37.23,
+    "oos_r": 0.618,
+    "n_records": 763,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -116,6 +116,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=20.4% imp=13.03pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=20.2% imp=10.43pt"
     }
   ],
   "rejected_factors": [
@@ -183,11 +188,11 @@
   "point_models": [
     {
       "name": "下浦沖",
-      "n": 101,
-      "wmape_h0": 20.4,
-      "bl2_wmape": 36.8,
-      "oos_r": 0.727,
-      "improvement_pt": 10.73
+      "n": 102,
+      "wmape_h0": 20.2,
+      "bl2_wmape": 37.0,
+      "oos_r": 0.732,
+      "improvement_pt": 10.43
     },
     {
       "name": "久里浜沖",
@@ -195,39 +200,39 @@
       "wmape_h0": 25.0,
       "bl2_wmape": 36.8,
       "oos_r": 0.676,
-      "improvement_pt": 6.21
+      "improvement_pt": 5.68
     },
     {
       "name": "鴨居沖",
-      "n": 154,
-      "wmape_h0": 28.5,
-      "bl2_wmape": 39.4,
-      "oos_r": 0.692,
-      "improvement_pt": 2.67
+      "n": 157,
+      "wmape_h0": 28.4,
+      "bl2_wmape": 40.3,
+      "oos_r": 0.698,
+      "improvement_pt": 2.27
     },
     {
       "name": "竹岡沖",
-      "n": 263,
-      "wmape_h0": 32.3,
-      "bl2_wmape": 39.8,
-      "oos_r": 0.675,
-      "improvement_pt": -1.12
+      "n": 275,
+      "wmape_h0": 32.9,
+      "bl2_wmape": 40.1,
+      "oos_r": 0.662,
+      "improvement_pt": -2.25
     },
     {
       "name": "剣崎沖",
       "n": 59,
-      "wmape_h0": 33.4,
+      "wmape_h0": 33.3,
       "bl2_wmape": 38.7,
-      "oos_r": 0.439,
-      "improvement_pt": -2.24
+      "oos_r": 0.444,
+      "improvement_pt": -2.64
     }
   ],
   "best_point": {
     "name": "下浦沖",
-    "wmape_h0": 20.4,
-    "improvement_pt": 10.73
+    "wmape_h0": 20.2,
+    "improvement_pt": 10.43
   },
-  "improvement_pt": 10.73,
+  "improvement_pt": 10.43,
   "trip_models": [
     {
       "trip_no": 1,

@@ -1,29 +1,29 @@
 {
   "fish": "マルイカ",
   "ship": "秀丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 66.32,
-    "bl2_wmape": 70.94,
-    "oos_r": 0.335,
-    "n_records": 943,
+    "wmape_h0": 65.58,
+    "bl2_wmape": 70.54,
+    "oos_r": 0.353,
+    "n_records": 954,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "沼津沖",
-      "n": 943,
-      "wmape_h0": 66.3,
-      "bl2_wmape": 70.9,
-      "oos_r": 0.335,
+      "n": 954,
+      "wmape_h0": 65.6,
+      "bl2_wmape": 70.5,
+      "oos_r": 0.353,
       "improvement_pt": 0.01
     }
   ],
   "best_point": {
     "name": "沼津沖",
-    "wmape_h0": 66.3,
+    "wmape_h0": 65.6,
     "improvement_pt": 0.01
   },
   "improvement_pt": 0.01,
@@ -143,6 +143,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=沼津沖 wmape=66.3% imp=0.01pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=65.6% imp=0.01pt"
     }
   ],
   "trip_models": [

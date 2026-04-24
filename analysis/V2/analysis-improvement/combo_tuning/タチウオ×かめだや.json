@@ -1,12 +1,12 @@
 {
   "fish": "タチウオ",
   "ship": "かめだや",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 43.05,
+    "wmape_h0": 43.14,
     "bl2_wmape": 57.85,
-    "oos_r": 0.602,
+    "oos_r": 0.598,
     "n_records": 124,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -116,6 +116,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=走水沖 wmape=36.7% imp=6.32pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=走水沖 wmape=36.7% imp=6.41pt"
     }
   ],
   "rejected_factors": [
@@ -187,15 +192,15 @@
       "wmape_h0": 36.7,
       "bl2_wmape": 44.2,
       "oos_r": 0.413,
-      "improvement_pt": 6.32
+      "improvement_pt": 6.41
     }
   ],
   "best_point": {
     "name": "走水沖",
     "wmape_h0": 36.7,
-    "improvement_pt": 6.32
+    "improvement_pt": 6.41
   },
-  "improvement_pt": 6.32,
+  "improvement_pt": 6.41,
   "trip_models": [
     {
       "trip_no": 1,

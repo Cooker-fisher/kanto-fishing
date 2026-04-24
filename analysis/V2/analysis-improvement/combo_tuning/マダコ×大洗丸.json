@@ -1,12 +1,12 @@
 {
   "fish": "マダコ",
   "ship": "大洗丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.35,
+    "wmape_h0": 36.38,
     "bl2_wmape": 52.93,
-    "oos_r": 0.604,
+    "oos_r": 0.607,
     "n_records": 104,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -111,6 +111,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=大洗沖 wmape=35.9% imp=0.46pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=大洗沖 wmape=36.0% imp=0.39pt"
     }
   ],
   "rejected_factors": [
@@ -197,16 +202,16 @@
     {
       "name": "大洗沖",
       "n": 101,
-      "wmape_h0": 35.9,
+      "wmape_h0": 36.0,
       "bl2_wmape": 52.4,
-      "oos_r": 0.602,
-      "improvement_pt": 0.46
+      "oos_r": 0.601,
+      "improvement_pt": 0.39
     }
   ],
   "best_point": {
     "name": "大洗沖",
-    "wmape_h0": 35.9,
-    "improvement_pt": 0.46
+    "wmape_h0": 36.0,
+    "improvement_pt": 0.39
   },
-  "improvement_pt": 0.46
+  "improvement_pt": 0.39
 }

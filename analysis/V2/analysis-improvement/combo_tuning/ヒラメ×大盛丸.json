@@ -1,12 +1,12 @@
 {
   "fish": "ヒラメ",
   "ship": "大盛丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 37.48,
     "bl2_wmape": 44.74,
-    "oos_r": 0.519,
+    "oos_r": 0.518,
     "n_records": 268,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -165,6 +165,11 @@
     },
     {
       "date": "2026-04-22",
+      "action": "point_backtest_updated",
+      "note": "best=外川前 wmape=31.0% imp=6.46pt"
+    },
+    {
+      "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=外川前 wmape=31.0% imp=6.46pt"
     }

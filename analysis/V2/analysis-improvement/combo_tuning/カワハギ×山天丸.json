@@ -1,13 +1,13 @@
 {
   "fish": "カワハギ",
   "ship": "山天丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.86,
-    "bl2_wmape": 40.78,
-    "oos_r": 0.559,
-    "n_records": 320,
+    "wmape_h0": 33.75,
+    "bl2_wmape": 40.75,
+    "oos_r": 0.563,
+    "n_records": 321,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -15,10 +15,10 @@
     {
       "name": "剣崎沖",
       "n": 33,
-      "wmape_h0": 19.8,
+      "wmape_h0": 20.0,
       "bl2_wmape": 61.9,
-      "oos_r": 0.883,
-      "improvement_pt": 14.03
+      "oos_r": 0.881,
+      "improvement_pt": 13.72
     },
     {
       "name": "久里浜沖",
@@ -26,39 +26,39 @@
       "wmape_h0": 22.4,
       "bl2_wmape": 38.1,
       "oos_r": 0.735,
-      "improvement_pt": 11.41
+      "improvement_pt": 11.31
     },
     {
       "name": "下浦沖",
       "n": 32,
       "wmape_h0": 22.6,
       "bl2_wmape": 51.5,
-      "oos_r": 0.81,
-      "improvement_pt": 11.24
+      "oos_r": 0.808,
+      "improvement_pt": 11.15
     },
     {
       "name": "竹岡沖",
-      "n": 132,
-      "wmape_h0": 29.6,
+      "n": 133,
+      "wmape_h0": 29.5,
       "bl2_wmape": 46.8,
-      "oos_r": 0.723,
-      "improvement_pt": 4.22
+      "oos_r": 0.726,
+      "improvement_pt": 4.26
     },
     {
       "name": "鴨居沖",
       "n": 84,
       "wmape_h0": 33.7,
       "bl2_wmape": 44.8,
-      "oos_r": 0.454,
-      "improvement_pt": 0.18
+      "oos_r": 0.447,
+      "improvement_pt": 0.1
     }
   ],
   "best_point": {
     "name": "剣崎沖",
-    "wmape_h0": 19.8,
-    "improvement_pt": 14.03
+    "wmape_h0": 20.0,
+    "improvement_pt": 13.72
   },
-  "improvement_pt": 14.03,
+  "improvement_pt": 13.72,
   "points": [
     {
       "name": "竹岡沖",
@@ -226,6 +226,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=19.8% imp=14.03pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=20.0% imp=13.72pt"
     }
   ],
   "trip_models": [

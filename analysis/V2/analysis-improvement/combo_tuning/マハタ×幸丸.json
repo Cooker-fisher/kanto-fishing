@@ -1,12 +1,12 @@
 {
   "fish": "マハタ",
   "ship": "幸丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.94,
+    "wmape_h0": 31.13,
     "bl2_wmape": 43.85,
-    "oos_r": 0.879,
+    "oos_r": 0.881,
     "n_records": 85,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -72,6 +72,11 @@
       "date": "2026-04-22",
       "action": "depth_band_point_adoption",
       "note": "水深帯ポイント採用: 浅場(~40m) (N=55, wMAPE=31.0% vs BL2=42.0%, BL2比+11.0pt改善)"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=29.0% imp=2.17pt"
     }
   ],
   "rejected_factors": [
@@ -140,18 +145,18 @@
     {
       "name": "浅場(~40m)",
       "n": 55,
-      "wmape_h0": 31.0,
+      "wmape_h0": 29.0,
       "bl2_wmape": 42.0,
-      "oos_r": 0.936,
-      "improvement_pt": 0.99
+      "oos_r": 0.942,
+      "improvement_pt": 2.17
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
-    "wmape_h0": 31.0,
-    "improvement_pt": 0.99
+    "wmape_h0": 29.0,
+    "improvement_pt": 2.17
   },
-  "improvement_pt": 0.99,
+  "improvement_pt": 2.17,
   "trip_models": [
     {
       "trip_no": 6,

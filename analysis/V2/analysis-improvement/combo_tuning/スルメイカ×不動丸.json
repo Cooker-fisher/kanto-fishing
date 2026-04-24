@@ -1,12 +1,12 @@
 {
   "fish": "スルメイカ",
   "ship": "不動丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.57,
+    "wmape_h0": 39.61,
     "bl2_wmape": 47.09,
-    "oos_r": 0.466,
+    "oos_r": 0.463,
     "n_records": 251,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,15 +15,15 @@
     {
       "name": "勝浦沖",
       "n": 212,
-      "wmape_h0": 39.5,
+      "wmape_h0": 39.6,
       "bl2_wmape": 47.8,
-      "oos_r": 0.467,
+      "oos_r": 0.464,
       "improvement_pt": 0.03
     }
   ],
   "best_point": {
     "name": "勝浦沖",
-    "wmape_h0": 39.5,
+    "wmape_h0": 39.6,
     "improvement_pt": 0.03
   },
   "improvement_pt": 0.03,
@@ -164,6 +164,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=勝浦沖 wmape=39.5% imp=0.03pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=勝浦沖 wmape=39.6% imp=0.03pt"
     }
   ],
   "trip_models": [

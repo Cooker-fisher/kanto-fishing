@@ -1,16 +1,15 @@
 {
   "fish": "ムギイカ",
   "ship": "第八幸松丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 58.1,
-    "bl0_wmape": 68.1,
-    "bl2_wmape": 65.0,
-    "oos_r": 0.334,
-    "n_records": 92,
-    "alpha_scale": 0.598,
-    "use_fallback": false
+    "wmape_h0": 55.91,
+    "bl2_wmape": 64.03,
+    "oos_r": 0.353,
+    "n_records": 97,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -82,7 +81,13 @@
     "最低気温が高い日ほど釣果が上がる傾向",
     "沖合の海面水位が低い月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=静浦沖 wmape=55.5% imp=0.46pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_100m_spring",
@@ -158,5 +163,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "静浦沖",
+      "n": 96,
+      "wmape_h0": 55.5,
+      "bl2_wmape": 63.9,
+      "oos_r": 0.367,
+      "improvement_pt": 0.46
+    }
+  ],
+  "best_point": {
+    "name": "静浦沖",
+    "wmape_h0": 55.5,
+    "improvement_pt": 0.46
+  },
+  "improvement_pt": 0.46
 }

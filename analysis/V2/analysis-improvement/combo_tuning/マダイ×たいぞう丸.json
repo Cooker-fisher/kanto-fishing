@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "たいぞう丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.12,
+    "wmape_h0": 38.15,
     "bl2_wmape": 39.41,
-    "oos_r": 0.361,
+    "oos_r": 0.357,
     "n_records": 397,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -17,16 +17,16 @@
       "n": 388,
       "wmape_h0": 37.8,
       "bl2_wmape": 39.3,
-      "oos_r": 0.362,
-      "improvement_pt": 0.29
+      "oos_r": 0.365,
+      "improvement_pt": 0.39
     }
   ],
   "best_point": {
     "name": "葉山沖",
     "wmape_h0": 37.8,
-    "improvement_pt": 0.29
+    "improvement_pt": 0.39
   },
-  "improvement_pt": 0.29,
+  "improvement_pt": 0.39,
   "points": [
     {
       "name": "葉山沖",
@@ -159,6 +159,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=葉山沖 wmape=37.6% imp=0.48pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=葉山沖 wmape=37.8% imp=0.39pt"
     }
   ],
   "trip_models": [

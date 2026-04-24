@@ -1,12 +1,12 @@
 {
   "fish": "キハダマグロ",
   "ship": "翔太丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 64.97,
+    "wmape_h0": 66.52,
     "bl2_wmape": 58.42,
-    "oos_r": 0.089,
+    "oos_r": 0.056,
     "n_records": 57,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,23 +15,28 @@
     {
       "name": "城ヶ島沖",
       "n": 54,
-      "wmape_h0": 60.1,
+      "wmape_h0": 61.8,
       "bl2_wmape": 55.7,
-      "oos_r": 0.2,
-      "improvement_pt": 4.89
+      "oos_r": 0.16,
+      "improvement_pt": 4.68
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
-    "wmape_h0": 60.1,
-    "improvement_pt": 4.89
+    "wmape_h0": 61.8,
+    "improvement_pt": 4.68
   },
-  "improvement_pt": 4.89,
+  "improvement_pt": 4.68,
   "history": [
     {
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=60.1% imp=4.89pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=61.8% imp=4.68pt"
     }
   ]
 }
