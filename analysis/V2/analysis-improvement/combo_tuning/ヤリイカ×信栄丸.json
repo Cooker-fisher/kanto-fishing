@@ -1,0 +1,31 @@
+{
+  "fish": "ヤリイカ",
+  "ship": "信栄丸",
+  "last_reviewed": "2026-04-25",
+  "status": "backtest_na",
+  "metrics": {
+    "wmape_h0": null,
+    "bl2_wmape": null,
+    "oos_r": null,
+    "n_records": 34,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": null,
+    "depth_max": null
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "N=34件・2026/01～03（3ヶ月・旬節魚）。MIN_MONTHS=6ガードによりバックテスト不可。季節限定のため構造的にバックテスト不可。N蓄積後も月数は3～4ヶ月止まり。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "backtest_na",
+      "note": "MIN_MONTHS=6スキップ。2026/01～03（3ヶ月・旬節魚）。combo_metaには存在（平均値・平年比表示は可能）。"
+    }
+  ]
+}

@@ -723,23 +723,36 @@ def main():
             all_new.extend(ship_records)
 
         elif parser_type == "yukou":
-            # 勇幸丸スタイル: history URL で過去7日分をループ取得（1日1件形式）
+            # 勇幸丸スタイル:
+            #   gyo history は「最新更新日以降の hdt を指定すると最終レポートを返す」仕様。
+            #   そのためhdt=今日から-1日ずつ試すのでなく、
+            #   「最新のparsed_dateを取得し、その前日を次のhdt起点にする」方式で遡る。
             ship_records = []
-            for days_ago in range(7):
-                hdt     = today - timedelta(days=days_ago)
+            seen_dates   = set()
+            hdt          = today
+            for _ in range(50):  # 最大50エントリ（週3〜5出漁で約10〜17週分）
                 hdt_str = hdt.strftime("%Y/%m/%d")
                 url     = GYO_HISTORY_URL.format(cid=s["cid"], hdt=hdt_str, dt=dt_param)
                 html    = fetch_gyo(url)
                 if not html:
                     print(f"    {hdt_str}: fetch error")
-                    continue
-                recs = parse_gyo_yukou(html, s["ship"], s["area"], date_str=hdt_str)
-                if recs:
-                    print(f"    {hdt_str}: {len(recs)} 件 pt={recs[0]['point_raw']}")
-                else:
-                    print(f"    {hdt_str}: 0 件（休船または更新なし）")
+                    break
+                # date_str=None: stale data を許容して日付はHTML内から取得
+                recs = parse_gyo_yukou(html, s["ship"], s["area"], date_str=None)
+                if not recs:
+                    print(f"    {hdt_str}: データなし → 終了")
+                    break
+                got_date = recs[0]["date"]
+                if got_date in seen_dates:
+                    # 同日データが返ってきた → これ以上遡れない（ループ終端）
+                    print(f"    {hdt_str}: {got_date} 既取得 → 終了")
+                    break
+                seen_dates.add(got_date)
+                print(f"    {hdt_str}→{got_date}: {len(recs)} 件 pt={recs[0]['point_raw']}")
                 ship_records.extend(recs)
-                time.sleep(1.0)
+                # 次の探索起点: 今回取得した日付の前日
+                hdt = datetime.strptime(got_date, "%Y/%m/%d") - timedelta(days=1)
+                time.sleep(1.5)
             all_new.extend(ship_records)
 
         else:
