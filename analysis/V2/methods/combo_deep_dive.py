@@ -1678,7 +1678,9 @@ def _get_sss_nearest(conn_cmems, lat, lon, date_iso):
     """
     if conn_cmems is None:
         return None
-    k = (round(lat, 4), round(lon, 4), date_iso)
+    # CMEMS grid ≈ 0.08°。2桁丸めで船宿単位の再利用率を最大化する
+    rl, ro = round(lat, 2), round(lon, 2)
+    k = (rl, ro, date_iso)
     if k in _sss_nearest_cache:
         return _sss_nearest_cache[k]
     row = conn_cmems.execute(
@@ -1687,7 +1689,7 @@ def _get_sss_nearest(conn_cmems, lat, lon, date_iso):
              AND ABS(lat - ?) < 0.25 AND ABS(lon - ?) < 0.25
            ORDER BY (lat - ?) * (lat - ?) + (lon - ?) * (lon - ?)
            LIMIT 1""",
-        (date_iso, lat, lon, lat, lat, lon, lon),
+        (date_iso, rl, ro, rl, rl, ro, ro),
     ).fetchone()
     v = row[0] if row else None
     _sss_nearest_cache[k] = v
