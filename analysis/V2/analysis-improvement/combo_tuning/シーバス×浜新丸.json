@@ -1,0 +1,37 @@
+{
+  "fish": "シーバス",
+  "ship": "浜新丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 55.41,
+    "bl2_wmape": 52.85,
+    "oos_r": 0.314,
+    "n_records": 75,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "富津沖",
+      "n": 75,
+      "wmape_h0": 40.9,
+      "bl2_wmape": 52.8,
+      "oos_r": 0.58,
+      "improvement_pt": 14.56
+    }
+  ],
+  "best_point": {
+    "name": "富津沖",
+    "wmape_h0": 40.9,
+    "improvement_pt": 14.56
+  },
+  "improvement_pt": 14.56,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=富津沖 wmape=40.9% imp=14.56pt"
+    }
+  ]
+}

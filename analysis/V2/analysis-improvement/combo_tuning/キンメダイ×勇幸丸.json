@@ -1,0 +1,37 @@
+{
+  "fish": "キンメダイ",
+  "ship": "勇幸丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 57.16,
+    "bl2_wmape": 45.46,
+    "oos_r": -0.27,
+    "n_records": 45,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "片貝沖",
+      "n": 45,
+      "wmape_h0": 32.2,
+      "bl2_wmape": 45.5,
+      "oos_r": 0.68,
+      "improvement_pt": 24.99
+    }
+  ],
+  "best_point": {
+    "name": "片貝沖",
+    "wmape_h0": 32.2,
+    "improvement_pt": 24.99
+  },
+  "improvement_pt": 24.99,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=片貝沖 wmape=32.2% imp=24.99pt"
+    }
+  ]
+}

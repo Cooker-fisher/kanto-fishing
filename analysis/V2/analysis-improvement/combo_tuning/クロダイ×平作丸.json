@@ -1,0 +1,37 @@
+{
+  "fish": "クロダイ",
+  "ship": "平作丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 45.73,
+    "bl2_wmape": 47.88,
+    "oos_r": 0.189,
+    "n_records": 53,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 53,
+      "wmape_h0": 40.2,
+      "bl2_wmape": 47.9,
+      "oos_r": 0.401,
+      "improvement_pt": 5.52
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 40.2,
+    "improvement_pt": 5.52
+  },
+  "improvement_pt": 5.52,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=40.2% imp=5.52pt"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "fish": "ヤリイカ",
+  "ship": "春盛丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 41.99,
+    "bl2_wmape": 42.25,
+    "oos_r": 0.074,
+    "n_records": 221,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 34,
+      "wmape_h0": 28.2,
+      "bl2_wmape": 31.8,
+      "oos_r": 0.41,
+      "improvement_pt": 13.83
+    },
+    {
+      "name": "長井沖",
+      "n": 118,
+      "wmape_h0": 35.1,
+      "bl2_wmape": 50.5,
+      "oos_r": 0.537,
+      "improvement_pt": 6.85
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 28.2,
+    "improvement_pt": 13.83
+  },
+  "improvement_pt": 13.83,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=28.2% imp=13.83pt"
+    }
+  ]
+}

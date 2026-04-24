@@ -1,0 +1,37 @@
+{
+  "fish": "マダコ",
+  "ship": "新修丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 55.03,
+    "bl2_wmape": 57.38,
+    "oos_r": 0.144,
+    "n_records": 74,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "富岡沖",
+      "n": 49,
+      "wmape_h0": 49.4,
+      "bl2_wmape": 64.7,
+      "oos_r": 0.423,
+      "improvement_pt": 5.59
+    }
+  ],
+  "best_point": {
+    "name": "富岡沖",
+    "wmape_h0": 49.4,
+    "improvement_pt": 5.59
+  },
+  "improvement_pt": 5.59,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=富岡沖 wmape=49.4% imp=5.59pt"
+    }
+  ]
+}

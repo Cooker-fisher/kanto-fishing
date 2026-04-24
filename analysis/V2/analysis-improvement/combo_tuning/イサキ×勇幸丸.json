@@ -1,0 +1,37 @@
+{
+  "fish": "イサキ",
+  "ship": "勇幸丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 53.37,
+    "bl2_wmape": 59.87,
+    "oos_r": 0.211,
+    "n_records": 90,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "太東沖",
+      "n": 68,
+      "wmape_h0": 33.4,
+      "bl2_wmape": 46.6,
+      "oos_r": 0.484,
+      "improvement_pt": 19.95
+    }
+  ],
+  "best_point": {
+    "name": "太東沖",
+    "wmape_h0": 33.4,
+    "improvement_pt": 19.95
+  },
+  "improvement_pt": 19.95,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=太東沖 wmape=33.4% imp=19.95pt"
+    }
+  ]
+}

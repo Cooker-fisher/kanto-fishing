@@ -1,0 +1,37 @@
+{
+  "fish": "キハダマグロ",
+  "ship": "洋征丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 78.96,
+    "bl2_wmape": 69.93,
+    "oos_r": 0.067,
+    "n_records": 69,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "小坪沖",
+      "n": 48,
+      "wmape_h0": 63.8,
+      "bl2_wmape": 63.3,
+      "oos_r": 0.411,
+      "improvement_pt": 15.18
+    }
+  ],
+  "best_point": {
+    "name": "小坪沖",
+    "wmape_h0": 63.8,
+    "improvement_pt": 15.18
+  },
+  "improvement_pt": 15.18,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=小坪沖 wmape=63.8% imp=15.18pt"
+    }
+  ]
+}

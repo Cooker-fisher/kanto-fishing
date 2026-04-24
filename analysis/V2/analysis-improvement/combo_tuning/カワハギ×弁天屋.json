@@ -1,0 +1,37 @@
+{
+  "fish": "カワハギ",
+  "ship": "弁天屋",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 45.6,
+    "bl2_wmape": 44.71,
+    "oos_r": 0.253,
+    "n_records": 216,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "竹岡沖",
+      "n": 206,
+      "wmape_h0": 38.2,
+      "bl2_wmape": 44.3,
+      "oos_r": 0.534,
+      "improvement_pt": 7.44
+    }
+  ],
+  "best_point": {
+    "name": "竹岡沖",
+    "wmape_h0": 38.2,
+    "improvement_pt": 7.44
+  },
+  "improvement_pt": 7.44,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=竹岡沖 wmape=38.2% imp=7.44pt"
+    }
+  ]
+}

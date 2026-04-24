@@ -1,0 +1,37 @@
+{
+  "fish": "カワハギ",
+  "ship": "儀兵衛丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 47.68,
+    "bl2_wmape": 43.64,
+    "oos_r": 0.314,
+    "n_records": 748,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "長井沖",
+      "n": 748,
+      "wmape_h0": 43.5,
+      "bl2_wmape": 43.6,
+      "oos_r": 0.483,
+      "improvement_pt": 4.18
+    }
+  ],
+  "best_point": {
+    "name": "長井沖",
+    "wmape_h0": 43.5,
+    "improvement_pt": 4.18
+  },
+  "improvement_pt": 4.18,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=長井沖 wmape=43.5% imp=4.18pt"
+    }
+  ]
+}

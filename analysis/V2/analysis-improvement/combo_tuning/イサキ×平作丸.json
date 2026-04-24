@@ -1,0 +1,45 @@
+{
+  "fish": "イサキ",
+  "ship": "平作丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 69.34,
+    "bl2_wmape": 73.95,
+    "oos_r": 0.111,
+    "n_records": 115,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 71,
+      "wmape_h0": 56.7,
+      "bl2_wmape": 53.1,
+      "oos_r": 0.084,
+      "improvement_pt": 12.65
+    },
+    {
+      "name": "久里浜沖",
+      "n": 44,
+      "wmape_h0": 86.8,
+      "bl2_wmape": 74.8,
+      "oos_r": -0.097,
+      "improvement_pt": -17.51
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 56.7,
+    "improvement_pt": 12.65
+  },
+  "improvement_pt": 12.65,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=56.7% imp=12.65pt"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "fish": "カワハギ",
+  "ship": "新修丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 51.6,
+    "bl2_wmape": 59.08,
+    "oos_r": 0.299,
+    "n_records": 284,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "八景沖",
+      "n": 60,
+      "wmape_h0": 29.8,
+      "bl2_wmape": 45.5,
+      "oos_r": 0.61,
+      "improvement_pt": 21.78
+    },
+    {
+      "name": "竹岡沖",
+      "n": 224,
+      "wmape_h0": 47.3,
+      "bl2_wmape": 56.0,
+      "oos_r": 0.446,
+      "improvement_pt": 4.31
+    }
+  ],
+  "best_point": {
+    "name": "八景沖",
+    "wmape_h0": 29.8,
+    "improvement_pt": 21.78
+  },
+  "improvement_pt": 21.78,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=八景沖 wmape=29.8% imp=21.78pt"
+    }
+  ]
+}

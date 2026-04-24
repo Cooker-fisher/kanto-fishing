@@ -1,0 +1,37 @@
+{
+  "fish": "アジ",
+  "ship": "とうふや丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 34.06,
+    "bl2_wmape": 29.71,
+    "oos_r": -0.091,
+    "n_records": 166,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "瀬の海",
+      "n": 158,
+      "wmape_h0": 23.2,
+      "bl2_wmape": 28.2,
+      "oos_r": 0.435,
+      "improvement_pt": 10.82
+    }
+  ],
+  "best_point": {
+    "name": "瀬の海",
+    "wmape_h0": 23.2,
+    "improvement_pt": 10.82
+  },
+  "improvement_pt": 10.82,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=瀬の海 wmape=23.2% imp=10.82pt"
+    }
+  ]
+}

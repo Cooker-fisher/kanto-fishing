@@ -1,0 +1,37 @@
+{
+  "fish": "カワハギ",
+  "ship": "三喜丸釣船店",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 62.62,
+    "bl2_wmape": 44.57,
+    "oos_r": -0.315,
+    "n_records": 36,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "竹岡沖",
+      "n": 36,
+      "wmape_h0": 37.5,
+      "bl2_wmape": 44.6,
+      "oos_r": 0.404,
+      "improvement_pt": 25.09
+    }
+  ],
+  "best_point": {
+    "name": "竹岡沖",
+    "wmape_h0": 37.5,
+    "improvement_pt": 25.09
+  },
+  "improvement_pt": 25.09,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=竹岡沖 wmape=37.5% imp=25.09pt"
+    }
+  ]
+}

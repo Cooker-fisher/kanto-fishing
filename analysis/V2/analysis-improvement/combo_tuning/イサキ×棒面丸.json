@@ -1,0 +1,37 @@
+{
+  "fish": "イサキ",
+  "ship": "棒面丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 42.4,
+    "bl2_wmape": 44.4,
+    "oos_r": -0.203,
+    "n_records": 55,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 34,
+      "wmape_h0": 33.0,
+      "bl2_wmape": 41.1,
+      "oos_r": 0.343,
+      "improvement_pt": 9.36
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 33.0,
+    "improvement_pt": 9.36
+  },
+  "improvement_pt": 9.36,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=33.0% imp=9.36pt"
+    }
+  ]
+}

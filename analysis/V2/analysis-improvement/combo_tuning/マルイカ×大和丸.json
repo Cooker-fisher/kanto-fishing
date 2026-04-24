@@ -1,0 +1,37 @@
+{
+  "fish": "マルイカ",
+  "ship": "大和丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 59.79,
+    "bl2_wmape": 51.91,
+    "oos_r": 0.038,
+    "n_records": 148,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "城ヶ島沖",
+      "n": 148,
+      "wmape_h0": 37.8,
+      "bl2_wmape": 51.9,
+      "oos_r": 0.6,
+      "improvement_pt": 21.98
+    }
+  ],
+  "best_point": {
+    "name": "城ヶ島沖",
+    "wmape_h0": 37.8,
+    "improvement_pt": 21.98
+  },
+  "improvement_pt": 21.98,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=37.8% imp=21.98pt"
+    }
+  ]
+}

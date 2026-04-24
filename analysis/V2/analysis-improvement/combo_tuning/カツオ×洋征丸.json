@@ -1,0 +1,37 @@
+{
+  "fish": "カツオ",
+  "ship": "洋征丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 66.07,
+    "bl2_wmape": 68.6,
+    "oos_r": 0.047,
+    "n_records": 93,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "相模湾",
+      "n": 65,
+      "wmape_h0": 59.6,
+      "bl2_wmape": 69.3,
+      "oos_r": 0.492,
+      "improvement_pt": 6.46
+    }
+  ],
+  "best_point": {
+    "name": "相模湾",
+    "wmape_h0": 59.6,
+    "improvement_pt": 6.46
+  },
+  "improvement_pt": 6.46,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=相模湾 wmape=59.6% imp=6.46pt"
+    }
+  ]
+}
