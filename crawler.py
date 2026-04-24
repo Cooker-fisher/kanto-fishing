@@ -6139,6 +6139,101 @@ SHIP_GOMOKU_RULES = {
     "弘漁丸":       "ヒラメ",
     "こなや丸":     "サワラ",
     "林遊船":       "サワラ",
+    "太幸丸":       "コマセ五目",
+}
+
+# 船宿別デフォルトポイント（point_raw・kanso_rawで地名が取れない場合のフォールバック）
+# 地元の単一ポイント運航が明らかな船宿のみ登録
+SHIP_DEFAULT_POINT = {
+    "ちがさき丸": "茅ヶ崎沖",
+    "平安丸":     "小田原沖",
+}
+
+# 船宿別便種ルール: kanso_raw 先頭がパターンに前方一致 → tsuri_mono を強制上書き
+# SHIP_GOMOKU_RULES より優先的に適用される（複数便種を持つ船宿専用）
+SHIP_TRIP_RULES = {
+    "平安丸": [
+        ("根魚",     "キンメダイ"),   # 根魚船・根魚リレー船 → キンメダイ
+        ("LT五目",  "イサキ"),
+    ],
+    "村井丸": [
+        ("LTタイ五目", "クロダイ"),
+        ("タイ五目船",  "クロダイ"),
+        ("タイ仕立船",  "クロダイ"),
+        ("タイ船",      "クロダイ"),
+        ("マダイ船",    "クロダイ"),
+        ("LTタイ船",    "クロダイ"),
+        ("LT五目",      "LT五目"),
+        ("ライト五目",  "LT五目"),
+        ("落とし込み",  "落とし込み"),
+        ("落し込み",    "落とし込み"),
+        ("アマダイ",    "アマダイ"),
+        ("カワハギ",    "カワハギ"),
+    ],
+    "鶴丸": [
+        ("朝シロアマダイ", "シロアマダイ"),
+        ("朝アカアマダイ", "アカアマダイ"),
+        ("朝紅白アマダイ", "アカアマダイ"),  # 紅白＝アカ・シロ → 冒頭アカ
+        ("朝アマダイ",     "アマダイ"),
+    ],
+    "たいぞう丸": [
+        ("シロアマダイ五目", "シロアマダイ"),
+        ("アマダイ五目",     "アマダイ"),
+        ("アマダイ船",       "アマダイ"),
+        ("アマダイ",         "アマダイ"),
+    ],
+    "大盛丸": [
+        ("ホウボウ", "ホウボウ"),  # ホウボウ五目船
+        ("イシナギ", "ヒラメ"),
+        ("アマダイ", "アマダイ"),  # アマダイ船
+        ("五目",     "五目"),      # 五目船（汎用）
+    ],
+    "大貫丸": [
+        ("アマダイ", "アマダイ"),  # アマダイ船100件のマダイ誤分類修正
+        ("ムラソイ船", "キンメダイ"),  # ムラソイ船=根魚五目
+    ],
+    "恵漁丸": [
+        ("シロアマダイ", "シロアマダイ"),
+        ("アマダイ",     "アマダイ"),
+    ],
+    "海桜丸": [
+        ("五目アマダイ", "アマダイ"),
+        ("五目&アマダイ", "アマダイ"),
+        ("アマダイ",     "アマダイ"),
+    ],
+    "第八幸松丸": [
+        ("午前便アマダイ五目", "アマダイ"),
+        ("午前便アマダイ",     "アマダイ"),
+    ],
+    "仁徳丸": [
+        ("スロージギング", "スロージギング"),
+        ("浅場根魚五目",   "キンメダイ"),
+        ("アラ五目",       "アラ"),
+        ("アマダイ五目",   "アマダイ"),
+        ("アマダイ",       "アマダイ"),
+    ],
+    "共栄丸": [
+        ("午後アマダイ五目", "アマダイ"),
+        ("午前アマダイ五目", "アマダイ"),
+        ("アマダイ五目",     "アマダイ"),
+    ],
+    "秀丸": [
+        ("早夜ムラサキイカ", "アカイカ"),
+        ("深夜ムラサキイカ", "アカイカ"),
+        ("ムラサキイカ",     "アカイカ"),
+    ],
+    "庄治郎丸": [
+        ("ライトルアー", "ライトルアー"),
+    ],
+    "不動丸": [
+        ("SLJ", "SLJ"),
+    ],
+    "伊達丸": [
+        ("アマラバ", "アマラバ"),
+    ],
+    "吉野屋": [
+        ("アナゴ船", "アナゴ"),
+    ],
 }
 
 
@@ -6152,6 +6247,11 @@ def normalize_tsuri_mono(raw, ship=""):
     # 船宿別イカ特例
     if raw == "イカ" and ship in SHIP_IKA_RULES:
         return SHIP_IKA_RULES[ship]
+    # 船宿別便種ルール（SHIP_GOMOKU_RULES より優先）
+    if ship in SHIP_TRIP_RULES:
+        for pattern, result in SHIP_TRIP_RULES[ship]:
+            if raw.startswith(pattern):
+                return result
     # 船宿別五目特例（汎用五目系表記）
     _gomoku_keys = ("五目", "LT五目", "タイ五目", "イナダ五目", "イサキ五目", "根魚五目", "青物")
     if any(k in raw for k in _gomoku_keys) and ship in SHIP_GOMOKU_RULES:
@@ -6166,7 +6266,15 @@ def normalize_tsuri_mono(raw, ship=""):
             return tsuri_mono
     # 3. パターンがrawに含まれる（例: raw="大マダイ" → "マダイ" in "大マダイ"）
     #    ※ raw in p（逆方向）は使わない → アマダイ→マダイ等の誤分類を防ぐ
+    #    ※ アマダイ系を先にチェック（"マダイ" in "アマダイ" = True の誤ヒット防止）
+    _amadai_priority = ("アカアマダイ", "シロアマダイ", "アマダイ")
+    for _tm in _amadai_priority:
+        if _tm in TSURI_MONO_MAP:
+            if any(p in raw for p in TSURI_MONO_MAP[_tm]):
+                return _tm
     for tsuri_mono, patterns in TSURI_MONO_MAP.items():
+        if tsuri_mono in _amadai_priority:
+            continue
         if any(p in raw for p in patterns):
             return tsuri_mono
     return ""
@@ -6551,6 +6659,9 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 pp_from_kanso = _extract_point_from_kanso(comment)
                 if pp_from_kanso:
                     places = [pp_from_kanso] + list(places[1:])
+            # 船宿別デフォルトポイント（地元単一運航船）
+            if (not places or not places[0]) and r.get("ship") in SHIP_DEFAULT_POINT:
+                places = [SHIP_DEFAULT_POINT[r["ship"]]] + list(places[1:] if places else [])
 
             cr = extract_count(r.get("count_raw") or "")
             sc = extract_size_cm(r.get("size_raw") or "")

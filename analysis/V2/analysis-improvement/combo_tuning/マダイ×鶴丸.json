@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "鶴丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "pending",
   "metrics": {
     "wmape_h0": 44.3,
@@ -67,7 +67,13 @@
     "秋の長潮・若潮に釣果が上がる傾向",
     "小潮・長潮で釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "tsuri_mono_reclassify",
+      "note": "SHIP_TRIP_RULES追加: 朝シロアマダイ→シロアマダイ, 朝アカアマダイ→アカアマダイ, 朝紅白アマダイ→アカアマダイ, 朝アマダイ→アマダイ。アマダイ系146件のマダイ誤分類を修正。n減少見込み。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_avg",

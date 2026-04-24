@@ -1,7 +1,7 @@
 {
   "fish": "タイ五目",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 81.52,
@@ -180,6 +180,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=茅ヶ崎沖 wmape=80.0% imp=1.51pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "default_point_set",
+      "note": "SHIP_DEFAULT_POINT追加: ちがさき丸 → 茅ヶ崎沖。point空254件を茅ヶ崎沖に統合。"
     }
   ],
   "trip_models": [

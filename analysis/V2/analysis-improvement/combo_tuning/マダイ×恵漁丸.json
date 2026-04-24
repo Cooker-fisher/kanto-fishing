@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "恵漁丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "pending",
   "metrics": {
     "wmape_h0": 36.7,
@@ -107,7 +107,13 @@
     "気温が低い日ほど釣果が上がる傾向",
     "産卵期以外に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "tsuri_mono_reclassify",
+      "note": "SHIP_TRIP_RULES追加: アマダイ出船→アマダイ(18件), シロアマダイ出船→シロアマダイ(10件) 分離。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "precip_sum5",

@@ -1,7 +1,7 @@
 {
   "fish": "カツオ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "pending",
   "metrics": {
     "wmape_h0": 49.1,
@@ -82,7 +82,13 @@
     "最低気温が低い日ほど釣果が上がる傾向",
     "夏の大潮に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "default_point_set",
+      "note": "SHIP_DEFAULT_POINT追加: 平安丸 → 小田原沖。point空352件を小田原沖に統合見込み。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",

@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "大貫丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-24",
   "status": "pending",
   "metrics": {
     "wmape_h0": 39.0,
@@ -87,7 +87,13 @@
     "前週好調が継続しやすい傾向",
     "夏季の100m深水温が高い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "tsuri_mono_reclassify",
+      "note": "アマダイ船100件のマダイ誤分類をSHIP_TRIP_RULES追加で修正。n減少見込み。"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_monthly",

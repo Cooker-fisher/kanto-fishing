@@ -187,6 +187,16 @@
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=小田原沖 wmape=50.7% imp=3.86pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "tsuri_mono_reclassify",
+      "note": "SHIP_TRIP_RULES追加: 根魚船/根魚リレー船 → キンメダイ に統合。n増加見込み。"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "default_point_set",
+      "note": "SHIP_DEFAULT_POINT追加: 平安丸 → 小田原沖。point空352件を小田原沖に統合見込み。"
     }
   ],
   "trip_models": [
