@@ -1,0 +1,31 @@
+{
+  "fish": "クロムツ",
+  "ship": "太郎丸",
+  "last_reviewed": "2026-04-25",
+  "status": "combo_marginal",
+  "metrics": {
+    "wmape_h0": 63.2,
+    "bl2_wmape": 65.8,
+    "oos_r": -0.039,
+    "n_records": 34,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 300,
+    "depth_max": 400
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "城ヶ島沖20件・沖ノ瀬7件・空19件。深場300-400m。H=0 r=-0.039 ほぼ無相関。use_fallback=1(DB設定)。フォールバック後63.2%でBL2(65.8%)には僅差勝ち。水色記録41/49と豊富。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "combo_marginal",
+      "note": "r=-0.039 無相関。use_fallback=1。フォールバック+BL2僅差勝ち(63.2%<65.8%)。城ヶ島沖/沖ノ瀬が主ポイントだが各N<30で点モデル未作成。深場300-400m。データ増加後に再評価。"
+    }
+  ]
+}

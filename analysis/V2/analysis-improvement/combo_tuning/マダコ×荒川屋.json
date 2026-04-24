@@ -1,0 +1,31 @@
+{
+  "fish": "マダコ",
+  "ship": "荒川屋",
+  "last_reviewed": "2026-04-25",
+  "status": "combo_ok",
+  "metrics": {
+    "wmape_h0": 46.8,
+    "bl2_wmape": 57.6,
+    "oos_r": 0.366,
+    "n_records": 38,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 5,
+    "depth_max": 23
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "富岡沖32件(64%)。水色記録50/50=全件あり。H=0 wmape=46.8% BL2(57.6%)勝ち・r=0.366。use_fallback=1がDB設定済み（全horizon平均での判定）。H=0個別では良好。浅場5-23m。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "combo_ok",
+      "note": "H=0 wmape=46.8% BL2(57.6%)勝ち r=0.366。use_fallback=1はDB設定(全horizon平均での逆補正判定)。H=0では正常。水色データ100%カバーで水色特徴量が有効。富岡沖浅場。"
+    }
+  ]
+}

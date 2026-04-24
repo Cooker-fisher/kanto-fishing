@@ -1,8 +1,8 @@
 {
   "fish": "カワハギ",
   "ship": "儀兵衛丸",
-  "last_reviewed": "2026-04-24",
-  "status": "point_model_marginal",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 47.68,
     "bl2_wmape": 43.64,
@@ -10,6 +10,12 @@
     "n_records": 748,
     "use_fallback": false,
     "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 10,
+    "depth_max": 30
   },
   "point_models": [
     {
@@ -32,6 +38,11 @@
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=長井沖 wmape=43.5% imp=4.18pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_model_applied",
+      "note": "長井沖100%カバー・r=0.483・通年748件。浅場10-30m。コンボwMAPE47.68%だがポイントモデル43.5%でBL2(43.6%)に僅差勝ち。n_points_visited追加後の再実行で改善期待。"
     }
   ]
 }

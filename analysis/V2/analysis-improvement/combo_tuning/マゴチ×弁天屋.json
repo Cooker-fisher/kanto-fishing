@@ -1,14 +1,14 @@
 {
   "fish": "マゴチ",
   "ship": "弁天屋",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 47.33,
+    "wmape_h0": 36.86,
     "bl2_wmape": 47.04,
-    "oos_r": -0.007,
+    "oos_r": 0.532,
     "n_records": 106,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
@@ -18,7 +18,7 @@
       "wmape_h0": 30.4,
       "bl2_wmape": 45.7,
       "oos_r": 0.465,
-      "improvement_pt": 16.94
+      "improvement_pt": 6.47
     },
     {
       "name": "八景沖",
@@ -26,20 +26,25 @@
       "wmape_h0": 39.1,
       "bl2_wmape": 53.4,
       "oos_r": 0.545,
-      "improvement_pt": 8.24
+      "improvement_pt": -2.22
     }
   ],
   "best_point": {
     "name": "富津沖",
     "wmape_h0": 30.4,
-    "improvement_pt": 16.94
+    "improvement_pt": 6.47
   },
-  "improvement_pt": 16.94,
+  "improvement_pt": 6.47,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=富津沖 wmape=30.4% imp=16.94pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=富津沖 wmape=30.4% imp=6.47pt"
     }
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "fish": "ヤリイカ",
+  "ship": "吉野屋",
+  "last_reviewed": "2026-04-25",
+  "status": "combo_ok",
+  "metrics": {
+    "wmape_h0": 28.6,
+    "bl2_wmape": 40.2,
+    "oos_r": 0.691,
+    "n_records": 31,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 150,
+    "depth_max": 220
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "剣崎沖25件(80%)。n=31で点モデル未作成。H=0 r=0.691 H=7 r=0.643 ともに高相関・優秀。深場150-220m。単独ポイント日のみ(n_points_visited=1: 31/31)。水色記録なし→water_color_daily補完。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "combo_ok",
+      "note": "r=0.691 全コンボ中トップクラス。wMAPE28.6%はBL2(40.2%)を-11.6pt下回る優秀コンボ。剣崎沖中心深場。H=7でも31.0%と精度維持。データ増加次第で剣崎沖ポイントモデル作成予定。"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "fish": "カツオ",
+  "ship": "幸丸",
+  "last_reviewed": "2026-04-25",
+  "status": "kaiyu_ok",
+  "metrics": {
+    "wmape_h0": 80.4,
+    "bl2_wmape": 115.2,
+    "oos_r": 0.460,
+    "n_records": 36,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": null,
+    "depth_max": null
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "ポイント記録全件空。水色記録2/36件のみ。H=0 wmape=80.4% BL2(115.2%)を-34.8pt大差勝ち。H=7も79.2% vs 115.7%で一貫してBL2大差勝ち。r=0.460良好。BL2(前週値)が参考にならない不安定な回遊魚→当モデルが有効。★チャンス評価系。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "kaiyu_ok",
+      "note": "BL2大差勝ち(80.4% vs 115.2% = -34.8pt)。回遊魚カツオ特有の不安定さ(BL2が前週値のためBL2自体が悪い)。r=0.460で気象連動あり。★チャンス評価で来週末予測に活用。ポイント・水色データ取得が課題。"
+    }
+  ]
+}

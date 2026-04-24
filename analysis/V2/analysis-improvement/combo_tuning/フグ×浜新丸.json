@@ -1,14 +1,14 @@
 {
   "fish": "フグ",
   "ship": "浜新丸",
-  "last_reviewed": "2026-04-24",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.24,
+    "wmape_h0": 34.43,
     "bl2_wmape": 49.6,
-    "oos_r": -0.057,
+    "oos_r": 0.633,
     "n_records": 71,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
@@ -18,20 +18,25 @@
       "wmape_h0": 30.4,
       "bl2_wmape": 49.6,
       "oos_r": 0.714,
-      "improvement_pt": 23.86
+      "improvement_pt": 4.05
     }
   ],
   "best_point": {
     "name": "富津南沖",
     "wmape_h0": 30.4,
-    "improvement_pt": 23.86
+    "improvement_pt": 4.05
   },
-  "improvement_pt": 23.86,
+  "improvement_pt": 4.05,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=富津南沖 wmape=30.4% imp=23.86pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=富津南沖 wmape=30.4% imp=4.05pt"
     }
   ]
 }

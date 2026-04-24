@@ -1,0 +1,31 @@
+{
+  "fish": "カツオ",
+  "ship": "はら丸",
+  "last_reviewed": "2026-04-25",
+  "status": "kaiyu_check",
+  "metrics": {
+    "wmape_h0": 72.0,
+    "bl2_wmape": 70.7,
+    "oos_r": 0.421,
+    "n_records": 63,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 15,
+    "depth_max": 32
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "相模湾エリア。point_place1が87/99件空→point補完も実ポイント名なし。H=0 wmape=72.0% BL2(70.7%)僅差負け。r=0.421正の相関だが回遊魚特性でバラつき大。★チャンス評価系（KAIYU_FISH）で扱う。水色記録1/99件のみ（ほぼなし）。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "kaiyu_check",
+      "note": "回遊魚カツオ。H=0 BL2僅差負け(72.0% vs 70.7%)。H=7 wmape=93.3% BL2=70.7%(BL2勝ち)。ポイント情報ほぼなし。★チャンス評価で対応。水色データ取得が課題。"
+    }
+  ]
+}

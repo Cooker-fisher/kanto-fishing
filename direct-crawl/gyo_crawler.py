@@ -32,9 +32,11 @@ USER_AGENT      = "Mozilla/5.0 (compatible; kanto-fishing-bot/1.0)"
 GYO_SHIPS = [
     # parser="table"  : 忠彦丸スタイル（<th>=日付縦書き / <td>=釣果の1行2セルテーブル）
     # parser="freetext": 一之瀬丸スタイル（≪船名≫→X日の釣果→釣果テキスト の自由記述）
+    # parser="yukou"  : 勇幸丸スタイル（<div style="color:green;"> に日付+釣果+コメントが一体）
     {"cid": "tadahiko",  "ship": "忠彦丸",    "area": "金沢八景", "parser": "table"},
     {"cid": "ichinose",  "ship": "一之瀬丸",  "area": "金沢八景", "parser": "freetext"},
     {"cid": "yonemoto",  "ship": "米元釣船店", "area": "横浜",     "parser": "freetext"},
+    {"cid": "yukou",     "ship": "勇幸丸",    "area": "片貝",     "parser": "yukou"},
 ]
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "catches_raw_direct.json")
@@ -489,6 +491,141 @@ def parse_gyo_freetext(html, ship, area, date_str=None):
 
 
 # ============================================================
+# 勇幸丸専用パーサー（<div style="color:green;"> 形式）
+# ============================================================
+
+# ポイント抽出パターン（「〜沖」「〜瀬」「〜根」「〜ポイント」等）
+# - 直前が語頭・空白・助詞区切り相当（は/で/に/を/が/と/も の後ろにあるものはスキップ）
+# - 先頭は漢字・片仮名2〜6文字（地名らしさを担保）、末尾は地形語
+_POINT_PATTERN = re.compile(
+    r'([一-龥ァ-ン]{2,6}(?:沖|瀬|根|礁|洲|海峡|岬|ポイント))'
+)
+
+
+def parse_gyo_yukou(html, ship, area, date_str=None):
+    """
+    勇幸丸スタイルのパーサー。
+
+    ページ構造:
+      <div style="color:green;"> に最新釣果1件が格納されている。
+      テキスト例: "４月１４日　本日14日の釣果は イサキ　21~36cm 0~20尾
+                   コマセ釣り。前半は太東沖攻め..."
+
+    パース方針:
+      1. <div style="color:green;"> 内のテキストを取得
+      2. 先頭の「X月Y日」（全角数字対応）で日付を確定
+      3. date_str 指定時: HTMLの日付が date_str と一致しなければスキップ（stale data対策）
+      4. 日付より後のテキストを「。」で区切り:
+           - 最初の文（「〜」）→ fish_raw（釣果行）
+           - 残り全体         → kanso_raw（コメント）
+      5. 全テキストからポイント名（〜沖 / 〜瀬 等）を抽出 → point_raw
+
+    戻り値: レコードリスト（0件または1件）
+    """
+    today      = datetime.now()
+    today_year = today.year
+    today_month = today.month
+
+    # <div style="color:green;"> または <div style='color:green;'> を取得
+    divs = re.findall(
+        r'<div[^>]*color\s*:\s*green[^>]*>(.*?)</div>',
+        html, re.S | re.I
+    )
+    if not divs:
+        return []
+
+    # 最初のdivを使用（通常1件のみ）
+    raw_html = divs[0]
+
+    # <span> 等内タグを除去してテキスト化
+    text = re.sub(r'<[^>]+>', '', raw_html)
+    text = re.sub(r'&[a-zA-Z]+;|&#\d+;', ' ', text)
+    # 全角スペース・&nbsp; 正規化
+    text = re.sub(r'[\u3000\xa0\ufffd]+', ' ', text)
+    text = text.strip()
+
+    if not text:
+        return []
+
+    # 全角数字を半角に変換
+    text_half = text.translate(str.maketrans('０１２３４５６７８９', '0123456789'))
+
+    # 先頭の「X月Y日」を抽出して日付確定
+    m_date = re.match(r'\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日', text_half)
+    if m_date is None:
+        return []
+
+    month = int(m_date.group(1))
+    day   = int(m_date.group(2))
+    year  = today_year
+    try:
+        dt_obj = datetime(year, month, day)
+        if dt_obj > datetime.now():
+            year -= 1
+            datetime(year, month, day)  # バリデーション
+    except ValueError:
+        return []
+
+    parsed_date = f"{year}/{month:02d}/{day:02d}"
+
+    # date_str 指定時: HTMLの日付と一致しなければ stale data としてスキップ
+    if date_str is not None and parsed_date != date_str:
+        return []
+
+    date_str = parsed_date
+
+    # 日付部分より後のテキストを取得
+    body = text_half[m_date.end():].strip()
+    # 先頭の「本日X日の釣果は」のような説明句をスキップ（オプション）
+    body = re.sub(r'^本日\d+日の釣果は\s*', '', body).strip()
+
+    # fish_raw: 先頭から最初の「。」の手前まで（釣果行）
+    # kanso_raw: 最初の「。」以降（コメント行）
+    # 「。」がない場合は全体を fish_raw とする
+    period_idx = body.find('。')
+    if period_idx >= 0:
+        # 「。」を含めて fish_raw に入れる
+        fish_raw  = normalize_text(body[:period_idx + 1])
+        kanso_raw = normalize_text(body[period_idx + 1:])
+    else:
+        fish_raw  = normalize_text(body)
+        kanso_raw = ""
+
+    if not fish_raw:
+        return []
+
+    # point_raw: 全テキストから「〜沖」「〜瀬」等を抽出して「/」区切りで結合
+    # point_coords.json にある片貝沖・太東沖などをカバーする
+    points_found = _POINT_PATTERN.findall(text)
+    # 重複除去・順序保持
+    seen = set()
+    unique_points = []
+    for p in points_found:
+        if p not in seen and len(p) >= 2:
+            seen.add(p)
+            unique_points.append(p)
+    point_raw = '/'.join(unique_points)
+
+    return [{
+        "ship":            ship,
+        "area":            area,
+        "date":            date_str,
+        "trip_no":         None,
+        "is_cancellation": False,
+        "reason_text":     "",
+        "fish_raw":        fish_raw,
+        "count_raw":       "",
+        "size_raw":        "",
+        "weight_raw":      "",
+        "tokki_raw":       "",
+        "point_raw":       point_raw,
+        "kanso_raw":       kanso_raw,
+        "suion_raw":       None,
+        "suishoku_raw":    None,
+    }]
+
+
+# ============================================================
 # fetch
 # ============================================================
 
@@ -581,6 +718,26 @@ def main():
                     continue
                 recs = parse_gyo_freetext(html, s["ship"], s["area"], date_str=hdt_str)
                 print(f"    {hdt_str}: {len(recs)} 件")
+                ship_records.extend(recs)
+                time.sleep(1.0)
+            all_new.extend(ship_records)
+
+        elif parser_type == "yukou":
+            # 勇幸丸スタイル: history URL で過去7日分をループ取得（1日1件形式）
+            ship_records = []
+            for days_ago in range(7):
+                hdt     = today - timedelta(days=days_ago)
+                hdt_str = hdt.strftime("%Y/%m/%d")
+                url     = GYO_HISTORY_URL.format(cid=s["cid"], hdt=hdt_str, dt=dt_param)
+                html    = fetch_gyo(url)
+                if not html:
+                    print(f"    {hdt_str}: fetch error")
+                    continue
+                recs = parse_gyo_yukou(html, s["ship"], s["area"], date_str=hdt_str)
+                if recs:
+                    print(f"    {hdt_str}: {len(recs)} 件 pt={recs[0]['point_raw']}")
+                else:
+                    print(f"    {hdt_str}: 0 件（休船または更新なし）")
                 ship_records.extend(recs)
                 time.sleep(1.0)
             all_new.extend(ship_records)

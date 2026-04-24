@@ -1236,6 +1236,29 @@ def load_records(fish, ship_filter=None):
                 })
     records.sort(key=lambda r: r["date"])
 
+    # 実装A: point_place1 が空のレコードをコンボ（ship）の最頻ポイントで補完
+    # フォールバック（水深帯・ship_fish_point・area_coords）でも空のままのレコードに適用
+    from collections import Counter as _Counter
+    _ship_modal: dict = {}
+    for _r in records:
+        _s = _r.get("ship", "")
+        if _r.get("point") and _s:
+            if _s not in _ship_modal:
+                _ship_modal[_s] = []
+            _ship_modal[_s].append(_r["point"])
+    _ship_modal_pt: dict = {}
+    for _s, _pts in _ship_modal.items():
+        _mc = _Counter(_pts).most_common(1)
+        if _mc:
+            _ship_modal_pt[_s] = _mc[0][0]
+    _filled_by_modal = 0
+    for _r in records:
+        if not _r.get("point"):
+            _s = _r.get("ship", "")
+            if _s in _ship_modal_pt:
+                _r["point"] = _ship_modal_pt[_s]
+                _filled_by_modal += 1
+
     # 水色補完: 同日・0.3度以内の近接船宿から water_color_imputed を付与
     # 水色なしレコードに対し、同日・最近傍の水色ありレコードの値を補完する
     from collections import defaultdict as _dd

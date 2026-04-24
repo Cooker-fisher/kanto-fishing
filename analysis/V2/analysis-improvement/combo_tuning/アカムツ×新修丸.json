@@ -1,0 +1,30 @@
+{
+  "fish": "アカムツ",
+  "ship": "新修丸",
+  "last_reviewed": "2026-04-25",
+  "status": "fallback_applied",
+  "metrics": {
+    "wmape_h0": 22.9,
+    "bl2_wmape": 20.5,
+    "oos_r": -0.342,
+    "n_records": 33,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 160,
+    "depth_max": 230
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "fallback_applied",
+      "note": "r=-0.342 逆補正。use_fallback=1設定済み。フォールバック後wmape=22.9%でもBL2(20.5%)に負け。深場160-230m・久里浜沖中心（点データ少）。BL2の前週値がアカムツ周期性をうまく捉えている可能性。"
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 {
   "fish": "アジ",
   "ship": "弁天屋",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 56.08,
+    "wmape_h0": 52.57,
     "bl2_wmape": 56.79,
-    "oos_r": 0.164,
+    "oos_r": 0.361,
     "n_records": 956,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 38.1,
       "bl2_wmape": 40.8,
       "oos_r": 0.441,
-      "improvement_pt": 18.02
+      "improvement_pt": 14.51
     },
     {
       "name": "小柴沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 39.1,
       "bl2_wmape": 46.4,
       "oos_r": 0.579,
-      "improvement_pt": 17.01
+      "improvement_pt": 13.5
     },
     {
       "name": "本牧沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 41.5,
       "bl2_wmape": 56.2,
       "oos_r": 0.558,
-      "improvement_pt": 14.54
+      "improvement_pt": 11.03
     },
     {
       "name": "富岡沖",
@@ -42,20 +42,25 @@
       "wmape_h0": 51.2,
       "bl2_wmape": 58.4,
       "oos_r": 0.481,
-      "improvement_pt": 4.88
+      "improvement_pt": 1.37
     }
   ],
   "best_point": {
     "name": "南本牧沖",
     "wmape_h0": 38.1,
-    "improvement_pt": 18.02
+    "improvement_pt": 14.51
   },
-  "improvement_pt": 18.02,
+  "improvement_pt": 14.51,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=南本牧沖 wmape=38.1% imp=18.02pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=南本牧沖 wmape=38.1% imp=14.51pt"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "fish": "ヒラメ",
   "ship": "大盛丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 37.79,
@@ -177,6 +177,11 @@
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "SHIP_TRIP_RULES追加: ホウボウ五目船→ホウボウ, イシナギ船→ヒラメ(正式化), 五目船→五目。空件数を削減。"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=外川前 wmape=31.7% imp=6.04pt"
     }
   ],
   "trip_models": [

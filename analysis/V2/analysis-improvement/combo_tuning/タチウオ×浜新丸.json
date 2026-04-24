@@ -1,12 +1,12 @@
 {
   "fish": "タチウオ",
   "ship": "浜新丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.76,
+    "wmape_h0": 36.02,
     "bl2_wmape": 43.89,
-    "oos_r": 0.313,
+    "oos_r": 0.587,
     "n_records": 257,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 27.7,
       "bl2_wmape": 40.5,
       "oos_r": 0.639,
-      "improvement_pt": 19.01
+      "improvement_pt": 8.27
     },
     {
       "name": "観音崎沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 31.0,
       "bl2_wmape": 57.7,
       "oos_r": 0.728,
-      "improvement_pt": 15.8
+      "improvement_pt": 5.07
     },
     {
       "name": "横須賀沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 32.0,
       "bl2_wmape": 50.4,
       "oos_r": 0.766,
-      "improvement_pt": 14.73
+      "improvement_pt": 4.0
     },
     {
       "name": "富津沖",
@@ -42,20 +42,25 @@
       "wmape_h0": 36.9,
       "bl2_wmape": 44.1,
       "oos_r": 0.561,
-      "improvement_pt": 9.9
+      "improvement_pt": -0.84
     }
   ],
   "best_point": {
     "name": "第二海堡沖",
     "wmape_h0": 27.7,
-    "improvement_pt": 19.01
+    "improvement_pt": 8.27
   },
-  "improvement_pt": 19.01,
+  "improvement_pt": 8.27,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=第二海堡沖 wmape=27.7% imp=19.01pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=第二海堡沖 wmape=27.7% imp=8.27pt"
     }
   ]
 }

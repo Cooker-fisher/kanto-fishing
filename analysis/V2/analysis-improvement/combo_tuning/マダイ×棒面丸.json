@@ -1,14 +1,14 @@
 {
   "fish": "マダイ",
   "ship": "棒面丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 51.9,
+    "wmape_h0": 36.04,
     "bl2_wmape": 55.25,
-    "oos_r": 0.08,
+    "oos_r": 0.593,
     "n_records": 119,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
@@ -18,7 +18,7 @@
       "wmape_h0": 23.2,
       "bl2_wmape": 35.2,
       "oos_r": 0.72,
-      "improvement_pt": 28.67
+      "improvement_pt": 12.82
     },
     {
       "name": "剣崎沖",
@@ -26,20 +26,25 @@
       "wmape_h0": 47.9,
       "bl2_wmape": 56.0,
       "oos_r": 0.546,
-      "improvement_pt": 4.01
+      "improvement_pt": -11.85
     }
   ],
   "best_point": {
     "name": "松輪江奈港",
     "wmape_h0": 23.2,
-    "improvement_pt": 28.67
+    "improvement_pt": 12.82
   },
-  "improvement_pt": 28.67,
+  "improvement_pt": 12.82,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=松輪江奈港 wmape=23.2% imp=28.67pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=松輪江奈港 wmape=23.2% imp=12.82pt"
     }
   ]
 }

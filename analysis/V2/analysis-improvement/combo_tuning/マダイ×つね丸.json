@@ -2,14 +2,20 @@
   "fish": "マダイ",
   "ship": "つね丸",
   "last_reviewed": "2026-04-24",
-  "status": "point_model_marginal",
+  "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 28.34,
     "bl2_wmape": 27.13,
     "oos_r": 0.101,
     "n_records": 119,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 40,
+    "depth_max": 70
   },
   "point_models": [
     {
@@ -32,6 +38,11 @@
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=佐島沖 wmape=23.4% imp=4.93pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_model_applied",
+      "note": "use_fallback解除。佐島沖ポイントモデル適用。水深40-70m（公式サイト tunemaru.net 確認）を depth_min/depth_max に追加。水深モデル再実行要。"
     }
   ]
 }

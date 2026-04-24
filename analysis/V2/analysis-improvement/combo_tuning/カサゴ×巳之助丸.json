@@ -1,0 +1,31 @@
+{
+  "fish": "カサゴ",
+  "ship": "巳之助丸",
+  "last_reviewed": "2026-04-25",
+  "status": "combo_ok",
+  "metrics": {
+    "wmape_h0": 26.4,
+    "bl2_wmape": 30.2,
+    "oos_r": 0.325,
+    "n_records": 38,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 10,
+    "depth_max": 25
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "久里浜沖27件(71%)・観音崎沖9件(24%)。N=38で点モデル未作成(点単独N<30)。複数ポイント日が20/38件と多い→multi_point_n特徴量が有効な可能性。浅場10-25m。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "combo_ok",
+      "note": "BL2勝ち(26.4%<30.2%) r=0.325。久里浜沖主体浅場。多点移動日が多いためmulti_point_n効果に期待。n_records=38で今後増加すれば久里浜沖ポイントモデル作成可能。"
+    }
+  ]
+}

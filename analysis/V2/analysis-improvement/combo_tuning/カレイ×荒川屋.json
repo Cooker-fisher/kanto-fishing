@@ -1,0 +1,31 @@
+{
+  "fish": "カレイ",
+  "ship": "荒川屋",
+  "last_reviewed": "2026-04-25",
+  "status": "combo_ok",
+  "metrics": {
+    "wmape_h0": 40.5,
+    "bl2_wmape": 46.5,
+    "oos_r": 0.225,
+    "n_records": 32,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 10,
+    "depth_max": 16
+  },
+  "point_models": [],
+  "best_point": null,
+  "improvement_pt": 0,
+  "notes": "小柴沖31件・富岡沖21件（金沢八景エリア）。総件数60件だがバックテスト対象32件。水色記録54/60と良好。浅場10-16m。H=7 wmape=45.6%もBL2(46.9%)に僅差勝ち。",
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "combo_ok",
+      "note": "BL2勝ち(40.5%<46.5%) r=0.225。小柴沖・富岡沖の横浜南部エリア。水色情報豊富。浅場カレイは水色と潮汐の影響が大きい。点モデルはデータ増加待ち(各30件未満)。"
+    }
+  ]
+}

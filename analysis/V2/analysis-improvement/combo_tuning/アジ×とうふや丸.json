@@ -1,15 +1,21 @@
 {
   "fish": "アジ",
   "ship": "とうふや丸",
-  "last_reviewed": "2026-04-24",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 34.06,
+    "wmape_h0": 24.28,
     "bl2_wmape": 29.71,
-    "oos_r": -0.091,
+    "oos_r": 0.437,
     "n_records": 166,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
+  },
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 90,
+    "depth_max": 100
   },
   "point_models": [
     {
@@ -18,20 +24,51 @@
       "wmape_h0": 23.2,
       "bl2_wmape": 28.2,
       "oos_r": 0.435,
-      "improvement_pt": 10.82
+      "improvement_pt": 1.05
     }
   ],
   "best_point": {
     "name": "瀬の海",
     "wmape_h0": 23.2,
-    "improvement_pt": 10.82
+    "improvement_pt": 1.05
   },
-  "improvement_pt": 10.82,
+  "water_color_models": [
+    {
+      "water_color_cat": "濁り",
+      "n": 131,
+      "wmape_h0": 23.0,
+      "bl2_wmape": 29.8,
+      "oos_r": 0.427
+    },
+    {
+      "water_color_cat": "澄み",
+      "n": 35,
+      "wmape_h0": 16.6,
+      "bl2_wmape": 32.9,
+      "oos_r": 0.8
+    }
+  ],
+  "best_water_color": {
+    "water_color_cat": "澄み",
+    "wmape_h0": 16.6,
+    "oos_r": 0.8
+  },
+  "improvement_pt": 1.05,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=瀬の海 wmape=23.2% imp=10.82pt"
+    },
+    {
+      "date": "2026-04-24",
+      "action": "point_model_applied",
+      "note": "use_fallback解除。瀬の海ポイントモデル適用。水深90-100m（釣りビジョン/公式サイト scn-net.ne.jp/~tofuya 確認）。水色モデル有効（澄みr=0.800・濁りr=0.427）。予測ログ未蓄積（新規船宿）。"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=瀬の海 wmape=23.2% imp=1.05pt"
     }
   ]
 }

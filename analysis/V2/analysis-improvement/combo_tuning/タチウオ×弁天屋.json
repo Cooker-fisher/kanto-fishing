@@ -1,14 +1,14 @@
 {
   "fish": "タチウオ",
   "ship": "弁天屋",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 60.67,
+    "wmape_h0": 50.08,
     "bl2_wmape": 59.05,
-    "oos_r": 0.127,
+    "oos_r": 0.41,
     "n_records": 601,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
@@ -18,7 +18,7 @@
       "wmape_h0": 33.8,
       "bl2_wmape": 56.0,
       "oos_r": 0.814,
-      "improvement_pt": 26.88
+      "improvement_pt": 16.29
     },
     {
       "name": "観音崎沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 38.2,
       "bl2_wmape": 68.9,
       "oos_r": 0.714,
-      "improvement_pt": 22.48
+      "improvement_pt": 11.89
     },
     {
       "name": "横須賀沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 42.0,
       "bl2_wmape": 84.9,
       "oos_r": 0.677,
-      "improvement_pt": 18.66
+      "improvement_pt": 8.07
     },
     {
       "name": "走水沖",
@@ -42,20 +42,25 @@
       "wmape_h0": 46.4,
       "bl2_wmape": 57.0,
       "oos_r": 0.411,
-      "improvement_pt": 14.25
+      "improvement_pt": 3.66
     }
   ],
   "best_point": {
     "name": "猿島沖",
     "wmape_h0": 33.8,
-    "improvement_pt": 26.88
+    "improvement_pt": 16.29
   },
-  "improvement_pt": 26.88,
+  "improvement_pt": 16.29,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=猿島沖 wmape=33.8% imp=26.88pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=猿島沖 wmape=33.8% imp=16.29pt"
     }
   ]
 }

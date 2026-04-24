@@ -1,24 +1,48 @@
 {
   "fish": "ヤリイカ",
   "ship": "儀兵衛丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 59.73,
+    "wmape_h0": 46.18,
     "bl2_wmape": 58.72,
-    "oos_r": -0.1,
+    "oos_r": 0.335,
     "n_records": 208,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
+    {
+      "name": "長井沖_単独",
+      "n": 31,
+      "wmape_h0": 30.2,
+      "bl2_wmape": 52.8,
+      "oos_r": 0.634,
+      "improvement_pt": 15.95
+    },
     {
       "name": "長井沖",
       "n": 70,
       "wmape_h0": 35.4,
       "bl2_wmape": 48.1,
       "oos_r": 0.538,
-      "improvement_pt": 24.35
+      "improvement_pt": 10.8
+    },
+    {
+      "name": "複数ポイント",
+      "n": 82,
+      "wmape_h0": 38.3,
+      "bl2_wmape": 67.0,
+      "oos_r": 0.635,
+      "improvement_pt": 7.83
+    },
+    {
+      "name": "城ヶ島沖_単独",
+      "n": 69,
+      "wmape_h0": 40.5,
+      "bl2_wmape": 56.9,
+      "oos_r": 0.426,
+      "improvement_pt": 5.64
     },
     {
       "name": "城ヶ島沖",
@@ -26,20 +50,36 @@
       "wmape_h0": 42.9,
       "bl2_wmape": 65.0,
       "oos_r": 0.523,
-      "improvement_pt": 16.8
+      "improvement_pt": 3.24
     }
   ],
   "best_point": {
-    "name": "長井沖",
-    "wmape_h0": 35.4,
-    "improvement_pt": 24.35
+    "name": "長井沖_単独",
+    "wmape_h0": 30.2,
+    "improvement_pt": 15.95
   },
-  "improvement_pt": 24.35,
+  "improvement_pt": 15.95,
+  "overrides": {
+    "factor_blacklist": [],
+    "wave_clamp": null,
+    "depth_min": 80,
+    "depth_max": 180
+  },
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=長井沖 wmape=35.4% imp=24.35pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_model_applied",
+      "note": "use_fallback解除。コンボmape=97.6%逆補正→長井沖r=0.538・城ヶ島沖r=0.523でポイントモデル適用。深場80-180m。秋冬春専門。水色未記録→water_color_daily補完待ち。"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "single_multi_split_analysis",
+      "note": "n_points_visited で単独/複数ポイントを分割再分析。長井沖_単独(N=31) wMAPE=30.2% r=+0.634、城ヶ島沖_単独(N=69) wMAPE=40.5% r=+0.426、複数ポイント(N=82) wMAPE=38.3% r=+0.635。combo_point_backtest/wx_params に3点名で保存済み。長井沖_単独がbest_point更新(35.4%→30.2%)。"
     }
   ]
 }
