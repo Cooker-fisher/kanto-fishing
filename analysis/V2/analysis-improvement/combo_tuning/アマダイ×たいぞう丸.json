@@ -2,13 +2,36 @@
   "fish": "アマダイ",
   "ship": "たいぞう丸",
   "last_reviewed": "2026-04-24",
-  "status": "pending",
-  "metrics": {},
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 38.75,
+    "bl2_wmape": 39.39,
+    "oos_r": 0.256,
+    "n_records": 381,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
   "history": [
     {
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "新コンボ: SHIP_TRIP_RULES追加により分離。再分析待ち。"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "葉山沖",
+      "n": 372,
+      "wmape_h0": 37.6,
+      "bl2_wmape": 39.3,
+      "oos_r": 0.302,
+      "improvement_pt": 1.18
+    }
+  ],
+  "best_point": {
+    "name": "葉山沖",
+    "wmape_h0": 37.6,
+    "improvement_pt": 1.18
+  },
+  "improvement_pt": 1.18
 }

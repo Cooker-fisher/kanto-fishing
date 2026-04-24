@@ -4,21 +4,21 @@
   "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.35,
-    "bl2_wmape": 40.95,
-    "oos_r": 0.369,
-    "n_records": 349,
+    "wmape_h0": 39.44,
+    "bl2_wmape": 40.99,
+    "oos_r": 0.366,
+    "n_records": 348,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "岩和田沖",
-      "n": 87,
-      "wmape_h0": 36.1,
-      "bl2_wmape": 41.7,
-      "oos_r": 0.381,
-      "improvement_pt": 3.3
+      "n": 86,
+      "wmape_h0": 35.9,
+      "bl2_wmape": 41.9,
+      "oos_r": 0.401,
+      "improvement_pt": 3.51
     },
     {
       "name": "岩船沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 37.0,
       "bl2_wmape": 39.4,
       "oos_r": 0.372,
-      "improvement_pt": 2.39
+      "improvement_pt": 2.48
     },
     {
       "name": "岩和田沖航程5",
@@ -34,7 +34,7 @@
       "wmape_h0": 39.0,
       "bl2_wmape": 57.5,
       "oos_r": 0.48,
-      "improvement_pt": 0.31
+      "improvement_pt": 0.4
     },
     {
       "name": "部原沖",
@@ -42,15 +42,15 @@
       "wmape_h0": 39.4,
       "bl2_wmape": 48.5,
       "oos_r": 0.426,
-      "improvement_pt": -0.05
+      "improvement_pt": 0.04
     }
   ],
   "best_point": {
     "name": "岩和田沖",
-    "wmape_h0": 36.1,
-    "improvement_pt": 3.3
+    "wmape_h0": 35.9,
+    "improvement_pt": 3.51
   },
-  "improvement_pt": 3.3,
+  "improvement_pt": 3.51,
   "points": [
     {
       "name": "岩和田沖",

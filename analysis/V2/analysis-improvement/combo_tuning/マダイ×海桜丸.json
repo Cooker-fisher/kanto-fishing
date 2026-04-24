@@ -4,10 +4,10 @@
   "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 44.79,
-    "bl2_wmape": 66.04,
-    "oos_r": 0.559,
-    "n_records": 74,
+    "wmape_h0": 44.03,
+    "bl2_wmape": 55.79,
+    "oos_r": 0.462,
+    "n_records": 58,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -178,19 +178,19 @@
   "point_models": [
     {
       "name": "三保沖",
-      "n": 50,
-      "wmape_h0": 40.0,
-      "bl2_wmape": 55.6,
-      "oos_r": 0.572,
-      "improvement_pt": 4.75
+      "n": 53,
+      "wmape_h0": 40.4,
+      "bl2_wmape": 56.0,
+      "oos_r": 0.561,
+      "improvement_pt": 3.61
     }
   ],
   "best_point": {
     "name": "三保沖",
-    "wmape_h0": 40.0,
-    "improvement_pt": 4.75
+    "wmape_h0": 40.4,
+    "improvement_pt": 3.61
   },
-  "improvement_pt": 4.75,
+  "improvement_pt": 3.61,
   "trip_models": [
     {
       "trip_no": 1,

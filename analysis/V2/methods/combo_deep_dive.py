@@ -1014,6 +1014,7 @@ def nearest_coord(lat, lon, coords):
 _WC_DAILY_CACHE: dict = {}
 _WC_DAILY_LOADED: bool = False
 _WC_DAILY_COORDS: list = []  # (lat, lon) のユニークリスト
+_WC_COORD_SNAP: dict = {}    # (lat_r4, lon_r4) -> (nearest_lat, nearest_lon) スナップキャッシュ
 # 関東（北緯35°付近）で東西≒27km・南北≒33km の楕円フィルター。
 # 既存コードと同じ非補正ユークリッド近似で統一。
 _WC_MAX_DIST = 0.3
@@ -1042,15 +1043,25 @@ def _load_wc_daily_cache():
 def _lookup_wc_pred(lat, lon, date_iso):
     """最近傍 wx_coord の当日 wc_pred を返す。テーブルがなければ None。
     最近傍座標が _WC_MAX_DIST(°)より遠い場合は外挿とみなして None を返す。"""
-    _load_wc_daily_cache()
+    if not _WC_DAILY_LOADED:
+        _load_wc_daily_cache()
     if not _WC_DAILY_CACHE:
         return None
     if not _WC_DAILY_COORDS:
         return None
-    wlat, wlon = min(_WC_DAILY_COORDS,
-                     key=lambda c: (c[0] - lat)**2 + (c[1] - lon)**2)
-    if (wlat - lat)**2 + (wlon - lon)**2 > _WC_MAX_DIST**2:
-        return None
+    ck = (round(lat, 4), round(lon, 4))
+    if ck in _WC_COORD_SNAP:
+        snap = _WC_COORD_SNAP[ck]
+        if snap is None:
+            return None
+        wlat, wlon = snap
+    else:
+        wlat, wlon = min(_WC_DAILY_COORDS,
+                         key=lambda c: (c[0] - lat)**2 + (c[1] - lon)**2)
+        if (wlat - lat)**2 + (wlon - lon)**2 > _WC_MAX_DIST**2:
+            _WC_COORD_SNAP[ck] = None
+            return None
+        _WC_COORD_SNAP[ck] = (wlat, wlon)
     k = (round(wlat, 2), round(wlon, 2), date_iso)
     return _WC_DAILY_CACHE.get(k)
 
@@ -1489,7 +1500,8 @@ def _preload_chl_if_needed(conn_cmems):
 
 def _get_chl_monthly_avg(conn_cmems, lat, lon, date_iso):
     """in-memory dict で月平均 CHL を返す（SQL クエリなし）。"""
-    _preload_chl_if_needed(conn_cmems)
+    if not _CHL_LOADED:
+        _preload_chl_if_needed(conn_cmems)
     lr = round(lat, 3)
     nr = round(lon, 3)
     ym = date_iso[:7]
@@ -1550,7 +1562,8 @@ def _preload_sla_if_needed(conn_cmems):
 
 def _get_sla_nearest(conn_cmems, lat, lon, date_iso):
     """in-memory dict で最近傍 SLA を返す（SQL クエリなし）。"""
-    _preload_sla_if_needed(conn_cmems)
+    if not _SLA_LOADED:
+        _preload_sla_if_needed(conn_cmems)
     lr = round(lat, 3)
     nr = round(lon, 3)
     val = _SLA_POINT_DATE.get((lr, nr, date_iso))
@@ -1573,7 +1586,8 @@ def _get_sla_nearest(conn_cmems, lat, lon, date_iso):
 
 def _get_sla_monthly_avg(conn_cmems, lat, lon, date_iso, window=30):
     """in-memory dict で月平均 SLA を返す（SQL クエリなし）。"""
-    _preload_sla_if_needed(conn_cmems)
+    if not _SLA_LOADED:
+        _preload_sla_if_needed(conn_cmems)
     lr = round(lat, 3)
     nr = round(lon, 3)
     ym = date_iso[:7]
@@ -1601,7 +1615,8 @@ def _get_sla_approach_idx(conn_cmems, date_iso):
     南方: lat32-34, lon136-140（黒潮大蛇行時の蓄積域）
     正値=接岸・負値=大蛇行。_SLA_BY_MONTHのin-memoryから計算（SQLなし）。
     """
-    _preload_sla_if_needed(conn_cmems)
+    if not _SLA_LOADED:
+        _preload_sla_if_needed(conn_cmems)
     ym = date_iso[:7]
     if ym in _SLA_APPROACH_CACHE:
         return _SLA_APPROACH_CACHE[ym]
@@ -1621,7 +1636,8 @@ def _get_kuroshio_sla_monthly(conn_cmems, date_iso):
     sla_approach_idxとの違い: 差分ではなく絶対値水準。
     マダイr=+0.75、カワハギr=+0.61、カンパチr=+0.54（2026/04/18分析）。
     """
-    _preload_sla_if_needed(conn_cmems)
+    if not _SLA_LOADED:
+        _preload_sla_if_needed(conn_cmems)
     ym = date_iso[:7]
     if ym in _KUROSHIO_SLA_MONTHLY_CACHE:
         return _KUROSHIO_SLA_MONTHLY_CACHE[ym]
@@ -1636,7 +1652,8 @@ def _get_sla_pelagic_monthly(conn_cmems, date_iso):
     """沖合回遊魚用月次SLA平均（34-36°N, 141-143°E）を返す。
     カツオ/キハダマグロの黒潮本流評価に使用。沿岸ポイントSLAと独立した外洋シグナル。
     """
-    _preload_sla_if_needed(conn_cmems)
+    if not _SLA_LOADED:
+        _preload_sla_if_needed(conn_cmems)
     ym = date_iso[:7]
     if ym in _PELAGIC_SLA_MONTHLY_CACHE:
         return _PELAGIC_SLA_MONTHLY_CACHE[ym]
@@ -1668,32 +1685,59 @@ def _get_kuroshio_sla_delta_1m(conn_cmems, date_iso):
     return cur - prev
 
 
-_sss_nearest_cache: dict = {}
+_SSS_POINT_DATE: dict = {}   # (lat_r3, lon_r3, date_str) -> sss
+_SSS_BY_DATE:    dict = {}   # date_str -> [(lat_r3, lon_r3, sss), ...]
+_SSS_SNAP_CACHE: dict = {}   # (lat, lon, date_str) -> sss (nearest-neighbor snap cache)
+_SSS_LOADED = False
+
+
+def _preload_sss_if_needed(conn_cmems):
+    """cmems_daily の SSS 非NULL行を一括ロードして dict に展開する（初回のみ）。
+    SLA プリロードと同じパターン。毎レコード都度クエリを廃止。
+    """
+    global _SSS_LOADED, _SSS_POINT_DATE, _SSS_BY_DATE
+    if _SSS_LOADED:
+        return
+    if conn_cmems is None:
+        _SSS_LOADED = True
+        return
+    t0 = time.time()
+    rows = conn_cmems.execute(
+        "SELECT lat, lon, date, sss FROM cmems_daily WHERE sss IS NOT NULL"
+    ).fetchall()
+    for lat, lon, date_str, sss in rows:
+        lr = round(lat, 3)
+        nr = round(lon, 3)
+        _SSS_POINT_DATE[(lr, nr, date_str)] = sss
+        if date_str not in _SSS_BY_DATE:
+            _SSS_BY_DATE[date_str] = []
+        _SSS_BY_DATE[date_str].append((lr, nr, sss))
+    elapsed = time.time() - t0
+    print(f"  [CMEMS SSS preload] {len(rows):,}行 → {len(_SSS_POINT_DATE):,}point×date ({elapsed:.1f}s)", flush=True)
+    _SSS_LOADED = True
 
 
 def _get_sss_nearest(conn_cmems, lat, lon, date_iso):
-    """指定日・座標の近傍グリッドから SSS 非NULLの値を返す。
-    get_cmems_day は最近傍1件のみなので NULL が返ることがある（SSS はCHL/SLAと独立の欠損パターン）。
-    これは SSS 非NULL 行のみを対象に最近傍を取得する専用クエリ。
-    """
-    if conn_cmems is None:
-        return None
-    # CMEMS grid ≈ 0.08°。2桁丸めで船宿単位の再利用率を最大化する
-    rl, ro = round(lat, 2), round(lon, 2)
-    k = (rl, ro, date_iso)
-    if k in _sss_nearest_cache:
-        return _sss_nearest_cache[k]
-    row = conn_cmems.execute(
-        """SELECT sss FROM cmems_daily
-           WHERE date=? AND sss IS NOT NULL
-             AND ABS(lat - ?) < 0.25 AND ABS(lon - ?) < 0.25
-           ORDER BY (lat - ?) * (lat - ?) + (lon - ?) * (lon - ?)
-           LIMIT 1""",
-        (date_iso, rl, ro, rl, rl, ro, ro),
-    ).fetchone()
-    v = row[0] if row else None
-    _sss_nearest_cache[k] = v
-    return v
+    """in-memory dict で最近傍 SSS を返す（SQL クエリなし）。"""
+    if not _SSS_LOADED:
+        _preload_sss_if_needed(conn_cmems)
+    lr = round(lat, 3)
+    nr = round(lon, 3)
+    val = _SSS_POINT_DATE.get((lr, nr, date_iso))
+    if val is not None:
+        return val
+    snap_key = (lat, lon, date_iso)
+    if snap_key in _SSS_SNAP_CACHE:
+        return _SSS_SNAP_CACHE[snap_key]
+    best_d2 = 0.0625  # 0.25° 以内で最近傍探索
+    best_v  = None
+    for la, lo, v in _SSS_BY_DATE.get(date_iso, []):
+        d2 = (la - lat) ** 2 + (lo - lon) ** 2
+        if d2 < best_d2:
+            best_d2 = d2
+            best_v  = v
+    _SSS_SNAP_CACHE[snap_key] = best_v
+    return best_v
 
 
 def _get_sss_delta_7d(conn_cmems, lat, lon, date_iso):
@@ -1736,6 +1780,9 @@ def _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, grid_deg, cols):
     return rows
 
 
+_cmems_depth_day_cache: dict = {}
+
+
 def get_cmems_depth_day(conn_cmems, lat, lon, date_iso):
     """CMEMS 深度別データ → 派生特徴量を返す（cmems_depth テーブル）。
     temp は GLORYS12 (0.083°)、do/no3 は BGC (0.25°) として別クエリで取得。
@@ -1744,12 +1791,17 @@ def get_cmems_depth_day(conn_cmems, lat, lon, date_iso):
     if conn_cmems is None:
         return {}
 
+    ck = (round(lat, 4), round(lon, 4), date_iso)
+    if ck in _cmems_depth_day_cache:
+        return _cmems_depth_day_cache[ck]
+
     # temp: GLORYS12 0.083° グリッド
     temp_rows = _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, 0.0833, ["temp"])
     # do/no3: BGC 0.25° グリッド
     bgc_rows  = _cmems_depth_nearest(conn_cmems, lat, lon, date_iso, 0.25,   ["do", "no3"])
 
     if not temp_rows and not bgc_rows:
+        _cmems_depth_day_cache[ck] = {}
         return {}
 
     result = {}
@@ -1790,6 +1842,7 @@ def get_cmems_depth_day(conn_cmems, lat, lon, date_iso):
             best = max(valid_pairs, key=lambda x: abs(x[1] - x[3]))
             result["thermocline_depth"] = best[0]
 
+    _cmems_depth_day_cache[ck] = result
     return result
 
 
@@ -1832,6 +1885,12 @@ def get_typhoon(conn_ty, date_iso):
     return {"typhoon_dist": None, "typhoon_wind": None}
 
 
+_wx_global_cache:      dict = {}
+_tide_global_cache:    dict = {}
+_typhoon_global_cache: dict = {}
+_cmems_surf_cache:     dict = {}
+
+
 def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_records=None, conn_tide=None, conn_typhoon=None, conn_cmems=None, fish=None):
     """全レコードに海況・潮汐・前週釣果を付与（horizon 日前の weather を使用）。
 
@@ -1840,10 +1899,10 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
     horizon=H のとき、prediction_date = D - H 以前の最新釣果を prev_week_cnt とする。
     H=0〜7: 先週以内の釣果 → 有効  |  H>7: 2週以上前 → FAST_FACTORS により無効化
     """
-    wx_cache      = {}
-    tide_cache    = {}
-    typhoon_cache = {}
-    cmems_cache   = {}
+    wx_cache      = _wx_global_cache
+    tide_cache    = _tide_global_cache
+    typhoon_cache = _typhoon_global_cache
+    cmems_cache   = _cmems_surf_cache
     result = []
 
     # SST勾配用の固定参照座標（起動時に1回だけ最近傍を解決）

@@ -4,37 +4,37 @@
   "last_reviewed": "2026-04-24",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.54,
-    "bl2_wmape": 62.16,
-    "oos_r": 0.409,
-    "n_records": 376,
+    "wmape_h0": 54.82,
+    "bl2_wmape": 62.21,
+    "oos_r": 0.415,
+    "n_records": 388,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "小田原沖",
-      "n": 310,
-      "wmape_h0": 50.7,
-      "bl2_wmape": 55.4,
+      "n": 318,
+      "wmape_h0": 51.0,
+      "bl2_wmape": 55.3,
       "oos_r": 0.467,
-      "improvement_pt": 3.86
+      "improvement_pt": 3.83
     },
     {
       "name": "真鶴沖",
-      "n": 66,
-      "wmape_h0": 58.7,
-      "bl2_wmape": 78.1,
-      "oos_r": 0.584,
-      "improvement_pt": -4.15
+      "n": 70,
+      "wmape_h0": 62.0,
+      "bl2_wmape": 77.7,
+      "oos_r": 0.541,
+      "improvement_pt": -7.16
     }
   ],
   "best_point": {
     "name": "小田原沖",
-    "wmape_h0": 50.7,
-    "improvement_pt": 3.86
+    "wmape_h0": 51.0,
+    "improvement_pt": 3.83
   },
-  "improvement_pt": 3.86,
+  "improvement_pt": 3.83,
   "points": [
     {
       "name": "小田原沖",

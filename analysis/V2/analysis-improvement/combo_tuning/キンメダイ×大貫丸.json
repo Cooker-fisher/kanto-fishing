@@ -1,0 +1,37 @@
+{
+  "fish": "キンメダイ",
+  "ship": "大貫丸",
+  "last_reviewed": "2026-04-24",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 53.76,
+    "bl2_wmape": 57.53,
+    "oos_r": 0.256,
+    "n_records": 40,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "日立沖",
+      "n": 40,
+      "wmape_h0": 39.9,
+      "bl2_wmape": 57.5,
+      "oos_r": 0.469,
+      "improvement_pt": 13.83
+    }
+  ],
+  "best_point": {
+    "name": "日立沖",
+    "wmape_h0": 39.9,
+    "improvement_pt": 13.83
+  },
+  "improvement_pt": 13.83,
+  "history": [
+    {
+      "date": "2026-04-24",
+      "action": "point_backtest_updated",
+      "note": "best=日立沖 wmape=39.9% imp=13.83pt"
+    }
+  ]
+}

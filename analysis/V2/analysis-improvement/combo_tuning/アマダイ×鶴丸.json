@@ -2,13 +2,36 @@
   "fish": "アマダイ",
   "ship": "鶴丸",
   "last_reviewed": "2026-04-24",
-  "status": "pending",
-  "metrics": {},
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 52.08,
+    "bl2_wmape": 59.92,
+    "oos_r": 0.224,
+    "n_records": 38,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
   "history": [
     {
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "新コンボ: SHIP_TRIP_RULES + tsuri_mono_map追加によりマダイ×鶴丸から分離。再分析待ち。"
     }
-  ]
+  ],
+  "point_models": [
+    {
+      "name": "田子の浦沖",
+      "n": 37,
+      "wmape_h0": 18.8,
+      "bl2_wmape": 61.6,
+      "oos_r": 0.911,
+      "improvement_pt": 33.26
+    }
+  ],
+  "best_point": {
+    "name": "田子の浦沖",
+    "wmape_h0": 18.8,
+    "improvement_pt": 33.26
+  },
+  "improvement_pt": 33.26
 }
