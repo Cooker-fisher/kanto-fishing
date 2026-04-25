@@ -1,14 +1,13 @@
 {
   "fish": "アジ",
   "ship": "長崎屋",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_no_improvement",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 28.02,
-    "bl2_wmape": 32.55,
-    "oos_r": 0.546,
-    "n_records": 360,
-    "alpha_scale": 0.4501,
+    "wmape_h0": 31.82,
+    "bl2_wmape": 32.33,
+    "oos_r": 0.502,
+    "n_records": 364,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,16 +17,16 @@
       "n": 343,
       "wmape_h0": 28.3,
       "bl2_wmape": 32.9,
-      "oos_r": 0.548,
-      "improvement_pt": -0.28
+      "oos_r": 0.547,
+      "improvement_pt": 3.47
     }
   ],
   "best_point": {
     "name": "航程3",
     "wmape_h0": 28.3,
-    "improvement_pt": -0.28
+    "improvement_pt": 3.47
   },
-  "improvement_pt": -0.28,
+  "improvement_pt": 3.47,
   "points": [
     {
       "name": "航程3",
@@ -170,6 +169,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=航程3 wmape=28.27% combo=28.02% diff=-0.25pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=航程3 wmape=28.3% imp=3.47pt"
     }
   ],
   "trip_models": [
