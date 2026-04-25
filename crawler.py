@@ -3173,6 +3173,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .cta-line{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--line);color:#fff;border-radius:22px;font-size:13px;font-weight:700;text-decoration:none}
 .cta-line:hover{opacity:.9;text-decoration:none}
 .cta-line .line-ic{width:16px;height:16px;background:#fff;color:var(--line);border-radius:4px;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.cta-btn{display:inline-block;padding:10px 20px;background:var(--cta);color:#fff;border-radius:22px;font-size:13px;font-weight:700;text-decoration:none}
+.cta-btn:hover{background:var(--cta2);text-decoration:none}
 .teaser-price{font-size:10px;color:var(--muted);margin-top:8px}
 .teaser-price em{color:var(--cta);font-style:normal;font-weight:700}
 .teaser-rotator{background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:1.5px dashed var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px}
@@ -3362,8 +3364,8 @@ def build_teaser_rotator_html():
     <button class="tr-dot" aria-label="スライド3"></button>
   </div>
   <div class="teaser-cta-wrap">
-    <div class="teaser-cta-msg">公開時に<strong>LINEでお知らせ</strong>します。友だち追加してお待ちください。</div>
-    <div class="teaser-cta-btns"><a class="cta-line" href="#line-pending"><span class="line-ic">L</span>LINEで通知を受け取る</a></div>
+    <div class="teaser-cta-msg">現在開発中。<strong>有料プランページ</strong>で最新の釣果予測をご確認ください。</div>
+    <div class="teaser-cta-btns"><a class="cta-btn" href="/forecast/index.html">有料プランを見る（月額500円）</a></div>
     <div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>
   </div>
 </div>"""
@@ -5228,6 +5230,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
 # ============================================================
 def build_fish_pages(data, history, crawled_at=""):
     os.makedirs(os.path.join(WEB_DIR, "fish"), exist_ok=True)
+    # 旧バージョンで生成された数字ファイル名（正規化失敗）を削除
+    fish_dir = os.path.join(WEB_DIR, "fish")
+    for _fn in os.listdir(fish_dir):
+        if _fn.endswith(".html") and os.path.splitext(_fn)[0].isdigit():
+            os.remove(os.path.join(fish_dir, _fn))
     now = datetime.now()
     current_month = now.month
     year, week_num = current_iso_week()
@@ -5237,7 +5244,7 @@ def build_fish_pages(data, history, crawled_at=""):
     _SKIP_FISH = {"不明", "欠航"}
     for c in data:
         for f in c["fish"]:
-            if f not in _SKIP_FISH: fish_summary.setdefault(f, []).append(c)
+            if f not in _SKIP_FISH and not f.isdigit(): fish_summary.setdefault(f, []).append(c)
     for fish, catches in fish_summary.items():
         if len(catches) < 1: continue
         season_bar_html = build_season_bar(fish, current_month)
@@ -7816,6 +7823,33 @@ def main():
     # --export-csv: catches_raw.json から data/V2/ を全再生成して終了
     if "--export-csv" in _sys.argv:
         export_csv_from_raw()
+        return
+
+    # --html-only: catches.json + history.json を使ってHTML生成だけを実行（クロールなし）
+    if "--html-only" in _sys.argv:
+        crawled_at = datetime.now().strftime("%Y/%m/%d %H:%M")
+        with open("catches.json", encoding="utf-8") as _f:
+            _snap = json.load(_f)
+        valid_catches = _snap.get("data", _snap) if isinstance(_snap, dict) else _snap
+        with open("history.json", encoding="utf-8") as _f:
+            history = json.load(_f)
+        weather_data = load_weather_data()
+        forecast_data = None
+        if os.path.exists("forecast.json"):
+            with open("forecast.json", encoding="utf-8") as _f:
+                forecast_data = json.load(_f)
+        os.makedirs(WEB_DIR, exist_ok=True)
+        build_style_css()
+        build_main_js()
+        with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as _f:
+            _f.write(build_html(valid_catches, crawled_at, history, weather_data))
+        build_fish_pages(valid_catches, history, crawled_at)
+        build_area_pages(valid_catches, history, crawled_at, weather_data)
+        build_fish_area_pages(valid_catches, crawled_at, history)
+        with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as _f:
+            _f.write(build_calendar_page(crawled_at))
+        build_sitemap(valid_catches)
+        print(f"=== HTML生成完了（--html-only）===")
         return
 
     all_catches = []
