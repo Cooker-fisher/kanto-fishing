@@ -2639,6 +2639,73 @@ def _load_mp_factors(fish, ship):
         return []
 
 
+def _load_mp_context_for_backtest(fish, ship):
+    """DBの combo_multi_point_context から section_backtest_rolling 用の mp_context を構築。
+    テーブルが未作成 / 該当行なし の場合は None を返す（補正なし）。
+    CMEMSプリロードを2重実行しないよう、section_multi_point_wx より前に呼び出す用途専用。
+    """
+    try:
+        conn = _open_ana()
+        rows = conn.execute(
+            """SELECT factor, r_bad, r_good, threshold_bad, threshold_good,
+                      dir_bad, dir_good, n_multi_bad, n_multi_good
+               FROM combo_multi_point_context
+               WHERE fish=? AND ship=?""",
+            (fish, ship)
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return None
+    if not rows:
+        return None
+    bad_list, good_list = [], []
+    for r in rows:
+        factor = r[0]
+        if r[1] is not None and r[3] is not None and r[5] is not None:
+            bad_list.append({"factor": factor, "r": r[1], "threshold": r[3], "direction": r[5]})
+        if r[2] is not None and r[4] is not None and r[6] is not None:
+            good_list.append({"factor": factor, "r": r[2], "threshold": r[4], "direction": r[6]})
+    if not bad_list and not good_list:
+        return None
+    return {"bad": bad_list, "good": good_list}
+
+
+def _calc_multi_point_context_inline(record, context_factors):
+    """バックテスト用 multi_point context 補正計算（bad下方 + good上方）。
+    context_factors: {"bad": [...], "good": [...]}
+    各因子は {"factor", "threshold", "direction", "r"} を持つ。
+    direction: bad側は "high_is_bad"/"low_is_bad"、good側は "high_is_good"/"low_is_good"
+    戻り値: (最終補正係数 float, bad_risk float, good_risk float)
+    """
+    def _score(factors, high_key, low_key):
+        if not factors: return 0.0
+        hits, weights = [], []
+        for f in factors:
+            val = record.get(f["factor"])
+            if val is None: continue
+            thr = f["threshold"]
+            is_hit = (f["direction"] == high_key and val >= thr) or \
+                     (f["direction"] == low_key   and val <= thr)
+            hits.append(1.0 if is_hit else 0.0)
+            weights.append(abs(f["r"]))
+        if not hits: return 0.0
+        return sum(h * w for h, w in zip(hits, weights)) / sum(weights)
+
+    bad_risk  = _score(context_factors.get("bad",  []), "high_is_bad",  "low_is_bad")
+    good_risk = _score(context_factors.get("good", []), "high_is_good", "low_is_good")
+
+    if bad_risk < 0.3:   bad_corr = 1.0
+    elif bad_risk < 0.6: bad_corr = 1.0 - (bad_risk - 0.3) / 0.3 * 0.25
+    else:                bad_corr = 0.75 - (bad_risk - 0.6) / 0.4 * 0.20
+
+    if good_risk < 0.3:   good_corr = 1.0
+    elif good_risk < 0.6: good_corr = 1.0 + (good_risk - 0.3) / 0.3 * 0.15
+    else:                  good_corr = 1.15 + (good_risk - 0.6) / 0.4 * 0.10
+
+    final_corr = max(0.55, min(1.40, bad_corr * good_corr))
+    return final_corr, bad_risk, good_risk
+
+
 def _calc_multi_point_risk_inline(record, mp_factors):
     """バックテスト用 multi_point リスク計算。
     record の気象値（実績）と mp_factors の threshold を照合してリスクスコアと補正係数を返す。
@@ -2675,7 +2742,7 @@ def _calc_multi_point_risk_inline(record, mp_factors):
     return max(0.55, correction), risk
 
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None, mp_factors=None):
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None, mp_factors=None, mp_context=None):
     """leave-one-month-out クロスバリデーション
 
     各月をテスト期として、それ以外の全データ（前後含む）を学習に使う。
@@ -3090,11 +3157,16 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         pred = (_ap if _ap is not None else base) * _ratio
                     # 案C: BL-2 ブレンド適用
                     pred = pred + beta_bl2 * (_bl2_p - pred)
-                    # multi_point 補正: cnt_avg のみ。リスクが高い日の予測値を下げる（上方補正なし）
-                    if met == "cnt_avg" and mp_factors:
-                        _mp_corr, _ = _calc_multi_point_risk_inline(r, mp_factors)
-                        if _mp_corr < 1.0:
-                            pred = pred * _mp_corr
+                    # multi_point 補正: cnt_avg のみ。bad下方・good上方両方向。
+                    if met == "cnt_avg":
+                        if mp_context and (mp_context.get("bad") or mp_context.get("good")):
+                            _mp_corr, _, _ = _calc_multi_point_context_inline(r, mp_context)
+                            if _mp_corr != 1.0:
+                                pred = pred * _mp_corr
+                        elif mp_factors:
+                            _mp_corr, _ = _calc_multi_point_risk_inline(r, mp_factors)
+                            if _mp_corr < 1.0:
+                                pred = pred * _mp_corr
                     # cnt_avg予測を保存（次のmet=cnt_max/cnt_min のratio計算に使用）
                     if met == "cnt_avg":
                         avg_pred_store[H][r["date"]] = pred
@@ -4518,30 +4590,7 @@ def deep_dive_by_point(fish, ship):
                 print(f"    → H=0 wMAPE={row[6]:.1f}%  r={row[2]:+.3f}  BL2={row[26]}", flush=True)
                 break
 
-    # multi_point_wx 分析（全レコード対象・DB接続クローズ前に実行）
-    try:
-        factors_result, context_result = section_multi_point_wx(
-            all_records, fish, ship,
-            conn_wx, conn_tide, conn_typhoon, conn_cmems,
-            ship_coords=ship_coords, wx_coords=wx_coords, ship_area=ship_area,
-        )
-        if factors_result:
-            save_multi_point_factors(fish, ship, factors_result)
-            top2 = sorted(factors_result.items(), key=lambda x: -abs(x[1]["r"]))[:2]
-            print(f"  [multi_pt] {fish}×{ship}: {len(factors_result)}因子 top={top2}", flush=True)
-        else:
-            print(f"  [multi_pt] {fish}×{ship}: 有意因子なし（n_multi_bad={sum(1 for r in all_records if r.get('n_points_visited',1)>=2)}, n_single={sum(1 for r in all_records if r.get('n_points_visited',1)<2)}）", flush=True)
-        if context_result:
-            save_multi_point_context(fish, ship, context_result)
-            top_bad  = sorted([(f, v["r_bad"])  for f, v in context_result.items() if v.get("r_bad")],
-                               key=lambda x: -abs(x[1]))[:2]
-            top_good = sorted([(f, v["r_good"]) for f, v in context_result.items() if v.get("r_good")],
-                               key=lambda x: -abs(x[1]))[:2]
-            print(f"  [multi_ctx] {fish}×{ship}: bad={top_bad} good={top_good}", flush=True)
-    except Exception as _mp_e:
-        import traceback
-        print(f"  [multi_pt] {fish}×{ship}: ERROR {_mp_e}", flush=True)
-        traceback.print_exc()
+    # section_multi_point_wx は deep_dive() 内のバックテスト前に実行・保存済みのため省略
 
     for c in [conn_wx, conn_tide, conn_typhoon, conn_cmems]:
         if c is not None:
@@ -5223,13 +5272,13 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     save_point_stats(fish, ship, records)
     save_point_events(fish, ship, en0)
 
+    # DBに保存済みの mp_context を読み込んでバックテストへ渡す
+    # （section_multi_point_wx はバックテスト後に実行してDBに保存する。
+    #   初回実行時は None → 補正なし。2回目以降は前回保存値を適用。）
+    _mp_context_for_bt = _load_mp_context_for_backtest(fish, ship)
+
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    # multi_point 補正: 現在は無効化。
-    # combo_multi_point_factors の因子相関は「どの気象でポイント移動が多いか」であり
-    # 「どの気象で釣果が少ないか」とは一致しない（wave low_is_multi 等の逆相関問題）。
-    # バックテストへの組み込みには「ポイント移動=不漁」の因果検証が別途必要。
-    # _load_mp_factors / _calc_multi_point_risk_inline の実装は保持（将来利用可能）。
-    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems, mp_factors=None)
+    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems, mp_factors=None, mp_context=_mp_context_for_bt)
     out += bt_lines
 
     if conn_wx is not None:
@@ -5250,6 +5299,30 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     save_range_backtest(fish, ship, range_bt_data)
     save_star_backtest(fish, ship, star_bt_data)
     save_thresholds(fish, ship, season_thr_final)
+
+    # multi_point_wx 分析（バックテスト後・DB接続クローズ前に実行してDBに保存）
+    # 次回実行時は _load_mp_context_for_backtest() でDBから読み込んでバックテストへ渡す
+    try:
+        _factors_post, _context_post = section_multi_point_wx(
+            records, fish, ship,
+            conn_wx, conn_tide, conn_typhoon, conn_cmems,
+            ship_coords=ship_coords, wx_coords=wx_coords, ship_area=ship_area,
+        )
+        if _factors_post:
+            save_multi_point_factors(fish, ship, _factors_post)
+        if _context_post:
+            save_multi_point_context(fish, ship, _context_post)
+            top_bad  = sorted([(f, v["r_bad"])  for f, v in _context_post.items() if v.get("r_bad")],
+                               key=lambda x: -abs(x[1]))[:2]
+            top_good = sorted([(f, v["r_good"]) for f, v in _context_post.items() if v.get("r_good")],
+                               key=lambda x: -abs(x[1]))[:2]
+            print(f"  [multi_ctx] {fish}×{ship}: bad={top_bad} good={top_good}", flush=True)
+        else:
+            print(f"  [multi_pt] {fish}×{ship}: 有意因子なし（context）", flush=True)
+    except Exception as _mp_e:
+        import traceback as _tb_mp
+        print(f"  [multi_pt] {fish}×{ship}: ERROR {_mp_e}", flush=True)
+        _tb_mp.print_exc()
 
     # auto_fallback: 以下いずれかの場合、predict_count.py で気象補正をスキップ。
     #   ① BL-0（全体平均）より 10pt 以上悪い
