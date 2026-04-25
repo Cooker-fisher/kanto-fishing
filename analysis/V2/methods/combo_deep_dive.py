@@ -2742,7 +2742,7 @@ def _calc_multi_point_risk_inline(record, mp_factors):
     return max(0.55, correction), risk
 
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None, mp_factors=None, mp_context=None):
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None, mp_factors=None, mp_context=None):  # mp_context は現在未使用（双方向相関がメインモデルと重複するため削除済み）
     """leave-one-month-out クロスバリデーション
 
     各月をテスト期として、それ以外の全データ（前後含む）を学習に使う。
@@ -3157,16 +3157,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         pred = (_ap if _ap is not None else base) * _ratio
                     # 案C: BL-2 ブレンド適用
                     pred = pred + beta_bl2 * (_bl2_p - pred)
-                    # multi_point 補正: cnt_avg のみ。bad下方・good上方両方向。
-                    if met == "cnt_avg":
-                        if mp_context and (mp_context.get("bad") or mp_context.get("good")):
-                            _mp_corr, _, _ = _calc_multi_point_context_inline(r, mp_context)
-                            if _mp_corr != 1.0:
-                                pred = pred * _mp_corr
-                        elif mp_factors:
-                            _mp_corr, _ = _calc_multi_point_risk_inline(r, mp_factors)
-                            if _mp_corr < 1.0:
-                                pred = pred * _mp_corr
+                    # multi_point 補正は削除（WX因子の二重適用になるため）
                     # cnt_avg予測を保存（次のmet=cnt_max/cnt_min のratio計算に使用）
                     if met == "cnt_avg":
                         avg_pred_store[H][r["date"]] = pred
@@ -5272,13 +5263,8 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     save_point_stats(fish, ship, records)
     save_point_events(fish, ship, en0)
 
-    # DBに保存済みの mp_context を読み込んでバックテストへ渡す
-    # （section_multi_point_wx はバックテスト後に実行してDBに保存する。
-    #   初回実行時は None → 補正なし。2回目以降は前回保存値を適用。）
-    _mp_context_for_bt = _load_mp_context_for_backtest(fish, ship)
-
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems, mp_factors=None, mp_context=_mp_context_for_bt)
+    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems)
     out += bt_lines
 
     text = "\n".join(out)
