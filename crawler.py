@@ -6418,12 +6418,13 @@ def _classify_cancel_type(reason: str) -> str:
     return "不明"
 
 
-def _extract_time_slot(fish_raw: str) -> str:
-    """fish_raw から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'"""
-    if not fish_raw:
+def _extract_time_slot(fish_raw: str, kanso_raw: str = "", trip_no: int = 1) -> str:
+    """fish_raw/kanso_raw/trip_no から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'"""
+    combined = (fish_raw or "") + " " + (kanso_raw or "")
+    if not combined.strip():
         return ""
     # 午前・午後 併記（例: 忠彦丸「午前・午後ライトアジ乗合船」）→ 時間帯不定
-    if "午前" in fish_raw and "午後" in fish_raw:
+    if "午前" in combined and "午後" in combined:
         return ""
     # 優先順位順にチェック（長いパターンを先に）
     for pattern, slot in [
@@ -6432,6 +6433,10 @@ def _extract_time_slot(fish_raw: str) -> str:
         ("午後半日",   "午後"),
         ("ナイト",     "夜"),
         ("デイゲーム", "昼"),
+        ("早朝",       "朝"),
+        ("深夜",       "夜"),
+        ("夜釣",       "夜"),
+        ("夜間",       "夜"),
         ("午前",       "午前"),
         ("午後",       "午後"),
         ("朝マヅメ",   "朝"),
@@ -6442,8 +6447,12 @@ def _extract_time_slot(fish_raw: str) -> str:
         ("ショート",   "ショート"),
         ("半日",       "午前"),
     ]:
-        if pattern in fish_raw:
+        if pattern in combined:
             return slot
+    # イカ系でtrip_no>=2かつtime_slot未判定の場合は夜便と推定
+    _ika_words = ("ムギイカ", "マルイカ", "ヤリイカ", "スルメイカ", "コウイカ", "スミイカ")
+    if trip_no >= 2 and any(w in combined for w in _ika_words):
+        return "夜"
     return ""
 
 
@@ -6702,7 +6711,7 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 "tsuri_mono":     tsuri_norm,
                 "main_sub":       main_sub,
                 "fish_raw":       r.get("fish_raw", ""),
-                "time_slot":      _extract_time_slot(r.get("fish_raw", "")),
+                "time_slot":      _extract_time_slot(r.get("fish_raw", ""), r.get("kanso_raw", ""), int(r.get("trip_no") or 1)),
                 "cnt_min":        cr["min"] if cr else "",
                 "cnt_max":        cr["max"] if cr else "",
                 "cnt_avg":        cnt_avg if cnt_avg is not None else "",
@@ -6829,7 +6838,7 @@ def save_daily_csv(catches):
             # V2 正規化
             tsuri_norm = normalize_tsuri_mono(fish_raw, c["ship"])
             main_sub   = _classify_main_sub(fish_raw, tsuri_norm)
-            time_slot  = _extract_time_slot(fish_raw)
+            time_slot  = _extract_time_slot(fish_raw, c.get("kanso_raw", ""), int(c.get("trip_no") or 1))
             pp1, pp2   = _split_place_pair(c.get("point_place") or "")
             d_min, d_max = _split_depth(c.get("point_depth") or "")
 
