@@ -739,6 +739,74 @@ def _predict_point(conn, fish: str, ship: str, month: int) -> str | None:
         return None
 
 
+def _slot_group_for_predict(time_slot: str) -> str:
+    """time_slot → PDT モデルのスロットグループに変換。"""
+    if time_slot in ("夜",):
+        return "夜"
+    if time_slot in ("朝", "午前", "ショート"):
+        return "朝系"
+    if time_slot in ("午後",):
+        return "午後"
+    return ""
+
+
+def _predict_pdt_key(conn, fish: str, ship: str, point: str, time_slot: str):
+    """combo_pdt_backtest から (point, depth_band, slot) の最良キーを返す。
+    BL2比 5pt 以上改善するキーのみ採用。slot 一致 > 全便 の順で探す。
+    """
+    sl = _slot_group_for_predict(time_slot)
+    try:
+        # slot が一致するキーを優先
+        for slot_q in ([sl, ""] if sl else [""]):
+            row = conn.execute(
+                """SELECT point, depth_band, slot, (bl2_wmape - wmape) as imp
+                   FROM combo_pdt_backtest
+                   WHERE fish=? AND ship=? AND point=? AND slot=?
+                     AND horizon=0 AND metric='cnt_avg'
+                     AND bl2_wmape IS NOT NULL AND wmape IS NOT NULL
+                   ORDER BY imp DESC LIMIT 1""",
+                (fish, ship, point, slot_q)
+            ).fetchone()
+            if row and row[3] is not None and row[3] >= 5.0:
+                return (row[0], row[1], row[2])
+    except Exception:
+        pass
+    return None
+
+
+def _apply_pdt_wx_correction(conn, fish: str, ship: str,
+                              point: str, depth_band: str, slot: str,
+                              target_date: str, baseline_cnt: float,
+                              lat: float, lon: float,
+                              metric: str = 'cnt_avg') -> float | None:
+    """combo_pdt_wx_params の PDT モデルで補正を計算。パラメータなければ None。"""
+    try:
+        rows = conn.execute(
+            "SELECT factor, mean, std, r, alpha_scale, met_mean, met_std, lat, lon "
+            "FROM combo_pdt_wx_params "
+            "WHERE fish=? AND ship=? AND point=? AND depth_band=? AND slot=? AND metric=?",
+            (fish, ship, point, depth_band, slot, metric)
+        ).fetchall()
+    except Exception:
+        return None
+    if not rows:
+        return None
+    meta = None; factor_params = {}; wx_lat = lat; wx_lon = lon
+    for row in rows:
+        fac, mean, std, r, alpha_scale, met_mean, met_std, rlat, rlon = row
+        if fac == "_meta":
+            meta = (alpha_scale, met_mean, met_std)
+            if rlat and rlon:
+                wx_lat, wx_lon = rlat, rlon
+        elif r is not None and abs(r) >= 0.10 and mean is not None and std is not None:
+            factor_params[fac] = (mean, std, r)
+    if meta is None or not factor_params:
+        return None
+    wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
+
+
 def _apply_trip_wx_correction(conn, fish: str, ship: str, trip_no: int,
                                target_date: str, baseline_cnt: float,
                                lat: float, lon: float,
@@ -1154,6 +1222,20 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             if pd_cnt is not None:
                 cnt_predicted = pd_cnt
 
+    # ── PDT補正（ポイント×水深帯×時間帯 combo_pdt_wx_params があれば優先） ──────
+    # 優先チェーン: combo < point < water_color < point_depth < PDT < trip（最高優先）
+    predicted_pdt = None
+    if lat and lon and not use_fb and predicted_point:
+        pdt_key = _predict_pdt_key(conn, fish, ship, predicted_point, time_slot)
+        if pdt_key:
+            pdt_cnt = _apply_pdt_wx_correction(
+                conn, fish, ship, pdt_key[0], pdt_key[1], pdt_key[2],
+                target_date, avg_cnt, lat, lon, 'cnt_avg'
+            )
+            if pdt_cnt is not None:
+                cnt_predicted = pdt_cnt
+                predicted_pdt = pdt_key
+
     # ── 便別補正（trip_no 指定時に combo_trip_wx_params があれば最優先） ─────────
     # 便番号が判明している場合（予約情報等）に便別モデルを適用。最も高精度なため最優先。
     predicted_trip_no = None
@@ -1297,6 +1379,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "predicted_point":        predicted_point,
         "predicted_point_depth":  predicted_point_depth,   # {point}_{depth_band} or None
         "predicted_water_color":  predicted_water_color,   # 澄み/濁り/"" (water_color_daily予測)
+        "predicted_pdt":          predicted_pdt,           # (point, depth_band, slot) or None
         "predicted_trip_no":      predicted_trip_no,       # trip_no指定時のみ
     }
 

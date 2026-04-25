@@ -5070,6 +5070,194 @@ def deep_dive_by_water_color(fish, ship):
     print(f"  [wc_opt] {fish}×{ship}: 完了", flush=True)
 
 
+# ───────────────────────────────────────────────
+# ポイント × 水深帯 × 時間帯 サブコンボ分析
+# ───────────────────────────────────────────────
+
+def _depth_band(record) -> str:
+    """水深帯を返す。depth_min が None/0 の場合は '不明'。"""
+    d = record.get("depth_min")
+    if d is None or d == 0:
+        return "不明"
+    if d <= 40:
+        return "浅場"
+    if d <= 100:
+        return "中深場"
+    return "深場"
+
+
+def _slot_group(record) -> str:
+    """time_slot を朝系/夜/不明に正規化する。"""
+    ts = record.get("time_slot") or ""
+    if ts in ("夜",):
+        return "夜"
+    if ts in ("朝", "午前", "ショート"):
+        return "朝系"
+    if ts in ("午後",):
+        return "午後"
+    return ""
+
+
+def save_pdt_backtest(fish, ship, point, depth_band, slot, bt_data):
+    if not bt_data:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_pdt_backtest (
+            fish TEXT, ship TEXT, point TEXT, depth_band TEXT, slot TEXT,
+            metric TEXT, horizon INTEGER,
+            r REAL, mae REAL, mape REAL, smape REAL, wmape REAL,
+            dir_acc REAL, n INTEGER, rmse REAL,
+            bl0_wmape REAL, bl1_wmape REAL, bl2_wmape REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, point, depth_band, slot, metric, horizon)
+        )
+    """)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute(
+        "DELETE FROM combo_pdt_backtest WHERE fish=? AND ship=? AND point=? AND depth_band=? AND slot=?",
+        (fish, ship, point, depth_band, slot)
+    )
+    rows = [
+        (fish, ship, point, depth_band, slot,
+         metric, H, rv, mae, mape, smape, wmape, dacc, n, rmse,
+         bl0w, bl1w, bl2w, now)
+        for metric, H, rv, mae, mape, smape, wmape, rmse, dacc,
+            good_r, bad_r, gprec, grec, gf1, bprec, brec, bf1, acc3, n, r_own,
+            bl0w, bl0m, bl0r, bl1w, bl1m, bl1r, bl2w, bl2m, bl2r in bt_data
+    ]
+    conn.executemany(
+        "INSERT OR REPLACE INTO combo_pdt_backtest VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def save_pdt_wx_params(fish, ship, point, depth_band, slot, wx_params_data, modal_lat=None, modal_lon=None):
+    if not wx_params_data:
+        return
+    conn = _open_ana()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS combo_pdt_wx_params (
+            fish TEXT, ship TEXT, point TEXT, depth_band TEXT, slot TEXT,
+            metric TEXT, factor TEXT,
+            mean REAL, std REAL, r REAL, alpha_scale REAL,
+            met_mean REAL, met_std REAL, lat REAL, lon REAL,
+            updated_at TEXT,
+            PRIMARY KEY (fish, ship, point, depth_band, slot, metric, factor)
+        )
+    """)
+    conn.execute(
+        "DELETE FROM combo_pdt_wx_params WHERE fish=? AND ship=? AND point=? AND depth_band=? AND slot=?",
+        (fish, ship, point, depth_band, slot)
+    )
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = []
+    for met, params in wx_params_data.items():
+        if met.startswith("_"):
+            continue
+        rows.append((fish, ship, point, depth_band, slot, met, "_meta",
+                     None, None, None,
+                     params.get("alpha_scale"), params.get("met_mean"), params.get("met_std"),
+                     modal_lat, modal_lon, now))
+        for fac, (mean, std, r) in params.get("factors", {}).items():
+            rows.append((fish, ship, point, depth_band, slot, met, fac,
+                         mean, std, r, None, None, None, None, None, now))
+    if rows:
+        conn.executemany(
+            "INSERT OR REPLACE INTO combo_pdt_wx_params VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            rows
+        )
+    conn.commit()
+    conn.close()
+
+
+def deep_dive_by_pdt(fish, ship):
+    """ポイント × 水深帯 × 時間帯 の組み合わせごとに独立した気象最適化＋バックテストを実行。
+    N >= MIN_N_COMBO かつ months >= 6 の組み合わせのみ対象。
+    結果を combo_pdt_backtest / combo_pdt_wx_params に保存する。
+    """
+    import collections as _col
+
+    all_records = load_records(fish, ship_filter=ship)
+    if not all_records:
+        return
+
+    _noboat = [r for r in all_records if r.get("is_boat", 0) == 0]
+    if len(_noboat) >= MIN_N_COMBO and len(_noboat) < len(all_records):
+        all_records = _noboat
+
+    # 各レコードに PDT キーを付与
+    def _pdt_key(r):
+        return (r.get("point", "") or "", _depth_band(r), _slot_group(r))
+
+    key_counts = _col.Counter(_pdt_key(r) for r in all_records)
+    viable_keys = []
+    for key, n in key_counts.most_common():
+        pt, db, sl = key
+        if not pt or n < MIN_N_COMBO:
+            continue
+        key_months = {r["date"][:7] for r in all_records if _pdt_key(r) == key}
+        if len(key_months) < 6:
+            continue
+        viable_keys.append(key)
+
+    if not viable_keys:
+        return
+
+    print(f"  [pdt_opt] {fish}×{ship}: {len(viable_keys)}コンテキスト最適化開始", flush=True)
+
+    ship_coords  = load_ship_coords()
+    wx_coords    = load_wx_coords_list()
+    ship_area    = load_ship_area()
+    conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
+    conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
+    conn_typhoon = sqlite3.connect(DB_TYPHOON) if (os.path.exists(DB_TYPHOON) and os.path.getsize(DB_TYPHOON) > 0) else None
+    conn_cmems   = sqlite3.connect(DB_CMEMS)   if (os.path.exists(DB_CMEMS)   and os.path.getsize(DB_CMEMS)   > 0) else None
+
+    decadal_global = load_decadal(fish, ship)
+
+    for key in viable_keys:
+        pt, db, sl = key
+        ctx_records = [r for r in all_records if _pdt_key(r) == key]
+        n = len(ctx_records)
+        print(f"    [{pt}|{db}|{sl or '全便'}]  N={n}", flush=True)
+
+        pt_decadal = _build_decadal_from_records(ctx_records)
+        decadal = pt_decadal if len(pt_decadal) >= 6 else decadal_global
+
+        try:
+            bt_lines, bt_data, range_bt_data, star_bt_data, season_thr, wx_params_data, modal_lat, modal_lon, best_cmems = \
+                section_backtest_rolling(
+                    ctx_records, ship_coords, wx_coords, conn_wx, ship_area, decadal,
+                    conn_tide=conn_tide, conn_typhoon=conn_typhoon,
+                    fish=fish, conn_cmems=conn_cmems
+                )
+        except Exception as e:
+            print(f"    [pdt_opt] ERROR {key}: {e}", flush=True)
+            continue
+
+        if bt_data:
+            save_pdt_backtest(fish, ship, pt, db, sl, bt_data)
+        if wx_params_data:
+            save_pdt_wx_params(fish, ship, pt, db, sl, wx_params_data, modal_lat, modal_lon)
+
+        for row in bt_data:
+            if row[0] == "cnt_avg" and row[1] == 0:
+                print(f"    → H=0 wMAPE={row[6]:.1f}%  r={row[2]:+.3f}  BL2={row[26]}", flush=True)
+                break
+
+    for c in [conn_wx, conn_tide, conn_typhoon, conn_cmems]:
+        if c is not None:
+            try:
+                c.close()
+            except Exception:
+                pass
+
+    print(f"  [pdt_opt] {fish}×{ship}: 完了", flush=True)
+
+
 def _save_combo_tuning_json(fish, ship):
     """ポイント別最適化後にcombo_tuning JSONを更新する。
     改善があった場合（best_point_wmape < combo_wmape）のみ更新。
@@ -5393,6 +5581,7 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     deep_dive_by_trip(fish, ship)
     deep_dive_by_point_depth(fish, ship)
     deep_dive_by_water_color(fish, ship)
+    deep_dive_by_pdt(fish, ship)
 
     if verbose:
         _sys.stdout.buffer.write(text.encode("utf-8", errors="replace") + b"\n")
@@ -5466,6 +5655,7 @@ def main():
             deep_dive_by_point_depth(args.fish, ship)
             deep_dive_by_trip(args.fish, ship)
             deep_dive_by_water_color(args.fish, ship)
+            deep_dive_by_pdt(args.fish, ship)
     elif args.ship:
         deep_dive(args.fish, args.ship, reset_best=_reset)
     else:
