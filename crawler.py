@@ -2862,9 +2862,25 @@ def load_area_romaji():
     with open(p, encoding="utf-8") as f:
         return json.load(f)
 
+def load_ship_romaji():
+    """normalize/ship_romaji_map.json → {船宿名: slug}"""
+    p = os.path.join("normalize", "ship_romaji_map.json")
+    if not os.path.exists(p): return {}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+def load_ship_info():
+    """normalize/ship_info.json → {船宿名: {basic, vessel, reservation, season_strategy, access, features}}"""
+    p = os.path.join("normalize", "ship_info.json")
+    if not os.path.exists(p): return {}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
 # モジュールレベルで1回だけロード
 _FISH_ROMAJI = load_fish_romaji()
 _AREA_ROMAJI = load_area_romaji()
+_SHIP_ROMAJI = load_ship_romaji()
+_SHIP_INFO = load_ship_info()
 
 def fish_slug(fish: str) -> str:
     """魚種名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
@@ -2873,6 +2889,23 @@ def fish_slug(fish: str) -> str:
 def area_slug(area: str) -> str:
     """エリア名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _AREA_ROMAJI.get(area, area)
+
+def ship_slug(name: str) -> str:
+    """船宿名 → URL用ローマ字スラグ（マップ未登録時はNone）"""
+    return _SHIP_ROMAJI.get(name)
+
+def _ship_link(name: str, depth: int = 1) -> str:
+    """
+    船宿名をリンク化。
+    depth: HTMLからship/への相対パス階層（1=fish/area配下から、0=ルートから）
+    リンク条件: ship_romaji_map と ship_info の両方にエントリがある場合のみ。
+    （ship_info にないとページ生成されていないので404になる）
+    """
+    slug = _SHIP_ROMAJI.get(name)
+    if not slug or name not in _SHIP_INFO:
+        return name
+    prefix = "../" * depth if depth > 0 else ""
+    return f'<a href="{prefix}ship/{slug}.html">{name}</a>'
 
 def current_iso_week():
     now = datetime.now()
@@ -5330,7 +5363,7 @@ def build_fish_pages(data, history, crawled_at=""):
             sr_items += (
                 f'<div class="sr">'
                 f'<span class="sr-rank">{i+1}</span>'
-                f'<span class="sr-name">{sn}</span>'
+                f'<span class="sr-name">{_ship_link(sn, depth=1)}</span>'
                 f'<span class="sr-range">{s_range}</span>'
                 f'<span class="sr-pt">{top_pt}</span></div>'
             )
@@ -5632,7 +5665,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
                 f'<div class="fn">{fish}</div>'
                 + (f'<div class="fr">{cnt_str}</div>' if cnt_str else "")
                 + f'<div class="fs">{" | ".join(detail_parts)}</div>'
-                + (f'<div class="fb">◎{best_ship}</div>' if best_ship else "")
+                + (f'<div class="fb">◎{_ship_link(best_ship, depth=1)}</div>' if best_ship else "")
                 + '</a>'
             )
 
@@ -5694,7 +5727,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             top_pt = _Counter(pts).most_common(1)[0][0] if pts else ""
             ship_items_html += (
                 f'<div class="sl-item">'
-                f'<div class="sl-top"><span class="sl-name">{sn}</span>'
+                f'<div class="sl-top"><span class="sl-name">{_ship_link(sn, depth=1)}</span>'
                 f'<div class="sl-fish">{badges}</div></div>'
                 + (f'<div class="sl-detail">{top_pt}</div>' if top_pt else "")
                 + '</div>'
@@ -5990,7 +6023,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
             sr_items_fa += (
                 f'<div class="sr">'
                 f'<span class="sr-rank">{i+1}</span>'
-                f'<span class="sr-name">{sn}</span>'
+                f'<span class="sr-name">{_ship_link(sn, depth=1)}</span>'
                 f'<span class="sr-range">{s_range}</span>'
                 f'<span class="sr-pt">{sd["cnt"]}件</span></div>'
             )
@@ -6003,7 +6036,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
             sub = " / ".join(filter(None, [cnt_str, sz_cm]))
             recent_cards_fa += (
                 f'<div class="sl-card">'
-                f'<div class="sl-head"><span class="sl-name">{c["ship"]}</span>'
+                f'<div class="sl-head"><span class="sl-name">{_ship_link(c["ship"], depth=1)}</span>'
                 f'<span class="sl-date">{(c.get("date") or "")[-5:]}</span></div>'
                 f'<div class="sl-sub">{sub if sub else "釣果あり"}</div>'
                 f'</div>'
@@ -7031,6 +7064,715 @@ def repair_csv_depth(catches):
 
 
 # ============================================================
+# 船宿個別ページ生成 (T8: docs/ship/*.html)
+# ============================================================
+
+# mockup-ship.html から流用したCSS（V2配色・濃紺ヘッダ + オレンジCTA）
+_SHIP_PAGE_CSS = """
+:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
+.c{max-width:var(--mx);margin:0 auto;padding:0 14px}
+header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
+header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;font-weight:700}header h1 a{color:#fff}header h1 span{color:var(--cta)}
+nav.gnav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
+nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
+nav.gnav a:hover,nav.gnav a.on{background:var(--accent);color:#fff;text-decoration:none}
+nav.gnav a.prem{color:var(--prem)}
+nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;background:var(--prem);border-radius:50%;margin-right:4px;vertical-align:middle}
+.bn a.prem{color:var(--prem)}
+.st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
+.ship-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.ship-hero .sh-badge{font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);border-radius:10px;color:#fff}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
+.info-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:12px;color:var(--sub);line-height:1.8}
+.info-box strong{color:var(--text)}
+.info-box .info-row{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--bg)}
+.info-box .info-row:last-child{border-bottom:none}
+.info-box .info-label{flex:0 0 100px;color:var(--muted);font-weight:600}
+.info-box .info-val{flex:1}
+.fish-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.fish-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.fish-section h3 .h-range{color:var(--cta);font-size:15px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
+.chart-bars .cb.today{opacity:1;background:var(--pos)}
+.chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.fish-meta{font-size:11px;color:var(--sub);margin-top:8px;padding-top:8px;border-top:1px solid var(--bg)}
+.fish-meta strong{color:var(--accent)}
+.rank-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.rank-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.rk{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--bg);gap:8px;font-size:12px}
+.rk:last-child{border-bottom:none}
+.rk.self{background:#fef6ee;border-radius:6px;padding:8px;border-bottom:none;margin-bottom:4px}
+.rk .rk-rank{font-weight:800;color:var(--cta);flex:0 0 30px;text-align:center}
+.rk .rk-name{flex:1;font-weight:700;color:var(--accent)}
+.rk .rk-pct{font-weight:700;font-size:11px;padding:2px 6px;border-radius:6px;background:#e6f7ee;color:var(--pos)}
+.spec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;font-size:12px;color:var(--sub)}
+.spec-grid .sg-item{padding:6px 0}
+.spec-grid .sg-item strong{display:block;color:var(--muted);font-size:10px;font-weight:600;margin-bottom:2px}
+.facility-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.facility-tags .ft{font-size:10px;padding:3px 8px;background:var(--nav);color:var(--sub);border-radius:10px;border:1px solid var(--border)}
+.season-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.season-grid .sg{padding:10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--cta)}
+.season-grid .sg .sg-label{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px}
+.season-grid .sg .sg-fish{font-size:13px;color:var(--accent);font-weight:600}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cta-grid a{padding:10px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;text-align:center;text-decoration:none}
+.cta-grid a.alt{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.cta-grid a:hover{background:var(--cta2)}
+.cta-grid a.alt:hover{background:var(--accent);color:#fff}
+.faq-list{margin-top:8px}
+.faq-list details{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;padding:0}
+.faq-list summary{padding:10px 14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--accent);list-style:none}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::before{content:"Q. ";color:var(--cta);font-weight:800;margin-right:4px}
+.faq-list details[open] summary{border-bottom:1px solid var(--bg)}
+.faq-list .faq-a{padding:10px 14px;font-size:12px;color:var(--sub);line-height:1.7}
+.faq-list .faq-a::before{content:"A. ";color:var(--pos);font-weight:800;margin-right:4px}
+.contact-cta{background:var(--accent);color:#fff;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:16px}
+.contact-cta h3{font-size:14px;margin-bottom:8px}
+.contact-cta p{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px}
+.contact-cta a{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;margin:4px}
+footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
+footer a{color:rgba(255,255,255,.7)}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.bn a{flex:1;text-align:center;padding:7px 0;font-size:9px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.bn a .i{font-size:18px}.bn a.on{color:var(--cta)}.bn a:hover{text-decoration:none;color:var(--cta)}
+@media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
+""".strip()
+
+
+def _ship_load_area_coords():
+    """area_coords.json を読む（{area: {lat, lon}}）"""
+    p = os.path.join("normalize", "area_coords.json")
+    if not os.path.exists(p): return {}
+    try:
+        with open(p, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+# 料金表記サニタイザ（船宿料金は変動するため一切記載しない・自社サブスク料金「月額500円」は別フローで保持）
+_PRICE_PATTERNS = [
+    re.compile(r"\d{1,3}(?:,\d{3})+\s*円"),        # 1,000円・10,500円
+    re.compile(r"\d+\s*円"),                        # 500円・3000円
+    re.compile(r"[¥￥]\s*\d+(?:[,，]?\d+)*"),        # ¥1000・￥5,000
+    re.compile(r"\d+(?:～~〜-)\d+\s*円"),            # 300〜500円
+    re.compile(r"\d+\s*[%％]\s*off", re.IGNORECASE),  # 50%off
+    re.compile(r"\d+\s*[%％]?割引"),                 # 30%割引・2割引
+    re.compile(r"\d+\s*ポイント還元"),               # 100ポイント還元
+]
+def _sanitize_no_price(text):
+    """料金関連の文字列を「（要確認）」に置換。textがNoneや空ならそのまま"""
+    if not text or not isinstance(text, str):
+        return text
+    out = text
+    for p in _PRICE_PATTERNS:
+        out = p.sub("（要確認）", out)
+    # 連続する「（要確認）」を1つに圧縮
+    out = re.sub(r"(（要確認）)(?:[\s、・,/]*\1)+", "（要確認）", out)
+    # 「（要確認）/台」「（要確認）/日」のような接尾辞も削除
+    out = re.sub(r"（要確認）[/／]\s*[台日人]", "（要確認）", out)
+    return out
+
+
+def _sanitize_ship_info(info):
+    """ship_info 辞書全体を再帰的に料金サニタイズ"""
+    if isinstance(info, dict):
+        return {k: _sanitize_ship_info(v) for k, v in info.items()}
+    if isinstance(info, list):
+        return [_sanitize_ship_info(v) for v in info]
+    if isinstance(info, str):
+        return _sanitize_no_price(info)
+    return info
+
+
+def _ship_calc_sailrate(catches, ship_name, today_dt):
+    """直近30日の出船日数 / 欠航日数 / 出船率"""
+    from datetime import timedelta
+    cutoff = today_dt - timedelta(days=30)
+    days_sail = set()
+    days_cancel = set()
+    for c in catches:
+        if c.get("ship") != ship_name:
+            continue
+        d_str = c.get("date") or ""
+        try:
+            d = datetime.strptime(d_str, "%Y/%m/%d")
+        except ValueError:
+            continue
+        if d < cutoff or d > today_dt:
+            continue
+        if c.get("is_cancellation") or "欠航" in (c.get("fish") or [""])[0]:
+            days_cancel.add(d_str)
+        else:
+            days_sail.add(d_str)
+    sail = len(days_sail)
+    cancel = len(days_cancel)
+    total = sail + cancel
+    rate = round(100.0 * sail / total) if total > 0 else None
+    return sail, cancel, rate
+
+
+def _ship_recent_fish_html(catches, ship_name, today_dt):
+    """直近7日 × 上位3魚種の7日推移バーチャート HTML"""
+    from datetime import timedelta
+    from collections import defaultdict
+    cutoff = today_dt - timedelta(days=7)
+    # 魚種別カウント（直近7日）
+    fish_count = defaultdict(int)
+    fish_daily = defaultdict(lambda: defaultdict(list))  # fish → date_str → [cnts]
+    fish_size = defaultdict(list)
+    fish_point = defaultdict(list)
+    for c in catches:
+        if c.get("ship") != ship_name:
+            continue
+        d_str = c.get("date") or ""
+        try:
+            d = datetime.strptime(d_str, "%Y/%m/%d")
+        except ValueError:
+            continue
+        if d < cutoff or d > today_dt:
+            continue
+        for f in c.get("fish") or []:
+            if f in ("不明", "欠航"):
+                continue
+            cr = c.get("count_range") or {}
+            cnt_max = cr.get("max")
+            if cnt_max:
+                fish_count[f] += 1
+                fish_daily[f][d_str].append(cnt_max)
+                sr = c.get("size_range_cm") or {}
+                if sr.get("min"): fish_size[f].append(sr["min"])
+                if sr.get("max"): fish_size[f].append(sr["max"])
+                pp = c.get("point_place1")
+                if pp: fish_point[f].append(pp)
+    if not fish_count:
+        return '<p style="font-size:12px;color:var(--muted);text-align:center;padding:20px">直近7日のデータがありません</p>'
+    top_fish = sorted(fish_count.items(), key=lambda x: -x[1])[:3]
+    out = []
+    today_iso = today_dt.strftime("%Y/%m/%d")
+    # 過去7日のラベル
+    day_labels = []
+    day_keys = []
+    for i in range(6, -1, -1):
+        d = today_dt - timedelta(days=i)
+        day_keys.append(d.strftime("%Y/%m/%d"))
+        day_labels.append(d.strftime("%-m/%-d") if os.name != "nt" else d.strftime("%#m/%#d"))
+    day_labels[-1] = "今日"
+    for fish, _ in top_fish:
+        all_cnts = []
+        for cnts in fish_daily[fish].values():
+            all_cnts.extend(cnts)
+        if not all_cnts:
+            continue
+        max_v = max(all_cnts) or 1
+        # 日別 max 値
+        bars_html = ""
+        for k in day_keys:
+            day_cnts = fish_daily[fish].get(k, [])
+            day_max = max(day_cnts) if day_cnts else 0
+            h = int(100 * day_max / max_v) if max_v else 0
+            today_cls = " today" if k == today_iso else ""
+            bars_html += f'<div class="cb{today_cls}" style="height:{max(h,5)}%"></div>'
+        labels_html = "".join(f'<span>{lab}</span>' for lab in day_labels)
+        sz_str = ""
+        if fish_size[fish]:
+            sz_lo = int(min(fish_size[fish]))
+            sz_hi = int(max(fish_size[fish]))
+            sz_str = f"{sz_lo}〜{sz_hi}cm" if sz_lo != sz_hi else f"{sz_lo}cm"
+        from collections import Counter as _C
+        top_pt = _C(fish_point[fish]).most_common(1)[0][0] if fish_point[fish] else ""
+        cnt_lo = int(min(all_cnts))
+        cnt_hi = int(max(all_cnts))
+        range_str = f"{cnt_lo}〜{cnt_hi}匹" if cnt_lo != cnt_hi else f"{cnt_hi}匹"
+        meta_parts = []
+        if sz_str: meta_parts.append(f"<strong>サイズ:</strong> {sz_str}")
+        if top_pt: meta_parts.append(f"<strong>主要ポイント:</strong> {top_pt}")
+        meta_html = " | ".join(meta_parts) if meta_parts else ""
+        out.append(
+            f'<div class="fish-section">'
+            f'<h3>{fish} <span class="h-range">{range_str}</span></h3>'
+            f'<div class="chart-bars">{bars_html}</div>'
+            f'<div class="chart-labels">{labels_html}</div>'
+            + (f'<div class="fish-meta">{meta_html}</div>' if meta_html else "")
+            + '</div>'
+        )
+    return "\n".join(out)
+
+
+def _ship_area_ranking_html(catches, area, self_name, today_dt):
+    """同エリアの船宿ランキング（直近30日件数 TOP5）"""
+    from datetime import timedelta
+    from collections import Counter as _C
+    cutoff = today_dt - timedelta(days=30)
+    counter = _C()
+    for c in catches:
+        if c.get("area") != area:
+            continue
+        d_str = c.get("date") or ""
+        try:
+            d = datetime.strptime(d_str, "%Y/%m/%d")
+        except ValueError:
+            continue
+        if d < cutoff or d > today_dt:
+            continue
+        if c.get("is_cancellation"):
+            continue
+        sn = c.get("ship")
+        if sn:
+            counter[sn] += 1
+    if not counter:
+        return ""
+    top5 = counter.most_common(5)
+    out = []
+    for i, (sn, cnt) in enumerate(top5, 1):
+        # 自船宿は強調
+        is_self = (sn == self_name)
+        cls = "rk self" if is_self else "rk"
+        slug = _SHIP_ROMAJI.get(sn)
+        if is_self:
+            name_html = f'{sn}（このページ）'
+        elif slug:
+            name_html = f'<a href="{slug}.html">{sn}</a>'
+        else:
+            name_html = sn
+        out.append(
+            f'<div class="{cls}">'
+            f'<span class="rk-rank">{i}位</span>'
+            f'<span class="rk-name">{name_html}</span>'
+            f'<span class="rk-pct">{cnt}件</span>'
+            f'</div>'
+        )
+    return (
+        '<div class="rank-box">'
+        f'<h3>{area}エリアの船宿ランキング（直近30日・釣果件数）</h3>'
+        + "".join(out)
+        + '</div>'
+    )
+
+
+def _ship_primary_fish_list(catches, ship_name, limit=5):
+    """その船宿の主要対象魚（直近90日・釣果件数 TOP N）"""
+    from datetime import timedelta
+    from collections import Counter as _C
+    cutoff = datetime.now() - timedelta(days=90)
+    counter = _C()
+    for c in catches:
+        if c.get("ship") != ship_name:
+            continue
+        d_str = c.get("date") or ""
+        try:
+            d = datetime.strptime(d_str, "%Y/%m/%d")
+        except ValueError:
+            continue
+        if d < cutoff:
+            continue
+        for f in c.get("fish") or []:
+            if f not in ("不明", "欠航"):
+                counter[f] += 1
+    return [n for n, _ in counter.most_common(limit)]
+
+
+def _ship_main_points(catches, ship_name, limit=3):
+    """その船宿の主要ポイント TOP3"""
+    from datetime import timedelta
+    from collections import Counter as _C
+    cutoff = datetime.now() - timedelta(days=180)
+    counter = _C()
+    for c in catches:
+        if c.get("ship") != ship_name:
+            continue
+        d_str = c.get("date") or ""
+        try:
+            d = datetime.strptime(d_str, "%Y/%m/%d")
+        except ValueError:
+            continue
+        if d < cutoff:
+            continue
+        for k in ("point_place1", "point_place2", "point_place3"):
+            p = c.get(k)
+            if p:
+                counter[p] += 1
+    return [p for p, _ in counter.most_common(limit)]
+
+
+def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at):
+    """1船宿分のHTMLを生成して返す"""
+    name = ship["name"]
+    slug = ship["romaji_slug"]
+    area = ship["area"]
+    chowari_id = ship["chowari_id"]
+    castingnet_id = ship.get("castingnet_id") or chowari_id
+    sid = ship["sid"]
+    chowari_url = f"https://www.chowari.jp/ship/{chowari_id}/"
+    castingnet_url = f"https://reserve.castingnet.jp/ship{castingnet_id}.html"
+
+    # 料金記載は変動するため一切出さない（サニタイザで（要確認）に置換）
+    info = _sanitize_ship_info(info)
+    basic = info.get("basic") or {}
+    vessel = info.get("vessel") or {}
+    reservation = info.get("reservation") or {}
+    season = info.get("season_strategy") or {}
+    access = info.get("access") or {}
+    features = info.get("features") or []
+
+    sail, cancel, rate = _ship_calc_sailrate(catches, name, today_dt)
+    primary_fish = _ship_primary_fish_list(catches, name)
+    main_points = _ship_main_points(catches, name)
+    recent_html = _ship_recent_fish_html(catches, name, today_dt)
+    area_rank_html = _ship_area_ranking_html(catches, area, name, today_dt)
+
+    # area の slug（パンくず・リンク用）
+    area_slug_str = area_slug(area)
+
+    # HEROバッジ（料金・★評価など出所不明・E-E-A-T観点で除外）
+    badges_html = ""
+    for f in features[:5]:
+        # 料金表記・星評価（出所不明）・他サイト評価点は除外
+        if any(k in f for k in ("円", "￥", "¥", "%off", "％off", "★", "★", "/5", "つ星", "(件)", "件）")):
+            continue
+        if re.search(r"\d+\.?\d*\s*[★⭐]", f):
+            continue
+        badges_html += f'<span class="sh-badge">{f}</span>'
+        if badges_html.count("sh-badge") >= 3:
+            break
+    # 出船率は最低5日のサンプルがある場合のみ表示（データ不足の誤解防止）
+    overall_str = ""
+    total_known = sail + cancel
+    if rate is not None and total_known >= 5:
+        overall_str = f"直近30日の出船率: {rate}% （出船{sail}日 / 欠航{cancel}日）"
+    elif total_known > 0:
+        overall_str = f"直近30日: 出船{sail}日 / 欠航{cancel}日 <span style=\"font-size:9px;opacity:.7\">(クロール記録ベース)</span>"
+
+    # 基本情報BOX
+    info_rows = []
+    info_rows.append(f'<div class="info-row"><span class="info-label">エリア</span><span class="info-val"><a href="../area/{area_slug_str}.html">{area}</a></span></div>')
+    addr = basic.get("address")
+    if addr:
+        info_rows.append(f'<div class="info-row"><span class="info-label">所在地</span><span class="info-val">{addr}</span></div>')
+    phone = basic.get("phone")
+    if phone:
+        info_rows.append(f'<div class="info-row"><span class="info-label">電話</span><span class="info-val">{phone}</span></div>')
+    off = basic.get("official_url")
+    if off and off.startswith("http"):
+        info_rows.append(f'<div class="info-row"><span class="info-label">公式サイト</span><span class="info-val"><a href="{off}" rel="nofollow noopener" target="_blank">外部サイトを開く →</a></span></div>')
+    if primary_fish:
+        info_rows.append(f'<div class="info-row"><span class="info-label">主要対象魚</span><span class="info-val">{" ・ ".join(primary_fish)}</span></div>')
+    if main_points:
+        info_rows.append(f'<div class="info-row"><span class="info-label">主要ポイント</span><span class="info-val">{" / ".join(main_points)}（直近実績より）</span></div>')
+    nearest = access.get("nearest_station")
+    parking = access.get("parking")
+    acc_parts = []
+    if nearest: acc_parts.append(nearest)
+    if parking: acc_parts.append(f"駐車場: {parking}")
+    if acc_parts:
+        info_rows.append(f'<div class="info-row"><span class="info-label">アクセス</span><span class="info-val">{" / ".join(acc_parts)}</span></div>')
+    if total_known >= 5 and rate is not None:
+        info_rows.append(f'<div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船{sail}日 / 欠航{cancel}日（出船率{rate}%）</span></div>')
+    elif total_known > 0:
+        info_rows.append(f'<div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船{sail}日 / 欠航{cancel}日 <span style="color:var(--muted);font-size:11px">(当サイトのクロール記録ベース・実出船日数とは異なります)</span></span></div>')
+
+    # 船舶・設備BOX（vessel が空なら省略）
+    vessel_html = ""
+    if vessel and any(vessel.get(k) for k in ("length_m", "tonnage_t", "capacity", "facilities")):
+        sg_items = []
+        if vessel.get("length_m"): sg_items.append(f'<div class="sg-item"><strong>全長</strong>{vessel["length_m"]} m</div>')
+        if vessel.get("tonnage_t"): sg_items.append(f'<div class="sg-item"><strong>総トン数</strong>{vessel["tonnage_t"]} t</div>')
+        if vessel.get("capacity"): sg_items.append(f'<div class="sg-item"><strong>定員</strong>{vessel["capacity"]} 名</div>')
+        spec_grid = '<div class="spec-grid">' + "".join(sg_items) + '</div>' if sg_items else ""
+        ft_html = ""
+        for f in vessel.get("facilities") or []:
+            ft_html += f'<span class="ft">{f}</span>'
+        ft_block = f'<div class="facility-tags" style="margin-top:12px">{ft_html}</div>' if ft_html else ""
+        vessel_html = f'<h2 class="st">船舶・設備</h2><div class="spec-card">{spec_grid}{ft_block}</div>'
+
+    # 予約方法BOX（料金一切なし）
+    rsv_items = []
+    dt_str = reservation.get("departure_time")
+    if dt_str: rsv_items.append(f'<div class="sg-item"><strong>出船時間</strong>{dt_str}</div>')
+    rm = reservation.get("reservation_method")
+    if rm:
+        if isinstance(rm, list): rm = " / ".join(rm)
+        rsv_items.append(f'<div class="sg-item"><strong>予約手段</strong>{rm}</div>')
+    rentals = reservation.get("rental_items") or []
+    if rentals:
+        rentals_str = " ・ ".join(rentals)
+        rsv_items.append(f'<div class="sg-item"><strong>レンタル品</strong>あり（{rentals_str}）</div>')
+    discounts = reservation.get("discount_types") or []
+    if discounts:
+        disc_str = " ・ ".join(discounts)
+        rsv_items.append(f'<div class="sg-item"><strong>割引制度</strong>あり（{disc_str}）</div>')
+    rsv_grid = '<div class="spec-grid">' + "".join(rsv_items) + '</div>' if rsv_items else ""
+    reservation_html = (
+        '<h2 class="st">予約方法</h2>'
+        '<div class="spec-card">'
+        + rsv_grid
+        + '<p style="font-size:11px;color:var(--muted);margin-top:10px">※ 料金・割引額は変動するため掲載していません。最新は予約サイト・公式サイトでご確認ください。</p>'
+        + '<div class="cta-grid">'
+        + f'<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で予約 →</a>'
+        + f'<a href="{castingnet_url}" rel="nofollow noopener" target="_blank" class="alt">キャスティング予約 →</a>'
+        + '</div></div>'
+    )
+
+    # 季節別の狙い物（4つ揃っていなければ部分表示）
+    season_html = ""
+    season_labels = [("spring", "春 (3〜5月)"), ("summer", "夏 (6〜8月)"), ("autumn", "秋 (9〜11月)"), ("winter", "冬 (12〜2月)")]
+    sg_items = []
+    for k, label in season_labels:
+        v = season.get(k)
+        if v:
+            sg_items.append(f'<div class="sg"><div class="sg-label">{label}</div><div class="sg-fish">{v}</div></div>')
+    if sg_items:
+        season_html = '<h2 class="st">季節別の狙い物</h2><div class="spec-card"><div class="season-grid">' + "".join(sg_items) + '</div></div>'
+
+    # FAQ（船宿固有データを差し込んでコピーコンテンツ判定回避）
+    rental_q_a = ""
+    if rentals:
+        rental_q_a = (
+            f'<details><summary>{name}にレンタル品はありますか？</summary>'
+            f'<div class="faq-a">{name}では「{" ・ ".join(rentals)}」のレンタル/販売に対応しています。'
+            '在庫・料金は変動するため、予約時に船宿または予約サイトでご確認ください。</div></details>'
+        )
+    else:
+        rental_q_a = (
+            f'<details><summary>{name}にレンタル品はありますか？</summary>'
+            '<div class="faq-a">レンタル品の最新の有無・料金は予約サイト・公式サイトでご確認ください。'
+            '一般に多くの船宿が竿・リール・氷・コマセに対応しています。</div></details>'
+        )
+    parking_text = ""
+    if access.get("parking"):
+        parking_text = f'{name}は「{access["parking"]}」と案内されています。'
+    parking_q_a = (
+        f'<details><summary>駐車場はありますか？</summary>'
+        f'<div class="faq-a">{parking_text}台数・料金・予約要否は最新情報を予約時にご確認ください。</div></details>'
+    )
+    main_pt_text = " / ".join(main_points) if main_points else "船宿に確認してください"
+    main_fish_text = " ・ ".join(primary_fish[:3]) if primary_fish else "主要対象魚は予約時に確認してください"
+    point_q_a = (
+        f'<details><summary>{name}の主要なポイントは？</summary>'
+        f'<div class="faq-a">直近の出船記録によると、{main_pt_text} が主要ポイントです。'
+        f'主要対象魚は {main_fish_text} 。当日の海況・潮通しで変わる場合があります。</div></details>'
+    )
+    faq_html = (
+        '<h2 class="st">よくある質問</h2>'
+        '<div class="faq-list">'
+        f'<details><summary>{name}は初心者でも参加できますか？</summary><div class="faq-a">船長や常連が仕掛け・釣り方を教えてくれる船宿が多く、初参加でも安心して乗船できる場合がほとんどです。当日のタックル・服装の最新情報は予約時に船宿に直接ご確認ください。</div></details>'
+        + rental_q_a
+        + f'<details><summary>料金はいくらですか？</summary><div class="faq-a">料金は時期・釣り物・人数などで変動するため、本サイトには掲載していません。最新の料金は <a href="{chowari_url}" rel="nofollow noopener">釣割</a> または <a href="{castingnet_url}" rel="nofollow noopener">キャスティング予約</a> でご確認ください。</div></details>'
+        + point_q_a
+        + '<details><summary>欠航の判定はどう行われますか？</summary><div class="faq-a">荒天・台風・うねり等で当日朝に船長が判定する船宿が大半です。前日夜〜当日朝の連絡が一般的です。</div></details>'
+        + parking_q_a
+        + '</div>'
+    )
+
+    # JSON-LD（LocalBusiness + BreadcrumbList + FAQPage）
+    ld_local = {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": name,
+        "url": f"{SITE_URL}/ship/{slug}.html",
+        "areaServed": area,
+    }
+    if addr:
+        ld_local["address"] = {"@type": "PostalAddress", "streetAddress": addr}
+    if phone:
+        ld_local["telephone"] = phone
+    coord = area_coords.get(area) or area_coords.get(area + "港") or {}
+    if coord.get("lat") and coord.get("lon"):
+        ld_local["geo"] = {"@type": "GeoCoordinates", "latitude": coord["lat"], "longitude": coord["lon"]}
+    ld_breadcrumb = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "トップ", "item": f"{SITE_URL}/"},
+            {"@type": "ListItem", "position": 2, "name": area, "item": f"{SITE_URL}/area/{area_slug_str}.html"},
+            {"@type": "ListItem", "position": 3, "name": name, "item": f"{SITE_URL}/ship/{slug}.html"},
+        ],
+    }
+    ld_faq = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": "初心者でも参加できますか？", "acceptedAnswer": {"@type": "Answer", "text": "船長や常連が仕掛け・釣り方を教えてくれる船宿が多く、初参加でも安心です。"}},
+            {"@type": "Question", "name": "レンタル竿はありますか？", "acceptedAnswer": {"@type": "Answer", "text": "多くの船宿が竿・リール・氷・コマセのレンタルや販売に対応しています。"}},
+            {"@type": "Question", "name": "料金はいくらですか？", "acceptedAnswer": {"@type": "Answer", "text": "料金は時期・釣り物・人数などで変動するため、本サイトには掲載していません。最新の料金は予約サイトでご確認ください。"}},
+            {"@type": "Question", "name": "欠航の判定はどう行われますか？", "acceptedAnswer": {"@type": "Answer", "text": "荒天・台風・うねり等で当日朝に船長が判定する船宿が大半です。"}},
+            {"@type": "Question", "name": "駐車場はありますか？", "acceptedAnswer": {"@type": "Answer", "text": "船宿または近隣に専用駐車場を持つ場合が多いです。詳細は予約時にご確認ください。"}},
+        ],
+    }
+    ld_json = (
+        '<script type="application/ld+json">' + json.dumps(ld_local, ensure_ascii=False) + '</script>'
+        '<script type="application/ld+json">' + json.dumps(ld_breadcrumb, ensure_ascii=False) + '</script>'
+        '<script type="application/ld+json">' + json.dumps(ld_faq, ensure_ascii=False) + '</script>'
+    )
+
+    # ヘッダ・ナビ・ボトムナビ（fish/area ページと同じ構成・5項目）
+    header_html = (
+        '<header><div class="inner">'
+        '<h1><a href="/index.html">船釣り<span>予想</span></a></h1>'
+        '<span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span>'
+        '</div></header>'
+        '<nav class="gnav">'
+        '<a href="/index.html">今日の釣果</a>'
+        '<a href="/fish/">魚種</a>'
+        '<a href="/area/">エリア</a>'
+        '<a href="/calendar.html">カレンダー</a>'
+        '<a href="/forecast/index.html" class="prem">有料プラン</a>'
+        '</nav>'
+    )
+    bottom_nav = (
+        '<div class="bn">'
+        '<a href="/index.html"><span class="i">🎣</span>釣果</a>'
+        '<a href="/fish/"><span class="i">🐟</span>魚種</a>'
+        '<a href="/area/"><span class="i">📍</span>エリア</a>'
+        '<a href="/calendar.html"><span class="i">📅</span>カレンダー</a>'
+        '<a href="/forecast/index.html" class="prem"><span class="i">⭐</span>有料</a>'
+        '</div>'
+    )
+
+    # メタ
+    title = f"{name}（{area}）の釣果情報・船舶・予約方法 — 船釣り予想"
+    desc_parts = [f"{name}（{area}）の船釣り情報。"]
+    if vessel.get("length_m") and vessel.get("capacity"):
+        desc_parts.append(f"全長{vessel['length_m']}m・定員{vessel['capacity']}名。")
+    if primary_fish:
+        desc_parts.append(f"主要対象魚: {' ・ '.join(primary_fish[:4])}。")
+    if rate is not None and total_known >= 5:
+        desc_parts.append(f"直近30日の出船率{rate}%。")
+    desc = "".join(desc_parts)[:160]
+
+    page_url = f"{SITE_URL}/ship/{slug}.html"
+
+    html = f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{page_url}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{page_url}">
+<meta property="og:type" content="website">
+{ld_json}
+<style>{_SHIP_PAGE_CSS}</style>
+</head>
+<body>
+{header_html}
+
+<div class="ship-hero">
+<h2>{name}</h2>
+<div class="sh-area">{area}</div>
+<div class="sh-badges">{badges_html}</div>
+{f'<div class="sh-overall">{overall_str}</div>' if overall_str else ''}
+</div>
+
+<div class="c">
+<div class="bread"><a href="../">トップ</a> &gt; <a href="../area/{area_slug_str}.html">{area}</a> &gt; {name}</div>
+
+<h2 class="st">基本情報</h2>
+<div class="info-box">
+{"".join(info_rows)}
+</div>
+
+{vessel_html}
+
+{reservation_html}
+
+{season_html}
+
+<h2 class="st">最近の釣果実績（直近7日・船宿実績）</h2>
+{recent_html}
+
+<div class="ad-slot">広告スペース（レクタングル）</div>
+
+<!-- 明日の予測（有料・準備中チラ見せ） -->
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px">
+<h3 style="font-size:14px;color:var(--prem);margin-bottom:8px;text-align:center">🔒 {name}の明日の予測（準備中）</h3>
+<div style="background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px;position:relative;overflow:hidden">
+<div style="filter:blur(5px);user-select:none;pointer-events:none">
+<div style="font-weight:700;color:var(--accent);font-size:13px">明日の主要魚種 — 信頼度 ★★★★★</div>
+<div style="font-size:15px;font-weight:800;color:var(--cta);margin-top:4px">XX〜XX匹</div>
+<div style="font-size:10px;color:var(--sub);margin-top:4px">気象条件・潮通し分析より推定</div>
+</div>
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,.06);font-size:13px;font-weight:700;color:var(--prem)">🔒 月額500円で見る予定</div>
+</div>
+</div>
+
+{area_rank_html}
+
+<div class="contact-cta">
+<h3>{name}で釣行を計画する</h3>
+<p>料金や空席状況・最新情報は公式サイト/予約サイトをご確認ください</p>
+<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で予約 →</a>
+<a href="{castingnet_url}" rel="nofollow noopener" target="_blank">キャスティングで予約 →</a>
+</div>
+</div>
+
+<div class="ad-slot">広告スペース（レクタングル）</div>
+
+{faq_html}
+
+</div>
+
+<footer>
+<a href="../pages/privacy.html">プライバシーポリシー</a> · <a href="../pages/terms.html">利用規約</a> · <a href="../pages/about.html">サイトについて</a><br>
+<div style="margin-top:6px"><a href="../">トップ</a> · <a href="../area/{area_slug_str}.html">{area}</a></div>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: {crawled_at}</span>
+</footer>
+
+{bottom_nav}
+
+</body>
+</html>"""
+    return html
+
+
+def build_ship_pages(catches, crawled_at=""):
+    """船宿個別ページを docs/ship/ に生成する（chowari_id がある37船宿のみ）"""
+    if not _SHIP_INFO:
+        print("ship_info.json なし → build_ship_pages スキップ")
+        return 0
+    if not _SHIP_ROMAJI:
+        print("ship_romaji_map.json なし → build_ship_pages スキップ")
+        return 0
+    out_dir = os.path.join(WEB_DIR, "ship")
+    os.makedirs(out_dir, exist_ok=True)
+    target_ships = [s for s in SHIPS if s.get("chowari_id") and s.get("romaji_slug")]
+    today_dt = datetime.now()
+    area_coords = _ship_load_area_coords()
+    generated = 0
+    for ship in target_ships:
+        name = ship["name"]
+        info = _SHIP_INFO.get(name)
+        if not info:
+            continue
+        try:
+            html = _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at)
+            slug = ship["romaji_slug"]
+            with open(os.path.join(out_dir, f"{slug}.html"), "w", encoding="utf-8") as f:
+                f.write(html)
+            generated += 1
+        except Exception as e:
+            print(f"  船宿ページ生成失敗 {name}: {e}")
+    print(f"船宿ページ生成: {generated} 件 → docs/ship/")
+    return generated
+
+
+# ============================================================
 # sitemap.xml 自動生成
 # ============================================================
 def build_sitemap(data):
@@ -7062,6 +7804,10 @@ def build_sitemap(data):
     for (fish, area), cnt in sorted(fa_counts.items()):
         if cnt >= 5:
             urls.append((f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html", "0.7", "weekly"))
+    # ship/*.html（chowari_id + romaji_slug + ship_info あり）
+    for s in SHIPS:
+        if s.get("chowari_id") and s.get("romaji_slug") and s["name"] in _SHIP_INFO:
+            urls.append((f"{SITE_URL}/ship/{s['romaji_slug']}.html", "0.6", "weekly"))
     entries = "\n".join(
         f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
         for loc, pri, freq in urls
@@ -7846,6 +8592,7 @@ def main():
         build_fish_pages(valid_catches, history, crawled_at)
         build_area_pages(valid_catches, history, crawled_at, weather_data)
         build_fish_area_pages(valid_catches, crawled_at, history)
+        build_ship_pages(valid_catches, crawled_at)
         with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as _f:
             _f.write(build_calendar_page(crawled_at))
         build_sitemap(valid_catches)
@@ -7951,6 +8698,7 @@ def main():
     build_fish_pages(valid_catches, history, crawled_at)
     build_area_pages(valid_catches, history, crawled_at, weather_data)
     build_fish_area_pages(valid_catches, crawled_at, history)
+    build_ship_pages(valid_catches, crawled_at)
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
