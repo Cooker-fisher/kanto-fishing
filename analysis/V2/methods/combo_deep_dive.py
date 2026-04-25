@@ -459,7 +459,8 @@ TYPHOON_FACTORS = ["typhoon_dist", "typhoon_wind"]
 
 # カレンダー因子（土日・祝日 → 全ホライズンで有効）
 CALENDAR_FACTORS = ["is_holiday", "is_consec_holiday", "is_summer_vacation", "spawn_season_n",
-                    "day_of_decade"]  # 旬内残り日数（1〜10: カレンダー確定値 → 全H有効）
+                    "day_of_decade",
+                    "time_slot_n"]  # 時間帯スコア（夜=1, 朝/午前/午後=0, 空=None→スキップ）
 
 # 全因子（相関計算対象）
 ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS + CALENDAR_FACTORS
@@ -1235,6 +1236,10 @@ def load_records(fish, ship_filter=None):
                     "spawn_season_n":     _spawn_season_n(date_str),
                     "day_of_decade":      _day_of_decade(date_str),
                     **obs,   # OBS因子 + テキストフィールド + text_all
+                    # obs_fields.json の time_slot_n（夜=-1）を上書き: 夜=1, 朝/午前/午後=0, 空=None
+                    "time_slot_n":        (1 if row.get("time_slot") == "夜"
+                                           else 0 if row.get("time_slot") in ("朝", "午前", "午後", "ショート")
+                                           else None),
                 })
     records.sort(key=lambda r: r["date"])
 
