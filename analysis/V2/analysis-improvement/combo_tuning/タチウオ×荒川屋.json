@@ -2,11 +2,11 @@
   "fish": "タチウオ",
   "ship": "荒川屋",
   "last_reviewed": "2026-04-25",
-  "status": "point_model_applied",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.97,
-    "bl2_wmape": 53.78,
-    "oos_r": 0.507,
+    "wmape_h0": 41.39,
+    "bl2_wmape": 51.24,
+    "oos_r": 0.544,
     "n_records": 298,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 38.3,
       "bl2_wmape": 60.4,
       "oos_r": 0.691,
-      "improvement_pt": 5.66
+      "improvement_pt": 3.07
     },
     {
       "name": "走水沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 38.9,
       "bl2_wmape": 67.5,
       "oos_r": 0.64,
-      "improvement_pt": 5.03
+      "improvement_pt": 2.45
     },
     {
       "name": "大津沖",
@@ -34,15 +34,15 @@
       "wmape_h0": 44.5,
       "bl2_wmape": 55.3,
       "oos_r": 0.387,
-      "improvement_pt": -0.52
+      "improvement_pt": -3.11
     }
   ],
   "best_point": {
     "name": "猿島沖",
     "wmape_h0": 38.3,
-    "improvement_pt": 5.66
+    "improvement_pt": 3.07
   },
-  "improvement_pt": 5.66,
+  "improvement_pt": 3.07,
   "history": [
     {
       "date": "2026-04-24",

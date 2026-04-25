@@ -2,11 +2,11 @@
   "fish": "スルメイカ",
   "ship": "春盛丸",
   "last_reviewed": "2026-04-25",
-  "status": "point_model_applied",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.07,
-    "bl2_wmape": 46.0,
-    "oos_r": 0.432,
+    "wmape_h0": 38.17,
+    "bl2_wmape": 45.28,
+    "oos_r": 0.433,
     "n_records": 225,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 33.6,
       "bl2_wmape": 37.3,
       "oos_r": 0.458,
-      "improvement_pt": 5.46
+      "improvement_pt": 4.56
     },
     {
       "name": "長井沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 38.5,
       "bl2_wmape": 49.7,
       "oos_r": 0.567,
-      "improvement_pt": 0.53
+      "improvement_pt": -0.37
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
     "wmape_h0": 33.6,
-    "improvement_pt": 5.46
+    "improvement_pt": 4.56
   },
-  "improvement_pt": 5.46,
+  "improvement_pt": 4.56,
   "history": [
     {
       "date": "2026-04-24",

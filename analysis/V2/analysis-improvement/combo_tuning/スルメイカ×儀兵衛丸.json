@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 49.76,
-    "bl2_wmape": 62.58,
-    "oos_r": 0.453,
+    "wmape_h0": 48.11,
+    "bl2_wmape": 61.13,
+    "oos_r": 0.478,
     "n_records": 221,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 47.4,
       "bl2_wmape": 57.6,
       "oos_r": 0.489,
-      "improvement_pt": 2.32
+      "improvement_pt": 0.67
     },
     {
       "name": "長井沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 50.5,
       "bl2_wmape": 71.5,
       "oos_r": 0.452,
-      "improvement_pt": -0.73
+      "improvement_pt": -2.38
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
     "wmape_h0": 47.4,
-    "improvement_pt": 2.32
+    "improvement_pt": 0.67
   },
-  "improvement_pt": 2.32,
+  "improvement_pt": 0.67,
   "overrides": {
     "factor_blacklist": [],
     "wave_clamp": null,

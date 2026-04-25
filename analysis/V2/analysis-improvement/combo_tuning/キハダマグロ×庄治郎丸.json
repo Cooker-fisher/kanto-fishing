@@ -1,16 +1,15 @@
 {
   "fish": "キハダマグロ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-22",
-  "status": "reviewed",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 72.9,
-    "bl0_wmape": 82.4,
-    "bl2_wmape": 126.3,
-    "oos_r": -0.265,
+    "wmape_h0": 75.81,
+    "bl2_wmape": 67.18,
+    "oos_r": 0.218,
     "n_records": 39,
-    "alpha_scale": 0.1,
-    "use_fallback": true
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -50,6 +49,11 @@
       "change": "use_fallback=1",
       "effect": "BL2負け",
       "reason": "r=-0.265 逆相関"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=69.7% imp=6.15pt"
     }
   ],
   "rejected_factors": [
@@ -119,5 +123,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "平塚沖",
+      "n": 39,
+      "wmape_h0": 69.7,
+      "bl2_wmape": 126.3,
+      "oos_r": 0.596,
+      "improvement_pt": 6.15
+    }
+  ],
+  "best_point": {
+    "name": "平塚沖",
+    "wmape_h0": 69.7,
+    "improvement_pt": 6.15
+  },
+  "improvement_pt": 6.15
 }

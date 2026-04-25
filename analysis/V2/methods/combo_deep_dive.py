@@ -3416,8 +3416,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             good_line = _quantile(acts_all, 0.75)
             if good_line <= 0:
                 good_line = 1.0  # フォールバック
-            if good_line <= 3:
-                continue  # 実質釣れないコンボは★評価しない（有料ページに無意味な★を出さない）
+            if good_line <= 0:
+                continue  # P75=0（大多数がゼロ）のコンボは★評価しない
 
             # 予測値分位数でコンボ固有の★閾値を決定
             preds_all = [pred for pred, _, _ in entries]
@@ -5406,12 +5406,25 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
         return
 
     # 乗合フィルタ: 仕立て(is_boat=1)の外れ値がモデルを汚染するのを防ぐ
-    # 乗合ユーザー向け予測には乗合データのみを使う
     _noboat = [r for r in records if r.get("is_boat", 0) == 0]
     _boat_filtered = len(_noboat) >= MIN_N_COMBO and len(_noboat) < len(records)
     if _boat_filtered:
         print(f"  [is_boat filter] {fish}×{ship}: {len(records)}件 → {len(_noboat)}件（仕立{len(records)-len(_noboat)}件除外）")
         records = _noboat
+
+    # 外れ値キャップ: Q3 + 3×IQR 超えを上限値に丸める（Tukey法）
+    _cnts = sorted(r["cnt_avg"] for r in records if r.get("cnt_avg") is not None)
+    if len(_cnts) >= 4:
+        _q1 = _cnts[len(_cnts) // 4]
+        _q3 = _cnts[3 * len(_cnts) // 4]
+        _iqr = _q3 - _q1
+        _cap = _q3 + 3 * _iqr
+        _capped = [(r, r["cnt_avg"]) for r in records if r.get("cnt_avg", 0) > _cap]
+        if _capped:
+            print(f"  [outlier cap] {fish}×{ship}: cap={_cap:.0f} → {len(_capped)}件をキャップ " +
+                  str([(r["date"], orig) for r, orig in _capped]))
+            for r, _ in _capped:
+                r["cnt_avg"] = _cap
 
     conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
     conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
