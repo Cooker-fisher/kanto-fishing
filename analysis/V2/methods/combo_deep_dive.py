@@ -5281,13 +5281,6 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems, mp_factors=None, mp_context=_mp_context_for_bt)
     out += bt_lines
 
-    if conn_wx is not None:
-        conn_wx.close()
-    if conn_tide is not None:
-        conn_tide.close()
-    if conn_typhoon is not None:
-        conn_typhoon.close()
-
     text = "\n".join(out)
     out_path = os.path.join(OUT_DIR, f"{fish}_{ship}.txt")
     with open(out_path, "w", encoding="utf-8") as f:
@@ -5323,6 +5316,15 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
         import traceback as _tb_mp
         print(f"  [multi_pt] {fish}×{ship}: ERROR {_mp_e}", flush=True)
         _tb_mp.print_exc()
+
+    if conn_wx is not None:
+        conn_wx.close()
+    if conn_tide is not None:
+        conn_tide.close()
+    if conn_typhoon is not None:
+        conn_typhoon.close()
+    if conn_cmems is not None:
+        conn_cmems.close()
 
     # auto_fallback: 以下いずれかの場合、predict_count.py で気象補正をスキップ。
     #   ① BL-0（全体平均）より 10pt 以上悪い
