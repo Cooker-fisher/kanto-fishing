@@ -164,6 +164,8 @@ SLOW_FACTORS = {
     # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
+    # sst × 季節交互作用（SST絶対水準の季節依存効果: 夏高水温=活性↑, 冬低水温=根魚↑）
+    "sst_spring", "sst_summer", "sst_autumn", "sst_winter",
     # CMEMS CHL月次集計（ベイト密度の月次シグナル）: SLOW因子 → 全H有効
     # SLAの月次指数と同様に、当月のCHL平均を広域ベイト環境の指標として使用
     "chl_monthly",
@@ -180,6 +182,7 @@ FAST_FACTORS = {
     "wind_dir_e",                          # 風向東西成分 sin(deg): 東=+1, 西=-1（循環補正）
     "wave_height_avg", "wave_height_max",  # 波高（日次avg/max）
     "wave_clamp",                          # 波高キャップ min(wave_height_avg, 2.0)：逆U字効果（2m超は"釣れない荒れ"）
+    "wave_clamp_spring", "wave_clamp_summer", "wave_clamp_autumn", "wave_clamp_winter",  # wave_clamp×季節
     "wave_period_avg", "wave_period_min",  # 波周期（日次avg/min）
     "swell_height_avg", "swell_height_max",# うねり（日次avg/max）
     "temp_range",                          # 日較差（晴天シグナル、急変しやすい）
@@ -435,6 +438,10 @@ WX_FACTORS = [
     # temp_100m × 季節交互作用
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
+    # wave_clamp × 季節交互作用（波影響の季節依存性: 春=低波良, 冬=荒れ多）
+    "wave_clamp_spring", "wave_clamp_summer", "wave_clamp_autumn", "wave_clamp_winter",
+    # sst × 季節交互作用（水温の季節依存性: 夏高水温=活性↑, 冬低水温=根魚↑）
+    "sst_spring", "sst_summer", "sst_autumn", "sst_winter",
     # CMEMS CHL月次集計（ベイト密度の月次シグナル: SLOW・全H有効）
     "chl_monthly",
     # CMEMS 複合スコア（MAX_FACTORS=12化で再試行。CMEMS capの枠内で競合）
@@ -2182,6 +2189,20 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
                 wx[f"temp_100m_{_sfx}"] = None
             wx["temp_100m_bin"] = None
 
+        # ── wave_clamp × 季節交互作用 ──────────────────────────────────────────
+        _wc_val = wx.get("wave_clamp") or 0.0
+        wx["wave_clamp_spring"] = _wc_val if _ssn == "春" else 0.0
+        wx["wave_clamp_summer"] = _wc_val if _ssn == "夏" else 0.0
+        wx["wave_clamp_autumn"] = _wc_val if _ssn == "秋" else 0.0
+        wx["wave_clamp_winter"] = _wc_val if _ssn == "冬" else 0.0
+
+        # ── sst × 季節交互作用 ─────────────────────────────────────────────────
+        _sst_val = wx.get("sst_avg") or 0.0
+        wx["sst_spring"] = _sst_val if _ssn == "春" else 0.0
+        wx["sst_summer"] = _sst_val if _ssn == "夏" else 0.0
+        wx["sst_autumn"] = _sst_val if _ssn == "秋" else 0.0
+        wx["sst_winter"] = _sst_val if _ssn == "冬" else 0.0
+
         # ── CMEMS 複合スコア（個別変数が弱いコンボでも複合で効く可能性）─────────
         _sla_v  = wx.get("sla_avg")
         _chl_v  = wx.get("chl_avg")
@@ -3073,7 +3094,20 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 _alpha_floor = max(0.1, _max_r_fold * 1.0)  # max_r=0.3→floor=0.3, 0.5→0.5
             else:
                 _alpha_floor = 0.1  # OLS負 = 気象補正が逆なのでfloor不要
-            alpha_scale = max(_alpha_floor, min(1.2, _alpha_ols))  # 上限 2.0→1.2（補正過大適用を防止）
+            _alpha_ols_clipped = max(_alpha_floor, min(1.2, _alpha_ols))
+            # グリッドサーチで alpha_scale を精緻化（train fold の wMAPE を最小化）
+            _ALPHA_CANDIDATES = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]
+            _alpha_scores = {}
+            for _ac in _ALPHA_CANDIDATES:
+                _preds_a = [_b + _c * _ac for _b, _c, _bl2t, _a in _alpha_tr]
+                _acts_a  = [_a            for _b, _c, _bl2t, _a in _alpha_tr]
+                _sc = _wmape(_preds_a, _acts_a)
+                if _sc is not None:
+                    _alpha_scores[_ac] = _sc
+            if _alpha_scores:
+                alpha_scale = min(_alpha_scores, key=_alpha_scores.get)
+            else:
+                alpha_scale = _alpha_ols_clipped  # フォールバック: OLS clip値
             alpha_scales_by_met[met].append(alpha_scale)  # フォールドごとに収集
             # β: BL-2 ブレンド比（0〜0.5 にクリップ）
             _bt_num = 0.0; _bt_den = 0.0
