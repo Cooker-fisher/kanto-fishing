@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.54,
+    "wmape_h0": 47.04,
     "bl2_wmape": 76.81,
-    "oos_r": 0.533,
+    "oos_r": 0.521,
     "n_records": 88,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -169,26 +169,26 @@
     {
       "name": "鹿島北沖",
       "n": 38,
-      "wmape_h0": 34.6,
+      "wmape_h0": 32.4,
       "bl2_wmape": 57.5,
-      "oos_r": 0.561,
-      "improvement_pt": 11.9
+      "oos_r": 0.594,
+      "improvement_pt": 14.68
     },
     {
       "name": "大根",
       "n": 38,
-      "wmape_h0": 70.5,
+      "wmape_h0": 52.7,
       "bl2_wmape": 92.7,
-      "oos_r": 0.254,
-      "improvement_pt": -23.97
+      "oos_r": 0.499,
+      "improvement_pt": -5.69
     }
   ],
   "best_point": {
     "name": "鹿島北沖",
-    "wmape_h0": 34.6,
-    "improvement_pt": 11.9
+    "wmape_h0": 32.4,
+    "improvement_pt": 14.68
   },
-  "improvement_pt": 11.9,
+  "improvement_pt": 14.68,
   "trip_models": [
     {
       "trip_no": 3,

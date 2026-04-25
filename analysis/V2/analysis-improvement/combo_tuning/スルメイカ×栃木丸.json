@@ -4,45 +4,45 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 47.11,
+    "wmape_h0": 47.58,
     "bl2_wmape": 59.69,
-    "oos_r": 0.446,
+    "oos_r": 0.436,
     "n_records": 394,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "長井沖",
-      "n": 105,
-      "wmape_h0": 41.7,
-      "bl2_wmape": 52.5,
-      "oos_r": 0.509,
-      "improvement_pt": 5.42
-    },
-    {
       "name": "洲崎沖",
       "n": 49,
-      "wmape_h0": 42.3,
+      "wmape_h0": 37.1,
       "bl2_wmape": 70.7,
-      "oos_r": 0.472,
-      "improvement_pt": 4.85
+      "oos_r": 0.57,
+      "improvement_pt": 10.45
+    },
+    {
+      "name": "長井沖",
+      "n": 105,
+      "wmape_h0": 40.9,
+      "bl2_wmape": 52.5,
+      "oos_r": 0.524,
+      "improvement_pt": 6.67
     },
     {
       "name": "城ヶ島沖",
       "n": 180,
-      "wmape_h0": 46.4,
+      "wmape_h0": 46.9,
       "bl2_wmape": 61.1,
-      "oos_r": 0.523,
-      "improvement_pt": 0.67
+      "oos_r": 0.512,
+      "improvement_pt": 0.65
     }
   ],
   "best_point": {
-    "name": "長井沖",
-    "wmape_h0": 41.7,
-    "improvement_pt": 5.42
+    "name": "洲崎沖",
+    "wmape_h0": 37.1,
+    "improvement_pt": 10.45
   },
-  "improvement_pt": 5.42,
+  "improvement_pt": 10.45,
   "history": [
     {
       "date": "2026-04-24",

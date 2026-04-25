@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 30.94,
+    "wmape_h0": 29.11,
     "bl2_wmape": 36.61,
-    "oos_r": 0.629,
+    "oos_r": 0.645,
     "n_records": 758,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -194,50 +194,50 @@
     {
       "name": "下浦沖",
       "n": 102,
-      "wmape_h0": 20.2,
+      "wmape_h0": 18.2,
       "bl2_wmape": 37.0,
-      "oos_r": 0.732,
-      "improvement_pt": 10.73
+      "oos_r": 0.768,
+      "improvement_pt": 10.9
     },
     {
       "name": "久里浜沖",
       "n": 156,
-      "wmape_h0": 25.0,
+      "wmape_h0": 24.8,
       "bl2_wmape": 36.8,
-      "oos_r": 0.676,
-      "improvement_pt": 5.99
+      "oos_r": 0.679,
+      "improvement_pt": 4.33
     },
     {
       "name": "鴨居沖",
       "n": 157,
-      "wmape_h0": 28.4,
+      "wmape_h0": 25.9,
       "bl2_wmape": 40.3,
-      "oos_r": 0.698,
-      "improvement_pt": 2.57
-    },
-    {
-      "name": "竹岡沖",
-      "n": 270,
-      "wmape_h0": 32.2,
-      "bl2_wmape": 39.9,
-      "oos_r": 0.673,
-      "improvement_pt": -1.24
+      "oos_r": 0.717,
+      "improvement_pt": 3.24
     },
     {
       "name": "剣崎沖",
       "n": 59,
-      "wmape_h0": 33.3,
+      "wmape_h0": 28.6,
       "bl2_wmape": 38.7,
-      "oos_r": 0.444,
-      "improvement_pt": -2.33
+      "oos_r": 0.563,
+      "improvement_pt": 0.51
+    },
+    {
+      "name": "竹岡沖",
+      "n": 270,
+      "wmape_h0": 30.0,
+      "bl2_wmape": 39.9,
+      "oos_r": 0.671,
+      "improvement_pt": -0.91
     }
   ],
   "best_point": {
     "name": "下浦沖",
-    "wmape_h0": 20.2,
-    "improvement_pt": 10.73
+    "wmape_h0": 18.2,
+    "improvement_pt": 10.9
   },
-  "improvement_pt": 10.73,
+  "improvement_pt": 10.9,
   "trip_models": [
     {
       "trip_no": 1,

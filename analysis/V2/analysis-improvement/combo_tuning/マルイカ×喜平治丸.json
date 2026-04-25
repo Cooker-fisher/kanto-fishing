@@ -4,37 +4,37 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.88,
+    "wmape_h0": 39.34,
     "bl2_wmape": 49.88,
-    "oos_r": 0.5,
+    "oos_r": 0.486,
     "n_records": 397,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "剣崎沖",
-      "n": 334,
-      "wmape_h0": 37.2,
-      "bl2_wmape": 52.4,
-      "oos_r": 0.549,
-      "improvement_pt": 1.64
-    },
-    {
       "name": "城ヶ島沖",
       "n": 61,
-      "wmape_h0": 39.7,
+      "wmape_h0": 37.0,
       "bl2_wmape": 50.5,
-      "oos_r": 0.51,
-      "improvement_pt": -0.78
+      "oos_r": 0.562,
+      "improvement_pt": 2.34
+    },
+    {
+      "name": "剣崎沖",
+      "n": 334,
+      "wmape_h0": 37.5,
+      "bl2_wmape": 52.4,
+      "oos_r": 0.544,
+      "improvement_pt": 1.82
     }
   ],
   "best_point": {
-    "name": "剣崎沖",
-    "wmape_h0": 37.2,
-    "improvement_pt": 1.64
+    "name": "城ヶ島沖",
+    "wmape_h0": 37.0,
+    "improvement_pt": 2.34
   },
-  "improvement_pt": 1.64,
+  "improvement_pt": 2.34,
   "points": [
     {
       "name": "剣崎沖",

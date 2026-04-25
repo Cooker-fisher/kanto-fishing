@@ -4,53 +4,53 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.71,
+    "wmape_h0": 33.57,
     "bl2_wmape": 37.32,
-    "oos_r": 0.62,
+    "oos_r": 0.623,
     "n_records": 547,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "富津沖",
-      "n": 40,
-      "wmape_h0": 26.0,
-      "bl2_wmape": 32.7,
-      "oos_r": 0.504,
-      "improvement_pt": 7.67
-    },
-    {
       "name": "浦安沖",
       "n": 56,
-      "wmape_h0": 28.3,
+      "wmape_h0": 25.1,
       "bl2_wmape": 46.1,
-      "oos_r": 0.794,
-      "improvement_pt": 5.4
+      "oos_r": 0.829,
+      "improvement_pt": 8.51
+    },
+    {
+      "name": "富津沖",
+      "n": 40,
+      "wmape_h0": 26.4,
+      "bl2_wmape": 32.7,
+      "oos_r": 0.486,
+      "improvement_pt": 7.19
     },
     {
       "name": "中ノ瀬",
       "n": 35,
-      "wmape_h0": 28.9,
+      "wmape_h0": 27.7,
       "bl2_wmape": 38.0,
-      "oos_r": 0.543,
-      "improvement_pt": 4.77
+      "oos_r": 0.555,
+      "improvement_pt": 5.88
     },
     {
       "name": "木更津沖",
       "n": 402,
-      "wmape_h0": 31.1,
+      "wmape_h0": 31.4,
       "bl2_wmape": 36.8,
-      "oos_r": 0.632,
-      "improvement_pt": 2.63
+      "oos_r": 0.627,
+      "improvement_pt": 2.14
     }
   ],
   "best_point": {
-    "name": "富津沖",
-    "wmape_h0": 26.0,
-    "improvement_pt": 7.67
+    "name": "浦安沖",
+    "wmape_h0": 25.1,
+    "improvement_pt": 8.51
   },
-  "improvement_pt": 7.67,
+  "improvement_pt": 8.51,
   "points": [
     {
       "name": "木更津沖",

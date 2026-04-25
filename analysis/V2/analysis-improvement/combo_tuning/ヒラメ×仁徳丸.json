@@ -1,12 +1,12 @@
 {
   "fish": "ヒラメ",
   "ship": "仁徳丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 33.17,
+    "wmape_h0": 32.82,
     "bl2_wmape": 44.95,
-    "oos_r": 0.567,
+    "oos_r": 0.573,
     "n_records": 67,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -121,6 +121,11 @@
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=波崎沖 wmape=32.9% imp=0.26pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=波崎沖 wmape=32.8% imp=0.05pt"
     }
   ],
   "rejected_factors": [
@@ -189,18 +194,18 @@
     {
       "name": "波崎沖",
       "n": 66,
-      "wmape_h0": 32.9,
+      "wmape_h0": 32.8,
       "bl2_wmape": 45.0,
-      "oos_r": 0.576,
-      "improvement_pt": 0.26
+      "oos_r": 0.577,
+      "improvement_pt": 0.05
     }
   ],
   "best_point": {
     "name": "波崎沖",
-    "wmape_h0": 32.9,
-    "improvement_pt": 0.26
+    "wmape_h0": 32.8,
+    "improvement_pt": 0.05
   },
-  "improvement_pt": 0.26,
+  "improvement_pt": 0.05,
   "trip_models": [
     {
       "trip_no": 1,

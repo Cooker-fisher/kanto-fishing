@@ -1,16 +1,15 @@
 {
   "fish": "アジ",
   "ship": "なごみ丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 68.4,
-    "bl0_wmape": 91.3,
-    "bl2_wmape": 94.0,
-    "oos_r": 0.759,
+    "wmape_h0": 33.67,
+    "bl2_wmape": 92.69,
+    "oos_r": 0.92,
     "n_records": 36,
-    "alpha_scale": 0.62,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -97,7 +96,13 @@
     "濁り・赤潮傾向の日に釣果が上がる傾向",
     "水温が低い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=松崎沖 wmape=32.3% imp=1.35pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -173,5 +178,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "松崎沖",
+      "n": 35,
+      "wmape_h0": 32.3,
+      "bl2_wmape": 103.0,
+      "oos_r": 0.932,
+      "improvement_pt": 1.35
+    }
+  ],
+  "best_point": {
+    "name": "松崎沖",
+    "wmape_h0": 32.3,
+    "improvement_pt": 1.35
+  },
+  "improvement_pt": 1.35
 }

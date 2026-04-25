@@ -4,7 +4,7 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.76,
+    "wmape_h0": 47.71,
     "bl2_wmape": 51.62,
     "oos_r": 0.423,
     "n_records": 207,
@@ -13,36 +13,36 @@
   },
   "point_models": [
     {
-      "name": "南沖",
-      "n": 45,
-      "wmape_h0": 43.7,
-      "bl2_wmape": 49.1,
-      "oos_r": 0.47,
-      "improvement_pt": 4.11
-    },
-    {
       "name": "二宮沖",
       "n": 71,
-      "wmape_h0": 46.4,
+      "wmape_h0": 44.2,
       "bl2_wmape": 55.6,
-      "oos_r": 0.513,
-      "improvement_pt": 1.33
+      "oos_r": 0.534,
+      "improvement_pt": 3.48
+    },
+    {
+      "name": "南沖",
+      "n": 45,
+      "wmape_h0": 44.6,
+      "bl2_wmape": 49.1,
+      "oos_r": 0.483,
+      "improvement_pt": 3.09
     },
     {
       "name": "真鶴沖",
       "n": 63,
-      "wmape_h0": 49.0,
+      "wmape_h0": 45.6,
       "bl2_wmape": 58.8,
-      "oos_r": 0.472,
-      "improvement_pt": -1.28
+      "oos_r": 0.53,
+      "improvement_pt": 2.12
     }
   ],
   "best_point": {
-    "name": "南沖",
-    "wmape_h0": 43.7,
-    "improvement_pt": 4.11
+    "name": "二宮沖",
+    "wmape_h0": 44.2,
+    "improvement_pt": 3.48
   },
-  "improvement_pt": 4.11,
+  "improvement_pt": 3.48,
   "points": [
     {
       "name": "二宮沖",

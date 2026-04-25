@@ -2,11 +2,11 @@
   "fish": "マダイ",
   "ship": "太幸丸",
   "last_reviewed": "2026-04-25",
-  "status": "point_model_marginal",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.23,
+    "wmape_h0": 32.86,
     "bl2_wmape": 50.46,
-    "oos_r": 0.669,
+    "oos_r": 0.674,
     "n_records": 96,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,26 +15,26 @@
     {
       "name": "浅場(~40m)",
       "n": 40,
-      "wmape_h0": 30.5,
+      "wmape_h0": 25.9,
       "bl2_wmape": 39.1,
-      "oos_r": 0.662,
-      "improvement_pt": 2.71
+      "oos_r": 0.72,
+      "improvement_pt": 6.97
     },
     {
       "name": "飯岡沖",
       "n": 56,
-      "wmape_h0": 41.3,
+      "wmape_h0": 36.1,
       "bl2_wmape": 59.2,
-      "oos_r": 0.594,
-      "improvement_pt": -8.07
+      "oos_r": 0.651,
+      "improvement_pt": -3.22
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
-    "wmape_h0": 30.5,
-    "improvement_pt": 2.71
+    "wmape_h0": 25.9,
+    "improvement_pt": 6.97
   },
-  "improvement_pt": 2.71,
+  "improvement_pt": 6.97,
   "history": [
     {
       "date": "2026-04-22",

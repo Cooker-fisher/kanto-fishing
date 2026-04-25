@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 42.7,
+    "wmape_h0": 40.91,
     "bl2_wmape": 47.01,
-    "oos_r": 0.635,
+    "oos_r": 0.647,
     "n_records": 989,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -195,18 +195,18 @@
     {
       "name": "浅場(~40m)",
       "n": 954,
-      "wmape_h0": 42.2,
+      "wmape_h0": 40.6,
       "bl2_wmape": 46.8,
-      "oos_r": 0.624,
-      "improvement_pt": 0.54
+      "oos_r": 0.638,
+      "improvement_pt": 0.36
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
-    "wmape_h0": 42.2,
-    "improvement_pt": 0.54
+    "wmape_h0": 40.6,
+    "improvement_pt": 0.36
   },
-  "improvement_pt": 0.54,
+  "improvement_pt": 0.36,
   "trip_models": [
     {
       "trip_no": 1,

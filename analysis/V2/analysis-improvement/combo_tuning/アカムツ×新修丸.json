@@ -2,13 +2,13 @@
   "fish": "アカムツ",
   "ship": "新修丸",
   "last_reviewed": "2026-04-25",
-  "status": "fallback_applied",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 22.9,
-    "bl2_wmape": 20.5,
-    "oos_r": -0.342,
+    "wmape_h0": 19.8,
+    "bl2_wmape": 20.55,
+    "oos_r": 0.111,
     "n_records": 33,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "overrides": {
@@ -17,9 +17,22 @@
     "depth_min": 160,
     "depth_max": 230
   },
-  "point_models": [],
-  "best_point": null,
-  "improvement_pt": 0,
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 33,
+      "wmape_h0": 16.6,
+      "bl2_wmape": 20.5,
+      "oos_r": 0.201,
+      "improvement_pt": 3.24
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 16.6,
+    "improvement_pt": 3.24
+  },
+  "improvement_pt": 3.24,
   "history": [
     {
       "date": "2026-04-25",

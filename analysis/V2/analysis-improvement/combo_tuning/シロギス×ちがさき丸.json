@@ -1,12 +1,12 @@
 {
   "fish": "シロギス",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-04-25",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 32.47,
-    "bl2_wmape": 40.06,
-    "oos_r": 0.405,
+    "wmape_h0": 32.77,
+    "bl2_wmape": 39.76,
+    "oos_r": 0.387,
     "n_records": 190,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -122,6 +122,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=茅ヶ崎沖 wmape=32.3% imp=0.16pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=茅ヶ崎沖 wmape=32.6% imp=0.13pt"
     }
   ],
   "rejected_factors": [
@@ -190,18 +195,18 @@
     {
       "name": "茅ヶ崎沖",
       "n": 170,
-      "wmape_h0": 32.4,
+      "wmape_h0": 32.6,
       "bl2_wmape": 39.5,
-      "oos_r": 0.373,
-      "improvement_pt": 0.04
+      "oos_r": 0.355,
+      "improvement_pt": 0.13
     }
   ],
   "best_point": {
     "name": "茅ヶ崎沖",
-    "wmape_h0": 32.4,
-    "improvement_pt": 0.04
+    "wmape_h0": 32.6,
+    "improvement_pt": 0.13
   },
-  "improvement_pt": 0.04,
+  "improvement_pt": 0.13,
   "trip_models": [
     {
       "trip_no": 1,

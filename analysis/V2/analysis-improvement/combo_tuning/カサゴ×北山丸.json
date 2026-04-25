@@ -1,12 +1,12 @@
 {
   "fish": "カサゴ",
   "ship": "北山丸",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 62.95,
+    "wmape_h0": 56.14,
     "bl2_wmape": 83.36,
-    "oos_r": 0.548,
+    "oos_r": 0.582,
     "n_records": 152,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -120,6 +120,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=洲崎沖 wmape=48.9% imp=14.01pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=洲崎沖 wmape=56.0% imp=0.09pt"
     }
   ],
   "rejected_factors": [
@@ -187,19 +192,19 @@
   "point_models": [
     {
       "name": "洲崎沖",
-      "n": 78,
-      "wmape_h0": 48.9,
-      "bl2_wmape": 71.1,
-      "oos_r": 0.618,
-      "improvement_pt": 14.01
+      "n": 151,
+      "wmape_h0": 56.0,
+      "bl2_wmape": 85.1,
+      "oos_r": 0.586,
+      "improvement_pt": 0.09
     }
   ],
   "best_point": {
     "name": "洲崎沖",
-    "wmape_h0": 48.9,
-    "improvement_pt": 14.01
+    "wmape_h0": 56.0,
+    "improvement_pt": 0.09
   },
-  "improvement_pt": 14.01,
+  "improvement_pt": 0.09,
   "trip_models": [
     {
       "trip_no": 1,

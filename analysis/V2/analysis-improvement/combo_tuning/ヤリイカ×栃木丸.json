@@ -2,11 +2,11 @@
   "fish": "ヤリイカ",
   "ship": "栃木丸",
   "last_reviewed": "2026-04-25",
-  "status": "point_model_marginal",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 50.54,
+    "wmape_h0": 50.58,
     "bl2_wmape": 61.91,
-    "oos_r": 0.316,
+    "oos_r": 0.311,
     "n_records": 274,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,34 +15,34 @@
     {
       "name": "城ヶ島沖",
       "n": 157,
-      "wmape_h0": 46.9,
+      "wmape_h0": 45.4,
       "bl2_wmape": 55.3,
-      "oos_r": 0.364,
-      "improvement_pt": 3.62
+      "oos_r": 0.375,
+      "improvement_pt": 5.15
     },
     {
       "name": "洲崎沖",
       "n": 40,
-      "wmape_h0": 57.8,
+      "wmape_h0": 56.2,
       "bl2_wmape": 80.9,
-      "oos_r": 0.41,
-      "improvement_pt": -7.28
+      "oos_r": 0.432,
+      "improvement_pt": -5.62
     },
     {
       "name": "長井沖",
       "n": 45,
-      "wmape_h0": 62.7,
+      "wmape_h0": 58.3,
       "bl2_wmape": 93.4,
-      "oos_r": 0.406,
-      "improvement_pt": -12.13
+      "oos_r": 0.456,
+      "improvement_pt": -7.77
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
-    "wmape_h0": 46.9,
-    "improvement_pt": 3.62
+    "wmape_h0": 45.4,
+    "improvement_pt": 5.15
   },
-  "improvement_pt": 3.62,
+  "improvement_pt": 5.15,
   "history": [
     {
       "date": "2026-04-24",

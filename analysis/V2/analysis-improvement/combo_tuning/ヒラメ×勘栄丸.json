@@ -1,13 +1,13 @@
 {
   "fish": "ヒラメ",
   "ship": "勘栄丸",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.05,
-    "bl2_wmape": 48.24,
-    "oos_r": 0.2,
-    "n_records": 78,
+    "wmape_h0": 46.57,
+    "bl2_wmape": 49.37,
+    "oos_r": 0.191,
+    "n_records": 80,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -116,6 +116,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=太東沖 wmape=33.9% imp=13.1pt"
+    },
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=太東沖 wmape=46.3% imp=0.31pt"
     }
   ],
   "rejected_factors": [
@@ -183,19 +188,19 @@
   "point_models": [
     {
       "name": "太東沖",
-      "n": 47,
-      "wmape_h0": 33.9,
-      "bl2_wmape": 52.8,
-      "oos_r": 0.592,
-      "improvement_pt": 13.1
+      "n": 59,
+      "wmape_h0": 46.3,
+      "bl2_wmape": 51.7,
+      "oos_r": 0.401,
+      "improvement_pt": 0.31
     }
   ],
   "best_point": {
     "name": "太東沖",
-    "wmape_h0": 33.9,
-    "improvement_pt": 13.1
+    "wmape_h0": 46.3,
+    "improvement_pt": 0.31
   },
-  "improvement_pt": 13.1,
+  "improvement_pt": 0.31,
   "trip_models": [
     {
       "trip_no": 1,

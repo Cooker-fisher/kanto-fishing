@@ -1,16 +1,15 @@
 {
   "fish": "ヒラメ",
   "ship": "第八幸松丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-25",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 30.0,
-    "bl0_wmape": 30.5,
+    "wmape_h0": 21.48,
     "bl2_wmape": 34.7,
-    "oos_r": 0.076,
+    "oos_r": 0.55,
     "n_records": 47,
-    "alpha_scale": 0.903,
-    "use_fallback": true
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -56,7 +55,13 @@
     "大潮・中潮で釣果が上がる傾向",
     "潮差が大きい日に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-25",
+      "action": "point_backtest_updated",
+      "note": "best=静浦沖 wmape=13.9% imp=7.55pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "tide_delta",
@@ -136,5 +141,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "静浦沖",
+      "n": 47,
+      "wmape_h0": 13.9,
+      "bl2_wmape": 34.7,
+      "oos_r": 0.626,
+      "improvement_pt": 7.55
+    }
+  ],
+  "best_point": {
+    "name": "静浦沖",
+    "wmape_h0": 13.9,
+    "improvement_pt": 7.55
+  },
+  "improvement_pt": 7.55
 }

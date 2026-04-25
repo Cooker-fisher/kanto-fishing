@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-25",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 45.88,
+    "wmape_h0": 45.44,
     "bl2_wmape": 59.87,
-    "oos_r": 0.405,
+    "oos_r": 0.42,
     "n_records": 90,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "太東沖",
       "n": 86,
-      "wmape_h0": 43.3,
+      "wmape_h0": 43.1,
       "bl2_wmape": 55.9,
-      "oos_r": 0.398,
-      "improvement_pt": 2.55
+      "oos_r": 0.402,
+      "improvement_pt": 2.3
     }
   ],
   "best_point": {
     "name": "太東沖",
-    "wmape_h0": 43.3,
-    "improvement_pt": 2.55
+    "wmape_h0": 43.1,
+    "improvement_pt": 2.3
   },
-  "improvement_pt": 2.55,
+  "improvement_pt": 2.3,
   "notes": "太東沖・片貝沖エリア。コンボ全体wmape=44.8%→太東沖絞り33.4%(-11.4pt)。H=7も43.7% vs BL2=59.5%で一貫してBL2大差勝ち。r=0.474良好。gyo.ne.jp(cid=yukou)に太東沖40m・片貝沖30m確認→ship_fish_point.jsonにイサキ/ハナダイ/アジ登録済み。",
   "history": [
     {
