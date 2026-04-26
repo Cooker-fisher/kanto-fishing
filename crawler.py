@@ -3547,11 +3547,15 @@ def build_fish_guide_html(fish, tackle_data):
   {rows}
 </div>"""
 
-def build_fish_7day_chart_html(fish, catches):
-    """直近7日間の釣果推移バーチャート（匹数上限）"""
+def build_fish_7day_chart_html(fish, catches, display_date=None, display_label="今日"):
+    """直近7日間の釣果推移バーチャート（匹数上限）
+    display_date: 最右列の基準日 (date オブジェクト)。省略時は今日。
+    display_label: 最右列のラベル文字列。省略時は「今日」。
+    """
     from datetime import datetime, timedelta
     today = datetime.now(JST).replace(tzinfo=None).date()
-    days = [(today - timedelta(days=i)) for i in range(6, -1, -1)]  # 6日前〜今日
+    base_date = display_date if display_date is not None else today
+    days = [(base_date - timedelta(days=i)) for i in range(6, -1, -1)]  # 6日前〜基準日
     # 日付→最大釣果
     daily_max = {}
     for c in catches:
@@ -3574,13 +3578,13 @@ def build_fish_7day_chart_html(fish, catches):
     bars = []
     for i, (d, v) in enumerate(zip(days, values)):
         h = max(8, int(v / week_max * 100)) if v > 0 else 4
-        cls = "cb today" if d == today else ("cb weekend" if d.weekday() >= 5 else "cb")
+        cls = "cb today" if d == base_date else ("cb weekend" if d.weekday() >= 5 else "cb")
         bars.append(f'<div class="{cls}" style="height:{h}%"></div>')
     # ラベル
     labels = []
     for d in days:
-        if d == today:
-            labels.append("<span>今日</span>")
+        if d == base_date:
+            labels.append(f"<span>{display_label}</span>")
         else:
             labels.append(f"<span>{d.month}/{d.day}</span>")
     # トレンド（後半3日 vs 前半4日の平均比較）
@@ -4760,6 +4764,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 fish_summary.setdefault(f, []).append(c)
     areas = sorted(set(c["area"] for c in catches))
     cards = ""
+    # ミニバーグラフ最右列ラベル（HERO と同じ日付判定で事前計算）
+    _today_str_idx = now.strftime("%Y/%m/%d")
+    _, _mini_today_label, _ = _resolve_display_dataset(catches, _today_str_idx)
 
     def _trend_key(fish):
         tw = get_yoy_data(history, fish, year, week_num)[0]
@@ -4873,7 +4880,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
                 _d = _today - timedelta(days=6 - _i)
                 if _i == 6:
-                    _label_parts.append('<span class="bl today">今日</span>')
+                    _label_parts.append(f'<span class="bl today">{_mini_today_label}</span>')
                 elif _i == 0:
                     _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
                 else:
@@ -5127,7 +5134,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     <span class="dot"></span>
     <span>{hero_label}の釣果報告 — {hero_ships}船宿・{hero_areas}エリア</span>
   </div>
-  <div class="updated">最終クロール: {crawled_at} JST</div>
+  <div class="updated">最終更新: {crawled_at} JST</div>
 </div>
 <div class="c">
 <!-- ZONE B: 釣れている魚 -->
@@ -5224,7 +5231,7 @@ def build_fish_pages(data, history, crawled_at=""):
             )
         # V2: 今日・今週の集計
         today_str_f = now.strftime("%Y/%m/%d")
-        today_catches_f, fish_today_label, _ = _resolve_display_dataset(catches, today_str_f)
+        today_catches_f, fish_today_label, fish_display_date_str = _resolve_display_dataset(catches, today_str_f)
         max_cnt = 0
         for c in catches:
             cr = c.get("count_range")
@@ -5260,7 +5267,7 @@ def build_fish_pages(data, history, crawled_at=""):
                 f'<span class="ar-range">{a_range}</span>'
                 f'</a>'
             )
-        area_cmp_html = f'<div class="area-cmp"><h3>エリア別の今日の釣果</h3>{area_cmp_rows}</div>' if area_cmp_rows else ""
+        area_cmp_html = f'<div class="area-cmp"><h3>エリア別の{fish_today_label}の釣果</h3>{area_cmp_rows}</div>' if area_cmp_rows else ""
         # ship-rank（今週・今日優先）
         ship_data_f: dict = {}
         for c in catches:
@@ -5343,7 +5350,8 @@ def build_fish_pages(data, history, crawled_at=""):
         season_map_html = build_fish_season_map_html(fish, decadal_calendar)
         guide_html = build_fish_guide_html(fish, tackle_data)
         faq_html, faq_jsonld = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
-        chart7_html = build_fish_7day_chart_html(fish, catches)
+        _chart7_base = datetime.strptime(fish_display_date_str, "%Y/%m/%d").date()
+        chart7_html = build_fish_7day_chart_html(fish, catches, display_date=_chart7_base, display_label=fish_today_label)
         fish_extra_css = """\
 .fish-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:22px 14px 18px;text-align:center}
 .fish-hero h2{font-size:26px;font-weight:800;margin:0}
@@ -5693,7 +5701,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         _top_fish_str = "・".join(f for f, _ in top_fish_items[:3])
         _area_desc_fish = f"{_top_fish_str}など" if _top_fish_str else ""
         today_cnt = len(today_catches)
-        area_desc = f"{area}（{group}）の船釣り釣果。今日{today_cnt}件。{_area_desc_fish}釣れている魚種と船宿情報を毎日更新。"
+        area_desc = f"{area}（{group}）の船釣り釣果。{fish_label}{today_cnt}件。{_area_desc_fish}釣れている魚種と船宿情報を毎日更新。"
 
         # 有料ティザー
         area_teaser_html = (
@@ -5718,10 +5726,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{area}の釣果情報・おすすめ船宿【今日{today_cnt}件】| 船釣り予想</title>
+  <title>{area}の釣果情報・おすすめ船宿【{fish_label}{today_cnt}件】| 船釣り予想</title>
   <meta name="description" content="{area_desc}">
   <link rel="canonical" href="{area_url}">
-  <meta property="og:title" content="{area}の釣果情報・おすすめ船宿【今日{today_cnt}件】">
+  <meta property="og:title" content="{area}の釣果情報・おすすめ船宿【{fish_label}{today_cnt}件】">
   <meta property="og:description" content="{area_desc}">
   <meta property="og:url" content="{area_url}">
   <meta property="og:type" content="website">
@@ -7142,7 +7150,7 @@ def _ship_calc_sailrate(catches, ship_name, today_dt):
     return sail, cancel, rate
 
 
-def _ship_recent_fish_html(catches, ship_name, today_dt):
+def _ship_recent_fish_html(catches, ship_name, today_dt, display_label="今日"):
     """直近7日 × 上位3魚種の7日推移バーチャート HTML"""
     from datetime import timedelta
     from collections import defaultdict
@@ -7187,7 +7195,7 @@ def _ship_recent_fish_html(catches, ship_name, today_dt):
         d = today_dt - timedelta(days=i)
         day_keys.append(d.strftime("%Y/%m/%d"))
         day_labels.append(d.strftime("%-m/%-d") if os.name != "nt" else d.strftime("%#m/%#d"))
-    day_labels[-1] = "今日"
+    day_labels[-1] = display_label
     for fish, _ in top_fish:
         all_cnts = []
         for cnts in fish_daily[fish].values():
@@ -7348,7 +7356,11 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     sail, cancel, rate = _ship_calc_sailrate(catches, name, today_dt)
     primary_fish = _ship_primary_fish_list(catches, name)
     main_points = _ship_main_points(catches, name)
-    recent_html = _ship_recent_fish_html(catches, name, today_dt)
+    # 当日データ有無で最右列ラベルを決定（fish/area ページと同じ方式）
+    _ship_catches = [c for c in catches if c.get("ship") == name]
+    _today_str_s = today_dt.strftime("%Y/%m/%d")
+    _, ship_today_label, _ = _resolve_display_dataset(_ship_catches, _today_str_s)
+    recent_html = _ship_recent_fish_html(catches, name, today_dt, display_label=ship_today_label)
     area_rank_html = _ship_area_ranking_html(catches, area, name, today_dt)
 
     # area の slug（パンくず・リンク用）
