@@ -7522,11 +7522,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         '<h2 class="st">予約方法</h2>'
         '<div class="spec-card">'
         + rsv_grid
-        + '<p style="font-size:11px;color:var(--muted);margin-top:10px">※ 予約は船宿へ直接お電話ください。料金・空席状況・出船判断などは電話で確認するのが確実です。下記の予約サイトは空席状況の参考としてご利用ください。</p>'
-        + '<div class="cta-grid">'
-        + f'<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で空席を確認 →</a>'
-        + f'<a href="{castingnet_url}" rel="nofollow noopener" target="_blank" class="alt">キャスティングで空席を確認 →</a>'
-        + '</div></div>'
+        + '<p style="font-size:11px;color:var(--muted);margin-top:10px">※ 予約は船宿へ直接お電話ください。料金・空席状況・出船判断などは電話で確認するのが確実です。</p>'
+        + '</div>'
     )
 
     # 季節別の狙い物（4つ揃っていなければ部分表示）
@@ -7625,8 +7622,18 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     if phone:
         phone_digits = re.sub(r"[^\d+\-]", "", phone)
         phone_cta_html = f'<a href="tel:{phone_digits}" style="background:var(--pos)">📞 電話: {phone}</a>'
+        phone_cta_block = (
+            f'<a href="tel:{phone_digits}" '
+            'style="display:inline-block;padding:14px 28px;background:var(--pos);color:#fff;'
+            'border-radius:24px;font-weight:700;font-size:16px;margin-top:8px;text-decoration:none">'
+            f'📞 {phone}</a>'
+        )
     else:
         phone_cta_html = ''
+        phone_cta_block = (
+            '<p style="font-size:12px;color:rgba(255,255,255,.85);margin-top:10px">'
+            '電話番号は船宿の公式サイトまたは予約サイトでご確認ください。</p>'
+        )
 
     # ヘッダ・ナビ・ボトムナビ（fish/area ページと同じ構成・5項目）
     header_html = (
@@ -7726,12 +7733,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
 <div class="contact-cta">
 <h3>{name}で釣行を計画する</h3>
-<p>予約は船宿へ直接お電話を推奨。空席や最新情報の確認は予約サイトもご利用いただけます。</p>
-<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
-{phone_cta_html}
-<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で空席確認</a>
-<a href="{castingnet_url}" rel="nofollow noopener" target="_blank">キャスティングで空席確認</a>
-</div>
+<p>予約は船宿へ直接お電話ください。最新の料金・空席・出船判断はすべて船宿が把握しています。</p>
+{phone_cta_block}
 </div>
 
 <div class="ad-slot">広告スペース（レクタングル）</div>
