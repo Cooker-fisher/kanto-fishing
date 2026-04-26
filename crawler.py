@@ -1920,7 +1920,7 @@ def _build_daily_page(date_str, day_data, forecast_data, weather_data):
     # 釣果予測は有料機能（準備中）— 認証システム未実装のため一切公開しない
     html += '''
 <div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
-<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">🔒 釣果予測（準備中）</h2>
+<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">釣果予測（準備中）</h2>
 <p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
 当日の海況・潮通し・直近実績を組み合わせた、<br>
 魚種別・エリア別の<strong>釣果予測（匹数レンジ・サイズ・狙い・確信度）</strong>を準備中です。<br>
@@ -1963,7 +1963,7 @@ def _build_weekly_page(week_id, week_data, forecast_data):
     # 釣果予測は有料機能（準備中）
     html += '''
 <div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
-<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">🔒 週次釣果予測（準備中）</h2>
+<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">週次釣果予測（準備中）</h2>
 <p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
 潮回り×季節傾向×直近実績で算出する週次の<strong>魚種・エリア別予測</strong>を準備中です。<br>
 公開時は有料プランのみで提供予定です。
@@ -2002,7 +2002,7 @@ def _build_area_forecast_page(area_group, forecast_data):
     # 釣果予測は有料機能（準備中）
     html += '''
 <div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
-<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">🔒 エリア別釣果予測（準備中）</h2>
+<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">エリア別釣果予測（準備中）</h2>
 <p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
 このエリアの<strong>魚種別予測（匹数レンジ・サイズ・確信度）</strong>を準備中です。<br>
 公開時は有料プランのみで提供予定です。
@@ -2021,7 +2021,7 @@ def _build_forecast_hub(forecast_data, catches=None):
     # 釣果予測は準備中（認証システム未実装のため一切公開しない）
     html += '''
 <div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:14px;padding:48px 24px;margin:32px 0;text-align:center">
-<h2 style="font-size:22px;color:#7c3aed;margin-bottom:16px;border:none;padding:0">🔒 有料プラン（準備中）</h2>
+<h2 style="font-size:22px;color:#7c3aed;margin-bottom:16px;border:none;padding:0">有料プラン（準備中）</h2>
 <p style="font-size:14px;color:#5a6a7a;line-height:1.9;margin-bottom:24px">
 気象条件・潮通し・直近実績を組み合わせた、<br>
 <strong>魚種別・エリア別・日次の釣果予測</strong>を準備中です。<br>
@@ -3267,6 +3267,11 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .sm-cell[data-v="4"]{background:#1b5e20;color:#fff}
 .sm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)}
 .sm-lc{width:14px;height:14px;border-radius:2px;display:inline-block}
+.sm-lc-0{background:#eef2f5}
+.sm-lc-1{background:#c8e6c9}
+.sm-lc-2{background:#66bb6a}
+.sm-lc-3{background:#388e3c}
+.sm-lc-4{background:#1b5e20}
 .area-season{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .as-wrap{overflow-x:auto}
 .as-table{border-collapse:separate;border-spacing:3px;min-width:220px}
@@ -3281,6 +3286,11 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .as-cell[data-v="4"]{background:#1b5e20;color:#fff}
 .as-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)}
 .as-lc{width:14px;height:14px;border-radius:2px;display:inline-block}
+.as-lc-0{background:#eef2f5}
+.as-lc-1{background:#c8e6c9}
+.as-lc-2{background:#66bb6a}
+.as-lc-3{background:#388e3c}
+.as-lc-4{background:#1b5e20}
 .fish-guide{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .fish-guide>h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px}
 .fg-row{display:flex;gap:10px;line-height:1.75;padding:7px 0;border-bottom:1px solid var(--bg)}
@@ -3413,7 +3423,7 @@ def build_teaser_rotator_html():
       <div style="position:relative">
         <div class="teaser-dummy"><div class="td-fish">アジ <span class="td-star">★★★★★</span></div><div class="td-range">25〜45匹 / 18〜25cm</div><div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div></div>
         <div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div><div class="td-range">0〜5匹 / 30〜55cm</div><div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>
-        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 今週 日毎の釣果予測</li><li>✓ 2・3・4週先の釣果予測</li><li>✓ 気象×潮汐で自動算出</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>今週 日毎の釣果予測</li><li>2・3・4週先の釣果予測</li><li>気象×潮汐で自動算出</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
       </div>
     </div>
     <div class="tr-slide">
@@ -3425,7 +3435,7 @@ def build_teaser_rotator_html():
       <div style="position:relative">
         <div class="teaser-dummy"><div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div><div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div><div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div></div>
         <div class="teaser-dummy"><div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div><div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div><div class="td-reason">水温× 予報より1.5℃低下で活性低下</div></div>
-        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 先週の予測 vs 実績比較</li><li>✓ 予測精度スコア</li><li>✓ 外れた理由の解説</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>先週の予測 vs 実績比較</li><li>予測精度スコア</li><li>外れた理由の解説</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
       </div>
     </div>
     <div class="tr-slide">
@@ -3437,7 +3447,7 @@ def build_teaser_rotator_html():
       <div style="position:relative">
         <div class="teaser-dummy"><div class="td-fish">注目: アジ × 金沢八景</div><div class="td-range">スコア 92 / 平年比 +38%</div><div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div></div>
         <div class="teaser-dummy"><div class="td-fish">急落: タチウオ × 走水</div><div class="td-range">先週比 -45%</div><div class="td-reason">水温急低下でベイトが抜けた模様</div></div>
-        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">🔒 準備中</div><ul class="cs-features"><li>✓ 日別釣果予測（7日先）</li><li>✓ 気象相関グラフ</li><li>✓ 急上昇・急落コンボ通知</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>日別釣果予測（7日先）</li><li>気象相関グラフ</li><li>急上昇・急落コンボ通知</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
       </div>
     </div>
   </div>
@@ -3559,16 +3569,13 @@ def build_fish_season_map_html(fish, decadal_calendar):
   </div>
   <div class="sm-legend">
     <span>釣れ具合：</span>
-    <span class="sm-lc" style="background:#eef2f5"></span>なし
-    <span class="sm-lc" style="background:#c8e6c9"></span>渋
-    <span class="sm-lc" style="background:#66bb6a"></span>普通
-    <span class="sm-lc" style="background:#388e3c"></span>良
-    <span class="sm-lc" style="background:#1b5e20"></span>◎
+    <span class="sm-lc sm-lc-0"></span>なし
+    <span class="sm-lc sm-lc-1"></span>渋
+    <span class="sm-lc sm-lc-2"></span>普通
+    <span class="sm-lc sm-lc-3"></span>良
+    <span class="sm-lc sm-lc-4"></span>◎
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
-  <div style="margin-top:8px;padding:8px 10px;background:#f8f4ff;border:1px dashed var(--prem);border-radius:6px;font-size:11px;color:var(--prem);font-weight:600">
-    🔒 上旬/中旬/下旬の旬別詳細データは有料プランで公開予定
-  </div>
   {note}
 </div>"""
 
@@ -3615,11 +3622,11 @@ def build_area_season_map_html(area, area_decadal, top_fish_list):
   </div>
   <div class="as-legend">
     <span>釣れ具合：</span>
-    <span class="as-lc" style="background:#eef2f5"></span>なし
-    <span class="as-lc" style="background:#c8e6c9"></span>渋
-    <span class="as-lc" style="background:#66bb6a"></span>普通
-    <span class="as-lc" style="background:#388e3c"></span>良
-    <span class="as-lc" style="background:#1b5e20"></span>◎
+    <span class="as-lc as-lc-0"></span>なし
+    <span class="as-lc as-lc-1"></span>渋
+    <span class="as-lc as-lc-2"></span>普通
+    <span class="as-lc as-lc-3"></span>良
+    <span class="as-lc as-lc-4"></span>◎
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の釣果データより集計（2023〜2025年）</p>
 </div>"""
@@ -5735,10 +5742,10 @@ def build_fish_pages(data, history, crawled_at=""):
             f'<div class="td-range">水温○ / 大潮○ / 波穏○</div>'
             f'<div class="td-reason">気象スコアより推定</div></div>'
             f'<div class="teaser-overlay"><div class="coming-soon-panel">'
-            f'<div class="cs-title">🔒 準備中</div>'
-            f'<ul class="cs-features"><li>✓ 気象条件スコア</li>'
-            f'<li>✓ 来週の釣れる日予測</li>'
-            f'<li>✓ 船宿別おすすめ日</li></ul>'
+            f'<div class="cs-title">準備中</div>'
+            f'<ul class="cs-features"><li>気象条件スコア</li>'
+            f'<li>来週の釣れる日予測</li>'
+            f'<li>船宿別おすすめ日</li></ul>'
             f'<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
             f'</div></div></div></div>'
         )
@@ -5827,7 +5834,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <meta property="og:url" content="{fish_url}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
-  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果情報","item":"{fish_url}"}}]}}</script>
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"魚種一覧","item":"{SITE_URL}/fish/"}},{{"@type":"ListItem","position":3,"name":"{fish}の釣果情報","item":"{fish_url}"}}]}}</script>
   {faq_jsonld}
   {GA_TAG}
   {ADSENSE_TAG}
@@ -5845,7 +5852,7 @@ def build_fish_pages(data, history, crawled_at=""):
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {season_entry_html}
-  <div class="comment">💬 {comment}</div>
+  <div class="comment">{comment}</div>
   {chart7_html}
   <h2 class="st">{fish_today_label}の釣果 <span class="tag free">無料</span></h2>
   {area_cmp_html if area_cmp_html else '<p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>'}
@@ -6413,9 +6420,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             f'<div class="td-range">{top_fish_list[0] if top_fish_list else "—"} ★★★★☆</div>'
             f'<div class="td-reason">潮汐・SST・前週実績より推定</div></div>'
             f'<div class="teaser-overlay"><div class="coming-soon-panel">'
-            f'<div class="cs-title">🔒 準備中</div>'
-            f'<ul class="cs-features"><li>✓ エリア別日別予測（7日先）</li>'
-            f'<li>✓ 全ポイント情報</li><li>✓ 欠航リスク予報</li></ul>'
+            f'<div class="cs-title">準備中</div>'
+            f'<ul class="cs-features"><li>エリア別日別予測（7日先）</li>'
+            f'<li>全ポイント情報</li><li>欠航リスク予報</li></ul>'
             f'<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
             f'</div></div></div></div>'
         )
@@ -6431,7 +6438,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <meta property="og:url" content="{area_url}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
-  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{group}","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":3,"name":"{area}の釣果","item":"{area_url}"}}]}}</script>
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"エリア一覧","item":"{SITE_URL}/area/"}},{{"@type":"ListItem","position":3,"name":"{area}の釣果","item":"{area_url}"}}]}}</script>
   {area_faq_jsonld}
   {GA_TAG}
   {ADSENSE_TAG}
@@ -6572,7 +6579,17 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 .sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
-.sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}"""
+.sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
+.season-bar{display:flex;gap:2px;margin-top:8px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
+.sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}
+.sb-cell.peak-count{background:#e85d04}
+.sb-cell.peak-size{background:#7209b7}
+.sb-cell.mid{background:#1a6ea8}
+.sb-cell.low{background:#1a3050}
+.sb-cell.now{outline:2px solid #fff;outline-offset:1px}
+.sb-legend{font-size:9px;color:var(--muted);text-align:center;margin-top:3px;margin-bottom:14px}
+.sb-legend .leg-count::before{content:"";display:inline-block;width:8px;height:8px;background:#e85d04;border-radius:2px;margin-right:3px;vertical-align:middle}
+.sb-legend .leg-size::before{content:"";display:inline-block;width:8px;height:8px;background:#7209b7;border-radius:2px;margin-right:3px;vertical-align:middle}"""
 
     now_fa_global = datetime.now(JST).replace(tzinfo=None)
     current_month_fa = now_fa_global.month
@@ -6620,13 +6637,13 @@ def build_fish_area_pages(data, crawled_at="", history=None):
         season_score_fa = get_season_score(fish, current_month_fa)
         group_fa = _area_to_group(area) or area
         if season_score_fa >= 4:
-            combo_cmt = f"💬 {group_fa}の{fish}は今月がシーズン本番。{trend_label}の傾向です。"
+            combo_cmt = f"{group_fa}の{fish}は今月がシーズン本番。{trend_label}の傾向です。"
         elif season_score_fa >= 3:
-            combo_cmt = f"💬 {group_fa}の{fish}はシーズン中盤。安定した釣果が期待できます。"
+            combo_cmt = f"{group_fa}の{fish}はシーズン中盤。安定した釣果が期待できます。"
         elif season_score_fa >= 2:
-            combo_cmt = f"💬 {group_fa}の{fish}はシーズンの立ち上がり／終盤。{trend_label}の傾向。"
+            combo_cmt = f"{group_fa}の{fish}はシーズンの立ち上がり／終盤。{trend_label}の傾向。"
         else:
-            combo_cmt = f"💬 {group_fa}の{fish}はオフシーズンですが釣果報告あり。"
+            combo_cmt = f"{group_fa}の{fish}はオフシーズンですが釣果報告あり。"
         combo_comment_html = f'<div class="combo-comment">{combo_cmt}</div>'
         # V2: ship-rank（sr スタイル）
         today_str_fa = now_fa_global.strftime("%Y/%m/%d")
@@ -6678,7 +6695,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <meta property="og:url" content="{page_url}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
-  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_slug(fish)}.html"}},{{"@type":"ListItem","position":3,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"魚種一覧","item":"{SITE_URL}/fish/"}},{{"@type":"ListItem","position":3,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_slug(fish)}.html"}},{{"@type":"ListItem","position":4,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
   {GA_TAG}
   {ADSENSE_TAG}
   <style>{V2_COMMON_CSS}
@@ -8297,14 +8314,14 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
 <!-- 明日の予測（有料・準備中チラ見せ） -->
 <div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px">
-<h3 style="font-size:14px;color:var(--prem);margin-bottom:8px;text-align:center">🔒 {name}の明日の予測（準備中）</h3>
+<h3 style="font-size:14px;color:var(--prem);margin-bottom:8px;text-align:center">{name}の明日の予測（準備中）</h3>
 <div style="background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px;position:relative;overflow:hidden">
 <div style="filter:blur(5px);user-select:none;pointer-events:none">
 <div style="font-weight:700;color:var(--accent);font-size:13px">明日の主要魚種 — 信頼度 ★★★★★</div>
 <div style="font-size:15px;font-weight:800;color:var(--cta);margin-top:4px">XX〜XX匹</div>
 <div style="font-size:10px;color:var(--sub);margin-top:4px">気象条件・潮通し分析より推定</div>
 </div>
-<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,.06);font-size:13px;font-weight:700;color:var(--prem)">🔒 月額500円で見る予定</div>
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,.06);font-size:13px;font-weight:700;color:var(--prem)">月額500円で見る予定</div>
 </div>
 </div>
 
