@@ -58,11 +58,13 @@
   → 全釣果に「今日の日付」が入る問題を修正
 """
 import re, json, time, os, csv, math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from urllib.parse import quote
 from html.parser import HTMLParser
+
+JST = timezone(timedelta(hours=9))
 
 # ── data/ バージョン管理 ───────────────────────────────────────────────────
 # config.json の active_version に連動して data/{ver}/ を DATA_DIR として使う。
@@ -295,7 +297,7 @@ def _float_or_none(v):
 
 def _next_weekend():
     """次の土日の日付を返す。土日当日なら今週末を返す。"""
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     wd = now.weekday()  # 0=月 ... 5=土 6=日
     if wd == 5:       # 土曜日
         sat = now
@@ -483,7 +485,7 @@ def _fetch_wind_forecast(lat, lon, date_from, date_to):
 def load_weather_data():
     """7日間の日次海況予報を全エリアから取得 + 潮汐データを読み込む"""
     result = {"forecast": {}, "tide": {}}
-    today = datetime.now()
+    today = datetime.now(JST).replace(tzinfo=None)
     date_from = today.strftime("%Y-%m-%d")
     date_to   = (today + timedelta(days=6)).strftime("%Y-%m-%d")
 
@@ -1373,7 +1375,7 @@ def build_forecast_json(weather_data, catches=None, history=None):
     if history is None:
         history = {}
 
-    result = {"generated_at": datetime.now().strftime("%Y/%m/%d %H:%M"), "days": {}, "weeks": {}}
+    result = {"generated_at": datetime.now(JST).replace(tzinfo=None).strftime("%Y/%m/%d %H:%M"), "days": {}, "weeks": {}}
 
     # ── エリア別SST傾向（7日間予報の前半→後半で変化方向を計算）──
     _area_sst_pairs = {}
@@ -1506,7 +1508,7 @@ def build_forecast_json(weather_data, catches=None, history=None):
         }
 
     # ── 週次予測（2〜4週後）──
-    today = datetime.now()
+    today = datetime.now(JST).replace(tzinfo=None)
     for week_offset in range(2, 5):
         week_start = today + timedelta(days=(7 * week_offset - today.weekday()))
         week_end = week_start + timedelta(days=6)
@@ -2248,7 +2250,7 @@ def parse_catches_from_html(html, ship, area, year):
         # フォールバック: TableParserで全テーブルを取得し今日の日付を使用
         parser = TableParser()
         parser.feed(html)
-        now = datetime.now()
+        now = datetime.now(JST).replace(tzinfo=None)
         fallback_date = f"{year}/{now.month:02d}/{now.day:02d}"
         return _parse_tables(parser.tables, ship, area, fallback_date, now.month)
 
@@ -2258,9 +2260,9 @@ def parse_catches_from_html(html, ship, area, year):
         if date_m:
             date_str = date_m.group(1).strip()
             date = parse_jp_date(date_str, year)
-            month = int(re.search(r'(\d{1,2})月', date_str).group(1)) if re.search(r'(\d{1,2})月', date_str) else datetime.now().month
+            month = int(re.search(r'(\d{1,2})月', date_str).group(1)) if re.search(r'(\d{1,2})月', date_str) else datetime.now(JST).replace(tzinfo=None).month
         else:
-            now = datetime.now()
+            now = datetime.now(JST).replace(tzinfo=None)
             date = f"{year}/{now.month:02d}/{now.day:02d}"
             month = now.month
 
@@ -2580,7 +2582,7 @@ def parse_catches_gyo(html, ship, area, year, cutoff_days=60):
     cutoff_days 日以内の日付のみ有効とする（デフォルト60日）。
     """
     results = []
-    now     = datetime.now()
+    now     = datetime.now(JST).replace(tzinfo=None)
     cutoff  = now - timedelta(days=cutoff_days)
 
     def _valid_date(y, mo, d):
@@ -2801,7 +2803,7 @@ def _ship_link(name: str, depth: int = 1) -> str:
     return f'<a href="{prefix}ship/{slug}.html">{name}</a>'
 
 def current_iso_week():
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     return now.year, now.isocalendar()[1]
 
 def validate_catch(c):
@@ -3180,6 +3182,31 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
 # V2 ビルダー関数
 # ============================================================
 
+def _format_date_label(date_str: str) -> str:
+    """YYYY/MM/DD → 'M/D(曜)' 形式（例: 4/25(金)）"""
+    try:
+        dt = datetime.strptime(date_str, "%Y/%m/%d")
+        wday = "月火水木金土日"[dt.weekday()]
+        return f"{dt.month}/{dt.day}({wday})"
+    except (ValueError, TypeError):
+        return date_str
+
+def _resolve_display_dataset(catches, today_str):
+    """
+    当日データありなら (today_catches, '今日', today_str)
+    なければ catches 内の最新日にフォールバック → (latest_catches, 'M/D(曜)', latest_date)
+    両者とも0件なら (catches, '—', today_str)
+    """
+    today_catches = [c for c in catches if c.get("date") == today_str]
+    if today_catches:
+        return today_catches, "今日", today_str
+    dates = [c["date"] for c in catches if c.get("date")]
+    if not dates:
+        return catches, "—", today_str
+    latest_date = max(dates)
+    latest_catches = [c for c in catches if c.get("date") == latest_date]
+    return latest_catches, _format_date_label(latest_date), latest_date
+
 def _v2_header_nav(active_page=""):
     """V2共通ヘッダー + グローバルナビ"""
     pages = [
@@ -3298,7 +3325,7 @@ def build_teaser_rotator_html():
 
 def build_index_overview_text(catches, history, crawled_at=""):
     """今日の関東船釣り概況テキスト（200〜300字）を生成"""
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     today_str = now.strftime("%Y/%m/%d")
     year, week_num = current_iso_week()
     # 今日分のみで集計
@@ -3523,7 +3550,7 @@ def build_fish_guide_html(fish, tackle_data):
 def build_fish_7day_chart_html(fish, catches):
     """直近7日間の釣果推移バーチャート（匹数上限）"""
     from datetime import datetime, timedelta
-    today = datetime.now().date()
+    today = datetime.now(JST).replace(tzinfo=None).date()
     days = [(today - timedelta(days=i)) for i in range(6, -1, -1)]  # 6日前〜今日
     # 日付→最大釣果
     daily_max = {}
@@ -4365,7 +4392,7 @@ footer a:hover{text-decoration:underline}
 # #7: 今週イチ押し + #1: リンク付きカード
 # ============================================================
 def calc_targets(data, history):
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     cur_month = now.month
     year, week_num = current_iso_week()
     cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
@@ -4408,7 +4435,7 @@ def calc_targets(data, history):
 # ============================================================
 def calc_combo_scores(data, history):
     """魚種×エリアグループごとの複合スコアを計算しランキング化"""
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     cur_month = now.month
     year, week_num = current_iso_week()
     cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
@@ -4722,7 +4749,7 @@ def build_catch_table(catches):
 # index.html 生成
 # ============================================================
 def build_html(catches, crawled_at, history, weather_data=None):
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     current_month = now.month
     fish_summary = {}
     year, week_num = current_iso_week()
@@ -4992,10 +5019,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="fo-list">{other_links}</div>'
             f'</div>'
         )
-    # HERO 数値（今日分のみ）
+    # HERO 数値（当日分があれば当日、なければ最新データ日）
     today_str = now.strftime("%Y/%m/%d")
-    today_catches = [c for c in catches if c.get("date") == today_str]
-    hero_base = today_catches if today_catches else catches
+    hero_base, hero_label, hero_date = _resolve_display_dataset(catches, today_str)
     hero_count = len(hero_base)
     hero_ships = len(set(c["ship"] for c in hero_base))
     hero_areas = len(set(c["area"] for c in hero_base))
@@ -5099,9 +5125,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
   <div class="n">{hero_count}<u>件</u></div>
   <div class="info">
     <span class="dot"></span>
-    <span>本日の釣果報告 — {hero_ships}船宿・{hero_areas}エリア</span>
+    <span>{hero_label}の釣果報告 — {hero_ships}船宿・{hero_areas}エリア</span>
   </div>
-  <div class="updated">最終更新: {crawled_at}</div>
+  <div class="updated">最終クロール: {crawled_at} JST</div>
 </div>
 <div class="c">
 <!-- ZONE B: 釣れている魚 -->
@@ -5161,7 +5187,7 @@ def build_fish_pages(data, history, crawled_at=""):
     for _fn in os.listdir(fish_dir):
         if _fn.endswith(".html") and os.path.splitext(_fn)[0].isdigit():
             os.remove(os.path.join(fish_dir, _fn))
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     current_month = now.month
     year, week_num = current_iso_week()
     decadal_calendar = load_decadal_calendar()
@@ -5198,7 +5224,7 @@ def build_fish_pages(data, history, crawled_at=""):
             )
         # V2: 今日・今週の集計
         today_str_f = now.strftime("%Y/%m/%d")
-        today_catches_f = [c for c in catches if c.get("date") == today_str_f]
+        today_catches_f, fish_today_label, _ = _resolve_display_dataset(catches, today_str_f)
         max_cnt = 0
         for c in catches:
             cr = c.get("count_range")
@@ -5377,14 +5403,14 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2>{fish}</h2>
   {f'<div class="fh-r">{cnt_range_str}</div>' if cnt_range_str else ''}
   {f'<div class="fh-s">{sz_str}</div>' if sz_str else ''}
-  <div class="fh-m">今日 {len(today_catches_f)}件・{len(set(c['ship'] for c in today_catches_f))}船宿</div>
+  <div class="fh-m">{fish_today_label} {len(today_catches_f)}件・{len(set(c['ship'] for c in today_catches_f))}船宿</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {season_entry_html}
   <div class="comment">💬 {comment}</div>
   {chart7_html}
-  <h2 class="st">今日の釣果 <span class="tag free">無料</span></h2>
+  <h2 class="st">{fish_today_label}の釣果 <span class="tag free">無料</span></h2>
   {area_cmp_html if area_cmp_html else '<p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>'}
   {ship_rank_html}
   <!-- 広告① -->
@@ -5456,7 +5482,7 @@ def build_fish_pages(data, history, crawled_at=""):
 # ============================================================
 def build_area_pages(data, history, crawled_at="", weather_data=None):
     os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     today_str = now.strftime("%Y/%m/%d")
     today_iso = now.strftime("%Y-%m-%d")
     area_desc_data = load_area_description()
@@ -5512,10 +5538,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
 
         # 今日の釣果
-        today_catches = [c for c in catches if c.get("date") == today_str]
-        use_today = len(today_catches) >= 1
-        fish_source = today_catches if use_today else catches
-        fish_label = "今日" if use_today else "今週"
+        today_catches, fish_label, area_date = _resolve_display_dataset(catches, today_str)
+        use_today = (area_date == today_str)
+        fish_source = today_catches
 
         # 魚種別集計（fia-grid用）
         fish_data = {}
@@ -5714,7 +5739,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <div class="c">
     <h2>{area}</h2>
     <div class="ah-sub">{group}</div>
-    <div class="ah-m">{today_cnt}件 <small>({len(set(c['ship'] for c in today_catches))}船宿・今日)</small></div>
+    <div class="ah-m">{today_cnt}件 <small>({len(set(c['ship'] for c in today_catches))}船宿・{fish_label})</small></div>
     {ah_sea_html}
   </div>
 </div>
@@ -5844,7 +5869,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}"""
 
-    now_fa_global = datetime.now()
+    now_fa_global = datetime.now(JST).replace(tzinfo=None)
     current_month_fa = now_fa_global.month
     year_fa_g, week_num_fa_g = current_iso_week()
 
@@ -5980,7 +6005,7 @@ def build_fish_area_pages(data, crawled_at="", history=None):
 # calendar.html
 # ============================================================
 def build_calendar_page(crawled_at=""):
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     current_month = now.month
     months = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
     header_cells = "".join(f'<th class="{"cur-month" if i+1==current_month else ""}">{m}</th>' for i,m in enumerate(months))
@@ -7259,7 +7284,7 @@ def _ship_primary_fish_list(catches, ship_name, limit=5):
     """その船宿の主要対象魚（直近90日・釣果件数 TOP N）"""
     from datetime import timedelta
     from collections import Counter as _C
-    cutoff = datetime.now() - timedelta(days=90)
+    cutoff = datetime.now(JST).replace(tzinfo=None) - timedelta(days=90)
     counter = _C()
     for c in catches:
         if c.get("ship") != ship_name:
@@ -7281,7 +7306,7 @@ def _ship_main_points(catches, ship_name, limit=3):
     """その船宿の主要ポイント TOP3"""
     from datetime import timedelta
     from collections import Counter as _C
-    cutoff = datetime.now() - timedelta(days=180)
+    cutoff = datetime.now(JST).replace(tzinfo=None) - timedelta(days=180)
     counter = _C()
     for c in catches:
         if c.get("ship") != ship_name:
@@ -7615,7 +7640,7 @@ def build_ship_pages(catches, crawled_at=""):
         s for s in SHIPS
         if s.get("romaji_slug") and (s.get("chowari_id") or s["name"] in _SHIP_INFO)
     ]
-    today_dt = datetime.now()
+    today_dt = datetime.now(JST).replace(tzinfo=None)
     area_coords = _ship_load_area_coords()
     generated = 0
     for ship in target_ships:
@@ -7640,7 +7665,7 @@ def build_ship_pages(catches, crawled_at=""):
 # ============================================================
 def build_sitemap(data):
     from urllib.parse import quote as _quote
-    now = datetime.now().strftime("%Y-%m-%d")
+    now = datetime.now(JST).replace(tzinfo=None).strftime("%Y-%m-%d")
     urls = [
         (f"{SITE_URL}/", "1.0", "daily"),
         (f"{SITE_URL}/calendar.html", "0.6", "weekly"),
@@ -8436,7 +8461,7 @@ def main():
 
     # --html-only: catches.json + history.json を使ってHTML生成だけを実行（クロールなし）
     if "--html-only" in _sys.argv:
-        crawled_at = datetime.now().strftime("%Y/%m/%d %H:%M")
+        crawled_at = datetime.now(JST).replace(tzinfo=None).strftime("%Y/%m/%d %H:%M")
         with open("catches.json", encoding="utf-8") as _f:
             _snap = json.load(_f)
         valid_catches = _snap.get("data", _snap) if isinstance(_snap, dict) else _snap
@@ -8466,7 +8491,7 @@ def main():
 
     all_catches = []
     errors = []
-    now = datetime.now()
+    now = datetime.now(JST).replace(tzinfo=None)
     crawled_at = now.strftime("%Y/%m/%d %H:%M")
     year = now.year
     # exclude / boat_only フラグを持つ船宿はクロール対象外
@@ -8529,7 +8554,7 @@ def main():
 
     # 問題2対応 (2026/04/16): catches.json は当日分のみに絞る
     # save_daily_csv はメモリ上の all_catches を使うため影響なし
-    _today_str_snap = datetime.now().strftime("%Y/%m/%d")
+    _today_str_snap = datetime.now(JST).replace(tzinfo=None).strftime("%Y/%m/%d")
     today_all = [c for c in all_catches if c.get("date") == _today_str_snap]
     today_valid = [c for c in valid_catches if c.get("date") == _today_str_snap]
     today_anomaly = sum(1 for c in today_all if c.get("anomaly"))
