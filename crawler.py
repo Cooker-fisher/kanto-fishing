@@ -246,6 +246,22 @@ AREA_FORECAST_COORDS = {
     "静岡":           {"lat": 35.0, "lon": 139.1},
 }
 
+# 予測広域エリア → URL/アンカー用ヘボン式スラッグ（決定ログ 2026/04/10「ローマ字統一」）
+_FORECAST_AREA_SLUG = {
+    "茨城":           "ibaraki",
+    "千葉・外房":     "chiba-sotobo",
+    "千葉・内房":     "chiba-uchibo",
+    "千葉・東京湾奥": "chiba-tokyo-bay-inner",
+    "東京":           "tokyo",
+    "神奈川・東京湾": "kanagawa-tokyo-bay",
+    "神奈川・相模湾": "kanagawa-sagami-bay",
+    "静岡":           "shizuoka",
+}
+
+def forecast_area_slug(group: str) -> str:
+    """予測広域エリア名 → URLスラッグ（V2ローマ字統一）"""
+    return _FORECAST_AREA_SLUG.get(group, group)
+
 # weather_data/ の4エリアサマリー（潮汐・月齢）
 _TIDE_AREA_MAP = {
     "tokyo_bay":  "東京湾",
@@ -1656,8 +1672,8 @@ def _forecast_page_foot():
 </body></html>"""
 
 
-def _forecast_date_nav(all_dates, all_weeks, current):
-    """日付ナビバー"""
+def _forecast_date_nav(all_dates, all_weeks, current, prefix=""):
+    """日付ナビバー。prefix は forecast/ への相対パス（forecast/area/ から呼ぶ場合は '../'）"""
     html = '<div class="date-nav">'
     for d in all_dates:
         m, dd = int(d[5:7]), int(d[8:10])
@@ -1665,10 +1681,10 @@ def _forecast_date_nav(all_dates, all_weeks, current):
         wd = ["月","火","水","木","金","土","日"][wd_idx]
         cls = " active" if d == current else ""
         cls += " weekend" if wd_idx >= 5 else ""
-        html += f'<a href="{d}.html" class="{cls.strip()}">{m}/{dd}({wd})</a>'
+        html += f'<a href="{prefix}{d}.html" class="{cls.strip()}">{m}/{dd}({wd})</a>'
     for wk_id, wk in all_weeks.items():
         cls = " active" if wk_id == current else ""
-        html += f'<a href="{wk_id}.html" class="{cls.strip()}">{wk["label"]}</a>'
+        html += f'<a href="{prefix}{wk_id}.html" class="{cls.strip()}">{wk["label"]}</a>'
     html += '</div>'
     return html
 
@@ -1766,14 +1782,14 @@ def _build_daily_page(date_str, day_data, forecast_data, weather_data):
 </div>
 <p style="font-size:14px;color:#fff;margin-bottom:8px">出船判定: {ok}</p>"""
 
-    # エリア別チップ（リンク付き）
+    # エリア別チップ（リンク付き）— forecast/area/<slug>.html へ
     areas = day_data.get("areas", {})
     html += '<div class="area-chips">'
     for g, a in areas.items():
         s = a.get("score", 0)
         cls = "ok-good" if s >= 70 else "ok-fair" if s >= 45 else "ok-warn" if s >= 20 else "ok-bad"
         ok_mark = a.get("ok", "")
-        html += f'<a href="area/{area_slug(g)}.html" class="area-chip {cls}">{g} {ok_mark}</a>'
+        html += f'<a href="area/{forecast_area_slug(g)}.html" class="area-chip {cls}">{g} {ok_mark}</a>'
     html += '</div>'
 
     preds = day_data.get("predictions", [])
@@ -1841,16 +1857,18 @@ def _build_weekly_page(week_id, week_data, forecast_data):
 
 
 def _build_area_forecast_page(area_group, forecast_data):
-    """エリア別予測ページHTML"""
+    """エリア別予測ページHTML（forecast/area/<slug>.html）"""
     title = f"{area_group} 釣果予測"
     html = _forecast_page_head(title)
     all_dates = sorted(forecast_data.get("days", {}).keys())
     all_weeks = forecast_data.get("weeks", {})
-    html += _forecast_date_nav(all_dates, all_weeks, "")
+    # forecast/area/ から forecast/<日付>.html へのリンクは ../ プレフィックスが必要
+    html += _forecast_date_nav(all_dates, all_weeks, "", prefix="../")
 
     # 7日間サマリー（日付→日次ページリンク）
     html += f'<h2>{area_group} 予測</h2>'
     html += '<div class="date-nav">'
+    area_anchor = forecast_area_slug(area_group)
     for d in all_dates:
         day = forecast_data["days"].get(d, {})
         area_info = day.get("areas", {}).get(area_group, {})
@@ -1859,7 +1877,7 @@ def _build_area_forecast_page(area_group, forecast_data):
         wd_idx = datetime.strptime(d, "%Y-%m-%d").weekday()
         wd = ["月","火","水","木","金","土","日"][wd_idx]
         cls = " weekend" if wd_idx >= 5 else ""
-        html += f'<a href="{d}.html#area-{quote(area_group, safe="")}" class="{cls.strip()}">{m}/{dd}({wd}) {ok}</a>'
+        html += f'<a href="../{d}.html#area-{area_anchor}" class="{cls.strip()}">{m}/{dd}({wd}) {ok}</a>'
     html += '</div>'
 
     # 釣果予測は有料機能（準備中）
@@ -1927,11 +1945,15 @@ def build_forecast_pages(forecast_data, weather_data, catches=None, history=None
             f.write(html)
         page_count += 1
 
-    # エリア別ページ
+    # エリア別ページ（V2ローマ字スラッグ。古いURLエンコード版があれば削除）
+    forecast_area_dir = os.path.join(WEB_DIR, "forecast", "area")
+    for _fn in os.listdir(forecast_area_dir):
+        if "%" in _fn or any(ord(c) > 127 for c in _fn):
+            os.remove(os.path.join(forecast_area_dir, _fn))
     for group in AREA_FORECAST_COORDS:
         html = _build_area_forecast_page(group, forecast_data)
-        encoded = quote(group, safe="")
-        with open(os.path.join(WEB_DIR, f"forecast/area/{encoded}.html"), "w", encoding="utf-8") as f:
+        slug = forecast_area_slug(group)
+        with open(os.path.join(WEB_DIR, f"forecast/area/{slug}.html"), "w", encoding="utf-8") as f:
             f.write(html)
         page_count += 1
 
@@ -3209,17 +3231,6 @@ def _resolve_display_dataset(catches, today_str):
 
 def _v2_header_nav(active_page=""):
     """V2共通ヘッダー + グローバルナビ"""
-    pages = [
-        ("今日の釣果", "index.html", ""),
-        ("魚種",       "fish/",      ""),
-        ("エリア",     "area/",      ""),
-        ("カレンダー", "calendar/index.html", ""),
-        ("有料プラン", "premium/index.html",  "prem"),
-    ]
-    links = ""
-    for label, href, cls in pages:
-        on = " on" if active_page in href or active_page == label else ""
-        links += f'<a href="/{href}" class="{cls}{on}".strip()>{label}</a>'
     return f"""<header>
   <div class="inner">
     <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
@@ -4562,9 +4573,9 @@ def build_combo_section(combos):
         max_str = f'最高{cb["max"]}匹' if cb["max"] else ""
         stat_str = " / ".join(s for s in [avg_str, max_str] if s)
 
-        # 代表的なfish_areaページへのリンク（最初の港）
+        # 代表的なfish_areaページへのリンク（最初の港）— V2ローマ字ハイフン形式
         link_area = cb["ports"][0] if cb["ports"] else ""
-        link_href = f'fish_area/{quote(cb["fish"], safe="")}_{quote(link_area, safe="")}.html' if link_area else "#"
+        link_href = f'fish_area/{fish_slug(cb["fish"])}-{area_slug(link_area)}.html' if link_area else "#"
 
         rank_label = ""
         if i == 0:
@@ -5204,8 +5215,75 @@ def build_fish_pages(data, history, crawled_at=""):
     for c in data:
         for f in c["fish"]:
             if f not in _SKIP_FISH and not f.isdigit(): fish_summary.setdefault(f, []).append(c)
+    # fish_tackle.json で説明がある魚種も最低限ページを生成（404 防止）。
+    # スラッグ未登録（_FISH_ROMAJI にない）はURL作れないので除外。
+    for f in tackle_data.keys():
+        if f in _FISH_ROMAJI and f not in fish_summary:
+            fish_summary[f] = []
     for fish, catches in fish_summary.items():
-        if len(catches) < 1: continue
+        if len(catches) < 1:
+            # 当日 catches=0 → 最低限ページ（魚種名 + ガイド + 「データ準備中」表示）
+            tackle_obj = tackle_data.get(fish, {}) if isinstance(tackle_data, dict) else {}
+            method = ""
+            tackle_lines = ""
+            size_typical = ""
+            notes = ""
+            if isinstance(tackle_obj, dict):
+                method = tackle_obj.get("method_detail") or tackle_obj.get("method_name") or ""
+                tackle_dict = tackle_obj.get("tackle", {})
+                if isinstance(tackle_dict, dict) and tackle_dict:
+                    first_method = next(iter(tackle_dict.keys()))
+                    first_tackle = tackle_dict[first_method] if isinstance(tackle_dict[first_method], dict) else {}
+                    tackle_lines = f'<li><b>釣法</b>: {first_method}</li>'
+                    for label, key in (("竿", "rod"), ("リール", "reel"), ("ライン", "line"),
+                                        ("仕掛け", "rig"), ("エサ", "bait")):
+                        v = first_tackle.get(key) if isinstance(first_tackle, dict) else None
+                        if v:
+                            tackle_lines += f'<li><b>{label}</b>: {v}</li>'
+                size_typ_obj = tackle_obj.get("size_typical", {})
+                if isinstance(size_typ_obj, dict):
+                    size_typical = size_typ_obj.get("text", "") or ""
+                elif isinstance(size_typ_obj, str):
+                    size_typical = size_typ_obj
+                notes = tackle_obj.get("notes", "") or ""
+            season_bar_min = build_season_bar(fish, current_month)
+            title_f_min = f"{fish}の船釣り情報・釣り方・タックル | 船釣り予想"
+            desc_f_min = (f"{fish}の船釣り情報。釣り方・タックル・サイズ目安。"
+                          "当日釣果は出船があり次第更新します。")
+            html_f_min = f"""<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title_f_min}</title>
+<meta name="description" content="{desc_f_min}">
+<link rel="canonical" href="{SITE_URL}/fish/{fish_slug(fish)}.html">
+{GA_TAG}{ADSENSE_TAG}
+<style>{V2_COMMON_CSS}</style>
+</head>
+<body>
+{_v2_header_nav('fish')}
+<div style="background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:22px 14px 18px;text-align:center">
+  <div style="font-size:26px;font-weight:800">{fish}</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:2px">関東エリアの船釣り情報</div>
+  <div style="font-size:18px;font-weight:800;color:var(--cta);margin-top:8px">釣果データ準備中</div>
+</div>
+<div class="c">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="index.html">魚種</a> &rsaquo; {fish}</p>
+  <p style="font-size:13px;color:var(--sub);margin:14px 0 18px;line-height:1.7">
+    現在 {fish} の当日釣果情報を収集中です。今シーズンの出船があり次第このページに反映されます。
+  </p>
+  {('<h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>' + season_bar_min) if season_bar_min else ''}
+  {('<h2 class="st">釣り方</h2><p style="font-size:13px;color:var(--sub);line-height:1.7">' + method + '</p>') if method else ''}
+  {('<h2 class="st">タックル目安</h2><ul style="font-size:13px;color:var(--sub);line-height:1.9;padding-left:18px">' + tackle_lines + '</ul>') if tackle_lines else ''}
+  {('<h2 class="st">サイズ目安</h2><p style="font-size:13px;color:var(--sub);line-height:1.7">' + size_typical + '</p>') if size_typical else ''}
+  {('<p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:14px">' + notes + '</p>') if notes else ''}
+</div>
+{DATA_NOTE_HTML}
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav('fish')}
+</body></html>"""
+            with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
+                f.write(html_f_min)
+            continue
         season_bar_html = build_season_bar(fish, current_month)
         score   = get_season_score(fish, current_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
@@ -5498,6 +5576,22 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
     area_summary = {}
     for c in data:
         area_summary.setdefault(c["area"], []).append(c)
+    # ship_info / 有効船宿 / area_description で言及されるエリアも、
+    # 当日 catches=0 でも最低限ページを作る（404 防止）。
+    # スラッグ未登録（_AREA_ROMAJI にない）エリアは生成不能なので除外。
+    for ship_name, info in _SHIP_INFO.items():
+        a = info.get("area")
+        if a and a in _AREA_ROMAJI and a not in area_summary:
+            area_summary[a] = []
+    for s in SHIPS:
+        if s.get("exclude") or s.get("boat_only"):
+            continue
+        a = s.get("area")
+        if a and a in _AREA_ROMAJI and a not in area_summary:
+            area_summary[a] = []
+    for a in area_desc_data.keys():
+        if a in _AREA_ROMAJI and a not in area_summary:
+            area_summary[a] = []
 
     area_extra_css = """\
 .area-hero{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:22px 14px 18px;text-align:center}
@@ -5540,10 +5634,53 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 .related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}"""
 
     for area, catches in area_summary.items():
-        if len(catches) < 2:
-            continue
-
         group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
+
+        if len(catches) < 2:
+            # 当日 catches < 2 → 最低限ページ（船宿リスト + 概要 + 「準備中」表示）を生成
+            ships_in_area = [s["name"] for s in SHIPS
+                             if not s.get("exclude") and not s.get("boat_only") and s.get("area") == area]
+            ship_li = "".join(f'<li style="padding:6px 0">{_ship_link(n, depth=1)}</li>' for n in ships_in_area)
+            ship_html_min = (
+                f'<div class="sl-card"><h3>このエリアの船宿（{len(ships_in_area)}件）</h3>'
+                f'<ul style="margin:0;padding-left:18px">{ship_li}</ul></div>'
+            ) if ships_in_area else ""
+            _desc_obj = area_desc_data.get(area, {})
+            _ovw = _desc_obj.get("overview", "") if isinstance(_desc_obj, dict) else ""
+            title_min = f"{area}（{group}）の船釣り情報 | 船釣り予想"
+            desc_meta_min = (f"{area}（{group}）の船釣り情報。所属船宿リストとエリア概要。"
+                             "当日釣果は出船があり次第更新します。")
+            html_min = f"""<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title_min}</title>
+<meta name="description" content="{desc_meta_min}">
+<link rel="canonical" href="{SITE_URL}/area/{area_slug(area)}.html">
+{GA_TAG}{ADSENSE_TAG}
+<style>{V2_COMMON_CSS}{area_extra_css}</style>
+</head>
+<body>
+{_v2_header_nav('area')}
+<div class="area-hero">
+  <h2>{area}</h2>
+  <div class="ah-sub">{group} の船釣りエリア</div>
+  <div class="ah-m">釣果データ準備中</div>
+</div>
+<div class="c">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="index.html">エリア</a> &rsaquo; {area}</p>
+  <p style="font-size:13px;color:var(--sub);margin:14px 0 18px;line-height:1.7">
+    現在 {area} の当日釣果情報を収集中です。出船があり次第このページに反映されます。
+  </p>
+  {ship_html_min}
+  {('<h3 style="margin-top:18px">エリア概要</h3><p style="font-size:13px;color:var(--sub);line-height:1.7">' + _ovw + '</p>') if _ovw else ''}
+</div>
+{DATA_NOTE_HTML}
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav('area')}
+</body></html>"""
+            with open(os.path.join(WEB_DIR, f"area/{area_slug(area)}.html"), "w", encoding="utf-8") as f:
+                f.write(html_min)
+            continue
 
         # 今日の釣果
         today_catches, fish_label, area_date = _resolve_display_dataset(catches, today_str)
@@ -7267,9 +7404,10 @@ def _ship_area_ranking_html(catches, area, self_name, today_dt):
         is_self = (sn == self_name)
         cls = "rk self" if is_self else "rk"
         slug = _SHIP_ROMAJI.get(sn)
+        # T8 決定通り: ship_romaji_map と ship_info の両方にあるときだけリンク化（404防止）
         if is_self:
             name_html = f'{sn}（このページ）'
-        elif slug:
+        elif slug and sn in _SHIP_INFO:
             name_html = f'<a href="{slug}.html">{sn}</a>'
         else:
             name_html = sn
@@ -7689,10 +7827,35 @@ def build_sitemap(data):
         for f in c["fish"]:
             if f not in _SKIP:
                 fish_set.add(f)
+    # fish_tackle.json で説明があり最低限ページが生成される魚種も sitemap に含める（build_fish_pages と整合）
+    try:
+        for f in load_fish_tackle().keys():
+            if f in _FISH_ROMAJI:
+                fish_set.add(f)
+    except Exception:
+        pass
+    fish_set = {f for f in fish_set if f in _FISH_ROMAJI}
     for fish in sorted(fish_set):
         urls.append((f"{SITE_URL}/fish/{fish_slug(fish)}.html", "0.8", "daily"))
     # area/*.html
-    area_set = set(c["area"] for c in data)
+    area_set = set(c["area"] for c in data if c.get("area"))
+    # ship_info / 有効船宿 / area_description で言及される area も含める（build_area_pages と整合）
+    for _ship_name, _info in _SHIP_INFO.items():
+        _a = _info.get("area")
+        if _a:
+            area_set.add(_a)
+    for _s in SHIPS:
+        if _s.get("exclude") or _s.get("boat_only"):
+            continue
+        _a = _s.get("area")
+        if _a:
+            area_set.add(_a)
+    try:
+        for _a in load_area_description().keys():
+            area_set.add(_a)
+    except Exception:
+        pass
+    area_set = {a for a in area_set if a in _AREA_ROMAJI}
     for area in sorted(area_set):
         urls.append((f"{SITE_URL}/area/{area_slug(area)}.html", "0.7", "daily"))
     # fish_area/*.html（≥5件の組み合わせ）
