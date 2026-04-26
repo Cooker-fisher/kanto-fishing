@@ -7497,14 +7497,18 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         ft_block = f'<div class="facility-tags" style="margin-top:12px">{ft_html}</div>' if ft_html else ""
         vessel_html = f'<h2 class="st">船舶・設備</h2><div class="spec-card">{spec_grid}{ft_block}</div>'
 
-    # 予約方法BOX（料金一切なし）
+    # 予約方法BOX（料金一切なし・予約は船宿への直接電話が原則）
     rsv_items = []
     dt_str = reservation.get("departure_time")
-    if dt_str: rsv_items.append(f'<div class="sg-item"><strong>出船時間</strong>{dt_str}</div>')
-    rm = reservation.get("reservation_method")
-    if rm:
-        if isinstance(rm, list): rm = " / ".join(rm)
-        rsv_items.append(f'<div class="sg-item"><strong>予約手段</strong>{rm}</div>')
+    if dt_str:
+        rsv_items.append(f'<div class="sg-item"><strong>出船時間</strong>{dt_str}</div>')
+    # 予約手段は常に「電話で直接お問い合わせください」（船宿の方針）
+    if phone:
+        # tel: リンクは数字以外を除去
+        phone_digits = re.sub(r"[^\d+\-]", "", phone)
+        rsv_items.append(f'<div class="sg-item"><strong>予約方法</strong>船宿へ直接お電話 → <a href="tel:{phone_digits}">{phone}</a></div>')
+    else:
+        rsv_items.append('<div class="sg-item"><strong>予約方法</strong>船宿へ直接お電話ください</div>')
     rentals = reservation.get("rental_items") or []
     if rentals:
         rentals_str = " ・ ".join(rentals)
@@ -7518,10 +7522,10 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         '<h2 class="st">予約方法</h2>'
         '<div class="spec-card">'
         + rsv_grid
-        + '<p style="font-size:11px;color:var(--muted);margin-top:10px">※ 料金・割引額は変動するため掲載していません。最新は予約サイト・公式サイトでご確認ください。</p>'
+        + '<p style="font-size:11px;color:var(--muted);margin-top:10px">※ 予約は船宿へ直接お電話ください。料金・空席状況・出船判断などは電話で確認するのが確実です。下記の予約サイトは空席状況の参考としてご利用ください。</p>'
         + '<div class="cta-grid">'
-        + f'<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で予約 →</a>'
-        + f'<a href="{castingnet_url}" rel="nofollow noopener" target="_blank" class="alt">キャスティング予約 →</a>'
+        + f'<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で空席を確認 →</a>'
+        + f'<a href="{castingnet_url}" rel="nofollow noopener" target="_blank" class="alt">キャスティングで空席を確認 →</a>'
         + '</div></div>'
     )
 
@@ -7616,6 +7620,13 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         '<script type="application/ld+json">' + json.dumps(ld_breadcrumb, ensure_ascii=False) + '</script>'
         '<script type="application/ld+json">' + json.dumps(ld_faq, ensure_ascii=False) + '</script>'
     )
+
+    # 電話CTA HTML（電話番号があれば tel: リンク・なければ案内）
+    if phone:
+        phone_digits = re.sub(r"[^\d+\-]", "", phone)
+        phone_cta_html = f'<a href="tel:{phone_digits}" style="background:var(--pos)">📞 電話: {phone}</a>'
+    else:
+        phone_cta_html = ''
 
     # ヘッダ・ナビ・ボトムナビ（fish/area ページと同じ構成・5項目）
     header_html = (
@@ -7715,10 +7726,11 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
 <div class="contact-cta">
 <h3>{name}で釣行を計画する</h3>
-<p>料金や空席状況・最新情報は公式サイト/予約サイトをご確認ください</p>
+<p>予約は船宿へ直接お電話を推奨。空席や最新情報の確認は予約サイトもご利用いただけます。</p>
 <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
-<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で予約 →</a>
-<a href="{castingnet_url}" rel="nofollow noopener" target="_blank">キャスティングで予約 →</a>
+{phone_cta_html}
+<a href="{chowari_url}" rel="nofollow noopener" target="_blank">釣割で空席確認</a>
+<a href="{castingnet_url}" rel="nofollow noopener" target="_blank">キャスティングで空席確認</a>
 </div>
 </div>
 
