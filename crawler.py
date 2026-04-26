@@ -6800,6 +6800,20 @@ TSURI_MONO_MAP = {
     if isinstance(v, list) and not k.startswith("_")
 }
 
+# ship_trip_slot_map.json から trip_no フォールバックマップをロード（モジュール起動時1回）
+_stsm_path = os.path.join(os.path.dirname(__file__), "normalize", "ship_trip_slot_map.json")
+try:
+    with open(_stsm_path, encoding="utf-8") as _f:
+        _raw_stsm = json.load(_f)
+    # "_comment" キーを除外し、trip_no キーを str で統一
+    SHIP_TRIP_SLOT_MAP: dict[str, dict[str, str]] = {
+        ship: {str(k): v for k, v in trips.items()}
+        for ship, trips in _raw_stsm.items()
+        if not ship.startswith("_")
+    }
+except FileNotFoundError:
+    SHIP_TRIP_SLOT_MAP = {}
+
 # 船宿別イカ特例: fish_raw="イカ" の場合に船宿で判別
 SHIP_IKA_RULES = {
     "吉久":       "スミイカ",
@@ -7098,11 +7112,16 @@ def _classify_cancel_type(reason: str) -> str:
     return "不明"
 
 
-def _extract_time_slot(fish_raw: str, kanso_raw: str = "", trip_no: int = 1) -> str:
-    """fish_raw/kanso_raw/trip_no から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'"""
+def _extract_time_slot(fish_raw: str, kanso_raw: str = "", trip_no: int = 1, ship: str = "") -> str:
+    """fish_raw/kanso_raw/trip_no から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'
+    ship 引数を指定すると、fish_raw/kanso_raw で確定できない場合に
+    normalize/ship_trip_slot_map.json の trip_no→slot フォールバックを適用する。
+    """
     combined = (fish_raw or "") + " " + (kanso_raw or "")
     if not combined.strip():
-        return ""
+        # combined が空でも ship フォールバックは試みる
+        mapped = SHIP_TRIP_SLOT_MAP.get(ship, {}).get(str(trip_no), "")
+        return mapped
     # 午前・午後 併記（例: 忠彦丸「午前・午後ライトアジ乗合船」）→ 時間帯不定
     if "午前" in combined and "午後" in combined:
         return ""
@@ -7133,6 +7152,11 @@ def _extract_time_slot(fish_raw: str, kanso_raw: str = "", trip_no: int = 1) -> 
     _ika_words = ("ムギイカ", "マルイカ", "ヤリイカ", "スルメイカ", "コウイカ", "スミイカ")
     if trip_no >= 2 and any(w in combined for w in _ika_words):
         return "夜"
+    # ship_trip_slot_map フォールバック: キーワードで確定できなかった場合のみ適用
+    if ship:
+        mapped = SHIP_TRIP_SLOT_MAP.get(ship, {}).get(str(trip_no), "")
+        if mapped:
+            return mapped
     return ""
 
 
@@ -7391,7 +7415,7 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 "tsuri_mono":     tsuri_norm,
                 "main_sub":       main_sub,
                 "fish_raw":       r.get("fish_raw", ""),
-                "time_slot":      _extract_time_slot(r.get("fish_raw", ""), r.get("kanso_raw", ""), int(r.get("trip_no") or 1)),
+                "time_slot":      _extract_time_slot(r.get("fish_raw", ""), r.get("kanso_raw", ""), int(r.get("trip_no") or 1), r.get("ship", "")),
                 "cnt_min":        cr["min"] if cr else "",
                 "cnt_max":        cr["max"] if cr else "",
                 "cnt_avg":        cnt_avg if cnt_avg is not None else "",
@@ -7518,7 +7542,7 @@ def save_daily_csv(catches):
             # V2 正規化
             tsuri_norm = normalize_tsuri_mono(fish_raw, c["ship"])
             main_sub   = _classify_main_sub(fish_raw, tsuri_norm)
-            time_slot  = _extract_time_slot(fish_raw, c.get("kanso_raw", ""), int(c.get("trip_no") or 1))
+            time_slot  = _extract_time_slot(fish_raw, c.get("kanso_raw", ""), int(c.get("trip_no") or 1), c.get("ship", ""))
             pp1, pp2   = _split_place_pair(c.get("point_place") or "")
             d_min, d_max = _split_depth(c.get("point_depth") or "")
 

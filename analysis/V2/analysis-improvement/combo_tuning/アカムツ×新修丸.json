@@ -1,7 +1,7 @@
 {
   "fish": "アカムツ",
   "ship": "新修丸",
-  "last_reviewed": "2026-04-25",
+  "last_reviewed": "2026-04-26",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 19.8,
@@ -38,6 +38,11 @@
       "date": "2026-04-25",
       "action": "fallback_applied",
       "note": "r=-0.342 逆補正。use_fallback=1設定済み。フォールバック後wmape=22.9%でもBL2(20.5%)に負け。深場160-230m・久里浜沖中心（点データ少）。BL2の前週値がアカムツ周期性をうまく捉えている可能性。"
+    },
+    {
+      "date": "2026-04-26",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=16.6% imp=3.24pt"
     }
   ]
 }
