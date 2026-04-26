@@ -7412,11 +7412,11 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     name = ship["name"]
     slug = ship["romaji_slug"]
     area = ship["area"]
-    chowari_id = ship["chowari_id"]
+    chowari_id = ship.get("chowari_id")
     castingnet_id = ship.get("castingnet_id") or chowari_id
-    sid = ship["sid"]
-    chowari_url = f"https://www.chowari.jp/ship/{chowari_id}/"
-    castingnet_url = f"https://reserve.castingnet.jp/ship{castingnet_id}.html"
+    sid = ship.get("sid")
+    chowari_url = f"https://www.chowari.jp/ship/{chowari_id}/" if chowari_id else None
+    castingnet_url = f"https://reserve.castingnet.jp/ship{castingnet_id}.html" if castingnet_id else None
 
     # 料金記載は変動するため一切出さない（サニタイザで（要確認）に置換）
     info = _sanitize_ship_info(info)
@@ -7570,7 +7570,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         '<div class="faq-list">'
         f'<details><summary>{name}は初心者でも参加できますか？</summary><div class="faq-a">船長や常連が仕掛け・釣り方を教えてくれる船宿が多く、初参加でも安心して乗船できる場合がほとんどです。当日のタックル・服装の最新情報は予約時に船宿に直接ご確認ください。</div></details>'
         + rental_q_a
-        + f'<details><summary>料金はいくらですか？</summary><div class="faq-a">料金は時期・釣り物・人数などで変動するため、本サイトには掲載していません。最新の料金は <a href="{chowari_url}" rel="nofollow noopener">釣割</a> または <a href="{castingnet_url}" rel="nofollow noopener">キャスティング予約</a> でご確認ください。</div></details>'
+        + '<details><summary>料金はいくらですか？</summary><div class="faq-a">料金は時期・釣り物・人数などで変動するため、本サイトには掲載していません。最新の料金は船宿へ直接お電話でご確認ください。</div></details>'
         + point_q_a
         + '<details><summary>欠航の判定はどう行われますか？</summary><div class="faq-a">荒天・台風・うねり等で当日朝に船長が判定する船宿が大半です。前日夜〜当日朝の連絡が一般的です。</div></details>'
         + parking_q_a
@@ -7766,7 +7766,11 @@ def build_ship_pages(catches, crawled_at=""):
         return 0
     out_dir = os.path.join(WEB_DIR, "ship")
     os.makedirs(out_dir, exist_ok=True)
-    target_ships = [s for s in SHIPS if s.get("chowari_id") and s.get("romaji_slug")]
+    # ship_info.json に手動データがあれば chowari_id 無しでも生成（公式サイトのみ等）
+    target_ships = [
+        s for s in SHIPS
+        if s.get("romaji_slug") and (s.get("chowari_id") or s["name"] in _SHIP_INFO)
+    ]
     today_dt = datetime.now()
     area_coords = _ship_load_area_coords()
     generated = 0
@@ -7819,9 +7823,9 @@ def build_sitemap(data):
     for (fish, area), cnt in sorted(fa_counts.items()):
         if cnt >= 5:
             urls.append((f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html", "0.7", "weekly"))
-    # ship/*.html（chowari_id + romaji_slug + ship_info あり）
+    # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     for s in SHIPS:
-        if s.get("chowari_id") and s.get("romaji_slug") and s["name"] in _SHIP_INFO:
+        if s.get("romaji_slug") and s["name"] in _SHIP_INFO:
             urls.append((f"{SITE_URL}/ship/{s['romaji_slug']}.html", "0.6", "weekly"))
     entries = "\n".join(
         f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
