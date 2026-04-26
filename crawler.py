@@ -1780,55 +1780,18 @@ def _build_daily_page(date_str, day_data, forecast_data, weather_data):
         html += _forecast_page_foot()
         return html
 
-    # TODAY'S PICK
-    pick_name = day_data.get("todays_pick")
-    if pick_name and preds:
-        pick = next((p for p in preds if f'{p["fish"]}×{p["group"]}' == pick_name), preds[0])
-        avg = pick.get("avg", 0)
-        pred_min = max(1, round(avg * 0.6))
-        pred_max = pick.get("max", round(avg * 1.4))
-        size_str = f' / {pick["size_min"]}〜{pick["size_max"]}cm' if pick.get("size_min") else ""
-        analysis = pick.get("analysis", "")
-        ships = pick.get("top_ships", [])
-        html += f"""<div class="pick-card">
-<div class="pick-label">TODAY'S PICK</div>
-<div class="pick-fish">{pick['fish']} × {pick['group']}</div>
-<div class="pick-range">予測 {pred_min}〜{pred_max}匹{size_str}　{pick.get('season_type','')}{'狙い' if pick.get('season_type') else ''}</div>
-<div class="pick-analysis">{analysis}</div>
-<div class="pick-meta">📍 {' / '.join(ships)}　分析データ: {pick.get('samples',0):,}件</div>
-</div>"""
-
-    # 予測一覧テーブル（エリア別セクション）
-    html += '<h2>予測一覧</h2>'
-    # エリアでグループ化
-    area_groups = {}
-    for p in preds:
-        area_groups.setdefault(p["group"], []).append(p)
-
-    for group, group_preds in area_groups.items():
-        area_info = areas.get(group, {})
-        area_ok = area_info.get("ok", "")
-        html += f'<h3 id="area-{quote(group, safe="")}">{group} {area_ok}</h3>'
-        html += '<table class="pred-table"><thead><tr>'
-        html += '<th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th>'
-        html += '</tr></thead><tbody>'
-        for p in sorted(group_preds, key=lambda x: -x.get("avg", 0)):
-            avg = p.get("avg", 0)
-            pred_min = max(1, round(avg * 0.6))
-            pred_max = p.get("max", round(avg * 1.4))
-            size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
-            st = p.get("season_type", "")
-            type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
-            adj = p.get("adjustment", 0)
-            trend = '<span class="trend-up">↑</span>' if adj > 0.05 else '<span class="trend-down">↓</span>' if adj < -0.05 else '<span class="trend-flat">→</span>'
-            conf = p.get("confidence", "D")
-            html += f'<tr><td>{p["fish"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td>{trend}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
-        html += '</tbody></table>'
-
-        # 詳細カード
-        for p in sorted(group_preds, key=lambda x: -x.get("avg", 0)):
-            html += _forecast_combo_card(p, show_area=False)
-
+    # 釣果予測は有料機能（準備中）— 認証システム未実装のため一切公開しない
+    html += '''
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
+<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">🔒 釣果予測（準備中）</h2>
+<p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
+当日の海況・潮通し・直近実績を組み合わせた、<br>
+魚種別・エリア別の<strong>釣果予測（匹数レンジ・サイズ・狙い・確信度）</strong>を準備中です。<br>
+公開時は有料プランのみで提供予定です。
+</p>
+<div style="display:inline-block;padding:12px 32px;background:#7c3aed;color:#fff;border-radius:24px;font-weight:700;font-size:14px">準備中・公開時は月額500円</div>
+</div>
+'''
     html += _forecast_page_foot()
     return html
 
@@ -1860,20 +1823,17 @@ def _build_weekly_page(week_id, week_data, forecast_data):
             html += f'<span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">{dd}({s["weekday"]}) {s["moon_title"]}</span>'
         html += '</div>'
 
-    preds = week_data.get("predictions", [])
-    if preds:
-        html += '<table class="pred-table"><thead><tr><th>魚種</th><th>エリア</th><th>予測匹数</th><th>型</th><th>狙い</th><th>確信度</th></tr></thead><tbody>'
-        for p in sorted(preds, key=lambda x: -x.get("avg", 0)):
-            avg = p.get("avg", 0)
-            pred_min = max(1, round(avg * 0.6))
-            pred_max = p.get("max", round(avg * 1.4))
-            size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
-            st = p.get("season_type", "")
-            type_str = "数" if st == "数" else "型" if st == "型" else "-"
-            conf = p.get("confidence", "D")
-            html += f'<tr><td>{p["fish"]}</td><td>{p["group"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
-        html += '</tbody></table>'
-
+    # 釣果予測は有料機能（準備中）
+    html += '''
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
+<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">🔒 週次釣果予測（準備中）</h2>
+<p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
+潮回り×季節傾向×直近実績で算出する週次の<strong>魚種・エリア別予測</strong>を準備中です。<br>
+公開時は有料プランのみで提供予定です。
+</p>
+<div style="display:inline-block;padding:12px 32px;background:#7c3aed;color:#fff;border-radius:24px;font-weight:700;font-size:14px">準備中・公開時は月額500円</div>
+</div>
+'''
     html += _forecast_page_foot()
     return html
 
@@ -1900,111 +1860,44 @@ def _build_area_forecast_page(area_group, forecast_data):
         html += f'<a href="{d}.html#area-{quote(area_group, safe="")}" class="{cls.strip()}">{m}/{dd}({wd}) {ok}</a>'
     html += '</div>'
 
-    # このエリアの予測一覧（最新日のデータ）
-    if all_dates:
-        latest = all_dates[-1]
-        # 次の土曜があればそちらを優先
-        for d in all_dates:
-            if datetime.strptime(d, "%Y-%m-%d").weekday() == 5:
-                latest = d
-                break
-        day = forecast_data["days"].get(latest, {})
-        preds = [p for p in day.get("predictions", []) if p.get("group") == area_group]
-
-        if preds:
-            html += f'<h3>このエリアの予測一覧（{latest}）</h3>'
-            html += '<table class="pred-table"><thead><tr><th>魚種</th><th>予測匹数</th><th>型</th><th>狙い</th><th>傾向</th><th>確信度</th></tr></thead><tbody>'
-            for p in sorted(preds, key=lambda x: -x.get("avg", 0)):
-                avg = p.get("avg", 0)
-                pred_min = max(1, round(avg * 0.6))
-                pred_max = p.get("max", round(avg * 1.4))
-                size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
-                st = p.get("season_type", "")
-                type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
-                adj = p.get("adjustment", 0)
-                trend = '<span class="trend-up">↑</span>' if adj > 0.05 else '<span class="trend-down">↓</span>' if adj < -0.05 else '<span class="trend-flat">→</span>'
-                conf = p.get("confidence", "D")
-                html += f'<tr><td>{p["fish"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td>{trend}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
-            html += '</tbody></table>'
-
-            # 詳細カード
-            for p in sorted(preds, key=lambda x: -x.get("avg", 0)):
-                html += _forecast_combo_card(p, show_area=False)
-
+    # 釣果予測は有料機能（準備中）
+    html += '''
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
+<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">🔒 エリア別釣果予測（準備中）</h2>
+<p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
+このエリアの<strong>魚種別予測（匹数レンジ・サイズ・確信度）</strong>を準備中です。<br>
+公開時は有料プランのみで提供予定です。
+</p>
+<div style="display:inline-block;padding:12px 32px;background:#7c3aed;color:#fff;border-radius:24px;font-weight:700;font-size:14px">準備中・公開時は月額500円</div>
+</div>
+'''
     html += _forecast_page_foot()
     return html
 
 
 def _build_forecast_hub(forecast_data, catches=None):
     """有料トップページHTML（予測結果レポート＋チラ見せ＋料金）"""
-    html = _forecast_page_head("釣果予測 プレミアム")
+    html = _forecast_page_head("釣果予測 プレミアム（準備中）")
 
-    # ── 予測結果レポート（1件完全＋4件ぼかし）──
-    html += '<h2>📊 予測結果レポート</h2>'
-    # TODO: evaluate_predictions()で実績と突合。現時点ではプレースホルダ
-    html += '<p class="section-note">34,800件超の実績データに基づく独自分析。予測精度は継続的に検証しています。</p>'
-
-    # ── 今日の予測チラ見せ ──
-    days = forecast_data.get("days", {})
-    all_dates = sorted(days.keys())
-    all_weeks = forecast_data.get("weeks", {})
-
-    html += '<h2>📅 日付から探す</h2>'
-    html += _forecast_date_nav(all_dates, all_weeks, "")
-
-    if all_dates:
-        # 次の土曜を優先表示
-        show_date = all_dates[0]
-        for d in all_dates:
-            if datetime.strptime(d, "%Y-%m-%d").weekday() == 5:
-                show_date = d
-                break
-
-        day = days[show_date]
-        preds = day.get("predictions", [])
-        dt = datetime.strptime(show_date, "%Y-%m-%d")
-        m, d_num = dt.month, dt.day
-        wd = ["月","火","水","木","金","土","日"][dt.weekday()]
-
-        html += f'<h3>{m}月{d_num}日({wd}) の予測 — {len(preds)}件分析済み</h3>'
-
-        if preds:
-            # 1件目は完全表示
-            first = preds[0]
-            avg = first.get("avg", 0)
-            pred_min = max(1, round(avg * 0.6))
-            pred_max = first.get("max", round(avg * 1.4))
-            size = f'{first["size_min"]}〜{first["size_max"]}cm' if first.get("size_min") else "-"
-            st = first.get("season_type", "")
-            type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
-            conf = first.get("confidence", "D")
-            html += '<table class="pred-table"><thead><tr><th>魚種 × エリア</th><th>予測匹数</th><th>型</th><th>狙い</th><th>確信度</th></tr></thead><tbody>'
-            html += f'<tr><td>{first["fish"]} × {first["group"]}</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
-
-            # 2〜5件はコンボ名ぼかし（匹数・型・確信度は見せる）
-            for p in preds[1:5]:
-                avg = p.get("avg", 0)
-                pred_min = max(1, round(avg * 0.6))
-                pred_max = p.get("max", round(avg * 1.4))
-                size = f'{p["size_min"]}〜{p["size_max"]}cm' if p.get("size_min") else "-"
-                st = p.get("season_type", "")
-                type_str = "数" if st == "数" else "型" if st == "型" else "数＆型" if st else "-"
-                conf = p.get("confidence", "D")
-                html += f'<tr><td class="blur-text">■■■ × ■■■</td><td>{pred_min}〜{pred_max}匹</td><td>{size}</td><td>{type_str}</td><td><span class="conf-badge conf-{conf}">{conf}</span></td></tr>'
-            html += '</tbody></table>'
-
-            html += f"""<div class="paywall">
-<a href="#" class="paywall-btn">全{len(preds)}件の予測を見る（月額500円）</a>
-<p class="paywall-sub">スポット購入: 100円/日　|　1回の船代1万円。500円で判断材料を</p>
-</div>"""
-
-    # ── エリアから探す ──
-    html += '<h2>📍 エリアから探す</h2>'
-    html += '<div class="area-chips">'
-    for group in AREA_FORECAST_COORDS:
-        html += f'<a href="area/{area_slug(group)}.html" class="area-chip ok-good">{group}</a>'
-    html += '</div>'
-
+    # 釣果予測は準備中（認証システム未実装のため一切公開しない）
+    html += '''
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:14px;padding:48px 24px;margin:32px 0;text-align:center">
+<h2 style="font-size:22px;color:#7c3aed;margin-bottom:16px;border:none;padding:0">🔒 有料プラン（準備中）</h2>
+<p style="font-size:14px;color:#5a6a7a;line-height:1.9;margin-bottom:24px">
+気象条件・潮通し・直近実績を組み合わせた、<br>
+<strong>魚種別・エリア別・日次の釣果予測</strong>を準備中です。<br>
+ご提供内容（予定）:
+</p>
+<ul style="display:inline-block;text-align:left;font-size:13px;color:#5a6a7a;line-height:1.9;margin-bottom:24px">
+<li>日次予測（魚種×エリアの匹数レンジ・サイズ・確信度）</li>
+<li>週次予測（潮回り×季節傾向）</li>
+<li>エリア別予測ハブ</li>
+<li>船宿別 明日の予測</li>
+</ul>
+<div style="margin-top:8px"><div style="display:inline-block;padding:14px 36px;background:#7c3aed;color:#fff;border-radius:24px;font-weight:700;font-size:15px">準備中・公開時は月額500円</div></div>
+<p style="font-size:11px;color:#8a96a4;margin-top:14px">公開時期は未定です。決済システム整備後にご案内します。</p>
+</div>
+'''
     html += _forecast_page_foot()
     return html
 
@@ -8612,6 +8505,8 @@ def main():
         build_area_pages(valid_catches, history, crawled_at, weather_data)
         build_fish_area_pages(valid_catches, crawled_at, history)
         build_ship_pages(valid_catches, crawled_at)
+        if forecast_data:
+            build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history)
         with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as _f:
             _f.write(build_calendar_page(crawled_at))
         build_sitemap(valid_catches)
