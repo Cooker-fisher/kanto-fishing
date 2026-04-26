@@ -7430,45 +7430,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     if sg_items:
         season_html = '<h2 class="st">季節別の狙い物</h2><div class="spec-card"><div class="season-grid">' + "".join(sg_items) + '</div></div>'
 
-    # FAQ（船宿固有データを差し込んでコピーコンテンツ判定回避）
-    rental_q_a = ""
-    if rentals:
-        rental_q_a = (
-            f'<details><summary>{name}にレンタル品はありますか？</summary>'
-            f'<div class="faq-a">{name}では「{" ・ ".join(rentals)}」のレンタル/販売に対応しています。'
-            '在庫・料金は変動するため、予約時に船宿または予約サイトでご確認ください。</div></details>'
-        )
-    else:
-        rental_q_a = (
-            f'<details><summary>{name}にレンタル品はありますか？</summary>'
-            '<div class="faq-a">レンタル品の最新の有無・料金は予約サイト・公式サイトでご確認ください。'
-            '一般に多くの船宿が竿・リール・氷・コマセに対応しています。</div></details>'
-        )
-    parking_text = ""
-    if access.get("parking"):
-        parking_text = f'{name}は「{access["parking"]}」と案内されています。'
-    parking_q_a = (
-        f'<details><summary>駐車場はありますか？</summary>'
-        f'<div class="faq-a">{parking_text}台数・料金・予約要否は最新情報を予約時にご確認ください。</div></details>'
-    )
-    main_pt_text = " / ".join(main_points) if main_points else "船宿に確認してください"
-    main_fish_text = " ・ ".join(primary_fish[:3]) if primary_fish else "主要対象魚は予約時に確認してください"
-    point_q_a = (
-        f'<details><summary>{name}の主要なポイントは？</summary>'
-        f'<div class="faq-a">直近の出船記録によると、{main_pt_text} が主要ポイントです。'
-        f'主要対象魚は {main_fish_text} 。当日の海況・潮通しで変わる場合があります。</div></details>'
-    )
-    faq_html = (
-        '<h2 class="st">よくある質問</h2>'
-        '<div class="faq-list">'
-        f'<details><summary>{name}は初心者でも参加できますか？</summary><div class="faq-a">船長や常連が仕掛け・釣り方を教えてくれる船宿が多く、初参加でも安心して乗船できる場合がほとんどです。当日のタックル・服装の最新情報は予約時に船宿に直接ご確認ください。</div></details>'
-        + rental_q_a
-        + '<details><summary>料金はいくらですか？</summary><div class="faq-a">料金は時期・釣り物・人数などで変動するため、本サイトには掲載していません。最新の料金は船宿へ直接お電話でご確認ください。</div></details>'
-        + point_q_a
-        + '<details><summary>欠航の判定はどう行われますか？</summary><div class="faq-a">荒天・台風・うねり等で当日朝に船長が判定する船宿が大半です。前日夜〜当日朝の連絡が一般的です。</div></details>'
-        + parking_q_a
-        + '</div>'
-    )
+    # FAQ は不要（船宿のテンプレ質問は表示しない）
+    faq_html = ""
 
     # JSON-LD（LocalBusiness + BreadcrumbList + FAQPage）
     ld_local = {
@@ -7494,21 +7457,9 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
             {"@type": "ListItem", "position": 3, "name": name, "item": f"{SITE_URL}/ship/{slug}.html"},
         ],
     }
-    ld_faq = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-            {"@type": "Question", "name": "初心者でも参加できますか？", "acceptedAnswer": {"@type": "Answer", "text": "船長や常連が仕掛け・釣り方を教えてくれる船宿が多く、初参加でも安心です。"}},
-            {"@type": "Question", "name": "レンタル竿はありますか？", "acceptedAnswer": {"@type": "Answer", "text": "多くの船宿が竿・リール・氷・コマセのレンタルや販売に対応しています。"}},
-            {"@type": "Question", "name": "料金はいくらですか？", "acceptedAnswer": {"@type": "Answer", "text": "料金は時期・釣り物・人数などで変動するため、本サイトには掲載していません。最新の料金は予約サイトでご確認ください。"}},
-            {"@type": "Question", "name": "欠航の判定はどう行われますか？", "acceptedAnswer": {"@type": "Answer", "text": "荒天・台風・うねり等で当日朝に船長が判定する船宿が大半です。"}},
-            {"@type": "Question", "name": "駐車場はありますか？", "acceptedAnswer": {"@type": "Answer", "text": "船宿または近隣に専用駐車場を持つ場合が多いです。詳細は予約時にご確認ください。"}},
-        ],
-    }
     ld_json = (
         '<script type="application/ld+json">' + json.dumps(ld_local, ensure_ascii=False) + '</script>'
         '<script type="application/ld+json">' + json.dumps(ld_breadcrumb, ensure_ascii=False) + '</script>'
-        '<script type="application/ld+json">' + json.dumps(ld_faq, ensure_ascii=False) + '</script>'
     )
 
     # 電話CTA HTML（電話番号があれば tel: リンク・なければ案内）
