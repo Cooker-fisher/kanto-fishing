@@ -1,10 +1,10 @@
 {
   "fish": "アマダイ",
   "ship": "山下丸",
-  "last_reviewed": "2026-04-26",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.98,
+    "wmape_h0": 38.97,
     "bl2_wmape": 42.59,
     "oos_r": 0.348,
     "n_records": 366,
@@ -18,7 +18,7 @@
       "wmape_h0": 35.4,
       "bl2_wmape": 40.3,
       "oos_r": 0.422,
-      "improvement_pt": 3.6
+      "improvement_pt": 3.59
     },
     {
       "name": "剣崎沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 37.0,
       "bl2_wmape": 39.6,
       "oos_r": 0.338,
-      "improvement_pt": 1.97
+      "improvement_pt": 1.95
     }
   ],
   "best_point": {
     "name": "岩井沖",
     "wmape_h0": 35.4,
-    "improvement_pt": 3.6
+    "improvement_pt": 3.59
   },
-  "improvement_pt": 3.6,
+  "improvement_pt": 3.59,
   "points": [
     {
       "name": "剣崎沖",
@@ -207,6 +207,11 @@
       "date": "2026-04-26",
       "action": "point_backtest_updated",
       "note": "best=岩井沖 wmape=35.4% imp=3.6pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=岩井沖 wmape=35.4% imp=3.59pt"
     }
   ],
   "trip_models": [

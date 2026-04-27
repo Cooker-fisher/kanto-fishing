@@ -1,7 +1,7 @@
 {
   "fish": "カサゴ",
   "ship": "山下丸",
-  "last_reviewed": "2026-04-26",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 26.44,
@@ -15,10 +15,10 @@
     {
       "name": "鴨居沖",
       "n": 87,
-      "wmape_h0": 20.3,
+      "wmape_h0": 20.2,
       "bl2_wmape": 25.8,
-      "oos_r": 0.561,
-      "improvement_pt": 6.17
+      "oos_r": 0.564,
+      "improvement_pt": 6.28
     },
     {
       "name": "久里浜沖",
@@ -31,10 +31,10 @@
   ],
   "best_point": {
     "name": "鴨居沖",
-    "wmape_h0": 20.3,
-    "improvement_pt": 6.17
+    "wmape_h0": 20.2,
+    "improvement_pt": 6.28
   },
-  "improvement_pt": 6.17,
+  "improvement_pt": 6.28,
   "points": [
     {
       "name": "久里浜沖",
@@ -207,6 +207,11 @@
       "date": "2026-04-26",
       "action": "point_backtest_updated",
       "note": "best=鴨居沖 wmape=20.3% imp=6.17pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=鴨居沖 wmape=20.2% imp=6.28pt"
     }
   ],
   "trip_models": [
