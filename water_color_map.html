@@ -51,12 +51,28 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
   padding: 3px 6px; border-radius: 4px; font-size: 12px;
 }
 
+/* ソースフィルター */
+#src-filters {
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+}
+.src-btn {
+  padding: 3px 10px; border-radius: 12px; border: 1.5px solid; cursor: pointer;
+  font-size: 11px; font-weight: 600; transition: opacity 0.2s;
+  background: transparent;
+}
+.src-btn.obs  { border-color: #ffffff; color: #ffffff; }
+.src-btn.imp  { border-color: #ffd700; color: #ffd700; }
+.src-btn.pred { border-color: #888;    color: #aaa; }
+.src-btn.active.obs  { background: #ffffff; color: #0a1628; }
+.src-btn.active.imp  { background: #ffd700; color: #0a1628; }
+.src-btn.active.pred { background: #555; color: #fff; }
+
 #map { flex: 1; }
 
 #legend {
   position: absolute; bottom: 32px; right: 12px; z-index: 1000;
   background: rgba(10,22,40,0.92); border: 1px solid #1e3a5f;
-  border-radius: 8px; padding: 12px 16px; min-width: 170px;
+  border-radius: 8px; padding: 12px 16px; min-width: 200px;
 }
 #legend h3 { font-size: 12px; color: #9ab; margin-bottom: 8px; }
 .legend-bar {
@@ -69,14 +85,28 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #ccd; margin-bottom: 4px; }
 .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 
+/* ソース凡例 */
+.src-legend { margin-top: 12px; border-top: 1px solid #1e3a5f; padding-top: 10px; }
+.src-legend h4 { font-size: 11px; color: #9ab; margin-bottom: 6px; }
+.src-legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #ccd; margin-bottom: 5px; }
+.src-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; background: #888; }
+.src-dot.obs  { border: 3px solid #fff;    background: transparent; }
+.src-dot.imp  { border: 3px dashed #ffd700; background: transparent; }
+.src-dot.pred { border: 1px solid #555;    background: #444; opacity: 0.7; }
+
+#src-counter {
+  font-size: 11px; color: #9ab; margin-top: 8px;
+}
+
 #info-panel {
   position: absolute; top: 70px; left: 12px; z-index: 1000;
   background: rgba(10,22,40,0.9); border: 1px solid #1e3a5f;
   border-radius: 8px; padding: 10px 14px; font-size: 12px;
-  max-width: 220px; display: none;
+  max-width: 240px; display: none;
 }
 #info-panel .pt-name { font-size: 14px; font-weight: 600; color: #7ec8e3; margin-bottom: 6px; }
 #info-panel .pt-val { color: #e8eaf0; }
+#info-panel .pt-src { margin-top: 4px; font-size: 11px; }
 #info-panel .pt-trend { margin-top: 6px; color: #9ab; font-size: 11px; }
 </style>
 </head>
@@ -99,6 +129,12 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
       <option value="300">速い</option>
       <option value="150">最速</option>
     </select>
+    <div id="src-filters">
+      <span style="font-size:11px;color:#9ab;">表示:</span>
+      <button class="src-btn obs  active" data-src="obs" >実測</button>
+      <button class="src-btn imp  active" data-src="imp" >補間</button>
+      <button class="src-btn pred active" data-src="pred">予測</button>
+    </div>
   </div>
 </div>
 
@@ -113,7 +149,7 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
       <span>普通(0)</span>
       <span>澄み(+1)</span>
     </div>
-    <div class="legend-items" style="margin-top:10px;">
+    <div class="legend-items">
       <div class="legend-item"><div class="legend-dot" style="background:#3d1c02;border:1px solid #555"></div>強濁り (&lt;-1.5)</div>
       <div class="legend-item"><div class="legend-dot" style="background:#8b4513;border:1px solid #555"></div>濁り (-1.5〜-1.0)</div>
       <div class="legend-item"><div class="legend-dot" style="background:#c8a04a;border:1px solid #555"></div>やや濁り (-1.0〜-0.3)</div>
@@ -121,18 +157,25 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
       <div class="legend-item"><div class="legend-dot" style="background:#40c8f0;border:1px solid #555"></div>澄み (+0.1〜+0.6)</div>
       <div class="legend-item"><div class="legend-dot" style="background:#0060c0;border:1px solid #555"></div>澄み強 (&gt;+0.6)</div>
     </div>
+    <div class="src-legend">
+      <h4>データソース</h4>
+      <div class="src-legend-item"><div class="src-dot obs"></div>実測（当日観測）</div>
+      <div class="src-legend-item"><div class="src-dot imp"></div>補間（0.3°以内の実測）</div>
+      <div class="src-legend-item"><div class="src-dot pred"></div>予測モデルのみ</div>
+    </div>
+    <div id="src-counter"></div>
   </div>
 
   <div id="info-panel">
     <div class="pt-name" id="info-name"></div>
-    <div class="pt-val" id="info-val"></div>
+    <div class="pt-val"  id="info-val"></div>
+    <div class="pt-src"  id="info-src"></div>
     <div class="pt-trend" id="info-trend"></div>
   </div>
 </div>
 
 <script>
-// ─── データ読み込み ────────────────────────────────────────────────
-fetch('tmp_wc_map_data.json')
+fetch('tmp_wc_map_data.json?t=' + Date.now())
   .then(r => r.json())
   .then(json => init(json))
   .catch(e => {
@@ -145,28 +188,20 @@ function init({ data, coord_to_name }) {
   slider.max = dates.length - 1;
   slider.value = dates.length - 1;
 
-  // ─── 地図初期化 ────────────────────────────────────────────────
-  const map = L.map('map', {
-    center: [35.2, 139.6],
-    zoom: 9,
-    zoomControl: true,
-  });
-
+  const map = L.map('map', { center: [35.2, 139.6], zoom: 9, zoomControl: true });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO',
-    maxZoom: 14,
+    attribution: '© OpenStreetMap © CARTO', maxZoom: 14,
   }).addTo(map);
 
-  // ─── 色スケール ────────────────────────────────────────────────
+  // ─── 色スケール ─────────────────────────────────────────────────
   function wcColor(v) {
-    if (v < -1.5) return { fill: '#3d1c02', opacity: 0.88 };
-    if (v < -1.0) return { fill: '#8b4513', opacity: 0.82 };
-    if (v < -0.3) return { fill: '#c8a04a', opacity: 0.78 };
-    if (v <  0.1) return { fill: '#d0d080', opacity: 0.70 };
-    if (v <  0.6) return { fill: '#40c8f0', opacity: 0.72 };
-    return               { fill: '#0060c0', opacity: 0.80 };
+    if (v < -1.5) return '#3d1c02';
+    if (v < -1.0) return '#8b4513';
+    if (v < -0.3) return '#c8a04a';
+    if (v <  0.1) return '#d0d080';
+    if (v <  0.6) return '#40c8f0';
+    return               '#0060c0';
   }
-
   function wcLabel(v) {
     if (v < -1.5) return '強濁り';
     if (v < -1.0) return '濁り';
@@ -176,130 +211,149 @@ function init({ data, coord_to_name }) {
     return '澄み強';
   }
 
-  // ─── マーカー生成 ────────────────────────────────────────────────
-  let circles = [];
+  // ─── ソース別スタイル ────────────────────────────────────────────
+  function srcStyle(src, fill) {
+    if (src === 'obs')  return { radius: 11, fillColor: fill, fillOpacity: 0.85, color: '#ffffff', weight: 2.5, opacity: 0.9 };
+    if (src === 'imp')  return { radius: 9,  fillColor: fill, fillOpacity: 0.70, color: '#ffd700', weight: 2,   opacity: 0.8, dashArray: '4,3' };
+    /* pred */          return { radius: 8,  fillColor: fill, fillOpacity: 0.45, color: '#666',    weight: 1,   opacity: 0.5 };
+  }
+  function srcLabel(src) {
+    if (src === 'obs')  return '<span style="color:#fff;font-weight:700">実測（当日観測）</span>';
+    if (src === 'imp')  return '<span style="color:#ffd700">補間（0.3°以内の実測から）</span>';
+    return                     '<span style="color:#888">予測モデルのみ</span>';
+  }
 
-  const firstDate = dates[dates.length - 1];
-  const firstPoints = data[firstDate];
-
-  firstPoints.forEach(pt => {
-    const key = `${pt.lat},${pt.lon}`;
-    const name = coord_to_name[key] || `${pt.lat},${pt.lon}`;
-    const { fill, opacity } = wcColor(pt.v);
-
-    const circle = L.circleMarker([pt.lat, pt.lon], {
-      radius: 9,
-      fillColor: fill,
-      fillOpacity: opacity,
-      color: '#fff',
-      weight: 0.5,
-      opacity: 0.5,
-    }).addTo(map);
-
-    circle._wcName = name;
-    circle._wcLat = pt.lat;
-    circle._wcLon = pt.lon;
-
-    circle.on('click', () => showInfo(circle._wcName, circle._wcLat, circle._wcLon, data, dates, parseInt(slider.value)));
-    circle.on('mouseover', () => {
-      circle.setStyle({ weight: 2, color: '#fff' });
-      circle.bindTooltip(`<b>${name}</b><br>スコア: ${pt.v.toFixed(2)}<br>${wcLabel(pt.v)}`, { sticky: true }).openTooltip();
+  // ─── フィルター状態 ──────────────────────────────────────────────
+  const showSrc = { obs: true, imp: true, pred: true };
+  document.querySelectorAll('.src-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const src = btn.dataset.src;
+      showSrc[src] = !showSrc[src];
+      btn.classList.toggle('active', showSrc[src]);
+      updateDate(parseInt(slider.value));
     });
-    circle.on('mouseout', () => {
-      circle.setStyle({ weight: 0.5, color: '#fff' });
-      circle.closeTooltip();
-    });
-
-    circles.push({ circle, lat: pt.lat, lon: pt.lon });
   });
 
-  // ─── 日付更新 ────────────────────────────────────────────────
+  // ─── 全ユニーク座標のマーカーを事前生成 ────────────────────────────
+  // 日付ごとに座標セットが変わる（pred期間 vs obs期間）ため、全日付の和集合を使う
+  const allCoords = {};
+  dates.forEach(d => {
+    (data[d] || []).forEach(pt => {
+      const key = `${pt.lat},${pt.lon}`;
+      if (!allCoords[key]) allCoords[key] = { lat: pt.lat, lon: pt.lon };
+    });
+  });
+
+  let circles = [];
+  Object.values(allCoords).forEach(({ lat, lon }) => {
+    const key = `${lat},${lon}`;
+    const name = coord_to_name[key] || `${lat.toFixed(2)},${lon.toFixed(2)}`;
+
+    const circle = L.circleMarker([lat, lon], {
+      radius: 8, fillColor: '#444', fillOpacity: 0, color: '#444', weight: 1, opacity: 0,
+    }).addTo(map);
+    circle._wc = { name, lat, lon };
+    circle.on('click', () => showInfo(circle._wc, data, dates, parseInt(slider.value)));
+
+    circles.push({ circle, lat, lon });
+  });
+
+  // ─── 日付更新 ────────────────────────────────────────────────────
   function updateDate(idx) {
     const date = dates[idx];
     document.getElementById('date-display').textContent = date;
-    const points = data[date];
+    const points = data[date] || [];
     const ptMap = {};
     points.forEach(p => { ptMap[`${p.lat},${p.lon}`] = p; });
+
+    let cnt = { obs: 0, imp: 0, pred: 0 };
 
     circles.forEach(({ circle, lat, lon }) => {
       const key = `${lat},${lon}`;
       const pt = ptMap[key];
-      if (!pt) return;
-      const { fill, opacity } = wcColor(pt.v);
-      circle.setStyle({ fillColor: fill, fillOpacity: opacity });
-      circle._wcV = pt.v;
-      // tooltip更新
-      const name = circle._wcName;
+      if (!pt) { circle.setStyle({ opacity: 0, fillOpacity: 0 }); return; }
+
+      cnt[pt.src] = (cnt[pt.src] || 0) + 1;
+      const visible = showSrc[pt.src];
+      if (!visible) { circle.setStyle({ opacity: 0, fillOpacity: 0 }); return; }
+
+      const fill = wcColor(pt.v);
+      const style = srcStyle(pt.src, fill);
+      circle.setStyle(style);
+      circle._wc._pt = pt;
+
+      // tooltip
+      const name = circle._wc.name;
       circle.unbindTooltip();
       circle.on('mouseover', () => {
-        circle.setStyle({ weight: 2, color: '#fff' });
-        circle.bindTooltip(`<b>${name}</b><br>スコア: ${pt.v.toFixed(2)}<br>${wcLabel(pt.v)}`, { sticky: true }).openTooltip();
+        circle.setStyle({ ...circle.options, weight: circle.options.weight + 1.5 });
+        circle.bindTooltip(
+          `<b>${name}</b><br>スコア: ${pt.v.toFixed(2)}　${wcLabel(pt.v)}<br>${srcLabel(pt.src)}`,
+          { sticky: true }
+        ).openTooltip();
       });
       circle.on('mouseout', () => {
-        circle.setStyle({ weight: 0.5, color: '#fff' });
+        circle.setStyle(srcStyle(pt.src, fill));
         circle.closeTooltip();
       });
     });
+
+    // カウント表示
+    document.getElementById('src-counter').innerHTML =
+      `実測: <b style="color:#fff">${cnt.obs||0}</b> ／ 補間: <b style="color:#ffd700">${cnt.imp||0}</b> ／ 予測: <b style="color:#888">${cnt.pred||0}</b>`;
   }
 
   updateDate(parseInt(slider.value));
+  slider.addEventListener('input', () => updateDate(parseInt(slider.value)));
 
-  slider.addEventListener('input', () => {
-    updateDate(parseInt(slider.value));
-  });
-
-  // ─── 再生 ────────────────────────────────────────────────
-  let playing = false;
-  let timer = null;
+  // ─── 再生 ────────────────────────────────────────────────────────
+  let playing = false, timer = null;
   const playBtn = document.getElementById('play-btn');
-
   playBtn.addEventListener('click', () => {
     playing = !playing;
     playBtn.textContent = playing ? '⏸ 停止' : '▶ 再生';
-    if (playing) tick();
-    else clearTimeout(timer);
+    if (playing) tick(); else clearTimeout(timer);
   });
-
   function tick() {
     if (!playing) return;
     let idx = parseInt(slider.value);
     idx = (idx + 1) % dates.length;
     slider.value = idx;
     updateDate(idx);
-    const speed = parseInt(document.getElementById('speed-select').value);
-    timer = setTimeout(tick, speed);
+    timer = setTimeout(tick, parseInt(document.getElementById('speed-select').value));
   }
 
-  // ─── 情報パネル ────────────────────────────────────────────────
-  function showInfo(name, lat, lon, data, dates, curIdx) {
+  // ─── 情報パネル ──────────────────────────────────────────────────
+  function showInfo({ name, lat, lon }, data, dates, curIdx) {
     const panel = document.getElementById('info-panel');
     panel.style.display = 'block';
     document.getElementById('info-name').textContent = name;
 
-    const key = `${lat},${lon}`;
     const curDate = dates[curIdx];
-    const pts = data[curDate];
+    const pts = data[curDate] || [];
     const cur = pts.find(p => p.lat === lat && p.lon === lon);
-    const v = cur ? cur.v : null;
-
-    if (v !== null) {
+    if (cur) {
       document.getElementById('info-val').innerHTML =
-        `スコア: <b style="color:${wcColor(v).fill}">${v.toFixed(2)}</b>　${wcLabel(v)}`;
+        `スコア: <b style="color:${wcColor(cur.v)}">${cur.v.toFixed(2)}</b>　${wcLabel(cur.v)}`;
+      document.getElementById('info-src').innerHTML = srcLabel(cur.src);
     }
 
-    // トレンド（全日付の値）
+    // トレンド
     const trend = dates.map(d => {
       const pt = (data[d] || []).find(p => p.lat === lat && p.lon === lon);
-      return pt ? pt.v : null;
-    }).filter(v => v !== null);
+      return pt ? { v: pt.v, src: pt.src } : null;
+    }).filter(Boolean);
 
     if (trend.length >= 3) {
-      const delta = trend[trend.length - 1] - trend[0];
+      const vals = trend.map(t => t.v);
+      const delta = vals[vals.length - 1] - vals[0];
       const arrow = delta > 0.1 ? '↑ 澄んできている' : delta < -0.1 ? '↓ 濁ってきている' : '→ ほぼ変化なし';
-      const min = Math.min(...trend).toFixed(2);
-      const max = Math.max(...trend).toFixed(2);
+      const obsDays = trend.filter(t => t.src === 'obs').length;
+      const impDays = trend.filter(t => t.src === 'imp').length;
+      const predDays = trend.filter(t => t.src === 'pred').length;
       document.getElementById('info-trend').innerHTML =
-        `期間推移: ${arrow}<br>範囲: ${min} 〜 ${max}`;
+        `${arrow}<br>範囲: ${Math.min(...vals).toFixed(2)}〜${Math.max(...vals).toFixed(2)}<br>` +
+        `<span style="font-size:10px;color:#9ab">実測${obsDays}日 / 補間${impDays}日 / 予測${predDays}日</span>`;
     }
   }
 

@@ -855,7 +855,7 @@ def transition_analysis(records):
 
 # ─── 全点×全日 水色予測 ────────────────────────────────────────────────────────
 def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
-                       start_date=None, end_date=None):
+                       start_date=None, end_date=None, conn_cmems=None):
     """全 weather_cache 座標×全日付で水色スコアを予測し analysis.sqlite に保存"""
     global_coeffs, global_fkeys = global_model
     if global_coeffs is None:
@@ -936,7 +936,10 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
             nbr_vals = [prev_day_preds.get(nb, 0.0) for nb in nbrs]
             wc_spatial_lag_val = sum(nbr_vals) / len(nbr_vals) if nbr_vals else 0.0
 
-            r = {**pf, **wxd, **riv, **tide,
+            cmems_d = get_cmems_wc_day(conn_cmems, lat, lon, date_iso)
+            r = {**pf, **wxd, **riv, **tide, **cmems_d,
+                 "no3_surface": cmems_d.get("no3_surface", 0.0),
+                 "do_surface":  cmems_d.get("do_surface",  0.0),
                  "wc_prev1": wc_prev1,
                  "wc_spatial_lag": wc_spatial_lag_val,
                  "cape_proximity_n": _cape_proximity(lat, lon),
@@ -1082,6 +1085,7 @@ def main():
             conn_wx, wx_coords,
             (global_coeffs, global_fkeys), stratified,
             start_date=args.start, end_date=args.end,
+            conn_cmems=conn_cmems,
         )
     else:
         print("\n[ヒント] --predict で全点×全日水色予測テーブルを生成できます")
