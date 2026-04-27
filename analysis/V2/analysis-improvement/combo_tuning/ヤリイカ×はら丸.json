@@ -1,7 +1,7 @@
 {
   "fish": "ヤリイカ",
   "ship": "はら丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 45.11,
@@ -39,10 +39,10 @@
     {
       "name": "城ヶ島沖",
       "n": 116,
-      "wmape_h0": 46.0,
+      "wmape_h0": 46.1,
       "bl2_wmape": 61.8,
-      "oos_r": 0.537,
-      "improvement_pt": -0.88
+      "oos_r": 0.536,
+      "improvement_pt": -0.97
     }
   ],
   "best_point": {
@@ -76,6 +76,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=長井沖 wmape=23.8% imp=21.59pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=長井沖 wmape=23.8% imp=21.29pt"
     }
   ]
 }

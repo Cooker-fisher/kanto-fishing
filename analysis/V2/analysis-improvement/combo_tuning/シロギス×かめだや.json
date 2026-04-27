@@ -1,7 +1,7 @@
 {
   "fish": "シロギス",
   "ship": "かめだや",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 30.06,
@@ -17,8 +17,8 @@
       "n": 121,
       "wmape_h0": 26.2,
       "bl2_wmape": 33.0,
-      "oos_r": 0.403,
-      "improvement_pt": 3.82
+      "oos_r": 0.406,
+      "improvement_pt": 3.87
     },
     {
       "name": "中の瀬",
@@ -40,9 +40,9 @@
   "best_point": {
     "name": "富津沖",
     "wmape_h0": 26.2,
-    "improvement_pt": 3.82
+    "improvement_pt": 3.87
   },
-  "improvement_pt": 3.82,
+  "improvement_pt": 3.87,
   "points": [
     {
       "name": "中の瀬",
@@ -225,6 +225,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=富津沖 wmape=26.2% imp=3.96pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=富津沖 wmape=26.2% imp=3.87pt"
     }
   ],
   "trip_models": [

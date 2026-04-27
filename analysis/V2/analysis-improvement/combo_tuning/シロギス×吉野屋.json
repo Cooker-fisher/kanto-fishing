@@ -1,7 +1,7 @@
 {
   "fish": "シロギス",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 33.65,
@@ -13,6 +13,14 @@
   },
   "point_models": [
     {
+      "name": "富津沖",
+      "n": 40,
+      "wmape_h0": 26.2,
+      "bl2_wmape": 32.7,
+      "oos_r": 0.479,
+      "improvement_pt": 7.48
+    },
+    {
       "name": "浦安沖",
       "n": 57,
       "wmape_h0": 26.3,
@@ -21,20 +29,12 @@
       "improvement_pt": 7.35
     },
     {
-      "name": "富津沖",
-      "n": 40,
-      "wmape_h0": 26.4,
-      "bl2_wmape": 32.7,
-      "oos_r": 0.486,
-      "improvement_pt": 7.28
-    },
-    {
       "name": "中ノ瀬",
       "n": 35,
       "wmape_h0": 27.7,
       "bl2_wmape": 38.0,
-      "oos_r": 0.555,
-      "improvement_pt": 5.97
+      "oos_r": 0.554,
+      "improvement_pt": 5.91
     },
     {
       "name": "木更津沖",
@@ -46,11 +46,11 @@
     }
   ],
   "best_point": {
-    "name": "浦安沖",
-    "wmape_h0": 26.3,
-    "improvement_pt": 7.35
+    "name": "富津沖",
+    "wmape_h0": 26.2,
+    "improvement_pt": 7.48
   },
-  "improvement_pt": 7.35,
+  "improvement_pt": 7.48,
   "points": [
     {
       "name": "木更津沖",
@@ -107,6 +107,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=25.1% imp=8.51pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=富津沖 wmape=26.2% imp=7.48pt"
     }
   ],
   "trip_models": [

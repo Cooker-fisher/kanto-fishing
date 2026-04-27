@@ -161,6 +161,13 @@ SLOW_FACTORS = {
     # 旬頭 vs 旬末で釣果パターンが異なる魚種（産卵期移行、回遊盛期/終期）
     # カレンダー確定値 → 全ホライズン有効（CALENDAR_FACTORS と同分類）
     "day_of_decade",
+    # 利根川移流ラグ特徴量（鹿島・外房エリア向け河川濁水シグナル）
+    # 利根川（銚子 35.71°N/140.87°E）の上流降水が鹿島・大洗に3〜7日で到達
+    # 正値（降水大 × 近接）= 濁り水流入リスク = 底物活性↓・イカ活性↓
+    # 内房・相模湾はポイントが遠いため近接度ペナルティが自動的に抑制
+    "river_tone_advect_3d",  # 3日前利根川流域降水 × 利根川近接度（近=1,遠≈0）
+    "river_tone_advect_5d",  # 5日前（最大影響ラグ候補）
+    "river_tone_advect_7d",  # 7日前（遅延遠場ラグ）
     # temp_100m × 季節交互作用（深層水温の季節依存性を捉える）
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",     # 深層水温区分: 0=cold(<8℃) / 1=warm(8-12℃) / 2=hot(>12℃)
@@ -440,6 +447,14 @@ WX_FACTORS = [
     "sla_pelagic_monthly",  # 沖合月次SLA（34-36°N,141-143°E）: カツオ/キハダ外洋シグナル
     # SSS変化率（7日間）: 塩分急変=黒潮フロント通過シグナル
     "sss_delta_7d",  # 当日SSS - 7日前SSS: 正=黒潮水流入, 負=淡水流入
+    # 利根川移流ラグ特徴量（Variant A: 物理的妥当ラグ 3/5/7日）
+    # 利根川流域降水量 × 釣りポイントの利根川近接度（exp距離重み）
+    # 鹿島・外房: 近接度≈1 → 濁水シグナルが強く出る
+    # 東京湾・相模湾: 近接度≈0 → 実質無効化（自動ペナルティ）
+    # SLOW因子扱い（降水予報は14日先まで取得可 → H≤14 で有効）
+    "river_tone_advect_3d",  # 3日前降水 × 近接度（急速到達エリア向け）
+    "river_tone_advect_5d",  # 5日前降水 × 近接度（最大影響ラグ候補）
+    "river_tone_advect_7d",  # 7日前降水 × 近接度（遅延遠場ラグ）
     # temp_100m × 季節交互作用
     "temp_100m_spring", "temp_100m_summer", "temp_100m_autumn", "temp_100m_winter",
     "temp_100m_bin",    # 深層水温区分: 0=cold / 1=warm / 2=hot
@@ -1448,6 +1463,24 @@ def get_daily_wx(conn_wx, lat, lon, date_iso):
 
     return result
 
+# 利根川河口座標キャッシュ（weather テーブル最近傍を初回1回だけ解決）
+# 利根川銚子河口: 35.71°N / 140.87°E
+_TONE_RIVER_TARGET = (35.71, 140.87)
+_TONE_COORD_CACHE: tuple | None = None
+_TONE_PRECIP_CACHE: dict = {}  # (lat, lon, date_iso) → SUM(precipitation)
+
+def _get_tone_coord(conn_wx):
+    """利根川座標の最近傍 weather グリッド点を返す。初回のみ SELECT。"""
+    global _TONE_COORD_CACHE
+    if _TONE_COORD_CACHE is None and conn_wx is not None:
+        coords = conn_wx.execute("SELECT DISTINCT lat, lon FROM weather").fetchall()
+        if coords:
+            _TONE_COORD_CACHE = min(
+                coords,
+                key=lambda c: (c[0] - _TONE_RIVER_TARGET[0])**2 + (c[1] - _TONE_RIVER_TARGET[1])**2
+            )
+    return _TONE_COORD_CACHE
+
 _cmems_day_cache: dict = {}
 
 def get_cmems_day(conn_cmems, lat, lon, date_iso):
@@ -1952,6 +1985,9 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
     _grad_off_coord = nearest_coord(*SST_GRAD_OFFSHORE, wx_coords) if wx_coords else None
     _grad_in_coord  = nearest_coord(*SST_GRAD_INSHORE,  wx_coords) if wx_coords else None
 
+    # 利根川移流用: 利根川河口最近傍座標（座標は固定。近接度はループ内で per-record 計算）
+    _tone_coord = _get_tone_coord(conn_wx)
+
     # 前週釣果の参照先（日付昇順ソート済み）
     _ref_records = sorted(all_records or records, key=lambda r: r["date"])
     # bisect 用の日付リスト（O(log n) 検索）
@@ -1968,6 +2004,15 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             wlat, wlon = nearest_coord(slat, slon, wx_coords)
         else:
             continue
+
+        # 利根川近接度: per-record（釣りポイントごとに異なる）
+        # 近接度 = exp(-dist / 0.4°) where dist = Euclidean lat/lon distance
+        # 0.4°≈44km: 銚子沖≈1.0, 外房≈0.7, 鹿島≈0.5, 東京湾≈0.1, 相模湾≈0.05
+        if _tone_coord is not None:
+            _dist_to_tone = ((wlat - _TONE_RIVER_TARGET[0])**2 + (wlon - _TONE_RIVER_TARGET[1])**2)**0.5
+            _tone_prox = math.exp(-_dist_to_tone / 0.4)
+        else:
+            _tone_prox = None
 
         try:
             d = datetime.strptime(r["date"], "%Y/%m/%d")
@@ -2083,6 +2128,28 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
             wx["sst_gradient"] = (_sst_off - _sst_in) if (_sst_off is not None and _sst_in is not None) else None
         else:
             wx["sst_gradient"] = None
+
+        # ── 利根川移流ラグ特徴量（river_tone_advect_3d / 5d / 7d）──────────────
+        # 利根川流域降水 × 釣りポイント近接度（exp距離重み）
+        # 近い（銚子・外房・鹿島）ほど大きな値 → 相関分析で濁水影響を定量化
+        # ラグは既存 precip_sum と同様に horizon 込みで計算（予測時点基準）
+        if _tone_coord is not None and _tone_prox is not None and conn_wx is not None:
+            _tone_lat, _tone_lon = _tone_coord
+            for _tlag in [3, 5, 7]:
+                _tlag_date = (d - timedelta(days=horizon + _tlag)).strftime("%Y-%m-%d")
+                _tk = (_tone_lat, _tone_lon, _tlag_date)
+                if _tk not in _TONE_PRECIP_CACHE:
+                    _row = conn_wx.execute(
+                        "SELECT SUM(precipitation) FROM weather WHERE lat=? AND lon=? AND date(dt)=?",
+                        (_tone_lat, _tone_lon, _tlag_date)
+                    ).fetchone()
+                    _TONE_PRECIP_CACHE[_tk] = float(_row[0]) if _row and _row[0] is not None else 0.0
+                _prec = _TONE_PRECIP_CACHE[_tk]
+                wx[f"river_tone_advect_{_tlag}d"] = _tone_prox * _prec
+        else:
+            wx["river_tone_advect_3d"] = None
+            wx["river_tone_advect_5d"] = None
+            wx["river_tone_advect_7d"] = None
 
         # ── 前週釣果（prev_week_cnt）────────────────────────────────────────
         # prediction_date = D - horizon の時点で知っている最新の釣果を取得

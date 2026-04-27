@@ -1,7 +1,7 @@
 {
   "fish": "フグ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 43.77,
@@ -23,10 +23,10 @@
     {
       "name": "八景沖",
       "n": 94,
-      "wmape_h0": 33.5,
+      "wmape_h0": 33.7,
       "bl2_wmape": 48.8,
-      "oos_r": 0.591,
-      "improvement_pt": 10.24
+      "oos_r": 0.588,
+      "improvement_pt": 10.11
     },
     {
       "name": "大貫沖",
@@ -218,6 +218,11 @@
     },
     {
       "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=中ノ瀬 wmape=21.3% imp=22.5pt"
+    },
+    {
+      "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=中ノ瀬 wmape=21.3% imp=22.5pt"
     }

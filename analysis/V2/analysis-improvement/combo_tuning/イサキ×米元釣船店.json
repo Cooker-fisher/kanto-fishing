@@ -1,7 +1,7 @@
 {
   "fish": "イサキ",
   "ship": "米元釣船店",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 36.8,
@@ -15,18 +15,18 @@
     {
       "name": "剣崎沖",
       "n": 86,
-      "wmape_h0": 36.4,
+      "wmape_h0": 36.7,
       "bl2_wmape": 41.1,
-      "oos_r": 0.246,
-      "improvement_pt": 0.4
+      "oos_r": 0.233,
+      "improvement_pt": 0.06
     }
   ],
   "best_point": {
     "name": "剣崎沖",
-    "wmape_h0": 36.4,
-    "improvement_pt": 0.4
+    "wmape_h0": 36.7,
+    "improvement_pt": 0.06
   },
-  "improvement_pt": 0.4,
+  "improvement_pt": 0.06,
   "history": [
     {
       "date": "2026-04-24",
@@ -47,6 +47,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=36.4% imp=0.4pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=36.7% imp=0.06pt"
     }
   ]
 }
