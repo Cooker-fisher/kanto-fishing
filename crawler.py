@@ -2425,6 +2425,18 @@ def parse_catches_from_html(html, ship, area, year):
                 if not c.get("suishoku_raw"):
                     c["suishoku_raw"] = box_suishoku
 
+        # div.color の生テキストを color_raw として保存
+        color_div_m = re.search(r'<div[^>]+class="color"[^>]*>([\s\S]*?)</div>', box_html)
+        if color_div_m:
+            _ct = re.sub(r'<[^>]+>', '', color_div_m.group(1))
+            _ct = re.sub(r'\s+', ' ', _ct).strip()
+            box_color_raw = _ct if _ct else None
+        else:
+            box_color_raw = None
+        for c in catches:
+            if "color_raw" not in c:
+                c["color_raw"] = box_color_raw
+
         # 感想テキストを trip_no で紐付け → kanso_raw に設定
         trip_comments = _extract_trip_comments(box_html)
         for c in catches:
@@ -7360,8 +7372,8 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
             _parts = comment.split("。")
             kanso_short = "。".join(_parts[:2]) + ("。" if len(_parts) > 1 else "")
 
-            wt          = _extract_water_temp_range(r.get("suion_raw") or comment)
-            water_color = _extract_water_color(r.get("suishoku_raw") or comment)
+            wt          = _extract_water_temp_range(r.get("suion_raw") or r.get("color_raw") or comment)
+            water_color = _extract_water_color(r.get("suishoku_raw") or r.get("color_raw") or comment)
             wind        = _extract_wind_info(comment)
             tide_info   = _extract_tide_info(comment)
             wave_info   = _extract_wave_info(comment)
@@ -7577,9 +7589,9 @@ def save_daily_csv(catches):
                 "n_points_visited": max(1, sum(1 for _p in [pp1, pp2] if _p and _p.strip())),
                 "depth_min":      d_min,
                 "depth_max":      d_max,
-                "water_temp_min": _extract_water_temp_range(c.get("suion_raw") or "").get("min", ""),
-                "water_temp_max": _extract_water_temp_range(c.get("suion_raw") or "").get("max", ""),
-                "water_color":    _extract_water_color(c.get("suishoku_raw") or ""),
+                "water_temp_min": _extract_water_temp_range(c.get("suion_raw") or c.get("color_raw") or "").get("min", ""),
+                "water_temp_max": _extract_water_temp_range(c.get("suion_raw") or c.get("color_raw") or "").get("max", ""),
+                "water_color":    _extract_water_color(c.get("suishoku_raw") or c.get("color_raw") or ""),
                 "wind_direction": "",
                 "wind_speed":     "",
                 "tide_info":      "",
