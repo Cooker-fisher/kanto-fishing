@@ -205,7 +205,10 @@ _wx_coord_cache = None
 _cmems_wc_cache = {}
 
 def get_cmems_wc_day(conn_cmems, lat, lon, date_iso):
-    """水色モデル用 CMEMS 取得（no3_surface, do_surface）。0.25° 最近傍 + 0.5° フォールバック。"""
+    """水色モデル用 CMEMS 取得（no3_surface, do_surface, sla_surface, chl_surface, sss_surface）。
+    cmems_depth: 0.25° 最近傍 + 0.5° フォールバック。
+    cmems_daily: 0.1° 最近傍（グリッド ≈ 0.042°）+ 0.5° フォールバック。
+    """
     if conn_cmems is None:
         return {}
     k = (lat, lon, date_iso)
@@ -229,6 +232,27 @@ def get_cmems_wc_day(conn_cmems, lat, lon, date_iso):
     if row:
         if row[0] is not None: result["do_surface"]  = row[0]
         if row[1] is not None: result["no3_surface"] = row[1]
+
+    # cmems_daily から sla/chl/sss を 0.1° 最近傍で取得（グリッド ≈ 0.042°）
+    row2 = conn_cmems.execute(
+        """SELECT sla, chl, sss FROM cmems_daily
+           WHERE date=? AND ABS(lat-?)<0.1 AND ABS(lon-?)<0.1
+           ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?) LIMIT 1""",
+        (date_iso, lat, lon, lat, lat, lon, lon),
+    ).fetchone()
+    if not row2:
+        # 0.5° フォールバック
+        row2 = conn_cmems.execute(
+            """SELECT sla, chl, sss FROM cmems_daily
+               WHERE date=? AND ABS(lat-?)<0.5 AND ABS(lon-?)<0.5
+               ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?) LIMIT 1""",
+            (date_iso, lat, lon, lat, lat, lon, lon),
+        ).fetchone()
+    if row2:
+        if row2[0] is not None: result["sla_surface"] = row2[0]
+        if row2[1] is not None: result["chl_surface"] = row2[1]
+        if row2[2] is not None: result["sss_surface"] = row2[2]
+
     _cmems_wc_cache[k] = result
     return result
 
@@ -491,6 +515,9 @@ def build_features(records, conn_wx, wx_coords, conn_cmems=None):
 
         m = int(r["date"][5:7])
         feat = {
+            # CMEMSデフォルト（データなし日はニュートラル値で補完）
+            "no3_surface": 0.0, "do_surface": 0.0,
+            "sla_surface": 0.0, "chl_surface": 0.5, "sss_surface": 34.0,
             **r, **pf, **wxd,
             **riv, **tide, **cmems,
             "wc_prev1":         _lookup_wc_prev(wlat, wlon, date_iso),
@@ -521,7 +548,9 @@ BASE_FEATURES = (
        "cape_proximity_n",
        "month_sin", "month_cos",
        # CMEMS 栄養塩・酸素: 高no3=植物プランクトン増→有機物分解→濁り、低do=貧酸素=青潮
-       "no3_surface", "do_surface"]
+       "no3_surface", "do_surface",
+       # CMEMS 海面: sla=黒潮接岸度、chl=クロロフィル(濁度代理)、sss=塩分(陸水混入検出)
+       "sla_surface", "chl_surface", "sss_surface"]
 )
 # NOTE: precip_cumW7 を削除（河口3特徴量に置き換え）。
 # precip_cumW7 ≈ tone/tama_impact / prox で多重共線性が発生するため。
@@ -573,6 +602,52 @@ def predict_wc(coeffs, features, r):
     vals = [r.get(k) for k in features]
     if any(v is None for v in vals): return None
     return max(-2.0, min(1.5, coeffs[0] + sum(coeffs[i+1] * vals[i] for i in range(len(vals)))))
+
+
+# ─── Random Forest モデル ───────────────────────────────────────────────────────
+def fit_rf(records, features=None):
+    """Random Forest で水色スコアを予測。scikit-learn が必要。
+    Returns: (model, features) または (None, None) 失敗時。
+    """
+    try:
+        from sklearn.ensemble import RandomForestRegressor
+        import numpy as np
+    except ImportError:
+        return None, None
+
+    if features is None:
+        features = BASE_FEATURES
+
+    valid = [r for r in records
+             if all(r.get(k) is not None for k in features)
+             and r.get("water_color_n") is not None]
+    if len(valid) < 50:
+        return None, None
+
+    X = np.array([[r[k] for k in features] for r in valid])
+    y = np.array([r["water_color_n"] for r in valid])
+
+    model = RandomForestRegressor(
+        n_estimators=200, max_depth=8, min_samples_leaf=10,
+        random_state=42, n_jobs=-1,
+    )
+    model.fit(X, y)
+    return model, features
+
+
+def predict_wc_rf(model, features, r):
+    """RF モデルで予測。None 返却時は OLS にフォールバック。"""
+    if model is None:
+        return None
+    try:
+        import numpy as np
+    except ImportError:
+        return None
+    vals = [r.get(k) for k in features]
+    if any(v is None for v in vals):
+        return None
+    pred = model.predict(np.array([vals]))[0]
+    return max(-2.0, min(1.5, float(pred)))
 
 
 # ─── 深さ別モデル ─────────────────────────────────────────────────────────────
@@ -631,12 +706,12 @@ def predict_wc_stratified(models, r, global_coeffs, global_features):
 
 # ─── バックテスト ─────────────────────────────────────────────────────────────
 def backtest(records, use_stratified=True):
-    """leave-one-month-out CV。グローバル / 水深別モデルを両方評価。"""
+    """leave-one-month-out CV。グローバル / 水深別 OLS モデル + RF モデルを評価。"""
     months = sorted({r["month"] for r in records})
     if len(months) < 3:
         print("  月数不足 → バックテスト不可"); return
 
-    results = {"global": [], "stratified": []}
+    results = {"global": [], "stratified": [], "rf": []}
     group_errs = defaultdict(list)
 
     for test_month in months:
@@ -644,8 +719,11 @@ def backtest(records, use_stratified=True):
         test  = [r for r in records if r["month"] == test_month]
         if len(train) < 50 or len(test) < 5: continue
 
-        # グローバルモデル
+        # グローバル OLS
         g_coeffs, g_fkeys = fit_ols(train)
+
+        # RF モデル（全特徴量）
+        rf_model, rf_features = fit_rf(train)
 
         # 深さ別モデル（訓練データのみで学習）
         s_models = {}
@@ -661,7 +739,8 @@ def backtest(records, use_stratified=True):
                                 "tide_coeff","moon_age",
                                 "tone_impact","sagami_impact","tama_impact",
                                 "wc_prev1","wc_spatial_lag","cape_proximity_n",
-                                "month_sin","month_cos"],
+                                "month_sin","month_cos",
+                                "sla_surface","chl_surface","sss_surface"],
                     "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
                                ["days_since_rain",
                                 "wave_height_avg","swell_height_avg","current_speed_avg",
@@ -669,7 +748,8 @@ def backtest(records, use_stratified=True):
                                 "tide_coeff","moon_age",
                                 "tone_impact","sagami_impact","tama_impact",
                                 "wc_prev1","wc_spatial_lag","cape_proximity_n",
-                                "month_sin","month_cos"],
+                                "month_sin","month_cos",
+                                "sla_surface","chl_surface","sss_surface"],
                     "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
                                ["days_since_rain",
                                 "wave_height_avg","swell_height_avg","current_speed_avg",
@@ -677,7 +757,8 @@ def backtest(records, use_stratified=True):
                                 "tide_coeff","moon_age",
                                 "tone_impact","sagami_impact","tama_impact",
                                 "wc_prev1","wc_spatial_lag","cape_proximity_n",
-                                "month_sin","month_cos"],
+                                "month_sin","month_cos",
+                                "sla_surface","chl_surface","sss_surface"],
                 }.get(grp, BASE_FEATURES)
                 c, fk = fit_ols(g_tr, features=feats)
                 if c: s_models[grp] = (c, fk)
@@ -686,30 +767,37 @@ def backtest(records, use_stratified=True):
             actual = r.get("water_color_n")
             if actual is None: continue
 
-            # グローバル
+            # グローバル OLS
             pg = predict_wc(g_coeffs, g_fkeys, r)
             if pg is not None:
                 results["global"].append(pg - actual)
 
-            # 深さ別
+            # 深さ別 OLS
             ps = predict_wc_stratified(s_models, r, g_coeffs, g_fkeys)
             if ps is not None:
                 results["stratified"].append(ps - actual)
                 group_errs[r.get("depth_grp","unknown")].append(ps - actual)
 
+            # RF
+            pr = predict_wc_rf(rf_model, rf_features, r)
+            if pr is not None:
+                results["rf"].append(pr - actual)
+
     def _stats(errs, label):
         if not errs:
-            print(f"  {label}: データなし"); return
+            print(f"  {label}: データなし"); return None
         rmse = (sum(e**2 for e in errs)/len(errs))**0.5
         mae  = sum(abs(e) for e in errs)/len(errs)
         sign = sum(1 for e in errs if abs(e) < 0.75) / len(errs) * 100  # ±0.75以内を「当たり」
         print(f"  {label}: n={len(errs)}  RMSE={rmse:.3f}  MAE={mae:.3f}  ±0.75以内={sign:.1f}%")
+        return {"rmse": rmse, "mae": mae, "within075": sign}
 
     print("\n=== バックテスト（leave-one-month-out CV）===")
-    _stats(results["global"],     "グローバルモデル ")
-    _stats(results["stratified"], "水深別モデル     ")
+    _stats(results["global"],     "OLS グローバル    ")
+    _stats(results["stratified"], "OLS 水深別        ")
+    _stats(results["rf"],         "RF  グローバル    ")
 
-    print("\n  水深グループ別（水深別モデル）:")
+    print("\n  水深グループ別（OLS 水深別モデル）:")
     for grp in ["shallow", "mid", "deep", "unknown"]:
         _stats(group_errs.get(grp, []), f"    {grp:8s}")
 
@@ -727,6 +815,7 @@ def factor_correlation_analysis(records):
         ("潮汐・月齢",   ["tide_coeff", "moon_age"]),
         ("水深・沖合",   ["depth_avg", "depth_bin_n", "dist_shore"]),
         ("季節",         ["month_n", "month_sin", "month_cos"]),
+        ("CMEMS 海面",   ["sla_surface", "chl_surface", "sss_surface"]),
     ]
     targets = [r.get("water_color_n") for r in records]
     for gname, keys in groups:
@@ -855,10 +944,13 @@ def transition_analysis(records):
 
 # ─── 全点×全日 水色予測 ────────────────────────────────────────────────────────
 def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
-                       start_date=None, end_date=None, conn_cmems=None):
-    """全 weather_cache 座標×全日付で水色スコアを予測し analysis.sqlite に保存"""
+                       start_date=None, end_date=None, conn_cmems=None,
+                       rf_model=None, rf_features=None):
+    """全 weather_cache 座標×全日付で水色スコアを予測し analysis.sqlite に保存。
+    RF モデルが利用可能な場合は RF 優先、失敗時は OLS グローバルモデルにフォールバック。
+    """
     global_coeffs, global_fkeys = global_model
-    if global_coeffs is None:
+    if global_coeffs is None and rf_model is None:
         print("  グローバルモデルなし → スキップ"); return
 
     conn_ana = sqlite3.connect(DB_ANA, timeout=60.0)
@@ -938,8 +1030,11 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
 
             cmems_d = get_cmems_wc_day(conn_cmems, lat, lon, date_iso)
             r = {**pf, **wxd, **riv, **tide, **cmems_d,
-                 "no3_surface": cmems_d.get("no3_surface", 0.0),
-                 "do_surface":  cmems_d.get("do_surface",  0.0),
+                 "no3_surface":  cmems_d.get("no3_surface",  0.0),
+                 "do_surface":   cmems_d.get("do_surface",   0.0),
+                 "sla_surface":  cmems_d.get("sla_surface",  0.0),
+                 "chl_surface":  cmems_d.get("chl_surface",  0.5),
+                 "sss_surface":  cmems_d.get("sss_surface",  34.0),
                  "wc_prev1": wc_prev1,
                  "wc_spatial_lag": wc_spatial_lag_val,
                  "cape_proximity_n": _cape_proximity(lat, lon),
@@ -947,8 +1042,12 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
                  "depth_grp": "unknown", "depth_bin_n": 1,
                  "dist_shore": _dist_from_bay_center(lat, lon)}
 
-            # グローバルモデルで予測（深さ情報なし）
-            pred = predict_wc(global_coeffs, global_fkeys, r)
+            # RF モデル優先 → 失敗時は OLS グローバルモデルにフォールバック
+            pred = None
+            if rf_model is not None:
+                pred = predict_wc_rf(rf_model, rf_features, r)
+            if pred is None:
+                pred = predict_wc(global_coeffs, global_fkeys, r)
             if pred is None:
                 continue
             batch.append((lat, lon, date_iso, pred, "unknown"))
@@ -1030,9 +1129,9 @@ def main():
     conn_cmems = None
     if os.path.exists(DB_CMEMS) and os.path.getsize(DB_CMEMS) > 0:
         conn_cmems = sqlite3.connect(DB_CMEMS, timeout=30.0)
-        print("CMEMS DB 接続済み（no3/do_surface 利用）", flush=True)
+        print("CMEMS DB 接続済み（no3/do_surface/sla/chl/sss 利用）", flush=True)
     else:
-        print("CMEMS DB なし → no3/do_surface をスキップ", flush=True)
+        print("CMEMS DB なし → CMEMS 特徴量をスキップ", flush=True)
 
     print("weather_cache 座標取得 ...", flush=True)
     wx_coords = load_wx_coords(conn_wx)
@@ -1057,7 +1156,7 @@ def main():
     # ── 遷移日数分析 ──
     transition_analysis(records)
 
-    # ── バックテスト ──
+    # ── バックテスト（OLS + RF 比較） ──
     print("\nバックテスト実行 ...", flush=True)
     backtest(records, use_stratified=True)
 
@@ -1065,13 +1164,29 @@ def main():
     print("\n全データでモデル学習 ...", flush=True)
     global_coeffs, global_fkeys = fit_ols(records)
     if global_coeffs:
-        print(f"  グローバルモデル: bias={global_coeffs[0]:+.3f}")
+        print(f"  OLS グローバルモデル: bias={global_coeffs[0]:+.3f}")
         for i, k in enumerate(global_fkeys):
             print(f"    {k:30s}: {global_coeffs[i+1]:+.5f}")
     else:
-        print("  [ERROR] グローバルモデル学習失敗")
+        print("  [ERROR] OLS グローバルモデル学習失敗")
 
-    print("\n水深別モデル学習 ...", flush=True)
+    print("\nRF モデル学習 ...", flush=True)
+    rf_model, rf_features = fit_rf(records)
+    if rf_model is not None:
+        try:
+            import numpy as np
+            importances = rf_model.feature_importances_
+            top_idx = sorted(range(len(importances)), key=lambda i: importances[i], reverse=True)[:10]
+            print("  RF 特徴量重要度 TOP10:")
+            for idx in top_idx:
+                print(f"    {rf_features[idx]:30s}: {importances[idx]:.4f}")
+        except Exception:
+            pass
+        print("  RF モデル学習完了")
+    else:
+        print("  RF モデル学習失敗（scikit-learn 未インストールまたはデータ不足）")
+
+    print("\n水深別 OLS モデル学習 ...", flush=True)
     stratified = fit_stratified_models(records)
 
     # ── モデル係数を DB 保存 ──
@@ -1080,12 +1195,14 @@ def main():
 
     # ── 全点×全日予測 ──
     if args.predict:
-        print("\n全点×全日 水色予測実行 ...", flush=True)
+        use_rf = rf_model is not None
+        print(f"\n全点×全日 水色予測実行 ({'RF 優先' if use_rf else 'OLS'}) ...", flush=True)
         predict_all_points(
             conn_wx, wx_coords,
             (global_coeffs, global_fkeys), stratified,
             start_date=args.start, end_date=args.end,
             conn_cmems=conn_cmems,
+            rf_model=rf_model, rf_features=rf_features,
         )
     else:
         print("\n[ヒント] --predict で全点×全日水色予測テーブルを生成できます")
