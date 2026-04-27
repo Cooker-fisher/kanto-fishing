@@ -1,14 +1,14 @@
 {
   "fish": "マダイ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.13,
+    "wmape_h0": 29.82,
     "bl2_wmape": 34.85,
-    "oos_r": 0.125,
+    "oos_r": 0.295,
     "n_records": 42,
-    "use_fallback": true,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "points": [
@@ -127,6 +127,11 @@
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=茅ヶ崎沖 wmape=19.4% imp=13.72pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=茅ヶ崎沖 wmape=17.5% imp=12.34pt"
     }
   ],
   "rejected_factors": [
@@ -195,18 +200,18 @@
     {
       "name": "茅ヶ崎沖",
       "n": 42,
-      "wmape_h0": 19.4,
+      "wmape_h0": 17.5,
       "bl2_wmape": 34.9,
-      "oos_r": 0.665,
-      "improvement_pt": 13.72
+      "oos_r": 0.686,
+      "improvement_pt": 12.34
     }
   ],
   "best_point": {
     "name": "茅ヶ崎沖",
-    "wmape_h0": 19.4,
-    "improvement_pt": 13.72
+    "wmape_h0": 17.5,
+    "improvement_pt": 12.34
   },
-  "improvement_pt": 13.72,
+  "improvement_pt": 12.34,
   "trip_models": [],
   "best_trip": null,
   "point_depth_models": [],

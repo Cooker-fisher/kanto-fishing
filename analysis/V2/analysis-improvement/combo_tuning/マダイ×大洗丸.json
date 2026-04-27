@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "大洗丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.1,
-    "bl0_wmape": 52.0,
-    "bl2_wmape": 46.6,
-    "oos_r": 0.622,
-    "n_records": 98,
-    "alpha_scale": 0.389,
-    "use_fallback": false
+    "wmape_h0": 37.35,
+    "bl2_wmape": 46.51,
+    "oos_r": 0.653,
+    "n_records": 99,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "夏の中潮以外に釣果が上がる傾向",
     "黒潮が接近している月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=大洗沖 wmape=36.9% imp=0.49pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sst",
@@ -172,5 +177,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "大洗沖",
+      "n": 99,
+      "wmape_h0": 36.9,
+      "bl2_wmape": 46.5,
+      "oos_r": 0.677,
+      "improvement_pt": 0.49
+    }
+  ],
+  "best_point": {
+    "name": "大洗沖",
+    "wmape_h0": 36.9,
+    "improvement_pt": 0.49
+  },
+  "improvement_pt": 0.49
 }

@@ -1,16 +1,15 @@
 {
   "fish": "アジ",
   "ship": "鶴丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 45.9,
-    "bl0_wmape": 67.1,
-    "bl2_wmape": 81.6,
-    "oos_r": 0.571,
-    "n_records": 43,
-    "alpha_scale": 0.1,
-    "use_fallback": false
+    "wmape_h0": 24.75,
+    "bl2_wmape": 70.35,
+    "oos_r": 0.888,
+    "n_records": 35,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -82,7 +81,13 @@
     "濁り・赤潮傾向の日に釣果が上がる傾向",
     "夏の中潮に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=田子の浦沖 wmape=22.2% imp=2.5pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -162,5 +167,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "田子の浦沖",
+      "n": 35,
+      "wmape_h0": 22.2,
+      "bl2_wmape": 70.3,
+      "oos_r": 0.902,
+      "improvement_pt": 2.5
+    }
+  ],
+  "best_point": {
+    "name": "田子の浦沖",
+    "wmape_h0": 22.2,
+    "improvement_pt": 2.5
+  },
+  "improvement_pt": 2.5
 }

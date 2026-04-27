@@ -1,13 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "海桜丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 44.03,
-    "bl2_wmape": 55.79,
-    "oos_r": 0.462,
-    "n_records": 58,
+    "wmape_h0": 35.18,
+    "bl2_wmape": 54.54,
+    "oos_r": 0.593,
+    "n_records": 62,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -111,6 +111,11 @@
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "SHIP_TRIP_RULES追加: アマダイ釣り→アマダイ(10件), 五目アマダイ→アマダイ(8件) 分離。"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=三保沖 wmape=34.1% imp=1.06pt"
     }
   ],
   "rejected_factors": [
@@ -178,19 +183,19 @@
   "point_models": [
     {
       "name": "三保沖",
-      "n": 53,
-      "wmape_h0": 40.4,
-      "bl2_wmape": 56.0,
-      "oos_r": 0.561,
-      "improvement_pt": 3.61
+      "n": 57,
+      "wmape_h0": 34.1,
+      "bl2_wmape": 54.6,
+      "oos_r": 0.631,
+      "improvement_pt": 1.06
     }
   ],
   "best_point": {
     "name": "三保沖",
-    "wmape_h0": 40.4,
-    "improvement_pt": 3.61
+    "wmape_h0": 34.1,
+    "improvement_pt": 1.06
   },
-  "improvement_pt": 3.61,
+  "improvement_pt": 1.06,
   "trip_models": [
     {
       "trip_no": 1,

@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "鶴丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.08,
+    "wmape_h0": 34.13,
     "bl2_wmape": 44.51,
-    "oos_r": 0.326,
+    "oos_r": 0.58,
     "n_records": 35,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -71,6 +71,11 @@
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "SHIP_TRIP_RULES追加: 朝シロアマダイ→シロアマダイ, 朝アカアマダイ→アカアマダイ, 朝紅白アマダイ→アカアマダイ, 朝アマダイ→アマダイ。アマダイ系146件のマダイ誤分類を修正。n減少見込み。"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=田子の浦沖 wmape=20.0% imp=14.09pt"
     }
   ],
   "rejected_factors": [
@@ -153,16 +158,16 @@
     {
       "name": "田子の浦沖",
       "n": 34,
-      "wmape_h0": 23.4,
+      "wmape_h0": 20.0,
       "bl2_wmape": 44.5,
-      "oos_r": 0.769,
-      "improvement_pt": 22.71
+      "oos_r": 0.799,
+      "improvement_pt": 14.09
     }
   ],
   "best_point": {
     "name": "田子の浦沖",
-    "wmape_h0": 23.4,
-    "improvement_pt": 22.71
+    "wmape_h0": 20.0,
+    "improvement_pt": 14.09
   },
-  "improvement_pt": 22.71
+  "improvement_pt": 14.09
 }

@@ -1,12 +1,12 @@
 {
   "fish": "アマダイ",
   "ship": "鶴丸",
-  "last_reviewed": "2026-04-25",
-  "status": "point_model_marginal",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 19.69,
+    "wmape_h0": 29.6,
     "bl2_wmape": 59.92,
-    "oos_r": 0.892,
+    "oos_r": 0.76,
     "n_records": 38,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -21,22 +21,27 @@
       "date": "2026-04-25",
       "action": "point_backtest_updated",
       "note": "best=田子の浦沖 wmape=18.8% imp=0.87pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=田子の浦沖 wmape=14.5% imp=15.06pt"
     }
   ],
   "point_models": [
     {
       "name": "田子の浦沖",
       "n": 37,
-      "wmape_h0": 18.8,
+      "wmape_h0": 14.5,
       "bl2_wmape": 61.6,
-      "oos_r": 0.911,
-      "improvement_pt": 0.87
+      "oos_r": 0.936,
+      "improvement_pt": 15.06
     }
   ],
   "best_point": {
     "name": "田子の浦沖",
-    "wmape_h0": 18.8,
-    "improvement_pt": 0.87
+    "wmape_h0": 14.5,
+    "improvement_pt": 15.06
   },
-  "improvement_pt": 0.87
+  "improvement_pt": 15.06
 }

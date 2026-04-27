@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-24",
-  "status": "point_model_marginal",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.02,
-    "bl2_wmape": 44.18,
-    "oos_r": 0.517,
-    "n_records": 186,
+    "wmape_h0": 41.23,
+    "bl2_wmape": 43.62,
+    "oos_r": 0.19,
+    "n_records": 183,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -101,6 +101,11 @@
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=平塚沖 wmape=35.8% imp=0.2pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=36.0% imp=5.22pt"
     }
   ],
   "rejected_factors": [
@@ -168,19 +173,19 @@
   "point_models": [
     {
       "name": "平塚沖",
-      "n": 186,
-      "wmape_h0": 35.8,
-      "bl2_wmape": 44.2,
-      "oos_r": 0.518,
-      "improvement_pt": 0.2
+      "n": 183,
+      "wmape_h0": 36.0,
+      "bl2_wmape": 43.7,
+      "oos_r": 0.521,
+      "improvement_pt": 5.22
     }
   ],
   "best_point": {
     "name": "平塚沖",
-    "wmape_h0": 35.8,
-    "improvement_pt": 0.2
+    "wmape_h0": 36.0,
+    "improvement_pt": 5.22
   },
-  "improvement_pt": 0.2,
+  "improvement_pt": 5.22,
   "trip_models": [
     {
       "trip_no": 3,

@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-27",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 45.7,
+    "wmape_h0": 45.91,
     "bl2_wmape": 58.72,
-    "oos_r": 0.354,
+    "oos_r": 0.345,
     "n_records": 208,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 30.2,
       "bl2_wmape": 52.8,
       "oos_r": 0.634,
-      "improvement_pt": 15.48
+      "improvement_pt": 15.68
     },
     {
       "name": "長井沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 34.7,
       "bl2_wmape": 48.1,
       "oos_r": 0.558,
-      "improvement_pt": 11.03
+      "improvement_pt": 11.23
     },
     {
       "name": "複数ポイント",
@@ -34,7 +34,7 @@
       "wmape_h0": 38.3,
       "bl2_wmape": 67.0,
       "oos_r": 0.635,
-      "improvement_pt": 7.36
+      "improvement_pt": 7.56
     },
     {
       "name": "城ヶ島沖_単独",
@@ -42,23 +42,23 @@
       "wmape_h0": 40.5,
       "bl2_wmape": 56.9,
       "oos_r": 0.426,
-      "improvement_pt": 5.17
+      "improvement_pt": 5.37
     },
     {
       "name": "城ヶ島沖",
       "n": 93,
-      "wmape_h0": 41.6,
+      "wmape_h0": 42.0,
       "bl2_wmape": 65.0,
-      "oos_r": 0.555,
-      "improvement_pt": 4.14
+      "oos_r": 0.537,
+      "improvement_pt": 3.88
     }
   ],
   "best_point": {
     "name": "長井沖_単独",
     "wmape_h0": 30.2,
-    "improvement_pt": 15.48
+    "improvement_pt": 15.68
   },
-  "improvement_pt": 15.48,
+  "improvement_pt": 15.68,
   "overrides": {
     "factor_blacklist": [],
     "wave_clamp": null,

@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "秀丸",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.26,
-    "bl2_wmape": 49.98,
-    "oos_r": 0.533,
-    "n_records": 42,
+    "wmape_h0": 28.72,
+    "bl2_wmape": 50.3,
+    "oos_r": 0.756,
+    "n_records": 43,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -96,6 +96,11 @@
       "date": "2026-04-21",
       "action": "point_backtest_added",
       "note": "best=沼津沖 imp=6.56pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=28.7% imp=0.03pt"
     }
   ],
   "rejected_factors": [
@@ -163,19 +168,19 @@
   "point_models": [
     {
       "name": "沼津沖",
-      "n": 42,
-      "wmape_h0": 29.7,
-      "bl2_wmape": 50.0,
-      "oos_r": 0.73,
-      "improvement_pt": 6.56
+      "n": 43,
+      "wmape_h0": 28.7,
+      "bl2_wmape": 50.3,
+      "oos_r": 0.756,
+      "improvement_pt": 0.03
     }
   ],
   "best_point": {
     "name": "沼津沖",
-    "wmape_h0": 29.7,
-    "improvement_pt": 6.56
+    "wmape_h0": 28.7,
+    "improvement_pt": 0.03
   },
-  "improvement_pt": 6.56,
+  "improvement_pt": 0.03,
   "trip_models": [],
   "best_trip": null,
   "point_depth_models": [],

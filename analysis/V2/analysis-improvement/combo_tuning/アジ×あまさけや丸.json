@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "あまさけや丸",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 25.13,
-    "bl2_wmape": 35.76,
-    "oos_r": 0.619,
-    "n_records": 69,
+    "wmape_h0": 24.42,
+    "bl2_wmape": 35.42,
+    "oos_r": 0.631,
+    "n_records": 70,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -91,6 +91,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=16.4% imp=8.73pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=23.9% imp=0.52pt"
     }
   ],
   "rejected_factors": [
@@ -158,19 +163,19 @@
   "point_models": [
     {
       "name": "剣崎沖",
-      "n": 42,
-      "wmape_h0": 16.4,
-      "bl2_wmape": 27.0,
-      "oos_r": 0.76,
-      "improvement_pt": 8.73
+      "n": 70,
+      "wmape_h0": 23.9,
+      "bl2_wmape": 35.4,
+      "oos_r": 0.648,
+      "improvement_pt": 0.52
     }
   ],
   "best_point": {
     "name": "剣崎沖",
-    "wmape_h0": 16.4,
-    "improvement_pt": 8.73
+    "wmape_h0": 23.9,
+    "improvement_pt": 0.52
   },
-  "improvement_pt": 8.73,
+  "improvement_pt": 0.52,
   "trip_models": [
     {
       "trip_no": 2,

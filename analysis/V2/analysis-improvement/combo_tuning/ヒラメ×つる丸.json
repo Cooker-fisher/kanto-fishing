@@ -1,16 +1,15 @@
 {
   "fish": "ヒラメ",
   "ship": "つる丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 51.2,
-    "bl0_wmape": 49.1,
-    "bl2_wmape": 51.4,
-    "oos_r": 0.234,
-    "n_records": 254,
-    "alpha_scale": 0.1,
-    "use_fallback": false
+    "wmape_h0": 50.57,
+    "bl2_wmape": 50.78,
+    "oos_r": 0.256,
+    "n_records": 260,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +106,13 @@
     "底層酸素が豊富な時に釣果が上がる傾向",
     "沖合の海面水位が高い月に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=42.5% imp=8.1pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_monthly",
@@ -187,5 +192,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "大原沖",
+      "n": 253,
+      "wmape_h0": 42.5,
+      "bl2_wmape": 52.8,
+      "oos_r": 0.442,
+      "improvement_pt": 8.1
+    }
+  ],
+  "best_point": {
+    "name": "大原沖",
+    "wmape_h0": 42.5,
+    "improvement_pt": 8.1
+  },
+  "improvement_pt": 8.1
 }

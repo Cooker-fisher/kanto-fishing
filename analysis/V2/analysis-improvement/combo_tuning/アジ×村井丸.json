@@ -1,12 +1,12 @@
 {
   "fish": "アジ",
   "ship": "村井丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 34.5,
-    "bl2_wmape": 36.81,
-    "oos_r": 0.483,
+    "wmape_h0": 34.52,
+    "bl2_wmape": 36.55,
+    "oos_r": 0.48,
     "n_records": 220,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "保田沖",
       "n": 220,
-      "wmape_h0": 34.2,
+      "wmape_h0": 34.5,
       "bl2_wmape": 36.8,
-      "oos_r": 0.489,
-      "improvement_pt": 0.26
+      "oos_r": 0.481,
+      "improvement_pt": 0.03
     }
   ],
   "best_point": {
     "name": "保田沖",
-    "wmape_h0": 34.2,
-    "improvement_pt": 0.26
+    "wmape_h0": 34.5,
+    "improvement_pt": 0.03
   },
-  "improvement_pt": 0.26,
+  "improvement_pt": 0.03,
   "points": [
     {
       "name": "保田沖",
@@ -174,6 +174,11 @@
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "SHIP_TRIP_RULES追加: アジ五目船=アジ船=アジ五目 → アジ に純化。LT五目/クロダイ/落とし込みを分離。"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=保田沖 wmape=34.5% imp=0.03pt"
     }
   ],
   "trip_models": [

@@ -1030,7 +1030,8 @@ _WC_DAILY_COORDS: list = []  # (lat, lon) のユニークリスト
 _WC_COORD_SNAP: dict = {}    # (lat_r4, lon_r4) -> (nearest_lat, nearest_lon) スナップキャッシュ
 # 関東（北緯35°付近）で東西≒27km・南北≒33km の楕円フィルター。
 # 既存コードと同じ非補正ユークリッド近似で統一。
-_WC_MAX_DIST = 0.3
+_WC_MAX_DIST = 0.3      # _lookup_wc_pred() 専用（water_color_daily グリッド外挿防止）
+_WC_IMP_MAX_DIST = 0.3  # load_records() water_color_imp_n 近接補完半径
 
 def _load_wc_daily_cache():
     """analysis.sqlite の water_color_daily を一度だけメモリに展開する。"""
@@ -1278,7 +1279,7 @@ def load_records(fish, ship_filter=None):
                 _r["point"] = _ship_modal_pt[_s]
                 _filled_by_modal += 1
 
-    # 水色補完: 同日・0.3度以内の近接船宿から water_color_imputed を付与
+    # 水色補完: 同日・0.5度以内の近接船宿から water_color_imputed を付与
     # 水色なしレコードに対し、同日・最近傍の水色ありレコードの値を補完する
     from collections import defaultdict as _dd
     _date_idx = _dd(list)
@@ -1302,7 +1303,7 @@ def load_records(fish, ship_filter=None):
             if lat_n is None or lon_n is None:
                 continue
             dist = ((lat_r - lat_n) ** 2 + (lon_r - lon_n) ** 2) ** 0.5
-            if dist < 0.3 and dist < best_dist:
+            if dist < _WC_IMP_MAX_DIST and dist < best_dist:
                 best_dist = dist
                 best = nb
         r["water_color_imp_n"] = best["water_color_n"] if best else None

@@ -1,16 +1,15 @@
 {
   "fish": "ヒラメ",
   "ship": "宮田丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 46.1,
-    "bl0_wmape": 45.7,
-    "bl2_wmape": 42.4,
-    "oos_r": 0.258,
+    "wmape_h0": 39.42,
+    "bl2_wmape": 42.42,
+    "oos_r": 0.491,
     "n_records": 55,
-    "alpha_scale": 0.691,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -77,7 +76,13 @@
     "水温が高い日ほど釣果が上がる傾向",
     "潮流が弱い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=日立沖 wmape=39.3% imp=0.07pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_lag30",
@@ -157,5 +162,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "日立沖",
+      "n": 55,
+      "wmape_h0": 39.3,
+      "bl2_wmape": 42.4,
+      "oos_r": 0.492,
+      "improvement_pt": 0.07
+    }
+  ],
+  "best_point": {
+    "name": "日立沖",
+    "wmape_h0": 39.3,
+    "improvement_pt": 0.07
+  },
+  "improvement_pt": 0.07
 }

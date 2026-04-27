@@ -1,12 +1,12 @@
 {
   "fish": "イナダ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 72.76,
-    "bl2_wmape": 80.99,
-    "oos_r": 0.411,
+    "wmape_h0": 69.6,
+    "bl2_wmape": 77.85,
+    "oos_r": 0.28,
     "n_records": 170,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -121,6 +121,11 @@
       "date": "2026-04-24",
       "action": "default_point_set",
       "note": "SHIP_DEFAULT_POINT追加: 平安丸 → 小田原沖。point空352件を小田原沖に統合見込み。"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=小田原沖 wmape=68.2% imp=1.35pt"
     }
   ],
   "rejected_factors": [
@@ -188,19 +193,19 @@
   "point_models": [
     {
       "name": "小田原沖",
-      "n": 148,
-      "wmape_h0": 67.9,
-      "bl2_wmape": 80.4,
-      "oos_r": 0.453,
-      "improvement_pt": 4.88
+      "n": 168,
+      "wmape_h0": 68.2,
+      "bl2_wmape": 80.7,
+      "oos_r": 0.416,
+      "improvement_pt": 1.35
     }
   ],
   "best_point": {
     "name": "小田原沖",
-    "wmape_h0": 67.9,
-    "improvement_pt": 4.88
+    "wmape_h0": 68.2,
+    "improvement_pt": 1.35
   },
-  "improvement_pt": 4.88,
+  "improvement_pt": 1.35,
   "trip_models": [
     {
       "trip_no": 1,

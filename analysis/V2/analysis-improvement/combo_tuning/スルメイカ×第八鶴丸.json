@@ -1,16 +1,15 @@
 {
   "fish": "スルメイカ",
   "ship": "第八鶴丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 52.8,
-    "bl0_wmape": 63.9,
-    "bl2_wmape": 66.4,
-    "oos_r": 0.561,
+    "wmape_h0": 46.57,
+    "bl2_wmape": 66.35,
+    "oos_r": 0.609,
     "n_records": 89,
-    "alpha_scale": 0.635,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -77,7 +76,13 @@
     "最大うねりが大きい日に釣果が上がる傾向",
     "波が高い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=川津沖 wmape=45.5% imp=1.07pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "wave_height",
@@ -157,5 +162,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "川津沖",
+      "n": 89,
+      "wmape_h0": 45.5,
+      "bl2_wmape": 66.4,
+      "oos_r": 0.623,
+      "improvement_pt": 1.07
+    }
+  ],
+  "best_point": {
+    "name": "川津沖",
+    "wmape_h0": 45.5,
+    "improvement_pt": 1.07
+  },
+  "improvement_pt": 1.07
 }

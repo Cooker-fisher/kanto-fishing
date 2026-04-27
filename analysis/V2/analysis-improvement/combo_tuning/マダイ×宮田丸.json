@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "宮田丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-27",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.6,
-    "bl0_wmape": 53.9,
-    "bl2_wmape": 51.7,
-    "oos_r": 0.543,
-    "n_records": 106,
-    "alpha_scale": 0.426,
-    "use_fallback": false
+    "wmape_h0": 37.48,
+    "bl2_wmape": 52.35,
+    "oos_r": 0.702,
+    "n_records": 110,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "50m深水温が高い時に釣果が上がる傾向",
     "秋の長潮・若潮に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=日立沖 wmape=37.4% imp=0.11pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_lag30",
@@ -167,5 +172,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "日立沖",
+      "n": 110,
+      "wmape_h0": 37.4,
+      "bl2_wmape": 52.3,
+      "oos_r": 0.704,
+      "improvement_pt": 0.11
+    }
+  ],
+  "best_point": {
+    "name": "日立沖",
+    "wmape_h0": 37.4,
+    "improvement_pt": 0.11
+  },
+  "improvement_pt": 0.11
 }

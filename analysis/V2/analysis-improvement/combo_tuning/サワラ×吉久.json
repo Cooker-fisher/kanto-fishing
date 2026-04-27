@@ -1,32 +1,32 @@
 {
   "fish": "サワラ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-25",
+  "last_reviewed": "2026-04-27",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 49.52,
+    "wmape_h0": 69.38,
     "bl2_wmape": 50.88,
-    "oos_r": 0.682,
+    "oos_r": 0.258,
     "n_records": 74,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "湾内",
       "n": 70,
-      "wmape_h0": 39.3,
+      "wmape_h0": 40.0,
       "bl2_wmape": 62.3,
-      "oos_r": 0.813,
-      "improvement_pt": 10.23
+      "oos_r": 0.814,
+      "improvement_pt": 29.41
     }
   ],
   "best_point": {
     "name": "湾内",
-    "wmape_h0": 39.3,
-    "improvement_pt": 10.23
+    "wmape_h0": 40.0,
+    "improvement_pt": 29.41
   },
-  "improvement_pt": 10.23,
+  "improvement_pt": 29.41,
   "points": [
     {
       "name": "湾内",
@@ -184,6 +184,11 @@
       "date": "2026-04-25",
       "action": "point_backtest_updated",
       "note": "best=湾内 wmape=39.3% imp=11.19pt"
+    },
+    {
+      "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=湾内 wmape=40.0% imp=29.41pt"
     }
   ],
   "trip_models": [
