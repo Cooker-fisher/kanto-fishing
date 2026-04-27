@@ -1,10 +1,10 @@
 {
   "fish": "アジ",
   "ship": "なごみ丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 33.65,
+    "wmape_h0": 33.49,
     "bl2_wmape": 92.69,
     "oos_r": 0.92,
     "n_records": 36,
@@ -111,6 +111,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=松崎沖 wmape=32.3% imp=1.35pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=松崎沖 wmape=32.1% imp=1.36pt"
     }
   ],
   "rejected_factors": [
@@ -193,16 +198,16 @@
     {
       "name": "松崎沖",
       "n": 35,
-      "wmape_h0": 32.3,
+      "wmape_h0": 32.1,
       "bl2_wmape": 103.0,
-      "oos_r": 0.931,
-      "improvement_pt": 1.31
+      "oos_r": 0.932,
+      "improvement_pt": 1.36
     }
   ],
   "best_point": {
     "name": "松崎沖",
-    "wmape_h0": 32.3,
-    "improvement_pt": 1.31
+    "wmape_h0": 32.1,
+    "improvement_pt": 1.36
   },
-  "improvement_pt": 1.31
+  "improvement_pt": 1.36
 }

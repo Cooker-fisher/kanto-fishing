@@ -1,12 +1,12 @@
 {
   "fish": "ヒラメ",
   "ship": "大盛丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 37.88,
+    "wmape_h0": 37.96,
     "bl2_wmape": 45.53,
-    "oos_r": 0.523,
+    "oos_r": 0.525,
     "n_records": 274,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,23 +18,23 @@
       "wmape_h0": 31.0,
       "bl2_wmape": 53.9,
       "oos_r": 0.679,
-      "improvement_pt": 6.91
+      "improvement_pt": 6.99
     },
     {
       "name": "外川沖",
       "n": 187,
-      "wmape_h0": 34.4,
+      "wmape_h0": 34.0,
       "bl2_wmape": 44.2,
-      "oos_r": 0.545,
-      "improvement_pt": 3.45
+      "oos_r": 0.558,
+      "improvement_pt": 3.94
     }
   ],
   "best_point": {
     "name": "外川前",
     "wmape_h0": 31.0,
-    "improvement_pt": 6.91
+    "improvement_pt": 6.99
   },
-  "improvement_pt": 6.91,
+  "improvement_pt": 6.99,
   "points": [
     {
       "name": "外川前",
@@ -192,6 +192,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=外川前 wmape=31.0% imp=6.73pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=外川前 wmape=31.0% imp=6.99pt"
     }
   ],
   "trip_models": [

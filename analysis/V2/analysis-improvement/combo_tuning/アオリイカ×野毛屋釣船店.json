@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-28",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.25,
+    "wmape_h0": 36.02,
     "bl2_wmape": 43.69,
-    "oos_r": 0.497,
+    "oos_r": 0.5,
     "n_records": 76,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -194,18 +194,18 @@
     {
       "name": "竹岡沖",
       "n": 75,
-      "wmape_h0": 35.8,
+      "wmape_h0": 35.7,
       "bl2_wmape": 43.4,
-      "oos_r": 0.498,
-      "improvement_pt": 0.5
+      "oos_r": 0.499,
+      "improvement_pt": 0.31
     }
   ],
   "best_point": {
     "name": "竹岡沖",
-    "wmape_h0": 35.8,
-    "improvement_pt": 0.5
+    "wmape_h0": 35.7,
+    "improvement_pt": 0.31
   },
-  "improvement_pt": 0.5,
+  "improvement_pt": 0.31,
   "trip_models": [
     {
       "trip_no": 2,

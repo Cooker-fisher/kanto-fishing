@@ -1,10 +1,10 @@
 {
   "fish": "マルイカ",
   "ship": "はら丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 42.45,
+    "wmape_h0": 42.46,
     "bl2_wmape": 54.26,
     "oos_r": 0.683,
     "n_records": 82,
@@ -18,15 +18,15 @@
       "wmape_h0": 41.0,
       "bl2_wmape": 67.9,
       "oos_r": 0.763,
-      "improvement_pt": 1.45
+      "improvement_pt": 1.46
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
     "wmape_h0": 41.0,
-    "improvement_pt": 1.45
+    "improvement_pt": 1.46
   },
-  "improvement_pt": 1.45,
+  "improvement_pt": 1.46,
   "history": [
     {
       "date": "2026-04-22",
@@ -52,6 +52,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=41.0% imp=0.44pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=41.0% imp=1.46pt"
     }
   ]
 }

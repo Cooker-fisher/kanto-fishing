@@ -1,10 +1,10 @@
 {
   "fish": "マダイ",
   "ship": "弁天屋",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.81,
+    "wmape_h0": 37.79,
     "bl2_wmape": 46.94,
     "oos_r": 0.544,
     "n_records": 102,
@@ -17,7 +17,7 @@
       "n": 98,
       "wmape_h0": 37.3,
       "bl2_wmape": 47.9,
-      "oos_r": 0.527,
+      "oos_r": 0.528,
       "improvement_pt": 0.54
     }
   ],
@@ -45,6 +45,11 @@
     },
     {
       "date": "2026-04-27",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=37.3% imp=0.54pt"
+    },
+    {
+      "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=37.3% imp=0.54pt"
     }

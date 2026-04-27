@@ -1,12 +1,12 @@
 {
   "fish": "アジ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.02,
+    "wmape_h0": 35.9,
     "bl2_wmape": 37.55,
-    "oos_r": 0.466,
+    "oos_r": 0.469,
     "n_records": 891,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,10 +15,10 @@
     {
       "name": "横須賀沖",
       "n": 43,
-      "wmape_h0": 13.8,
+      "wmape_h0": 13.7,
       "bl2_wmape": 29.0,
       "oos_r": 0.83,
-      "improvement_pt": 22.27
+      "improvement_pt": 22.22
     },
     {
       "name": "浦安沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 15.6,
       "bl2_wmape": 53.2,
       "oos_r": 0.876,
-      "improvement_pt": 20.37
+      "improvement_pt": 20.25
     },
     {
       "name": "観音崎沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 18.7,
       "bl2_wmape": 27.7,
       "oos_r": 0.581,
-      "improvement_pt": 17.33
+      "improvement_pt": 17.21
     },
     {
       "name": "本牧沖",
@@ -42,31 +42,31 @@
       "wmape_h0": 21.4,
       "bl2_wmape": 33.5,
       "oos_r": 0.608,
-      "improvement_pt": 14.61
+      "improvement_pt": 14.49
     },
     {
       "name": "横浜沖",
       "n": 83,
       "wmape_h0": 27.2,
       "bl2_wmape": 37.6,
-      "oos_r": 0.691,
-      "improvement_pt": 8.81
+      "oos_r": 0.692,
+      "improvement_pt": 8.74
     },
     {
       "name": "木更津沖",
       "n": 476,
-      "wmape_h0": 30.1,
+      "wmape_h0": 30.0,
       "bl2_wmape": 34.7,
       "oos_r": 0.49,
-      "improvement_pt": 5.94
+      "improvement_pt": 5.85
     }
   ],
   "best_point": {
     "name": "横須賀沖",
-    "wmape_h0": 13.8,
-    "improvement_pt": 22.27
+    "wmape_h0": 13.7,
+    "improvement_pt": 22.22
   },
-  "improvement_pt": 22.27,
+  "improvement_pt": 22.22,
   "points": [
     {
       "name": "木更津沖",
@@ -268,6 +268,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=横須賀沖 wmape=13.9% imp=22.05pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=横須賀沖 wmape=13.7% imp=22.22pt"
     }
   ],
   "trip_models": [

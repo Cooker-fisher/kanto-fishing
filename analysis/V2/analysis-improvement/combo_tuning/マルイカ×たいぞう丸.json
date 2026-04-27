@@ -1,7 +1,7 @@
 {
   "fish": "マルイカ",
   "ship": "たいぞう丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 44.55,
@@ -18,7 +18,7 @@
       "wmape_h0": 31.7,
       "bl2_wmape": 46.8,
       "oos_r": 0.709,
-      "improvement_pt": 12.83
+      "improvement_pt": 12.85
     },
     {
       "name": "亀城根",
@@ -40,9 +40,9 @@
   "best_point": {
     "name": "城ヶ島沖",
     "wmape_h0": 31.7,
-    "improvement_pt": 12.83
+    "improvement_pt": 12.85
   },
-  "improvement_pt": 12.83,
+  "improvement_pt": 12.85,
   "points": [
     {
       "name": "亀城根",
@@ -225,6 +225,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=31.7% imp=12.76pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=31.7% imp=12.85pt"
     }
   ],
   "trip_models": [

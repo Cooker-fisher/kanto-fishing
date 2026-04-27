@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 33.21,
@@ -15,10 +15,10 @@
     {
       "name": "観音崎沖",
       "n": 80,
-      "wmape_h0": 18.4,
+      "wmape_h0": 18.3,
       "bl2_wmape": 51.3,
-      "oos_r": 0.874,
-      "improvement_pt": 14.78
+      "oos_r": 0.875,
+      "improvement_pt": 14.87
     },
     {
       "name": "猿島沖",
@@ -31,10 +31,10 @@
     {
       "name": "走水沖",
       "n": 233,
-      "wmape_h0": 26.1,
+      "wmape_h0": 26.0,
       "bl2_wmape": 30.2,
-      "oos_r": 0.557,
-      "improvement_pt": 7.1
+      "oos_r": 0.555,
+      "improvement_pt": 7.2
     },
     {
       "name": "大貫沖",
@@ -55,10 +55,10 @@
   ],
   "best_point": {
     "name": "観音崎沖",
-    "wmape_h0": 18.4,
-    "improvement_pt": 14.78
+    "wmape_h0": 18.3,
+    "improvement_pt": 14.87
   },
-  "improvement_pt": 14.78,
+  "improvement_pt": 14.87,
   "points": [
     {
       "name": "走水沖",
@@ -261,6 +261,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=18.4% imp=14.79pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=18.3% imp=14.87pt"
     }
   ],
   "trip_models": [

@@ -2,11 +2,11 @@
   "fish": "トラフグ",
   "ship": "野毛屋釣船店",
   "last_reviewed": "2026-04-28",
-  "status": "point_model_marginal",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 41.17,
+    "wmape_h0": 41.24,
     "bl2_wmape": 59.09,
-    "oos_r": 0.522,
+    "oos_r": 0.521,
     "n_records": 80,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -199,18 +199,18 @@
     {
       "name": "横須賀沖",
       "n": 59,
-      "wmape_h0": 36.2,
+      "wmape_h0": 36.0,
       "bl2_wmape": 59.1,
-      "oos_r": 0.581,
-      "improvement_pt": 5.0
+      "oos_r": 0.587,
+      "improvement_pt": 5.22
     }
   ],
   "best_point": {
     "name": "横須賀沖",
-    "wmape_h0": 36.2,
-    "improvement_pt": 5.0
+    "wmape_h0": 36.0,
+    "improvement_pt": 5.22
   },
-  "improvement_pt": 5.0,
+  "improvement_pt": 5.22,
   "trip_models": [
     {
       "trip_no": 3,

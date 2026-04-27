@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "つね丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-04-28",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 23.38,
@@ -21,18 +21,18 @@
     {
       "name": "佐島沖",
       "n": 119,
-      "wmape_h0": 21.3,
+      "wmape_h0": 21.2,
       "bl2_wmape": 27.1,
-      "oos_r": 0.507,
-      "improvement_pt": 2.12
+      "oos_r": 0.508,
+      "improvement_pt": 2.17
     }
   ],
   "best_point": {
     "name": "佐島沖",
-    "wmape_h0": 21.3,
-    "improvement_pt": 2.12
+    "wmape_h0": 21.2,
+    "improvement_pt": 2.17
   },
-  "improvement_pt": 2.12,
+  "improvement_pt": 2.17,
   "history": [
     {
       "date": "2026-04-24",
@@ -58,6 +58,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=佐島沖 wmape=21.3% imp=2.12pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=佐島沖 wmape=21.2% imp=2.17pt"
     }
   ]
 }
