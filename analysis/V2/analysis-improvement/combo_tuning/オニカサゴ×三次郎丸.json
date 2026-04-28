@@ -1,7 +1,7 @@
 {
   "fish": "オニカサゴ",
   "ship": "三次郎丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 24.05,
@@ -18,15 +18,15 @@
       "wmape_h0": 22.9,
       "bl2_wmape": 30.1,
       "oos_r": 0.503,
-      "improvement_pt": 1.14
+      "improvement_pt": 1.12
     }
   ],
   "best_point": {
     "name": "飯岡沖",
     "wmape_h0": 22.9,
-    "improvement_pt": 1.14
+    "improvement_pt": 1.12
   },
-  "improvement_pt": 1.14,
+  "improvement_pt": 1.12,
   "history": [
     {
       "date": "2026-04-22",
@@ -52,6 +52,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=飯岡沖 wmape=22.9% imp=1.14pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=飯岡沖 wmape=22.9% imp=1.12pt"
     }
   ]
 }

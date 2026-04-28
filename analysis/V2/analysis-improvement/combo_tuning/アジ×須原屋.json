@@ -1,10 +1,10 @@
 {
   "fish": "アジ",
   "ship": "須原屋",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 19.8,
+    "wmape_h0": 19.77,
     "bl2_wmape": 23.29,
     "oos_r": 0.693,
     "n_records": 590,
@@ -17,8 +17,8 @@
       "n": 150,
       "wmape_h0": 13.1,
       "bl2_wmape": 18.7,
-      "oos_r": 0.68,
-      "improvement_pt": 6.66
+      "oos_r": 0.681,
+      "improvement_pt": 6.64
     },
     {
       "name": "横浜沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 21.4,
       "bl2_wmape": 24.1,
       "oos_r": 0.58,
-      "improvement_pt": -1.63
+      "improvement_pt": -1.65
     }
   ],
   "best_point": {
     "name": "木更津沖",
     "wmape_h0": 13.1,
-    "improvement_pt": 6.66
+    "improvement_pt": 6.64
   },
-  "improvement_pt": 6.66,
+  "improvement_pt": 6.64,
   "points": [
     {
       "name": "横浜沖",
@@ -212,6 +212,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=13.1% imp=6.59pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=木更津沖 wmape=13.1% imp=6.64pt"
     }
   ],
   "trip_models": [

@@ -1,12 +1,12 @@
 {
   "fish": "シロギス",
   "ship": "弁天屋",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.58,
+    "wmape_h0": 31.62,
     "bl2_wmape": 38.84,
-    "oos_r": 0.658,
+    "oos_r": 0.659,
     "n_records": 168,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -17,16 +17,16 @@
       "n": 109,
       "wmape_h0": 27.9,
       "bl2_wmape": 40.0,
-      "oos_r": 0.661,
-      "improvement_pt": 3.69
+      "oos_r": 0.66,
+      "improvement_pt": 3.73
     }
   ],
   "best_point": {
     "name": "中ノ瀬",
     "wmape_h0": 27.9,
-    "improvement_pt": 3.69
+    "improvement_pt": 3.73
   },
-  "improvement_pt": 3.69,
+  "improvement_pt": 3.73,
   "history": [
     {
       "date": "2026-04-24",
@@ -52,6 +52,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=中ノ瀬 wmape=27.8% imp=3.83pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=中ノ瀬 wmape=27.9% imp=3.73pt"
     }
   ]
 }

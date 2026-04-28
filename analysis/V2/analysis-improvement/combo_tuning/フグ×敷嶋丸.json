@@ -1,12 +1,12 @@
 {
   "fish": "フグ",
   "ship": "敷嶋丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 63.74,
+    "wmape_h0": 63.75,
     "bl2_wmape": 85.22,
-    "oos_r": 0.455,
+    "oos_r": 0.454,
     "n_records": 355,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,26 +15,26 @@
     {
       "name": "大原沖",
       "n": 84,
-      "wmape_h0": 53.8,
+      "wmape_h0": 53.5,
       "bl2_wmape": 80.6,
-      "oos_r": 0.556,
-      "improvement_pt": 9.93
+      "oos_r": 0.564,
+      "improvement_pt": 10.25
     },
     {
       "name": "太東沖",
       "n": 264,
-      "wmape_h0": 60.8,
+      "wmape_h0": 60.7,
       "bl2_wmape": 89.4,
-      "oos_r": 0.538,
-      "improvement_pt": 2.9
+      "oos_r": 0.54,
+      "improvement_pt": 3.06
     }
   ],
   "best_point": {
     "name": "大原沖",
-    "wmape_h0": 53.8,
-    "improvement_pt": 9.93
+    "wmape_h0": 53.5,
+    "improvement_pt": 10.25
   },
-  "improvement_pt": 9.93,
+  "improvement_pt": 10.25,
   "points": [
     {
       "name": "太東沖",
@@ -202,6 +202,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=大原沖 wmape=53.4% imp=10.21pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=53.5% imp=10.25pt"
     }
   ],
   "trip_models": [

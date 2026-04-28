@@ -1,7 +1,7 @@
 {
   "fish": "ヤリイカ",
   "ship": "幸丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 51.7,
@@ -127,6 +127,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=深場(81-150m) wmape=50.6% imp=0.89pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=深場(81-150m) wmape=51.7% imp=0.03pt"
     }
   ],
   "rejected_factors": [
@@ -195,18 +200,18 @@
     {
       "name": "深場(81-150m)",
       "n": 57,
-      "wmape_h0": 51.0,
+      "wmape_h0": 51.7,
       "bl2_wmape": 62.5,
       "oos_r": 0.317,
-      "improvement_pt": 0.73
+      "improvement_pt": 0.03
     }
   ],
   "best_point": {
     "name": "深場(81-150m)",
-    "wmape_h0": 51.0,
-    "improvement_pt": 0.73
+    "wmape_h0": 51.7,
+    "improvement_pt": 0.03
   },
-  "improvement_pt": 0.73,
+  "improvement_pt": 0.03,
   "trip_models": [],
   "best_trip": null,
   "point_depth_models": [],

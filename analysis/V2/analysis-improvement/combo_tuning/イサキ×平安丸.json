@@ -1,7 +1,7 @@
 {
   "fish": "イサキ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 28.5,
@@ -141,6 +141,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=小田原沖 wmape=25.4% imp=3.12pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=小田原沖 wmape=25.5% imp=3.05pt"
     }
   ],
   "rejected_factors": [
@@ -209,18 +214,18 @@
     {
       "name": "小田原沖",
       "n": 36,
-      "wmape_h0": 25.4,
+      "wmape_h0": 25.5,
       "bl2_wmape": 55.3,
-      "oos_r": 0.785,
-      "improvement_pt": 3.12
+      "oos_r": 0.784,
+      "improvement_pt": 3.05
     }
   ],
   "best_point": {
     "name": "小田原沖",
-    "wmape_h0": 25.4,
-    "improvement_pt": 3.12
+    "wmape_h0": 25.5,
+    "improvement_pt": 3.05
   },
-  "improvement_pt": 3.12,
+  "improvement_pt": 3.05,
   "trip_models": [],
   "best_trip": null,
   "point_depth_models": [],

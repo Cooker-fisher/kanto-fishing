@@ -1,12 +1,12 @@
 {
   "fish": "キンメダイ",
   "ship": "太郎丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 55.25,
+    "wmape_h0": 55.29,
     "bl2_wmape": 60.12,
-    "oos_r": 0.402,
+    "oos_r": 0.401,
     "n_records": 224,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,26 +15,26 @@
     {
       "name": "沖ノ瀬",
       "n": 103,
-      "wmape_h0": 45.4,
+      "wmape_h0": 45.2,
       "bl2_wmape": 51.2,
-      "oos_r": 0.577,
-      "improvement_pt": 9.86
+      "oos_r": 0.578,
+      "improvement_pt": 10.14
     },
     {
       "name": "沖の瀬",
       "n": 96,
-      "wmape_h0": 46.0,
+      "wmape_h0": 46.1,
       "bl2_wmape": 57.4,
-      "oos_r": 0.537,
-      "improvement_pt": 9.23
+      "oos_r": 0.535,
+      "improvement_pt": 9.17
     }
   ],
   "best_point": {
     "name": "沖ノ瀬",
-    "wmape_h0": 45.4,
-    "improvement_pt": 9.86
+    "wmape_h0": 45.2,
+    "improvement_pt": 10.14
   },
-  "improvement_pt": 9.86,
+  "improvement_pt": 10.14,
   "history": [
     {
       "date": "2026-04-24",
@@ -60,6 +60,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=沖ノ瀬 wmape=45.4% imp=9.87pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=沖ノ瀬 wmape=45.2% imp=10.14pt"
     }
   ]
 }

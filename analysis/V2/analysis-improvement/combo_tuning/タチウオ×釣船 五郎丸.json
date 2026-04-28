@@ -1,12 +1,12 @@
 {
   "fish": "タチウオ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 45.89,
+    "wmape_h0": 45.93,
     "bl2_wmape": 55.6,
-    "oos_r": 0.508,
+    "oos_r": 0.507,
     "n_records": 583,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -17,24 +17,24 @@
       "n": 162,
       "wmape_h0": 36.3,
       "bl2_wmape": 56.1,
-      "oos_r": 0.627,
-      "improvement_pt": 9.55
+      "oos_r": 0.628,
+      "improvement_pt": 9.59
     },
     {
       "name": "観音崎沖",
       "n": 364,
-      "wmape_h0": 42.7,
+      "wmape_h0": 42.8,
       "bl2_wmape": 55.2,
-      "oos_r": 0.569,
-      "improvement_pt": 3.14
+      "oos_r": 0.566,
+      "improvement_pt": 3.09
     }
   ],
   "best_point": {
     "name": "猿島沖",
     "wmape_h0": 36.3,
-    "improvement_pt": 9.55
+    "improvement_pt": 9.59
   },
-  "improvement_pt": 9.55,
+  "improvement_pt": 9.59,
   "points": [
     {
       "name": "観音崎沖",
@@ -222,6 +222,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=猿島沖 wmape=36.3% imp=9.55pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=猿島沖 wmape=36.3% imp=9.59pt"
     }
   ],
   "trip_models": [

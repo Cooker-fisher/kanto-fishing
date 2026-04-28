@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "米元釣船店",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 39.83,
@@ -15,18 +15,18 @@
     {
       "name": "観音崎沖",
       "n": 70,
-      "wmape_h0": 18.8,
+      "wmape_h0": 18.9,
       "bl2_wmape": 53.3,
       "oos_r": 0.887,
-      "improvement_pt": 20.98
+      "improvement_pt": 20.97
     },
     {
       "name": "猿島沖",
       "n": 102,
-      "wmape_h0": 28.8,
+      "wmape_h0": 28.9,
       "bl2_wmape": 42.7,
-      "oos_r": 0.624,
-      "improvement_pt": 11.03
+      "oos_r": 0.619,
+      "improvement_pt": 10.88
     },
     {
       "name": "海堡沖",
@@ -41,16 +41,16 @@
       "n": 118,
       "wmape_h0": 32.7,
       "bl2_wmape": 38.4,
-      "oos_r": 0.675,
-      "improvement_pt": 7.15
+      "oos_r": 0.676,
+      "improvement_pt": 7.17
     }
   ],
   "best_point": {
     "name": "観音崎沖",
-    "wmape_h0": 18.8,
-    "improvement_pt": 20.98
+    "wmape_h0": 18.9,
+    "improvement_pt": 20.97
   },
-  "improvement_pt": 20.98,
+  "improvement_pt": 20.97,
   "history": [
     {
       "date": "2026-04-24",
@@ -76,6 +76,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=18.8% imp=20.98pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=18.9% imp=20.97pt"
     }
   ]
 }

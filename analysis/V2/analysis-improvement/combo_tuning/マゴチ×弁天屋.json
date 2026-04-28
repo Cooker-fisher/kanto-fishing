@@ -1,12 +1,12 @@
 {
   "fish": "マゴチ",
   "ship": "弁天屋",
-  "last_reviewed": "2026-04-28",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-29",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 34.36,
+    "wmape_h0": 34.92,
     "bl2_wmape": 45.37,
-    "oos_r": 0.518,
+    "oos_r": 0.5,
     "n_records": 106,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,10 +15,10 @@
     {
       "name": "富津沖",
       "n": 33,
-      "wmape_h0": 29.1,
+      "wmape_h0": 31.6,
       "bl2_wmape": 45.7,
-      "oos_r": 0.517,
-      "improvement_pt": 5.26
+      "oos_r": 0.356,
+      "improvement_pt": 3.29
     },
     {
       "name": "八景沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 36.4,
       "bl2_wmape": 53.4,
       "oos_r": 0.593,
-      "improvement_pt": -2.05
+      "improvement_pt": -1.49
     }
   ],
   "best_point": {
     "name": "富津沖",
-    "wmape_h0": 29.1,
-    "improvement_pt": 5.26
+    "wmape_h0": 31.6,
+    "improvement_pt": 3.29
   },
-  "improvement_pt": 5.26,
+  "improvement_pt": 3.29,
   "history": [
     {
       "date": "2026-04-24",
@@ -60,6 +60,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=富津沖 wmape=29.1% imp=5.82pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=富津沖 wmape=31.6% imp=3.29pt"
     }
   ]
 }

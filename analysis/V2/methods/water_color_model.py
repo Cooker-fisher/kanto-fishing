@@ -205,7 +205,7 @@ _wx_coord_cache = None
 _cmems_wc_cache = {}
 
 def get_cmems_wc_day(conn_cmems, lat, lon, date_iso):
-    """水色モデル用 CMEMS 取得（no3_surface, do_surface, sla_surface, chl_surface, sss_surface）。
+    """水色モデル用 CMEMS 取得（no3_surface, do_surface, sla_surface, chl_surface, sss_surface, kd490_surface）。
     cmems_depth: 0.25° 最近傍 + 0.5° フォールバック。
     cmems_daily: 0.1° 最近傍（グリッド ≈ 0.042°）+ 0.5° フォールバック。
     """
@@ -233,9 +233,9 @@ def get_cmems_wc_day(conn_cmems, lat, lon, date_iso):
         if row[0] is not None: result["do_surface"]  = row[0]
         if row[1] is not None: result["no3_surface"] = row[1]
 
-    # cmems_daily から sla/chl/sss を 0.1° 最近傍で取得（グリッド ≈ 0.042°）
+    # cmems_daily から sla/chl/sss/kd490 を 0.1° 最近傍で取得（グリッド ≈ 0.042°）
     row2 = conn_cmems.execute(
-        """SELECT sla, chl, sss FROM cmems_daily
+        """SELECT sla, chl, sss, kd490 FROM cmems_daily
            WHERE date=? AND ABS(lat-?)<0.1 AND ABS(lon-?)<0.1
            ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?) LIMIT 1""",
         (date_iso, lat, lon, lat, lat, lon, lon),
@@ -243,15 +243,16 @@ def get_cmems_wc_day(conn_cmems, lat, lon, date_iso):
     if not row2:
         # 0.5° フォールバック
         row2 = conn_cmems.execute(
-            """SELECT sla, chl, sss FROM cmems_daily
+            """SELECT sla, chl, sss, kd490 FROM cmems_daily
                WHERE date=? AND ABS(lat-?)<0.5 AND ABS(lon-?)<0.5
                ORDER BY (lat-?)*(lat-?)+(lon-?)*(lon-?) LIMIT 1""",
             (date_iso, lat, lon, lat, lat, lon, lon),
         ).fetchone()
     if row2:
-        if row2[0] is not None: result["sla_surface"] = row2[0]
-        if row2[1] is not None: result["chl_surface"] = row2[1]
-        if row2[2] is not None: result["sss_surface"] = row2[2]
+        if row2[0] is not None: result["sla_surface"]  = row2[0]
+        if row2[1] is not None: result["chl_surface"]  = row2[1]
+        if row2[2] is not None: result["sss_surface"]  = row2[2]
+        if row2[3] is not None: result["kd490_surface"] = row2[3]
 
     _cmems_wc_cache[k] = result
     return result
@@ -517,7 +518,7 @@ def build_features(records, conn_wx, wx_coords, conn_cmems=None):
         feat = {
             # CMEMSデフォルト（データなし日はニュートラル値で補完）
             "no3_surface": 0.0, "do_surface": 0.0,
-            "sla_surface": 0.0, "chl_surface": 0.5, "sss_surface": 34.0,
+            "sla_surface": 0.0, "chl_surface": 0.5, "sss_surface": 34.0, "kd490_surface": 0.1,
             **r, **pf, **wxd,
             **riv, **tide, **cmems,
             "wc_prev1":         _lookup_wc_prev(wlat, wlon, date_iso),
@@ -550,7 +551,8 @@ BASE_FEATURES = (
        # CMEMS 栄養塩・酸素: 高no3=植物プランクトン増→有機物分解→濁り、低do=貧酸素=青潮
        "no3_surface", "do_surface",
        # CMEMS 海面: sla=黒潮接岸度、chl=クロロフィル(濁度代理)、sss=塩分(陸水混入検出)
-       "sla_surface", "chl_surface", "sss_surface"]
+       # kd490=衛星濁度（490nm光減衰係数: 高値=濁り、低値=澄み）
+       "sla_surface", "chl_surface", "sss_surface", "kd490_surface"]
 )
 # NOTE: precip_cumW7 を削除（河口3特徴量に置き換え）。
 # precip_cumW7 ≈ tone/tama_impact / prox で多重共線性が発生するため。
@@ -743,7 +745,7 @@ def backtest(records, use_stratified=True):
                                 "tone_impact","sagami_impact","tama_impact",
                                 "wc_prev1","wc_spatial_lag","cape_proximity_n",
                                 "month_sin","month_cos",
-                                "sla_surface","chl_surface","sss_surface"],
+                                "sla_surface","chl_surface","sss_surface","kd490_surface"],
                     "mid":     [f"precip_sum{i}" for i in [2,3,4,5,6,7]] +
                                ["days_since_rain",
                                 "wave_height_avg","swell_height_avg","current_speed_avg",
@@ -752,7 +754,7 @@ def backtest(records, use_stratified=True):
                                 "tone_impact","sagami_impact","tama_impact",
                                 "wc_prev1","wc_spatial_lag","cape_proximity_n",
                                 "month_sin","month_cos",
-                                "sla_surface","chl_surface","sss_surface"],
+                                "sla_surface","chl_surface","sss_surface","kd490_surface"],
                     "deep":    [f"precip_sum{i}" for i in [4,5,6,7]] +
                                ["days_since_rain",
                                 "wave_height_avg","swell_height_avg","current_speed_avg",
@@ -761,7 +763,7 @@ def backtest(records, use_stratified=True):
                                 "tone_impact","sagami_impact","tama_impact",
                                 "wc_prev1","wc_spatial_lag","cape_proximity_n",
                                 "month_sin","month_cos",
-                                "sla_surface","chl_surface","sss_surface"],
+                                "sla_surface","chl_surface","sss_surface","kd490_surface"],
                 }.get(grp, BASE_FEATURES)
                 c, fk = fit_ols(g_tr, features=feats)
                 if c: s_models[grp] = (c, fk)
@@ -818,7 +820,7 @@ def factor_correlation_analysis(records):
         ("潮汐・月齢",   ["tide_coeff", "moon_age"]),
         ("水深・沖合",   ["depth_avg", "depth_bin_n", "dist_shore"]),
         ("季節",         ["month_n", "month_sin", "month_cos"]),
-        ("CMEMS 海面",   ["sla_surface", "chl_surface", "sss_surface"]),
+        ("CMEMS 海面",   ["sla_surface", "chl_surface", "sss_surface", "kd490_surface"]),
     ]
     targets = [r.get("water_color_n") for r in records]
     for gname, keys in groups:
@@ -1033,11 +1035,12 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
 
             cmems_d = get_cmems_wc_day(conn_cmems, lat, lon, date_iso)
             r = {**pf, **wxd, **riv, **tide, **cmems_d,
-                 "no3_surface":  cmems_d.get("no3_surface",  0.0),
-                 "do_surface":   cmems_d.get("do_surface",   0.0),
-                 "sla_surface":  cmems_d.get("sla_surface",  0.0),
-                 "chl_surface":  cmems_d.get("chl_surface",  0.5),
-                 "sss_surface":  cmems_d.get("sss_surface",  34.0),
+                 "no3_surface":   cmems_d.get("no3_surface",   0.0),
+                 "do_surface":    cmems_d.get("do_surface",    0.0),
+                 "sla_surface":   cmems_d.get("sla_surface",   0.0),
+                 "chl_surface":   cmems_d.get("chl_surface",   0.5),
+                 "sss_surface":   cmems_d.get("sss_surface",   34.0),
+                 "kd490_surface": cmems_d.get("kd490_surface", 0.1),
                  "wc_prev1": wc_prev1,
                  "wc_spatial_lag": wc_spatial_lag_val,
                  "cape_proximity_n": _cape_proximity(lat, lon),

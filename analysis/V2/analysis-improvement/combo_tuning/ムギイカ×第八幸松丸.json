@@ -1,12 +1,12 @@
 {
   "fish": "ムギイカ",
   "ship": "第八幸松丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.39,
+    "wmape_h0": 54.85,
     "bl2_wmape": 64.2,
-    "oos_r": 0.379,
+    "oos_r": 0.371,
     "n_records": 95,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -96,6 +96,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=静浦沖 wmape=54.2% imp=0.22pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=静浦沖 wmape=54.3% imp=0.56pt"
     }
   ],
   "rejected_factors": [
@@ -178,16 +183,16 @@
     {
       "name": "静浦沖",
       "n": 92,
-      "wmape_h0": 54.2,
+      "wmape_h0": 54.3,
       "bl2_wmape": 65.0,
-      "oos_r": 0.399,
-      "improvement_pt": 0.22
+      "oos_r": 0.397,
+      "improvement_pt": 0.56
     }
   ],
   "best_point": {
     "name": "静浦沖",
-    "wmape_h0": 54.2,
-    "improvement_pt": 0.22
+    "wmape_h0": 54.3,
+    "improvement_pt": 0.56
   },
-  "improvement_pt": 0.22
+  "improvement_pt": 0.56
 }

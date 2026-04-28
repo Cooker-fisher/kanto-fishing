@@ -1,12 +1,12 @@
 {
   "fish": "マダコ",
   "ship": "長崎屋",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 40.68,
+    "wmape_h0": 40.69,
     "bl2_wmape": 47.53,
-    "oos_r": 0.316,
+    "oos_r": 0.315,
     "n_records": 575,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -17,7 +17,7 @@
       "n": 573,
       "wmape_h0": 40.5,
       "bl2_wmape": 47.3,
-      "oos_r": 0.32,
+      "oos_r": 0.319,
       "improvement_pt": 0.15
     }
   ],
@@ -197,6 +197,11 @@
     },
     {
       "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=航程1 wmape=40.5% imp=0.15pt"
+    },
+    {
+      "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=航程1 wmape=40.5% imp=0.15pt"
     }

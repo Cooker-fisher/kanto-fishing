@@ -1,12 +1,12 @@
 {
   "fish": "アオリイカ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.02,
+    "wmape_h0": 36.25,
     "bl2_wmape": 43.69,
-    "oos_r": 0.5,
+    "oos_r": 0.497,
     "n_records": 76,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -126,6 +126,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=竹岡沖 wmape=35.8% imp=0.5pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=竹岡沖 wmape=35.8% imp=0.5pt"
     }
   ],
   "rejected_factors": [
@@ -194,18 +199,18 @@
     {
       "name": "竹岡沖",
       "n": 75,
-      "wmape_h0": 35.7,
+      "wmape_h0": 35.8,
       "bl2_wmape": 43.4,
-      "oos_r": 0.499,
-      "improvement_pt": 0.31
+      "oos_r": 0.498,
+      "improvement_pt": 0.5
     }
   ],
   "best_point": {
     "name": "竹岡沖",
-    "wmape_h0": 35.7,
-    "improvement_pt": 0.31
+    "wmape_h0": 35.8,
+    "improvement_pt": 0.5
   },
-  "improvement_pt": 0.31,
+  "improvement_pt": 0.5,
   "trip_models": [
     {
       "trip_no": 2,

@@ -1,7 +1,7 @@
 {
   "fish": "スルメイカ",
   "ship": "春盛丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 38.0,
@@ -15,10 +15,10 @@
     {
       "name": "城ヶ島沖",
       "n": 50,
-      "wmape_h0": 33.3,
+      "wmape_h0": 33.2,
       "bl2_wmape": 37.3,
-      "oos_r": 0.444,
-      "improvement_pt": 4.73
+      "oos_r": 0.446,
+      "improvement_pt": 4.81
     },
     {
       "name": "長井沖",
@@ -31,10 +31,10 @@
   ],
   "best_point": {
     "name": "城ヶ島沖",
-    "wmape_h0": 33.3,
-    "improvement_pt": 4.73
+    "wmape_h0": 33.2,
+    "improvement_pt": 4.81
   },
-  "improvement_pt": 4.73,
+  "improvement_pt": 4.81,
   "history": [
     {
       "date": "2026-04-24",
@@ -60,6 +60,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=33.3% imp=4.7pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=33.2% imp=4.81pt"
     }
   ]
 }

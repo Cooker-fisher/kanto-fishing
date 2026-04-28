@@ -59,6 +59,13 @@ DATASETS_SURFACE = {
         "nrt": "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D",
         "var": "CHL",
     },
+    "kd490": {
+        # 拡散減衰係数 490nm = 直接の水中濁度・透明度指標
+        # 高Kd490 = 濁り（光が吸収される）、低Kd490 = 澄み（透明）
+        "my":  "cmems_obs-oc_glo_bgc-transp_my_l4-gapfree-multi-4km_P1D",
+        "nrt": "cmems_obs-oc_glo_bgc-transp_nrt_l4-gapfree-multi-4km_P1D",
+        "var": "KD490",
+    },
     "sss": {
         "my":  None,
         "nrt": "cmems_obs-mob_glo_phy-sss_nrt_multi_P1D",
@@ -102,6 +109,7 @@ def init_db(conn: sqlite3.Connection):
             sla   REAL,
             chl   REAL,
             sss   REAL,
+            kd490 REAL,
             PRIMARY KEY (lat, lon, date)
         );
         CREATE INDEX IF NOT EXISTS idx_cmems_latlon ON cmems_daily(lat, lon);

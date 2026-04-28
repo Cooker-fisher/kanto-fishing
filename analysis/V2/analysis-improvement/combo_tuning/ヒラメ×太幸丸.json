@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-28",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.57,
+    "wmape_h0": 36.31,
     "bl2_wmape": 42.45,
-    "oos_r": 0.536,
+    "oos_r": 0.541,
     "n_records": 357,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,26 +15,26 @@
     {
       "name": "浅場(~40m)",
       "n": 67,
-      "wmape_h0": 24.9,
+      "wmape_h0": 24.8,
       "bl2_wmape": 37.1,
       "oos_r": 0.711,
-      "improvement_pt": 11.71
+      "improvement_pt": 11.49
     },
     {
       "name": "飯岡沖",
       "n": 279,
       "wmape_h0": 37.9,
       "bl2_wmape": 45.8,
-      "oos_r": 0.508,
-      "improvement_pt": -1.3
+      "oos_r": 0.51,
+      "improvement_pt": -1.61
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
-    "wmape_h0": 24.9,
-    "improvement_pt": 11.71
+    "wmape_h0": 24.8,
+    "improvement_pt": 11.49
   },
-  "improvement_pt": 11.71,
+  "improvement_pt": 11.49,
   "history": [
     {
       "date": "2026-04-22",

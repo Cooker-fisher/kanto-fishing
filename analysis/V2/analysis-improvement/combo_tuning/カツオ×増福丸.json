@@ -1,12 +1,12 @@
 {
   "fish": "カツオ",
   "ship": "増福丸",
-  "last_reviewed": "2026-04-27",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-04-29",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.47,
+    "wmape_h0": 32.28,
     "bl2_wmape": 48.97,
-    "oos_r": 0.328,
+    "oos_r": 0.517,
     "n_records": 37,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -106,6 +106,16 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=金洲沖 wmape=32.2% imp=6.31pt"
+    },
+    {
+      "date": "2026-04-28",
+      "action": "point_backtest_updated",
+      "note": "best=金洲沖 wmape=32.1% imp=0.01pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=金洲沖 wmape=32.3% imp=0.01pt"
     }
   ],
   "rejected_factors": [
@@ -192,16 +202,16 @@
     {
       "name": "金洲沖",
       "n": 37,
-      "wmape_h0": 32.2,
+      "wmape_h0": 32.3,
       "bl2_wmape": 49.0,
-      "oos_r": 0.518,
-      "improvement_pt": 6.31
+      "oos_r": 0.517,
+      "improvement_pt": 0.01
     }
   ],
   "best_point": {
     "name": "金洲沖",
-    "wmape_h0": 32.2,
-    "improvement_pt": 6.31
+    "wmape_h0": 32.3,
+    "improvement_pt": 0.01
   },
-  "improvement_pt": 6.31
+  "improvement_pt": 0.01
 }

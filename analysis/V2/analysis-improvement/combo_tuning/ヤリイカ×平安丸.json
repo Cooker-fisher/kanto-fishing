@@ -1,7 +1,7 @@
 {
   "fish": "ヤリイカ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 47.74,
@@ -17,7 +17,7 @@
       "n": 71,
       "wmape_h0": 44.3,
       "bl2_wmape": 55.6,
-      "oos_r": 0.533,
+      "oos_r": 0.532,
       "improvement_pt": 3.43
     },
     {
@@ -31,10 +31,10 @@
     {
       "name": "真鶴沖",
       "n": 63,
-      "wmape_h0": 46.2,
+      "wmape_h0": 46.3,
       "bl2_wmape": 58.8,
-      "oos_r": 0.519,
-      "improvement_pt": 1.5
+      "oos_r": 0.518,
+      "improvement_pt": 1.44
     }
   ],
   "best_point": {
@@ -230,6 +230,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=二宮沖 wmape=44.2% imp=3.5pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=二宮沖 wmape=44.3% imp=3.43pt"
     }
   ],
   "trip_models": [

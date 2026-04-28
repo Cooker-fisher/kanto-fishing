@@ -1,12 +1,12 @@
 {
   "fish": "マハタ",
   "ship": "幸丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 28.5,
+    "wmape_h0": 28.4,
     "bl2_wmape": 35.6,
-    "oos_r": 0.491,
+    "oos_r": 0.496,
     "n_records": 85,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -97,6 +97,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=浅場(~40m) wmape=22.5% imp=5.88pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=22.5% imp=5.88pt"
     }
   ],
   "rejected_factors": [
@@ -168,15 +173,15 @@
       "wmape_h0": 22.5,
       "bl2_wmape": 42.0,
       "oos_r": 0.957,
-      "improvement_pt": 5.98
+      "improvement_pt": 5.88
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
     "wmape_h0": 22.5,
-    "improvement_pt": 5.98
+    "improvement_pt": 5.88
   },
-  "improvement_pt": 5.98,
+  "improvement_pt": 5.88,
   "trip_models": [
     {
       "trip_no": 6,
