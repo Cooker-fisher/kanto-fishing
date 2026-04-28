@@ -641,12 +641,15 @@ def predict_wc_rf(model, features, r):
         return None
     try:
         import numpy as np
+        import warnings
     except ImportError:
         return None
     vals = [r.get(k) for k in features]
     if any(v is None for v in vals):
         return None
-    pred = model.predict(np.array([vals]))[0]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        pred = model.predict(np.array([vals]))[0]
     return max(-2.0, min(1.5, float(pred)))
 
 
