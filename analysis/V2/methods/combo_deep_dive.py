@@ -120,9 +120,10 @@ SLOW_FACTORS = {
     # ※ 実測 water_color_imp_n がある場合は obs_factor として別途使用
     "water_color_pred_n",  # 予測水色スコア（water_color_daily テーブル）
     # CMEMS 海洋データ（週単位で変化 → SLOW因子）
-    "sla_avg",   # SSH偏差平均 (m)：正=黒潮北上=澄み水=アジ・マダイ有利
-    "chl_avg",   # クロロフィルa平均 (mg/m³)：高=ベイト豊富=回遊魚集まる
-    "sss_avg",   # 塩分平均 (PSU)：高=黒潮水=マダイ・カツオ・キンメ有利
+    "sla_avg",        # SSH偏差平均 (m)：正=黒潮北上=澄み水=アジ・マダイ有利
+    "chl_avg",        # クロロフィルa平均 (mg/m³)：高=ベイト豊富=回遊魚集まる
+    "sss_avg",        # 塩分平均 (PSU)：高=黒潮水=マダイ・カツオ・キンメ有利
+    "kd490_surface",  # 光減衰係数 (m⁻¹)：高=濁水（懸濁物・植物色素多）, 低=澄み水
     # CMEMS 深度別データ派生特徴量（週単位で変化 → SLOW因子）
     "do_surface",        # 表層溶存酸素 (mmol/m³)：低=青潮リスク・貧酸素底層
     "do_bottom",         # 深層溶存酸素（最深レコード）：底魚生息可否の直接指標
@@ -424,10 +425,11 @@ WX_FACTORS = [
     # 降水ラグ＋波高＋潮流から全点推定。実測水色なしコンボも補完される。
     # SLOW因子（降水予報は14日先まで取得可能）→ 全H有効
     "water_color_pred_n",
-    # CMEMS 表層（黒潮SSH偏差・クロロフィル・塩分）: SLOW因子 → 全H有効
+    # CMEMS 表層（黒潮SSH偏差・クロロフィル・塩分・透明度）: SLOW因子 → 全H有効
     "sla_avg",          # SSH偏差 (m): 正=黒潮北上=澄み水
     "chl_avg",          # クロロフィルa (mg/m³): 高=ベイト豊富
     "sss_avg",          # 塩分 (PSU): 高=黒潮水
+    "kd490_surface",    # 光減衰係数 (m⁻¹): 高=濁水, 低=澄み水（CHL・SLAと独立した透明度シグナル）
     # CMEMS 深度別派生特徴量: SLOW因子 → 全H有効
     "do_surface",       # 表層溶存酸素 (mmol/m³): 低=青潮リスク
     "do_bottom",        # 深層溶存酸素: 底魚生息可否の直接指標
@@ -494,7 +496,7 @@ ALL_FACTORS = WX_FACTORS + TIDE_FACTORS + CATCH_FACTORS + TYPHOON_FACTORS + CALE
 
 # カテゴリ別上限用セット（MAX_CMEMS / MAX_TIDE_GRP で枠を制御）
 CMEMS_FACTORS = {
-    "sla_avg", "chl_avg", "sss_avg",
+    "sla_avg", "chl_avg", "sss_avg", "kd490_surface",
     "do_surface", "do_bottom", "temp_50m", "temp_100m", "temp_200m",
     "thermocline_depth", "no3_surface",
     "sla_delta", "chl_delta", "sla_monthly", "sla_lag30", "sla_approach_idx",
@@ -1493,7 +1495,7 @@ def get_cmems_day(conn_cmems, lat, lon, date_iso):
     if k in _cmems_day_cache:
         return _cmems_day_cache[k]
     row = conn_cmems.execute(
-        """SELECT sla, chl, sss FROM cmems_daily
+        """SELECT sla, chl, sss, kd490 FROM cmems_daily
            WHERE date=?
              AND ABS(lat - ?) < 0.15 AND ABS(lon - ?) < 0.15
            ORDER BY (lat - ?) * (lat - ?) + (lon - ?) * (lon - ?)
@@ -1508,6 +1510,8 @@ def get_cmems_day(conn_cmems, lat, lon, date_iso):
             result["chl_avg"] = row[1]
         if row[2] is not None:
             result["sss_avg"] = row[2]
+        if row[3] is not None:
+            result["kd490_surface"] = row[3]
     _cmems_day_cache[k] = result
     return result
 

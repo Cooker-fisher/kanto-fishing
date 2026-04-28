@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "吉久",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 33.21,
@@ -47,10 +47,10 @@
     {
       "name": "湾奥",
       "n": 102,
-      "wmape_h0": 41.6,
+      "wmape_h0": 40.9,
       "bl2_wmape": 44.8,
-      "oos_r": 0.439,
-      "improvement_pt": -8.43
+      "oos_r": 0.466,
+      "improvement_pt": -7.7
     }
   ],
   "best_point": {
@@ -266,6 +266,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=18.3% imp=14.87pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=18.4% imp=14.78pt"
     }
   ],
   "trip_models": [
