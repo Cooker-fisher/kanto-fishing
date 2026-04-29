@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 49.15,
+    "wmape_h0": 49.21,
     "bl2_wmape": 61.39,
-    "oos_r": 0.53,
+    "oos_r": 0.529,
     "n_records": 179,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -214,10 +214,10 @@
     {
       "name": "南沖",
       "n": 92,
-      "wmape_h0": 43.2,
+      "wmape_h0": 43.3,
       "bl2_wmape": 62.1,
-      "oos_r": 0.667,
-      "improvement_pt": 5.92
+      "oos_r": 0.666,
+      "improvement_pt": 5.86
     },
     {
       "name": "西沖",
@@ -225,15 +225,15 @@
       "wmape_h0": 45.1,
       "bl2_wmape": 57.2,
       "oos_r": 0.522,
-      "improvement_pt": 4.08
+      "improvement_pt": 4.14
     }
   ],
   "best_point": {
     "name": "南沖",
-    "wmape_h0": 43.2,
-    "improvement_pt": 5.92
+    "wmape_h0": 43.3,
+    "improvement_pt": 5.86
   },
-  "improvement_pt": 5.92,
+  "improvement_pt": 5.86,
   "trip_models": [
     {
       "trip_no": 1,

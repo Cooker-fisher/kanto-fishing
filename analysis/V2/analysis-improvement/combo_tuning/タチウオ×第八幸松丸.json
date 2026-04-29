@@ -1,16 +1,15 @@
 {
   "fish": "タチウオ",
   "ship": "第八幸松丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-04-29",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.8,
-    "bl0_wmape": 44.2,
-    "bl2_wmape": 43.0,
-    "oos_r": 0.479,
+    "wmape_h0": 36.58,
+    "bl2_wmape": 42.96,
+    "oos_r": 0.505,
     "n_records": 253,
-    "alpha_scale": 0.649,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -97,7 +96,13 @@
     "最低気温が低い日ほど釣果が上がる傾向",
     "潮目（水温勾配）がある時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=36.6% imp=0.01pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_50m",
@@ -184,5 +189,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "沼津沖",
+      "n": 251,
+      "wmape_h0": 36.6,
+      "bl2_wmape": 42.9,
+      "oos_r": 0.504,
+      "improvement_pt": 0.01
+    }
+  ],
+  "best_point": {
+    "name": "沼津沖",
+    "wmape_h0": 36.6,
+    "improvement_pt": 0.01
+  },
+  "improvement_pt": 0.01
 }

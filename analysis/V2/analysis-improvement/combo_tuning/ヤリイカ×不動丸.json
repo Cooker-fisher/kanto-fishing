@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-29",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 47.68,
+    "wmape_h0": 47.73,
     "bl2_wmape": 62.17,
-    "oos_r": 0.58,
+    "oos_r": 0.579,
     "n_records": 145,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -214,10 +214,10 @@
     {
       "name": "川津沖",
       "n": 73,
-      "wmape_h0": 41.9,
+      "wmape_h0": 41.8,
       "bl2_wmape": 88.9,
       "oos_r": 0.747,
-      "improvement_pt": 5.73
+      "improvement_pt": 5.91
     },
     {
       "name": "勝浦沖",
@@ -225,15 +225,15 @@
       "wmape_h0": 42.9,
       "bl2_wmape": 51.5,
       "oos_r": 0.443,
-      "improvement_pt": 4.81
+      "improvement_pt": 4.86
     }
   ],
   "best_point": {
     "name": "川津沖",
-    "wmape_h0": 41.9,
-    "improvement_pt": 5.73
+    "wmape_h0": 41.8,
+    "improvement_pt": 5.91
   },
-  "improvement_pt": 5.73,
+  "improvement_pt": 5.91,
   "trip_models": [
     {
       "trip_no": 1,

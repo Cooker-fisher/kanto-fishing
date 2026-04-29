@@ -4,9 +4,9 @@
   "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 51.7,
+    "wmape_h0": 51.77,
     "bl2_wmape": 67.33,
-    "oos_r": 0.49,
+    "oos_r": 0.489,
     "n_records": 75,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -200,18 +200,18 @@
     {
       "name": "深場(81-150m)",
       "n": 57,
-      "wmape_h0": 51.7,
+      "wmape_h0": 50.6,
       "bl2_wmape": 62.5,
-      "oos_r": 0.317,
-      "improvement_pt": 0.03
+      "oos_r": 0.34,
+      "improvement_pt": 1.16
     }
   ],
   "best_point": {
     "name": "深場(81-150m)",
-    "wmape_h0": 51.7,
-    "improvement_pt": 0.03
+    "wmape_h0": 50.6,
+    "improvement_pt": 1.16
   },
-  "improvement_pt": 0.03,
+  "improvement_pt": 1.16,
   "trip_models": [],
   "best_trip": null,
   "point_depth_models": [],
