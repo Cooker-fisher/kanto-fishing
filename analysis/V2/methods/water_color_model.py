@@ -718,6 +718,10 @@ def backtest(records, use_stratified=True):
 
     results = {"global": [], "stratified": [], "rf": []}
     group_errs = defaultdict(list)
+    # 改善③: wc_prev1 有無による src 分類エラー収集
+    # wc_prev1 あり = 前日実測水色が近接エリアで得られた（obs相当）
+    # wc_prev1 なし = 純粋にモデル予測のみ（pred相当）
+    src_errs = {"rf_obs": [], "rf_pred": []}
 
     for test_month in months:
         train = [r for r in records if r["month"] != test_month]
@@ -787,6 +791,11 @@ def backtest(records, use_stratified=True):
             pr = predict_wc_rf(rf_model, rf_features, r)
             if pr is not None:
                 results["rf"].append(pr - actual)
+                # 改善③: wc_prev1 有無で src 分類
+                if r.get("wc_prev1") is not None:
+                    src_errs["rf_obs"].append(pr - actual)
+                else:
+                    src_errs["rf_pred"].append(pr - actual)
 
     def _stats(errs, label):
         if not errs:
@@ -805,6 +814,12 @@ def backtest(records, use_stratified=True):
     print("\n  水深グループ別（OLS 水深別モデル）:")
     for grp in ["shallow", "mid", "deep", "unknown"]:
         _stats(group_errs.get(grp, []), f"    {grp:8s}")
+
+    # 改善③: src別バックテスト評価
+    print("\n=== バックテスト精度（src別, RF モデル）===")
+    print("  wc_prev1 判定: あり=obs相当(前日実測水色が近接で得られた) / なし=pred相当(モデル推定のみ)")
+    _stats(src_errs["rf_obs"],  "前日実測あり(obs相当) ")
+    _stats(src_errs["rf_pred"], "前日実測なし(pred相当)")
 
 
 # ─── 深掘り分析 ────────────────────────────────────────────────────────────────
@@ -1056,7 +1071,29 @@ def predict_all_points(conn_wx, wx_coords, global_model, stratified_models,
                 pred = predict_wc(global_coeffs, global_fkeys, r)
             if pred is None:
                 continue
-            batch.append((lat, lon, date_iso, pred, "unknown"))
+
+            # ── 改善①: KD490×水色モデル加重ブレンド ──────────────────────────
+            # KD490が実測値として存在するグリッド（>0.0）: KD490較正値と wc_pred をブレンド
+            # KD490なし（デフォルト=0.1）: wc_pred そのまま
+            # KD490スケール変換: log(0.10 / kd490) で正規化（標準値 0.10 m⁻¹ を基準）
+            #   高KD490(濁り=0.5): log(0.10/0.50)=-1.61 → 濁りスコア（負）
+            #   低KD490(澄み=0.03): log(0.10/0.03)=+1.20 → 澄みスコア（正）
+            # 較正係数 0.6: 漁師water_color_n の中央値分布（-2〜+1）に合わせてスケール調整
+            # 注: cmems_d.get("kd490_surface") が None は CMEMS データなし日（デフォルト値 0.1 と区別）
+            # cmems_d に "kd490_surface" キーが存在する = CMEMS から実測値が取れた
+            # デフォルト埋め（0.1）は r dict 組み立て時に上書きされているので
+            # ここでは cmems_d 直接チェックが「実測ありかどうか」の唯一の判断根拠
+            kd490_raw = cmems_d.get("kd490_surface")
+            if kd490_raw is not None and kd490_raw > 0:
+                # kd490_surface キーが存在する = CMEMSから実測値あり
+                kd490_score = max(-2.0, min(1.0, math.log(0.10 / kd490_raw)))
+                kd490_calibrated = kd490_score * 0.6
+                wc_blended = pred * 0.7 + kd490_calibrated * 0.3
+            else:
+                wc_blended = pred
+            wc_blended = max(-2.0, min(1.5, wc_blended))
+
+            batch.append((lat, lon, date_iso, wc_blended, "unknown"))
             current_day_preds[(lat, lon)] = pred
 
         prev_day_preds = current_day_preds  # 翌日の wc_prev1 として引き継ぐ

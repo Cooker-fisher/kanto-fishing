@@ -119,6 +119,9 @@ SLOW_FACTORS = {
     # 実測水色がないポイントも含む全点×全日で補完 → SLOW因子（H=28でも有効）
     # ※ 実測 water_color_imp_n がある場合は obs_factor として別途使用
     "water_color_pred_n",  # 予測水色スコア（water_color_daily テーブル）
+    # 水色データソース品質: obs/imp実測あり=1.0 / モデル予測のみ=0.3
+    # enrich() で付与。水色情報の信頼度を補正因子として使用。
+    "wc_quality",
     # CMEMS 海洋データ（週単位で変化 → SLOW因子）
     "sla_avg",        # SSH偏差平均 (m)：正=黒潮北上=澄み水=アジ・マダイ有利
     "chl_avg",        # クロロフィルa平均 (mg/m³)：高=ベイト豊富=回遊魚集まる
@@ -425,6 +428,9 @@ WX_FACTORS = [
     # 降水ラグ＋波高＋潮流から全点推定。実測水色なしコンボも補完される。
     # SLOW因子（降水予報は14日先まで取得可能）→ 全H有効
     "water_color_pred_n",
+    # 水色データソース品質スコア（obs/imp実測あり=1.0 / モデル推定のみ=0.3）
+    # enrich() でレコードの water_color_imp_n 有無から動的に付与。SLOW因子。
+    "wc_quality",
     # CMEMS 表層（黒潮SSH偏差・クロロフィル・塩分・透明度）: SLOW因子 → 全H有効
     "sla_avg",          # SSH偏差 (m): 正=黒潮北上=澄み水
     "chl_avg",          # クロロフィルa (mg/m³): 高=ベイト豊富
@@ -2177,6 +2183,16 @@ def enrich(records, ship_coords, wx_coords, conn_wx, ship_area, horizon=0, all_r
         # 実測水色なしコンボも補完。SLOW因子なので horizon に関わらず当日の予測値を使用。
         # wx_date ではなく tide_date（当日）を使う → 釣行当日の水色状態を知りたい
         wx["water_color_pred_n"] = _lookup_wc_pred(wlat, wlon, tide_date)
+
+        # 改善②: wc_quality — 水色データソース品質スコア
+        # 当日レコードに実測水色が存在する（water_color_imp_n あり）= obs/imp相当 → 1.0
+        # 実測なし（water_color_daily モデル予測のみ）→ 0.3
+        # 用途: water_color_pred_n の alpha_scale 調整（alpha_scale *= wc_quality_mean）や
+        #       wc_quality 自体を WX_FACTORS として相関分析する際の信頼度フラグ
+        # 注: r["water_color_imp_n"] は load_records() 時点の観測補完値
+        #     SLOW因子（観測体制の質は天候依存ではなく観測依存）→ 全H有効
+        _wc_imp = r.get("water_color_imp_n")
+        wx["wc_quality"] = 1.0 if _wc_imp is not None else 0.3
 
         # CMEMS データ（黒潮SSH偏差・クロロフィル・塩分・深度別）: SLOW因子 → 当日を使用
         _ck = (wlat, wlon, tide_date)

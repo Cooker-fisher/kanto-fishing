@@ -181,6 +181,9 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
 </div>
 
 <script>
+// グローバル変数（closure問題を回避）
+var _activeLayer = 'wc';
+
 fetch('tmp_wc_map_data.json?t=' + Date.now())
   .then(r => r.json())
   .then(json => init(json))
@@ -241,22 +244,44 @@ function init({ data, coord_to_name }) {
   });
 
   // ─── レイヤー切替 ────────────────────────────────────────────────
-  let activeLayer = 'wc';  // 'wc' or 'kd490'
-  document.querySelectorAll('.layer-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeLayer = btn.dataset.layer;
-      document.querySelectorAll('.layer-btn').forEach(b => {
-        const isKd = b.dataset.layer === 'kd490';
-        b.style.background = (b.dataset.layer === activeLayer)
+  _activeLayer = 'wc';  // グローバル変数を初期化
+
+  // KD490データが存在する最後の日付インデックスを事前計算
+  var lastKd490Idx = dates.length - 1;
+  for (var _ki = dates.length - 1; _ki >= 0; _ki--) {
+    var _kpts = data[dates[_ki]] || [];
+    if (_kpts.some(function(p){ return p.kd490_n != null; })) {
+      lastKd490Idx = _ki;
+      break;
+    }
+  }
+  console.log('lastKd490Idx=', lastKd490Idx, 'date=', dates[lastKd490Idx]);
+
+  document.querySelectorAll('.layer-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      _activeLayer = btn.dataset.layer;
+      console.log('layer switched to:', _activeLayer);
+      document.querySelectorAll('.layer-btn').forEach(function(b) {
+        var isKd = b.dataset.layer === 'kd490';
+        b.style.background = (b.dataset.layer === _activeLayer)
           ? (isKd ? '#7a3c00' : '#1e3a5f') : 'transparent';
-        b.style.opacity = (b.dataset.layer === activeLayer) ? '1' : '0.6';
+        b.style.opacity = (b.dataset.layer === _activeLayer) ? '1' : '0.6';
       });
       // 凡例タイトル更新
       document.getElementById('legend-title').textContent =
-        activeLayer === 'kd490' ? 'KD490（衛星濁度）' : '水色スコア';
+        _activeLayer === 'kd490' ? 'KD490（衛星濁度）' : '水色スコア';
       document.getElementById('legend-subtitle').textContent =
-        activeLayer === 'kd490' ? '※log変換で水色スコア相当に正規化' : '';
-      updateDate(parseInt(slider.value));
+        _activeLayer === 'kd490' ? '※log変換で水色スコア相当に正規化' : '';
+      // KD490レイヤーに切替時: 現在日にKD490なければ最新KD490日に自動ジャンプ
+      var idx = parseInt(slider.value);
+      if (_activeLayer === 'kd490') {
+        var curPts = data[dates[idx]] || [];
+        if (!curPts.some(function(p){ return p.kd490_n != null; })) {
+          idx = lastKd490Idx;
+          slider.value = idx;
+        }
+      }
+      updateDate(idx);
     });
   });
 
@@ -287,7 +312,12 @@ function init({ data, coord_to_name }) {
   // ─── 日付更新 ────────────────────────────────────────────────────
   function updateDate(idx) {
     const date = dates[idx];
-    document.getElementById('date-display').textContent = date;
+    const pts_check = data[date] || [];
+    const hasKd490 = pts_check.some(p => p.kd490_n != null);
+    const dateLabel = (_activeLayer === 'kd490' && !hasKd490)
+      ? `${date}（KD490データなし — スライダーを戻してください）`
+      : date;
+    document.getElementById('date-display').textContent = dateLabel;
     const points = data[date] || [];
     const ptMap = {};
     points.forEach(p => { ptMap[`${p.lat},${p.lon}`] = p; });
@@ -304,8 +334,8 @@ function init({ data, coord_to_name }) {
       if (!visible) { circle.setStyle({ opacity: 0, fillOpacity: 0 }); return; }
 
       // レイヤーに応じて表示値を選択
-      let displayV = pt.v;
-      if (activeLayer === 'kd490') {
+      var displayV = pt.v;
+      if (_activeLayer === 'kd490') {
         if (pt.kd490_n == null) { circle.setStyle({ opacity: 0, fillOpacity: 0 }); return; }
         displayV = pt.kd490_n;
       }
@@ -315,24 +345,29 @@ function init({ data, coord_to_name }) {
       circle.setStyle(style);
       circle._wc._pt = pt;
 
-      // tooltip
+      // tooltip（その時点のlayerをキャプチャするためiife）
       const name = circle._wc.name;
+      const _dv = displayV;
+      const _ptv = pt.v;
+      const _kd = pt.kd490_n;
+      const _src = pt.src;
       circle.unbindTooltip();
-      circle.on('mouseover', () => {
-        circle.setStyle({ ...circle.options, weight: circle.options.weight + 1.5 });
-        let tipHtml = `<b>${name}</b>`;
-        if (activeLayer === 'kd490') {
-          tipHtml += `<br>KD490換算: ${displayV.toFixed(2)}　${wcLabel(displayV)}`;
-          tipHtml += `<br>水色モデル: ${pt.v.toFixed(2)}　${wcLabel(pt.v)}`;
+      circle.off('mouseover').off('mouseout');
+      circle.on('mouseover', function() {
+        circle.setStyle({ radius: style.radius + 2, fillColor: style.fillColor, fillOpacity: style.fillOpacity + 0.15, color: '#ffffff', weight: 2, opacity: 1 });
+        var tipHtml = '<b>' + name + '</b>';
+        if (_activeLayer === 'kd490') {
+          tipHtml += '<br>KD490換算: ' + _dv.toFixed(2) + '　' + wcLabel(_dv);
+          tipHtml += '<br>水色モデル: ' + _ptv.toFixed(2) + '　' + wcLabel(_ptv);
         } else {
-          tipHtml += `<br>水色スコア: ${pt.v.toFixed(2)}　${wcLabel(pt.v)}`;
-          if (pt.kd490_n != null) tipHtml += `<br>KD490換算: ${pt.kd490_n.toFixed(2)}`;
+          tipHtml += '<br>水色スコア: ' + _ptv.toFixed(2) + '　' + wcLabel(_ptv);
+          if (_kd != null) tipHtml += '<br>KD490換算: ' + _kd.toFixed(2);
         }
-        tipHtml += `<br>${srcLabel(pt.src)}`;
+        tipHtml += '<br>' + srcLabel(_src);
         circle.bindTooltip(tipHtml, { sticky: true }).openTooltip();
       });
-      circle.on('mouseout', () => {
-        circle.setStyle(srcStyle(pt.src, fill));
+      circle.on('mouseout', function() {
+        circle.setStyle(style);
         circle.closeTooltip();
       });
     });
