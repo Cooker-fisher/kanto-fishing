@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "大春丸",
-  "last_reviewed": "2026-04-25",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.23,
-    "bl2_wmape": 58.84,
-    "oos_r": 0.37,
+    "wmape_h0": 47.44,
+    "bl2_wmape": 58.34,
+    "oos_r": 0.363,
     "n_records": 328,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "鹿島沖",
       "n": 328,
-      "wmape_h0": 47.2,
+      "wmape_h0": 47.4,
       "bl2_wmape": 58.8,
-      "oos_r": 0.37,
-      "improvement_pt": 0.01
+      "oos_r": 0.363,
+      "improvement_pt": 0.03
     }
   ],
   "best_point": {
     "name": "鹿島沖",
-    "wmape_h0": 47.2,
-    "improvement_pt": 0.01
+    "wmape_h0": 47.4,
+    "improvement_pt": 0.03
   },
-  "improvement_pt": 0.01,
+  "improvement_pt": 0.03,
   "history": [
     {
       "date": "2026-04-22",
@@ -42,6 +42,11 @@
       "date": "2026-04-25",
       "action": "point_backtest_updated",
       "note": "best=鹿島沖 wmape=47.2% imp=0.01pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島沖 wmape=47.4% imp=0.03pt"
     }
   ]
 }

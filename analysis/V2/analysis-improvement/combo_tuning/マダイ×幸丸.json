@@ -4,10 +4,10 @@
   "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.01,
-    "bl2_wmape": 47.02,
+    "wmape_h0": 40.99,
+    "bl2_wmape": 47.01,
     "oos_r": 0.646,
-    "n_records": 990,
+    "n_records": 989,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -214,19 +214,19 @@
   "point_models": [
     {
       "name": "浅場(~40m)",
-      "n": 955,
-      "wmape_h0": 40.7,
+      "n": 954,
+      "wmape_h0": 40.6,
       "bl2_wmape": 46.8,
-      "oos_r": 0.636,
-      "improvement_pt": 0.35
+      "oos_r": 0.638,
+      "improvement_pt": 0.41
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
-    "wmape_h0": 40.7,
-    "improvement_pt": 0.35
+    "wmape_h0": 40.6,
+    "improvement_pt": 0.41
   },
-  "improvement_pt": 0.35,
+  "improvement_pt": 0.41,
   "trip_models": [
     {
       "trip_no": 1,

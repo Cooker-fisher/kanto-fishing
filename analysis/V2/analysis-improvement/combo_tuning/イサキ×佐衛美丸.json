@@ -1,32 +1,32 @@
 {
   "fish": "イサキ",
   "ship": "佐衛美丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-04-29",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 17.97,
-    "bl2_wmape": 21.29,
-    "oos_r": 0.416,
-    "n_records": 245,
+    "wmape_h0": 17.54,
+    "bl2_wmape": 21.45,
+    "oos_r": 0.442,
+    "n_records": 241,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "洲崎沖",
-      "n": 242,
-      "wmape_h0": 18.0,
-      "bl2_wmape": 21.0,
-      "oos_r": 0.412,
-      "improvement_pt": 0.01
+      "n": 238,
+      "wmape_h0": 17.5,
+      "bl2_wmape": 21.1,
+      "oos_r": 0.428,
+      "improvement_pt": 0.02
     }
   ],
   "best_point": {
     "name": "洲崎沖",
-    "wmape_h0": 18.0,
-    "improvement_pt": 0.01
+    "wmape_h0": 17.5,
+    "improvement_pt": 0.02
   },
-  "improvement_pt": 0.01,
+  "improvement_pt": 0.02,
   "points": [
     {
       "name": "洲崎沖",
@@ -174,6 +174,11 @@
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=洲崎沖 wmape=18.0% imp=0.01pt"
+    },
+    {
+      "date": "2026-04-29",
+      "action": "point_backtest_updated",
+      "note": "best=洲崎沖 wmape=17.5% imp=0.02pt"
     }
   ],
   "trip_models": [
