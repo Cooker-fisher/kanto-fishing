@@ -3171,14 +3171,84 @@ def yoy_badge(this_data, last_data):
     else:        return f'<span class="yoy down">↓昨年比{pct}%</span>'
 
 # ============================================================
+# V2 旬シグナル / エリアカラーヘルパー
+# ============================================================
+def _fish_signal(fish: str, month: int):
+    """旬シグナル (signal_key, signal_label) を返す（簡易版）"""
+    peak = {
+        "アジ":     [4,5,6,10,11],
+        "シロギス": [5,6,7,8,9],
+        "マダイ":   [4,5,10,11],
+        "イサキ":   [6,7,8],
+        "カツオ":   [7,8,9],
+        "カワハギ": [10,11,12],
+        "タチウオ": [7,8,9,10],
+        "ヒラメ":   [10,11,12,1,2],
+        "メバル":   [2,3,4],
+        "アマダイ": [11,12,1,2],
+    }
+    late = {
+        "メバル":   [5,6],
+        "マダイ":   [6,7,8,9],
+        "タチウオ": [11,12,1],
+        "ヒラメ":   [3,4,5],
+    }
+    peaks = peak.get(fish, [])
+    lates = late.get(fish, [])
+    if month in peaks:
+        return "peak", "旬ピーク"
+    if month in lates:
+        return "late", "終盤"
+    adj = set()
+    for m in peaks:
+        adj.add((m - 2) % 12 + 1)
+        adj.add(m % 12 + 1)
+    if month in adj:
+        return "season", "シーズン中"
+    return "normal", "通常"
+
+_EA_KEY = {
+    "神奈川": "kanagawa", "横須賀": "kanagawa", "金沢": "kanagawa",
+    "走水": "kanagawa", "久里浜": "kanagawa", "三浦": "kanagawa",
+    "剣崎": "kanagawa", "城ヶ島": "kanagawa", "小網代": "kanagawa",
+    "平塚": "kanagawa", "茅ヶ崎": "kanagawa", "江ノ島": "kanagawa",
+    "東京": "tokyo", "湾奥": "tokyo", "浦安": "tokyo",
+    "千葉": "chiba", "館山": "chiba", "富浦": "chiba",
+    "大原": "chiba", "勝浦": "chiba", "銚子": "chiba",
+    "九十九里": "chiba", "外房": "chiba", "内房": "chiba",
+    "茨城": "ibaraki", "大洗": "ibaraki", "鹿島": "ibaraki",
+    "静岡": "shizuoka", "沼津": "shizuoka", "焼津": "shizuoka",
+    "御前崎": "shizuoka",
+}
+
+def _area_ea_key(area_name: str) -> str:
+    """エリア名から CSS data-ea 値を返す"""
+    for k, v in _EA_KEY.items():
+        if k in area_name:
+            return v
+    return "gaiwan"
+
+# ============================================================
 # V2 デザイン共通 CSS
 # ============================================================
-V2_COMMON_CSS = """:root{
+V2_COMMON_CSS = """@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@800&display=swap');
+:root{
   --bg:#f5f7fa;--card:#fff;--border:#d0d8e0;
   --text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;
   --accent:#0d2b4a;--accent2:#163d5c;--cta:#e85d04;--cta2:#d04e00;
   --pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;
   --hdr:#0d2b4a;--nav:#f0f3f7;--line:#06c755;
+  --teal:#00bfa5;
+  --ea-kanagawa:#1a6fb5;
+  --ea-tokyo:#0d2b4a;
+  --ea-chiba:#16a34a;
+  --ea-ibaraki:#dc2626;
+  --ea-shizuoka:#d97706;
+  --ea-gaiwan:#7c3aed;
+  --sig-peak:#ffc107;
+  --sig-season:#00bfa5;
+  --sig-normal:#8a96a4;
+  --sig-late:#ff6b6b;
   --r:10px;--mx:900px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -5038,8 +5108,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 f'<div class="bars">{"".join(_bar_parts)}</div>'
                 f'<div class="bar-labels">{"".join(_label_parts)}</div>'
             )
+        signal_key, signal_label = _fish_signal(fish, current_month)
         cards += (
-            f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html">'
+            f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html" data-signal="{signal_key}">'
+            f'<span class="fc-signal">{signal_label}</span>'
             f'<div class="fn">{fish}</div>'
             f'<div class="fr">{cnt_range_str} <small>釣果{len(cs)}件・{ship_num}船宿</small></div>'
             f'<div class="fs">{detail_str}</div>'
@@ -5093,10 +5165,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
         top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
         fish_tags = "".join(f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">{f}</a>' for f, _ in top_fish)
         # NOTE: <a> の中に <a> をネストすると HTML 違反 → div で囲い、上部のみ area リンク
+        ea_key = _area_ea_key(area)
         area_today_html += (
-            f'<div class="at-card">'
+            f'<div class="at-card" data-ea="{ea_key}">'
             f'<a href="area/{area_slug(area)}.html" class="at-area-link">'
-            f'<div class="at-name">{area}</div>'
+            f'<div class="at-name-wrap"><span class="at-dot"></span><div class="at-name">{area}</div></div>'
             f'<div class="at-count">{cnt}件</div>'
             f'</a>'
             f'<div class="at-fish">{fish_tags}</div>'
@@ -5181,20 +5254,70 @@ def build_html(catches, crawled_at, history, weather_data=None):
     hero_count = len(hero_base)
     hero_ships = len(set(c["ship"] for c in hero_base))
     hero_areas = len(set(c["area"] for c in hero_base))
-    index_extra_css = """.hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;text-align:center;padding:24px 14px 20px}
+    # LIVE ティッカーアイテム生成（当日データから上位5件）
+    _ticker_candidates = []
+    for c in hero_base:
+        ship = c.get("ship", "")
+        cr = c.get("count_range")
+        for f in c.get("fish", []):
+            if f in ("不明", "欠航") or not ship:
+                continue
+            if cr and cr.get("avg"):
+                n = int(cr["avg"])
+                _ticker_candidates.append((f, ship, n))
+    # 魚種×船宿でユニーク化し件数上位5件
+    _seen_ticker = set()
+    _ticker_items_list = []
+    for f, s, n in sorted(_ticker_candidates, key=lambda x: -x[2]):
+        key = (f, s)
+        if key not in _seen_ticker:
+            _seen_ticker.add(key)
+            _ticker_items_list.append(f'<span>本日 {f} × {s} {n}匹</span>')
+        if len(_ticker_items_list) >= 5:
+            break
+    ticker_items = "".join(_ticker_items_list)
+    # ティッカーアイテムが空でも構造は維持（空ティッカーは非表示）
+    live_ticker_html = ""
+    if ticker_items:
+        live_ticker_html = (
+            f'<div class="hero-live">'
+            f'<span class="live-badge"><span class="live-pulse"></span>LIVE</span>'
+            f'<div class="live-track-wrap">'
+            f'<div class="live-track">{ticker_items}{ticker_items}</div>'
+            f'</div>'
+            f'</div>'
+        )
+    index_extra_css = """.hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;text-align:center;padding:24px 14px 0}
 .hero-sub{font-size:12px;color:rgba(255,255,255,.6)}
-.hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1.1}
-.hero .n u{font-size:16px;color:rgba(255,255,255,.7);font-weight:400;text-decoration:none;margin-left:3px}
+.hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1.1;font-family:'Outfit',system-ui}
+.hero .n u{font-size:16px;color:rgba(255,255,255,.7);font-weight:400;text-decoration:none;margin-left:3px;font-family:system-ui}
 .hero .info{font-size:12px;color:rgba(255,255,255,.6);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
 .hero .dot{width:6px;height:6px;background:var(--pos);border-radius:50%;animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .hero .updated{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+.hero-live{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 14px;background:rgba(0,0,0,.25);overflow:hidden}
+.live-badge{display:inline-flex;align-items:center;gap:5px;background:var(--teal);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:10px;white-space:nowrap;letter-spacing:.5px;flex-shrink:0}
+.live-pulse{width:6px;height:6px;background:#fff;border-radius:50%;animation:live-blink 1s ease-in-out infinite}
+@keyframes live-blink{0%,100%{opacity:1}50%{opacity:.2}}
+.live-track-wrap{flex:1;overflow:hidden}
+.live-track{display:flex;white-space:nowrap;font-size:12px;color:rgba(255,255,255,.85)}
+.live-track span{display:inline-block;padding:0 32px}
+.live-track span::after{content:"·";margin-left:16px;opacity:.4}
+@media(prefers-reduced-motion:no-preference){.live-track{animation:live-scroll 40s linear infinite}}
+@keyframes live-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .fish-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
-.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;transition:border-color .15s}
-.fc:hover{border-color:var(--cta);text-decoration:none}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden;padding-bottom:14px}
+.fc:hover{border-color:var(--fc-sig-color,var(--cta));box-shadow:0 0 0 2px rgba(232,93,4,.15);text-decoration:none}
+.fc::after{content:"";position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--fc-sig-color,var(--border));border-radius:0 0 var(--r) var(--r)}
+.fc-signal{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(138,150,164,.15);color:var(--fc-sig-color,var(--muted))}
+.fc[data-signal="peak"]{--fc-sig-color:var(--sig-peak)}
+.fc[data-signal="season"]{--fc-sig-color:var(--sig-season)}
+.fc[data-signal="normal"]{--fc-sig-color:var(--sig-normal)}
+.fc[data-signal="late"]{--fc-sig-color:var(--sig-late)}
 .fc .fn{font-size:14px;font-weight:800;color:var(--accent)}
-.fc .fr{font-size:18px;font-weight:800;color:var(--cta);margin-top:2px}
-.fc .fr small{font-size:11px;color:var(--muted);font-weight:400}
+.fc .fr{font-size:18px;font-weight:800;color:var(--cta);margin-top:2px;font-family:'Outfit',system-ui}
+.fc .fr .unit{font-size:13px;color:var(--teal);font-weight:700;font-family:system-ui}
+.fc .fr small{font-size:11px;color:var(--muted);font-weight:400;font-family:system-ui}
 .fc .fs{font-size:10px;color:var(--muted)}
 .fc .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
 .fc .bars{display:flex;align-items:flex-end;gap:1px;height:20px;margin-top:4px}
@@ -5212,12 +5335,20 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fo-list a{font-size:12px;padding:3px 8px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
 .fo-list a:hover{background:var(--accent);color:#fff;text-decoration:none}
 .area-today{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
-.at-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;transition:border-color .15s}
-.at-card:hover{border-color:var(--cta)}
+.at-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;transition:border-color .15s;border-left:4px solid var(--at-ea-color,var(--border))}
+.at-card:hover{border-color:var(--at-ea-color,var(--cta))}
+.at-card[data-ea="kanagawa"]{--at-ea-color:var(--ea-kanagawa)}
+.at-card[data-ea="tokyo"]{--at-ea-color:var(--ea-tokyo)}
+.at-card[data-ea="chiba"]{--at-ea-color:var(--ea-chiba)}
+.at-card[data-ea="ibaraki"]{--at-ea-color:var(--ea-ibaraki)}
+.at-card[data-ea="shizuoka"]{--at-ea-color:var(--ea-shizuoka)}
+.at-card[data-ea="gaiwan"]{--at-ea-color:var(--ea-gaiwan)}
+.at-name-wrap{display:flex;align-items:center;gap:6px}
+.at-dot{width:8px;height:8px;border-radius:50%;background:var(--at-ea-color,var(--muted));flex-shrink:0}
 .at-area-link{display:block;text-decoration:none;color:inherit}
 .at-area-link:hover{text-decoration:none}
 .at-name{font-size:12px;font-weight:700;color:var(--accent)}
-.at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px}
+.at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px;font-family:'Outfit',system-ui}
 .at-count::before{content:"釣果報告";display:block;font-size:9px;font-weight:400;color:var(--sub);margin-bottom:1px}
 .at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
 .at-ftag{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub);text-decoration:none}
@@ -5284,6 +5415,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     <span>{hero_label}の釣果報告 — {hero_ships}船宿・{hero_areas}エリア</span>
   </div>
   <div class="updated">最終更新: {crawled_at} JST</div>
+{live_ticker_html}
 </div>
 <div class="c">
 <!-- ZONE B: 釣れている魚 -->
