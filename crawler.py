@@ -8287,8 +8287,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
             }
             break
 
-    # basic に ships_contact をマージ（basic が優先）
-    basic_merged = {**ships_contact, **basic}
+    # basic に ships_contact をマージ（ships_contact が優先・最新データを表示）
+    basic_merged = {**basic, **ships_contact}
 
     # 基本情報BOX
     info_rows = []
