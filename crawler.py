@@ -5258,13 +5258,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
     _ticker_candidates = []
     for c in hero_base:
         ship = c.get("ship", "")
-        cr = c.get("count_range")
+        cr = c.get("count_range") or {}
+        n = c.get("count_avg") or (cr.get("min", 0) + cr.get("max", 0)) // 2
         for f in c.get("fish", []):
-            if f in ("不明", "欠航") or not ship:
+            if f in ("不明", "欠航") or not ship or not n:
                 continue
-            if cr and cr.get("avg"):
-                n = int(cr["avg"])
-                _ticker_candidates.append((f, ship, n))
+            _ticker_candidates.append((f, ship, int(n)))
     # 魚種×船宿でユニーク化し件数上位5件
     _seen_ticker = set()
     _ticker_items_list = []
