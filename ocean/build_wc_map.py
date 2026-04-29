@@ -6,6 +6,7 @@ build_wc_map.py  —  water_color_map.html 用 JSON 生成（検証用）
     "obs"  : その日その座標（船宿）で実際に水色テキストが記録されていた
     "imp"  : 直接観測なし、0.3° 以内の別ポイントに実測値があり補間した
     "pred" : モデル予測値 (water_color_daily) のみ
+  各ポイントに kd490_n フィールド（KD490衛星濁度を水色スコア相当に変換）も追加。
 
 使い方:
   python ocean/build_wc_map.py [--days 90]
@@ -17,6 +18,7 @@ from datetime import datetime, timedelta
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_ANA   = os.path.join(BASE, "analysis", "V2", "results", "analysis.sqlite")
+DB_CMEMS = os.path.join(BASE, "ocean", "cmems_data.sqlite")
 SHIPS_JSON = os.path.join(BASE, "crawl", "ships.json")
 SHIP_FISH_POINT = os.path.join(BASE, "normalize", "ship_fish_point.json")
 AREA_COORDS     = os.path.join(BASE, "normalize", "area_coords.json")
@@ -26,6 +28,15 @@ DATA_DIR        = os.path.join(BASE, "data", "V2")
 OUT_JSON        = os.path.join(BASE, "tmp_wc_map_data.json")
 
 IMP_MAX_DIST = 0.3  # ° — 補間半径（enrich() と同一）
+
+# ── KD490 → 水色スコア相当値 ──────────────────────────────────────────
+# 物理的根拠: kd490=0.10 m⁻¹ を「普通(0)」の基準点とし log スケールで変換
+# kd490=0.03 → +1.0(澄み強), kd490=0.10 → 0.0(普通), kd490=0.50 → -1.6(強濁り)
+def kd490_to_score(kd490):
+    if kd490 is None or kd490 <= 0:
+        return None
+    raw = math.log(0.10 / kd490)
+    return max(-2.0, min(1.0, round(raw, 3)))
 
 # ── 水色テキスト → スコア変換 ─────────────────────────────────────────
 def _load_wc_scores():
@@ -140,6 +151,22 @@ def main():
     ).fetchall()
     db.close()
 
+    # KD490 衛星濁度データ
+    print("KD490データ読み込み中...")
+    kd490_by_date = defaultdict(dict)
+    if os.path.exists(DB_CMEMS):
+        db_c = sqlite3.connect(DB_CMEMS)
+        kd490_rows = db_c.execute(
+            "SELECT lat, lon, date, kd490 FROM cmems_daily WHERE date >= ? AND kd490 IS NOT NULL ORDER BY date, lat, lon",
+            (since,)
+        ).fetchall()
+        db_c.close()
+        for klat, klon, kdate, kval in kd490_rows:
+            kd490_by_date[kdate][(round(klat, 2), round(klon, 2))] = kval
+        print(f"  KD490行数: {len(kd490_rows)}, 日数: {len(kd490_by_date)}")
+    else:
+        print("  cmems_data.sqlite が見つかりません")
+
     # グリッド座標一覧
     grid_coords = list(set((round(r[0], 2), round(r[1], 2)) for r in rows))
     print(f"  グリッド座標数: {len(grid_coords)}, 行数: {len(rows)}")
@@ -194,12 +221,29 @@ def main():
     output_data = {}
     prev_day_map: dict = {}  # キャリーフォワード用（前日の全グリッド値）
 
+    # KD490 最近傍マップを日付横断で事前構築（cmems_daily は ≈0.042° グリッド）
+    all_kd490_coords = set()
+    for dm in kd490_by_date.values():
+        all_kd490_coords.update(dm.keys())
+    kd490_coord_cache = {}  # grid_coord → nearest_cmems_coord (or None)
+    for coord in grid_coords:
+        lat_r2, lon_r2 = coord
+        best_c, best_d = None, float("inf")
+        for (klat, klon) in all_kd490_coords:
+            d2 = (lat_r2 - klat) ** 2 + (lon_r2 - klon) ** 2
+            if d2 < 0.01 and d2 < best_d:  # 0.1° 以内
+                best_d = d2
+                best_c = (klat, klon)
+        kd490_coord_cache[coord] = best_c
+    mapped = sum(1 for v in kd490_coord_cache.values() if v is not None)
+    print(f"  KD490座標マッピング: {mapped}/{len(grid_coords)} グリッド解決")
+
     for date in all_dates:
-        pred_map = pred_by_date.get(date, {})
-        obs_map  = obs_wc.get(date, {})
+        pred_map  = pred_by_date.get(date, {})
+        obs_map   = obs_wc.get(date, {})
+        kd490_map = kd490_by_date.get(date, {})
 
         # obs=0 かつ pred=0 の日はキャリーフォワード（前日値をそのまま使う）
-        # ただし src を "carry" としてマーク（mapでは pred と同じ見た目）
         use_carry = (not obs_map and not pred_map and prev_day_map)
 
         day_points = []
@@ -209,6 +253,11 @@ def main():
             pred_v = pred_map.get(coord)
             if pred_v is not None:
                 pred_v = pred_v + pred_bias  # バイアス補正
+
+            # KD490: 事前構築マッピングから最近傍 CMEMS 座標を取得
+            kd_coord = kd490_coord_cache.get(coord)
+            kd490_raw = kd490_map.get(kd_coord) if kd_coord else None
+            kd490_n = kd490_to_score(kd490_raw)
 
             # 実測チェック（同一座標）
             obs_v = obs_map.get(coord)
@@ -231,18 +280,15 @@ def main():
                     src = "pred"
                     v   = pred_v
                 elif use_carry and coord in prev_day_map:
-                    # obs も pred もない日 → 前日値をキャリーフォワード
-                    src = "pred"  # 表示上は pred 扱い
+                    src = "pred"
                     v   = prev_day_map[coord]
                 else:
                     continue  # データなし
 
-            day_points.append({
-                "lat": lat_r2,
-                "lon": lon_r2,
-                "v":   round(v, 3),
-                "src": src,
-            })
+            pt = {"lat": lat_r2, "lon": lon_r2, "v": round(v, 3), "src": src}
+            if kd490_n is not None:
+                pt["kd490_n"] = kd490_n
+            day_points.append(pt)
 
         if day_points:
             output_data[date] = day_points

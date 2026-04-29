@@ -135,6 +135,11 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
       <button class="src-btn imp  active" data-src="imp" >補間</button>
       <button class="src-btn pred active" data-src="pred">予測</button>
     </div>
+    <div id="layer-toggle" style="display:flex;gap:4px;align-items:center;margin-left:8px;">
+      <span style="font-size:11px;color:#9ab;">レイヤー:</span>
+      <button class="layer-btn active" data-layer="wc" style="padding:3px 10px;border-radius:12px;border:1.5px solid #7ec8e3;color:#7ec8e3;background:#1e3a5f;font-size:11px;font-weight:600;cursor:pointer;">水色モデル</button>
+      <button class="layer-btn" data-layer="kd490" style="padding:3px 10px;border-radius:12px;border:1.5px solid #f5a623;color:#f5a623;background:transparent;font-size:11px;font-weight:600;cursor:pointer;">KD490衛星</button>
+    </div>
   </div>
 </div>
 
@@ -142,7 +147,8 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #0a1628; 
   <div id="map"></div>
 
   <div id="legend">
-    <h3>水色スコア</h3>
+    <h3 id="legend-title">水色スコア</h3>
+    <div id="legend-subtitle" style="font-size:10px;color:#f5a623;margin-bottom:4px;"></div>
     <div class="legend-bar"></div>
     <div class="legend-labels">
       <span>濁り強(-2)</span>
@@ -234,6 +240,26 @@ function init({ data, coord_to_name }) {
     });
   });
 
+  // ─── レイヤー切替 ────────────────────────────────────────────────
+  let activeLayer = 'wc';  // 'wc' or 'kd490'
+  document.querySelectorAll('.layer-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeLayer = btn.dataset.layer;
+      document.querySelectorAll('.layer-btn').forEach(b => {
+        const isKd = b.dataset.layer === 'kd490';
+        b.style.background = (b.dataset.layer === activeLayer)
+          ? (isKd ? '#7a3c00' : '#1e3a5f') : 'transparent';
+        b.style.opacity = (b.dataset.layer === activeLayer) ? '1' : '0.6';
+      });
+      // 凡例タイトル更新
+      document.getElementById('legend-title').textContent =
+        activeLayer === 'kd490' ? 'KD490（衛星濁度）' : '水色スコア';
+      document.getElementById('legend-subtitle').textContent =
+        activeLayer === 'kd490' ? '※log変換で水色スコア相当に正規化' : '';
+      updateDate(parseInt(slider.value));
+    });
+  });
+
   // ─── 全ユニーク座標のマーカーを事前生成 ────────────────────────────
   // 日付ごとに座標セットが変わる（pred期間 vs obs期間）ため、全日付の和集合を使う
   const allCoords = {};
@@ -277,7 +303,14 @@ function init({ data, coord_to_name }) {
       const visible = showSrc[pt.src];
       if (!visible) { circle.setStyle({ opacity: 0, fillOpacity: 0 }); return; }
 
-      const fill = wcColor(pt.v);
+      // レイヤーに応じて表示値を選択
+      let displayV = pt.v;
+      if (activeLayer === 'kd490') {
+        if (pt.kd490_n == null) { circle.setStyle({ opacity: 0, fillOpacity: 0 }); return; }
+        displayV = pt.kd490_n;
+      }
+
+      const fill = wcColor(displayV);
       const style = srcStyle(pt.src, fill);
       circle.setStyle(style);
       circle._wc._pt = pt;
@@ -287,10 +320,16 @@ function init({ data, coord_to_name }) {
       circle.unbindTooltip();
       circle.on('mouseover', () => {
         circle.setStyle({ ...circle.options, weight: circle.options.weight + 1.5 });
-        circle.bindTooltip(
-          `<b>${name}</b><br>スコア: ${pt.v.toFixed(2)}　${wcLabel(pt.v)}<br>${srcLabel(pt.src)}`,
-          { sticky: true }
-        ).openTooltip();
+        let tipHtml = `<b>${name}</b>`;
+        if (activeLayer === 'kd490') {
+          tipHtml += `<br>KD490換算: ${displayV.toFixed(2)}　${wcLabel(displayV)}`;
+          tipHtml += `<br>水色モデル: ${pt.v.toFixed(2)}　${wcLabel(pt.v)}`;
+        } else {
+          tipHtml += `<br>水色スコア: ${pt.v.toFixed(2)}　${wcLabel(pt.v)}`;
+          if (pt.kd490_n != null) tipHtml += `<br>KD490換算: ${pt.kd490_n.toFixed(2)}`;
+        }
+        tipHtml += `<br>${srcLabel(pt.src)}`;
+        circle.bindTooltip(tipHtml, { sticky: true }).openTooltip();
       });
       circle.on('mouseout', () => {
         circle.setStyle(srcStyle(pt.src, fill));
@@ -333,8 +372,14 @@ function init({ data, coord_to_name }) {
     const pts = data[curDate] || [];
     const cur = pts.find(p => p.lat === lat && p.lon === lon);
     if (cur) {
-      document.getElementById('info-val').innerHTML =
-        `スコア: <b style="color:${wcColor(cur.v)}">${cur.v.toFixed(2)}</b>　${wcLabel(cur.v)}`;
+      let valHtml = `水色モデル: <b style="color:${wcColor(cur.v)}">${cur.v.toFixed(2)}</b>　${wcLabel(cur.v)}`;
+      if (cur.kd490_n != null) {
+        valHtml += `<br>KD490衛星: <b style="color:${wcColor(cur.kd490_n)}">${cur.kd490_n.toFixed(2)}</b>　${wcLabel(cur.kd490_n)}`;
+        const diff = cur.v - cur.kd490_n;
+        const diffColor = Math.abs(diff) > 0.5 ? '#f88' : '#9ab';
+        valHtml += `<br><span style="color:${diffColor};font-size:10px">差(モデル-KD490): ${diff > 0 ? '+' : ''}${diff.toFixed(2)}</span>`;
+      }
+      document.getElementById('info-val').innerHTML = valHtml;
       document.getElementById('info-src').innerHTML = srcLabel(cur.src);
     }
 
