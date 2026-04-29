@@ -2946,11 +2946,18 @@ def _ship_link(name: str, depth: int = 1) -> str:
     """
     船宿名をリンク化。
     depth: HTMLからship/への相対パス階層（1=fish/area配下から、0=ルートから）
-    リンク条件: ship_romaji_map と ship_info の両方にエントリがある場合のみ。
-    （ship_info にないとページ生成されていないので404になる）
+    リンク条件: ships.json に romaji_slug があるすべての船宿をリンク化。
     """
-    slug = _SHIP_ROMAJI.get(name)
-    if not slug or name not in _SHIP_INFO:
+    slug = None
+    # ships.json から slug を取得
+    for ship in SHIPS:
+        if ship.get("name") == name and ship.get("romaji_slug"):
+            slug = ship.get("romaji_slug")
+            break
+    # フォールバック: _SHIP_ROMAJI から取得
+    if not slug:
+        slug = _SHIP_ROMAJI.get(name)
+    if not slug:
         return name
     prefix = "../" * depth if depth > 0 else ""
     return f'<a href="{prefix}ship/{slug}.html">{name}</a>'
@@ -8267,16 +8274,32 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     elif total_known > 0:
         overall_str = f"直近30日: 出船{sail}日 / 欠航{cancel}日 <span style=\"font-size:9px;opacity:.7\">(クロール記録ベース)</span>"
 
+    # ships.json から contact 情報を取得（official_url, phone, address, business_hours, closed_days）
+    ships_contact = {}
+    for s in SHIPS:
+        if s.get("name") == name:
+            ships_contact = {
+                "official_url": s.get("official_url"),
+                "phone": s.get("phone"),
+                "address": s.get("address"),
+                "business_hours": s.get("business_hours"),
+                "closed_days": s.get("closed_days"),
+            }
+            break
+
+    # basic に ships_contact をマージ（basic が優先）
+    basic_merged = {**ships_contact, **basic}
+
     # 基本情報BOX
     info_rows = []
     info_rows.append(f'<div class="info-row"><span class="info-label">エリア</span><span class="info-val"><a href="../area/{area_slug_str}.html">{area}</a></span></div>')
-    addr = basic.get("address")
-    if addr:
+    addr = basic_merged.get("address")
+    if addr and addr != "未確認":
         info_rows.append(f'<div class="info-row"><span class="info-label">所在地</span><span class="info-val">{addr}</span></div>')
-    phone = basic.get("phone")
-    if phone:
+    phone = basic_merged.get("phone")
+    if phone and phone != "未確認":
         info_rows.append(f'<div class="info-row"><span class="info-label">電話</span><span class="info-val">{phone}</span></div>')
-    off = basic.get("official_url")
+    off = basic_merged.get("official_url")
     if off and off.startswith("http"):
         info_rows.append(f'<div class="info-row"><span class="info-label">公式サイト</span><span class="info-val"><a href="{off}" rel="nofollow noopener" target="_blank">外部サイトを開く →</a></span></div>')
     if primary_fish:
@@ -8290,6 +8313,14 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     if parking: acc_parts.append(f"駐車場: {parking}")
     if acc_parts:
         info_rows.append(f'<div class="info-row"><span class="info-label">アクセス</span><span class="info-val">{" / ".join(acc_parts)}</span></div>')
+
+    # 営業時間と定休日
+    business_hours = basic_merged.get("business_hours")
+    if business_hours and business_hours not in ("記載なし", "未記載"):
+        info_rows.append(f'<div class="info-row"><span class="info-label">営業時間</span><span class="info-val">{business_hours}</span></div>')
+    closed_days = basic_merged.get("closed_days")
+    if closed_days and closed_days not in ("記載なし", "未記載"):
+        info_rows.append(f'<div class="info-row"><span class="info-label">定休日</span><span class="info-val">{closed_days}</span></div>')
     if total_known >= 5 and rate is not None:
         info_rows.append(f'<div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船{sail}日 / 欠航{cancel}日（出船率{rate}%）</span></div>')
     elif total_known > 0:
@@ -8520,28 +8551,21 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
 
 def build_ship_pages(catches, crawled_at=""):
-    """船宿個別ページを docs/ship/ に生成する（chowari_id がある37船宿のみ）"""
-    if not _SHIP_INFO:
-        print("ship_info.json なし → build_ship_pages スキップ")
-        return 0
-    if not _SHIP_ROMAJI:
-        print("ship_romaji_map.json なし → build_ship_pages スキップ")
-        return 0
+    """船宿個別ページを docs/ship/ に生成する（romaji_slug がある全船宿）"""
     out_dir = os.path.join(WEB_DIR, "ship")
     os.makedirs(out_dir, exist_ok=True)
-    # ship_info.json に手動データがあれば chowari_id 無しでも生成（公式サイトのみ等）
+    # ships.json に romaji_slug があるすべての船宿を対象
     target_ships = [
         s for s in SHIPS
-        if s.get("romaji_slug") and (s.get("chowari_id") or s["name"] in _SHIP_INFO)
+        if s.get("romaji_slug") and not s.get("exclude")
     ]
     today_dt = datetime.now(JST).replace(tzinfo=None)
     area_coords = _ship_load_area_coords()
     generated = 0
     for ship in target_ships:
         name = ship["name"]
-        info = _SHIP_INFO.get(name)
-        if not info:
-            continue
+        # ship_info.json があればそれを使用、なければ空で作成
+        info = _SHIP_INFO.get(name) or {}
         try:
             html = _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at)
             slug = ship["romaji_slug"]
