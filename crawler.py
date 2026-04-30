@@ -4078,6 +4078,16 @@ def build_area_guide_html(area, desc_data):
   {rows}
 </div>"""
 
+def build_area_description_html(area, desc_data):
+    """area_description.json の description フィールドを段落に変換して返す。なければ空文字。"""
+    ad = (desc_data.get(area) or {}) if desc_data else {}
+    text = ad.get("description", "")
+    if not text:
+        return ""
+    paras = [p.strip() for p in text.split("\n") if p.strip()]
+    return '<div class="area-desc">' + "".join(f"<p>{p}</p>" for p in paras) + "</div>"
+
+
 def build_area_faq_html(area, desc_data, area_coords=None, top_fish_items=None, area_catches=None):
     """エリア別FAQ（データ駆動型）＋ FAQPage+Place JSON-LD を返す (html, jsonld) のタプル"""
     ad = (desc_data.get(area) or {}) if desc_data else {}
@@ -6219,7 +6229,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 .related h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .related .rl{display:flex;flex-wrap:wrap;gap:6px}
 .related .rl a{font-size:12px;padding:4px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600;text-decoration:none}
-.related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}"""
+.related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}
+.area-desc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.area-desc p{font-size:14px;line-height:1.8;color:var(--sub);margin:0 0 10px}
+.area-desc p:last-child{margin-bottom:0}"""
 
     for area, catches in area_summary.items():
         group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
@@ -6619,6 +6632,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         area_season_html = build_area_season_map_html(area, area_decadal, top_fish_list)
         area_guide_html = build_area_guide_html(area, area_desc_data)
         area_faq_html, area_faq_jsonld = build_area_faq_html(area, area_desc_data, top_fish_items=top_fish_items, area_catches=catches)
+        area_description_html = build_area_description_html(area, area_desc_data)
 
         # SEO
         area_url = f"{SITE_URL}/area/{area_slug(area)}.html"
@@ -6693,8 +6707,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
-  <h2 class="st">よくある質問</h2>
-  {area_faq_html}
+  {('<h2 class="st">このエリアについて</h2>' + area_description_html) if area_description_html else ('<h2 class="st">よくある質問</h2>' + area_faq_html)}
   {area_teaser_html}
 </div>
 {DATA_NOTE_HTML}
