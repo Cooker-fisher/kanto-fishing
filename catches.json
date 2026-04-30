@@ -1,76 +1,40 @@
 {
-  "crawled_at": "2026/04/29 21:13",
-  "total": 117,
-  "valid": 117,
+  "crawled_at": "2026/04/30 18:35",
+  "total": 92,
+  "valid": 92,
   "anomaly": 0,
   "errors": [],
   "data": [
     {
-      "ship": "龍正丸",
-      "area": "下田港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "シマアジ 0～4 匹 船中 11匹  1～1.4 kg",
-      "fish_raw": "シマアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 4,
-        "is_boat": true
-      },
-      "count_avg": 2,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 1.0,
-        "max": 1.4
-      },
-      "point_place": "銭洲沖",
-      "point_depth": "31～42m",
-      "trip_no": 1,
-      "trip_comment": "シマアジ船。バラシありあり。今日は石廊崎西のシマアジです。途中食い良かった時有りましたが長く続かずでした。1人ボウズでした。",
-      "count_raw": "0～4 匹 船中 11匹",
-      "size_raw": "",
-      "weight_raw": "1～1.4 kg",
-      "tokki_raw": "",
-      "point_raw": "銭洲沖水深31～42m",
-      "suion_raw": "18.7℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【波】0.5m 【水色】薄濁り 【水温】18.7℃",
-      "kanso_raw": "シマアジ船。バラシありあり。今日は石廊崎西のシマアジです。途中食い良かった時有りましたが長く続かずでした。1人ボウズでした。",
-      "anomaly": false
-    },
-    {
       "ship": "山下丸",
       "area": "久比里港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "カワハギ 2～21 匹 15～28 cm",
+      "catch_raw": "カワハギ 2～13 匹 16～28 cm",
       "fish_raw": "カワハギ",
       "fish": [
         "カワハギ"
       ],
       "count_range": {
         "min": 2,
-        "max": 21,
+        "max": 13,
         "is_boat": false
       },
-      "count_avg": 11,
+      "count_avg": 7,
       "size_cm": {
-        "min": 15,
+        "min": 16,
         "max": 28
       },
       "weight_kg": null,
-      "point_place": "久里浜沖～鴨居沖",
-      "point_depth": "15m",
+      "point_place": "鴨居沖～久里浜沖",
+      "point_depth": "15～30m",
       "trip_no": 1,
       "trip_comment": null,
-      "count_raw": "2～21 匹",
-      "size_raw": "15～28 cm",
+      "count_raw": "2～13 匹",
+      "size_raw": "16～28 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "久里浜沖～鴨居沖水深15m",
+      "point_raw": "鴨居沖～久里浜沖水深15～30m",
       "suion_raw": "17℃",
       "suishoku_raw": "濁る",
       "color_raw": "【水色】濁る 【水温】17℃",
@@ -80,33 +44,33 @@
     {
       "ship": "山下丸",
       "area": "久比里港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "カサゴ 15～36 匹 15～30 cm",
+      "catch_raw": "カサゴ 15～43 匹 16～25 cm",
       "fish_raw": "カサゴ",
       "fish": [
         "カサゴ"
       ],
       "count_range": {
         "min": 15,
-        "max": 36,
+        "max": 43,
         "is_boat": false
       },
-      "count_avg": 25,
+      "count_avg": 29,
       "size_cm": {
-        "min": 15,
-        "max": 30
+        "min": 16,
+        "max": 25
       },
       "weight_kg": null,
-      "point_place": "鴨居沖",
-      "point_depth": "30m",
+      "point_place": "久里浜沖",
+      "point_depth": "15m",
       "trip_no": 2,
       "trip_comment": null,
-      "count_raw": "15～36 匹",
-      "size_raw": "15～30 cm",
+      "count_raw": "15～43 匹",
+      "size_raw": "16～25 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "鴨居沖水深30m",
+      "point_raw": "久里浜沖水深15m",
       "suion_raw": "17℃",
       "suishoku_raw": "濁る",
       "color_raw": "【水色】濁る 【水温】17℃",
@@ -116,30 +80,30 @@
     {
       "ship": "山下丸",
       "area": "久比里港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "アジ 30～74 匹 23～36 cm",
+      "catch_raw": "アジ 32～65 匹 23～38 cm",
       "fish_raw": "アジ",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 30,
-        "max": 74,
+        "min": 32,
+        "max": 65,
         "is_boat": false
       },
-      "count_avg": 52,
+      "count_avg": 48,
       "size_cm": {
         "min": 23,
-        "max": 36
+        "max": 38
       },
       "weight_kg": null,
       "point_place": "久里浜沖",
       "point_depth": "30～60m",
       "trip_no": 3,
       "trip_comment": null,
-      "count_raw": "30～74 匹",
-      "size_raw": "23～36 cm",
+      "count_raw": "32～65 匹",
+      "size_raw": "23～38 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "久里浜沖水深30～60m",
@@ -152,45 +116,117 @@
     {
       "ship": "山天丸",
       "area": "久比里港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マルイカ 11～19 匹 15～30 cm",
+      "catch_raw": "マルイカ 9～73 匹 13～30 cm",
       "fish_raw": "マルイカ",
       "fish": [
         "マルイカ"
       ],
       "count_range": {
-        "min": 11,
-        "max": 19,
+        "min": 9,
+        "max": 73,
         "is_boat": false
       },
-      "count_avg": 15,
+      "count_avg": 41,
       "size_cm": {
-        "min": 15,
+        "min": 13,
         "max": 30
       },
       "weight_kg": null,
       "point_place": "剣崎沖",
-      "point_depth": "90m",
+      "point_depth": "60～80m",
       "trip_no": 1,
       "trip_comment": null,
-      "count_raw": "11～19 匹",
-      "size_raw": "15～30 cm",
+      "count_raw": "9～73 匹",
+      "size_raw": "13～30 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "剣崎沖水深90m",
+      "point_raw": "剣崎沖水深60～80m",
       "suion_raw": "19℃",
-      "suishoku_raw": "澄む",
-      "color_raw": "【水色】澄む 【水温】19℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】19℃",
       "kanso_raw": "",
       "anomaly": false
     },
     {
-      "ship": "山天丸",
+      "ship": "巳之助丸",
       "area": "久比里港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "アマダイ 1～7 匹 25～43 cm",
+      "catch_raw": "カワハギ 1～11 匹 18～31 cm",
+      "fish_raw": "カワハギ",
+      "fish": [
+        "カワハギ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 11,
+        "is_boat": false
+      },
+      "count_avg": 6,
+      "size_cm": {
+        "min": 18,
+        "max": 31
+      },
+      "weight_kg": null,
+      "point_place": "鴨居沖～久里浜沖",
+      "point_depth": "10～15m",
+      "trip_no": 1,
+      "trip_comment": "日中船の釣果。尺ハギ3匹ゲット!他にカサゴ・ホウボウ。",
+      "count_raw": "1～11 匹",
+      "size_raw": "18～31 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "鴨居沖～久里浜沖水深10～15m",
+      "suion_raw": "17～18℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】17～18℃",
+      "kanso_raw": "日中船の釣果。尺ハギ3匹ゲット!他にカサゴ・ホウボウ。",
+      "anomaly": false
+    },
+    {
+      "ship": "巳之助丸",
+      "area": "久比里港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アジ 30～95 匹 24～40 cm",
+      "fish_raw": "アジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 30,
+        "max": 95,
+        "is_boat": false
+      },
+      "count_avg": 62,
+      "size_cm": {
+        "min": 24,
+        "max": 40
+      },
+      "weight_kg": null,
+      "point_place": "久里浜沖～観音崎沖",
+      "point_depth": "30～45m",
+      "trip_no": 2,
+      "trip_comment": "日中船の釣果。竿頭は昨日に続き95匹。他にサバ・クロダイ。",
+      "count_raw": "30～95 匹",
+      "size_raw": "24～40 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "久里浜沖～観音崎沖水深30～45m",
+      "suion_raw": "17～18℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】17～18℃",
+      "kanso_raw": "日中船の釣果。竿頭は昨日に続き95匹。他にサバ・クロダイ。",
+      "anomaly": false
+    },
+    {
+      "ship": "巳之助丸",
+      "area": "久比里港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アマダイ 1～5 匹 24～40 cm",
       "fish_raw": "アマダイ",
       "fish": [
         "マダイ",
@@ -198,180 +234,104 @@
       ],
       "count_range": {
         "min": 1,
-        "max": 7,
+        "max": 5,
         "is_boat": false
       },
-      "count_avg": 4,
+      "count_avg": 3,
       "size_cm": {
-        "min": 25,
-        "max": 43
-      },
-      "weight_kg": null,
-      "point_place": "剣崎沖",
-      "point_depth": "70～100m",
-      "trip_no": 2,
-      "trip_comment": "他にムシガレイ・オニカサゴ。",
-      "count_raw": "1～7 匹",
-      "size_raw": "25～43 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "剣崎沖水深70～100m",
-      "suion_raw": "19℃",
-      "suishoku_raw": "澄む",
-      "color_raw": "【水色】澄む 【水温】19℃",
-      "kanso_raw": "他にムシガレイ・オニカサゴ。",
-      "anomaly": false
-    },
-    {
-      "ship": "山天丸",
-      "area": "久比里港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "カワハギ 2～19 匹 16～27 cm",
-      "fish_raw": "カワハギ",
-      "fish": [
-        "カワハギ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 19,
-        "is_boat": false
-      },
-      "count_avg": 10,
-      "size_cm": {
-        "min": 16,
-        "max": 27
-      },
-      "weight_kg": null,
-      "point_place": "鴨居沖",
-      "point_depth": "15～25m",
-      "trip_no": 3,
-      "trip_comment": null,
-      "count_raw": "2～19 匹",
-      "size_raw": "16～27 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "鴨居沖水深15～25m",
-      "suion_raw": "19℃",
-      "suishoku_raw": "澄む",
-      "color_raw": "【水色】澄む 【水温】19℃",
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "巳之助丸",
-      "area": "久比里港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "カワハギ 4～27 匹 17～33 cm",
-      "fish_raw": "カワハギ",
-      "fish": [
-        "カワハギ"
-      ],
-      "count_range": {
-        "min": 4,
-        "max": 27,
-        "is_boat": false
-      },
-      "count_avg": 15,
-      "size_cm": {
-        "min": 17,
-        "max": 33
-      },
-      "weight_kg": null,
-      "point_place": "鴨居沖",
-      "point_depth": "10～15m",
-      "trip_no": 1,
-      "trip_comment": "日中船・乗合・2隻の釣果。竿頭2人、次いで23匹、21匹が2人。他にカサゴ・ホウボウ。",
-      "count_raw": "4～27 匹",
-      "size_raw": "17～33 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "鴨居沖水深10～15m",
-      "suion_raw": "17℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17℃",
-      "kanso_raw": "日中船・乗合・2隻の釣果。竿頭2人、次いで23匹、21匹が2人。他にカサゴ・ホウボウ。",
-      "anomaly": false
-    },
-    {
-      "ship": "巳之助丸",
-      "area": "久比里港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アジ 20～94 匹 22～40 cm",
-      "fish_raw": "アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 20,
-        "max": 94,
-        "is_boat": false
-      },
-      "count_avg": 57,
-      "size_cm": {
-        "min": 22,
+        "min": 24,
         "max": 40
       },
       "weight_kg": null,
-      "point_place": "久里浜沖～観音崎沖",
-      "point_depth": "30～50m",
-      "trip_no": 2,
-      "trip_comment": "日中船の釣果。竿頭2人。88匹、次いで87匹。他にサバ・クロダイ。",
-      "count_raw": "20～94 匹",
-      "size_raw": "22～40 cm",
+      "point_place": "剣崎沖",
+      "point_depth": "80～105m",
+      "trip_no": 3,
+      "trip_comment": "日中船の釣果。他にオニカサゴ・アカタチ・キダイ・カサゴ。",
+      "count_raw": "1～5 匹",
+      "size_raw": "24～40 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "久里浜沖～観音崎沖水深30～50m",
-      "suion_raw": "17℃",
+      "point_raw": "剣崎沖水深80～105m",
+      "suion_raw": "17～18℃",
       "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17℃",
-      "kanso_raw": "日中船の釣果。竿頭2人。88匹、次いで87匹。他にサバ・クロダイ。",
+      "color_raw": "【水色】薄濁り 【水温】17～18℃",
+      "kanso_raw": "日中船の釣果。他にオニカサゴ・アカタチ・キダイ・カサゴ。",
       "anomaly": false
     },
     {
       "ship": "平作丸",
       "area": "久里浜港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "クロダイ 1～16 匹 船中 80匹 35～43 cm",
+      "catch_raw": "クロダイ 6～31 匹 船中 113匹 35～44 cm",
       "fish_raw": "クロダイ",
       "fish": [
         "不明"
       ],
       "count_range": {
-        "min": 1,
-        "max": 16,
+        "min": 6,
+        "max": 31,
         "is_boat": true
       },
-      "count_avg": 8,
+      "count_avg": 18,
       "size_cm": {
         "min": 35,
-        "max": 43
+        "max": 44
       },
       "weight_kg": null,
       "point_place": "久里浜沖",
       "point_depth": "20m",
       "trip_no": 1,
-      "trip_comment": "クロダイ船。久里浜沖を狙い、朝一は波高く釣り辛く、型見た程度でしたが、波が落ち着くにつれアタリ活発で連続ヒットが続きました。トップ16匹次いで14匹、8匹、7匹が2人、6匹が2人、5匹が2人、船中80匹と爆釣!",
-      "count_raw": "1～16 匹 船中 80匹",
-      "size_raw": "35～43 cm",
+      "trip_comment": "クロダイ船。久里浜沖を狙い、トップ31匹次いで13匹2人、10匹、9匹、8匹3人、7匹、6匹、船中113匹と大漁でした。特大アジがお土産になりました。他にメジナ。",
+      "count_raw": "6～31 匹 船中 113匹",
+      "size_raw": "35～44 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "久里浜沖水深20m",
-      "suion_raw": "18℃",
+      "suion_raw": "17.5℃",
       "suishoku_raw": "",
-      "color_raw": "【波】高い 【水温】18℃",
-      "kanso_raw": "クロダイ船。久里浜沖を狙い、朝一は波高く釣り辛く、型見た程度でしたが、波が落ち着くにつれアタリ活発で連続ヒットが続きました。トップ16匹次いで14匹、8匹、7匹が2人、6匹が2人、5匹が2人、船中80匹と爆釣!",
+      "color_raw": "【水温】17.5℃",
+      "kanso_raw": "クロダイ船。久里浜沖を狙い、トップ31匹次いで13匹2人、10匹、9匹、8匹3人、7匹、6匹、船中113匹と大漁でした。特大アジがお土産になりました。他にメジナ。",
       "anomaly": false
     },
     {
       "ship": "平作丸",
       "area": "久里浜港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 0～11 匹 船中 41匹  0.4～2.5 kg",
+      "catch_raw": "大アジ  45～50 cm",
+      "fish_raw": "大アジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": {
+        "min": 45,
+        "max": 50
+      },
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "クロダイ船。久里浜沖を狙い、トップ31匹次いで13匹2人、10匹、9匹、8匹3人、7匹、6匹、船中113匹と大漁でした。特大アジがお土産になりました。他にメジナ。",
+      "count_raw": "",
+      "size_raw": "45～50 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "17.5℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】17.5℃",
+      "kanso_raw": "クロダイ船。久里浜沖を狙い、トップ31匹次いで13匹2人、10匹、9匹、8匹3人、7匹、6匹、船中113匹と大漁でした。特大アジがお土産になりました。他にメジナ。",
+      "anomaly": false
+    },
+    {
+      "ship": "平作丸",
+      "area": "久里浜港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～11 匹 船中 43匹  0.4～1.9 kg",
       "fish_raw": "マダイ",
       "fish": [
         "マダイ"
@@ -385,27 +345,27 @@
       "size_cm": null,
       "weight_kg": {
         "min": 0.4,
-        "max": 2.5
+        "max": 1.9
       },
       "point_place": "久里浜沖",
       "point_depth": "40m",
       "trip_no": 2,
-      "trip_comment": "マダイ船。久里浜沖を狙い、波高く船酔いの方もいましたが、活性高く朝一から好調にアタリ、トップ11匹次いで6匹が2人、5匹が2人、4匹が2人、船中41匹と絶好調!全員お土産は釣れましたが、マダイは1人残念でした。他にイナダ・良型イサキ交じる。",
-      "count_raw": "0～11 匹 船中 41匹",
+      "trip_comment": "マダイ船。久里浜沖を狙い、朝一は活性低く心配しましたが、徐々に反応も出だしポツポツとアタリ、帰りまで釣れてくれました。トップ11匹、次いで8匹、6匹、5匹、3匹が2人、2匹が2人、船中43匹と絶好調!1人だけ残念でした。",
+      "count_raw": "0～11 匹 船中 43匹",
       "size_raw": "",
-      "weight_raw": "0.4～2.5 kg",
+      "weight_raw": "0.4～1.9 kg",
       "tokki_raw": "",
       "point_raw": "久里浜沖水深40m",
-      "suion_raw": "18℃",
+      "suion_raw": "17.5℃",
       "suishoku_raw": "",
-      "color_raw": "【波】高い 【水温】18℃",
-      "kanso_raw": "マダイ船。久里浜沖を狙い、波高く船酔いの方もいましたが、活性高く朝一から好調にアタリ、トップ11匹次いで6匹が2人、5匹が2人、4匹が2人、船中41匹と絶好調!全員お土産は釣れましたが、マダイは1人残念でした。他にイナダ・良型イサキ交じる。",
+      "color_raw": "【水温】17.5℃",
+      "kanso_raw": "マダイ船。久里浜沖を狙い、朝一は活性低く心配しましたが、徐々に反応も出だしポツポツとアタリ、帰りまで釣れてくれました。トップ11匹、次いで8匹、6匹、5匹、3匹が2人、2匹が2人、船中43匹と絶好調!1人だけ残念でした。",
       "anomaly": false
     },
     {
       "ship": "つね丸",
       "area": "佐島",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
       "catch_raw": "マダイ",
       "fish_raw": "マダイ",
@@ -419,83 +379,56 @@
       "point_place": "佐島沖",
       "point_depth": "40～70m",
       "trip_no": 1,
-      "trip_comment": "マダイ乗合。他にメジナ・ハナダイ・カサゴ。",
+      "trip_comment": "マダイ乗合。他にメジナ・大アジ・ウマヅラハギ・カサゴ・ソウダガツオ。",
       "count_raw": "",
       "size_raw": "",
       "weight_raw": "",
       "tokki_raw": "顔見ず",
       "point_raw": "佐島沖水深40～70m",
       "color_raw": null,
-      "kanso_raw": "マダイ乗合。他にメジナ・ハナダイ・カサゴ。",
+      "kanso_raw": "マダイ乗合。他にメジナ・大アジ・ウマヅラハギ・カサゴ・ソウダガツオ。",
       "anomaly": false
     },
     {
       "ship": "不動丸",
       "area": "勝浦川津港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "ヤリイカ 12～36 匹 28～45 cm",
+      "catch_raw": "ヤリイカ 22～52 匹 28～45 cm",
       "fish_raw": "ヤリイカ",
       "fish": [
         "ヤリイカ"
       ],
       "count_range": {
-        "min": 12,
-        "max": 36,
+        "min": 22,
+        "max": 52,
         "is_boat": false
       },
-      "count_avg": 24,
+      "count_avg": 37,
       "size_cm": {
         "min": 28,
         "max": 45
       },
       "weight_kg": null,
       "point_place": "勝浦沖",
-      "point_depth": "140～200m前後",
+      "point_depth": "160～180m前後",
       "trip_no": 1,
-      "trip_comment": "潮流れ、前半浅い水深でサバの邪魔少なかったが活性今ひとつ。後半深い水深でサバの邪魔あったが、他にスルメイカ交じりでポツリポツリ釣れた。",
-      "count_raw": "12～36 匹",
+      "trip_comment": "潮トロリ流れ反応見えサバの邪魔もあったが、終日ポツリポツリ他にスルメイカ交じりで好調に釣れた。",
+      "count_raw": "22～52 匹",
       "size_raw": "28～45 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "勝浦沖水深140～200m前後",
-      "suion_raw": "20～20.2℃",
+      "point_raw": "勝浦沖水深160～180m前後",
+      "suion_raw": "20.1～20.8℃",
       "suishoku_raw": "",
-      "color_raw": "【水温】20～20.2℃",
-      "kanso_raw": "潮流れ、前半浅い水深でサバの邪魔少なかったが活性今ひとつ。後半深い水深でサバの邪魔あったが、他にスルメイカ交じりでポツリポツリ釣れた。",
+      "color_raw": "【水温】20.1～20.8℃",
+      "kanso_raw": "潮トロリ流れ反応見えサバの邪魔もあったが、終日ポツリポツリ他にスルメイカ交じりで好調に釣れた。",
       "anomaly": false
     },
     {
       "ship": "つる丸",
       "area": "大原港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マハタ",
-      "fish_raw": "マハタ",
-      "fish": [
-        "マハタ"
-      ],
-      "count_range": null,
-      "count_avg": null,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "今日もいい感じ!前半流れずパッとしなかったが、流れて来てからポツポツ釣れました!今日はマハタも釣れました!",
-      "count_raw": "",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "今日もいい感じ!前半流れずパッとしなかったが、流れて来てからポツポツ釣れました!今日はマハタも釣れました!",
-      "anomaly": false
-    },
-    {
-      "ship": "つる丸",
-      "area": "大原港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
       "catch_raw": "ヒラメ",
       "fish_raw": "ヒラメ",
@@ -509,23 +442,189 @@
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "今日もいい感じ!前半流れずパッとしなかったが、流れて来てからポツポツ釣れました!今日はマハタも釣れました!",
+      "trip_comment": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
       "count_raw": "",
       "size_raw": "",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "今日もいい感じ!前半流れずパッとしなかったが、流れて来てからポツポツ釣れました!今日はマハタも釣れました!",
+      "kanso_raw": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
+      "anomaly": false
+    },
+    {
+      "ship": "つる丸",
+      "area": "大原港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マハタ",
+      "fish_raw": "マハタ",
+      "fish": [
+        "マハタ"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
+      "count_raw": "",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
+      "anomaly": false
+    },
+    {
+      "ship": "つる丸",
+      "area": "大原港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "カサゴ",
+      "fish_raw": "カサゴ",
+      "fish": [
+        "カサゴ"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
+      "count_raw": "",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
+      "anomaly": false
+    },
+    {
+      "ship": "つる丸",
+      "area": "大原港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マトウダイ",
+      "fish_raw": "マトウダイ",
+      "fish": [
+        "不明"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
+      "count_raw": "",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "今日も大ビラメ交じり!前半流れず苦戦モード。後半流れる潮入ってきてマハタ、カサゴ、マトウダイ交じりポツポツ釣れました!!",
+      "anomaly": false
+    },
+    {
+      "ship": "つる丸",
+      "area": "大原港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "まさかのノーエントリー。潮直って今日は釣れてます!優勝サイズ釣れたけどエントリー無し。毎年のあるあるです。現在の一位の方セーフ!!切られたりバレたり多いです…。",
+      "count_raw": "",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "まさかのノーエントリー。潮直って今日は釣れてます!優勝サイズ釣れたけどエントリー無し。毎年のあるあるです。現在の一位の方セーフ!!切られたりバレたり多いです…。",
+      "anomaly": false
+    },
+    {
+      "ship": "勇盛丸",
+      "area": "大原港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マハタ 船中 2匹",
+      "fish_raw": "マハタ",
+      "fish": [
+        "マハタ"
+      ],
+      "count_range": {
+        "min": 2,
+        "max": 2,
+        "is_boat": true
+      },
+      "count_avg": 2,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "外房大原港～マハタ&ヒラメに出船しました!。水温上昇!朝のうちは潮の流れが悪く水温も低下してきたので、沖の深場ポイントへ移動。移動後、ヒラメのアタリが良く好調に釣れました!サイズも良型マハタ1kg級が2匹。ヒラメ最大3.99kg、3.3kg、2.69kg、2.68kg、2.34kg、2.06kg、1.75kg、他1kg級。水温が上昇して、潮が馴染めば期待大です今後に期待出来そうです。他にカサゴも釣れました。",
+      "count_raw": "船中 2匹",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "1kg級",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "外房大原港～マハタ&ヒラメに出船しました!。水温上昇!朝のうちは潮の流れが悪く水温も低下してきたので、沖の深場ポイントへ移動。移動後、ヒラメのアタリが良く好調に釣れました!サイズも良型マハタ1kg級が2匹。ヒラメ最大3.99kg、3.3kg、2.69kg、2.68kg、2.34kg、2.06kg、1.75kg、他1kg級。水温が上昇して、潮が馴染めば期待大です今後に期待出来そうです。他にカサゴも釣れました。",
+      "anomaly": false
+    },
+    {
+      "ship": "勇盛丸",
+      "area": "大原港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ヒラメ",
+      "fish_raw": "ヒラメ",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "外房大原港～マハタ&ヒラメに出船しました!。水温上昇!朝のうちは潮の流れが悪く水温も低下してきたので、沖の深場ポイントへ移動。移動後、ヒラメのアタリが良く好調に釣れました!サイズも良型マハタ1kg級が2匹。ヒラメ最大3.99kg、3.3kg、2.69kg、2.68kg、2.34kg、2.06kg、1.75kg、他1kg級。水温が上昇して、潮が馴染めば期待大です今後に期待出来そうです。他にカサゴも釣れました。",
+      "count_raw": "",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "1kg級～3.99kg",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "外房大原港～マハタ&ヒラメに出船しました!。水温上昇!朝のうちは潮の流れが悪く水温も低下してきたので、沖の深場ポイントへ移動。移動後、ヒラメのアタリが良く好調に釣れました!サイズも良型マハタ1kg級が2匹。ヒラメ最大3.99kg、3.3kg、2.69kg、2.68kg、2.34kg、2.06kg、1.75kg、他1kg級。水温が上昇して、潮が馴染めば期待大です今後に期待出来そうです。他にカサゴも釣れました。",
       "anomaly": false
     },
     {
       "ship": "新幸丸",
       "area": "大原港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "午前マダイ 0～3 匹  0.3～1 kg",
-      "fish_raw": "午前マダイ",
+      "catch_raw": "マダイ 0～3 匹  0.3～2 kg",
+      "fish_raw": "マダイ",
       "fish": [
         "マダイ"
       ],
@@ -538,27 +637,27 @@
       "size_cm": null,
       "weight_kg": {
         "min": 0.3,
-        "max": 1.0
+        "max": 2.0
       },
       "point_place": "大原沖",
-      "point_depth": "25～40m",
+      "point_depth": "15～40m",
       "trip_no": 1,
-      "trip_comment": "潮が速く釣りづらかった、流すたびに型はありました。他にカサゴ・アカハタ・ウマヅラハギ・ハタ。",
+      "trip_comment": "潮流れなかったが前半は魚の活性良くゲスト、良型マダイに中ダイも入った。他にハナダイ・カサゴ・ハタ・カンダイ・ウマヅラハギ。",
       "count_raw": "0～3 匹",
       "size_raw": "",
-      "weight_raw": "0.3～1 kg",
+      "weight_raw": "0.3～2 kg",
       "tokki_raw": "",
-      "point_raw": "大原沖水深25～40m",
+      "point_raw": "大原沖水深15～40m",
       "color_raw": null,
-      "kanso_raw": "潮が速く釣りづらかった、流すたびに型はありました。他にカサゴ・アカハタ・ウマヅラハギ・ハタ。",
+      "kanso_raw": "潮流れなかったが前半は魚の活性良くゲスト、良型マダイに中ダイも入った。他にハナダイ・カサゴ・ハタ・カンダイ・ウマヅラハギ。",
       "anomaly": false
     },
     {
       "ship": "第三松栄丸",
       "area": "大原港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "ヒラメ 0～4 匹  0.6～2.81 kg",
+      "catch_raw": "ヒラメ 0～4 匹  0.7～2.8 kg",
       "fish_raw": "ヒラメ",
       "fish": [
         "ヒラメ"
@@ -571,28 +670,28 @@
       "count_avg": 2,
       "size_cm": null,
       "weight_kg": {
-        "min": 0.6,
-        "max": 2.81
+        "min": 0.7,
+        "max": 2.8
       },
       "point_place": "大原沖",
-      "point_depth": "30～40m",
+      "point_depth": "35～68m",
       "trip_no": 1,
-      "trip_comment": "ヒラメ&マハタ・5人の釣果。朝は寒さを感じず日中はそれほど気温上がらず…。そんな今日、予報に反し海況思った以上に悪く…船酔いした方も何名か。大原沖30～40mの深場を攻めます。釣り辛い中、貸竿メンバー奮闘してくれました!5名中4名が本命get!!そしてトップ4匹!!ただ全員GETとはならず…皆さんお疲れ様でした。他にカサゴ。",
+      "trip_comment": "ヒラメ&マハタ。朝から風も強く寒ーい1日。今日も大原沖35～68mの深場を攻めます!!海況悪く、釣り辛く…それでも!同時ヒットあり!!良型交じりにポツポツ釣れました!ただ全員GETとはいかず…。船長曰く「タナ取りで差がでたなぁー」との事。寒い中、皆さんお疲れ様でした!!他にカサゴ・ホウボウ。",
       "count_raw": "0～4 匹",
       "size_raw": "",
-      "weight_raw": "0.6～2.81 kg",
+      "weight_raw": "0.7～2.8 kg",
       "tokki_raw": "",
-      "point_raw": "大原沖水深30～40m",
+      "point_raw": "大原沖水深35～68m",
       "color_raw": null,
-      "kanso_raw": "ヒラメ&マハタ・5人の釣果。朝は寒さを感じず日中はそれほど気温上がらず…。そんな今日、予報に反し海況思った以上に悪く…船酔いした方も何名か。大原沖30～40mの深場を攻めます。釣り辛い中、貸竿メンバー奮闘してくれました!5名中4名が本命get!!そしてトップ4匹!!ただ全員GETとはならず…皆さんお疲れ様でした。他にカサゴ。",
+      "kanso_raw": "ヒラメ&マハタ。朝から風も強く寒ーい1日。今日も大原沖35～68mの深場を攻めます!!海況悪く、釣り辛く…それでも!同時ヒットあり!!良型交じりにポツポツ釣れました!ただ全員GETとはいかず…。船長曰く「タナ取りで差がでたなぁー」との事。寒い中、皆さんお疲れ様でした!!他にカサゴ・ホウボウ。",
       "anomaly": false
     },
     {
       "ship": "第三松栄丸",
       "area": "大原港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マハタ 0～1 匹  0.6～0.8 kg",
+      "catch_raw": "マハタ 0～1 匹  0.6～1.2 kg",
       "fish_raw": "マハタ",
       "fish": [
         "マハタ"
@@ -606,117 +705,46 @@
       "size_cm": null,
       "weight_kg": {
         "min": 0.6,
-        "max": 0.8
+        "max": 1.2
       },
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "ヒラメ&マハタ・5人の釣果。朝は寒さを感じず日中はそれほど気温上がらず…。そんな今日、予報に反し海況思った以上に悪く…船酔いした方も何名か。大原沖30～40mの深場を攻めます。釣り辛い中、貸竿メンバー奮闘してくれました!5名中4名が本命get!!そしてトップ4匹!!ただ全員GETとはならず…皆さんお疲れ様でした。他にカサゴ。",
+      "trip_comment": "ヒラメ&マハタ。朝から風も強く寒ーい1日。今日も大原沖35～68mの深場を攻めます!!海況悪く、釣り辛く…それでも!同時ヒットあり!!良型交じりにポツポツ釣れました!ただ全員GETとはいかず…。船長曰く「タナ取りで差がでたなぁー」との事。寒い中、皆さんお疲れ様でした!!他にカサゴ・ホウボウ。",
       "count_raw": "0～1 匹",
       "size_raw": "",
-      "weight_raw": "0.6～0.8 kg",
+      "weight_raw": "0.6～1.2 kg",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "ヒラメ&マハタ・5人の釣果。朝は寒さを感じず日中はそれほど気温上がらず…。そんな今日、予報に反し海況思った以上に悪く…船酔いした方も何名か。大原沖30～40mの深場を攻めます。釣り辛い中、貸竿メンバー奮闘してくれました!5名中4名が本命get!!そしてトップ4匹!!ただ全員GETとはならず…皆さんお疲れ様でした。他にカサゴ。",
-      "anomaly": false
-    },
-    {
-      "ship": "恒丸",
-      "area": "大磯港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アジ 21～58 匹 22～38 cm",
-      "fish_raw": "アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 21,
-        "max": 58,
-        "is_boat": false
-      },
-      "count_avg": 39,
-      "size_cm": {
-        "min": 22,
-        "max": 38
-      },
-      "weight_kg": null,
-      "point_place": "瀬の海",
-      "point_depth": "100m前後",
-      "trip_no": 1,
-      "trip_comment": "仕立の釣果。アジは良型交じりに食いが良かったです。他にサバが上がりました。",
-      "count_raw": "21～58 匹",
-      "size_raw": "22～38 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "瀬の海水深100m前後",
-      "color_raw": null,
-      "kanso_raw": "仕立の釣果。アジは良型交じりに食いが良かったです。他にサバが上がりました。",
-      "anomaly": false
-    },
-    {
-      "ship": "恒丸",
-      "area": "大磯港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ワラサ 船中 1匹  5  kg",
-      "fish_raw": "ワラサ",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 1,
-        "is_boat": true
-      },
-      "count_avg": 1,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 5.0,
-        "max": 5.0
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "仕立の釣果。アジは良型交じりに食いが良かったです。他にサバが上がりました。",
-      "count_raw": "船中 1匹",
-      "size_raw": "",
-      "weight_raw": "5  kg",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "仕立の釣果。アジは良型交じりに食いが良かったです。他にサバが上がりました。",
+      "kanso_raw": "ヒラメ&マハタ。朝から風も強く寒ーい1日。今日も大原沖35～68mの深場を攻めます!!海況悪く、釣り辛く…それでも!同時ヒットあり!!良型交じりにポツポツ釣れました!ただ全員GETとはいかず…。船長曰く「タナ取りで差がでたなぁー」との事。寒い中、皆さんお疲れ様でした!!他にカサゴ・ホウボウ。",
       "anomaly": false
     },
     {
       "ship": "第八鶴丸",
       "area": "天津港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 1～2 匹  0.6～2.2 kg",
-      "fish_raw": "マダイ",
+      "catch_raw": "マルイカ・ムギイカ ～47 匹",
+      "fish_raw": "マルイカ・ムギイカ",
       "fish": [
-        "マダイ"
+        "マルイカ"
       ],
       "count_range": {
-        "min": 1,
-        "max": 2,
+        "min": 47,
+        "max": 47,
         "is_boat": false
       },
-      "count_avg": 1,
+      "count_avg": 47,
       "size_cm": null,
-      "weight_kg": {
-        "min": 0.6,
-        "max": 2.2
-      },
+      "weight_kg": null,
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
       "trip_comment": null,
-      "count_raw": "1～2 匹",
+      "count_raw": "～47 匹",
       "size_raw": "",
-      "weight_raw": "0.6～2.2 kg",
+      "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
@@ -724,239 +752,66 @@
       "anomaly": false
     },
     {
-      "ship": "三喜丸釣船店",
-      "area": "小柴港",
-      "date": "2026/04/29",
+      "ship": "平安丸",
+      "area": "小田原早川港",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "LTアジ 31～80 匹 17～29 cm",
-      "fish_raw": "LTアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 31,
-        "max": 80,
-        "is_boat": false
-      },
-      "count_avg": 55,
-      "size_cm": {
-        "min": 17,
-        "max": 29
-      },
-      "weight_kg": null,
-      "point_place": "小柴沖～富岡沖",
-      "point_depth": "25～30m",
-      "trip_no": 1,
-      "trip_comment": "LTアジ船。中型多数。他にクロダイ・イシモチ。",
-      "count_raw": "31～80 匹",
-      "size_raw": "17～29 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "小柴沖～富岡沖水深25～30m",
-      "color_raw": null,
-      "kanso_raw": "LTアジ船。中型多数。他にクロダイ・イシモチ。",
-      "anomaly": false
-    },
-    {
-      "ship": "三喜丸釣船店",
-      "area": "小柴港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "五目 4～10 匹 20～82 cm ～5.1 kg",
-      "fish_raw": "五目",
+      "catch_raw": "ムギイカ 1～18 匹 18～25 cm",
+      "fish_raw": "ムギイカ",
       "fish": [
         "不明"
-      ],
-      "count_range": {
-        "min": 4,
-        "max": 10,
-        "is_boat": false
-      },
-      "count_avg": 7,
-      "size_cm": {
-        "min": 20,
-        "max": 82
-      },
-      "weight_kg": {
-        "min": 5.1,
-        "max": 5.1
-      },
-      "point_place": "洲ノ崎沖",
-      "point_depth": "70～100m",
-      "trip_no": 2,
-      "trip_comment": "コマセ五目船。五目はイサキ・マダイ・ウマヅラハギ・アカイサキ・サバ・ソウダガツオ・レンコダイ。最大はマダイ5.1kg。海悪く苦戦。",
-      "count_raw": "4～10 匹",
-      "size_raw": "20～82 cm",
-      "weight_raw": "～5.1 kg",
-      "tokki_raw": "",
-      "point_raw": "洲ノ崎沖水深70～100m",
-      "color_raw": null,
-      "kanso_raw": "コマセ五目船。五目はイサキ・マダイ・ウマヅラハギ・アカイサキ・サバ・ソウダガツオ・レンコダイ。最大はマダイ5.1kg。海悪く苦戦。",
-      "anomaly": false
-    },
-    {
-      "ship": "三喜丸釣船店",
-      "area": "小柴港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "タチウオ 1～8 匹 65～102 cm",
-      "fish_raw": "タチウオ",
-      "fish": [
-        "タチウオ"
       ],
       "count_range": {
         "min": 1,
-        "max": 8,
+        "max": 18,
         "is_boat": false
       },
-      "count_avg": 4,
+      "count_avg": 9,
       "size_cm": {
-        "min": 65,
-        "max": 102
+        "min": 18,
+        "max": 25
       },
       "weight_kg": null,
-      "point_place": "走水沖～観音崎沖",
-      "point_depth": "60～70m",
-      "trip_no": 3,
-      "trip_comment": "タチウオ船。8匹3人、ルアー、エサ同数。バレ多い。他にアジ。",
-      "count_raw": "1～8 匹",
-      "size_raw": "65～102 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "走水沖～観音崎沖水深60～70m",
-      "color_raw": null,
-      "kanso_raw": "タチウオ船。8匹3人、ルアー、エサ同数。バレ多い。他にアジ。",
-      "anomaly": false
-    },
-    {
-      "ship": "平安丸",
-      "area": "小田原早川港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アコウ 0～7 匹 船中 16匹  0.6～3 kg",
-      "fish_raw": "アコウ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 7,
-        "is_boat": true
-      },
-      "count_avg": 3,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.6,
-        "max": 3.0
-      },
       "point_place": "真鶴沖",
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "他にトウジン交じる。",
-      "count_raw": "0～7 匹 船中 16匹",
-      "size_raw": "",
-      "weight_raw": "0.6～3 kg",
+      "trip_comment": null,
+      "count_raw": "1～18 匹",
+      "size_raw": "18～25 cm",
+      "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "真鶴沖",
       "color_raw": null,
-      "kanso_raw": "他にトウジン交じる。",
-      "anomaly": false
-    },
-    {
-      "ship": "平安丸",
-      "area": "小田原早川港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マダイ 0～1 匹 船中 1匹  0.8  kg",
-      "fish_raw": "マダイ",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1,
-        "is_boat": true
-      },
-      "count_avg": 0,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.8,
-        "max": 0.8
-      },
-      "point_place": "小田原沖",
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": "他にアジ・イトヨリ・チダイ・アマダイ交じる。",
-      "count_raw": "0～1 匹 船中 1匹",
-      "size_raw": "",
-      "weight_raw": "0.8  kg",
-      "tokki_raw": "",
-      "point_raw": "小田原沖",
-      "color_raw": null,
-      "kanso_raw": "他にアジ・イトヨリ・チダイ・アマダイ交じる。",
-      "anomaly": false
-    },
-    {
-      "ship": "平安丸",
-      "area": "小田原早川港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ビシアジ 12～60 匹 25～38 cm",
-      "fish_raw": "ビシアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 12,
-        "max": 60,
-        "is_boat": false
-      },
-      "count_avg": 36,
-      "size_cm": {
-        "min": 25,
-        "max": 38
-      },
-      "weight_kg": null,
-      "point_place": "二宮沖",
-      "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": "他にサバ交じる。",
-      "count_raw": "12～60 匹",
-      "size_raw": "25～38 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "二宮沖",
-      "color_raw": null,
-      "kanso_raw": "他にサバ交じる。",
+      "kanso_raw": "",
       "anomaly": false
     },
     {
       "ship": "大和丸",
       "area": "小網代港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マルイカ 1～28 匹 15～27 cm",
+      "catch_raw": "マルイカ 9～64 匹 15～30 cm",
       "fish_raw": "マルイカ",
       "fish": [
         "マルイカ"
       ],
       "count_range": {
-        "min": 1,
-        "max": 28,
+        "min": 9,
+        "max": 64,
         "is_boat": false
       },
-      "count_avg": 14,
+      "count_avg": 36,
       "size_cm": {
         "min": 15,
-        "max": 27
+        "max": 30
       },
       "weight_kg": null,
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
       "trip_comment": null,
-      "count_raw": "1～28 匹",
-      "size_raw": "15～27 cm",
+      "count_raw": "9～64 匹",
+      "size_raw": "15～30 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
@@ -967,150 +822,80 @@
     {
       "ship": "翔太丸",
       "area": "小網代港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マルイカ 3～28 匹 15～35 cm",
+      "catch_raw": "マルイカ 14～40 匹 20～35 cm",
       "fish_raw": "マルイカ",
       "fish": [
         "マルイカ"
       ],
       "count_range": {
-        "min": 3,
-        "max": 28,
+        "min": 14,
+        "max": 40,
         "is_boat": false
       },
-      "count_avg": 15,
+      "count_avg": 27,
       "size_cm": {
-        "min": 15,
+        "min": 20,
         "max": 35
       },
       "weight_kg": null,
-      "point_place": "城ヶ島沖～剣崎沖",
-      "point_depth": "70～85m",
+      "point_place": "城ヶ島沖",
+      "point_depth": "60～80m",
       "trip_no": 1,
-      "trip_comment": "波がとれずで前半は大苦戦でした。出船間際まで風が吹いててナギ待ち出船でした。予想通りウネリが残り、潮も逆らいぐらんぐらの海でした。城ヶ島沖で反応は見れたんですが、ぜんぜんウネリで太刀打出来ない、アタリなんて取れない状態。何とか乗せても取り込めない位釣り辛い…。城ヶ島沖は型出た程度で海悪く諦めて…剣崎沖へ!城ヶ島沖と比べればぜんぜん釣りやすい状態。波は有るが揺れ方がこっちのが穏やかです。やっと反応アテてみると何とか半数位の人が乗せて、大流しで誰かしら1～2人乗せれる感じ。良かった。何とか0匹無に、3回、4回と上手く乗せたりする人も。その後は1回乗りが多くなってしまい、2～3人だったり4～5人だったりでしたが、帰り際までポツリポツリと釣れました。一日ウネリが残りアタリ取り辛くバレも多くなってしまい、苦戦は下が何とか皆さんお土産出来て良かったです。竿頭28匹…2番手25匹でした。",
-      "count_raw": "3～28 匹",
-      "size_raw": "15～35 cm",
+      "trip_comment": "良型のマルイカが乗りました…!今日は城ヶ島沖でじっくり狙い、朝の一投目から型を見れました。その後も反応見つかれば乗りが有り刃物も捕るけど、何とか上がって来る方が多い感じ。良い反応にアタると7～8割や全員乗りも有ったり、チョット活性が良い感じでした。続く流しは何回も無く動いてしまったり、刃物に動かされたり日中は乗せた人から刃物が捕っちゃう事も。次々と反応を変え流れで一回回りが多かったが、一日良型マルイカ出てました。けっこう刃物に食われて反応出てても旋回でしたが、マルイカ初挑戦と型も14匹、15匹と良い感じで竿頭40匹、2番手35匹、3番手31匹、20匹以上の人が多い。",
+      "count_raw": "14～40 匹",
+      "size_raw": "20～35 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "城ヶ島沖～剣崎沖水深70～85m",
+      "point_raw": "城ヶ島沖水深60～80m",
       "suion_raw": "17.5℃",
-      "suishoku_raw": "澄む",
-      "color_raw": "【波】高い 【水色】澄む 【水温】17.5℃",
-      "kanso_raw": "波がとれずで前半は大苦戦でした。出船間際まで風が吹いててナギ待ち出船でした。予想通りウネリが残り、潮も逆らいぐらんぐらの海でした。城ヶ島沖で反応は見れたんですが、ぜんぜんウネリで太刀打出来ない、アタリなんて取れない状態。何とか乗せても取り込めない位釣り辛い…。城ヶ島沖は型出た程度で海悪く諦めて…剣崎沖へ!城ヶ島沖と比べればぜんぜん釣りやすい状態。波は有るが揺れ方がこっちのが穏やかです。やっと反応アテてみると何とか半数位の人が乗せて、大流しで誰かしら1～2人乗せれる感じ。良かった。何とか0匹無に、3回、4回と上手く乗せたりする人も。その後は1回乗りが多くなってしまい、2～3人だったり4～5人だったりでしたが、帰り際までポツリポツリと釣れました。一日ウネリが残りアタリ取り辛くバレも多くなってしまい、苦戦は下が何とか皆さんお土産出来て良かったです。竿頭28匹…2番手25匹でした。",
-      "anomaly": false
-    },
-    {
-      "ship": "船宿 まる八",
-      "area": "平和島",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アジ 20～100 匹 16～32 cm",
-      "fish_raw": "アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 20,
-        "max": 100,
-        "is_boat": false
-      },
-      "count_avg": 60,
-      "size_cm": {
-        "min": 16,
-        "max": 32
-      },
-      "weight_kg": null,
-      "point_place": "木更津沖・富岡沖",
-      "point_depth": "15～25m",
-      "trip_no": 1,
-      "trip_comment": "LTショートアジ乗合船・2隻の釣果。1号船は東へ、開始からバリバリ大中小交じり。アカクラゲの妨害もありましたが皆様お土産バッチリでした。束釣り2名様。2号船は西へ、こちらも開始ポチポチ～バリバリ。中型メインで1日釣れました。お子様も30cmオーバーゲット!束釣り2名様。両船共に貸し竿のお客様多かったですが、平均50匹ほど釣れました。",
-      "count_raw": "20～100 匹",
-      "size_raw": "16～32 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "木更津沖・富岡沖水深15～25m",
-      "suion_raw": "",
-      "suishoku_raw": "濁る",
-      "color_raw": "【波】0.5m 【水色】濁る",
-      "kanso_raw": "LTショートアジ乗合船・2隻の釣果。1号船は東へ、開始からバリバリ大中小交じり。アカクラゲの妨害もありましたが皆様お土産バッチリでした。束釣り2名様。2号船は西へ、こちらも開始ポチポチ～バリバリ。中型メインで1日釣れました。お子様も30cmオーバーゲット!束釣り2名様。両船共に貸し竿のお客様多かったですが、平均50匹ほど釣れました。",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【波】ナギ 【水色】薄濁り 【水温】17.5℃",
+      "kanso_raw": "良型のマルイカが乗りました…!今日は城ヶ島沖でじっくり狙い、朝の一投目から型を見れました。その後も反応見つかれば乗りが有り刃物も捕るけど、何とか上がって来る方が多い感じ。良い反応にアタると7～8割や全員乗りも有ったり、チョット活性が良い感じでした。続く流しは何回も無く動いてしまったり、刃物に動かされたり日中は乗せた人から刃物が捕っちゃう事も。次々と反応を変え流れで一回回りが多かったが、一日良型マルイカ出てました。けっこう刃物に食われて反応出てても旋回でしたが、マルイカ初挑戦と型も14匹、15匹と良い感じで竿頭40匹、2番手35匹、3番手31匹、20匹以上の人が多い。",
       "anomaly": false
     },
     {
       "ship": "庄治郎丸",
       "area": "平塚港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "アジ 4～30 匹 18～36 cm",
+      "catch_raw": "アジ 1～15 匹 18～30 cm",
       "fish_raw": "アジ",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 4,
-        "max": 30,
+        "min": 1,
+        "max": 15,
         "is_boat": false
       },
-      "count_avg": 17,
+      "count_avg": 8,
       "size_cm": {
         "min": 18,
-        "max": 36
+        "max": 30
       },
       "weight_kg": null,
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "LT五目・2隻の釣果。他にマトウダイ・ハナダイ・アマダイ・オニカサゴ・メダイ・サバ・クロムツ。",
-      "count_raw": "4～30 匹",
-      "size_raw": "18～36 cm",
+      "trip_comment": "LT五目・2隻の釣果。他にアカハタ・レンコダイ・サバ。ルアーはバラシあり、他にサバ・アジ。",
+      "count_raw": "1～15 匹",
+      "size_raw": "18～30 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "LT五目・2隻の釣果。他にマトウダイ・ハナダイ・アマダイ・オニカサゴ・メダイ・サバ・クロムツ。",
+      "kanso_raw": "LT五目・2隻の釣果。他にアカハタ・レンコダイ・サバ。ルアーはバラシあり、他にサバ・アジ。",
       "anomaly": false
     },
     {
       "ship": "庄治郎丸",
       "area": "平塚港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "クロダイ 0～1 匹  0.55～0.6 kg",
+      "catch_raw": "クロダイ   1.2  kg",
       "fish_raw": "クロダイ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1,
-        "is_boat": false
-      },
-      "count_avg": 0,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.55,
-        "max": 0.6
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "LT五目・2隻の釣果。他にマトウダイ・ハナダイ・アマダイ・オニカサゴ・メダイ・サバ・クロムツ。",
-      "count_raw": "0～1 匹",
-      "size_raw": "",
-      "weight_raw": "0.55～0.6 kg",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "LT五目・2隻の釣果。他にマトウダイ・ハナダイ・アマダイ・オニカサゴ・メダイ・サバ・クロムツ。",
-      "anomaly": false
-    },
-    {
-      "ship": "庄治郎丸",
-      "area": "平塚港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "カンコ   1.2  kg",
-      "fish_raw": "カンコ",
       "fish": [
         "不明"
       ],
@@ -1124,97 +909,94 @@
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "LT五目・2隻の釣果。他にマトウダイ・ハナダイ・アマダイ・オニカサゴ・メダイ・サバ・クロムツ。",
+      "trip_comment": "LT五目・2隻の釣果。他にアカハタ・レンコダイ・サバ。ルアーはバラシあり、他にサバ・アジ。",
       "count_raw": "",
       "size_raw": "",
       "weight_raw": "1.2  kg",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "LT五目・2隻の釣果。他にマトウダイ・ハナダイ・アマダイ・オニカサゴ・メダイ・サバ・クロムツ。",
+      "kanso_raw": "LT五目・2隻の釣果。他にアカハタ・レンコダイ・サバ。ルアーはバラシあり、他にサバ・アジ。",
       "anomaly": false
     },
     {
       "ship": "庄治郎丸",
       "area": "平塚港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マルイカ 2～11 匹 18～26 cm",
-      "fish_raw": "マルイカ",
+      "catch_raw": "マルイカ・ムギイカ 0～62 匹 20～30 cm",
+      "fish_raw": "マルイカ・ムギイカ",
       "fish": [
         "マルイカ"
       ],
       "count_range": {
-        "min": 2,
-        "max": 11,
+        "min": 0,
+        "max": 62,
         "is_boat": false
       },
-      "count_avg": 6,
+      "count_avg": 31,
       "size_cm": {
-        "min": 18,
-        "max": 26
+        "min": 20,
+        "max": 30
       },
       "weight_kg": null,
       "point_place": null,
       "point_depth": null,
       "trip_no": 2,
-      "trip_comment": "他にムギイカ。",
-      "count_raw": "2～11 匹",
-      "size_raw": "18～26 cm",
+      "trip_comment": "ムギイカ1割交じる。",
+      "count_raw": "0～62 匹",
+      "size_raw": "20～30 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "他にムギイカ。",
+      "kanso_raw": "ムギイカ1割交じる。",
       "anomaly": false
     },
     {
       "ship": "庄治郎丸",
       "area": "平塚港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "ビシアジ 5～28 匹 23～35 cm",
-      "fish_raw": "ビシアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 5,
-        "max": 28,
-        "is_boat": false
-      },
-      "count_avg": 16,
-      "size_cm": {
-        "min": 23,
-        "max": 35
-      },
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": "他にサバ・アカタチ・カサゴ・アカボラ・ホウボウ・ムシガレイ。",
-      "count_raw": "5～28 匹",
-      "size_raw": "23～35 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "他にサバ・アカタチ・カサゴ・アカボラ・ホウボウ・ムシガレイ。",
-      "anomaly": false
-    },
-    {
-      "ship": "庄治郎丸",
-      "area": "平塚港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "カサゴ 0～3 匹",
+      "catch_raw": "カサゴ 0～9 匹",
       "fish_raw": "カサゴ",
       "fish": [
         "カサゴ"
       ],
       "count_range": {
         "min": 0,
-        "max": 3,
+        "max": 9,
+        "is_boat": false
+      },
+      "count_avg": 4,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 3,
+      "trip_comment": "カサゴ・ヒラメ五目。他にオオモンハタ・エソ。",
+      "count_raw": "0～9 匹",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "カサゴ・ヒラメ五目。他にオオモンハタ・エソ。",
+      "anomaly": false
+    },
+    {
+      "ship": "庄治郎丸",
+      "area": "平塚港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アカハタ 0～2 匹",
+      "fish_raw": "アカハタ",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2,
         "is_boat": false
       },
       "count_avg": 1,
@@ -1222,57 +1004,95 @@
       "weight_kg": null,
       "point_place": null,
       "point_depth": null,
-      "trip_no": 4,
-      "trip_comment": "カサゴ・ヒラメ五目。他にアカハタ・カタクチイワシ・サバフグ。",
-      "count_raw": "0～3 匹",
+      "trip_no": 3,
+      "trip_comment": "カサゴ・ヒラメ五目。他にオオモンハタ・エソ。",
+      "count_raw": "0～2 匹",
       "size_raw": "",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "カサゴ・ヒラメ五目。他にアカハタ・カタクチイワシ・サバフグ。",
+      "kanso_raw": "カサゴ・ヒラメ五目。他にオオモンハタ・エソ。",
       "anomaly": false
     },
     {
-      "ship": "宮田丸",
-      "area": "日立久慈港",
-      "date": "2026/04/29",
+      "ship": "明広丸",
+      "area": "御宿岩和田港",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 0～7 匹  0.1～1.8 kg",
-      "fish_raw": "マダイ",
+      "catch_raw": "マハタ 0～3 匹 船中 6匹  0.8～3.6 kg",
+      "fish_raw": "マハタ",
       "fish": [
-        "マダイ"
+        "マハタ"
       ],
       "count_range": {
         "min": 0,
-        "max": 7,
-        "is_boat": false
+        "max": 3,
+        "is_boat": true
       },
-      "count_avg": 3,
+      "count_avg": 1,
       "size_cm": null,
       "weight_kg": {
-        "min": 0.1,
-        "max": 1.8
+        "min": 0.8,
+        "max": 3.6
+      },
+      "point_place": "興津沖～勝浦灯台沖航程20～25分水深20～50m",
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "午前船の釣果。今日も朝からアジ釣り、岩和田海水浴場沖からイワシの反応非常に濃く、イワシが邪魔して苦戦。岩和田港沖に移動してやはりイワシの反応非常に濃くあり、イワシが邪魔してアジは数匹で苦戦。部原沖に移動してイワシの反応非常に濃くイワシに邪魔されたがアジも交じりました。マハタ、ヒラメ狙いに切り替えて、北東の風強く海も悪かったので興津沖から海はナギで、潮の流れも良く、ベイトの反応も濃くあり、ポツポツとアタリがありました。中盤も興津沖で潮の流れ悪くなりアタリ悪く、勝浦海中公園沖に移動して、アタリ無く苦戦。後半は勝浦灯台沖に移動して、北東の風強く、海も悪く、潮の流れは良かったが潮型悪くアタリ無く苦戦でした。マハタは最大で3.6kgが上がり、2.3kgと1kg前後が3匹でした。バラシ多数あり、根ズレハリス切れ2匹!今後も大物大釣りチャンスです!他にキジハタ・ハチカサゴ・カサゴ・マアジ・小サバ・ウルメイワシ・セグロイワシ。",
+      "count_raw": "0～3 匹 船中 6匹",
+      "size_raw": "",
+      "weight_raw": "0.8～3.6 kg",
+      "tokki_raw": "",
+      "point_raw": "興津沖～勝浦灯台沖航程20～25分水深20～50m",
+      "suion_raw": "19.9～20.8℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】19.9～20.8℃",
+      "kanso_raw": "午前船の釣果。今日も朝からアジ釣り、岩和田海水浴場沖からイワシの反応非常に濃く、イワシが邪魔して苦戦。岩和田港沖に移動してやはりイワシの反応非常に濃くあり、イワシが邪魔してアジは数匹で苦戦。部原沖に移動してイワシの反応非常に濃くイワシに邪魔されたがアジも交じりました。マハタ、ヒラメ狙いに切り替えて、北東の風強く海も悪かったので興津沖から海はナギで、潮の流れも良く、ベイトの反応も濃くあり、ポツポツとアタリがありました。中盤も興津沖で潮の流れ悪くなりアタリ悪く、勝浦海中公園沖に移動して、アタリ無く苦戦。後半は勝浦灯台沖に移動して、北東の風強く、海も悪く、潮の流れは良かったが潮型悪くアタリ無く苦戦でした。マハタは最大で3.6kgが上がり、2.3kgと1kg前後が3匹でした。バラシ多数あり、根ズレハリス切れ2匹!今後も大物大釣りチャンスです!他にキジハタ・ハチカサゴ・カサゴ・マアジ・小サバ・ウルメイワシ・セグロイワシ。",
+      "anomaly": false
+    },
+    {
+      "ship": "明広丸",
+      "area": "御宿岩和田港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ヒラメ 0～2 匹 船中 2匹  2～3.7 kg",
+      "fish_raw": "ヒラメ",
+      "fish": [
+        "ヒラメ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2,
+        "is_boat": true
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 2.0,
+        "max": 3.7
       },
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "テンヤマダイ。0匹は船酔い者。今日は風強く船酔い者何名か出たもののマダイ、ゲストともにソコソコの釣果でした。他にイナダ・カサゴ・ハナダイ・マゾイ・ウマヅラハギ・フグ交じった。",
-      "count_raw": "0～7 匹",
+      "trip_comment": "午前船の釣果。今日も朝からアジ釣り、岩和田海水浴場沖からイワシの反応非常に濃く、イワシが邪魔して苦戦。岩和田港沖に移動してやはりイワシの反応非常に濃くあり、イワシが邪魔してアジは数匹で苦戦。部原沖に移動してイワシの反応非常に濃くイワシに邪魔されたがアジも交じりました。マハタ、ヒラメ狙いに切り替えて、北東の風強く海も悪かったので興津沖から海はナギで、潮の流れも良く、ベイトの反応も濃くあり、ポツポツとアタリがありました。中盤も興津沖で潮の流れ悪くなりアタリ悪く、勝浦海中公園沖に移動して、アタリ無く苦戦。後半は勝浦灯台沖に移動して、北東の風強く、海も悪く、潮の流れは良かったが潮型悪くアタリ無く苦戦でした。マハタは最大で3.6kgが上がり、2.3kgと1kg前後が3匹でした。バラシ多数あり、根ズレハリス切れ2匹!今後も大物大釣りチャンスです!他にキジハタ・ハチカサゴ・カサゴ・マアジ・小サバ・ウルメイワシ・セグロイワシ。",
+      "count_raw": "0～2 匹 船中 2匹",
       "size_raw": "",
-      "weight_raw": "0.1～1.8 kg",
+      "weight_raw": "2～3.7 kg",
       "tokki_raw": "",
       "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "テンヤマダイ。0匹は船酔い者。今日は風強く船酔い者何名か出たもののマダイ、ゲストともにソコソコの釣果でした。他にイナダ・カサゴ・ハナダイ・マゾイ・ウマヅラハギ・フグ交じった。",
+      "suion_raw": "19.9～20.8℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】19.9～20.8℃",
+      "kanso_raw": "午前船の釣果。今日も朝からアジ釣り、岩和田海水浴場沖からイワシの反応非常に濃く、イワシが邪魔して苦戦。岩和田港沖に移動してやはりイワシの反応非常に濃くあり、イワシが邪魔してアジは数匹で苦戦。部原沖に移動してイワシの反応非常に濃くイワシに邪魔されたがアジも交じりました。マハタ、ヒラメ狙いに切り替えて、北東の風強く海も悪かったので興津沖から海はナギで、潮の流れも良く、ベイトの反応も濃くあり、ポツポツとアタリがありました。中盤も興津沖で潮の流れ悪くなりアタリ悪く、勝浦海中公園沖に移動して、アタリ無く苦戦。後半は勝浦灯台沖に移動して、北東の風強く、海も悪く、潮の流れは良かったが潮型悪くアタリ無く苦戦でした。マハタは最大で3.6kgが上がり、2.3kgと1kg前後が3匹でした。バラシ多数あり、根ズレハリス切れ2匹!今後も大物大釣りチャンスです!他にキジハタ・ハチカサゴ・カサゴ・マアジ・小サバ・ウルメイワシ・セグロイワシ。",
       "anomaly": false
     },
     {
-      "ship": "日正丸",
+      "ship": "大貫丸",
       "area": "日立久慈港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 0～4 匹  0.5～1.2 kg",
+      "catch_raw": "マダイ 0～4 匹  0.3～1.6 kg",
       "fish_raw": "マダイ",
       "fish": [
         "マダイ"
@@ -1285,169 +1105,32 @@
       "count_avg": 2,
       "size_cm": null,
       "weight_kg": {
-        "min": 0.5,
-        "max": 1.2
+        "min": 0.3,
+        "max": 1.6
       },
       "point_place": null,
-      "point_depth": "20～30m",
+      "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "本日テンヤマダイ船、出船!最大1.2kgゲット!他にハナダイ・カサゴ・ソイ・メバル・イナダ。",
+      "trip_comment": "テンヤマダイ船。1.6kg、1kgを最大に良い人3～4匹でした!!大マダイ切られあり。他にハナダイ・カサゴ・メバル・ソイ・アイナメ・イナダ・ショウサイフグ等!",
       "count_raw": "0～4 匹",
       "size_raw": "",
-      "weight_raw": "0.5～1.2 kg",
-      "tokki_raw": "",
-      "point_raw": "水深20～30m",
-      "suion_raw": "14～15℃",
-      "suishoku_raw": "",
-      "color_raw": "【水温】14～15℃",
-      "kanso_raw": "本日テンヤマダイ船、出船!最大1.2kgゲット!他にハナダイ・カサゴ・ソイ・メバル・イナダ。",
-      "anomaly": false
-    },
-    {
-      "ship": "須原屋",
-      "area": "東葛西",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ライトアジ 20～80 匹 16～25 cm",
-      "fish_raw": "ライトアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 20,
-        "max": 80,
-        "is_boat": false
-      },
-      "count_avg": 50,
-      "size_cm": {
-        "min": 16,
-        "max": 25
-      },
-      "weight_kg": null,
-      "point_place": "横浜沖",
-      "point_depth": "20m",
-      "trip_no": 1,
-      "trip_comment": null,
-      "count_raw": "20～80 匹",
-      "size_raw": "16～25 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "横浜沖水深20m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "須原屋",
-      "area": "東葛西",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "キス 6～105 匹 11～23 cm",
-      "fish_raw": "キス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 6,
-        "max": 105,
-        "is_boat": false
-      },
-      "count_avg": 55,
-      "size_cm": {
-        "min": 11,
-        "max": 23
-      },
-      "weight_kg": null,
-      "point_place": "木更津沖",
-      "point_depth": "16m",
-      "trip_no": 2,
-      "trip_comment": null,
-      "count_raw": "6～105 匹",
-      "size_raw": "11～23 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "木更津沖水深16m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "あまさけや丸",
-      "area": "松輪江奈港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ワラサ 0～1 匹  4.8～5.1 kg",
-      "fish_raw": "ワラサ",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1,
-        "is_boat": false
-      },
-      "count_avg": 0,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 4.8,
-        "max": 5.1
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "アジ泳がせ(ワラサ)。他にアジ。",
-      "count_raw": "0～1 匹",
-      "size_raw": "",
-      "weight_raw": "4.8～5.1 kg",
+      "weight_raw": "0.3～1.6 kg",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "アジ泳がせ(ワラサ)。他にアジ。",
+      "kanso_raw": "テンヤマダイ船。1.6kg、1kgを最大に良い人3～4匹でした!!大マダイ切られあり。他にハナダイ・カサゴ・メバル・ソイ・アイナメ・イナダ・ショウサイフグ等!",
       "anomaly": false
     },
     {
-      "ship": "あまさけや丸",
-      "area": "松輪江奈港",
-      "date": "2026/04/29",
+      "ship": "大貫丸",
+      "area": "日立久慈港",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 3～3 匹  1～4.3 kg",
-      "fish_raw": "マダイ",
+      "catch_raw": "アマダイ 1～2 匹 30～45 cm",
+      "fish_raw": "アマダイ",
       "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 3,
-        "is_boat": false
-      },
-      "count_avg": 3,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 1.0,
-        "max": 4.3
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": "他にイサキ・クロダイ。",
-      "count_raw": "3～3 匹",
-      "size_raw": "",
-      "weight_raw": "1～4.3 kg",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "他にイサキ・クロダイ。",
-      "anomaly": false
-    },
-    {
-      "ship": "あまさけや丸",
-      "area": "松輪江奈港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マダイ 1～2 匹  1.5～2 kg",
-      "fish_raw": "マダイ",
-      "fish": [
-        "マダイ"
+        "マダイ",
+        "アマダイ"
       ],
       "count_range": {
         "min": 1,
@@ -1455,127 +1138,30 @@
         "is_boat": false
       },
       "count_avg": 1,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 1.5,
-        "max": 2.0
+      "size_cm": {
+        "min": 30,
+        "max": 45
       },
+      "weight_kg": null,
       "point_place": null,
       "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": null,
+      "trip_no": 2,
+      "trip_comment": "アマダイ船。40cm級交じり良い人2匹でした!他にホウボウ・オニカサゴ・レンコダイ・ムシガレイ等!",
       "count_raw": "1～2 匹",
-      "size_raw": "",
-      "weight_raw": "1.5～2 kg",
+      "size_raw": "30～45 cm",
+      "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "",
+      "kanso_raw": "アマダイ船。40cm級交じり良い人2匹でした!他にホウボウ・オニカサゴ・レンコダイ・ムシガレイ等!",
       "anomaly": false
     },
     {
-      "ship": "棒面丸",
-      "area": "松輪江奈港",
-      "date": "2026/04/29",
+      "ship": "弘漁丸",
+      "area": "日立久慈港",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ",
-      "fish_raw": "マダイ",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": null,
-      "count_avg": null,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": "剣崎沖",
-      "point_depth": "45m",
-      "trip_no": 1,
-      "trip_comment": "ノーマルマダイ乗合。今日も剣崎沖で水深45mで朝イチからマダイが好調でした。なかには4kg弱のマダイも釣れました。",
-      "count_raw": "",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "～4kg弱",
-      "point_raw": "剣崎沖水深45m",
-      "color_raw": null,
-      "kanso_raw": "ノーマルマダイ乗合。今日も剣崎沖で水深45mで朝イチからマダイが好調でした。なかには4kg弱のマダイも釣れました。",
-      "anomaly": false
-    },
-    {
-      "ship": "美喜丸",
-      "area": "松輪江奈港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マダイ ～2 匹  2～3 kg",
-      "fish_raw": "マダイ",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 2,
-        "is_boat": false
-      },
-      "count_avg": 2,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 2.0,
-        "max": 3.0
-      },
-      "point_place": "剣崎沖",
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": null,
-      "count_raw": "～2 匹",
-      "size_raw": "",
-      "weight_raw": "2～3 kg",
-      "tokki_raw": "",
-      "point_raw": "剣崎沖",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "喜平治丸",
-      "area": "松輪間口港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マルイカ 0～41 匹 15～30 cm",
-      "fish_raw": "マルイカ",
-      "fish": [
-        "マルイカ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 41,
-        "is_boat": false
-      },
-      "count_avg": 20,
-      "size_cm": {
-        "min": 15,
-        "max": 30
-      },
-      "weight_kg": null,
-      "point_place": "剣崎沖～洲の崎沖",
-      "point_depth": "75～95m",
-      "trip_no": 1,
-      "trip_comment": null,
-      "count_raw": "0～41 匹",
-      "size_raw": "15～30 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "剣崎沖～洲の崎沖水深75～95m",
-      "suion_raw": "18.4℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】18.4℃",
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "喜平治丸",
-      "area": "松輪間口港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マダイ 0～4 匹  0.7～2.2 kg",
+      "catch_raw": "マダイ 0～4 匹  0.3～3.6 kg",
       "fish_raw": "マダイ",
       "fish": [
         "マダイ"
@@ -1588,28 +1174,202 @@
       "count_avg": 2,
       "size_cm": null,
       "weight_kg": {
-        "min": 0.7,
-        "max": 2.2
+        "min": 0.3,
+        "max": 3.6
       },
-      "point_place": "剣崎沖",
-      "point_depth": "40m",
-      "trip_no": 2,
-      "trip_comment": "剣崎沖です。一日ポツポツと。トップ4匹が2人、2番手2匹…。0匹は2人でした。バラシ、ハリス切れもあり。2.2kg、2kg等上がりました。他にイサキ多数。",
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": null,
       "count_raw": "0～4 匹",
       "size_raw": "",
-      "weight_raw": "0.7～2.2 kg",
+      "weight_raw": "0.3～3.6 kg",
       "tokki_raw": "",
-      "point_raw": "剣崎沖水深40m",
-      "suion_raw": "18.4℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】18.4℃",
-      "kanso_raw": "剣崎沖です。一日ポツポツと。トップ4匹が2人、2番手2匹…。0匹は2人でした。バラシ、ハリス切れもあり。2.2kg、2kg等上がりました。他にイサキ多数。",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "日正丸",
+      "area": "日立久慈港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～2 匹  0.3～0.6 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2,
+        "is_boat": false
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.3,
+        "max": 0.6
+      },
+      "point_place": null,
+      "point_depth": "20～30m",
+      "trip_no": 1,
+      "trip_comment": "本日テンヤマダイ船出船!他にハナダイ・カサゴ・ソイ メバル・イナダ。",
+      "count_raw": "0～2 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～0.6 kg",
+      "tokki_raw": "",
+      "point_raw": "水深20～30m",
+      "suion_raw": "14～15℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】14～15℃",
+      "kanso_raw": "本日テンヤマダイ船出船!他にハナダイ・カサゴ・ソイ メバル・イナダ。",
+      "anomaly": false
+    },
+    {
+      "ship": "あまさけや丸",
+      "area": "松輪江奈港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～3 匹  0.8～4.1 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3,
+        "is_boat": false
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.8,
+        "max": 4.1
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": null,
+      "count_raw": "0～3 匹",
+      "size_raw": "",
+      "weight_raw": "0.8～4.1 kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "あまさけや丸",
+      "area": "松輪江奈港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～2 匹  0.8～2.2 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2,
+        "is_boat": false
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.8,
+        "max": 2.2
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "他にイサキ。",
+      "count_raw": "0～2 匹",
+      "size_raw": "",
+      "weight_raw": "0.8～2.2 kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "他にイサキ。",
       "anomaly": false
     },
     {
       "ship": "喜平治丸",
       "area": "松輪間口港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マルイカ 1～44 匹 15～30 cm",
+      "fish_raw": "マルイカ",
+      "fish": [
+        "マルイカ"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 44,
+        "is_boat": false
+      },
+      "count_avg": 22,
+      "size_cm": {
+        "min": 15,
+        "max": 30
+      },
+      "weight_kg": null,
+      "point_place": "剣崎沖～城ヶ島沖",
+      "point_depth": "45～95m",
+      "trip_no": 1,
+      "trip_comment": "剣崎沖から城ヶ島沖です。2隻にわかれて出船しました。昨日はムギイカもだいぶ多かったのですが、今日はほとんどマルイカでムギイカは交ざった程度でした。2隻でトップ44匹、2番手37匹、3番手35匹…。1桁のかたも結構おられたのでちょっと釣果に差が出てしまいました。",
+      "count_raw": "1～44 匹",
+      "size_raw": "15～30 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "剣崎沖～城ヶ島沖水深45～95m",
+      "suion_raw": "18.4℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】18.4℃",
+      "kanso_raw": "剣崎沖から城ヶ島沖です。2隻にわかれて出船しました。昨日はムギイカもだいぶ多かったのですが、今日はほとんどマルイカでムギイカは交ざった程度でした。2隻でトップ44匹、2番手37匹、3番手35匹…。1桁のかたも結構おられたのでちょっと釣果に差が出てしまいました。",
+      "anomaly": false
+    },
+    {
+      "ship": "喜平治丸",
+      "area": "松輪間口港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～3 匹  0.7～2.75 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3,
+        "is_boat": false
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.7,
+        "max": 2.75
+      },
+      "point_place": "剣崎沖",
+      "point_depth": "40m",
+      "trip_no": 2,
+      "trip_comment": "剣崎沖です。反応の割に難しかったです。トップ3匹、2番手2匹…。0匹のかたも…。バラシ、ハリス切れもあり。大きいのは2.75kg、他に2kgサイズも!ゲストは多彩でイサキ多数。",
+      "count_raw": "0～3 匹",
+      "size_raw": "",
+      "weight_raw": "0.7～2.75 kg",
+      "tokki_raw": "",
+      "point_raw": "剣崎沖水深40m",
+      "suion_raw": "18.4℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】18.4℃",
+      "kanso_raw": "剣崎沖です。反応の割に難しかったです。トップ3匹、2番手2匹…。0匹のかたも…。バラシ、ハリス切れもあり。大きいのは2.75kg、他に2kgサイズも!ゲストは多彩でイサキ多数。",
+      "anomaly": false
+    },
+    {
+      "ship": "喜平治丸",
+      "area": "松輪間口港",
+      "date": "2026/04/30",
       "month": 4,
       "catch_raw": "クロダイ 0～1 匹",
       "fish_raw": "クロダイ",
@@ -1627,7 +1387,7 @@
       "point_place": null,
       "point_depth": null,
       "trip_no": 2,
-      "trip_comment": "剣崎沖です。一日ポツポツと。トップ4匹が2人、2番手2匹…。0匹は2人でした。バラシ、ハリス切れもあり。2.2kg、2kg等上がりました。他にイサキ多数。",
+      "trip_comment": "剣崎沖です。反応の割に難しかったです。トップ3匹、2番手2匹…。0匹のかたも…。バラシ、ハリス切れもあり。大きいのは2.75kg、他に2kgサイズも!ゲストは多彩でイサキ多数。",
       "count_raw": "0～1 匹",
       "size_raw": "",
       "weight_raw": "",
@@ -1636,320 +1396,171 @@
       "suion_raw": "18.4℃",
       "suishoku_raw": "薄濁り",
       "color_raw": "【水色】薄濁り 【水温】18.4℃",
-      "kanso_raw": "剣崎沖です。一日ポツポツと。トップ4匹が2人、2番手2匹…。0匹は2人でした。バラシ、ハリス切れもあり。2.2kg、2kg等上がりました。他にイサキ多数。",
+      "kanso_raw": "剣崎沖です。反応の割に難しかったです。トップ3匹、2番手2匹…。0匹のかたも…。バラシ、ハリス切れもあり。大きいのは2.75kg、他に2kgサイズも!ゲストは多彩でイサキ多数。",
       "anomaly": false
     },
     {
-      "ship": "長崎屋",
-      "area": "横浜本牧港",
-      "date": "2026/04/29",
+      "ship": "喜平治丸",
+      "area": "松輪間口港",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "ショートLTアジ 30～118 匹 17～38 cm",
-      "fish_raw": "ショートLTアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 30,
-        "max": 118,
-        "is_boat": false
-      },
-      "count_avg": 74,
-      "size_cm": {
-        "min": 17,
-        "max": 38
-      },
-      "weight_kg": null,
-      "point_place": "航程3～10分位",
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "近場のライトアジ!型にバタツキがありましたが、中型もポツポツと交じって好調でした!最大は38cm!他に36cmも!トップ118匹!2番手117匹。50匹前後の方が多かったです。他にクロダイ・イシモチ。バチコンは34～55匹。 2",
-      "count_raw": "30～118 匹",
-      "size_raw": "17～38 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "航程3～10分位",
-      "suion_raw": "16.1℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【波】0.5m 【水色】薄濁り 【水温】16.1℃",
-      "kanso_raw": "近場のライトアジ!型にバタツキがありましたが、中型もポツポツと交じって好調でした!最大は38cm!他に36cmも!トップ118匹!2番手117匹。50匹前後の方が多かったです。他にクロダイ・イシモチ。バチコンは34～55匹。 2",
-      "anomaly": false
-    },
-    {
-      "ship": "長崎屋",
-      "area": "横浜本牧港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "シロギス 21～174 匹 14～24 cm",
-      "fish_raw": "シロギス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 21,
-        "max": 174,
-        "is_boat": false
-      },
-      "count_avg": 97,
-      "size_cm": {
-        "min": 14,
-        "max": 24
-      },
-      "weight_kg": null,
-      "point_place": "航程3～20分位",
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": null,
-      "count_raw": "21～174 匹",
-      "size_raw": "14～24 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "航程3～20分位",
-      "suion_raw": "16.1℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【波】0.5m 【水色】薄濁り 【水温】16.1℃",
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "長崎屋",
-      "area": "横浜本牧港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "シロギス 29～150 匹 14～24 cm",
-      "fish_raw": "シロギス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 29,
-        "max": 150,
-        "is_boat": false
-      },
-      "count_avg": 89,
-      "size_cm": {
-        "min": 14,
-        "max": 24
-      },
-      "weight_kg": null,
-      "point_place": "航程3～20分位",
-      "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": "好調!良型交じりで1日ポツポツとアタリ続き引き続き好調でした!トップは174匹!別船はトップ150匹!2隻とも40匹前後の方が多く、50匹超す方も多数いました。他にホウボウ・イシモチ・マコガレイ・カサゴ等。",
-      "count_raw": "29～150 匹",
-      "size_raw": "14～24 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "航程3～20分位",
-      "suion_raw": "16.1℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【波】0.5m 【水色】薄濁り 【水温】16.1℃",
-      "kanso_raw": "好調!良型交じりで1日ポツポツとアタリ続き引き続き好調でした!トップは174匹!別船はトップ150匹!2隻とも40匹前後の方が多く、50匹超す方も多数いました。他にホウボウ・イシモチ・マコガレイ・カサゴ等。",
-      "anomaly": false
-    },
-    {
-      "ship": "渡辺釣船店",
-      "area": "横浜港･新山下",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午前LTアジ 50～77 匹 17～28 cm",
-      "fish_raw": "午前LTアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 50,
-        "max": 77,
-        "is_boat": false
-      },
-      "count_avg": 63,
-      "size_cm": {
-        "min": 17,
-        "max": 28
-      },
-      "weight_kg": null,
-      "point_place": "横浜沖",
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "復調でバリバリでした。トップは3名様。",
-      "count_raw": "50～77 匹",
-      "size_raw": "17～28 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "横浜沖",
-      "suion_raw": "16.7℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】16.7℃",
-      "kanso_raw": "復調でバリバリでした。トップは3名様。",
-      "anomaly": false
-    },
-    {
-      "ship": "渡辺釣船店",
-      "area": "横浜港･新山下",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午後LTアジ 11～56 匹 17～28 cm",
-      "fish_raw": "午後LTアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 11,
-        "max": 56,
-        "is_boat": false
-      },
-      "count_avg": 33,
-      "size_cm": {
-        "min": 17,
-        "max": 28
-      },
-      "weight_kg": null,
-      "point_place": "横浜沖",
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": "活性良く絶好調でした。20cmの中サイズ揃いです。",
-      "count_raw": "11～56 匹",
-      "size_raw": "17～28 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "横浜沖",
-      "suion_raw": "16.7℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】16.7℃",
-      "kanso_raw": "活性良く絶好調でした。20cmの中サイズ揃いです。",
-      "anomaly": false
-    },
-    {
-      "ship": "渡辺釣船店",
-      "area": "横浜港･新山下",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "タチウオ 2～20 匹 60～122 cm",
-      "fish_raw": "タチウオ",
-      "fish": [
-        "タチウオ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 20,
-        "is_boat": false
-      },
-      "count_avg": 11,
-      "size_cm": {
-        "min": 60,
-        "max": 122
-      },
-      "weight_kg": null,
-      "point_place": "大貫沖",
-      "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": "ルアー。ここ連日走水沖を狙っていましたが、今朝から反応がバラバラ。大貫沖よりいた僚船から情報いただき合流!すぐに小振りちゃん～指3.5本サイズまで活性良くポツリポツリと型出してくれました。結果的には走水沖からは反応が離れていったかもですが、大貫沖では広域に反応を捕らえ終わりまで狙うことが出来ました。最後の最後に122cmを筆頭に同級クラスを数匹GET。引き続きこの周辺を狙っていきます。",
-      "count_raw": "2～20 匹",
-      "size_raw": "60～122 cm",
-      "weight_raw": "",
-      "tokki_raw": "～指3.5本",
-      "point_raw": "大貫沖",
-      "suion_raw": "16.7℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】16.7℃",
-      "kanso_raw": "ルアー。ここ連日走水沖を狙っていましたが、今朝から反応がバラバラ。大貫沖よりいた僚船から情報いただき合流!すぐに小振りちゃん～指3.5本サイズまで活性良くポツリポツリと型出してくれました。結果的には走水沖からは反応が離れていったかもですが、大貫沖では広域に反応を捕らえ終わりまで狙うことが出来ました。最後の最後に122cmを筆頭に同級クラスを数匹GET。引き続きこの周辺を狙っていきます。",
-      "anomaly": false
-    },
-    {
-      "ship": "林遊船",
-      "area": "江戸川放水路･原木中山",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午前クロダイ 0～3 匹 船中 5匹 35～46 cm",
-      "fish_raw": "午前クロダイ",
+      "catch_raw": "メジナ 0～5 匹",
+      "fish_raw": "メジナ",
       "fish": [
         "不明"
       ],
       "count_range": {
         "min": 0,
-        "max": 3,
+        "max": 5,
+        "is_boat": false
+      },
+      "count_avg": 2,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "剣崎沖です。反応の割に難しかったです。トップ3匹、2番手2匹…。0匹のかたも…。バラシ、ハリス切れもあり。大きいのは2.75kg、他に2kgサイズも!ゲストは多彩でイサキ多数。",
+      "count_raw": "0～5 匹",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "18.4℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】18.4℃",
+      "kanso_raw": "剣崎沖です。反応の割に難しかったです。トップ3匹、2番手2匹…。0匹のかたも…。バラシ、ハリス切れもあり。大きいのは2.75kg、他に2kgサイズも!ゲストは多彩でイサキ多数。",
+      "anomaly": false
+    },
+    {
+      "ship": "長崎屋",
+      "area": "横浜本牧港",
+      "date": "2026/04/30",
+      "month": 4,
+      "is_cancellation": true,
+      "reason_text": "定休日です。 Tweet シェア",
+      "fish": [],
+      "catch_raw": "",
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "anomaly": false
+    },
+    {
+      "ship": "渡辺釣船店",
+      "area": "横浜港･新山下",
+      "date": "2026/04/30",
+      "month": 4,
+      "is_cancellation": true,
+      "reason_text": "定休日。 Tweet シェア",
+      "fish": [],
+      "catch_raw": "",
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "anomaly": false
+    },
+    {
+      "ship": "林遊船",
+      "area": "江戸川放水路･原木中山",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "午前シーバス 1～8 匹 船中 16匹 48～68 cm",
+      "fish_raw": "午前シーバス",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 1,
+        "max": 8,
         "is_boat": true
       },
-      "count_avg": 1,
+      "count_avg": 4,
       "size_cm": {
-        "min": 35,
-        "max": 46
+        "min": 48,
+        "max": 68
       },
       "weight_kg": null,
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "チニング・チャーター船の釣果。他にマゴチ。 2",
-      "count_raw": "0～3 匹 船中 5匹",
-      "size_raw": "35～46 cm",
+      "trip_comment": "乗合船の釣果。他にクロダイ。",
+      "count_raw": "1～8 匹 船中 16匹",
+      "size_raw": "48～68 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "チニング・チャーター船の釣果。他にマゴチ。 2",
+      "kanso_raw": "乗合船の釣果。他にクロダイ。",
       "anomaly": false
     },
     {
       "ship": "林遊船",
       "area": "江戸川放水路･原木中山",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "アジ 7～73 匹 15～27 cm",
+      "catch_raw": "アジ 32～175 匹 15～26 cm",
       "fish_raw": "アジ",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 7,
-        "max": 73,
+        "min": 32,
+        "max": 175,
         "is_boat": false
       },
-      "count_avg": 40,
+      "count_avg": 103,
       "size_cm": {
         "min": 15,
-        "max": 27
+        "max": 26
       },
       "weight_kg": null,
       "point_place": null,
       "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": "乗合船の釣果。平均40匹。他にカサゴ・イワシ。",
-      "count_raw": "7～73 匹",
-      "size_raw": "15～27 cm",
+      "trip_no": 2,
+      "trip_comment": "乗合船の釣果。平均50匹。他にカサゴ。",
+      "count_raw": "32～175 匹",
+      "size_raw": "15～26 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "乗合船の釣果。平均40匹。他にカサゴ・イワシ。",
+      "kanso_raw": "乗合船の釣果。平均50匹。他にカサゴ。",
       "anomaly": false
     },
     {
       "ship": "林遊船",
       "area": "江戸川放水路･原木中山",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "午後クロダイ 7～19 匹 船中 54匹 35～47 cm",
+      "catch_raw": "午後クロダイ 3～4 匹 船中 7匹 32～48 cm",
       "fish_raw": "午後クロダイ",
       "fish": [
         "不明"
       ],
       "count_range": {
-        "min": 7,
-        "max": 19,
+        "min": 3,
+        "max": 4,
         "is_boat": true
       },
-      "count_avg": 13,
+      "count_avg": 3,
       "size_cm": {
-        "min": 35,
-        "max": 47
+        "min": 32,
+        "max": 48
       },
       "weight_kg": null,
       "point_place": null,
       "point_depth": null,
-      "trip_no": 4,
+      "trip_no": 3,
       "trip_comment": "チニング・乗合船の釣果。他にマゴチ。",
-      "count_raw": "7～19 匹 船中 54匹",
-      "size_raw": "35～47 cm",
+      "count_raw": "3～4 匹 船中 7匹",
+      "size_raw": "32～48 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
@@ -1958,228 +1569,57 @@
       "anomaly": false
     },
     {
-      "ship": "第八幸松丸",
-      "area": "沼津静浦",
-      "date": "2026/04/29",
+      "ship": "佐衛美丸",
+      "area": "洲崎港",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "イトヨリ",
-      "fish_raw": "イトヨリ",
+      "catch_raw": "イサキ 10～50 匹 22～37 cm",
+      "fish_raw": "イサキ",
       "fish": [
-        "不明"
-      ],
-      "count_range": null,
-      "count_avg": null,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "午前便タイラバ。マダイ撃沈。コマセエリアでは無いマダイ反応を探しながら徹底的に狙いましたが釣果に繋がるアタリは無く撃沈。皆さん最後まで諦めずに巻き続けて頂きありがとうございました。海加減といえ昨晩からの3航海連続撃沈は精神的にまいりました…。今夜のムギイカが超絶ご機嫌になってくれる事を願います。",
-      "count_raw": "",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "午前便タイラバ。マダイ撃沈。コマセエリアでは無いマダイ反応を探しながら徹底的に狙いましたが釣果に繋がるアタリは無く撃沈。皆さん最後まで諦めずに巻き続けて頂きありがとうございました。海加減といえ昨晩からの3航海連続撃沈は精神的にまいりました…。今夜のムギイカが超絶ご機嫌になってくれる事を願います。",
-      "anomaly": false
-    },
-    {
-      "ship": "仁徳丸",
-      "area": "波崎港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アラ 0～1 匹  1.5～2.7 kg",
-      "fish_raw": "アラ",
-      "fish": [
-        "不明"
+        "イサキ"
       ],
       "count_range": {
-        "min": 0,
-        "max": 1,
+        "min": 10,
+        "max": 50,
         "is_boat": false
       },
-      "count_avg": 0,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 1.5,
-        "max": 2.7
-      },
-      "point_place": "犬吠沖",
-      "point_depth": "120～140m",
-      "trip_no": 1,
-      "trip_comment": "スロージギングアラ五目船。北から南からもウネリが有り、海悪く釣りづらいが良型沖カサゴ多数でお土産に。他に沖メバル交じる。",
-      "count_raw": "0～1 匹",
-      "size_raw": "",
-      "weight_raw": "1.5～2.7 kg",
-      "tokki_raw": "",
-      "point_raw": "犬吠沖水深120～140m",
-      "suion_raw": "19.8℃",
-      "suishoku_raw": "濁る",
-      "color_raw": "【水色】濁る 【水温】19.8℃",
-      "kanso_raw": "スロージギングアラ五目船。北から南からもウネリが有り、海悪く釣りづらいが良型沖カサゴ多数でお土産に。他に沖メバル交じる。",
-      "anomaly": false
-    },
-    {
-      "ship": "仁徳丸",
-      "area": "波崎港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "沖カサゴ 2～12 匹 18～36 cm",
-      "fish_raw": "沖カサゴ",
-      "fish": [
-        "カサゴ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 12,
-        "is_boat": false
-      },
-      "count_avg": 7,
+      "count_avg": 30,
       "size_cm": {
-        "min": 18,
-        "max": 36
+        "min": 22,
+        "max": 37
       },
       "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
+      "point_place": "洲崎沖",
+      "point_depth": "20～40m",
       "trip_no": 1,
-      "trip_comment": "スロージギングアラ五目船。北から南からもウネリが有り、海悪く釣りづらいが良型沖カサゴ多数でお土産に。他に沖メバル交じる。",
-      "count_raw": "2～12 匹",
-      "size_raw": "18～36 cm",
+      "trip_comment": "前半は潮よく良型が喰い活発でしたが、ポイント移動後は多点掛け少なかった。手慣れた方は軽々達成出来ました。",
+      "count_raw": "10～50 匹",
+      "size_raw": "22～37 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "",
-      "suion_raw": "19.8℃",
-      "suishoku_raw": "濁る",
-      "color_raw": "【水色】濁る 【水温】19.8℃",
-      "kanso_raw": "スロージギングアラ五目船。北から南からもウネリが有り、海悪く釣りづらいが良型沖カサゴ多数でお土産に。他に沖メバル交じる。",
-      "anomaly": false
-    },
-    {
-      "ship": "信栄丸",
-      "area": "波崎港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "イナダ・サンパク・ワラサ 3～14 匹  2～5.5 kg",
-      "fish_raw": "イナダ・サンパク・ワラサ",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 14,
-        "is_boat": false
-      },
-      "count_avg": 8,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 2.0,
-        "max": 5.5
-      },
-      "point_place": null,
-      "point_depth": "30～50m",
-      "trip_no": 1,
-      "trip_comment": "ジギング船。風の割に海況悪かったが流す度にポチポチと掛かってくれて良い流しはプチラッシュもあって終日楽しめました。",
-      "count_raw": "3～14 匹",
-      "size_raw": "",
-      "weight_raw": "2～5.5 kg",
-      "tokki_raw": "",
-      "point_raw": "水深30～50m",
-      "suion_raw": "18～18.5℃",
+      "point_raw": "洲崎沖水深20～40m",
+      "suion_raw": "18.7℃",
       "suishoku_raw": "",
-      "color_raw": "【水温】18～18.5℃",
-      "kanso_raw": "ジギング船。風の割に海況悪かったが流す度にポチポチと掛かってくれて良い流しはプチラッシュもあって終日楽しめました。",
-      "anomaly": false
-    },
-    {
-      "ship": "信栄丸",
-      "area": "波崎港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "メヌケ 0～2 匹  0.8～2.5 kg",
-      "fish_raw": "メヌケ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 2,
-        "is_boat": false
-      },
-      "count_avg": 1,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.8,
-        "max": 2.5
-      },
-      "point_place": "犬吠沖",
-      "point_depth": "300m",
-      "trip_no": 2,
-      "trip_comment": "ライトメヌケ船。潮の流れがいまいちで昨日のウネリも残り条件悪く全体的にはアタリが少なかったが、型は見られたので落ち着けばもう少し釣果は出るかも?",
-      "count_raw": "0～2 匹",
-      "size_raw": "",
-      "weight_raw": "0.8～2.5 kg",
-      "tokki_raw": "",
-      "point_raw": "犬吠沖水深300m",
-      "suion_raw": "18～18.5℃",
-      "suishoku_raw": "",
-      "color_raw": "【水温】18～18.5℃",
-      "kanso_raw": "ライトメヌケ船。潮の流れがいまいちで昨日のウネリも残り条件悪く全体的にはアタリが少なかったが、型は見られたので落ち着けばもう少し釣果は出るかも?",
+      "color_raw": "【水温】18.7℃",
+      "kanso_raw": "前半は潮よく良型が喰い活発でしたが、ポイント移動後は多点掛け少なかった。手慣れた方は軽々達成出来ました。",
       "anomaly": false
     },
     {
       "ship": "吉久",
       "area": "浦安",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "タチウオ 0～35 匹 65～110 cm",
-      "fish_raw": "タチウオ",
-      "fish": [
-        "タチウオ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 35,
-        "is_boat": false
-      },
-      "count_avg": 17,
-      "size_cm": {
-        "min": 65,
-        "max": 110
-      },
-      "weight_kg": null,
-      "point_place": "観音崎沖",
-      "point_depth": "60m",
-      "trip_no": 1,
-      "trip_comment": "食い活発!",
-      "count_raw": "0～35 匹",
-      "size_raw": "65～110 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "観音崎沖水深60m",
-      "suion_raw": "15.5℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】15.5℃",
-      "kanso_raw": "食い活発!",
-      "anomaly": false
-    },
-    {
-      "ship": "吉久",
-      "area": "浦安",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ショウサイフグ 1～12 匹 20～38 cm",
+      "catch_raw": "ショウサイフグ 0～11 匹 20～38 cm",
       "fish_raw": "ショウサイフグ",
       "fish": [
         "フグ"
       ],
       "count_range": {
-        "min": 1,
-        "max": 12,
+        "min": 0,
+        "max": 11,
         "is_boat": false
       },
-      "count_avg": 6,
+      "count_avg": 5,
       "size_cm": {
         "min": 20,
         "max": 38
@@ -2187,9 +1627,9 @@
       "weight_kg": null,
       "point_place": "大貫沖",
       "point_depth": "10m",
-      "trip_no": 2,
-      "trip_comment": "好調!",
-      "count_raw": "1～12 匹",
+      "trip_no": 1,
+      "trip_comment": "良型!",
+      "count_raw": "0～11 匹",
       "size_raw": "20～38 cm",
       "weight_raw": "",
       "tokki_raw": "",
@@ -2197,1205 +1637,121 @@
       "suion_raw": "15.5℃",
       "suishoku_raw": "薄濁り",
       "color_raw": "【水色】薄濁り 【水温】15.5℃",
-      "kanso_raw": "好調!",
+      "kanso_raw": "良型!",
       "anomaly": false
     },
     {
       "ship": "吉久",
       "area": "浦安",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マアジ 25～78 匹 18～27 cm",
+      "catch_raw": "タチウオ 0～15 匹 65～100 cm",
+      "fish_raw": "タチウオ",
+      "fish": [
+        "タチウオ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 15,
+        "is_boat": false
+      },
+      "count_avg": 7,
+      "size_cm": {
+        "min": 65,
+        "max": 100
+      },
+      "weight_kg": null,
+      "point_place": "観音崎沖",
+      "point_depth": "60m",
+      "trip_no": 2,
+      "trip_comment": null,
+      "count_raw": "0～15 匹",
+      "size_raw": "65～100 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "観音崎沖水深60m",
+      "suion_raw": "15.5℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】15.5℃",
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "吉久",
+      "area": "浦安",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マアジ 10～56 匹 18～26 cm",
       "fish_raw": "マアジ",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 25,
-        "max": 78,
+        "min": 10,
+        "max": 56,
         "is_boat": false
       },
-      "count_avg": 51,
+      "count_avg": 33,
       "size_cm": {
         "min": 18,
-        "max": 27
-      },
-      "weight_kg": null,
-      "point_place": "本牧沖",
-      "point_depth": "20m",
-      "trip_no": 3,
-      "trip_comment": "活発!",
-      "count_raw": "25～78 匹",
-      "size_raw": "18～27 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "本牧沖水深20m",
-      "suion_raw": "15.5℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】15.5℃",
-      "kanso_raw": "活発!",
-      "anomaly": false
-    },
-    {
-      "ship": "吉野屋",
-      "area": "浦安",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アジ 32～100 匹 15～28 cm",
-      "fish_raw": "アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 32,
-        "max": 100,
-        "is_boat": false
-      },
-      "count_avg": 66,
-      "size_cm": {
-        "min": 15,
-        "max": 28
+        "max": 26
       },
       "weight_kg": null,
       "point_place": "木更津沖",
       "point_depth": "15m",
-      "trip_no": 1,
-      "trip_comment": "LTアジ船。",
-      "count_raw": "32～100 匹",
-      "size_raw": "15～28 cm",
+      "trip_no": 3,
+      "trip_comment": null,
+      "count_raw": "10～56 匹",
+      "size_raw": "18～26 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "木更津沖水深15m",
-      "color_raw": null,
-      "kanso_raw": "LTアジ船。",
+      "suion_raw": "15.5℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】15.5℃",
+      "kanso_raw": "",
       "anomaly": false
     },
     {
       "ship": "吉野屋",
       "area": "浦安",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "シロギス 12～50 匹 12～24 cm",
-      "fish_raw": "シロギス",
+      "catch_raw": "アジ 15～50 匹 22～38 cm",
+      "fish_raw": "アジ",
       "fish": [
-        "シロギス"
+        "アジ"
       ],
       "count_range": {
-        "min": 12,
+        "min": 15,
         "max": 50,
-        "is_boat": false
-      },
-      "count_avg": 31,
-      "size_cm": {
-        "min": 12,
-        "max": 24
-      },
-      "weight_kg": null,
-      "point_place": "木更津沖",
-      "point_depth": "17m",
-      "trip_no": 2,
-      "trip_comment": null,
-      "count_raw": "12～50 匹",
-      "size_raw": "12～24 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "木更津沖水深17m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "勇幸丸",
-      "area": "片貝港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "イサキ 11～46 匹 21～38 cm",
-      "fish_raw": "イサキ",
-      "fish": [
-        "イサキ"
-      ],
-      "count_range": {
-        "min": 11,
-        "max": 46,
-        "is_boat": false
-      },
-      "count_avg": 28,
-      "size_cm": {
-        "min": 21,
-        "max": 38
-      },
-      "weight_kg": null,
-      "point_place": "太東沖",
-      "point_depth": "30m",
-      "trip_no": 1,
-      "trip_comment": "ウネリ高く釣り難かったが順調にアタった。他にメジナも交じる。",
-      "count_raw": "11～46 匹",
-      "size_raw": "21～38 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "太東沖水深30m",
-      "suion_raw": "19.6℃",
-      "suishoku_raw": "澄む",
-      "color_raw": "【水色】澄む 【水温】19.6℃",
-      "kanso_raw": "ウネリ高く釣り難かったが順調にアタった。他にメジナも交じる。",
-      "anomaly": false
-    },
-    {
-      "ship": "孝徳丸",
-      "area": "片貝港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "イサキ 25～40 匹 25～36 cm",
-      "fish_raw": "イサキ",
-      "fish": [
-        "イサキ"
-      ],
-      "count_range": {
-        "min": 25,
-        "max": 40,
         "is_boat": false
       },
       "count_avg": 32,
       "size_cm": {
-        "min": 25,
-        "max": 36
-      },
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "今日もイサキ・ハナダイリレー釣りで出船で、朝から北東の風で海悪し、時間を掛けポイントに到着し、始めてすぐアタリが有り順調に釣れ出し、竿頭40匹で残りの時間はハナダイ釣りへ。皆さん何匹かずつ釣れて時間に帰港。",
-      "count_raw": "25～40 匹",
-      "size_raw": "25～36 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "今日もイサキ・ハナダイリレー釣りで出船で、朝から北東の風で海悪し、時間を掛けポイントに到着し、始めてすぐアタリが有り順調に釣れ出し、竿頭40匹で残りの時間はハナダイ釣りへ。皆さん何匹かずつ釣れて時間に帰港。",
-      "anomaly": false
-    },
-    {
-      "ship": "孝徳丸",
-      "area": "片貝港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ハナダイ 3～9 匹 20～32 cm",
-      "fish_raw": "ハナダイ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 9,
-        "is_boat": false
-      },
-      "count_avg": 6,
-      "size_cm": {
-        "min": 20,
-        "max": 32
-      },
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "今日もイサキ・ハナダイリレー釣りで出船で、朝から北東の風で海悪し、時間を掛けポイントに到着し、始めてすぐアタリが有り順調に釣れ出し、竿頭40匹で残りの時間はハナダイ釣りへ。皆さん何匹かずつ釣れて時間に帰港。",
-      "count_raw": "3～9 匹",
-      "size_raw": "20～32 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "今日もイサキ・ハナダイリレー釣りで出船で、朝から北東の風で海悪し、時間を掛けポイントに到着し、始めてすぐアタリが有り順調に釣れ出し、竿頭40匹で残りの時間はハナダイ釣りへ。皆さん何匹かずつ釣れて時間に帰港。",
-      "anomaly": false
-    },
-    {
-      "ship": "孝徳丸",
-      "area": "片貝港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "カイワリ 0～4 匹 19～28 cm",
-      "fish_raw": "カイワリ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 4,
-        "is_boat": false
-      },
-      "count_avg": 2,
-      "size_cm": {
-        "min": 19,
-        "max": 28
-      },
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "今日もイサキ・ハナダイリレー釣りで出船で、朝から北東の風で海悪し、時間を掛けポイントに到着し、始めてすぐアタリが有り順調に釣れ出し、竿頭40匹で残りの時間はハナダイ釣りへ。皆さん何匹かずつ釣れて時間に帰港。",
-      "count_raw": "0～4 匹",
-      "size_raw": "19～28 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "今日もイサキ・ハナダイリレー釣りで出船で、朝から北東の風で海悪し、時間を掛けポイントに到着し、始めてすぐアタリが有り順調に釣れ出し、竿頭40匹で残りの時間はハナダイ釣りへ。皆さん何匹かずつ釣れて時間に帰港。",
-      "anomaly": false
-    },
-    {
-      "ship": "海桜丸",
-      "area": "由比",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マダイ 0～2 匹 船中 4匹  0.8～2.6 kg",
-      "fish_raw": "マダイ",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 2,
-        "is_boat": true
-      },
-      "count_avg": 1,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.8,
-        "max": 2.6
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "五目釣り。クロダイ祭りだね!",
-      "count_raw": "0～2 匹 船中 4匹",
-      "size_raw": "",
-      "weight_raw": "0.8～2.6 kg",
-      "tokki_raw": "",
-      "point_raw": "",
-      "suion_raw": "18℃",
-      "suishoku_raw": "",
-      "color_raw": "【水温】18℃",
-      "kanso_raw": "五目釣り。クロダイ祭りだね!",
-      "anomaly": false
-    },
-    {
-      "ship": "海桜丸",
-      "area": "由比",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "クロダイ 1～5 匹 船中 22匹",
-      "fish_raw": "クロダイ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 5,
-        "is_boat": true
-      },
-      "count_avg": 3,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "五目釣り。クロダイ祭りだね!",
-      "count_raw": "1～5 匹 船中 22匹",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "suion_raw": "18℃",
-      "suishoku_raw": "",
-      "color_raw": "【水温】18℃",
-      "kanso_raw": "五目釣り。クロダイ祭りだね!",
-      "anomaly": false
-    },
-    {
-      "ship": "かめだや",
-      "area": "羽田",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "シロギス 15～76 匹 14～23 cm",
-      "fish_raw": "シロギス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 15,
-        "max": 76,
-        "is_boat": false
-      },
-      "count_avg": 45,
-      "size_cm": {
-        "min": 14,
-        "max": 23
-      },
-      "weight_kg": null,
-      "point_place": "木更津沖",
-      "point_depth": "10～15m",
-      "trip_no": 1,
-      "trip_comment": "上潮に好調に釣れた。",
-      "count_raw": "15～76 匹",
-      "size_raw": "14～23 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "木更津沖水深10～15m",
-      "suion_raw": "17℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17℃",
-      "kanso_raw": "上潮に好調に釣れた。",
-      "anomaly": false
-    },
-    {
-      "ship": "かめだや",
-      "area": "羽田",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "LTアジ 16～43 匹 16～28 cm",
-      "fish_raw": "LTアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 16,
-        "max": 43,
-        "is_boat": false
-      },
-      "count_avg": 29,
-      "size_cm": {
-        "min": 16,
-        "max": 28
-      },
-      "weight_kg": null,
-      "point_place": "本牧沖～富岡沖",
-      "point_depth": "15～25m",
-      "trip_no": 2,
-      "trip_comment": "中型多い。他にイシモチ・クロダイ。",
-      "count_raw": "16～43 匹",
-      "size_raw": "16～28 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "本牧沖～富岡沖水深15～25m",
-      "suion_raw": "17℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17℃",
-      "kanso_raw": "中型多い。他にイシモチ・クロダイ。",
-      "anomaly": false
-    },
-    {
-      "ship": "ちがさき丸",
-      "area": "茅ヶ崎港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アジ 12～78 匹 26～41 cm",
-      "fish_raw": "アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 12,
-        "max": 78,
-        "is_boat": false
-      },
-      "count_avg": 45,
-      "size_cm": {
-        "min": 26,
-        "max": 41
-      },
-      "weight_kg": null,
-      "point_place": "茅ヶ崎沖",
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": null,
-      "count_raw": "12～78 匹",
-      "size_raw": "26～41 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "茅ヶ崎沖",
-      "color_raw": "【波】高い",
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "ちがさき丸",
-      "area": "茅ヶ崎港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マダイ",
-      "fish_raw": "マダイ",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": null,
-      "count_avg": null,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": "茅ヶ崎沖",
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": "タイ五目。本日もマダイは型見ずでしたが、他にクロダイ・アジ等アタリ良かった。",
-      "count_raw": "",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "型見ず",
-      "point_raw": "茅ヶ崎沖",
-      "color_raw": "【波】高い",
-      "kanso_raw": "タイ五目。本日もマダイは型見ずでしたが、他にクロダイ・アジ等アタリ良かった。",
-      "anomaly": false
-    },
-    {
-      "ship": "ちがさき丸",
-      "area": "茅ヶ崎港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アジ 3～32 匹 22～39 cm",
-      "fish_raw": "アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 32,
-        "is_boat": false
-      },
-      "count_avg": 17,
-      "size_cm": {
         "min": 22,
-        "max": 39
-      },
-      "weight_kg": null,
-      "point_place": "茅ヶ崎沖",
-      "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": "LT五目。本日浅場の五目釣りで、イシダイ・タカベ・ニザダイ・マルアジ・イサキ等魚種多数!!後半は深場にてデカアジをGET!!初心者様多くご乗船でしたがお土産バッチリです!!",
-      "count_raw": "3～32 匹",
-      "size_raw": "22～39 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "茅ヶ崎沖",
-      "color_raw": "【波】高い",
-      "kanso_raw": "LT五目。本日浅場の五目釣りで、イシダイ・タカベ・ニザダイ・マルアジ・イサキ等魚種多数!!後半は深場にてデカアジをGET!!初心者様多くご乗船でしたがお土産バッチリです!!",
-      "anomaly": false
-    },
-    {
-      "ship": "たいぞう丸",
-      "area": "葉山あぶずり港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マルイカ 0～46 匹 16～30 cm",
-      "fish_raw": "マルイカ",
-      "fish": [
-        "マルイカ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 46,
-        "is_boat": false
-      },
-      "count_avg": 23,
-      "size_cm": {
-        "min": 16,
-        "max": 30
-      },
-      "weight_kg": null,
-      "point_place": "亀城根～城ヶ島沖",
-      "point_depth": "40～80m",
-      "trip_no": 1,
-      "trip_comment": "マルイカ船・2隻の釣果。大ウネリ…風はナギでしたが朝から海悪く、乗ってるだけで筋肉痛になりそうな海でしたね。皆様お疲れ様でした。前半は空振り流しもあり、型見れれば◎と難しい状況でしたね。中盤から後半にかけて半数以上巻いたりと良い流しも出てきてくれました!最後の30分ぐらいは乗り目良くなり、流すたびに連チャンや3匹掛け、2匹掛けもあり良い感じに!後ろ髪引かれながらの帰港となりました。トップ別船から46匹、2番手29匹、28匹、27匹…。本船でお一人様バラシのみで型見れずでした。",
-      "count_raw": "0～46 匹",
-      "size_raw": "16～30 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "亀城根～城ヶ島沖水深40～80m",
-      "suion_raw": "18.5℃",
-      "suishoku_raw": "澄む",
-      "color_raw": "【水色】澄む 【水温】18.5℃",
-      "kanso_raw": "マルイカ船・2隻の釣果。大ウネリ…風はナギでしたが朝から海悪く、乗ってるだけで筋肉痛になりそうな海でしたね。皆様お疲れ様でした。前半は空振り流しもあり、型見れれば◎と難しい状況でしたね。中盤から後半にかけて半数以上巻いたりと良い流しも出てきてくれました!最後の30分ぐらいは乗り目良くなり、流すたびに連チャンや3匹掛け、2匹掛けもあり良い感じに!後ろ髪引かれながらの帰港となりました。トップ別船から46匹、2番手29匹、28匹、27匹…。本船でお一人様バラシのみで型見れずでした。",
-      "anomaly": false
-    },
-    {
-      "ship": "小柴丸",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "イシモチ 4～22 匹 20～35 cm",
-      "fish_raw": "イシモチ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 4,
-        "max": 22,
-        "is_boat": false
-      },
-      "count_avg": 13,
-      "size_cm": {
-        "min": 20,
-        "max": 35
-      },
-      "weight_kg": null,
-      "point_place": "富岡沖",
-      "point_depth": "20m前後",
-      "trip_no": 1,
-      "trip_comment": "他にアジ多数・シロギスも交じる。",
-      "count_raw": "4～22 匹",
-      "size_raw": "20～35 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "富岡沖水深20m前後",
-      "color_raw": null,
-      "kanso_raw": "他にアジ多数・シロギスも交じる。",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "全日マゴチ 0～7 匹 33～64 cm",
-      "fish_raw": "全日マゴチ",
-      "fish": [
-        "マゴチ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 7,
-        "is_boat": false
-      },
-      "count_avg": 3,
-      "size_cm": {
-        "min": 33,
-        "max": 64
-      },
-      "weight_kg": null,
-      "point_place": "富津沖",
-      "point_depth": "10～20m",
-      "trip_no": 1,
-      "trip_comment": null,
-      "count_raw": "0～7 匹",
-      "size_raw": "33～64 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "富津沖水深10～20m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "全日アジ 50～176 匹 17～27 cm",
-      "fish_raw": "全日アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 50,
-        "max": 176,
-        "is_boat": false
-      },
-      "count_avg": 113,
-      "size_cm": {
-        "min": 17,
-        "max": 27
-      },
-      "weight_kg": null,
-      "point_place": "小柴沖",
-      "point_depth": "25～30m",
-      "trip_no": 2,
-      "trip_comment": null,
-      "count_raw": "50～176 匹",
-      "size_raw": "17～27 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "小柴沖水深25～30m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ワラサ 0～4 匹  4.1～6.1 kg",
-      "fish_raw": "ワラサ",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 4,
-        "is_boat": false
-      },
-      "count_avg": 2,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 4.1,
-        "max": 6.1
-      },
-      "point_place": "久里浜沖",
-      "point_depth": "40～60m",
-      "trip_no": 3,
-      "trip_comment": "全日青物ルアー船。 4 2隻の高低。",
-      "count_raw": "0～4 匹",
-      "size_raw": "",
-      "weight_raw": "4.1～6.1 kg",
-      "tokki_raw": "",
-      "point_raw": "久里浜沖水深40～60m",
-      "color_raw": null,
-      "kanso_raw": "全日青物ルアー船。 4 2隻の高低。",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "イナダ 2～5 匹",
-      "fish_raw": "イナダ",
-      "fish": [
-        "ワラサ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 5,
-        "is_boat": false
-      },
-      "count_avg": 3,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 3,
-      "trip_comment": "全日青物ルアー船。 4 2隻の高低。",
-      "count_raw": "2～5 匹",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": null,
-      "kanso_raw": "全日青物ルアー船。 4 2隻の高低。",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午前アジ 2～58 匹 17～26 cm",
-      "fish_raw": "午前アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 58,
-        "is_boat": false
-      },
-      "count_avg": 30,
-      "size_cm": {
-        "min": 17,
-        "max": 26
-      },
-      "weight_kg": null,
-      "point_place": "富岡沖",
-      "point_depth": "15～30m",
-      "trip_no": 4,
-      "trip_comment": null,
-      "count_raw": "2～58 匹",
-      "size_raw": "17～26 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "富岡沖水深15～30m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午前シロギス 3～49 匹 16～24 cm",
-      "fish_raw": "午前シロギス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 49,
-        "is_boat": false
-      },
-      "count_avg": 26,
-      "size_cm": {
-        "min": 16,
-        "max": 24
-      },
-      "weight_kg": null,
-      "point_place": "中ノ瀬",
-      "point_depth": "15～20m",
-      "trip_no": 5,
-      "trip_comment": null,
-      "count_raw": "3～49 匹",
-      "size_raw": "16～24 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "中ノ瀬水深15～20m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午後アジ 10～43 匹 17～30 cm",
-      "fish_raw": "午後アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 10,
-        "max": 43,
-        "is_boat": false
-      },
-      "count_avg": 26,
-      "size_cm": {
-        "min": 17,
-        "max": 30
-      },
-      "weight_kg": null,
-      "point_place": "富岡沖",
-      "point_depth": "15～20m",
-      "trip_no": 6,
-      "trip_comment": null,
-      "count_raw": "10～43 匹",
-      "size_raw": "17～30 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "富岡沖水深15～20m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "弁天屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午後シロギス 8～74 匹 16～23 cm",
-      "fish_raw": "午後シロギス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 8,
-        "max": 74,
-        "is_boat": false
-      },
-      "count_avg": 41,
-      "size_cm": {
-        "min": 16,
-        "max": 23
-      },
-      "weight_kg": null,
-      "point_place": "中ノ瀬",
-      "point_depth": "15～20m",
-      "trip_no": 7,
-      "trip_comment": null,
-      "count_raw": "8～74 匹",
-      "size_raw": "16～23 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "中ノ瀬水深15～20m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "米元釣船店",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ショートビシアジ 9～34 匹 20～38 cm",
-      "fish_raw": "ショートビシアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 9,
-        "max": 34,
-        "is_boat": false
-      },
-      "count_avg": 21,
-      "size_cm": {
-        "min": 20,
         "max": 38
       },
       "weight_kg": null,
-      "point_place": "走水沖～観音崎沖",
-      "point_depth": "45m前後",
+      "point_place": "観音崎沖",
+      "point_depth": "50m",
       "trip_no": 1,
-      "trip_comment": "他にサバ・イシモチ交じりです。",
-      "count_raw": "9～34 匹",
-      "size_raw": "20～38 cm",
+      "trip_comment": "ビシアジ船。",
+      "count_raw": "15～50 匹",
+      "size_raw": "22～38 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "走水沖～観音崎沖水深45m前後",
+      "point_raw": "観音崎沖水深50m",
       "color_raw": null,
-      "kanso_raw": "他にサバ・イシモチ交じりです。",
+      "kanso_raw": "ビシアジ船。",
       "anomaly": false
     },
     {
-      "ship": "米元釣船店",
-      "area": "金沢八景",
-      "date": "2026/04/29",
+      "ship": "吉野屋",
+      "area": "浦安",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "ショートLTアジ 17～77 匹 18～27 cm",
-      "fish_raw": "ショートLTアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 17,
-        "max": 77,
-        "is_boat": false
-      },
-      "count_avg": 47,
-      "size_cm": {
-        "min": 18,
-        "max": 27
-      },
-      "weight_kg": null,
-      "point_place": "富岡沖",
-      "point_depth": "25m前後",
-      "trip_no": 2,
-      "trip_comment": "他にイシモチ交じりです。",
-      "count_raw": "17～77 匹",
-      "size_raw": "18～27 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "富岡沖水深25m前後",
-      "color_raw": null,
-      "kanso_raw": "他にイシモチ交じりです。",
-      "anomaly": false
-    },
-    {
-      "ship": "荒川屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午前シロギス 4～46 匹 15～22 cm",
-      "fish_raw": "午前シロギス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 4,
-        "max": 46,
-        "is_boat": false
-      },
-      "count_avg": 25,
-      "size_cm": {
-        "min": 15,
-        "max": 22
-      },
-      "weight_kg": null,
-      "point_place": "中ノ瀬",
-      "point_depth": "17m",
-      "trip_no": 1,
-      "trip_comment": "潮止まり前からのスタートでした。派手さはありませんでしたが、船中ポツリポツリと。中盤に潮止まりがあり停滞気味でしたが、後半にまたポツリポツリと釣れました。他にホウボウ・ムシガレイ。 2 2番手44匹。午後もスタートからポツポツと釣れました。後半は潮止まりもあり失速気味でしたが、皆さん楽しめる程度に釣れました。他にホウボウ。",
-      "count_raw": "4～46 匹",
-      "size_raw": "15～22 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "中ノ瀬水深17m",
-      "color_raw": null,
-      "kanso_raw": "潮止まり前からのスタートでした。派手さはありませんでしたが、船中ポツリポツリと。中盤に潮止まりがあり停滞気味でしたが、後半にまたポツリポツリと釣れました。他にホウボウ・ムシガレイ。 2 2番手44匹。午後もスタートからポツポツと釣れました。後半は潮止まりもあり失速気味でしたが、皆さん楽しめる程度に釣れました。他にホウボウ。",
-      "anomaly": false
-    },
-    {
-      "ship": "荒川屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午後シロギス 2～48 匹",
-      "fish_raw": "午後シロギス",
-      "fish": [
-        "シロギス"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 48,
-        "is_boat": false
-      },
-      "count_avg": 25,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": "中ノ瀬",
-      "point_depth": "17m",
-      "trip_no": 2,
-      "trip_comment": null,
-      "count_raw": "2～48 匹",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "中ノ瀬水深17m",
-      "color_raw": null,
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "荒川屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午前アジ 7～68 匹 20～25 cm",
-      "fish_raw": "午前アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 7,
-        "max": 68,
-        "is_boat": false
-      },
-      "count_avg": 37,
-      "size_cm": {
-        "min": 20,
-        "max": 25
-      },
-      "weight_kg": null,
-      "point_place": "富岡沖",
-      "point_depth": "20m",
-      "trip_no": 3,
-      "trip_comment": "スタートからアタリ良く、オカズはバッチリ釣れ、クラゲの猛攻撃が有りましたが、終日アタリました。他にイシモチ。",
-      "count_raw": "7～68 匹",
-      "size_raw": "20～25 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "富岡沖水深20m",
-      "color_raw": null,
-      "kanso_raw": "スタートからアタリ良く、オカズはバッチリ釣れ、クラゲの猛攻撃が有りましたが、終日アタリました。他にイシモチ。",
-      "anomaly": false
-    },
-    {
-      "ship": "荒川屋",
-      "area": "金沢八景",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "午後アジ 3～46 匹 19～26 cm",
-      "fish_raw": "午後アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 46,
-        "is_boat": false
-      },
-      "count_avg": 24,
-      "size_cm": {
-        "min": 19,
-        "max": 26
-      },
-      "weight_kg": null,
-      "point_place": "富岡沖",
-      "point_depth": "19m",
-      "trip_no": 4,
-      "trip_comment": "潮速く、場所探しからのスタートでした。決め手が無く拾い釣りで、ポツリポツリでした。他にイシモチ。",
-      "count_raw": "3～46 匹",
-      "size_raw": "19～26 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "富岡沖水深19m",
-      "color_raw": null,
-      "kanso_raw": "潮速く、場所探しからのスタートでした。決め手が無く拾い釣りで、ポツリポツリでした。他にイシモチ。",
-      "anomaly": false
-    },
-    {
-      "ship": "さえむ丸",
-      "area": "金谷港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アオリイカ 0～1 匹 船中 2匹  0.45～1.4 kg",
-      "fish_raw": "アオリイカ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 1,
-        "is_boat": true
-      },
-      "count_avg": 0,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.45,
-        "max": 1.4
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "ティップラン。ウネリ高く苦戦も良型ゲットです。他にシリヤケイカ多数。",
-      "count_raw": "0～1 匹 船中 2匹",
-      "size_raw": "",
-      "weight_raw": "0.45～1.4 kg",
-      "tokki_raw": "",
-      "point_raw": "",
-      "suion_raw": "17.8℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17.8℃",
-      "kanso_raw": "ティップラン。ウネリ高く苦戦も良型ゲットです。他にシリヤケイカ多数。",
-      "anomaly": false
-    },
-    {
-      "ship": "さえむ丸",
-      "area": "金谷港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ビシアジ 0～25 匹 25～50 cm",
-      "fish_raw": "ビシアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 25,
-        "is_boat": false
-      },
-      "count_avg": 12,
-      "size_cm": {
-        "min": 25,
-        "max": 50
-      },
-      "weight_kg": null,
-      "point_place": "金谷沖",
-      "point_depth": "30～50m",
-      "trip_no": 2,
-      "trip_comment": "浅場のジャンボアジ狙いでジャンボアジは食い活発で皆さんお土産になりました!0匹は1人で船酔いの方です。他に大サバ・アマダイ・カサゴ多数と高級ゲスト多彩です!",
-      "count_raw": "0～25 匹",
-      "size_raw": "25～50 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "金谷沖水深30～50m",
-      "suion_raw": "17.8℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17.8℃",
-      "kanso_raw": "浅場のジャンボアジ狙いでジャンボアジは食い活発で皆さんお土産になりました!0匹は1人で船酔いの方です。他に大サバ・アマダイ・カサゴ多数と高級ゲスト多彩です!",
-      "anomaly": false
-    },
-    {
-      "ship": "さえむ丸",
-      "area": "金谷港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "クロダイ 船中 2匹",
-      "fish_raw": "クロダイ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 2,
-        "is_boat": true
-      },
-      "count_avg": 2,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": "浅場のジャンボアジ狙いでジャンボアジは食い活発で皆さんお土産になりました!0匹は1人で船酔いの方です。他に大サバ・アマダイ・カサゴ多数と高級ゲスト多彩です!",
-      "count_raw": "船中 2匹",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "suion_raw": "17.8℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17.8℃",
-      "kanso_raw": "浅場のジャンボアジ狙いでジャンボアジは食い活発で皆さんお土産になりました!0匹は1人で船酔いの方です。他に大サバ・アマダイ・カサゴ多数と高級ゲスト多彩です!",
-      "anomaly": false
-    },
-    {
-      "ship": "さえむ丸",
-      "area": "金谷港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "イトヨリ 船中 3匹",
-      "fish_raw": "イトヨリ",
-      "fish": [
-        "不明"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 3,
-        "is_boat": true
-      },
-      "count_avg": 3,
-      "size_cm": null,
-      "weight_kg": null,
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": "浅場のジャンボアジ狙いでジャンボアジは食い活発で皆さんお土産になりました!0匹は1人で船酔いの方です。他に大サバ・アマダイ・カサゴ多数と高級ゲスト多彩です!",
-      "count_raw": "船中 3匹",
-      "size_raw": "",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "",
-      "suion_raw": "17.8℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【水色】薄濁り 【水温】17.8℃",
-      "kanso_raw": "浅場のジャンボアジ狙いでジャンボアジは食い活発で皆さんお土産になりました!0匹は1人で船酔いの方です。他に大サバ・アマダイ・カサゴ多数と高級ゲスト多彩です!",
-      "anomaly": false
-    },
-    {
-      "ship": "光進丸",
-      "area": "金谷港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "アジ 1～32 匹 20～44 cm",
-      "fish_raw": "アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 32,
-        "is_boat": false
-      },
-      "count_avg": 16,
-      "size_cm": {
-        "min": 20,
-        "max": 44
-      },
-      "weight_kg": null,
-      "point_place": "金谷沖",
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "黄金アジ船。ウネリ苦戦でスソ船酔い含みです。反応良好で喰い順調!良型多々交じり!",
-      "count_raw": "1～32 匹",
-      "size_raw": "20～44 cm",
-      "weight_raw": "",
-      "tokki_raw": "黄金アジ",
-      "point_raw": "金谷沖",
-      "color_raw": null,
-      "kanso_raw": "黄金アジ船。ウネリ苦戦でスソ船酔い含みです。反応良好で喰い順調!良型多々交じり!",
-      "anomaly": false
-    },
-    {
-      "ship": "光進丸",
-      "area": "金谷港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "トラフグ 0～2 匹  1.2～4.1 kg",
+      "catch_raw": "トラフグ 0～2 匹  1.8～2.8 kg",
       "fish_raw": "トラフグ",
       "fish": [
         "フグ"
@@ -3408,210 +1764,620 @@
       "count_avg": 1,
       "size_cm": null,
       "weight_kg": {
-        "min": 1.2,
-        "max": 4.1
+        "min": 1.8,
+        "max": 2.8
       },
-      "point_place": "金谷沖",
-      "point_depth": null,
+      "point_place": "久里浜沖",
+      "point_depth": "80m",
       "trip_no": 2,
-      "trip_comment": "トラフグ船。反応広範囲に見れて喰い順調!トップ2匹は3名さま!",
+      "trip_comment": null,
       "count_raw": "0～2 匹",
       "size_raw": "",
-      "weight_raw": "1.2～4.1 kg",
+      "weight_raw": "1.8～2.8 kg",
       "tokki_raw": "",
-      "point_raw": "金谷沖",
+      "point_raw": "久里浜沖水深80m",
       "color_raw": null,
-      "kanso_raw": "トラフグ船。反応広範囲に見れて喰い順調!トップ2匹は3名さま!",
+      "kanso_raw": "",
       "anomaly": false
     },
     {
-      "ship": "勘次郎丸",
-      "area": "金谷港",
-      "date": "2026/04/29",
+      "ship": "吉野屋",
+      "area": "浦安",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "アジ 14～47 匹 25～41 cm",
+      "catch_raw": "アジ 35～100 匹 15～25 cm",
       "fish_raw": "アジ",
       "fish": [
         "アジ"
       ],
       "count_range": {
-        "min": 14,
+        "min": 35,
+        "max": 100,
+        "is_boat": false
+      },
+      "count_avg": 67,
+      "size_cm": {
+        "min": 15,
+        "max": 25
+      },
+      "weight_kg": null,
+      "point_place": "木更津沖",
+      "point_depth": "15m",
+      "trip_no": 3,
+      "trip_comment": "LTアジ船。",
+      "count_raw": "35～100 匹",
+      "size_raw": "15～25 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "木更津沖水深15m",
+      "color_raw": null,
+      "kanso_raw": "LTアジ船。",
+      "anomaly": false
+    },
+    {
+      "ship": "吉野屋",
+      "area": "浦安",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "カサゴ 16～51 匹 15～25 cm",
+      "fish_raw": "カサゴ",
+      "fish": [
+        "カサゴ"
+      ],
+      "count_range": {
+        "min": 16,
+        "max": 51,
+        "is_boat": false
+      },
+      "count_avg": 33,
+      "size_cm": {
+        "min": 15,
+        "max": 25
+      },
+      "weight_kg": null,
+      "point_place": "本牧沖",
+      "point_depth": "25m",
+      "trip_no": 4,
+      "trip_comment": null,
+      "count_raw": "16～51 匹",
+      "size_raw": "15～25 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "本牧沖水深25m",
+      "color_raw": null,
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "吉野屋",
+      "area": "浦安",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "シロギス 2～92 匹 12～24 cm",
+      "fish_raw": "シロギス",
+      "fish": [
+        "シロギス"
+      ],
+      "count_range": {
+        "min": 2,
+        "max": 92,
+        "is_boat": false
+      },
+      "count_avg": 47,
+      "size_cm": {
+        "min": 12,
+        "max": 24
+      },
+      "weight_kg": null,
+      "point_place": "木更津沖",
+      "point_depth": "13m",
+      "trip_no": 5,
+      "trip_comment": null,
+      "count_raw": "2～92 匹",
+      "size_raw": "12～24 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "木更津沖水深13m",
+      "color_raw": null,
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "かめだや",
+      "area": "羽田",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "シロギス 30～108 匹 12～23 cm",
+      "fish_raw": "シロギス",
+      "fish": [
+        "シロギス"
+      ],
+      "count_range": {
+        "min": 30,
+        "max": 108,
+        "is_boat": false
+      },
+      "count_avg": 69,
+      "size_cm": {
+        "min": 12,
+        "max": 23
+      },
+      "weight_kg": null,
+      "point_place": "木更津沖",
+      "point_depth": "10～15m",
+      "trip_no": 1,
+      "trip_comment": "終日好調に釣れた。",
+      "count_raw": "30～108 匹",
+      "size_raw": "12～23 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "木更津沖水深10～15m",
+      "suion_raw": "16.5℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】16.5℃",
+      "kanso_raw": "終日好調に釣れた。",
+      "anomaly": false
+    },
+    {
+      "ship": "かめだや",
+      "area": "羽田",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "LTアジ 20～53 匹 17～28 cm",
+      "fish_raw": "LTアジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 20,
+        "max": 53,
+        "is_boat": false
+      },
+      "count_avg": 36,
+      "size_cm": {
+        "min": 17,
+        "max": 28
+      },
+      "weight_kg": null,
+      "point_place": "本牧沖",
+      "point_depth": "18～30m",
+      "trip_no": 2,
+      "trip_comment": "良型交じる。他にイシモチ・クロダイ。",
+      "count_raw": "20～53 匹",
+      "size_raw": "17～28 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "本牧沖水深18～30m",
+      "suion_raw": "16.5℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】16.5℃",
+      "kanso_raw": "良型交じる。他にイシモチ・クロダイ。",
+      "anomaly": false
+    },
+    {
+      "ship": "ちがさき丸",
+      "area": "茅ヶ崎港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アジ 7～42 匹 26～40 cm",
+      "fish_raw": "アジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 7,
+        "max": 42,
+        "is_boat": false
+      },
+      "count_avg": 24,
+      "size_cm": {
+        "min": 26,
+        "max": 40
+      },
+      "weight_kg": null,
+      "point_place": "西沖",
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "朝一と帰り際ポツポツ釣れました。レンタルさんもいてなんとか形になりました。",
+      "count_raw": "7～42 匹",
+      "size_raw": "26～40 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "西沖",
+      "color_raw": null,
+      "kanso_raw": "朝一と帰り際ポツポツ釣れました。レンタルさんもいてなんとか形になりました。",
+      "anomaly": false
+    },
+    {
+      "ship": "ちがさき丸",
+      "area": "茅ヶ崎港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アジ 12～22 匹 20～38 cm",
+      "fish_raw": "アジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 12,
+        "max": 22,
+        "is_boat": false
+      },
+      "count_avg": 17,
+      "size_cm": {
+        "min": 20,
+        "max": 38
+      },
+      "weight_kg": null,
+      "point_place": "茅ヶ崎沖～西沖",
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "LT五目。今日は浅場のポイント反応あるも喰い渋め…。後半の深場のアジはポツポツ続き、皆様お土産確保!!",
+      "count_raw": "12～22 匹",
+      "size_raw": "20～38 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "茅ヶ崎沖～西沖",
+      "color_raw": null,
+      "kanso_raw": "LT五目。今日は浅場のポイント反応あるも喰い渋め…。後半の深場のアジはポツポツ続き、皆様お土産確保!!",
+      "anomaly": false
+    },
+    {
+      "ship": "ちがさき丸",
+      "area": "茅ヶ崎港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～1 匹  0.8  kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 1,
+        "is_boat": false
+      },
+      "count_avg": 0,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.8,
+        "max": 0.8
+      },
+      "point_place": "茅ヶ崎沖",
+      "point_depth": null,
+      "trip_no": 3,
+      "trip_comment": "タイ五目。今日マダイ型見れ、他にクロダイ多数でお土産バッチリでした。",
+      "count_raw": "0～1 匹",
+      "size_raw": "",
+      "weight_raw": "0.8  kg",
+      "tokki_raw": "",
+      "point_raw": "茅ヶ崎沖",
+      "color_raw": null,
+      "kanso_raw": "タイ五目。今日マダイ型見れ、他にクロダイ多数でお土産バッチリでした。",
+      "anomaly": false
+    },
+    {
+      "ship": "新修丸",
+      "area": "金沢八景",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ショートカサゴ 30～65 匹 13～26 cm",
+      "fish_raw": "ショートカサゴ",
+      "fish": [
+        "カサゴ"
+      ],
+      "count_range": {
+        "min": 30,
+        "max": 65,
+        "is_boat": false
+      },
+      "count_avg": 47,
+      "size_cm": {
+        "min": 13,
+        "max": 26
+      },
+      "weight_kg": null,
+      "point_place": "猿島沖",
+      "point_depth": "20～30m",
+      "trip_no": 1,
+      "trip_comment": "魚影濃く中型主体に2番手59匹。 2 5人の釣果。",
+      "count_raw": "30～65 匹",
+      "size_raw": "13～26 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "猿島沖水深20～30m",
+      "color_raw": null,
+      "kanso_raw": "魚影濃く中型主体に2番手59匹。 2 5人の釣果。",
+      "anomaly": false
+    },
+    {
+      "ship": "新修丸",
+      "area": "金沢八景",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アカムツ",
+      "fish_raw": "アカムツ",
+      "fish": [
+        "クロムツ"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": null,
+      "count_raw": "",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "型見ず",
+      "point_raw": "",
+      "color_raw": null,
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "さえむ丸",
+      "area": "金谷港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アオリイカ 0～1 匹  1.13  kg",
+      "fish_raw": "アオリイカ",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 1,
+        "is_boat": false
+      },
+      "count_avg": 0,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 1.13,
+        "max": 1.13
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "ティップラン。良型も乗り渋りました。他にシリヤケイカ数匹。",
+      "count_raw": "0～1 匹",
+      "size_raw": "",
+      "weight_raw": "1.13  kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "17.7℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】17.7℃",
+      "kanso_raw": "ティップラン。良型も乗り渋りました。他にシリヤケイカ数匹。",
+      "anomaly": false
+    },
+    {
+      "ship": "さえむ丸",
+      "area": "金谷港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ビシアジ 5～20 匹 40～50 cm",
+      "fish_raw": "ビシアジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 5,
+        "max": 20,
+        "is_boat": false
+      },
+      "count_avg": 12,
+      "size_cm": {
+        "min": 40,
+        "max": 50
+      },
+      "weight_kg": null,
+      "point_place": "金谷沖",
+      "point_depth": "30～50m",
+      "trip_no": 2,
+      "trip_comment": "浅場のジャンボアジ狙いでジャンボアジが喰い活発でクーラー満タンの方がいらっしゃいました!!ゲスト多彩です。ハリス切れやバラシがありました。他にマゴチ・ホウボウ多数。",
+      "count_raw": "5～20 匹",
+      "size_raw": "40～50 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "金谷沖水深30～50m",
+      "suion_raw": "17.7℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】17.7℃",
+      "kanso_raw": "浅場のジャンボアジ狙いでジャンボアジが喰い活発でクーラー満タンの方がいらっしゃいました!!ゲスト多彩です。ハリス切れやバラシがありました。他にマゴチ・ホウボウ多数。",
+      "anomaly": false
+    },
+    {
+      "ship": "さえむ丸",
+      "area": "金谷港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "クロダイ 船中 2匹  1.3～1.5 kg",
+      "fish_raw": "クロダイ",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 2,
+        "max": 2,
+        "is_boat": true
+      },
+      "count_avg": 2,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 1.3,
+        "max": 1.5
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "浅場のジャンボアジ狙いでジャンボアジが喰い活発でクーラー満タンの方がいらっしゃいました!!ゲスト多彩です。ハリス切れやバラシがありました。他にマゴチ・ホウボウ多数。",
+      "count_raw": "船中 2匹",
+      "size_raw": "",
+      "weight_raw": "1.3～1.5 kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "17.7℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】17.7℃",
+      "kanso_raw": "浅場のジャンボアジ狙いでジャンボアジが喰い活発でクーラー満タンの方がいらっしゃいました!!ゲスト多彩です。ハリス切れやバラシがありました。他にマゴチ・ホウボウ多数。",
+      "anomaly": false
+    },
+    {
+      "ship": "光進丸",
+      "area": "金谷港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アジ 6～35 匹 20～42 cm",
+      "fish_raw": "アジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 6,
+        "max": 35,
+        "is_boat": false
+      },
+      "count_avg": 20,
+      "size_cm": {
+        "min": 20,
+        "max": 42
+      },
+      "weight_kg": null,
+      "point_place": "金谷沖",
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "黄金アジ船。浅場で反応見れて良型多数で喰い順調!",
+      "count_raw": "6～35 匹",
+      "size_raw": "20～42 cm",
+      "weight_raw": "",
+      "tokki_raw": "黄金アジ",
+      "point_raw": "金谷沖",
+      "color_raw": null,
+      "kanso_raw": "黄金アジ船。浅場で反応見れて良型多数で喰い順調!",
+      "anomaly": false
+    },
+    {
+      "ship": "光進丸",
+      "area": "金谷港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "トラフグ 0～5 匹  1.1～4.3 kg",
+      "fish_raw": "トラフグ",
+      "fish": [
+        "フグ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 5,
+        "is_boat": false
+      },
+      "count_avg": 2,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 1.1,
+        "max": 4.3
+      },
+      "point_place": "金谷沖",
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "トラフグ船。今シーズン最終出船です。トップ規定数5匹!",
+      "count_raw": "0～5 匹",
+      "size_raw": "",
+      "weight_raw": "1.1～4.3 kg",
+      "tokki_raw": "",
+      "point_raw": "金谷沖",
+      "color_raw": null,
+      "kanso_raw": "トラフグ船。今シーズン最終出船です。トップ規定数5匹!",
+      "anomaly": false
+    },
+    {
+      "ship": "勘次郎丸",
+      "area": "金谷港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "アジ 31～47 匹 25～42 cm",
+      "fish_raw": "アジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 31,
         "max": 47,
         "is_boat": false
       },
-      "count_avg": 30,
+      "count_avg": 39,
       "size_cm": {
         "min": 25,
-        "max": 41
+        "max": 42
       },
       "weight_kg": null,
       "point_place": "金谷沖",
       "point_depth": "90m",
       "trip_no": 1,
-      "trip_comment": "毎日大型狙いです。今日も型揃い特大交じりで良かったです。型良いので皆さん満足でした。他に大型サバも交じります。",
-      "count_raw": "14～47 匹",
-      "size_raw": "25～41 cm",
+      "trip_comment": "毎日大型狙いです。今日も大型から特大交じりです。潮も良く型揃いので皆さん満足でした。",
+      "count_raw": "31～47 匹",
+      "size_raw": "25～42 cm",
       "weight_raw": "",
       "tokki_raw": "金アジ",
       "point_raw": "金谷沖水深90m",
       "color_raw": null,
-      "kanso_raw": "毎日大型狙いです。今日も型揃い特大交じりで良かったです。型良いので皆さん満足でした。他に大型サバも交じります。",
+      "kanso_raw": "毎日大型狙いです。今日も大型から特大交じりです。潮も良く型揃いので皆さん満足でした。",
       "anomaly": false
     },
     {
       "ship": "栃木丸",
       "area": "長井新宿港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "スルメイカ・ヤリイカ 0～11 匹 23～45 cm",
-      "fish_raw": "スルメイカ・ヤリイカ",
+      "catch_raw": "ヤリイカ・スルメイカ 0～10 匹 25～50 cm",
+      "fish_raw": "ヤリイカ・スルメイカ",
       "fish": [
         "ヤリイカ",
         "スルメイカ"
       ],
       "count_range": {
         "min": 0,
-        "max": 11,
+        "max": 10,
         "is_boat": false
       },
       "count_avg": 5,
       "size_cm": {
-        "min": 23,
-        "max": 45
-      },
-      "weight_kg": null,
-      "point_place": "城ヶ島沖～洲崎沖",
-      "point_depth": "85～180m",
-      "trip_no": 1,
-      "trip_comment": "スルメイカ・ヤリイカ船。城ヶ島沖から洲崎沖へ行ってみました。夜明け前まで南西風が吹いていたので海が悪かったです。城ヶ島沖ではヤリイカ・スルメイカの顔を見たばかりだったので洲崎沖へ。洲崎沖ではうまく反応にアタっていくと地味に顔は見られていました。他にヤリイカは交じった程度でした。",
-      "count_raw": "0～11 匹",
-      "size_raw": "23～45 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "城ヶ島沖～洲崎沖水深85～180m",
-      "color_raw": null,
-      "kanso_raw": "スルメイカ・ヤリイカ船。城ヶ島沖から洲崎沖へ行ってみました。夜明け前まで南西風が吹いていたので海が悪かったです。城ヶ島沖ではヤリイカ・スルメイカの顔を見たばかりだったので洲崎沖へ。洲崎沖ではうまく反応にアタっていくと地味に顔は見られていました。他にヤリイカは交じった程度でした。",
-      "anomaly": false
-    },
-    {
-      "ship": "栃木丸",
-      "area": "長井新宿港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マルイカ 2～12 匹 18～35 cm",
-      "fish_raw": "マルイカ",
-      "fish": [
-        "マルイカ"
-      ],
-      "count_range": {
-        "min": 2,
-        "max": 12,
-        "is_boat": false
-      },
-      "count_avg": 7,
-      "size_cm": {
-        "min": 18,
-        "max": 35
+        "min": 25,
+        "max": 50
       },
       "weight_kg": null,
       "point_place": "城ヶ島沖",
-      "point_depth": "75～95m",
-      "trip_no": 2,
-      "trip_comment": "マルイカ船。他にスルメイカが交じりました。",
-      "count_raw": "2～12 匹",
-      "size_raw": "18～35 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "城ヶ島沖水深75～95m",
-      "color_raw": null,
-      "kanso_raw": "マルイカ船。他にスルメイカが交じりました。",
-      "anomaly": false
-    },
-    {
-      "ship": "儀兵衛丸",
-      "area": "長井港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "スルメイカ・ヤリイカ 3～5 匹 20～45 cm",
-      "fish_raw": "スルメイカ・ヤリイカ",
-      "fish": [
-        "ヤリイカ",
-        "スルメイカ"
-      ],
-      "count_range": {
-        "min": 3,
-        "max": 5,
-        "is_boat": false
-      },
-      "count_avg": 4,
-      "size_cm": {
-        "min": 20,
-        "max": 45
-      },
-      "weight_kg": null,
-      "point_place": "洲崎沖～城ヶ島沖",
-      "point_depth": "80～200m",
+      "point_depth": "150～190m",
       "trip_no": 1,
-      "trip_comment": "ヤリイカが半分交じる。",
-      "count_raw": "3～5 匹",
-      "size_raw": "20～45 cm",
+      "trip_comment": "ヤリイカ・スルメイカ船。城ヶ島沖へ行ってみました。城ヶ島沖を西から東まで広く探索してみました。何処でも顔は見られたんですけど地味でした。1人が乗っても他の人には乗らないことが多かったです。スルメイカは交った程度でした。",
+      "count_raw": "0～10 匹",
+      "size_raw": "25～50 cm",
       "weight_raw": "",
       "tokki_raw": "",
-      "point_raw": "洲崎沖～城ヶ島沖水深80～200m",
+      "point_raw": "城ヶ島沖水深150～190m",
       "color_raw": null,
-      "kanso_raw": "ヤリイカが半分交じる。",
-      "anomaly": false
-    },
-    {
-      "ship": "儀兵衛丸",
-      "area": "長井港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "カワハギ 1～4 匹 19～23 cm",
-      "fish_raw": "カワハギ",
-      "fish": [
-        "カワハギ"
-      ],
-      "count_range": {
-        "min": 1,
-        "max": 4,
-        "is_boat": false
-      },
-      "count_avg": 2,
-      "size_cm": {
-        "min": 19,
-        "max": 23
-      },
-      "weight_kg": null,
-      "point_place": "長井沖",
-      "point_depth": "10～30m",
-      "trip_no": 2,
-      "trip_comment": "ショート釣り(4h)。",
-      "count_raw": "1～4 匹",
-      "size_raw": "19～23 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "長井沖水深10～30m",
-      "color_raw": null,
-      "kanso_raw": "ショート釣り(4h)。",
+      "kanso_raw": "ヤリイカ・スルメイカ船。城ヶ島沖へ行ってみました。城ヶ島沖を西から東まで広く探索してみました。何処でも顔は見られたんですけど地味でした。1人が乗っても他の人には乗らないことが多かったです。スルメイカは交った程度でした。",
       "anomaly": false
     },
     {
       "ship": "春盛丸",
       "area": "長井漆山港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マルイカ 5～40 匹 14～30 cm",
-      "fish_raw": "マルイカ",
+      "catch_raw": "ムギイカ 10～42 匹 14～30 cm",
+      "fish_raw": "ムギイカ",
       "fish": [
-        "マルイカ"
+        "不明"
       ],
       "count_range": {
-        "min": 5,
-        "max": 40,
+        "min": 10,
+        "max": 42,
         "is_boat": false
       },
-      "count_avg": 22,
+      "count_avg": 26,
       "size_cm": {
         "min": 14,
         "max": 30
@@ -3620,68 +2386,104 @@
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "日中大流しで釣れました。",
-      "count_raw": "5～40 匹",
+      "trip_comment": "他にマルイカ交じりで日中乗り活性でした。",
+      "count_raw": "10～42 匹",
       "size_raw": "14～30 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "日中大流しで釣れました。",
+      "kanso_raw": "他にマルイカ交じりで日中乗り活性でした。",
+      "anomaly": false
+    },
+    {
+      "ship": "こなや丸",
+      "area": "長浦",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "タチウオ 4～15 匹 55～90 cm",
+      "fish_raw": "タチウオ",
+      "fish": [
+        "タチウオ"
+      ],
+      "count_range": {
+        "min": 4,
+        "max": 15,
+        "is_boat": false
+      },
+      "count_avg": 9,
+      "size_cm": {
+        "min": 55,
+        "max": 90
+      },
+      "weight_kg": null,
+      "point_place": "富津沖",
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": null,
+      "count_raw": "4～15 匹",
+      "size_raw": "55～90 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "富津沖",
+      "suion_raw": "17.4℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】17.4℃",
+      "kanso_raw": "",
       "anomaly": false
     },
     {
       "ship": "三次郎丸",
       "area": "飯岡港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 0～5 匹  0.3～0.8 kg",
+      "catch_raw": "マダイ 1～7 匹  0.3～1.2 kg",
       "fish_raw": "マダイ",
       "fish": [
         "マダイ"
       ],
       "count_range": {
-        "min": 0,
-        "max": 5,
+        "min": 1,
+        "max": 7,
         "is_boat": false
       },
-      "count_avg": 2,
+      "count_avg": 4,
       "size_cm": null,
       "weight_kg": {
         "min": 0.3,
-        "max": 0.8
+        "max": 1.2
       },
-      "point_place": "河口沖",
-      "point_depth": "30m",
+      "point_place": "飯岡沖",
+      "point_depth": "20m",
       "trip_no": 1,
-      "trip_comment": "仕立船の釣果。活エビのテンヤ釣り。",
-      "count_raw": "0～5 匹",
+      "trip_comment": "タイラバ釣り。他にホウボウ・ハナダイ・カサゴも。",
+      "count_raw": "1～7 匹",
       "size_raw": "",
-      "weight_raw": "0.3～0.8 kg",
+      "weight_raw": "0.3～1.2 kg",
       "tokki_raw": "",
-      "point_raw": "河口沖水深30m",
+      "point_raw": "飯岡沖水深20m",
       "suion_raw": "17℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【波】やや高い 【水色】薄濁り 【水温】17℃",
-      "kanso_raw": "仕立船の釣果。活エビのテンヤ釣り。",
+      "suishoku_raw": "濁り気味",
+      "color_raw": "【波】ナギ 【水色】濁り気味 【水温】17℃",
+      "kanso_raw": "タイラバ釣り。他にホウボウ・ハナダイ・カサゴも。",
       "anomaly": false
     },
     {
       "ship": "太幸丸",
       "area": "飯岡港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "ハナダイ 1～11 匹 20～32 cm",
+      "catch_raw": "ハナダイ 6～15 匹 20～32 cm",
       "fish_raw": "ハナダイ",
       "fish": [
         "不明"
       ],
       "count_range": {
-        "min": 1,
-        "max": 11,
+        "min": 6,
+        "max": 15,
         "is_boat": false
       },
-      "count_avg": 6,
+      "count_avg": 10,
       "size_cm": {
         "min": 20,
         "max": 32
@@ -3690,265 +2492,61 @@
       "point_place": null,
       "point_depth": null,
       "trip_no": 1,
-      "trip_comment": "コマセ五目。反応あるけど活性はイマイチでした。また明日に期待です。他にアジ・マダイ・イサキ・メバル・カサゴ・ウマヅラハギが釣れました!!",
-      "count_raw": "1～11 匹",
+      "trip_comment": "コマセ五目。他にアジ・マダイ・メバル・カサゴ・ウマヅラハギが釣れました!!",
+      "count_raw": "6～15 匹",
       "size_raw": "20～32 cm",
       "weight_raw": "",
       "tokki_raw": "",
       "point_raw": "",
       "color_raw": null,
-      "kanso_raw": "コマセ五目。反応あるけど活性はイマイチでした。また明日に期待です。他にアジ・マダイ・イサキ・メバル・カサゴ・ウマヅラハギが釣れました!!",
+      "kanso_raw": "コマセ五目。他にアジ・マダイ・メバル・カサゴ・ウマヅラハギが釣れました!!",
       "anomaly": false
     },
     {
-      "ship": "梅花丸",
+      "ship": "幸丸",
       "area": "飯岡港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 0～15 匹  0.3～4 kg",
+      "catch_raw": "マダイ 0～9 匹  0.3～2.1 kg",
       "fish_raw": "マダイ",
       "fish": [
         "マダイ"
       ],
       "count_range": {
         "min": 0,
-        "max": 15,
+        "max": 9,
         "is_boat": false
       },
-      "count_avg": 7,
+      "count_avg": 4,
       "size_cm": null,
       "weight_kg": {
         "min": 0.3,
-        "max": 4.0
+        "max": 2.1
       },
       "point_place": null,
-      "point_depth": null,
+      "point_depth": "20m",
       "trip_no": 1,
-      "trip_comment": "午前の釣果。一つテンヤでのマダイ釣りです。本日は半分程の方が貸竿、初心者でした。4kgの大ダイを筆頭に1.7kgの中ダイ上がる!予報外れの強風、高波で釣り辛くバラシ連発、難しい釣況だったがアタリ多くTOP15匹、2番手11匹、3番手10匹、船酔いの方を除き殆どの方が本命ゲットでき絶好調!!海況良ければ本日以上の好釣果が期待出来そうです!!他にハナダイ・ホウボウ・イナワラ・ヒラマサ・サバ。",
-      "count_raw": "0～15 匹",
+      "trip_comment": "午前船の釣果。他にイナダ・ウマヅラハギ・カサゴ・トラフグ・ハナダイ・ホウボウ。アタリ少なめで苦戦しました。流れも悪く難しい釣りでした。",
+      "count_raw": "0～9 匹",
       "size_raw": "",
-      "weight_raw": "0.3～4 kg",
+      "weight_raw": "0.3～2.1 kg",
       "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": "【波】高い",
-      "kanso_raw": "午前の釣果。一つテンヤでのマダイ釣りです。本日は半分程の方が貸竿、初心者でした。4kgの大ダイを筆頭に1.7kgの中ダイ上がる!予報外れの強風、高波で釣り辛くバラシ連発、難しい釣況だったがアタリ多くTOP15匹、2番手11匹、3番手10匹、船酔いの方を除き殆どの方が本命ゲットでき絶好調!!海況良ければ本日以上の好釣果が期待出来そうです!!他にハナダイ・ホウボウ・イナワラ・ヒラマサ・サバ。",
+      "point_raw": "水深20m",
+      "suion_raw": "17.5～18℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】17.5～18℃",
+      "kanso_raw": "午前船の釣果。他にイナダ・ウマヅラハギ・カサゴ・トラフグ・ハナダイ・ホウボウ。アタリ少なめで苦戦しました。流れも悪く難しい釣りでした。",
       "anomaly": false
     },
     {
-      "ship": "梅花丸",
+      "ship": "幸丸",
       "area": "飯岡港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "マダイ 0～12 匹  0.3～1.2 kg",
+      "catch_raw": "マダイ 0～8 匹  0.3～4.6 kg",
       "fish_raw": "マダイ",
       "fish": [
         "マダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 12,
-        "is_boat": false
-      },
-      "count_avg": 6,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.3,
-        "max": 1.2
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 2,
-      "trip_comment": "午前の釣果。一つテンヤでのマダイ釣りです。終日ウネリ高く釣り辛い状況でしたが、パターンの合った方は入れ食いな時間帯もあり、TOP12匹、次に11匹と好調!!マダイっ気かなりありましたね!!今後も期待できるでしょう!また明日、頑張ります!他にハナダイ・カサゴ。",
-      "count_raw": "0～12 匹",
-      "size_raw": "",
-      "weight_raw": "0.3～1.2 kg",
-      "tokki_raw": "",
-      "point_raw": "",
-      "color_raw": "【波】高い",
-      "kanso_raw": "午前の釣果。一つテンヤでのマダイ釣りです。終日ウネリ高く釣り辛い状況でしたが、パターンの合った方は入れ食いな時間帯もあり、TOP12匹、次に11匹と好調!!マダイっ気かなりありましたね!!今後も期待できるでしょう!また明日、頑張ります!他にハナダイ・カサゴ。",
-      "anomaly": false
-    },
-    {
-      "ship": "福よし丸",
-      "area": "鴨居大室港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "日中アジ 32～63 匹 22～40 cm",
-      "fish_raw": "日中アジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 32,
-        "max": 63,
-        "is_boat": false
-      },
-      "count_avg": 47,
-      "size_cm": {
-        "min": 22,
-        "max": 40
-      },
-      "weight_kg": null,
-      "point_place": "観音崎沖",
-      "point_depth": "40～50m",
-      "trip_no": 1,
-      "trip_comment": "中型主体に食い活発。潮の流れが速くなってきました。",
-      "count_raw": "32～63 匹",
-      "size_raw": "22～40 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "観音崎沖水深40～50m",
-      "color_raw": null,
-      "kanso_raw": "中型主体に食い活発。潮の流れが速くなってきました。",
-      "anomaly": false
-    },
-    {
-      "ship": "釣船 五郎丸",
-      "area": "鴨居大室港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ショートアジ 20～52 匹 24～40 cm",
-      "fish_raw": "ショートアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 20,
-        "max": 52,
-        "is_boat": false
-      },
-      "count_avg": 36,
-      "size_cm": {
-        "min": 24,
-        "max": 40
-      },
-      "weight_kg": null,
-      "point_place": "鴨居沖～観音崎沖",
-      "point_depth": "40～60m",
-      "trip_no": 1,
-      "trip_comment": null,
-      "count_raw": "20～52 匹",
-      "size_raw": "24～40 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "鴨居沖～観音崎沖水深40～60m",
-      "color_raw": "【波】ナギ",
-      "kanso_raw": "",
-      "anomaly": false
-    },
-    {
-      "ship": "釣船 五郎丸",
-      "area": "鴨居大室港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ショートアジ 15～80 匹 24～40 cm",
-      "fish_raw": "ショートアジ",
-      "fish": [
-        "アジ"
-      ],
-      "count_range": {
-        "min": 15,
-        "max": 80,
-        "is_boat": false
-      },
-      "count_avg": 47,
-      "size_cm": {
-        "min": 24,
-        "max": 40
-      },
-      "weight_kg": null,
-      "point_place": "鴨居沖～観音崎沖",
-      "point_depth": "40～60m",
-      "trip_no": 2,
-      "trip_comment": "海穏やかで好調に釣れました。",
-      "count_raw": "15～80 匹",
-      "size_raw": "24～40 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "鴨居沖～観音崎沖水深40～60m",
-      "color_raw": "【波】ナギ",
-      "kanso_raw": "海穏やかで好調に釣れました。",
-      "anomaly": false
-    },
-    {
-      "ship": "釣船 五郎丸",
-      "area": "鴨居大室港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "日中マルイカ 11～31 匹 13～33 cm",
-      "fish_raw": "日中マルイカ",
-      "fish": [
-        "マルイカ"
-      ],
-      "count_range": {
-        "min": 11,
-        "max": 31,
-        "is_boat": false
-      },
-      "count_avg": 21,
-      "size_cm": {
-        "min": 13,
-        "max": 33
-      },
-      "weight_kg": null,
-      "point_place": "剣崎沖",
-      "point_depth": "80～90m",
-      "trip_no": 3,
-      "trip_comment": "前半ムギイカ多く、後半マルイカ釣れました。他にムギイカ。",
-      "count_raw": "11～31 匹",
-      "size_raw": "13～33 cm",
-      "weight_raw": "",
-      "tokki_raw": "",
-      "point_raw": "剣崎沖水深80～90m",
-      "color_raw": "【波】ナギ",
-      "kanso_raw": "前半ムギイカ多く、後半マルイカ釣れました。他にムギイカ。",
-      "anomaly": false
-    },
-    {
-      "ship": "幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "マダイ 0～4 匹  0.3～6.5 kg",
-      "fish_raw": "マダイ",
-      "fish": [
-        "マダイ"
-      ],
-      "count_range": {
-        "min": 0,
-        "max": 4,
-        "is_boat": false
-      },
-      "count_avg": 2,
-      "size_cm": null,
-      "weight_kg": {
-        "min": 0.3,
-        "max": 6.5
-      },
-      "point_place": null,
-      "point_depth": null,
-      "trip_no": 1,
-      "trip_comment": "テンヤマダイ船。他4kg、3.7kg、3.1kg、2.9kg、2.8kg、1.8kg、1.7kg、1.6kg2匹、1.4kg2匹、1.3kg、1.2kg3匹、1.1kg3匹、1kg12匹。本日も大マダイ連発中!!朝から風強く波も高くて釣りにくかったものの、関係ないくらいに大マダイ続々出現!!テンヤ、スイッチ(巻物系)どちらにも大マダイヒット!!上がった他にも大マダイのヒットあるも残念ながらラインブレイクもありと盛り上がりましたね!",
-      "count_raw": "0～4 匹",
-      "size_raw": "",
-      "weight_raw": "0.3～6.5 kg",
-      "tokki_raw": "",
-      "point_raw": "",
-      "suion_raw": "15℃",
-      "suishoku_raw": "薄濁り",
-      "color_raw": "【波】高い 【水色】薄濁り 【水温】15℃",
-      "kanso_raw": "テンヤマダイ船。他4kg、3.7kg、3.1kg、2.9kg、2.8kg、1.8kg、1.7kg、1.6kg2匹、1.4kg2匹、1.3kg、1.2kg3匹、1.1kg3匹、1kg12匹。本日も大マダイ連発中!!朝から風強く波も高くて釣りにくかったものの、関係ないくらいに大マダイ続々出現!!テンヤ、スイッチ(巻物系)どちらにも大マダイヒット!!上がった他にも大マダイのヒットあるも残念ながらラインブレイクもありと盛り上がりましたね!",
-      "anomaly": false
-    },
-    {
-      "ship": "幸栄丸",
-      "area": "鹿島港",
-      "date": "2026/04/29",
-      "month": 4,
-      "catch_raw": "ワラサ 0～8 匹  2.8～5 kg",
-      "fish_raw": "ワラサ",
-      "fish": [
-        "ワラサ"
       ],
       "count_range": {
         "min": 0,
@@ -3958,40 +2556,459 @@
       "count_avg": 4,
       "size_cm": null,
       "weight_kg": {
+        "min": 0.3,
+        "max": 4.6
+      },
+      "point_place": null,
+      "point_depth": "20m",
+      "trip_no": 2,
+      "trip_comment": "午前船の釣果。他にイナダ・カサゴ・トラフグ・ハナダイ・ホウボウ・ワラサ。朝の方はアタリが遠く厳しかったですが時間と共に食いが少しずつ上がり、本命ゲストと共にポツリポツリと釣れました。1kgぐらいのマダイが8匹釣れて、終盤には4.1kgと4.6kgの大ダイが釣れました。",
+      "count_raw": "0～8 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～4.6 kg",
+      "tokki_raw": "",
+      "point_raw": "水深20m",
+      "suion_raw": "17.5～18℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】17.5～18℃",
+      "kanso_raw": "午前船の釣果。他にイナダ・カサゴ・トラフグ・ハナダイ・ホウボウ・ワラサ。朝の方はアタリが遠く厳しかったですが時間と共に食いが少しずつ上がり、本命ゲストと共にポツリポツリと釣れました。1kgぐらいのマダイが8匹釣れて、終盤には4.1kgと4.6kgの大ダイが釣れました。",
+      "anomaly": false
+    },
+    {
+      "ship": "幸丸",
+      "area": "飯岡港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～6 匹  0.3～1.3 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 6,
+        "is_boat": false
+      },
+      "count_avg": 3,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.3,
+        "max": 1.3
+      },
+      "point_place": null,
+      "point_depth": "15～25m",
+      "trip_no": 3,
+      "trip_comment": "午前船の釣果。他にイナダ・カサゴ・ガンゾウビラメ・ショウサイフグ・トラフグ・ハナダイ・ヒラメ・ホウボウ・ワラサ。本日は食い渋く苦戦しました。ポイント移動繰り返しましたが、どこも型見る程度でした。また次回頑張ります。",
+      "count_raw": "0～6 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～1.3 kg",
+      "tokki_raw": "",
+      "point_raw": "水深15～25m",
+      "suion_raw": "17.5～18℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】17.5～18℃",
+      "kanso_raw": "午前船の釣果。他にイナダ・カサゴ・ガンゾウビラメ・ショウサイフグ・トラフグ・ハナダイ・ヒラメ・ホウボウ・ワラサ。本日は食い渋く苦戦しました。ポイント移動繰り返しましたが、どこも型見る程度でした。また次回頑張ります。",
+      "anomaly": false
+    },
+    {
+      "ship": "幸丸",
+      "area": "飯岡港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～5 匹  0.3～1 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 5,
+        "is_boat": false
+      },
+      "count_avg": 2,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.3,
+        "max": 1.0
+      },
+      "point_place": null,
+      "point_depth": "30m",
+      "trip_no": 4,
+      "trip_comment": "午前船の釣果。他にイナダ・カサゴ・ガンゾウビラメ・ハナダイ・フグ・ホウボウ・マハタ。昨日は落とせばアタっていたハナダイも本日は全く活動せず。非常にアタリの遠い1日となってしまいましたね…。本命は型は見れたものの、まとまっては釣れず。ゲストも数少なく、厳しい午前となってしまいましたね。残念。",
+      "count_raw": "0～5 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～1 kg",
+      "tokki_raw": "",
+      "point_raw": "水深30m",
+      "suion_raw": "17.5～18℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】17.5～18℃",
+      "kanso_raw": "午前船の釣果。他にイナダ・カサゴ・ガンゾウビラメ・ハナダイ・フグ・ホウボウ・マハタ。昨日は落とせばアタっていたハナダイも本日は全く活動せず。非常にアタリの遠い1日となってしまいましたね…。本命は型は見れたものの、まとまっては釣れず。ゲストも数少なく、厳しい午前となってしまいましたね。残念。",
+      "anomaly": false
+    },
+    {
+      "ship": "幸丸",
+      "area": "飯岡港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～3 匹  0.3～0.8 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3,
+        "is_boat": false
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "point_place": null,
+      "point_depth": "20m",
+      "trip_no": 5,
+      "trip_comment": "仕立・午前船の釣果。他にイナダ～ワラサ・カサゴ・トラフグ・ハナダイ・メバル。皆さん初めてのテンヤ釣り!序盤から着底すればアタリあるも、なかなか掛からない!中盤には待望の大ダイヒットするもハリス切れ…。非常に悔しい一日でしたね。後から来た2号船にみ～んな持って行かれましたー。",
+      "count_raw": "0～3 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～0.8 kg",
+      "tokki_raw": "",
+      "point_raw": "水深20m",
+      "suion_raw": "17.5～18℃",
+      "suishoku_raw": "",
+      "color_raw": "【水温】17.5～18℃",
+      "kanso_raw": "仕立・午前船の釣果。他にイナダ～ワラサ・カサゴ・トラフグ・ハナダイ・メバル。皆さん初めてのテンヤ釣り!序盤から着底すればアタリあるも、なかなか掛からない!中盤には待望の大ダイヒットするもハリス切れ…。非常に悔しい一日でしたね。後から来た2号船にみ～んな持って行かれましたー。",
+      "anomaly": false
+    },
+    {
+      "ship": "梅花丸",
+      "area": "飯岡港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～3 匹  0.3～0.8 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 3,
+        "is_boat": false
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "午前の釣果。一つテンヤでのマダイ釣りです。潮流れ緩く、前日と比べ数もサイズもダウン…。転々と探ってみましたが、活性低いのか?中々上向かずでした。シケ後の荒食いに期待しましょう!他にハナダイ・カサゴ・ホウボウ・イナワラ。",
+      "count_raw": "0～3 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～0.8 kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": "【波】やや高い",
+      "kanso_raw": "午前の釣果。一つテンヤでのマダイ釣りです。潮流れ緩く、前日と比べ数もサイズもダウン…。転々と探ってみましたが、活性低いのか?中々上向かずでした。シケ後の荒食いに期待しましょう!他にハナダイ・カサゴ・ホウボウ・イナワラ。",
+      "anomaly": false
+    },
+    {
+      "ship": "梅花丸",
+      "area": "飯岡港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～2 匹  0.3～0.7 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 2,
+        "is_boat": false
+      },
+      "count_avg": 1,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.3,
+        "max": 0.7
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "午前の釣果。一つテンヤでのマダイ釣りです。終日潮の流れ悪く、マダイの活性上がらず…。深場から浅場まで転々としたが、なかなかアタらず厳しい1日でした。次回に期待しましょう。他にハナダイ・カサゴ・カンパチ・ワラサ。",
+      "count_raw": "0～2 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～0.7 kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "color_raw": "【波】やや高い",
+      "kanso_raw": "午前の釣果。一つテンヤでのマダイ釣りです。終日潮の流れ悪く、マダイの活性上がらず…。深場から浅場まで転々としたが、なかなかアタらず厳しい1日でした。次回に期待しましょう。他にハナダイ・カサゴ・カンパチ・ワラサ。",
+      "anomaly": false
+    },
+    {
+      "ship": "福よし丸",
+      "area": "鴨居大室港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "日中アジ 59～65 匹 23～40 cm",
+      "fish_raw": "日中アジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 59,
+        "max": 65,
+        "is_boat": false
+      },
+      "count_avg": 62,
+      "size_cm": {
+        "min": 23,
+        "max": 40
+      },
+      "weight_kg": null,
+      "point_place": "鴨居沖",
+      "point_depth": "40m",
+      "trip_no": 1,
+      "trip_comment": null,
+      "count_raw": "59～65 匹",
+      "size_raw": "23～40 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "鴨居沖水深40m",
+      "suion_raw": "",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り",
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "釣船 五郎丸",
+      "area": "鴨居大室港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ショートアジ 45～67 匹 23～44 cm",
+      "fish_raw": "ショートアジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 45,
+        "max": 67,
+        "is_boat": false
+      },
+      "count_avg": 56,
+      "size_cm": {
+        "min": 23,
+        "max": 44
+      },
+      "weight_kg": null,
+      "point_place": "鴨居沖～観音崎沖",
+      "point_depth": "30～50m",
+      "trip_no": 1,
+      "trip_comment": null,
+      "count_raw": "45～67 匹",
+      "size_raw": "23～44 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "鴨居沖～観音崎沖水深30～50m",
+      "color_raw": null,
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "釣船 五郎丸",
+      "area": "鴨居大室港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ショートアジ 20～51 匹 23～44 cm",
+      "fish_raw": "ショートアジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 20,
+        "max": 51,
+        "is_boat": false
+      },
+      "count_avg": 35,
+      "size_cm": {
+        "min": 23,
+        "max": 44
+      },
+      "weight_kg": null,
+      "point_place": "鴨居沖～観音崎沖",
+      "point_depth": "30～50m",
+      "trip_no": 2,
+      "trip_comment": null,
+      "count_raw": "20～51 匹",
+      "size_raw": "23～44 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "鴨居沖～観音崎沖水深30～50m",
+      "color_raw": null,
+      "kanso_raw": "",
+      "anomaly": false
+    },
+    {
+      "ship": "釣船 五郎丸",
+      "area": "鴨居大室港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ショートアジ 9～52 匹 23～44 cm",
+      "fish_raw": "ショートアジ",
+      "fish": [
+        "アジ"
+      ],
+      "count_range": {
+        "min": 9,
+        "max": 52,
+        "is_boat": false
+      },
+      "count_avg": 30,
+      "size_cm": {
+        "min": 23,
+        "max": 44
+      },
+      "weight_kg": null,
+      "point_place": "鴨居沖～観音崎沖",
+      "point_depth": "30～50m",
+      "trip_no": 3,
+      "trip_comment": "良型交じって好調に釣れました。",
+      "count_raw": "9～52 匹",
+      "size_raw": "23～44 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "鴨居沖～観音崎沖水深30～50m",
+      "color_raw": null,
+      "kanso_raw": "良型交じって好調に釣れました。",
+      "anomaly": false
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "マダイ 0～4 匹  0.3～3.6 kg",
+      "fish_raw": "マダイ",
+      "fish": [
+        "マダイ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 4,
+        "is_boat": false
+      },
+      "count_avg": 2,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 0.3,
+        "max": 3.6
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "テンヤマダイ船。マダイ他2.7kg、1.7kg2匹、1.6kg、1.5kg、1.4kg2匹、1.3kg2匹、1.2kg3匹、1.1kg4匹、1kg4匹。大ダイ・中ダイ爆釣中!!最大kg数筆頭に朝から良型連発!バラシも多数あり!魚影濃厚!!今後も期待!",
+      "count_raw": "0～4 匹",
+      "size_raw": "",
+      "weight_raw": "0.3～3.6 kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "15℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】15℃",
+      "kanso_raw": "テンヤマダイ船。マダイ他2.7kg、1.7kg2匹、1.6kg、1.5kg、1.4kg2匹、1.3kg2匹、1.2kg3匹、1.1kg4匹、1kg4匹。大ダイ・中ダイ爆釣中!!最大kg数筆頭に朝から良型連発!バラシも多数あり!魚影濃厚!!今後も期待!",
+      "anomaly": false
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ハナダイ 0～14 匹",
+      "fish_raw": "ハナダイ",
+      "fish": [
+        "不明"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 14,
+        "is_boat": false
+      },
+      "count_avg": 7,
+      "size_cm": null,
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 1,
+      "trip_comment": "テンヤマダイ船。マダイ他2.7kg、1.7kg2匹、1.6kg、1.5kg、1.4kg2匹、1.3kg2匹、1.2kg3匹、1.1kg4匹、1kg4匹。大ダイ・中ダイ爆釣中!!最大kg数筆頭に朝から良型連発!バラシも多数あり!魚影濃厚!!今後も期待!",
+      "count_raw": "0～14 匹",
+      "size_raw": "",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "15℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】15℃",
+      "kanso_raw": "テンヤマダイ船。マダイ他2.7kg、1.7kg2匹、1.6kg、1.5kg、1.4kg2匹、1.3kg2匹、1.2kg3匹、1.1kg4匹、1kg4匹。大ダイ・中ダイ爆釣中!!最大kg数筆頭に朝から良型連発!バラシも多数あり!魚影濃厚!!今後も期待!",
+      "anomaly": false
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "ワラサ 0～5 匹  2.8～4 kg",
+      "fish_raw": "ワラサ",
+      "fish": [
+        "ワラサ"
+      ],
+      "count_range": {
+        "min": 0,
+        "max": 5,
+        "is_boat": false
+      },
+      "count_avg": 2,
+      "size_cm": null,
+      "weight_kg": {
         "min": 2.8,
-        "max": 5.0
+        "max": 4.0
       },
       "point_place": null,
       "point_depth": null,
       "trip_no": 2,
       "trip_comment": "青物ルアー船。",
-      "count_raw": "0～8 匹",
+      "count_raw": "0～5 匹",
       "size_raw": "",
-      "weight_raw": "2.8～5 kg",
+      "weight_raw": "2.8～4 kg",
       "tokki_raw": "",
       "point_raw": "",
       "suion_raw": "15℃",
       "suishoku_raw": "薄濁り",
-      "color_raw": "【波】高い 【水色】薄濁り 【水温】15℃",
+      "color_raw": "【水色】薄濁り 【水温】15℃",
       "kanso_raw": "青物ルアー船。",
       "anomaly": false
     },
     {
       "ship": "幸栄丸",
       "area": "鹿島港",
-      "date": "2026/04/29",
+      "date": "2026/04/30",
       "month": 4,
-      "catch_raw": "ヒラマサ   5  kg",
-      "fish_raw": "ヒラマサ",
+      "catch_raw": "ヒラメ   1.5  kg",
+      "fish_raw": "ヒラメ",
       "fish": [
-        "不明"
+        "ヒラメ"
       ],
       "count_range": null,
       "count_avg": null,
       "size_cm": null,
       "weight_kg": {
-        "min": 5.0,
-        "max": 5.0
+        "min": 1.5,
+        "max": 1.5
       },
       "point_place": null,
       "point_depth": null,
@@ -3999,16 +3016,84 @@
       "trip_comment": "青物ルアー船。",
       "count_raw": "",
       "size_raw": "",
-      "weight_raw": "5  kg",
+      "weight_raw": "1.5  kg",
       "tokki_raw": "",
       "point_raw": "",
       "suion_raw": "15℃",
       "suishoku_raw": "薄濁り",
-      "color_raw": "【波】高い 【水色】薄濁り 【水温】15℃",
+      "color_raw": "【水色】薄濁り 【水温】15℃",
       "kanso_raw": "青物ルアー船。",
+      "anomaly": false
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "トラフグ   4  kg",
+      "fish_raw": "トラフグ",
+      "fish": [
+        "フグ"
+      ],
+      "count_range": null,
+      "count_avg": null,
+      "size_cm": null,
+      "weight_kg": {
+        "min": 4.0,
+        "max": 4.0
+      },
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 2,
+      "trip_comment": "青物ルアー船。",
+      "count_raw": "",
+      "size_raw": "",
+      "weight_raw": "4  kg",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "15℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】15℃",
+      "kanso_raw": "青物ルアー船。",
+      "anomaly": false
+    },
+    {
+      "ship": "幸栄丸",
+      "area": "鹿島港",
+      "date": "2026/04/30",
+      "month": 4,
+      "catch_raw": "メバル 5～35 匹 25～35 cm",
+      "fish_raw": "メバル",
+      "fish": [
+        "メバル"
+      ],
+      "count_range": {
+        "min": 5,
+        "max": 35,
+        "is_boat": false
+      },
+      "count_avg": 20,
+      "size_cm": {
+        "min": 25,
+        "max": 35
+      },
+      "weight_kg": null,
+      "point_place": null,
+      "point_depth": null,
+      "trip_no": 3,
+      "trip_comment": "メバル五目船。",
+      "count_raw": "5～35 匹",
+      "size_raw": "25～35 cm",
+      "weight_raw": "",
+      "tokki_raw": "",
+      "point_raw": "",
+      "suion_raw": "15℃",
+      "suishoku_raw": "薄濁り",
+      "color_raw": "【水色】薄濁り 【水温】15℃",
+      "kanso_raw": "メバル五目船。",
       "anomaly": false
     }
   ],
-  "_all_count": 730,
+  "_all_count": 745,
   "_today_only": true
 }
