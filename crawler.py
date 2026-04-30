@@ -189,13 +189,15 @@ AREA_GROUPS = {
     "東京":               ["羽田", "平和島", "横浜港･新山下"],
     "神奈川・東京湾":     ["小柴港", "金沢漁港", "金沢八景", "新安浦港",
                            "横浜本牧港", "磯子港", "久比里", "久比里港",
-                           "久里浜", "鴨居大室港", "小坪港", "小網代港"],
-    "神奈川・相模湾":     ["松輪", "松輪江奈港", "長井", "長井港",
+                           "久里浜", "久里浜港", "鴨居大室港", "小坪港",
+                           "小網代港", "佐島"],
+    "神奈川・相模湾":     ["松輪", "松輪江奈港", "松輪間口港", "長井", "長井港",
                            "長井新宿港", "長井漆山港", "葉山鐙摺",
                            "葉山あぶずり港", "腰越", "茅ヶ崎", "茅ヶ崎港",
                            "平塚", "平塚港", "大磯港", "寒川港",
                            "小田原早川", "小田原早川港"],
-    "静岡":               ["宇佐美", "戸田"],
+    "静岡":               ["宇佐美", "戸田", "沼津内港", "沼津静浦",
+                           "由比", "御前崎港", "福田港", "下田港"],
 }
 
 # crawl/ships.json が正（discover_ships.py が月1回更新）
@@ -245,6 +247,62 @@ AREA_FORECAST_COORDS = {
     "神奈川・相模湾": {"lat": 35.1, "lon": 139.4},
     "静岡":           {"lat": 35.0, "lon": 139.1},
 }
+
+# ============================================================
+# 出船リスク予報：内海/外海分類と閾値
+# ============================================================
+_UCHIUMI_AREAS = {"千葉・内房", "千葉・東京湾奥", "東京", "神奈川・東京湾"}
+_SOTOUMI_AREAS = {"茨城", "千葉・外房", "神奈川・相模湾", "静岡"}
+
+# (warn_wave, warn_wind, bad_wave, bad_wind)
+_RISK_THR = {
+    "内海": (1.5, 8.0, 2.5, 12.0),
+    "外海": (0.8, 6.0, 1.5,  9.0),
+}
+
+def _risk_label(wave, wind, sea_type):
+    """波高(m)・風速(m/s)・内海/外海 → (cls, icon, lbl)"""
+    warn_w, warn_wnd, bad_w, bad_wnd = _RISK_THR[sea_type]
+    if wave >= bad_w or wind >= bad_wnd:
+        return "bad", "×", "欠航警戒"
+    if wave >= warn_w or wind >= warn_wnd:
+        return "warn", "△", "注意"
+    return "good", "○", "好条件"
+
+def _risk_grid_row(label, area_names, days_data):
+    """1行分のリスクグリッドHTML（ラベル付き）"""
+    dow_jp = ["月","火","水","木","金","土","日"]
+    sea_type = "内海" if label == "内海" else "外海"
+    cells = ""
+    for date_str in sorted(days_data.keys())[:7]:
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d")
+            dow = dow_jp[dt.weekday()]
+            label_date = f"{dt.month}/{dt.day}"
+        except:
+            continue
+        day_info = days_data[date_str]
+        areas_info = day_info.get("areas", {})
+        waves = [areas_info[a]["wave"] for a in area_names if a in areas_info and areas_info[a].get("wave") is not None]
+        winds = [areas_info[a]["wind"] for a in area_names if a in areas_info and areas_info[a].get("wind") is not None]
+        avg_wave = sum(waves) / len(waves) if waves else day_info.get("wave") or 0
+        avg_wind = sum(winds) / len(winds) if winds else day_info.get("wind") or 0
+        cls, icon, lbl = _risk_label(avg_wave, avg_wind, sea_type)
+        cells += (
+            f'<div class="risk-day {cls}">'
+            f'<div class="rd-dow">{dow}</div>'
+            f'<div class="rd-date">{label_date}</div>'
+            f'<div class="rd-icon">{icon}</div>'
+            f'<div class="rd-label">{lbl}</div>'
+            f'</div>'
+        )
+    subtitle = "茨城・外房・相模湾・静岡" if sea_type == "外海" else "東京湾各エリア"
+    return (
+        f'<div class="risk-row">'
+        f'<div class="risk-row-head"><span class="risk-sea-type">{label}</span><span class="risk-sea-areas">（{subtitle}）</span></div>'
+        f'<div class="risk-days">{cells}</div>'
+        f'</div>'
+    )
 
 # 予測広域エリア → URL/アンカー用ヘボン式スラッグ（決定ログ 2026/04/10「ローマ字統一」）
 _FORECAST_AREA_SLUG = {
@@ -1975,6 +2033,46 @@ def _build_weekly_page(week_id, week_data, forecast_data):
     return html
 
 
+def _area_sea_type(area_group):
+    """エリアグループ名 → '内海' or '外海'"""
+    return "内海" if area_group in _UCHIUMI_AREAS else "外海"
+
+def _area_risk_grid(area_group, forecast_data):
+    """エリア別出船リスクグリッドHTML（7日間）"""
+    days_data = forecast_data.get("days", {})
+    if not days_data:
+        return ""
+    sea_type = _area_sea_type(area_group)
+    dow_jp = ["月","火","水","木","金","土","日"]
+    cells = ""
+    for date_str in sorted(days_data.keys())[:7]:
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d")
+            dow = dow_jp[dt.weekday()]
+            label_date = f"{dt.month}/{dt.day}"
+        except:
+            continue
+        day_info = days_data[date_str]
+        area_info = day_info.get("areas", {}).get(area_group, {})
+        wave = area_info.get("wave") or day_info.get("wave") or 0
+        wind = area_info.get("wind") or day_info.get("wind") or 0
+        cls, icon, lbl = _risk_label(wave, wind, sea_type)
+        cells += (
+            f'<div class="risk-day {cls}">'
+            f'<div class="rd-dow">{dow}</div>'
+            f'<div class="rd-date">{label_date}</div>'
+            f'<div class="rd-icon">{icon}</div>'
+            f'<div class="rd-label">{lbl}</div>'
+            f'</div>'
+        )
+    thr = _RISK_THR[sea_type]
+    note = f'注意: 波{thr[0]}m・風{thr[1]}m/s / 欠航警戒: 波{thr[2]}m・風{thr[3]}m/s'
+    return (
+        f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>'
+        f'<p class="risk-note">閾値（{sea_type}基準）: {note}</p>'
+        f'<div class="risk-grid">{cells}</div>'
+    )
+
 def _build_area_forecast_page(area_group, forecast_data):
     """エリア別予測ページHTML（forecast/area/<slug>.html）"""
     title = f"{area_group} 釣果予測"
@@ -1983,6 +2081,9 @@ def _build_area_forecast_page(area_group, forecast_data):
     all_weeks = forecast_data.get("weeks", {})
     # forecast/area/ から forecast/<日付>.html へのリンクは ../ プレフィックスが必要
     html += _forecast_date_nav(all_dates, all_weeks, "", prefix="../")
+
+    # 出船リスクグリッド（エリア固有閾値）
+    html += _area_risk_grid(area_group, forecast_data)
 
     # 7日間サマリー（日付→日次ページリンク）
     html += f'<h2>{area_group} 予測</h2>'
@@ -5182,46 +5283,15 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="at-fish">{fish_tags}</div>'
             f'</div>'
         )
-    # V2 ZONE C: 出船リスク予報（7日間）
+    # V2 ZONE C: 出船リスク予報（内海/外海 × 7日間）
     risk_grid_html = ""
     forecast_json_data_for_risk = weather_data.get("_forecast_data") if weather_data else None
     if forecast_json_data_for_risk:
         days_data = forecast_json_data_for_risk.get("days", {})
-        dow_jp = ["月","火","水","木","金","土","日"]
-        risk_days = ""
-        for date_str in sorted(days_data.keys())[:7]:
-            try:
-                dt = datetime.strptime(date_str, "%Y-%m-%d")
-                dow = dow_jp[dt.weekday()]
-                label_date = f"{dt.month}/{dt.day}"
-            except: continue
-            day_info = days_data[date_str]
-            # エリア別波高・風速の平均
-            areas_info = day_info.get("areas", {})
-            if areas_info:
-                waves = [v.get("wave_height", 0) or 0 for v in areas_info.values()]
-                winds = [v.get("wind_speed", 0) or 0 for v in areas_info.values()]
-                avg_wave = sum(waves) / len(waves) if waves else 0
-                avg_wind = sum(winds) / len(winds) if winds else 0
-            else:
-                avg_wave = day_info.get("wave_height") or 0
-                avg_wind = day_info.get("wind_speed") or 0
-            if avg_wave >= 2.0 or avg_wind >= 10:
-                cls, icon, lbl = "bad", "×", "欠航警戒"
-            elif avg_wave >= 1.2 or avg_wind >= 7:
-                cls, icon, lbl = "warn", "△", "注意"
-            else:
-                cls, icon, lbl = "good", "○", "好条件"
-            risk_days += (
-                f'<div class="risk-day {cls}">'
-                f'<div class="rd-dow">{dow}</div>'
-                f'<div class="rd-date">{label_date}</div>'
-                f'<div class="rd-icon">{icon}</div>'
-                f'<div class="rd-label">{lbl}</div>'
-                f'</div>'
-            )
-        if risk_days:
-            risk_grid_html = f'<div class="risk-grid">{risk_days}</div>'
+        if days_data:
+            soto_row = _risk_grid_row("外海", _SOTOUMI_AREAS, days_data)
+            uchi_row = _risk_grid_row("内海", _UCHIUMI_AREAS, days_data)
+            risk_grid_html = f'<div class="risk-grid-wrap">{soto_row}{uchi_row}</div>'
     # V2 魚種ナビチップ（ZONE E）
     fish_nav_html = "".join(
         f'<a href="fish/{fish_slug(f)}.html">{f}</a>'
@@ -6408,7 +6478,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         fish_data = {}
         for c in fish_source:
             for f in c["fish"]:
-                if f in ("不明", "欠航"):
+                if not f or f in ("不明", "欠航"):
                     continue
                 d = fish_data.setdefault(f, {"cnt_mins": [], "cnt_maxs": [], "sz_mins": [], "sz_maxs": [], "ships": set(), "records": 0, "ship_recs": {}})
                 d["records"] += 1
@@ -8059,7 +8129,7 @@ def _ship_recent_fish_html(catches, ship_name, today_dt, display_label="今日")
         if d < cutoff or d > today_dt:
             continue
         for f in c.get("fish") or []:
-            if f in ("不明", "欠航"):
+            if not f or f in ("不明", "欠航"):
                 continue
             cr = c.get("count_range") or {}
             cnt_max = cr.get("max")

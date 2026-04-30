@@ -416,6 +416,12 @@ nav.gnav a.prem::before {
 }
 
 /* ── ZONE C: 出船リスク・海況（無料） ── */
+.risk-grid-wrap { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.risk-row { display: flex; flex-direction: column; gap: 4px; }
+.risk-row-head { font-size: 11px; font-weight: 700; color: var(--sub); }
+.risk-sea-type { color: var(--text); }
+.risk-sea-areas { font-weight: 400; color: var(--muted); }
+.risk-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 .risk-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -439,6 +445,7 @@ nav.gnav a.prem::before {
 .risk-day.warn .rd-icon { color: var(--warn); }
 .risk-day.bad  .rd-icon { color: var(--neg); }
 .rd-label { font-size: 9px; font-weight: 700; }
+.risk-note { font-size: 10px; color: var(--muted); margin: -8px 0 6px; }
 
 .weather-list {
   background: var(--card);
