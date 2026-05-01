@@ -5260,9 +5260,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 fish_summary.setdefault(f, []).append(c)
     areas = sorted(set(c["area"] for c in catches_for_summary))
     cards = ""
-    # ミニバーグラフ最右列ラベル（HERO と同じ日付判定で事前計算）
-    _today_str_idx = now.strftime("%Y/%m/%d")
-    _, _mini_today_label, _ = _resolve_display_dataset(catches, _today_str_idx)
+    # ミニバーグラフ最右列ラベル: 軸が今日基準で固定なので常に「今日」
+    # （以前は当日 sparse 時に fallback 日付（5/1(金)等）を表示し fish page と
+    # 不整合だった）
+    _mini_today_label = "今日"
 
     def _trend_key(fish):
         tw = get_yoy_data(history, fish, year, week_num)[0]
@@ -6096,21 +6097,40 @@ def build_fish_pages(data, history, crawled_at=""):
         for c in catches:
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"): max_cnt = max(max_cnt, cr["max"])
-        # fish-hero 数値: トップページ ZONE B カードと整合させるため、
-        # catches（過去7日 merged）を集計対象とする（today だけだと sparse 時に
-        # 数字が極端に小さくなりトップカードと不一致になる）。
-        w_maxs = [c["count_range"]["max"] for c in catches if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("max") is not None]
-        w_avgs = [c.get("count_avg") for c in catches if c.get("count_avg") is not None]
-        w_sz_lo = [c["size_cm"]["min"] for c in catches if c.get("size_cm") and c["size_cm"].get("min") is not None]
-        w_sz_hi = [c["size_cm"]["max"] for c in catches if c.get("size_cm") and c["size_cm"].get("max") is not None]
-        if w_avgs and w_maxs:
-            avg_val = sum(w_avgs) / len(w_avgs)
-            cnt_range_str = f"{int(avg_val)}〜{int(max(w_maxs))}匹"
-        elif w_maxs:
-            cnt_range_str = f"〜{int(max(w_maxs))}匹"
+        # fish-hero 数値: **トップページ ZONE B カードと完全一致させる**ため、
+        # 同じ this_w (history.json ISO週集計) を使う。
+        # 平均匹数の計算式（update_history が round() 後に保存）と
+        # 直接集計（int() 切り捨て）で 6 匹のズレが出ていた事故への対処。
+        # this_w 不在時は catches から計算（フォールバック）。
+        cnt_range_str = ""
+        if this_w:
+            _av = this_w.get("avg") or 0
+            _mx = this_w.get("max") or 0
+            if _av and _mx:
+                cnt_range_str = f"{_av:.0f}〜{_mx}匹"
+            elif _mx:
+                cnt_range_str = f"〜{_mx}匹"
+            elif _av:
+                cnt_range_str = f"平均{_av:.0f}匹"
+        if not cnt_range_str:
+            # this_w 不在 → catches から直接集計
+            w_maxs = [c["count_range"]["max"] for c in catches if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("max") is not None]
+            w_avgs = [c.get("count_avg") for c in catches if c.get("count_avg") is not None]
+            if w_avgs and w_maxs:
+                cnt_range_str = f"{sum(w_avgs)/len(w_avgs):.0f}〜{int(max(w_maxs))}匹"
+            elif w_maxs:
+                cnt_range_str = f"〜{int(max(w_maxs))}匹"
+            else:
+                cnt_range_str = f"釣果{len(catches)}件"
+        # サイズ: this_w.size_avg があれば「平均{X}cm」、無ければ catches から min〜max
+        sz_str = ""
+        if this_w and this_w.get("size_avg"):
+            sz_str = f"{this_w['size_avg']:.0f}cm"
         else:
-            cnt_range_str = f"釣果{len(catches)}件"
-        sz_str = f"{int(min(w_sz_lo))}〜{int(max(w_sz_hi))}cm" if w_sz_lo and w_sz_hi else ""
+            w_sz_lo = [c["size_cm"]["min"] for c in catches if c.get("size_cm") and c["size_cm"].get("min") is not None]
+            w_sz_hi = [c["size_cm"]["max"] for c in catches if c.get("size_cm") and c["size_cm"].get("max") is not None]
+            if w_sz_lo and w_sz_hi:
+                sz_str = f"{int(min(w_sz_lo))}〜{int(max(w_sz_hi))}cm"
         # area-cmp（今日のエリア別）
         area_today_f: dict = {}
         for c in today_catches_f:
