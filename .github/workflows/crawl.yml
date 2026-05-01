@@ -22,10 +22,11 @@ jobs:
       - name: direct-crawl shojiro (庄治郎丸 point_raw 補完)
         continue-on-error: true
         run: python3 direct-crawl/shojiro_crawler.py
-      - name: re-export CSV (direct-crawl 反映)
-        if: success()
-        continue-on-error: true
-        run: python3 crawler.py --export-csv
+      # ⚠️ --export-csv は意図的に削除（2026-05-01）。
+      # 削除理由: --export-csv は catches_raw.json から CSV を全再生成するが、
+      # crawler.py main() は catches_raw.json を更新しないため、save_daily_csv()
+      # の追記分が日次で wipe される問題があった（4/24 以降の records 喪失）。
+      # 直接クロール (shojiro/koueimaru) の point_raw 補完は手動 --export-csv で適用する。
       - name: push
         run: |
           git config user.name "github-actions[bot]"
