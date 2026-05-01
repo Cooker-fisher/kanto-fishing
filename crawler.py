@@ -6494,7 +6494,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         # 今日の釣果
         today_catches, fish_label, area_date = _resolve_display_dataset(catches, today_str)
         use_today = (area_date == today_str)
-        fish_source = today_catches
+        fish_source = catches
 
         # 魚種別集計（fia-grid用）
         fish_data = {}
@@ -6512,6 +6512,24 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
                 if c.get("size_max") is not None: d["sz_maxs"].append(c["size_max"])
 
         top_fish_items = sorted(fish_data.items(), key=lambda x: -x[1]["records"])[:6]
+
+        # 今週の魚種説明文（2〜3文）
+        _week_n = len(catches)
+        _week_fish_names = [f for f, _ in top_fish_items]
+        _week_ships = len(set(c["ship"] for c in catches))
+        if _week_fish_names:
+            _desc1 = f"{area}では今週{_week_n}件・{_week_ships}船宿から釣果報告があります。"
+            _fish_join = "・".join(_week_fish_names[:4])
+            _desc2 = f"{_fish_join}など{len(_week_fish_names)}種の釣果が確認されています。"
+            _best_fish, _best_fd = top_fish_items[0]
+            if _best_fd["cnt_maxs"]:
+                _best_max = int(max(_best_fd["cnt_maxs"]))
+                _desc3 = f"なかでも{_best_fish}が{_best_max}匹の最高釣果で好調です。"
+            else:
+                _desc3 = f"なかでも{_best_fish}が最も多くの船宿で釣れています。"
+            fia_desc_html = f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">{_desc1}{_desc2}{_desc3}</p>'
+        else:
+            fia_desc_html = ""
 
         fia_cards = ""
         for fish, fd in top_fish_items:
@@ -6700,8 +6718,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
-  <h2 class="st">このエリアで{fish_label}釣れている魚 <span class="tag free">無料</span></h2>
-  <div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">本日の釣果はまだ集計中です</p>'}</div>
+  <h2 class="st">このエリアで今週釣れている魚 <span class="tag free">無料</span></h2>
+  {fia_desc_html}<div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">今週の釣果はまだ集計中です</p>'}</div>
   {sea_section_html}
   <h2 class="st">船宿一覧 <span class="tag free">無料</span></h2>
   <div class="sl-card">{ship_items_html}</div>
