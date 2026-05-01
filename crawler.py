@@ -741,6 +741,64 @@ def _load_historical_catches():
             continue
     return rows
 
+def _load_recent_catches_for_index(now, days=7):
+    """過去 days 日（today 含む）の catches を data/V2/*.csv から読み込み、
+    fish/index.html・area/index.html の「今週」集計用に dict-list を返す。
+    再クロールは一切しない（save_daily_csv() による日次蓄積を流用）。
+
+    返却 record（valid_catches と互換）: {ship, area, date, fish, fish_raw}
+      - fish: guess_fish(fish_raw) でサイト全体と同一の FISH_MAP 正規化
+      - date: "YYYY/MM/DD"
+
+    遅延到着耐性: data/V2 CSV は (ship, area, date, fish_raw) で dedup 追記される。
+    Day N の record が Day N に取れず Day N+1 のクロールで初めて拾われた場合も、
+    Day N+1 に正しく CSV へ追加される（既存キーに該当しないため）。
+    7日窓で読めば遅延到着 records も自然に含まれる。
+    """
+    cutoff = (now - timedelta(days=days-1)).strftime("%Y/%m/%d")
+    today_str = now.strftime("%Y/%m/%d")
+    months_needed = set()
+    for d in range(days):
+        dt = now - timedelta(days=d)
+        months_needed.add(dt.strftime("%Y-%m"))
+
+    base = os.path.dirname(__file__) or "."
+    try:
+        with open(os.path.join(base, "config.json"), encoding="utf-8") as f:
+            ver = json.load(f).get("active_version", "V2")
+    except Exception:
+        ver = "V2"
+    data_dir = os.path.join(base, "data", ver)
+    if not os.path.isdir(data_dir):
+        return []
+
+    rows_out = []
+    for ym in sorted(months_needed):
+        path = os.path.join(data_dir, f"{ym}.csv")
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8", newline="") as f:
+                for row in csv.DictReader(f):
+                    d = row.get("date", "")
+                    if not d or d < cutoff or d > today_str:
+                        continue
+                    if row.get("is_cancellation") == "1":
+                        continue
+                    fish_raw = row.get("fish_raw", "") or row.get("tsuri_mono_raw", "")
+                    if not fish_raw:
+                        continue
+                    rows_out.append({
+                        "ship":     row.get("ship", ""),
+                        "area":     row.get("area", ""),
+                        "date":     d,
+                        "fish":     guess_fish(fish_raw),
+                        "fish_raw": fish_raw,
+                    })
+        except Exception:
+            continue
+    return rows_out
+
 def _summarize_area_history(area: str, hist_rows: list, today_dt) -> dict:
     """data/V2/CSV から area の過去データを集計（catches=0 のときの準備中ページ用）。
     返却: total/recent_30_days/recent_30_ships/top_fish/top_points/top_ships/top_sizes/month_days
@@ -6129,12 +6187,15 @@ def build_fish_pages(data, history, crawled_at=""):
         with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
-    # fish/index.html: 魚種一覧（今週 = 過去7日間ローリング）
-    _week_cutoff = (now - timedelta(days=6)).strftime("%Y/%m/%d")
-    fish_week_summary = {}
-    for fish, cs in fish_summary.items():
-        week_cs = [c for c in cs if (c.get("date") or "") >= _week_cutoff]
-        fish_week_summary[fish] = week_cs
+    # fish/index.html: 魚種一覧（今週 = 過去7日間ローリング、CSV由来）
+    # 再クロール禁止: data/V2/*.csv の蓄積データを読み込む
+    _recent7 = _load_recent_catches_for_index(now, days=7)
+    fish_week_summary = {f: [] for f in fish_summary.keys()}
+    for c in _recent7:
+        for f in c["fish"]:
+            if f in _SKIP_FISH or f.isdigit():
+                continue
+            fish_week_summary.setdefault(f, []).append(c)
     fish_index_cards = ""
     for fish, cs in sorted(fish_week_summary.items(), key=lambda x: (-len(x[1]), x[0])):
         cnt = len(cs)
@@ -6761,12 +6822,12 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         with open(os.path.join(WEB_DIR, f"area/{area_slug(area)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
-    # area/index.html: エリア一覧（今週 = 過去7日間ローリング）
-    _area_week_cutoff = (now - timedelta(days=6)).strftime("%Y/%m/%d")
-    area_week_summary = {
-        area: [c for c in cs if (c.get("date") or "") >= _area_week_cutoff]
-        for area, cs in area_summary.items()
-    }
+    # area/index.html: エリア一覧（今週 = 過去7日間ローリング、CSV由来）
+    # 再クロール禁止: data/V2/*.csv の蓄積データを読み込む
+    _recent7_area = _load_recent_catches_for_index(now, days=7)
+    area_week_summary = {a: [] for a in area_summary.keys()}
+    for c in _recent7_area:
+        area_week_summary.setdefault(c["area"], []).append(c)
     _group_order = ["茨城", "千葉・外房", "千葉・内房", "千葉・東京湾奥", "東京", "神奈川・東京湾", "神奈川・相模湾", "静岡"]
     area_index_sections = ""
     for grp in _group_order:
