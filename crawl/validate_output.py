@@ -156,6 +156,42 @@ def validate_area_season_heatmap():
         ok(f"area 旬カレンダー: {len(sample_files)} 件サンプル全て塗りつぶし正常")
 
 
+def validate_no_nested_anchors():
+    """ネストした <a> タグ（HTML5 invalid）が無いか検証。
+    過去 area ページの fia カード内部に <a class="fia">...<div class="fb">◎<a>船宿</a></div></a>
+    という構造があり、ブラウザが自動的に anchor を分離して「◎船宿名」が
+    独立カードとして表示される事故が発生した。
+    """
+    print("\n[11] ネストした <a> タグ検出")
+    targets = []
+    for sub in ("area", "fish", "fish_area", "ship"):
+        d = os.path.join(DOCS, sub)
+        if os.path.isdir(d):
+            for fn in os.listdir(d):
+                if fn.endswith(".html"):
+                    targets.append(os.path.join(d, fn))
+    if not targets:
+        warn("検証対象 HTML が無い")
+        return
+    bad = []
+    # 簡易検出: <a で始まり </a> で閉じるまでの間にもう1つ <a が出現
+    pattern = re.compile(r'<a\s[^>]*>(?:(?!</a>).)*?<a\s', re.DOTALL)
+    for path in targets[:30]:  # 先頭30ファイルのみサンプル（速度のため）
+        try:
+            content = open(path, encoding="utf-8").read()
+        except Exception:
+            continue
+        if pattern.search(content):
+            bad.append(os.path.relpath(path, DOCS))
+    if bad:
+        for p in bad[:5]:
+            fail(f"{p}: ネストした <a> タグを検出")
+        if len(bad) > 5:
+            fail(f"... 他 {len(bad)-5} ファイルも同問題")
+    else:
+        ok(f"ネストアンカー: {len(targets[:30])} 件サンプル全てクリア")
+
+
 def validate_fish_hero_uniformity():
     """全 fish/*.html ページが同じ HERO 構造を持つか検証。
     過去マダイ（rich）と ワラサ（placeholder）で .fh-sub と .c wrapper の有無で
@@ -389,6 +425,7 @@ def main():
     validate_area_fia_cards()
     validate_fish_7day_chart()
     validate_fish_hero_uniformity()
+    validate_no_nested_anchors()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

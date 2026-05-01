@@ -6744,12 +6744,15 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             if sz_str: detail_parts.append(sz_str)
             detail_parts.append(f"{fd['records']}件・{len(fd['ships'])}船宿")
             best_ship = max(fd["ship_recs"].items(), key=lambda x: x[1])[0] if fd["ship_recs"] else ""
+            # ⚠️ fia は <a> なので内部に船宿リンク <a> を入れるとブラウザが
+            # 自動的にネストアンカーを分離 → 「◎船宿名」が独立カードとして
+            # 表示される事故になる（過去発生済み）。船宿名はプレーンテキストで。
             fia_cards += (
                 f'<a class="fia" href="../fish/{fish_slug(fish)}.html">'
                 f'<div class="fn">{fish}</div>'
                 + (f'<div class="fr">{cnt_str}</div>' if cnt_str else "")
                 + f'<div class="fs">{" | ".join(detail_parts)}</div>'
-                + (f'<div class="fb">◎{_ship_link(best_ship, depth=1)}</div>' if best_ship else "")
+                + (f'<div class="fb">◎{best_ship}</div>' if best_ship else "")
                 + '</a>'
             )
 
