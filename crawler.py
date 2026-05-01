@@ -9728,18 +9728,12 @@ def main():
         os.makedirs(WEB_DIR, exist_ok=True)
         build_style_css()
         build_main_js()
-        with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as _f:
-            _f.write(build_html(valid_catches, crawled_at, history, weather_data))
-        build_fish_pages(valid_catches, history, crawled_at)
-        build_area_pages(valid_catches, history, crawled_at, weather_data)
-        build_fish_area_pages(valid_catches, crawled_at, history)
-        build_ship_pages(valid_catches, crawled_at)
-        if forecast_data:
-            build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history)
+        # catches.json はスナップショット（当日のみ・魚データ空）なので
+        # データ依存ページ（index/fish/area/ship/forecast/sitemap）は生成しない。
+        # GitHub Actions のフルクロール版を保護するためスキップする。
         with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as _f:
             _f.write(build_calendar_page(crawled_at))
-        build_sitemap(valid_catches)
-        print(f"=== HTML生成完了（--html-only）===")
+        print(f"=== HTML生成完了（--html-only: CSS/JS/calendar のみ）===")
         return
 
     all_catches = []
