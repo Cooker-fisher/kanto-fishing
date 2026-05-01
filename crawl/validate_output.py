@@ -156,6 +156,49 @@ def validate_area_season_heatmap():
         ok(f"area 旬カレンダー: {len(sample_files)} 件サンプル全て塗りつぶし正常")
 
 
+def validate_fish_7day_chart():
+    """個別魚種ページ docs/fish/{slug}.html の「直近7日間の釣果推移」チャートが
+    今日の1本だけになっていないか検証。
+    chart-bars 内の <div class="cb..."> が height:8% 以下なのは「データなし」相当。
+    7 本中 6 本以上が「データなし」なら、過去日が空（今日だけしか描画されてない）。
+    """
+    print("\n[9] docs/fish/*.html 直近7日チャート")
+    fish_dir = os.path.join(DOCS, "fish")
+    if not os.path.isdir(fish_dir):
+        warn("docs/fish/ ディレクトリが無い")
+        return
+    # 主要魚種（aji, madai, hirame, etc.）のうち 5件サンプル
+    candidates = ["aji", "madai", "hirame", "tachiuo", "kawahagi",
+                  "kasago", "shirogisu", "warasa", "marika", "mebaru"]
+    sample = [c for c in candidates if os.path.isfile(os.path.join(fish_dir, f"{c}.html"))][:5]
+    if not sample:
+        warn("検証対象の主要 fish HTML が見つからない")
+        return
+    bad = []
+    for slug in sample:
+        path = os.path.join(fish_dir, f"{slug}.html")
+        content = open(path, encoding="utf-8").read()
+        if "直近7日間の釣果推移" not in content:
+            continue
+        # chart-bars 内の cb 要素を抽出（chart-labels 直前まで）
+        m = re.search(r'<div class="chart-bars">(.*?)<div class="chart-labels"', content, re.DOTALL)
+        if not m:
+            bad.append((slug, "chart-bars 要素が無い"))
+            continue
+        heights = re.findall(r'class="cb[^"]*"\s+style="height:(\d+)%"', m.group(1))
+        if len(heights) != 7:
+            bad.append((slug, f"バー数 {len(heights)} != 7"))
+            continue
+        empty = sum(1 for h in heights if int(h) <= 8)
+        if empty >= 6:
+            bad.append((slug, f"7本中 {empty} 本が height≤8%（過去日空）"))
+    if bad:
+        for slug, reason in bad[:5]:
+            fail(f"fish/{slug}.html: {reason}")
+    else:
+        ok(f"fish 7日チャート: {len(sample)} 件サンプル正常")
+
+
 def validate_area_fia_cards():
     """個別エリアページの「このエリアで今週釣れている魚」fia-grid を検証。
     - 過去複数回、fia card が空（< 3 cards）になる事故が発生
@@ -304,6 +347,7 @@ def main():
     validate_catches_raw()
     validate_area_season_heatmap()
     validate_area_fia_cards()
+    validate_fish_7day_chart()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

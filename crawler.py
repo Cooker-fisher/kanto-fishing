@@ -5723,7 +5723,32 @@ def build_fish_pages(data, history, crawled_at=""):
     _hist_rows_for_fish = _load_historical_catches()
     fish_summary = {}
     _SKIP_FISH = {"不明", "欠航"}
-    for c in data:
+
+    # 当日 crawl が sparse な場合、個別 fish ページの「直近7日間の釣果推移」
+    # チャートが今日の1本しか描画されない問題を防ぐため、過去6日分を CSV から
+    # マージする（再クロールなし・save_daily_csv() の蓄積を流用）。
+    # しきい値は build_html と同じ 30 件。
+    today_str_fp = now.strftime("%Y/%m/%d")
+    today_with_fish_fp = sum(1 for c in data
+                             if c.get("date") == today_str_fp
+                             and any(f != "不明" for f in (c.get("fish") or [])))
+    if today_with_fish_fp < 30:
+        try:
+            _recent7_fp = _load_recent_catches_for_index(now, days=7)
+        except Exception:
+            _recent7_fp = []
+        seen_fp = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in data}
+        merged_data = list(data)
+        for c in _recent7_fp:
+            k = (c.get("ship"), c.get("date"), c.get("fish_raw", ""))
+            if k not in seen_fp:
+                merged_data.append(c)
+                seen_fp.add(k)
+        data_for_fish = merged_data
+    else:
+        data_for_fish = data
+
+    for c in data_for_fish:
         for f in c["fish"]:
             if f not in _SKIP_FISH and not f.isdigit(): fish_summary.setdefault(f, []).append(c)
     # fish_tackle.json で説明がある魚種も最低限ページを生成（404 防止）。
