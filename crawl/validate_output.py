@@ -156,6 +156,46 @@ def validate_area_season_heatmap():
         ok(f"area 旬カレンダー: {len(sample_files)} 件サンプル全て塗りつぶし正常")
 
 
+def validate_fish_hero_uniformity():
+    """全 fish/*.html ページが同じ HERO 構造を持つか検証。
+    過去マダイ（rich）と ワラサ（placeholder）で .fh-sub と .c wrapper の有無で
+    レイアウトが分岐していた事故を再発させない。
+    """
+    print("\n[10] docs/fish/*.html HERO 構造の統一")
+    fish_dir = os.path.join(DOCS, "fish")
+    if not os.path.isdir(fish_dir):
+        warn("docs/fish/ ディレクトリが無い")
+        return
+    files = [f for f in os.listdir(fish_dir)
+             if f.endswith(".html") and f != "index.html"]
+    if not files:
+        warn("検証対象 fish HTML が無い")
+        return
+    bad = []
+    for fn in files:
+        with open(os.path.join(fish_dir, fn), encoding="utf-8") as f:
+            content = f.read()
+        # fish-hero div の直下が h2 であること（.c wrapper を許容しない）
+        m = re.search(r'<div class="fish-hero">(\s*<!--[^-]*-->)?\s*(<[^>]+>)', content)
+        if not m:
+            bad.append((fn, "fish-hero div が無い"))
+            continue
+        first_tag = m.group(2)
+        if not first_tag.startswith("<h2"):
+            bad.append((fn, f"fish-hero 直下が <h2> ではない（{first_tag[:30]}）"))
+            continue
+        # 古い fh-sub が混入していないこと
+        if re.search(r'<div class="fish-hero">[\s\S]*?<div class="fh-sub">', content):
+            bad.append((fn, "古い fh-sub が残存（placeholder 旧形式）"))
+    if bad:
+        for fn, reason in bad[:5]:
+            fail(f"fish/{fn}: {reason}")
+        if len(bad) > 5:
+            fail(f"... 他 {len(bad)-5} ファイルも同種の問題")
+    else:
+        ok(f"fish HERO 統一: {len(files)} ファイル全て同構造")
+
+
 def validate_fish_7day_chart():
     """個別魚種ページ docs/fish/{slug}.html の「直近7日間の釣果推移」チャートが
     今日の1本だけになっていないか検証。
@@ -348,6 +388,7 @@ def main():
     validate_area_season_heatmap()
     validate_area_fia_cards()
     validate_fish_7day_chart()
+    validate_fish_hero_uniformity()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

@@ -5982,10 +5982,11 @@ def build_fish_pages(data, history, crawled_at=""):
 .mb-bar{{width:80%;background:linear-gradient(180deg,var(--cta),#f47b3a);border-radius:3px 3px 0 0;min-height:3px}}
 .mb-label{{font-size:10px;color:var(--muted);margin-top:6px}}
 .mb-num{{font-size:11px;color:var(--accent);font-weight:700}}
-.fish-hero{{background:linear-gradient(135deg,#0d2b4a,#163d5c);color:#fff;padding:22px 14px 18px;text-align:center}}
+.fish-hero{{background:linear-gradient(135deg,var(--accent),var(--accent2,#163d5c));color:#fff;padding:22px 14px 18px;text-align:center}}
 .fish-hero h2{{font-size:26px;font-weight:800;margin:0}}
-.fish-hero .fh-sub{{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}}
-.fish-hero .fh-m{{font-size:18px;font-weight:800;color:var(--cta);margin-top:8px}}
+.fish-hero .fh-r{{font-size:30px;font-weight:800;color:var(--cta);margin-top:4px;line-height:1.1}}
+.fish-hero .fh-s{{font-size:18px;font-weight:700;color:#fff;margin-top:2px}}
+.fish-hero .fh-m{{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}}
 .fia-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}}
 .fia{{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;text-decoration:none;color:inherit}}
 .fia:hover{{border-color:var(--cta);text-decoration:none}}
@@ -6012,12 +6013,11 @@ def build_fish_pages(data, history, crawled_at=""):
 </head>
 <body>
 {_v2_header_nav('fish')}
+<!-- 統一HERO: マダイ等の rich 形式と同構造 -->
 <div class="fish-hero">
-  <div class="c">
-    <h2>{fish}</h2>
-    <div class="fh-sub">関東エリアの船釣り情報</div>
-    <div class="fh-m">本日の釣果報告は集計待ち（過去1年 {past_year_records:,}件の実績）</div>
-  </div>
+  <h2>{fish}</h2>
+  <div class="fh-r">過去1年 {past_year_records:,}件</div>
+  <div class="fh-m">本日の釣果報告は集計待ち</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="index.html">魚種一覧</a> &rsaquo; {fish}</p>
