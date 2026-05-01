@@ -4005,13 +4005,15 @@ def build_fish_guide_html(fish, tackle_data):
 
 def build_fish_7day_chart_html(fish, catches, display_date=None, display_label="今日"):
     """直近7日間の釣果推移バーチャート（匹数上限）
-    display_date: 最右列の基準日 (date オブジェクト)。省略時は今日。
-    display_label: 最右列のラベル文字列。省略時は「今日」。
+
+    最右列は **常に今日** を基準とする（トップページ ZONE B のミニバーと整合）。
+    display_date / display_label は当日が空のときの「最新釣果日ラベル」用に
+    引数として残しているが、days 軸は今日基準で固定する。
     """
     from datetime import datetime, timedelta
     today = datetime.now(JST).replace(tzinfo=None).date()
-    base_date = display_date if display_date is not None else today
-    days = [(base_date - timedelta(days=i)) for i in range(6, -1, -1)]  # 6日前〜基準日
+    base_date = today  # 軸は常に今日。display_date は label 切替用にのみ使う
+    days = [(base_date - timedelta(days=i)) for i in range(6, -1, -1)]  # 6日前〜今日
     # 日付→最大釣果
     daily_max = {}
     for c in catches:
@@ -4036,11 +4038,11 @@ def build_fish_7day_chart_html(fish, catches, display_date=None, display_label="
         h = max(8, int(v / week_max * 100)) if v > 0 else 4
         cls = "cb today" if d == base_date else ("cb weekend" if d.weekday() >= 5 else "cb")
         bars.append(f'<div class="{cls}" style="height:{h}%"></div>')
-    # ラベル
+    # ラベル: 最右列は常に「今日」（base_date = 今日固定のため）
     labels = []
     for d in days:
         if d == base_date:
-            labels.append(f"<span>{display_label}</span>")
+            labels.append('<span>今日</span>')
         else:
             labels.append(f"<span>{d.month}/{d.day}</span>")
     # トレンド（後半3日 vs 前半4日の平均比較）
@@ -6094,18 +6096,21 @@ def build_fish_pages(data, history, crawled_at=""):
         for c in catches:
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"): max_cnt = max(max_cnt, cr["max"])
-        # fish-hero 数値
-        t_maxs = [c["count_range"]["max"] for c in today_catches_f if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("max") is not None]
-        t_mins = [c["count_range"]["min"] for c in today_catches_f if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("min") is not None]
-        t_sz_lo = [c["size_cm"]["min"] for c in today_catches_f if c.get("size_cm") and c["size_cm"].get("min") is not None]
-        t_sz_hi = [c["size_cm"]["max"] for c in today_catches_f if c.get("size_cm") and c["size_cm"].get("max") is not None]
-        if t_mins and t_maxs:
-            cnt_range_str = f"{int(min(t_mins))}〜{int(max(t_maxs))}匹"
-        elif t_maxs:
-            cnt_range_str = f"〜{int(max(t_maxs))}匹"
+        # fish-hero 数値: トップページ ZONE B カードと整合させるため、
+        # catches（過去7日 merged）を集計対象とする（today だけだと sparse 時に
+        # 数字が極端に小さくなりトップカードと不一致になる）。
+        w_maxs = [c["count_range"]["max"] for c in catches if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("max") is not None]
+        w_avgs = [c.get("count_avg") for c in catches if c.get("count_avg") is not None]
+        w_sz_lo = [c["size_cm"]["min"] for c in catches if c.get("size_cm") and c["size_cm"].get("min") is not None]
+        w_sz_hi = [c["size_cm"]["max"] for c in catches if c.get("size_cm") and c["size_cm"].get("max") is not None]
+        if w_avgs and w_maxs:
+            avg_val = sum(w_avgs) / len(w_avgs)
+            cnt_range_str = f"{int(avg_val)}〜{int(max(w_maxs))}匹"
+        elif w_maxs:
+            cnt_range_str = f"〜{int(max(w_maxs))}匹"
         else:
             cnt_range_str = f"釣果{len(catches)}件"
-        sz_str = f"{int(min(t_sz_lo))}〜{int(max(t_sz_hi))}cm" if t_sz_lo and t_sz_hi else ""
+        sz_str = f"{int(min(w_sz_lo))}〜{int(max(w_sz_hi))}cm" if w_sz_lo and w_sz_hi else ""
         # area-cmp（今日のエリア別）
         area_today_f: dict = {}
         for c in today_catches_f:
@@ -6269,7 +6274,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2>{fish}</h2>
   {f'<div class="fh-r">{cnt_range_str}</div>' if cnt_range_str else ''}
   {f'<div class="fh-s">{sz_str}</div>' if sz_str else ''}
-  <div class="fh-m">{fish_today_label} {len(today_catches_f)}件・{len(set(c['ship'] for c in today_catches_f))}船宿</div>
+  <div class="fh-m">今週 {len(catches)}件・{len(set(c['ship'] for c in catches))}船宿</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
