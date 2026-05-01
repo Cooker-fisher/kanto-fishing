@@ -6815,16 +6815,18 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
                     cm_parts.append(f"水温は平年比{diff:.1f}℃と低め")
                 else:
                     cm_parts.append(f"水温は平年並み（{sst:.1f}℃）")
-            # 波・風 欠航リスク
-            risk = []
-            if wave is not None and wave >= 2.5:
-                risk.append(f"波高{wave:.1f}m")
-            if wind_spd is not None and wind_spd >= 12:
-                risk.append(f"風{wind_spd:.0f}m/s")
-            if risk:
-                cm_parts.append(f"{'・'.join(risk)}で欠航リスクあり")
-            elif wave is not None or wind_spd is not None:
-                cm_parts.append("波・風とも穏やかで出船日和")
+            # 波・風 欠航リスク（_RISK_THR に従う・外海/内海で閾値切替）
+            sea_type = "内海" if group in _UCHIUMI_AREAS else "外海"
+            warn_w, warn_wnd, bad_w, bad_wnd = _RISK_THR[sea_type]
+            if wave is not None or wind_spd is not None:
+                _w = wave or 0
+                _wd = wind_spd or 0
+                if _w >= bad_w or _wd >= bad_wnd:
+                    cm_parts.append(f"波{_w:.1f}m・風{_wd:.0f}m/sで{sea_type}基準を大きく超え欠航警戒")
+                elif _w >= warn_w or _wd >= warn_wnd:
+                    cm_parts.append(f"波{_w:.1f}m・風{_wd:.0f}m/sで{sea_type}基準的に出船注意")
+                else:
+                    cm_parts.append(f"波{_w:.1f}m・風{_wd:.0f}m/sで{sea_type}基準的に出船可")
             if cm_parts:
                 sea_comment = f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">{"。".join(cm_parts)}。</p>'
 

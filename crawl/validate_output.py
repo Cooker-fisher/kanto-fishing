@@ -199,7 +199,9 @@ def validate_area_sea_section():
             # 「平年」「出船」「欠航リスク」「穏やか」のいずれかが海況セクション付近にある
             section_idx = content.find("海況データ")
             sea_segment = content[section_idx:section_idx+800]
-            has_comment = any(kw in sea_segment for kw in ("平年", "出船日和", "欠航リスク", "穏やか"))
+            has_comment = any(kw in sea_segment for kw in (
+                "平年", "出船可", "出船注意", "欠航警戒", "外海基準", "内海基準"
+            ))
             if not has_comment:
                 bad.append((fn, "海況1行コメントが無い"))
     if bad:
