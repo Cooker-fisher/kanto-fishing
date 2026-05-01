@@ -156,6 +156,59 @@ def validate_area_season_heatmap():
         ok(f"area 旬カレンダー: {len(sample_files)} 件サンプル全て塗りつぶし正常")
 
 
+def validate_area_sea_section():
+    """area ページの「海況データ」セクションを検証。
+    - 潮汐は名称（大潮/中潮/小潮/長潮/若潮）であって数値ではないこと
+    - 月相は名称（満月/新月/三日月 等）であって数値ではないこと
+    - 海況1行コメントが含まれていること（水温平年比 or 出船判定）
+    """
+    print("\n[12] docs/area/*.html 海況セクション")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        warn("docs/area/ ディレクトリが無い")
+        return
+    sample = [f for f in os.listdir(area_dir)
+              if f.endswith(".html") and f != "index.html"][:10]
+    if not sample:
+        warn("検証対象の area HTML が無い")
+        return
+    tide_names = {"大潮", "中潮", "小潮", "長潮", "若潮", "—"}
+    moon_names = {"満月", "新月", "三日月", "上弦の月", "下弦の月", "十三夜", "十六夜", "有明月", "—"}
+    bad = []
+    for fn in sample:
+        content = open(os.path.join(area_dir, fn), encoding="utf-8").read()
+        if "海況データ" not in content or "sea-grid" not in content:
+            continue
+        # sea-item の sv 値を抽出（順番: 水温/波高/風/潮汐/月相/気圧）
+        m = re.search(r'<div class="sea-grid">(.*?)</div>\s*\)?', content, re.DOTALL)
+        if not m:
+            continue
+        # 潮汐 sea-item 抽出
+        items = re.findall(r'<div class="sv">([^<]+)</div><div class="sl2">([^<]+)</div>', m.group(1))
+        for val, lbl in items:
+            val = val.strip()
+            if "潮汐" in lbl and val not in tide_names:
+                # 数値（小数点 or 数字のみ）なら NG
+                if re.fullmatch(r'[\d.]+', val):
+                    bad.append((fn, f"潮汐が数値: {val}"))
+            if ("月相" in lbl or "月齢" in lbl) and val not in moon_names:
+                if re.fullmatch(r'[\d.]+', val):
+                    bad.append((fn, f"月相が数値: {val}"))
+        # 海況コメント: 水温/波/風 のいずれかを言及する <p> が sea-grid 直前にあること
+        if "海況データ" in content and "sea-grid" in content:
+            # 「平年」「出船」「欠航リスク」「穏やか」のいずれかが海況セクション付近にある
+            section_idx = content.find("海況データ")
+            sea_segment = content[section_idx:section_idx+800]
+            has_comment = any(kw in sea_segment for kw in ("平年", "出船日和", "欠航リスク", "穏やか"))
+            if not has_comment:
+                bad.append((fn, "海況1行コメントが無い"))
+    if bad:
+        for fn, reason in bad[:5]:
+            fail(f"area/{fn}: {reason}")
+    else:
+        ok(f"area 海況セクション: {len(sample)} 件サンプル正常（潮汐・月相が名称・コメントあり）")
+
+
 def validate_no_nested_anchors():
     """ネストした <a> タグ（HTML5 invalid）が無いか検証。
     過去 area ページの fia カード内部に <a class="fia">...<div class="fb">◎<a>船宿</a></div></a>
@@ -426,6 +479,7 @@ def main():
     validate_fish_7day_chart()
     validate_fish_hero_uniformity()
     validate_no_nested_anchors()
+    validate_area_sea_section()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

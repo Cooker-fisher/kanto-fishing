@@ -428,6 +428,20 @@ def _moon_title(age):
             return "若潮"
     return "中潮"
 
+def _moon_phase_name(age):
+    """月齢 → 月相名（満月・新月・半月 等）。海況表示用。"""
+    if age is None:
+        return ""
+    if age < 1.5:                 return "新月"
+    if age < 6.5:                 return "三日月"
+    if age < 8.5:                 return "上弦の月"
+    if age < 13.5:                return "十三夜"
+    if age < 16.0:                return "満月"
+    if age < 21.5:                return "十六夜"
+    if age < 23.5:                return "下弦の月"
+    if age < 28.0:                return "有明月"
+    return "新月"
+
 def _weather_code_text(code):
     """WMO Weather interpretation code → 日本語テキスト"""
     if code is None: return ""
@@ -6765,32 +6779,66 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         wind_spd = sea_fc.get("wind_speed")
         wind_dir = sea_fc.get("wind_dir")
         pressure = sea_fc.get("pressure")
-        tide_range = sea_fc.get("tide_range", "")
         moon_age = sea_fc.get("moon_age")
         sst_str = f"{sst:.1f}℃" if sst else "—"
         wave_str = f"{wave:.1f}m" if wave else "—"
         wind_txt = (_wind_dir_text(wind_dir) if wind_dir else "") + (f"{wind_spd:.1f}m/s" if wind_spd else "")
         wind_str = wind_txt if wind_txt else "—"
-        tide_str = tide_range if tide_range else "—"
-        moon_str = f"{moon_age:.1f}" if moon_age is not None else "—"
+        # 潮汐: 数字（潮差cm）ではなく 大潮/中潮/小潮 等の名称で表示
+        tide_label = _moon_title(moon_age) if moon_age is not None else ""
+        tide_str = tide_label if tide_label else "—"
+        # 月齢: 数字ではなく 満月/新月/半月 等の名称で表示
+        moon_label = _moon_phase_name(moon_age) if moon_age is not None else ""
+        moon_str = moon_label if moon_label else "—"
         pressure_str = f"{int(pressure)}hPa" if pressure else "—"
         # ヒーローの海況テキスト
         sea_parts = []
         if sst: sea_parts.append(f"水温{sst_str}")
         if wave: sea_parts.append(f"波{wave_str}")
         if wind_txt: sea_parts.append(wind_str)
-        if tide_range: sea_parts.append(str(tide_range))
+        if tide_label: sea_parts.append(tide_label)
         ah_sea_html = f'<div class="ah-sea">{" / ".join(sea_parts)}</div>' if sea_parts else ""
+
+        # 海況1行コメント: 平年比SST・波高/風による欠航リスク
+        sea_comment = ""
+        if sea_fc:
+            cm_parts = []
+            # SST 平年比（簡易: 月別の平均SST 想定値との差）
+            # 関東沿岸の月別 SST 平年値（5月=17℃ 基準で簡易テーブル）
+            _sst_norm = {1:14, 2:13, 3:14, 4:16, 5:18, 6:21, 7:24, 8:26, 9:25, 10:22, 11:19, 12:16}
+            if sst is not None:
+                norm = _sst_norm.get(now.month, 18)
+                diff = sst - norm
+                if diff >= 1.5:
+                    cm_parts.append(f"水温は平年比+{diff:.1f}℃と高め")
+                elif diff <= -1.5:
+                    cm_parts.append(f"水温は平年比{diff:.1f}℃と低め")
+                else:
+                    cm_parts.append(f"水温は平年並み（{sst:.1f}℃）")
+            # 波・風 欠航リスク
+            risk = []
+            if wave is not None and wave >= 2.5:
+                risk.append(f"波高{wave:.1f}m")
+            if wind_spd is not None and wind_spd >= 12:
+                risk.append(f"風{wind_spd:.0f}m/s")
+            if risk:
+                cm_parts.append(f"{'・'.join(risk)}で欠航リスクあり")
+            elif wave is not None or wind_spd is not None:
+                cm_parts.append("波・風とも穏やかで出船日和")
+            if cm_parts:
+                sea_comment = f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">{"。".join(cm_parts)}。</p>'
+
         sea_section_html = ""
         if sea_fc:
             sea_section_html = (
                 f'<h2 class="st">海況データ <span class="tag free">無料</span></h2>'
+                f'{sea_comment}'
                 f'<div class="sea-grid">'
                 f'<div class="sea-item"><div class="sv">{sst_str}</div><div class="sl2">水温</div></div>'
                 f'<div class="sea-item"><div class="sv">{wave_str}</div><div class="sl2">波高</div></div>'
                 f'<div class="sea-item"><div class="sv">{wind_str}</div><div class="sl2">風</div></div>'
                 f'<div class="sea-item"><div class="sv">{tide_str}</div><div class="sl2">潮汐</div></div>'
-                f'<div class="sea-item"><div class="sv">{moon_str}</div><div class="sl2">月齢</div></div>'
+                f'<div class="sea-item"><div class="sv">{moon_str}</div><div class="sl2">月相</div></div>'
                 f'<div class="sea-item"><div class="sv">{pressure_str}</div><div class="sl2">気圧</div></div>'
                 f'</div>'
             )
