@@ -9721,8 +9721,7 @@ def main():
         os.makedirs(WEB_DIR, exist_ok=True)
         build_style_css()
         build_main_js()
-        with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as _f:
-            _f.write(build_html(valid_catches, crawled_at, history, weather_data))
+        # index.htmlはフルクロールデータがないと魚カードが空になるためスキップ
         build_fish_pages(valid_catches, history, crawled_at)
         build_area_pages(valid_catches, history, crawled_at, weather_data)
         build_fish_area_pages(valid_catches, crawled_at, history)
