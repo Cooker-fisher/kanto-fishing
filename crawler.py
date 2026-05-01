@@ -3706,40 +3706,44 @@ def build_index_overview_text(catches, history, crawled_at=""):
         f'</div>'
     )
 
+def _to_relative_levels(avgs: list) -> list:
+    """月別平均値リストを魚種内の相対ランクで0〜4に変換する"""
+    mx = max(avgs) if avgs else 0
+    mn = min(avgs) if avgs else 0
+    rng = mx - mn
+    if mx == 0:
+        return [0] * len(avgs)
+    if rng < 10:
+        # 変動幅が小さい（型釣りスコア等）→ 絶対値で低・中・高を判定
+        return [2 if v >= mx * 0.9 else 1 if v >= mx * 0.5 else 0 for v in avgs]
+    levels = []
+    for v in avgs:
+        norm = (v - mn) / rng
+        if norm >= 0.80:   lv = 4
+        elif norm >= 0.60: lv = 3
+        elif norm >= 0.35: lv = 2
+        elif norm >= 0.15: lv = 1
+        else:              lv = 0
+        levels.append(lv)
+    return levels
+
 def _decadal_to_monthly_index(fish_decades: dict) -> list:
-    """36旬のcnt_indexを12か月平均に変換して返す（0〜4スケール）"""
-    monthly = []
+    """36旬のcnt_indexを12か月平均に変換して返す（魚種内相対スケール0〜4）"""
+    avgs = []
     for m in range(1, 13):
         d1 = (m - 1) * 3 + 1
-        d2 = d1 + 1
-        d3 = d1 + 2
-        vals = [fish_decades.get(d, {}).get("cnt_index", 0) for d in (d1, d2, d3)]
-        avg = sum(vals) / len(vals)
-        # 100を中央値として0〜4スケール
-        if avg >= 160:   lv = 4
-        elif avg >= 130: lv = 3
-        elif avg >= 90:  lv = 2
-        elif avg >= 50:  lv = 1
-        else:            lv = 0
-        monthly.append(lv)
-    return monthly
+        vals = [fish_decades.get(d, {}).get("cnt_index", 0) for d in (d1, d1+1, d1+2)]
+        avgs.append(sum(vals) / 3)
+    return _to_relative_levels(avgs)
 
 def _decadal_to_monthly_size_index(fish_decades: dict) -> list:
-    """36旬のsize_indexを12か月平均に変換して返す（0〜4スケール）"""
-    monthly = []
+    """36旬のsize_indexを12か月平均に変換して返す（魚種内相対スケール0〜4）"""
+    avgs = []
     for m in range(1, 13):
         d1 = (m - 1) * 3 + 1
-        d2 = d1 + 1
-        d3 = d1 + 2
-        vals = [fish_decades.get(d, {}).get("size_index", 0) for d in (d1, d2, d3)]
-        avg = sum(vals) / len(vals)
-        if avg >= 110:   lv = 4
-        elif avg >= 103: lv = 3
-        elif avg >= 97:  lv = 2
-        elif avg >= 90:  lv = 1
-        else:            lv = 0
-        monthly.append(lv)
-    return monthly
+        vals = [fish_decades.get(d, {}).get("size_index", 0) for d in (d1, d1+1, d1+2)]
+        avgs.append(sum(vals) / 3)
+    return _to_relative_levels(avgs)
 
 def build_fish_season_map_html(fish, decadal_calendar):
     """魚種の旬カレンダー（12か月×数釣/型釣 ヒートマップ）"""
