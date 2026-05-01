@@ -7882,6 +7882,31 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
     with open(raw_path, encoding="utf-8") as f:
         records = json.load(f)
 
+    # 鮮度ガード: catches_raw.json が stale だと CSV を全再生成すると
+    # save_daily_csv() が日次で追記した records が wipe される（過去に発生）。
+    # raw の最新日付が today-7日 より古ければ refuse して abort。
+    # 環境変数 FORCE_EXPORT=1 で override 可能（手動メンテナンス時）。
+    if os.environ.get("FORCE_EXPORT") != "1":
+        try:
+            _raw_dates = sorted(
+                r["date"] for r in records
+                if isinstance(r, dict) and r.get("date")
+            )
+            if _raw_dates:
+                _raw_latest = _raw_dates[-1]
+                _today = datetime.now(JST).replace(tzinfo=None)
+                _cutoff = (_today - timedelta(days=7)).strftime("%Y/%m/%d")
+                if _raw_latest < _cutoff:
+                    print(
+                        f"\n❌ export_csv_from_raw: ABORT\n"
+                        f"   catches_raw.json の最新日付 {_raw_latest} が cutoff {_cutoff} より古い。\n"
+                        f"   このまま CSV 再生成すると save_daily_csv() の追記分が wipe される。\n"
+                        f"   override したい場合: FORCE_EXPORT=1 python crawler.py --export-csv\n"
+                    )
+                    return -1
+        except Exception as _e:
+            print(f"WARN: 鮮度チェック skip ({_e})")
+
     # ships.json の exclude/boat_only フラグを読み込んで除外リストを構築
     _ships_json = os.path.join(os.path.dirname(__file__), "crawl", "ships.json")
     _exclude_ships = set()

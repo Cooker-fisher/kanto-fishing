@@ -27,6 +27,10 @@ jobs:
       # crawler.py main() は catches_raw.json を更新しないため、save_daily_csv()
       # の追記分が日次で wipe される問題があった（4/24 以降の records 喪失）。
       # 直接クロール (shojiro/koueimaru) の point_raw 補完は手動 --export-csv で適用する。
+      - name: validate output (gatekeeper)
+        # HTML/CSV の不変条件チェック。違反時は非0終了 → push をスキップ。
+        # 過去に発生した「魚種カードが空」「前日データ消失」を再発させない。
+        run: python3 crawl/validate_output.py
       - name: push
         run: |
           git config user.name "github-actions[bot]"
