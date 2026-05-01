@@ -200,10 +200,15 @@ def validate_area_sea_section():
             section_idx = content.find("海況データ")
             sea_segment = content[section_idx:section_idx+800]
             has_comment = any(kw in sea_segment for kw in (
-                "平年", "出船可", "出船注意", "欠航警戒", "外海基準", "内海基準"
+                "平年", "出船日和", "出船注意", "欠航警戒", "荒れ"
             ))
             if not has_comment:
                 bad.append((fn, "海況1行コメントが無い"))
+            # 内部用語（外海/内海/基準）が表示文言に漏れていないか
+            for ng_word in ("外海基準", "内海基準", "外海的", "内海的"):
+                if ng_word in sea_segment:
+                    bad.append((fn, f"内部用語「{ng_word}」が文言に漏出"))
+                    break
     if bad:
         for fn, reason in bad[:5]:
             fail(f"area/{fn}: {reason}")
