@@ -5163,14 +5163,42 @@ def build_catch_table(catches):
 def build_html(catches, crawled_at, history, weather_data=None):
     now = datetime.now(JST).replace(tzinfo=None)
     current_month = now.month
-    fish_summary = {}
     year, week_num = current_iso_week()
     stale_cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
-    for c in catches:
+
+    # 当日 crawl が sparse（船宿の投稿遅延）→ 過去7日窓で fish_summary / area_summary を補強。
+    # HERO カウントと LIVE ティッカーは「当日」セマンティクスを維持し、
+    # ZONE B（魚種カード）/ ZONE B2（エリア今日）は CSV由来の7日窓を使う。
+    # is_sparse_today=True のとき section ラベルを「直近1週間」に書き換える。
+    today_str_local = now.strftime("%Y/%m/%d")
+    today_with_fish = sum(1 for c in catches
+                          if c.get("date") == today_str_local
+                          and any(f != "不明" for f in (c.get("fish") or [])))
+    SPARSE_THRESHOLD = 30
+    is_sparse_today = today_with_fish < SPARSE_THRESHOLD
+    if is_sparse_today:
+        try:
+            _recent7 = _load_recent_catches_for_index(now, days=7)
+        except Exception:
+            _recent7 = []
+        # マージ（dedup: ship+date+fish_raw）。catches 側に詳細フィールドがあるため優先。
+        seen = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in catches}
+        merged = list(catches)
+        for c in _recent7:
+            k = (c.get("ship"), c.get("date"), c.get("fish_raw", ""))
+            if k not in seen:
+                merged.append(c)
+                seen.add(k)
+        catches_for_summary = merged
+    else:
+        catches_for_summary = catches
+
+    fish_summary = {}
+    for c in catches_for_summary:
         for f in c["fish"]:
             if f != "不明":
                 fish_summary.setdefault(f, []).append(c)
-    areas = sorted(set(c["area"] for c in catches))
+    areas = sorted(set(c["area"] for c in catches_for_summary))
     cards = ""
     # ミニバーグラフ最右列ラベル（HERO と同じ日付判定で事前計算）
     _today_str_idx = now.strftime("%Y/%m/%d")
@@ -5335,9 +5363,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="area-group-links">{"".join(others)}</div></div>'
         )
     area_nav = "".join(area_nav_parts)
-    # V2 ZONE B2: エリア別今日の釣果カード
+    # V2 ZONE B2: エリア別今日の釣果カード（当日 sparse 時は7日窓を使用）
     today_str = now.strftime("%Y/%m/%d")
-    today_catches = [c for c in catches if c.get("date") == today_str]
+    if is_sparse_today:
+        today_catches = catches_for_summary
+    else:
+        today_catches = [c for c in catches if c.get("date") == today_str]
     area_today_html = ""
     area_fish_map = {}  # area -> {fish: count}
     for c in today_catches:
@@ -5583,11 +5614,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
 </div>
 <div class="c">
 <!-- ZONE B: 釣れている魚 -->
-<h2 class="st">今日 釣れている魚 <span class="tag free">無料</span></h2>
+<h2 class="st">{"直近1週間 釣れている魚" if is_sparse_today else "今日 釣れている魚"} <span class="tag free">無料</span></h2>
 <div class="fish-grid">{cards}</div>
 {fish_others_html}
 <!-- ZONE B2: エリア別今日の釣果 -->
-<h2 class="st">エリア別 今日の釣果 <span class="tag free">無料</span></h2>
+<h2 class="st">{"エリア別 直近1週間の釣果" if is_sparse_today else "エリア別 今日の釣果"} <span class="tag free">無料</span></h2>
 <div class="area-today">{area_today_html}</div>
 {f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>{risk_grid_html}' if risk_grid_html else ''}
 <!-- TEASER ROTATOR -->
