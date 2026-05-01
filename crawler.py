@@ -3746,16 +3746,21 @@ def _decadal_to_monthly_size_index(fish_decades: dict) -> list:
         avgs.append(sum(vals) / 3)
     return _to_relative_levels(avgs)
 
-def build_fish_season_map_html(fish, decadal_calendar):
-    """魚種の旬カレンダー（12か月×数釣/型釣 ヒートマップ）"""
-    fish_decades = decadal_calendar.get(fish, {})
+def build_fish_season_map_html(fish, decadal_calendar, current_month=None):
+    """魚種の旬カレンダー（12か月×数釣/型釣 ヒートマップ）。
+    decadal_calendar が空（GitHub Actions 環境等）の場合は build_season_bar にフォールバック。"""
+    fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
+    if not fish_decades:
+        # analysis.sqlite 非存在時は SEASON_DATA 固定バーで代替
+        if current_month is None:
+            current_month = datetime.now(JST).replace(tzinfo=None).month
+        return build_season_bar(fish, current_month)
     cnt_levels   = _decadal_to_monthly_index(fish_decades)
     size_levels  = _decadal_to_monthly_size_index(fish_decades)
     month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
     ths = "".join(f"<th>{m}</th>" for m in month_labels)
     cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
     size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
-    note = "" if fish_decades else f'<p style="font-size:11px;color:var(--muted)">※ {fish}のデータが不足しています</p>'
     return f"""<div class="season-map">
   <div class="sm-wrap">
     <table class="sm-table">
@@ -3775,7 +3780,6 @@ def build_fish_season_map_html(fish, decadal_calendar):
     <span class="sm-lc sm-lc-4"></span>◎
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
-  {note}
 </div>"""
 
 def build_area_season_map_html(area, area_decadal, top_fish_list):
@@ -6029,7 +6033,7 @@ def build_fish_pages(data, history, crawled_at=""):
             '<div class="chip-wrap">' + _fa_links + '</div>'
         ) if _fa_links else ""
         # V2 season map / guide / FAQ / chart
-        season_map_html = build_fish_season_map_html(fish, decadal_calendar)
+        season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month)
         guide_html = build_fish_guide_html(fish, tackle_data)
         faq_html, faq_jsonld = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
         _chart7_base = datetime.strptime(fish_display_date_str, "%Y/%m/%d").date()
