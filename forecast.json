@@ -1,523 +1,12 @@
 {
-  "generated_at": "2026/04/30 18:39",
+  "generated_at": "2026/05/01 07:06",
   "days": {
-    "2026-04-30": {
-      "wave": 0.7,
-      "wind": 5.5,
-      "sst": 17.9,
-      "pressure": 1022.0,
-      "weather_code": 3,
-      "weather_text": "曇り",
-      "tide_range": 108.5,
-      "moon_age": 12.8,
-      "moon_title": "中潮",
-      "score": 100,
-      "ok": "◎ 出船日和",
-      "areas": {
-        "茨城": {
-          "wave": 0.9,
-          "wind": 5.8,
-          "sst": 16.6,
-          "wind_dir": 73,
-          "weather_text": "晴れ",
-          "pressure": 1022.5,
-          "score": 100,
-          "ok": "◎ 出船日和"
-        },
-        "千葉・外房": {
-          "wave": 1.4,
-          "wind": 7.3,
-          "sst": 18.6,
-          "wind_dir": 66,
-          "weather_text": "晴れ",
-          "pressure": 1021.6,
-          "score": 80,
-          "ok": "◎ 出船日和"
-        },
-        "千葉・内房": {
-          "wave": 0.5,
-          "wind": 4.5,
-          "sst": 18.2,
-          "wind_dir": 52,
-          "weather_text": "霧雨",
-          "pressure": 1021.7,
-          "score": 100,
-          "ok": "◎ 出船日和"
-        },
-        "千葉・東京湾奥": {
-          "wave": 0.1,
-          "wind": 3.9,
-          "sst": 17.1,
-          "wind_dir": 61,
-          "weather_text": "曇り",
-          "pressure": 1022.1,
-          "score": 100,
-          "ok": "◎ 出船日和"
-        },
-        "東京": {
-          "wave": 0.2,
-          "wind": 4.9,
-          "sst": 16.8,
-          "wind_dir": 60,
-          "weather_text": "曇り",
-          "pressure": 1022.1,
-          "score": 100,
-          "ok": "◎ 出船日和"
-        },
-        "神奈川・相模湾": {
-          "wave": 0.8,
-          "wind": 6.6,
-          "sst": 18.9,
-          "wind_dir": 46,
-          "weather_text": "曇り",
-          "pressure": 1021.9,
-          "score": 90,
-          "ok": "◎ 出船日和"
-        },
-        "静岡": {
-          "wave": 1.1,
-          "wind": 5.7,
-          "sst": 19.1,
-          "wind_dir": 48,
-          "weather_text": "曇り",
-          "pressure": 1021.9,
-          "score": 90,
-          "ok": "◎ 出船日和"
-        }
-      },
-      "predictions": [
-        {
-          "fish": "アジ",
-          "group": "東京",
-          "avg": 65.3,
-          "base_avg": 73.1,
-          "adjustment": -0.108,
-          "max": 191,
-          "samples": 419,
-          "season_score": 4,
-          "season_type": "数",
-          "size_min": 15,
-          "size_max": 33,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "渡辺釣船店",
-            "船宿 まる八",
-            "かめだや"
-          ],
-          "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。東北東風は東京エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 419件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "rising"
-        },
-        {
-          "fish": "アジ",
-          "group": "千葉・内房",
-          "avg": 62.8,
-          "base_avg": 63.3,
-          "adjustment": -0.008,
-          "max": 220,
-          "samples": 597,
-          "season_score": 4,
-          "season_type": "数",
-          "size_min": 17,
-          "size_max": 53,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "光進丸",
-            "勘次郎丸",
-            "さえむ丸"
-          ],
-          "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。北東風は千葉・内房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 597件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "アジ",
-          "group": "千葉・東京湾奥",
-          "avg": 58.2,
-          "base_avg": 67.1,
-          "adjustment": -0.133,
-          "max": 225,
-          "samples": 540,
-          "season_score": 4,
-          "season_type": "数",
-          "size_min": 13,
-          "size_max": 38,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "須原屋",
-            "林遊船",
-            "吉野屋"
-          ],
-          "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。東北東風は千葉・東京湾奥エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 540件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "rising"
-        },
-        {
-          "fish": "アジ",
-          "group": "神奈川・相模湾",
-          "avg": 38.5,
-          "base_avg": 39.7,
-          "adjustment": -0.032,
-          "max": 106,
-          "samples": 304,
-          "season_score": 4,
-          "season_type": "数",
-          "size_min": 18,
-          "size_max": 41,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "庄治郎丸",
-            "ちがさき丸",
-            "とうふや丸"
-          ],
-          "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 304件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "シロギス",
-          "group": "東京",
-          "avg": 60.3,
-          "base_avg": 51.6,
-          "adjustment": 0.17,
-          "max": 139,
-          "samples": 105,
-          "season_score": 3,
-          "season_type": "数",
-          "size_min": 12,
-          "size_max": 25,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "かめだや"
-          ],
-          "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。東北東風は東京エリアでは時化やすく出船に影響する可能性。分析データ: 105件",
-          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "rising"
-        },
-        {
-          "fish": "シロギス",
-          "group": "千葉・東京湾奥",
-          "avg": 54.1,
-          "base_avg": 41.4,
-          "adjustment": 0.308,
-          "max": 166,
-          "samples": 302,
-          "season_score": 3,
-          "season_type": "数",
-          "size_min": 11,
-          "size_max": 24,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "吉野屋",
-            "須原屋"
-          ],
-          "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。東北東風は千葉・東京湾奥エリアでは時化やすく出船に影響する可能性。分析データ: 302件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "rising"
-        },
-        {
-          "fish": "マルイカ",
-          "group": "神奈川・相模湾",
-          "avg": 34.2,
-          "base_avg": 33.8,
-          "adjustment": 0.014,
-          "max": 261,
-          "samples": 419,
-          "season_score": 5,
-          "season_type": "数",
-          "size_min": 13,
-          "size_max": 35,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
-          ],
-          "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。分析データ: 419件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響あり",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "マダイ",
-          "group": "茨城",
-          "avg": 5.7,
-          "base_avg": 6.2,
-          "adjustment": 0.014,
-          "max": 35,
-          "samples": 796,
-          "season_score": 5,
-          "season_type": "型",
-          "size_min": 30,
-          "size_max": 49,
-          "weight_min": 0.1,
-          "weight_max": 9.1,
-          "top_ships": [
-            "大貫丸",
-            "宮田丸",
-            "弘漁丸"
-          ],
-          "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。東北東風は茨城エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+678%）。人気が集まっている。分析データ: 796件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響あり",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "イサキ",
-          "group": "千葉・内房",
-          "avg": 44.0,
-          "base_avg": 42.4,
-          "adjustment": 0.036,
-          "max": 50,
-          "samples": 126,
-          "season_score": 3,
-          "season_type": "",
-          "size_min": 22,
-          "size_max": 39,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "佐衛美丸"
-          ],
-          "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。北東風は千葉・内房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 126件",
-          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "イサキ",
-          "group": "千葉・外房",
-          "avg": 32.7,
-          "base_avg": 32.6,
-          "adjustment": 0.003,
-          "max": 50,
-          "samples": 171,
-          "season_score": 3,
-          "season_type": "",
-          "size_min": 21,
-          "size_max": 38,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "勇幸丸",
-            "孝徳丸"
-          ],
-          "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。来月（5月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。東北東風は千葉・外房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 171件",
-          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
-          "condition_labels": {
-            "wave": "やや注意",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "declining"
-        },
-        {
-          "fish": "アマダイ",
-          "group": "茨城",
-          "avg": 5.0,
-          "base_avg": 5.0,
-          "adjustment": 0.004,
-          "max": 12,
-          "samples": 35,
-          "season_score": 3,
-          "season_type": "",
-          "size_min": 30,
-          "size_max": 49,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "大貫丸",
-            "明進丸"
-          ],
-          "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。東北東風は茨城エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 35件",
-          "uncertainty": "分析データが少なく、予測の精度が出にくい",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "カワハギ",
-          "group": "神奈川・相模湾",
-          "avg": 5.6,
-          "base_avg": 6.0,
-          "adjustment": 0.013,
-          "max": 24,
-          "samples": 159,
-          "season_score": 2,
-          "season_type": "",
-          "size_min": 5,
-          "size_max": 31,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "儀兵衛丸",
-            "あまさけや丸"
-          ],
-          "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。分析データ: 159件",
-          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "クロムツ",
-          "group": "神奈川・相模湾",
-          "avg": 8.7,
-          "base_avg": 9.7,
-          "adjustment": -0.118,
-          "max": 17,
-          "samples": 13,
-          "season_score": 3,
-          "season_type": "",
-          "size_min": 26,
-          "size_max": 36,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "とうふや丸",
-            "儀兵衛丸"
-          ],
-          "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 13件",
-          "uncertainty": "分析データが少なく、予測の精度が出にくい",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "クロムツ",
-          "group": "千葉・外房",
-          "avg": 6.5,
-          "base_avg": 7.9,
-          "adjustment": 0.097,
-          "max": 81,
-          "samples": 38,
-          "season_score": 3,
-          "season_type": "",
-          "size_min": 30,
-          "size_max": 37,
-          "weight_min": 1.7,
-          "weight_max": 1.7,
-          "top_ships": [
-            "第八鶴丸"
-          ],
-          "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。東北東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
-          "uncertainty": "分析データが少なく、予測の精度が出にくい",
-          "condition_labels": {
-            "wave": "やや注意",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "高気圧"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "declining"
-        }
-      ],
-      "todays_pick": "アジ×東京"
-    },
     "2026-05-01": {
-      "wave": 1.8,
-      "wind": 10.8,
-      "sst": 17.8,
-      "pressure": 1003.6,
-      "weather_code": 63,
+      "wave": 1.9,
+      "wind": 8.1,
+      "sst": 17.9,
+      "pressure": 1003.2,
+      "weather_code": 65,
       "weather_text": "雨",
       "tide_range": 117.1,
       "moon_age": 13.8,
@@ -526,72 +15,82 @@
       "ok": "△ やや不安",
       "areas": {
         "茨城": {
-          "wave": 2.5,
-          "wind": 13.4,
-          "sst": 16.6,
-          "wind_dir": 147,
+          "wave": 2.7,
+          "wind": 11.7,
+          "sst": 17.0,
+          "wind_dir": 149,
           "weather_text": "雨",
-          "pressure": 1005.2,
-          "score": 0,
+          "pressure": 1004.6,
+          "score": 15,
           "ok": "✕ 欠航リスク"
         },
         "千葉・外房": {
-          "wave": 3.2,
-          "wind": 15.4,
-          "sst": 18.1,
-          "wind_dir": 164,
+          "wave": 3.6,
+          "wind": 16.5,
+          "sst": 18.5,
+          "wind_dir": 165,
           "weather_text": "雨",
-          "pressure": 1005.1,
+          "pressure": 1004.2,
           "score": 0,
           "ok": "✕ 欠航リスク"
         },
         "千葉・内房": {
-          "wave": 1.9,
-          "wind": 11.9,
-          "sst": 18.1,
-          "wind_dir": 168,
-          "weather_text": "雨",
-          "pressure": 1003.3,
-          "score": 45,
-          "ok": "△ やや不安"
-        },
-        "千葉・東京湾奥": {
-          "wave": 0.5,
-          "wind": 9.5,
-          "sst": 17.1,
-          "wind_dir": 149,
-          "weather_text": "雨",
-          "pressure": 1003.2,
-          "score": 75,
-          "ok": "○ 概ね良好"
-        },
-        "東京": {
-          "wave": 0.7,
-          "wind": 9.2,
-          "sst": 16.7,
-          "wind_dir": 150,
-          "weather_text": "雨",
-          "pressure": 1003.1,
-          "score": 75,
-          "ok": "○ 概ね良好"
-        },
-        "神奈川・相模湾": {
-          "wave": 1.8,
-          "wind": 11.3,
-          "sst": 18.8,
-          "wind_dir": 159,
+          "wave": 2.1,
+          "wind": 11.6,
+          "sst": 18.4,
+          "wind_dir": 170,
           "weather_text": "雨",
           "pressure": 1002.6,
           "score": 45,
           "ok": "△ やや不安"
         },
-        "静岡": {
-          "wave": 1.9,
-          "wind": 5.2,
-          "sst": 19.0,
-          "wind_dir": 127,
+        "千葉・東京湾奥": {
+          "wave": 0.5,
+          "wind": 4.9,
+          "sst": 17.1,
+          "wind_dir": 170,
           "weather_text": "雨",
-          "pressure": 1002.5,
+          "pressure": 1003.2,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "東京": {
+          "wave": 0.8,
+          "wind": 4.1,
+          "sst": 16.8,
+          "wind_dir": 152,
+          "weather_text": "雨",
+          "pressure": 1003.1,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・東京湾": {
+          "wave": 1.2,
+          "wind": 3.8,
+          "sst": 17.4,
+          "wind_dir": 208,
+          "weather_text": "雨",
+          "pressure": 1002.9,
+          "score": 90,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・相模湾": {
+          "wave": 2.0,
+          "wind": 7.5,
+          "sst": 18.8,
+          "wind_dir": 157,
+          "weather_text": "雨",
+          "pressure": 1002.6,
+          "score": 60,
+          "ok": "○ 概ね良好"
+        },
+        "静岡": {
+          "wave": 2.1,
+          "wind": 4.4,
+          "sst": 19.1,
+          "wind_dir": 188,
+          "weather_text": "雨",
+          "pressure": 1002.4,
           "score": 70,
           "ok": "○ 概ね良好"
         }
@@ -600,9 +99,9 @@
         {
           "fish": "アジ",
           "group": "東京",
-          "avg": 73.7,
+          "avg": 73.4,
           "base_avg": 71.9,
-          "adjustment": 0.025,
+          "adjustment": 0.021,
           "max": 164,
           "samples": 412,
           "season_score": 4,
@@ -617,11 +116,11 @@
             "かめだや"
           ],
           "confidence": "B",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 412件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 412件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
-            "wind": "やや注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
@@ -630,10 +129,41 @@
         },
         {
           "fish": "アジ",
+          "group": "神奈川・東京湾",
+          "avg": 66.9,
+          "base_avg": 60.3,
+          "adjustment": 0.11,
+          "max": 255,
+          "samples": 1764,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 50,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "釣船 五郎丸",
+            "荒川屋"
+          ],
+          "confidence": "A",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 1,764件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
           "group": "千葉・東京湾奥",
-          "avg": 59.5,
+          "avg": 60.1,
           "base_avg": 59.8,
-          "adjustment": -0.005,
+          "adjustment": 0.005,
           "max": 225,
           "samples": 548,
           "season_score": 4,
@@ -648,11 +178,11 @@
             "吉野屋"
           ],
           "confidence": "A",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 548件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 548件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
-            "wind": "やや注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
@@ -662,9 +192,9 @@
         {
           "fish": "アジ",
           "group": "神奈川・相模湾",
-          "avg": 50.9,
+          "avg": 53.7,
           "base_avg": 40.0,
-          "adjustment": 0.273,
+          "adjustment": 0.342,
           "max": 120,
           "samples": 315,
           "season_score": 4,
@@ -679,23 +209,23 @@
             "とうふや丸"
           ],
           "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
-            "wind": "やや注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アジ",
           "group": "千葉・内房",
-          "avg": 46.5,
+          "avg": 45.5,
           "base_avg": 56.8,
-          "adjustment": -0.182,
+          "adjustment": -0.199,
           "max": 220,
           "samples": 658,
           "season_score": 4,
@@ -710,7 +240,7 @@
             "さえむ丸"
           ],
           "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 658件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 658件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
@@ -739,23 +269,23 @@
             "孝徳丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
             "wind": "注意",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
           "fish": "シロギス",
           "group": "東京",
-          "avg": 52.0,
+          "avg": 53.5,
           "base_avg": 55.7,
-          "adjustment": -0.068,
+          "adjustment": -0.039,
           "max": 156,
           "samples": 129,
           "season_score": 5,
@@ -768,11 +298,11 @@
             "かめだや"
           ],
           "confidence": "C",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。分析データ: 129件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。分析データ: 129件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "好条件",
-            "wind": "やや注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
@@ -781,10 +311,41 @@
         },
         {
           "fish": "シロギス",
+          "group": "神奈川・東京湾",
+          "avg": 48.7,
+          "base_avg": 55.0,
+          "adjustment": -0.113,
+          "max": 151,
+          "samples": 493,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "長崎屋",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 493件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
           "group": "千葉・東京湾奥",
-          "avg": 41.5,
+          "avg": 44.8,
           "base_avg": 44.1,
-          "adjustment": -0.058,
+          "adjustment": 0.017,
           "max": 188,
           "samples": 415,
           "season_score": 5,
@@ -798,16 +359,78 @@
             "須原屋"
           ],
           "confidence": "B",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。分析データ: 415件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 415件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
-            "wind": "やや注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
           "sst_trend": "rising"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・相模湾",
+          "avg": 40.2,
+          "base_avg": 43.6,
+          "adjustment": -0.079,
+          "max": 261,
+          "samples": 633,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 35,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "喜平治丸",
+            "庄治郎丸",
+            "たいぞう丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 633件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・東京湾",
+          "avg": 32.4,
+          "base_avg": 33.1,
+          "adjustment": -0.019,
+          "max": 108,
+          "samples": 302,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "大和丸",
+            "翔太丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 302件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
         },
         {
           "fish": "イサキ",
@@ -827,7 +450,7 @@
             "佐衛美丸"
           ],
           "confidence": "C",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 158件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "注意",
@@ -841,9 +464,9 @@
         {
           "fish": "イサキ",
           "group": "千葉・外房",
-          "avg": 25.3,
+          "avg": 24.4,
           "base_avg": 31.0,
-          "adjustment": -0.185,
+          "adjustment": -0.212,
           "max": 50,
           "samples": 314,
           "season_score": 4,
@@ -857,54 +480,54 @@
             "孝徳丸"
           ],
           "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 314件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 314件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
             "wind": "注意",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
-          "fish": "マルイカ",
-          "group": "神奈川・相模湾",
-          "avg": 35.0,
-          "base_avg": 42.0,
-          "adjustment": -0.168,
-          "max": 261,
-          "samples": 466,
+          "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.4,
+          "base_avg": 8.7,
+          "adjustment": -0.065,
+          "max": 189,
+          "samples": 147,
           "season_score": 5,
-          "season_type": "数",
-          "size_min": 13,
-          "size_max": 35,
-          "weight_min": null,
-          "weight_max": null,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "weight_min": 0.7,
+          "weight_max": 2.6,
           "top_ships": [
-            "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
           ],
-          "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 466件",
-          "uncertainty": "",
+          "confidence": "C",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 147件",
+          "uncertainty": "個体差が大きく匹数予測の精度が出にくい魚種",
           "condition_labels": {
             "wave": "注意",
-            "wind": "やや注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響あり",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "マダイ",
           "group": "茨城",
           "avg": 5.2,
           "base_avg": 6.5,
-          "adjustment": -0.084,
+          "adjustment": -0.09,
           "max": 35,
           "samples": 846,
           "season_score": 5,
@@ -919,23 +542,85 @@
             "弘漁丸"
           ],
           "confidence": "A",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南東風は茨城エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+678%）。人気が集まっている。分析データ: 846件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南東風は茨城エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 846件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
-            "wind": "注意",
+            "wind": "やや注意",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マダイ",
+          "group": "神奈川・東京湾",
+          "avg": 3.0,
+          "base_avg": 3.8,
+          "adjustment": 0.046,
+          "max": 39,
+          "samples": 285,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": 0.4,
+          "weight_max": 4.5,
+          "top_ships": [
+            "つね丸",
+            "平作丸",
+            "山天丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 285件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響あり",
           "sst_trend": "stable"
         },
         {
           "fish": "カワハギ",
+          "group": "神奈川・東京湾",
+          "avg": 13.4,
+          "base_avg": 13.7,
+          "adjustment": -0.021,
+          "max": 34,
+          "samples": 401,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 15,
+          "size_max": 34,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山下丸",
+            "巳之助丸",
+            "山天丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「端境期」にあたり出船数は少なめ。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 401件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
           "group": "神奈川・相模湾",
-          "avg": 6.1,
+          "avg": 5.8,
           "base_avg": 6.6,
-          "adjustment": -0.037,
+          "adjustment": -0.088,
           "max": 24,
           "samples": 158,
           "season_score": 2,
@@ -949,23 +634,23 @@
             "あまさけや丸"
           ],
           "confidence": "C",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「端境期」にあたり出船数は少なめ。南南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 158件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「端境期」にあたり出船数は少なめ。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "注意",
-            "wind": "やや注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アマダイ",
           "group": "茨城",
           "avg": 6.5,
           "base_avg": 6.0,
-          "adjustment": -0.079,
+          "adjustment": -0.066,
           "max": 10,
           "samples": 6,
           "season_score": 3,
@@ -983,9 +668,69 @@
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
-            "wind": "注意",
+            "wind": "やや注意",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アマダイ",
+          "group": "神奈川・東京湾",
+          "avg": 4.9,
+          "base_avg": 5.4,
+          "adjustment": -0.052,
+          "max": 18,
+          "samples": 154,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "山下丸",
+            "巳之助丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 154件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マゴチ",
+          "group": "神奈川・東京湾",
+          "avg": 5.2,
+          "base_avg": 5.8,
+          "adjustment": -0.05,
+          "max": 20,
+          "samples": 63,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 33,
+          "size_max": 64,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋"
+          ],
+          "confidence": "C",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 63件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
@@ -1008,25 +753,56 @@
             "第八鶴丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
             "wind": "注意",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "神奈川・東京湾",
+          "avg": 5.8,
+          "base_avg": 6.8,
+          "adjustment": -0.169,
+          "max": 12,
+          "samples": 5,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 26,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "太郎丸",
+            "洋征丸",
+            "新修丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
         }
       ],
-      "todays_pick": "シロギス×東京"
+      "todays_pick": "アジ×東京"
     },
     "2026-05-02": {
       "wave": 1.2,
       "wind": 6.2,
-      "sst": 17.5,
-      "pressure": 1004.6,
+      "sst": 17.6,
+      "pressure": 1003.8,
       "weather_code": 0,
       "weather_text": "快晴",
       "tide_range": 120.0,
@@ -1036,72 +812,82 @@
       "ok": "◎ 出船日和",
       "areas": {
         "茨城": {
-          "wave": 1.1,
-          "wind": 6.6,
-          "sst": 16.8,
-          "wind_dir": 264,
+          "wave": 1.2,
+          "wind": 6.5,
+          "sst": 17.1,
+          "wind_dir": 270,
           "weather_text": "快晴",
-          "pressure": 1002.8,
+          "pressure": 1001.7,
           "score": 80,
           "ok": "◎ 出船日和"
         },
         "千葉・外房": {
           "wave": 2.1,
-          "wind": 9.0,
-          "sst": 15.4,
-          "wind_dir": 253,
+          "wind": 9.9,
+          "sst": 15.7,
+          "wind_dir": 241,
           "weather_text": "快晴",
-          "pressure": 1004.8,
+          "pressure": 1004.0,
           "score": 45,
           "ok": "△ やや不安"
         },
         "千葉・内房": {
           "wave": 1.7,
-          "wind": 5.4,
-          "sst": 18.3,
-          "wind_dir": 230,
+          "wind": 6.0,
+          "sst": 18.6,
+          "wind_dir": 235,
           "weather_text": "快晴",
-          "pressure": 1005.4,
-          "score": 70,
+          "pressure": 1004.6,
+          "score": 60,
           "ok": "○ 概ね良好"
         },
         "千葉・東京湾奥": {
-          "wave": 0.4,
-          "wind": 6.2,
-          "sst": 17.4,
-          "wind_dir": 225,
+          "wave": 0.5,
+          "wind": 6.4,
+          "sst": 17.3,
+          "wind_dir": 222,
           "weather_text": "快晴",
-          "pressure": 1004.6,
+          "pressure": 1003.8,
           "score": 90,
           "ok": "◎ 出船日和"
         },
         "東京": {
           "wave": 0.6,
-          "wind": 5.9,
-          "sst": 17.1,
-          "wind_dir": 212,
+          "wind": 6.3,
+          "sst": 17.0,
+          "wind_dir": 213,
           "weather_text": "快晴",
-          "pressure": 1004.8,
+          "pressure": 1003.9,
+          "score": 90,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・東京湾": {
+          "wave": 0.9,
+          "wind": 3.5,
+          "sst": 17.7,
+          "wind_dir": 204,
+          "weather_text": "快晴",
+          "pressure": 1004.2,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・相模湾": {
           "wave": 1.1,
-          "wind": 7.2,
-          "sst": 18.5,
-          "wind_dir": 220,
+          "wind": 7.3,
+          "sst": 18.7,
+          "wind_dir": 228,
           "weather_text": "快晴",
-          "pressure": 1005.0,
+          "pressure": 1004.2,
           "score": 80,
           "ok": "◎ 出船日和"
         },
         "静岡": {
-          "wave": 1.2,
-          "wind": 3.4,
-          "sst": 19.3,
-          "wind_dir": 224,
+          "wave": 1.3,
+          "wind": 3.7,
+          "sst": 19.0,
+          "wind_dir": 234,
           "weather_text": "快晴",
-          "pressure": 1005.0,
+          "pressure": 1004.3,
           "score": 90,
           "ok": "◎ 出船日和"
         }
@@ -1110,9 +896,9 @@
         {
           "fish": "アジ",
           "group": "東京",
-          "avg": 72.1,
+          "avg": 72.2,
           "base_avg": 71.9,
-          "adjustment": 0.002,
+          "adjustment": 0.004,
           "max": 164,
           "samples": 412,
           "season_score": 4,
@@ -1140,10 +926,41 @@
         },
         {
           "fish": "アジ",
+          "group": "神奈川・東京湾",
+          "avg": 64.5,
+          "base_avg": 60.3,
+          "adjustment": 0.07,
+          "max": 255,
+          "samples": 1764,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 50,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "釣船 五郎丸",
+            "荒川屋"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 1,764件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
           "group": "千葉・東京湾奥",
-          "avg": 58.7,
+          "avg": 59.8,
           "base_avg": 59.8,
-          "adjustment": -0.019,
+          "adjustment": 0.0,
           "max": 225,
           "samples": 548,
           "season_score": 4,
@@ -1172,9 +989,9 @@
         {
           "fish": "アジ",
           "group": "千葉・内房",
-          "avg": 50.6,
+          "avg": 50.3,
           "base_avg": 56.8,
-          "adjustment": -0.108,
+          "adjustment": -0.114,
           "max": 220,
           "samples": 658,
           "season_score": 4,
@@ -1195,7 +1012,7 @@
             "wave": "注意",
             "wind": "好条件",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
@@ -1220,16 +1037,16 @@
             "とうふや丸"
           ],
           "confidence": "B",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アジ",
@@ -1249,7 +1066,7 @@
             "孝徳丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。西南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。西南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
@@ -1258,14 +1075,14 @@
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
           "fish": "シロギス",
           "group": "東京",
-          "avg": 54.5,
+          "avg": 54.3,
           "base_avg": 55.7,
-          "adjustment": -0.021,
+          "adjustment": -0.025,
           "max": 156,
           "samples": 129,
           "season_score": 5,
@@ -1291,10 +1108,41 @@
         },
         {
           "fish": "シロギス",
+          "group": "神奈川・東京湾",
+          "avg": 51.7,
+          "base_avg": 55.0,
+          "adjustment": -0.06,
+          "max": 151,
+          "samples": 493,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "長崎屋",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 493件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
           "group": "千葉・東京湾奥",
-          "avg": 44.9,
+          "avg": 43.8,
           "base_avg": 44.1,
-          "adjustment": 0.019,
+          "adjustment": -0.007,
           "max": 188,
           "samples": 415,
           "season_score": 5,
@@ -1320,6 +1168,68 @@
           "sst_trend": "rising"
         },
         {
+          "fish": "マルイカ",
+          "group": "神奈川・相模湾",
+          "avg": 42.2,
+          "base_avg": 43.6,
+          "adjustment": -0.033,
+          "max": 261,
+          "samples": 633,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 35,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "喜平治丸",
+            "庄治郎丸",
+            "たいぞう丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 633件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・東京湾",
+          "avg": 32.8,
+          "base_avg": 33.1,
+          "adjustment": -0.01,
+          "max": 108,
+          "samples": 302,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "大和丸",
+            "翔太丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 302件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "イサキ",
           "group": "千葉・内房",
           "avg": 62.4,
@@ -1337,13 +1247,13 @@
             "佐衛美丸"
           ],
           "confidence": "C",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南西風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 158件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南西風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "注意",
             "wind": "好条件",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
           "sst_trend": "stable"
@@ -1351,7 +1261,7 @@
         {
           "fish": "イサキ",
           "group": "千葉・外房",
-          "avg": 27.8,
+          "avg": 27.7,
           "base_avg": 31.0,
           "adjustment": -0.105,
           "max": 50,
@@ -1367,7 +1277,7 @@
             "孝徳丸"
           ],
           "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。西南西風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 314件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。西南西風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 314件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
@@ -1376,45 +1286,45 @@
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
-          "fish": "マルイカ",
-          "group": "神奈川・相模湾",
-          "avg": 39.2,
-          "base_avg": 42.0,
-          "adjustment": -0.067,
-          "max": 261,
-          "samples": 466,
+          "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.7,
+          "base_avg": 8.7,
+          "adjustment": -0.03,
+          "max": 189,
+          "samples": 147,
           "season_score": 5,
-          "season_type": "数",
-          "size_min": 13,
-          "size_max": 35,
-          "weight_min": null,
-          "weight_max": null,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "weight_min": 0.7,
+          "weight_max": 2.6,
           "top_ships": [
-            "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
           ],
-          "confidence": "B",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。分析データ: 466件",
-          "uncertainty": "",
+          "confidence": "C",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 147件",
+          "uncertainty": "個体差が大きく匹数予測の精度が出にくい魚種",
           "condition_labels": {
             "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響あり",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "マダイ",
           "group": "茨城",
           "avg": 5.6,
           "base_avg": 6.5,
-          "adjustment": -0.023,
+          "adjustment": -0.026,
           "max": 35,
           "samples": 846,
           "season_score": 5,
@@ -1429,7 +1339,7 @@
             "弘漁丸"
           ],
           "confidence": "A",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+678%）。人気が集まっている。分析データ: 846件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 846件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "やや注意",
@@ -1441,11 +1351,73 @@
           "sst_trend": "stable"
         },
         {
+          "fish": "マダイ",
+          "group": "神奈川・東京湾",
+          "avg": 3.0,
+          "base_avg": 3.8,
+          "adjustment": 0.027,
+          "max": 39,
+          "samples": 285,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": 0.4,
+          "weight_max": 4.5,
+          "top_ships": [
+            "つね丸",
+            "平作丸",
+            "山天丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 285件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
+          "group": "神奈川・東京湾",
+          "avg": 13.5,
+          "base_avg": 13.7,
+          "adjustment": -0.015,
+          "max": 34,
+          "samples": 401,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 15,
+          "size_max": 34,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山下丸",
+            "巳之助丸",
+            "山天丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 401件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "カワハギ",
           "group": "神奈川・相模湾",
           "avg": 6.1,
           "base_avg": 6.6,
-          "adjustment": -0.028,
+          "adjustment": -0.026,
           "max": 24,
           "samples": 158,
           "season_score": 2,
@@ -1459,23 +1431,23 @@
             "あまさけや丸"
           ],
           "confidence": "C",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「端境期」にあたり出船数は少なめ。分析データ: 158件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「端境期」にあたり出船数は少なめ。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
-            "pressure": "やや低め"
+            "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アマダイ",
           "group": "茨城",
           "avg": 6.8,
           "base_avg": 6.0,
-          "adjustment": -0.029,
+          "adjustment": -0.028,
           "max": 10,
           "samples": 6,
           "season_score": 3,
@@ -1501,11 +1473,71 @@
           "sst_trend": "stable"
         },
         {
+          "fish": "アマダイ",
+          "group": "神奈川・東京湾",
+          "avg": 5.1,
+          "base_avg": 5.4,
+          "adjustment": -0.028,
+          "max": 18,
+          "samples": 154,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "山下丸",
+            "巳之助丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 154件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マゴチ",
+          "group": "神奈川・東京湾",
+          "avg": 5.2,
+          "base_avg": 5.8,
+          "adjustment": -0.04,
+          "max": 20,
+          "samples": 63,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 33,
+          "size_max": 64,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 63件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "クロムツ",
           "group": "千葉・外房",
           "avg": 7.9,
           "base_avg": 8.3,
-          "adjustment": 0.181,
+          "adjustment": 0.184,
           "max": 81,
           "samples": 38,
           "season_score": 3,
@@ -1518,7 +1550,7 @@
             "第八鶴丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。西南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。西南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
@@ -1527,16 +1559,47 @@
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "神奈川・東京湾",
+          "avg": 6.2,
+          "base_avg": 6.8,
+          "adjustment": -0.093,
+          "max": 12,
+          "samples": 5,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 26,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "太郎丸",
+            "洋征丸",
+            "新修丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
         }
       ],
-      "todays_pick": "アジ×東京"
+      "todays_pick": "シロギス×東京"
     },
     "2026-05-03": {
       "wave": 0.7,
-      "wind": 5.5,
-      "sst": 18.1,
-      "pressure": 1012.2,
+      "wind": 4.8,
+      "sst": 18.0,
+      "pressure": 1012.0,
       "weather_code": 1,
       "weather_text": "晴れ",
       "tide_range": 116.7,
@@ -1547,49 +1610,59 @@
       "areas": {
         "茨城": {
           "wave": 1.0,
-          "wind": 4.2,
-          "sst": 17.3,
-          "wind_dir": 74,
+          "wind": 3.9,
+          "sst": 17.2,
+          "wind_dir": 59,
           "weather_text": "晴れ",
-          "pressure": 1011.4,
+          "pressure": 1011.6,
           "score": 90,
           "ok": "◎ 出船日和"
         },
         "千葉・外房": {
-          "wave": 1.3,
-          "wind": 9.2,
-          "sst": 17.3,
-          "wind_dir": 218,
-          "weather_text": "晴れ",
-          "pressure": 1012.4,
-          "score": 65,
+          "wave": 1.5,
+          "wind": 7.6,
+          "sst": 16.9,
+          "wind_dir": 229,
+          "weather_text": "快晴",
+          "pressure": 1012.3,
+          "score": 60,
           "ok": "○ 概ね良好"
         },
         "千葉・内房": {
           "wave": 0.7,
-          "wind": 5.2,
+          "wind": 4.8,
           "sst": 18.6,
-          "wind_dir": 210,
-          "weather_text": "晴れ",
-          "pressure": 1012.8,
+          "wind_dir": 246,
+          "weather_text": "快晴",
+          "pressure": 1012.5,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "千葉・東京湾奥": {
           "wave": 0.2,
-          "wind": 5.3,
+          "wind": 5.0,
           "sst": 17.6,
-          "wind_dir": 241,
+          "wind_dir": 237,
           "weather_text": "晴れ",
-          "pressure": 1011.9,
+          "pressure": 1011.8,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "東京": {
           "wave": 0.3,
-          "wind": 5.4,
+          "wind": 5.3,
           "sst": 17.4,
-          "wind_dir": 234,
+          "wind_dir": 229,
+          "weather_text": "晴れ",
+          "pressure": 1011.9,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・東京湾": {
+          "wave": 0.5,
+          "wind": 3.1,
+          "sst": 18.0,
+          "wind_dir": 197,
           "weather_text": "晴れ",
           "pressure": 1012.0,
           "score": 100,
@@ -1597,21 +1670,21 @@
         },
         "神奈川・相模湾": {
           "wave": 0.6,
-          "wind": 6.3,
+          "wind": 6.1,
           "sst": 19.2,
-          "wind_dir": 136,
+          "wind_dir": 209,
           "weather_text": "晴れ",
-          "pressure": 1012.4,
+          "pressure": 1012.1,
           "score": 90,
           "ok": "◎ 出船日和"
         },
         "静岡": {
           "wave": 0.7,
-          "wind": 2.7,
-          "sst": 19.1,
-          "wind_dir": 179,
+          "wind": 2.5,
+          "sst": 19.0,
+          "wind_dir": 184,
           "weather_text": "晴れ",
-          "pressure": 1012.4,
+          "pressure": 1011.9,
           "score": 100,
           "ok": "◎ 出船日和"
         }
@@ -1650,6 +1723,68 @@
         },
         {
           "fish": "アジ",
+          "group": "神奈川・東京湾",
+          "avg": 62.1,
+          "base_avg": 60.3,
+          "adjustment": 0.029,
+          "max": 255,
+          "samples": 1764,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 50,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "釣船 五郎丸",
+            "荒川屋"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 1,764件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "千葉・内房",
+          "avg": 56.7,
+          "base_avg": 56.8,
+          "adjustment": -0.002,
+          "max": 220,
+          "samples": 658,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 53,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "光進丸",
+            "勘次郎丸",
+            "さえむ丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 658件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
           "group": "千葉・東京湾奥",
           "avg": 56.6,
           "base_avg": 59.8,
@@ -1681,41 +1816,10 @@
         },
         {
           "fish": "アジ",
-          "group": "千葉・内房",
-          "avg": 56.5,
-          "base_avg": 56.8,
-          "adjustment": -0.005,
-          "max": 220,
-          "samples": 658,
-          "season_score": 4,
-          "season_type": "型",
-          "size_min": 17,
-          "size_max": 53,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "光進丸",
-            "勘次郎丸",
-            "さえむ丸"
-          ],
-          "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 658件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "好条件",
-            "wind": "好条件",
-            "sst": "適温帯",
-            "pressure": "やや低め"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "stable"
-        },
-        {
-          "fish": "アジ",
           "group": "神奈川・相模湾",
           "avg": 41.4,
           "base_avg": 40.0,
-          "adjustment": 0.033,
+          "adjustment": 0.035,
           "max": 120,
           "samples": 315,
           "season_score": 4,
@@ -1730,7 +1834,7 @@
             "とうふや丸"
           ],
           "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
@@ -1739,7 +1843,7 @@
             "pressure": "やや低め"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アジ",
@@ -1759,23 +1863,23 @@
             "孝徳丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
-            "wave": "やや注意",
-            "wind": "やや注意",
+            "wave": "注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "やや低め"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
           "fish": "シロギス",
           "group": "東京",
           "avg": 57.4,
           "base_avg": 55.7,
-          "adjustment": 0.029,
+          "adjustment": 0.03,
           "max": 156,
           "samples": 129,
           "season_score": 5,
@@ -1801,10 +1905,41 @@
         },
         {
           "fish": "シロギス",
+          "group": "神奈川・東京湾",
+          "avg": 55.7,
+          "base_avg": 55.0,
+          "adjustment": 0.013,
+          "max": 151,
+          "samples": 493,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "長崎屋",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 493件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
           "group": "千葉・東京湾奥",
-          "avg": 47.5,
+          "avg": 47.7,
           "base_avg": 44.1,
-          "adjustment": 0.079,
+          "adjustment": 0.084,
           "max": 188,
           "samples": 415,
           "season_score": 5,
@@ -1830,11 +1965,73 @@
           "sst_trend": "rising"
         },
         {
+          "fish": "マルイカ",
+          "group": "神奈川・相模湾",
+          "avg": 43.5,
+          "base_avg": 43.6,
+          "adjustment": -0.004,
+          "max": 261,
+          "samples": 633,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 35,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "喜平治丸",
+            "庄治郎丸",
+            "たいぞう丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 633件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・東京湾",
+          "avg": 32.9,
+          "base_avg": 33.1,
+          "adjustment": -0.006,
+          "max": 108,
+          "samples": 302,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "大和丸",
+            "翔太丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 302件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "イサキ",
           "group": "千葉・内房",
-          "avg": 51.9,
+          "avg": 51.7,
           "base_avg": 44.6,
-          "adjustment": 0.164,
+          "adjustment": 0.16,
           "max": 50,
           "samples": 158,
           "season_score": 4,
@@ -1847,7 +2044,7 @@
             "佐衛美丸"
           ],
           "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 158件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "好条件",
@@ -1861,9 +2058,9 @@
         {
           "fish": "イサキ",
           "group": "千葉・外房",
-          "avg": 29.3,
+          "avg": 28.9,
           "base_avg": 31.0,
-          "adjustment": -0.055,
+          "adjustment": -0.067,
           "max": 50,
           "samples": 314,
           "season_score": 4,
@@ -1877,39 +2074,39 @@
             "孝徳丸"
           ],
           "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 314件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 314件",
           "uncertainty": "",
           "condition_labels": {
-            "wave": "やや注意",
-            "wind": "やや注意",
+            "wave": "注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "やや低め"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
-          "fish": "マルイカ",
-          "group": "神奈川・相模湾",
-          "avg": 41.4,
-          "base_avg": 42.0,
-          "adjustment": -0.015,
-          "max": 261,
-          "samples": 466,
+          "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.8,
+          "base_avg": 8.7,
+          "adjustment": 0.001,
+          "max": 189,
+          "samples": 147,
           "season_score": 5,
-          "season_type": "数",
-          "size_min": 13,
-          "size_max": 35,
-          "weight_min": null,
-          "weight_max": null,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "weight_min": 0.7,
+          "weight_max": 2.6,
           "top_ships": [
-            "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
           ],
-          "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 466件",
-          "uncertainty": "",
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 147件",
+          "uncertainty": "個体差が大きく匹数予測の精度が出にくい魚種",
           "condition_labels": {
             "wave": "好条件",
             "wind": "好条件",
@@ -1917,7 +2114,7 @@
             "pressure": "やや低め"
           },
           "tide_impact": "影響あり",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "マダイ",
@@ -1939,7 +2136,7 @@
             "弘漁丸"
           ],
           "confidence": "A",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。東北東風は茨城エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+678%）。人気が集まっている。分析データ: 846件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。東北東風は茨城エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 846件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "やや注意",
@@ -1951,11 +2148,73 @@
           "sst_trend": "stable"
         },
         {
+          "fish": "マダイ",
+          "group": "神奈川・東京湾",
+          "avg": 2.9,
+          "base_avg": 3.8,
+          "adjustment": -0.006,
+          "max": 39,
+          "samples": 285,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": 0.4,
+          "weight_max": 4.5,
+          "top_ships": [
+            "つね丸",
+            "平作丸",
+            "山天丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 285件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
+          "group": "神奈川・東京湾",
+          "avg": 13.6,
+          "base_avg": 13.7,
+          "adjustment": -0.009,
+          "max": 34,
+          "samples": 401,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 15,
+          "size_max": 34,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山下丸",
+            "巳之助丸",
+            "山天丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 401件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "カワハギ",
           "group": "神奈川・相模湾",
           "avg": 6.3,
           "base_avg": 6.6,
-          "adjustment": -0.001,
+          "adjustment": -0.002,
           "max": 24,
           "samples": 158,
           "season_score": 2,
@@ -1969,7 +2228,7 @@
             "あまさけや丸"
           ],
           "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。南東風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 158件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "好条件",
@@ -1978,14 +2237,14 @@
             "pressure": "やや低め"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アマダイ",
           "group": "茨城",
           "avg": 6.9,
           "base_avg": 6.0,
-          "adjustment": -0.011,
+          "adjustment": -0.009,
           "max": 10,
           "samples": 6,
           "season_score": 3,
@@ -2011,11 +2270,71 @@
           "sst_trend": "stable"
         },
         {
+          "fish": "アマダイ",
+          "group": "神奈川・東京湾",
+          "avg": 5.2,
+          "base_avg": 5.4,
+          "adjustment": -0.001,
+          "max": 18,
+          "samples": 154,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "山下丸",
+            "巳之助丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 154件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マゴチ",
+          "group": "神奈川・東京湾",
+          "avg": 5.3,
+          "base_avg": 5.8,
+          "adjustment": -0.017,
+          "max": 20,
+          "samples": 63,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 33,
+          "size_max": 64,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 63件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "クロムツ",
           "group": "千葉・外房",
-          "avg": 7.3,
+          "avg": 7.5,
           "base_avg": 8.3,
-          "adjustment": 0.097,
+          "adjustment": 0.112,
           "max": 81,
           "samples": 38,
           "season_score": 3,
@@ -2028,100 +2347,141 @@
             "第八鶴丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
-            "wave": "やや注意",
-            "wind": "やや注意",
+            "wave": "注意",
+            "wind": "好条件",
             "sst": "適温帯",
             "pressure": "やや低め"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "神奈川・東京湾",
+          "avg": 7.0,
+          "base_avg": 6.8,
+          "adjustment": 0.012,
+          "max": 12,
+          "samples": 5,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 26,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "太郎丸",
+            "洋征丸",
+            "新修丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "やや低め"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
         }
       ],
-      "todays_pick": "シロギス×東京"
+      "todays_pick": "アジ×東京"
     },
     "2026-05-04": {
-      "wave": 2.6,
-      "wind": 10.8,
+      "wave": 2.5,
+      "wind": 12.1,
       "sst": 17.6,
-      "pressure": 999.3,
-      "weather_code": 61,
+      "pressure": 999.4,
+      "weather_code": 63,
       "weather_text": "雨",
       "tide_range": 107.7,
       "moon_age": 16.8,
       "moon_title": "中潮",
-      "score": 15,
+      "score": 0,
       "ok": "✕ 欠航リスク",
       "areas": {
         "茨城": {
-          "wave": 1.6,
-          "wind": 6.5,
-          "sst": 16.9,
-          "wind_dir": 221,
-          "weather_text": "雨",
+          "wave": 1.7,
+          "wind": 8.0,
+          "sst": 17.0,
+          "wind_dir": 217,
+          "weather_text": "霧雨",
           "pressure": 998.1,
-          "score": 60,
-          "ok": "○ 概ね良好"
+          "score": 45,
+          "ok": "△ やや不安"
         },
         "千葉・外房": {
           "wave": 3.8,
-          "wind": 17.5,
-          "sst": 15.5,
-          "wind_dir": 211,
-          "weather_text": "雨",
-          "pressure": 1000.8,
+          "wind": 17.3,
+          "sst": 16.4,
+          "wind_dir": 210,
+          "weather_text": "霧雨",
+          "pressure": 1001.3,
           "score": 0,
           "ok": "✕ 欠航リスク"
         },
         "千葉・内房": {
-          "wave": 3.6,
-          "wind": 11.5,
+          "wave": 3.4,
+          "wind": 12.3,
           "sst": 18.5,
-          "wind_dir": 212,
+          "wind_dir": 208,
           "weather_text": "雨",
-          "pressure": 1000.7,
-          "score": 15,
+          "pressure": 1001.0,
+          "score": 0,
           "ok": "✕ 欠航リスク"
         },
         "千葉・東京湾奥": {
-          "wave": 1.6,
-          "wind": 9.2,
+          "wave": 1.7,
+          "wind": 11.4,
           "sst": 17.8,
-          "wind_dir": 207,
+          "wind_dir": 202,
           "weather_text": "霧雨",
-          "pressure": 998.5,
+          "pressure": 998.3,
           "score": 45,
           "ok": "△ やや不安"
         },
         "東京": {
-          "wave": 1.8,
-          "wind": 8.0,
-          "sst": 17.2,
-          "wind_dir": 208,
+          "wave": 1.9,
+          "wind": 10.0,
+          "sst": 17.3,
+          "wind_dir": 199,
           "weather_text": "雨",
-          "pressure": 998.1,
+          "pressure": 997.8,
           "score": 45,
           "ok": "△ やや不安"
         },
-        "神奈川・相模湾": {
-          "wave": 2.8,
-          "wind": 15.5,
-          "sst": 18.9,
-          "wind_dir": 206,
+        "神奈川・東京湾": {
+          "wave": 2.3,
+          "wind": 14.0,
+          "sst": 17.8,
+          "wind_dir": 208,
           "weather_text": "雨",
-          "pressure": 999.4,
+          "pressure": 999.6,
+          "score": 20,
+          "ok": "✕ 欠航リスク"
+        },
+        "神奈川・相模湾": {
+          "wave": 2.6,
+          "wind": 16.4,
+          "sst": 18.4,
+          "wind_dir": 203,
+          "weather_text": "雨",
+          "pressure": 999.7,
           "score": 0,
           "ok": "✕ 欠航リスク"
         },
         "静岡": {
-          "wave": 2.8,
-          "wind": 7.7,
-          "sst": 18.6,
-          "wind_dir": 242,
+          "wave": 2.5,
+          "wind": 7.4,
+          "sst": 17.9,
+          "wind_dir": 239,
           "weather_text": "雨",
-          "pressure": 999.2,
+          "pressure": 999.3,
           "score": 30,
           "ok": "✕ 欠航リスク"
         }
@@ -2130,9 +2490,9 @@
         {
           "fish": "アジ",
           "group": "東京",
-          "avg": 82.8,
+          "avg": 84.0,
           "base_avg": 71.9,
-          "adjustment": 0.151,
+          "adjustment": 0.168,
           "max": 164,
           "samples": 412,
           "season_score": 4,
@@ -2161,9 +2521,9 @@
         {
           "fish": "アジ",
           "group": "千葉・東京湾奥",
-          "avg": 71.7,
+          "avg": 72.7,
           "base_avg": 59.8,
-          "adjustment": 0.199,
+          "adjustment": 0.215,
           "max": 225,
           "samples": 548,
           "season_score": 4,
@@ -2191,6 +2551,37 @@
         },
         {
           "fish": "アジ",
+          "group": "神奈川・東京湾",
+          "avg": 71.1,
+          "base_avg": 60.3,
+          "adjustment": 0.179,
+          "max": 255,
+          "samples": 1764,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 50,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "釣船 五郎丸",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 1,764件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
           "group": "神奈川・相模湾",
           "avg": 56.0,
           "base_avg": 40.0,
@@ -2209,7 +2600,7 @@
             "とうふや丸"
           ],
           "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
@@ -2218,14 +2609,14 @@
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アジ",
           "group": "千葉・内房",
-          "avg": 37.3,
+          "avg": 38.1,
           "base_avg": 56.8,
-          "adjustment": -0.343,
+          "adjustment": -0.33,
           "max": 220,
           "samples": 658,
           "season_score": 4,
@@ -2244,7 +2635,7 @@
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
-            "wind": "やや注意",
+            "wind": "注意",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
@@ -2269,7 +2660,7 @@
             "孝徳丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
@@ -2278,73 +2669,14 @@
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
-        },
-        {
-          "fish": "イサキ",
-          "group": "千葉・内房",
-          "avg": 62.4,
-          "base_avg": 44.6,
-          "adjustment": 0.4,
-          "max": 50,
-          "samples": 158,
-          "season_score": 4,
-          "season_type": "",
-          "size_min": 22,
-          "size_max": 39,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "佐衛美丸"
-          ],
-          "confidence": "C",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 158件",
-          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
-          "condition_labels": {
-            "wave": "注意",
-            "wind": "やや注意",
-            "sst": "適温帯",
-            "pressure": "低気圧接近"
-          },
-          "tide_impact": "影響限定的",
           "sst_trend": "stable"
-        },
-        {
-          "fish": "イサキ",
-          "group": "千葉・外房",
-          "avg": 24.0,
-          "base_avg": 31.0,
-          "adjustment": -0.225,
-          "max": 50,
-          "samples": 314,
-          "season_score": 4,
-          "season_type": "",
-          "size_min": 21,
-          "size_max": 38,
-          "weight_min": null,
-          "weight_max": null,
-          "top_ships": [
-            "勇幸丸",
-            "孝徳丸"
-          ],
-          "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 314件",
-          "uncertainty": "",
-          "condition_labels": {
-            "wave": "注意",
-            "wind": "注意",
-            "sst": "適温帯",
-            "pressure": "低気圧接近"
-          },
-          "tide_impact": "影響限定的",
-          "sst_trend": "declining"
         },
         {
           "fish": "シロギス",
           "group": "東京",
-          "avg": 43.3,
+          "avg": 41.5,
           "base_avg": 55.7,
-          "adjustment": -0.223,
+          "adjustment": -0.256,
           "max": 156,
           "samples": 129,
           "season_score": 5,
@@ -2370,10 +2702,41 @@
         },
         {
           "fish": "シロギス",
+          "group": "神奈川・東京湾",
+          "avg": 37.5,
+          "base_avg": 55.0,
+          "adjustment": -0.319,
+          "max": 151,
+          "samples": 493,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "長崎屋",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 493件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
           "group": "千葉・東京湾奥",
-          "avg": 31.2,
+          "avg": 28.7,
           "base_avg": 44.1,
-          "adjustment": -0.292,
+          "adjustment": -0.349,
           "max": 188,
           "samples": 415,
           "season_score": 5,
@@ -2401,11 +2764,11 @@
         {
           "fish": "マルイカ",
           "group": "神奈川・相模湾",
-          "avg": 29.7,
-          "base_avg": 42.0,
-          "adjustment": -0.294,
+          "avg": 36.5,
+          "base_avg": 43.6,
+          "adjustment": -0.163,
           "max": 261,
-          "samples": 466,
+          "samples": 633,
           "season_score": 5,
           "season_type": "数",
           "size_min": 13,
@@ -2413,12 +2776,43 @@
           "weight_min": null,
           "weight_max": null,
           "top_ships": [
+            "喜平治丸",
             "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "たいぞう丸"
           ],
           "confidence": "B",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 466件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 633件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・東京湾",
+          "avg": 31.5,
+          "base_avg": 33.1,
+          "adjustment": -0.047,
+          "max": 108,
+          "samples": 302,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "大和丸",
+            "翔太丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 302件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
@@ -2430,11 +2824,101 @@
           "sst_trend": "stable"
         },
         {
+          "fish": "イサキ",
+          "group": "千葉・内房",
+          "avg": 62.4,
+          "base_avg": 44.6,
+          "adjustment": 0.4,
+          "max": 50,
+          "samples": 158,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 22,
+          "size_max": 39,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "佐衛美丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 158件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "イサキ",
+          "group": "千葉・外房",
+          "avg": 24.0,
+          "base_avg": 31.0,
+          "adjustment": -0.226,
+          "max": 50,
+          "samples": 314,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 21,
+          "size_max": 38,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "勇幸丸",
+            "孝徳丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 314件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.2,
+          "base_avg": 8.7,
+          "adjustment": -0.089,
+          "max": 189,
+          "samples": 147,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "weight_min": 0.7,
+          "weight_max": 2.6,
+          "top_ships": [
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 147件",
+          "uncertainty": "個体差が大きく匹数予測の精度が出にくい魚種",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
           "fish": "マダイ",
           "group": "茨城",
-          "avg": 5.5,
+          "avg": 5.4,
           "base_avg": 6.5,
-          "adjustment": -0.042,
+          "adjustment": -0.048,
           "max": 35,
           "samples": 846,
           "season_score": 5,
@@ -2449,11 +2933,42 @@
             "弘漁丸"
           ],
           "confidence": "A",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。出船数が前週から大幅増（+678%）。人気が集まっている。分析データ: 846件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 846件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
-            "wind": "好条件",
+            "wind": "やや注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マダイ",
+          "group": "神奈川・東京湾",
+          "avg": 3.2,
+          "base_avg": 3.8,
+          "adjustment": 0.13,
+          "max": 39,
+          "samples": 285,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": 0.4,
+          "weight_max": 4.5,
+          "top_ships": [
+            "つね丸",
+            "平作丸",
+            "山天丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 285件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
@@ -2462,10 +2977,41 @@
         },
         {
           "fish": "カワハギ",
+          "group": "神奈川・東京湾",
+          "avg": 13.4,
+          "base_avg": 13.7,
+          "adjustment": -0.022,
+          "max": 34,
+          "samples": 401,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 15,
+          "size_max": 34,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山下丸",
+            "巳之助丸",
+            "山天丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「端境期」にあたり出船数は少なめ。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 401件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
           "group": "神奈川・相模湾",
-          "avg": 5.9,
+          "avg": 6.0,
           "base_avg": 6.6,
-          "adjustment": -0.066,
+          "adjustment": -0.045,
           "max": 24,
           "samples": 158,
           "season_score": 2,
@@ -2479,7 +3025,7 @@
             "あまさけや丸"
           ],
           "confidence": "C",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「端境期」にあたり出船数は少なめ。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 158件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「端境期」にあたり出船数は少なめ。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "注意",
@@ -2488,14 +3034,14 @@
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アマダイ",
           "group": "茨城",
           "avg": 6.8,
           "base_avg": 6.0,
-          "adjustment": -0.028,
+          "adjustment": -0.039,
           "max": 10,
           "samples": 6,
           "season_score": 3,
@@ -2509,11 +3055,71 @@
             "明進丸"
           ],
           "confidence": "D",
-          "analysis": "海況は概ね良好。安定した釣果が期待できる条件。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 6件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 6件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
-            "wind": "好条件",
+            "wind": "やや注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アマダイ",
+          "group": "神奈川・東京湾",
+          "avg": 4.4,
+          "base_avg": 5.4,
+          "adjustment": -0.139,
+          "max": 18,
+          "samples": 154,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "山下丸",
+            "巳之助丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 154件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マゴチ",
+          "group": "神奈川・東京湾",
+          "avg": 5.1,
+          "base_avg": 5.8,
+          "adjustment": -0.065,
+          "max": 20,
+          "samples": 63,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 33,
+          "size_max": 64,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋"
+          ],
+          "confidence": "C",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 63件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
             "sst": "適温帯",
             "pressure": "低気圧接近"
           },
@@ -2538,7 +3144,7 @@
             "第八鶴丸"
           ],
           "confidence": "D",
-          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
@@ -2547,18 +3153,49 @@
             "pressure": "低気圧接近"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "神奈川・東京湾",
+          "avg": 4.8,
+          "base_avg": 6.8,
+          "adjustment": -0.3,
+          "max": 12,
+          "samples": 5,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 26,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "太郎丸",
+            "洋征丸",
+            "新修丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況にやや不安要素あり。条件次第で釣果が変動する可能性。シーズンは平年並みで安定して出船がある時期。南南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "注意",
+            "wind": "注意",
+            "sst": "適温帯",
+            "pressure": "低気圧接近"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
         }
       ],
-      "todays_pick": "アジ×東京"
+      "todays_pick": "シロギス×静岡"
     },
     "2026-05-05": {
-      "wave": 0.8,
-      "wind": 4.5,
-      "sst": 17.4,
-      "pressure": 1018.2,
-      "weather_code": 0,
-      "weather_text": "快晴",
+      "wave": 0.9,
+      "wind": 5.0,
+      "sst": 17.6,
+      "pressure": 1015.8,
+      "weather_code": 3,
+      "weather_text": "曇り",
       "tide_range": 94.7,
       "moon_age": 17.8,
       "moon_title": "中潮",
@@ -2566,72 +3203,82 @@
       "ok": "◎ 出船日和",
       "areas": {
         "茨城": {
-          "wave": 0.7,
-          "wind": 2.9,
-          "sst": 16.9,
-          "wind_dir": 206,
+          "wave": 0.8,
+          "wind": 3.8,
+          "sst": 16.8,
+          "wind_dir": 275,
           "weather_text": "快晴",
-          "pressure": 1018.2,
+          "pressure": 1016.0,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "千葉・外房": {
           "wave": 1.5,
-          "wind": 7.9,
-          "sst": 14.0,
-          "wind_dir": 34,
-          "weather_text": "曇り",
-          "pressure": 1018.4,
+          "wind": 7.7,
+          "sst": 16.1,
+          "wind_dir": 128,
+          "weather_text": "晴れ",
+          "pressure": 1016.0,
           "score": 60,
           "ok": "○ 概ね良好"
         },
         "千葉・内房": {
-          "wave": 0.9,
-          "wind": 4.7,
-          "sst": 18.2,
-          "wind_dir": 45,
+          "wave": 1.1,
+          "wind": 5.2,
+          "sst": 18.4,
+          "wind_dir": 28,
           "weather_text": "曇り",
-          "pressure": 1018.1,
-          "score": 100,
+          "pressure": 1015.5,
+          "score": 90,
           "ok": "◎ 出船日和"
         },
         "千葉・東京湾奥": {
-          "wave": 0.2,
-          "wind": 2.3,
-          "sst": 17.8,
-          "wind_dir": 173,
-          "weather_text": "快晴",
-          "pressure": 1018.3,
+          "wave": 0.3,
+          "wind": 4.0,
+          "sst": 17.9,
+          "wind_dir": 229,
+          "weather_text": "曇り",
+          "pressure": 1015.9,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "東京": {
-          "wave": 0.4,
-          "wind": 3.3,
-          "sst": 17.4,
-          "wind_dir": 158,
-          "weather_text": "快晴",
-          "pressure": 1018.2,
+          "wave": 0.5,
+          "wind": 4.2,
+          "sst": 17.6,
+          "wind_dir": 164,
+          "weather_text": "曇り",
+          "pressure": 1015.8,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・東京湾": {
+          "wave": 0.7,
+          "wind": 5.8,
+          "sst": 17.9,
+          "wind_dir": 34,
+          "weather_text": "曇り",
+          "pressure": 1015.6,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・相模湾": {
-          "wave": 0.9,
-          "wind": 7.8,
-          "sst": 18.9,
-          "wind_dir": 67,
-          "weather_text": "快晴",
-          "pressure": 1017.9,
-          "score": 90,
+          "wave": 1.0,
+          "wind": 6.5,
+          "sst": 18.2,
+          "wind_dir": 50,
+          "weather_text": "曇り",
+          "pressure": 1015.5,
+          "score": 80,
           "ok": "◎ 出船日和"
         },
         "静岡": {
-          "wave": 1.0,
-          "wind": 2.4,
-          "sst": 18.8,
-          "wind_dir": 104,
-          "weather_text": "晴れ",
-          "pressure": 1018.0,
+          "wave": 1.1,
+          "wind": 2.7,
+          "sst": 18.2,
+          "wind_dir": 124,
+          "weather_text": "曇り",
+          "pressure": 1015.9,
           "score": 90,
           "ok": "◎ 出船日和"
         }
@@ -2640,9 +3287,9 @@
         {
           "fish": "アジ",
           "group": "東京",
-          "avg": 69.8,
+          "avg": 70.8,
           "base_avg": 71.9,
-          "adjustment": -0.03,
+          "adjustment": -0.016,
           "max": 164,
           "samples": 412,
           "season_score": 4,
@@ -2670,10 +3317,41 @@
         },
         {
           "fish": "アジ",
+          "group": "神奈川・東京湾",
+          "avg": 62.2,
+          "base_avg": 60.3,
+          "adjustment": 0.032,
+          "max": 255,
+          "samples": 1764,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 50,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "釣船 五郎丸",
+            "荒川屋"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 1,764件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
           "group": "千葉・東京湾奥",
-          "avg": 56.7,
+          "avg": 57.7,
           "base_avg": 59.8,
-          "adjustment": -0.052,
+          "adjustment": -0.035,
           "max": 225,
           "samples": 548,
           "season_score": 4,
@@ -2688,7 +3366,7 @@
             "吉野屋"
           ],
           "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 548件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 548件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
@@ -2702,9 +3380,9 @@
         {
           "fish": "アジ",
           "group": "千葉・内房",
-          "avg": 55.4,
+          "avg": 54.2,
           "base_avg": 56.8,
-          "adjustment": -0.025,
+          "adjustment": -0.046,
           "max": 220,
           "samples": 658,
           "season_score": 4,
@@ -2719,10 +3397,10 @@
             "さえむ丸"
           ],
           "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。北東風は千葉・内房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 658件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。北北東風は千葉・内房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 658件",
           "uncertainty": "",
           "condition_labels": {
-            "wave": "好条件",
+            "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
             "pressure": "安定"
@@ -2733,9 +3411,9 @@
         {
           "fish": "アジ",
           "group": "神奈川・相模湾",
-          "avg": 43.7,
+          "avg": 44.8,
           "base_avg": 40.0,
-          "adjustment": 0.092,
+          "adjustment": 0.119,
           "max": 120,
           "samples": 315,
           "season_score": 4,
@@ -2750,16 +3428,16 @@
             "とうふや丸"
           ],
           "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
           "uncertainty": "",
           "condition_labels": {
-            "wave": "好条件",
+            "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
             "pressure": "安定"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アジ",
@@ -2779,7 +3457,7 @@
             "孝徳丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
@@ -2788,14 +3466,14 @@
             "pressure": "安定"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
           "fish": "シロギス",
           "group": "東京",
-          "avg": 57.6,
+          "avg": 56.3,
           "base_avg": 55.7,
-          "adjustment": 0.033,
+          "adjustment": 0.01,
           "max": 156,
           "samples": 129,
           "season_score": 5,
@@ -2821,10 +3499,41 @@
         },
         {
           "fish": "シロギス",
+          "group": "神奈川・東京湾",
+          "avg": 53.5,
+          "base_avg": 55.0,
+          "adjustment": -0.026,
+          "max": 151,
+          "samples": 493,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "長崎屋",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 493件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
           "group": "千葉・東京湾奥",
-          "avg": 49.7,
+          "avg": 47.5,
           "base_avg": 44.1,
-          "adjustment": 0.128,
+          "adjustment": 0.079,
           "max": 188,
           "samples": 415,
           "season_score": 5,
@@ -2838,7 +3547,7 @@
             "須原屋"
           ],
           "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 415件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 415件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
@@ -2850,11 +3559,73 @@
           "sst_trend": "rising"
         },
         {
+          "fish": "マルイカ",
+          "group": "神奈川・相模湾",
+          "avg": 42.4,
+          "base_avg": 43.6,
+          "adjustment": -0.029,
+          "max": 261,
+          "samples": 633,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 35,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "喜平治丸",
+            "庄治郎丸",
+            "たいぞう丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 633件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・東京湾",
+          "avg": 32.8,
+          "base_avg": 33.1,
+          "adjustment": -0.009,
+          "max": 108,
+          "samples": 302,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "大和丸",
+            "翔太丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 302件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "イサキ",
           "group": "千葉・内房",
-          "avg": 57.3,
+          "avg": 62.4,
           "base_avg": 44.6,
-          "adjustment": 0.285,
+          "adjustment": 0.4,
           "max": 50,
           "samples": 158,
           "season_score": 4,
@@ -2867,10 +3638,10 @@
             "佐衛美丸"
           ],
           "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。北東風は千葉・内房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 158件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。北北東風は千葉・内房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
-            "wave": "好条件",
+            "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
             "pressure": "安定"
@@ -2897,7 +3668,7 @@
             "孝徳丸"
           ],
           "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 314件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 314件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "注意",
@@ -2906,45 +3677,45 @@
             "pressure": "安定"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
-          "fish": "マルイカ",
-          "group": "神奈川・相模湾",
-          "avg": 39.7,
-          "base_avg": 42.0,
-          "adjustment": -0.055,
-          "max": 261,
-          "samples": 466,
+          "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.8,
+          "base_avg": 8.7,
+          "adjustment": -0.015,
+          "max": 189,
+          "samples": 147,
           "season_score": 5,
-          "season_type": "数",
-          "size_min": 13,
-          "size_max": 35,
-          "weight_min": null,
-          "weight_max": null,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "weight_min": 0.7,
+          "weight_max": 2.6,
           "top_ships": [
-            "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
           ],
-          "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。分析データ: 466件",
-          "uncertainty": "",
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 147件",
+          "uncertainty": "個体差が大きく匹数予測の精度が出にくい魚種",
           "condition_labels": {
-            "wave": "好条件",
+            "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
             "pressure": "安定"
           },
           "tide_impact": "影響あり",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "マダイ",
           "group": "茨城",
           "avg": 5.7,
           "base_avg": 6.5,
-          "adjustment": -0.004,
+          "adjustment": -0.009,
           "max": 35,
           "samples": 846,
           "season_score": 5,
@@ -2959,7 +3730,38 @@
             "弘漁丸"
           ],
           "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。出船数が前週から大幅増（+678%）。人気が集まっている。分析データ: 846件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 846件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マダイ",
+          "group": "神奈川・東京湾",
+          "avg": 2.9,
+          "base_avg": 3.8,
+          "adjustment": 0.012,
+          "max": 39,
+          "samples": 285,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": 0.4,
+          "weight_max": 4.5,
+          "top_ships": [
+            "つね丸",
+            "平作丸",
+            "山天丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 285件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
@@ -2972,10 +3774,41 @@
         },
         {
           "fish": "カワハギ",
+          "group": "神奈川・東京湾",
+          "avg": 13.5,
+          "base_avg": 13.7,
+          "adjustment": -0.01,
+          "max": 34,
+          "samples": 401,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 15,
+          "size_max": 34,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山下丸",
+            "巳之助丸",
+            "山天丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 401件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
           "group": "神奈川・相模湾",
-          "avg": 6.3,
+          "avg": 6.1,
           "base_avg": 6.6,
-          "adjustment": -0.008,
+          "adjustment": -0.029,
           "max": 24,
           "samples": 158,
           "season_score": 2,
@@ -2989,23 +3822,23 @@
             "あまさけや丸"
           ],
           "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。分析データ: 158件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
-            "wave": "好条件",
+            "wave": "やや注意",
             "wind": "好条件",
             "sst": "適温帯",
             "pressure": "安定"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アマダイ",
           "group": "茨城",
-          "avg": 7.0,
+          "avg": 6.9,
           "base_avg": 6.0,
-          "adjustment": -0.002,
+          "adjustment": -0.009,
           "max": 10,
           "samples": 6,
           "season_score": 3,
@@ -3019,7 +3852,67 @@
             "明進丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 6件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 6件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アマダイ",
+          "group": "神奈川・東京湾",
+          "avg": 5.1,
+          "base_avg": 5.4,
+          "adjustment": -0.017,
+          "max": 18,
+          "samples": 154,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "山下丸",
+            "巳之助丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 154件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マゴチ",
+          "group": "神奈川・東京湾",
+          "avg": 5.3,
+          "base_avg": 5.8,
+          "adjustment": -0.02,
+          "max": 20,
+          "samples": 63,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 33,
+          "size_max": 64,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 63件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -3035,7 +3928,7 @@
           "group": "千葉・外房",
           "avg": 7.5,
           "base_avg": 8.3,
-          "adjustment": 0.118,
+          "adjustment": 0.114,
           "max": 81,
           "samples": 38,
           "season_score": 3,
@@ -3048,7 +3941,7 @@
             "第八鶴丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "注意",
@@ -3057,18 +3950,49 @@
             "pressure": "安定"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "神奈川・東京湾",
+          "avg": 6.5,
+          "base_avg": 6.8,
+          "adjustment": -0.052,
+          "max": 12,
+          "samples": 5,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 26,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "太郎丸",
+            "洋征丸",
+            "新修丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。北東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
         }
       ],
-      "todays_pick": "シロギス×東京"
+      "todays_pick": "アジ×東京"
     },
     "2026-05-06": {
-      "wave": 0.6,
-      "wind": 2.6,
+      "wave": 0.5,
+      "wind": 2.8,
       "sst": 17.9,
-      "pressure": 1023.1,
-      "weather_code": 0,
-      "weather_text": "快晴",
+      "pressure": 1022.1,
+      "weather_code": 3,
+      "weather_text": "曇り",
       "tide_range": 79.9,
       "moon_age": 18.8,
       "moon_title": "中潮",
@@ -3077,71 +4001,81 @@
       "areas": {
         "茨城": {
           "wave": 0.7,
-          "wind": 3.4,
+          "wind": 3.5,
           "sst": 16.9,
-          "wind_dir": 194,
-          "weather_text": "快晴",
-          "pressure": 1023.1,
+          "wind_dir": 189,
+          "weather_text": "曇り",
+          "pressure": 1022.1,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "千葉・外房": {
           "wave": 1.0,
-          "wind": 3.1,
-          "sst": 16.0,
-          "wind_dir": 162,
-          "weather_text": "晴れ",
-          "pressure": 1023.4,
+          "wind": 4.0,
+          "sst": 17.2,
+          "wind_dir": 167,
+          "weather_text": "曇り",
+          "pressure": 1022.4,
           "score": 90,
           "ok": "◎ 出船日和"
         },
         "千葉・内房": {
           "wave": 0.5,
-          "wind": 2.4,
-          "sst": 18.6,
-          "wind_dir": 160,
-          "weather_text": "快晴",
-          "pressure": 1023.1,
+          "wind": 2.6,
+          "sst": 18.5,
+          "wind_dir": 164,
+          "weather_text": "曇り",
+          "pressure": 1022.1,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "千葉・東京湾奥": {
           "wave": 0.1,
-          "wind": 2.3,
+          "wind": 2.4,
           "sst": 18.1,
-          "wind_dir": 199,
-          "weather_text": "快晴",
-          "pressure": 1023.0,
+          "wind_dir": 196,
+          "weather_text": "曇り",
+          "pressure": 1022.1,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "東京": {
           "wave": 0.2,
-          "wind": 2.0,
-          "sst": 17.8,
-          "wind_dir": 173,
-          "weather_text": "快晴",
-          "pressure": 1022.9,
+          "wind": 2.5,
+          "sst": 17.7,
+          "wind_dir": 176,
+          "weather_text": "曇り",
+          "pressure": 1022.0,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・東京湾": {
+          "wave": 0.3,
+          "wind": 2.9,
+          "sst": 18.1,
+          "wind_dir": 181,
+          "weather_text": "曇り",
+          "pressure": 1022.1,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "神奈川・相模湾": {
           "wave": 0.7,
-          "wind": 2.5,
-          "sst": 19.2,
-          "wind_dir": 206,
-          "weather_text": "快晴",
-          "pressure": 1023.1,
+          "wind": 1.7,
+          "sst": 18.4,
+          "wind_dir": 93,
+          "weather_text": "曇り",
+          "pressure": 1022.1,
           "score": 100,
           "ok": "◎ 出船日和"
         },
         "静岡": {
           "wave": 0.7,
-          "wind": 2.3,
-          "sst": 18.9,
-          "wind_dir": 119,
-          "weather_text": "快晴",
-          "pressure": 1023.1,
+          "wind": 2.6,
+          "sst": 18.4,
+          "wind_dir": 140,
+          "weather_text": "曇り",
+          "pressure": 1021.9,
           "score": 100,
           "ok": "◎ 出船日和"
         }
@@ -3150,9 +4084,9 @@
         {
           "fish": "アジ",
           "group": "東京",
-          "avg": 67.7,
+          "avg": 67.8,
           "base_avg": 71.9,
-          "adjustment": -0.059,
+          "adjustment": -0.057,
           "max": 164,
           "samples": 412,
           "season_score": 4,
@@ -3180,10 +4114,41 @@
         },
         {
           "fish": "アジ",
+          "group": "神奈川・東京湾",
+          "avg": 60.2,
+          "base_avg": 60.3,
+          "adjustment": -0.002,
+          "max": 255,
+          "samples": 1764,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 50,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "釣船 五郎丸",
+            "荒川屋"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 1,764件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
           "group": "千葉・内房",
-          "avg": 58.7,
+          "avg": 58.6,
           "base_avg": 56.8,
-          "adjustment": 0.034,
+          "adjustment": 0.033,
           "max": 220,
           "samples": 658,
           "season_score": 4,
@@ -3245,7 +4210,7 @@
           "group": "神奈川・相模湾",
           "avg": 43.4,
           "base_avg": 40.0,
-          "adjustment": 0.084,
+          "adjustment": 0.086,
           "max": 120,
           "samples": 315,
           "season_score": 4,
@@ -3260,7 +4225,7 @@
             "とうふや丸"
           ],
           "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
@@ -3269,7 +4234,7 @@
             "pressure": "高気圧"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アジ",
@@ -3289,7 +4254,7 @@
             "孝徳丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "やや注意",
@@ -3298,14 +4263,14 @@
             "pressure": "高気圧"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
           "fish": "シロギス",
           "group": "東京",
-          "avg": 60.0,
+          "avg": 59.7,
           "base_avg": 55.7,
-          "adjustment": 0.077,
+          "adjustment": 0.072,
           "max": 156,
           "samples": 129,
           "season_score": 5,
@@ -3331,10 +4296,41 @@
         },
         {
           "fish": "シロギス",
+          "group": "神奈川・東京湾",
+          "avg": 57.6,
+          "base_avg": 55.0,
+          "adjustment": 0.048,
+          "max": 151,
+          "samples": 493,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "長崎屋",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 493件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
           "group": "千葉・東京湾奥",
-          "avg": 50.7,
+          "avg": 50.6,
           "base_avg": 44.1,
-          "adjustment": 0.151,
+          "adjustment": 0.15,
           "max": 188,
           "samples": 415,
           "season_score": 5,
@@ -3360,11 +4356,73 @@
           "sst_trend": "rising"
         },
         {
+          "fish": "マルイカ",
+          "group": "神奈川・相模湾",
+          "avg": 44.4,
+          "base_avg": 43.6,
+          "adjustment": 0.018,
+          "max": 261,
+          "samples": 633,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 35,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "喜平治丸",
+            "庄治郎丸",
+            "たいぞう丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 633件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・東京湾",
+          "avg": 33.2,
+          "base_avg": 33.1,
+          "adjustment": 0.004,
+          "max": 108,
+          "samples": 302,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "大和丸",
+            "翔太丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 302件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
           "fish": "イサキ",
           "group": "千葉・内房",
-          "avg": 45.0,
+          "avg": 45.1,
           "base_avg": 44.6,
-          "adjustment": 0.009,
+          "adjustment": 0.01,
           "max": 50,
           "samples": 158,
           "season_score": 4,
@@ -3377,7 +4435,7 @@
             "佐衛美丸"
           ],
           "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 158件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "好条件",
@@ -3393,7 +4451,7 @@
           "group": "千葉・外房",
           "avg": 30.1,
           "base_avg": 31.0,
-          "adjustment": -0.029,
+          "adjustment": -0.031,
           "max": 50,
           "samples": 314,
           "season_score": 4,
@@ -3407,7 +4465,7 @@
             "孝徳丸"
           ],
           "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（20匹←6匹←4匹）。出船数が前週から大幅増（+250%）。人気が集まっている。分析データ: 314件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 314件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "やや注意",
@@ -3416,30 +4474,30 @@
             "pressure": "高気圧"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "declining"
+          "sst_trend": "stable"
         },
         {
-          "fish": "マルイカ",
-          "group": "神奈川・相模湾",
-          "avg": 42.5,
-          "base_avg": 42.0,
-          "adjustment": 0.011,
-          "max": 261,
-          "samples": 466,
+          "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.8,
+          "base_avg": 8.7,
+          "adjustment": -0.001,
+          "max": 189,
+          "samples": 147,
           "season_score": 5,
-          "season_type": "数",
-          "size_min": 13,
-          "size_max": 35,
-          "weight_min": null,
-          "weight_max": null,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "weight_min": 0.7,
+          "weight_max": 2.6,
           "top_ships": [
-            "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
           ],
-          "confidence": "B",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 466件",
-          "uncertainty": "",
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 147件",
+          "uncertainty": "個体差が大きく匹数予測の精度が出にくい魚種",
           "condition_labels": {
             "wave": "好条件",
             "wind": "好条件",
@@ -3447,7 +4505,7 @@
             "pressure": "高気圧"
           },
           "tide_impact": "影響あり",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "マダイ",
@@ -3469,7 +4527,38 @@
             "弘漁丸"
           ],
           "confidence": "A",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。出船数が前週から大幅増（+678%）。人気が集まっている。分析データ: 846件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 846件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マダイ",
+          "group": "神奈川・東京湾",
+          "avg": 2.9,
+          "base_avg": 3.8,
+          "adjustment": -0.017,
+          "max": 39,
+          "samples": 285,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": 0.4,
+          "weight_max": 4.5,
+          "top_ships": [
+            "つね丸",
+            "平作丸",
+            "山天丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 285件",
           "uncertainty": "",
           "condition_labels": {
             "wave": "好条件",
@@ -3482,10 +4571,41 @@
         },
         {
           "fish": "カワハギ",
+          "group": "神奈川・東京湾",
+          "avg": 13.6,
+          "base_avg": 13.7,
+          "adjustment": -0.006,
+          "max": 34,
+          "samples": 401,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 15,
+          "size_max": 34,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山下丸",
+            "巳之助丸",
+            "山天丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 401件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
           "group": "神奈川・相模湾",
           "avg": 6.0,
           "base_avg": 6.6,
-          "adjustment": -0.044,
+          "adjustment": -0.054,
           "max": 24,
           "samples": 158,
           "season_score": 2,
@@ -3499,7 +4619,7 @@
             "あまさけや丸"
           ],
           "confidence": "C",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。南南西風は神奈川・相模湾エリアでは時化やすく出船に影響する可能性。分析データ: 158件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 158件",
           "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
           "condition_labels": {
             "wave": "好条件",
@@ -3508,14 +4628,14 @@
             "pressure": "高気圧"
           },
           "tide_impact": "影響限定的",
-          "sst_trend": "stable"
+          "sst_trend": "declining"
         },
         {
           "fish": "アマダイ",
           "group": "茨城",
           "avg": 7.0,
           "base_avg": 6.0,
-          "adjustment": -0.006,
+          "adjustment": -0.007,
           "max": 10,
           "samples": 6,
           "season_score": 3,
@@ -3530,6 +4650,97 @@
           ],
           "confidence": "D",
           "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 6件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アマダイ",
+          "group": "神奈川・東京湾",
+          "avg": 5.3,
+          "base_avg": 5.4,
+          "adjustment": 0.016,
+          "max": 18,
+          "samples": 154,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "山下丸",
+            "巳之助丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 154件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マゴチ",
+          "group": "神奈川・東京湾",
+          "avg": 5.3,
+          "base_avg": 5.8,
+          "adjustment": -0.014,
+          "max": 20,
+          "samples": 63,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 33,
+          "size_max": 64,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。南風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 63件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "高気圧"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "神奈川・東京湾",
+          "avg": 7.3,
+          "base_avg": 6.8,
+          "adjustment": 0.061,
+          "max": 12,
+          "samples": 5,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 26,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "太郎丸",
+            "洋征丸",
+            "新修丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 5件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "好条件",
@@ -3558,7 +4769,7 @@
             "第八鶴丸"
           ],
           "confidence": "D",
-          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。南南東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
           "uncertainty": "分析データが少なく、予測の精度が出にくい",
           "condition_labels": {
             "wave": "やや注意",
@@ -3567,7 +4778,804 @@
             "pressure": "高気圧"
           },
           "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        }
+      ],
+      "todays_pick": "シロギス×東京"
+    },
+    "2026-05-07": {
+      "wave": 0.6,
+      "wind": 2.1,
+      "sst": 18.3,
+      "pressure": 1013.7,
+      "weather_code": 3,
+      "weather_text": "曇り",
+      "tide_range": 66.1,
+      "moon_age": 19.8,
+      "moon_title": "中潮",
+      "score": 100,
+      "ok": "◎ 出船日和",
+      "areas": {
+        "茨城": {
+          "wave": 0.8,
+          "wind": 1.8,
+          "sst": 17.5,
+          "wind_dir": 190,
+          "weather_text": "曇り",
+          "pressure": 1013.6,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "千葉・外房": {
+          "wave": 1.0,
+          "wind": 2.2,
+          "sst": 17.8,
+          "wind_dir": 63,
+          "weather_text": "霧雨",
+          "pressure": 1013.7,
+          "score": 90,
+          "ok": "◎ 出船日和"
+        },
+        "千葉・内房": {
+          "wave": 0.5,
+          "wind": 2.3,
+          "sst": 18.6,
+          "wind_dir": 125,
+          "weather_text": "霧雨",
+          "pressure": 1013.6,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "千葉・東京湾奥": {
+          "wave": 0.1,
+          "wind": 1.4,
+          "sst": 18.5,
+          "wind_dir": 225,
+          "weather_text": "晴れ",
+          "pressure": 1013.6,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "東京": {
+          "wave": 0.2,
+          "wind": 1.6,
+          "sst": 18.2,
+          "wind_dir": 130,
+          "weather_text": "曇り",
+          "pressure": 1013.6,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・東京湾": {
+          "wave": 0.3,
+          "wind": 2.4,
+          "sst": 18.4,
+          "wind_dir": 80,
+          "weather_text": "曇り",
+          "pressure": 1013.7,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "神奈川・相模湾": {
+          "wave": 0.8,
+          "wind": 3.4,
+          "sst": 18.6,
+          "wind_dir": 101,
+          "weather_text": "快晴",
+          "pressure": 1013.8,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        },
+        "静岡": {
+          "wave": 0.8,
+          "wind": 1.9,
+          "sst": 18.8,
+          "wind_dir": 66,
+          "weather_text": "晴れ",
+          "pressure": 1013.8,
+          "score": 100,
+          "ok": "◎ 出船日和"
+        }
+      },
+      "predictions": [
+        {
+          "fish": "アジ",
+          "group": "東京",
+          "avg": 67.6,
+          "base_avg": 71.9,
+          "adjustment": -0.061,
+          "max": 164,
+          "samples": 412,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 15,
+          "size_max": 33,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "渡辺釣船店",
+            "船宿 まる八",
+            "かめだや"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 412件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・東京湾",
+          "avg": 60.3,
+          "base_avg": 60.3,
+          "adjustment": 0.0,
+          "max": 255,
+          "samples": 1764,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 50,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "釣船 五郎丸",
+            "荒川屋"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 1,764件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "千葉・内房",
+          "avg": 58.7,
+          "base_avg": 56.8,
+          "adjustment": 0.034,
+          "max": 220,
+          "samples": 658,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 17,
+          "size_max": 53,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "光進丸",
+            "勘次郎丸",
+            "さえむ丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 658件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アジ",
+          "group": "千葉・東京湾奥",
+          "avg": 55.7,
+          "base_avg": 59.8,
+          "adjustment": -0.069,
+          "max": 225,
+          "samples": 548,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 13,
+          "size_max": 38,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "須原屋",
+            "林遊船",
+            "吉野屋"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南西風はこのエリアで穏やかな海況をもたらす傾向。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 548件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
+        },
+        {
+          "fish": "アジ",
+          "group": "神奈川・相模湾",
+          "avg": 44.0,
+          "base_avg": 40.0,
+          "adjustment": 0.1,
+          "max": 120,
+          "samples": 315,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 18,
+          "size_max": 41,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "庄治郎丸",
+            "ちがさき丸",
+            "とうふや丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 315件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
           "sst_trend": "declining"
+        },
+        {
+          "fish": "アジ",
+          "group": "千葉・外房",
+          "avg": 16.5,
+          "base_avg": 11.8,
+          "adjustment": 0.4,
+          "max": 20,
+          "samples": 5,
+          "season_score": 4,
+          "season_type": "型",
+          "size_min": 23,
+          "size_max": 35,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "孝徳丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。東北東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+620%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
+          "group": "東京",
+          "avg": 60.3,
+          "base_avg": 55.7,
+          "adjustment": 0.082,
+          "max": 156,
+          "samples": 129,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 25,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "かめだや"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。分析データ: 129件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
+        },
+        {
+          "fish": "シロギス",
+          "group": "神奈川・東京湾",
+          "avg": 57.6,
+          "base_avg": 55.0,
+          "adjustment": 0.048,
+          "max": 151,
+          "samples": 493,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 12,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋",
+            "長崎屋",
+            "荒川屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 493件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "シロギス",
+          "group": "千葉・東京湾奥",
+          "avg": 51.5,
+          "base_avg": 44.1,
+          "adjustment": 0.168,
+          "max": 188,
+          "samples": 415,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 11,
+          "size_max": 24,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "吉野屋",
+            "須原屋"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今週を通じて海水温は上昇傾向。魚の活性が高まる方向。南西風はこのエリアで穏やかな海況をもたらす傾向。分析データ: 415件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "rising"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・相模湾",
+          "avg": 43.9,
+          "base_avg": 43.6,
+          "adjustment": 0.005,
+          "max": 261,
+          "samples": 633,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 35,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "喜平治丸",
+            "庄治郎丸",
+            "たいぞう丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 633件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マルイカ",
+          "group": "神奈川・東京湾",
+          "avg": 33.3,
+          "base_avg": 33.1,
+          "adjustment": 0.005,
+          "max": 108,
+          "samples": 302,
+          "season_score": 5,
+          "season_type": "数",
+          "size_min": 13,
+          "size_max": 45,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "大和丸",
+            "翔太丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 302件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "イサキ",
+          "group": "千葉・内房",
+          "avg": 44.9,
+          "base_avg": 44.6,
+          "adjustment": 0.007,
+          "max": 50,
+          "samples": 158,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 22,
+          "size_max": 39,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "佐衛美丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 158件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "イサキ",
+          "group": "千葉・外房",
+          "avg": 30.1,
+          "base_avg": 31.0,
+          "adjustment": -0.028,
+          "max": 50,
+          "samples": 314,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 21,
+          "size_max": 38,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "勇幸丸",
+            "孝徳丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。東北東風は千葉・外房エリアでは時化やすく出船に影響する可能性。3週連続上昇中（24匹←6匹←4匹）。出船数が前週から大幅増（+200%）。人気が集まっている。分析データ: 314件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.8,
+          "base_avg": 8.7,
+          "adjustment": -0.005,
+          "max": 189,
+          "samples": 147,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "weight_min": 0.7,
+          "weight_max": 2.6,
+          "top_ships": [
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 147件",
+          "uncertainty": "個体差が大きく匹数予測の精度が出にくい魚種",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "マダイ",
+          "group": "茨城",
+          "avg": 5.7,
+          "base_avg": 6.5,
+          "adjustment": -0.006,
+          "max": 35,
+          "samples": 846,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 30,
+          "size_max": 49,
+          "weight_min": 0.1,
+          "weight_max": 9.1,
+          "top_ships": [
+            "大貫丸",
+            "宮田丸",
+            "弘漁丸"
+          ],
+          "confidence": "A",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 846件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マダイ",
+          "group": "神奈川・東京湾",
+          "avg": 2.9,
+          "base_avg": 3.8,
+          "adjustment": -0.017,
+          "max": 39,
+          "samples": 285,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": 0.4,
+          "weight_max": 4.5,
+          "top_ships": [
+            "つね丸",
+            "平作丸",
+            "山天丸"
+          ],
+          "confidence": "B",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬盛り」で活性が高い時期。今がピーク。6月以降は徐々に落ち着く傾向。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+656%）。人気が集まっている。分析データ: 285件",
+          "uncertainty": "",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響あり",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
+          "group": "神奈川・東京湾",
+          "avg": 13.6,
+          "base_avg": 13.7,
+          "adjustment": -0.005,
+          "max": 34,
+          "samples": 401,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 15,
+          "size_max": 34,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山下丸",
+            "巳之助丸",
+            "山天丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 401件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "カワハギ",
+          "group": "神奈川・相模湾",
+          "avg": 6.0,
+          "base_avg": 6.6,
+          "adjustment": -0.043,
+          "max": 24,
+          "samples": 158,
+          "season_score": 2,
+          "season_type": "",
+          "size_min": 5,
+          "size_max": 31,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "儀兵衛丸",
+            "あまさけや丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「端境期」にあたり出船数は少なめ。海水温はやや低下傾向。水温変化への適応が遅い魚種は注意。分析データ: 158件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "declining"
+        },
+        {
+          "fish": "アマダイ",
+          "group": "茨城",
+          "avg": 7.0,
+          "base_avg": 6.0,
+          "adjustment": 0.007,
+          "max": 10,
+          "samples": 6,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 30,
+          "size_max": 49,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "大貫丸",
+            "明進丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 6件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "アマダイ",
+          "group": "神奈川・東京湾",
+          "avg": 5.3,
+          "base_avg": 5.4,
+          "adjustment": 0.018,
+          "max": 18,
+          "samples": 154,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 20,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "山天丸",
+            "山下丸",
+            "巳之助丸"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 154件",
+          "uncertainty": "海況変動の影響を受けやすく、予報が外れると釣果が大きく変動する可能性",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "マゴチ",
+          "group": "神奈川・東京湾",
+          "avg": 5.3,
+          "base_avg": 5.8,
+          "adjustment": -0.016,
+          "max": 20,
+          "samples": 63,
+          "season_score": 4,
+          "season_type": "",
+          "size_min": 33,
+          "size_max": 64,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "弁天屋"
+          ],
+          "confidence": "C",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズン的には「旬」で活性が高い時期。来月（6月）に向けてシーズンが上向く見込み。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。分析データ: 63件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "神奈川・東京湾",
+          "avg": 7.3,
+          "base_avg": 6.8,
+          "adjustment": 0.063,
+          "max": 12,
+          "samples": 5,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 26,
+          "size_max": 43,
+          "weight_min": null,
+          "weight_max": null,
+          "top_ships": [
+            "太郎丸",
+            "洋征丸",
+            "新修丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。東風は神奈川・東京湾エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 5件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "好条件",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
+        },
+        {
+          "fish": "クロムツ",
+          "group": "千葉・外房",
+          "avg": 6.9,
+          "base_avg": 8.3,
+          "adjustment": 0.046,
+          "max": 81,
+          "samples": 38,
+          "season_score": 3,
+          "season_type": "",
+          "size_min": 30,
+          "size_max": 37,
+          "weight_min": 1.7,
+          "weight_max": 1.7,
+          "top_ships": [
+            "第八鶴丸"
+          ],
+          "confidence": "D",
+          "analysis": "海況が安定しており、過去の類似条件で釣果が伸びる傾向が確認されている。シーズンは平年並みで安定して出船がある時期。東北東風は千葉・外房エリアでは時化やすく出船に影響する可能性。出船数が前週から大幅増（+300%）。人気が集まっている。分析データ: 38件",
+          "uncertainty": "分析データが少なく、予測の精度が出にくい",
+          "condition_labels": {
+            "wave": "やや注意",
+            "wind": "好条件",
+            "sst": "適温帯",
+            "pressure": "安定"
+          },
+          "tide_impact": "影響限定的",
+          "sst_trend": "stable"
         }
       ],
       "todays_pick": "アジ×東京"
@@ -3642,11 +5650,11 @@
           "group": "神奈川・東京湾",
           "avg": 60.3,
           "max": 255,
-          "samples": 1758,
+          "samples": 1764,
           "season_score": 4,
           "season_type": "型",
           "size_min": 17,
-          "size_max": 44,
+          "size_max": 50,
           "top_ships": [
             "弁天屋",
             "釣船 五郎丸",
@@ -3779,19 +5787,19 @@
         {
           "fish": "マルイカ",
           "group": "神奈川・相模湾",
-          "avg": 42.0,
+          "avg": 43.6,
           "max": 261,
-          "samples": 466,
+          "samples": 633,
           "season_score": 5,
           "season_type": "数",
           "size_min": 13,
           "size_max": 35,
           "top_ships": [
+            "喜平治丸",
             "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "たいぞう丸"
           ],
-          "confidence": "B",
+          "confidence": "A",
           "tide_impact": "影響あり"
         },
         {
@@ -3847,6 +5855,24 @@
         },
         {
           "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.8,
+          "max": 189,
+          "samples": 147,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "top_ships": [
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
+          ],
+          "confidence": "C",
+          "tide_impact": "影響あり"
+        },
+        {
+          "fish": "マダイ",
           "group": "茨城",
           "avg": 5.8,
           "max": 35,
@@ -3866,19 +5892,19 @@
         {
           "fish": "マダイ",
           "group": "神奈川・東京湾",
-          "avg": 3.5,
+          "avg": 2.9,
           "max": 39,
-          "samples": 173,
+          "samples": 285,
           "season_score": 5,
           "season_type": "型",
           "size_min": 20,
           "size_max": 43,
           "top_ships": [
-            "山天丸",
-            "弁天屋",
-            "米元釣船店"
+            "つね丸",
+            "平作丸",
+            "山天丸"
           ],
-          "confidence": "C",
+          "confidence": "B",
           "tide_impact": "影響あり"
         },
         {
@@ -4071,11 +6097,11 @@
           "group": "神奈川・東京湾",
           "avg": 60.3,
           "max": 255,
-          "samples": 1758,
+          "samples": 1764,
           "season_score": 4,
           "season_type": "型",
           "size_min": 17,
-          "size_max": 44,
+          "size_max": 50,
           "top_ships": [
             "弁天屋",
             "釣船 五郎丸",
@@ -4208,19 +6234,19 @@
         {
           "fish": "マルイカ",
           "group": "神奈川・相模湾",
-          "avg": 42.0,
+          "avg": 43.6,
           "max": 261,
-          "samples": 466,
+          "samples": 633,
           "season_score": 5,
           "season_type": "数",
           "size_min": 13,
           "size_max": 35,
           "top_ships": [
+            "喜平治丸",
             "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "たいぞう丸"
           ],
-          "confidence": "B",
+          "confidence": "A",
           "tide_impact": "影響あり"
         },
         {
@@ -4276,6 +6302,24 @@
         },
         {
           "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.8,
+          "max": 189,
+          "samples": 147,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "top_ships": [
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
+          ],
+          "confidence": "C",
+          "tide_impact": "影響あり"
+        },
+        {
+          "fish": "マダイ",
           "group": "茨城",
           "avg": 5.8,
           "max": 35,
@@ -4295,19 +6339,19 @@
         {
           "fish": "マダイ",
           "group": "神奈川・東京湾",
-          "avg": 3.5,
+          "avg": 2.9,
           "max": 39,
-          "samples": 173,
+          "samples": 285,
           "season_score": 5,
           "season_type": "型",
           "size_min": 20,
           "size_max": 43,
           "top_ships": [
-            "山天丸",
-            "弁天屋",
-            "米元釣船店"
+            "つね丸",
+            "平作丸",
+            "山天丸"
           ],
-          "confidence": "C",
+          "confidence": "B",
           "tide_impact": "影響あり"
         },
         {
@@ -4500,11 +6544,11 @@
           "group": "神奈川・東京湾",
           "avg": 60.3,
           "max": 255,
-          "samples": 1758,
+          "samples": 1764,
           "season_score": 4,
           "season_type": "型",
           "size_min": 17,
-          "size_max": 44,
+          "size_max": 50,
           "top_ships": [
             "弁天屋",
             "釣船 五郎丸",
@@ -4637,19 +6681,19 @@
         {
           "fish": "マルイカ",
           "group": "神奈川・相模湾",
-          "avg": 42.0,
+          "avg": 43.6,
           "max": 261,
-          "samples": 466,
+          "samples": 633,
           "season_score": 5,
           "season_type": "数",
           "size_min": 13,
           "size_max": 35,
           "top_ships": [
+            "喜平治丸",
             "庄治郎丸",
-            "たいぞう丸",
-            "春盛丸"
+            "たいぞう丸"
           ],
-          "confidence": "B",
+          "confidence": "A",
           "tide_impact": "影響あり"
         },
         {
@@ -4705,6 +6749,24 @@
         },
         {
           "fish": "マダイ",
+          "group": "静岡",
+          "avg": 6.8,
+          "max": 189,
+          "samples": 147,
+          "season_score": 5,
+          "season_type": "型",
+          "size_min": 70,
+          "size_max": 71,
+          "top_ships": [
+            "伊達丸",
+            "海桜丸",
+            "第八幸松丸"
+          ],
+          "confidence": "C",
+          "tide_impact": "影響あり"
+        },
+        {
+          "fish": "マダイ",
           "group": "茨城",
           "avg": 5.8,
           "max": 35,
@@ -4724,19 +6786,19 @@
         {
           "fish": "マダイ",
           "group": "神奈川・東京湾",
-          "avg": 3.5,
+          "avg": 2.9,
           "max": 39,
-          "samples": 173,
+          "samples": 285,
           "season_score": 5,
           "season_type": "型",
           "size_min": 20,
           "size_max": 43,
           "top_ships": [
-            "山天丸",
-            "弁天屋",
-            "米元釣船店"
+            "つね丸",
+            "平作丸",
+            "山天丸"
           ],
-          "confidence": "C",
+          "confidence": "B",
           "tide_impact": "影響あり"
         },
         {
