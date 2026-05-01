@@ -1924,6 +1924,30 @@ def _forecast_combo_card(pred, fc=None, show_area=True):
     return html
 
 
+def _build_teaser_predictions(preds, free_count=1, max_count=5):
+    """予測ティザーHTML: free_count件は完全表示、残りはblur+ペイウォール"""
+    if not preds:
+        return ''
+    shown = preds[:max_count]
+    total = len(preds)
+    html = '<div class="st teaser-title"><span>釣果予測</span><span class="tag coming">有料プラン</span></div>'
+    html += '<p class="section-note">海況・潮汐・過去実績から算出。上位1件は無料表示、残りは有料プランで閲覧できます。</p>'
+    for i, pred in enumerate(shown):
+        card = _forecast_combo_card(pred)
+        if i < free_count:
+            html += card
+        else:
+            html += f'<div style="filter:blur(5px);user-select:none;pointer-events:none;opacity:0.75">{card}</div>'
+    hidden_count = total - free_count
+    if hidden_count > 0:
+        html += f'''<div class="paywall">
+<p style="font-size:13px;color:#5a6a7a;margin-bottom:16px">残り<strong>{hidden_count}件</strong>の予測と詳細分析は有料プランで閲覧できます。</p>
+<a href="/forecast/index.html" class="paywall-btn">月額500円で全て見る</a>
+<p class="paywall-sub">スポット閲覧 100円〜 ・ 決済システム準備中</p>
+</div>'''
+    return html
+
+
 def _build_daily_page(date_str, day_data, forecast_data, weather_data):
     """日次予測ページHTML"""
     dt = datetime.strptime(date_str, "%Y-%m-%d")
@@ -1975,18 +1999,7 @@ def _build_daily_page(date_str, day_data, forecast_data, weather_data):
         html += _forecast_page_foot()
         return html
 
-    # 釣果予測は有料機能（準備中）— 認証システム未実装のため一切公開しない
-    html += '''
-<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
-<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">釣果予測（準備中）</h2>
-<p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
-当日の海況・潮通し・直近実績を組み合わせた、<br>
-魚種別・エリア別の<strong>釣果予測（匹数レンジ・サイズ・狙い・確信度）</strong>を準備中です。<br>
-公開時は有料プランのみで提供予定です。
-</p>
-<div style="display:inline-block;padding:12px 32px;background:#7c3aed;color:#fff;border-radius:24px;font-weight:700;font-size:14px">準備中・公開時は月額500円</div>
-</div>
-'''
+    html += _build_teaser_predictions(preds)
     html += _forecast_page_foot()
     return html
 
@@ -2018,17 +2031,8 @@ def _build_weekly_page(week_id, week_data, forecast_data):
             html += f'<span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">{dd}({s["weekday"]}) {s["moon_title"]}</span>'
         html += '</div>'
 
-    # 釣果予測は有料機能（準備中）
-    html += '''
-<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
-<h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">週次釣果予測（準備中）</h2>
-<p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
-潮回り×季節傾向×直近実績で算出する週次の<strong>魚種・エリア別予測</strong>を準備中です。<br>
-公開時は有料プランのみで提供予定です。
-</p>
-<div style="display:inline-block;padding:12px 32px;background:#7c3aed;color:#fff;border-radius:24px;font-weight:700;font-size:14px">準備中・公開時は月額500円</div>
-</div>
-'''
+    week_preds = week_data.get("predictions", [])
+    html += _build_teaser_predictions(week_preds)
     html += _forecast_page_foot()
     return html
 
@@ -2117,25 +2121,23 @@ def _build_area_forecast_page(area_group, forecast_data):
 
 def _build_forecast_hub(forecast_data, catches=None):
     """有料トップページHTML（予測結果レポート＋チラ見せ＋料金）"""
-    html = _forecast_page_head("釣果予測 プレミアム（準備中）")
+    html = _forecast_page_head("釣果予測 プレミアム")
 
-    # 釣果予測は準備中（認証システム未実装のため一切公開しない）
     html += '''
-<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:14px;padding:48px 24px;margin:32px 0;text-align:center">
-<h2 style="font-size:22px;color:#7c3aed;margin-bottom:16px;border:none;padding:0">有料プラン（準備中）</h2>
-<p style="font-size:14px;color:#5a6a7a;line-height:1.9;margin-bottom:24px">
-気象条件・潮通し・直近実績を組み合わせた、<br>
-<strong>魚種別・エリア別・日次の釣果予測</strong>を準備中です。<br>
-ご提供内容（予定）:
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:14px;padding:36px 24px;margin:24px 0;text-align:center">
+<h2 style="font-size:20px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">釣果予測 プレミアム</h2>
+<p style="font-size:13px;color:#5a6a7a;line-height:1.9;margin-bottom:20px">
+気象条件・潮通し・過去3年の実績データから算出する<strong>魚種別・エリア別の釣果予測</strong>です。<br>
+日次予測（7日先）・週次予測（4週先）・エリア別ハブを提供します。
 </p>
-<ul style="display:inline-block;text-align:left;font-size:13px;color:#5a6a7a;line-height:1.9;margin-bottom:24px">
-<li>日次予測（魚種×エリアの匹数レンジ・サイズ・確信度）</li>
-<li>週次予測（潮回り×季節傾向）</li>
-<li>エリア別予測ハブ</li>
-<li>船宿別 明日の予測</li>
+<ul style="display:inline-block;text-align:left;font-size:13px;color:#5a6a7a;line-height:1.9;margin-bottom:20px">
+<li>日次予測: 匹数レンジ・サイズ・確信度・分析コメント</li>
+<li>週次予測: 潮回り×季節傾向×直近実績</li>
+<li>エリア別出船リスク予報（7日間）</li>
+<li>船宿別 釣果ランキング＋予測</li>
 </ul>
-<div style="margin-top:8px"><div style="display:inline-block;padding:14px 36px;background:#7c3aed;color:#fff;border-radius:24px;font-weight:700;font-size:15px">準備中・公開時は月額500円</div></div>
-<p style="font-size:11px;color:#8a96a4;margin-top:14px">公開時期は未定です。決済システム整備後にご案内します。</p>
+<p style="font-size:13px;color:#7c3aed;font-weight:700;margin-bottom:16px">月額500円 / スポット閲覧 100円〜</p>
+<p style="font-size:11px;color:#8a96a4">決済システム整備中。下の日付から予測の一部を無料でプレビューできます。</p>
 </div>
 '''
     html += _forecast_page_foot()
