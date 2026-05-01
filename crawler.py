@@ -788,12 +788,40 @@ def _load_recent_catches_for_index(now, days=7):
                     fish_raw = row.get("fish_raw", "") or row.get("tsuri_mono_raw", "")
                     if not fish_raw:
                         continue
+                    # count_range / size_cm 構築（ミニバー・サイズ表示で使用）
+                    def _to_int(s):
+                        try: return int(float(s))
+                        except (ValueError, TypeError): return None
+                    def _to_float(s):
+                        try: return float(s)
+                        except (ValueError, TypeError): return None
+                    cmin = _to_int(row.get("cnt_min", ""))
+                    cmax = _to_int(row.get("cnt_max", ""))
+                    cavg = _to_int(row.get("cnt_avg", ""))
+                    is_boat = row.get("is_boat", "") == "1"
+                    count_range = None
+                    if cmin is not None and cmax is not None:
+                        count_range = {"min": cmin, "max": cmax, "is_boat": is_boat}
+                    smin = _to_float(row.get("size_min", ""))
+                    smax = _to_float(row.get("size_max", ""))
+                    size_cm = None
+                    if smin is not None and smax is not None:
+                        size_cm = {"min": smin, "max": smax}
+                    kgmin = _to_float(row.get("kg_min", ""))
+                    kgmax = _to_float(row.get("kg_max", ""))
+                    weight_kg = None
+                    if kgmin is not None and kgmax is not None:
+                        weight_kg = {"min": kgmin, "max": kgmax}
                     rows_out.append({
-                        "ship":     row.get("ship", ""),
-                        "area":     row.get("area", ""),
-                        "date":     d,
-                        "fish":     guess_fish(fish_raw),
-                        "fish_raw": fish_raw,
+                        "ship":        row.get("ship", ""),
+                        "area":        row.get("area", ""),
+                        "date":        d,
+                        "fish":        guess_fish(fish_raw),
+                        "fish_raw":    fish_raw,
+                        "count_range": count_range,
+                        "count_avg":   cavg,
+                        "size_cm":     size_cm,
+                        "weight_kg":   weight_kg,
                     })
         except Exception:
             continue
