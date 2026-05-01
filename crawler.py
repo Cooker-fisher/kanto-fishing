@@ -6129,9 +6129,14 @@ def build_fish_pages(data, history, crawled_at=""):
         with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
-    # fish/index.html: 魚種一覧
+    # fish/index.html: 魚種一覧（今週 = 過去7日間ローリング）
+    _week_cutoff = (now - timedelta(days=6)).strftime("%Y/%m/%d")
+    fish_week_summary = {}
+    for fish, cs in fish_summary.items():
+        week_cs = [c for c in cs if (c.get("date") or "") >= _week_cutoff]
+        fish_week_summary[fish] = week_cs
     fish_index_cards = ""
-    for fish, cs in sorted(fish_summary.items(), key=lambda x: -len(x[1])):
+    for fish, cs in sorted(fish_week_summary.items(), key=lambda x: (-len(x[1]), x[0])):
         cnt = len(cs)
         fish_index_cards += (
             f'<a class="fi-card" href="{fish_slug(fish)}.html">'
@@ -6139,6 +6144,7 @@ def build_fish_pages(data, history, crawled_at=""):
             f'<div class="fi-cnt">今週釣果{cnt}件</div>'
             f'</a>'
         )
+    _week_active = sum(1 for cs in fish_week_summary.values() if cs)
     fish_index_css = """.fi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:16px 0}
 .fi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;text-decoration:none;color:inherit;transition:border-color .15s}
 .fi-card:hover{border-color:var(--cta);text-decoration:none}
@@ -6157,11 +6163,11 @@ def build_fish_pages(data, history, crawled_at=""):
 {_v2_header_nav('fish')}
 <div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
   <div class="c"><div style="font-size:26px;font-weight:800">魚種別 釣果一覧</div>
-  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣れている魚種 {len(fish_summary)}種</div></div>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {_week_active}種</div></div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; 魚種一覧</p>
-  <h2 class="st">今週釣れている魚種</h2>
+  <h2 class="st">今週釣れている魚種（過去7日間）</h2>
   <div class="fi-grid">{fish_index_cards}</div>
 </div>
 {DATA_NOTE_HTML}
@@ -6755,12 +6761,17 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         with open(os.path.join(WEB_DIR, f"area/{area_slug(area)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
-    # area/index.html: エリア一覧（グループ別）
+    # area/index.html: エリア一覧（今週 = 過去7日間ローリング）
+    _area_week_cutoff = (now - timedelta(days=6)).strftime("%Y/%m/%d")
+    area_week_summary = {
+        area: [c for c in cs if (c.get("date") or "") >= _area_week_cutoff]
+        for area, cs in area_summary.items()
+    }
     _group_order = ["茨城", "千葉・外房", "千葉・内房", "千葉・東京湾奥", "東京", "神奈川・東京湾", "神奈川・相模湾", "静岡"]
     area_index_sections = ""
     for grp in _group_order:
-        grp_areas = [(area, catches) for area, catches in area_summary.items()
-                     if area in AREA_GROUPS.get(grp, []) and len(catches) >= 2]
+        grp_areas = [(area, area_week_summary[area]) for area in area_week_summary
+                     if area in AREA_GROUPS.get(grp, []) and len(area_week_summary[area]) >= 2]
         if not grp_areas: continue
         cards = ""
         for area, catches in sorted(grp_areas, key=lambda x: -len(x[1])):
@@ -6776,8 +6787,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         area_index_sections += f'<h2 class="st">{grp}</h2><div class="ai-grid">{cards}</div>'
     # 未分類エリア
     _matched = {a for areas in AREA_GROUPS.values() for a in areas}
-    _other = [(area, catches) for area, catches in area_summary.items()
-              if area not in _matched and len(catches) >= 2]
+    _other = [(area, area_week_summary[area]) for area in area_week_summary
+              if area not in _matched and len(area_week_summary[area]) >= 2]
     if _other:
         cards = ""
         for area, catches in sorted(_other, key=lambda x: -len(x[1])):
@@ -6811,7 +6822,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 {_v2_header_nav('area')}
 <div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
   <div class="c"><div style="font-size:26px;font-weight:800">エリア別 釣果一覧</div>
-  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {len([a for a,cs in area_summary.items() if len(cs)>=2])}エリア</div></div>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {len([a for a,cs in area_week_summary.items() if len(cs)>=2])}エリア</div></div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; エリア一覧</p>
