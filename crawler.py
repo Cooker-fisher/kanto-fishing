@@ -3869,12 +3869,18 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None):
 </div>"""
 
 def build_area_season_map_html(area, area_decadal, top_fish_list):
-    """エリアの魚種別旬カレンダー（魚種×12か月 ヒートマップ）"""
+    """エリアの魚種別旬カレンダー（魚種×12か月 ヒートマップ）
+
+    データソース: area_decadal（analysis.sqlite 由来・cnt_index 集計値）
+    フォールバック: analysis.sqlite が無い環境（GitHub Actions 等）では
+                   SEASON_DATA の score（1〜5）を level（0〜4）にマップして表示。
+                   過去複数回 analysis.sqlite gitignore で全セル空になったため。
+    """
     # 港名で直接引けなければ座標→分析地域名に変換してlookup
-    area_data = area_decadal.get(area)
+    area_data = area_decadal.get(area) if area_decadal else None
     if area_data is None:
         region = _port_to_analysis_region(area)
-        area_data = area_decadal.get(region, {}) if region else {}
+        area_data = area_decadal.get(region, {}) if (area_decadal and region) else {}
     month_labels = ["1","2","3","4","5","6","7","8","9","10","11","12"]
     ths = "".join(f"<th>{m}</th>" for m in month_labels)
     rows = ""
@@ -3882,21 +3888,31 @@ def build_area_season_map_html(area, area_decadal, top_fish_list):
         fish_decades = area_data.get(fish, {})
         # area_decadal は cnt_index のみ
         cnt_levels = []
+        # この魚種の area_decadal データが空なら SEASON_DATA フォールバックを使う
+        fallback_scores = None
+        if not fish_decades:
+            fallback_scores = SEASON_DATA.get(fish)
         for m in range(1, 13):
-            d1 = (m - 1) * 3 + 1
-            d2 = d1 + 1
-            d3 = d1 + 2
-            raw_vals = [fish_decades.get(d) for d in (d1, d2, d3)]
-            present = [v for v in raw_vals if v is not None]
-            if not present:
-                lv = -1  # データなし
+            if fallback_scores is not None:
+                # SEASON_DATA score 1〜5 → level 0〜4
+                lv = max(0, min(4, fallback_scores[m - 1] - 1))
             else:
-                avg = sum(present) / len(present)
-                if avg >= 160:   lv = 4
-                elif avg >= 130: lv = 3
-                elif avg >= 90:  lv = 2
-                elif avg >= 50:  lv = 1
-                else:            lv = 0
+                d1 = (m - 1) * 3 + 1
+                d2 = d1 + 1
+                d3 = d1 + 2
+                raw_vals = [fish_decades.get(d) for d in (d1, d2, d3)]
+                present = [v for v in raw_vals if v is not None]
+                if not present:
+                    # 部分データ欠落 → SEASON_DATA があれば使う、無ければ -1
+                    sd = SEASON_DATA.get(fish)
+                    lv = max(0, min(4, sd[m - 1] - 1)) if sd else -1
+                else:
+                    avg = sum(present) / len(present)
+                    if avg >= 160:   lv = 4
+                    elif avg >= 130: lv = 3
+                    elif avg >= 90:  lv = 2
+                    elif avg >= 50:  lv = 1
+                    else:            lv = 0
             cnt_levels.append(lv)
         cells = "".join(f'<td class="as-cell" data-v="{lv}"></td>' for lv in cnt_levels)
         rows += f'<tr><th class="as-th-fish">{fish}</th>{cells}</tr>\n'

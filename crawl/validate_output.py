@@ -121,6 +121,41 @@ def validate_area_index():
         ok(f"ai-card: {ai_count} 個")
 
 
+def validate_area_season_heatmap():
+    """個別エリアページの「魚種別 旬カレンダー」が空セルだらけでないか検証。
+    過去 analysis.sqlite gitignore で全セル data-v=-1 になる事故が複数回発生。
+    SEASON_DATA フォールバックで各セルが 0〜4 のいずれかに塗られているはず。
+    """
+    print("\n[7] docs/area/*.html 旬カレンダーヒートマップ")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        warn("docs/area/ ディレクトリが無い")
+        return
+    sample_files = [f for f in os.listdir(area_dir)
+                    if f.endswith(".html") and f != "index.html"][:10]
+    if not sample_files:
+        warn("検証対象の area HTML が無い")
+        return
+    bad_pages = []
+    for fn in sample_files:
+        with open(os.path.join(area_dir, fn), encoding="utf-8") as f:
+            content = f.read()
+        # 旬カレンダーが含まれているページのみ対象
+        if 'as-cell' not in content:
+            continue
+        cells = re.findall(r'data-v="(-?\d+)"', content)
+        if not cells:
+            continue
+        empty_cells = sum(1 for c in cells if c == "-1")
+        if empty_cells / len(cells) > 0.5:
+            bad_pages.append((fn, empty_cells, len(cells)))
+    if bad_pages:
+        for fn, e, t in bad_pages[:5]:
+            fail(f"area/{fn}: 旬カレンダー {e}/{t} セルが空（>50%）")
+    else:
+        ok(f"area 旬カレンダー: {len(sample_files)} 件サンプル全て塗りつぶし正常")
+
+
 def validate_calendar_html():
     print("\n[4] docs/calendar.html")
     path = os.path.join(DOCS, "calendar.html")
@@ -210,6 +245,7 @@ def main():
     validate_calendar_html()
     validate_csv_freshness()
     validate_catches_raw()
+    validate_area_season_heatmap()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
