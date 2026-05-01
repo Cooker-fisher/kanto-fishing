@@ -261,5 +261,7 @@ python -m http.server 8000 # ローカルサーバー起動
 
 @.claude/memory/project_status.md
 @.claude/memory/feedback_crawler_editing.md
+@.claude/memory/feedback_regression_prevention.md
 
 @PIPELINE.md
+@design/V2/REGRESSION_PREVENTION.md
