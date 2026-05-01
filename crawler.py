@@ -6650,6 +6650,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         fish_source = catches
 
         # 魚種別集計（fia-grid用）
+        # 修正: valid_catches 形式（count_range/size_cm dict）と CSV 形式
+        # （cnt_min/cnt_max/size_min/size_max スカラー）の両方に対応。
+        # 過去は CSV 列名のみ参照していたため 匹数range・サイズ が常に空だった。
         fish_data = {}
         for c in fish_source:
             for f in c["fish"]:
@@ -6659,10 +6662,23 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
                 d["records"] += 1
                 d["ships"].add(c["ship"])
                 d["ship_recs"][c["ship"]] = d["ship_recs"].get(c["ship"], 0) + 1
-                if c.get("cnt_min") is not None: d["cnt_mins"].append(c["cnt_min"])
-                if c.get("cnt_max") is not None: d["cnt_maxs"].append(c["cnt_max"])
-                if c.get("size_min") is not None: d["sz_mins"].append(c["size_min"])
-                if c.get("size_max") is not None: d["sz_maxs"].append(c["size_max"])
+                # count_range が dict なら優先（in-memory形式）、無ければ cnt_min/max（CSV形式）
+                cr = c.get("count_range")
+                if isinstance(cr, dict):
+                    if cr.get("min") is not None and not cr.get("is_boat"):
+                        d["cnt_mins"].append(cr["min"])
+                    if cr.get("max") is not None and not cr.get("is_boat"):
+                        d["cnt_maxs"].append(cr["max"])
+                else:
+                    if c.get("cnt_min") is not None: d["cnt_mins"].append(c["cnt_min"])
+                    if c.get("cnt_max") is not None: d["cnt_maxs"].append(c["cnt_max"])
+                sz = c.get("size_cm")
+                if isinstance(sz, dict):
+                    if sz.get("min") is not None: d["sz_mins"].append(sz["min"])
+                    if sz.get("max") is not None: d["sz_maxs"].append(sz["max"])
+                else:
+                    if c.get("size_min") is not None: d["sz_mins"].append(c["size_min"])
+                    if c.get("size_max") is not None: d["sz_maxs"].append(c["size_max"])
 
         top_fish_items = sorted(fish_data.items(), key=lambda x: -x[1]["records"])[:6]
 

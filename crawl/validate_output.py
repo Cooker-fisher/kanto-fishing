@@ -156,6 +156,63 @@ def validate_area_season_heatmap():
         ok(f"area 旬カレンダー: {len(sample_files)} 件サンプル全て塗りつぶし正常")
 
 
+def validate_area_fia_cards():
+    """個別エリアページの「このエリアで今週釣れている魚」fia-grid を検証。
+    - 過去複数回、fia card が空（< 3 cards）になる事故が発生
+    - card 内の cnt_str（匹数）/sz_str（サイズ）が空ばかりだとレイアウト sparse
+    """
+    print("\n[8] docs/area/*.html 今週釣れている魚 fia-grid")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        warn("docs/area/ ディレクトリが無い")
+        return
+    # データのある area_index.html から area_summary に登場するエリアを取得
+    aindex_path = os.path.join(area_dir, "index.html")
+    if not os.path.isfile(aindex_path):
+        warn("area/index.html が無い → fia-grid 検証 skip")
+        return
+    aindex_content = open(aindex_path, encoding="utf-8").read()
+    # area_index で「今週釣果X件」と表示されているエリア（X >= 5）のページのみ検証
+    target_slugs = []
+    for m in re.finditer(r'href="(\w[\w-]*)\.html"[^>]*>.*?今週釣果(\d+)件', aindex_content, re.DOTALL):
+        slug, n = m.group(1), int(m.group(2))
+        if n >= 5:
+            target_slugs.append(slug)
+    if not target_slugs:
+        warn("検証対象エリア（週5件以上）が無い")
+        return
+    sample = target_slugs[:5]
+    bad = []
+    sparse = []
+    for slug in sample:
+        path = os.path.join(area_dir, f"{slug}.html")
+        if not os.path.isfile(path):
+            continue
+        content = open(path, encoding="utf-8").read()
+        if "このエリアで今週釣れている魚" not in content:
+            continue
+        # fia card 数
+        fia_count = len(re.findall(r'<a class="fia"', content))
+        if fia_count < 1:
+            bad.append((slug, "fia card が 0"))
+            continue
+        # サイズ・匹数の有無を確認（"15〜30匹" や "20〜40cm" 形式）
+        m = re.search(r'<a class="fia"[^>]*>(.*?)</a>', content, re.DOTALL)
+        if m:
+            card = m.group(1)
+            has_count = bool(re.search(r'\d+〜\d+匹|\d+匹', card))
+            has_size = bool(re.search(r'\d+〜\d+cm|\d+cm', card))
+            if not (has_count or has_size):
+                sparse.append(slug)
+    if bad:
+        for slug, reason in bad:
+            fail(f"area/{slug}.html: {reason}")
+    elif len(sparse) >= len(sample) // 2:
+        warn(f"area/*.html fia card に 匹数/サイズ が無いページが多い: {sparse[:3]}")
+    else:
+        ok(f"area fia-grid: {len(sample)} 件サンプル正常（card あり・匹数orサイズあり）")
+
+
 def validate_calendar_html():
     print("\n[4] docs/calendar.html")
     path = os.path.join(DOCS, "calendar.html")
@@ -246,6 +303,7 @@ def main():
     validate_csv_freshness()
     validate_catches_raw()
     validate_area_season_heatmap()
+    validate_area_fia_cards()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
