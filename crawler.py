@@ -5439,6 +5439,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
 .at-ftag{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub);text-decoration:none}
 .at-ftag:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
+.risk-grid-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.risk-row{display:flex;flex-direction:column;gap:4px}
+.risk-row-head{font-size:11px;font-weight:700;color:var(--sub)}
+.risk-sea-type{color:var(--text)}
+.risk-sea-areas{font-weight:400;color:var(--muted)}
+.risk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .risk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
 .risk-day{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center}
 .risk-day.good{border-color:var(--pos);background:#f0fdf4}
@@ -5451,6 +5457,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .risk-day.warn .rd-icon{color:var(--warn)}
 .risk-day.bad .rd-icon{color:var(--neg)}
 .rd-label{font-size:9px;font-weight:700}
+.risk-note{font-size:10px;color:var(--muted);margin:-6px 0 4px}
 .nav-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .nav-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .nav-chips{display:flex;flex-wrap:wrap;gap:5px}
