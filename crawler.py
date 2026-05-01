@@ -6798,8 +6798,187 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 # ============================================================
 # #11: 魚種×港ページ（fish_area/）
 # ============================================================
-def build_fish_area_pages(data, crawled_at="", history=None):
+def _decade_label(dn):
+    """decade_no（1-36）→ 'X月上/中/下旬' ラベル"""
+    month = ((int(dn) - 1) // 3) + 1
+    jun = ["上旬", "中旬", "下旬"][(int(dn) - 1) % 3]
+    return f"{month}月{jun}"
+
+
+def _fa_catches_stats(fa_catches):
+    """fish_area 用の釣果統計 (n_personal, avg_med, max_val, p25, p75, max_boat)"""
+    personal = [
+        c for c in fa_catches
+        if c.get("count_range") and not c["count_range"].get("is_boat")
+        and c["count_range"].get("max") is not None
+    ]
+    max_boat = max(
+        (c["count_range"]["max"] for c in fa_catches
+         if c.get("count_range") and c["count_range"].get("is_boat")
+         and c["count_range"].get("max") is not None),
+        default=0
+    )
+    if not personal:
+        return 0, 0.0, 0, 0, 0, max_boat
+    mins = sorted([(c["count_range"].get("min") or 0) for c in personal])
+    maxes = sorted([c["count_range"]["max"] for c in personal])
+    avgs = sorted([((c["count_range"].get("min") or 0) + c["count_range"]["max"]) / 2 for c in personal])
+    n = len(personal)
+    med = avgs[n // 2]
+    p25 = mins[int(n * 0.25)] if n >= 4 else mins[0]
+    p75 = maxes[int(n * 0.75)] if n >= 4 else maxes[-1]
+    return n, round(med, 1), int(maxes[-1]), int(p25), int(p75), max_boat
+
+
+def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar):
+    """fish_area 説明文（200字以上・自サイトデータのみ）"""
+    N = len(fa_catches)
+    n_personal, avg_med, max_val, p25, p75, max_boat = _fa_catches_stats(fa_catches)
+
+    fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
+    peak_label = ""
+    if fish_decades:
+        top_dn = max(fish_decades.items(), key=lambda x: x[1].get("cnt_index", 0))
+        peak_label = _decade_label(top_dn[0])
+
+    ship_counts: dict = {}
+    for c in fa_catches:
+        sn = c.get("ship", "")
+        if sn:
+            ship_counts[sn] = ship_counts.get(sn, 0) + 1
+    top_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
+
+    dates = sorted([c.get("date", "") for c in fa_catches if c.get("date")])
+    years_str = ""
+    if len(dates) >= 2:
+        y0, y1 = dates[0][:4], dates[-1][:4]
+        years_str = f"（{y0}年〜{y1}年）" if y0 != y1 else f"（{y0}年）"
+
+    total_ships = len(ship_counts)
+    lines = [f"{area}での{fish}の釣果データは{N}件記録されています{years_str}。"]
+    if peak_label:
+        lines.append(f"月別の集計では{peak_label}前後に釣果が集中する傾向があります。")
+    if n_personal >= 5:
+        lines.append(f"1回の釣行あたりの中央値は{avg_med:.0f}匹で、最高釣果は{max_val}匹の記録があります。")
+        if p25 < p75:
+            lines.append(f"標準的な釣果レンジは{p25}〜{p75}匹です。")
+        lines.append(f"釣果は潮回りや水温の影響を受けやすく、旬の時期を選ぶと安定した釣果が期待できます。")
+    elif max_val > 0:
+        lines.append(f"最高釣果は{max_val}匹の記録があります（データ蓄積中：{N}件）。")
+        lines.append(f"釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。")
+    elif max_boat > 0:
+        lines.append(f"乗合船全体の最大釣果は{max_boat}匹の記録があります。")
+        lines.append(f"個人釣果の統計は引き続きデータ収集中です。釣果は潮回りや季節によって変動します。")
+    else:
+        lines.append(f"引き続きデータを収集中です。")
+        lines.append(f"釣果は潮回りや季節によって変動するため、旬の時期を選ぶと安定した釣果が期待できます。")
+    if top_ships:
+        ship_strs = "、".join(f"{sn}（{cnt}件）" for sn, cnt in top_ships)
+        lines.append(f"出船実績の多い船宿は{ship_strs}です。")
+    if total_ships > 0:
+        lines.append(f"このエリアでは計{total_ships}船宿が{fish}の出船実績を持ちます。各船宿の出船スケジュールは直接ご確認ください。")
+    text = "".join(lines)
+    if len(text) < 200:
+        text += "このページのシーズンバーと釣果カードで最新の傾向を確認の上、釣行計画にお役立てください。"
+    return f'<p class="fa-intro">{text}</p>'
+
+
+def build_fish_area_faq_html(fish, area, fa_catches, decadal_calendar):
+    """fish_area ページ用 FAQ 3問 + FAQPage JSON-LD を返す (html, jsonld) タプル"""
+    N = len(fa_catches)
+    n_personal, avg_med, max_val, p25, p75, max_boat = _fa_catches_stats(fa_catches)
+
+    # Q1: 最も釣れる時期
+    fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
+    if fish_decades and N >= 5:
+        sorted_dns = sorted(fish_decades.items(), key=lambda x: -x[1].get("cnt_index", 0))
+        top3 = sorted_dns[:3]
+        top_labels = "、".join(_decade_label(dn) for dn, _ in top3)
+        top_score = round(top3[0][1].get("cnt_index", 0), 1)
+        q1_ans = (
+            f"{area}での{fish}は{_decade_label(top3[0][0])}に釣果指数が最も高くなります"
+            f"（釣果指数{top_score}）。"
+            f"上位3旬は{top_labels}で、この時期に釣果が集中しています。"
+            f"シーズン外でも釣果報告はあり、直近{N}件のデータに基づく集計です。"
+        )
+    elif N >= 5:
+        q1_ans = (
+            f"直近{N}件の釣果データをもとに季節傾向を集計中です。"
+            f"このページの年間シーズンバーで月別の傾向をご確認ください。"
+        )
+    else:
+        q1_ans = f"データ蓄積中（{N}件）のため、季節ピークの特定には十分なサンプルが必要です。今後のデータ追加をお待ちください。"
+
+    # Q2: 釣果レンジ
+    if n_personal >= 10:
+        q2_ans = (
+            f"直近{N}件のデータでは{p25}〜{p75}匹が標準的なレンジです（中央値{avg_med:.0f}匹）。"
+            f"{area}での{fish}の最高記録は{max_val}匹です。"
+            f"釣果は潮回り・水温・季節によって変動します。直近の釣果カードおよびページ上部のシーズンバーもご参考ください。"
+        )
+    elif n_personal >= 3:
+        q2_ans = (
+            f"直近データ（{n_personal}件の実釣記録）では最高{max_val}匹の記録があります。"
+            f"釣果は潮回り・水温・季節によって大きく変動します。"
+            f"引き続きサンプルを蓄積中のため、今後より精度の高い釣果レンジをお伝えできる予定です。"
+            f"直近の実績はこのページの釣果カードをご参照ください。"
+        )
+    elif max_boat > 0:
+        q2_ans = (
+            f"{area}での{fish}は直近{N}件の釣果記録があります。"
+            f"乗合船全体での最大釣果は{max_boat}匹の記録があります（船全体の合計数）。"
+            f"個人別釣果の統計的レンジは引き続きデータ収集中のため、直近の釣果カードをご確認ください。"
+        )
+    else:
+        q2_ans = (
+            f"{area}での{fish}は現在データ蓄積中（{N}件）です。"
+            f"釣果レンジの統計的な算出には一定のサンプル数が必要なため、引き続き釣果データを収集しています。"
+            f"データが蓄積され次第、より詳細な情報を提供します。直近の実績はこのページの釣果カードをご確認ください。"
+        )
+
+    # Q3: 船宿
+    ship_counts: dict = {}
+    for c in fa_catches:
+        sn = c.get("ship", "")
+        if sn:
+            ship_counts[sn] = ship_counts.get(sn, 0) + 1
+    top3_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
+    total_ships = len(ship_counts)
+    if top3_ships:
+        ship_strs = "、".join(f"{sn}（{cnt}件）" for sn, cnt in top3_ships)
+        q3_ans = (
+            f"{area}での{fish}釣果データがある船宿は計{total_ships}船宿です。"
+            f"記録件数が多い順に{ship_strs}が上位です。"
+            f"出船スケジュールや仕掛けのレンタル・販売の有無は各船宿に直接お問い合わせください。"
+            f"予約方法は電話またはWebから確認できます。"
+        )
+    else:
+        q3_ans = (
+            f"{area}での{fish}の船宿情報はデータ蓄積中です。"
+            f"引き続き釣果データを収集しており、出船実績のある船宿が確認でき次第、このページに反映します。"
+        )
+
+    faqs = [
+        (f"{area}で{fish}が最も釣れる時期はいつですか？", q1_ans),
+        (f"{area}での{fish}の釣果はどのくらいですか？", q2_ans),
+        (f"{area}で{fish}を狙える船宿はどこですか？", q3_ans),
+    ]
+    html = '<div class="faq-list">\n'
+    for q, a in faqs:
+        html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}</p></details>\n'
+    html += '</div>'
+    jsonld_items = ",\n".join(
+        f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
+        for q, a in faqs
+    )
+    jsonld = f'<script type="application/ld+json">{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{jsonld_items}]}}</script>'
+    return html, jsonld
+
+
+def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=None):
     os.makedirs(os.path.join(WEB_DIR, "fish_area"), exist_ok=True)
+    if decadal_calendar is None:
+        decadal_calendar = load_decadal_calendar()
     fa_summary: dict = {}
     for c in data:
         for f in c["fish"]:
@@ -6923,6 +7102,9 @@ def build_fish_area_pages(data, crawled_at="", history=None):
                 f'<div class="sl-sub">{sub if sub else "釣果あり"}</div>'
                 f'</div>'
             )
+        # 説明文 + FAQ（AdSense コンテンツ充実）
+        fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar)
+        fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, catches, decadal_calendar)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         desc = f"{area}での{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
@@ -6938,16 +7120,19 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"魚種一覧","item":"{SITE_URL}/fish/"}},{{"@type":"ListItem","position":3,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_slug(fish)}.html"}},{{"@type":"ListItem","position":4,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
+  {fa_faq_ld}
   {GA_TAG}
   {ADSENSE_TAG}
   <style>{V2_COMMON_CSS}
-{fa_extra_css}</style>
+{fa_extra_css}
+.fa-intro{{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:16px}}</style>
 </head>
 <body>
 {_v2_header_nav('')}
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}</p>
   <h2 class="st">{area}の{fish}釣果情報</h2>
+  {fa_intro_html}
   {stat_cards_fa}
   <h2 class="st">年間シーズン <span class="tag free">無料</span></h2>{season_bar_fa}
   {combo_comment_html}
@@ -6955,6 +7140,8 @@ def build_fish_area_pages(data, crawled_at="", history=None):
   {ship_rank_fa_html}
   <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
   {recent_cards_fa}
+  <h2 class="st">よくある質問</h2>
+  {fa_faq_html}
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
