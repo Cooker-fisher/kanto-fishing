@@ -3629,7 +3629,6 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .faq-src{display:block;font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5}
 .faq-src-link{color:var(--muted);text-decoration:underline;text-decoration-style:dotted}
 .faq-src-link:hover{color:var(--sub)}
-.faq-src-link::after{content:" ↗";font-size:9px}
 .overview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .overview-title{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:6px}
 .overview-body{font-size:13px;color:var(--text);line-height:1.8}
@@ -6725,8 +6724,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             faq_a4 = "本ページの旬カレンダーで魚種別の月別釣れ具合をご確認いただけます。過去3年の実績から集計しています。"
             faq_q5 = f"{area}へのアクセス方法は？"
             faq_a5 = _access if _access else f"{area}への詳細なアクセスは各船宿のウェブサイトをご確認ください。"
-            faq_html = (
-                '<div class="faq-list">'
+            auto_faq_html_thin = (
+                '<div class="faq-list faq-data">'
+                f'<h3 class="faq-block-ttl">{area}釣果データから分かること</h3>'
                 f'<details><summary>{faq_q1}</summary><p class="faq-ans">{faq_a1}</p></details>'
                 f'<details><summary>{faq_q2}</summary><p class="faq-ans">{faq_a2}</p></details>'
                 f'<details><summary>{faq_q3}</summary><p class="faq-ans">{faq_a3}</p></details>'
@@ -6734,6 +6734,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
                 f'<details><summary>{faq_q5}</summary><p class="faq-ans">{faq_a5}</p></details>'
                 '</div>'
             )
+            fixed_faq_html_thin, fixed_faq_pairs_thin = build_fixed_faq_html("area", area, fixed_faq_data_area)
+            faq_html = auto_faq_html_thin + fixed_faq_html_thin
 
             teaser_html = (
                 '<h2 class="st teaser-title">このエリアの予測・分析 <span class="tag coming">まもなく公開</span></h2>'
@@ -6744,15 +6746,20 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             )
 
             import json as _json
+            _thin_main_entity = [
+                {"@type":"Question","name":faq_q1,"acceptedAnswer":{"@type":"Answer","text":faq_a1}},
+                {"@type":"Question","name":faq_q2,"acceptedAnswer":{"@type":"Answer","text":faq_a2}},
+                {"@type":"Question","name":faq_q3,"acceptedAnswer":{"@type":"Answer","text":faq_a3}},
+                {"@type":"Question","name":faq_q4,"acceptedAnswer":{"@type":"Answer","text":faq_a4}},
+                {"@type":"Question","name":faq_q5,"acceptedAnswer":{"@type":"Answer","text":faq_a5}},
+            ]
+            for _q, _a in fixed_faq_pairs_thin:
+                _thin_main_entity.append(
+                    {"@type":"Question","name":_q,"acceptedAnswer":{"@type":"Answer","text":_a}}
+                )
             faq_jsonld = _json.dumps({
                 "@context": "https://schema.org", "@type": "FAQPage",
-                "mainEntity": [
-                    {"@type":"Question","name":faq_q1,"acceptedAnswer":{"@type":"Answer","text":faq_a1}},
-                    {"@type":"Question","name":faq_q2,"acceptedAnswer":{"@type":"Answer","text":faq_a2}},
-                    {"@type":"Question","name":faq_q3,"acceptedAnswer":{"@type":"Answer","text":faq_a3}},
-                    {"@type":"Question","name":faq_q4,"acceptedAnswer":{"@type":"Answer","text":faq_a4}},
-                    {"@type":"Question","name":faq_q5,"acceptedAnswer":{"@type":"Answer","text":faq_a5}},
-                ],
+                "mainEntity": _thin_main_entity,
             }, ensure_ascii=False)
             crumb_jsonld = _json.dumps({
                 "@context":"https://schema.org","@type":"BreadcrumbList",
@@ -7097,13 +7104,13 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             for q, a in _area_all_faq_pairs
         )
         _area_coords_ld = _ship_load_area_coords()
-        _place_json = ""
+        _place_script = ""
         if _area_coords_ld and area in _area_coords_ld:
             _lat = _area_coords_ld[area].get("lat")
             _lon = _area_coords_ld[area].get("lon")
             if _lat and _lon:
-                _place_json = f',{{"@context":"https://schema.org","@type":"Place","name":{json.dumps(area, ensure_ascii=False)},"geo":{{"@type":"GeoCoordinates","latitude":{_lat},"longitude":{_lon}}}}}'
-        area_faq_jsonld = f'<script type="application/ld+json">[{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{_area_faq_items}]}}{_place_json}]</script>'
+                _place_script = f'<script type="application/ld+json">{{"@context":"https://schema.org","@type":"Place","name":{json.dumps(area, ensure_ascii=False)},"geo":{{"@type":"GeoCoordinates","latitude":{_lat},"longitude":{_lon}}}}}</script>'
+        area_faq_jsonld = f'<script type="application/ld+json">{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{_area_faq_items}]}}</script>{_place_script}'
 
         # SEO
         area_url = f"{SITE_URL}/area/{area_slug(area)}.html"
@@ -7178,7 +7185,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
-  {('<h2 class="st">このエリアについて</h2>' + area_description_html) if area_description_html else ('<h2 class="st">よくある質問</h2>' + area_faq_html)}
+  {('<h2 class="st">このエリアについて</h2>' + area_description_html) if area_description_html else ''}
+  <h2 class="st">よくある質問</h2>
+  {area_faq_html}
   {area_teaser_html}
 </div>
 {DATA_NOTE_HTML}

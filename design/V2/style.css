@@ -589,7 +589,6 @@ footer .cp { margin-top: 10px; display: block; opacity: .5; }
 .faq-src { display: block; font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
 .faq-src-link { color: var(--muted); text-decoration: underline; text-decoration-style: dotted; }
 .faq-src-link:hover { color: var(--sub); }
-.faq-src-link::after { content: " ↗"; font-size: 9px; }
 
 /* ── PC ── */
 @media (min-width: 769px) {
