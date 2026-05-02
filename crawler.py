@@ -3858,18 +3858,33 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None):
     decadal_calendar が空（GitHub Actions 環境等）の場合は SEASON_DATA 固定ヒートマップで代替。"""
     fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
     if not fish_decades:
-        # analysis.sqlite 非存在時は SEASON_DATA から sm-cell ヒートマップを生成
+        # analysis.sqlite 非存在時は SEASON_DATA + SEASON_TYPE から数釣/型釣 2行ヒートマップを生成
         scores = SEASON_DATA.get(fish, [3] * 12)
+        types  = SEASON_TYPE.get(fish, [""] * 12)
         month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
         ths = "".join(f"<th>{m}</th>" for m in month_labels)
-        cnt_levels = [max(0, min(4, s - 1)) for s in scores]
+        cnt_levels  = []
+        size_levels = []
+        for s, t in zip(scores, types):
+            base = max(0, min(4, s - 1))
+            if t == "数" and s >= 4:
+                cnt_levels.append(base)
+                size_levels.append(max(0, base - 1))
+            elif t == "型" and s >= 4:
+                cnt_levels.append(max(0, base - 1))
+                size_levels.append(base)
+            else:
+                cnt_levels.append(base)
+                size_levels.append(base)
         cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
+        size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
         return f"""<div class="season-map">
   <div class="sm-wrap">
     <table class="sm-table">
       <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
       <tbody>
-        <tr><th class="sm-th-mo">旬</th>{cnt_cells}</tr>
+        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
+        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
       </tbody>
     </table>
   </div>
@@ -3881,7 +3896,7 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None):
     <span class="sm-lc sm-lc-3"></span>良
     <span class="sm-lc sm-lc-4"></span>◎
   </div>
-  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 季節的な傾向データ（固定）</p>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
 </div>"""
     cnt_levels   = _decadal_to_monthly_index(fish_decades)
     size_levels  = _decadal_to_monthly_size_index(fish_decades)
