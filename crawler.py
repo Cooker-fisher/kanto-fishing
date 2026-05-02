@@ -5334,6 +5334,16 @@ def build_html(catches, crawled_at, history, weather_data=None):
             if av and mx: cnt_range_str = f"{av:.0f}〜{mx}匹"
             elif mx:       cnt_range_str = f"〜{mx}匹"
             elif av:       cnt_range_str = f"平均{av:.0f}匹"
+        if not cnt_range_str:
+            # this_w が None（週またぎ等で今週の history なし）のとき cs から直接計算
+            _cs_p = [c for c in cs if c.get("count_range") and not c["count_range"].get("is_boat")]
+            if _cs_p:
+                _avgs = [(c["count_range"]["min"] + c["count_range"]["max"]) // 2 for c in _cs_p]
+                _mx   = max(c["count_range"]["max"] for c in _cs_p)
+                _av   = round(sum(_avgs) / len(_avgs))
+                if _av and _mx: cnt_range_str = f"{_av:.0f}〜{_mx}匹"
+                elif _mx:       cnt_range_str = f"〜{_mx}匹"
+                elif _av:       cnt_range_str = f"平均{_av:.0f}匹"
         if not cnt_range_str: cnt_range_str = f"{len(cs)}件"
         sz_val = (this_w.get("size_avg") or 0) if this_w else 0
         sz_str = f"{sz_val:.0f}cm" if sz_val else ""
