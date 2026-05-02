@@ -5484,7 +5484,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             risk_grid_html = f'<div class="risk-grid-wrap">{soto_row}{uchi_row}</div>'
     # V2 魚種ナビチップ（ZONE E）
     fish_nav_html = "".join(
-        f'<a href="fish/{fish_slug(f)}.html">{f}</a>'
+        f'<a href="fish/{fish_slug(f)}.html"><img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
         for f in sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))[:12]
     )
     area_nav_html = "".join(
@@ -5650,6 +5650,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .nav-chips{display:flex;flex-wrap:wrap;gap:5px}
 .nav-chips a{font-size:12px;padding:5px 10px;background:var(--bg);border-radius:12px;color:var(--sub);font-weight:600}
 .nav-chips a:hover{background:var(--accent);color:#fff;text-decoration:none}
+.chip-emoji{width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px}
 @media(min-width:769px){.fish-grid{grid-template-columns:repeat(3,1fr)}}
 .st-sub{font-size:12px;font-weight:400;color:var(--sub);margin-left:6px}
 .note-text{font-size:12px;color:var(--sub);margin-bottom:10px}
@@ -6024,7 +6025,8 @@ def build_fish_pages(data, history, crawled_at=""):
 .mb-label{{font-size:10px;color:var(--muted);margin-top:6px}}
 .mb-num{{font-size:11px;color:var(--accent);font-weight:700}}
 .fish-hero{{background:linear-gradient(135deg,var(--accent),var(--accent2,#163d5c));color:#fff;padding:22px 14px 18px;text-align:center}}
-.fish-hero h2{{font-size:26px;font-weight:800;margin:0}}
+.fish-hero h2{{font-size:26px;font-weight:800;margin:0;display:flex;align-items:center;justify-content:center;gap:8px}}
+.fh-emoji{{width:40px;height:40px;object-fit:contain}}
 .fish-hero .fh-r{{font-size:30px;font-weight:800;color:var(--cta);margin-top:4px;line-height:1.1}}
 .fish-hero .fh-s{{font-size:18px;font-weight:700;color:#fff;margin-top:2px}}
 .fish-hero .fh-m{{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}}
@@ -6056,7 +6058,7 @@ def build_fish_pages(data, history, crawled_at=""):
 {_v2_header_nav('fish')}
 <!-- 統一HERO: マダイ等の rich 形式と同構造 -->
 <div class="fish-hero">
-  <h2>{fish}</h2>
+  <h2><img src="../assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
   <div class="fh-r">過去1年 {past_year_records:,}件</div>
   <div class="fh-m">本日の釣果報告は集計待ち</div>
 </div>
@@ -6261,7 +6263,8 @@ def build_fish_pages(data, history, crawled_at=""):
         chart7_html = build_fish_7day_chart_html(fish, catches, display_date=_chart7_base, display_label=fish_today_label)
         fish_extra_css = """\
 .fish-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:22px 14px 18px;text-align:center}
-.fish-hero h2{font-size:26px;font-weight:800;margin:0}
+.fish-hero h2{font-size:26px;font-weight:800;margin:0;display:flex;align-items:center;justify-content:center;gap:8px}
+.fh-emoji{width:40px;height:40px;object-fit:contain}
 .fish-hero .fh-r{font-size:30px;font-weight:800;color:var(--cta);margin-top:4px;line-height:1.1}
 .fish-hero .fh-s{font-size:18px;font-weight:700;color:#fff;margin-top:2px}
 .fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
@@ -6315,7 +6318,7 @@ def build_fish_pages(data, history, crawled_at=""):
 <body>
 {_v2_header_nav('fish')}
 <div class="fish-hero">
-  <h2>{fish}</h2>
+  <h2><img src="../assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
   {f'<div class="fh-r">{cnt_range_str}</div>' if cnt_range_str else ''}
   {f'<div class="fh-s">{sz_str}</div>' if sz_str else ''}
   <div class="fh-m">今週 {len(catches)}件・{len(set(c['ship'] for c in catches))}船宿</div>
@@ -6364,7 +6367,7 @@ def build_fish_pages(data, history, crawled_at=""):
         cnt = len(cs)
         fish_index_cards += (
             f'<a class="fi-card" href="{fish_slug(fish)}.html">'
-            f'<div class="fi-name">{fish}</div>'
+            f'<div class="fi-name"><img src="../assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fi-emoji" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
             f'<div class="fi-cnt">今週釣果{cnt}件</div>'
             f'</a>'
         )
@@ -6372,7 +6375,8 @@ def build_fish_pages(data, history, crawled_at=""):
     fish_index_css = """.fi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:16px 0}
 .fi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;text-decoration:none;color:inherit;transition:border-color .15s}
 .fi-card:hover{border-color:var(--cta);text-decoration:none}
-.fi-name{font-size:14px;font-weight:700;color:var(--accent)}
+.fi-name{font-size:14px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px}
+.fi-emoji{width:28px;height:28px;object-fit:contain;flex-shrink:0}
 .fi-cnt{font-size:11px;color:var(--muted);margin-top:4px}"""
     fish_index_html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
@@ -7516,15 +7520,16 @@ def build_calendar_page(crawled_at=""):
             cls    = ("peak-count" if tp == "数" else "peak-size") if sc >= 4 else ("mid" if sc == 3 else "low")
             label  = "◎" if sc >= 4 else ("○" if sc == 3 else "-")
             cells += f'<td class="{cls} {is_now}">{label}</td>'
-        rows += f"<tr><td class='fish-name'><a href='fish/{fish_slug(fish)}.html'>{fish}</a></td>{cells}</tr>"
+        rows += f"<tr><td class='fish-name'><a href='fish/{fish_slug(fish)}.html'><img src='assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp' alt='{fish}' class='cal-emoji' width='20' height='20' loading='lazy' decoding='async' onerror='this.style.display=\"none\"'>{fish}</a></td>{cells}</tr>"
     cal_extra_css = """.cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px}
 .cal-wrap table{font-size:12px;min-width:600px}
 .cal-wrap th{text-align:center;min-width:34px;font-size:11px;padding:6px 4px}
 .cal-wrap th.cur-month{background:var(--cta);color:#fff}
 .cal-wrap td{text-align:center;padding:5px 3px;border-bottom:1px solid var(--border)}
 .cal-wrap td.fish-name{text-align:left;font-weight:700;min-width:80px;padding-left:4px;white-space:nowrap}
-.cal-wrap td.fish-name a{color:var(--text)}
+.cal-wrap td.fish-name a{color:var(--text);display:flex;align-items:center;gap:4px}
 .cal-wrap td.fish-name a:hover{color:var(--cta)}
+.cal-emoji{width:20px;height:20px;object-fit:contain;flex-shrink:0}
 .cal-wrap td.peak-count{background:#fde8d4;color:#b84500;font-weight:700}
 .cal-wrap td.peak-size{background:#ece5fd;color:#6d28d9;font-weight:700}
 .cal-wrap td.mid{background:#dfe8f4;color:#2c6ea8}
