@@ -576,6 +576,21 @@ footer .cp { margin-top: 10px; display: block; opacity: .5; }
 .leg-count { color: var(--cta); }
 .leg-size  { color: #7209b7; margin-left: 6px; }
 
+/* ── FAQ ブロック内小見出し ── */
+.faq-block-ttl {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 10px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 2px;
+}
+.faq-block-ttl:first-child { padding-top: 2px; }
+.faq-block-ttl--common { margin-top: 10px; }
+
+/* ── FAQ 出典リンク ── */
+.faq-src { display: block; font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.faq-src-link { color: var(--muted); text-decoration: underline; text-decoration-style: dotted; }
+.faq-src-link:hover { color: var(--sub); }
+.faq-src-link::after { content: " ↗"; font-size: 9px; }
+
 /* ── PC ── */
 @media (min-width: 769px) {
   .bn { display: none; }

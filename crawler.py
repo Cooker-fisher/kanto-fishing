@@ -3623,6 +3623,13 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .faq-list summary::after{content:"+";font-size:16px;color:var(--muted);flex-shrink:0;line-height:1}
 .faq-list details[open]>summary::after{content:"−"}
 .faq-ans{font-size:12px;color:var(--sub);line-height:1.75;padding-bottom:12px}
+.faq-block-ttl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:2px}
+.faq-block-ttl:first-child{padding-top:2px}
+.faq-block-ttl--common{margin-top:10px}
+.faq-src{display:block;font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5}
+.faq-src-link{color:var(--muted);text-decoration:underline;text-decoration-style:dotted}
+.faq-src-link:hover{color:var(--sub)}
+.faq-src-link::after{content:" ↗";font-size:9px}
 .overview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .overview-title{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:6px}
 .overview-body{font-size:13px;color:var(--text);line-height:1.8}
@@ -4109,8 +4116,96 @@ def build_fish_7day_chart_html(fish, catches, display_date=None, display_label="
   {trend}
 </div>"""
 
+def _load_fixed_faq():
+    """normalize/fixed_faq.json を読み込む。失敗時は空 dict を返す。"""
+    import os as _os
+    path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "normalize", "fixed_faq.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _faq_source_html(sources):
+    """sources リストから出典 <small> HTML を生成する。空リストなら空文字。"""
+    if not sources:
+        return ""
+    import html as _html
+    import urllib.parse as _up
+    links = []
+    for url in sources:
+        try:
+            host = _up.urlparse(url).netloc
+            # www. prefix を除去してドメイン部分を表示
+            display = host.replace("www.", "") if host.startswith("www.") else host
+        except Exception:
+            display = url
+        links.append(
+            f'<a href="{_html.escape(url)}" target="_blank" rel="nofollow noopener noreferrer" class="faq-src-link">{_html.escape(display)}</a>'
+        )
+    joined = "、".join(links)
+    return f'<small class="faq-src">出典: {joined}</small>'
+
+
+def build_fixed_faq_html(scope_type, scope_key, fixed_faq_data):
+    """
+    固定FAQブロック (faq-static) を生成する。
+    scope_type: "fish" or "area"
+    scope_key : 魚種名 or エリア名
+    fixed_faq_data: _load_fixed_faq() の戻り値
+    戻り値: (html, faq_pairs)  faq_pairs = [(q, a), ...]
+    """
+    import html as _html
+    common_items = fixed_faq_data.get("common", [])
+    scoped_items = (fixed_faq_data.get(scope_type) or {}).get(scope_key, [])
+
+    faq_pairs = []
+    inner = ""
+
+    # ── 固有FAQ ────────────────────────────────────────────
+    if scoped_items:
+        if scope_type == "fish":
+            block_ttl = f"{_html.escape(scope_key)}船釣りの基礎知識"
+        else:
+            block_ttl = f"{_html.escape(scope_key)}を釣り場として知る"
+        inner += f'<h3 class="faq-block-ttl">{block_ttl}</h3>\n'
+        for item in scoped_items:
+            q = item.get("q", "")
+            a = item.get("a", "")
+            sources = item.get("sources", [])
+            src_html = _faq_source_html(sources)
+            inner += (
+                f'  <details><summary>{_html.escape(q)}</summary>'
+                f'<p class="faq-ans">{_html.escape(a)}{src_html}</p></details>\n'
+            )
+            faq_pairs.append((q, a))
+
+    # ── 共通FAQ ───────────────────────────────────────────
+    if common_items:
+        common_cls = "faq-block-ttl faq-block-ttl--common" if scoped_items else "faq-block-ttl"
+        inner += f'<h3 class="{common_cls}">船釣り共通の基礎知識</h3>\n'
+        for item in common_items:
+            q = item.get("q", "")
+            a = item.get("a", "")
+            sources = item.get("sources", [])
+            src_html = _faq_source_html(sources)
+            inner += (
+                f'  <details><summary>{_html.escape(q)}</summary>'
+                f'<p class="faq-ans">{_html.escape(a)}{src_html}</p></details>\n'
+            )
+            faq_pairs.append((q, a))
+
+    if not inner:
+        return "", []
+
+    scope_attr = _html.escape(f"{scope_type}-{scope_key}")
+    html = f'<div class="faq-list faq-static" data-scope="{scope_attr}">\n{inner}</div>'
+    return html, faq_pairs
+
+
 def build_fish_faq_html(fish, catches, decadal_calendar, site_url=""):
-    """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, jsonld) のタプル"""
+    """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル"""
     # Q1: 旬はいつ？
     fish_decades = decadal_calendar.get(fish, {})
     if fish_decades:
@@ -4211,16 +4306,13 @@ def build_fish_faq_html(fish, catches, decadal_calendar, site_url=""):
         (f"{fish}の一日の釣果はどのくらいですか？", q3_ans),
         (f"初心者でも{fish}釣りは楽しめますか？", q4_ans),
     ]
-    html = '<div class="faq-list">\n'
+    import html as _html_mod
+    block_ttl = f"{_html_mod.escape(fish)}釣果データから分かること"
+    html = f'<div class="faq-list faq-data">\n<h3 class="faq-block-ttl">{block_ttl}</h3>\n'
     for q, a in faqs:
         html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}</p></details>\n'
     html += '</div>'
-    jsonld_items = ",\n".join(
-        f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
-        for q, a in faqs
-    )
-    jsonld = f'<script type="application/ld+json">{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{jsonld_items}]}}</script>'
-    return html, jsonld
+    return html, faqs
 
 def build_area_guide_html(area, desc_data):
     """エリアガイドセクション（アクセス・特徴・主要ポイント・船宿系統・出船率）"""
@@ -4311,23 +4403,13 @@ def build_area_faq_html(area, desc_data, area_coords=None, top_fish_items=None, 
         (f"{area}でおすすめの釣り物と時期は？", q3_ans),
         (f"{area}でよく出船する船宿は？", q4_ans),
     ]
-    html = '<div class="faq-list">\n'
+    import html as _html_mod2
+    block_ttl2 = f"{_html_mod2.escape(area)}釣果データから分かること"
+    html = f'<div class="faq-list faq-data">\n<h3 class="faq-block-ttl">{block_ttl2}</h3>\n'
     for q, a in faqs:
         html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}</p></details>\n'
     html += '</div>'
-    # JSON-LD: FAQPage + Place
-    faq_items = ",\n".join(
-        f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
-        for q, a in faqs
-    )
-    place_json = ""
-    if area_coords and area in area_coords:
-        lat = area_coords[area].get("lat")
-        lon = area_coords[area].get("lon")
-        if lat and lon:
-            place_json = f',{{"@context":"https://schema.org","@type":"Place","name":{json.dumps(area, ensure_ascii=False)},"geo":{{"@type":"GeoCoordinates","latitude":{lat},"longitude":{lon}}}}}'
-    jsonld = f'<script type="application/ld+json">[{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{faq_items}]}}{place_json}]</script>'
-    return html, jsonld
+    return html, faqs
 
 # ============================================================
 # シーズンデータ
@@ -5797,6 +5879,7 @@ def build_fish_pages(data, history, crawled_at=""):
     year, week_num = current_iso_week()
     decadal_calendar = load_decadal_calendar()
     tackle_data = load_fish_tackle()
+    fixed_faq_data = _load_fixed_faq()
     # 過去CSVを一度だけロード（catches=0 魚種の準備中ページ用）
     _hist_rows_for_fish = _load_historical_catches()
     fish_summary = {}
@@ -6294,7 +6377,15 @@ def build_fish_pages(data, history, crawled_at=""):
         # V2 season map / guide / FAQ / chart
         season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month)
         guide_html = build_fish_guide_html(fish, tackle_data)
-        faq_html, faq_jsonld = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
+        auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
+        fixed_faq_html, fixed_faq_pairs = build_fixed_faq_html("fish", fish, fixed_faq_data)
+        faq_html = auto_faq_html + fixed_faq_html
+        all_faq_pairs = auto_faq_pairs + fixed_faq_pairs
+        _faq_jsonld_items = ",\n".join(
+            f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
+            for q, a in all_faq_pairs
+        )
+        faq_jsonld = f'<script type="application/ld+json">{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{_faq_jsonld_items}]}}</script>'
         _chart7_base = datetime.strptime(fish_display_date_str, "%Y/%m/%d").date()
         chart7_html = build_fish_7day_chart_html(fish, catches, display_date=_chart7_base, display_label=fish_today_label)
         fish_extra_css = """\
@@ -6451,6 +6542,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
     today_iso = now.strftime("%Y-%m-%d")
     area_desc_data = load_area_description()
     area_decadal = load_area_decadal()
+    fixed_faq_data_area = _load_fixed_faq()
     # 過去CSVを一度だけロード（catches=0 エリアの準備中ページに使う）
     _hist_rows_for_placeholder = _load_historical_catches()
     # area_coords.json（Place JSON-LD の geo に使用）
@@ -6994,8 +7086,24 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         top_fish_list = [f for f, _ in top_fish_items]
         area_season_html = build_area_season_map_html(area, area_decadal, top_fish_list)
         area_guide_html = build_area_guide_html(area, area_desc_data)
-        area_faq_html, area_faq_jsonld = build_area_faq_html(area, area_desc_data, top_fish_items=top_fish_items, area_catches=catches)
+        auto_area_faq_html, auto_area_faq_pairs = build_area_faq_html(area, area_desc_data, top_fish_items=top_fish_items, area_catches=catches)
+        fixed_area_faq_html, fixed_area_faq_pairs = build_fixed_faq_html("area", area, fixed_faq_data_area)
+        area_faq_html = auto_area_faq_html + fixed_area_faq_html
+        _area_all_faq_pairs = auto_area_faq_pairs + fixed_area_faq_pairs
         area_description_html = build_area_description_html(area, area_desc_data)
+        # JSON-LD: FAQPage + Place（統合版）
+        _area_faq_items = ",\n".join(
+            f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
+            for q, a in _area_all_faq_pairs
+        )
+        _area_coords_ld = _ship_load_area_coords()
+        _place_json = ""
+        if _area_coords_ld and area in _area_coords_ld:
+            _lat = _area_coords_ld[area].get("lat")
+            _lon = _area_coords_ld[area].get("lon")
+            if _lat and _lon:
+                _place_json = f',{{"@context":"https://schema.org","@type":"Place","name":{json.dumps(area, ensure_ascii=False)},"geo":{{"@type":"GeoCoordinates","latitude":{_lat},"longitude":{_lon}}}}}'
+        area_faq_jsonld = f'<script type="application/ld+json">[{{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{_area_faq_items}]}}{_place_json}]</script>'
 
         # SEO
         area_url = f"{SITE_URL}/area/{area_slug(area)}.html"
