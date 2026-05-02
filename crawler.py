@@ -5400,7 +5400,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         cards += (
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html" data-signal="{signal_key}">'
             f'<span class="fc-signal">{signal_label}</span>'
-            f'<div class="fn">{fish}</div>'
+            f'<div class="fn"><img src="assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fc-emoji" width="32" height="32" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
             f'<div class="fr">{cnt_range_str} <small>釣果{len(cs)}件・{ship_num}船宿</small></div>'
             f'<div class="fs">{detail_str}</div>'
             f'{fb_tag}{mini_bars}{trend_tag}'
@@ -5501,7 +5501,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
     # カードをそのまま使う（分割せずに）
     fish_others_html = ""
     if other_fish:
-        other_links = "".join(f'<a href="fish/{fish_slug(f)}.html">{f}</a>' for f in other_fish)
+        other_links = "".join(
+            f'<a href="fish/{fish_slug(f)}.html">'
+            f'<img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="fo-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+            f'{f}</a>'
+            for f in other_fish
+        )
         fish_others_html = (
             f'<div class="fish-others">'
             f'<div class="fo-title">今日ほかに釣れている魚</div>'
@@ -5588,6 +5593,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fc .trend{font-size:9px;font-weight:700;margin-top:2px}
 .fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
 .fc.stale{opacity:.6}
+.fc-emoji{width:32px;height:32px;object-fit:contain;vertical-align:middle;margin-right:5px;flex-shrink:0}
+.fo-emoji{width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:3px}
 .fish-others{margin:12px 0 20px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
 .fo-title{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px}
 .fo-list{display:flex;flex-wrap:wrap;gap:4px}
