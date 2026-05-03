@@ -382,6 +382,29 @@ nav.gnav a.prem::before {
 .fc .trend.up   { color: var(--pos); }
 .fc .trend.dn   { color: var(--neg); }
 .fc .trend.flat { color: var(--muted); }
+/* T13-B: 非ゼロ日数 < 4 のとき bars 代わりに表示 */
+.fc .fb-sparse {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 6px;
+  padding: 3px 6px;
+  background: var(--bg);
+  border-radius: 4px;
+  text-align: center;
+}
+/* T13-A: その他魚種 chip（fish-others 内） */
+.fo-list a.ft {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.fo-list a.ft .ft-n {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-left: 2px;
+}
 
 /* その他魚種タグ */
 .fish-others {

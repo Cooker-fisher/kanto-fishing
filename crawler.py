@@ -5661,24 +5661,19 @@ def build_html(catches, crawled_at, history, weather_data=None):
             if f != "不明":
                 fish_summary.setdefault(f, []).append(c)
     areas = sorted(set(c["area"] for c in catches_for_summary))
-    cards = ""
     # ミニバーグラフ最右列ラベル: 軸が今日基準で固定なので常に「今日」
     # （以前は当日 sparse 時に fallback 日付（5/1(金)等）を表示し fish page と
     # 不整合だった）
     _mini_today_label = "今日"
 
-    def _trend_key(fish):
-        tw = get_yoy_data(history, fish, year, week_num)[0]
-        pw = get_prev_week_data(history, fish, year, week_num)
-        if tw and pw:
-            ts = tw.get("ships") or 0
-            ps = pw.get("ships") or 0
-            if ts and ps:
-                if ts / ps > 1.2: return 0
-                if ts / ps < 0.8: return 2
-        return 1
+    # T13: 魚種カードをメイン/その他に振り分けるため、いったん dict にまとめる
+    # メイン条件: 7日合計件数 ≥ 10件 AND 報告日数 ≥ 3日
+    # フォールバック: メイン < 5枚なら閾値を緩和（合計≥5件 AND 日数≥2日）して
+    # 不変条件 #1（魚種カード ≥ 5枚）を死守
+    fish_entries = []  # list of dict（各魚種の集計済み情報）
+    _today = now.date()
 
-    for fish, cs in sorted(fish_summary.items(), key=lambda x: (_trend_key(x[0]), -len(x[1]))):
+    for fish, cs in fish_summary.items():
         areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))
         fish_id     = re.sub(r'[^\w]', '_', fish)
         latest_date = max((c.get("date") or "" for c in cs), default="")
@@ -5757,19 +5752,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             _p = round((this_w.get("ships", 0) - last_w["ships"]) / last_w["ships"] * 100)
             if abs(_p) >= 5: yoy_pct_str = f"{'+'if _p>=0 else ''}{_p}%"
         fb_text = " ".join(filter(None, [f"◎{top_ship_name}" if top_ship_name else "", yoy_pct_str]))
-        v2_trend_cls, v2_trend_txt = "", ""
-        if this_w and prev_w:
-            _ts = this_w.get("ships") or 0
-            _ps = prev_w.get("ships") or 0
-            if _ts and _ps:
-                if _ts/_ps > 1.2:   v2_trend_cls, v2_trend_txt = "up",   "↑ 先週より上昇"
-                elif _ts/_ps < 0.8: v2_trend_cls, v2_trend_txt = "dn",   "↓ 先週より減少"
-                else:                v2_trend_cls, v2_trend_txt = "flat", "→ 先週並み"
-        stale_cls = " stale" if is_stale else ""
-        trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
-        fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
-        # ミニバー（7日間）
-        _today = now.date()
+        # ミニバー（7日間）— 日別 max 匹数を集計
         _daily_max = {}
         for c in cs:
             try: _d = datetime.strptime(c["date"], "%Y/%m/%d").date()
@@ -5778,28 +5761,60 @@ def build_html(catches, crawled_at, history, weather_data=None):
             _v = (_cr["max"] if _cr and not _cr.get("is_boat") else 0) or 0
             if _v > _daily_max.get(_d, 0): _daily_max[_d] = _v
         _vals = [_daily_max.get(_today - timedelta(days=i), 0) for i in range(6, -1, -1)]
-        _wmax = max(_vals) if any(v > 0 for v in _vals) else 1
+        # _vals: [6日前, 5日前, 4日前, 3日前, 2日前, 1日前, 今日]
+        _nonzero_days = sum(1 for v in _vals if v > 0)
+        _total_count_7d = sum(_vals)
+        # T13-C: trend 判定（n 閾値導入・1日あたり平均で直近3日 vs 4〜7日前を比較）
+        # _vals[4..6] = 直近3日（今日/昨日/一昨日）
+        # _vals[0..3] = 4〜7日前
+        _n_recent3 = sum(_vals[4:7])
+        _n_prev4   = sum(_vals[0:4])
+        _trend_total = _n_recent3 + _n_prev4
+        _avg_recent = _n_recent3 / 3.0
+        _avg_prev   = _n_prev4 / 4.0
+        v2_trend_cls, v2_trend_txt = "", ""
+        if _trend_total >= 10:
+            if _avg_prev == 0:
+                # 比較対象が無い → 直近のみで急増の可能性。横ばい扱いにする
+                v2_trend_cls, v2_trend_txt = "flat", "→ 横ばい"
+            elif _avg_recent >= _avg_prev * 1.3:
+                v2_trend_cls, v2_trend_txt = "up", "↑ 上昇"
+            elif _avg_recent <= _avg_prev * 0.7:
+                v2_trend_cls, v2_trend_txt = "dn", "↓ 下降"
+            else:
+                v2_trend_cls, v2_trend_txt = "flat", "→ 横ばい"
+        stale_cls = " stale" if is_stale else ""
+        fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
+        # T13-B: 非ゼロ日数 < 4 のときは bars を抑制し fb-sparse を出す
+        # sparse 時は trend も非表示（矛盾表示防止）
         mini_bars = ""
-        if _wmax > 0:
-            _bar_parts = []
-            _label_parts = []
-            for _i, _v in enumerate(_vals):
-                _h = max(8, int(_v / _wmax * 100)) if _v > 0 else 4
-                _cls = " today" if _i == 6 else ""
-                _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
-                _d = _today - timedelta(days=6 - _i)
-                if _i == 6:
-                    _label_parts.append(f'<span class="bl today">{_mini_today_label}</span>')
-                elif _i == 0:
-                    _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
-                else:
-                    _label_parts.append('<span class="bl"></span>')
-            mini_bars = (
-                f'<div class="bars">{"".join(_bar_parts)}</div>'
-                f'<div class="bar-labels">{"".join(_label_parts)}</div>'
-            )
+        if _nonzero_days < 4:
+            mini_bars = f'<div class="fb-sparse">日ムラあり（直近7日 {_nonzero_days}日のみ報告）</div>'
+            v2_trend_cls, v2_trend_txt = "", ""  # trend を消す
+        else:
+            _wmax = max(_vals) if any(v > 0 for v in _vals) else 1
+            if _wmax > 0:
+                _bar_parts = []
+                _label_parts = []
+                for _i, _v in enumerate(_vals):
+                    _h = max(8, int(_v / _wmax * 100)) if _v > 0 else 4
+                    _cls = " today" if _i == 6 else ""
+                    _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
+                    _d = _today - timedelta(days=6 - _i)
+                    if _i == 6:
+                        _label_parts.append(f'<span class="bl today">{_mini_today_label}</span>')
+                    elif _i == 0:
+                        _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
+                    else:
+                        _label_parts.append('<span class="bl"></span>')
+                mini_bars = (
+                    f'<div class="bars">{"".join(_bar_parts)}</div>'
+                    f'<div class="bar-labels">{"".join(_label_parts)}</div>'
+                )
+        # trend_tag は mini_bars 確定後に生成（sparse 時の上書きを反映するため）
+        trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
         signal_key, signal_label = _fish_signal(fish, current_month)
-        cards += (
+        card_html = (
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html" data-signal="{signal_key}">'
             f'<span class="fc-signal">{signal_label}</span>'
             f'<div class="fn"><img src="assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fc-emoji" width="32" height="32" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
@@ -5808,6 +5823,36 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'{fb_tag}{mini_bars}{trend_tag}'
             f'</a>'
         )
+        fish_entries.append({
+            "fish": fish,
+            "cs_count": len(cs),
+            "total_count_7d": _total_count_7d,
+            "nonzero_days": _nonzero_days,
+            "card_html": card_html,
+        })
+
+    # T13-A: 魚種カードを「メイン (.fc 大カード)」と「その他 (chip)」に振り分け
+    # メイン条件: 7日合計件数 ≥ 10件 AND 報告日数 ≥ 3日
+    # フォールバック: メイン < 5枚なら閾値を緩和（合計≥5件 AND 日数≥2日）して
+    #                 不変条件 #1（魚種カード ≥ 5枚）を死守
+    def _is_main(e, total_thr, days_thr):
+        return e["total_count_7d"] >= total_thr and e["nonzero_days"] >= days_thr
+    main_entries = [e for e in fish_entries if _is_main(e, 10, 3)]
+    if len(main_entries) < 5:
+        # 緩和条件で再判定
+        main_entries = [e for e in fish_entries if _is_main(e, 5, 2)]
+    if len(main_entries) < 5:
+        # それでも 5 枚に満たないなら、件数降順で上位 5 枚を強制採用
+        # （不変条件 #1 死守）
+        sorted_all = sorted(fish_entries, key=lambda e: -e["total_count_7d"])
+        main_entries = sorted_all[:5] if len(sorted_all) >= 5 else sorted_all
+    # メイン並び順: 7日合計件数 降順
+    main_entries.sort(key=lambda e: -e["total_count_7d"])
+    main_fish_set = {e["fish"] for e in main_entries}
+    other_entries = [e for e in fish_entries if e["fish"] not in main_fish_set]
+    other_entries.sort(key=lambda e: -e["total_count_7d"])
+    cards = "".join(e["card_html"] for e in main_entries)
+
     targets      = calc_targets(catches, history)
     target_html  = build_target_section(targets)
     forecast     = build_forecast(targets)
@@ -5890,28 +5935,18 @@ def build_html(catches, crawled_at, history, weather_data=None):
     overview_html = build_index_overview_text(catches, history, crawled_at)
     # V2 ティザー
     teaser_html = build_teaser_rotator_html()
-    # V2 その他魚種（fish_others）
-    sorted_fish = sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))
-    main_fish = sorted_fish[:10]
-    other_fish = sorted_fish[10:]
-    main_cards = "".join(
-        cards_part for f, cards_part in zip(
-            [f for f in sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))],
-            cards.split('</a><a ') if '</a><a ' in cards else [cards]
-        )
-    ) if cards else ""
-    # カードをそのまま使う（分割せずに）
+    # T13-A: その他魚種（chip 形式）— main に入らなかった魚を chip 表示
     fish_others_html = ""
-    if other_fish:
+    if other_entries:
         other_links = "".join(
-            f'<a href="fish/{fish_slug(f)}.html">'
-            f'<img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="fo-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
-            f'{f}</a>'
-            for f in other_fish
+            f'<a href="fish/{fish_slug(e["fish"])}.html" class="ft">'
+            f'<img src="assets/fish/{fish_slug(e["fish"])}/{fish_slug(e["fish"])}_emoji.webp" alt="{e["fish"]}" class="fo-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+            f'{e["fish"]} <span class="ft-n">{e["total_count_7d"]}</span></a>'
+            for e in other_entries
         )
         fish_others_html = (
             f'<div class="fish-others">'
-            f'<div class="fo-title">今日ほかに釣れている魚</div>'
+            f'<div class="fo-title">今週その他の魚種（直近7日報告少）</div>'
             f'<div class="fo-list">{other_links}</div>'
             f'</div>'
         )
@@ -6003,6 +6038,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fc .bar-labels .bl.today{color:var(--pos);font-weight:700}
 .fc .trend{font-size:9px;font-weight:700;margin-top:2px}
 .fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
+.fc .fb-sparse{font-size:10px;color:var(--muted);font-weight:500;margin-top:6px;padding:3px 6px;background:var(--bg);border-radius:4px;text-align:center}
+.fo-list a.ft{display:inline-flex;align-items:center;gap:3px}
+.fo-list a.ft .ft-n{font-size:10px;color:var(--muted);font-weight:500;margin-left:2px}
 .fc.stale{opacity:.6}
 .fc-emoji{width:32px;height:32px;object-fit:contain;vertical-align:middle;margin-right:5px;flex-shrink:0}
 .fo-emoji{width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:3px}
