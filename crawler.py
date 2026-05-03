@@ -72,9 +72,12 @@ JST = timezone(timedelta(hours=9))
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 try:
     with open(os.path.join(_BASE_DIR, "config.json"), encoding="utf-8") as _f:
-        _ACTIVE_VER = json.load(_f)["active_version"]
+        _CFG = json.load(_f)
+        _ACTIVE_VER = _CFG["active_version"]
+        _LINE_ACCOUNT_ID = (_CFG.get("line_account_id") or "").strip() or None
 except Exception:
     _ACTIVE_VER = "V2"
+    _LINE_ACCOUNT_ID = None
 _DATA_DIR = os.path.join(_BASE_DIR, "data", _ACTIVE_VER)
 
 SHIPS = [
@@ -4454,59 +4457,148 @@ def _v2_bottom_nav(active_page=""):
     nav += '</nav>'
     return nav
 
-def build_teaser_rotator_html():
-    """有料機能プレビュー ローテーターパネル（index.html用）"""
-    return """<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
-<div class="teaser-rotator">
-  <div class="tr-track">
-    <div class="tr-slide is-active">
-      <div class="teaser-head">
-        <span class="teaser-badge soon">開発中</span>
-        <span class="teaser-title-in">今週の狙い目 — 週末TOP5魚種</span>
-      </div>
-      <div class="teaser-desc">約10万件の釣果データ×気象×潮汐をAI分析。<strong>今週末の狙い目魚種・エリア</strong>をランキング表示。</div>
-      <div style="position:relative">
-        <div class="teaser-dummy"><div class="td-fish">アジ <span class="td-star">★★★★★</span></div><div class="td-range">25〜45匹 / 18〜25cm</div><div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div></div>
-        <div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div><div class="td-range">0〜5匹 / 30〜55cm</div><div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>
-        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>今週 日毎の釣果予測</li><li>2・3・4週先の釣果予測</li><li>気象×潮汐で自動算出</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
-      </div>
-    </div>
-    <div class="tr-slide">
-      <div class="teaser-head">
-        <span class="teaser-badge soon">開発中</span>
-        <span class="teaser-title-in">予測の答え合わせ — 予測 vs 実績</span>
-      </div>
-      <div class="teaser-desc"><strong>前日の予測</strong>が実際の釣果と一致したかを毎日公開。「なぜ当たった・外れたか」を正直レポート。</div>
-      <div style="position:relative">
-        <div class="teaser-dummy"><div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div><div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div><div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div></div>
-        <div class="teaser-dummy"><div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div><div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div><div class="td-reason">水温× 予報より1.5℃低下で活性低下</div></div>
-        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>先週の予測 vs 実績比較</li><li>予測精度スコア</li><li>外れた理由の解説</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
-      </div>
-    </div>
-    <div class="tr-slide">
-      <div class="teaser-head">
-        <span class="teaser-badge soon">開発中</span>
-        <span class="teaser-title-in">分析・予測 — 注目コンボ・急落コンボ</span>
-      </div>
-      <div class="teaser-desc"><strong>魚種×エリアの組合せ</strong>を独自スコアリング。「来週のどの日に何が釣れるか」を日別で予測。</div>
-      <div style="position:relative">
-        <div class="teaser-dummy"><div class="td-fish">注目: アジ × 金沢八景</div><div class="td-range">スコア 92 / 平年比 +38%</div><div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div></div>
-        <div class="teaser-dummy"><div class="td-fish">急落: タチウオ × 走水</div><div class="td-range">先週比 -45%</div><div class="td-reason">水温急低下でベイトが抜けた模様</div></div>
-        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>日別釣果予測（7日先）</li><li>気象相関グラフ</li><li>急上昇・急落コンボ通知</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
-      </div>
-    </div>
-  </div>
-  <div class="tr-dots">
-    <button class="tr-dot is-active" aria-label="スライド1"></button>
-    <button class="tr-dot" aria-label="スライド2"></button>
-    <button class="tr-dot" aria-label="スライド3"></button>
-  </div>
-  <div class="teaser-cta-wrap">
-    <div class="teaser-cta-msg">現在開発中。<strong>有料プランページ</strong>で最新の釣果予測をご確認ください。</div>
-    <div class="teaser-cta-btns"><a class="cta-btn" href="/forecast/index.html">有料プランを見る（月額500円）</a></div>
-    <div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>
-  </div>
-</div>"""
+def build_teaser_rotator_html(top_entries=None, line_url=None):
+    """有料機能プレビュー ローテーターパネル（index.html用）
+
+    top_entries: list of dict（T16 動的化用）。各要素は
+      {"fish": str, "cnt_range_str": str, "sz_str": str, "top_area": str}
+      上位2件を使用。None または長さ < 2 のときは静的ダミーにフォールバック。
+    line_url: LINE 公式アカウントURL（設定済みなら CTA ブロックを表示、None/空なら非表示）
+    """
+    # --- スライド1 ダミーカード生成 ---
+    _STATIC_SLIDE1 = (
+        '<div class="teaser-dummy"><div class="td-fish">アジ <span class="td-star">★★★★★</span></div>'
+        '<div class="td-range">25〜45匹 / 18〜25cm</div>'
+        '<div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div></div>'
+        '<div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div>'
+        '<div class="td-range">0〜5匹 / 30〜55cm</div>'
+        '<div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>'
+    )
+    _STARS = ["★★★★★", "★★★★☆"]
+    try:
+        if top_entries and len(top_entries) >= 2:
+            slide1_cards = ""
+            for i, e in enumerate(top_entries[:2]):
+                fish = e.get("fish", "")
+                rng  = e.get("cnt_range_str", "")
+                sz   = e.get("sz_str", "")
+                area = e.get("top_area", "")
+                range_txt = " / ".join(filter(None, [rng, sz])) or "データ集計中"
+                reason_txt = f"{area} 中心 — 今週末好条件予測" if area else "今週の釣れ筋魚種"
+                star = _STARS[i]
+                slide1_cards += (
+                    f'<div class="teaser-dummy">'
+                    f'<div class="td-fish">{fish} <span class="td-star">{star}</span></div>'
+                    f'<div class="td-range">{range_txt}</div>'
+                    f'<div class="td-reason">{reason_txt}</div>'
+                    f'</div>'
+                )
+        else:
+            slide1_cards = _STATIC_SLIDE1
+    except Exception:
+        slide1_cards = _STATIC_SLIDE1
+
+    # --- LINE CTA ブロック ---
+    if line_url:
+        cta_html = (
+            '<div class="teaser-cta-wrap">'
+            '<div class="teaser-cta-msg">公開時に<strong>LINE</strong>でお知らせします。'
+            '友だち追加してお待ちください。</div>'
+            '<div class="teaser-cta-btns">'
+            f'<a class="cta-line" href="{line_url}" rel="noopener">'
+            '<span class="line-ic">L</span>LINEで通知を受け取る'
+            '</a>'
+            '</div>'
+            '<div class="teaser-price">※ 全機能まとめて <em>月額500円</em>（仕掛け1セット分）'
+            '/ スポット <em>1回100円</em></div>'
+            '</div>'
+        )
+    else:
+        cta_html = (
+            '<div class="teaser-cta-wrap">'
+            '<div class="teaser-cta-msg">現在開発中。<strong>有料プランページ</strong>'
+             'で最新の釣果予測をご確認ください。</div>'
+            '<div class="teaser-cta-btns">'
+            '<a class="cta-btn" href="/forecast/index.html">有料プランを見る（月額500円）</a>'
+            '</div>'
+            '<div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>'
+            '</div>'
+        )
+
+    return (
+        '<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>'
+        '\n<div class="teaser-rotator">'
+        '\n  <div class="tr-track">'
+        '\n    <div class="tr-slide is-active">'
+        '\n      <div class="teaser-head">'
+        '\n        <span class="teaser-badge soon">開発中</span>'
+        '\n        <span class="teaser-title-in">今週の狙い目 — 週末TOP5魚種</span>'
+        '\n      </div>'
+        '\n      <div class="teaser-desc">約10万件の釣果データ×気象×潮汐をAI分析。'
+        '<strong>今週末の狙い目魚種・エリア</strong>をランキング表示。</div>'
+        '\n      <div style="position:relative">'
+        f'\n        {slide1_cards}'
+        '\n        <div class="teaser-overlay"><div class="coming-soon-panel">'
+        '<div class="cs-title">準備中</div>'
+        '<ul class="cs-features"><li>今週 日毎の釣果予測</li>'
+        '<li>2・3・4週先の釣果予測</li><li>気象×潮汐で自動算出</li></ul>'
+        '<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
+        '</div></div>'
+        '\n      </div>'
+        '\n    </div>'
+        '\n    <div class="tr-slide">'
+        '\n      <div class="teaser-head">'
+        '\n        <span class="teaser-badge soon">開発中</span>'
+        '\n        <span class="teaser-title-in">予測の答え合わせ — 予測 vs 実績</span>'
+        '\n      </div>'
+        '\n      <div class="teaser-desc"><strong>前日の予測</strong>が実際の釣果と一致したかを毎日公開。'
+        '「なぜ当たった・外れたか」を正直レポート。</div>'
+        '\n      <div style="position:relative">'
+        '\n        <div class="teaser-dummy"><div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div>'
+        '<div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div>'
+        '<div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div></div>'
+        '\n        <div class="teaser-dummy"><div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div>'
+        '<div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div>'
+        '<div class="td-reason">水温× 予報より1.5℃低下で活性低下</div></div>'
+        '\n        <div class="teaser-overlay"><div class="coming-soon-panel">'
+        '<div class="cs-title">準備中</div>'
+        '<ul class="cs-features"><li>先週の予測 vs 実績比較</li>'
+        '<li>予測精度スコア</li><li>外れた理由の解説</li></ul>'
+        '<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
+        '</div></div>'
+        '\n      </div>'
+        '\n    </div>'
+        '\n    <div class="tr-slide">'
+        '\n      <div class="teaser-head">'
+        '\n        <span class="teaser-badge soon">開発中</span>'
+        '\n        <span class="teaser-title-in">分析・予測 — 注目コンボ・急落コンボ</span>'
+        '\n      </div>'
+        '\n      <div class="teaser-desc"><strong>魚種×エリアの組合せ</strong>を独自スコアリング。'
+        '「来週のどの日に何が釣れるか」を日別で予測。</div>'
+        '\n      <div style="position:relative">'
+        '\n        <div class="teaser-dummy"><div class="td-fish">注目: アジ × 金沢八景</div>'
+        '<div class="td-range">スコア 92 / 平年比 +38%</div>'
+        '<div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div></div>'
+        '\n        <div class="teaser-dummy"><div class="td-fish">急落: タチウオ × 走水</div>'
+        '<div class="td-range">先週比 -45%</div>'
+        '<div class="td-reason">水温急低下でベイトが抜けた模様</div></div>'
+        '\n        <div class="teaser-overlay"><div class="coming-soon-panel">'
+        '<div class="cs-title">準備中</div>'
+        '<ul class="cs-features"><li>日別釣果予測（7日先）</li>'
+        '<li>気象相関グラフ</li><li>急上昇・急落コンボ通知</li></ul>'
+        '<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
+        '</div></div>'
+        '\n      </div>'
+        '\n    </div>'
+        '\n  </div>'
+        '\n  <div class="tr-dots">'
+        '\n    <button class="tr-dot is-active" aria-label="スライド1"></button>'
+        '\n    <button class="tr-dot" aria-label="スライド2"></button>'
+        '\n    <button class="tr-dot" aria-label="スライド3"></button>'
+        '\n  </div>'
+        f'\n  {cta_html}'
+        '\n</div>'
+    )
 
 def build_index_overview_text(catches, history, crawled_at=""):
     """今日の関東船釣り概況テキスト（200〜300字）を生成"""
@@ -6292,6 +6384,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
             "total_count_7d": _total_count_7d,
             "nonzero_days": _nonzero_days,
             "card_html": card_html,
+            # T16: teaser動的化用（スライド1ダミーカードに使用）
+            "cnt_range_str": cnt_range_str,
+            "sz_str": sz_str,
+            "top_area": areas_list[0] if areas_list else "",
         })
 
     # T13-A: 魚種カードを「メイン (.fc 大カード)」と「その他 (chip)」に振り分け
@@ -6399,8 +6495,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
     )
     # V2 概況テキスト
     overview_html = build_index_overview_text(catches, history, crawled_at)
-    # V2 ティザー
-    teaser_html = build_teaser_rotator_html()
+    # V2 ティザー (T16: スライド1動的化 + LINE CTA)
+    _teaser_top2 = (main_entries[:2]
+                    if len(main_entries) >= 2
+                    else fish_entries[:2] if len(fish_entries) >= 2 else None)
+    _line_url = (f"https://lin.ee/{_LINE_ACCOUNT_ID}" if _LINE_ACCOUNT_ID else None)
+    teaser_html = build_teaser_rotator_html(top_entries=_teaser_top2, line_url=_line_url)
     # T13-A: その他魚種（chip 形式）— main に入らなかった魚を chip 表示
     fish_others_html = ""
     if other_entries:
