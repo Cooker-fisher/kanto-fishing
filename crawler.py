@@ -3615,6 +3615,211 @@ def _build_hero_sea_html(sea: dict) -> str:
 
 
 # ============================================================
+# T14: ZONE B2 エリア別カード拡充（◎船宿 / 翌日海況）
+# ============================================================
+
+# モジュール内キャッシュ
+_T14_AREA_COORDS_CACHE: dict | None = None
+_T14_POINT_COORDS_CACHE: dict | None = None
+_T14_AREA_POINT_CACHE: dict[str, str | None] = {}
+_T14_SEA_DAY_CACHE: dict[str, dict] = {}  # date_str -> {point: {wave, wind}}
+_T14_ALL_WX_DATES: list[str] | None = None  # weather/ 内の全日付（降順・キャッシュ）
+
+
+def _t14_load_area_coords() -> dict:
+    global _T14_AREA_COORDS_CACHE
+    if _T14_AREA_COORDS_CACHE is not None:
+        return _T14_AREA_COORDS_CACHE
+    p = os.path.join(os.path.dirname(__file__), "normalize", "area_coords.json")
+    try:
+        with open(p, encoding="utf-8") as f:
+            _T14_AREA_COORDS_CACHE = json.load(f) or {}
+    except Exception:
+        _T14_AREA_COORDS_CACHE = {}
+    return _T14_AREA_COORDS_CACHE
+
+
+def _t14_load_point_coords() -> dict:
+    global _T14_POINT_COORDS_CACHE
+    if _T14_POINT_COORDS_CACHE is not None:
+        return _T14_POINT_COORDS_CACHE
+    p = os.path.join(os.path.dirname(__file__), "normalize", "point_coords.json")
+    try:
+        with open(p, encoding="utf-8") as f:
+            _T14_POINT_COORDS_CACHE = json.load(f) or {}
+    except Exception:
+        _T14_POINT_COORDS_CACHE = {}
+    return _T14_POINT_COORDS_CACHE
+
+
+def _t14_load_sea_day(date_str: str) -> dict:
+    """指定日の {point: {wave, wind}} を 6〜15時平均で返す。未取得日は {} 。"""
+    if date_str in _T14_SEA_DAY_CACHE:
+        return _T14_SEA_DAY_CACHE[date_str]
+    base = os.path.dirname(__file__)
+    fname = os.path.join(base, "weather", f"{date_str[:7]}.csv")
+    if not os.path.isfile(fname):
+        _T14_SEA_DAY_CACHE[date_str] = {}
+        return {}
+    acc: dict = {}
+    try:
+        with open(fname, encoding="utf-8", newline="") as f:
+            for row in csv.DictReader(f):
+                if row.get("date") != date_str:
+                    continue
+                try:
+                    hr = int(row.get("hour", "0"))
+                except ValueError:
+                    continue
+                if hr < 6 or hr > 15:
+                    continue
+                pt = row.get("point", "")
+                if not pt:
+                    continue
+                rec = acc.setdefault(pt, {"wave": [], "wind": []})
+                try: rec["wave"].append(float(row["wave_height"]))
+                except (KeyError, ValueError, TypeError): pass
+                try: rec["wind"].append(float(row["wind_speed"]))
+                except (KeyError, ValueError, TypeError): pass
+    except Exception:
+        _T14_SEA_DAY_CACHE[date_str] = {}
+        return {}
+    out = {}
+    for pt, d in acc.items():
+        if not d["wave"] and not d["wind"]:
+            continue
+        out[pt] = {
+            "wave": (round(sum(d["wave"]) / len(d["wave"]), 1) if d["wave"] else None),
+            "wind": (round(sum(d["wind"]) / len(d["wind"]), 1) if d["wind"] else None),
+        }
+    _T14_SEA_DAY_CACHE[date_str] = out
+    return out
+
+
+def _t14_resolve_area_point(area: str) -> str | None:
+    """エリア名から weather/CSV の point 列値を返す。
+    優先順:
+      ① area_coords.json[area]['point']（ヒットすれば最優先・44/58 で一致）
+      ② area_coords.json[area] の lat/lon と point_coords.json の最近傍ポイント名
+    見つからなければ None。
+    """
+    if area in _T14_AREA_POINT_CACHE:
+        return _T14_AREA_POINT_CACHE[area]
+    ac = _t14_load_area_coords()
+    info = ac.get(area) or ac.get(area + "港") or {}
+    pt = info.get("point")
+    # ① 直接指定
+    if pt:
+        _T14_AREA_POINT_CACHE[area] = pt
+        return pt
+    # ② 最近傍
+    lat = info.get("lat"); lon = info.get("lon")
+    if lat is None or lon is None:
+        _T14_AREA_POINT_CACHE[area] = None
+        return None
+    pc = _t14_load_point_coords()
+    best = None; best_d = 1e9
+    for name, pinfo in pc.items():
+        try:
+            la = float(pinfo.get("lat")); lo = float(pinfo.get("lon"))
+        except (TypeError, ValueError):
+            continue
+        d = (la - lat) ** 2 + (lo - lon) ** 2
+        if d < best_d:
+            best_d = d; best = name
+    _T14_AREA_POINT_CACHE[area] = best
+    return best
+
+
+def _build_area_top_ship(area: str, records: list) -> str:
+    """ZONE B2 at-card 内の ◎船宿（件数Top1）行 HTML。
+    プレーンテキスト（<a> ネスト禁止・不変条件 #11）。0件なら空文字。
+    """
+    from collections import Counter
+    cnt = Counter(c.get("ship", "") for c in records if c.get("area") == area and c.get("ship"))
+    top = cnt.most_common(1)
+    if not top or top[0][1] <= 0:
+        return ""
+    ship, n = top[0]
+    return f'<div class="at-top">◎ {ship}（{n}件）</div>'
+
+
+def _build_area_sea(area: str, target_str: str) -> str:
+    """ZONE B2 at-card 内の翌日海況 1 行 HTML。
+    取得失敗時は空文字（ブロック非表示）。
+    target_str: 翌日 'YYYY-MM-DD'
+    フォールバック: target_str → 同ファイル内で target_str 以前の最新日を全スキャンで検索
+    （_load_hero_sea_data と同じ思想・weather data が stale でも表示できる）
+    """
+    pt = _t14_resolve_area_point(area)
+    if not pt:
+        return ""
+    # まず翌日当日を試みる
+    day = _t14_load_sea_day(target_str)
+    if pt in day:
+        rec = day[pt]
+    else:
+        # フォールバック: weather/ 配下の全日付リスト（キャッシュ済み）から
+        # target_str 以前の最新日を探す
+        rec = None
+        global _T14_ALL_WX_DATES
+        if _T14_ALL_WX_DATES is None:
+            base = os.path.dirname(__file__)
+            wx_dir = os.path.join(base, "weather")
+            _dates: list[str] = []
+            try:
+                for fname in os.listdir(wx_dir):
+                    if not fname.endswith(".csv"):
+                        continue
+                    fpath = os.path.join(wx_dir, fname)
+                    try:
+                        with open(fpath, encoding="utf-8", newline="") as f:
+                            for row in csv.DictReader(f):
+                                d = row.get("date", "")
+                                if d:
+                                    _dates.append(d)
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+            _T14_ALL_WX_DATES = sorted(set(_dates), reverse=True)  # 降順
+        for cand in _T14_ALL_WX_DATES:
+            if cand > target_str:
+                continue
+            d2 = _t14_load_sea_day(cand)
+            if pt in d2:
+                rec = d2[pt]
+                break
+    if not rec:
+        return ""
+    wave = rec.get("wave"); wind = rec.get("wind")
+    if wave is None and wind is None:
+        return ""
+    # hero-sea と同じ判定ロジック
+    score = 100
+    if wave is not None:
+        if wave >= 2.5: score -= 60
+        elif wave >= 1.5: score -= 30
+        elif wave >= 1.0: score -= 10
+    if wind is not None:
+        if wind >= 12: score -= 50
+        elif wind >= 8: score -= 25
+        elif wind >= 6: score -= 10
+    score = max(0, score)
+    if score >= 80:
+        pill_cls, pill_mark = "good", "○"
+    elif score >= 50:
+        pill_cls, pill_mark = "warn", "△"
+    else:
+        pill_cls, pill_mark = "bad", "×"
+    parts = []
+    if wave is not None: parts.append(f"波 {wave:.1f}m")
+    if wind is not None: parts.append(f"風 {wind:.0f}m")
+    txt = "・".join(parts)
+    return f'<div class="at-sea"><span class="hs-pill {pill_cls}">{pill_mark}</span>{txt}</div>'
+
+
+# ============================================================
 # Section 8: index.html 追加 JSON-LD 生成
 # ============================================================
 
@@ -5898,12 +6103,17 @@ def build_html(catches, crawled_at, history, weather_data=None):
     area_cnt_map = {}
     for c in today_catches:
         area_cnt_map[c["area"]] = area_cnt_map.get(c["area"], 0) + 1
+    # T14: ◎船宿/翌日海況用の翌日文字列
+    _b2_tomorrow_str = (now + timedelta(days=1)).strftime("%Y-%m-%d")
     for area in sorted(active_areas, key=lambda x: -area_cnt_map.get(x, 0))[:8]:
         cnt = area_cnt_map.get(area, 0)
         top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
         fish_tags = "".join(f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">{f}</a>' for f, _ in top_fish)
         # NOTE: <a> の中に <a> をネストすると HTML 違反 → div で囲い、上部のみ area リンク
         ea_key = _area_ea_key(area)
+        # T14: ◎船宿（プレーンテキスト・<a> ネスト禁止）と翌日海況1行
+        top_ship_html = _build_area_top_ship(area, today_catches)
+        sea_html = _build_area_sea(area, _b2_tomorrow_str)
         area_today_html += (
             f'<div class="at-card" data-ea="{ea_key}">'
             f'<a href="area/{area_slug(area)}.html" class="at-area-link">'
@@ -5911,6 +6121,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="at-count">{cnt}件</div>'
             f'</a>'
             f'<div class="at-fish">{fish_tags}</div>'
+            f'{top_ship_html}'
+            f'{sea_html}'
             f'</div>'
         )
     # V2 ZONE C: 出船リスク予報（内海/外海 × 7日間）
@@ -6068,6 +6280,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
 .at-ftag{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub);text-decoration:none}
 .at-ftag:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
+.at-top{font-size:10px;color:var(--pos);font-weight:700;margin-top:4px}
+.at-sea{font-size:10px;color:var(--sub);margin-top:3px;display:flex;align-items:center;gap:4px}
+.at-sea .hs-pill{width:14px;height:14px;line-height:14px;font-size:9px}
 .risk-grid-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .risk-row{display:flex;flex-direction:column;gap:4px}
 .risk-row-head{font-size:11px;font-weight:700;color:var(--sub)}

@@ -649,3 +649,9 @@ footer .cp { margin-top: 10px; display: block; opacity: .5; }
   body { padding-bottom: 0; }
   .fish-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* T14: ZONE B2 at-card 拡充（◎船宿 / 翌日海況） */
+.at-top { font-size: 10px; color: var(--pos); font-weight: 700; margin-top: 4px; }
+.at-sea { font-size: 10px; color: var(--sub); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+.at-sea .hs-pill { width: 14px; height: 14px; line-height: 14px; font-size: 9px; }
+
