@@ -3820,6 +3820,263 @@ def _build_area_sea(area: str, target_str: str) -> str:
 
 
 # ============================================================
+# T15: ZONE C 出船リスク予報（7日リスクグリッド + 週末エリア海況）
+# ============================================================
+
+def _t15_classify(wave, wind):
+    """波高・風速 → (cls, icon, label) を返す。hero-sea と同じ閾値を使用。"""
+    score = 100
+    if wave is not None:
+        if wave >= 2.5: score -= 60
+        elif wave >= 1.5: score -= 30
+        elif wave >= 1.0: score -= 10
+    if wind is not None:
+        if wind >= 12: score -= 50
+        elif wind >= 8: score -= 25
+        elif wind >= 6: score -= 10
+    score = max(0, score)
+    if score >= 80:
+        return "good", "○", "好条件"
+    elif score >= 50:
+        return "warn", "△", "注意"
+    else:
+        return "bad", "×", "荒天"
+
+
+def _t15_kanto_avg(date_str: str) -> dict:
+    """関東主要4ポイント（_HERO_SEA_POINTS）の指定日平均 (wave, wind, sst)。
+    取得失敗時は {}。temp は wave/wind の平均と同じ wx_dir スキャンで取得。
+    """
+    base = os.path.dirname(__file__)
+    fname = os.path.join(base, "weather", f"{date_str[:7]}.csv")
+    if not os.path.isfile(fname):
+        return {}
+    waves, winds, ssts = [], [], []
+    pts = set(_HERO_SEA_POINTS)
+    try:
+        with open(fname, encoding="utf-8", newline="") as f:
+            for row in csv.DictReader(f):
+                if row.get("date") != date_str:
+                    continue
+                if row.get("point", "") not in pts:
+                    continue
+                try:
+                    hr = int(row.get("hour", "0"))
+                except ValueError:
+                    continue
+                if hr < 6 or hr > 15:
+                    continue
+                try: waves.append(float(row["wave_height"]))
+                except (KeyError, ValueError, TypeError): pass
+                try: winds.append(float(row["wind_speed"]))
+                except (KeyError, ValueError, TypeError): pass
+                try: ssts.append(float(row["sst"]))
+                except (KeyError, ValueError, TypeError): pass
+    except Exception:
+        return {}
+    if not waves and not winds:
+        return {}
+    def _avg(lst): return round(sum(lst) / len(lst), 1) if lst else None
+    return {"wave": _avg(waves), "wind": _avg(winds), "sst": _avg(ssts)}
+
+
+def _t15_kanto_avg_with_fallback(date_str: str) -> dict:
+    """指定日のデータがなければ weather/ 配下から最新（≤指定日）を遡って取得。
+    フォールバック時は as_of キーを追加。"""
+    sea = _t15_kanto_avg(date_str)
+    if sea:
+        return sea
+    base = os.path.dirname(__file__)
+    wx_dir = os.path.join(base, "weather")
+    if not os.path.isdir(wx_dir):
+        return {}
+    try:
+        all_dates = []
+        for fname in os.listdir(wx_dir):
+            if not fname.endswith(".csv"):
+                continue
+            try:
+                with open(os.path.join(wx_dir, fname), encoding="utf-8", newline="") as f:
+                    for row in csv.DictReader(f):
+                        d = row.get("date", "")
+                        if d and d <= date_str:
+                            all_dates.append(d)
+            except Exception:
+                continue
+        for cand in sorted(set(all_dates), reverse=True):
+            r = _t15_kanto_avg(cand)
+            if r:
+                r["as_of"] = cand
+                return r
+    except Exception:
+        pass
+    return {}
+
+
+def _build_t15_risk_grid(today: datetime) -> str:
+    """今日から7日間の出船リスクグリッド HTML。全日不在なら空文字。"""
+    dow_jp = ["月", "火", "水", "木", "金", "土", "日"]
+    cells = []
+    for i in range(7):
+        d = today + timedelta(days=i)
+        date_str = d.strftime("%Y-%m-%d")
+        sea = _t15_kanto_avg_with_fallback(date_str)
+        if not sea:
+            continue
+        wave = sea.get("wave"); wind = sea.get("wind"); sst = sea.get("sst")
+        cls, icon, lbl = _t15_classify(wave, wind)
+        tip_parts = []
+        if wave is not None: tip_parts.append(f"波 {wave:.1f}m")
+        if wind is not None: tip_parts.append(f"風 {wind:.0f}m")
+        if sst is not None: tip_parts.append(f"{sst:.0f}℃")
+        tip = " / ".join(tip_parts)
+        cells.append(
+            f'<div class="risk-day {cls}">'
+            f'<div class="rd-dow">{dow_jp[d.weekday()]}</div>'
+            f'<div class="rd-date">{d.month}/{d.day:02d}</div>'
+            f'<div class="rd-icon">{icon}</div>'
+            f'<div class="rd-label">{lbl}</div>'
+            f'<div class="rd-tip">{tip}</div>'
+            f'</div>'
+        )
+    if not cells:
+        return ""
+    return f'<div class="risk-grid">{"".join(cells)}</div>'
+
+
+# 6 固定エリア（表示名・area_coords.json キー）
+_T15_WEEKEND_AREAS = [
+    ("金沢八景", "金沢八景"),
+    ("走水",     "走水港"),
+    ("剣崎",     "松輪江奈港"),
+    ("大原",     "大原港"),
+    ("久里浜",   "久里浜港"),
+    ("銚子",     "外川港"),
+]
+
+
+def _t15_resolve_saturday(today: datetime) -> datetime:
+    """今日 → 表示すべき土曜日。
+    今日が土曜 → 当日 / 日曜 → 来週土曜（+6）/ 平日 → 直近土曜（今後7日以内）。
+    """
+    wd = today.weekday()  # 月=0..日=6
+    if wd == 5:    # 土
+        return today
+    if wd == 6:    # 日 → 来週土曜
+        return today + timedelta(days=6)
+    # 月〜金 → 今週土曜（5 - wd 日後）
+    return today + timedelta(days=(5 - wd))
+
+
+def _t14_get_area_sea_rec(area_key: str, target_str: str) -> dict:
+    """エリアキー（area_coords.json キー）と対象日から海況辞書 {wave, wind, sst} を返す。
+    データが target_str にない場合は _build_area_sea と同じ stale fallback で遡る。
+    取得失敗時は {}。
+    """
+    pt = _t14_resolve_area_point(area_key)
+    if not pt:
+        return {}
+
+    def _rec_for_date(d: str) -> dict | None:
+        day = _t14_load_sea_day(d)
+        if pt not in day:
+            return None
+        r = day[pt]
+        wave = r.get("wave"); wind = r.get("wind")
+        if wave is None and wind is None:
+            return None
+        # SST は _t14_load_sea_day が保持しないため CSV を直接走査
+        sst = None
+        base = os.path.dirname(__file__)
+        fname = os.path.join(base, "weather", f"{d[:7]}.csv")
+        if os.path.isfile(fname):
+            ssts: list[float] = []
+            try:
+                with open(fname, encoding="utf-8", newline="") as f:
+                    for row in csv.DictReader(f):
+                        if row.get("date") != d: continue
+                        if row.get("point", "") != pt: continue
+                        try: hr = int(row.get("hour", "0"))
+                        except ValueError: continue
+                        if hr < 6 or hr > 15: continue
+                        try: ssts.append(float(row["sst"]))
+                        except (KeyError, ValueError, TypeError): pass
+            except Exception:
+                pass
+            if ssts:
+                sst = round(sum(ssts) / len(ssts), 1)
+        return {"wave": wave, "wind": wind, "sst": sst}
+
+    # target_str 当日を試みる
+    rec = _rec_for_date(target_str)
+    if rec:
+        return rec
+
+    # stale fallback: _T14_ALL_WX_DATES を利用（_build_area_sea と同一ロジック）
+    global _T14_ALL_WX_DATES
+    if _T14_ALL_WX_DATES is None:
+        base = os.path.dirname(__file__)
+        wx_dir = os.path.join(base, "weather")
+        _dates: list[str] = []
+        try:
+            for fname in os.listdir(wx_dir):
+                if not fname.endswith(".csv"): continue
+                try:
+                    with open(os.path.join(wx_dir, fname), encoding="utf-8", newline="") as f:
+                        for row in csv.DictReader(f):
+                            d = row.get("date", "")
+                            if d: _dates.append(d)
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        _T14_ALL_WX_DATES = sorted(set(_dates), reverse=True)
+
+    for cand in _T14_ALL_WX_DATES:
+        if cand > target_str:
+            continue
+        rec = _rec_for_date(cand)
+        if rec:
+            return rec
+    return {}
+
+
+def _build_t15_weekend_list(today: datetime) -> str:
+    """週末（直近土曜）の 6 エリア海況リスト HTML。全行不在なら空文字。
+    データ取得は _t14_get_area_sea_rec（stale fallback 付き）を使用。
+    """
+    sat = _t15_resolve_saturday(today)
+    sat_str = sat.strftime("%Y-%m-%d")
+    rows = []
+    for label, area_key in _T15_WEEKEND_AREAS:
+        rec = _t14_get_area_sea_rec(area_key, sat_str)
+        if not rec:
+            continue
+        wave = rec.get("wave"); wind = rec.get("wind"); sst = rec.get("sst")
+        if wave is None and wind is None:
+            continue
+        cls, icon, _ = _t15_classify(wave, wind)
+        judge_txt = (f"{icon} 出船可" if cls == "good"
+                     else f"{icon} 注意" if cls == "warn"
+                     else f"{icon} 荒天")
+        wave_txt = f"波 {wave:.1f}m" if wave is not None else "波 ―"
+        wind_txt = f"風 {wind:.0f}m" if wind is not None else "風 ―"
+        temp_txt = f"{sst:.0f}℃" if sst is not None else "―"
+        rows.append(
+            f'<div class="wl-row">'
+            f'<span class="wl-area">{label}</span>'
+            f'<span class="wl-wave">{wave_txt}</span>'
+            f'<span class="wl-wind">{wind_txt}</span>'
+            f'<span class="wl-temp">{temp_txt}</span>'
+            f'<span class="wl-judge {cls}">{judge_txt}</span>'
+            f'</div>'
+        )
+    if not rows:
+        return ""
+    return f'<div class="weather-list">{"".join(rows)}</div>'
+
+
+# ============================================================
 # Section 8: index.html 追加 JSON-LD 生成
 # ============================================================
 
@@ -3887,8 +4144,9 @@ def _build_index_extra_jsonld(fish_summary: dict, site_url: str, crawled_date: s
             "acceptedAnswer": {
                 "@type": "Answer",
                 "text": (
-                    "ページ最上部のHEROブロックで関東主要エリアの最新海況（波高・風速・水温）を表示しています。"
-                    "エリア別ページでは各港の出船動向や直近の欠航情報も確認できます。"
+                    "ページ内『出船リスク予報』セクションに今後7日間の関東主要海域の波高・風速・気温と"
+                    "出船可否目安（○好条件・△注意・×荒天）を掲載しています。"
+                    "また主要6エリア（金沢八景・走水・剣崎・大原・久里浜・銚子）の直近土曜の海況一覧も同セクション下部で確認できます。"
                 )
             }
         }
@@ -6125,15 +6383,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'{sea_html}'
             f'</div>'
         )
-    # V2 ZONE C: 出船リスク予報（内海/外海 × 7日間）
-    risk_grid_html = ""
-    forecast_json_data_for_risk = weather_data.get("_forecast_data") if weather_data else None
-    if forecast_json_data_for_risk:
-        days_data = forecast_json_data_for_risk.get("days", {})
-        if days_data:
-            soto_row = _risk_grid_row("外海", _SOTOUMI_AREAS, days_data)
-            uchi_row = _risk_grid_row("内海", _UCHIUMI_AREAS, days_data)
-            risk_grid_html = f'<div class="risk-grid-wrap">{soto_row}{uchi_row}</div>'
+    # V2 ZONE C: 出船リスク予報（T15 — 7日リスクグリッド + 週末エリア海況）
+    # 旧 forecast_data（_forecast_data）依存ロジックは未稼働だったため、
+    # weather/YYYY-MM.csv を直接読む T15 ヘルパーに置き換え。
+    risk_grid_html = _build_t15_risk_grid(now)
+    weekend_list_html = _build_t15_weekend_list(now)
     # V2 魚種ナビチップ（ZONE E）
     fish_nav_html = "".join(
         f'<a href="fish/{fish_slug(f)}.html"><img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
@@ -6322,7 +6576,19 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .wl-wind{flex:1 1 80px;color:var(--sub)}
 .wl-temp{flex:0 0 50px;color:var(--sub)}
 .wl-judge{font-size:12px;font-weight:700;flex:0 0 80px;text-align:right}
-.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:#f4a261}.wl-judge.bad{color:var(--neg)}"""
+.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:#f4a261}.wl-judge.bad{color:var(--neg)}
+.risk-day{position:relative}
+.rd-tip{font-size:9px;color:var(--sub);margin-top:3px;line-height:1.3}
+.weather-list{margin-bottom:14px;border:1px solid var(--border);border-radius:var(--r);background:var(--card);padding:4px 12px}
+.weather-list .wl-row:first-child{border-top:none}
+.wl-area{font-size:12px;font-weight:700;color:var(--accent);min-width:64px;flex:0 0 auto}
+@media(max-width:480px){
+  .rd-tip{font-size:8px}
+  .wl-row{flex-wrap:wrap}
+  .wl-area{flex:0 0 100%}
+  .wl-wave,.wl-wind,.wl-temp{flex:0 0 30%}
+  .wl-judge{flex:1;text-align:right}
+}"""
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -6367,6 +6633,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <h2 class="st">{"エリア別 直近1週間の釣果" if is_sparse_today else "エリア別 今日の釣果"} <span class="tag free">無料</span></h2>
 <div class="area-today">{area_today_html}</div>
 {f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>{risk_grid_html}' if risk_grid_html else ''}
+{f'<h2 class="st">今週末 土曜の海況 <span class="tag free">無料</span></h2>{weekend_list_html}' if weekend_list_html else ''}
 <!-- TEASER ROTATOR -->
 {teaser_html}
 <!-- 広告① -->
