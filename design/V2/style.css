@@ -382,29 +382,6 @@ nav.gnav a.prem::before {
 .fc .trend.up   { color: var(--pos); }
 .fc .trend.dn   { color: var(--neg); }
 .fc .trend.flat { color: var(--muted); }
-/* T13-B: 非ゼロ日数 < 4 のとき bars 代わりに表示 */
-.fc .fb-sparse {
-  font-size: 10px;
-  color: var(--muted);
-  font-weight: 500;
-  margin-top: 6px;
-  padding: 3px 6px;
-  background: var(--bg);
-  border-radius: 4px;
-  text-align: center;
-}
-/* T13-A: その他魚種 chip（fish-others 内） */
-.fo-list a.ft {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-.fo-list a.ft .ft-n {
-  font-size: 10px;
-  color: var(--muted);
-  font-weight: 500;
-  margin-left: 2px;
-}
 
 /* その他魚種タグ */
 .fish-others {
@@ -613,45 +590,9 @@ footer .cp { margin-top: 10px; display: block; opacity: .5; }
 .faq-src-link { color: var(--muted); text-decoration: underline; text-decoration-style: dotted; }
 .faq-src-link:hover { color: var(--sub); }
 
-/* ── HERO Top3エリア (Section 1) ── */
-.hero-top3 {
-  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
-  padding: 10px 14px 4px; margin-top: 6px;
-}
-.ht3-card {
-  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-  border-radius: 8px; padding: 6px 10px; text-decoration: none;
-  min-width: 90px; text-align: center; flex: 1; max-width: 180px;
-  transition: background .2s;
-}
-.ht3-card:hover { background: rgba(255,255,255,.22); text-decoration: none; }
-.ht3-rank { font-size: 9px; color: rgba(255,255,255,.5); font-weight: 700; letter-spacing: .5px; }
-.ht3-area { font-size: 11px; font-weight: 800; color: #fff; margin: 1px 0; line-height: 1.2; }
-.ht3-cnt  { font-size: 14px; font-weight: 800; color: var(--cta); font-family: 'Outfit', system-ui; }
-.ht3-cnt u { font-size: 10px; color: rgba(255,255,255,.6); font-weight: 400; text-decoration: none; margin-left: 1px; font-family: system-ui; }
-.ht3-fish { font-size: 9px; color: rgba(255,255,255,.65); margin-top: 2px; line-height: 1.4; }
-
-/* ── HERO 海況1行 (Section 1) ── */
-.hero-sea {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 6px 14px 10px; font-size: 11px; color: rgba(255,255,255,.8);
-}
-.hs-label { font-size: 9px; color: rgba(255,255,255,.5); font-weight: 700; letter-spacing: .5px; }
-.hs-val   { font-weight: 600; }
-.hs-pill  { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
-.hs-pill.good { background: var(--pos);  color: #fff; }
-.hs-pill.warn { background: var(--warn); color: #fff; }
-.hs-pill.bad  { background: var(--neg);  color: #fff; }
-
 /* ── PC ── */
 @media (min-width: 769px) {
   .bn { display: none; }
   body { padding-bottom: 0; }
   .fish-grid { grid-template-columns: repeat(3, 1fr); }
 }
-
-/* T14: ZONE B2 at-card 拡充（◎船宿 / 翌日海況） */
-.at-top { font-size: 10px; color: var(--pos); font-weight: 700; margin-top: 4px; }
-.at-sea { font-size: 10px; color: var(--sub); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
-.at-sea .hs-pill { width: 14px; height: 14px; line-height: 14px; font-size: 9px; }
-

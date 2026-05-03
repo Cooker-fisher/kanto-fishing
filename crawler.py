@@ -72,12 +72,9 @@ JST = timezone(timedelta(hours=9))
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 try:
     with open(os.path.join(_BASE_DIR, "config.json"), encoding="utf-8") as _f:
-        _CFG = json.load(_f)
-        _ACTIVE_VER = _CFG["active_version"]
-        _LINE_ACCOUNT_ID = (_CFG.get("line_account_id") or "").strip() or None
+        _ACTIVE_VER = json.load(_f)["active_version"]
 except Exception:
     _ACTIVE_VER = "V2"
-    _LINE_ACCOUNT_ID = None
 _DATA_DIR = os.path.join(_BASE_DIR, "data", _ACTIVE_VER)
 
 SHIPS = [
@@ -3445,743 +3442,6 @@ def _area_ea_key(area_name: str) -> str:
     return "gaiwan"
 
 # ============================================================
-# Section 1: HERO 補助関数
-# ============================================================
-
-# 海況判定用の代表ポイント（weather/YYYY-MM.csv の point 列の値）
-_HERO_SEA_POINTS = ["八景沖", "走水沖", "大原沖", "外川沖"]
-
-def _load_hero_sea_data(target_str: str) -> dict:
-    """指定日（通常は翌日）の海況（波高・風速・SST）を weather/YYYY-MM.csv から全ポイント平均で返す。
-
-    ポイント名を絞らず全レコードの 6〜15 時平均をとる。
-    指定日データが空なら今日→昨日→と最大 7 日遡ってフォールバック。
-    フォールバック時は返り値に as_of キーを追加する。
-    それでも空なら {} を返す（_build_hero_sea_html が空文字を返すため HERO に表示されない）。
-    """
-    base = os.path.dirname(__file__)
-    wx_dir = os.path.join(base, "weather")
-    if not os.path.isdir(wx_dir):
-        return {}
-
-    def _read_day(date_str):
-        """指定日の全ポイント 6〜15 時平均 (wave/wind/sst) を返す。データなしは {}。"""
-        ym = date_str[:7]
-        fname = os.path.join(wx_dir, f"{ym}.csv")
-        if not os.path.isfile(fname):
-            return {}
-        waves, winds, ssts = [], [], []
-        try:
-            with open(fname, encoding="utf-8", newline="") as f:
-                for row in csv.DictReader(f):
-                    dt = row.get("date", "")
-                    if dt != date_str:
-                        continue
-                    try:
-                        hr = int(row.get("hour", "0"))
-                    except ValueError:
-                        continue
-                    if hr < 6 or hr > 15:
-                        continue
-                    try: waves.append(float(row["wave_height"]))
-                    except (KeyError, ValueError): pass
-                    try: winds.append(float(row["wind_speed"]))
-                    except (KeyError, ValueError): pass
-                    try: ssts.append(float(row["sst"]))
-                    except (KeyError, ValueError): pass
-        except Exception:
-            return {}
-        if not waves and not winds:
-            return {}
-        def _avg(lst): return round(sum(lst) / len(lst), 1) if lst else None
-        return {"wave": _avg(waves), "wind": _avg(winds), "sst": _avg(ssts)}
-
-    # まず指定日を試みる
-    result = _read_day(target_str)
-    if result:
-        return result
-
-    # フォールバック: weather/ 配下の全 CSV から実際に存在する日付を収集し
-    # target_str 以前の最新日から順に試みる（固定 7 日ではなくスキャン方式）
-    try:
-        all_dates = []
-        for fname in os.listdir(wx_dir):
-            if not fname.endswith(".csv"):
-                continue
-            fpath = os.path.join(wx_dir, fname)
-            try:
-                with open(fpath, encoding="utf-8", newline="") as f:
-                    for row in csv.DictReader(f):
-                        d = row.get("date", "")
-                        if d and d <= target_str:
-                            all_dates.append(d)
-            except Exception:
-                continue
-        for cand in sorted(set(all_dates), reverse=True):
-            r = _read_day(cand)
-            if r:
-                r["as_of"] = cand
-                return r
-    except Exception:
-        pass
-    return {}
-
-
-def _build_hero_top3_html(hero_base: list) -> str:
-    """今日のTop3エリア＋各エリア上位魚種2件の HTML を返す。
-    hero_base: HERO に使う釣果レコードリスト（7日窓フォールバック後でも同じソースで一貫）
-    area_fish_map 引数は廃止。hero_base から直接再計算するため不一致が生じない。
-    """
-    if not hero_base:
-        return ""
-    from collections import Counter, defaultdict
-    area_cnt = Counter(c["area"] for c in hero_base)
-    # hero_base から直接 area → fish カウントを再計算
-    area_fish: dict = defaultdict(Counter)
-    for c in hero_base:
-        fish_val = c.get("fish")
-        fish_list = fish_val if isinstance(fish_val, list) else ([fish_val] if fish_val else [])
-        for f in fish_list:
-            if f and f not in ("不明", "欠航"):
-                area_fish[c["area"]][f] += 1
-    top3 = area_cnt.most_common(3)
-    if not top3:
-        return ""
-    rank_labels = ["1st", "2nd", "3rd"]
-    items = ""
-    for i, (area, cnt) in enumerate(top3):
-        slug = area_slug(area)
-        top_fish = area_fish[area].most_common(2)
-        fish_txt = "・".join(f for f, _ in top_fish) if top_fish else ""
-        rank = rank_labels[i] if i < len(rank_labels) else ""
-        items += (
-            f'<a href="area/{slug}.html" class="ht3-card">'
-            f'<div class="ht3-rank">{rank}</div>'
-            f'<div class="ht3-area">{area}</div>'
-            f'<div class="ht3-cnt">{cnt}<u>件</u></div>'
-            f'{"<div class=\'ht3-fish\'>" + fish_txt + "</div>" if fish_txt else ""}'
-            f'</a>'
-        )
-    return f'<div class="hero-top3">{items}</div>'
-
-
-def _build_hero_sea_html(sea: dict) -> str:
-    """海況1行 HTML を返す。
-    sea = {"wave": float|None, "wind": float|None, "sst": float|None, "as_of": "YYYY-MM-DD"(省略可)}
-    as_of がない場合は「明日の関東平均」、ある場合は「最新データ (M/D時点) 関東平均」を使う。
-    wave/wind が両方 None なら空文字を返す。
-    """
-    wave = sea.get("wave")
-    wind = sea.get("wind")
-    sst  = sea.get("sst")
-    if wave is None and wind is None:
-        return ""
-    # ラベル
-    as_of = sea.get("as_of")
-    if as_of:
-        try:
-            _dt = datetime.strptime(as_of, "%Y-%m-%d")
-            label = f"最新データ ({_dt.month}/{_dt.day}時点) 関東平均"
-        except Exception:
-            label = "最新データ 関東平均"
-    else:
-        label = "明日の関東平均"
-    # 出船可否スコア
-    score = 100
-    if wave is not None:
-        if wave >= 2.5: score -= 60
-        elif wave >= 1.5: score -= 30
-        elif wave >= 1.0: score -= 10
-    if wind is not None:
-        if wind >= 12: score -= 50
-        elif wind >= 8: score -= 25
-        elif wind >= 6: score -= 10
-    score = max(0, score)
-    if score >= 80:
-        pill_cls, pill_txt = "good", "○ 好条件"
-    elif score >= 50:
-        pill_cls, pill_txt = "warn", "△ 注意"
-    else:
-        pill_cls, pill_txt = "bad", "× 荒れ注意"
-    parts = []
-    if wave is not None: parts.append(f'波 {wave:.1f}m')
-    if wind is not None: parts.append(f'風 {wind:.0f}m/s')
-    if sst  is not None: parts.append(f'{sst:.0f}℃')
-    sea_txt = " / ".join(parts)
-    return (
-        f'<div class="hero-sea">'
-        f'<span class="hs-label">{label}</span>'
-        f'<span class="hs-val">{sea_txt}</span>'
-        f'<span class="hs-pill {pill_cls}">{pill_txt}</span>'
-        f'</div>'
-    )
-
-
-# ============================================================
-# T14: ZONE B2 エリア別カード拡充（◎船宿 / 翌日海況）
-# ============================================================
-
-# モジュール内キャッシュ
-_T14_AREA_COORDS_CACHE: dict | None = None
-_T14_POINT_COORDS_CACHE: dict | None = None
-_T14_AREA_POINT_CACHE: dict[str, str | None] = {}
-_T14_SEA_DAY_CACHE: dict[str, dict] = {}  # date_str -> {point: {wave, wind}}
-_T14_ALL_WX_DATES: list[str] | None = None  # weather/ 内の全日付（降順・キャッシュ）
-
-
-def _t14_load_area_coords() -> dict:
-    global _T14_AREA_COORDS_CACHE
-    if _T14_AREA_COORDS_CACHE is not None:
-        return _T14_AREA_COORDS_CACHE
-    p = os.path.join(os.path.dirname(__file__), "normalize", "area_coords.json")
-    try:
-        with open(p, encoding="utf-8") as f:
-            _T14_AREA_COORDS_CACHE = json.load(f) or {}
-    except Exception:
-        _T14_AREA_COORDS_CACHE = {}
-    return _T14_AREA_COORDS_CACHE
-
-
-def _t14_load_point_coords() -> dict:
-    global _T14_POINT_COORDS_CACHE
-    if _T14_POINT_COORDS_CACHE is not None:
-        return _T14_POINT_COORDS_CACHE
-    p = os.path.join(os.path.dirname(__file__), "normalize", "point_coords.json")
-    try:
-        with open(p, encoding="utf-8") as f:
-            _T14_POINT_COORDS_CACHE = json.load(f) or {}
-    except Exception:
-        _T14_POINT_COORDS_CACHE = {}
-    return _T14_POINT_COORDS_CACHE
-
-
-def _t14_load_sea_day(date_str: str) -> dict:
-    """指定日の {point: {wave, wind}} を 6〜15時平均で返す。未取得日は {} 。"""
-    if date_str in _T14_SEA_DAY_CACHE:
-        return _T14_SEA_DAY_CACHE[date_str]
-    base = os.path.dirname(__file__)
-    fname = os.path.join(base, "weather", f"{date_str[:7]}.csv")
-    if not os.path.isfile(fname):
-        _T14_SEA_DAY_CACHE[date_str] = {}
-        return {}
-    acc: dict = {}
-    try:
-        with open(fname, encoding="utf-8", newline="") as f:
-            for row in csv.DictReader(f):
-                if row.get("date") != date_str:
-                    continue
-                try:
-                    hr = int(row.get("hour", "0"))
-                except ValueError:
-                    continue
-                if hr < 6 or hr > 15:
-                    continue
-                pt = row.get("point", "")
-                if not pt:
-                    continue
-                rec = acc.setdefault(pt, {"wave": [], "wind": []})
-                try: rec["wave"].append(float(row["wave_height"]))
-                except (KeyError, ValueError, TypeError): pass
-                try: rec["wind"].append(float(row["wind_speed"]))
-                except (KeyError, ValueError, TypeError): pass
-    except Exception:
-        _T14_SEA_DAY_CACHE[date_str] = {}
-        return {}
-    out = {}
-    for pt, d in acc.items():
-        if not d["wave"] and not d["wind"]:
-            continue
-        out[pt] = {
-            "wave": (round(sum(d["wave"]) / len(d["wave"]), 1) if d["wave"] else None),
-            "wind": (round(sum(d["wind"]) / len(d["wind"]), 1) if d["wind"] else None),
-        }
-    _T14_SEA_DAY_CACHE[date_str] = out
-    return out
-
-
-def _t14_resolve_area_point(area: str) -> str | None:
-    """エリア名から weather/CSV の point 列値を返す。
-    優先順:
-      ① area_coords.json[area]['point']（ヒットすれば最優先・44/58 で一致）
-      ② area_coords.json[area] の lat/lon と point_coords.json の最近傍ポイント名
-    見つからなければ None。
-    """
-    if area in _T14_AREA_POINT_CACHE:
-        return _T14_AREA_POINT_CACHE[area]
-    ac = _t14_load_area_coords()
-    info = ac.get(area) or ac.get(area + "港") or {}
-    pt = info.get("point")
-    # ① 直接指定
-    if pt:
-        _T14_AREA_POINT_CACHE[area] = pt
-        return pt
-    # ② 最近傍
-    lat = info.get("lat"); lon = info.get("lon")
-    if lat is None or lon is None:
-        _T14_AREA_POINT_CACHE[area] = None
-        return None
-    pc = _t14_load_point_coords()
-    best = None; best_d = 1e9
-    for name, pinfo in pc.items():
-        try:
-            la = float(pinfo.get("lat")); lo = float(pinfo.get("lon"))
-        except (TypeError, ValueError):
-            continue
-        d = (la - lat) ** 2 + (lo - lon) ** 2
-        if d < best_d:
-            best_d = d; best = name
-    _T14_AREA_POINT_CACHE[area] = best
-    return best
-
-
-def _build_area_top_ship(area: str, records: list) -> str:
-    """ZONE B2 at-card 内の ◎船宿（件数Top1）行 HTML。
-    プレーンテキスト（<a> ネスト禁止・不変条件 #11）。0件なら空文字。
-    """
-    from collections import Counter
-    cnt = Counter(c.get("ship", "") for c in records if c.get("area") == area and c.get("ship"))
-    top = cnt.most_common(1)
-    if not top or top[0][1] <= 0:
-        return ""
-    ship, n = top[0]
-    return f'<div class="at-top">◎ {ship}（{n}件）</div>'
-
-
-def _build_area_sea(area: str, target_str: str) -> str:
-    """ZONE B2 at-card 内の翌日海況 1 行 HTML。
-    取得失敗時は空文字（ブロック非表示）。
-    target_str: 翌日 'YYYY-MM-DD'
-    フォールバック: target_str → 同ファイル内で target_str 以前の最新日を全スキャンで検索
-    （_load_hero_sea_data と同じ思想・weather data が stale でも表示できる）
-    """
-    pt = _t14_resolve_area_point(area)
-    if not pt:
-        return ""
-    # まず翌日当日を試みる
-    day = _t14_load_sea_day(target_str)
-    if pt in day:
-        rec = day[pt]
-    else:
-        # フォールバック: weather/ 配下の全日付リスト（キャッシュ済み）から
-        # target_str 以前の最新日を探す
-        rec = None
-        global _T14_ALL_WX_DATES
-        if _T14_ALL_WX_DATES is None:
-            base = os.path.dirname(__file__)
-            wx_dir = os.path.join(base, "weather")
-            _dates: list[str] = []
-            try:
-                for fname in os.listdir(wx_dir):
-                    if not fname.endswith(".csv"):
-                        continue
-                    fpath = os.path.join(wx_dir, fname)
-                    try:
-                        with open(fpath, encoding="utf-8", newline="") as f:
-                            for row in csv.DictReader(f):
-                                d = row.get("date", "")
-                                if d:
-                                    _dates.append(d)
-                    except Exception:
-                        continue
-            except Exception:
-                pass
-            _T14_ALL_WX_DATES = sorted(set(_dates), reverse=True)  # 降順
-        for cand in _T14_ALL_WX_DATES:
-            if cand > target_str:
-                continue
-            d2 = _t14_load_sea_day(cand)
-            if pt in d2:
-                rec = d2[pt]
-                break
-    if not rec:
-        return ""
-    wave = rec.get("wave"); wind = rec.get("wind")
-    if wave is None and wind is None:
-        return ""
-    # hero-sea と同じ判定ロジック
-    score = 100
-    if wave is not None:
-        if wave >= 2.5: score -= 60
-        elif wave >= 1.5: score -= 30
-        elif wave >= 1.0: score -= 10
-    if wind is not None:
-        if wind >= 12: score -= 50
-        elif wind >= 8: score -= 25
-        elif wind >= 6: score -= 10
-    score = max(0, score)
-    if score >= 80:
-        pill_cls, pill_mark = "good", "○"
-    elif score >= 50:
-        pill_cls, pill_mark = "warn", "△"
-    else:
-        pill_cls, pill_mark = "bad", "×"
-    parts = []
-    if wave is not None: parts.append(f"波 {wave:.1f}m")
-    if wind is not None: parts.append(f"風 {wind:.0f}m")
-    txt = "・".join(parts)
-    return f'<div class="at-sea"><span class="hs-pill {pill_cls}">{pill_mark}</span>{txt}</div>'
-
-
-# ============================================================
-# T15: ZONE C 出船リスク予報（7日リスクグリッド + 週末エリア海況）
-# ============================================================
-
-def _t15_classify(wave, wind):
-    """波高・風速 → (cls, icon, label) を返す。hero-sea と同じ閾値を使用。"""
-    score = 100
-    if wave is not None:
-        if wave >= 2.5: score -= 60
-        elif wave >= 1.5: score -= 30
-        elif wave >= 1.0: score -= 10
-    if wind is not None:
-        if wind >= 12: score -= 50
-        elif wind >= 8: score -= 25
-        elif wind >= 6: score -= 10
-    score = max(0, score)
-    if score >= 80:
-        return "good", "○", "好条件"
-    elif score >= 50:
-        return "warn", "△", "注意"
-    else:
-        return "bad", "×", "荒天"
-
-
-def _t15_kanto_avg(date_str: str) -> dict:
-    """関東主要4ポイント（_HERO_SEA_POINTS）の指定日平均 (wave, wind, sst)。
-    取得失敗時は {}。temp は wave/wind の平均と同じ wx_dir スキャンで取得。
-    """
-    base = os.path.dirname(__file__)
-    fname = os.path.join(base, "weather", f"{date_str[:7]}.csv")
-    if not os.path.isfile(fname):
-        return {}
-    waves, winds, ssts = [], [], []
-    pts = set(_HERO_SEA_POINTS)
-    try:
-        with open(fname, encoding="utf-8", newline="") as f:
-            for row in csv.DictReader(f):
-                if row.get("date") != date_str:
-                    continue
-                if row.get("point", "") not in pts:
-                    continue
-                try:
-                    hr = int(row.get("hour", "0"))
-                except ValueError:
-                    continue
-                if hr < 6 or hr > 15:
-                    continue
-                try: waves.append(float(row["wave_height"]))
-                except (KeyError, ValueError, TypeError): pass
-                try: winds.append(float(row["wind_speed"]))
-                except (KeyError, ValueError, TypeError): pass
-                try: ssts.append(float(row["sst"]))
-                except (KeyError, ValueError, TypeError): pass
-    except Exception:
-        return {}
-    if not waves and not winds:
-        return {}
-    def _avg(lst): return round(sum(lst) / len(lst), 1) if lst else None
-    return {"wave": _avg(waves), "wind": _avg(winds), "sst": _avg(ssts)}
-
-
-def _t15_kanto_avg_with_fallback(date_str: str) -> dict:
-    """指定日のデータがなければ weather/ 配下から最新（≤指定日）を遡って取得。
-    フォールバック時は as_of キーを追加。"""
-    sea = _t15_kanto_avg(date_str)
-    if sea:
-        return sea
-    base = os.path.dirname(__file__)
-    wx_dir = os.path.join(base, "weather")
-    if not os.path.isdir(wx_dir):
-        return {}
-    try:
-        all_dates = []
-        for fname in os.listdir(wx_dir):
-            if not fname.endswith(".csv"):
-                continue
-            try:
-                with open(os.path.join(wx_dir, fname), encoding="utf-8", newline="") as f:
-                    for row in csv.DictReader(f):
-                        d = row.get("date", "")
-                        if d and d <= date_str:
-                            all_dates.append(d)
-            except Exception:
-                continue
-        for cand in sorted(set(all_dates), reverse=True):
-            r = _t15_kanto_avg(cand)
-            if r:
-                r["as_of"] = cand
-                return r
-    except Exception:
-        pass
-    return {}
-
-
-def _build_t15_risk_grid(today: datetime) -> str:
-    """今日から7日間の出船リスクグリッド HTML。全日不在なら空文字。"""
-    dow_jp = ["月", "火", "水", "木", "金", "土", "日"]
-    cells = []
-    for i in range(7):
-        d = today + timedelta(days=i)
-        date_str = d.strftime("%Y-%m-%d")
-        sea = _t15_kanto_avg_with_fallback(date_str)
-        if not sea:
-            continue
-        wave = sea.get("wave"); wind = sea.get("wind"); sst = sea.get("sst")
-        cls, icon, lbl = _t15_classify(wave, wind)
-        tip_parts = []
-        if wave is not None: tip_parts.append(f"波 {wave:.1f}m")
-        if wind is not None: tip_parts.append(f"風 {wind:.0f}m")
-        if sst is not None: tip_parts.append(f"{sst:.0f}℃")
-        tip = " / ".join(tip_parts)
-        cells.append(
-            f'<div class="risk-day {cls}">'
-            f'<div class="rd-dow">{dow_jp[d.weekday()]}</div>'
-            f'<div class="rd-date">{d.month}/{d.day:02d}</div>'
-            f'<div class="rd-icon">{icon}</div>'
-            f'<div class="rd-label">{lbl}</div>'
-            f'<div class="rd-tip">{tip}</div>'
-            f'</div>'
-        )
-    if not cells:
-        return ""
-    return f'<div class="risk-grid">{"".join(cells)}</div>'
-
-
-# 6 固定エリア（表示名・area_coords.json キー）
-_T15_WEEKEND_AREAS = [
-    ("金沢八景", "金沢八景"),
-    ("走水",     "走水港"),
-    ("剣崎",     "松輪江奈港"),
-    ("大原",     "大原港"),
-    ("久里浜",   "久里浜港"),
-    ("銚子",     "外川港"),
-]
-
-
-def _t15_resolve_saturday(today: datetime) -> datetime:
-    """今日 → 表示すべき土曜日。
-    今日が土曜 → 当日 / 日曜 → 来週土曜（+6）/ 平日 → 直近土曜（今後7日以内）。
-    """
-    wd = today.weekday()  # 月=0..日=6
-    if wd == 5:    # 土
-        return today
-    if wd == 6:    # 日 → 来週土曜
-        return today + timedelta(days=6)
-    # 月〜金 → 今週土曜（5 - wd 日後）
-    return today + timedelta(days=(5 - wd))
-
-
-def _t14_get_area_sea_rec(area_key: str, target_str: str) -> dict:
-    """エリアキー（area_coords.json キー）と対象日から海況辞書 {wave, wind, sst} を返す。
-    データが target_str にない場合は _build_area_sea と同じ stale fallback で遡る。
-    取得失敗時は {}。
-    """
-    pt = _t14_resolve_area_point(area_key)
-    if not pt:
-        return {}
-
-    def _rec_for_date(d: str) -> dict | None:
-        day = _t14_load_sea_day(d)
-        if pt not in day:
-            return None
-        r = day[pt]
-        wave = r.get("wave"); wind = r.get("wind")
-        if wave is None and wind is None:
-            return None
-        # SST は _t14_load_sea_day が保持しないため CSV を直接走査
-        sst = None
-        base = os.path.dirname(__file__)
-        fname = os.path.join(base, "weather", f"{d[:7]}.csv")
-        if os.path.isfile(fname):
-            ssts: list[float] = []
-            try:
-                with open(fname, encoding="utf-8", newline="") as f:
-                    for row in csv.DictReader(f):
-                        if row.get("date") != d: continue
-                        if row.get("point", "") != pt: continue
-                        try: hr = int(row.get("hour", "0"))
-                        except ValueError: continue
-                        if hr < 6 or hr > 15: continue
-                        try: ssts.append(float(row["sst"]))
-                        except (KeyError, ValueError, TypeError): pass
-            except Exception:
-                pass
-            if ssts:
-                sst = round(sum(ssts) / len(ssts), 1)
-        return {"wave": wave, "wind": wind, "sst": sst}
-
-    # target_str 当日を試みる
-    rec = _rec_for_date(target_str)
-    if rec:
-        return rec
-
-    # stale fallback: _T14_ALL_WX_DATES を利用（_build_area_sea と同一ロジック）
-    global _T14_ALL_WX_DATES
-    if _T14_ALL_WX_DATES is None:
-        base = os.path.dirname(__file__)
-        wx_dir = os.path.join(base, "weather")
-        _dates: list[str] = []
-        try:
-            for fname in os.listdir(wx_dir):
-                if not fname.endswith(".csv"): continue
-                try:
-                    with open(os.path.join(wx_dir, fname), encoding="utf-8", newline="") as f:
-                        for row in csv.DictReader(f):
-                            d = row.get("date", "")
-                            if d: _dates.append(d)
-                except Exception:
-                    continue
-        except Exception:
-            pass
-        _T14_ALL_WX_DATES = sorted(set(_dates), reverse=True)
-
-    for cand in _T14_ALL_WX_DATES:
-        if cand > target_str:
-            continue
-        rec = _rec_for_date(cand)
-        if rec:
-            return rec
-    return {}
-
-
-def _build_t15_weekend_list(today: datetime) -> str:
-    """週末（直近土曜）の 6 エリア海況リスト HTML。全行不在なら空文字。
-    データ取得は _t14_get_area_sea_rec（stale fallback 付き）を使用。
-    """
-    sat = _t15_resolve_saturday(today)
-    sat_str = sat.strftime("%Y-%m-%d")
-    rows = []
-    for label, area_key in _T15_WEEKEND_AREAS:
-        rec = _t14_get_area_sea_rec(area_key, sat_str)
-        if not rec:
-            continue
-        wave = rec.get("wave"); wind = rec.get("wind"); sst = rec.get("sst")
-        if wave is None and wind is None:
-            continue
-        cls, icon, _ = _t15_classify(wave, wind)
-        judge_txt = (f"{icon} 出船可" if cls == "good"
-                     else f"{icon} 注意" if cls == "warn"
-                     else f"{icon} 荒天")
-        wave_txt = f"波 {wave:.1f}m" if wave is not None else "波 ―"
-        wind_txt = f"風 {wind:.0f}m" if wind is not None else "風 ―"
-        temp_txt = f"{sst:.0f}℃" if sst is not None else "―"
-        rows.append(
-            f'<div class="wl-row">'
-            f'<span class="wl-area">{label}</span>'
-            f'<span class="wl-wave">{wave_txt}</span>'
-            f'<span class="wl-wind">{wind_txt}</span>'
-            f'<span class="wl-temp">{temp_txt}</span>'
-            f'<span class="wl-judge {cls}">{judge_txt}</span>'
-            f'</div>'
-        )
-    if not rows:
-        return ""
-    return f'<div class="weather-list">{"".join(rows)}</div>'
-
-
-# ============================================================
-# Section 8: index.html 追加 JSON-LD 生成
-# ============================================================
-
-def _build_index_extra_jsonld(fish_summary: dict, site_url: str, crawled_date: str) -> str:
-    """index.html の <head> 末尾に追加する3つの JSON-LD スクリプトタグを返す。
-    1. ItemList  — 今日のTop10魚種
-    2. BreadcrumbList — トップ1階層
-    3. FAQPage   — 3問
-    """
-    import json as _json_ld
-    # 1. ItemList（件数降順 Top10）
-    top10 = sorted(fish_summary.items(), key=lambda x: -len(x[1]))[:10]
-    list_items = [
-        {
-            "@type": "ListItem",
-            "position": i + 1,
-            "name": f + "の釣果情報",
-            "url": f"{site_url}/fish/{fish_slug(f)}.html"
-        }
-        for i, (f, _) in enumerate(top10)
-    ]
-    item_list_ld = {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "name": "今日の関東船釣り 釣れている魚 Top10",
-        "description": "関東75船宿の釣果データから集計した本日のTop10魚種",
-        "itemListElement": list_items
-    }
-    # 2. BreadcrumbList（トップ1階層）
-    breadcrumb_ld = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "トップ — 関東船釣り釣果情報",
-                "item": f"{site_url}/"
-            }
-        ]
-    }
-    # 3. FAQPage（2〜3問）
-    # top10 が空のとき「今日何が釣れた？」は実データがないため偽情報リスクがある → 除外する
-    faq_main_entity = []
-    if top10:
-        today_fish_names = "・".join(f for f, _ in top10[:3])
-        faq_main_entity.append(
-            {
-                "@type": "Question",
-                "name": "今日の関東沖で何が釣れていますか？",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": (
-                        f"本日（{crawled_date}）の関東75船宿の報告では、"
-                        f"{today_fish_names}などの釣果が確認されています。"
-                        "毎日16時30分ごろ最新データに更新されます。"
-                    )
-                }
-            }
-        )
-    faq_main_entity.append(
-        {
-            "@type": "Question",
-            "name": "今週末の関東の海況はどうですか？",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": (
-                    "ページ内『出船リスク予報』セクションに今後7日間の関東主要海域の波高・風速・気温と"
-                    "出船可否目安（○好条件・△注意・×荒天）を掲載しています。"
-                    "また主要6エリア（金沢八景・走水・剣崎・大原・久里浜・銚子）の直近土曜の海況一覧も同セクション下部で確認できます。"
-                )
-            }
-        }
-    )
-    faq_main_entity.append(
-        {
-            "@type": "Question",
-            "name": "データはどこから取得していますか？",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": (
-                    "釣りビジョン（fishing-v.jp）に掲載された神奈川・東京・千葉・茨城・静岡の"
-                    "船宿釣果報告を毎日自動収集しています。現在75船宿・96,000件以上の"
-                    "釣果データを蓄積しており、海況データはOpen-Meteo APIを利用しています。"
-                )
-            }
-        }
-    )
-    faq_ld = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": faq_main_entity
-    }
-    def _s(obj): return _json_ld.dumps(obj, ensure_ascii=False)
-    return (
-        f'<script type="application/ld+json">{_s(item_list_ld)}</script>\n'
-        f'  <script type="application/ld+json">{_s(breadcrumb_ld)}</script>\n'
-        f'  <script type="application/ld+json">{_s(faq_ld)}</script>'
-    )
-
-
-# ============================================================
 # V2 デザイン共通 CSS
 # ============================================================
 V2_COMMON_CSS = """@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@800&display=swap');
@@ -4457,148 +3717,59 @@ def _v2_bottom_nav(active_page=""):
     nav += '</nav>'
     return nav
 
-def build_teaser_rotator_html(top_entries=None, line_url=None):
-    """有料機能プレビュー ローテーターパネル（index.html用）
-
-    top_entries: list of dict（T16 動的化用）。各要素は
-      {"fish": str, "cnt_range_str": str, "sz_str": str, "top_area": str}
-      上位2件を使用。None または長さ < 2 のときは静的ダミーにフォールバック。
-    line_url: LINE 公式アカウントURL（設定済みなら CTA ブロックを表示、None/空なら非表示）
-    """
-    # --- スライド1 ダミーカード生成 ---
-    _STATIC_SLIDE1 = (
-        '<div class="teaser-dummy"><div class="td-fish">アジ <span class="td-star">★★★★★</span></div>'
-        '<div class="td-range">25〜45匹 / 18〜25cm</div>'
-        '<div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div></div>'
-        '<div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div>'
-        '<div class="td-range">0〜5匹 / 30〜55cm</div>'
-        '<div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>'
-    )
-    _STARS = ["★★★★★", "★★★★☆"]
-    try:
-        if top_entries and len(top_entries) >= 2:
-            slide1_cards = ""
-            for i, e in enumerate(top_entries[:2]):
-                fish = e.get("fish", "")
-                rng  = e.get("cnt_range_str", "")
-                sz   = e.get("sz_str", "")
-                area = e.get("top_area", "")
-                range_txt = " / ".join(filter(None, [rng, sz])) or "データ集計中"
-                reason_txt = f"{area} 中心 — 今週末好条件予測" if area else "今週の釣れ筋魚種"
-                star = _STARS[i]
-                slide1_cards += (
-                    f'<div class="teaser-dummy">'
-                    f'<div class="td-fish">{fish} <span class="td-star">{star}</span></div>'
-                    f'<div class="td-range">{range_txt}</div>'
-                    f'<div class="td-reason">{reason_txt}</div>'
-                    f'</div>'
-                )
-        else:
-            slide1_cards = _STATIC_SLIDE1
-    except Exception:
-        slide1_cards = _STATIC_SLIDE1
-
-    # --- LINE CTA ブロック ---
-    if line_url:
-        cta_html = (
-            '<div class="teaser-cta-wrap">'
-            '<div class="teaser-cta-msg">公開時に<strong>LINE</strong>でお知らせします。'
-            '友だち追加してお待ちください。</div>'
-            '<div class="teaser-cta-btns">'
-            f'<a class="cta-line" href="{line_url}" rel="noopener">'
-            '<span class="line-ic">L</span>LINEで通知を受け取る'
-            '</a>'
-            '</div>'
-            '<div class="teaser-price">※ 全機能まとめて <em>月額500円</em>（仕掛け1セット分）'
-            '/ スポット <em>1回100円</em></div>'
-            '</div>'
-        )
-    else:
-        cta_html = (
-            '<div class="teaser-cta-wrap">'
-            '<div class="teaser-cta-msg">現在開発中。<strong>有料プランページ</strong>'
-             'で最新の釣果予測をご確認ください。</div>'
-            '<div class="teaser-cta-btns">'
-            '<a class="cta-btn" href="/forecast/index.html">有料プランを見る（月額500円）</a>'
-            '</div>'
-            '<div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>'
-            '</div>'
-        )
-
-    return (
-        '<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>'
-        '\n<div class="teaser-rotator">'
-        '\n  <div class="tr-track">'
-        '\n    <div class="tr-slide is-active">'
-        '\n      <div class="teaser-head">'
-        '\n        <span class="teaser-badge soon">開発中</span>'
-        '\n        <span class="teaser-title-in">今週の狙い目 — 週末TOP5魚種</span>'
-        '\n      </div>'
-        '\n      <div class="teaser-desc">約10万件の釣果データ×気象×潮汐をAI分析。'
-        '<strong>今週末の狙い目魚種・エリア</strong>をランキング表示。</div>'
-        '\n      <div style="position:relative">'
-        f'\n        {slide1_cards}'
-        '\n        <div class="teaser-overlay"><div class="coming-soon-panel">'
-        '<div class="cs-title">準備中</div>'
-        '<ul class="cs-features"><li>今週 日毎の釣果予測</li>'
-        '<li>2・3・4週先の釣果予測</li><li>気象×潮汐で自動算出</li></ul>'
-        '<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
-        '</div></div>'
-        '\n      </div>'
-        '\n    </div>'
-        '\n    <div class="tr-slide">'
-        '\n      <div class="teaser-head">'
-        '\n        <span class="teaser-badge soon">開発中</span>'
-        '\n        <span class="teaser-title-in">予測の答え合わせ — 予測 vs 実績</span>'
-        '\n      </div>'
-        '\n      <div class="teaser-desc"><strong>前日の予測</strong>が実際の釣果と一致したかを毎日公開。'
-        '「なぜ当たった・外れたか」を正直レポート。</div>'
-        '\n      <div style="position:relative">'
-        '\n        <div class="teaser-dummy"><div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div>'
-        '<div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div>'
-        '<div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div></div>'
-        '\n        <div class="teaser-dummy"><div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div>'
-        '<div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div>'
-        '<div class="td-reason">水温× 予報より1.5℃低下で活性低下</div></div>'
-        '\n        <div class="teaser-overlay"><div class="coming-soon-panel">'
-        '<div class="cs-title">準備中</div>'
-        '<ul class="cs-features"><li>先週の予測 vs 実績比較</li>'
-        '<li>予測精度スコア</li><li>外れた理由の解説</li></ul>'
-        '<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
-        '</div></div>'
-        '\n      </div>'
-        '\n    </div>'
-        '\n    <div class="tr-slide">'
-        '\n      <div class="teaser-head">'
-        '\n        <span class="teaser-badge soon">開発中</span>'
-        '\n        <span class="teaser-title-in">分析・予測 — 注目コンボ・急落コンボ</span>'
-        '\n      </div>'
-        '\n      <div class="teaser-desc"><strong>魚種×エリアの組合せ</strong>を独自スコアリング。'
-        '「来週のどの日に何が釣れるか」を日別で予測。</div>'
-        '\n      <div style="position:relative">'
-        '\n        <div class="teaser-dummy"><div class="td-fish">注目: アジ × 金沢八景</div>'
-        '<div class="td-range">スコア 92 / 平年比 +38%</div>'
-        '<div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div></div>'
-        '\n        <div class="teaser-dummy"><div class="td-fish">急落: タチウオ × 走水</div>'
-        '<div class="td-range">先週比 -45%</div>'
-        '<div class="td-reason">水温急低下でベイトが抜けた模様</div></div>'
-        '\n        <div class="teaser-overlay"><div class="coming-soon-panel">'
-        '<div class="cs-title">準備中</div>'
-        '<ul class="cs-features"><li>日別釣果予測（7日先）</li>'
-        '<li>気象相関グラフ</li><li>急上昇・急落コンボ通知</li></ul>'
-        '<div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div>'
-        '</div></div>'
-        '\n      </div>'
-        '\n    </div>'
-        '\n  </div>'
-        '\n  <div class="tr-dots">'
-        '\n    <button class="tr-dot is-active" aria-label="スライド1"></button>'
-        '\n    <button class="tr-dot" aria-label="スライド2"></button>'
-        '\n    <button class="tr-dot" aria-label="スライド3"></button>'
-        '\n  </div>'
-        f'\n  {cta_html}'
-        '\n</div>'
-    )
+def build_teaser_rotator_html():
+    """有料機能プレビュー ローテーターパネル（index.html用）"""
+    return """<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser-rotator">
+  <div class="tr-track">
+    <div class="tr-slide is-active">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title-in">今週の狙い目 — 週末TOP5魚種</span>
+      </div>
+      <div class="teaser-desc">約10万件の釣果データ×気象×潮汐をAI分析。<strong>今週末の狙い目魚種・エリア</strong>をランキング表示。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy"><div class="td-fish">アジ <span class="td-star">★★★★★</span></div><div class="td-range">25〜45匹 / 18〜25cm</div><div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div></div>
+        <div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div><div class="td-range">0〜5匹 / 30〜55cm</div><div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>今週 日毎の釣果予測</li><li>2・3・4週先の釣果予測</li><li>気象×潮汐で自動算出</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+      </div>
+    </div>
+    <div class="tr-slide">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title-in">予測の答え合わせ — 予測 vs 実績</span>
+      </div>
+      <div class="teaser-desc"><strong>前日の予測</strong>が実際の釣果と一致したかを毎日公開。「なぜ当たった・外れたか」を正直レポート。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy"><div class="td-fish">アジ <span style="color:var(--pos);font-size:10px;margin-left:6px">的中</span></div><div class="td-range">予想 25〜42匹 → 実績 20〜48匹</div><div class="td-reason">水温○ / 風速○ / 波高○ 予報通りで好条件持続</div></div>
+        <div class="teaser-dummy"><div class="td-fish">マダイ <span style="color:var(--neg);font-size:10px;margin-left:6px">ハズレ</span></div><div class="td-range">予想 2〜8匹 → 実績 0〜3匹</div><div class="td-reason">水温× 予報より1.5℃低下で活性低下</div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>先週の予測 vs 実績比較</li><li>予測精度スコア</li><li>外れた理由の解説</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+      </div>
+    </div>
+    <div class="tr-slide">
+      <div class="teaser-head">
+        <span class="teaser-badge soon">開発中</span>
+        <span class="teaser-title-in">分析・予測 — 注目コンボ・急落コンボ</span>
+      </div>
+      <div class="teaser-desc"><strong>魚種×エリアの組合せ</strong>を独自スコアリング。「来週のどの日に何が釣れるか」を日別で予測。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy"><div class="td-fish">注目: アジ × 金沢八景</div><div class="td-range">スコア 92 / 平年比 +38%</div><div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div></div>
+        <div class="teaser-dummy"><div class="td-fish">急落: タチウオ × 走水</div><div class="td-range">先週比 -45%</div><div class="td-reason">水温急低下でベイトが抜けた模様</div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>日別釣果予測（7日先）</li><li>気象相関グラフ</li><li>急上昇・急落コンボ通知</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="tr-dots">
+    <button class="tr-dot is-active" aria-label="スライド1"></button>
+    <button class="tr-dot" aria-label="スライド2"></button>
+    <button class="tr-dot" aria-label="スライド3"></button>
+  </div>
+  <div class="teaser-cta-wrap">
+    <div class="teaser-cta-msg">現在開発中。<strong>有料プランページ</strong>で最新の釣果予測をご確認ください。</div>
+    <div class="teaser-cta-btns"><a class="cta-btn" href="/forecast/index.html">有料プランを見る（月額500円）</a></div>
+    <div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>
+  </div>
+</div>"""
 
 def build_index_overview_text(catches, history, crawled_at=""):
     """今日の関東船釣り概況テキスト（200〜300字）を生成"""
@@ -4781,13 +3952,9 @@ def build_area_season_map_html(area, area_decadal, top_fish_list):
         # area_decadal は cnt_index のみ
         cnt_levels = []
         # この魚種の area_decadal データが空なら SEASON_DATA フォールバックを使う
-        # SEASON_DATA に未登録の魚種はフォールバック先がないため出力しない
-        # （空セル比率が > 50% になる regression #88ad038f の再発防止）
         fallback_scores = None
         if not fish_decades:
             fallback_scores = SEASON_DATA.get(fish)
-            if fallback_scores is None:
-                continue  # SEASON_DATA 未登録 → この魚種行をスキップ
         for m in range(1, 13):
             if fallback_scores is not None:
                 # SEASON_DATA score 1〜5 → level 0〜4
@@ -6216,19 +5383,24 @@ def build_html(catches, crawled_at, history, weather_data=None):
             if f != "不明":
                 fish_summary.setdefault(f, []).append(c)
     areas = sorted(set(c["area"] for c in catches_for_summary))
+    cards = ""
     # ミニバーグラフ最右列ラベル: 軸が今日基準で固定なので常に「今日」
     # （以前は当日 sparse 時に fallback 日付（5/1(金)等）を表示し fish page と
     # 不整合だった）
     _mini_today_label = "今日"
 
-    # T13: 魚種カードをメイン/その他に振り分けるため、いったん dict にまとめる
-    # メイン条件: 7日合計件数 ≥ 10件 AND 報告日数 ≥ 3日
-    # フォールバック: メイン < 5枚なら閾値を緩和（合計≥5件 AND 日数≥2日）して
-    # 不変条件 #1（魚種カード ≥ 5枚）を死守
-    fish_entries = []  # list of dict（各魚種の集計済み情報）
-    _today = now.date()
+    def _trend_key(fish):
+        tw = get_yoy_data(history, fish, year, week_num)[0]
+        pw = get_prev_week_data(history, fish, year, week_num)
+        if tw and pw:
+            ts = tw.get("ships") or 0
+            ps = pw.get("ships") or 0
+            if ts and ps:
+                if ts / ps > 1.2: return 0
+                if ts / ps < 0.8: return 2
+        return 1
 
-    for fish, cs in fish_summary.items():
+    for fish, cs in sorted(fish_summary.items(), key=lambda x: (_trend_key(x[0]), -len(x[1]))):
         areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))
         fish_id     = re.sub(r'[^\w]', '_', fish)
         latest_date = max((c.get("date") or "" for c in cs), default="")
@@ -6307,7 +5479,19 @@ def build_html(catches, crawled_at, history, weather_data=None):
             _p = round((this_w.get("ships", 0) - last_w["ships"]) / last_w["ships"] * 100)
             if abs(_p) >= 5: yoy_pct_str = f"{'+'if _p>=0 else ''}{_p}%"
         fb_text = " ".join(filter(None, [f"◎{top_ship_name}" if top_ship_name else "", yoy_pct_str]))
-        # ミニバー（7日間）— 日別 max 匹数を集計
+        v2_trend_cls, v2_trend_txt = "", ""
+        if this_w and prev_w:
+            _ts = this_w.get("ships") or 0
+            _ps = prev_w.get("ships") or 0
+            if _ts and _ps:
+                if _ts/_ps > 1.2:   v2_trend_cls, v2_trend_txt = "up",   "↑ 先週より上昇"
+                elif _ts/_ps < 0.8: v2_trend_cls, v2_trend_txt = "dn",   "↓ 先週より減少"
+                else:                v2_trend_cls, v2_trend_txt = "flat", "→ 先週並み"
+        stale_cls = " stale" if is_stale else ""
+        trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
+        fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
+        # ミニバー（7日間）
+        _today = now.date()
         _daily_max = {}
         for c in cs:
             try: _d = datetime.strptime(c["date"], "%Y/%m/%d").date()
@@ -6316,60 +5500,28 @@ def build_html(catches, crawled_at, history, weather_data=None):
             _v = (_cr["max"] if _cr and not _cr.get("is_boat") else 0) or 0
             if _v > _daily_max.get(_d, 0): _daily_max[_d] = _v
         _vals = [_daily_max.get(_today - timedelta(days=i), 0) for i in range(6, -1, -1)]
-        # _vals: [6日前, 5日前, 4日前, 3日前, 2日前, 1日前, 今日]
-        _nonzero_days = sum(1 for v in _vals if v > 0)
-        _total_count_7d = sum(_vals)
-        # T13-C: trend 判定（n 閾値導入・1日あたり平均で直近3日 vs 4〜7日前を比較）
-        # _vals[4..6] = 直近3日（今日/昨日/一昨日）
-        # _vals[0..3] = 4〜7日前
-        _n_recent3 = sum(_vals[4:7])
-        _n_prev4   = sum(_vals[0:4])
-        _trend_total = _n_recent3 + _n_prev4
-        _avg_recent = _n_recent3 / 3.0
-        _avg_prev   = _n_prev4 / 4.0
-        v2_trend_cls, v2_trend_txt = "", ""
-        if _trend_total >= 10:
-            if _avg_prev == 0:
-                # 比較対象が無い → 直近のみで急増の可能性。横ばい扱いにする
-                v2_trend_cls, v2_trend_txt = "flat", "→ 横ばい"
-            elif _avg_recent >= _avg_prev * 1.3:
-                v2_trend_cls, v2_trend_txt = "up", "↑ 上昇"
-            elif _avg_recent <= _avg_prev * 0.7:
-                v2_trend_cls, v2_trend_txt = "dn", "↓ 下降"
-            else:
-                v2_trend_cls, v2_trend_txt = "flat", "→ 横ばい"
-        stale_cls = " stale" if is_stale else ""
-        fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
-        # T13-B: 非ゼロ日数 < 4 のときは bars を抑制し fb-sparse を出す
-        # sparse 時は trend も非表示（矛盾表示防止）
+        _wmax = max(_vals) if any(v > 0 for v in _vals) else 1
         mini_bars = ""
-        if _nonzero_days < 4:
-            mini_bars = f'<div class="fb-sparse">日ムラあり（直近7日 {_nonzero_days}日のみ報告）</div>'
-            v2_trend_cls, v2_trend_txt = "", ""  # trend を消す
-        else:
-            _wmax = max(_vals) if any(v > 0 for v in _vals) else 1
-            if _wmax > 0:
-                _bar_parts = []
-                _label_parts = []
-                for _i, _v in enumerate(_vals):
-                    _h = max(8, int(_v / _wmax * 100)) if _v > 0 else 4
-                    _cls = " today" if _i == 6 else ""
-                    _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
-                    _d = _today - timedelta(days=6 - _i)
-                    if _i == 6:
-                        _label_parts.append(f'<span class="bl today">{_mini_today_label}</span>')
-                    elif _i == 0:
-                        _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
-                    else:
-                        _label_parts.append('<span class="bl"></span>')
-                mini_bars = (
-                    f'<div class="bars">{"".join(_bar_parts)}</div>'
-                    f'<div class="bar-labels">{"".join(_label_parts)}</div>'
-                )
-        # trend_tag は mini_bars 確定後に生成（sparse 時の上書きを反映するため）
-        trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
+        if _wmax > 0:
+            _bar_parts = []
+            _label_parts = []
+            for _i, _v in enumerate(_vals):
+                _h = max(8, int(_v / _wmax * 100)) if _v > 0 else 4
+                _cls = " today" if _i == 6 else ""
+                _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
+                _d = _today - timedelta(days=6 - _i)
+                if _i == 6:
+                    _label_parts.append(f'<span class="bl today">{_mini_today_label}</span>')
+                elif _i == 0:
+                    _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
+                else:
+                    _label_parts.append('<span class="bl"></span>')
+            mini_bars = (
+                f'<div class="bars">{"".join(_bar_parts)}</div>'
+                f'<div class="bar-labels">{"".join(_label_parts)}</div>'
+            )
         signal_key, signal_label = _fish_signal(fish, current_month)
-        card_html = (
+        cards += (
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html" data-signal="{signal_key}">'
             f'<span class="fc-signal">{signal_label}</span>'
             f'<div class="fn"><img src="assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fc-emoji" width="32" height="32" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
@@ -6378,40 +5530,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'{fb_tag}{mini_bars}{trend_tag}'
             f'</a>'
         )
-        fish_entries.append({
-            "fish": fish,
-            "cs_count": len(cs),
-            "total_count_7d": _total_count_7d,
-            "nonzero_days": _nonzero_days,
-            "card_html": card_html,
-            # T16: teaser動的化用（スライド1ダミーカードに使用）
-            "cnt_range_str": cnt_range_str,
-            "sz_str": sz_str,
-            "top_area": areas_list[0] if areas_list else "",
-        })
-
-    # T13-A: 魚種カードを「メイン (.fc 大カード)」と「その他 (chip)」に振り分け
-    # メイン条件: 7日合計件数 ≥ 10件 AND 報告日数 ≥ 3日
-    # フォールバック: メイン < 5枚なら閾値を緩和（合計≥5件 AND 日数≥2日）して
-    #                 不変条件 #1（魚種カード ≥ 5枚）を死守
-    def _is_main(e, total_thr, days_thr):
-        return e["total_count_7d"] >= total_thr and e["nonzero_days"] >= days_thr
-    main_entries = [e for e in fish_entries if _is_main(e, 10, 3)]
-    if len(main_entries) < 5:
-        # 緩和条件で再判定
-        main_entries = [e for e in fish_entries if _is_main(e, 5, 2)]
-    if len(main_entries) < 5:
-        # それでも 5 枚に満たないなら、件数降順で上位 5 枚を強制採用
-        # （不変条件 #1 死守）
-        sorted_all = sorted(fish_entries, key=lambda e: -e["total_count_7d"])
-        main_entries = sorted_all[:5] if len(sorted_all) >= 5 else sorted_all
-    # メイン並び順: 7日合計件数 降順
-    main_entries.sort(key=lambda e: -e["total_count_7d"])
-    main_fish_set = {e["fish"] for e in main_entries}
-    other_entries = [e for e in fish_entries if e["fish"] not in main_fish_set]
-    other_entries.sort(key=lambda e: -e["total_count_7d"])
-    cards = "".join(e["card_html"] for e in main_entries)
-
     targets      = calc_targets(catches, history)
     target_html  = build_target_section(targets)
     forecast     = build_forecast(targets)
@@ -6457,17 +5575,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
     area_cnt_map = {}
     for c in today_catches:
         area_cnt_map[c["area"]] = area_cnt_map.get(c["area"], 0) + 1
-    # T14: ◎船宿/翌日海況用の翌日文字列
-    _b2_tomorrow_str = (now + timedelta(days=1)).strftime("%Y-%m-%d")
     for area in sorted(active_areas, key=lambda x: -area_cnt_map.get(x, 0))[:8]:
         cnt = area_cnt_map.get(area, 0)
         top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
         fish_tags = "".join(f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">{f}</a>' for f, _ in top_fish)
         # NOTE: <a> の中に <a> をネストすると HTML 違反 → div で囲い、上部のみ area リンク
         ea_key = _area_ea_key(area)
-        # T14: ◎船宿（プレーンテキスト・<a> ネスト禁止）と翌日海況1行
-        top_ship_html = _build_area_top_ship(area, today_catches)
-        sea_html = _build_area_sea(area, _b2_tomorrow_str)
         area_today_html += (
             f'<div class="at-card" data-ea="{ea_key}">'
             f'<a href="area/{area_slug(area)}.html" class="at-area-link">'
@@ -6475,15 +5588,17 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="at-count">{cnt}件</div>'
             f'</a>'
             f'<div class="at-fish">{fish_tags}</div>'
-            f'{top_ship_html}'
-            f'{sea_html}'
             f'</div>'
         )
-    # V2 ZONE C: 出船リスク予報（T15 — 7日リスクグリッド + 週末エリア海況）
-    # 旧 forecast_data（_forecast_data）依存ロジックは未稼働だったため、
-    # weather/YYYY-MM.csv を直接読む T15 ヘルパーに置き換え。
-    risk_grid_html = _build_t15_risk_grid(now)
-    weekend_list_html = _build_t15_weekend_list(now)
+    # V2 ZONE C: 出船リスク予報（内海/外海 × 7日間）
+    risk_grid_html = ""
+    forecast_json_data_for_risk = weather_data.get("_forecast_data") if weather_data else None
+    if forecast_json_data_for_risk:
+        days_data = forecast_json_data_for_risk.get("days", {})
+        if days_data:
+            soto_row = _risk_grid_row("外海", _SOTOUMI_AREAS, days_data)
+            uchi_row = _risk_grid_row("内海", _UCHIUMI_AREAS, days_data)
+            risk_grid_html = f'<div class="risk-grid-wrap">{soto_row}{uchi_row}</div>'
     # V2 魚種ナビチップ（ZONE E）
     fish_nav_html = "".join(
         f'<a href="fish/{fish_slug(f)}.html"><img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
@@ -6495,24 +5610,30 @@ def build_html(catches, crawled_at, history, weather_data=None):
     )
     # V2 概況テキスト
     overview_html = build_index_overview_text(catches, history, crawled_at)
-    # V2 ティザー (T16: スライド1動的化 + LINE CTA)
-    _teaser_top2 = (main_entries[:2]
-                    if len(main_entries) >= 2
-                    else fish_entries[:2] if len(fish_entries) >= 2 else None)
-    _line_url = (f"https://lin.ee/{_LINE_ACCOUNT_ID}" if _LINE_ACCOUNT_ID else None)
-    teaser_html = build_teaser_rotator_html(top_entries=_teaser_top2, line_url=_line_url)
-    # T13-A: その他魚種（chip 形式）— main に入らなかった魚を chip 表示
+    # V2 ティザー
+    teaser_html = build_teaser_rotator_html()
+    # V2 その他魚種（fish_others）
+    sorted_fish = sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))
+    main_fish = sorted_fish[:10]
+    other_fish = sorted_fish[10:]
+    main_cards = "".join(
+        cards_part for f, cards_part in zip(
+            [f for f in sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))],
+            cards.split('</a><a ') if '</a><a ' in cards else [cards]
+        )
+    ) if cards else ""
+    # カードをそのまま使う（分割せずに）
     fish_others_html = ""
-    if other_entries:
+    if other_fish:
         other_links = "".join(
-            f'<a href="fish/{fish_slug(e["fish"])}.html" class="ft">'
-            f'<img src="assets/fish/{fish_slug(e["fish"])}/{fish_slug(e["fish"])}_emoji.webp" alt="{e["fish"]}" class="fo-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
-            f'{e["fish"]} <span class="ft-n">{e["total_count_7d"]}</span></a>'
-            for e in other_entries
+            f'<a href="fish/{fish_slug(f)}.html">'
+            f'<img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="fo-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+            f'{f}</a>'
+            for f in other_fish
         )
         fish_others_html = (
             f'<div class="fish-others">'
-            f'<div class="fo-title">今週その他の魚種（直近7日報告少）</div>'
+            f'<div class="fo-title">今日ほかに釣れている魚</div>'
             f'<div class="fo-list">{other_links}</div>'
             f'</div>'
         )
@@ -6554,15 +5675,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'</div>'
             f'</div>'
         )
-    # Section 1: HERO Top3 エリア（hero_base のみを参照。area_fish_map は today のみで不一致になるため不使用）
-    hero_top3_html = _build_hero_top3_html(hero_base)
-    # Section 1: HERO 翌日海況
-    _tomorrow_str = (now + timedelta(days=1)).strftime("%Y-%m-%d")
-    _sea_data = _load_hero_sea_data(_tomorrow_str)
-    hero_sea_html = _build_hero_sea_html(_sea_data)
-    # Section 8: 追加 JSON-LD（ItemList / BreadcrumbList / FAQPage）
-    _crawled_date_label = now.strftime("%Y年%m月%d日")
-    extra_jsonld = _build_index_extra_jsonld(fish_summary, SITE_URL, _crawled_date_label)
     index_extra_css = """.hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;text-align:center;padding:24px 14px 0}
 .hero-sub{font-size:12px;color:rgba(255,255,255,.6)}
 .hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1.1;font-family:'Outfit',system-ui}
@@ -6604,9 +5716,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fc .bar-labels .bl.today{color:var(--pos);font-weight:700}
 .fc .trend{font-size:9px;font-weight:700;margin-top:2px}
 .fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
-.fc .fb-sparse{font-size:10px;color:var(--muted);font-weight:500;margin-top:6px;padding:3px 6px;background:var(--bg);border-radius:4px;text-align:center}
-.fo-list a.ft{display:inline-flex;align-items:center;gap:3px}
-.fo-list a.ft .ft-n{font-size:10px;color:var(--muted);font-weight:500;margin-left:2px}
 .fc.stale{opacity:.6}
 .fc-emoji{width:32px;height:32px;object-fit:contain;vertical-align:middle;margin-right:5px;flex-shrink:0}
 .fo-emoji{width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:3px}
@@ -6634,9 +5743,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
 .at-ftag{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub);text-decoration:none}
 .at-ftag:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
-.at-top{font-size:10px;color:var(--pos);font-weight:700;margin-top:4px}
-.at-sea{font-size:10px;color:var(--sub);margin-top:3px;display:flex;align-items:center;gap:4px}
-.at-sea .hs-pill{width:14px;height:14px;line-height:14px;font-size:9px}
 .risk-grid-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .risk-row{display:flex;flex-direction:column;gap:4px}
 .risk-row-head{font-size:11px;font-weight:700;color:var(--sub)}
@@ -6676,19 +5782,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .wl-wind{flex:1 1 80px;color:var(--sub)}
 .wl-temp{flex:0 0 50px;color:var(--sub)}
 .wl-judge{font-size:12px;font-weight:700;flex:0 0 80px;text-align:right}
-.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:#f4a261}.wl-judge.bad{color:var(--neg)}
-.risk-day{position:relative}
-.rd-tip{font-size:9px;color:var(--sub);margin-top:3px;line-height:1.3}
-.weather-list{margin-bottom:14px;border:1px solid var(--border);border-radius:var(--r);background:var(--card);padding:4px 12px}
-.weather-list .wl-row:first-child{border-top:none}
-.wl-area{font-size:12px;font-weight:700;color:var(--accent);min-width:64px;flex:0 0 auto}
-@media(max-width:480px){
-  .rd-tip{font-size:8px}
-  .wl-row{flex-wrap:wrap}
-  .wl-area{flex:0 0 100%}
-  .wl-wave,.wl-wind,.wl-temp{flex:0 0 30%}
-  .wl-judge{flex:1;text-align:right}
-}"""
+.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:#f4a261}.wl-judge.bad{color:var(--neg)}"""
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -6703,7 +5797,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="船釣り予想">
   <script type="application/ld+json">{jsonld_website}</script>
-  {extra_jsonld}
   {GA_TAG}
   {ADSENSE_TAG}
   <style>{V2_COMMON_CSS}
@@ -6721,8 +5814,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
   </div>
   <div class="updated">最終更新: {crawled_at} JST</div>
 {live_ticker_html}
-{hero_top3_html}
-{hero_sea_html}
 </div>
 <div class="c">
 <!-- ZONE B: 釣れている魚 -->
@@ -6733,7 +5824,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <h2 class="st">{"エリア別 直近1週間の釣果" if is_sparse_today else "エリア別 今日の釣果"} <span class="tag free">無料</span></h2>
 <div class="area-today">{area_today_html}</div>
 {f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>{risk_grid_html}' if risk_grid_html else ''}
-{f'<h2 class="st">今週末 土曜の海況 <span class="tag free">無料</span></h2>{weekend_list_html}' if weekend_list_html else ''}
 <!-- TEASER ROTATOR -->
 {teaser_html}
 <!-- 広告① -->
