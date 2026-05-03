@@ -1,10 +1,10 @@
 {
   "fish": "タチウオ",
   "ship": "こなや丸",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 39.55,
+    "wmape_h0": 39.53,
     "bl2_wmape": 43.18,
     "oos_r": 0.628,
     "n_records": 377,
@@ -18,12 +18,12 @@
       "wmape_h0": 32.6,
       "bl2_wmape": 41.8,
       "oos_r": 0.718,
-      "improvement_pt": 6.96
+      "improvement_pt": 6.94
     },
     {
       "name": "長浦沖",
       "n": 235,
-      "wmape_h0": 38.6,
+      "wmape_h0": 38.5,
       "bl2_wmape": 45.8,
       "oos_r": 0.643,
       "improvement_pt": 1.0
@@ -32,9 +32,9 @@
   "best_point": {
     "name": "走水沖",
     "wmape_h0": 32.6,
-    "improvement_pt": 6.96
+    "improvement_pt": 6.94
   },
-  "improvement_pt": 6.96,
+  "improvement_pt": 6.94,
   "points": [
     {
       "name": "走水沖",
@@ -217,6 +217,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=走水沖 wmape=32.6% imp=6.92pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=走水沖 wmape=32.6% imp=6.96pt"
     }
   ],
   "trip_models": [

@@ -1,12 +1,12 @@
 {
   "fish": "スルメイカ",
   "ship": "儀兵衛丸",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 48.05,
-    "bl2_wmape": 61.13,
-    "oos_r": 0.483,
+    "wmape_h0": 48.25,
+    "bl2_wmape": 61.54,
+    "oos_r": 0.482,
     "n_records": 221,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 47.8,
       "bl2_wmape": 57.6,
       "oos_r": 0.479,
-      "improvement_pt": 0.27
+      "improvement_pt": 0.41
     },
     {
       "name": "長井沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 51.1,
       "bl2_wmape": 71.5,
       "oos_r": 0.45,
-      "improvement_pt": -3.05
+      "improvement_pt": -2.85
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
     "wmape_h0": 47.8,
-    "improvement_pt": 0.27
+    "improvement_pt": 0.41
   },
-  "improvement_pt": 0.27,
+  "improvement_pt": 0.41,
   "overrides": {
     "factor_blacklist": [],
     "wave_clamp": null,
@@ -71,6 +71,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=47.8% imp=0.26pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=47.8% imp=0.41pt"
     }
   ]
 }

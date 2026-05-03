@@ -1,13 +1,13 @@
 {
   "fish": "アマダイ",
   "ship": "大貫丸",
-  "last_reviewed": "2026-04-24",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 30.07,
-    "bl2_wmape": 44.24,
-    "oos_r": 0.702,
-    "n_records": 98,
+    "wmape_h0": 27.3,
+    "bl2_wmape": 44.15,
+    "oos_r": 0.74,
+    "n_records": 99,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -16,22 +16,27 @@
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "SHIP_TRIP_RULES追加により分離。再分析待ち。"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=日立沖 wmape=27.2% imp=0.06pt"
     }
   ],
   "point_models": [
     {
       "name": "日立沖",
-      "n": 98,
-      "wmape_h0": 28.5,
+      "n": 99,
+      "wmape_h0": 27.2,
       "bl2_wmape": 44.2,
-      "oos_r": 0.737,
-      "improvement_pt": 1.57
+      "oos_r": 0.741,
+      "improvement_pt": 0.06
     }
   ],
   "best_point": {
     "name": "日立沖",
-    "wmape_h0": 28.5,
-    "improvement_pt": 1.57
+    "wmape_h0": 27.2,
+    "improvement_pt": 0.06
   },
-  "improvement_pt": 1.57
+  "improvement_pt": 0.06
 }

@@ -1,13 +1,13 @@
 {
   "fish": "マルイカ",
   "ship": "第八鶴丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.97,
-    "bl2_wmape": 63.17,
-    "oos_r": 0.527,
-    "n_records": 120,
+    "wmape_h0": 55.6,
+    "bl2_wmape": 62.59,
+    "oos_r": 0.513,
+    "n_records": 119,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -86,6 +86,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=川津沖 wmape=54.2% imp=0.78pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=川津沖 wmape=55.6% imp=0.04pt"
     }
   ],
   "rejected_factors": [
@@ -171,17 +176,17 @@
   "point_models": [
     {
       "name": "川津沖",
-      "n": 120,
-      "wmape_h0": 54.2,
-      "bl2_wmape": 63.2,
-      "oos_r": 0.535,
-      "improvement_pt": 0.78
+      "n": 119,
+      "wmape_h0": 55.6,
+      "bl2_wmape": 62.6,
+      "oos_r": 0.513,
+      "improvement_pt": 0.04
     }
   ],
   "best_point": {
     "name": "川津沖",
-    "wmape_h0": 54.2,
-    "improvement_pt": 0.78
+    "wmape_h0": 55.6,
+    "improvement_pt": 0.04
   },
-  "improvement_pt": 0.78
+  "improvement_pt": 0.04
 }

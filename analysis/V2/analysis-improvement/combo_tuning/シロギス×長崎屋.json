@@ -1,10 +1,10 @@
 {
   "fish": "シロギス",
   "ship": "長崎屋",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 25.64,
+    "wmape_h0": 25.63,
     "bl2_wmape": 27.46,
     "oos_r": 0.59,
     "n_records": 741,
@@ -18,7 +18,7 @@
       "wmape_h0": 19.2,
       "bl2_wmape": 34.2,
       "oos_r": 0.719,
-      "improvement_pt": 6.48
+      "improvement_pt": 6.47
     },
     {
       "name": "航程10",
@@ -26,7 +26,7 @@
       "wmape_h0": 20.1,
       "bl2_wmape": 24.1,
       "oos_r": 0.711,
-      "improvement_pt": 5.55
+      "improvement_pt": 5.54
     },
     {
       "name": "航程5",
@@ -34,15 +34,15 @@
       "wmape_h0": 21.4,
       "bl2_wmape": 28.3,
       "oos_r": 0.608,
-      "improvement_pt": 4.29
+      "improvement_pt": 4.28
     }
   ],
   "best_point": {
     "name": "航程15",
     "wmape_h0": 19.2,
-    "improvement_pt": 6.48
+    "improvement_pt": 6.47
   },
-  "improvement_pt": 6.48,
+  "improvement_pt": 6.47,
   "points": [
     {
       "name": "航程10",
@@ -225,6 +225,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=航程15 wmape=19.2% imp=6.49pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=航程15 wmape=19.2% imp=6.48pt"
     }
   ],
   "trip_models": [

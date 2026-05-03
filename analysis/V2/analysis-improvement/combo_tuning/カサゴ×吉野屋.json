@@ -1,12 +1,12 @@
 {
   "fish": "カサゴ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 27.95,
+    "wmape_h0": 27.89,
     "bl2_wmape": 35.42,
-    "oos_r": 0.464,
+    "oos_r": 0.467,
     "n_records": 119,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 19.6,
       "bl2_wmape": 38.7,
       "oos_r": 0.694,
-      "improvement_pt": 8.38
+      "improvement_pt": 8.32
     },
     {
       "name": "横浜沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 21.1,
       "bl2_wmape": 26.3,
       "oos_r": 0.518,
-      "improvement_pt": 6.9
+      "improvement_pt": 6.83
     }
   ],
   "best_point": {
     "name": "川崎沖",
     "wmape_h0": 19.6,
-    "improvement_pt": 8.38
+    "improvement_pt": 8.32
   },
-  "improvement_pt": 8.38,
+  "improvement_pt": 8.32,
   "points": [
     {
       "name": "横浜沖",
@@ -96,6 +96,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=川崎沖 wmape=19.4% imp=8.57pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=川崎沖 wmape=19.6% imp=8.38pt"
     }
   ],
   "trip_models": [

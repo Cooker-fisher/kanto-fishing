@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 35.91,
-    "bl2_wmape": 42.35,
-    "oos_r": 0.468,
-    "n_records": 754,
+    "wmape_h0": 35.96,
+    "bl2_wmape": 42.43,
+    "oos_r": 0.469,
+    "n_records": 751,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,7 +18,7 @@
       "wmape_h0": 23.4,
       "bl2_wmape": 35.1,
       "oos_r": 0.388,
-      "improvement_pt": 12.53
+      "improvement_pt": 12.57
     },
     {
       "name": "観音崎沖",
@@ -26,23 +26,23 @@
       "wmape_h0": 36.5,
       "bl2_wmape": 41.4,
       "oos_r": 0.393,
-      "improvement_pt": -0.56
+      "improvement_pt": -0.51
     },
     {
       "name": "鴨居沖",
-      "n": 342,
-      "wmape_h0": 37.4,
-      "bl2_wmape": 46.0,
-      "oos_r": 0.522,
-      "improvement_pt": -1.5
+      "n": 339,
+      "wmape_h0": 37.7,
+      "bl2_wmape": 46.2,
+      "oos_r": 0.519,
+      "improvement_pt": -1.73
     }
   ],
   "best_point": {
     "name": "久里浜沖",
     "wmape_h0": 23.4,
-    "improvement_pt": 12.53
+    "improvement_pt": 12.57
   },
-  "improvement_pt": 12.53,
+  "improvement_pt": 12.57,
   "points": [
     {
       "name": "観音崎沖",
@@ -187,6 +187,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=久里浜沖 wmape=23.4% imp=12.53pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=23.4% imp=12.56pt"
     }
   ],
   "trip_models": [

@@ -1,13 +1,13 @@
 {
   "fish": "フグ",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 63.81,
-    "bl2_wmape": 73.04,
-    "oos_r": 0.296,
-    "n_records": 240,
+    "wmape_h0": 63.84,
+    "bl2_wmape": 72.95,
+    "oos_r": 0.294,
+    "n_records": 239,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -125,6 +125,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=鹿島南沖 wmape=63.3% imp=0.56pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島南沖 wmape=63.7% imp=0.08pt"
     }
   ],
   "rejected_factors": [
@@ -193,18 +198,18 @@
     {
       "name": "鹿島南沖",
       "n": 226,
-      "wmape_h0": 63.3,
+      "wmape_h0": 63.7,
       "bl2_wmape": 70.7,
-      "oos_r": 0.358,
-      "improvement_pt": 0.56
+      "oos_r": 0.337,
+      "improvement_pt": 0.1
     }
   ],
   "best_point": {
     "name": "鹿島南沖",
-    "wmape_h0": 63.3,
-    "improvement_pt": 0.56
+    "wmape_h0": 63.7,
+    "improvement_pt": 0.1
   },
-  "improvement_pt": 0.56,
+  "improvement_pt": 0.1,
   "trip_models": [
     {
       "trip_no": 2,

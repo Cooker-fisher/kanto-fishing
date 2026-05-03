@@ -1,10 +1,10 @@
 {
   "fish": "タチウオ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 42.05,
+    "wmape_h0": 42.04,
     "bl2_wmape": 48.57,
     "oos_r": 0.503,
     "n_records": 609,
@@ -18,15 +18,15 @@
       "wmape_h0": 26.5,
       "bl2_wmape": 39.9,
       "oos_r": 0.739,
-      "improvement_pt": 15.6
+      "improvement_pt": 15.59
     },
     {
       "name": "観音崎沖",
       "n": 98,
-      "wmape_h0": 33.5,
+      "wmape_h0": 33.1,
       "bl2_wmape": 57.3,
-      "oos_r": 0.775,
-      "improvement_pt": 8.56
+      "oos_r": 0.776,
+      "improvement_pt": 8.95
     },
     {
       "name": "走水沖",
@@ -143,6 +143,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=猿島沖 wmape=26.5% imp=15.6pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=猿島沖 wmape=26.5% imp=15.6pt"
     }
   ],
   "rejected_factors": [
@@ -210,9 +215,9 @@
   "best_point": {
     "name": "猿島沖",
     "wmape_h0": 26.5,
-    "improvement_pt": 15.6
+    "improvement_pt": 15.59
   },
-  "improvement_pt": 15.6,
+  "improvement_pt": 15.59,
   "trip_models": [
     {
       "trip_no": 1,

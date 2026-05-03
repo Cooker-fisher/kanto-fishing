@@ -1,16 +1,15 @@
 {
   "fish": "アジ",
   "ship": "林遊船",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-05-03",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.1,
-    "bl0_wmape": 45.2,
-    "bl2_wmape": 44.4,
-    "oos_r": 0.588,
-    "n_records": 428,
-    "alpha_scale": 0.479,
-    "use_fallback": false
+    "wmape_h0": 35.48,
+    "bl2_wmape": 44.6,
+    "oos_r": 0.607,
+    "n_records": 432,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "水温低下時に釣果が上がる傾向",
     "特定風向（北寄り）時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=35.4% imp=0.06pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "sla_avg",
@@ -181,5 +186,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "浦安沖",
+      "n": 432,
+      "wmape_h0": 35.4,
+      "bl2_wmape": 44.6,
+      "oos_r": 0.609,
+      "improvement_pt": 0.06
+    }
+  ],
+  "best_point": {
+    "name": "浦安沖",
+    "wmape_h0": 35.4,
+    "improvement_pt": 0.06
+  },
+  "improvement_pt": 0.06
 }

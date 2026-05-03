@@ -1,12 +1,12 @@
 {
   "fish": "スルメイカ",
   "ship": "栃木丸",
-  "last_reviewed": "2026-04-29",
+  "last_reviewed": "2026-05-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 47.56,
+    "wmape_h0": 47.66,
     "bl2_wmape": 59.69,
-    "oos_r": 0.436,
+    "oos_r": 0.432,
     "n_records": 394,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 37.0,
       "bl2_wmape": 70.7,
       "oos_r": 0.571,
-      "improvement_pt": 10.51
+      "improvement_pt": 10.61
     },
     {
       "name": "長井沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 40.8,
       "bl2_wmape": 52.5,
       "oos_r": 0.526,
-      "improvement_pt": 6.77
+      "improvement_pt": 6.87
     },
     {
       "name": "城ヶ島沖",
@@ -34,15 +34,15 @@
       "wmape_h0": 46.9,
       "bl2_wmape": 61.1,
       "oos_r": 0.512,
-      "improvement_pt": 0.61
+      "improvement_pt": 0.71
     }
   ],
   "best_point": {
     "name": "洲崎沖",
     "wmape_h0": 37.0,
-    "improvement_pt": 10.51
+    "improvement_pt": 10.61
   },
-  "improvement_pt": 10.51,
+  "improvement_pt": 10.61,
   "history": [
     {
       "date": "2026-04-24",
@@ -73,6 +73,11 @@
       "date": "2026-04-29",
       "action": "point_backtest_updated",
       "note": "best=洲崎沖 wmape=37.3% imp=10.21pt"
+    },
+    {
+      "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=洲崎沖 wmape=37.0% imp=10.51pt"
     }
   ]
 }
