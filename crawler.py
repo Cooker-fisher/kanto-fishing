@@ -3140,6 +3140,23 @@ def fish_slug(fish: str) -> str:
     """魚種名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _FISH_ROMAJI.get(fish, fish)
 
+# URLスラグとフォルダ名が異なる魚種の上書きマップ
+_FISH_IMG_OVERRIDES = {
+    "ビシアジ":    "bishiaji",
+    "シロアマダイ": "shiroamadai",
+    "キハダマグロ": "kihadamaguro",
+    "タイ五目":    "taigomoku",
+    "モンゴウイカ": "mongouika",
+    "沖カサゴ":    "okikasago",
+    "沖メバル":    "okimebaru",
+    "アブラボウズ": "aburabozu",
+    "シマアジ":    "shimaaji",
+}
+
+def fish_img_slug(fish: str) -> str:
+    """画像アセットフォルダ用スラグ（URLスラグとは別管理・フォルダ名と一致）"""
+    return _FISH_IMG_OVERRIDES.get(fish, fish_slug(fish))
+
 def area_slug(area: str) -> str:
     """エリア名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _AREA_ROMAJI.get(area, area)
@@ -5400,7 +5417,24 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 if ts / ps < 0.8: return 2
         return 1
 
-    for fish, cs in sorted(fish_summary.items(), key=lambda x: (_trend_key(x[0]), -len(x[1]))):
+    def _heat_score(fish, cs):
+        # 件数を対数変換（絶対数の支配力を圧縮）
+        cnt = math.log1p(len(cs))
+        # 前週比（上限3倍）
+        tw = get_yoy_data(history, fish, year, week_num)[0]
+        pw = get_prev_week_data(history, fish, year, week_num)
+        ratio = 1.0
+        if tw and pw:
+            ts = tw.get("ships") or 0
+            ps = pw.get("ships") or 0
+            if ts and ps:
+                ratio = min(ts / ps, 3.0)
+        # 旬係数
+        sk, _ = _fish_signal(fish, current_month)
+        season_mul = {"peak": 1.3, "season": 1.1, "normal": 1.0, "late": 0.7}[sk]
+        return cnt * ratio * season_mul
+
+    for fish, cs in sorted(fish_summary.items(), key=lambda x: -_heat_score(x[0], x[1])):
         areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))
         fish_id     = re.sub(r'[^\w]', '_', fish)
         latest_date = max((c.get("date") or "" for c in cs), default="")
@@ -5524,7 +5558,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         cards += (
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html" data-signal="{signal_key}">'
             f'<span class="fc-signal">{signal_label}</span>'
-            f'<div class="fn"><img src="assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fc-emoji" width="32" height="32" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
+            f'<div class="fn"><img src="assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fc-emoji" width="32" height="32" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
             f'<div class="fr">{cnt_range_str} <small>釣果{len(cs)}件・{ship_num}船宿</small></div>'
             f'<div class="fs">{detail_str}</div>'
             f'{fb_tag}{mini_bars}{trend_tag}'
@@ -5601,7 +5635,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             risk_grid_html = f'<div class="risk-grid-wrap">{soto_row}{uchi_row}</div>'
     # V2 魚種ナビチップ（ZONE E）
     fish_nav_html = "".join(
-        f'<a href="fish/{fish_slug(f)}.html"><img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
+        f'<a href="fish/{fish_slug(f)}.html"><img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="{f}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
         for f in sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))[:12]
     )
     area_nav_html = "".join(
@@ -5627,7 +5661,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     if other_fish:
         other_links = "".join(
             f'<a href="fish/{fish_slug(f)}.html">'
-            f'<img src="assets/fish/{fish_slug(f)}/{fish_slug(f)}_emoji.webp" alt="{f}" class="fo-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+            f'<img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="{f}" class="fo-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
             f'{f}</a>'
             for f in other_fish
         )
@@ -6176,7 +6210,7 @@ def build_fish_pages(data, history, crawled_at=""):
 {_v2_header_nav('fish')}
 <!-- 統一HERO: マダイ等の rich 形式と同構造 -->
 <div class="fish-hero">
-  <h2><img src="../assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
+  <h2><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
   <div class="fh-r">過去1年 {past_year_records:,}件</div>
   <div class="fh-m">本日の釣果報告は集計待ち</div>
 </div>
@@ -6444,7 +6478,7 @@ def build_fish_pages(data, history, crawled_at=""):
 <body>
 {_v2_header_nav('fish')}
 <div class="fish-hero">
-  <h2><img src="../assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
+  <h2><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
   {f'<div class="fh-r">{cnt_range_str}</div>' if cnt_range_str else ''}
   {f'<div class="fh-s">{sz_str}</div>' if sz_str else ''}
   <div class="fh-m">今週 {len(catches)}件・{len(set(c['ship'] for c in catches))}船宿</div>
@@ -6493,7 +6527,7 @@ def build_fish_pages(data, history, crawled_at=""):
         cnt = len(cs)
         fish_index_cards += (
             f'<a class="fi-card" href="{fish_slug(fish)}.html">'
-            f'<div class="fi-name"><img src="../assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp" alt="{fish}" class="fi-emoji" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
+            f'<div class="fi-name"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fi-emoji" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
             f'<div class="fi-cnt">今週釣果{cnt}件</div>'
             f'</a>'
         )
@@ -7673,7 +7707,7 @@ def build_calendar_page(crawled_at=""):
             cls    = ("peak-count" if tp == "数" else "peak-size") if sc >= 4 else ("mid" if sc == 3 else "low")
             label  = "◎" if sc >= 4 else ("○" if sc == 3 else "-")
             cells += f'<td class="{cls} {is_now}">{label}</td>'
-        rows += f"<tr><td class='fish-name'><a href='fish/{fish_slug(fish)}.html'><img src='assets/fish/{fish_slug(fish)}/{fish_slug(fish)}_emoji.webp' alt='{fish}' class='cal-emoji' width='20' height='20' loading='lazy' decoding='async' onerror='this.style.display=\"none\"'>{fish}</a></td>{cells}</tr>"
+        rows += f"<tr><td class='fish-name'><a href='fish/{fish_slug(fish)}.html'><img src='assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp' alt='{fish}' class='cal-emoji' width='20' height='20' loading='lazy' decoding='async' onerror='this.style.display=\"none\"'>{fish}</a></td>{cells}</tr>"
     cal_extra_css = """.cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px}
 .cal-wrap table{font-size:12px;min-width:600px}
 .cal-wrap th{text-align:center;min-width:34px;font-size:11px;padding:6px 4px}
