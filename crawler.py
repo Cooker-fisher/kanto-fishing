@@ -6182,6 +6182,8 @@ def build_fish_pages(data, history, crawled_at=""):
 .fish-hero .fh-r{{font-size:30px;font-weight:800;color:var(--cta);margin-top:4px;line-height:1.1}}
 .fish-hero .fh-s{{font-size:18px;font-weight:700;color:#fff;margin-top:2px}}
 .fish-hero .fh-m{{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}}
+.comment-wrap{{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}}
+.comment-img{{width:100px;height:100px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}}
 .fia-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}}
 .fia{{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;text-decoration:none;color:inherit}}
 .fia:hover{{border-color:var(--cta);text-decoration:none}}
@@ -6486,7 +6488,10 @@ def build_fish_pages(data, history, crawled_at=""):
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {season_entry_html}
-  <div class="comment">{comment}</div>
+  <div class="comment-wrap">
+    <img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_illustration.png" alt="{fish}" class="comment-img" width="120" height="120" loading="lazy" onerror="this.style.display='none'">
+    <div class="comment">{comment}</div>
+  </div>
   {chart7_html}
   <h2 class="st">{fish_today_label}の釣果 <span class="tag free">無料</span></h2>
   {area_cmp_html if area_cmp_html else '<p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>'}
