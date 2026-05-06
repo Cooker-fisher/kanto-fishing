@@ -4733,6 +4733,86 @@ def get_season_score(fish, month):
     s = SEASON_DATA.get(fish, [])
     return s[month - 1] if s else 0
 
+
+def compute_combo_month_records(fish, area, hist_rows):
+    """fish × area の過去CSV から月別件数を返す（list[12]）"""
+    counts = [0] * 12
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish:
+            continue
+        if r.get("area") != area:
+            continue
+        d = r.get("date", "")
+        try:
+            mm = int(d.split("/")[1])
+            if 1 <= mm <= 12:
+                counts[mm - 1] += 1
+        except (ValueError, IndexError):
+            continue
+    return counts
+
+
+def build_season_bar_from_data(fish, area, hist_rows, current_month):
+    """fish × area の過去CSV から年間シーズンバーを実データで生成。
+    ハードコード SEASON_DATA より優先（fish_area ページ専用）。
+    データが無い（max=0）または極端に少ない（max<3）ときは SEASON_DATA fallback。
+    """
+    counts = compute_combo_month_records(fish, area, hist_rows)
+    max_v = max(counts) if any(counts) else 0
+    if max_v < 3:
+        return build_season_bar(fish, current_month)
+    types = SEASON_TYPE.get(fish, [""] * 12)
+    month_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    cells = ""
+    for i in range(12):
+        m = i + 1
+        cnt = counts[i]
+        ratio = cnt / max_v if max_v else 0
+        if ratio >= 0.7:
+            sc = 4
+        elif ratio >= 0.4:
+            sc = 3
+        elif ratio >= 0.15:
+            sc = 2
+        elif cnt > 0:
+            sc = 1
+        else:
+            sc = 0
+        is_now = "now" if m == current_month else ""
+        tp = types[i] if i < len(types) else ""
+        if sc >= 4:
+            cls = "peak-count" if tp == "数" else "peak-size"
+        elif sc == 3:
+            cls = "mid"
+        else:
+            cls = "low"
+        cells += f'<div class="sb-cell {cls} {is_now}" title="{m}月: {cnt}件">{month_labels[i]}</div>'
+    label = ""
+    if fish in SEASON_TYPE:
+        label = '<div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>'
+    return f'<div class="season-bar">{cells}</div>{label}'
+
+
+def get_combo_season_score(fish, area, hist_rows, month):
+    """fish × area × month の実データ正規化スコア (0-4)。
+    SEASON_DATA fallback ロジックは build_season_bar_from_data と同じ。
+    """
+    counts = compute_combo_month_records(fish, area, hist_rows)
+    max_v = max(counts) if any(counts) else 0
+    if max_v < 3:
+        return get_season_score(fish, month)
+    cnt = counts[month - 1]
+    ratio = cnt / max_v if max_v else 0
+    if ratio >= 0.7:
+        return 4
+    if ratio >= 0.4:
+        return 3
+    if ratio >= 0.15:
+        return 2
+    if cnt > 0:
+        return 1
+    return 0
+
 def build_season_bar(fish, current_month):
     scores = SEASON_DATA.get(fish, [3]*12)
     types  = SEASON_TYPE.get(fish, [""]*12)
@@ -7873,6 +7953,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     os.makedirs(os.path.join(WEB_DIR, "fish_area"), exist_ok=True)
     if decadal_calendar is None:
         decadal_calendar = load_decadal_calendar()
+    # 年間シーズンバーを実データで生成するため過去CSVを一度だけロード
+    _hist_rows_for_fa = _load_historical_catches()
     fa_summary: dict = {}
     for c in data:
         for f in c["fish"]:
@@ -7946,10 +8028,10 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   <div class="stat-card"><div class="sv">{'%.0f' % combo_avg if combo_avg else '-'}匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else '-'}匹</div><div class="sl">最高釣果</div></div>
 </div>"""
-        # シーズンバー
-        season_bar_fa = build_season_bar(fish, current_month_fa)
-        # コンボコメント
-        season_score_fa = get_season_score(fish, current_month_fa)
+        # シーズンバー（実データ駆動・ハードコード SEASON_DATA より優先）
+        season_bar_fa = build_season_bar_from_data(fish, area, _hist_rows_for_fa, current_month_fa)
+        # コンボコメント（実データ駆動）
+        season_score_fa = get_combo_season_score(fish, area, _hist_rows_for_fa, current_month_fa)
         group_fa = _area_to_group(area) or area
         if season_score_fa >= 4:
             combo_cmt = f"{group_fa}の{fish}は今月がシーズン本番。{trend_label}の傾向です。"
