@@ -3796,6 +3796,76 @@ def _v2_bottom_nav(active_page=""):
     nav += '</nav>'
     return nav
 
+def build_top_combos_html(catches_for_summary, history, now):
+    """今週末の見どころ TOP3 — 直近1週間 (魚種×エリア) コンボの事実集計。
+    R3 (2026/05/06): HERO直下に結論型パネルを追加し、件数・船宿数・先週比を表示。
+    無料=事実 境界遵守: 件数・先週比のみで理由解釈・★評価は載せない。
+    """
+    today_str = now.strftime("%Y/%m/%d")
+    cutoff_str = (now - timedelta(days=6)).strftime("%Y/%m/%d")
+    # 直近1週間 (fish, area) → set of (ship, date)
+    combo = {}
+    for c in catches_for_summary:
+        d = c.get("date")
+        if not d or d < cutoff_str or d > today_str:
+            continue
+        for f in c.get("fish", []):
+            if f == "不明":
+                continue
+            key = (f, c.get("area"))
+            combo.setdefault(key, set()).add((c.get("ship"), d))
+    if not combo:
+        return ""
+    # 先週同期間 (8〜14日前)
+    prev_now = now - timedelta(days=7)
+    try:
+        prev_recs = _load_recent_catches_for_index(prev_now, days=7)
+    except Exception:
+        prev_recs = []
+    prev_cutoff = (prev_now - timedelta(days=6)).strftime("%Y/%m/%d")
+    prev_today = prev_now.strftime("%Y/%m/%d")
+    prev_combo = {}
+    for c in prev_recs:
+        d = c.get("date")
+        if not d or d < prev_cutoff or d > prev_today:
+            continue
+        for f in c.get("fish", []):
+            if f == "不明":
+                continue
+            key = (f, c.get("area"))
+            prev_combo.setdefault(key, set()).add((c.get("ship"), d))
+    # TOP3 by 件数（重複船宿日除く）
+    sorted_combos = sorted(combo.items(), key=lambda x: -len(x[1]))[:3]
+    if not sorted_combos:
+        return ""
+    cards = []
+    for (fish, area), records in sorted_combos:
+        cnt = len(records)
+        ships = len(set(r[0] for r in records))
+        prev_cnt = len(prev_combo.get((fish, area), set()))
+        wow_html = ""
+        if prev_cnt > 0:
+            pct = round((cnt - prev_cnt) / prev_cnt * 100)
+            cls = "up" if pct > 0 else "dn" if pct < 0 else "flat"
+            sign = "+" if pct >= 0 else ""
+            wow_html = f' <span class="topc-wow {cls}">先週比 {sign}{pct}%</span>'
+        # リンク先: fish_area ページがあればそこ、無ければ fish ページ
+        fa_path = f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
+        target = fa_path if os.path.exists(os.path.join(WEB_DIR, fa_path)) else f"fish/{fish_slug(fish)}.html"
+        cards.append(
+            f'<a class="topc-card" href="{target}">'
+            f'<div class="topc-fish"><img src="assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" '
+            f'alt="" class="topc-emoji" width="20" height="20" loading="lazy" decoding="async" '
+            f'onerror="this.style.display=\'none\'">{fish} × {area}</div>'
+            f'<div class="topc-stats">{cnt}件・{ships}船宿{wow_html}</div>'
+            f'</a>'
+        )
+    return (
+        '<h2 class="st">今週末の見どころ <span class="tag free">無料</span><span class="topc-period">直近1週間集計</span></h2>'
+        '<div class="topc-grid">' + "".join(cards) + '</div>'
+    )
+
+
 def build_teaser_rotator_html():
     """有料機能プレビュー ローテーターパネル（index.html用）"""
     return """<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
@@ -3858,7 +3928,21 @@ def build_index_overview_text(catches, history, crawled_at=""):
     # 今日分のみで集計
     today_catches = [c for c in catches if c.get("date") == today_str]
     base = today_catches if today_catches else catches  # 今日データなければ全件フォールバック
-    label = "本日" if today_catches else "直近"
+    # R8 (2026/05/06): フォールバック時は集計期間を明示（直近1週間（4/30〜5/6）等）
+    if today_catches:
+        label = "本日"
+    else:
+        # 集計期間を records から実際のmin/max日付で算出
+        dates_in_base = sorted(set(c.get("date") for c in base if c.get("date")))
+        if dates_in_base:
+            try:
+                d_min = datetime.strptime(dates_in_base[0], "%Y/%m/%d")
+                d_max = datetime.strptime(dates_in_base[-1], "%Y/%m/%d")
+                label = f"直近1週間（{d_min.month}/{d_min.day}〜{d_max.month}/{d_max.day}）"
+            except Exception:
+                label = "直近"
+        else:
+            label = "直近"
     total = len(base)
     areas_set = set(c["area"] for c in base)
     ships_set = set(c["ship"] for c in base)
@@ -5712,6 +5796,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
     overview_html = build_index_overview_text(catches, history, crawled_at)
     # V2 ティザー
     teaser_html = build_teaser_rotator_html()
+    # R3 (2026/05/06): 今週末の見どころ TOP3
+    top_combos_html = build_top_combos_html(catches_for_summary, history, now)
     # V2 その他魚種（fish_others）
     sorted_fish = sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))
     main_fish = sorted_fish[:10]
@@ -5884,7 +5970,17 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .wl-wind{flex:1 1 80px;color:var(--sub)}
 .wl-temp{flex:0 0 50px;color:var(--sub)}
 .wl-judge{font-size:12px;font-weight:700;flex:0 0 80px;text-align:right}
-.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:#f4a261}.wl-judge.bad{color:var(--neg)}"""
+.wl-judge.good{color:var(--pos)}.wl-judge.warn{color:#f4a261}.wl-judge.bad{color:var(--neg)}
+.topc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.topc-card{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--cta);border-radius:var(--r);padding:10px 12px;display:block;text-decoration:none;transition:border-color .15s,box-shadow .15s}
+.topc-card:hover{border-color:var(--cta);box-shadow:0 0 0 2px rgba(232,93,4,.15);text-decoration:none}
+.topc-fish{font-size:13px;font-weight:800;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.topc-emoji{width:20px;height:20px;object-fit:contain;flex-shrink:0}
+.topc-stats{font-size:11px;color:var(--sub)}
+.topc-wow{font-weight:700;font-size:11px}
+.topc-wow.up{color:var(--pos)}.topc-wow.dn{color:var(--neg)}.topc-wow.flat{color:var(--muted)}
+.topc-period{font-size:10px;font-weight:600;color:var(--muted);margin-left:6px}
+@media(max-width:640px){.topc-grid{grid-template-columns:1fr}}"""
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -5918,6 +6014,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
 {live_ticker_html}
 </div>
 <div class="c">
+<!-- TOP COMBOS: R3 今週末の見どころ -->
+{top_combos_html}
 <!-- ZONE B: 釣れている魚 -->
 <h2 class="st">{"直近1週間 釣れている魚" if is_sparse_today else "今日 釣れている魚"} <span class="tag free">無料</span></h2>
 <div class="fish-grid">{cards}</div>
