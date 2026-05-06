@@ -5673,7 +5673,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
     for area in sorted(active_areas, key=lambda x: -area_cnt_map.get(x, 0))[:8]:
         cnt = area_cnt_map.get(area, 0)
         top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
-        fish_tags = "".join(f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">{f}</a>' for f, _ in top_fish)
+        fish_tags = "".join(
+            f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">'
+            f'<img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="at-ftag-emoji" width="12" height="12" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
+            for f, _ in top_fish
+        )
         # NOTE: <a> の中に <a> をネストすると HTML 違反 → div で囲い、上部のみ area リンク
         ea_key = _area_ea_key(area)
         area_today_html += (
@@ -5836,8 +5840,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .at-count{font-size:22px;font-weight:800;color:var(--cta);line-height:1.1;margin-top:2px;font-family:'Outfit',system-ui}
 .at-count::before{content:"釣果報告";display:block;font-size:9px;font-weight:400;color:var(--sub);margin-bottom:1px}
 .at-fish{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
-.at-ftag{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub);text-decoration:none}
+.at-ftag{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--sub);text-decoration:none;display:inline-flex;align-items:center;gap:3px}
 .at-ftag:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
+.at-ftag-emoji{width:12px;height:12px;object-fit:contain;flex-shrink:0}
 .risk-grid-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .risk-row{display:flex;flex-direction:column;gap:4px}
 .risk-row-head{font-size:11px;font-weight:700;color:var(--sub)}
@@ -6243,7 +6248,7 @@ def build_fish_pages(data, history, crawled_at=""):
 .fish-hero .fh-r{{font-size:30px;font-weight:800;color:var(--cta);margin-top:4px;line-height:1.1}}
 .fish-hero .fh-s{{font-size:18px;font-weight:700;color:#fff;margin-top:2px}}
 .fish-hero .fh-m{{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}}
-.comment-wrap{{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}}
+.comment-wrap{{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}}
 .comment-img{{width:160px;height:160px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}}
 .fia-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}}
 .fia{{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;text-decoration:none;color:inherit}}
@@ -6449,7 +6454,9 @@ def build_fish_pages(data, history, crawled_at=""):
                     if _f != fish and _f != "不明":
                         _rel_counts[_f] = _rel_counts.get(_f, 0) + 1
         _rel_links = "".join(
-            '<a href="../fish/' + fish_slug(rf) + '.html" class="chip-link">' + rf + '</a>'
+            '<a href="../fish/' + fish_slug(rf) + '.html" class="chip-link">'
+            + f'<img src="../assets/fish/{fish_img_slug(rf)}/{fish_img_slug(rf)}_emoji.webp" alt="" class="chip-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+            + rf + '</a>'
             for rf, _ in sorted(_rel_counts.items(), key=lambda x: -x[1])[:6]
         )
         related_section_html = (
@@ -6505,16 +6512,17 @@ def build_fish_pages(data, history, crawled_at=""):
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
-.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text);white-space:pre-line;min-width:0}
+.comment{font-size:13px;color:var(--text);white-space:pre-line;min-width:0}
 .comment-fish-name{display:block;font-size:15px;font-weight:800;color:var(--accent);margin-bottom:6px}
-.comment-wrap{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
+.comment-wrap{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .comment-img{width:160px;height:160px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}
 .season-entry{font-size:12px;color:var(--sub);margin:8px 0;padding:6px 10px;border-radius:4px;background:var(--card);border:1px solid var(--border)}
 .season-entry.entry-early{border-left:3px solid var(--pos)}.season-entry.entry-late{border-left:3px solid var(--warn)}.season-entry.entry-same{border-left:3px solid var(--accent)}
 .entry-trend{font-weight:bold;margin-left:6px}
 .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+.chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
 .chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
+.chip-link .chip-emoji{width:14px;height:14px;object-fit:contain;flex-shrink:0}
 .chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
@@ -6555,8 +6563,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2 class="st">今週の概況 <span class="tag free">無料</span></h2>
   <div class="comment-wrap">
     <img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_illustration.png" alt="{fish}" class="comment-img" width="160" height="160" loading="lazy" onerror="this.style.display='none'">
-    <div class="comment"><span class="comment-fish-name">{fish}{"（" + FISH_KANJI[fish] + "）" if fish in FISH_KANJI and FISH_KANJI[fish] != fish else ""}</span>
-{comment}</div>
+    <div class="comment"><span class="comment-fish-name">{fish}{"（" + FISH_KANJI[fish] + "）" if fish in FISH_KANJI and FISH_KANJI[fish] != fish else ""}</span>{comment}</div>
   </div>
   {chart7_html}
   <h2 class="st">{fish_today_label}の釣果 <span class="tag free">無料</span></h2>
@@ -6687,7 +6694,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 .fia-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}
 .fia{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;text-decoration:none;color:inherit}
 .fia:hover{border-color:var(--cta);text-decoration:none}
-.fia .fn{font-size:14px;font-weight:800;color:var(--accent)}
+.fia .fn{font-size:14px;font-weight:800;color:var(--accent);display:flex;align-items:center;gap:5px}
+.fia .fn-emoji{width:18px;height:18px;object-fit:contain;flex-shrink:0}
 .fia .fr{font-size:17px;font-weight:800;color:var(--cta);margin-top:2px;line-height:1.2}
 .fia .fs{font-size:10px;color:var(--muted);margin-top:2px}
 .fia .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
@@ -7056,7 +7064,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             # 表示される事故になる（過去発生済み）。船宿名はプレーンテキストで。
             fia_cards += (
                 f'<a class="fia" href="../fish/{fish_slug(fish)}.html">'
-                f'<div class="fn">{fish}</div>'
+                f'<div class="fn"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="" class="fn-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
                 + (f'<div class="fr">{cnt_str}</div>' if cnt_str else "")
                 + f'<div class="fs">{" | ".join(detail_parts)}</div>'
                 + (f'<div class="fb">◎{best_ship}</div>' if best_ship else "")
