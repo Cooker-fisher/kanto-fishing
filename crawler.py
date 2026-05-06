@@ -6250,29 +6250,23 @@ def build_fish_pages(data, history, crawled_at=""):
     fish_summary = {}
     _SKIP_FISH = {"不明", "欠航"}
 
-    # 当日 crawl が sparse な場合、個別 fish ページの「直近7日間の釣果推移」
-    # チャートが今日の1本しか描画されない問題を防ぐため、過去6日分を CSV から
-    # マージする（再クロールなし・save_daily_csv() の蓄積を流用）。
-    # しきい値は build_html と同じ 30 件。
-    today_str_fp = now.strftime("%Y/%m/%d")
-    today_with_fish_fp = sum(1 for c in data
-                             if c.get("date") == today_str_fp
-                             and any(f != "不明" for f in (c.get("fish") or [])))
-    if today_with_fish_fp < 30:
-        try:
-            _recent7_fp = _load_recent_catches_for_index(now, days=7)
-        except Exception:
-            _recent7_fp = []
-        seen_fp = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in data}
-        merged_data = list(data)
-        for c in _recent7_fp:
-            k = (c.get("ship"), c.get("date"), c.get("fish_raw", ""))
-            if k not in seen_fp:
-                merged_data.append(c)
-                seen_fp.add(k)
-        data_for_fish = merged_data
-    else:
-        data_for_fish = data
+    # 個別 fish ページは「直近7日間の釣果推移」チャート + マイナー魚種（マダコ・
+    # マゴチ等の当日0件魚）への配慮で、常時 7日マージを行う。
+    # 旧仕様: 当日 catches >= 30件のとき merge skip → 当日0件のマイナー魚種が
+    # placeholder 経路に流れる regression があった（2026/05/06 ユーザー指摘）。
+    # 常時マージで全魚種に直近1週間データが揃う（再クロールなし・save_daily_csv の蓄積を流用）。
+    try:
+        _recent7_fp = _load_recent_catches_for_index(now, days=7)
+    except Exception:
+        _recent7_fp = []
+    seen_fp = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in data}
+    merged_data = list(data)
+    for c in _recent7_fp:
+        k = (c.get("ship"), c.get("date"), c.get("fish_raw", ""))
+        if k not in seen_fp:
+            merged_data.append(c)
+            seen_fp.add(k)
+    data_for_fish = merged_data
 
     for c in data_for_fish:
         for f in c["fish"]:
