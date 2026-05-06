@@ -3796,6 +3796,57 @@ def _v2_bottom_nav(active_page=""):
     nav += '</nav>'
     return nav
 
+def _load_prediction_log_one():
+    """R5 (2026/05/06): prediction_log から「答え合わせ」用に1件取得。
+    1) analysis.sqlite が存在すればそこから直接（local dev 経路）
+    2) なければ analysis/V2/results/prediction_log_recent.json から（CI 経路）
+    3) 両方ない場合は None（teaser placeholder にフォールバック）
+
+    返却: dict {target_date, fish, ship, pred_pct, actual_pct, is_good_hit,
+                fcast_wave, fcast_wind, fcast_sst, ...} or None
+    """
+    base = os.path.dirname(__file__) or "."
+    sqlite_path = os.path.join(base, "analysis", "V2", "results", "analysis.sqlite")
+    json_path = os.path.join(base, "analysis", "V2", "results", "prediction_log_recent.json")
+    # 1) sqlite 経路
+    if os.path.exists(sqlite_path):
+        try:
+            import sqlite3
+            conn = sqlite3.connect(sqlite_path)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT target_date, fish, ship, pred_pct, actual_pct, is_good_hit,
+                       fcast_wave, fcast_wind, fcast_sst, fcast_temp,
+                       pred_cnt_min, pred_cnt_max, actual_cnt_min, actual_cnt_max, horizon
+                FROM prediction_log
+                WHERE is_good_hit IS NOT NULL AND pred_pct IS NOT NULL AND actual_pct IS NOT NULL
+                  AND ABS(pred_pct) > 1.0 AND ABS(actual_pct) > 1.0
+                ORDER BY
+                    CASE WHEN is_good_hit=1 THEN 0 ELSE 1 END,
+                    ABS(pred_pct - actual_pct) ASC,
+                    target_date DESC
+                LIMIT 1
+            """)
+            r = cur.fetchone()
+            conn.close()
+            if r:
+                return dict(r)
+        except Exception as e:
+            print(f"prediction_log sqlite read failed: {e}")
+    # 2) JSON フォールバック
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, encoding="utf-8") as f:
+                payload = json.load(f)
+            recs = payload.get("records", [])
+            if recs:
+                return recs[0]
+        except Exception as e:
+            print(f"prediction_log_recent.json read failed: {e}")
+    return None
+
+
 def build_top_combos_html(catches_for_summary, history, now):
     """今週末の見どころ TOP3 — 直近1週間 (魚種×エリア) コンボの事実集計。
     R3 (2026/05/06): HERO直下に結論型パネルを追加し、件数・船宿数・先週比を表示。
@@ -3867,11 +3918,56 @@ def build_top_combos_html(catches_for_summary, history, now):
 
 
 def build_teaser_rotator_html():
-    """有料機能プレビュー ローテーターパネル（index.html用）"""
-    return """<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
-<div class="teaser-rotator">
-  <div class="tr-track">
-    <div class="tr-slide is-active">
+    """有料機能プレビュー ローテーターパネル（index.html用）
+
+    R5 (2026/05/06): スライド1を prediction_log の実データで本物化。
+    答え合わせ済みコンボ（is_good_hit=1）を1件取得して的中バッジ付きで表示。
+    データ取得失敗時は従来の準備中表示にフォールバック（regression防止）。
+    """
+    # R5: prediction_log から答え合わせ1件
+    pl = _load_prediction_log_one()
+    if pl:
+        # 実データ表示
+        target_date = pl.get("target_date", "").replace("/", "-")
+        fish = pl.get("fish", "")
+        ship = pl.get("ship", "")
+        pred_pct = pl.get("pred_pct", 0)
+        actual_pct = pl.get("actual_pct", 0)
+        is_hit = pl.get("is_good_hit", 0) == 1
+        f_wave = pl.get("fcast_wave")
+        f_wind = pl.get("fcast_wind")
+        f_sst = pl.get("fcast_sst")
+        # バッジ
+        badge_html = (
+            '<span style="color:var(--pos);font-size:10px;margin-left:6px;font-weight:700">的中</span>'
+            if is_hit else
+            '<span style="color:var(--neg);font-size:10px;margin-left:6px;font-weight:700">ハズレ</span>'
+        )
+        # pred/actual 表示
+        def _pct_str(v):
+            sign = "+" if (v is not None and v >= 0) else ""
+            return f"{sign}{v:.1f}%" if v is not None else "—"
+        # 気象要因メッセージ
+        wx_parts = []
+        if f_wave is not None: wx_parts.append(f"波{f_wave:.1f}m")
+        if f_wind is not None: wx_parts.append(f"風{f_wind:.1f}m/s")
+        if f_sst is not None: wx_parts.append(f"SST{f_sst:.1f}℃")
+        wx_str = " / ".join(wx_parts) if wx_parts else "予報詳細あり"
+        slide1_real = f'''<div class="tr-slide is-active">
+      <div class="teaser-head">
+        <span class="teaser-badge soon" style="background:var(--pos)">実例</span>
+        <span class="teaser-title-in">予測の答え合わせ — 実例公開中</span>
+      </div>
+      <div class="teaser-desc">過去約10万件の船宿釣果に、風・波・潮・水温を重ねて判定しています。<strong>外れた予測も毎日公開</strong>します。</div>
+      <div style="position:relative">
+        <div class="teaser-dummy" style="filter:none;opacity:1"><div class="td-fish">{fish} × {ship}{badge_html}</div><div class="td-range">予想 {_pct_str(pred_pct)} → 実績 {_pct_str(actual_pct)}</div><div class="td-reason">{target_date} 予報: {wx_str}</div></div>
+        <div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div><div class="td-range">0〜5匹 / 30〜55cm</div><div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>
+        <div class="teaser-overlay" style="align-items:flex-end;padding-bottom:8px"><div class="coming-soon-panel" style="background:rgba(13,43,74,.92)"><div class="cs-title">詳細予測は有料</div><ul class="cs-features"><li>匹数レンジ・サイズ範囲</li><li>2・3・4週先の予測</li><li>気象×潮汐で自動算出</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+      </div>
+    </div>'''
+    else:
+        # フォールバック: 従来の準備中表示
+        slide1_real = '''<div class="tr-slide is-active">
       <div class="teaser-head">
         <span class="teaser-badge soon">開発中</span>
         <span class="teaser-title-in">今週の狙い目 — 週末TOP5魚種</span>
@@ -3882,7 +3978,11 @@ def build_teaser_rotator_html():
         <div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div><div class="td-range">0〜5匹 / 30〜55cm</div><div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>
         <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>今週 日毎の釣果予測</li><li>2・3・4週先の釣果予測</li><li>気象×潮汐で自動算出</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
       </div>
-    </div>
+    </div>'''
+    return f"""<h2 class="st teaser-title">有料機能プレビュー <span class="tag coming">まもなく公開</span></h2>
+<div class="teaser-rotator">
+  <div class="tr-track">
+    {slide1_real}
     <div class="tr-slide">
       <div class="teaser-head">
         <span class="teaser-badge soon">開発中</span>
