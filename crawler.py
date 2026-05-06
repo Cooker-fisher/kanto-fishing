@@ -5967,9 +5967,34 @@ def build_html(catches, crawled_at, history, weather_data=None):
         key = (f, s)
         if key not in _seen_ticker:
             _seen_ticker.add(key)
-            _ticker_items_list.append(f'<span>本日 <img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="lt-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f} × {s} {n}匹</span>')
+            _ticker_items_list.append(f'<span>{hero_label} <img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="lt-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f} × {s} {n}匹</span>')
         if len(_ticker_items_list) >= 5:
             break
+    # R10 (2026/05/06): 大物（kg級）トロフィーティッカーを末尾に追加
+    _trophy_candidates = []
+    _seen_trophy = set()
+    for c in hero_base:
+        ship = c.get("ship", "")
+        kg = c.get("weight_kg") or {}
+        kgmax = kg.get("max")
+        if not ship or kgmax is None or kgmax < 1.0:
+            continue
+        for f in c.get("fish", []):
+            if f in ("不明", "欠航"):
+                continue
+            key = (f, ship)
+            if key in _seen_trophy:
+                continue
+            _seen_trophy.add(key)
+            _trophy_candidates.append((f, ship, float(kgmax)))
+    for f, s, kgmax in sorted(_trophy_candidates, key=lambda x: -x[2])[:3]:
+        kg_str = f"{kgmax:.1f}kg" if kgmax < 10 else f"{int(kgmax)}kg"
+        _ticker_items_list.append(
+            f'<span>{hero_label} <span class="lt-trophy">大物</span> '
+            f'<img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" '
+            f'alt="" class="lt-emoji" width="16" height="16" loading="lazy" decoding="async" '
+            f'onerror="this.style.display=\'none\'">{f} {kg_str} × {s}</span>'
+        )
     ticker_items = "".join(_ticker_items_list)
     # ティッカーアイテムが空でも構造は維持（空ティッカーは非表示）
     live_ticker_html = ""
@@ -5998,6 +6023,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .live-track{display:flex;white-space:nowrap;font-size:12px;color:rgba(255,255,255,.85)}
 .live-track span{display:inline-block;padding:0 32px}
 .live-track .lt-emoji{vertical-align:-3px;margin:0 4px;object-fit:contain}
+.live-track .lt-trophy{display:inline-block;background:var(--cta);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;margin-right:4px;letter-spacing:.5px}
 .live-track span::after{content:"·";margin-left:16px;opacity:.4}
 @media(prefers-reduced-motion:no-preference){.live-track{animation:live-scroll 40s linear infinite}}
 @keyframes live-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
