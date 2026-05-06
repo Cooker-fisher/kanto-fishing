@@ -4137,12 +4137,69 @@ def _decadal_to_monthly_size_index(fish_decades: dict) -> list:
         avgs.append(sum(vals) / 3)
     return _to_relative_levels(avgs)
 
-def build_fish_season_map_html(fish, decadal_calendar, current_month=None):
+def build_fish_season_map_html(fish, decadal_calendar, current_month=None, hist_rows=None):
     """魚種の旬カレンダー（12か月×数釣/型釣 ヒートマップ）。
-    decadal_calendar が空（GitHub Actions 環境等）の場合は SEASON_DATA 固定ヒートマップで代替。"""
+    優先順位（2026/05/06 改修）:
+    1. hist_rows（CSV から fish 全エリア合算の月別件数を計算）← 最優先
+    2. decadal_calendar（analysis.sqlite 由来・cnt_index/size_index）
+    3. SEASON_DATA + SEASON_TYPE（ハードコード fallback）
+    """
     fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
+    month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+    ths = "".join(f"<th>{m}</th>" for m in month_labels)
+    types = SEASON_TYPE.get(fish, [""] * 12)
+    # 2026/05/06: hist_rows を最優先で使用
+    hist_counts = None
+    if hist_rows:
+        hc = compute_fish_month_records(fish, hist_rows)
+        if max(hc) >= 5:
+            hist_counts = hc
+    if hist_counts is not None:
+        cnt_levels = []
+        size_levels = []
+        max_v = max(hist_counts)
+        for i in range(12):
+            cnt = hist_counts[i]
+            ratio = cnt / max_v if max_v else 0
+            if ratio >= 0.7:    lv = 4
+            elif ratio >= 0.4:  lv = 3
+            elif ratio >= 0.15: lv = 2
+            elif cnt > 0:       lv = 1
+            else:               lv = 0
+            tp = types[i] if i < len(types) else ""
+            if tp == "数" and lv >= 3:
+                cnt_levels.append(lv)
+                size_levels.append(max(0, lv - 1))
+            elif tp == "型" and lv >= 3:
+                cnt_levels.append(max(0, lv - 1))
+                size_levels.append(lv)
+            else:
+                cnt_levels.append(lv)
+                size_levels.append(lv)
+        cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
+        size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
+        return f"""<div class="season-map">
+  <div class="sm-wrap">
+    <table class="sm-table">
+      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
+      <tbody>
+        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
+        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sm-legend">
+    <span>釣れ具合：</span>
+    <span class="sm-lc sm-lc-0"></span>なし
+    <span class="sm-lc sm-lc-1"></span>渋
+    <span class="sm-lc sm-lc-2"></span>普通
+    <span class="sm-lc sm-lc-3"></span>良
+    <span class="sm-lc sm-lc-4"></span>◎
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
+</div>"""
     if not fish_decades:
-        # analysis.sqlite 非存在時は SEASON_DATA + SEASON_TYPE から数釣/型釣 2行ヒートマップを生成
+        # SEASON_DATA + SEASON_TYPE fallback（hist_rows も decadal_calendar も無い場合）
         scores = SEASON_DATA.get(fish, [3] * 12)
         types  = SEASON_TYPE.get(fish, [""] * 12)
         month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
@@ -4766,6 +4823,62 @@ SEASON_TYPE = {
 def get_season_score(fish, month):
     s = SEASON_DATA.get(fish, [])
     return s[month - 1] if s else 0
+
+
+def compute_fish_month_records(fish, hist_rows):
+    """fish の過去CSV から月別件数を返す（list[12]・全エリア合算）"""
+    counts = [0] * 12
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish:
+            continue
+        d = r.get("date", "")
+        try:
+            mm = int(d.split("/")[1])
+            if 1 <= mm <= 12:
+                counts[mm - 1] += 1
+        except (ValueError, IndexError):
+            continue
+    return counts
+
+
+def build_season_bar_from_fish_data(fish, hist_rows, current_month):
+    """fish の過去CSV から年間シーズンバーを実データで生成（fish ページ用・全エリア合算）。
+    max<5 のときは SEASON_DATA fallback。
+    """
+    counts = compute_fish_month_records(fish, hist_rows)
+    max_v = max(counts) if any(counts) else 0
+    if max_v < 5:
+        return build_season_bar(fish, current_month)
+    types = SEASON_TYPE.get(fish, [""] * 12)
+    month_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    cells = ""
+    for i in range(12):
+        m = i + 1
+        cnt = counts[i]
+        ratio = cnt / max_v if max_v else 0
+        if ratio >= 0.7:
+            sc = 4
+        elif ratio >= 0.4:
+            sc = 3
+        elif ratio >= 0.15:
+            sc = 2
+        elif cnt > 0:
+            sc = 1
+        else:
+            sc = 0
+        is_now = "now" if m == current_month else ""
+        tp = types[i] if i < len(types) else ""
+        if sc >= 4:
+            cls = "peak-count" if tp == "数" else "peak-size"
+        elif sc == 3:
+            cls = "mid"
+        else:
+            cls = "low"
+        cells += f'<div class="sb-cell {cls} {is_now}" title="{m}月: {cnt}件">{month_labels[i]}</div>'
+    label = ""
+    if fish in SEASON_TYPE:
+        label = '<div class="sb-legend"><span class="leg-count">■数狙い</span><span class="leg-size">■型狙い</span></div>'
+    return f'<div class="season-bar">{cells}</div>{label}'
 
 
 def compute_combo_month_records(fish, area, hist_rows):
@@ -6476,8 +6589,8 @@ def build_fish_pages(data, history, crawled_at=""):
                 f'<tbody>{big_rows_f}</tbody></table></div>'
             ) if big_rows_f else ""
 
-            # 旬バー
-            season_bar_min = build_season_bar(fish, current_month)
+            # 旬バー（実データ駆動・ハードコード SEASON_DATA より優先）
+            season_bar_min = build_season_bar_from_fish_data(fish, _hist_rows_for_fish, current_month)
 
             # FAQ
             past_year_records = fish_hist["recent_365_records"]
@@ -6717,7 +6830,7 @@ def build_fish_pages(data, history, crawled_at=""):
             with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
                 f.write(html_f_min)
             continue
-        season_bar_html = build_season_bar(fish, current_month)
+        season_bar_html = build_season_bar_from_fish_data(fish, _hist_rows_for_fish, current_month)
         score   = get_season_score(fish, current_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         comment = build_comment(fish, len(catches), score, this_w, last_w)
@@ -6882,7 +6995,7 @@ def build_fish_pages(data, history, crawled_at=""):
             '<div class="chip-wrap">' + _fa_links + '</div>'
         ) if _fa_links else ""
         # V2 season map / guide / FAQ / chart
-        season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month)
+        season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=_hist_rows_for_fish)
         guide_html = build_fish_guide_html(fish, tackle_data)
         auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
         fixed_faq_html, fixed_faq_pairs = build_fixed_faq_html("fish", fish, fixed_faq_data)
