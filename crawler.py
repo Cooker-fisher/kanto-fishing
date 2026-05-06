@@ -3658,6 +3658,7 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .as-table{border-collapse:separate;border-spacing:3px;min-width:220px}
 .as-table th{font-size:10px;color:var(--muted);font-weight:600;text-align:center;padding:2px 4px}
 .as-th-fish{font-size:11px;font-weight:700;color:var(--sub);text-align:left;padding-right:8px;white-space:nowrap}
+.as-th-fish .as-emoji{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}
 .as-cell{width:36px;height:22px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;vertical-align:middle}
 .as-cell[data-v="-1"]{background:#f0f0f0;opacity:.4}
 .as-cell[data-v="0"]{background:#eef2f5;color:var(--muted)}
@@ -4056,7 +4057,7 @@ def build_area_season_map_html(area, area_decadal, top_fish_list):
                     else:            lv = 0
             cnt_levels.append(lv)
         cells = "".join(f'<td class="as-cell" data-v="{lv}"></td>' for lv in cnt_levels)
-        rows += f'<tr><th class="as-th-fish">{fish}</th>{cells}</tr>\n'
+        rows += f'<tr><th class="as-th-fish"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="" class="as-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</th>{cells}</tr>\n'
     if not rows:
         return ""
     return f"""<div class="area-season">
@@ -6756,16 +6757,21 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             fish_cards_min = ""
             for fname, fcnt in hist["top_fish"][:8]:
                 fslug = _FISH_ROMAJI.get(fname)
+                _fname_with_icon = (
+                    f'<img src="../assets/fish/{fish_img_slug(fname)}/{fish_img_slug(fname)}_emoji.webp" '
+                    f'alt="" class="fn-emoji" width="18" height="18" loading="lazy" decoding="async" '
+                    f'onerror="this.style.display=\'none\'">{fname}'
+                )
                 if fslug:
                     fish_cards_min += (
                         f'<a class="fia" href="../fish/{fslug}.html">'
-                        f'<div class="fn">{fname}</div>'
+                        f'<div class="fn">{_fname_with_icon}</div>'
                         f'<div class="fr">{fcnt}件</div>'
                         f'<div class="fs">過去1年</div></a>'
                     )
                 else:
                     fish_cards_min += (
-                        f'<div class="fia"><div class="fn">{fname}</div>'
+                        f'<div class="fia"><div class="fn">{_fname_with_icon}</div>'
                         f'<div class="fr">{fcnt}件</div><div class="fs">過去1年</div></div>'
                     )
             fish_grid_html = f'<div class="fia-grid">{fish_cards_min}</div>' if fish_cards_min else ""
@@ -6781,8 +6787,13 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 
             big_rows_html = ""
             for sz, fname, dt in hist["top_sizes"]:
+                _fn_icon = (
+                    f'<img src="../assets/fish/{fish_img_slug(fname)}/{fish_img_slug(fname)}_emoji.webp" '
+                    f'alt="" class="big-emoji" width="16" height="16" loading="lazy" decoding="async" '
+                    f'onerror="this.style.display=\'none\'">{fname}'
+                )
                 big_rows_html += (
-                    f'<tr><td>{fname}</td>'
+                    f'<tr><td>{_fn_icon}</td>'
                     f'<td style="text-align:right;font-weight:700;color:var(--cta)">'
                     f'{int(sz) if sz == int(sz) else sz}cm</td>'
                     f'<td style="color:var(--muted);font-size:11px">{dt}</td></tr>'
