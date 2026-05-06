@@ -3247,6 +3247,21 @@ def _ship_link(name: str, depth: int = 1) -> str:
     prefix = "../" * depth if depth > 0 else ""
     return f'<a href="{prefix}ship/{slug}.html">{name}</a>'
 
+def _fish_area_link_or_fish(fish: str, area: str, depth: int = 1) -> str:
+    """
+    魚種×エリア用のリンク先を返す。
+    fish_area/{slug}-{area}.html が存在すれば fish_area へ、無ければ fish/{slug}.html にフォールバック。
+    depth: HTMLから docs/ への相対パス階層（1=fish/area/fish_area/ship 配下から、0=ルートから）
+
+    ※ build_fish_area_pages を build_area_pages より先に実行することで、
+       本日生成された fish_area ページが正しく検出される。
+    """
+    prefix = "../" * depth if depth > 0 else ""
+    fa_rel = f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
+    if os.path.exists(os.path.join(WEB_DIR, fa_rel)):
+        return f"{prefix}{fa_rel}"
+    return f"{prefix}fish/{fish_slug(fish)}.html"
+
 def current_iso_week():
     now = datetime.now(JST).replace(tzinfo=None)
     return now.year, now.isocalendar()[1]
@@ -3916,8 +3931,7 @@ def build_top_combos_html(catches_for_summary, history, now):
             sign = "+" if pct_int >= 0 else ""
             wow_html = f' <span class="topc-wow {cls}">先週比 {sign}{pct_int}%</span>'
         # リンク先: fish_area ページがあればそこ、無ければ fish ページ
-        fa_path = f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
-        target = fa_path if os.path.exists(os.path.join(WEB_DIR, fa_path)) else f"fish/{fish_slug(fish)}.html"
+        target = _fish_area_link_or_fish(fish, area, depth=0)
         cards.append(
             f'<a class="topc-card" href="{target}">'
             f'<div class="topc-fish"><img src="assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" '
@@ -4136,6 +4150,67 @@ def _decadal_to_monthly_size_index(fish_decades: dict) -> list:
         vals = [fish_decades.get(d, {}).get("size_index", 0) for d in (d1, d1+1, d1+2)]
         avgs.append(sum(vals) / 3)
     return _to_relative_levels(avgs)
+
+def build_combo_season_map_html(fish, area, hist_rows, current_month=None, decadal_calendar=None):
+    """fish × area の旬カレンダー（数釣/型釣 × 12ヶ月 ヒートマップ）。
+    fish_area ページ用に build_fish_season_map_html と同じフォーマットでコンボ別件数を描画する。
+
+    優先順位:
+    1. hist_rows × area で fish×area の月別件数（max>=3）
+    2. hist_rows × 全エリアで fish 全体の月別件数（コンボ件数不足時の fallback）
+    3. decadal_calendar / SEASON_DATA fallback（build_fish_season_map_html に委譲）
+    """
+    types = SEASON_TYPE.get(fish, [""] * 12)
+    month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+    ths = "".join(f"<th>{m}</th>" for m in month_labels)
+    counts = compute_combo_month_records(fish, area, hist_rows) if hist_rows else [0] * 12
+    max_v = max(counts) if any(counts) else 0
+    if max_v < 3:
+        # コンボ件数が少ない場合は fish 全体の月別件数 fallback
+        return build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=hist_rows)
+    cnt_levels = []
+    size_levels = []
+    for i in range(12):
+        cnt = counts[i]
+        ratio = cnt / max_v if max_v else 0
+        if ratio >= 0.7:    lv = 4
+        elif ratio >= 0.4:  lv = 3
+        elif ratio >= 0.15: lv = 2
+        elif cnt > 0:       lv = 1
+        else:               lv = 0
+        tp = types[i] if i < len(types) else ""
+        if tp == "数" and lv >= 3:
+            cnt_levels.append(lv)
+            size_levels.append(max(0, lv - 1))
+        elif tp == "型" and lv >= 3:
+            cnt_levels.append(max(0, lv - 1))
+            size_levels.append(lv)
+        else:
+            cnt_levels.append(lv)
+            size_levels.append(lv)
+    cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
+    size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
+    return f"""<div class="season-map">
+  <div class="sm-wrap">
+    <table class="sm-table">
+      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
+      <tbody>
+        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
+        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sm-legend">
+    <span>釣れ具合：</span>
+    <span class="sm-lc sm-lc-0"></span>なし
+    <span class="sm-lc sm-lc-1"></span>渋
+    <span class="sm-lc sm-lc-2"></span>普通
+    <span class="sm-lc sm-lc-3"></span>良
+    <span class="sm-lc sm-lc-4"></span>◎
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ {area}での{fish}釣果データから集計（過去3年）</p>
+</div>"""
+
 
 def build_fish_season_map_html(fish, decadal_calendar, current_month=None, hist_rows=None):
     """魚種の旬カレンダー（12か月×数釣/型釣 ヒートマップ）。
@@ -5660,8 +5735,9 @@ def build_combo_section(combos):
         stat_str = " / ".join(s for s in [avg_str, max_str] if s)
 
         # 代表的なfish_areaページへのリンク（最初の港）— V2ローマ字ハイフン形式
+        # fish_area が無ければ fish ページへフォールバック（404防止）
         link_area = cb["ports"][0] if cb["ports"] else ""
-        link_href = f'fish_area/{fish_slug(cb["fish"])}-{area_slug(link_area)}.html' if link_area else "#"
+        link_href = _fish_area_link_or_fish(cb["fish"], link_area, depth=0) if link_area else "#"
 
         rank_label = ""
         if i == 0:
@@ -6589,8 +6665,9 @@ def build_fish_pages(data, history, crawled_at=""):
                 f'<tbody>{big_rows_f}</tbody></table></div>'
             ) if big_rows_f else ""
 
-            # 旬バー（実データ駆動・ハードコード SEASON_DATA より優先）
-            season_bar_min = build_season_bar_from_fish_data(fish, _hist_rows_for_fish, current_month)
+            # 旬カレンダー（数釣/型釣 × 12ヶ月 ヒートマップ・実データ駆動）
+            # 2026/05/06: フォーマット統一のため小バー→旬カレンダーに変更（fish rich path と同じ）
+            season_map_min = build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=_hist_rows_for_fish)
 
             # FAQ
             past_year_records = fish_hist["recent_365_records"]
@@ -6731,8 +6808,8 @@ def build_fish_pages(data, history, crawled_at=""):
 
             big_section_html = (f'<h2 class="st">大物実績 TOP5 <span class="tag free">無料</span></h2>{big_html_f}'
                                 if (big_html_f and not is_thin) else '')
-            season_section_html = (f'<h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>{season_bar_min}'
-                                   if (season_bar_min and not is_thin) else '')
+            season_section_html = (f'<h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>{season_map_min}'
+                                   if (season_map_min and not is_thin) else '')
 
             html_f_min = f"""<!DOCTYPE html>
 <html lang="ja"><head>
@@ -6830,7 +6907,8 @@ def build_fish_pages(data, history, crawled_at=""):
             with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
                 f.write(html_f_min)
             continue
-        season_bar_html = build_season_bar_from_fish_data(fish, _hist_rows_for_fish, current_month)
+        # rich path は build_fish_season_map_html (heatmap) のみを使う
+        # （以前は build_season_bar_from_fish_data も呼んでいたが HTML には埋め込まれていなかった dead code）
         score   = get_season_score(fish, current_month)
         this_w, last_w = get_yoy_data(history, fish, year, week_num)
         comment = build_comment(fish, len(catches), score, this_w, last_w)
@@ -7279,7 +7357,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
                 )
                 if fslug:
                     fish_cards_min += (
-                        f'<a class="fia" href="../fish/{fslug}.html">'
+                        f'<a class="fia" href="{_fish_area_link_or_fish(fname, area, depth=1)}">'
                         f'<div class="fn">{_fname_with_icon}</div>'
                         f'<div class="fr">{fcnt}件</div>'
                         f'<div class="fs">過去1年</div></a>'
@@ -7591,7 +7669,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             # 自動的にネストアンカーを分離 → 「◎船宿名」が独立カードとして
             # 表示される事故になる（過去発生済み）。船宿名はプレーンテキストで。
             fia_cards += (
-                f'<a class="fia" href="../fish/{fish_slug(fish)}.html">'
+                f'<a class="fia" href="{_fish_area_link_or_fish(fish, area, depth=1)}">'
                 f'<div class="fn"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="" class="fn-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
                 + (f'<div class="fr">{cnt_str}</div>' if cnt_str else "")
                 + f'<div class="fs">{" | ".join(detail_parts)}</div>'
@@ -8175,8 +8253,11 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   <div class="stat-card"><div class="sv">{'%.0f' % combo_avg if combo_avg else '-'}匹</div><div class="sl">平均釣果</div></div>
   <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else '-'}匹</div><div class="sl">最高釣果</div></div>
 </div>"""
-        # シーズンバー（実データ駆動・ハードコード SEASON_DATA より優先）
-        season_bar_fa = build_season_bar_from_data(fish, area, _hist_rows_for_fa, current_month_fa)
+        # 旬カレンダー（数釣/型釣 × 12ヶ月 ヒートマップ・実データ駆動）
+        # 2026/05/06: フォーマット統一のため年間シーズンバー→旬カレンダーに変更。
+        combo_season_map_fa = build_combo_season_map_html(
+            fish, area, _hist_rows_for_fa, current_month_fa, decadal_calendar=decadal_calendar
+        )
         # コンボコメント（実データ駆動）
         season_score_fa = get_combo_season_score(fish, area, _hist_rows_for_fa, current_month_fa)
         group_fa = _area_to_group(area) or area
@@ -8257,7 +8338,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   <h2 class="st">{area}の{fish}釣果情報</h2>
   {fa_intro_html}
   {stat_cards_fa}
-  <h2 class="st">年間シーズン <span class="tag free">無料</span></h2>{season_bar_fa}
+  <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
+  {combo_season_map_fa}
   {combo_comment_html}
   <h2 class="st">船宿ランキング <span class="tag free">無料</span></h2>
   {ship_rank_fa_html}
@@ -11009,8 +11091,10 @@ def main():
     with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
     build_fish_pages(valid_catches, history, crawled_at)
-    build_area_pages(valid_catches, history, crawled_at, weather_data)
+    # fish_area を先に生成 → build_area_pages 内の _fish_area_link_or_fish が
+    # 当日生成された fish_area ページを正しく検出できる
     build_fish_area_pages(valid_catches, crawled_at, history)
+    build_area_pages(valid_catches, history, crawled_at, weather_data)
     build_ship_pages(valid_catches, crawled_at)
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
