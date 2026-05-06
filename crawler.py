@@ -6183,7 +6183,7 @@ def build_fish_pages(data, history, crawled_at=""):
 .fish-hero .fh-s{{font-size:18px;font-weight:700;color:#fff;margin-top:2px}}
 .fish-hero .fh-m{{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}}
 .comment-wrap{{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}}
-.comment-img{{width:100px;height:100px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}}
+.comment-img{{width:140px;height:140px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}}
 .fia-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}}
 .fia{{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;text-decoration:none;color:inherit}}
 .fia:hover{{border-color:var(--cta);text-decoration:none}}
@@ -6444,9 +6444,9 @@ def build_fish_pages(data, history, crawled_at=""):
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
-.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text);white-space:pre-line}
+.comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text);white-space:pre-line;min-width:0}
 .comment-wrap{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
-.comment-img{width:100px;height:100px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}
+.comment-img{width:140px;height:140px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}
 .season-entry{font-size:12px;color:var(--sub);margin:8px 0;padding:6px 10px;border-radius:4px;background:var(--card);border:1px solid var(--border)}
 .season-entry.entry-early{border-left:3px solid var(--pos)}.season-entry.entry-late{border-left:3px solid var(--warn)}.season-entry.entry-same{border-left:3px solid var(--accent)}
 .entry-trend{font-weight:bold;margin-left:6px}
@@ -6491,7 +6491,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {season_entry_html}
   <div class="comment-wrap">
-    <img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_illustration.png" alt="{fish}" class="comment-img" width="120" height="120" loading="lazy" onerror="this.style.display='none'">
+    <img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_illustration.png" alt="{fish}" class="comment-img" width="140" height="140" loading="lazy" onerror="this.style.display='none'">
     <div class="comment">{comment}</div>
   </div>
   {chart7_html}
