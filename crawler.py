@@ -5606,12 +5606,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 _cls = " today" if _i == 6 else ""
                 _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
                 _d = _today - timedelta(days=6 - _i)
+                # R2 (2026/05/06): 中間日も M/D ラベルを出して 7日チャートが
+                # 視覚的に機能するようにする（旧仕様: 両端のみで中5日が空白）
                 if _i == 6:
                     _label_parts.append(f'<span class="bl today">{_mini_today_label}</span>')
-                elif _i == 0:
-                    _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
                 else:
-                    _label_parts.append('<span class="bl"></span>')
+                    _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
             mini_bars = (
                 f'<div class="bars">{"".join(_bar_parts)}</div>'
                 f'<div class="bar-labels">{"".join(_label_parts)}</div>'
