@@ -6454,6 +6454,33 @@ def build_fish_pages(data, history, crawled_at=""):
                 desc_f_min = (f"{fish}の船釣り情報。本日の釣果報告は集計待ちです。"
                               f"過去1年{past_year_records}件の実績データ、釣れる港、月別釣果トレンド、釣り方・タックル目安をまとめました。")
 
+            # 統一感のため、placeholder 経路にも rich と同等の「シーズン概況」を出す
+            # （イラスト + 自動生成コメント）。直近1週間 catches 0件でも見栄えを揃える。
+            _peak_month = ""
+            if fish_hist["month_records"]:
+                _max_cnt = max(fish_hist["month_records"].values())
+                _peak_months = [m for m, c in fish_hist["month_records"].items() if c == _max_cnt]
+                _peak_month = "・".join(f"{int(m)}月" for m in _peak_months[:2])
+            _shun_text_parts = [f"過去1年で{past_year_records:,}件の釣果報告。"]
+            if _peak_month and not is_thin:
+                _shun_text_parts.append(f"{_peak_month}にピークを迎えています。")
+            if top_areas_str:
+                _shun_text_parts.append(f"主な釣り場は{top_areas_str}。")
+            if avg_size_phrase:
+                _shun_text_parts.append(avg_size_phrase)
+            _shun_text_parts.append("直近1週間は出船報告がまだ届いていません。集まり次第このページに反映します。")
+            _shun_comment_text = "".join(_shun_text_parts)
+            _kanji_suffix = f"（{FISH_KANJI[fish]}）" if fish in FISH_KANJI and FISH_KANJI[fish] != fish else ""
+            shun_section_html = (
+                f'<h2 class="st">シーズン概況 <span class="tag free">無料</span></h2>'
+                f'<div class="comment-wrap">'
+                f'<img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_illustration.png" '
+                f'alt="{fish}" class="comment-img" width="160" height="160" loading="lazy" '
+                f'onerror="this.style.display=\'none\'">'
+                f'<div class="comment"><span class="comment-fish-name">{fish}{_kanji_suffix}</span>{_shun_comment_text}</div>'
+                f'</div>'
+            )
+
             # 薄コンテンツ時は分析セクション群を非表示（AdSense Thin Content 対策）
             if is_thin:
                 analysis_sections = (
@@ -6510,6 +6537,8 @@ def build_fish_pages(data, history, crawled_at=""):
 .fish-hero .fh-m{{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}}
 .comment-wrap{{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}}
 .comment-img{{width:160px;height:160px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}}
+.comment{{font-size:13px;color:var(--text);white-space:pre-line;min-width:0}}
+.comment-fish-name{{display:block;font-size:15px;font-weight:800;color:var(--accent);margin-bottom:6px}}
 .fia-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}}
 .fia{{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;display:block;text-decoration:none;color:inherit}}
 .fia:hover{{border-color:var(--cta);text-decoration:none}}
@@ -6549,6 +6578,7 @@ def build_fish_pages(data, history, crawled_at=""):
     出船情報は各船宿のWebサイト・電話で直接ご確認ください。
     {('現在この魚種は過去1年の実績データが少なく、釣り方・タックル目安のみ表示しています。' if is_thin else '本ページでは過去1年の実績データから、釣れる港・月別トレンド・釣り方をご確認いただけます。')}
   </div>
+  {shun_section_html}
   {analysis_sections}
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
