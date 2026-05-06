@@ -6490,6 +6490,7 @@ def build_fish_pages(data, history, crawled_at=""):
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {season_entry_html}
+  <h2 class="st">今週の概況 <span class="tag free">無料</span></h2>
   <div class="comment-wrap">
     <img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_illustration.png" alt="{fish}" class="comment-img" width="160" height="160" loading="lazy" onerror="this.style.display='none'">
     <div class="comment">{comment}</div>
