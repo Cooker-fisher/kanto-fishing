@@ -3848,9 +3848,14 @@ def _load_prediction_log_one():
 
 
 def build_top_combos_html(catches_for_summary, history, now):
-    """今週末の見どころ TOP3 — 直近1週間 (魚種×エリア) コンボの事実集計。
+    """今週よく釣れているコンボ TOP3 — 直近1週間 (魚種×エリア) の事実集計。
     R3 (2026/05/06): HERO直下に結論型パネルを追加し、件数・船宿数・先週比を表示。
     無料=事実 境界遵守: 件数・先週比のみで理由解釈・★評価は載せない。
+
+    R3-fix (2026/05/06): 「見どころ」名は減少コンボが入ると違和感があるため
+    「今週よく釣れているコンボ」に変更。平日釣行者も含めて訴求。
+    選定ロジック: 件数 TOP10 → 先週比+優先（先週比+ で3件揃ったらそこで終了、
+    足りなければ件数順で補充）→ TOP3
     """
     today_str = now.strftime("%Y/%m/%d")
     cutoff_str = (now - timedelta(days=6)).strftime("%Y/%m/%d")
@@ -3885,21 +3890,31 @@ def build_top_combos_html(catches_for_summary, history, now):
                 continue
             key = (f, c.get("area"))
             prev_combo.setdefault(key, set()).add((c.get("ship"), d))
-    # TOP3 by 件数（重複船宿日除く）
-    sorted_combos = sorted(combo.items(), key=lambda x: -len(x[1]))[:3]
-    if not sorted_combos:
+    # 選定: 件数 TOP10 から先週比+ を優先で3件、足りなければ件数順で補充
+    top10 = sorted(combo.items(), key=lambda x: -len(x[1]))[:10]
+    positive = []  # 先週比 ≥ 0% or 先週データ無し
+    negative = []  # 先週比 < 0%
+    for key, records in top10:
+        cnt = len(records)
+        prev_cnt = len(prev_combo.get(key, set()))
+        pct = None if prev_cnt == 0 else (cnt - prev_cnt) / prev_cnt * 100
+        if pct is None or pct >= 0:
+            positive.append((key, records, pct))
+        else:
+            negative.append((key, records, pct))
+    selected = (positive + negative)[:3]
+    if not selected:
         return ""
     cards = []
-    for (fish, area), records in sorted_combos:
+    for (fish, area), records, pct in selected:
         cnt = len(records)
         ships = len(set(r[0] for r in records))
-        prev_cnt = len(prev_combo.get((fish, area), set()))
         wow_html = ""
-        if prev_cnt > 0:
-            pct = round((cnt - prev_cnt) / prev_cnt * 100)
-            cls = "up" if pct > 0 else "dn" if pct < 0 else "flat"
-            sign = "+" if pct >= 0 else ""
-            wow_html = f' <span class="topc-wow {cls}">先週比 {sign}{pct}%</span>'
+        if pct is not None:
+            pct_int = round(pct)
+            cls = "up" if pct_int > 0 else "dn" if pct_int < 0 else "flat"
+            sign = "+" if pct_int >= 0 else ""
+            wow_html = f' <span class="topc-wow {cls}">先週比 {sign}{pct_int}%</span>'
         # リンク先: fish_area ページがあればそこ、無ければ fish ページ
         fa_path = f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         target = fa_path if os.path.exists(os.path.join(WEB_DIR, fa_path)) else f"fish/{fish_slug(fish)}.html"
@@ -3912,7 +3927,7 @@ def build_top_combos_html(catches_for_summary, history, now):
             f'</a>'
         )
     return (
-        '<h2 class="st">今週末の見どころ <span class="tag free">無料</span><span class="topc-period">直近1週間集計</span></h2>'
+        '<h2 class="st">今週よく釣れているコンボ <span class="tag free">無料</span><span class="topc-period">直近1週間集計</span></h2>'
         '<div class="topc-grid">' + "".join(cards) + '</div>'
     )
 
@@ -6024,6 +6039,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .live-track span{display:inline-block;padding:0 32px}
 .live-track .lt-emoji{vertical-align:-3px;margin:0 4px;object-fit:contain}
 .live-track .lt-trophy{display:inline-block;background:var(--cta);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;margin-right:4px;letter-spacing:.5px}
+.live-track .lt-trophy::after{content:none}
 .live-track span::after{content:"·";margin-left:16px;opacity:.4}
 @media(prefers-reduced-motion:no-preference){.live-track{animation:live-scroll 40s linear infinite}}
 @keyframes live-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
