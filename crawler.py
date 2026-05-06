@@ -5898,6 +5898,27 @@ def build_html(catches, crawled_at, history, weather_data=None):
     teaser_html = build_teaser_rotator_html()
     # R3 (2026/05/06): 今週末の見どころ TOP3
     top_combos_html = build_top_combos_html(catches_for_summary, history, now)
+    # R9 (2026/05/06): 人気の船宿（直近1週間 件数 TOP5）。
+    # build_ship_pages が ships.json で romaji_slug を持つ全船宿のページを生成するため、
+    # _SHIP_ROMAJI 登録船宿のみリンク化すれば 404 にならない。
+    _ship_count = {}
+    for _c in catches_for_summary:
+        _s = _c.get("ship", "")
+        if _s and _s in _SHIP_ROMAJI:
+            _ship_count[_s] = _ship_count.get(_s, 0) + 1
+    _top_ships = sorted(_ship_count.items(), key=lambda x: -x[1])[:5]
+    top_ships_html = ""
+    if _top_ships:
+        _ship_links = "".join(
+            f'<a href="ship/{_SHIP_ROMAJI[_sn]}.html">{_sn} <span class="ship-cnt">{_sc}件</span></a>'
+            for _sn, _sc in _top_ships
+        )
+        top_ships_html = (
+            '<div class="nav-section">'
+            '<h3>人気の船宿から探す</h3>'
+            f'<div class="nav-chips ship-chips">{_ship_links}</div>'
+            '</div>'
+        )
     # V2 その他魚種（fish_others）
     sorted_fish = sorted(fish_summary.keys(), key=lambda x: -len(fish_summary[x]))
     main_fish = sorted_fish[:10]
@@ -6080,7 +6101,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .topc-wow{font-weight:700;font-size:11px}
 .topc-wow.up{color:var(--pos)}.topc-wow.dn{color:var(--neg)}.topc-wow.flat{color:var(--muted)}
 .topc-period{font-size:10px;font-weight:600;color:var(--muted);margin-left:6px}
-@media(max-width:640px){.topc-grid{grid-template-columns:1fr}}"""
+@media(max-width:640px){.topc-grid{grid-template-columns:1fr}}
+.ship-chips a{display:inline-flex;align-items:center;gap:4px}
+.ship-chips .ship-cnt{font-size:10px;color:var(--cta);font-weight:700}"""
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -6140,6 +6163,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
   <h3>エリアから探す</h3>
   <div class="nav-chips">{area_nav_html}<a href="area/">すべて見る →</a></div>
 </div>
+{top_ships_html}
 <!-- 広告② -->
 <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
