@@ -10474,6 +10474,16 @@ def main():
             json.dump(forecast_data, f, ensure_ascii=False, indent=2)
         print(f"forecast.json: {len(forecast_data.get('days', {}))} 日分 + {len(forecast_data.get('weeks', {}))} 週分生成")
         build_forecast_pages(forecast_data, weather_data, catches=valid_catches, history=history)
+    # R1 (2026/05/06): build_forecast_json が None を返した場合の defensive fallback。
+    # forecast.json が disk にあれば読み込んで ZONE C 出船リスク予報を出す。
+    # API 失敗時に ZONE C が消える regression の防止策。
+    elif os.path.exists("forecast.json"):
+        try:
+            with open("forecast.json", encoding="utf-8") as f:
+                weather_data["_forecast_data"] = json.load(f)
+            print(f"forecast.json fallback: {len(weather_data['_forecast_data'].get('days', {}))} 日分 (disk)")
+        except Exception as e:
+            print(f"forecast.json fallback failed: {e}")
     os.makedirs(WEB_DIR, exist_ok=True)
     with open(os.path.join(WEB_DIR, "CNAME"), "w", encoding="utf-8") as f:
         f.write("funatsuri-yoso.com")
