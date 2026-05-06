@@ -6710,9 +6710,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 .sl-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .sl-name{font-size:14px;font-weight:800;color:var(--accent)}
 .sl-fish{display:flex;gap:4px;flex-wrap:wrap}
-.sl-fish span{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700}
+.sl-fish span{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
 .sl-fish .g{background:#e6f7ee;color:var(--pos)}
 .sl-fish .o{background:#fef6ee;color:var(--cta)}
+.sl-fish .sl-emoji{width:14px;height:14px;object-fit:contain;flex-shrink:0}
 .sl-detail{font-size:11px;color:var(--muted);margin-top:3px}
 .point-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .point-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
@@ -7160,7 +7161,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         for sn in sorted_ships:
             fish_dict = ship_week_fish[sn]
             top_f = sorted(fish_dict.items(), key=lambda x: -x[1])[:3]
-            badges = "".join(f'<span class="{"g" if i == 0 else "o"}">{f}</span>' for i, (f, _) in enumerate(top_f))
+            badges = "".join(
+                f'<span class="{"g" if i == 0 else "o"}">'
+                f'<img src="../assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="sl-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</span>'
+                for i, (f, _) in enumerate(top_f)
+            )
             pts = [c["point_place1"] for c in catches if c["ship"] == sn and c.get("point_place1")]
             from collections import Counter as _Counter
             top_pt = _Counter(pts).most_common(1)[0][0] if pts else ""
