@@ -4209,13 +4209,16 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None):
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
 </div>"""
 
-def build_area_season_map_html(area, area_decadal, top_fish_list):
+def build_area_season_map_html(area, area_decadal, top_fish_list, hist_rows=None):
     """エリアの魚種別旬カレンダー（魚種×12か月 ヒートマップ）
 
-    データソース: area_decadal（analysis.sqlite 由来・cnt_index 集計値）
-    フォールバック: analysis.sqlite が無い環境（GitHub Actions 等）では
-                   SEASON_DATA の score（1〜5）を level（0〜4）にマップして表示。
-                   過去複数回 analysis.sqlite gitignore で全セル空になったため。
+    データソース優先順位:
+    1. area_decadal（analysis.sqlite 由来・cnt_index 集計値）
+    2. hist_rows（CSV から fish×area の月別件数を計算）— 2026/05/06 追加
+    3. SEASON_DATA（ハードコード fallback）
+
+    （2）が hist_rows を渡せば動作。analysis.sqlite が無くても CSV からエリア×魚種
+    の月別実態を反映できる。
     """
     # 港名で直接引けなければ座標→分析地域名に変換してlookup
     area_data = area_decadal.get(area) if area_decadal else None
@@ -4229,12 +4232,28 @@ def build_area_season_map_html(area, area_decadal, top_fish_list):
         fish_decades = area_data.get(fish, {})
         # area_decadal は cnt_index のみ
         cnt_levels = []
-        # この魚種の area_decadal データが空なら SEASON_DATA フォールバックを使う
+        # 2026/05/06: hist_rows を**最優先**で使用。area_decadal の cnt_index 集計値より
+        # 実 CSV 件数の方が正確（cnt_index しきい値 50/90/130/160 が実態と乖離するケースあり）。
+        hist_counts = None
         fallback_scores = None
-        if not fish_decades:
+        if hist_rows:
+            hc = compute_combo_month_records(fish, area, hist_rows)
+            if max(hc) >= 3:
+                hist_counts = hc
+        if hist_counts is None and not fish_decades:
             fallback_scores = SEASON_DATA.get(fish)
         for m in range(1, 13):
-            if fallback_scores is not None:
+            if hist_counts is not None:
+                # 実データ正規化: max=4, ratio>=0.7=4 / 0.4=3 / 0.15=2 / >0=1 / 0=0
+                max_v = max(hist_counts)
+                cnt = hist_counts[m - 1]
+                ratio = cnt / max_v if max_v else 0
+                if ratio >= 0.7:    lv = 4
+                elif ratio >= 0.4:  lv = 3
+                elif ratio >= 0.15: lv = 2
+                elif cnt > 0:       lv = 1
+                else:               lv = 0
+            elif fallback_scores is not None:
                 # SEASON_DATA score 1〜5 → level 0〜4
                 lv = max(0, min(4, fallback_scores[m - 1] - 1))
             else:
@@ -4244,9 +4263,24 @@ def build_area_season_map_html(area, area_decadal, top_fish_list):
                 raw_vals = [fish_decades.get(d) for d in (d1, d2, d3)]
                 present = [v for v in raw_vals if v is not None]
                 if not present:
-                    # 部分データ欠落 → SEASON_DATA があれば使う、無ければ -1
-                    sd = SEASON_DATA.get(fish)
-                    lv = max(0, min(4, sd[m - 1] - 1)) if sd else -1
+                    # 部分データ欠落 → hist_rows があれば実データ計算
+                    if hist_rows:
+                        hc2 = compute_combo_month_records(fish, area, hist_rows)
+                        if max(hc2) >= 3:
+                            max_v = max(hc2)
+                            cnt = hc2[m - 1]
+                            ratio = cnt / max_v if max_v else 0
+                            if ratio >= 0.7:    lv = 4
+                            elif ratio >= 0.4:  lv = 3
+                            elif ratio >= 0.15: lv = 2
+                            elif cnt > 0:       lv = 1
+                            else:               lv = 0
+                        else:
+                            sd = SEASON_DATA.get(fish)
+                            lv = max(0, min(4, sd[m - 1] - 1)) if sd else -1
+                    else:
+                        sd = SEASON_DATA.get(fish)
+                        lv = max(0, min(4, sd[m - 1] - 1)) if sd else -1
                 else:
                     avg = sum(present) / len(present)
                     if avg >= 160:   lv = 4
@@ -7174,7 +7208,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 
             # 旬カレンダーは件数 5 件以上の魚種のみ採用（過少データの色塗りで誤誘導を防止）
             top_fish_for_season = [f for f, c in hist["top_fish"][:6] if c >= 5]
-            season_map = build_area_season_map_html(area, area_decadal, top_fish_for_season) if top_fish_for_season else ""
+            season_map = build_area_season_map_html(area, area_decadal, top_fish_for_season, hist_rows=_hist_rows_for_placeholder) if top_fish_for_season else ""
 
             related_links = []
             for other in AREA_GROUPS.get(group, []):
@@ -7589,7 +7623,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 
         # 既存セクション（旬カレンダー・ガイド・FAQ）
         top_fish_list = [f for f, _ in top_fish_items]
-        area_season_html = build_area_season_map_html(area, area_decadal, top_fish_list)
+        area_season_html = build_area_season_map_html(area, area_decadal, top_fish_list, hist_rows=_hist_rows_for_placeholder)
         area_guide_html = build_area_guide_html(area, area_desc_data)
         auto_area_faq_html, auto_area_faq_pairs = build_area_faq_html(area, area_desc_data, top_fish_items=top_fish_items, area_catches=catches)
         fixed_area_faq_html, fixed_area_faq_pairs = build_fixed_faq_html("area", area, fixed_faq_data_area)
