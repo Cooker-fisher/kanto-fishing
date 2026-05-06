@@ -8527,7 +8527,10 @@ a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 .payment{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .payment h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .payment .pay-list{display:flex;gap:8px;flex-wrap:wrap}
-.payment .pay-item{font-size:11px;padding:6px 12px;background:var(--bg);border-radius:6px;color:var(--sub);font-weight:600}"""
+.payment .pay-item{font-size:11px;padding:6px 12px;background:var(--bg);border-radius:6px;color:var(--sub);font-weight:600}
+:root{--warn-bg:#fef9c3;--warn-border:#eab308;--warn-text:#a16207}
+.payment-warn{background:var(--warn-bg);border-color:var(--warn-border)}
+.payment-warn h3{color:var(--warn-text)}"""
 
     html = f"""<!DOCTYPE html>
 <html lang="ja">
