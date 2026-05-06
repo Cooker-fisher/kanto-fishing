@@ -3161,6 +3161,68 @@ def area_slug(area: str) -> str:
     """エリア名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _AREA_ROMAJI.get(area, area)
 
+FISH_KANJI: dict[str, str] = {
+    "マダイ":       "真鯛",
+    "アジ":         "鰺",
+    "ビシアジ":     "錘鰺",
+    "シロギス":     "白鱚",
+    "ヒラメ":       "鮃",
+    "カワハギ":     "皮剥",
+    "タチウオ":     "太刀魚",
+    "ワラサ":       "ワラサ",
+    "ブリ":         "鰤",
+    "イナダ":       "イナダ",
+    "カツオ":       "鰹",
+    "キハダマグロ": "黄肌鮪",
+    "キメジ":       "木目地",
+    "サワラ":       "鰆",
+    "カンパチ":     "間八",
+    "シイラ":       "鱪",
+    "ムギイカ":     "麦烏賊",
+    "スルメイカ":   "鯣烏賊",
+    "ヤリイカ":     "槍烏賊",
+    "スミイカ":     "墨烏賊",
+    "マルイカ":     "丸烏賊",
+    "アオリイカ":   "障泥烏賊",
+    "モンゴウイカ": "紋甲烏賊",
+    "スジイカ":     "条烏賊",
+    "マダコ":       "真蛸",
+    "カサゴ":       "笠子",
+    "沖カサゴ":     "沖笠子",
+    "オキカサゴ":   "沖笠子",
+    "オニカサゴ":   "鬼笠子",
+    "メバル":       "眼張",
+    "沖メバル":     "沖眼張",
+    "オキメバル":   "沖眼張",
+    "キンメダイ":   "金目鯛",
+    "アカムツ":     "赤鯥",
+    "クロムツ":     "黒鯥",
+    "メダイ":       "目鯛",
+    "アマダイ":     "甘鯛",
+    "シロアマダイ": "白甘鯛",
+    "フグ":         "河豚",
+    "トラフグ":     "虎河豚",
+    "ショウサイフグ": "小西河豚",
+    "アカメフグ":   "赤目河豚",
+    "ヒラマサ":     "平政",
+    "カレイ":       "鰈",
+    "ホウボウ":     "魴鮄",
+    "イサキ":       "伊佐木",
+    "クロダイ":     "黒鯛",
+    "シマアジ":     "縞鰺",
+    "マハタ":       "真羽太",
+    "ハタ":         "羽太",
+    "メヌケ":       "目抜",
+    "カマス":       "魳",
+    "イシダイ":     "石鯛",
+    "コハダ":       "小鰭",
+    "アユ":         "鮎",
+    "マゴチ":       "真鯒",
+    "シーバス":     "鱸",
+    "アラ":         "荒",
+    "タイ五目":     "鯛五目",
+}
+
 def ship_slug(name: str) -> str:
     """船宿名 → URL用ローマ字スラグ（マップ未登録時はNone）"""
     return _SHIP_ROMAJI.get(name)
@@ -3708,7 +3770,6 @@ def _v2_footer(crawled_at=""):
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
   </div>
-  <span class="cp">データ提供: 釣りビジョン / 各船宿{' | 最終更新: ' + crawled_at if crawled_at else ''}</span>
 </footer>"""
 
 def _v2_bottom_nav(active_page=""):
@@ -6445,6 +6506,7 @@ def build_fish_pages(data, history, crawled_at=""):
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
 .comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text);white-space:pre-line;min-width:0}
+.comment-fish-name{display:block;font-size:15px;font-weight:800;color:var(--accent);margin-bottom:6px}
 .comment-wrap{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
 .comment-img{width:160px;height:160px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#f5f7fa}
 .season-entry{font-size:12px;color:var(--sub);margin:8px 0;padding:6px 10px;border-radius:4px;background:var(--card);border:1px solid var(--border)}
@@ -6493,7 +6555,8 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2 class="st">今週の概況 <span class="tag free">無料</span></h2>
   <div class="comment-wrap">
     <img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_illustration.png" alt="{fish}" class="comment-img" width="160" height="160" loading="lazy" onerror="this.style.display='none'">
-    <div class="comment">{comment}</div>
+    <div class="comment"><span class="comment-fish-name">{fish}{"（" + FISH_KANJI[fish] + "）" if fish in FISH_KANJI and FISH_KANJI[fish] != fish else ""}</span>
+{comment}</div>
   </div>
   {chart7_html}
   <h2 class="st">{fish_today_label}の釣果 <span class="tag free">無料</span></h2>
