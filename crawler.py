@@ -5759,7 +5759,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         key = (f, s)
         if key not in _seen_ticker:
             _seen_ticker.add(key)
-            _ticker_items_list.append(f'<span>本日 {f} × {s} {n}匹</span>')
+            _ticker_items_list.append(f'<span>本日 <img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="lt-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f} × {s} {n}匹</span>')
         if len(_ticker_items_list) >= 5:
             break
     ticker_items = "".join(_ticker_items_list)
@@ -5789,6 +5789,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .live-track-wrap{flex:1;overflow:hidden}
 .live-track{display:flex;white-space:nowrap;font-size:12px;color:rgba(255,255,255,.85)}
 .live-track span{display:inline-block;padding:0 32px}
+.live-track .lt-emoji{vertical-align:-3px;margin:0 4px;object-fit:contain}
 .live-track span::after{content:"·";margin-left:16px;opacity:.4}
 @media(prefers-reduced-motion:no-preference){.live-track{animation:live-scroll 40s linear infinite}}
 @keyframes live-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
