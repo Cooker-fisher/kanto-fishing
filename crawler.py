@@ -3806,7 +3806,7 @@ def build_teaser_rotator_html():
         <span class="teaser-badge soon">開発中</span>
         <span class="teaser-title-in">今週の狙い目 — 週末TOP5魚種</span>
       </div>
-      <div class="teaser-desc">約10万件の釣果データ×気象×潮汐をAI分析。<strong>今週末の狙い目魚種・エリア</strong>をランキング表示。</div>
+      <div class="teaser-desc">過去約10万件の船宿釣果に、風・波・潮・水温を重ねて<strong>今週末の狙い目魚種・エリア</strong>を判定しています。<strong>外れた予測も毎日公開</strong>します。</div>
       <div style="position:relative">
         <div class="teaser-dummy"><div class="td-fish">アジ <span class="td-star">★★★★★</span></div><div class="td-range">25〜45匹 / 18〜25cm</div><div class="td-reason">大潮×水温上昇×波穏やか。金沢八景推奨</div></div>
         <div class="teaser-dummy"><div class="td-fish">マダイ <span class="td-star">★★★★☆</span></div><div class="td-range">0〜5匹 / 30〜55cm</div><div class="td-reason">中潮×SST適温。剣崎・久里浜が狙い目</div></div>
@@ -3845,7 +3845,7 @@ def build_teaser_rotator_html():
   </div>
   <div class="teaser-cta-wrap">
     <div class="teaser-cta-msg">現在開発中。<strong>有料プランページ</strong>で最新の釣果予測をご確認ください。</div>
-    <div class="teaser-cta-btns"><a class="cta-btn" href="/forecast/index.html">有料プランを見る（月額500円）</a></div>
+    <div class="teaser-cta-btns"><a class="cta-btn" href="/forecast/index.html">今週末、どこに乗るべきか見る → 1回100円</a></div>
     <div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>
   </div>
 </div>"""
