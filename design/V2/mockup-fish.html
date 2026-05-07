@@ -308,12 +308,10 @@ footer a{color:rgba(255,255,255,.7)}
 
 <div class="sample-ans">
 <h4>答え合わせ（正直に公開）</h4>
-<div class="sample-row"><span class="sl">3/1 予測18〜35匹</span><span class="sv2" style="color:var(--pos)">→ 実績20〜38匹 ○的中</span></div>
-<div class="sample-row"><span class="sl">3/2 予測20〜40匹</span><span class="sv2" style="color:var(--pos)">→ 実績22〜42匹 ○的中</span></div>
-<div class="sample-row"><span class="sl">3/3 予測15〜30匹</span><span class="sv2" style="color:var(--neg)">→ 実績8〜18匹 ×ハズレ（風速予報ズレ）</span></div>
-<div class="sample-row"><span class="sl">3/4 予測10〜25匹</span><span class="sv2" style="color:var(--pos)">→ 実績12〜22匹 ○的中</span></div>
-<div class="sample-row"><span class="sl">3/5 予測16〜32匹</span><span class="sv2" style="color:var(--pos)">→ 実績18〜35匹 ○的中</span></div>
-<div style="text-align:center;margin-top:8px;font-size:13px;font-weight:700;color:var(--pos)">この週の的中率: 4/5 = 80%</div>
+<!-- T15(2026/05/07): 架空の予測実績5件（3/1〜3/5・的中率80%）を削除。
+     mockup の固定例示として書かれていたが、特定の日付・匹数を出すと「過去の実例」と誤認されるため。
+     実装時は prediction_log から動的取得（sample-row × 数件 + 集計的中率）。 -->
+<div style="font-size:12px;color:var(--sub);text-align:center;padding:20px">予測の答え合わせは実装後に表示</div>
 </div>
 
 <a class="sample-cta" href="#">この精度の予測を毎日受け取る → 月額500円（仕掛け1セット分）</a>

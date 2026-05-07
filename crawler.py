@@ -5996,7 +5996,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
         # 旬係数
         sk, _ = _fish_signal(fish, current_month)
         season_mul = {"peak": 1.3, "season": 1.1, "normal": 1.0, "late": 0.7}[sk]
-        return cnt * ratio * season_mul
+        score = cnt * ratio * season_mul
+        # N<5 の魚種は末尾に集める（前週比ブーストで少数派が主力魚を抜くバグの修正）
+        if len(cs) < 5:
+            return score * 0.01
+        return score
 
     for fish, cs in sorted(fish_summary.items(), key=lambda x: -_heat_score(x[0], x[1])):
         areas_list  = list(dict.fromkeys(c["area"] for c in cs[:3]))

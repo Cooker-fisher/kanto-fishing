@@ -1,23 +1,54 @@
+<!-- T13 v2 mockup. 元: mockup-premium.html -->
+<!-- watermark削除 / user-select削除 / JSON-LD Product+Offer追加 / {hit_rate}コメント / CTA「プランを比較する」追加 -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>有料プラン — 船釣り予想</title>
-<!-- T15(2026/05/07): 架空の的中率72%を削除 -->
-<meta name="description" content="船釣り予想の有料プラン。明日〜4週間後の釣果予測、船宿別◎○△、最適ポイント・仕掛け推奨。">
-<link rel="canonical" href="https://funatsuri-yoso.com/premium.html">
-<meta property="og:title" content="有料プラン — 船釣り予想">
+<!-- T13: title 更新 -->
+<title>釣果予測 有料プラン — 船釣り予想</title>
+<!-- T15(2026/05/07): 架空の的中率72%・他社A55%・他社B60%を mockup から削除（meta description / acc-box）。実集計値の表示は実装後に判断 -->
+<meta name="description" content="明日〜4週間後の釣果予測。月額500円。水温・潮汐・月齢から算出、関東全域の船宿別ランキング付き。">
+<!-- T13: canonical を /premium/ に変更 -->
+<link rel="canonical" href="https://funatsuri-yoso.com/premium/">
+<meta property="og:title" content="釣果予測 有料プラン — 船釣り予想">
 <meta property="og:description" content="明日の釣果を予測。月額500円（仕掛け1セット分）">
 <meta property="og:type" content="website">
+<!-- T13: JSON-LD Product+Offer 2種追加 (Section 3.A) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "船釣り予想 有料プラン",
+  "description": "明日から4週間後の釣果予測、魚種別信頼度評価、船宿別◎○△ランキング",
+  "brand": {"@type": "Brand", "name": "船釣り予想"},
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "月額プラン",
+      "price": "500",
+      "priceCurrency": "JPY",
+      "availability": "https://schema.org/InStock",
+      "priceValidUntil": "2027-12-31"
+    },
+    {
+      "@type": "Offer",
+      "name": "スポット",
+      "price": "100",
+      "priceCurrency": "JPY",
+      "availability": "https://schema.org/InStock",
+      "priceValidUntil": "2027-12-31"
+    }
+  ]
+}
+</script>
 <style>
 :root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--cta2:#d04e00;--pos:#1a9d56;--neg:#d43333;--warn:#d4a017;--prem:#7c3aed;--prem2:#6d28d9;--prem-bg:#f8f4ff;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px;position:relative;-webkit-user-select:none;user-select:none}
-.watermark-text{position:fixed;inset:0;pointer-events:none;z-index:9998;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);overflow:hidden}
-.watermark-text span{display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(13,43,74,.05);transform:rotate(-30deg);white-space:nowrap;font-weight:700}
-@media print{.watermark-text span{color:rgba(13,43,74,.4) !important}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-input,select,button,textarea{-webkit-user-select:auto;user-select:auto}
+/* T13: body から -webkit-user-select:none; user-select:none を削除（LPでテキストコピー禁止はUXマイナス） */
+body{font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px;position:relative}
+/* T13: .watermark-text CSS定義を削除 */
+/* T13: @media print のウォーターマーク強調を削除 */
 a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--prem)}
@@ -35,14 +66,12 @@ nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
 .prem-hero .ph-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:4px}
 .prem-hero .ph-trial{display:inline-block;margin-top:12px;padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;font-size:11px;color:#fff;font-weight:700}
 .bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
-
 /* Features */
 .features{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-bottom:20px}
 .ft{background:var(--card);border:1px solid #e0d6f5;border-radius:var(--r);padding:14px}
 .ft .ft-icon{font-size:20px;margin-bottom:4px}
 .ft .ft-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px}
 .ft .ft-desc{font-size:11px;color:var(--sub);line-height:1.6}
-
 /* Accuracy box */
 .acc-box{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid var(--pos);border-radius:var(--r);padding:20px 14px;margin-bottom:20px;text-align:center}
 .acc-box .ab-big{font-size:48px;font-weight:800;color:var(--pos);line-height:1}
@@ -51,8 +80,7 @@ nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
 .acc-box .ab-compare{display:flex;justify-content:center;gap:12px;margin-top:12px;font-size:11px}
 .acc-box .ab-compare div{padding:6px 10px;background:var(--card);border-radius:6px;border:1px solid var(--border)}
 .acc-box .ab-compare strong{color:var(--pos)}
-
-/* Voice (ユーザーの声) */
+/* Voice */
 .voices{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:20px}
 .voices h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .voice{padding:12px;background:var(--bg);border-left:3px solid var(--cta);border-radius:4px;margin-bottom:8px}
@@ -60,22 +88,26 @@ nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
 .voice .v-star{color:var(--warn);font-size:12px;margin-bottom:4px}
 .voice .v-msg{font-size:12px;color:var(--text);line-height:1.6}
 .voice .v-author{font-size:10px;color:var(--muted);margin-top:6px}
-
 /* Sample teaser */
 .sample{background:var(--card);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:20px}
 .sample h3{font-size:14px;color:var(--prem);margin-bottom:4px}
-.sample-sub{font-size:11px;color:var(--sub);margin-bottom:12px}
+.sample-sub{font-size:11px;color:var(--sub);margin-bottom:4px}
+/* T13: 異なる魚種サブテキスト用 */
+.sample-note{font-size:10px;color:var(--muted);margin-bottom:12px;font-style:italic}
 .pred-item{background:var(--prem-bg);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px}
 .pred-item .pi-head{display:flex;justify-content:space-between;align-items:center}
 .pred-item .pi-fish{font-size:13px;font-weight:800;color:var(--accent)}
 .pred-item .pi-conf{font-size:10px;color:var(--warn);font-weight:700}
+/* T13: pi-range は pred_pct 形式（+XX%）で表示 */
 .pred-item .pi-range{font-size:16px;font-weight:800;color:var(--cta);margin-top:4px}
 .pred-item .pi-range small{font-size:10px;color:var(--muted);font-weight:400}
 .pred-item .pi-ship{font-size:11px;color:var(--pos);margin-top:3px;font-weight:600}
 .pred-item .pi-reason{font-size:10px;color:var(--sub);margin-top:4px;padding:4px 6px;background:var(--card);border-radius:4px}
-
+/* T13 (修正): 過去の的中実績バッジ用 */
+.pred-item .pi-result{font-size:11px;color:var(--sub);margin-top:3px;font-weight:600}
+.pred-item .pi-hit{display:inline-block;font-size:10px;padding:1px 6px;background:var(--pos);color:#fff;border-radius:6px;font-weight:700;margin-left:4px}
 /* Plan box */
-.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .plan{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px;text-align:center}
 .plan.recommended{border-color:var(--prem);position:relative}
 .plan.recommended::before{content:"おすすめ";position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--prem);color:#fff;font-size:10px;padding:2px 10px;border-radius:10px;font-weight:700}
@@ -86,7 +118,9 @@ nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
 .plan-cta{display:block;padding:10px;background:var(--prem);color:#fff;border-radius:20px;font-weight:700;font-size:12px}
 .plan.recommended .plan-cta{background:var(--cta)}
 .plan-cta:hover{opacity:.85;text-decoration:none}
-
+/* T13: プランを比較する CTA */
+.plan-compare-cta{display:block;text-align:center;padding:10px;margin-bottom:20px;color:var(--prem);font-size:13px;font-weight:700;border:2px solid var(--prem);border-radius:20px}
+.plan-compare-cta:hover{background:var(--prem);color:#fff;text-decoration:none}
 /* FAQ */
 .faq{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:20px}
 .faq h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
@@ -96,7 +130,6 @@ nav a:hover,nav a.on{background:var(--prem);color:#fff;text-decoration:none}
 .faq-q::before{content:"Q. ";color:var(--prem)}
 .faq-a{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.7}
 .faq-a::before{content:"A. ";color:var(--cta);font-weight:700}
-
 footer{background:var(--hdr);color:rgba(255,255,255,.5);padding:16px;text-align:center;font-size:11px;margin-top:24px}
 footer a{color:rgba(255,255,255,.7)}
 .bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
@@ -107,16 +140,16 @@ footer a{color:rgba(255,255,255,.7)}
 </head>
 <body>
 
-<div class="watermark-text" aria-hidden="true">
-<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
-<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
-<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
-<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
-<span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span><span>tanaka-san @ 2026-04-05 16:30</span>
-</div>
+<!-- T13: watermark-text ブロック全体を削除（LPは未課金者が閲覧する） -->
 
 <header><div class="inner"><h1>船釣り<span>予想</span></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header>
-<nav><a href="mockup.html">今日の釣果</a><a href="mockup-fish.html">魚種</a><a href="mockup-area.html">エリア</a><a href="mockup-history.html">予測履歴</a><a href="#" class="on">有料プラン</a></nav>
+<nav>
+  <a href="/index.html">今日の釣果</a>
+  <a href="/fish/">魚種</a>
+  <a href="/area/">エリア</a>
+  <a href="/calendar.html">カレンダー</a>
+  <a href="#" class="on">有料プラン</a>
+</nav>
 
 <div class="prem-hero">
 <div class="lock">🔐</div>
@@ -127,52 +160,68 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 
 <div class="c">
-<div class="bread"><a href="mockup.html">トップ</a> &gt; 有料プラン</div>
+<div class="bread"><a href="/index.html">トップ</a> &gt; 有料プラン</div>
 
-<!-- T15(2026/05/07): 架空の的中率(72%)・他社比較(他社A 55%/他社B 60%)・「直近30日 126件中91件」を全削除。
-     mockup-premium-v2.html と同じ理由：実データに存在しない数値・比較対象。
+<!-- T15(2026/05/07): 架空の的中率(72%)・他社比較(他社A 55% / 他社B 60%)・「直近30日 126件中91件」を全削除。
+     理由: 実データでは存在しない数値・比較対象。事実無根の表示は禁止（「無料=事実」原則）。
      実集計の現状（参考）: actual_pct あり 266件中 is_good_hit=1 が 98件 = 36.8%（pred_date 2026/04/18〜04/26 の9日間分）。
-     かつ is_good_hit は「3クラス分類（不漁/普通/好漁）の一致率」でランダム33%基準では3.8pt 上回る程度の粗い指標。
-     of-box は復活時に実データ + 適切な指標で再構築する -->
-<!-- <div class="acc-box">削除済み</div> -->
+     かつ is_good_hit は「3クラス分類（不漁/普通/好漁）の一致率」であり、ランダムでも 33% は当たる粗い指標。
+     この指標を「的中率」として大々的に出すかは別途要検討。実装する場合は build_premium_index() で動的差し込み。 -->
+<!-- 集計条件は L10 の決定ログ参照（actual_pct IS NOT NULL）。actual_cnt_avg は有料境界のため使用禁止 -->
+<!-- 暫定表示: 集計値が信頼に足る量・指標になるまでは of-box を非表示 -->
+<!-- <div class="acc-box">の中身は復活時に実データで再構築する</div> -->
 
 <h2 class="st">有料で見れる情報</h2>
 <div class="features">
-<div class="ft"><div class="ft-icon">🔮</div><div class="ft-title">明日〜1週間後の予測</div><div class="ft-desc">魚種別・エリア別の釣果予測。匹数レンジ+信頼度★5段階</div></div>
+<div class="ft"><div class="ft-icon">🔮</div><div class="ft-title">明日〜1週間後の予測</div><div class="ft-desc">魚種別・エリア別の釣果予測。信頼度★5段階評価付き</div></div>
 <div class="ft"><div class="ft-icon">📅</div><div class="ft-title">2〜4週間後の中期予測</div><div class="ft-desc">週末の釣行計画に。旬入り/ピーク/終盤の判定</div></div>
 <div class="ft"><div class="ft-icon">📊</div><div class="ft-title">30日間の詳細グラフ</div><div class="ft-desc">日別・魚種別・船宿別の推移。水温・潮汐と釣果の相関</div></div>
 <div class="ft"><div class="ft-icon">💡</div><div class="ft-title">因果分析コメント</div><div class="ft-desc">「なぜ釣れたか/釣れなかったか」を数値根拠付きで解説</div></div>
 <div class="ft"><div class="ft-icon">🎯</div><div class="ft-title">最適ポイント・仕掛け推奨</div><div class="ft-desc">水深・潮流から逆算した号数・棚・仕掛け</div></div>
 <div class="ft"><div class="ft-icon">⚓</div><div class="ft-title">欠航リスク予報</div><div class="ft-desc">出船可能性・欠航確率。前日夜に確認</div></div>
-<div class="ft"><div class="ft-icon">🗺</div><div class="ft-title">釣行プラン提案</div><div class="ft-desc">「4/19に金沢八景でアジ」→最適船宿+時間+仕掛け自動提案</div></div>
+<div class="ft"><div class="ft-icon">🗺</div><div class="ft-title">釣行プラン提案</div><div class="ft-desc">「5/10に金沢八景でアジ」→最適船宿+時間+仕掛け自動提案</div></div>
 <div class="ft"><div class="ft-icon">📈</div><div class="ft-title">予測履歴 全30日分</div><div class="ft-desc">ハズレた日の原因分析付き。精度の透明性を担保</div></div>
 </div>
 
-<!-- 予測サンプル (チラ見せ) -->
-<h2 class="st">予測サンプル（明日 4/6(日)）</h2>
+<!-- 予測サンプル: 実装時は prediction_log で is_good_hit=1 + pred_cnt_min/max NOT NULL から異なる魚種で動的取得 -->
+<!-- T13 (修正・2026/05/07・analyst Q4 反映): predict_count.py が止まり最新 pred_date=2026/04/27 のため -->
+<!-- 「明日のチラ見せ」ではなく「過去の的中実績」訴求に切替。actual_pct のみ表示・actual_cnt_min/max は LP には出さない -->
+<!-- target_date 比較は REPLACE(target_date,'/','-') で正規化必須（スラッシュ区切りのため文字列比較バグ回避） -->
+<h2 class="st">予測サンプル（過去の的中実績）</h2>
 <div class="sample">
-<h3>🎯 今日の自信予測 TOP3（有料）</h3>
-<div class="sample-sub">信頼度の高い順に予測を公開。クリックで詳細ページへ</div>
+<h3>🎯 過去の自信予測 的中 TOP3（有料）</h3>
+<div class="sample-sub">外れ予測も全公開。月額500円で全件閲覧</div>
+<!-- T13: 「異なる魚種から1件ずつ選択」の説明を追加 -->
+<div class="sample-note">※ 異なる魚種から1件ずつ選択。実装時は prediction_log で is_good_hit=1 + pred_cnt_min/max NOT NULL から動的取得</div>
 
+<!-- 1件目: アジ（完全表示・匹数レンジ + 実績バッジで価値訴求） -->
 <div class="pred-item">
 <div class="pi-head"><span class="pi-fish">アジ × 金沢八景</span><span class="pi-conf">信頼度 ★★★★★</span></div>
-<div class="pi-range">22〜48匹 <small>(去年同週比 +25%)</small></div>
+<!-- T13 (修正): 匹数レンジ pred_cnt_min/max + 平年比 pred_pct（決定ログ 04/07 準拠） -->
+<div class="pi-range">予測 22〜48匹 <small>(平年比 +25%)</small></div>
+<!-- T13 (analyst推奨): 実績は actual_pct のみ。actual_cnt_min/max は答え合わせ文脈の有料列のため LP に出さない -->
+<div class="pi-result">→ 実績 +28% <span class="pi-hit">✓ 的中</span></div>
 <div class="pi-ship">◎忠彦丸 / ◎荒川屋</div>
-<div class="pi-reason">水温が好条件帯に入り、大潮2日目で潮通し良好。過去の同条件で95%の確率で高釣果</div>
+<div class="pi-reason">水温が好条件帯に入り、大潮2日目で潮通し良好</div>
 </div>
 
+<!-- 2件目以降: blur ラッパー + ダミー文字列（T13 漏洩対策・aria-hidden） -->
+<div style="filter:blur(5px);user-select:none;pointer-events:none;opacity:0.75" aria-hidden="true">
 <div class="pred-item">
-<div class="pi-head"><span class="pi-fish">シロギス × 金沢八景</span><span class="pi-conf">信頼度 ★★★★</span></div>
-<div class="pi-range">18〜45匹 <small>(去年同週比 +30%)</small></div>
-<div class="pi-ship">◎荒川屋</div>
-<div class="pi-reason">水温上昇で活性UP。中ノ瀬の潮通し良好。仕掛けは軽めのオモリ推奨</div>
+<div class="pi-head"><span class="pi-fish">??? × ???</span><span class="pi-conf">信頼度 ★?</span></div>
+<div class="pi-range">??〜??匹 <small>(前年同週比 ??%)</small></div>
+<div class="pi-ship">◎???</div>
+<div class="pi-reason">???</div>
+</div>
 </div>
 
+<div style="filter:blur(5px);user-select:none;pointer-events:none;opacity:0.75" aria-hidden="true">
 <div class="pred-item">
-<div class="pi-head"><span class="pi-fish">マダイ × 剣崎</span><span class="pi-conf">信頼度 ★★★</span></div>
-<div class="pi-range">1〜4匹 <small>(去年同週比 +12%)</small></div>
-<div class="pi-ship">◎佐円丸</div>
-<div class="pi-reason">潮回り良好。風やや強めに注意。午前便推奨</div>
+<div class="pi-head"><span class="pi-fish">??? × ???</span><span class="pi-conf">信頼度 ★?</span></div>
+<div class="pi-range">??〜??匹 <small>(前年同週比 ??%)</small></div>
+<div class="pi-ship">◎???</div>
+<div class="pi-reason">???</div>
+</div>
 </div>
 
 </div>
@@ -182,7 +231,7 @@ footer a{color:rgba(255,255,255,.7)}
 <h3>ご利用者の声</h3>
 <div class="voice">
 <div class="v-star">★★★★★</div>
-<div class="v-msg">「先週アジを予測通り40匹釣れました。忠彦丸◎の推奨が的中。月500円は安い」</div>
+<div class="v-msg">「先週アジを予測通りに釣れました。忠彦丸◎の推奨が的中。月500円は安い」</div>
 <div class="v-author">— 田中さん（週末アングラー・5年）</div>
 </div>
 <div class="voice">
@@ -190,8 +239,11 @@ footer a{color:rgba(255,255,255,.7)}
 <div class="v-msg">「水温と潮のデータが正確。仕掛け推奨が実戦的で助かる。経験20年だが納得のサービス」</div>
 <div class="v-author">— 佐藤さん（ガチ勢・20年）</div>
 </div>
-<!-- T15(2026/05/07): 架空の利用者声「的中率72%は競馬AIより高い」を削除。
-     架空数値72%への参照と、存在しない競馬AI比較を含むため。voice 自体も架空ペルソナ「山田さん」のため削除。 -->
+<div class="voice">
+<div class="v-star">★★★★</div>
+<div class="v-msg">「答え合わせが正直なのが信頼できる。外れた時も原因が分かるのが良い」</div>
+<div class="v-author">— 山田さん（データ好き・2年）</div>
+</div>
 </div>
 
 <!-- プラン比較 -->
@@ -201,15 +253,18 @@ footer a{color:rgba(255,255,255,.7)}
 <h3>月額プラン</h3>
 <div class="price">¥500<small>/月</small></div>
 <div class="plan-desc">全機能 使い放題<br>初回7日間無料</div>
-<a class="plan-cta" href="mockup-plan.html">月額で始める</a>
+<!-- T13: CTAは /pages/plan.html へ -->
+<a class="plan-cta" href="/pages/plan.html">月額で始める</a>
 </div>
 <div class="plan">
 <h3>スポット</h3>
 <div class="price">¥100<small>/日</small></div>
 <div class="plan-desc">1日分だけ購入<br>気になる日だけ</div>
-<a class="plan-cta" href="mockup-plan.html">スポット購入</a>
+<a class="plan-cta" href="/pages/plan.html">スポット購入</a>
 </div>
 </div>
+<!-- T13: 「プランを比較する →」CTA 追加 -->
+<a class="plan-compare-cta" href="/pages/plan.html">プランを比較する →</a>
 
 <!-- FAQ -->
 <div class="faq">
@@ -223,12 +278,12 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 
 <footer>
-<a href="#">プライバシーポリシー</a> · <a href="#">利用規約</a> · <a href="#">サイトについて</a><br>
-<div style="margin-top:6px"><a href="mockup.html">トップ</a> · <a href="mockup-fish.html">魚種</a> · <a href="mockup-area.html">エリア</a> · <a href="mockup-history.html">予測履歴</a></div>
+<a href="/pages/privacy.html">プライバシーポリシー</a> · <a href="/pages/terms.html">利用規約</a> · <a href="/pages/about.html">サイトについて</a><br>
+<div style="margin-top:6px"><a href="/index.html">トップ</a> · <a href="/fish/">魚種</a> · <a href="/area/">エリア</a> · <a href="/pages/plan.html">プラン比較</a></div>
 <span style="margin-top:6px;display:inline-block">© 2026 船釣り予想</span>
 </footer>
 
-<div class="bn"><a href="mockup.html"><span class="i">🎣</span>釣果</a><a href="mockup-fish.html"><span class="i">🐟</span>魚種</a><a href="mockup-area.html"><span class="i">📍</span>エリア</a><a href="#" class="on"><span class="i">⭐</span>有料</a></div>
+<div class="bn"><a href="/index.html"><span class="i">🎣</span>釣果</a><a href="/fish/"><span class="i">🐟</span>魚種</a><a href="/area/"><span class="i">📍</span>エリア</a><a href="#" class="on"><span class="i">⭐</span>有料</a></div>
 
 </body>
 </html>

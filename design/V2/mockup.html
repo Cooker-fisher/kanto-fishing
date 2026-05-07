@@ -362,14 +362,14 @@ footer a{color:rgba(255,255,255,.7)}
 </div>
 
 <!-- 答え合わせ (1件フル公開 + 有料部分ブラー) -->
+<!-- T15(2026/05/07): 架空の「的中率 72%（18件中13件）」「4/3(木)の予測vs実績」「直近7日 OOXOOOX」を削除。
+     実装時は prediction_log から動的差し込み。指標定義（is_good_hit = 3クラス分類一致）も再検討対象。 -->
 <h2 class="st">一昨日の予測 答え合わせ</h2>
 <div class="ans-section">
 <div class="ans-header">
-<h3>4/3(木) の予測 vs 実績</h3>
-<span class="ans-accuracy">的中率 72%（18件中13件）</span>
+<h3>一昨日の予測 vs 実績</h3>
 </div>
-<div class="ans-dots">直近7日: <span style="color:var(--pos)">○○</span><span style="color:var(--neg)">×</span><span style="color:var(--pos)">○○○</span><span style="color:var(--neg)">×</span></div>
-<div class="ans-def">※ 的中 = 予測レンジ内に実績の中央値が収まった場合</div>
+<div class="ans-def">※ 詳細は実装後に表示</div>
 
 <!-- 1件フル公開（前年比のみ無料） -->
 <div class="ans-card">
