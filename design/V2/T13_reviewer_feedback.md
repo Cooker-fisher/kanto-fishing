@@ -113,9 +113,9 @@ is_good_hit=1 = 102件
 
 ## 📝 追加検討項目（3点・将来検討）
 
-### 検討1: plan.html の canonical 移行コスト
+### 検討1: plan.html 配置（リモート決定で解決済み）
 
-`/pages/plan.html` 配置は妥当だが、将来 `/premium/plan.html` へ統合した時に canonical 変更 + 旧URL 301 リダイレクトが発生。設計時点で `/premium/plan.html` にして `/pages/` に置かない判断もあり得る。決定ログ追記時に「将来 `/premium/plan.html` への移行可能性」を注記しておくと運用が楽。
+T13_designer_proposal v1.0-1.2 では `/pages/plan.html` を推奨していたが、リモート edf60cc5（別セッション先行コミット）で `/premium/plan.html` が既に本番化済み（`build_premium_plan_page()` で `docs/premium/plan.html` 生成）。canonical 移行コスト議論は無関係になり、本セッションは v1.3 でリモート決定に整合させる方針に切替。`/pages/plan.html` リテラルを4ファイルで `/premium/plan.html` に一括置換した。
 
 ### 検討2: LP description の動的化
 
