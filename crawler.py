@@ -10420,6 +10420,81 @@ def build_sitemap(data):
 
 
 # ============================================================
+# RSS feed.xml 自動生成（dlvr.it 等のRSS自動投稿サービス向け）
+# ============================================================
+def build_rss(catches):
+    """当日の釣果サマリーをRSSフィードとして出力 → docs/feed.xml
+
+    dlvr.it 無料プランがこのRSSをポーリングして X(Twitter) に自動投稿する。
+    guid を日付ベース (funatsuri-yoso-YYYY-MM-DD) にして、日替わりで新規投稿として扱われる。
+    """
+    from collections import defaultdict
+    now_jst = datetime.now(JST).replace(tzinfo=None)
+    today_str = now_jst.strftime("%Y/%m/%d")
+    today_iso = now_jst.strftime("%Y-%m-%d")
+    today_disp = f"{now_jst.month}/{now_jst.day}"
+
+    todays = [c for c in catches if c.get("date") == today_str]
+
+    fish_stats = defaultdict(lambda: {"ships": set(), "max_cnt": 0, "n": 0})
+    _SKIP = {"不明", "欠航"}
+    for c in todays:
+        for f in c.get("fish", []):
+            if f in _SKIP:
+                continue
+            fish_stats[f]["ships"].add(c.get("ship", ""))
+            fish_stats[f]["n"] += 1
+            cr = c.get("count_range") or {}
+            mx = cr.get("max") or 0
+            if mx > fish_stats[f]["max_cnt"]:
+                fish_stats[f]["max_cnt"] = mx
+
+    ranked = sorted(fish_stats.items(),
+                    key=lambda kv: (-kv[1]["max_cnt"], -kv[1]["n"], kv[0]))[:3]
+
+    if ranked:
+        top3_text = "・".join(f"{f}{s['max_cnt']}匹" for f, s in ranked)
+        ship_count = len({c.get("ship") for c in todays if c.get("ship")})
+        title = f"{today_disp} 関東船釣り釣果まとめ"
+        desc = (f"本日のTOP3: {top3_text}。"
+                f"報告{len(todays)}件・{ship_count}船宿。"
+                f"詳細→ {SITE_URL}/")
+    else:
+        title = f"{today_disp} 関東船釣り釣果"
+        desc = f"本日の釣果情報を更新中。詳細→ {SITE_URL}/"
+
+    pub_date = now_jst.strftime("%a, %d %b %Y %H:%M:%S +0900")
+
+    def _esc(s):
+        return (s.replace("&", "&amp;").replace("<", "&lt;")
+                  .replace(">", "&gt;").replace('"', "&quot;"))
+
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>船釣り予想 - 関東船釣り釣果情報</title>
+    <link>{SITE_URL}/</link>
+    <description>関東の船釣り釣果情報を毎日更新。マダイ・アジ・シーバスなど主要魚種の本日の釣果TOP3をお届け。</description>
+    <language>ja</language>
+    <pubDate>{pub_date}</pubDate>
+    <lastBuildDate>{pub_date}</lastBuildDate>
+    <item>
+      <title>{_esc(title)}</title>
+      <link>{SITE_URL}/</link>
+      <description>{_esc(desc)}</description>
+      <pubDate>{pub_date}</pubDate>
+      <guid isPermaLink="false">funatsuri-yoso-{today_iso}</guid>
+    </item>
+  </channel>
+</rss>"""
+
+    with open(os.path.join(WEB_DIR, "feed.xml"), "w", encoding="utf-8") as f:
+        f.write(xml)
+    top_label = ranked[0][0] if ranked else "(釣果なし)"
+    print(f"feed.xml: 1 item (TOP: {top_label}) → docs/")
+
+
+# ============================================================
 # V2 共通インフラ: style.css / main.js / page構造
 # ============================================================
 
@@ -11311,13 +11386,14 @@ def main():
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
+    build_rss(valid_catches)
     build_premium_plan_page()
     print(f"\n=== 完了 ===")
     _today_label = f"当日: {len(today_all)} 件" if today_all else f"当日0件→全件フォールバック: {len(all_catches)} 件"
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
     print(f"出力: {_today_label}（catches.json）")
     print(f"エラー: {errors or 'なし'}")
-    print(f"出力: docs/ (index.html / fish/*.html / area/*.html / fish_area/*.html / sitemap.xml / premium/plan.html / CNAME)")
+    print(f"出力: docs/ (index.html / fish/*.html / area/*.html / fish_area/*.html / sitemap.xml / feed.xml / premium/plan.html / CNAME)")
 
 if __name__ == "__main__":
     main()
