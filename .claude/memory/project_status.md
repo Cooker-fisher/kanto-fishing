@@ -1,46 +1,79 @@
 現行バージョン: crawler.py v5.28 / predict_count.py（Forecast API統合済み・FAST変数horizonフィルタ実装済み）
-最終更新: 2026/05/08
-最新コミット: 3eebfe53（Phase B-α' size 実測幅ベースレンジ生成・同一定義 +43.6pt 改善確定）
+最終更新: 2026/05/08 夜
+最新コミット: ddf2c396（Phase B-α' 完了記録・PIPELINE.md / project_status.md 更新）
 
 ---
 
-## ✅ 直近完了（2026/05/08 後半・engineer）
+## ✅ 直近完了（2026/05/08 夜・pm）
 
-### Phase B-α' コミット + SQL クリーンアップ（コミット 3eebfe53）
+### Phase B-α' 全コンボ再実行・採用確定（補遺8 追記）
 
-**変更ファイル:**
-- `combo_deep_dive.py`: P20/P80 比率列追加（avg_size_min / avg_size_max・無次元比率）
-- `predict_count.py`: size_lo/hi を pred_avg × 旬別比率に変更（旧 ±size_mae 廃止）
-- `plan_size_2026-05-08.md`: 改訂版（P20 採用）
-- `90_決定ログ.md`: 補遺7 追記
+**実行**: 17:26 JST 開始 → 19:36 JST 完了・55/55 OK・130分52秒（`run_full_deepdive.py --workers 4 --reset-best`）
 
-**SQL クリーンアップ:**
-- combo_range_backtest から metric='size_i' 7 行削除
-- 残存 metric: cnt=2033 / size=1267 / kg=721
+**全コンボ適用後 backtest（H=0, n>=30, 181コンボ）:**
+
+| 指標 | Phase A 同一定義（旧）| Phase B-α' 全（新）| 改善幅 |
+|---|---|---|---|
+| **size promise_break P50** | 98.4% | **31.25%** | **+67.2pt** |
+| size coverage 平均 | 高い | 0.40 | 大幅低下 |
+| size over_expect 平均 | 0.02 | 0.32 | +30pt 増加 |
+| size winkler 平均 | 5.8 | 23.2 | +17.4 増加 |
+
+`combo_decadal.avg_size_min/max` 充足率: 81.4%（6598/8105）。残り 18.6% は旬別 n<10 で全期間グローバル比率にフォールバック（仕様通り）。
+
+**判定: A 採用確定**
+- 同一定義基準 +67.2pt は plan_size 期待値（+30pt）の **2.24倍改善**
+- 副作用（winkler/coverage/over_expect 悪化）は数学的必然・補遺6/7 で許容ドメイン確定済み
+- pb 30-50% 帯張り付き 98コンボ（54.1%）は pred_avg と actual_avg の系統的乖離が原因 → P20→P10 への比率変更では救えない・中央予測モデル別軸の改善要
+
+**詳細**: `analysis/V2/analysis-improvement/90_決定ログ.md` 補遺8
 
 ---
 
 ## ★ 次セッションでやること（優先度順）
 
-### 1. 全コンボ再実行の結果確認（Phase B-α' 適用後）
-- `python analysis/V2/methods/run_full_deepdive.py --workers 4`（約4時間）
-- ログ: `analysis/V2/results/run_full_deepdive_YYYY-MM-DD.log`
-- 確認 SQL:
-  ```sql
-  SELECT metric, horizon, COUNT(*), AVG(promise_break_rate), AVG(coverage)
-  FROM combo_range_backtest WHERE n >= 30
-  GROUP BY metric, horizon ORDER BY metric, horizon;
-  ```
-- 期待: size promise_break P50 53.0% → 大幅改善
+### 1. Phase B-β 方向性確定（最優先・要ユーザー判断）
 
-### 2. Phase B-β（cnt min/max 独立予測復活）の Plan 策定
-- 全コンボ再実行結果で着手判断
-- size の実測幅ベース設計を cnt にも適用するか検討
-- 撤回基準を先に確定（独立モデル化前例 04/13 撤回参照）
+引き継ぎノート文言「cnt min/max 独立予測復活」は `plan_hit_rate.md`（11:11 JST 作成）の旧設計を引き継いだもの。Phase B-α' 経験（独立モデル → 撤回 → 実測幅ベース）を踏まえた選択肢:
 
-### 3. Phase C 実装（Phase B 後）
-- 加重平均 composite_hit_rate（cnt 0.6 / size 0.3 / kg 0.1）
-- kg NULL 率 70% → 実態は 0.667/0.333 に再正規化されるケース多
+| 案 | 内容 | リスク評価 | 期待効果 |
+|---|---|---|---|
+| **B-β-1** | バックテストから ratio override 撤去（独立予測評価）| 04/13 撤回パターン高リスク | 不明 |
+| **B-β-2'** | 実測幅ベース cnt 版（Phase B-α' 同型・P50 → P20/P80）| 低リスク | 限定的（P50=6.52% 既に良好）|
+| **B-β-3** | Phase C 直行（cnt は既に良好なので保留）| 無リスク | 進捗最大化 |
+
+**現状値（H=0, n>=30, 290コンボ）:**
+- cnt promise_break P50 = **6.52%**（既に十分低い）
+- cnt coverage 平均 = 0.79 / over_expect 平均 = 0.32
+
+### 2. 表示仕様の avg 削除（補遺3 確定済み・未実装）
+
+- `crawler.py` forecast HTML の `（avg X匹/cm/kg）` 表示を削除
+- `predict_count.py` から avg 系出力をユーザー表示用 dict に含めない
+- 補遺3 で「min/max のみ・avg は出さない」確定済み
+
+### 3. Phase C 実装（composite_hit_rate）
+
+- 加重平均: cnt 0.6 / size 0.3 / kg 0.1
+- kg NULL 率 70% で実態は 0.667/0.333 に再正規化されるケース多
+- Phase B-α' で size 改善確定したので集計に進める段階
+
+### 4. kg 改善 Plan（kg promise_break P50 = 55.56% 未改善）
+
+- size と同じ実測幅ベースを kg にも適用するか検討
+- ただし NULL 率 70% で combo 数 103 と少なく、学習データ不足リスク
+
+### 5. 30-50% 帯張り付き 98コンボ救済（中央予測モデル改善）
+
+- pred_avg と actual_avg の系統的乖離が原因
+- 中央予測モデル（size_avg）の精度向上が本質的解決
+- Phase B-α' とは別軸の Plan 化が必要
+
+### 6. ddf2c396 以降の未コミット変更
+
+- 補遺8 追記（90_決定ログ.md）
+- project_status.md 更新（本ファイル）
+- engineer に正式コミット依頼が必要
 
 ---
 
