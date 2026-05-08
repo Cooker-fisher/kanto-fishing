@@ -1255,7 +1255,11 @@ def load_records(fish, ship_filter=None):
                     "cnt_min": _float(row.get("cnt_min")),
                     "cnt_max": _float(row.get("cnt_max")),
                     "size_avg": size_avg,
+                    "size_min": sz_min,   # range_backtest の coverage 評価用（actual_size_min）
+                    "size_max": sz_max,   # range_backtest の coverage 評価用（actual_size_max）
                     "kg_avg":  kg_avg,
+                    "kg_min":  kg_min,    # range_backtest の coverage 評価用（actual_kg_min）
+                    "kg_max":  kg_max,    # range_backtest の coverage 評価用（actual_kg_max）
                     "point":           point_place1,
                     "point2":          row.get("point_place2", "").strip(),
                     "point3":          row.get("point_place3", "").strip(),
@@ -2877,6 +2881,15 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     MIN_TEST_N = 15   # テストセット最低件数（季節魚は年3-4ヶ月しか釣れない）
     MIN_MONTHS = 6    # バックテスト実施の最低月数。これ未満は leave-one-month-out CV が機能しない
     WAVE_CLAMP_CANDIDATES  = [1.0, 1.5, 2.0, 2.5, 3.0]
+    # range_backtest で _range_by_key に格納する metric（METRICS_LIST のサブセット）
+    # size_min/size_max/kg_min/kg_max の独立モデルは Phase B まで未実装のため含まない
+    # actual_size_min/max/kg_min/max は "_size_min_act" 等の補助キーで別途格納する
+    _RANGE_BACKTEST_CORE = (
+        "cnt_min", "cnt_max", "cnt_avg",
+        "size_avg", "kg_avg",
+    )
+    # size/kg の range_backtest で actual_min/max が非 NULL の行だけを有効サンプルとする最低数
+    MIN_N_RANGE = MIN_N_COMBO  # 現状 30 件（MIN_N_COMBO と共通）
 
     months = sorted(set(r["date"][:7] for r in records))
 
@@ -3312,12 +3325,26 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                     # BL-2: 評価用（上で計算済みの _bl2_p を再利用）
                     bl2_preds[met][H].append(_bl2_p)
                     bl2_acts[met][H].append(act)
-                    # range_backtest 用アライメント（cnt_max/cnt_min/cnt_avg）
-                    if met in ("cnt_max", "cnt_min", "cnt_avg"):
+                    # range_backtest 用アライメント（cnt / size / kg の 3メトリック）
+                    # cnt: cnt_min(pred,act) / cnt_max(pred,act) / cnt_avg(pred,act) を格納
+                    # size: size_avg(pred,act_avg) を格納し、actual_size_min/max も追記
+                    # kg:  kg_avg(pred,act_avg) を格納し、actual_kg_min/max も追記
+                    # size_min/size_max の独立モデルは Phase B まで未実装のため、
+                    # Phase A では size_avg pred を lo/hi の基準値とし actual_min/max と比較する
+                    # _RANGE_BACKTEST_CORE は関数冒頭で定義済み（ループ外定数）
+                    if met in _RANGE_BACKTEST_CORE:
                         _rk = (test_month, r["date"])
                         if _rk not in _range_by_key[H]:
                             _range_by_key[H][_rk] = {}
                         _range_by_key[H][_rk][met] = (pred, act)
+                        # size_avg ループ時に actual_size_min / actual_size_max も追記
+                        if met == "size_avg":
+                            _range_by_key[H][_rk]["_size_min_act"] = r.get("size_min")
+                            _range_by_key[H][_rk]["_size_max_act"] = r.get("size_max")
+                        # kg_avg ループ時に actual_kg_min / actual_kg_max も追記
+                        elif met == "kg_avg":
+                            _range_by_key[H][_rk]["_kg_min_act"] = r.get("kg_min")
+                            _range_by_key[H][_rk]["_kg_max_act"] = r.get("kg_max")
                     # star_backtest 用（cnt_avg × 回遊魚のみ）
                     if met == "cnt_avg" and fish in KAIYU_FISH:
                         _star_by_key[H][(test_month, r["date"])] = (pred, act, base)
@@ -3456,50 +3483,130 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     hist_avg_min   = sum(_hist_min_vals) / len(_hist_min_vals) if _hist_min_vals else 1.0
     bowzu_threshold = hist_avg_min * 0.3
 
+    # ── range_backtest: 3メトリック（cnt / size / kg）対応 ───────────────────────────
+    #
+    # cnt（独立モデルあり）:
+    #   pred_hi = cnt_max 予測（独立モデル）, pred_lo = cnt_min 予測（独立モデル）
+    #   ref = actual_avg, bowzu_act = actual_min（cnt_min の act 側）
+    #   ボウズ判定: actual_min=0 かつ pred_lo > bowzu_threshold
+    #
+    # size（独立モデルなし・Phase A 時点）:
+    #   pred_lo = pred_hi = size_avg 予測（1本の点予測）
+    #   ref = actual_size_avg
+    #   比較対象: pred_lo ↔ actual_size_min, pred_hi ↔ actual_size_max
+    #   → 「思ったより小さい = 外れ」体感（90_決定ログ 2026/05/08 補遺 #3 確定）
+    #   → promise_break = actual_size_avg < pred_lo（= pred）で評価
+    #   → coverage = actual_size_min <= pred <= actual_size_max（実測レンジが予測を包む）
+    #   → ボウズ概念なし（NULL 保存）
+    #
+    # kg（独立モデルなし・Phase A 時点）:
+    #   size と同設計（kg_avg 予測を pred_lo = pred_hi として使用）
+    #
+    # Winkler 非対称スコア（共通関数）
+    def _winkler_range(pl, ph, aa):
+        width = ph - pl
+        if aa < pl:   return width + (pl - aa) * 3.0   # 約束割れ: 3倍ペナルティ
+        elif aa > ph: return width + (aa - ph) * 0.5   # 嬉しい誤算: 0.5倍（軽い）
+        else:         return width                       # 範囲内: 幅のみ
+
     range_bt_data = []
     lines.append("\n  ─ レンジ評価（actual_avg vs [pred_lo, pred_hi]）─")
     lines.append(
-        f"  {'ホライズン':>10}  {'約束割れ%':>9}  {'期待超え%':>9}  {'Coverage':>8}  "
-        f"{'ボウズ%':>7}  {'Winkler':>8}  {'n':>4}"
+        f"  {'metric':>6}  {'ホライズン':>10}  {'約束割れ%':>9}  {'期待超え%':>9}  "
+        f"{'Coverage':>8}  {'ボウズ%':>7}  {'Winkler':>8}  {'n':>4}"
     )
-    lines.append("  " + "-"*78)
+    lines.append("  " + "-"*86)
+
+    # ── cnt メトリック（独立モデル: cnt_min / cnt_max / cnt_avg） ──────────────
     for H in HORIZONS:
         rows_r = []
         for _rk, d in _range_by_key[H].items():
             if "cnt_max" in d and "cnt_min" in d and "cnt_avg" in d:
                 pred_hi, _       = d["cnt_max"]
-                pred_lo, act_min = d["cnt_min"]
-                _,       act_avg = d["cnt_avg"]
+                pred_lo, act_min = d["cnt_min"]   # act_min = actual_cnt_min（ボウズ判定用）
+                _,       act_avg = d["cnt_avg"]   # ref = actual_avg
                 rows_r.append((pred_hi, pred_lo, act_avg, act_min))
         if len(rows_r) < MIN_N_COMBO:
             continue
         n_r = len(rows_r)
-
-        # PRIMARY: 約束割れ率（actual_avg < pred_lo）= 解約リスク最大
-        promise_break_rate = sum(1 for ph, pl, aa, ami in rows_r if aa < pl) / n_r
-        # SECONDARY: 期待させすぎ率（pred_hi / actual_avg > 2.5）
-        over_expect_rate   = sum(1 for ph, pl, aa, ami in rows_r
+        promise_break_rate = sum(1 for ph, pl, aa, alo in rows_r if aa < pl) / n_r
+        over_expect_rate   = sum(1 for ph, pl, aa, alo in rows_r
                                  if aa > 0 and ph / aa > 2.5) / n_r
-        # Coverage: actual_avg ∈ [pred_lo, pred_hi]
-        coverage           = sum(1 for ph, pl, aa, ami in rows_r if pl <= aa <= ph) / n_r
-        # ボウズ率: actual_min=0 かつ pred_lo が閾値より高い
-        bowzu_rate         = sum(1 for ph, pl, aa, ami in rows_r
-                                 if ami == 0 and pl > bowzu_threshold) / n_r
-        # Winkler 非対称スコア
-        def _winkler_range(pl, ph, aa):
-            width = ph - pl
-            if aa < pl:   return width + (pl - aa) * 3.0   # 約束割れ: 3倍ペナルティ
-            elif aa > ph: return width + (aa - ph) * 0.5   # 嬉しい誤算: 0.5倍（軽い）
-            else:         return width                       # 範囲内: 幅のみ
-        winkler = sum(_winkler_range(pl, ph, aa) for ph, pl, aa, ami in rows_r) / n_r
-
+        coverage           = sum(1 for ph, pl, aa, alo in rows_r if pl <= aa <= ph) / n_r
+        bowzu_rate         = sum(1 for ph, pl, aa, alo in rows_r
+                                 if alo == 0 and pl > bowzu_threshold) / n_r
+        winkler = sum(_winkler_range(pl, ph, aa) for ph, pl, aa, alo in rows_r) / n_r
         lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
         lines.append(
-            f"  {lh:>12}  {promise_break_rate:>8.1%}  {over_expect_rate:>8.1%}  "
-            f"{coverage:>7.1%}  {bowzu_rate:>6.1%}  {winkler:>7.2f}  {n_r:>4}"
+            f"  {'cnt':>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
+            f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {bowzu_rate:>6.1%}  "
+            f"{winkler:>7.2f}  {n_r:>4}"
         )
-        range_bt_data.append((H, promise_break_rate, over_expect_rate, coverage,
-                               bowzu_rate, winkler, n_r))
+        range_bt_data.append(("cnt", H, promise_break_rate, over_expect_rate,
+                               coverage, bowzu_rate, winkler, n_r))
+
+    # ── size / kg メトリック（Phase A: 単一モデル pred ± 実測レンジで評価） ──────
+    # size: _range_by_key["size_avg"] = (pred, actual_size_avg)
+    #       "_size_min_act" / "_size_max_act" = actual_size_min / actual_size_max
+    # kg:   _range_by_key["kg_avg"]   = (pred, actual_kg_avg)
+    #       "_kg_min_act" / "_kg_max_act" = actual_kg_min / actual_kg_max
+    #
+    # 分母統一（必須修正 1）:
+    #   size_min/size_max の NULL 率 38.8%・kg NULL 率 70.2% のため、
+    #   rows_valid（ami/amx 両方非 NULL の行）を 1 度だけ集計し、
+    #   promise_break / over_expect / coverage / winkler の全指標の分母 n_valid に統一する。
+    #   NULL 行を含む rows_r ベースで計算すると coverage だけ分母が異なり指標間整合性が崩れる。
+    #
+    # 各指標の定義（size/kg 共通・cnt と方向統一）:
+    #   promise_break = actual_avg < pred（予測より小さかった = 外れ・最悪ケース）
+    #   over_expect   = pred / actual_avg > 1.5（予測が実測の 1.5 倍超 = 期待させすぎ率）
+    #     ※ cnt と方向統一: cnt は pred_hi/actual_avg > 2.5、size/kg は点予測のため閾値小さめ
+    #     ※ 「爆釣率（actual > pred）」ではない。解約リスク軽症ケースを測る KPI 設計
+    #   coverage      = actual_min <= pred <= actual_max（実測レンジが予測点を包む）
+    #   winkler       = pl=ph=pred の幅ゼロ点予測版（cm または kg 単位・cnt の区間幅ベースと比較不可）
+    #   bowzu_rate    = None（ボウズ概念は cnt のみ）
+    for metric_label, avg_key, min_act_key, max_act_key in [
+        ("size", "size_avg", "_size_min_act", "_size_max_act"),
+        ("kg",   "kg_avg",   "_kg_min_act",   "_kg_max_act"),
+    ]:
+        for H in HORIZONS:
+            # rows_r: pred/act_avg が非 NULL の全行（サンプル数確認用）
+            rows_r = []
+            for _rk, d in _range_by_key[H].items():
+                if avg_key not in d:
+                    continue
+                pred, act_avg = d[avg_key]
+                if act_avg is None or pred is None:
+                    continue
+                act_min = d.get(min_act_key)
+                act_max = d.get(max_act_key)
+                rows_r.append((pred, act_avg, act_min, act_max))
+            # rows_valid: ami/amx 両方非 NULL の行のみ（全指標の分母統一）
+            rows_valid = [(p, aa, ami, amx) for p, aa, ami, amx in rows_r
+                          if ami is not None and amx is not None]
+            n_valid = len(rows_valid)
+            if n_valid < MIN_N_RANGE:
+                continue
+            # 全指標を rows_valid / n_valid で計算（分母統一）
+            # over_expect_rate: cnt と方向統一（pred が actual を倍率超過 = 期待させすぎ率）
+            #   cnt: pred_hi/actual > 2.5、size/kg: pred/actual > 1.5（点予測のため閾値小さめ）
+            promise_break_rate = sum(1 for p, aa, ami, amx in rows_valid if aa < p) / n_valid
+            over_expect_rate   = sum(1 for p, aa, ami, amx in rows_valid
+                                     if aa > 0 and p / aa > 1.5) / n_valid
+            coverage           = sum(1 for p, aa, ami, amx in rows_valid
+                                     if ami <= p <= amx) / n_valid
+            bowzu_rate         = None  # size / kg はボウズ概念なし
+            winkler            = sum(_winkler_range(p, p, aa)
+                                     for p, aa, ami, amx in rows_valid) / n_valid
+
+            lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
+            lines.append(
+                f"  {metric_label:>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
+                f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {'N/A':>6}  "
+                f"{winkler:>7.2f}  {n_valid:>4}"
+            )
+            range_bt_data.append((metric_label, H, promise_break_rate, over_expect_rate,
+                                   coverage, bowzu_rate, winkler, n_valid))
 
     # ── star_backtest: 回遊魚★評価バックテスト ───────────────────────────────────
     # ★割り当て: コンボ固有の予測値分位数（P80/P60/P40/P20）で切る
@@ -4258,22 +4365,30 @@ def save_point_wx_params(fish, ship, point, wx_params_data, modal_lat=None, moda
 
 
 def save_range_backtest(fish, ship, range_bt_data):
-    """レンジ評価指標を combo_range_backtest テーブルに保存
+    """レンジ評価指標を combo_range_backtest テーブルに保存（Phase A: 3メトリック対応）
+
+    metric 列: "cnt" / "size" / "kg"
     PRIMARY KPI: 約束割れ率 = actual_avg < pred_lo（期待させといてダメだった）→ 解約リスク最大
     SECONDARY:   期待させすぎ率 = pred_hi / actual_avg > 2.5
     Coverage:    pred_lo <= actual_avg <= pred_hi の割合
-    ボウズ率:    actual_min=0 かつ pred_lo > hist_avg_min*0.3
+    ボウズ率:    cnt のみ。actual_min=0 かつ pred_lo > hist_avg_min*0.3。size/kg は NULL
     Winkler:     非対称スコア（約束割れ=3倍ペナルティ / 嬉しい誤算=0.5倍 / 範囲内=幅のみ）
     """
     if not range_bt_data:
         return
     conn = _open_ana()
 
-    # スキーマ変更検知：旧列(max_over_rate)があればDROPして再作成
+    # スキーマ変更検知: metric 列がなければ DROP → CREATE（旧スキーマ・旧 max_over_rate も同様）
     existing_cols = {row[1] for row in conn.execute(
         "PRAGMA table_info(combo_range_backtest)"
     ).fetchall()}
-    if existing_cols and "max_over_rate" in existing_cols:
+    needs_recreate = (
+        existing_cols and (
+            "metric" not in existing_cols          # Phase A 追加列がない
+            or "max_over_rate" in existing_cols    # 旧列が残っている
+        )
+    )
+    if needs_recreate:
         conn.execute("DROP TABLE combo_range_backtest")
         conn.commit()  # DDL後に明示的 commit（並列実行時の一時消滅を防ぐ）
 
@@ -4281,27 +4396,28 @@ def save_range_backtest(fish, ship, range_bt_data):
         CREATE TABLE IF NOT EXISTS combo_range_backtest (
             fish               TEXT,
             ship               TEXT,
+            metric             TEXT,     -- "cnt" / "size" / "kg"
             horizon            INTEGER,
             promise_break_rate REAL,
             over_expect_rate   REAL,
             coverage           REAL,
-            bowzu_rate         REAL,
-            winkler            REAL,
-            n                  INTEGER,
+            bowzu_rate         REAL,     -- cnt のみ非 NULL。size/kg は NULL（ボウズ概念なし）
+            winkler            REAL,     -- ⚠ 単位混在: cnt は区間幅ベース（匹）、size/kg は点予測ペナルティ距離（cm or kg）。メトリック間直接比較不可
+            n                  INTEGER,  -- 有効サンプル数。size/kg は actual_min/max 両方非 NULL の行数
             updated_at         TEXT,
-            PRIMARY KEY (fish, ship, horizon)
+            PRIMARY KEY (fish, ship, metric, horizon)
         )
     """)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rows = [
-        (fish, ship, H, pbr, oer, cov, bzr, wkl, n, now)
-        for H, pbr, oer, cov, bzr, wkl, n in range_bt_data
+        (fish, ship, metric, H, pbr, oer, cov, bzr, wkl, n, now)
+        for metric, H, pbr, oer, cov, bzr, wkl, n in range_bt_data
     ]
     conn.executemany("""
         INSERT OR REPLACE INTO combo_range_backtest
-        (fish, ship, horizon, promise_break_rate, over_expect_rate, coverage,
+        (fish, ship, metric, horizon, promise_break_rate, over_expect_rate, coverage,
          bowzu_rate, winkler, n, updated_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)
     """, rows)
     conn.commit()
     conn.close()

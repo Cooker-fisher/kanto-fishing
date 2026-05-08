@@ -14,6 +14,32 @@
 - 評価軸: min/max 独立予測に戻す（04/13 ratio 法撤回）
 - size/kg: 加重平均 cnt:0.6 / size:0.3 / kg:0.1
 
+### ⚠ 出力形式の絶対制約（2026/05/08 補遺2 で明記）
+
+**出力は「単一レンジ + 中央値」の3値のみ。重ねレンジ禁止。**
+
+| 要素 | 出力形式 | 禁止例 |
+|---|---|---|
+| 数 | `min匹 〜 max匹、avg匹`（3値・レンジ1つ）| `min: A匹〜B匹` のように pred_lo/pred_hi 各々に区間予測をつけない |
+| 型 | `min cm 〜 max cm、avg cm`（3値・レンジ1つ）| 同上 |
+| 重 | `min kg 〜 max kg、avg kg`（3値・レンジ1つ）| 同上 |
+
+**「min/max 独立予測」が指す範囲（誤解防止のため厳密に定義）:**
+
+- 内部学習: cnt_min と cnt_max を**別々の回帰モデル**で学習（独立）
+- 内部出力: 各モデルから**点予測値1つ**を取得（cnt_min_pred = 単一スカラー / cnt_max_pred = 単一スカラー）
+- ユーザー表示: `cnt_min_pred 〜 cnt_max_pred` の**1本のレンジ**として提示
+- 中央値: avg（cnt_avg モデルの点予測値1つ）
+
+**実装で禁止する事項:**
+
+1. cnt_min に予測区間（confidence interval / prediction interval）を被せて `[lo_of_lo, hi_of_lo]` を出力する
+2. cnt_max に同様の予測区間を被せて `[lo_of_hi, hi_of_hi]` を出力する
+3. レンジを階層化する（meta-interval）
+4. min と max を別々のレンジ・別カードで表示する
+
+参照: CLAUDE.md「予測の出力形式: 数要素　min匹～max匹、ave匹、型要素（cm kgはデータ次第）min cm～max cm、ave cm、minkg～maxkg、avekg」
+
 ### 04/13 ratio 法の撤回経緯
 
 04/13 実装当時の判断:

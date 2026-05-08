@@ -268,7 +268,7 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 | combo_keywords | 1,513 | kanso_rawキーワード相関 |
 | combo_deep_params | 93,916 | 気象×釣果の回帰パラメータ（50魚種） |
 | combo_wx_params | 8,434 | 採用気象因子・係数 |
-| combo_range_backtest | 1,624 | cnt_min/max予測レンジ精度 |
+| combo_range_backtest | 1,624→最大5,000程度 | cnt/size/kg 3メトリックのレンジ精度（PK: fish, ship, metric, horizon。Phase A 拡張・2026/05/08）|
 | combo_star_backtest | 77 | 回遊魚★チャンス評価バックテスト |
 | combo_thresholds | 4,720 | 欠航閾値・ベースライン閾値 |
 | combo_monthly | 1,909 | 月別集計 |
@@ -466,3 +466,9 @@ crawler.py 実行時
   - `pressure_delta_48h` が WX_FACTORS 未登録で N=0 だった不具合を修正
   - `sss_delta_7d` は NULL 回避のため専用 nearest クエリ `_get_sss_nearest()` を新設
   - アジ×こなや丸で単体動作確認済み（deep_params N=4・H=0 wMAPE 33.7%）
+
+### 2026/05/08 後半
+- 「商品的中率」KPI 主指標を `1 - promise_break_rate`（"期待を下回らなかった率"）に確定
+- 04/13 の min/max ratio 法を撤回（Phase B で独立予測復活予定）
+- 出力形式の絶対制約を明記: 「単一レンジ + 中央値」の3値のみ・重ねレンジ禁止
+- combo_range_backtest を `(fish, ship, metric, horizon)` 4列 PK に拡張（cnt/size/kg 3メトリック対応）
