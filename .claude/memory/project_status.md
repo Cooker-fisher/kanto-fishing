@@ -66,12 +66,17 @@
   ```
 - size/kg の promise_break_rate 実態を Phase B 防御策の判断材料に
 
-### 2. Phase B-α 実装着手（size 単独先行・段階分割確定）
-- 着手前必読: `plan_size_2026-05-08.md`・`diag_size_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 後半・補遺2・補遺3・補遺4・補遺5」
-- **【段階分割】** Phase B 全体一括ではなく size 先行（補遺5）→ 成功後に Phase B-β（cnt 拡張）
-- size 用防御策: floor=0.55 / clamp=1.0（cnt 用 0.3/2.0 とは異なる・流用厳禁）
-- 撤回基準（事前明記）: BL-2 勝率<50% or promise_break改善<20pt or wMAPE 30%以上悪化
-- 詳細スコープ・実装手順は `plan_size_2026-05-08.md` 参照
+### 2. Phase B-α' 実装着手（実測幅ベース・新設計・補遺6）
+- 着手前必読: `plan_size_2026-05-08.md`（改訂版）・`diag_size_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 補遺2・補遺3・補遺5・補遺6」
+- **【設計変更】** Phase B-α（size_min/max 独立モデル + 防御策）は 1 コンボ悪化で撤回（補遺6）
+  - 真の解は「中央予測モデル維持 + 実測幅ベースのレンジ生成」
+  - ユーザードメイン知識: size_max は「お化け」で重要度低 → 非対称設計
+- 実装内容:
+  - combo_decadal に avg_size_min / avg_size_max（外れ値 P95 除外）列追加
+  - predict_count.py の size_lo/hi を `pred_avg ± (旬別実測幅)` に変更
+  - 防御策 floor / clamp は **削除**（実測ベースで不要）
+- 撤回基準（更新）: promise_break 改善<30pt or coverage<80% に悪化
+- 期待効果: promise_break 53% → 10〜15%（数式根拠あり）
 - **【拡張理由】** size promise_break 53% は size_avg=(min+max)/2 の構造問題。ポイント補正は既存の section_backtest_rolling 内で動いており、追加効果は実測されない（2026/05/08 診断で確定）
 - 変更ファイル:
   - `combo_deep_dive.py` L3285-3290 の ratio override を削除（cnt 用）
