@@ -1069,20 +1069,20 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     # avg_size_min / avg_size_max は Phase B-α' で追加（旬別実測幅ベースのレンジ生成用）
     row = conn.execute(
         "SELECT avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max, "
-        "avg_size_min, avg_size_max FROM combo_decadal "
+        "avg_size_min, avg_size_max, avg_kg_min, avg_kg_max FROM combo_decadal "
         "WHERE fish=? AND ship=? AND decade_no=?",
         (fish, ship, dekad)
     ).fetchone()
 
     if row:
         avg_cnt, avg_size, avg_kg, n_dekad, avg_cnt_min, avg_cnt_max, \
-            avg_size_min_dec, avg_size_max_dec = row
+            avg_size_min_dec, avg_size_max_dec, avg_kg_min_dec, avg_kg_max_dec = row
         fallback = False
     else:
         # 最近傍旬（±3以内）にフォールバック
         near = conn.execute(
             "SELECT decade_no, avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max, "
-            "avg_size_min, avg_size_max "
+            "avg_size_min, avg_size_max, avg_kg_min, avg_kg_max "
             "FROM combo_decadal "
             "WHERE fish=? AND ship=? ORDER BY ABS(decade_no - ?) LIMIT 1",
             (fish, ship, dekad)
@@ -1092,7 +1092,22 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         avg_cnt, avg_size, avg_kg, n_dekad = near[1], near[2], near[3], near[4]
         avg_cnt_min, avg_cnt_max = near[5], near[6]
         avg_size_min_dec, avg_size_max_dec = near[7], near[8]
+        avg_kg_min_dec, avg_kg_max_dec = near[9], near[10]   # Phase B-β-4 追加
         fallback = True
+
+    # Phase B-β-4: 旬別 avg_kg_min/max が NULL の場合に使う魚種別グローバル比率（案 A）
+    # combo_decadal から当該魚種の全旬平均を計算（非 NULL 旬のみ）
+    if avg_kg_min_dec is None or avg_kg_max_dec is None:
+        _fish_global = conn.execute(
+            "SELECT AVG(avg_kg_min), AVG(avg_kg_max) FROM combo_decadal "
+            "WHERE fish=? AND avg_kg_min IS NOT NULL",
+            (fish,)
+        ).fetchone()
+        if _fish_global and _fish_global[0] is not None:
+            if avg_kg_min_dec is None:
+                avg_kg_min_dec = _fish_global[0]
+            if avg_kg_max_dec is None:
+                avg_kg_max_dec = _fish_global[1]
 
     if not avg_cnt or avg_cnt <= 0:
         return None
@@ -1391,8 +1406,18 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             else (round(size_avg_corrected + size_mae, 1) if size_avg_corrected and size_mae else None)
         ),
         "kg_predicted":    round(avg_kg, 2) if avg_kg else None,
-        "kg_lo":           round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
-        "kg_hi":           round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
+        # Phase B-β-4: 比率ベース（avg_kg × 旬別 P20/P80 比率）
+        # フォールバック: 旬別・魚種別グローバルとも NULL なら旧設計（±kg_mae）
+        "kg_lo": (
+            round(avg_kg * avg_kg_min_dec, 2)
+            if avg_kg and avg_kg_min_dec is not None and avg_kg_min_dec > 0
+            else (round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None)
+        ),
+        "kg_hi": (
+            round(avg_kg * avg_kg_max_dec, 2)
+            if avg_kg and avg_kg_max_dec is not None and avg_kg_max_dec > 0
+            else (round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None)
+        ),
         # 精度・信頼性
         "model_reliable":  model_reliable,   # False = BL-0 を上回れない（HTML で「精度参考値」表示）
         "cnt_mape":        round(cnt_mape, 1),

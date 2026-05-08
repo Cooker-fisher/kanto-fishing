@@ -2981,6 +2981,57 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             max(1.0, _rmax)           if _rmax is not None else _global_ratio_max_p80,
         )
 
+    # ── Phase B-β-4: バックテスト評価用 旬別 kg 実測比率ルックアップテーブル ──────────
+    # 全期間 records（H=0 enrich 済み）から旬別 kg_min/kg_avg 比率・kg_max/kg_avg 比率を計算。
+    #
+    # 【設計方針】(2026-05-08 補遺9 確定予定)
+    #   比率 P20/P80 を pred_lo/pred_hi に使用:
+    #     ratio_min: 旬別 kg_min/kg_avg の P20 → pred_lo = pred_avg × ratio_min
+    #     ratio_max: 旬別 kg_max/kg_avg の P80 → pred_hi = pred_avg × ratio_max
+    #   size と同型・P95 除外なし（kg_max ≤ 2×avg は数学的必然）
+    #
+    # 【MIN_N 設計】
+    #   _MIN_N_BT_KG = 5（size の 10 より緩い・kg は旬別データが薄いため）
+    #   n < 5 の旬はグローバル比率にフォールバック
+    #
+    _MIN_N_BT_KG = 5
+    _bt_kg_ratio_buckets = {}
+    for _r in all_en_by_H.get(0, []):
+        _dec = _r.get("decade")
+        if _dec is None:
+            continue
+        _km = _r.get("kg_min"); _kx = _r.get("kg_max")
+        _ka = _r.get("kg_avg")
+        # 妥当性チェック: kg_min < kg_avg < kg_max を満たす行のみ（size と同型）
+        # ゼロガード: _ka <= 0 は除外
+        if _km is None or _kx is None or not _ka or _ka <= 0 or not (_km < _ka < _kx):
+            continue
+        if _dec not in _bt_kg_ratio_buckets:
+            _bt_kg_ratio_buckets[_dec] = {"ratio_min": [], "ratio_max": []}
+        _bt_kg_ratio_buckets[_dec]["ratio_min"].append(_km / _ka)
+        _bt_kg_ratio_buckets[_dec]["ratio_max"].append(_kx / _ka)
+
+    # グローバル（全旬）フォールバック
+    _all_kg_ratio_min_vals = [v for d in _bt_kg_ratio_buckets.values() for v in d["ratio_min"]]
+    _all_kg_ratio_max_vals = [v for d in _bt_kg_ratio_buckets.values() for v in d["ratio_max"]]
+    _global_kg_ratio_min_p20 = _bt_percentile(_all_kg_ratio_min_vals, 0.20) or 0.30
+    _global_kg_ratio_max_p80 = _bt_percentile(_all_kg_ratio_max_vals, 0.80) or 1.70
+
+    # 旬別比率テーブル
+    _bt_decadal_kg_ratio = {}
+    for _dec, _d in _bt_kg_ratio_buckets.items():
+        if len(_d["ratio_min"]) >= _MIN_N_BT_KG:
+            _rmin = _bt_percentile(_d["ratio_min"], 0.20)
+            _rmax = _bt_percentile(_d["ratio_max"], 0.80)
+        else:
+            _rmin = _global_kg_ratio_min_p20
+            _rmax = _global_kg_ratio_max_p80
+        # 物理制約: ratio_min ∈ (0, 1]、ratio_max ∈ [1, ∞)
+        _bt_decadal_kg_ratio[_dec] = (
+            max(0.0, min(1.0, _rmin)) if _rmin is not None else _global_kg_ratio_min_p20,
+            max(1.0, _rmax)           if _rmax is not None else _global_kg_ratio_max_p80,
+        )
+
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
     # 各月・各ホライズンの予測と実測を蓄積
     all_preds    = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
@@ -3674,36 +3725,50 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         range_bt_data.append(("size", H, promise_break_rate, over_expect_rate,
                                coverage, bowzu_rate, winkler, n_valid))
 
-    # ── kg メトリック（Phase A 設計継続: 点予測 pred ± 実測レンジで評価） ──────────
-    # kg は NULL 率 70.2% でサンプル少のため Phase B-α' 拡張対象外。
-    # promise_break / over_expect / coverage / winkler の定義は Phase A 設計を継続。
-    #   promise_break = actual_kg_avg < pred（点予測を下回った）
-    #   over_expect   = pred / actual_kg_avg > 1.5
-    #   coverage      = actual_kg_min <= pred <= actual_kg_max
+    # ── kg メトリック（Phase B-β-4: 実測幅ベース比率評価）──────────────────────────
+    # size（Phase B-α'）と同型。点予測 pred × 旬別 P20/P80 比率でレンジを生成。
+    #   promise_break (主指標) = actual_kg_min < pred_lo（下限割れ）
+    #   over_expect   (副指標) = actual_kg_max > pred_hi（上限超過）
+    #     → kg は size と異なり非対称設計なし。over_expect も記録して KPI 参考とする
+    #   coverage               = actual_kg_min >= pred_lo かつ actual_kg_max <= pred_hi
+    #   winkler                = promise 側（actual_kg_min）で評価
+    #
+    # 分母統一: actual_kg_min / actual_kg_max 両方非 NULL の行のみ（n_valid ベース）
     for H in HORIZONS:
-        rows_r = []
+        rows_kg = []
         for _rk, d in _range_by_key[H].items():
             if "kg_avg" not in d:
                 continue
-            pred, act_avg = d["kg_avg"]
-            if act_avg is None or pred is None:
+            pred_c, act_avg = d["kg_avg"]
+            if act_avg is None or pred_c is None:
                 continue
             act_min = d.get("_kg_min_act")
             act_max = d.get("_kg_max_act")
-            rows_r.append((pred, act_avg, act_min, act_max))
-        rows_valid = [(p, aa, ami, amx) for p, aa, ami, amx in rows_r
+            dec_no  = d.get("_decade_no")
+            # 旬別比率ルックアップ（フォールバック: グローバル P20/P80）
+            _rmin, _rmax = _bt_decadal_kg_ratio.get(
+                dec_no, (_global_kg_ratio_min_p20, _global_kg_ratio_max_p80)
+            )
+            pred_lo = pred_c * _rmin
+            pred_hi = pred_c * _rmax
+            rows_kg.append((pred_lo, pred_hi, pred_c, act_avg, act_min, act_max))
+
+        rows_valid = [(pl, ph, pc, aa, ami, amx) for pl, ph, pc, aa, ami, amx in rows_kg
                       if ami is not None and amx is not None]
         n_valid = len(rows_valid)
         if n_valid < MIN_N_RANGE:
             continue
-        promise_break_rate = sum(1 for p, aa, ami, amx in rows_valid if aa < p) / n_valid
-        over_expect_rate   = sum(1 for p, aa, ami, amx in rows_valid
-                                 if aa > 0 and p / aa > 1.5) / n_valid
-        coverage           = sum(1 for p, aa, ami, amx in rows_valid
-                                 if ami <= p <= amx) / n_valid
-        bowzu_rate         = None
-        winkler            = sum(_winkler_range(p, p, aa)
-                                 for p, aa, ami, amx in rows_valid) / n_valid
+
+        promise_break_rate = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
+                                 if ami < pl) / n_valid
+        over_expect_rate   = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
+                                 if amx > ph) / n_valid
+        coverage           = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
+                                 if ami >= pl and amx <= ph) / n_valid
+        bowzu_rate         = None  # kg はボウズ概念なし
+        winkler            = sum(_winkler_range(pl, ph, ami)   # promise 側は min で評価
+                                 for pl, ph, pc, aa, ami, amx in rows_valid) / n_valid
+
         lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
         lines.append(
             f"  {'kg':>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
@@ -4781,12 +4846,15 @@ def save_decadal(fish, ship, records):
         return s[idx]
 
     MIN_N_DECADAL_SIZE = 10  # これ未満の旬は全期間比率フォールバック（n<10 は自己参照バイアス大）
+    MIN_N_DECADAL_KG = 5    # kg は旬別データが薄いため size より緩い閾値（n<5 で全期間フォールバック）
 
     buckets = defaultdict(lambda: {
         "cnt": [], "cnt_min": [], "cnt_max": [],
         "size": [], "kg": [],
         # Phase B-α': size_min/size_avg 比率 および size_max/size_avg 比率を収集
         "size_ratio_min": [], "size_ratio_max": [],
+        # Phase B-β-4: kg_min/kg_avg 比率 および kg_max/kg_avg 比率を収集
+        "kg_ratio_min": [], "kg_ratio_max": [],
     })
     for r in records:
         dec = r.get("decade")
@@ -4811,12 +4879,25 @@ def save_decadal(fish, ship, records):
         if sm is not None and sx is not None and sa and sa > 0 and sm < sa < sx:
             buckets[dec]["size_ratio_min"].append(sm / sa)
             buckets[dec]["size_ratio_max"].append(sx / sa)
+        # Phase B-β-4: kg_min / kg_avg 比率・kg_max / kg_avg 比率を収集（P95 除外なし）
+        # 妥当性チェック: kg_min < kg_avg < kg_max を満たす行のみ（size と同型）
+        # ゼロガード: ka <= 0 は除外（kg=0 はデータ異常）
+        km = r.get("kg_min"); kx = r.get("kg_max"); ka = r.get("kg_avg")
+        if km is not None and kx is not None and ka and ka > 0 and km < ka < kx:
+            buckets[dec]["kg_ratio_min"].append(km / ka)
+            buckets[dec]["kg_ratio_max"].append(kx / ka)
 
     # 全期間比率（旬データ不足時のフォールバック用）
     all_ratio_min = [v for d in buckets.values() for v in d["size_ratio_min"]]
     all_ratio_max = [v for d in buckets.values() for v in d["size_ratio_max"]]
     global_ratio_min_p20 = _percentile(all_ratio_min, 0.20) or 0.65
     global_ratio_max_p80 = _percentile(all_ratio_max, 0.80) or 1.35
+
+    # Phase B-β-4: kg 全期間グローバル比率（旬データ不足時のフォールバック用）
+    all_kg_ratio_min = [v for d in buckets.values() for v in d["kg_ratio_min"]]
+    all_kg_ratio_max = [v for d in buckets.values() for v in d["kg_ratio_max"]]
+    global_kg_ratio_min_p20 = _percentile(all_kg_ratio_min, 0.20) or 0.30
+    global_kg_ratio_max_p80 = _percentile(all_kg_ratio_max, 0.80) or 1.70
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     rows = []
@@ -4847,6 +4928,22 @@ def save_decadal(fish, ship, records):
         if size_max_ratio is not None:
             size_max_ratio = max(1.0, size_max_ratio)
 
+        # Phase B-β-4: 旬別 kg 比率の P20 / P80
+        # n < MIN_N_DECADAL_KG=5 の旬は全期間比率フォールバック（NULL で格納）
+        n_kg = len(d["kg_ratio_min"])
+        if n_kg >= MIN_N_DECADAL_KG:
+            kg_min_ratio = _percentile(d["kg_ratio_min"], 0.20)  # P20
+            kg_max_ratio = _percentile(d["kg_ratio_max"], 0.80)  # P80
+            # 比率の物理的制約
+            if kg_min_ratio is not None:
+                kg_min_ratio = max(0.0, min(1.0, kg_min_ratio))
+            if kg_max_ratio is not None:
+                kg_max_ratio = max(1.0, kg_max_ratio)
+        else:
+            # n<5 の旬は NULL（predict_count.py でグローバル比率にフォールバック）
+            kg_min_ratio = None
+            kg_max_ratio = None
+
         rows.append((
             fish, ship, dec, len(d["cnt"]),
             round(avg_cnt, 2),
@@ -4857,6 +4954,8 @@ def save_decadal(fish, ship, records):
             round(cnt_max, 2) if cnt_max else None,
             round(size_min_ratio, 4) if size_min_ratio is not None else None,
             round(size_max_ratio, 4) if size_max_ratio is not None else None,
+            round(kg_min_ratio, 4) if kg_min_ratio is not None else None,
+            round(kg_max_ratio, 4) if kg_max_ratio is not None else None,
         ))
 
     if not rows:
@@ -4874,7 +4973,8 @@ def save_decadal(fish, ship, records):
             PRIMARY KEY (fish, ship, decade_no)
         )
     """)
-    for col in ("avg_cnt_min", "avg_cnt_max", "avg_size_min", "avg_size_max"):
+    for col in ("avg_cnt_min", "avg_cnt_max", "avg_size_min", "avg_size_max",
+                "avg_kg_min", "avg_kg_max"):
         try:
             conn.execute(f"ALTER TABLE combo_decadal ADD COLUMN {col} REAL")
         except Exception:
@@ -4883,8 +4983,8 @@ def save_decadal(fish, ship, records):
     conn.executemany(
         "INSERT INTO combo_decadal "
         "(fish, ship, decade_no, n, avg_cnt, avg_size, avg_kg, updated_at, "
-        "avg_cnt_min, avg_cnt_max, avg_size_min, avg_size_max) "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        "avg_cnt_min, avg_cnt_max, avg_size_min, avg_size_max, avg_kg_min, avg_kg_max) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         rows
     )
     conn.commit()
