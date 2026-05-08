@@ -6066,25 +6066,26 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 f'<div class="prob-bar-bg"><div class="prob-bar-fill" style="width:{prob}%;background:{color}"></div></div>'
                 f'<span class="prob-pct" style="color:{color};font-weight:bold">{label}</span></div>'
             )
-        # V2 カード用データ計算
+        # V2 カード用データ計算（補遺3: min〜max のみ・avg は出さない）
         cnt_range_str = ""
-        if this_w:
-            mx = this_w.get("max") or 0
-            av = this_w.get("avg") or 0
-            if av and mx: cnt_range_str = f"{av:.0f}〜{mx}匹"
-            elif mx:       cnt_range_str = f"〜{mx}匹"
-            elif av:       cnt_range_str = f"平均{av:.0f}匹"
-        if not cnt_range_str:
-            # this_w が None（週またぎ等で今週の history なし）のとき cs から直接計算
-            _cs_p = [c for c in cs if c.get("count_range") and not c["count_range"].get("is_boat")]
-            if _cs_p:
-                _avgs = [(c["count_range"]["min"] + c["count_range"]["max"]) // 2 for c in _cs_p]
-                _mx   = max(c["count_range"]["max"] for c in _cs_p)
-                _av   = round(sum(_avgs) / len(_avgs))
-                if _av and _mx: cnt_range_str = f"{_av:.0f}〜{_mx}匹"
-                elif _mx:       cnt_range_str = f"〜{_mx}匹"
-                elif _av:       cnt_range_str = f"平均{_av:.0f}匹"
-        if not cnt_range_str: cnt_range_str = f"{len(cs)}件"
+        # this_w に min が無い（旧スキーマ）ため、min は cs から直接集計
+        _cs_p = [c for c in cs if c.get("count_range") and not c["count_range"].get("is_boat")]
+        _mn = None
+        _mx = None
+        if _cs_p:
+            _mns = [c["count_range"].get("min") for c in _cs_p if c["count_range"].get("min") is not None]
+            _mxs = [c["count_range"].get("max") for c in _cs_p if c["count_range"].get("max") is not None]
+            if _mns: _mn = int(min(_mns))
+            if _mxs: _mx = int(max(_mxs))
+        # this_w.max があれば優先（history.json で集計済み・cs と同期している前提）
+        if this_w and (this_w.get("max") or 0):
+            _mx = int(this_w.get("max"))
+        if _mn is not None and _mx is not None and _mn != _mx:
+            cnt_range_str = f"{_mn}〜{_mx}匹"
+        elif _mx is not None:
+            cnt_range_str = f"{_mx}匹"
+        else:
+            cnt_range_str = f"{len(cs)}件"
         sz_val = (this_w.get("size_avg") or 0) if this_w else 0
         sz_str = f"{sz_val:.0f}cm" if sz_val else ""
         areas_str2 = "・".join(areas_list[:2])
@@ -6957,30 +6958,23 @@ def build_fish_pages(data, history, crawled_at=""):
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"): max_cnt = max(max_cnt, cr["max"])
         # fish-hero 数値: **トップページ ZONE B カードと完全一致させる**ため、
-        # 同じ this_w (history.json ISO週集計) を使う。
-        # 平均匹数の計算式（update_history が round() 後に保存）と
-        # 直接集計（int() 切り捨て）で 6 匹のズレが出ていた事故への対処。
-        # this_w 不在時は catches から計算（フォールバック）。
+        # 同じ catches （魚種フィルタ済み）を使って min/max を直接集計する。
+        # 補遺3 (2026/05/08): avg/平均 は出さず min〜max のみ表示。
+        # this_w に min が無いため、min は catches から計算。max は this_w 優先。
         cnt_range_str = ""
-        if this_w:
-            _av = this_w.get("avg") or 0
-            _mx = this_w.get("max") or 0
-            if _av and _mx:
-                cnt_range_str = f"{_av:.0f}〜{_mx}匹"
-            elif _mx:
-                cnt_range_str = f"〜{_mx}匹"
-            elif _av:
-                cnt_range_str = f"平均{_av:.0f}匹"
-        if not cnt_range_str:
-            # this_w 不在 → catches から直接集計
-            w_maxs = [c["count_range"]["max"] for c in catches if c.get("count_range") and not c["count_range"].get("is_boat") and c["count_range"].get("max") is not None]
-            w_avgs = [c.get("count_avg") for c in catches if c.get("count_avg") is not None]
-            if w_avgs and w_maxs:
-                cnt_range_str = f"{sum(w_avgs)/len(w_avgs):.0f}〜{int(max(w_maxs))}匹"
-            elif w_maxs:
-                cnt_range_str = f"〜{int(max(w_maxs))}匹"
-            else:
-                cnt_range_str = f"釣果{len(catches)}件"
+        w_p = [c for c in catches if c.get("count_range") and not c["count_range"].get("is_boat")]
+        w_mins = [c["count_range"].get("min") for c in w_p if c["count_range"].get("min") is not None]
+        w_maxs = [c["count_range"].get("max") for c in w_p if c["count_range"].get("max") is not None]
+        _mn = int(min(w_mins)) if w_mins else None
+        _mx = int(max(w_maxs)) if w_maxs else None
+        if this_w and (this_w.get("max") or 0):
+            _mx = int(this_w.get("max"))
+        if _mn is not None and _mx is not None and _mn != _mx:
+            cnt_range_str = f"{_mn}〜{_mx}匹"
+        elif _mx is not None:
+            cnt_range_str = f"{_mx}匹"
+        else:
+            cnt_range_str = f"釣果{len(catches)}件"
         # サイズ: this_w.size_avg があれば「平均{X}cm」、無ければ catches から min〜max
         sz_str = ""
         if this_w and this_w.get("size_avg"):
