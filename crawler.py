@@ -1164,6 +1164,8 @@ def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_d
         if fish.isdigit() or fish == "欠航": continue
         try: cnt = float(row.get("cnt_max", ""))
         except: continue
+        try: cnt_min_val = float(row.get("cnt_min", ""))
+        except: cnt_min_val = None
         month = int(dt[5:7]) if len(dt) >= 7 else None
         group = _area_to_group(area)
 
@@ -1192,7 +1194,7 @@ def _build_catch_weather_index(catches, weather_by_point, tide_data=None, moon_d
 
         if not wx: continue
         moon = moon_data.get(dt, {})
-        index.append({"fish": fish, "cnt": cnt, "wave": wx.get("wave"),
+        index.append({"fish": fish, "cnt": cnt, "cnt_min": cnt_min_val, "wave": wx.get("wave"),
                        "wind": wx.get("wind"), "sst": wx.get("sst"),
                        "wave_period": wx.get("wave_period"),
                        "tide_range": tide_data.get(dt),
@@ -1278,6 +1280,13 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
             # 中央値（低匹数魚種の外れ値対策）
             sorted_cnts = sorted(cnts)
             base_median = sorted_cnts[len(sorted_cnts) // 2]
+            # cnt_min の実測値から P20 相当を base_min に（NULL 除外）
+            cnt_mins_raw = [r["cnt_min"] for r in month_rows if r.get("cnt_min") is not None]
+            if cnt_mins_raw:
+                cnt_mins_sorted = sorted(cnt_mins_raw)
+                base_min = cnt_mins_sorted[int(len(cnt_mins_sorted) * 0.2)]
+            else:
+                base_min = None
 
             def _norm(key):
                 vals = [r[key] for r in month_rows if r.get(key) is not None]
@@ -1358,6 +1367,8 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
             if base_avg < 10:
                 pred_median = round(base_median * (1.0 + adjustment), 1)
                 pred_avg = round((pred_avg + pred_median) / 2, 1)
+            # cnt_min の実測値 P20 に同じ adjustment を適用（NULL の場合は None）
+            pred_min = int(max(0, round(base_min * (1.0 + adjustment)))) if base_min is not None else None
 
             key = (fish, group)
             season_score = get_season_score(fish, target_month) if target_month else 0
@@ -1367,6 +1378,7 @@ def predict_catches(index, area_forecasts, target_month, forecast_tide=None, for
                 "fish": fish,
                 "group": group,
                 "avg": pred_avg,
+                "min": pred_min,
                 "base_avg": round(base_avg, 1),
                 "adjustment": round(adjustment, 3),
                 "max": int(base_max),
@@ -1754,6 +1766,7 @@ def build_forecast_json(weather_data, catches=None, history=None):
                     "fish": fish,
                     "group": area["group"],
                     "avg": area["avg"],
+                    "min": area.get("min"),
                     "base_avg": area["base_avg"],
                     "adjustment": area["adjustment"],
                     "max": area["max"],
@@ -1834,6 +1847,7 @@ def build_forecast_json(weather_data, catches=None, history=None):
                     "fish": area["fish"],
                     "group": area["group"],
                     "avg": area["avg"],
+                    "min": area.get("min"),
                     "max": area["max"],
                     "samples": area["samples"],
                     "season_score": area.get("season_score", 0),
@@ -2370,9 +2384,9 @@ def build_forecast_section(forecast_data, weather_data):
           var medal = i<3?['🥇','🥈','🥉'][i]:'';
           h += '<div class="pred-card">';
           h += '<div class="pred-fish">'+medal+' '+p.fish+'</div>';
-          h += '<div class="pred-avg">平均 <strong>'+p.avg+'</strong> 匹</div>';
-          h += '<div class="pred-max">最高 '+p.max+' 匹</div>';
-          if(p.best_area) h += '<div class="pred-area">📍 '+p.best_area+' (平均'+p.best_avg+'匹)</div>';
+          var rangeStr = (p.min!=null && p.min!==p.max) ? (p.min+'〜'+p.max) : p.max;
+          h += '<div class="pred-range"><strong>'+rangeStr+'</strong> 匹</div>';
+          if(p.best_area) h += '<div class="pred-area">📍 '+p.best_area+'</div>';
           h += '<div class="pred-samples">過去'+p.samples+'件の実績</div>';
           h += '</div>';
         }});
@@ -5538,8 +5552,8 @@ footer a:hover{text-decoration:underline}
 .pred-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
 .pred-card{background:#0d2137;border:1px solid #1a4060;border-radius:8px;padding:12px}
 .pred-fish{font-size:15px;font-weight:bold;color:#fff;margin-bottom:4px}
-.pred-avg{font-size:13px;color:#4db8ff;margin-bottom:2px}
-.pred-max{font-size:11px;color:#7a9bb5}
+.pred-range{font-size:14px;color:#4db8ff;margin-bottom:2px}
+.pred-range strong{font-size:16px}
 .pred-area{font-size:11px;color:#f4a261;margin-top:2px}
 .pred-samples{font-size:10px;color:#4a6a8a;margin-top:4px}
 .combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
@@ -6988,7 +7002,12 @@ def build_fish_pages(data, history, crawled_at=""):
         for aname, ad in sorted(area_today_f.items(), key=lambda x: -(max(x[1]["hi"] or [0])))[:5]:
             a_lo = int(min(ad["lo"])) if ad["lo"] else None
             a_hi = int(max(ad["hi"])) if ad["hi"] else None
-            a_range = f"{a_lo}〜{a_hi}匹" if a_lo and a_hi and a_lo != a_hi else (f"{a_hi}匹" if a_hi else "—")
+            if a_lo is not None and a_hi is not None and a_lo != a_hi:
+                a_range = f"{a_lo}〜{a_hi}匹"
+            elif a_hi is not None:
+                a_range = f"{a_hi}匹"
+            else:
+                a_range = "—"
             area_cmp_rows += (
                 f'<a class="ar" href="../area/{area_slug(aname)}.html">'
                 f'<span class="ar-name">{aname}</span>'
@@ -7012,7 +7031,12 @@ def build_fish_pages(data, history, crawled_at=""):
         for i, (sn, sd) in enumerate(sorted(ship_data_f.items(), key=lambda x: -max(x[1]["cnt_his"] or [0]))[:8]):
             s_lo = int(min(sd["cnt_los"])) if sd["cnt_los"] else None
             s_hi = int(max(sd["cnt_his"])) if sd["cnt_his"] else None
-            s_range = f"{s_lo}〜{s_hi}匹" if s_lo and s_hi and s_lo != s_hi else (f"{s_hi}匹" if s_hi else f"{sd['cnt']}件")
+            if s_lo is not None and s_hi is not None and s_lo != s_hi:
+                s_range = f"{s_lo}〜{s_hi}匹"
+            elif s_hi is not None:
+                s_range = f"{s_hi}匹"
+            else:
+                s_range = f"{sd['cnt']}件"
             top_pt = _CtrF(sd["pts"]).most_common(1)[0][0] if sd["pts"] else ""
             sr_items += (
                 f'<div class="sr">'
@@ -8278,17 +8302,28 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         today_str_fa = now_fa_global.strftime("%Y/%m/%d")
         ship_data_fa: dict = {}
         for c in catches:
-            d = ship_data_fa.setdefault(c["ship"], {"cnt": 0, "max": 0, "today": False})
+            d = ship_data_fa.setdefault(c["ship"], {"cnt": 0, "his": [], "los": [], "today": False})
             d["cnt"] += 1
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
-                d["max"] = max(d["max"], cr["max"])
+                if cr.get("max") is not None:
+                    d["his"].append(cr["max"])
+                if cr.get("min") is not None:
+                    d["los"].append(cr["min"])
+                elif cr.get("max") is not None:
+                    d["los"].append(cr["max"])
             if c.get("date") == today_str_fa:
                 d["today"] = True
         sr_items_fa = ""
-        for i, (sn, sd) in enumerate(sorted(ship_data_fa.items(), key=lambda x: -x[1]["max"])[:8]):
-            mx = sd["max"]
-            s_range = f"最高{mx}匹" if mx else f"{sd['cnt']}件"
+        for i, (sn, sd) in enumerate(sorted(ship_data_fa.items(), key=lambda x: -(max(x[1]["his"]) if x[1]["his"] else 0))[:8]):
+            s_lo = int(min(sd["los"])) if sd["los"] else None
+            s_hi = int(max(sd["his"])) if sd["his"] else None
+            if s_lo is not None and s_hi is not None and s_lo != s_hi:
+                s_range = f"{s_lo}〜{s_hi}匹"
+            elif s_hi is not None:
+                s_range = f"{s_hi}匹"
+            else:
+                s_range = f"{sd['cnt']}件"
             sr_items_fa += (
                 f'<div class="sr">'
                 f'<span class="sr-rank">{i+1}</span>'
