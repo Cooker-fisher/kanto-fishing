@@ -18,12 +18,13 @@
 - analyst 実装 → 3 並列レビュー（code/stat/data）すべて Concerns → 修正 → code-reviewer 軽量再レビュー → engineer コミット
 - 3 reviewer 共通指摘「coverage 分母バイアス」を 1 修正で解決
 
-**90_決定ログ「2026/05/08 補遺2」追記:**
-- 出力形式の絶対制約 4 項目を明記
-- 「単一レンジ + 中央値」の 3 値のみ・重ねレンジ禁止
-- min/max 別カード禁止
+**90_決定ログ「2026/05/08 補遺2 + 補遺3」追記:**
+- 出力形式の絶対制約を明記
+- **補遺3 で確定: 出力は min〜max のみ・avg は出さない**（"1,1,1,100" と "1,99,99,99,100" の avg が同じになる問題）
+- 重ねレンジ禁止・min/max 別カード禁止
 - 「min/max 独立予測」は内部学習が独立というだけで出力は単一レンジ
-- plan_hit_rate にも同制約セクション追加
+- plan_hit_rate / CLAUDE.md にも同制約反映
+- 表示仕様: 数 `min匹〜max匹` / 型 `min cm〜max cm` / 重 `min kg〜max kg`
 
 **Phase B 防御策シミュレーション完了:**
 - レポート: `analysis/V2/analysis-improvement/diag_phase_b_simulation_2026-05-08.md`
@@ -66,10 +67,12 @@
 - size/kg の promise_break_rate 実態を Phase B 防御策の判断材料に
 
 ### 2. Phase B 実装着手
-- 着手前必読: `plan_hit_rate_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 後半・補遺・補遺2」・`diag_phase_b_simulation_2026-05-08.md`
+- 着手前必読: `plan_hit_rate_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 後半・補遺・補遺2・補遺3」・`diag_phase_b_simulation_2026-05-08.md`
 - 変更ファイル:
   - `combo_deep_dive.py` L3285-3290 の ratio override を削除
   - `predict_count.py` L1296-1333 に防御策①②（floor=0.3 / clamp=2.0）追加
+  - **`predict_count.py` の avg 系出力（cnt_avg/size_avg/kg_avg をユーザー表示用に返す部分）を削除**（補遺3）
+  - **`crawler.py` forecast HTML の `（avg X匹/cm/kg）` 表示を削除**（補遺3）
 - **3 並列レビュー必須**（過去 04/13 撤回パターン再発防止）
 - 実装後の全コンボ再実行も必要（4時間）
 
