@@ -262,7 +262,7 @@ for tsuri_mono, patterns in TSURI_MONO_MAP.items():
 
 | テーブル | 行数 | 内容 |
 |---------|------|------|
-| combo_decadal | 4,935+ | 魚種×船宿×旬(10日)の平均値 ← **ベースライン**。`deep_dive()` が直接更新（season_detail.py 非依存） |
+| combo_decadal | 4,935+ | 魚種×船宿×旬(10日)の平均値 ← **ベースライン**。`deep_dive()` が直接更新（season_detail.py 非依存）。`avg_size_min` / `avg_size_max` 列は P20/P80 無次元比率（実測幅ベースのレンジ生成用・Phase B-α' 追加） |
 | combo_backtest | 6,129 | H=0,1,3,7,14,21,28日前予測精度（r, MAE, wMAPE等） |
 | combo_meta | 246 | 座標・件数・精度サマリー（45魚種・246コンボ）※MIN_N_COMBO=30件以上のコンボのみ |
 | combo_keywords | 1,513 | kanso_rawキーワード相関 |
@@ -472,3 +472,10 @@ crawler.py 実行時
 - 04/13 の min/max ratio 法を撤回（Phase B で独立予測復活予定）
 - 出力形式の絶対制約を明記: 「単一レンジ + 中央値」の3値のみ・重ねレンジ禁止
 - combo_range_backtest を `(fish, ship, metric, horizon)` 4列 PK に拡張（cnt/size/kg 3メトリック対応）
+- Phase B-α' 実装・コミット（3eebfe53）:
+  - combo_decadal に `avg_size_min` / `avg_size_max` 列追加（P20/P80 無次元比率）
+  - predict_count.py の size_lo/hi を `pred_avg × 旬別 P20/P80 比率` に変更（旧 ±size_mae 廃止）
+  - 旬別 n<10 で全期間グローバル比率にフォールバック（_MIN_N_BT_SIZE=10）
+  - 同一定義再計算: size promise_break P50 が 98.4% → 53.0%（+43.6pt）撤回基準（30pt）クリア
+  - combo_range_backtest から metric='size_i' 実験残骸 7 行を削除
+  - 詳細: `analysis/V2/analysis-improvement/90_決定ログ.md` 補遺7

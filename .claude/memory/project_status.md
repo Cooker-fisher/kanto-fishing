@@ -1,8 +1,56 @@
 現行バージョン: crawler.py v5.28 / predict_count.py（Forecast API統合済み・FAST変数horizonフィルタ実装済み）
 最終更新: 2026/05/08
-最新コミット: 2b25b2d3（Phase A combo_range_backtest を size/kg 拡張・出力形式制約明記）
+最新コミット: 3eebfe53（Phase B-α' size 実測幅ベースレンジ生成・同一定義 +43.6pt 改善確定）
 
-## ✅ 今セッション完了（2026/05/08）
+## ✅ 今セッション完了（2026/05/08 後半・engineer）
+
+### Phase B-α' コミット + SQL クリーンアップ
+
+**コミット: 3eebfe53**
+
+**変更ファイル:**
+- `analysis/V2/methods/combo_deep_dive.py`: P20/P80 比率列追加（avg_size_min / avg_size_max・無次元比率）・妥当性チェック・winkler コメント修正
+- `analysis/V2/methods/predict_count.py`: size_lo/hi を pred_avg × 旬別比率に変更（旧 ±size_mae 廃止）・フォールバック実装
+- `analysis/V2/analysis-improvement/plan_size_2026-05-08.md`: 改訂版（P20 採用・coverage 撤回基準除外）
+- `analysis/V2/analysis-improvement/90_決定ログ.md`: 補遺7 追記済み
+- `dustbox/` 配下 8 ファイル: バックアップ・分析資料（記録として保存）
+
+**SQL クリーンアップ完了:**
+- `combo_range_backtest` から `metric='size_i'` 7 行を削除（Phase B-α 撤回時の実験残骸）
+- 残存 metric: cnt=2033件 / size=1267件 / kg=721件
+
+**全コンボ再実行:**
+- 現在時刻確認中（16:30 JST GitHub Actions 衝突回避のため別途 Step 5 で判定）
+
+---
+
+## ★ 次セッションでやること（優先度順）
+
+### 1. 全コンボ再実行の結果確認（Phase B-α' 適用後の全コンボ性能）
+- コマンド: `python analysis/V2/methods/run_full_deepdive.py --workers 4`（約 4 時間）
+- ログ: `analysis/V2/results/run_full_deepdive_YYYY-MM-DD.log`
+- 完了後の確認 SQL:
+  ```sql
+  SELECT metric, horizon, COUNT(*), AVG(promise_break_rate), AVG(coverage)
+  FROM combo_range_backtest
+  WHERE n >= 30
+  GROUP BY metric, horizon
+  ORDER BY metric, horizon;
+  ```
+- 期待: size promise_break P50 が 98.4% → 53.0%（同一定義）から大幅改善
+
+### 2. Phase B-β（cnt min/max 独立予測復活）の Plan 策定
+- Phase A の全コンボ再実行結果を踏まえて着手判断
+- size の実測幅ベース設計（B-α'）を cnt にも適用するか検討
+- 独立モデル化の前例（04/13 撤回）を参照し、撤回基準を先に確定する
+
+### 3. Phase C 実装（Phase B 後）
+- 加重平均 composite_hit_rate（cnt 0.6 / size 0.3 / kg 0.1）
+- kg NULL 率 70% で実態は 0.667/0.333 に再正規化されるケース多数
+
+---
+
+## ✅ 今セッション完了（2026/05/08 前半）
 
 ### 「商品的中率」KPI Phase A 実装 + Phase B シミュレーション準備
 
