@@ -1,12 +1,11 @@
-<!-- 最終更新: 2026-03-22 -->
 ---
 name: crawler.py編集ルール
-description: crawler.pyはClaude Codeで直接編集してよい（むしろ推奨）
+description: crawler.pyはClaude Codeで直接編集してよい
 type: feedback
 ---
 
-crawler.pyの編集はClaude Codeで直接行ってよい。できるならそちらが好ましい。
+crawler.py は Claude Code で直接編集する。
 
-**Why:** CLAUDE.mdに「claude.aiで行う」と書いてあるが、これは必須ではなくClaude Codeで対応できるなら直接編集する方が効率的。
+**Why:** CLAUDE.md の「claude.aiで行う」は必須でなく、Claude Code で対応する方が効率的。
 
-**How to apply:** crawler.pyの変更はEdit/Writeツールで直接行う。チャット上でコードを提示してユーザーに手動コピーさせる必要はない。
+**How to apply:** Edit/Write ツールで直接編集。手動コピーさせない。
