@@ -66,15 +66,30 @@
   ```
 - size/kg の promise_break_rate 実態を Phase B 防御策の判断材料に
 
-### 2. Phase B 実装着手
+### 2. Phase B 実装着手（拡張版: cnt + size の min/max 独立予測）
 - 着手前必読: `plan_hit_rate_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 後半・補遺・補遺2・補遺3」・`diag_phase_b_simulation_2026-05-08.md`
+- **【拡張理由】** size promise_break 53% は size_avg=(min+max)/2 の構造問題。ポイント補正は既存の section_backtest_rolling 内で動いており、追加効果は実測されない（2026/05/08 診断で確定）
 - 変更ファイル:
-  - `combo_deep_dive.py` L3285-3290 の ratio override を削除
+  - `combo_deep_dive.py` L3285-3290 の ratio override を削除（cnt 用）
+  - **`combo_deep_dive.py` に size_min / size_max メトリックを追加**（cnt と同型）
   - `predict_count.py` L1296-1333 に防御策①②（floor=0.3 / clamp=2.0）追加
-  - **`predict_count.py` の avg 系出力（cnt_avg/size_avg/kg_avg をユーザー表示用に返す部分）を削除**（補遺3）
+  - **`predict_count.py` size_lo/size_hi を独立モデル予測に切替**（既存の `avg_size ± size_mae` 廃止）
+  - **`predict_count.py` の avg 系出力をユーザー表示用に返さない**（補遺3）
   - **`crawler.py` forecast HTML の `（avg X匹/cm/kg）` 表示を削除**（補遺3）
 - **3 並列レビュー必須**（過去 04/13 撤回パターン再発防止）
-- 実装後の全コンボ再実行も必要（4時間）
+- 実装後の全コンボ再実行も必要（4時間 × 1回）
+
+### 2-bis. Phase A 後の追加実装メモ（2026/05/08 後半）
+- `predict_count.py` L1341-1357 に size ポイント別補正追加済み（コミット 1ec169ab）
+  - `_apply_point_wx_correction(metric='size_avg')` を呼ぶ
+  - キーカバレッジ 28%（events 256種 vs params 90種・交差72種）
+  - 本番予測のみで効果。backtest（combo_range_backtest）には反映されない
+- combo_deep_dive.py への統合は **不要と判定**:
+  - cnt も backtest で combo_point_wx_params を使っていない（独自経路）
+  - 全データ学習パラメータを backtest で使うとリーク発生
+  - 既存の section_backtest_rolling は size_point_dec / cnt→size slope / 気象因子の3補正を**リークなしで既に使用中**
+  - 良コンボも悪コンボも pt_param 存在率が同等（92% vs 93%）→ ポイント補正の有無は精度差を説明しない
+- 真の改善策 = **size_min/size_max 独立予測（Phase B 拡張）**
 
 ### 3. Phase C 実装（Phase B 後）
 - 加重平均 composite_hit_rate（cnt 0.6 / size 0.3 / kg 0.1）
