@@ -1338,6 +1338,21 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         if kaiyu_star_info is not None:
             stars = kaiyu_star_info["stars"]  # wMAPEベースの★を上書き
 
+    # ── size ポイント別補正（combo_point_wx_params metric='size_avg' を利用） ──
+    # 学習側（combo_deep_dive.py）は既に size_avg のポイント別パラメータを保存済み。
+    # cnt 補正で決定した predicted_point を再利用して size を補正する。
+    # point=None / lat=None / パラメータなし の場合は avg_size のまま（フォールバック）。
+    # キーカバレッジ: combo_point_events 256種 vs combo_point_wx_params(size_avg) 90種 → 交差 72種（28%）。
+    #   交差外は _apply_point_wx_correction が None を返し、avg_size baseline のまま使用される。
+    # n ガードは学習側の alpha_scale clip [0,1.2] に委譲（明示的 n_min なし）。
+    size_avg_corrected = avg_size
+    if avg_size and lat and lon and not use_fb and predicted_point:
+        pt_size = _apply_point_wx_correction(
+            conn, fish, ship, predicted_point, target_date, avg_size, lat, lon, 'size_avg'
+        )
+        if pt_size is not None:
+            size_avg_corrected = max(0.0, pt_size)  # サイズは負値にならない（cnt 側 max(0,...) と同型ガード）
+
     return {
         "fish":            fish,
         "ship":            ship,
@@ -1349,9 +1364,9 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "baseline_cnt":    round(baseline_cnt, 1),  # 旬別ベースライン（補正前）
         "cnt_lo":          cnt_lo,   # 初心者釣果（旬別min_ratio または avg-MAE）
         "cnt_hi":          cnt_hi,   # ベテラン釣果（旬別max_ratio または avg+MAE）
-        "size_predicted":  round(avg_size, 1) if avg_size else None,
-        "size_lo":         round(avg_size - size_mae, 1) if avg_size and size_mae else None,
-        "size_hi":         round(avg_size + size_mae, 1) if avg_size and size_mae else None,
+        "size_predicted":  round(size_avg_corrected, 1) if size_avg_corrected else None,
+        "size_lo":         round(size_avg_corrected - size_mae, 1) if size_avg_corrected and size_mae else None,
+        "size_hi":         round(size_avg_corrected + size_mae, 1) if size_avg_corrected and size_mae else None,
         "kg_predicted":    round(avg_kg, 2) if avg_kg else None,
         "kg_lo":           round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
         "kg_hi":           round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
