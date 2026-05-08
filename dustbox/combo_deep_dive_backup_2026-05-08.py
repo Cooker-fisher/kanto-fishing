@@ -2922,65 +2922,6 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     if len(months) >= 6:
         print(f"    [CMEMS最適化] best_cmems={best_cmems} (候補: 0/2/4/6)", flush=True)
 
-    # ── Phase B-α': バックテスト評価用 旬別実測比率ルックアップテーブル ──────────
-    # 全期間 records（H=0 enrich 済み）から旬別 size_min/size_avg 比率・size_max/size_avg 比率を計算。
-    #
-    # 【設計方針】(2026-05-08 補遺7 確定)
-    #   比率 P20/P80 を pred_lo/pred_hi に使用する:
-    #     ratio_min: 旬別 size_min/size_avg の P20 → pred_lo = pred_avg × ratio_min
-    #     ratio_max: 旬別 size_max/size_avg の P80 → pred_hi = pred_avg × ratio_max
-    #   → promise_break(actual_size_min < pred_lo) の期待値 ≈ 20%(P20 定義より)
-    #   → over_expect(actual_size_max > pred_hi) の期待値 ≈ 20%(P80 対称)
-    #   → save_decadal の avg_size_min/avg_size_max と同じ分位点を使用（本番経路と整合）
-    #
-    # 【リーク評価】
-    #   全期間データで比率を計算（テスト月含む）。
-    #   ただし比率は魚の物理的サイズ特性（自然法則）で fold 間の変動が小さいため許容。
-    #
-    def _bt_percentile(vals, q):
-        if not vals:
-            return None
-        s = sorted(vals)
-        idx = min(int(len(s) * q), len(s) - 1)
-        return s[idx]
-
-    _MIN_N_BT_SIZE = 10  # n < 10 の旬はグローバル比率にフォールバック（n<10 は自己参照バイアス大）
-    _bt_ratio_buckets = {}  # {decade_no: {"ratio_min": [...], "ratio_max": [...]}}
-    for _r in all_en_by_H.get(0, []):
-        _dec = _r.get("decade")
-        if _dec is None:
-            continue
-        _sm = _r.get("size_min"); _sx = _r.get("size_max")
-        _sa = _r.get("size_avg")  # records の size_avg = (size_min + size_max) / 2
-        # 妥当性チェック: size_min < size_avg < size_max を満たす行のみ（save_decadal と対称）
-        if _sm is None or _sx is None or not _sa or _sa <= 0 or not (_sm < _sa < _sx):
-            continue
-        if _dec not in _bt_ratio_buckets:
-            _bt_ratio_buckets[_dec] = {"ratio_min": [], "ratio_max": []}
-        _bt_ratio_buckets[_dec]["ratio_min"].append(_sm / _sa)
-        _bt_ratio_buckets[_dec]["ratio_max"].append(_sx / _sa)
-
-    # グローバル（全旬）の P20/P80 比率（フォールバック用）
-    _all_ratio_min_vals = [v for d in _bt_ratio_buckets.values() for v in d["ratio_min"]]
-    _all_ratio_max_vals = [v for d in _bt_ratio_buckets.values() for v in d["ratio_max"]]
-    _global_ratio_min_p20 = _bt_percentile(_all_ratio_min_vals, 0.20) or 0.65
-    _global_ratio_max_p80 = _bt_percentile(_all_ratio_max_vals, 0.80) or 1.35
-
-    # 旬別比率テーブル {decade_no: (ratio_min_p20, ratio_max_p80)}
-    _bt_decadal_size_ratio = {}
-    for _dec, _d in _bt_ratio_buckets.items():
-        if len(_d["ratio_min"]) >= _MIN_N_BT_SIZE:
-            _rmin = _bt_percentile(_d["ratio_min"], 0.20)  # P20
-            _rmax = _bt_percentile(_d["ratio_max"], 0.80)  # P80
-        else:
-            _rmin = _global_ratio_min_p20   # フォールバック
-            _rmax = _global_ratio_max_p80   # フォールバック
-        # 物理制約: ratio_min ∈ (0, 1]、ratio_max ∈ [1, ∞)
-        _bt_decadal_size_ratio[_dec] = (
-            max(0.0, min(1.0, _rmin)) if _rmin is not None else _global_ratio_min_p20,
-            max(1.0, _rmax)           if _rmax is not None else _global_ratio_max_p80,
-        )
-
     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
     # 各月・各ホライズンの予測と実測を蓄積
     all_preds    = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
@@ -3397,11 +3338,9 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                             _range_by_key[H][_rk] = {}
                         _range_by_key[H][_rk][met] = (pred, act)
                         # size_avg ループ時に actual_size_min / actual_size_max も追記
-                        # また旬別実測幅ルックアップ用に decade_no も保存（Phase B-α'）
                         if met == "size_avg":
                             _range_by_key[H][_rk]["_size_min_act"] = r.get("size_min")
                             _range_by_key[H][_rk]["_size_max_act"] = r.get("size_max")
-                            _range_by_key[H][_rk]["_decade_no"] = r.get("decade")
                         # kg_avg ループ時に actual_kg_min / actual_kg_max も追記
                         elif met == "kg_avg":
                             _range_by_key[H][_rk]["_kg_min_act"] = r.get("kg_min")
@@ -3606,112 +3545,68 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         range_bt_data.append(("cnt", H, promise_break_rate, over_expect_rate,
                                coverage, bowzu_rate, winkler, n_r))
 
-    # ── size メトリック（Phase B-α': 実測比率ベースのレンジ評価） ───────────────────
-    # pred_center = size_avg 予測（wMAPE 7.3% の良好なモデル、変更なし）
-    # pred_lo = pred_center × ratio_min_dec  （旬別 size_min/size_avg の P20 比率）
-    # pred_hi = pred_center × ratio_max_dec  （旬別 size_max/size_avg の P80 比率）
+    # ── size / kg メトリック（Phase A: 単一モデル pred ± 実測レンジで評価） ──────
+    # size: _range_by_key["size_avg"] = (pred, actual_size_avg)
+    #       "_size_min_act" / "_size_max_act" = actual_size_min / actual_size_max
+    # kg:   _range_by_key["kg_avg"]   = (pred, actual_kg_avg)
+    #       "_kg_min_act" / "_kg_max_act" = actual_kg_min / actual_kg_max
     #
-    # 評価軸（Phase B-α' 確定・補遺6/補遺7）:
-    #   promise_break (主指標) = actual_size_min < pred_lo（下限割れ = 最悪ケース）
-    #   over_expect   (副指標) = actual_size_max > pred_hi（お化けが出た = 許容）
-    #     → 上限超え（お化け）は許容ドメイン判断（補遺6 確定）のため KPI 外・over_expect で記録のみ
-    #   coverage               = actual_size_min >= pred_lo かつ actual_size_max <= pred_hi
-    #     → pred レンジ [pred_lo, pred_hi] が実測 [min, max] を完全包含する割合（参考指標・非 KPI）
-    #   winkler                = 下限割れのみ評価。actual_size_min で評価（promise 側）。
-    #     → 上限超え（お化け）は許容ドメイン判断（補遺6 確定）のため別指標 over_expect で記録
+    # 分母統一（必須修正 1）:
+    #   size_min/size_max の NULL 率 38.8%・kg NULL 率 70.2% のため、
+    #   rows_valid（ami/amx 両方非 NULL の行）を 1 度だけ集計し、
+    #   promise_break / over_expect / coverage / winkler の全指標の分母 n_valid に統一する。
+    #   NULL 行を含む rows_r ベースで計算すると coverage だけ分母が異なり指標間整合性が崩れる。
     #
-    # 分母統一: actual_size_min / actual_size_max 両方非 NULL の行のみ（n_valid ベース）
-    for H in HORIZONS:
-        rows_sz = []
-        for _rk, d in _range_by_key[H].items():
-            if "size_avg" not in d:
+    # 各指標の定義（size/kg 共通・cnt と方向統一）:
+    #   promise_break = actual_avg < pred（予測より小さかった = 外れ・最悪ケース）
+    #   over_expect   = pred / actual_avg > 1.5（予測が実測の 1.5 倍超 = 期待させすぎ率）
+    #     ※ cnt と方向統一: cnt は pred_hi/actual_avg > 2.5、size/kg は点予測のため閾値小さめ
+    #     ※ 「爆釣率（actual > pred）」ではない。解約リスク軽症ケースを測る KPI 設計
+    #   coverage      = actual_min <= pred <= actual_max（実測レンジが予測点を包む）
+    #   winkler       = pl=ph=pred の幅ゼロ点予測版（cm または kg 単位・cnt の区間幅ベースと比較不可）
+    #   bowzu_rate    = None（ボウズ概念は cnt のみ）
+    for metric_label, avg_key, min_act_key, max_act_key in [
+        ("size", "size_avg", "_size_min_act", "_size_max_act"),
+        ("kg",   "kg_avg",   "_kg_min_act",   "_kg_max_act"),
+    ]:
+        for H in HORIZONS:
+            # rows_r: pred/act_avg が非 NULL の全行（サンプル数確認用）
+            rows_r = []
+            for _rk, d in _range_by_key[H].items():
+                if avg_key not in d:
+                    continue
+                pred, act_avg = d[avg_key]
+                if act_avg is None or pred is None:
+                    continue
+                act_min = d.get(min_act_key)
+                act_max = d.get(max_act_key)
+                rows_r.append((pred, act_avg, act_min, act_max))
+            # rows_valid: ami/amx 両方非 NULL の行のみ（全指標の分母統一）
+            rows_valid = [(p, aa, ami, amx) for p, aa, ami, amx in rows_r
+                          if ami is not None and amx is not None]
+            n_valid = len(rows_valid)
+            if n_valid < MIN_N_RANGE:
                 continue
-            pred_c, act_avg = d["size_avg"]
-            if act_avg is None or pred_c is None:
-                continue
-            act_min = d.get("_size_min_act")
-            act_max = d.get("_size_max_act")
-            dec_no  = d.get("_decade_no")
-            # 旬別比率ルックアップ（フォールバック: グローバル P20/P80）
-            _rmin, _rmax = _bt_decadal_size_ratio.get(
-                dec_no, (_global_ratio_min_p20, _global_ratio_max_p80)
+            # 全指標を rows_valid / n_valid で計算（分母統一）
+            # over_expect_rate: cnt と方向統一（pred が actual を倍率超過 = 期待させすぎ率）
+            #   cnt: pred_hi/actual > 2.5、size/kg: pred/actual > 1.5（点予測のため閾値小さめ）
+            promise_break_rate = sum(1 for p, aa, ami, amx in rows_valid if aa < p) / n_valid
+            over_expect_rate   = sum(1 for p, aa, ami, amx in rows_valid
+                                     if aa > 0 and p / aa > 1.5) / n_valid
+            coverage           = sum(1 for p, aa, ami, amx in rows_valid
+                                     if ami <= p <= amx) / n_valid
+            bowzu_rate         = None  # size / kg はボウズ概念なし
+            winkler            = sum(_winkler_range(p, p, aa)
+                                     for p, aa, ami, amx in rows_valid) / n_valid
+
+            lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
+            lines.append(
+                f"  {metric_label:>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
+                f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {'N/A':>6}  "
+                f"{winkler:>7.2f}  {n_valid:>4}"
             )
-            # pred_lo / pred_hi の生成（比率ベース）
-            pred_lo = pred_c * _rmin
-            pred_hi = pred_c * _rmax
-            rows_sz.append((pred_lo, pred_hi, pred_c, act_avg, act_min, act_max))
-
-        # rows_valid: actual_min / actual_max 両方非 NULL の行のみ（分母統一）
-        rows_valid = [(pl, ph, pc, aa, ami, amx) for pl, ph, pc, aa, ami, amx in rows_sz
-                      if ami is not None and amx is not None]
-        n_valid = len(rows_valid)
-        if n_valid < MIN_N_RANGE:
-            continue
-
-        # 評価指標（Phase B-α' 新定義）
-        # promise_break (主): actual_size_min < pred_lo（下限割れ）
-        promise_break_rate = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
-                                 if ami < pl) / n_valid
-        # over_expect (副): actual_size_max > pred_hi（お化けが出た = 許容）
-        over_expect_rate   = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
-                                 if amx > ph) / n_valid
-        # coverage: pred レンジ [pred_lo, pred_hi] が actual [min, max] に完全包含
-        # → 実測の全個体が pred レンジ内 = 実測下限 >= pred_lo かつ 実測上限 <= pred_hi
-        # ※ 幅ゼロ (pred_lo==pred_hi) の場合は旧定義 actual_min <= pred <= actual_max と同義
-        coverage           = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
-                                 if ami >= pl and amx <= ph) / n_valid
-        bowzu_rate         = None  # size / kg はボウズ概念なし
-        # winkler: 非対称（下限割れ 3x ペナルティ・上限超過 0.5x）
-        winkler            = sum(_winkler_range(pl, ph, ami)   # promise 側は min で評価
-                                 for pl, ph, pc, aa, ami, amx in rows_valid) / n_valid
-
-        lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
-        lines.append(
-            f"  {'size':>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
-            f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {'N/A':>6}  "
-            f"{winkler:>7.2f}  {n_valid:>4}"
-        )
-        range_bt_data.append(("size", H, promise_break_rate, over_expect_rate,
-                               coverage, bowzu_rate, winkler, n_valid))
-
-    # ── kg メトリック（Phase A 設計継続: 点予測 pred ± 実測レンジで評価） ──────────
-    # kg は NULL 率 70.2% でサンプル少のため Phase B-α' 拡張対象外。
-    # promise_break / over_expect / coverage / winkler の定義は Phase A 設計を継続。
-    #   promise_break = actual_kg_avg < pred（点予測を下回った）
-    #   over_expect   = pred / actual_kg_avg > 1.5
-    #   coverage      = actual_kg_min <= pred <= actual_kg_max
-    for H in HORIZONS:
-        rows_r = []
-        for _rk, d in _range_by_key[H].items():
-            if "kg_avg" not in d:
-                continue
-            pred, act_avg = d["kg_avg"]
-            if act_avg is None or pred is None:
-                continue
-            act_min = d.get("_kg_min_act")
-            act_max = d.get("_kg_max_act")
-            rows_r.append((pred, act_avg, act_min, act_max))
-        rows_valid = [(p, aa, ami, amx) for p, aa, ami, amx in rows_r
-                      if ami is not None and amx is not None]
-        n_valid = len(rows_valid)
-        if n_valid < MIN_N_RANGE:
-            continue
-        promise_break_rate = sum(1 for p, aa, ami, amx in rows_valid if aa < p) / n_valid
-        over_expect_rate   = sum(1 for p, aa, ami, amx in rows_valid
-                                 if aa > 0 and p / aa > 1.5) / n_valid
-        coverage           = sum(1 for p, aa, ami, amx in rows_valid
-                                 if ami <= p <= amx) / n_valid
-        bowzu_rate         = None
-        winkler            = sum(_winkler_range(p, p, aa)
-                                 for p, aa, ami, amx in rows_valid) / n_valid
-        lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
-        lines.append(
-            f"  {'kg':>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
-            f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {'N/A':>6}  "
-            f"{winkler:>7.2f}  {n_valid:>4}"
-        )
-        range_bt_data.append(("kg", H, promise_break_rate, over_expect_rate,
-                               coverage, bowzu_rate, winkler, n_valid))
+            range_bt_data.append((metric_label, H, promise_break_rate, over_expect_rate,
+                                   coverage, bowzu_rate, winkler, n_valid))
 
     # ── star_backtest: 回遊魚★評価バックテスト ───────────────────────────────────
     # ★割り当て: コンボ固有の予測値分位数（P80/P60/P40/P20）で切る
@@ -4752,41 +4647,49 @@ def save_decadal(fish, ship, records):
     """deepdive 実行時に combo_decadal を直接更新する。
     season_detail.py の実行タイミングに依存せず常に最新 CSV と同期させる。
 
-    Phase B-α' (2026-05-08) — size 実測比率ベース列:
-      avg_size_min / avg_size_max は「旬別 size_min(max)/size_avg 比率」を格納する。
-      ※ cm 絶対値ではなく無次元比率。predict_count.py で pred_avg に掛けて使用。
-
-      - avg_size_min: 旬別 (size_min / size_avg) の P20 比率
-          → pred_lo = pred_avg × avg_size_min
-          → promise_break = actual_size_min < pred_lo の確率 ≈ 20%（P20 定義より）
-          → 採用理由: P50(≈48%) は改善効果なし、P10(≈10%) は下限過小、
-                     P20(≈18-20%) が「改善幅 33pt / 撤回基準クリア」として確定（2026-05-08 補遺7）
-      - avg_size_max: 旬別 (size_max / size_avg) の P80 比率（外れ値「お化け」は許容）
-          → pred_hi = pred_avg × avg_size_max
-          → over_expect = actual_size_max > pred_hi の確率 ≈ 20%（P80 対称配置）
-          → 採用理由: over_expect は KPI 外（許容）なので P20 と対称の P80 がシンプル
-      - MIN_N_DECADAL_SIZE = 10: n < 10 の旬は全期間比率にフォールバック
-          （n=6-8 では自己参照バイアス 12-17% が生じるため閾値を引き上げ）
-      - NULL 行（size_min/max が空）・妥当性チェック失敗行（size_min < size_avg < size_max を満たさない）は除外
+    Phase B-α' (2026-05-08):
+      avg_size_min / avg_size_max を旬別実測中央値として追加。
+      - avg_size_min: 旬別 actual_size_min の中央値（promise_break 計算用下限）
+      - avg_size_max: 旬別 actual_size_max の P95 外れ値除外中央値（「お化け」を学習対象外）
+      - MIN_N_DECADAL_SIZE = 5: n < 5 の旬は全期間平均にフォールバック（save_decadal 後に処理）
     """
     if not records:
         return
 
-    def _percentile(vals, q):
-        """vals の q 分位点（0.0〜1.0）を返す。vals が空なら None。"""
+    # ── P95 外れ値除外中央値ヘルパー ──────────────────────────────────────────
+    def _median_excl_p95(vals):
+        """vals の中から P95 以上を除外して中央値を返す。
+        n < 20 の場合は max 値 1 点だけ除外（P95 が機能しない小サンプル対策）。
+        vals が空の場合は None を返す。
+        """
+        if not vals:
+            return None
+        n = len(vals)
+        s = sorted(vals)
+        if n < 20:
+            # 最大値 1 点のみ除外（お化け 1 匹分を取り除く）
+            trimmed = s[:-1] if n > 1 else s
+        else:
+            # P95 以上を除外
+            p95_idx = int(n * 0.95)
+            trimmed = s[:p95_idx] if p95_idx > 0 else s
+        if not trimmed:
+            return None
+        mid = len(trimmed) // 2
+        return trimmed[mid]
+
+    def _median(vals):
         if not vals:
             return None
         s = sorted(vals)
-        idx = min(int(len(s) * q), len(s) - 1)
-        return s[idx]
+        return s[len(s) // 2]
 
-    MIN_N_DECADAL_SIZE = 10  # これ未満の旬は全期間比率フォールバック（n<10 は自己参照バイアス大）
+    MIN_N_DECADAL_SIZE = 5  # これ未満の旬は全期間平均フォールバック
 
     buckets = defaultdict(lambda: {
         "cnt": [], "cnt_min": [], "cnt_max": [],
         "size": [], "kg": [],
-        # Phase B-α': size_min/size_avg 比率 および size_max/size_avg 比率を収集
-        "size_ratio_min": [], "size_ratio_max": [],
+        "size_min": [], "size_max": [],  # Phase B-α' 追加
     })
     for r in records:
         dec = r.get("decade")
@@ -4804,19 +4707,18 @@ def save_decadal(fish, ship, records):
             buckets[dec]["size"].append(r["size_avg"])
         if r.get("kg_avg") is not None:
             buckets[dec]["kg"].append(r["kg_avg"])
-        # Phase B-α': size_min / size_avg 比率・size_max / size_avg 比率を収集
-        # size_avg は records 内で (size_min + size_max) / 2 として計算済み
-        # 妥当性チェック: size_min < size_avg < size_max を満たす行のみ採用（cnt の cm < cnt < cx と対称）
-        sm = r.get("size_min"); sx = r.get("size_max"); sa = r.get("size_avg")
-        if sm is not None and sx is not None and sa and sa > 0 and sm < sa < sx:
-            buckets[dec]["size_ratio_min"].append(sm / sa)
-            buckets[dec]["size_ratio_max"].append(sx / sa)
+        # Phase B-α': size_min / size_max を NULL 除外して収集
+        sm = r.get("size_min"); sx = r.get("size_max")
+        if sm is not None:
+            buckets[dec]["size_min"].append(sm)
+        if sx is not None:
+            buckets[dec]["size_max"].append(sx)
 
-    # 全期間比率（旬データ不足時のフォールバック用）
-    all_ratio_min = [v for d in buckets.values() for v in d["size_ratio_min"]]
-    all_ratio_max = [v for d in buckets.values() for v in d["size_ratio_max"]]
-    global_ratio_min_p20 = _percentile(all_ratio_min, 0.20) or 0.65
-    global_ratio_max_p80 = _percentile(all_ratio_max, 0.80) or 1.35
+    # 全期間 size_min / size_max の中央値（旬データ不足時のフォールバック用）
+    all_size_min = [v for d in buckets.values() for v in d["size_min"]]
+    all_size_max = [v for d in buckets.values() for v in d["size_max"]]
+    global_size_min_med = _median(all_size_min)
+    global_size_max_med = _median_excl_p95(all_size_max)
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     rows = []
@@ -4831,21 +4733,15 @@ def save_decadal(fish, ship, records):
         cnt_min  = min(raw_min, avg_cnt) if raw_min is not None else None
         cnt_max  = max(raw_max, avg_cnt) if raw_max is not None else None
 
-        # Phase B-α': 旬別 size 比率の P20 / P80
-        # n < MIN_N_DECADAL_SIZE の旬は全期間比率フォールバック
-        n_sz = len(d["size_ratio_min"])
+        # Phase B-α': 旬別 size_min / size_max 中央値（外れ値除外）
+        # n < MIN_N_DECADAL_SIZE の旬は全期間平均フォールバック
+        n_sz = len(d["size_min"])
         if n_sz >= MIN_N_DECADAL_SIZE:
-            size_min_ratio = _percentile(d["size_ratio_min"], 0.20)  # P20
-            size_max_ratio = _percentile(d["size_ratio_max"], 0.80)  # P80
+            avg_size_min_val = _median(d["size_min"])
+            avg_size_max_val = _median_excl_p95(d["size_max"])
         else:
-            size_min_ratio = global_ratio_min_p20   # フォールバック
-            size_max_ratio = global_ratio_max_p80   # フォールバック
-
-        # 比率の物理的制約: min 側は 0〜1、max 側は 1〜上限なし
-        if size_min_ratio is not None:
-            size_min_ratio = max(0.0, min(1.0, size_min_ratio))
-        if size_max_ratio is not None:
-            size_max_ratio = max(1.0, size_max_ratio)
+            avg_size_min_val = global_size_min_med   # フォールバック
+            avg_size_max_val = global_size_max_med   # フォールバック
 
         rows.append((
             fish, ship, dec, len(d["cnt"]),
@@ -4855,8 +4751,8 @@ def save_decadal(fish, ship, records):
             now,
             round(cnt_min, 2) if cnt_min else None,
             round(cnt_max, 2) if cnt_max else None,
-            round(size_min_ratio, 4) if size_min_ratio is not None else None,
-            round(size_max_ratio, 4) if size_max_ratio is not None else None,
+            round(avg_size_min_val, 2) if avg_size_min_val is not None else None,
+            round(avg_size_max_val, 2) if avg_size_max_val is not None else None,
         ))
 
     if not rows:
@@ -4867,10 +4763,7 @@ def save_decadal(fish, ship, records):
             fish TEXT, ship TEXT, decade_no INTEGER,
             n INTEGER, avg_cnt REAL, avg_size REAL, avg_kg REAL,
             updated_at TEXT, avg_cnt_min REAL, avg_cnt_max REAL,
-            avg_size_min REAL,  -- 無次元比率: 旬別 (size_min / size_avg) の P20 ∈ [0, 1] (Phase B-α' 2026-05-08)
-            avg_size_max REAL,  -- 無次元比率: 旬別 (size_max / size_avg) の P80 ∈ [1, ∞) (Phase B-α' 2026-05-08)
-            -- predict_count.py での使用: size_lo = pred_avg × avg_size_min, size_hi = pred_avg × avg_size_max
-            -- フォールバック: n < 10 の旬は全期間 P20/P80 比率を使用
+            avg_size_min REAL, avg_size_max REAL,
             PRIMARY KEY (fish, ship, decade_no)
         )
     """)

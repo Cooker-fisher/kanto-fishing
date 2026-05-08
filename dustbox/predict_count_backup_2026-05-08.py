@@ -1065,24 +1065,20 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
     if not dekad:
         return None
 
-    # 旬別ベースライン（avg_cnt_min/max + avg_size_min/max も取得）
-    # avg_size_min / avg_size_max は Phase B-α' で追加（旬別実測幅ベースのレンジ生成用）
+    # 旬別ベースライン（avg_cnt_min/max も取得）
     row = conn.execute(
-        "SELECT avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max, "
-        "avg_size_min, avg_size_max FROM combo_decadal "
+        "SELECT avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max FROM combo_decadal "
         "WHERE fish=? AND ship=? AND decade_no=?",
         (fish, ship, dekad)
     ).fetchone()
 
     if row:
-        avg_cnt, avg_size, avg_kg, n_dekad, avg_cnt_min, avg_cnt_max, \
-            avg_size_min_dec, avg_size_max_dec = row
+        avg_cnt, avg_size, avg_kg, n_dekad, avg_cnt_min, avg_cnt_max = row
         fallback = False
     else:
         # 最近傍旬（±3以内）にフォールバック
         near = conn.execute(
-            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max, "
-            "avg_size_min, avg_size_max "
+            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max "
             "FROM combo_decadal "
             "WHERE fish=? AND ship=? ORDER BY ABS(decade_no - ?) LIMIT 1",
             (fish, ship, dekad)
@@ -1091,7 +1087,6 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             return None
         avg_cnt, avg_size, avg_kg, n_dekad = near[1], near[2], near[3], near[4]
         avg_cnt_min, avg_cnt_max = near[5], near[6]
-        avg_size_min_dec, avg_size_max_dec = near[7], near[8]
         fallback = True
 
     if not avg_cnt or avg_cnt <= 0:
@@ -1370,26 +1365,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         "cnt_lo":          cnt_lo,   # 初心者釣果（旬別min_ratio または avg-MAE）
         "cnt_hi":          cnt_hi,   # ベテラン釣果（旬別max_ratio または avg+MAE）
         "size_predicted":  round(size_avg_corrected, 1) if size_avg_corrected else None,
-        # Phase B-α': 実測比率ベースのレンジ生成 (2026-05-08 補遺7 確定)
-        # avg_size_min_dec = 旬別 (size_min/size_avg) の P20 比率（combo_decadal に格納）
-        # avg_size_max_dec = 旬別 (size_max/size_avg) の P80 比率（combo_decadal に格納）
-        # size_lo = pred_avg × avg_size_min_dec  （≡ pred_avg × P20_ratio）
-        # size_hi = pred_avg × avg_size_max_dec  （≡ pred_avg × P80_ratio）
-        # → promise_break(actual_size_min < pred_lo) の期待値 ≈ 20%
-        # → pred_avg はポイント別補正済みの値を使用（比率なので補正量は比例して維持）
-        # フォールバック: avg_size_min/max_dec が NULL または 0（combo_deep_dive 再実行前等）は ±size_mae
-        # ゼロガード: avg_size_min_dec=0 は ratio=0 で pred_lo=0cm（物理的に不正）→ フォールバック
-        # ゼロガード: avg_size_max_dec=0 は ratio=0 で pred_hi=0cm（物理的に不正）→ フォールバック
-        "size_lo": (
-            round(size_avg_corrected * avg_size_min_dec, 1)
-            if size_avg_corrected and avg_size_min_dec is not None and avg_size_min_dec > 0
-            else (round(size_avg_corrected - size_mae, 1) if size_avg_corrected and size_mae else None)
-        ),
-        "size_hi": (
-            round(size_avg_corrected * avg_size_max_dec, 1)
-            if size_avg_corrected and avg_size_max_dec is not None and avg_size_max_dec > 0
-            else (round(size_avg_corrected + size_mae, 1) if size_avg_corrected and size_mae else None)
-        ),
+        "size_lo":         round(size_avg_corrected - size_mae, 1) if size_avg_corrected and size_mae else None,
+        "size_hi":         round(size_avg_corrected + size_mae, 1) if size_avg_corrected and size_mae else None,
         "kg_predicted":    round(avg_kg, 2) if avg_kg else None,
         "kg_lo":           round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
         "kg_hi":           round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,

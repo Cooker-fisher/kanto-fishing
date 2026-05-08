@@ -1,0 +1,458 @@
+diff --git a/analysis/V2/methods/combo_deep_dive.py b/analysis/V2/methods/combo_deep_dive.py
+index 798ce6ec..fe2d520e 100644
+--- a/analysis/V2/methods/combo_deep_dive.py
++++ b/analysis/V2/methods/combo_deep_dive.py
+@@ -2922,6 +2922,81 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
+     if len(months) >= 6:
+         print(f"    [CMEMS最適化] best_cmems={best_cmems} (候補: 0/2/4/6)", flush=True)
+ 
++    # ── Phase B-α': バックテスト評価用 旬別実測比率ルックアップテーブル ──────────
++    # 全期間 records（H=0 enrich 済み）から旬別 size_min/size_avg 比率・size_max/size_avg 比率を計算。
++    #
++    # 【設計方針】
++    #   実測幅は比率（size_min/size_avg, size_max/size_avg）で保存する。
++    #   予測時: pred_lo = pred_avg × ratio_min_dec, pred_hi = pred_avg × ratio_max_dec
++    #   これにより pred_avg の補正（ポイント別補正等）が変わっても幅比率は維持される。
++    #
++    # 【リーク評価】
++    #   全期間データで比率を計算するため、テスト月のレコードも含む。
++    #   ただし比率は「魚の物理的サイズ特性」であり自然法則的に安定した統計量のため、
++    #   fold ごとの差異は小さく、予測パラメータ（モデル係数）の漏洩ではない。
++    #   本番経路（combo_decadal）との整合性: 同じ比率 base を共有。
++    #
++    # _bt_decadal_size_ratio: {decade_no: (ratio_min_med, ratio_max_med_p95excl)}
++    # ratio_min_med    = 旬別 size_min/size_avg の中央値
++    # ratio_max_med    = 旬別 size_max/size_avg の P95 除外中央値（「お化け」除く）
++    _MIN_N_BT_SIZE = 5   # n < 5 の旬はグローバル比率にフォールバック
++    _bt_ratio_buckets = {}  # {decade_no: {"ratio_min": [...], "ratio_max": [...]}}
++    for _r in all_en_by_H.get(0, []):
++        _dec = _r.get("decade")
++        if _dec is None:
++            continue
++        _sm = _r.get("size_min"); _sx = _r.get("size_max")
++        _sa = _r.get("size_avg")  # records の size_avg = (size_min + size_max) / 2
++        if _sm is None or _sx is None or not _sa or _sa <= 0:
++            continue
++        if _dec not in _bt_ratio_buckets:
++            _bt_ratio_buckets[_dec] = {"ratio_min": [], "ratio_max": []}
++        _bt_ratio_buckets[_dec]["ratio_min"].append(_sm / _sa)
++        _bt_ratio_buckets[_dec]["ratio_max"].append(_sx / _sa)
++
++    def _bt_median(vals):
++        if not vals:
++            return None
++        s = sorted(vals)
++        return s[len(s) // 2]
++
++    def _bt_median_excl_p95(vals):
++        """P95 以上を除外して中央値（n<20 は最大値 1 点除外）。"""
++        if not vals:
++            return None
++        n = len(vals)
++        s = sorted(vals)
++        if n < 20:
++            trimmed = s[:-1] if n > 1 else s
++        else:
++            p95_idx = int(n * 0.95)
++            trimmed = s[:p95_idx] if p95_idx > 0 else s
++        if not trimmed:
++            return None
++        mid = len(trimmed) // 2
++        return trimmed[mid]
++
++    # グローバル（全旬）の比率中央値（フォールバック用）
++    _all_ratio_min_vals = [v for d in _bt_ratio_buckets.values() for v in d["ratio_min"]]
++    _all_ratio_max_vals = [v for d in _bt_ratio_buckets.values() for v in d["ratio_max"]]
++    _global_ratio_min_med = _bt_median(_all_ratio_min_vals) or 0.75
++    _global_ratio_max_med = _bt_median_excl_p95(_all_ratio_max_vals) or 1.25
++
++    # 旬別比率テーブル {decade_no: (ratio_min_med, ratio_max_med)}
++    _bt_decadal_size_ratio = {}
++    for _dec, _d in _bt_ratio_buckets.items():
++        if len(_d["ratio_min"]) >= _MIN_N_BT_SIZE:
++            _rmin = _bt_median(_d["ratio_min"])
++            _rmax = _bt_median_excl_p95(_d["ratio_max"])
++        else:
++            _rmin = _global_ratio_min_med   # フォールバック
++            _rmax = _global_ratio_max_med   # フォールバック
++        # ratio_min は 0 以上 1 以下、ratio_max は 1 以上に制約
++        _bt_decadal_size_ratio[_dec] = (
++            min(1.0, _rmin) if _rmin is not None else _global_ratio_min_med,
++            max(1.0, _rmax) if _rmax is not None else _global_ratio_max_med,
++        )
++
+     METRICS_LIST = ["cnt_avg", "cnt_min", "cnt_max", "size_avg", "kg_avg"]
+     # 各月・各ホライズンの予測と実測を蓄積
+     all_preds    = {met: {H: [] for H in HORIZONS} for met in METRICS_LIST}
+@@ -3338,9 +3413,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
+                             _range_by_key[H][_rk] = {}
+                         _range_by_key[H][_rk][met] = (pred, act)
+                         # size_avg ループ時に actual_size_min / actual_size_max も追記
++                        # また旬別実測幅ルックアップ用に decade_no も保存（Phase B-α'）
+                         if met == "size_avg":
+                             _range_by_key[H][_rk]["_size_min_act"] = r.get("size_min")
+                             _range_by_key[H][_rk]["_size_max_act"] = r.get("size_max")
++                            _range_by_key[H][_rk]["_decade_no"] = r.get("decade")
+                         # kg_avg ループ時に actual_kg_min / actual_kg_max も追記
+                         elif met == "kg_avg":
+                             _range_by_key[H][_rk]["_kg_min_act"] = r.get("kg_min")
+@@ -3545,68 +3622,110 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
+         range_bt_data.append(("cnt", H, promise_break_rate, over_expect_rate,
+                                coverage, bowzu_rate, winkler, n_r))
+ 
+-    # ── size / kg メトリック（Phase A: 単一モデル pred ± 実測レンジで評価） ──────
+-    # size: _range_by_key["size_avg"] = (pred, actual_size_avg)
+-    #       "_size_min_act" / "_size_max_act" = actual_size_min / actual_size_max
+-    # kg:   _range_by_key["kg_avg"]   = (pred, actual_kg_avg)
+-    #       "_kg_min_act" / "_kg_max_act" = actual_kg_min / actual_kg_max
++    # ── size メトリック（Phase B-α': 実測比率ベースのレンジ評価） ───────────────────
++    # pred_center = size_avg 予測（wMAPE 7.3% の良好なモデル、変更なし）
++    # pred_lo = pred_center × ratio_min_dec  （旬別 size_min/size_avg 中央値）
++    # pred_hi = pred_center × ratio_max_dec  （旬別 size_max/size_avg P95 除外中央値）
+     #
+-    # 分母統一（必須修正 1）:
+-    #   size_min/size_max の NULL 率 38.8%・kg NULL 率 70.2% のため、
+-    #   rows_valid（ami/amx 両方非 NULL の行）を 1 度だけ集計し、
+-    #   promise_break / over_expect / coverage / winkler の全指標の分母 n_valid に統一する。
+-    #   NULL 行を含む rows_r ベースで計算すると coverage だけ分母が異なり指標間整合性が崩れる。
++    # 評価軸（Phase B-α' 確定・補遺6）:
++    #   promise_break (主指標) = actual_size_min < pred_lo（下限割れ = 最悪ケース）
++    #   over_expect   (副指標) = actual_size_max > pred_hi（お化けが出た = 許容）
++    #   coverage               = actual_size_min >= pred_lo かつ actual_size_max <= pred_hi
++    #     → pred レンジ [pred_lo, pred_hi] が実測 [min, max] を完全包含する割合
++    #   winkler                = 非対称スコア（下限割れは 3x ペナルティ、上限超は 0.5x）
+     #
+-    # 各指標の定義（size/kg 共通・cnt と方向統一）:
+-    #   promise_break = actual_avg < pred（予測より小さかった = 外れ・最悪ケース）
+-    #   over_expect   = pred / actual_avg > 1.5（予測が実測の 1.5 倍超 = 期待させすぎ率）
+-    #     ※ cnt と方向統一: cnt は pred_hi/actual_avg > 2.5、size/kg は点予測のため閾値小さめ
+-    #     ※ 「爆釣率（actual > pred）」ではない。解約リスク軽症ケースを測る KPI 設計
+-    #   coverage      = actual_min <= pred <= actual_max（実測レンジが予測点を包む）
+-    #   winkler       = pl=ph=pred の幅ゼロ点予測版（cm または kg 単位・cnt の区間幅ベースと比較不可）
+-    #   bowzu_rate    = None（ボウズ概念は cnt のみ）
+-    for metric_label, avg_key, min_act_key, max_act_key in [
+-        ("size", "size_avg", "_size_min_act", "_size_max_act"),
+-        ("kg",   "kg_avg",   "_kg_min_act",   "_kg_max_act"),
+-    ]:
+-        for H in HORIZONS:
+-            # rows_r: pred/act_avg が非 NULL の全行（サンプル数確認用）
+-            rows_r = []
+-            for _rk, d in _range_by_key[H].items():
+-                if avg_key not in d:
+-                    continue
+-                pred, act_avg = d[avg_key]
+-                if act_avg is None or pred is None:
+-                    continue
+-                act_min = d.get(min_act_key)
+-                act_max = d.get(max_act_key)
+-                rows_r.append((pred, act_avg, act_min, act_max))
+-            # rows_valid: ami/amx 両方非 NULL の行のみ（全指標の分母統一）
+-            rows_valid = [(p, aa, ami, amx) for p, aa, ami, amx in rows_r
+-                          if ami is not None and amx is not None]
+-            n_valid = len(rows_valid)
+-            if n_valid < MIN_N_RANGE:
++    # 分母統一: actual_size_min / actual_size_max 両方非 NULL の行のみ（n_valid ベース）
++    for H in HORIZONS:
++        rows_sz = []
++        for _rk, d in _range_by_key[H].items():
++            if "size_avg" not in d:
+                 continue
+-            # 全指標を rows_valid / n_valid で計算（分母統一）
+-            # over_expect_rate: cnt と方向統一（pred が actual を倍率超過 = 期待させすぎ率）
+-            #   cnt: pred_hi/actual > 2.5、size/kg: pred/actual > 1.5（点予測のため閾値小さめ）
+-            promise_break_rate = sum(1 for p, aa, ami, amx in rows_valid if aa < p) / n_valid
+-            over_expect_rate   = sum(1 for p, aa, ami, amx in rows_valid
+-                                     if aa > 0 and p / aa > 1.5) / n_valid
+-            coverage           = sum(1 for p, aa, ami, amx in rows_valid
+-                                     if ami <= p <= amx) / n_valid
+-            bowzu_rate         = None  # size / kg はボウズ概念なし
+-            winkler            = sum(_winkler_range(p, p, aa)
+-                                     for p, aa, ami, amx in rows_valid) / n_valid
+-
+-            lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
+-            lines.append(
+-                f"  {metric_label:>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
+-                f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {'N/A':>6}  "
+-                f"{winkler:>7.2f}  {n_valid:>4}"
++            pred_c, act_avg = d["size_avg"]
++            if act_avg is None or pred_c is None:
++                continue
++            act_min = d.get("_size_min_act")
++            act_max = d.get("_size_max_act")
++            dec_no  = d.get("_decade_no")
++            # 旬別比率ルックアップ（フォールバック: グローバル比率中央値）
++            _rmin, _rmax = _bt_decadal_size_ratio.get(
++                dec_no, (_global_ratio_min_med, _global_ratio_max_med)
+             )
+-            range_bt_data.append((metric_label, H, promise_break_rate, over_expect_rate,
+-                                   coverage, bowzu_rate, winkler, n_valid))
++            # pred_lo / pred_hi の生成（比率ベース）
++            pred_lo = pred_c * _rmin
++            pred_hi = pred_c * _rmax
++            rows_sz.append((pred_lo, pred_hi, pred_c, act_avg, act_min, act_max))
++
++        # rows_valid: actual_min / actual_max 両方非 NULL の行のみ（分母統一）
++        rows_valid = [(pl, ph, pc, aa, ami, amx) for pl, ph, pc, aa, ami, amx in rows_sz
++                      if ami is not None and amx is not None]
++        n_valid = len(rows_valid)
++        if n_valid < MIN_N_RANGE:
++            continue
++
++        # 評価指標（Phase B-α' 新定義）
++        # promise_break (主): actual_size_min < pred_lo（下限割れ）
++        promise_break_rate = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
++                                 if ami < pl) / n_valid
++        # over_expect (副): actual_size_max > pred_hi（お化けが出た = 許容）
++        over_expect_rate   = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
++                                 if amx > ph) / n_valid
++        # coverage: pred レンジ [pred_lo, pred_hi] が actual [min, max] に完全包含
++        # → 実測の全個体が pred レンジ内 = 実測下限 >= pred_lo かつ 実測上限 <= pred_hi
++        # ※ 幅ゼロ (pred_lo==pred_hi) の場合は旧定義 actual_min <= pred <= actual_max と同義
++        coverage           = sum(1 for pl, ph, pc, aa, ami, amx in rows_valid
++                                 if ami >= pl and amx <= ph) / n_valid
++        bowzu_rate         = None  # size / kg はボウズ概念なし
++        # winkler: 非対称（下限割れ 3x ペナルティ・上限超過 0.5x）
++        winkler            = sum(_winkler_range(pl, ph, ami)   # promise 側は min で評価
++                                 for pl, ph, pc, aa, ami, amx in rows_valid) / n_valid
++
++        lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
++        lines.append(
++            f"  {'size':>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
++            f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {'N/A':>6}  "
++            f"{winkler:>7.2f}  {n_valid:>4}"
++        )
++        range_bt_data.append(("size", H, promise_break_rate, over_expect_rate,
++                               coverage, bowzu_rate, winkler, n_valid))
++
++    # ── kg メトリック（Phase A 設計継続: 点予測 pred ± 実測レンジで評価） ──────────
++    # kg は NULL 率 70.2% でサンプル少のため Phase B-α' 拡張対象外。
++    # promise_break / over_expect / coverage / winkler の定義は Phase A 設計を継続。
++    #   promise_break = actual_kg_avg < pred（点予測を下回った）
++    #   over_expect   = pred / actual_kg_avg > 1.5
++    #   coverage      = actual_kg_min <= pred <= actual_kg_max
++    for H in HORIZONS:
++        rows_r = []
++        for _rk, d in _range_by_key[H].items():
++            if "kg_avg" not in d:
++                continue
++            pred, act_avg = d["kg_avg"]
++            if act_avg is None or pred is None:
++                continue
++            act_min = d.get("_kg_min_act")
++            act_max = d.get("_kg_max_act")
++            rows_r.append((pred, act_avg, act_min, act_max))
++        rows_valid = [(p, aa, ami, amx) for p, aa, ami, amx in rows_r
++                      if ami is not None and amx is not None]
++        n_valid = len(rows_valid)
++        if n_valid < MIN_N_RANGE:
++            continue
++        promise_break_rate = sum(1 for p, aa, ami, amx in rows_valid if aa < p) / n_valid
++        over_expect_rate   = sum(1 for p, aa, ami, amx in rows_valid
++                                 if aa > 0 and p / aa > 1.5) / n_valid
++        coverage           = sum(1 for p, aa, ami, amx in rows_valid
++                                 if ami <= p <= amx) / n_valid
++        bowzu_rate         = None
++        winkler            = sum(_winkler_range(p, p, aa)
++                                 for p, aa, ami, amx in rows_valid) / n_valid
++        lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
++        lines.append(
++            f"  {'kg':>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
++            f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {'N/A':>6}  "
++            f"{winkler:>7.2f}  {n_valid:>4}"
++        )
++        range_bt_data.append(("kg", H, promise_break_rate, over_expect_rate,
++                               coverage, bowzu_rate, winkler, n_valid))
+ 
+     # ── star_backtest: 回遊魚★評価バックテスト ───────────────────────────────────
+     # ★割り当て: コンボ固有の予測値分位数（P80/P60/P40/P20）で切る
+@@ -4646,10 +4765,51 @@ def save_point_events(fish, ship, en0):
+ def save_decadal(fish, ship, records):
+     """deepdive 実行時に combo_decadal を直接更新する。
+     season_detail.py の実行タイミングに依存せず常に最新 CSV と同期させる。
++
++    Phase B-α' (2026-05-08):
++      avg_size_min / avg_size_max を旬別実測中央値として追加。
++      - avg_size_min: 旬別 actual_size_min の中央値（promise_break 計算用下限）
++      - avg_size_max: 旬別 actual_size_max の P95 外れ値除外中央値（「お化け」を学習対象外）
++      - MIN_N_DECADAL_SIZE = 5: n < 5 の旬は全期間平均にフォールバック（save_decadal 後に処理）
+     """
+     if not records:
+         return
+-    buckets = defaultdict(lambda: {"cnt": [], "cnt_min": [], "cnt_max": [], "size": [], "kg": []})
++
++    # ── P95 外れ値除外中央値ヘルパー ──────────────────────────────────────────
++    def _median_excl_p95(vals):
++        """vals の中から P95 以上を除外して中央値を返す。
++        n < 20 の場合は max 値 1 点だけ除外（P95 が機能しない小サンプル対策）。
++        vals が空の場合は None を返す。
++        """
++        if not vals:
++            return None
++        n = len(vals)
++        s = sorted(vals)
++        if n < 20:
++            # 最大値 1 点のみ除外（お化け 1 匹分を取り除く）
++            trimmed = s[:-1] if n > 1 else s
++        else:
++            # P95 以上を除外
++            p95_idx = int(n * 0.95)
++            trimmed = s[:p95_idx] if p95_idx > 0 else s
++        if not trimmed:
++            return None
++        mid = len(trimmed) // 2
++        return trimmed[mid]
++
++    def _median(vals):
++        if not vals:
++            return None
++        s = sorted(vals)
++        return s[len(s) // 2]
++
++    MIN_N_DECADAL_SIZE = 5  # これ未満の旬は全期間平均フォールバック
++
++    buckets = defaultdict(lambda: {
++        "cnt": [], "cnt_min": [], "cnt_max": [],
++        "size": [], "kg": [],
++        "size_min": [], "size_max": [],  # Phase B-α' 追加
++    })
+     for r in records:
+         dec = r.get("decade")
+         if dec is None:
+@@ -4666,6 +4826,18 @@ def save_decadal(fish, ship, records):
+             buckets[dec]["size"].append(r["size_avg"])
+         if r.get("kg_avg") is not None:
+             buckets[dec]["kg"].append(r["kg_avg"])
++        # Phase B-α': size_min / size_max を NULL 除外して収集
++        sm = r.get("size_min"); sx = r.get("size_max")
++        if sm is not None:
++            buckets[dec]["size_min"].append(sm)
++        if sx is not None:
++            buckets[dec]["size_max"].append(sx)
++
++    # 全期間 size_min / size_max の中央値（旬データ不足時のフォールバック用）
++    all_size_min = [v for d in buckets.values() for v in d["size_min"]]
++    all_size_max = [v for d in buckets.values() for v in d["size_max"]]
++    global_size_min_med = _median(all_size_min)
++    global_size_max_med = _median_excl_p95(all_size_max)
+ 
+     now = datetime.now().strftime("%Y-%m-%d %H:%M")
+     rows = []
+@@ -4679,6 +4851,17 @@ def save_decadal(fish, ship, records):
+         raw_max  = sum(d["cnt_max"]) / len(d["cnt_max"]) if len(d["cnt_max"]) >= 3 else None
+         cnt_min  = min(raw_min, avg_cnt) if raw_min is not None else None
+         cnt_max  = max(raw_max, avg_cnt) if raw_max is not None else None
++
++        # Phase B-α': 旬別 size_min / size_max 中央値（外れ値除外）
++        # n < MIN_N_DECADAL_SIZE の旬は全期間平均フォールバック
++        n_sz = len(d["size_min"])
++        if n_sz >= MIN_N_DECADAL_SIZE:
++            avg_size_min_val = _median(d["size_min"])
++            avg_size_max_val = _median_excl_p95(d["size_max"])
++        else:
++            avg_size_min_val = global_size_min_med   # フォールバック
++            avg_size_max_val = global_size_max_med   # フォールバック
++
+         rows.append((
+             fish, ship, dec, len(d["cnt"]),
+             round(avg_cnt, 2),
+@@ -4687,6 +4870,8 @@ def save_decadal(fish, ship, records):
+             now,
+             round(cnt_min, 2) if cnt_min else None,
+             round(cnt_max, 2) if cnt_max else None,
++            round(avg_size_min_val, 2) if avg_size_min_val is not None else None,
++            round(avg_size_max_val, 2) if avg_size_max_val is not None else None,
+         ))
+ 
+     if not rows:
+@@ -4697,10 +4882,11 @@ def save_decadal(fish, ship, records):
+             fish TEXT, ship TEXT, decade_no INTEGER,
+             n INTEGER, avg_cnt REAL, avg_size REAL, avg_kg REAL,
+             updated_at TEXT, avg_cnt_min REAL, avg_cnt_max REAL,
++            avg_size_min REAL, avg_size_max REAL,
+             PRIMARY KEY (fish, ship, decade_no)
+         )
+     """)
+-    for col in ("avg_cnt_min", "avg_cnt_max"):
++    for col in ("avg_cnt_min", "avg_cnt_max", "avg_size_min", "avg_size_max"):
+         try:
+             conn.execute(f"ALTER TABLE combo_decadal ADD COLUMN {col} REAL")
+         except Exception:
+@@ -4708,8 +4894,9 @@ def save_decadal(fish, ship, records):
+     conn.execute("DELETE FROM combo_decadal WHERE fish=? AND ship=?", (fish, ship))
+     conn.executemany(
+         "INSERT INTO combo_decadal "
+-        "(fish, ship, decade_no, n, avg_cnt, avg_size, avg_kg, updated_at, avg_cnt_min, avg_cnt_max) "
+-        "VALUES (?,?,?,?,?,?,?,?,?,?)",
++        "(fish, ship, decade_no, n, avg_cnt, avg_size, avg_kg, updated_at, "
++        "avg_cnt_min, avg_cnt_max, avg_size_min, avg_size_max) "
++        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+         rows
+     )
+     conn.commit()
+diff --git a/analysis/V2/methods/predict_count.py b/analysis/V2/methods/predict_count.py
+index 77383a2e..d22f2d1d 100644
+--- a/analysis/V2/methods/predict_count.py
++++ b/analysis/V2/methods/predict_count.py
+@@ -1065,20 +1065,24 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
+     if not dekad:
+         return None
+ 
+-    # 旬別ベースライン（avg_cnt_min/max も取得）
++    # 旬別ベースライン（avg_cnt_min/max + avg_size_min/max も取得）
++    # avg_size_min / avg_size_max は Phase B-α' で追加（旬別実測幅ベースのレンジ生成用）
+     row = conn.execute(
+-        "SELECT avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max FROM combo_decadal "
++        "SELECT avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max, "
++        "avg_size_min, avg_size_max FROM combo_decadal "
+         "WHERE fish=? AND ship=? AND decade_no=?",
+         (fish, ship, dekad)
+     ).fetchone()
+ 
+     if row:
+-        avg_cnt, avg_size, avg_kg, n_dekad, avg_cnt_min, avg_cnt_max = row
++        avg_cnt, avg_size, avg_kg, n_dekad, avg_cnt_min, avg_cnt_max, \
++            avg_size_min_dec, avg_size_max_dec = row
+         fallback = False
+     else:
+         # 最近傍旬（±3以内）にフォールバック
+         near = conn.execute(
+-            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max "
++            "SELECT decade_no, avg_cnt, avg_size, avg_kg, n, avg_cnt_min, avg_cnt_max, "
++            "avg_size_min, avg_size_max "
+             "FROM combo_decadal "
+             "WHERE fish=? AND ship=? ORDER BY ABS(decade_no - ?) LIMIT 1",
+             (fish, ship, dekad)
+@@ -1087,6 +1091,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
+             return None
+         avg_cnt, avg_size, avg_kg, n_dekad = near[1], near[2], near[3], near[4]
+         avg_cnt_min, avg_cnt_max = near[5], near[6]
++        avg_size_min_dec, avg_size_max_dec = near[7], near[8]
+         fallback = True
+ 
+     if not avg_cnt or avg_cnt <= 0:
+@@ -1365,8 +1370,23 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
+         "cnt_lo":          cnt_lo,   # 初心者釣果（旬別min_ratio または avg-MAE）
+         "cnt_hi":          cnt_hi,   # ベテラン釣果（旬別max_ratio または avg+MAE）
+         "size_predicted":  round(size_avg_corrected, 1) if size_avg_corrected else None,
+-        "size_lo":         round(size_avg_corrected - size_mae, 1) if size_avg_corrected and size_mae else None,
+-        "size_hi":         round(size_avg_corrected + size_mae, 1) if size_avg_corrected and size_mae else None,
++        # Phase B-α': 実測比率ベースのレンジ生成
++        # avg_size_min_dec / avg_size_max_dec = 旬別実測中央値（cm・combo_decadal から取得）
++        # ratio_min = avg_size_min_dec / avg_size （旬別 size_min/size_avg 中央値比率）
++        # ratio_max = avg_size_max_dec / avg_size （旬別 size_max/size_avg P95 除外中央値比率）
++        # size_lo = pred_avg × ratio_min, size_hi = pred_avg × ratio_max
++        # → pred_avg の補正（ポイント別補正等）が変わっても幅比率は維持される
++        # avg_size_min/max_dec が未取得（combo_deep_dive 再実行前等）の場合は ±size_mae にフォールバック。
++        "size_lo": (
++            round(size_avg_corrected * (avg_size_min_dec / avg_size), 1)
++            if size_avg_corrected and avg_size and avg_size_min_dec is not None and avg_size > 0
++            else (round(size_avg_corrected - size_mae, 1) if size_avg_corrected and size_mae else None)
++        ),
++        "size_hi": (
++            round(size_avg_corrected * (avg_size_max_dec / avg_size), 1)
++            if size_avg_corrected and avg_size and avg_size_max_dec is not None and avg_size > 0
++            else (round(size_avg_corrected + size_mae, 1) if size_avg_corrected and size_mae else None)
++        ),
+         "kg_predicted":    round(avg_kg, 2) if avg_kg else None,
+         "kg_lo":           round(max(0.0, avg_kg - kg_mae), 2) if avg_kg and kg_mae else None,
+         "kg_hi":           round(avg_kg + kg_mae, 2) if avg_kg and kg_mae else None,
