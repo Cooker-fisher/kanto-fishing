@@ -1992,7 +1992,7 @@ def _forecast_combo_card(pred, fc=None, show_area=True):
     title = f"{fish} × {group}" if show_area else fish
 
     avg = pred.get("avg", 0)
-    pred_min = max(1, round(avg * 0.6))
+    pred_min = pred.get("min") if pred.get("min") is not None else max(1, round(avg * 0.6))
     pred_max = pred.get("max", round(avg * 1.4))
 
     size_str = ""
@@ -5945,32 +5945,33 @@ def build_html(catches, crawled_at, history, weather_data=None):
     year, week_num = current_iso_week()
     stale_cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
 
-    # 当日 crawl が sparse（船宿の投稿遅延）→ 過去7日窓で fish_summary / area_summary を補強。
-    # HERO カウントと LIVE ティッカーは「当日」セマンティクスを維持し、
-    # ZONE B（魚種カード）/ ZONE B2（エリア今日）は CSV由来の7日窓を使う。
-    # is_sparse_today=True のとき section ラベルを「直近1週間」に書き換える。
+    # ZONE B（魚種カード）/ ZONE B2（エリア今日）は 7日窓ベースで集計する。
+    # ZONE B のミニバーグラフ・船宿数・「N匹」表示が7日分のデータを使うため、
+    # fish_summary を常時 7日マージで構築する（build_fish_pages と同じ方針・2026/05/08）。
+    # 旧仕様 is_sparse_today で「当日 30件以上なら7日マージしない」は、
+    # 当日 N=1〜数件の魚種がフォールバック経路を取らず ratio ブーストで上位に来る
+    # regression（カンパチ問題）の原因だった。
+    # HERO カウント・LIVE ティッカーは別途 catches（当日 sparse 含む）を使うため
+    # is_sparse_today フラグはセクションラベル切替のみで使用する。
     today_str_local = now.strftime("%Y/%m/%d")
     today_with_fish = sum(1 for c in catches
                           if c.get("date") == today_str_local
                           and any(f != "不明" for f in (c.get("fish") or [])))
     SPARSE_THRESHOLD = 30
     is_sparse_today = today_with_fish < SPARSE_THRESHOLD
-    if is_sparse_today:
-        try:
-            _recent7 = _load_recent_catches_for_index(now, days=7)
-        except Exception:
-            _recent7 = []
-        # マージ（dedup: ship+date+fish_raw）。catches 側に詳細フィールドがあるため優先。
-        seen = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in catches}
-        merged = list(catches)
-        for c in _recent7:
-            k = (c.get("ship"), c.get("date"), c.get("fish_raw", ""))
-            if k not in seen:
-                merged.append(c)
-                seen.add(k)
-        catches_for_summary = merged
-    else:
-        catches_for_summary = catches
+    try:
+        _recent7 = _load_recent_catches_for_index(now, days=7)
+    except Exception:
+        _recent7 = []
+    # マージ（dedup: ship+date+fish_raw）。catches 側に詳細フィールドがあるため優先。
+    seen = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in catches}
+    merged = list(catches)
+    for c in _recent7:
+        k = (c.get("ship"), c.get("date"), c.get("fish_raw", ""))
+        if k not in seen:
+            merged.append(c)
+            seen.add(k)
+    catches_for_summary = merged
 
     fish_summary = {}
     for c in catches_for_summary:
@@ -6011,8 +6012,14 @@ def build_html(catches, crawled_at, history, weather_data=None):
         sk, _ = _fish_signal(fish, current_month)
         season_mul = {"peak": 1.3, "season": 1.1, "normal": 1.0, "late": 0.7}[sk]
         score = cnt * ratio * season_mul
-        # N<5 の魚種は末尾に集める（前週比ブーストで少数派が主力魚を抜くバグの修正）
-        if len(cs) < 5:
+        # 集計可件数（count_range あり & is_boat=False）が 5 未満の魚種は末尾に集める。
+        # 旧仕様 len(cs)<5 では「N=5 だが is_boat=True で実質集計可0」のカンパチ等が
+        # 前週比 ratio=3.0 ブーストで上位に来てグラフ空カードになる regression 発生。
+        display_cnt = sum(
+            1 for c in cs
+            if c.get("count_range") and not c["count_range"].get("is_boat")
+        )
+        if display_cnt < 5:
             return score * 0.01
         return score
 
