@@ -66,8 +66,12 @@
   ```
 - size/kg の promise_break_rate 実態を Phase B 防御策の判断材料に
 
-### 2. Phase B 実装着手（拡張版: cnt + size の min/max 独立予測）
-- 着手前必読: `plan_hit_rate_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 後半・補遺・補遺2・補遺3」・`diag_phase_b_simulation_2026-05-08.md`
+### 2. Phase B-α 実装着手（size 単独先行・段階分割確定）
+- 着手前必読: `plan_size_2026-05-08.md`・`diag_size_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 後半・補遺2・補遺3・補遺4・補遺5」
+- **【段階分割】** Phase B 全体一括ではなく size 先行（補遺5）→ 成功後に Phase B-β（cnt 拡張）
+- size 用防御策: floor=0.55 / clamp=1.0（cnt 用 0.3/2.0 とは異なる・流用厳禁）
+- 撤回基準（事前明記）: BL-2 勝率<50% or promise_break改善<20pt or wMAPE 30%以上悪化
+- 詳細スコープ・実装手順は `plan_size_2026-05-08.md` 参照
 - **【拡張理由】** size promise_break 53% は size_avg=(min+max)/2 の構造問題。ポイント補正は既存の section_backtest_rolling 内で動いており、追加効果は実測されない（2026/05/08 診断で確定）
 - 変更ファイル:
   - `combo_deep_dive.py` L3285-3290 の ratio override を削除（cnt 用）
