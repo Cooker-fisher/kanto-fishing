@@ -1,10 +1,10 @@
 {
   "fish": "アジ",
   "ship": "荒川屋",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.03,
+    "wmape_h0": 46.06,
     "bl2_wmape": 50.2,
     "oos_r": 0.4,
     "n_records": 1182,
@@ -18,7 +18,7 @@
       "wmape_h0": 31.4,
       "bl2_wmape": 65.0,
       "oos_r": 0.676,
-      "improvement_pt": 14.65
+      "improvement_pt": 14.68
     },
     {
       "name": "富岡沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 37.7,
       "bl2_wmape": 47.2,
       "oos_r": 0.456,
-      "improvement_pt": 8.33
+      "improvement_pt": 8.35
     },
     {
       "name": "小柴沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 38.2,
       "bl2_wmape": 56.3,
       "oos_r": 0.617,
-      "improvement_pt": 7.88
+      "improvement_pt": 7.9
     },
     {
       "name": "赤灯沖",
@@ -42,7 +42,7 @@
       "wmape_h0": 44.1,
       "bl2_wmape": 55.5,
       "oos_r": 0.545,
-      "improvement_pt": 1.92
+      "improvement_pt": 1.95
     },
     {
       "name": "根岸沖",
@@ -50,7 +50,7 @@
       "wmape_h0": 46.1,
       "bl2_wmape": 55.6,
       "oos_r": 0.234,
-      "improvement_pt": -0.1
+      "improvement_pt": -0.08
     },
     {
       "name": "横須賀沖",
@@ -58,7 +58,7 @@
       "wmape_h0": 46.2,
       "bl2_wmape": 59.2,
       "oos_r": 0.503,
-      "improvement_pt": -0.16
+      "improvement_pt": -0.13
     },
     {
       "name": "八景沖",
@@ -66,15 +66,15 @@
       "wmape_h0": 47.4,
       "bl2_wmape": 56.6,
       "oos_r": 0.443,
-      "improvement_pt": -1.41
+      "improvement_pt": -1.38
     }
   ],
   "best_point": {
     "name": "本牧沖",
     "wmape_h0": 31.4,
-    "improvement_pt": 14.65
+    "improvement_pt": 14.68
   },
-  "improvement_pt": 14.65,
+  "improvement_pt": 14.68,
   "history": [
     {
       "date": "2026-04-24",
@@ -110,6 +110,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=本牧沖 wmape=31.4% imp=14.65pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=本牧沖 wmape=31.4% imp=14.68pt"
     }
   ]
 }

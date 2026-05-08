@@ -1,12 +1,12 @@
 {
   "fish": "ヤリイカ",
   "ship": "不動丸",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 49.38,
-    "bl2_wmape": 62.91,
-    "oos_r": 0.544,
+    "wmape_h0": 51.18,
+    "bl2_wmape": 63.55,
+    "oos_r": 0.504,
     "n_records": 142,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -151,6 +151,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=川津沖 wmape=41.8% imp=7.55pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=川津沖 wmape=41.8% imp=9.36pt"
     }
   ],
   "rejected_factors": [
@@ -222,7 +227,7 @@
       "wmape_h0": 41.8,
       "bl2_wmape": 88.9,
       "oos_r": 0.747,
-      "improvement_pt": 7.56
+      "improvement_pt": 9.36
     },
     {
       "name": "勝浦沖",
@@ -230,15 +235,15 @@
       "wmape_h0": 44.3,
       "bl2_wmape": 50.4,
       "oos_r": 0.337,
-      "improvement_pt": 5.1
+      "improvement_pt": 6.89
     }
   ],
   "best_point": {
     "name": "川津沖",
     "wmape_h0": 41.8,
-    "improvement_pt": 7.56
+    "improvement_pt": 9.36
   },
-  "improvement_pt": 7.56,
+  "improvement_pt": 9.36,
   "trip_models": [
     {
       "trip_no": 1,

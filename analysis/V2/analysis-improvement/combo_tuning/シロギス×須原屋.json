@@ -1,10 +1,10 @@
 {
   "fish": "シロギス",
   "ship": "須原屋",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 32.16,
+    "wmape_h0": 32.17,
     "bl2_wmape": 34.49,
     "oos_r": 0.665,
     "n_records": 289,
@@ -146,6 +146,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=中ノ瀬 wmape=24.1% imp=8.16pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=中ノ瀬 wmape=24.1% imp=8.09pt"
     }
   ],
   "rejected_factors": [
@@ -230,10 +235,10 @@
     {
       "name": "木更津沖",
       "n": 132,
-      "wmape_h0": 29.3,
+      "wmape_h0": 29.4,
       "bl2_wmape": 34.6,
-      "oos_r": 0.72,
-      "improvement_pt": 2.86
+      "oos_r": 0.717,
+      "improvement_pt": 2.72
     }
   ],
   "best_point": {

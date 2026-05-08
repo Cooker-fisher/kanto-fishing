@@ -1,10 +1,10 @@
 {
   "fish": "アジ",
   "ship": "光進丸",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.36,
+    "wmape_h0": 31.37,
     "bl2_wmape": 34.0,
     "oos_r": 0.551,
     "n_records": 899,
@@ -18,7 +18,7 @@
       "wmape_h0": 28.2,
       "bl2_wmape": 33.3,
       "oos_r": 0.414,
-      "improvement_pt": 3.11
+      "improvement_pt": 3.12
     },
     {
       "name": "金谷沖浅場",
@@ -34,15 +34,15 @@
       "wmape_h0": 31.3,
       "bl2_wmape": 33.9,
       "oos_r": 0.602,
-      "improvement_pt": 0.04
+      "improvement_pt": 0.03
     }
   ],
   "best_point": {
     "name": "金谷沖超浅場",
     "wmape_h0": 28.2,
-    "improvement_pt": 3.11
+    "improvement_pt": 3.12
   },
-  "improvement_pt": 3.11,
+  "improvement_pt": 3.12,
   "points": [
     {
       "name": "金谷沖",
@@ -202,6 +202,11 @@
     },
     {
       "date": "2026-05-03",
+      "action": "point_backtest_updated",
+      "note": "best=金谷沖超浅場 wmape=28.2% imp=3.12pt"
+    },
+    {
+      "date": "2026-05-08",
       "action": "point_backtest_updated",
       "note": "best=金谷沖超浅場 wmape=28.2% imp=3.12pt"
     }

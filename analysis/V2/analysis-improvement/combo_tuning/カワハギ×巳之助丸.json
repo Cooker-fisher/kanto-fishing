@@ -1,7 +1,7 @@
 {
   "fish": "カワハギ",
   "ship": "巳之助丸",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 29.12,
@@ -151,6 +151,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=18.3% imp=10.85pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=18.3% imp=10.87pt"
     }
   ],
   "rejected_factors": [
@@ -221,7 +226,7 @@
       "n": 102,
       "wmape_h0": 18.3,
       "bl2_wmape": 37.0,
-      "oos_r": 0.766,
+      "oos_r": 0.767,
       "improvement_pt": 10.87
     },
     {
@@ -235,10 +240,10 @@
     {
       "name": "鴨居沖",
       "n": 157,
-      "wmape_h0": 25.9,
+      "wmape_h0": 25.8,
       "bl2_wmape": 40.3,
       "oos_r": 0.715,
-      "improvement_pt": 3.26
+      "improvement_pt": 3.27
     },
     {
       "name": "剣崎沖",

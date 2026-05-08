@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "三喜丸釣船店",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 30.58,
@@ -23,7 +23,7 @@
       "n": 611,
       "wmape_h0": 29.7,
       "bl2_wmape": 35.4,
-      "oos_r": 0.491,
+      "oos_r": 0.49,
       "improvement_pt": 0.85
     }
   ],
@@ -73,6 +73,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=小柴沖 wmape=29.7% imp=0.86pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=小柴沖 wmape=29.7% imp=0.85pt"
     }
   ]
 }

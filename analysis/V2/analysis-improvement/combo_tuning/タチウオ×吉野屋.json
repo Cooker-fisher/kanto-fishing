@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 42.04,
@@ -25,8 +25,8 @@
       "n": 98,
       "wmape_h0": 33.1,
       "bl2_wmape": 57.3,
-      "oos_r": 0.776,
-      "improvement_pt": 8.95
+      "oos_r": 0.775,
+      "improvement_pt": 8.97
     },
     {
       "name": "走水沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 36.4,
       "bl2_wmape": 46.1,
       "oos_r": 0.501,
-      "improvement_pt": 5.65
+      "improvement_pt": 5.64
     }
   ],
   "point_selection": {
@@ -148,6 +148,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=猿島沖 wmape=26.5% imp=15.6pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=猿島沖 wmape=26.5% imp=15.59pt"
     }
   ],
   "rejected_factors": [

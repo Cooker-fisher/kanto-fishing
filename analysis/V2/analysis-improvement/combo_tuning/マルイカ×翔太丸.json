@@ -1,10 +1,10 @@
 {
   "fish": "マルイカ",
   "ship": "翔太丸",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 41.55,
+    "wmape_h0": 41.54,
     "bl2_wmape": 48.2,
     "oos_r": 0.551,
     "n_records": 298,
@@ -15,10 +15,10 @@
     {
       "name": "城ヶ島沖",
       "n": 68,
-      "wmape_h0": 33.2,
+      "wmape_h0": 33.4,
       "bl2_wmape": 51.1,
-      "oos_r": 0.671,
-      "improvement_pt": 8.35
+      "oos_r": 0.668,
+      "improvement_pt": 8.14
     },
     {
       "name": "小網代沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 39.0,
       "bl2_wmape": 47.3,
       "oos_r": 0.597,
-      "improvement_pt": 2.59
+      "improvement_pt": 2.58
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
-    "wmape_h0": 33.2,
-    "improvement_pt": 8.35
+    "wmape_h0": 33.4,
+    "improvement_pt": 8.14
   },
-  "improvement_pt": 8.35,
+  "improvement_pt": 8.14,
   "history": [
     {
       "date": "2026-04-22",
@@ -75,6 +75,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=33.2% imp=8.3pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=33.4% imp=8.14pt"
     }
   ]
 }

@@ -1,8 +1,85 @@
 現行バージョン: crawler.py v5.28 / predict_count.py（Forecast API統合済み・FAST変数horizonフィルタ実装済み）
-最終更新: 2026/04/22
-最新コミット: 3146af3a（過去クロール補完・CSV再生成・全種再分析）
+最終更新: 2026/05/08
+最新コミット: 2b25b2d3（Phase A combo_range_backtest を size/kg 拡張・出力形式制約明記）
 
-## ✅ 今セッション完了（2026/04/22 後半）
+## ✅ 今セッション完了（2026/05/08）
+
+### 「商品的中率」KPI Phase A 実装 + Phase B シミュレーション準備
+
+**Phase A コミット（2b25b2d3）:**
+- `combo_range_backtest` テーブルに `metric` 列追加（PK: fish, ship, metric, horizon）
+- cnt のみ → cnt/size/kg の 3 メトリックに拡張
+- size/kg ループの分母を NULL 除外後 `n_valid` に統一（NULL 率 38.8%/70.2% でのバイアス回避）
+- `_RANGE_BACKTEST_CORE` をループ外定数化
+- size/kg の `over_expect_rate` を cnt と方向統一（「期待させすぎ率」: pred/actual > 1.5）
+- DDL コメントに winkler 単位混在・bowzu_rate cnt 限定を注記
+
+**フロー:**
+- analyst 実装 → 3 並列レビュー（code/stat/data）すべて Concerns → 修正 → code-reviewer 軽量再レビュー → engineer コミット
+- 3 reviewer 共通指摘「coverage 分母バイアス」を 1 修正で解決
+
+**90_決定ログ「2026/05/08 補遺2」追記:**
+- 出力形式の絶対制約 4 項目を明記
+- 「単一レンジ + 中央値」の 3 値のみ・重ねレンジ禁止
+- min/max 別カード禁止
+- 「min/max 独立予測」は内部学習が独立というだけで出力は単一レンジ
+- plan_hit_rate にも同制約セクション追加
+
+**Phase B 防御策シミュレーション完了:**
+- レポート: `analysis/V2/analysis-improvement/diag_phase_b_simulation_2026-05-08.md`
+- 推奨採用値:
+  - 防御策① pred_lo 下限: `pred_lo >= avg_cnt × 0.3`（発動率43%・BL2負けコンボ64.9%カバー）
+  - 防御策② 区間幅上限: `区間幅 <= avg_cnt × 2.0`（発動率1%・winkler副作用最小）
+- Plan の不明点 #6（winkler 整合性）解消
+- Phase B 実装判定: **Go**
+
+**Phase A 全コンボ再実行完了（H=0, n>=30）:**
+
+| metric | コンボ数 | promise_break P50 | coverage | over_expect | bowzu | winkler |
+|---|---|---|---|---|---|---|
+| cnt  | 290 | 6.7%  | 79.3% | 32.1% | 16.2% | 18.33 |
+| size | 181 | 52.9% | 90.6% | 2.0%  | N/A   | 5.67  |
+| kg   | 103 | 55.6% | 67.9% | 20.0% | N/A   | 2.52  |
+
+**重要発見:**
+- cnt 精度安定（前回 7.5% → 6.7% 微改善）
+- size/kg promise_break ≈ 53-56% で **系統的に過大予測**
+- size coverage 90.6%（実測レンジに入る）に対して promise_break 53% が高い
+  → 構造的問題: size_avg = (size_min + size_max)/2 で計算した予測点が actual_avg より高めに張りつく傾向
+- Phase B/C 実装時に size/kg の独立モデル化（または floor の size 版）を要検討
+
+---
+
+## ★ 次セッションでやること（優先度順）
+
+### 1. Phase A 全コンボ再実行の結果確認（最優先）
+- バックグラウンド実行: ID `b3q4iz6lo`・`run_full_deepdive.py --workers 4 --reset-best`
+- ログ: `analysis/V2/results/run_full_deepdive_2026-05-08.log`
+- 完了後の確認 SQL:
+  ```sql
+  SELECT metric, horizon, COUNT(*), AVG(promise_break_rate), AVG(coverage)
+  FROM combo_range_backtest
+  WHERE n >= 30
+  GROUP BY metric, horizon
+  ORDER BY metric, horizon;
+  ```
+- size/kg の promise_break_rate 実態を Phase B 防御策の判断材料に
+
+### 2. Phase B 実装着手
+- 着手前必読: `plan_hit_rate_2026-05-08.md`・`90_決定ログ.md`「2026/05/08 後半・補遺・補遺2」・`diag_phase_b_simulation_2026-05-08.md`
+- 変更ファイル:
+  - `combo_deep_dive.py` L3285-3290 の ratio override を削除
+  - `predict_count.py` L1296-1333 に防御策①②（floor=0.3 / clamp=2.0）追加
+- **3 並列レビュー必須**（過去 04/13 撤回パターン再発防止）
+- 実装後の全コンボ再実行も必要（4時間）
+
+### 3. Phase C 実装（Phase B 後）
+- 加重平均 composite_hit_rate（cnt 0.6 / size 0.3 / kg 0.1）
+- kg NULL 率 70% で実態は 0.667/0.333 に再正規化されるケース多数
+
+---
+
+## ✅ 前セッション完了（2026/04/22 後半）
 
 ### 過去データ補完・CSV再生成・全種再分析
 

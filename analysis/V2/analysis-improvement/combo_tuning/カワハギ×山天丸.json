@@ -1,10 +1,10 @@
 {
   "fish": "カワハギ",
   "ship": "山天丸",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 32.31,
+    "wmape_h0": 32.2,
     "bl2_wmape": 40.04,
     "oos_r": 0.596,
     "n_records": 321,
@@ -18,7 +18,7 @@
       "wmape_h0": 15.7,
       "bl2_wmape": 51.5,
       "oos_r": 0.879,
-      "improvement_pt": 16.6
+      "improvement_pt": 16.5
     },
     {
       "name": "久里浜沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 20.9,
       "bl2_wmape": 38.1,
       "oos_r": 0.749,
-      "improvement_pt": 11.45
+      "improvement_pt": 11.35
     },
     {
       "name": "剣崎沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 21.5,
       "bl2_wmape": 61.9,
       "oos_r": 0.879,
-      "improvement_pt": 10.79
+      "improvement_pt": 10.68
     },
     {
       "name": "竹岡沖",
@@ -42,7 +42,7 @@
       "wmape_h0": 27.1,
       "bl2_wmape": 46.8,
       "oos_r": 0.756,
-      "improvement_pt": 5.24
+      "improvement_pt": 5.13
     },
     {
       "name": "鴨居沖",
@@ -50,15 +50,15 @@
       "wmape_h0": 32.2,
       "bl2_wmape": 44.8,
       "oos_r": 0.482,
-      "improvement_pt": 0.13
+      "improvement_pt": 0.02
     }
   ],
   "best_point": {
     "name": "下浦沖",
     "wmape_h0": 15.7,
-    "improvement_pt": 16.6
+    "improvement_pt": 16.5
   },
-  "improvement_pt": 16.6,
+  "improvement_pt": 16.5,
   "points": [
     {
       "name": "竹岡沖",
@@ -261,6 +261,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=15.7% imp=16.6pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=15.7% imp=16.5pt"
     }
   ],
   "trip_models": [

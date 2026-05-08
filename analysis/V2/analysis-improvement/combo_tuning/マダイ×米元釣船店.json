@@ -1,10 +1,10 @@
 {
   "fish": "マダイ",
   "ship": "米元釣船店",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 48.71,
+    "wmape_h0": 48.7,
     "bl2_wmape": 59.0,
     "oos_r": 0.422,
     "n_records": 249,
@@ -18,7 +18,7 @@
       "wmape_h0": 37.8,
       "bl2_wmape": 47.6,
       "oos_r": 0.387,
-      "improvement_pt": 10.93
+      "improvement_pt": 10.92
     },
     {
       "name": "久里浜沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 54.8,
       "bl2_wmape": 61.8,
       "oos_r": 0.289,
-      "improvement_pt": -6.08
+      "improvement_pt": -6.09
     }
   ],
   "best_point": {
     "name": "八景沖",
     "wmape_h0": 37.8,
-    "improvement_pt": 10.93
+    "improvement_pt": 10.92
   },
-  "improvement_pt": 10.93,
+  "improvement_pt": 10.92,
   "history": [
     {
       "date": "2026-04-24",
@@ -70,6 +70,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=八景沖 wmape=37.8% imp=10.83pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=八景沖 wmape=37.8% imp=10.92pt"
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "幸丸",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 40.97,
     "bl2_wmape": 47.01,
-    "oos_r": 0.646,
+    "oos_r": 0.647,
     "n_records": 989,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -152,6 +152,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=浅場(~40m) wmape=40.6% imp=0.32pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=40.6% imp=0.35pt"
     }
   ],
   "rejected_factors": [

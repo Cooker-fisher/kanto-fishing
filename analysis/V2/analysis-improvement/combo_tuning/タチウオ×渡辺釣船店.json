@@ -1,10 +1,10 @@
 {
   "fish": "タチウオ",
   "ship": "渡辺釣船店",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.27,
+    "wmape_h0": 33.26,
     "bl2_wmape": 43.74,
     "oos_r": 0.673,
     "n_records": 210,
@@ -26,7 +26,7 @@
       "wmape_h0": 20.4,
       "bl2_wmape": 49.4,
       "oos_r": 0.813,
-      "improvement_pt": 12.86
+      "improvement_pt": 12.85
     },
     {
       "name": "走水沖",
@@ -250,6 +250,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=大貫沖 wmape=14.6% imp=18.68pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=大貫沖 wmape=14.6% imp=18.67pt"
     }
   ],
   "trip_models": [

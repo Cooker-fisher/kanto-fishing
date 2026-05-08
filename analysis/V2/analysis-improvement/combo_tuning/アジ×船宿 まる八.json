@@ -1,12 +1,12 @@
 {
   "fish": "アジ",
   "ship": "船宿 まる八",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-05-08",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 22.47,
+    "wmape_h0": 22.48,
     "bl2_wmape": 24.87,
-    "oos_r": 0.582,
+    "oos_r": 0.581,
     "n_records": 601,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 19.6,
       "bl2_wmape": 23.8,
       "oos_r": 0.657,
-      "improvement_pt": 2.85
+      "improvement_pt": 2.86
     },
     {
       "name": "川崎沖",
@@ -42,15 +42,15 @@
       "wmape_h0": 24.5,
       "bl2_wmape": 26.4,
       "oos_r": 0.267,
-      "improvement_pt": -1.98
+      "improvement_pt": -1.97
     }
   ],
   "best_point": {
     "name": "木更津沖",
     "wmape_h0": 19.6,
-    "improvement_pt": 2.85
+    "improvement_pt": 2.86
   },
-  "improvement_pt": 2.85,
+  "improvement_pt": 2.86,
   "points": [
     {
       "name": "木更津沖",
@@ -248,6 +248,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=19.6% imp=2.88pt"
+    },
+    {
+      "date": "2026-05-08",
+      "action": "point_backtest_updated",
+      "note": "best=木更津沖 wmape=19.6% imp=2.86pt"
     }
   ],
   "trip_models": [
