@@ -10676,8 +10676,15 @@ def build_sitemap(data):
 # ============================================================
 
 def build_style_css():
-    """V2 style.css を docs/ に生成する（V1 CSS とは完全に独立）"""
-    css = """:root {
+    """V2 style.css を docs/ に生成する（design/V2/style.css を読んで同期）"""
+    design_css_path = os.path.join(_BASE_DIR, "design", "V2", "style.css")
+    if not os.path.exists(design_css_path):
+        print(f"[WARN] design/V2/style.css が見つかりません: {design_css_path}")
+        return
+    with open(design_css_path, "r", encoding="utf-8") as f:
+        css = f.read()
+    if False:  # 旧インラインCSS（参照用に保持・実際には読まれない）
+        css = """:root {
   /* ── ベース ── */
   --bg-primary:    #f5f7fa;
   --bg-card:       #ffffff;

@@ -755,3 +755,17 @@ ins.adsbygoogle[data-ad-status="unfilled"] { display: none !important; }
   th, td { padding: 5px 4px; }
   .bar-wrap { width: 50px; }
 }
+
+/* ── FAQ リスト（V2_COMMON_CSS 統合・T22-M3 追記） ── */
+.faq-list { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 16px; }
+.faq-list > h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+.faq-list details { border-bottom: 1px solid var(--bg); }
+.faq-list details:last-child { border-bottom: none; }
+.faq-list summary { font-size: 13px; font-weight: 600; color: var(--accent); padding: 11px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary::after { content: "+"; font-size: 16px; color: var(--muted); flex-shrink: 0; line-height: 1; }
+.faq-list details[open] > summary::after { content: "\2212"; }
+.faq-ans { font-size: 12px; color: var(--sub); line-height: 1.75; padding-bottom: 12px; }
+
+/* ── ティザーインタイトル ── */
+.teaser-title-in { font-size: 14px; font-weight: 800; color: var(--prem); }
