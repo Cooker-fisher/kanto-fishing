@@ -8389,7 +8389,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         trend_label = {"up": "↑ 上昇中", "down": "↓ 減少", "flat": "→ 横ばい"}.get(trend_fa, "-")
         stat_cards_fa = f"""<div class="stat-cards">
   <div class="stat-card"><div class="sv">{ship_num}船宿</div><div class="sl">出船船宿数</div></div>
-  <div class="stat-card"><div class="sv">{'%.0f' % combo_avg if combo_avg else '-'}匹</div><div class="sl">平均釣果</div></div>
+  <div class="stat-card"><div class="sv">{'%.0f' % combo_avg if combo_avg else '-'}匹</div><div class="sl">釣果目安</div></div>
   <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else '-'}匹</div><div class="sl">最高釣果</div></div>
 </div>"""
         # 旬カレンダー（数釣/型釣 × 12ヶ月 ヒートマップ・実データ駆動）
