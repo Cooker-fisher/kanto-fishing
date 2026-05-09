@@ -1,12 +1,12 @@
 {
   "fish": "シロギス",
   "ship": "吉野屋",
-  "last_reviewed": "2026-05-08",
+  "last_reviewed": "2026-05-09",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.67,
+    "wmape_h0": 33.71,
     "bl2_wmape": 37.31,
-    "oos_r": 0.621,
+    "oos_r": 0.62,
     "n_records": 547,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 25.1,
       "bl2_wmape": 46.1,
       "oos_r": 0.829,
-      "improvement_pt": 8.59
+      "improvement_pt": 8.63
     },
     {
       "name": "富津沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 26.2,
       "bl2_wmape": 32.7,
       "oos_r": 0.482,
-      "improvement_pt": 7.45
+      "improvement_pt": 7.49
     },
     {
       "name": "中ノ瀬",
@@ -34,7 +34,7 @@
       "wmape_h0": 27.7,
       "bl2_wmape": 38.0,
       "oos_r": 0.554,
-      "improvement_pt": 5.94
+      "improvement_pt": 5.97
     },
     {
       "name": "木更津沖",
@@ -42,15 +42,15 @@
       "wmape_h0": 31.5,
       "bl2_wmape": 36.8,
       "oos_r": 0.628,
-      "improvement_pt": 2.18
+      "improvement_pt": 2.21
     }
   ],
   "best_point": {
     "name": "浦安沖",
     "wmape_h0": 25.1,
-    "improvement_pt": 8.59
+    "improvement_pt": 8.63
   },
-  "improvement_pt": 8.59,
+  "improvement_pt": 8.63,
   "points": [
     {
       "name": "木更津沖",
@@ -127,6 +127,11 @@
       "date": "2026-05-08",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=25.1% imp=8.62pt"
+    },
+    {
+      "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=25.1% imp=8.63pt"
     }
   ],
   "trip_models": [

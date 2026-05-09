@@ -1,12 +1,38 @@
-現行バージョン: crawler.py v5.28 / predict_count.py（kg_lo/hi 比率ベース化済み・Phase B-β-4 採用確定）
-最終更新: 2026/05/08 深夜
-最新コミット: 本コミット（Phase B-β-4 採用確定・kg P50 23.93%）
+現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定）
+最終更新: 2026/05/09 早朝
+最新コミット: 本コミット（Phase C 採用確定・composite_promise_break P50 13.94%）
 
 ---
 
-## ✅ 直近完了（2026/05/08 深夜・pm）
+## ✅ 直近完了（2026/05/09 早朝・main agent）
 
-### Phase B-β-4 全コンボ再実行・採用確定（補遺9 追記）
+### Phase C composite_hit_rate 採用確定（補遺10 追記）
+
+**実行**: `run_full_deepdive.py --workers 4 --reset-best` で 55/55 OK・43分51秒
+
+**全コンボ適用後 backtest（H=0, n>=30）:**
+
+| metric | n | promise_break P50 | coverage avg |
+|---|---|---|---|
+| cnt | 290 | 11.0% | 79.4% |
+| **composite** | **290** | **13.94%** | **69.4%** |
+| size | 181 | 31.8% | 40.4% |
+| kg | 103 | 25.7% | 42.2% |
+
+**設計**:
+- 加重平均 cnt:size:kg = 0.6:0.3:0.1（線形加重和・行レベル集計）
+- combo_range_backtest に metric='composite' 行追加（既存非破壊）
+- component_count 列で 1/2/3 を記録（{1: 14, 2: 276, 3: 0}）
+- HTML 表示なし・内部評価指標のみ（補遺3 整合）
+
+**判定: 採用確定**
+- 成功基準 9 項目全クリア（Plan §4）
+- composite_promise_break P50=13.94% は cnt 11.0% に近く、重み 0.6 の cnt 支配が事業方針通り
+- レビューサイクル v1→v1.5・5巡（CRITICAL 解消後 MINOR 連鎖）→ 実装着手判断
+
+**詳細**: `analysis/V2/analysis-improvement/90_決定ログ.md` 補遺10 / `plan_C_2026-05-08.md` v1.5
+
+### Phase B-β-4 全コンボ再実行・採用確定（補遺9 追記・前セッション分）
 
 **実行**: 22:15 JST 開始 → 22:42 JST 完了・55/55 OK・26分59秒（`run_full_deepdive.py --workers 4 --reset-best`）
 
@@ -56,18 +82,18 @@
 
 ## ★ 次セッションでやること（優先度順）
 
-### 1. Phase C 実装（composite_hit_rate）
+### 1. 30-50% 帯張り付き救済（中央予測モデル改善）
 
-- 加重平均: cnt 0.6 / size 0.3 / kg 0.1
-- kg NULL 率 70% で実態は 0.667/0.333 に再正規化されるケース多
-- size（B-α'）と kg（B-β-4）両方改善確定したので集計に進める段階
-
-### 2. 30-50% 帯張り付き救済（中央予測モデル改善）
-
-- size: 31.25% で帯張り付き残存（kg は 23.93% で解消気味）
+- size: 31.8% で帯張り付き残存（kg は 25.7% / composite 13.94% で解消気味）
 - pred_avg と actual_avg の系統的乖離が原因
 - 中央予測モデル（size_avg）の精度向上が本質的解決
-- Phase B 系とは別軸の Plan 化が必要
+- Phase B/C 系とは別軸の Plan 化が必要
+
+### 2. D 層予測モデル本番実装
+
+- Phase B/C で評価指標が揃った（cnt/size/kg/composite の promise_break P50 確定）
+- D 層は予測モデルの本番化（cnt P50=11.0%・composite P50=13.94% を維持して実装）
+- 設計済み・実装待ち（CLAUDE.md 「未実装・ブロック中」）
 
 ### 3. キハダマグロ winkler 高止まり時の E 層フィルタ（plan_kg v2 リスク 7・覚書）
 

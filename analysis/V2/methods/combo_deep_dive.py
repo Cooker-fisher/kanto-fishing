@@ -3655,7 +3655,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             f"{winkler:>7.2f}  {n_r:>4}"
         )
         range_bt_data.append(("cnt", H, promise_break_rate, over_expect_rate,
-                               coverage, bowzu_rate, winkler, n_r))
+                               coverage, bowzu_rate, winkler, n_r, None))
 
     # ── size メトリック（Phase B-α': 実測比率ベースのレンジ評価） ───────────────────
     # pred_center = size_avg 予測（wMAPE 7.3% の良好なモデル、変更なし）
@@ -3723,7 +3723,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             f"{winkler:>7.2f}  {n_valid:>4}"
         )
         range_bt_data.append(("size", H, promise_break_rate, over_expect_rate,
-                               coverage, bowzu_rate, winkler, n_valid))
+                               coverage, bowzu_rate, winkler, n_valid, None))
 
     # ── kg メトリック（Phase B-β-4: 実測幅ベース比率評価）──────────────────────────
     # size（Phase B-α'）と同型。点予測 pred × 旬別 P20/P80 比率でレンジを生成。
@@ -3776,7 +3776,183 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             f"{winkler:>7.2f}  {n_valid:>4}"
         )
         range_bt_data.append(("kg", H, promise_break_rate, over_expect_rate,
-                               coverage, bowzu_rate, winkler, n_valid))
+                               coverage, bowzu_rate, winkler, n_valid, None))
+
+    # ── composite メトリック（Phase C: 加重平均 hit_rate）─────────────────────────
+    # 設計根拠: plan_C_2026-05-08.md §3 / plan_hit_rate_2026-05-08.md §C-1〜C-4
+    # 補遺3 整合: composite は内部評価のみ。HTML 表示禁止（§8 リスク 3 参照）。
+    #
+    # 重み（plan_C §1.4 確定値）:
+    #   W_CNT = 0.6 / W_SIZE = 0.3 / W_KG = 0.1
+    #
+    # NULL 時の重み再正規化:
+    #   有効メトリックの重みのみで正規化（0 除算ガード必須）
+    #   cnt は必須（cnt なし → composite 計算不可・行スキップ）
+    #
+    # 評価軸の統一（§2 技術確定事項）:
+    #   cnt  → actual_avg ベース（実コード L3636-3658 の cnt ループと統一）
+    #   size → actual_min/max ベース（Phase B-α' L3704-3713 と統一）
+    #   kg   → actual_min/max ベース（Phase B-β-4 L3762-3767 と統一）
+    #
+    # フラグの排他性（数学的保証）:
+    #   cnt:  is_cnt_below + is_cnt_above + is_cnt_in = 1
+    #         （actual_avg は 1 点なので below / above / in は完全排他的）
+    #   size: is_size_below + is_size_above + is_size_in <= 2
+    #         （actual_min < pred_lo かつ actual_max > pred_hi の場合 below=1, above=1 になり得る）
+    #         （区間が pred 区間を完全に外から囲むケース）
+    #   kg:   size と同様 <= 2
+    #   ※ size/kg は「一方の端だけ外れる」場合 below=0, above=0, in=0 も有り得る
+    #      （actual_min >= pred_lo かつ actual_max > pred_hi = above=1, in=0）
+    #
+    # 行レベル集計採用の根拠:
+    #   各釣行（行）単位で cnt/size/kg の同時達成度を加重平均し、全行で再平均する方式。
+    #   テーブルレベル集計（metric ごとの promise_break_rate を加重平均）では
+    #   「cnt が良くて size が悪いコンボ」の悪化を過小評価するリスクがある。
+    #   行レベルは「全指標が同時に範囲内に入った率」という統合評価の意味を保つ。
+    #   具体例: cnt が良好(0%)・size が悪い(100%) の 1 行コンボの場合、
+    #     テーブルレベル(0.667×0 + 0.333×1 = 0.333)よりも
+    #     行レベル(W_CNT×0 + W_SIZE×1)/w_sum = 0.333 で一致するが、
+    #     複数行が混在するコンボでは、cnt が良く size が悪い日と cnt が悪く size が良い日が
+    #     混在する場合にテーブルレベルではこの日間相関構造が失われる。
+    #     行レベルでは各日の同時達成を評価できるため、統合評価として適切。
+    #
+    # 行レベルとテーブルレベル（v1.5 修正・stat-reviewer 指摘反映）:
+    #   現実装は線形加重和のため、行レベル集計とテーブルレベル集計は数学的に等価。
+    #   linearity of expectation により以下が成立:
+    #     sum_i(W_CNT×f_cnt_i + W_SIZE×f_size_i) / (n×w_sum)
+    #     ≡ W_CNT/w_sum × mean(f_cnt_i) + W_SIZE/w_sum × mean(f_size_i)
+    #   §5.2 ステップ 3 の比較 SQL で「両者が一致する」のが期待値。差があれば実装ミス。
+    #
+    #   行レベル構造を採用する根拠: 将来の非線形統合指標
+    #     （例: cnt AND size の同時達成率 = is_cnt_in × is_size_in の積）
+    #     への拡張可能性を確保するため。現時点では数学的に同値だが、
+    #     非線形化する将来拡張に備えて行レベルアーキテクチャを維持する。
+    #
+    # composite の is_cnt_above 定義について:
+    #   composite の is_cnt_above は「act_avg > pred_hi」（単純超過ベース）を使用。
+    #   cnt 単体の over_expect_rate（実コード L3645-3646: pred_hi/act_avg > 2.5 比率ベース）とは
+    #   定義が異なる。composite は内部評価のみのため、単純超過ベースで許容。
+    W_CNT, W_SIZE, W_KG = 0.6, 0.3, 0.1
+
+    for H in HORIZONS:
+        composite_rows = []
+        for _rk, d in _range_by_key[H].items():
+
+            # ── cnt（必須）: actual_avg ベース ──────────────────────────────────
+            # L3636-3658 の cnt ループと評価軸を統一
+            if "cnt_min" not in d or "cnt_max" not in d or "cnt_avg" not in d:
+                continue
+            pred_lo_cnt, _ = d["cnt_min"]   # cnt_min モデルの pred 値
+            pred_hi_cnt, _ = d["cnt_max"]   # cnt_max モデルの pred 値
+            _,    act_avg  = d["cnt_avg"]   # actual_avg（cnt 評価軸）
+            if pred_lo_cnt is None or pred_hi_cnt is None or act_avg is None:
+                continue
+            # cnt フラグは完全排他的（actual_avg は 1 点なので is_below + is_above + is_cnt_in = 1）
+            # ※ is_cnt_above は act_avg > pred_hi の単純超過ベース。
+            #    cnt 単体 over_expect（pred_hi/act_avg > 2.5 比率ベース L3645-3646）とは定義が異なる。
+            #    composite は内部評価のみのため、単純超過ベースで許容（補遺3 整合）。
+            is_cnt_below = 1.0 if act_avg < pred_lo_cnt else 0.0
+            is_cnt_above = 1.0 if act_avg > pred_hi_cnt else 0.0
+            is_cnt_in    = 1.0 if pred_lo_cnt <= act_avg <= pred_hi_cnt else 0.0
+
+            # ── size（任意）: actual_min/max ベース、pred は再計算 ───────────────
+            # Phase B-α' L3677-3726 の size ループと評価軸を統一
+            # pred_lo/pred_hi は _range_by_key に未格納のため composite ブロックで再計算
+            is_size_below = is_size_above = is_size_in = None
+            if "size_avg" in d:
+                pred_c_sz, _ = d["size_avg"]   # size_avg モデルの pred 値（点予測）
+                act_sz_min   = d.get("_size_min_act")
+                act_sz_max   = d.get("_size_max_act")
+                dec_no       = d.get("_decade_no")
+                if (pred_c_sz is not None
+                        and act_sz_min is not None and act_sz_max is not None):
+                    _rmin_sz, _rmax_sz = _bt_decadal_size_ratio.get(
+                        dec_no, (_global_ratio_min_p20, _global_ratio_max_p80)
+                    )
+                    pred_lo_sz = pred_c_sz * _rmin_sz
+                    pred_hi_sz = pred_c_sz * _rmax_sz
+                    # size フラグは <= 2（act_min < pred_lo かつ act_max > pred_hi で below=above=1 になり得る）
+                    is_size_below = 1.0 if act_sz_min < pred_lo_sz else 0.0
+                    is_size_above = 1.0 if act_sz_max > pred_hi_sz else 0.0
+                    is_size_in    = (1.0 if (act_sz_min >= pred_lo_sz
+                                             and act_sz_max <= pred_hi_sz) else 0.0)
+
+            # ── kg（任意）: actual_min/max ベース、pred は再計算 ─────────────────
+            # Phase B-β-4 L3737-3779 の kg ループと評価軸を統一
+            is_kg_below = is_kg_above = is_kg_in = None
+            if "kg_avg" in d:
+                pred_c_kg, _ = d["kg_avg"]   # kg_avg モデルの pred 値（点予測）
+                act_kg_min   = d.get("_kg_min_act")
+                act_kg_max   = d.get("_kg_max_act")
+                dec_no_kg    = d.get("_decade_no")  # _decade_no は size と共通キー
+                if (pred_c_kg is not None
+                        and act_kg_min is not None and act_kg_max is not None):
+                    _rmin_kg, _rmax_kg = _bt_decadal_kg_ratio.get(
+                        dec_no_kg, (_global_kg_ratio_min_p20, _global_kg_ratio_max_p80)
+                    )
+                    pred_lo_kg = pred_c_kg * _rmin_kg
+                    pred_hi_kg = pred_c_kg * _rmax_kg
+                    # kg フラグは <= 2（size と同様）
+                    is_kg_below = 1.0 if act_kg_min < pred_lo_kg else 0.0
+                    is_kg_above = 1.0 if act_kg_max > pred_hi_kg else 0.0
+                    is_kg_in    = (1.0 if (act_kg_min >= pred_lo_kg
+                                           and act_kg_max <= pred_hi_kg) else 0.0)
+
+            # ── 重み再正規化 ─────────────────────────────────────────────────────
+            w_sum = W_CNT
+            component_count = 1   # cnt は必須なので 1 から始まる
+            if is_size_in is not None:
+                w_sum += W_SIZE
+                component_count += 1
+            if is_kg_in is not None:
+                w_sum += W_KG
+                component_count += 1
+
+            if w_sum <= 0:
+                continue   # 防御的ガード（理論上 w_sum >= 0.6 のはず）
+
+            # ── 4 指標を行レベル加重平均（正規化済み）───────────────────────────
+            below_w = W_CNT * is_cnt_below
+            above_w = W_CNT * is_cnt_above
+            in_w    = W_CNT * is_cnt_in
+            if is_size_in is not None:
+                below_w += W_SIZE * is_size_below
+                above_w += W_SIZE * is_size_above
+                in_w    += W_SIZE * is_size_in
+            if is_kg_in is not None:
+                below_w += W_KG * is_kg_below
+                above_w += W_KG * is_kg_above
+                in_w    += W_KG * is_kg_in
+
+            composite_rows.append({
+                "below": below_w / w_sum,
+                "above": above_w / w_sum,
+                "in":    in_w    / w_sum,
+                "comp":  component_count,
+            })
+
+        n_comp = len(composite_rows)
+        if n_comp < MIN_N_RANGE:
+            continue
+
+        # ── 4 指標の集計（行レベル平均）─────────────────────────────────────────
+        comp_pb  = sum(r["below"] for r in composite_rows) / n_comp
+        comp_oe  = sum(r["above"] for r in composite_rows) / n_comp
+        comp_cov = sum(r["in"]    for r in composite_rows) / n_comp
+        # winkler は cnt/size/kg で単位が異なるため加重平均は意味をなさない → NULL
+        comp_winkler = None
+
+        # component_count 代表値: 平均値の四捨五入（期待値の整数化・実態の近似値）
+        # 注意: 1 と 3 が均等混在するコンボでは四捨五入結果は 2 になるが最頻値は不定。
+        #       同一コンボ内で行ごとに component_count が異なる場合（kg が一部行のみ存在等）、
+        #       代表値は行間の分布を潰す。層別解析が必要な場合は §8 リスク 8 参照。
+        avg_comp = sum(r["comp"] for r in composite_rows) / n_comp
+        comp_count_repr = round(avg_comp)
+
+        range_bt_data.append((
+            "composite", H, comp_pb, comp_oe, comp_cov, None, comp_winkler, n_comp,
+            comp_count_repr   # 9 要素目: component_count（save_range_backtest で受け取る）
+        ))
 
     # ── star_backtest: 回遊魚★評価バックテスト ───────────────────────────────────
     # ★割り当て: コンボ固有の予測値分位数（P80/P60/P40/P20）で切る
@@ -4535,14 +4711,15 @@ def save_point_wx_params(fish, ship, point, wx_params_data, modal_lat=None, moda
 
 
 def save_range_backtest(fish, ship, range_bt_data):
-    """レンジ評価指標を combo_range_backtest テーブルに保存（Phase A: 3メトリック対応）
+    """レンジ評価指標を combo_range_backtest テーブルに保存（Phase C: composite 追加・4メトリック対応）
 
-    metric 列: "cnt" / "size" / "kg"
+    metric 列: "cnt" / "size" / "kg" / "composite"
     PRIMARY KPI: 約束割れ率 = actual_avg < pred_lo（期待させといてダメだった）→ 解約リスク最大
     SECONDARY:   期待させすぎ率 = pred_hi / actual_avg > 2.5
     Coverage:    pred_lo <= actual_avg <= pred_hi の割合
     ボウズ率:    cnt のみ。actual_min=0 かつ pred_lo > hist_avg_min*0.3。size/kg は NULL
     Winkler:     非対称スコア（約束割れ=3倍ペナルティ / 嬉しい誤算=0.5倍 / 範囲内=幅のみ）
+    component_count: composite のみ 1/2/3（使用メトリック数）。cnt/size/kg は NULL
     """
     if not range_bt_data:
         return
@@ -4556,6 +4733,7 @@ def save_range_backtest(fish, ship, range_bt_data):
         existing_cols and (
             "metric" not in existing_cols          # Phase A 追加列がない
             or "max_over_rate" in existing_cols    # 旧列が残っている
+            or "component_count" not in existing_cols   # Phase C 追加列がない
         )
     )
     if needs_recreate:
@@ -4566,28 +4744,29 @@ def save_range_backtest(fish, ship, range_bt_data):
         CREATE TABLE IF NOT EXISTS combo_range_backtest (
             fish               TEXT,
             ship               TEXT,
-            metric             TEXT,     -- "cnt" / "size" / "kg"
+            metric             TEXT,     -- "cnt" / "size" / "kg" / "composite"
             horizon            INTEGER,
             promise_break_rate REAL,
             over_expect_rate   REAL,
             coverage           REAL,
-            bowzu_rate         REAL,     -- cnt のみ非 NULL。size/kg は NULL（ボウズ概念なし）
-            winkler            REAL,     -- ⚠ 単位混在: cnt は区間幅ベース（匹）、size/kg は点予測ペナルティ距離（cm or kg）。メトリック間直接比較不可
+            bowzu_rate         REAL,     -- cnt のみ非 NULL。size/kg/composite は NULL（ボウズ概念なし）
+            winkler            REAL,     -- ⚠ 単位混在: cnt は区間幅ベース（匹）、size/kg は点予測ペナルティ距離（cm or kg）。composite は NULL（単位混在のため）。メトリック間直接比較不可
             n                  INTEGER,  -- 有効サンプル数。size/kg は actual_min/max 両方非 NULL の行数
+            component_count    INTEGER,  -- composite のみ 1/2/3（使用メトリック数）。cnt/size/kg は NULL
             updated_at         TEXT,
             PRIMARY KEY (fish, ship, metric, horizon)
         )
     """)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rows = [
-        (fish, ship, metric, H, pbr, oer, cov, bzr, wkl, n, now)
-        for metric, H, pbr, oer, cov, bzr, wkl, n in range_bt_data
+        (fish, ship, metric, H, pbr, oer, cov, bzr, wkl, n, comp_count, now)
+        for metric, H, pbr, oer, cov, bzr, wkl, n, comp_count in range_bt_data
     ]
     conn.executemany("""
         INSERT OR REPLACE INTO combo_range_backtest
         (fish, ship, metric, horizon, promise_break_rate, over_expect_rate, coverage,
-         bowzu_rate, winkler, n, updated_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?)
+         bowzu_rate, winkler, n, component_count, updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
     """, rows)
     conn.commit()
     conn.close()
