@@ -3956,7 +3956,7 @@ def build_top_combos_html(catches_for_summary, history, now):
             f'</a>'
         )
     return (
-        '<h2 class="st">今週よく釣れているコンボ <span class="tag free">無料</span><span class="topc-period">直近1週間集計</span></h2>'
+        '<h2 class="st">今週よく釣れている 魚×エリア <span class="tag free">無料</span><span class="topc-period">直近1週間集計</span></h2>'
         '<div class="topc-grid">' + "".join(cards) + '</div>'
     )
 
@@ -4042,13 +4042,13 @@ def build_teaser_rotator_html():
     <div class="tr-slide">
       <div class="teaser-head">
         <span class="teaser-badge soon">開発中</span>
-        <span class="teaser-title-in">分析・予測 — 注目コンボ・急落コンボ</span>
+        <span class="teaser-title-in">分析・予測 — 注目の魚×エリア・急落速報</span>
       </div>
       <div class="teaser-desc"><strong>魚種×エリアの組合せ</strong>を独自スコアリング。「来週のどの日に何が釣れるか」を日別で予測。</div>
       <div style="position:relative">
         <div class="teaser-dummy"><div class="td-fish">注目: アジ × 金沢八景</div><div class="td-range">スコア 92 / 平年比 +38%</div><div class="td-reason">大潮×SST18.5℃×波0.8m でベスト条件</div></div>
         <div class="teaser-dummy"><div class="td-fish">急落: タチウオ × 走水</div><div class="td-range">先週比 -45%</div><div class="td-reason">水温急低下でベイトが抜けた模様</div></div>
-        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>日別釣果予測（7日先）</li><li>気象相関グラフ</li><li>急上昇・急落コンボ通知</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
+        <div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>日別釣果予測（7日先）</li><li>気象相関グラフ</li><li>急上昇・急落 魚×エリア通知</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div>
       </div>
     </div>
   </div>
