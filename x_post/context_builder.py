@@ -82,13 +82,26 @@ def _load_combo_decadal(db_path, fish, decade_no):
     return None
 
 
+def _wind_dir_label(deg):
+    """風向角度(度) → 16方位日本語ラベル"""
+    if deg is None:
+        return ""
+    try:
+        deg = float(deg)
+    except Exception:
+        return ""
+    dirs = ["北", "北北東", "北東", "東北東", "東", "東南東", "南東", "南南東",
+            "南", "南南西", "南西", "西南西", "西", "西北西", "北西", "北北西"]
+    return dirs[int((deg + 11.25) / 22.5) % 16]
+
+
 def _parse_weather_csv(weather_dir, date_str):
     """weather/YYYY-MM.csv から当日の代表値を取得"""
     ym = date_str[:7]  # "2026-05"
     csv_path = os.path.join(weather_dir, f"{ym}.csv")
     if not os.path.exists(csv_path):
         return {}
-    waves, winds, ssts = [], [], []
+    waves, winds, wind_dirs, ssts = [], [], [], []
     try:
         with open(csv_path, encoding="utf-8") as f:
             lines = f.readlines()
@@ -98,6 +111,7 @@ def _parse_weather_csv(weather_dir, date_str):
         idx_date = header.index("date") if "date" in header else -1
         idx_wave = header.index("wave_height") if "wave_height" in header else -1
         idx_wind = header.index("wind_speed") if "wind_speed" in header else -1
+        idx_wdir = header.index("wind_dir") if "wind_dir" in header else -1
         idx_sst = header.index("sst") if "sst" in header else -1
         for line in lines[1:]:
             parts = line.strip().split(",")
@@ -110,6 +124,8 @@ def _parse_weather_csv(weather_dir, date_str):
                     waves.append(float(parts[idx_wave]))
                 if idx_wind >= 0 and parts[idx_wind]:
                     winds.append(float(parts[idx_wind]))
+                if idx_wdir >= 0 and parts[idx_wdir]:
+                    wind_dirs.append(float(parts[idx_wdir]))
                 if idx_sst >= 0 and parts[idx_sst]:
                     ssts.append(float(parts[idx_sst]))
             except ValueError:
@@ -124,9 +140,40 @@ def _parse_weather_csv(weather_dir, date_str):
         result["wind_inner_max"] = max(winds)
         result["wind_inner_min"] = min(winds)
         result["max_wind"] = max(winds)
+        # 最頻出風速に対応する風向を代表値とする
+        if wind_dirs:
+            # 最大風速時刻の風向を採用（zip で同インデックス対応）
+            paired = sorted(zip(winds, wind_dirs), key=lambda x: -x[0])
+            result["wind_dir_deg"] = paired[0][1]
+            result["wind_dir_label"] = _wind_dir_label(paired[0][1])
     if ssts:
         result["sst_mean"] = round(sum(ssts) / len(ssts), 1)
     return result
+
+
+def _load_pressure_from_cache(root_dir, date_str):
+    """weather_cache.sqlite から気圧中央値を取得。
+    代表座標: 東京湾 (35.3N, 139.8E) 付近。存在しなければ None を返す。"""
+    cache_path = os.path.join(root_dir, "ocean", "weather_cache.sqlite")
+    if not os.path.exists(cache_path):
+        return None
+    try:
+        con = sqlite3.connect(cache_path, timeout=5)
+        # 当日の圧力値（35.2〜35.4N, 139.7〜139.9E の範囲で集計）
+        rows = con.execute(
+            "SELECT pressure FROM weather WHERE dt LIKE ? "
+            "AND lat BETWEEN 35.1 AND 35.5 AND lon BETWEEN 139.6 AND 140.0 "
+            "AND pressure IS NOT NULL LIMIT 48",
+            (f"{date_str}%",)
+        ).fetchall()
+        con.close()
+        if rows:
+            vals = [r[0] for r in rows]
+            vals.sort()
+            return round(vals[len(vals) // 2], 0)  # 中央値
+    except Exception:
+        pass
+    return None
 
 
 def build_context(valid_catches, history, analysis_db, date_str, weather_dir=None):
@@ -281,11 +328,14 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     max_wind = wx.get("max_wind", 5.0)
     wind_inner_max = wx.get("wind_inner_max", 5.0)
     wind_inner_min = wx.get("wind_inner_min", 2.0)
+    wind_dir_label = wx.get("wind_dir_label", "")  # 16方位テキスト（例: "南南西"）
     sst_mean = wx.get("sst_mean", 18.0)
     # 気候平年値（簡易）: 5月の平均 SST = 17℃
     sst_norm = {1: 15, 2: 14, 3: 15, 4: 16, 5: 17, 6: 19, 7: 22, 8: 24,
                 9: 23, 10: 21, 11: 18, 12: 16}
     sst_anom = round(sst_mean - sst_norm.get(dt.month, 17), 1)
+    # 気圧: weather_cache.sqlite から取得（なければ None）
+    pressure_hpa = _load_pressure_from_cache(_root_dir, date_str)
 
     # inner / outer 釣果割合
     inner_cnt = sum(1 for c in day_catches if c.get("area", "") in _INNER_PORTS)
@@ -563,6 +613,9 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         "wind_inner_min": wind_inner_min,
         "wind_inner_str": wind_inner_str,
         "wind_outer_max": wind_outer_max,
+        "wind_dir_label": wind_dir_label,
+        "sst_mean": sst_mean,
+        "pressure_hpa": pressure_hpa,  # None の場合は "—" 表示
         "sst_anom": sst_anom,
         "kuroshio_state": "stable",  # cmems_data が無いためデフォルト
         "rain_yesterday_mm": rain_yesterday_mm,

@@ -109,6 +109,16 @@ body {
 .umi-card .ratio { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 13px; }
 .umi-card .ratio b { color: var(--good); font-weight: 800; }
 .umi-card .ratio.warn b { color: var(--warn); }
+/* sea-grid: area ページと同スタイルの 6 カード海況グリッド */
+.sea-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 16px; }
+.sea-item { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; text-align: center; }
+.sea-item .sv { font-size: 18px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+.sea-item .sl2 { font-size: 10px; color: var(--sub); margin-top: 3px; }
+.sea-summary { font-size: 13px; line-height: 1.7; color: var(--sub); margin: 0 0 10px; }
+.ship-rate-bar { margin-top: 10px; font-size: 13px; color: var(--sub); }
+.ship-rate-bar b { color: var(--good); font-weight: 800; }
+.ship-rate-bar.warn b { color: var(--warn); }
+@media (max-width: 480px) { .sea-grid { grid-template-columns: repeat(2, 1fr); } }
 .fish-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .fish-row {
   display: grid;
@@ -288,42 +298,73 @@ def _x_card_table_rows_html(fish_rows):
     return "\n".join(rows)
 
 
-def _umi_cards_html(ctx):
-    """海況カード 2 列 HTML"""
-    tide_type = ctx.get("tide_type", "中潮")
-    moon_phase = ctx.get("moon_phase", "")
-    wave_inner = ctx.get("wave_inner", "—")
-    max_wind = ctx.get("max_wind", "—")
-    sst_anom = ctx.get("sst_anom", 0)
+def _sea_grid_html(ctx):
+    """area ページと同スタイルの 6 カード海況グリッド + 1 行サマリ + 出船率バー"""
+    # 各値を整形
+    sst = ctx.get("sst_mean")
+    wave = ctx.get("wave_inner")
+    wind_spd = ctx.get("max_wind")
+    wind_dir = ctx.get("wind_dir_label", "")
+    tide_type = ctx.get("tide_type", "—")
+    moon_phase = ctx.get("moon_phase", "—")
+    pressure_hpa = ctx.get("pressure_hpa")
     n_ships = ctx.get("n_ships", 0)
     n_cancellations = ctx.get("n_cancellations", 0)
-    ship_rate = f"{int((n_ships - n_cancellations) / max(n_ships, 1) * 100)}%"
-    # C5: warn クラスは出船率 < 0.7（欠航 > 30%）のときのみ
-    _ship_rate_val = (n_ships - n_cancellations) / max(n_ships, 1)
-    warn_cls = " warn" if _ship_rate_val < 0.7 else ""
-    sst_str = f"+{sst_anom:.1f}℃" if sst_anom >= 0 else f"{sst_anom:.1f}℃"
 
-    return f"""    <div class="umi-grid">
-      <div class="umi-card">
-        <div class="h">内海（東京湾・相模湾）</div>
-        <dl>
-          <dt>波</dt><dd>{wave_inner:.1f}m</dd>
-          <dt>最大風速</dt><dd>{max_wind:.0f}m/s</dd>
-          <dt>潮汐</dt><dd>{tide_type}（{moon_phase}）</dd>
-          <dt>SST 偏差</dt><dd>例年比 {sst_str}</dd>
-        </dl>
-        <div class="ratio{warn_cls}">出船率 <b>{ship_rate}</b>（{n_ships}船宿中・{n_cancellations}欠航）</div>
-      </div>
-      <div class="umi-card">
-        <div class="h">外海・広域</div>
-        <dl>
-          <dt>黒潮</dt><dd>詳細は <a href="/forecast/index.html" style="color:var(--port)">予報ページ</a></dd>
-          <dt>潮型</dt><dd>{tide_type}</dd>
-          <dt>月齢</dt><dd>{ctx.get("moon_age", "—"):.0f}日（{moon_phase}）</dd>
-        </dl>
-        <div class="ratio">外海詳細は海況予報ページをご参照ください</div>
-      </div>
-    </div>"""
+    sst_str = f"{sst:.1f}℃" if sst else "—"
+    wave_str = f"{wave:.1f}m" if wave is not None else "—"
+    if wind_dir and wind_spd is not None:
+        wind_str = f"{wind_dir}{wind_spd:.1f}m/s"
+    elif wind_spd is not None:
+        wind_str = f"{wind_spd:.1f}m/s"
+    else:
+        wind_str = "—"
+    pressure_str = f"{int(pressure_hpa)}hPa" if pressure_hpa else "—"
+
+    # 1 行サマリ
+    summary_parts = []
+    sst_norm = {1: 15, 2: 14, 3: 15, 4: 16, 5: 17, 6: 19, 7: 22, 8: 24,
+                9: 23, 10: 21, 11: 18, 12: 16}
+    if sst is not None:
+        from datetime import datetime as _dt
+        _m = _dt.now().month
+        diff = sst - sst_norm.get(_m, 17)
+        if diff >= 1.5:
+            summary_parts.append(f"水温は平年比+{diff:.1f}℃と高め（{sst:.1f}℃）")
+        elif diff <= -1.5:
+            summary_parts.append(f"水温は平年比{diff:.1f}℃と低め（{sst:.1f}℃）")
+        else:
+            summary_parts.append(f"水温は平年並み（{sst:.1f}℃）")
+    if wave is not None and wind_spd is not None:
+        if wave >= 2.0 or wind_spd >= 10:
+            summary_parts.append(f"波{wave:.1f}m・風{wind_spd:.0f}m/sの荒天で欠航警戒")
+        elif wave >= 1.0 or wind_spd >= 6:
+            summary_parts.append(f"波{wave:.1f}m・風{wind_spd:.0f}m/sでやや荒れ気味、出船注意")
+        else:
+            summary_parts.append(f"波{wave:.1f}m・風{wind_spd:.0f}m/sと穏やかで出船日和")
+    summary_html = ""
+    if summary_parts:
+        summary_html = f'<p class="sea-summary">{"。".join(summary_parts)}。</p>'
+
+    # 出船率バー
+    _rate_val = (n_ships - n_cancellations) / max(n_ships, 1)
+    ship_rate_str = f"{int(_rate_val * 100)}%"
+    warn_cls = " warn" if _rate_val < 0.7 else ""
+    rate_html = (
+        f'<div class="ship-rate-bar{warn_cls}">'
+        f'出船率 <b>{ship_rate_str}</b>（{n_ships}船宿中・{n_cancellations}欠航）'
+        f'</div>'
+    )
+
+    return f"""{summary_html}    <div class="sea-grid">
+      <div class="sea-item"><div class="sv">{sst_str}</div><div class="sl2">水温</div></div>
+      <div class="sea-item"><div class="sv">{wave_str}</div><div class="sl2">波高</div></div>
+      <div class="sea-item"><div class="sv">{wind_str}</div><div class="sl2">風</div></div>
+      <div class="sea-item"><div class="sv">{tide_type}</div><div class="sl2">潮汐</div></div>
+      <div class="sea-item"><div class="sv">{moon_phase}</div><div class="sl2">月相</div></div>
+      <div class="sea-item"><div class="sv">{pressure_str}</div><div class="sl2">気圧</div></div>
+    </div>
+{rate_html}"""
 
 
 def _hl_cards_html(ctx):
@@ -406,8 +447,8 @@ def build(ctx, commentary_html, output_path, png_url=None):
 
     # ハイライトカード
     hl_cards = _hl_cards_html(ctx)
-    # 海況カード
-    umi_cards = _umi_cards_html(ctx)
+    # 海況グリッド（6カード・area ページと同スタイル）
+    sea_grid = _sea_grid_html(ctx)
     # 魚種テーブル
     fish_rows_html = _fish_table_rows_html(fish_rows, depth="../")
     # X カードテーブル
@@ -477,10 +518,10 @@ def build(ctx, commentary_html, output_path, png_url=None):
 
   <section class="sec">
     <h2><span class="num">2</span>海況レポート</h2>
-    <p class="lead">
-      関東各港の出船状況と海況データ。詳細な予報は<a href="/forecast/index.html">予報ページ</a>をご参照ください。
+{sea_grid}
+    <p class="lead" style="margin-top:10px">
+      詳細な予報・長期見通しは<a href="/forecast/index.html">予報ページ</a>をご参照ください。
     </p>
-{umi_cards}
   </section>
 
   <section class="sec">

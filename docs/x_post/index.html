@@ -113,6 +113,16 @@ body {
 .umi-card .ratio { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 13px; }
 .umi-card .ratio b { color: var(--good); font-weight: 800; }
 .umi-card .ratio.warn b { color: var(--warn); }
+/* sea-grid: area ページと同スタイルの 6 カード海況グリッド */
+.sea-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 16px; }
+.sea-item { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; text-align: center; }
+.sea-item .sv { font-size: 18px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+.sea-item .sl2 { font-size: 10px; color: var(--sub); margin-top: 3px; }
+.sea-summary { font-size: 13px; line-height: 1.7; color: var(--sub); margin: 0 0 10px; }
+.ship-rate-bar { margin-top: 10px; font-size: 13px; color: var(--sub); }
+.ship-rate-bar b { color: var(--good); font-weight: 800; }
+.ship-rate-bar.warn b { color: var(--warn); }
+@media (max-width: 480px) { .sea-grid { grid-template-columns: repeat(2, 1fr); } }
 .fish-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .fish-row {
   display: grid;
