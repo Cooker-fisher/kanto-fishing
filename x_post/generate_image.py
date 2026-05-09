@@ -241,6 +241,9 @@ def create(ctx, output_path):
 
     # 保存
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    img.save(output_path, format="PNG", optimize=True)
-    print(f"[generate_image] PNG 保存: {output_path} ({W}x{H})")
+    # 2倍 LANCZOS リサンプリングで X 上でのくっきり表示を改善
+    # （X は 1200x600 級を推奨・元 800x500 は拡大表示でぼやけていた）
+    img_2x = img.resize((W * 2, H * 2), Image.LANCZOS)
+    img_2x.save(output_path, format="PNG", optimize=True)
+    print(f"[generate_image] PNG 保存: {output_path} ({W*2}x{H*2})")
     return True
