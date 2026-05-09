@@ -3,6 +3,28 @@
 
 import os
 import re
+import json
+
+
+_FISH_ROMAJI: dict = {}
+_FISH_ROMAJI_LOADED = False
+
+
+def _load_fish_romaji() -> dict:
+    """normalize/fish_romaji_map.json を読み込んでキャッシュ。
+    全 60 魚種対応（ハイフン付き形式・例: 'bishi-aji'）。
+    asset フォルダ用にハイフン除去が必要なケースは呼出側で .replace('-', '') する。"""
+    global _FISH_ROMAJI, _FISH_ROMAJI_LOADED
+    if not _FISH_ROMAJI_LOADED:
+        _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        _path = os.path.join(_root, "normalize", "fish_romaji_map.json")
+        try:
+            with open(_path, encoding="utf-8") as f:
+                _FISH_ROMAJI = json.load(f)
+        except Exception:
+            _FISH_ROMAJI = {}
+        _FISH_ROMAJI_LOADED = True
+    return _FISH_ROMAJI
 
 
 # ── CSS（mockup-x-post-daily.html から抽出・CSS 変数のみ使用） ──
@@ -213,16 +235,7 @@ def _fish_table_rows_html(fish_rows, depth="../"):
     """魚種別テーブル行 HTML（docs/x_post/ から見た相対パスでアイコン参照）"""
     rows = []
     icon_base = f"{depth}assets/fish/"
-    # ローマ字変換マップ（簡易）
-    _romaji = {
-        "アジ": "aji", "マダイ": "madai", "シロギス": "shirogisu",
-        "カワハギ": "kawahagi", "タチウオ": "tachiuo", "カンパチ": "kanpachi",
-        "マルイカ": "maruika", "ヤリイカ": "yariika", "フグ": "fugu",
-        "スルメイカ": "surumeika", "ワラサ": "warasa", "マハタ": "mahata",
-        "メダイ": "medai", "アマダイ": "amadai", "イサキ": "isaki",
-        "マゴチ": "magochi", "シイラ": "shiira", "カツオ": "katsuo",
-        "キハダマグロ": "kihada", "サワラ": "sawara", "ヒラメ": "hirame",
-    }
+    _romaji = _load_fish_romaji()
     for row in fish_rows:
         fish_name = row.get("fish", "")
         cnt_min = row.get("cnt_min", 0)
@@ -233,7 +246,8 @@ def _fish_table_rows_html(fish_rows, depth="../"):
         cm_min = row.get("cm_min", 0)
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
-        romaji = _romaji.get(fish_name, fish_name.lower())
+        # asset フォルダ名はハイフンなし（例: bishi-aji → bishiaji）
+        romaji = _romaji.get(fish_name, fish_name.lower()).replace("-", "")
         icon_path = f"{icon_base}{romaji}/{romaji}_emoji.webp"
         # M3: 型表示を min-max 形式に（補遺3 遵守）
         if kg_max and kg_max > 0:
@@ -262,12 +276,7 @@ def _fish_table_rows_html(fish_rows, depth="../"):
 def _x_card_table_rows_html(fish_rows):
     """X 投稿画像プレビュー用テーブル行 HTML（縮小版）"""
     rows = []
-    _romaji = {
-        "アジ": "aji", "マダイ": "madai", "シロギス": "shirogisu",
-        "カワハギ": "kawahagi", "タチウオ": "tachiuo", "カンパチ": "kanpachi",
-        "マルイカ": "maruika", "ヤリイカ": "yariika", "フグ": "fugu",
-        "スルメイカ": "surumeika",
-    }
+    _romaji = _load_fish_romaji()
     icon_base = "../../assets/fish/"
     for row in fish_rows[:10]:
         fish_name = row.get("fish", "")
@@ -277,7 +286,8 @@ def _x_card_table_rows_html(fish_rows):
         cm_max = row.get("cm_max", 0)
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
-        romaji = _romaji.get(fish_name, fish_name.lower())
+        # asset フォルダ名はハイフンなし
+        romaji = _romaji.get(fish_name, fish_name.lower()).replace("-", "")
         icon_path = f"{icon_base}{romaji}/{romaji}_icon_sm.png"
         # 型
         if kg_max and kg_max > 0:
