@@ -143,6 +143,35 @@ def create(ctx, output_path):
     ROW_TOP = TABLE_TOP + TH_H + 2
     MAX_ROWS = min(len(fish_rows), 9)  # 最大9行（500px に収める）
 
+    # 魚種アイコン読み込み（fish_romaji_map.json から romaji 解決）
+    import json
+    _fish_romaji_path = os.path.join(root_dir, "normalize", "fish_romaji_map.json")
+    try:
+        with open(_fish_romaji_path, encoding="utf-8") as _f:
+            _fish_romaji = json.load(_f)
+    except Exception:
+        _fish_romaji = {}
+
+    def _load_icon(fish_name, size=28):
+        """魚種アイコン PNG を読み込んで size x size にリサイズして返す。失敗時 None。"""
+        romaji = _fish_romaji.get(fish_name, fish_name.lower()).replace("-", "")
+        if not romaji:
+            return None
+        for fname in (f"{romaji}_icon_sm.png", f"{romaji}_icon.png"):
+            p = os.path.join(root_dir, "docs", "assets", "fish", romaji, fname)
+            if os.path.exists(p):
+                try:
+                    icon = Image.open(p).convert("RGBA")
+                    icon = icon.resize((size, size), Image.LANCZOS)
+                    return icon
+                except Exception:
+                    continue
+        return None
+
+    ICON_SIZE = 28
+    ICON_PAD = 6  # アイコンと魚種名の間隔
+    NAME_OFFSET_X = ICON_SIZE + ICON_PAD  # 魚種名の左オフセット
+
     for i, row in enumerate(fish_rows[:MAX_ROWS]):
         y = ROW_TOP + i * ROW_H
         row_bg = (250, 253, 254) if i % 2 == 0 else C_BG
@@ -156,8 +185,17 @@ def create(ctx, output_path):
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
 
+        # 魚種アイコン（あれば）
+        icon = _load_icon(fish_name, ICON_SIZE)
+        if icon is not None:
+            icon_y = y + (ROW_H - ICON_SIZE) // 2
+            img.paste(icon, (COL_X[0] + 4, icon_y), icon)
+            name_x = COL_X[0] + 4 + NAME_OFFSET_X
+        else:
+            name_x = COL_X[0] + 4
+
         # 魚種名
-        draw.text((COL_X[0] + 4, y + 10), fish_name, font=fn_bold_14, fill=(10, 77, 110))
+        draw.text((name_x, y + 10), fish_name, font=fn_bold_14, fill=(10, 77, 110))
 
         # 釣果 MIN〜MAX
         catch_str = f"{cnt_min}〜{cnt_max}匹"
