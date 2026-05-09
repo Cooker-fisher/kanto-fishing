@@ -6468,7 +6468,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fc .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
 .fc .bars{display:flex;align-items:flex-end;gap:1px;height:20px;margin-top:4px}
 .fc .bars .b{flex:1;background:var(--cta);border-radius:1px 1px 0 0;opacity:.6;min-width:4px}
-.fc .bars .b.weekend{opacity:.85;background:#f4a043}
+.fc .bars .b.weekend{opacity:.85;background:var(--weekend)}
 .fc .bars .b.today{opacity:1;background:var(--pos);outline:1px solid var(--accent);outline-offset:-1px}
 .fc .bar-labels{display:flex;gap:1px;margin-top:1px}
 .fc .bar-labels .bl{flex:1;font-size:8px;color:var(--muted);text-align:center;min-width:4px}
@@ -7235,7 +7235,7 @@ def build_fish_pages(data, history, crawled_at=""):
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.weekend{opacity:.8;background:var(--weekend)}
 .chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
 .chart-labels span.weekend{color:#c66a14}
@@ -9836,7 +9836,7 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .fish-section h3 .h-range{color:var(--cta);font-size:15px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.weekend{opacity:.8;background:var(--weekend)}
 .chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
 .chart-labels span.weekend{color:#c66a14}
@@ -9905,7 +9905,7 @@ _SHIP_EXTRA_CSS = """\
 .fish-section h3 .h-range{color:var(--cta);font-size:15px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.weekend{opacity:.8;background:var(--weekend)}
 .chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
 .chart-labels span.weekend{color:#c66a14}
