@@ -4671,6 +4671,49 @@ def build_fixed_faq_html(scope_type, scope_key, fixed_faq_data):
     return html, faq_pairs
 
 
+def build_fish_fixed_faq_html(fish, fixed_faq_data):
+    """
+    M1 (T22): 魚種ページ用の固定FAQ。
+    固有 FAQ（魚種別）のみを <details> で出力し、
+    共通 9 問は faq.html へのリンクブロックに差し替える。
+    戻り値: (html, faq_pairs)  faq_pairs は固有 FAQ の (q, a) のみ（JSON-LD 用）
+    """
+    import html as _html
+    scoped_items = (fixed_faq_data.get("fish") or {}).get(fish, [])
+
+    faq_pairs = []
+    inner = ""
+
+    if scoped_items:
+        block_ttl = f"{_html.escape(fish)}船釣りの基礎知識"
+        inner += f'<h3 class="faq-block-ttl">{block_ttl}</h3>\n'
+        for item in scoped_items:
+            q = item.get("q", "")
+            a = item.get("a", "")
+            sources = item.get("sources", [])
+            src_html = _faq_source_html(sources)
+            inner += (
+                f'  <details><summary>{_html.escape(q)}</summary>'
+                f'<p class="faq-ans">{_html.escape(a)}{src_html}</p></details>\n'
+            )
+            faq_pairs.append((q, a))
+
+    # 共通 FAQ はリンクに差し替え（M1: 51 魚種 × 7 問の重複解消）
+    common_link = (
+        '<p class="faq-common-link">'
+        '服装・船酔い対策・予約方法・ライフジャケットなど船釣り共通の基礎 Q&amp;A は'
+        '<a href="/pages/faq.html">よくある質問ページ</a>にまとめています。'
+        '</p>'
+    )
+
+    if inner:
+        html = f'<div class="faq-list faq-static" data-scope="fish-{_html.escape(fish)}">\n{inner}</div>\n{common_link}'
+    else:
+        html = common_link
+
+    return html, faq_pairs
+
+
 def build_fish_faq_html(fish, catches, decadal_calendar, site_url=""):
     """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル"""
     # Q1: 旬はいつ？
@@ -7123,8 +7166,10 @@ def build_fish_pages(data, history, crawled_at=""):
         season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=_hist_rows_for_fish)
         guide_html = build_fish_guide_html(fish, tackle_data)
         auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
-        fixed_faq_html, fixed_faq_pairs = build_fixed_faq_html("fish", fish, fixed_faq_data)
+        # M1 (T22): 共通 FAQ 9 問を faq.html に切り出し。固有 FAQ + リンクのみ出力
+        fixed_faq_html, fixed_faq_pairs = build_fish_fixed_faq_html(fish, fixed_faq_data)
         faq_html = auto_faq_html + fixed_faq_html
+        # JSON-LD は auto + 固有のみ（共通 FAQ の重複 JSON-LD を除去）
         all_faq_pairs = auto_faq_pairs + fixed_faq_pairs
         _faq_jsonld_items = ",\n".join(
             f'{{"@type":"Question","name":{json.dumps(q, ensure_ascii=False)},"acceptedAnswer":{{"@type":"Answer","text":{json.dumps(a, ensure_ascii=False)}}}}}'
@@ -7175,7 +7220,9 @@ def build_fish_pages(data, history, crawled_at=""):
 .chart-labels span.weekend{color:#c66a14}
 .chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
-.chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}"""
+.chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}
+.faq-common-link{font-size:12px;color:var(--sub);margin-top:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.faq-common-link a{color:var(--cta)}"""
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
