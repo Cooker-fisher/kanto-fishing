@@ -158,3 +158,40 @@ def measure_text_length(html_text):
     """HTML タグを除去した純テキスト文字数を返す（800字以上チェック用）"""
     plain = re.sub(r"<[^>]+>", "", html_text)
     return len(plain)
+
+
+def build_commentary_blocks(hl_text, ocean_text, fish_texts, ctx):
+    """
+    各セクション用の散文 HTML ブロックを dict で返す（冒頭集中問題の修正）。
+    返り値: {"intro": "<p class='lead'>...</p>",
+             "hl": "<p>...</p>",
+             "ocean": "<p>...</p>",
+             "fish": "<p>...</p>"}
+    各セクション内の最後に挿入する想定。
+    """
+    date_label = ctx.get("date_label", "")
+    n_records = ctx.get("n_records", 0)
+    n_ships = ctx.get("n_ships", 0)
+    n_fish_species = ctx.get("n_fish_species", 0)
+    season_label = ctx.get("season_label", "")
+
+    intro = (f'<p class="lead">{date_label}は<b>{n_ships}船宿</b>が出船し、'
+             f'<b>{n_fish_species}魚種</b>で<b>{n_records}件</b>の釣果報告が寄せられました。'
+             f'{season_label}の釣況をデータでお届けします。</p>')
+    hl = f'<div class="commentary"><p>{hl_text}</p></div>'
+    ocean = f'<div class="commentary"><p>{ocean_text}</p></div>'
+    fish = f'<div class="commentary"><p>{fish_texts}</p></div>'
+
+    blocks = {"intro": intro, "hl": hl, "ocean": ocean, "fish": fish}
+
+    # 船宿リンク化（intro は不要・hl/ocean/fish のみ）
+    for k in ("hl", "ocean", "fish"):
+        blocks[k] = _linkify_ship_names(blocks[k])
+
+    # 禁止語ガード
+    plain = " ".join(re.sub(r"<[^>]+>", "", v) for v in blocks.values())
+    _forbidden = ["釣りビジョン", "fishing-v.jp", "fishing-v"]
+    for word in _forbidden:
+        assert word not in plain, f"データソース言及禁止: '{word}' が含まれています"
+
+    return blocks

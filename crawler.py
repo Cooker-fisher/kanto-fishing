@@ -11589,6 +11589,7 @@ def main():
                 render_template as _render_tpl,
                 render_section as _render_sec,
                 build_commentary_html as _build_comm,
+                build_commentary_blocks as _build_blocks,
             )
             from x_post.generate_image import create as _create_img
             from x_post.build_daily_page import build as _build_daily
@@ -11611,12 +11612,12 @@ def main():
             _f_tpls = _pick_ft(_ctx)
 
             print("[x_post] 散文生成...")
-            _comm_html = _build_comm(
-                _render_tpl(_h_tpl, _ctx),
-                _render_tpl(_s_tpl, _ctx),
-                _render_sec(_f_tpls, _ctx),
-                _ctx,
-            )
+            _hl_text = _render_tpl(_h_tpl, _ctx)
+            _oc_text = _render_tpl(_s_tpl, _ctx)
+            _fi_text = _render_sec(_f_tpls, _ctx)
+            _comm_html = _build_comm(_hl_text, _oc_text, _fi_text, _ctx)
+            # 各セクション内挿入用 dict（冒頭集中問題の修正）
+            _comm_blocks = _build_blocks(_hl_text, _oc_text, _fi_text, _ctx)
 
             _png_url = f"https://funatsuri-yoso.com/x_post/{_today_str}.png"
             _daily_url = f"https://funatsuri-yoso.com/x_post/{_today_str}.html"
@@ -11627,7 +11628,7 @@ def main():
 
             print("[x_post] daily HTML 生成...")
             _build_daily(
-                _ctx, _comm_html,
+                _ctx, _comm_blocks,
                 output_path=os.path.join(_x_post_dir, f"{_today_str}.html"),
                 png_url=_png_url,
             )

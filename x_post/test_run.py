@@ -15,7 +15,7 @@ sys.path.insert(0, _ROOT_DIR)
 
 from x_post.context_builder import build_context
 from x_post.template_picker import pick_highlight, pick_ocean, pick_fish_templates
-from x_post.text_generator import render_template, render_section, build_commentary_html, measure_text_length
+from x_post.text_generator import render_template, render_section, build_commentary_html, build_commentary_blocks, measure_text_length
 from x_post.build_daily_page import build as build_daily_page
 from x_post.build_rss import build as build_rss
 from x_post.generate_image import create as create_image
@@ -83,6 +83,8 @@ def main():
     ocean_text = render_template(s_tpl, ctx)
     fish_text = render_section(f_tpls, ctx)
     commentary_html = build_commentary_html(hl_text, ocean_text, fish_text, ctx)
+    # 各セクション内に散文を配置するための dict 形式（冒頭集中問題の修正）
+    commentary_blocks = build_commentary_blocks(hl_text, ocean_text, fish_text, ctx)
 
     # 文字数計測
     char_count = measure_text_length(commentary_html)
@@ -124,7 +126,7 @@ def main():
     html_path = os.path.join(docs_x_post_dir, f"{date_str}.html")
     png_url = f"https://funatsuri-yoso.com/x_post/{date_str}.png"
     daily_url = f"https://funatsuri-yoso.com/x_post/{date_str}.html"
-    build_daily_page(ctx, commentary_html, output_path=html_path, png_url=png_url)
+    build_daily_page(ctx, commentary_blocks, output_path=html_path, png_url=png_url)
 
     # 最終 HTML 文字数確認
     with open(html_path, encoding="utf-8") as f:

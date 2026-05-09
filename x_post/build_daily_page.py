@@ -452,14 +452,26 @@ def _hl_cards_html(ctx):
     return f'    <div class="hl-grid">\n' + "\n".join(cards) + "\n    </div>"
 
 
-def build(ctx, commentary_html, output_path, png_url=None):
+def build(ctx, commentary, output_path, png_url=None):
     """
     docs/x_post/YYYY-MM-DD.html を生成して output_path に保存。
     ctx: context_builder.build_context() の戻り値
-    commentary_html: text_generator.build_commentary_html() の戻り値
+    commentary: dict (build_commentary_blocks の戻り値) または str (旧 build_commentary_html の戻り値・互換)
     output_path: 保存先パス
     png_url: この日の PNG の URL（sitemap・OGP 用）
     """
+    # 互換: str で渡された場合は intro/hl にまとめて入れて ocean/fish は空
+    if isinstance(commentary, dict):
+        intro_block = commentary.get("intro", "")
+        hl_commentary = commentary.get("hl", "")
+        ocean_commentary = commentary.get("ocean", "")
+        fish_commentary = commentary.get("fish", "")
+    else:
+        # 後方互換：旧 commentary_html を hl にまとめて入れる
+        intro_block = ""
+        hl_commentary = commentary or ""
+        ocean_commentary = ""
+        fish_commentary = ""
     date_label = ctx.get("date_label", "")
     date_iso = ctx.get("date_iso", "")
     n_ships = ctx.get("n_ships", 0)
@@ -552,16 +564,15 @@ def build(ctx, commentary_html, output_path, png_url=None):
 
   <section class="sec">
     <h2><span class="num">1</span>今日のハイライト</h2>
-    <p class="lead">
-      {date_label}は<b>{n_ships}船宿</b>が出船し、<b>{n_fish_species}魚種</b>で<b>{n_records}件</b>の釣果報告が寄せられました。{season_label}の釣況をデータでお届けします。
-    </p>
+{intro_block}
 {hl_cards}
-{commentary_html}
+{hl_commentary}
   </section>
 
   <section class="sec">
     <h2><span class="num">2</span>海況レポート</h2>
 {sea_grid}
+{ocean_commentary}
   </section>
 
   <section class="sec">
@@ -572,6 +583,7 @@ def build(ctx, commentary_html, output_path, png_url=None):
     <div class="fish-list">
 {fish_rows_html}
     </div>
+{fish_commentary}
   </section>
 
   <div class="related">
