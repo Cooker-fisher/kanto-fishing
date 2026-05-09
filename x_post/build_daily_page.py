@@ -199,8 +199,8 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 """
 
 
-def _fish_table_rows_html(fish_rows, depth="../../"):
-    """魚種別テーブル行 HTML（fish/*.html への相対パスでアイコン参照）"""
+def _fish_table_rows_html(fish_rows, depth="../"):
+    """魚種別テーブル行 HTML（docs/x_post/ から見た相対パスでアイコン参照）"""
     rows = []
     icon_base = f"{depth}assets/fish/"
     # ローマ字変換マップ（簡易）
@@ -224,7 +224,7 @@ def _fish_table_rows_html(fish_rows, depth="../../"):
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
         romaji = _romaji.get(fish_name, fish_name.lower())
-        icon_path = f"{icon_base}{romaji}/{romaji}_icon_sm.png"
+        icon_path = f"{icon_base}{romaji}/{romaji}_emoji.webp"
         # M3: 型表示を min-max 形式に（補遺3 遵守）
         if kg_max and kg_max > 0:
             if kg_min and kg_min > 0 and kg_min < kg_max:
@@ -409,7 +409,7 @@ def build(ctx, commentary_html, output_path, png_url=None):
     # 海況カード
     umi_cards = _umi_cards_html(ctx)
     # 魚種テーブル
-    fish_rows_html = _fish_table_rows_html(fish_rows, depth="../../")
+    fish_rows_html = _fish_table_rows_html(fish_rows, depth="../")
     # X カードテーブル
     x_table_rows = _x_card_table_rows_html(fish_rows)
 
