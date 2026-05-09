@@ -4699,17 +4699,13 @@ def build_fish_fixed_faq_html(fish, fixed_faq_data):
             faq_pairs.append((q, a))
 
     # 共通 FAQ はリンクに差し替え（M1: 51 魚種 × 7 問の重複解消）
-    common_link = (
-        '<p class="faq-common-link">'
-        '服装・船酔い対策・予約方法・ライフジャケットなど船釣り共通の基礎 Q&amp;A は'
-        '<a href="/pages/faq.html">よくある質問ページ</a>にまとめています。'
-        '</p>'
-    )
+    # common_link は魚種ガイド直後（広告②の前）に配置するため、ここでは html に含めない。
+    # build_fish_pages() 側でテンプレートに直接差し込む。
 
     if inner:
-        html = f'<div class="faq-list faq-static" data-scope="fish-{_html.escape(fish)}">\n{inner}</div>\n{common_link}'
+        html = f'<div class="faq-list faq-static" data-scope="fish-{_html.escape(fish)}">\n{inner}</div>'
     else:
-        html = common_link
+        html = ""
 
     return html, faq_pairs
 
@@ -7245,8 +7241,8 @@ def build_fish_pages(data, history, crawled_at=""):
 .chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 .chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}
-.faq-common-link{font-size:12px;color:var(--sub);margin-top:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
-.faq-common-link a{color:var(--cta)}"""
+.faq-common-link{font-size:14px;color:var(--accent);margin:16px 0;padding:12px 16px;background:var(--card);border:2px solid var(--accent);border-radius:var(--r);line-height:1.6}
+.faq-common-link a{color:var(--cta);text-decoration:underline}"""
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7293,6 +7289,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   {season_map_html}
   {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ''}
+  <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
