@@ -444,7 +444,7 @@ def build(ctx, commentary_html, output_path, png_url=None):
   <nav>
     <a href="/">トップ</a>
     <a href="/calendar.html">カレンダー</a>
-    <a href="/x_post/">過去まとめ</a>
+    <a href="/x_post/index.html">釣果速報</a>
     <a href="/pages/about.html">サイトについて</a>
   </nav>
 </header>
@@ -452,7 +452,7 @@ def build(ctx, commentary_html, output_path, png_url=None):
 <div class="wrap">
 
   <div class="crumbs">
-    <a href="/">トップ</a> &raquo; <a href="/x_post/">過去まとめ</a> &raquo; {date_label} 釣果まとめ
+    <a href="/">トップ</a> &raquo; <a href="/x_post/index.html">釣果速報</a> &raquo; {date_label} 釣果まとめ
   </div>
 
   <div class="hero">
@@ -522,10 +522,10 @@ def build(ctx, commentary_html, output_path, png_url=None):
 
   <div class="related">
     <h3>関連ページ</h3>
+    <a href="/x_post/index.html">&larr; 釣果速報トップへ戻る</a>
     <a href="/">トップ（今日の釣果）</a>
     <a href="/calendar.html">釣りものカレンダー</a>
     <a href="/forecast/index.html">海況予報</a>
-    <a href="/x_post/">過去の釣果まとめ一覧</a>
   </div>
 
 </div>

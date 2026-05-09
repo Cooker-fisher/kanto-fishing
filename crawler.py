@@ -3791,6 +3791,7 @@ def _v2_header_nav(active_page=""):
 </header>
 <nav class="gnav">
   <a href="/index.html"{' class="on"' if active_page == 'index' else ''}>今日の釣果</a>
+  <a href="/x_post/index.html"{' class="on"' if active_page == 'xpost' else ''}>釣果速報</a>
   <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
@@ -3810,18 +3811,20 @@ def _v2_footer(crawled_at=""):
 
 def _v2_bottom_nav(active_page=""):
     icons = {
-        "index": '<svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>',
-        "fish":  '<svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>',
-        "area":  '<svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
-        "cal":   '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>',
-        "prem":  '<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>',
+        "index":  '<svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>',
+        "xpost":  '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><circle cx="7" cy="14" r="1.2" fill="currentColor" stroke="none"/><line x1="10" y1="14" x2="17" y2="14"/><line x1="10" y1="11" x2="17" y2="11"/></svg>',
+        "fish":   '<svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>',
+        "area":   '<svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+        "cal":    '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>',
+        "prem":   '<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>',
     }
     items = [
-        ("index", "/index.html", "釣果", ""),
-        ("fish",  "/fish/",      "魚種", ""),
-        ("area",  "/area/",      "エリア", ""),
-        ("cal",   "/calendar.html",        "カレンダー", ""),
-        ("prem",  "/forecast/index.html", "有料", "prem"),
+        ("index", "/index.html",         "釣果",     ""),
+        ("xpost", "/x_post/index.html",  "速報",     ""),
+        ("fish",  "/fish/",              "魚種",     ""),
+        ("area",  "/area/",              "エリア",   ""),
+        ("cal",   "/calendar.html",      "カレンダー", ""),
+        ("prem",  "/forecast/index.html", "有料",    "prem"),
     ]
     nav = '<nav class="bn">'
     for key, href, label, cls in items:
@@ -11572,7 +11575,14 @@ def main():
                 output_path=_feed_path,
                 existing_feed_path=_feed_path if os.path.exists(_feed_path) else None,
             )
-            print(f"[x_post] 完了 → docs/x_post/{_today_str}.html / docs/feed.xml")
+
+            print("[x_post] index.html 生成...")
+            from x_post.build_index_page import build_index as _build_x_index
+            _build_x_index(
+                output_path=os.path.join(_x_post_dir, "index.html"),
+                docs_x_post_dir=_x_post_dir,
+            )
+            print(f"[x_post] 完了 → docs/x_post/{_today_str}.html / docs/x_post/index.html / docs/feed.xml")
         except Exception as _e:
             print(f"[x_post] ERROR: {_e}")
             import traceback as _tb

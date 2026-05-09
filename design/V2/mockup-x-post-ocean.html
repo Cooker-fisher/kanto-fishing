@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X投稿カード 案3 OCEAN（修正版）— アイコン+港+型+MIN〜MAX+便</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Meiryo", sans-serif;
+  background: #f0f3f7;
+  padding: 32px 16px 64px;
+  color: #1a2332;
+  line-height: 1.5;
+}
+.head {
+  width: 880px;
+  max-width: 100%;
+  margin: 0 auto 32px;
+  padding: 16px 22px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #d0d8e0;
+}
+.head h1 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a4d6e;
+  margin-bottom: 4px;
+}
+.head ul { padding-left: 20px; font-size: 12px; color: #1a2332; line-height: 1.9; }
+.head ul li b { color: #c44402; }
+.section {
+  width: 880px;
+  max-width: 100%;
+  margin: 0 auto 32px;
+}
+.card-label {
+  font-size: 11px;
+  color: #8a96a4;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* ───────────────────────────────────────────
+   案3 OCEAN（修正版）— アイコン+港+型+MIN〜MAX+便
+   ─────────────────────────────────────────── */
+.card-ocean {
+  width: 800px;
+  background: #f0f9ff;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(13,71,114,0.12);
+  border: 1px solid #b8dde9;
+}
+.card-ocean .header {
+  background: linear-gradient(90deg, #0a4d6e 0%, #0a7ea4 50%, #14a3c9 100%);
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+.card-ocean .header::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b35 0%, #ffd166 50%, #06d6a0 100%);
+}
+.card-ocean .site-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: .8px;
+}
+.card-ocean .site-name::before {
+  content: "⚓";
+  margin-right: 6px;
+}
+.card-ocean .title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+}
+.card-ocean .sub {
+  font-size: 12px;
+  color: #b8e0eb;
+  font-weight: 700;
+}
+.card-ocean .body { padding: 14px 22px 8px; }
+.card-ocean table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.card-ocean thead tr { background: rgba(10,77,110,0.08); }
+.card-ocean th {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0a4d6e;
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 2px solid #0a7ea4;
+  letter-spacing: .3px;
+}
+.card-ocean td {
+  font-size: 12.5px;
+  color: #1a2332;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d6ebf2;
+  vertical-align: middle;
+}
+.card-ocean tbody tr:nth-child(odd) td { background: #fafdfe; }
+
+/* 1列目: アイコン + 魚種名 + 便バッジ */
+.card-ocean th:first-child,
+.card-ocean td:first-child {
+  width: 200px;
+}
+.card-ocean .fcell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-ocean .fish-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  object-fit: contain;
+  /* emoji.webp は完全透過版を使用（mix-blend-mode 不要） */
+}
+.card-ocean .fname {
+  font-weight: 800;
+  color: #0a4d6e;
+  font-size: 13.5px;
+}
+.card-ocean .badge {
+  display: inline-block;
+  background: #14a3c9;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* 2列目: 釣果 MIN〜MAX */
+.card-ocean th:nth-child(2),
+.card-ocean td:nth-child(2) { width: 140px; }
+.card-ocean .catch {
+  color: #ff6b35;
+  font-weight: 800;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+.card-ocean .catch-min {
+  color: #5a6a7a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 3列目: 型（kg/cm）— MIN〜MAX 表記対応 */
+.card-ocean th:nth-child(3),
+.card-ocean td:nth-child(3) { width: 130px; }
+.card-ocean .big-kg {
+  background: #ffd166;
+  color: #6a4400;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.card-ocean .big-cm { color: #0a4d6e; font-size: 12px; font-weight: 600; }
+.card-ocean .null-val { color: #aab4bf; font-size: 11px; }
+
+/* 4列目: 港 */
+.card-ocean .port-cell {
+  color: #0a7ea4;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.card-ocean .footer {
+  padding: 9px 28px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #0a4d6e 0%, #0a7ea4 100%);
+}
+.card-ocean .url {
+  font-size: 12px;
+  color: #ffd166;
+  font-weight: 800;
+}
+.card-ocean .meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+}
+
+/* メモ */
+.notes {
+  width: 880px;
+  max-width: 100%;
+  margin: 24px auto 0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 18px;
+  border-left: 4px solid #14a3c9;
+}
+.notes h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0a4d6e;
+  margin-bottom: 8px;
+}
+.notes ul { padding-left: 18px; font-size: 12px; color: #1a2332; line-height: 1.9; }
+.notes ul li b { color: #c44402; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>案3 OCEAN（修正版）— ユーザー指摘 4 件反映</h1>
+  <ul>
+    <li><b>1)</b> 魚種色ドット → <b>魚種アイコン</b>（docs/assets/fish/{romaji}/{romaji}_icon_sm.png 使用）</li>
+    <li><b>2)</b> 「15件」→ <b>「15便」</b>（catches.json の便単位レコード数 = trip 数で意味明示）</li>
+    <li><b>3)</b> 列名「最大釣果」→ <b>「釣果」</b>＋値を <b>MIN〜MAX 匹</b>（補遺3 準拠）</li>
+    <li><b>4)</b> 列名「大物」→ <b>「型」</b>（kg 優先・cm フォールバック）</li>
+    <li><b>5)</b> 列名「エリア」→ <b>「港」</b></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="card-label">B 案構造（単日 × 全魚種10種・5/8 実データ）</div>
+
+  <div class="card-ocean">
+    <div class="header">
+      <span class="site-name">船釣り予想</span>
+      <span class="title">5/8(金) 関東船釣り 釣果まとめ</span>
+      <span class="sub">25船宿 18港</span>
+    </div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th>魚種</th>
+            <th>釣果</th>
+            <th>型</th>
+            <th>港</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/aji.webp" alt="アジ">
+                <span class="fname">アジ</span>
+                <span class="badge">15便</span>
+              </div>
+            </td>
+            <td><span class="catch">0〜121匹</span></td>
+            <td><span class="big-cm">20〜45cm</span></td>
+            <td class="port-cell">金沢八景・浦安</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/madai.webp" alt="マダイ">
+                <span class="fname">マダイ</span>
+                <span class="badge">8便</span>
+              </div>
+            </td>
+            <td><span class="catch">1〜10匹</span></td>
+            <td><span class="big-kg">1.2〜3.7kg</span></td>
+            <td class="port-cell">松輪・日立久慈</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/shirogisu.webp" alt="シロギス">
+                <span class="fname">シロギス</span>
+                <span class="badge">4便</span>
+              </div>
+            </td>
+            <td><span class="catch">0〜180匹</span></td>
+            <td><span class="big-cm">12〜26cm</span></td>
+            <td class="port-cell">浦安・久比里</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/kawahagi.webp" alt="カワハギ">
+                <span class="fname">カワハギ</span>
+                <span class="badge">2便</span>
+              </div>
+            </td>
+            <td><span class="catch">1〜15匹</span></td>
+            <td><span class="big-cm">22〜31cm</span></td>
+            <td class="port-cell">久比里</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/tachiuo.webp" alt="タチウオ">
+                <span class="fname">タチウオ</span>
+                <span class="badge">2便</span>
+              </div>
+            </td>
+            <td><span class="catch">0〜12匹</span></td>
+            <td><span class="big-cm">85〜100cm</span></td>
+            <td class="port-cell">横浜・金沢八景</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/kanpachi.webp" alt="カンパチ">
+                <span class="fname">カンパチ</span>
+                <span class="badge">1便</span>
+              </div>
+            </td>
+            <td><span class="catch">1〜3匹</span></td>
+            <td><span class="big-kg">8.5〜15.64kg</span></td>
+            <td class="port-cell">下田(銭洲)</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/maruika.webp" alt="マルイカ">
+                <span class="fname">マルイカ</span>
+                <span class="badge">1便</span>
+              </div>
+            </td>
+            <td><span class="catch">2〜46匹</span></td>
+            <td><span class="big-cm">13〜40cm</span></td>
+            <td class="port-cell">松輪(剣崎沖)</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/yariika.webp" alt="ヤリイカ">
+                <span class="fname">ヤリイカ</span>
+                <span class="badge">1便</span>
+              </div>
+            </td>
+            <td><span class="catch">1〜21匹</span></td>
+            <td><span class="big-cm">28〜45cm</span></td>
+            <td class="port-cell">御前崎</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/fugu.webp" alt="フグ">
+                <span class="fname">フグ</span>
+                <span class="badge">1便</span>
+              </div>
+            </td>
+            <td><span class="catch">0〜8匹</span></td>
+            <td><span class="big-cm">20〜33cm</span></td>
+            <td class="port-cell">横浜</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fcell">
+                <img class="fish-icon" src="x_post_assets/icons/surumeika.webp" alt="スルメイカ">
+                <span class="fname">スルメイカ</span>
+                <span class="badge">1便</span>
+              </div>
+            </td>
+            <td><span class="catch">0〜8匹</span></td>
+            <td><span class="null-val">—</span></td>
+            <td class="port-cell">御前崎</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <span class="url">funatsuri-yoso.com</span>
+      <span class="meta">神奈川・東京・千葉・茨城・静岡対応</span>
+    </div>
+  </div>
+</div>
+
+<div class="notes">
+  <h3>実装メモ</h3>
+  <ul>
+    <li><b>アイコン</b>: 28×28px・白背景・角丸6px・薄水色枠。Pillow 実装時は icon_sm.png（128px）を縮小して合成</li>
+    <li><b>「N便」バッジ</b>: catches.json data 配列のうち (ship, date, trip_no, fish) 単位のレコード数（同一船宿が午前午後2便とも釣ったら 2便）</li>
+    <li><b>釣果 MIN〜MAX</b>: count_range.min 〜 count_range.max の最広レンジ（その魚種の便を全部マージした min と max）。同船客にボウズあれば min=0</li>
+    <li><b>型</b>: weight_kg.max 優先 → kg なければ size_cm.max → 両方 NULL は「—」。kg 値はオレンジ枠で強調</li>
+    <li><b>港</b>: area 上位2件を「・」区切り。1件のみなら 1 件表示</li>
+    <li><b>釣りビジョン非言及</b>: 出典は funatsuri-yoso.com のみ。船宿名はそのまま表示</li>
+  </ul>
+</div>
+
+</body>
+</html>

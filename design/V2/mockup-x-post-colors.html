@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X投稿カード 配色比較 — 3案 / B案構造（単日×全魚種10種）</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Meiryo", sans-serif;
+  background: #f0f3f7;
+  padding: 32px 16px 64px;
+  color: #1a2332;
+  line-height: 1.5;
+}
+.head {
+  width: 880px;
+  max-width: 100%;
+  margin: 0 auto 32px;
+  padding: 16px 22px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #d0d8e0;
+}
+.head h1 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0d2b4a;
+  margin-bottom: 4px;
+}
+.head p { font-size: 12px; color: #5a6a7a; line-height: 1.7; }
+.head p code {
+  font-size: 11px;
+  background: #f5f7fa;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid #d8dde2;
+}
+
+.section {
+  width: 880px;
+  max-width: 100%;
+  margin: 0 auto 56px;
+}
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0d2b4a;
+  margin-bottom: 4px;
+  letter-spacing: .3px;
+}
+.section-note {
+  font-size: 12px;
+  color: #5a6a7a;
+  margin-bottom: 14px;
+}
+.section-tags {
+  font-size: 11px;
+  color: #8a96a4;
+  margin-bottom: 16px;
+}
+.section-tags span {
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #d0d8e0;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-right: 6px;
+}
+
+/* ───────────────────────────────────────────
+   案1: WHITE — 白ベース + 濃紺見出し + オレンジ強調
+   サイト本体（V2）と完全統一
+   ─────────────────────────────────────────── */
+.card-white {
+  width: 800px;
+  height: 500px;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(13,43,74,0.10);
+  border: 1px solid #e3e9ef;
+}
+.card-white .header {
+  background: linear-gradient(90deg, #0d2b4a 0%, #15406b 100%);
+  padding: 14px 28px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #e85d04;
+}
+.card-white .site-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: .8px;
+}
+.card-white .site-name::before {
+  content: "🐟";
+  margin-right: 6px;
+  font-size: 14px;
+}
+.card-white .title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: .3px;
+}
+.card-white .sub {
+  font-size: 12px;
+  color: #ffd166;
+  font-weight: 700;
+}
+.card-white .body {
+  flex: 1;
+  padding: 14px 26px 8px;
+}
+.card-white table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.card-white thead tr {
+  background: #f5f7fa;
+}
+.card-white th {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5a6a7a;
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 2px solid #0d2b4a;
+  letter-spacing: .3px;
+}
+.card-white td {
+  font-size: 12.5px;
+  color: #1a2332;
+  padding: 7px 10px;
+  border-bottom: 1px solid #e3e9ef;
+  vertical-align: middle;
+}
+.card-white tr:nth-child(odd) td { background: #fafbfd; }
+.card-white .fname {
+  font-weight: 800;
+  color: #0d2b4a;
+  font-size: 13px;
+}
+.card-white .badge {
+  display: inline-block;
+  background: #e85d04;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+.card-white .catch {
+  color: #e85d04;
+  font-weight: 800;
+  font-size: 13px;
+}
+.card-white .big-kg {
+  background: #fff3e0;
+  color: #c44402;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.card-white .big-cm { color: #5a6a7a; font-size: 12px; }
+.card-white .area-cell { color: #15406b; font-size: 11.5px; }
+.card-white .footer {
+  padding: 9px 28px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e3e9ef;
+  background: #fafbfd;
+}
+.card-white .url {
+  font-size: 12px;
+  color: #e85d04;
+  font-weight: 700;
+}
+.card-white .meta { font-size: 11px; color: #8a96a4; }
+
+/* ───────────────────────────────────────────
+   案2: MORNING — 朝焼けグラデ（オレンジ→濃紺）
+   釣行の朝・大物期待感
+   ─────────────────────────────────────────── */
+.card-morning {
+  width: 800px;
+  height: 500px;
+  background: linear-gradient(160deg, #ff6b35 0%, #f7931e 25%, #2a4d8f 70%, #0d2b4a 100%);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(13,43,74,0.20);
+  position: relative;
+}
+.card-morning::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255,255,255,0.25) 0%, transparent 35%),
+    radial-gradient(circle at 10% 90%, rgba(13,43,74,0.4) 0%, transparent 50%);
+  pointer-events: none;
+}
+.card-morning .header {
+  position: relative;
+  padding: 16px 28px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-morning .site-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: .8px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.card-morning .site-name::before {
+  content: "🌅";
+  margin-right: 6px;
+}
+.card-morning .title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+.card-morning .sub {
+  font-size: 12px;
+  color: #ffd166;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.card-morning .body {
+  position: relative;
+  flex: 1;
+  padding: 12px 26px 8px;
+}
+.card-morning .body-inner {
+  background: rgba(255,255,255,0.92);
+  border-radius: 10px;
+  padding: 10px 16px;
+  height: 100%;
+  backdrop-filter: blur(8px);
+}
+.card-morning table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.card-morning thead tr { background: transparent; }
+.card-morning th {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5a6a7a;
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 2px solid #ff6b35;
+  letter-spacing: .3px;
+}
+.card-morning td {
+  font-size: 12px;
+  color: #1a2332;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0e5dc;
+  vertical-align: middle;
+}
+.card-morning .fname { font-weight: 800; color: #0d2b4a; font-size: 12.5px; }
+.card-morning .badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #ff6b35, #f7931e);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 4px;
+}
+.card-morning .catch { color: #c44402; font-weight: 800; font-size: 12.5px; }
+.card-morning .big-kg {
+  background: #2a4d8f;
+  color: #fff;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11.5px;
+}
+.card-morning .big-cm { color: #5a6a7a; font-size: 11.5px; }
+.card-morning .area-cell { color: #2a4d8f; font-size: 11px; font-weight: 600; }
+.card-morning .footer {
+  position: relative;
+  padding: 8px 28px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-morning .url {
+  font-size: 12px;
+  color: #ffd166;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.card-morning .meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* ───────────────────────────────────────────
+   案3: OCEAN — 青ベース + 魚種カラー帯
+   爽やか海テーマ・魚種別色分け
+   ─────────────────────────────────────────── */
+.card-ocean {
+  width: 800px;
+  height: 500px;
+  background: #f0f9ff;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(13,71,114,0.10);
+  border: 1px solid #b8dde9;
+}
+.card-ocean .header {
+  background: linear-gradient(90deg, #0a4d6e 0%, #0a7ea4 50%, #14a3c9 100%);
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+.card-ocean .header::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b35 0%, #ffd166 50%, #06d6a0 100%);
+}
+.card-ocean .site-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: .8px;
+}
+.card-ocean .site-name::before {
+  content: "⚓";
+  margin-right: 6px;
+}
+.card-ocean .title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+}
+.card-ocean .sub {
+  font-size: 12px;
+  color: #b8e0eb;
+  font-weight: 700;
+}
+.card-ocean .body { flex: 1; padding: 14px 26px 8px; }
+.card-ocean table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.card-ocean thead tr { background: rgba(10,77,110,0.08); }
+.card-ocean th {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0a4d6e;
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 2px solid #0a7ea4;
+  letter-spacing: .3px;
+}
+.card-ocean td {
+  font-size: 12.5px;
+  color: #1a2332;
+  padding: 7px 10px;
+  border-bottom: 1px solid #d6ebf2;
+  vertical-align: middle;
+}
+.card-ocean tbody tr:nth-child(odd) td { background: #fafdfe; }
+.card-ocean .fname {
+  font-weight: 800;
+  color: #0a4d6e;
+  font-size: 13px;
+}
+/* 魚種別カラードット */
+.card-ocean .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.card-ocean .dot-aji { background: #c0c0c0; }
+.card-ocean .dot-madai { background: #ff6b6b; }
+.card-ocean .dot-kisu { background: #ffd166; }
+.card-ocean .dot-kawahagi { background: #06d6a0; }
+.card-ocean .dot-tachi { background: #2a2a2a; }
+.card-ocean .dot-kanpachi { background: #f7931e; }
+.card-ocean .dot-marui { background: #be1ec3; }
+.card-ocean .dot-yari { background: #a98ed6; }
+.card-ocean .dot-fugu { background: #8a8a8a; }
+.card-ocean .dot-surume { background: #5a3a8a; }
+
+.card-ocean .badge {
+  display: inline-block;
+  background: #14a3c9;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 4px;
+}
+.card-ocean .catch {
+  color: #ff6b35;
+  font-weight: 800;
+  font-size: 13px;
+}
+.card-ocean .big-kg {
+  background: #ffd166;
+  color: #6a4400;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.card-ocean .big-cm { color: #0a4d6e; font-size: 12px; }
+.card-ocean .area-cell { color: #0a7ea4; font-size: 11.5px; font-weight: 600; }
+.card-ocean .footer {
+  padding: 9px 28px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #0a4d6e 0%, #0a7ea4 100%);
+}
+.card-ocean .url {
+  font-size: 12px;
+  color: #ffd166;
+  font-weight: 800;
+}
+.card-ocean .meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ───────────────────────────────────────────
+   評価メモ（各案下）
+   ─────────────────────────────────────────── */
+.eval {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 8px;
+  border-left: 3px solid #0d2b4a;
+  font-size: 12px;
+  color: #1a2332;
+  line-height: 1.7;
+}
+.eval strong { color: #0d2b4a; }
+.eval .pros { color: #0a7ea4; }
+.eval .cons { color: #c44402; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>X 投稿カード 配色比較 — 3 案（B 案構造・5/8(金) 単日×全魚種）</h1>
+  <p>
+    紺一色は却下。新しい配色案 3 つを横並び比較。データは 2026/05/08 catches.json 実値。<br>
+    実装は <code>Pillow</code> で 800×500px PNG 生成 → RSS feed.xml の <code>&lt;media:content&gt;</code> に添付 → dlvr.it が拾って X 投稿。<br>
+    釣りビジョン・fishing-v.jp への言及なし。出典: funatsuri-yoso.com のみ。
+  </p>
+</div>
+
+<!-- ────────── 案1: WHITE ────────── -->
+<div class="section">
+  <div class="section-title">案1: WHITE — 白ベース + 濃紺ヘッダ + オレンジ強調</div>
+  <div class="section-note">サイト本体（V2）と完全統一。情報サイトらしい清潔感・可読性最高。</div>
+  <div class="section-tags">
+    <span>背景: 白</span><span>見出し: 濃紺#0d2b4a</span><span>強調: オレンジ#e85d04</span><span>kg: 警告色枠</span>
+  </div>
+
+  <div class="card-white">
+    <div class="header">
+      <span class="site-name">船釣り予想</span>
+      <span class="title">5/8(金) 関東船釣り 釣果まとめ</span>
+      <span class="sub">25船宿 18エリア</span>
+    </div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr><th>魚種</th><th>最大釣果</th><th>大物</th><th>主なエリア</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="fname">アジ</span><span class="badge">15件</span></td><td><span class="catch">〜121匹</span></td><td><span class="big-cm">45cm</span></td><td class="area-cell">金沢八景・浦安</td></tr>
+          <tr><td><span class="fname">マダイ</span><span class="badge">8件</span></td><td><span class="catch">〜10匹</span></td><td><span class="big-kg">3.7kg</span></td><td class="area-cell">松輪・日立久慈</td></tr>
+          <tr><td><span class="fname">シロギス</span><span class="badge">4件</span></td><td><span class="catch">〜180匹</span></td><td><span class="big-cm">26cm</span></td><td class="area-cell">浦安・久比里</td></tr>
+          <tr><td><span class="fname">カワハギ</span><span class="badge">2件</span></td><td><span class="catch">〜15匹</span></td><td><span class="big-cm">31cm</span></td><td class="area-cell">久比里</td></tr>
+          <tr><td><span class="fname">タチウオ</span><span class="badge">2件</span></td><td><span class="catch">〜12匹</span></td><td><span class="big-cm">100cm</span></td><td class="area-cell">横浜・金沢八景</td></tr>
+          <tr><td><span class="fname">カンパチ</span><span class="badge">1件</span></td><td><span class="catch">〜3匹</span></td><td><span class="big-kg">15.64kg</span></td><td class="area-cell">下田(銭洲)</td></tr>
+          <tr><td><span class="fname">マルイカ</span><span class="badge">1件</span></td><td><span class="catch">〜46匹</span></td><td><span class="big-cm">40cm</span></td><td class="area-cell">松輪(剣崎沖)</td></tr>
+          <tr><td><span class="fname">ヤリイカ</span><span class="badge">1件</span></td><td><span class="catch">〜21匹</span></td><td><span class="big-cm">45cm</span></td><td class="area-cell">御前崎</td></tr>
+          <tr><td><span class="fname">フグ</span><span class="badge">1件</span></td><td><span class="catch">〜8匹</span></td><td><span class="big-cm">33cm</span></td><td class="area-cell">横浜</td></tr>
+          <tr><td><span class="fname">スルメイカ</span><span class="badge">1件</span></td><td><span class="catch">〜8匹</span></td><td>—</td><td class="area-cell">御前崎</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <span class="url">funatsuri-yoso.com</span>
+      <span class="meta">神奈川・東京・千葉・茨城・静岡対応</span>
+    </div>
+  </div>
+
+  <div class="eval">
+    <strong>評価:</strong>
+    <span class="pros">◎ サイト本体と完全統一・情報サイトらしい清潔感・可読性最高・印刷映え◎</span><br>
+    <span class="cons">△ 「ダサい」と言われた紺一色から最も離れているが、SNSでは無難すぎて目を引きにくい可能性</span>
+  </div>
+</div>
+
+<!-- ────────── 案2: MORNING ────────── -->
+<div class="section">
+  <div class="section-title">案2: MORNING — 朝焼けグラデ（オレンジ→濃紺）</div>
+  <div class="section-note">朝出船・釣行の夜明けをイメージ。表だけ白で読みやすさ確保。</div>
+  <div class="section-tags">
+    <span>背景: グラデ #ff6b35→#0d2b4a</span><span>表: 白半透明</span><span>強調: オレンジ系</span><span>kg: 濃紺バッジ</span>
+  </div>
+
+  <div class="card-morning">
+    <div class="header">
+      <span class="site-name">船釣り予想</span>
+      <span class="title">5/8(金) 関東船釣り 釣果まとめ</span>
+      <span class="sub">25船宿 18エリア</span>
+    </div>
+    <div class="body">
+      <div class="body-inner">
+        <table>
+          <thead>
+            <tr><th>魚種</th><th>最大釣果</th><th>大物</th><th>主なエリア</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="fname">アジ</span><span class="badge">15件</span></td><td><span class="catch">〜121匹</span></td><td><span class="big-cm">45cm</span></td><td class="area-cell">金沢八景・浦安</td></tr>
+            <tr><td><span class="fname">マダイ</span><span class="badge">8件</span></td><td><span class="catch">〜10匹</span></td><td><span class="big-kg">3.7kg</span></td><td class="area-cell">松輪・日立久慈</td></tr>
+            <tr><td><span class="fname">シロギス</span><span class="badge">4件</span></td><td><span class="catch">〜180匹</span></td><td><span class="big-cm">26cm</span></td><td class="area-cell">浦安・久比里</td></tr>
+            <tr><td><span class="fname">カワハギ</span><span class="badge">2件</span></td><td><span class="catch">〜15匹</span></td><td><span class="big-cm">31cm</span></td><td class="area-cell">久比里</td></tr>
+            <tr><td><span class="fname">タチウオ</span><span class="badge">2件</span></td><td><span class="catch">〜12匹</span></td><td><span class="big-cm">100cm</span></td><td class="area-cell">横浜・金沢八景</td></tr>
+            <tr><td><span class="fname">カンパチ</span><span class="badge">1件</span></td><td><span class="catch">〜3匹</span></td><td><span class="big-kg">15.64kg</span></td><td class="area-cell">下田(銭洲)</td></tr>
+            <tr><td><span class="fname">マルイカ</span><span class="badge">1件</span></td><td><span class="catch">〜46匹</span></td><td><span class="big-cm">40cm</span></td><td class="area-cell">松輪(剣崎沖)</td></tr>
+            <tr><td><span class="fname">ヤリイカ</span><span class="badge">1件</span></td><td><span class="catch">〜21匹</span></td><td><span class="big-cm">45cm</span></td><td class="area-cell">御前崎</td></tr>
+            <tr><td><span class="fname">フグ</span><span class="badge">1件</span></td><td><span class="catch">〜8匹</span></td><td><span class="big-cm">33cm</span></td><td class="area-cell">横浜</td></tr>
+            <tr><td><span class="fname">スルメイカ</span><span class="badge">1件</span></td><td><span class="catch">〜8匹</span></td><td>—</td><td class="area-cell">御前崎</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="url">funatsuri-yoso.com</span>
+      <span class="meta">神奈川・東京・千葉・茨城・静岡対応</span>
+    </div>
+  </div>
+
+  <div class="eval">
+    <strong>評価:</strong>
+    <span class="pros">◎ 釣行の朝焼けをイメージし情緒的・SNSで目を引く・船釣りの世界観に合う</span><br>
+    <span class="cons">△ Pillow 実装でグラデーション再現がやや手間（背景画像ベース or 描画ループ）・印刷向きではない</span>
+  </div>
+</div>
+
+<!-- ────────── 案3: OCEAN ────────── -->
+<div class="section">
+  <div class="section-title">案3: OCEAN — 青ベース + 魚種カラードット</div>
+  <div class="section-note">爽やかな海テーマ・各魚種をカラードットで識別・カラフルだが煩くない。</div>
+  <div class="section-tags">
+    <span>背景: 薄水色#f0f9ff</span><span>ヘッダ: 青グラデ</span><span>魚種: 色ドット</span><span>強調: オレンジ#ff6b35</span>
+  </div>
+
+  <div class="card-ocean">
+    <div class="header">
+      <span class="site-name">船釣り予想</span>
+      <span class="title">5/8(金) 関東船釣り 釣果まとめ</span>
+      <span class="sub">25船宿 18エリア</span>
+    </div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr><th>魚種</th><th>最大釣果</th><th>大物</th><th>主なエリア</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="dot dot-aji"></span><span class="fname">アジ</span><span class="badge">15件</span></td><td><span class="catch">〜121匹</span></td><td><span class="big-cm">45cm</span></td><td class="area-cell">金沢八景・浦安</td></tr>
+          <tr><td><span class="dot dot-madai"></span><span class="fname">マダイ</span><span class="badge">8件</span></td><td><span class="catch">〜10匹</span></td><td><span class="big-kg">3.7kg</span></td><td class="area-cell">松輪・日立久慈</td></tr>
+          <tr><td><span class="dot dot-kisu"></span><span class="fname">シロギス</span><span class="badge">4件</span></td><td><span class="catch">〜180匹</span></td><td><span class="big-cm">26cm</span></td><td class="area-cell">浦安・久比里</td></tr>
+          <tr><td><span class="dot dot-kawahagi"></span><span class="fname">カワハギ</span><span class="badge">2件</span></td><td><span class="catch">〜15匹</span></td><td><span class="big-cm">31cm</span></td><td class="area-cell">久比里</td></tr>
+          <tr><td><span class="dot dot-tachi"></span><span class="fname">タチウオ</span><span class="badge">2件</span></td><td><span class="catch">〜12匹</span></td><td><span class="big-cm">100cm</span></td><td class="area-cell">横浜・金沢八景</td></tr>
+          <tr><td><span class="dot dot-kanpachi"></span><span class="fname">カンパチ</span><span class="badge">1件</span></td><td><span class="catch">〜3匹</span></td><td><span class="big-kg">15.64kg</span></td><td class="area-cell">下田(銭洲)</td></tr>
+          <tr><td><span class="dot dot-marui"></span><span class="fname">マルイカ</span><span class="badge">1件</span></td><td><span class="catch">〜46匹</span></td><td><span class="big-cm">40cm</span></td><td class="area-cell">松輪(剣崎沖)</td></tr>
+          <tr><td><span class="dot dot-yari"></span><span class="fname">ヤリイカ</span><span class="badge">1件</span></td><td><span class="catch">〜21匹</span></td><td><span class="big-cm">45cm</span></td><td class="area-cell">御前崎</td></tr>
+          <tr><td><span class="dot dot-fugu"></span><span class="fname">フグ</span><span class="badge">1件</span></td><td><span class="catch">〜8匹</span></td><td><span class="big-cm">33cm</span></td><td class="area-cell">横浜</td></tr>
+          <tr><td><span class="dot dot-surume"></span><span class="fname">スルメイカ</span><span class="badge">1件</span></td><td><span class="catch">〜8匹</span></td><td>—</td><td class="area-cell">御前崎</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <span class="url">funatsuri-yoso.com</span>
+      <span class="meta">神奈川・東京・千葉・茨城・静岡対応</span>
+    </div>
+  </div>
+
+  <div class="eval">
+    <strong>評価:</strong>
+    <span class="pros">◎ 魚種色ドットが「釣果速報」のリッチ感を演出・SNSで他と差別化・遊び心あり</span><br>
+    <span class="cons">△ 色多すぎると感じる場合あり・ドット色は魚種が増えると衝突する可能性（10色以上で破綻）</span>
+  </div>
+</div>
+
+<!-- 選定ガイド -->
+<div class="head" style="margin-top:48px">
+  <h1>選定の観点</h1>
+  <p>
+    1. <strong>白</strong>: サイト本体と統一感重視・「真面目な情報サイト」ブランディング<br>
+    2. <strong>朝焼けグラデ</strong>: 釣行の世界観・SNS で目を引く感性訴求<br>
+    3. <strong>海+ドット</strong>: 爽やか・遊び心・魚種ごとの識別性<br><br>
+
+    ご希望の案を教えてください。または「案1の濃紺をもう少し明るく」「案3のドットだけ案1ベースに乗せる」等のミックスも可能です。<br>
+    決定後、選定配色で <strong>A 案（単一魚種 × 直近5日）と B 案（単日 × 全魚種）両方の最終 mockup</strong> を生成します。
+  </p>
+</div>
+
+</body>
+</html>
