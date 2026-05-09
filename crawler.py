@@ -3791,6 +3791,7 @@ def _v2_header_nav(active_page=""):
 </header>
 <nav class="gnav">
   <a href="/index.html"{' class="on"' if active_page == 'index' else ''}>今日の釣果</a>
+  <a href="/x_post/index.html"{' class="on"' if active_page == 'xpost' else ''}>釣果速報</a>
   <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
@@ -3810,18 +3811,20 @@ def _v2_footer(crawled_at=""):
 
 def _v2_bottom_nav(active_page=""):
     icons = {
-        "index": '<svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>',
-        "fish":  '<svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>',
-        "area":  '<svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
-        "cal":   '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>',
-        "prem":  '<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>',
+        "index":  '<svg viewBox="0 0 24 24"><path d="M2 12c3-5 8-7 13-5 2 1 4 3 5 5-1 2-3 4-5 5-5 2-10 0-13-5z"/><circle cx="16" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M20 12l2-2M20 12l2 2"/></svg>',
+        "xpost":  '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><circle cx="7" cy="14" r="1.2" fill="currentColor" stroke="none"/><line x1="10" y1="14" x2="17" y2="14"/><line x1="10" y1="11" x2="17" y2="11"/></svg>',
+        "fish":   '<svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>',
+        "area":   '<svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+        "cal":    '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>',
+        "prem":   '<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>',
     }
     items = [
-        ("index", "/index.html", "釣果", ""),
-        ("fish",  "/fish/",      "魚種", ""),
-        ("area",  "/area/",      "エリア", ""),
-        ("cal",   "/calendar.html",        "カレンダー", ""),
-        ("prem",  "/forecast/index.html", "有料", "prem"),
+        ("index", "/index.html",         "釣果",     ""),
+        ("xpost", "/x_post/index.html",  "速報",     ""),
+        ("fish",  "/fish/",              "魚種",     ""),
+        ("area",  "/area/",              "エリア",   ""),
+        ("cal",   "/calendar.html",      "カレンダー", ""),
+        ("prem",  "/forecast/index.html", "有料",    "prem"),
     ]
     nav = '<nav class="bn">'
     for key, href, label, cls in items:
@@ -11571,6 +11574,85 @@ def main():
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
     build_premium_plan_page()
+
+    # ── X 投稿用コンテンツ生成（--html-only のときはスキップ）──
+    # --html-only パスはこのブロックに到達しないが、念のため argv チェックも付ける
+    if "--html-only" not in _sys.argv:
+        try:
+            from x_post.context_builder import build_context as _build_ctx
+            from x_post.template_picker import (
+                pick_highlight as _pick_hl,
+                pick_ocean as _pick_oc,
+                pick_fish_templates as _pick_ft,
+            )
+            from x_post.text_generator import (
+                render_template as _render_tpl,
+                render_section as _render_sec,
+                build_commentary_html as _build_comm,
+            )
+            from x_post.generate_image import create as _create_img
+            from x_post.build_daily_page import build as _build_daily
+            from x_post.build_rss import build as _build_rss
+
+            _today_str = now.strftime("%Y-%m-%d")
+            _x_post_dir = os.path.join(WEB_DIR, "x_post")
+            os.makedirs(_x_post_dir, exist_ok=True)
+
+            print("\n[x_post] ctx 組立...")
+            _ctx = _build_ctx(
+                valid_catches, history, ANALYSIS_DB,
+                _today_str,
+                weather_dir=os.path.join("weather"),
+            )
+
+            print("[x_post] 文型選択...")
+            _h_tpl = _pick_hl(_ctx)
+            _s_tpl = _pick_oc(_ctx)
+            _f_tpls = _pick_ft(_ctx)
+
+            print("[x_post] 散文生成...")
+            _comm_html = _build_comm(
+                _render_tpl(_h_tpl, _ctx),
+                _render_tpl(_s_tpl, _ctx),
+                _render_sec(_f_tpls, _ctx),
+                _ctx,
+            )
+
+            _png_url = f"https://funatsuri-yoso.com/x_post/{_today_str}.png"
+            _daily_url = f"https://funatsuri-yoso.com/x_post/{_today_str}.html"
+            _feed_path = os.path.join(WEB_DIR, "feed.xml")
+
+            print("[x_post] PNG 生成...")
+            _create_img(_ctx, output_path=os.path.join(_x_post_dir, f"{_today_str}.png"))
+
+            print("[x_post] daily HTML 生成...")
+            _build_daily(
+                _ctx, _comm_html,
+                output_path=os.path.join(_x_post_dir, f"{_today_str}.html"),
+                png_url=_png_url,
+            )
+
+            print("[x_post] feed.xml 生成...")
+            _build_rss(
+                _ctx,
+                png_url=_png_url,
+                daily_url=_daily_url,
+                output_path=_feed_path,
+                existing_feed_path=_feed_path if os.path.exists(_feed_path) else None,
+            )
+
+            print("[x_post] index.html 生成...")
+            from x_post.build_index_page import build_index as _build_x_index
+            _build_x_index(
+                output_path=os.path.join(_x_post_dir, "index.html"),
+                docs_x_post_dir=_x_post_dir,
+            )
+            print(f"[x_post] 完了 → docs/x_post/{_today_str}.html / docs/x_post/index.html / docs/feed.xml")
+        except Exception as _e:
+            print(f"[x_post] ERROR: {_e}")
+            import traceback as _tb
+            _tb.print_exc()
+
     print(f"\n=== 完了 ===")
     _today_label = f"当日: {len(today_all)} 件" if today_all else f"当日0件→全件フォールバック: {len(all_catches)} 件"
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")

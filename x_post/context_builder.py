@@ -1,0 +1,710 @@
+# context_builder.py — ctx 辞書組立
+# catches.json (valid_catches list) + history.json + analysis.sqlite + weather/ CSV から構築
+# 補遺3 遵守: avg/平均 を ctx 値として使わない（min/max のみ）
+
+import os
+import json
+import sqlite3
+from datetime import datetime, timedelta, timezone
+
+# JST 定義（crawler.py と同じ方式）
+JST = timezone(timedelta(hours=9))
+
+# 海況 INNER/OUTER の港名グループ
+_INNER_PORTS = {
+    "金沢八景港", "横浜港", "新山下港", "本牧港", "磯子港", "大黒", "鶴見",
+    "浦安港", "千葉港", "富津港", "江ノ島港", "葉山", "逗子",
+    "東京湾", "相模湾",
+}
+_OUTER_PORTS = {
+    "下田港", "神津島", "銭洲", "外房", "大原港", "勝浦港",
+    "鴨川港", "御前崎港", "日立港", "日立久慈港",
+}
+
+# 青物魚種
+_PELAGIC_FISH = {"カンパチ", "ハマチ", "ブリ", "ワラサ", "イナダ", "サワラ", "シイラ", "カツオ", "キハダマグロ"}
+
+# レア魚種（初接岸シグナル用）
+_RARE_FISH = {"カンパチ", "シイラ", "カツオ", "キハダマグロ"}
+
+# 旬ラベル変換
+_DECADE_LABELS = {
+    **{i: f"{(i-1)//3+1}月{'上' if (i-1)%3==0 else ('中' if (i-1)%3==1 else '下')}旬"
+       for i in range(1, 37)}
+}
+
+
+def _get_decade_no(dt):
+    """datetime → decade_no (1-36)"""
+    month = dt.month
+    day = dt.day
+    sub = 0 if day <= 10 else (1 if day <= 20 else 2)
+    return (month - 1) * 3 + sub + 1
+
+
+def _load_tide_moon(db_path, date_str):
+    """tide_moon.sqlite から潮汐・月相を取得"""
+    if not os.path.exists(db_path):
+        return {"tide_type": "中潮", "moon_phase": "七日月", "moon_age": 7.0}
+    try:
+        con = sqlite3.connect(db_path)
+        row = con.execute(
+            "SELECT tide_type, moon_phase, moon_age FROM tide_moon WHERE date=?", (date_str,)
+        ).fetchone()
+        con.close()
+        if row:
+            return {"tide_type": row[0], "moon_phase": row[1], "moon_age": row[2]}
+    except Exception:
+        pass
+    return {"tide_type": "中潮", "moon_phase": "七日月", "moon_age": 7.0}
+
+
+def _load_combo_decadal(db_path, fish, decade_no):
+    """analysis.sqlite combo_decadal から旬別データを取得"""
+    if not os.path.exists(db_path):
+        return None
+    try:
+        con = sqlite3.connect(db_path)
+        rows = con.execute(
+            "SELECT fish, ship, avg_cnt, avg_cnt_min, avg_cnt_max FROM combo_decadal "
+            "WHERE fish=? AND decade_no=? AND n>=5",
+            (fish, decade_no)
+        ).fetchall()
+        con.close()
+        if rows:
+            # 全船宿の avg_cnt_max 中央値
+            maxs = sorted([r[4] for r in rows if r[4] is not None])
+            if maxs:
+                mid = maxs[len(maxs) // 2]
+                return mid
+    except Exception:
+        pass
+    return None
+
+
+def _parse_weather_csv(weather_dir, date_str):
+    """weather/YYYY-MM.csv から当日の代表値を取得"""
+    ym = date_str[:7]  # "2026-05"
+    csv_path = os.path.join(weather_dir, f"{ym}.csv")
+    if not os.path.exists(csv_path):
+        return {}
+    waves, winds, ssts = [], [], []
+    try:
+        with open(csv_path, encoding="utf-8") as f:
+            lines = f.readlines()
+        if not lines:
+            return {}
+        header = lines[0].strip().split(",")
+        idx_date = header.index("date") if "date" in header else -1
+        idx_wave = header.index("wave_height") if "wave_height" in header else -1
+        idx_wind = header.index("wind_speed") if "wind_speed" in header else -1
+        idx_sst = header.index("sst") if "sst" in header else -1
+        for line in lines[1:]:
+            parts = line.strip().split(",")
+            if len(parts) <= max(idx_date, idx_wave, idx_wind):
+                continue
+            if idx_date >= 0 and not parts[idx_date].startswith(date_str):
+                continue
+            try:
+                if idx_wave >= 0 and parts[idx_wave]:
+                    waves.append(float(parts[idx_wave]))
+                if idx_wind >= 0 and parts[idx_wind]:
+                    winds.append(float(parts[idx_wind]))
+                if idx_sst >= 0 and parts[idx_sst]:
+                    ssts.append(float(parts[idx_sst]))
+            except ValueError:
+                pass
+    except Exception:
+        pass
+
+    result = {}
+    if waves:
+        result["wave_inner"] = round(sum(waves) / len(waves), 1)
+    if winds:
+        result["wind_inner_max"] = max(winds)
+        result["wind_inner_min"] = min(winds)
+        result["max_wind"] = max(winds)
+    if ssts:
+        result["sst_mean"] = round(sum(ssts) / len(ssts), 1)
+    return result
+
+
+def build_context(valid_catches, history, analysis_db, date_str, weather_dir=None):
+    """
+    ctx 辞書を組み立てる。
+    引数:
+        valid_catches: list of catch dict (catches.json の data フィールド)
+        history: history.json の内容
+        analysis_db: analysis.sqlite のパス
+        date_str: "YYYY-MM-DD" 形式の日付
+        weather_dir: weather/ ディレクトリのパス（None の場合は自動推定）
+    """
+    # ルートディレクトリを推定（このファイルが x_post/ 内にある想定）
+    _this_dir = os.path.dirname(os.path.abspath(__file__))
+    _root_dir = os.path.dirname(_this_dir)
+    if weather_dir is None:
+        weather_dir = os.path.join(_root_dir, "weather")
+
+    tide_db = os.path.join(_root_dir, "ocean", "tide_moon.sqlite")
+
+    # 日付情報
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    weekdays_jp = ["月", "火", "水", "木", "金", "土", "日"]
+    weekdays_en = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    wd_idx = dt.weekday()
+    date_label = f"{dt.month}/{dt.day}({weekdays_jp[wd_idx]})"
+    decade_no = _get_decade_no(dt)
+    season_label = _DECADE_LABELS.get(decade_no, f"{dt.month}月")
+    is_weekend_eve = weekdays_en[wd_idx] in ("friday", "thursday")
+
+    # 潮汐
+    tide_info = _load_tide_moon(tide_db, date_str)
+
+    # 当日 catches を絞り込み
+    date_slash = dt.strftime("%Y/%m/%d")
+    day_catches = [c for c in valid_catches if c.get("date", "").startswith(date_slash[:7])]
+    # 日付完全一致も試みる
+    day_exact = [c for c in valid_catches if c.get("date") == date_slash]
+    if day_exact:
+        day_catches = day_exact
+
+    # 出船統計
+    ships_set = {c["ship"] for c in day_catches}
+    areas_set = {c.get("area", "") for c in day_catches}
+    n_ships = len(ships_set)
+    n_areas = len(areas_set)
+
+    # 魚種集計
+    fish_counter = {}
+    for c in day_catches:
+        for f in c.get("fish", []):
+            if f and f != "不明":
+                fish_counter[f] = fish_counter.get(f, 0) + 1
+    n_fish_species = len(fish_counter)
+    n_records = len(day_catches)
+
+    # top_cnt (最大匹数)
+    top_cnt_data = None
+    best_cnt_max = 0
+    for c in day_catches:
+        cr = c.get("count_range") or {}
+        if isinstance(cr, dict):
+            cmax = cr.get("max") or 0
+            if cmax > best_cnt_max:
+                best_cnt_max = cmax
+                top_cnt_data = {
+                    "fish": (c.get("fish") or ["不明"])[0],
+                    "cnt_max": cr.get("max") or 0,
+                    "cnt_min": cr.get("min") or 0,
+                    "ship": c.get("ship", ""),
+                    "port": c.get("area", ""),
+                }
+
+    # top_kg (最大重量)
+    top_kg_data = None
+    best_kg_max = 0.0
+    for c in day_catches:
+        wk = c.get("weight_kg") or {}
+        if isinstance(wk, dict):
+            kmax = wk.get("max") or 0
+            if kmax > best_kg_max:
+                best_kg_max = kmax
+                top_kg_data = {
+                    "fish": (c.get("fish") or ["不明"])[0],
+                    "kg_max": kmax,
+                    "kg_min": wk.get("min") or 0,
+                    "ship": c.get("ship", ""),
+                    "port": c.get("area", ""),
+                }
+
+    # top_cm (最大サイズ)
+    top_cm_data = None
+    best_cm_max = 0
+    for c in day_catches:
+        sc = c.get("size_cm") or {}
+        if isinstance(sc, dict):
+            cmax = sc.get("max") or 0
+            if cmax > best_cm_max:
+                best_cm_max = cmax
+                top_cm_data = {
+                    "fish": (c.get("fish") or ["不明"])[0],
+                    "cm_max": sc.get("max") or 0,
+                    "cm_min": sc.get("min") or 0,
+                    "ship": c.get("ship", ""),
+                    "port": c.get("area", ""),
+                }
+
+    # 欠航数
+    n_cancellations = sum(1 for c in day_catches if c.get("is_cancellation") or
+                          "欠航" in str(c.get("catch_raw", "")) or
+                          "出船中止" in str(c.get("catch_raw", "")))
+
+    # wow_pct (先週比)
+    weekly = history.get("weekly", {})
+    week_keys = sorted(weekly.keys(), reverse=True)
+    this_w = weekly.get(week_keys[0], {}) if week_keys else {}
+    last_w = weekly.get(week_keys[1], {}) if len(week_keys) > 1 else {}
+
+    wow_pct = {}
+    for fish_name, fdata in this_w.items():
+        this_max = fdata.get("max", 0) or 0
+        last_max = (last_w.get(fish_name) or {}).get("max", 1) or 1
+        wow_pct[fish_name] = round(this_max / last_max, 2) if last_max else 1.0
+
+    # season_ratio (旬別比)
+    top_cnt_fish = (top_cnt_data or {}).get("fish", "")
+    season_ratio_top_cnt = 1.0
+    if top_cnt_fish and top_cnt_data:
+        hist_median = _load_combo_decadal(analysis_db, top_cnt_fish, decade_no)
+        if hist_median and hist_median > 0:
+            season_ratio_top_cnt = round(top_cnt_data["cnt_max"] / hist_median, 1)
+
+    season_ratio_top_kg = 1.0
+    top_kg_fish = (top_kg_data or {}).get("fish", "")
+    if top_kg_fish and top_kg_data:
+        hist_median = _load_combo_decadal(analysis_db, top_kg_fish, decade_no)
+        if hist_median and hist_median > 0:
+            season_ratio_top_kg = round(top_kg_data["kg_max"] / hist_median, 1)
+
+    season_ratio_top_cm = 1.0
+    top_cm_fish = (top_cm_data or {}).get("fish", "")
+    if top_cm_fish and top_cm_data:
+        hist_median = _load_combo_decadal(analysis_db, top_cm_fish, decade_no)
+        if hist_median and hist_median > 0:
+            season_ratio_top_cm = round(top_cm_data["cm_max"] / hist_median, 1)
+
+    season_ratio_kanpachi = wow_pct.get("カンパチ", 1.0)
+
+    # 海況データ
+    wx = _parse_weather_csv(weather_dir, date_str)
+    wave_inner = wx.get("wave_inner", 1.0)
+    max_wind = wx.get("max_wind", 5.0)
+    wind_inner_max = wx.get("wind_inner_max", 5.0)
+    wind_inner_min = wx.get("wind_inner_min", 2.0)
+    sst_mean = wx.get("sst_mean", 18.0)
+    # 気候平年値（簡易）: 5月の平均 SST = 17℃
+    sst_norm = {1: 15, 2: 14, 3: 15, 4: 16, 5: 17, 6: 19, 7: 22, 8: 24,
+                9: 23, 10: 21, 11: 18, 12: 16}
+    sst_anom = round(sst_mean - sst_norm.get(dt.month, 17), 1)
+
+    # inner / outer 釣果割合
+    inner_cnt = sum(1 for c in day_catches if c.get("area", "") in _INNER_PORTS)
+    outer_cnt = sum(1 for c in day_catches if c.get("area", "") in _OUTER_PORTS)
+    total_area_cnt = max(inner_cnt + outer_cnt, 1)
+    inner_ratio = inner_cnt / total_area_cnt
+    outer_ratio = outer_cnt / total_area_cnt
+
+    # 青物割合
+    pelagic_cnt = sum(1 for c in day_catches
+                      for f in c.get("fish", []) if f in _PELAGIC_FISH)
+    pelagic_share = pelagic_cnt / max(n_records, 1)
+
+    # レア魚種
+    rare_fish_present = any(f in _RARE_FISH for c in day_catches for f in c.get("fish", []))
+    rare_species = [f for f in fish_counter if f in _RARE_FISH and fish_counter[f] <= 3]
+    rare_fish_name = rare_species[0] if rare_species else ""
+
+    # 総欠航率
+    total_cancel_rate = n_cancellations / max(n_ships, 1)
+
+    # no_special_event: 大物・急増・レア種が無い
+    no_special_event = (
+        best_kg_max < 5.0 and
+        max(wow_pct.values() or [1.0]) < 1.5 and
+        not rare_fish_present
+    )
+
+    # 主力魚種リスト（件数上位3）
+    top_fish_list = sorted(fish_counter, key=lambda f: fish_counter[f], reverse=True)[:5]
+    mainstream_count = min(len(top_fish_list), 3)
+    opportunistic_count = len([f for f in top_fish_list if f in _RARE_FISH or _PELAGIC_FISH])
+    mainstream_fish_list = "・".join(top_fish_list[:3]) if top_fish_list else "各魚種"
+    opportunistic_fish_list = "・".join([f for f in top_fish_list if f in _PELAGIC_FISH]) or "青物系"
+
+    # 魚種別データ（F2-F11 用）
+    def _fish_data(fish_name):
+        catches = [c for c in day_catches if fish_name in c.get("fish", [])]
+        if not catches:
+            return None
+        cnt_maxes = [c["count_range"]["max"] for c in catches
+                     if isinstance(c.get("count_range"), dict) and c["count_range"].get("max") is not None]
+        cnt_mins = [c["count_range"]["min"] for c in catches
+                    if isinstance(c.get("count_range"), dict) and c["count_range"].get("min") is not None]
+        kg_maxes = [c["weight_kg"]["max"] for c in catches
+                    if isinstance(c.get("weight_kg"), dict) and c["weight_kg"].get("max") is not None]
+        kg_mins = [c["weight_kg"]["min"] for c in catches
+                   if isinstance(c.get("weight_kg"), dict) and c["weight_kg"].get("min") is not None]
+        cm_maxes = [c["size_cm"]["max"] for c in catches
+                    if isinstance(c.get("size_cm"), dict) and c["size_cm"].get("max") is not None]
+        cm_mins = [c["size_cm"]["min"] for c in catches
+                   if isinstance(c.get("size_cm"), dict) and c["size_cm"].get("min") is not None]
+        ports = list({c.get("area", "") for c in catches if c.get("area")})[:2]
+        top_ship = max(catches, key=lambda c: (c.get("count_range") or {}).get("max") or 0,
+                       default=catches[0]).get("ship", "")
+        return {
+            "cnt_max": max(cnt_maxes) if cnt_maxes else 0,
+            "cnt_min": min(cnt_mins) if cnt_mins else 0,
+            "kg_max": max(kg_maxes) if kg_maxes else 0.0,
+            "kg_min": min(kg_mins) if kg_mins else 0.0,
+            "cm_max": max(cm_maxes) if cm_maxes else 0,
+            "cm_min": min(cm_mins) if cm_mins else 0,
+            "top_areas": "・".join(ports) if ports else "",
+            "top_ship": top_ship,
+            "n": len(catches),
+        }
+
+    # 魚種別データを ctx に展開
+    _fish_map = {
+        "aji": "アジ", "madai": "マダイ", "kisu": "シロギス",
+        "kawahagi": "カワハギ", "tachiuo": "タチウオ", "kanpachi": "カンパチ",
+        "maruika": "マルイカ", "yariika": "ヤリイカ", "fugu": "フグ",
+        "surumeika": "スルメイカ",
+    }
+
+    fish_ctx = {}
+    for key, fish_name in _fish_map.items():
+        d = _fish_data(fish_name)
+        fish_ctx[f"has_{key}"] = d is not None
+        if d:
+            fish_ctx[f"{key}_cnt_max"] = d["cnt_max"]
+            fish_ctx[f"{key}_cnt_min"] = d["cnt_min"]
+            fish_ctx[f"{key}_kg_max"] = d["kg_max"]
+            fish_ctx[f"{key}_kg_min"] = d["kg_min"]
+            fish_ctx[f"{key}_cm_max"] = d["cm_max"]
+            fish_ctx[f"{key}_cm_min"] = d["cm_min"]
+            fish_ctx[f"{key}_top_areas"] = d["top_areas"]
+            fish_ctx[f"{key}_top_ship"] = d["top_ship"]
+            fish_ctx[f"{key}_top_count"] = d["cnt_max"]
+        else:
+            for suffix in ["cnt_max", "cnt_min", "kg_max", "kg_min", "cm_max", "cm_min",
+                           "top_areas", "top_ship", "top_count"]:
+                fish_ctx[f"{key}_{suffix}"] = 0 if "max" in suffix or "min" in suffix else ""
+
+    # fish_rows: B案 PNG / テーブル用
+    fish_rows = []
+    for fish_name in top_fish_list[:10]:
+        d = _fish_data(fish_name)
+        if d:
+            fish_rows.append({
+                "fish": fish_name,
+                "cnt_min": d["cnt_min"],
+                "cnt_max": d["cnt_max"],
+                "kg_max": d["kg_max"],
+                "kg_min": d["kg_min"],   # M3: kg min-max 表記用
+                "cm_max": d["cm_max"],
+                "cm_min": d["cm_min"],   # M3: cm min-max 表記用
+                "top_port": d["top_areas"],
+                "n_trips": d["n"],
+            })
+
+    # C4修正: top_cnt_min を全便 min に統一（hl-card と fish-list で同一値）
+    # top_cnt_data["cnt_min"] は最多便のみの min なので、全便 min を再集計
+    _top_cnt_all_data = _fish_data(top_cnt_fish) if top_cnt_fish else None
+    _top_cnt_min_unified = (_top_cnt_all_data or {}).get("cnt_min", 0)
+
+    # 先週比文字列
+    wow_pct_top_cnt = wow_pct.get(top_cnt_fish, 1.0)
+    if wow_pct_top_cnt >= 1.0:
+        wow_pct_top_cnt_str = f"+{int((wow_pct_top_cnt - 1) * 100)}%"
+    else:
+        wow_pct_top_cnt_str = f"{int((wow_pct_top_cnt - 1) * 100)}%"
+
+    # 潮汐強い魚種
+    tide_strong = []
+    if tide_info["tide_type"] == "大潮":
+        tide_strong = [f for f in ["マダイ", "アジ", "シロギス"] if f in fish_counter]
+    tide_strong_fish_list = "・".join(tide_strong[:3]) if tide_strong else top_fish_list[0] if top_fish_list else "各魚種"
+    tide_active_fish_list = tide_strong_fish_list
+    small_tide_advantageous_fish = top_fish_list[0] if top_fish_list else "各魚種"
+
+    # 季節性魚種（春の新顔）
+    _SPRING_FISH = ["シロギス", "アジ", "カツオ", "シイラ", "マゴチ"]
+    seasonal_first = [f for f in _SPRING_FISH if f in fish_counter and dt.month in [4, 5, 6]]
+    seasonal_first_len = len(seasonal_first)
+    seasonal_first_list = "・".join(seasonal_first[:3]) if seasonal_first else ""
+    seasonal_focus_fish = seasonal_first[0] if seasonal_first else (top_fish_list[0] if top_fish_list else "各魚種")
+    seasonal_max_data = _fish_data(seasonal_focus_fish)
+    seasonal_max = (seasonal_max_data or {}).get("cnt_max", 0)
+
+    # 旬終盤魚種
+    _AUTUMN_FISH = ["タチウオ", "アオリイカ", "ヒラメ"]
+    season_ending = [f for f in _AUTUMN_FISH if f in fish_counter and dt.month in [10, 11, 12]]
+    season_ending_share = len(season_ending) / max(n_fish_species, 1)
+    season_ending_main_fish = "・".join(season_ending[:2]) if season_ending else (top_fish_list[0] if top_fish_list else "各魚種")
+
+    # 安定組の割合
+    _STABLE_FISH = {"アジ", "シロギス", "カワハギ", "フグ", "タチウオ", "マダイ", "アイナメ"}
+    stable_cnt = sum(1 for c in day_catches if any(f in _STABLE_FISH for f in c.get("fish", [])))
+    seasonal_stable_share = stable_cnt / max(n_records, 1)
+    seasonal_stable_list = "・".join([f for f in top_fish_list if f in _STABLE_FISH][:3]) or mainstream_fish_list
+
+    # 補助変数
+    inner_top_fish = top_fish_list[0] if top_fish_list else "アジ"
+    outer_top_fish = next((f for f in top_fish_list if f in _PELAGIC_FISH), top_fish_list[0] if top_fish_list else "カンパチ")
+    stormy_top_fish = top_fish_list[0] if top_fish_list else "アジ"
+    stable_top_fish = top_fish_list[0] if top_fish_list else "アジ"
+    clear_top_fish = top_fish_list[0] if top_fish_list else "マダイ"
+    strong_wind_top_fish = inner_top_fish
+    minimal_top_fish = top_fish_list[0] if top_fish_list else "各魚種"
+    minimal_fish_top = minimal_top_fish
+    calm_main_fish = top_fish_list[0] if top_fish_list else "アジ"
+    calm_target_fish = "マダイ"
+    neutral_top_fish = top_fish_list[0] if top_fish_list else "アジ"
+    down_tide_target_fish = "マダイ"
+    turbid_resistant_fish = "アジ"
+    turbid_resilient_fish = "アジ"
+    clear_view_top_fish = "マダイ"
+    swell_resistant_fish = "カワハギ"
+    stable_calm_top_fish = top_fish_list[0] if top_fish_list else "アジ"
+    weekend_focus_fish = top_fish_list[0] if top_fish_list else "アジ"
+    weekend_focus_areas = "・".join(list(areas_set)[:2]) if areas_set else "関東各港"
+    post_holiday_recommend_fish = top_fish_list[0] if top_fish_list else "アジ"
+    morning_top_areas = "・".join(list(areas_set)[:2]) if areas_set else "各港"
+    large_pelagic_areas = "・".join([c.get("area", "") for c in day_catches
+                                     if any(f in _PELAGIC_FISH for f in c.get("fish", []))][:2]) or "外房・銭洲"
+    large_pelagic_count = sum(1 for c in day_catches if any(f in _PELAGIC_FISH for f in c.get("fish", [])))
+    kuroshio_pelagic_records = large_pelagic_count
+    shoot_main_list = mainstream_fish_list
+    rare_appearances = "・".join([f for f in top_fish_list if f in _RARE_FISH][:2]) or "珍しい魚種"
+    rare_port = (top_kg_data or {}).get("port", "外房")
+    rare_ship = (top_kg_data or {}).get("ship", "")
+    rare_count = fish_counter.get(rare_fish_name, 0)
+    rare_species_count = len(rare_species)
+    rare_species_list = "・".join(rare_species[:3]) if rare_species else ""
+    ship_specialty = "多魚種対応"
+    inner_state = "穏やか"
+    outer_top_ship = max((c["ship"] for c in day_catches if c.get("area") in _OUTER_PORTS),
+                         key=lambda s: 1, default="")
+    outer_top_record = f"{outer_top_fish}の釣果"
+    strong_wind_cancel = n_cancellations
+    pelagic_top_fish_list = "・".join([f for f in top_fish_list if f in _PELAGIC_FISH][:3]) or "青物"
+    pelagic_main_areas = large_pelagic_areas
+    pelagic_records = pelagic_cnt
+    multi_fish_main_three = "・".join(top_fish_list[:3]) if len(top_fish_list) >= 3 else mainstream_fish_list
+    multi_fish_supporting = [f for f in top_fish_list if f not in top_fish_list[:3]]
+    multi_fish_supporting_list = "・".join(multi_fish_supporting[:3]) if multi_fish_supporting else "他魚種"
+    single_fish_dominant = top_fish_list[0] if top_fish_list else "各魚種"
+    single_fish_pct = fish_counter.get(single_fish_dominant, 0) / max(n_records, 1)
+    bait_active = pelagic_share >= 0.3
+    bait_active_areas = pelagic_main_areas
+    bait_predator_fish = outer_top_fish
+    swell_outer = max_wind / 10  # 簡易推定
+    swell_affected_areas = "外房・銭洲"
+    cancel_rate_inner = 0.0
+    cancel_rate_outer = total_cancel_rate
+    wind_inner_str = f"{wind_inner_min:.0f}〜{wind_inner_max:.0f}m/s"
+    wind_outer_max = max_wind
+    wind_direction_changes = 0
+    no_rain_3d = True
+    rain_yesterday_mm = 0  # 雨データ取得は省略（デフォルト 0mm）
+    consecutive_calm_days = 1
+    high_tide_hour = 9  # 簡易デフォルト
+    low_tide_hour = 15
+    morning_share = 0.5  # 簡易デフォルト
+    morning_pct = morning_share
+    inner_pct = inner_ratio
+    strong_wind_affected_areas = "外海各港"
+    clear_view_areas = "東京湾"
+    clear_view_depth_m = 10
+    turbid_resistant_fish_val = turbid_resistant_fish
+    period_label = f"{dt.month}月以降"
+    kg_threshold = f"{int(best_kg_max // 5) * 5}kg" if best_kg_max >= 5 else "5kg"
+
+    ctx = {
+        # 日付
+        "date_label": date_label,
+        "date_iso": date_str,
+        "season_label": season_label,
+        "decade_no": decade_no,
+        "weekday": weekdays_en[wd_idx],
+        "weekday_jp": weekdays_jp[wd_idx] + "曜日",
+        "is_weekend_eve": is_weekend_eve,
+        "month": dt.month,
+        "period_label": period_label,
+        # 釣果統計
+        "n_ships": n_ships,
+        "n_areas": n_areas,
+        "n_fish_species": n_fish_species,
+        "n_records": n_records,
+        "n_cancellations": n_cancellations,
+        "total_cancel_rate": total_cancel_rate,
+        "fish_rows": fish_rows,
+        "top_fish_list": top_fish_list,
+        # top_kg
+        "top_kg_fish": (top_kg_data or {}).get("fish", ""),
+        "top_kg_max": (top_kg_data or {}).get("kg_max", 0.0),
+        "top_kg_min": (top_kg_data or {}).get("kg_min", 0.0),
+        "top_kg_ship": (top_kg_data or {}).get("ship", ""),
+        "top_kg_port": (top_kg_data or {}).get("port", ""),
+        "season_ratio_top_kg": season_ratio_top_kg,
+        "kg_threshold": kg_threshold,
+        "ship_specialty": ship_specialty,
+        # top_cnt（C4: cnt_min は全便 min に統一）
+        "top_cnt_fish": (top_cnt_data or {}).get("fish", ""),
+        "top_cnt_max": (top_cnt_data or {}).get("cnt_max", 0),
+        "top_cnt_min": _top_cnt_min_unified,  # 全便 min（hl-card と fish-list で同値）
+        "top_cnt_ship": (top_cnt_data or {}).get("ship", ""),
+        "top_cnt_port": (top_cnt_data or {}).get("port", ""),
+        "wow_pct_top_cnt": wow_pct_top_cnt,
+        "wow_pct_top_cnt_str": wow_pct_top_cnt_str,
+        "season_ratio_top_cnt": season_ratio_top_cnt,
+        # top_cm
+        "top_cm_fish": (top_cm_data or {}).get("fish", ""),
+        "top_cm_max": (top_cm_data or {}).get("cm_max", 0),
+        "top_cm_min": (top_cm_data or {}).get("cm_min", 0),
+        "top_cm_ship": (top_cm_data or {}).get("ship", ""),
+        "top_cm_port": (top_cm_data or {}).get("port", ""),
+        "season_ratio_top_cm": season_ratio_top_cm,
+        # 海況
+        "wave_inner": wave_inner,
+        "swell_outer": swell_outer,
+        "max_wind": max_wind,
+        "wind_inner_max": wind_inner_max,
+        "wind_inner_min": wind_inner_min,
+        "wind_inner_str": wind_inner_str,
+        "wind_outer_max": wind_outer_max,
+        "sst_anom": sst_anom,
+        "kuroshio_state": "stable",  # cmems_data が無いためデフォルト
+        "rain_yesterday_mm": rain_yesterday_mm,
+        "weather_today": "晴れ",  # デフォルト
+        "no_rain_3d": no_rain_3d,
+        "wind_direction_changes": wind_direction_changes,
+        "consecutive_calm_days": consecutive_calm_days,
+        # 潮汐
+        "tide_type": tide_info["tide_type"],
+        "moon_phase": tide_info["moon_phase"],
+        "moon_age": tide_info["moon_age"],
+        "tide_strong_fish_list": tide_strong_fish_list,
+        "tide_active_fish_list": tide_active_fish_list,
+        "small_tide_advantageous_fish": small_tide_advantageous_fish,
+        "high_tide_hour": high_tide_hour,
+        "low_tide_hour": low_tide_hour,
+        # 割合
+        "inner_ratio": inner_ratio,
+        "outer_ratio": outer_ratio,
+        "inner_pct": inner_pct,
+        "morning_share": morning_share,
+        "morning_pct": morning_pct,
+        "pelagic_share": pelagic_share,
+        "seasonal_stable_share": seasonal_stable_share,
+        "season_ending_share": season_ending_share,
+        "cancel_rate_inner": cancel_rate_inner,
+        "cancel_rate_outer": cancel_rate_outer,
+        # 季節
+        "seasonal_first_len": seasonal_first_len,
+        "seasonal_first_list": seasonal_first_list,
+        "seasonal_focus_fish": seasonal_focus_fish,
+        "seasonal_max": seasonal_max,
+        "season_ending_main_fish": season_ending_main_fish,
+        "seasonal_stable_list": seasonal_stable_list,
+        # 魚種別
+        "mainstream_count": mainstream_count,
+        "opportunistic_count": opportunistic_count,
+        "mainstream_fish_list": mainstream_fish_list,
+        "opportunistic_fish_list": opportunistic_fish_list,
+        "multi_fish_main_three": multi_fish_main_three,
+        "multi_fish_supporting_list": multi_fish_supporting_list,
+        "single_fish_dominant": single_fish_dominant,
+        "single_fish_pct": single_fish_pct,
+        "pelagic_top_fish_list": pelagic_top_fish_list,
+        "pelagic_main_areas": pelagic_main_areas,
+        "pelagic_records": pelagic_records,
+        # フラグ
+        "rare_fish_present": rare_fish_present,
+        "rare_fish_name": rare_fish_name,
+        "rare_port": rare_port,
+        "rare_ship": rare_ship,
+        "rare_count": rare_count,
+        "rare_species_count": rare_species_count,
+        "rare_species_list": rare_species_list,
+        "bait_active": bait_active,
+        "bait_active_areas": bait_active_areas,
+        "bait_predator_fish": bait_predator_fish,
+        "no_special_event": no_special_event,
+        "n_records_ratio": 1.0,  # 分母が分からないためデフォルト 1.0
+        # 補助文字列
+        "shoot_main_list": shoot_main_list,
+        "rare_appearances": rare_appearances,
+        "stable_top_fish": stable_top_fish,
+        "inner_top_fish": inner_top_fish,
+        "outer_top_fish": outer_top_fish,
+        "outer_top_ship": outer_top_ship,
+        "outer_top_record": outer_top_record,
+        "stormy_top_fish": stormy_top_fish,
+        "clear_top_fish": clear_top_fish,
+        "strong_wind_top_fish": strong_wind_top_fish,
+        "strong_wind_cancel": strong_wind_cancel,
+        "strong_wind_affected_areas": strong_wind_affected_areas,
+        "minimal_top_fish": minimal_top_fish,
+        "minimal_fish_top": minimal_fish_top,
+        "calm_main_fish": calm_main_fish,
+        "calm_target_fish": calm_target_fish,
+        "neutral_top_fish": neutral_top_fish,
+        "down_tide_target_fish": down_tide_target_fish,
+        "turbid_resistant_fish": turbid_resistant_fish,
+        "turbid_resilient_fish": turbid_resilient_fish,
+        "turbid_weak_fish": "シロギス",
+        "clear_view_top_fish": clear_view_top_fish,
+        "clear_view_areas": clear_view_areas,
+        "clear_view_depth_m": clear_view_depth_m,
+        "swell_resistant_fish": swell_resistant_fish,
+        "swell_affected_areas": swell_affected_areas,
+        "stable_calm_top_fish": stable_calm_top_fish,
+        "weekend_focus_fish": weekend_focus_fish,
+        "weekend_focus_areas": weekend_focus_areas,
+        "post_holiday_recommend_fish": post_holiday_recommend_fish,
+        "morning_top_areas": morning_top_areas,
+        "large_pelagic_areas": large_pelagic_areas,
+        "large_pelagic_count": large_pelagic_count,
+        "kuroshio_pelagic_records": kuroshio_pelagic_records,
+        "kuroshio_north_areas": "外房・銭洲",
+        "kuroshio_north_records": large_pelagic_count,
+        "kuroshio_south_areas": "外海各港",
+        "kuroshio_south_effect": "水温低下",
+        "kuroshio_alternative_fish": "カワハギ・カサゴ",
+        "inner_state": inner_state,
+        "season_ratio_kanpachi": season_ratio_kanpachi,
+        # ship_info fallback (ship_info.json がなくても動く)
+        "travel_hours": "2〜3",
+        "env_note": "海況の変化",
+        "gap_weeks": "数",
+        "port_specialty": "外洋",
+        "trend_note": "サイズが上向く傾向",
+        "forecast_window": "来週末",
+        "forecast_weeks": "2〜3",
+        "typical_cnt_range": "20〜80",
+        "post_holiday_state": "余裕のある",
+        "post_holiday_records": n_records,
+        "clear_recovery_window": "晴天続き",
+        "tomorrow_wx_outer": "明日",
+        "turbid_records": n_records,
+        "inner_storm_cause": "北風",
+        "below_avg_pct": 0.3,
+        "stormy_cause": "低気圧",
+        "recovery_eta": "2〜3日",
+        "neutral_top_areas": "東京湾",
+        "stable_calm_records": n_records,
+        "stable_calm_pattern_break": "週末",
+        "wind_change_count": wind_direction_changes,
+        "wind_changes_summary": "北東→南西→北東",
+        "wind_change_skilled_ships": "熟練船長",
+        "wind_change_top_record": f"{top_fish_list[0] if top_fish_list else '各魚種'}の好釣果",
+        "tomorrow_wind_outlook": "安定する方向",
+        "dawn_ship_examples": "早朝便",
+        "down_tide_record": "マダイ大型",
+        "down_tide_outlook": "下げ潮パターン",
+        "clear_view_strategy": "細ハリスの工夫",
+        "clear_view_top_record": "マダイ好記録",
+        "neutral_top_record": f"{neutral_top_fish}の安定釣果",
+        "morming_top_record": "各魚種の好釣果",
+        "calm_top_record": "各魚種の記録",
+        "calm_top_areas": "東京湾",
+        "bait_outlook": "来週末",
+        "seasonal_lag_pretty": "平年並みの",
+        "seasonal_alternative_fish": "カワハギ",
+    }
+
+    # 魚種別 ctx を展開
+    ctx.update(fish_ctx)
+
+    return ctx
