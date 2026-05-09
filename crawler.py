@@ -11506,6 +11506,78 @@ def main():
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
     build_premium_plan_page()
+
+    # ── X 投稿用コンテンツ生成（--html-only のときはスキップ）──
+    # --html-only パスはこのブロックに到達しないが、念のため argv チェックも付ける
+    if "--html-only" not in _sys.argv:
+        try:
+            from x_post.context_builder import build_context as _build_ctx
+            from x_post.template_picker import (
+                pick_highlight as _pick_hl,
+                pick_ocean as _pick_oc,
+                pick_fish_templates as _pick_ft,
+            )
+            from x_post.text_generator import (
+                render_template as _render_tpl,
+                render_section as _render_sec,
+                build_commentary_html as _build_comm,
+            )
+            from x_post.generate_image import create as _create_img
+            from x_post.build_daily_page import build as _build_daily
+            from x_post.build_rss import build as _build_rss
+
+            _today_str = now.strftime("%Y-%m-%d")
+            _x_post_dir = os.path.join(WEB_DIR, "x_post")
+            os.makedirs(_x_post_dir, exist_ok=True)
+
+            print("\n[x_post] ctx 組立...")
+            _ctx = _build_ctx(
+                valid_catches, history, ANALYSIS_DB,
+                _today_str,
+                weather_dir=os.path.join("weather"),
+            )
+
+            print("[x_post] 文型選択...")
+            _h_tpl = _pick_hl(_ctx)
+            _s_tpl = _pick_oc(_ctx)
+            _f_tpls = _pick_ft(_ctx)
+
+            print("[x_post] 散文生成...")
+            _comm_html = _build_comm(
+                _render_tpl(_h_tpl, _ctx),
+                _render_tpl(_s_tpl, _ctx),
+                _render_sec(_f_tpls, _ctx),
+                _ctx,
+            )
+
+            _png_url = f"https://funatsuri-yoso.com/x_post/{_today_str}.png"
+            _daily_url = f"https://funatsuri-yoso.com/x_post/{_today_str}.html"
+            _feed_path = os.path.join(WEB_DIR, "feed.xml")
+
+            print("[x_post] PNG 生成...")
+            _create_img(_ctx, output_path=os.path.join(_x_post_dir, f"{_today_str}.png"))
+
+            print("[x_post] daily HTML 生成...")
+            _build_daily(
+                _ctx, _comm_html,
+                output_path=os.path.join(_x_post_dir, f"{_today_str}.html"),
+                png_url=_png_url,
+            )
+
+            print("[x_post] feed.xml 生成...")
+            _build_rss(
+                _ctx,
+                png_url=_png_url,
+                daily_url=_daily_url,
+                output_path=_feed_path,
+                existing_feed_path=_feed_path if os.path.exists(_feed_path) else None,
+            )
+            print(f"[x_post] 完了 → docs/x_post/{_today_str}.html / docs/feed.xml")
+        except Exception as _e:
+            print(f"[x_post] ERROR: {_e}")
+            import traceback as _tb
+            _tb.print_exc()
+
     print(f"\n=== 完了 ===")
     _today_label = f"当日: {len(today_all)} 件" if today_all else f"当日0件→全件フォールバック: {len(all_catches)} 件"
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")

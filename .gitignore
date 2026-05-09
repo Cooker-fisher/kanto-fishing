@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 _*.py
 !analysis/**/methods/_paths.py
+!x_post/__init__.py
 _*.json
 tmp.txt
 weather_cache.sqlite
@@ -27,3 +28,7 @@ crawl/ships.json.bak_before_chowari
 tmp_*.txt
 .claude/scheduled_tasks.lock
 analysis/V2/results/analysis.sqlite
+
+# x_post
+x_post/x_post_log.jsonl
+.env
