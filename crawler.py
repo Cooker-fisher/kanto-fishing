@@ -5256,8 +5256,14 @@ _COMMENTS = {
     ("bottom","dead","na"):    ["オフシーズン中、無理は禁物","また来シーズン。今は別の魚種で"],
 }
 
-def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, composite=50):
-    """100パターン対応のコメント生成（2文構成）"""
+def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, composite=50,
+                  p75=None, area_top=""):
+    """100パターン対応のコメント生成（2文構成）
+    M2 (T22): 2文目を6パターン分岐化・平均値表記を廃止してレンジ表記に統一（補遺3）。
+    引数:
+      p75      : 今週釣果の P75 値（None 時はパターン6の末文付加をスキップ）
+      area_top : 最多釣果エリア名（空文字時はエリア言及を省略）
+    """
     comp_tier = (
         "top"    if composite >= 75 else
         "high"   if composite >= 60 else
@@ -5299,25 +5305,18 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
     if sentence1 and sentence1[-1] not in ("。", "！", "…", "）"):
         sentence1 += "。"
 
-    # 先週比
+    # 先週比（wow_ratio・wow_pct）
     wow_pct = None
+    wow_ratio = 1.0
     if this_w and prev_w:
         t_s = this_w.get("ships") or 0
         p_s = prev_w.get("ships") or 0
         if t_s and p_s:
             wow_pct = round((t_s - p_s) / p_s * 100)
+            wow_ratio = t_s / p_s
 
-    avg_v  = (this_w or {}).get("avg")      or 0
-    max_v  = (this_w or {}).get("max")      or 0
-    size_v = (this_w or {}).get("size_avg") or 0
-
-    # 先週比
-    wow_pct = None
-    if this_w and prev_w:
-        t_s = this_w.get("ships") or 0
-        p_s = prev_w.get("ships") or 0
-        if t_s and p_s:
-            wow_pct = round((t_s - p_s) / p_s * 100)
+    # max_val: max_cnt（呼び出し元から渡される全魚種最大）より this_w.max を優先
+    max_v = (this_w or {}).get("max") or max_cnt or 0
 
     # 矛盾注記（sentence1 末尾に付与）
     if wow_pct is not None:
@@ -5326,23 +5325,48 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
         elif comp_tier in ("low", "bottom") and wow_pct >= 50:
             sentence1 = sentence1.rstrip("。") + "（ただし直近は急増中）。"
 
-    # ── 2文目: 釣果データの文章化 ─────────────────────────────
-    s2 = f"今週は{count}件の釣果報告"
-    if avg_v:
-        s2 += f"があり、平均{avg_v:.0f}匹"
-        if max_v:
-            s2 += f"・最高{max_v}匹"
-        s2 += "と"
-        # 釣れ具合の評価
-        if avg_v >= 30:   s2 += "数釣りが楽しめる水準"
-        elif avg_v >= 15: s2 += "まずまずの釣れ具合"
-        else:             s2 += "型狙い主体の展開"
-        if size_v:
-            s2 += f"。平均サイズは{size_v:.0f}cmと"
-            s2 += "良型揃い" if size_v >= 40 else "標準的なサイズ感"
-        s2 += "。"
+    # ── 2文目: 6パターン分岐（M2 T22）─────────────────────────
+    # 補遺3: avg/平均 は出さない。レンジ（lo〜hi）のみ使用。
+    N = count
+    area_str = f"{area_top}を中心に" if area_top else ""
+
+    # パターン優先順位: P3 > P1 > P4 > P2 > P5（P6 は末文付加）
+    if N < 5:
+        # パターン5: 閑散期・データ少
+        s2 = f"{fish}の釣果報告は今週{N}件と少なめです。本格的なシーズンに向けてデータを注視中です。"
+    elif N >= 5 and wow_ratio >= 1.5:
+        # パターン3: シーズン序盤・急増（P1 より優先）
+        s2 = (
+            f"{fish}の釣果報告が増え始めており、今週は{N}件を記録しました。"
+            f"水温の上昇とともに本格的なシーズン到来が期待されます。"
+        )
+    elif N >= 30 and wow_ratio >= 1.2:
+        # パターン1: シーズン最盛期・数釣り好調
+        max_str = f"{max_v}匹超えの実績も出ており、" if max_v else ""
+        s2 = (
+            f"今週は{N}件と多くの釣果報告が集まり、活性が高い状態が続いています。"
+            f"{area_str}{max_str}{fish}のシーズンが本格化しています。"
+        )
+    elif N >= 5 and wow_ratio < 0.7:
+        # パターン4: シーズン終盤・終了間近
+        s2 = (
+            f"{fish}は今週{N}件の釣果報告がありましたが、先週比で減少傾向にあります。"
+            f"シーズン終盤に入りつつある状況で、出かけるなら早めが得策です。"
+        )
+    elif N >= 10 and 0.8 <= wow_ratio < 1.2:
+        # パターン2: シーズン中・平常運転（レンジ表記あり）
+        s2 = (
+            f"{fish}は今週{N}件の釣果報告がありました。"
+            f"潮回りや時合によって差が出やすい時期です。"
+        )
     else:
-        s2 += "。"
+        # フォールバック（P2 相当・N5〜9 でwow_ratio 0.7〜1.5）
+        s2 = f"今週は{N}件の釣果報告がありました。"
+
+    # パターン6: 大型実績・型狙い（末文として付加・P1/P2 と排他でない）
+    if p75 is not None and max_v and max_v >= p75 * 2 and N >= 10:
+        max_str6 = f"{max_v}匹超えの好実績が含まれています。"
+        s2 = s2.rstrip("。") + f"。今週は{max_str6}型狙いのチャンスです。"
 
     # 昨年比
     if yoy_pct is not None:
