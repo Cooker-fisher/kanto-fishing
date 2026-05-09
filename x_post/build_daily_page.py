@@ -131,16 +131,21 @@ body {
 .umi-card .ratio { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 13px; }
 .umi-card .ratio b { color: var(--good); font-weight: 800; }
 .umi-card .ratio.warn b { color: var(--warn); }
-/* sea-grid: area ページと同スタイルの 6 カード海況グリッド */
-.sea-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 16px; }
-.sea-item { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; text-align: center; }
-.sea-item .sv { font-size: 18px; font-weight: 800; color: var(--accent); line-height: 1.2; }
-.sea-item .sl2 { font-size: 10px; color: var(--sub); margin-top: 3px; }
+/* sea-pair: 内海・外海を横並び 2 カラム配置（スペース節約） */
+.sea-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 10px 0 12px; }
+.sea-section-title { font-size: 13px; font-weight: 800; color: var(--port); margin: 0 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+/* sea-grid: 各カラム内で 3 カード × 2 行 */
+.sea-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.sea-item { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 6px; padding: 8px 4px; text-align: center; }
+.sea-item .sv { font-size: 14px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+.sea-item .sl2 { font-size: 9px; color: var(--sub); margin-top: 2px; }
 .sea-summary { font-size: 13px; line-height: 1.7; color: var(--sub); margin: 0 0 10px; }
 .ship-rate-bar { margin-top: 10px; font-size: 13px; color: var(--sub); }
 .ship-rate-bar b { color: var(--good); font-weight: 800; }
 .ship-rate-bar.warn b { color: var(--warn); }
-@media (max-width: 480px) { .sea-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) {
+  .sea-pair { grid-template-columns: 1fr; gap: 10px; }
+}
 .fish-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .fish-row {
   display: grid;
@@ -402,10 +407,16 @@ def _sea_grid_html(ctx):
 
     return (
         f"{summary_html}"
-        f'<h3 class="sea-section-title">内海（東京湾・相模湾）</h3>\n'
-        f'<div class="sea-grid">{inner_cards}</div>\n'
-        f'<h3 class="sea-section-title">外海（外房・銚子方面）</h3>\n'
-        f'<div class="sea-grid">{outer_cards}</div>\n'
+        f'<div class="sea-pair">'
+        f'<div class="sea-section">'
+        f'<div class="sea-section-title">内海（東京湾・相模湾）</div>'
+        f'<div class="sea-grid">{inner_cards}</div>'
+        f'</div>'
+        f'<div class="sea-section">'
+        f'<div class="sea-section-title">外海（外房・銚子方面）</div>'
+        f'<div class="sea-grid">{outer_cards}</div>'
+        f'</div>'
+        f'</div>\n'
         f"{rate_html}"
     )
 
