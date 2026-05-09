@@ -1948,6 +1948,7 @@ def _forecast_page_head(title):
     return f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, follow">
 <title>{title} | 船釣り予想</title>
 {GA_TAG}
 {ADSENSE_TAG}
