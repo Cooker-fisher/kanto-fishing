@@ -32,8 +32,8 @@ _ITEM_TEMPLATE = """\
       <description><![CDATA[{description}]]></description>
       <pubDate>{pub_date}</pubDate>
       <guid isPermaLink="true">{link}</guid>
-      <media:content url="{png_url}" medium="image" width="800" height="500"/>
-      <enclosure url="{png_url}" length="{png_size}" type="image/png"/>
+      <media:content url="{png_url}?v=2" medium="image" width="800" height="500"/>
+      <enclosure url="{png_url}?v=2" length="{png_size}" type="image/png"/>
     </item>"""
 
 

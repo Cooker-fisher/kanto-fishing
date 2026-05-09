@@ -515,7 +515,7 @@ def build(ctx, commentary_html, output_path, png_url=None):
 <meta name="description" content="{og_desc}">
 <meta property="og:title" content="{date_label} 関東船釣り 釣果まとめ | 船釣り予想">
 <meta property="og:description" content="{og_desc}">
-<meta property="og:image" content="{png_url}">
+<meta property="og:image" content="{png_url}?v=2">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://funatsuri-yoso.com/x_post/{date_str_for_file}.html">
