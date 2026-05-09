@@ -1944,7 +1944,7 @@ _FORECAST_EXTRA_CSS = """.date-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bo
 """
 
 
-def _forecast_page_head(title):
+def _forecast_page_head(title, depth_prefix="../"):
     return f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1952,8 +1952,8 @@ def _forecast_page_head(title):
 <title>{title} | 船釣り予想</title>
 {GA_TAG}
 {ADSENSE_TAG}
-<style>{V2_COMMON_CSS}
-{_FORECAST_EXTRA_CSS}</style>
+<link rel="stylesheet" href="{depth_prefix}style.css">
+<style>{_FORECAST_EXTRA_CSS}</style>
 </head><body>
 {_v2_header_nav('forecast')}
 <div class="c">
@@ -2198,7 +2198,7 @@ def _area_risk_grid(area_group, forecast_data):
 def _build_area_forecast_page(area_group, forecast_data):
     """エリア別予測ページHTML（forecast/area/<slug>.html）"""
     title = f"{area_group} 釣果予測"
-    html = _forecast_page_head(title)
+    html = _forecast_page_head(title, depth_prefix="../../")
     all_dates = sorted(forecast_data.get("days", {}).keys())
     all_weeks = forecast_data.get("weeks", {})
     # forecast/area/ から forecast/<日付>.html へのリンクは ../ プレフィックスが必要
@@ -6572,8 +6572,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
   <script type="application/ld+json">{jsonld_website}</script>
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{V2_COMMON_CSS}
-{index_extra_css}</style>
+  <link rel="stylesheet" href="style.css">
+  <style>{index_extra_css}</style>
 </head>
 <body>
 {_v2_header_nav('index')}
@@ -6932,7 +6932,8 @@ def build_fish_pages(data, history, crawled_at=""):
 <script type="application/ld+json">{crumb_jsonld_f}</script>
 <script type="application/ld+json">{faq_jsonld_f}</script>
 {GA_TAG}{ADSENSE_TAG}
-<style>{V2_COMMON_CSS}
+<link rel="stylesheet" href="../style.css">
+<style>
 .notice{{background:#fff8e6;border-left:3px solid var(--warn);padding:10px 14px;margin:14px 0;border-radius:0 6px 6px 0;font-size:13px;color:var(--sub);line-height:1.7}}
 .month-chart{{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}}
 .mb-grid{{display:flex;gap:4px;align-items:flex-end;height:100px;padding:0 4px}}
@@ -7258,8 +7259,8 @@ def build_fish_pages(data, history, crawled_at=""):
   {faq_jsonld}
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{V2_COMMON_CSS}
-{fish_extra_css}</style>
+  <link rel="stylesheet" href="../style.css">
+  <style>{fish_extra_css}</style>
 </head>
 <body>
 {_v2_header_nav('fish')}
@@ -7336,7 +7337,8 @@ def build_fish_pages(data, history, crawled_at=""):
   <meta name="description" content="関東の船釣り魚種別釣果一覧。アジ・マダイ・ヒラメ・タチウオなど今週釣れている魚種をまとめて確認できます。">
   <link rel="canonical" href="{SITE_URL}/fish/">
   {GA_TAG}{ADSENSE_TAG}
-  <style>{V2_COMMON_CSS}{fish_index_css}</style>
+  <link rel="stylesheet" href="../style.css">
+  <style>{fish_index_css}</style>
 </head>
 <body>
 {_v2_header_nav('fish')}
@@ -7640,7 +7642,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 <script type="application/ld+json">{faq_jsonld}</script>
 <script type="application/ld+json">{place_jsonld}</script>
 {GA_TAG}{ADSENSE_TAG}
-<style>{V2_COMMON_CSS}{area_extra_css}
+<link rel="stylesheet" href="../style.css">
+<style>{area_extra_css}
 .notice{{background:#fff8e6;border-left:3px solid var(--warn);padding:10px 14px;margin:14px 0;border-radius:0 6px 6px 0;font-size:13px;color:var(--sub);line-height:1.7}}
 .month-chart{{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}}
 .mb-grid{{display:flex;gap:4px;align-items:flex-end;height:100px;padding:0 4px}}
@@ -7995,8 +7998,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   {area_faq_jsonld}
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{V2_COMMON_CSS}
-{area_extra_css}</style>
+  <link rel="stylesheet" href="../style.css">
+  <style>{area_extra_css}</style>
 </head>
 <body>
 {_v2_header_nav('area')}
@@ -8093,7 +8096,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <meta name="description" content="関東の船釣りエリア別釣果一覧。茨城・千葉・東京・神奈川エリアの今週の釣果件数と釣れている魚種を確認できます。">
   <link rel="canonical" href="{SITE_URL}/area/">
   {GA_TAG}{ADSENSE_TAG}
-  <style>{V2_COMMON_CSS}{area_index_css}</style>
+  <link rel="stylesheet" href="../style.css">
+  <style>{area_index_css}</style>
 </head>
 <body>
 {_v2_header_nav('area')}
@@ -8475,7 +8479,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   {fa_faq_ld}
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{V2_COMMON_CSS}
+  <link rel="stylesheet" href="../style.css">
+  <style>
 {fa_extra_css}
 .fa-intro{{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:16px}}</style>
 </head>
@@ -8591,7 +8596,8 @@ def build_calendar_page(crawled_at=""):
   <link rel="canonical" href="{SITE_URL}/calendar.html">
   {GA_TAG}
   {ADSENSE_TAG}
-  <style>{V2_COMMON_CSS}
+  <link rel="stylesheet" href="style.css">
+  <style>
 {cal_extra_css}
 {cal_extra_css2}</style>
 </head>
@@ -9880,6 +9886,60 @@ footer a{color:rgba(255,255,255,.7)}
 @media(min-width:769px){.bn{display:none}body{padding-bottom:0}}
 """.strip()
 
+# ship ページ固有CSS（style.css 外部化後に残すインライン部分 - 外部CSSに未収録のセレクタのみ）
+_SHIP_EXTRA_CSS = """\
+.ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.ship-hero .sh-badge{font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);border-radius:10px;color:#fff}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+.info-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:12px;color:var(--sub);line-height:1.8}
+.info-box strong{color:var(--text)}
+.info-box .info-row{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--bg)}
+.info-box .info-row:last-child{border-bottom:none}
+.info-box .info-label{flex:0 0 100px;color:var(--muted);font-weight:600}
+.info-box .info-val{flex:1}
+.fish-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.fish-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.fish-section h3 .h-range{color:var(--cta);font-size:15px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
+.chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
+.fish-meta{font-size:11px;color:var(--sub);margin-top:8px;padding-top:8px;border-top:1px solid var(--bg)}
+.fish-meta strong{color:var(--accent)}
+.rank-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.rank-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.rk{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--bg);gap:8px;font-size:12px}
+.rk:last-child{border-bottom:none}
+.rk.self{background:#fef6ee;border-radius:6px;padding:8px;border-bottom:none;margin-bottom:4px}
+.rk .rk-rank{font-weight:800;color:var(--cta);flex:0 0 30px;text-align:center}
+.rk .rk-name{flex:1;font-weight:700;color:var(--accent)}
+.rk .rk-pct{font-weight:700;font-size:11px;padding:2px 6px;border-radius:6px;background:#e6f7ee;color:var(--pos)}
+.spec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;font-size:12px;color:var(--sub)}
+.spec-grid .sg-item{padding:6px 0}
+.spec-grid .sg-item strong{display:block;color:var(--muted);font-size:10px;font-weight:600;margin-bottom:2px}
+.facility-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.facility-tags .ft{font-size:10px;padding:3px 8px;background:var(--nav);color:var(--sub);border-radius:10px;border:1px solid var(--border)}
+.season-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.season-grid .sg{padding:10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--cta)}
+.season-grid .sg .sg-label{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px}
+.season-grid .sg .sg-fish{font-size:13px;color:var(--accent);font-weight:600}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cta-grid a{padding:10px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;text-align:center;text-decoration:none}
+.cta-grid a.alt{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.cta-grid a:hover{background:var(--cta2)}
+.cta-grid a.alt:hover{background:var(--accent);color:#fff}
+.contact-cta{background:var(--accent);color:#fff;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:16px}
+.contact-cta h3{font-size:14px;margin-bottom:8px}
+.contact-cta p{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px}
+.contact-cta a{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;margin:4px}"""
+
 
 def _ship_load_area_coords():
     """area_coords.json を読む（{area: {lat, lon}}）"""
@@ -10433,7 +10493,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 <meta property="og:url" content="{page_url}">
 <meta property="og:type" content="website">
 {ld_json}
-<style>{_SHIP_PAGE_CSS}</style>
+<link rel="stylesheet" href="../style.css">
+<style>{_SHIP_EXTRA_CSS}</style>
 </head>
 <body>
 {header_html}

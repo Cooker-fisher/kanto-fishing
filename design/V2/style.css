@@ -596,3 +596,162 @@ footer .cp { margin-top: 10px; display: block; opacity: .5; }
   body { padding-bottom: 0; }
   .fish-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ================================================================
+   V2_COMMON_CSS 統合（T22-M3: 2026/05/09）
+   crawler.py V2_COMMON_CSS 定数の内容を外部CSS化
+   注: 上記 :root ブロックと重複する変数は本ブロックが上書きする（カスケード末尾優先）
+   ================================================================ */
+
+/* エリア別カラー・シグナル変数（style.css 上部に未定義の変数を追加） */
+:root {
+  --accent2: #163d5c;
+  --teal: #00bfa5;
+  --ea-kanagawa: #1a6fb5;
+  --ea-tokyo: #0d2b4a;
+  --ea-chiba: #16a34a;
+  --ea-ibaraki: #dc2626;
+  --ea-shizuoka: #d97706;
+  --ea-gaiwan: #7c3aed;
+  --sig-peak: #ffc107;
+  --sig-season: #00bfa5;
+  --sig-normal: #8a96a4;
+  --sig-late: #ff6b6b;
+}
+
+/* ── Google Fonts (Outfit 800) ── */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@800&display=swap');
+
+/* ── サイトロゴリンク ── */
+a.site-logo { text-decoration: none; color: inherit; }
+a.site-logo:hover { opacity: .8; text-decoration: none; }
+
+/* ── パンくず ── */
+.bread { font-size: 11px; color: var(--muted); padding: 10px 0; }
+.bread a { color: var(--sub); }
+
+/* ── テーブル共通 ── */
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--accent); color: #fff; padding: 8px; text-align: left; font-size: 12px; }
+td { padding: 8px; border-bottom: 1px solid var(--border); }
+tbody tr:hover td { background: #f0f4f8; }
+tr.highlight td { background: #e6f7ee; }
+tr.dim td { opacity: .45; }
+
+/* ── 統計カード ── */
+.stat-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 16px 0; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; text-align: center; }
+.stat-card .sv { font-size: 22px; font-weight: 800; color: var(--cta); line-height: 1.2; }
+.stat-card .sl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── バー ── */
+.bar-wrap { background: #e0e8f0; border-radius: 2px; height: 8px; width: 80px; }
+.bar-fill { background: linear-gradient(90deg,var(--accent),#2c6ea8); height: 8px; border-radius: 2px; }
+.yoy-table .up { color: var(--pos); }
+.yoy-table .down { color: var(--neg); }
+
+/* ── データ注記 ── */
+.data-note { max-width: var(--mx); margin: 20px auto 0; padding: 0 14px; }
+.data-note details { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 14px; }
+.data-note summary { color: var(--muted); font-size: 12px; cursor: pointer; user-select: none; }
+.data-note ul { margin-top: 8px; padding-left: 16px; color: var(--sub); font-size: 11px; line-height: 1.9; }
+
+/* ── CTAボタン ── */
+.cta-btn { display: inline-block; padding: 10px 20px; background: var(--cta); color: #fff; border-radius: 22px; font-size: 13px; font-weight: 700; text-decoration: none; }
+.cta-btn:hover { background: var(--cta2); text-decoration: none; }
+
+/* ── テーザーローテーター ── */
+.teaser-rotator { background: linear-gradient(135deg,#f8f4ff,#f0eafa); border: 1.5px dashed var(--prem); border-radius: var(--r); padding: 16px; margin-bottom: 16px; }
+.tr-track { overflow: hidden; }
+.tr-slide { display: none; }
+.tr-slide.is-active { display: block; }
+.tr-dots { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
+.tr-dot { width: 8px; height: 8px; border-radius: 50%; background: #d4c4f5; border: none; cursor: pointer; padding: 0; transition: background .2s; }
+.tr-dot.is-active { background: var(--prem); }
+
+/* ── 旬マップ（season-map） ── */
+.season-map { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 16px; }
+.season-map h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+.sm-wrap { overflow-x: auto; }
+.sm-table { border-collapse: separate; border-spacing: 3px; min-width: 220px; }
+.sm-table th { font-size: 10px; color: var(--muted); font-weight: 600; text-align: center; padding: 2px 4px; }
+.sm-th-mo { font-size: 11px; font-weight: 700; color: var(--sub); text-align: left; padding-right: 8px; white-space: nowrap; }
+.sm-cell { width: 40px; height: 24px; border-radius: 3px; font-size: 9px; font-weight: 700; text-align: center; vertical-align: middle; }
+.sm-cell[data-v="0"] { background: #eef2f5; color: var(--muted); }
+.sm-cell[data-v="1"] { background: #c8e6c9; color: #2e7d32; }
+.sm-cell[data-v="2"] { background: #66bb6a; color: #fff; }
+.sm-cell[data-v="3"] { background: #388e3c; color: #fff; }
+.sm-cell[data-v="4"] { background: #1b5e20; color: #fff; }
+.sm-legend { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 10px; color: var(--muted); }
+.sm-lc { width: 14px; height: 14px; border-radius: 2px; display: inline-block; }
+.sm-lc-0 { background: #eef2f5; }
+.sm-lc-1 { background: #c8e6c9; }
+.sm-lc-2 { background: #66bb6a; }
+.sm-lc-3 { background: #388e3c; }
+.sm-lc-4 { background: #1b5e20; }
+
+/* ── エリア旬マップ（area-season） ── */
+.area-season { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 16px; }
+.as-wrap { overflow-x: auto; }
+.as-table { border-collapse: separate; border-spacing: 3px; min-width: 220px; }
+.as-table th { font-size: 10px; color: var(--muted); font-weight: 600; text-align: center; padding: 2px 4px; }
+.as-th-fish { font-size: 11px; font-weight: 700; color: var(--sub); text-align: left; padding-right: 8px; white-space: nowrap; }
+.as-th-fish .as-emoji { width: 16px; height: 16px; object-fit: contain; vertical-align: -3px; margin-right: 4px; }
+.as-cell { width: 36px; height: 22px; border-radius: 3px; font-size: 9px; font-weight: 700; text-align: center; vertical-align: middle; }
+.as-cell[data-v="-1"] { background: #f0f0f0; opacity: .4; }
+.as-cell[data-v="0"] { background: #eef2f5; color: var(--muted); }
+.as-cell[data-v="1"] { background: #c8e6c9; color: #2e7d32; }
+.as-cell[data-v="2"] { background: #66bb6a; color: #fff; }
+.as-cell[data-v="3"] { background: #388e3c; color: #fff; }
+.as-cell[data-v="4"] { background: #1b5e20; color: #fff; }
+.as-legend { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 10px; color: var(--muted); }
+.as-lc { width: 14px; height: 14px; border-radius: 2px; display: inline-block; }
+.as-lc-0 { background: #eef2f5; }
+.as-lc-1 { background: #c8e6c9; }
+.as-lc-2 { background: #66bb6a; }
+.as-lc-3 { background: #388e3c; }
+.as-lc-4 { background: #1b5e20; }
+
+/* ── 魚種ガイド ── */
+.fish-guide { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 16px; }
+.fish-guide > h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+.fg-row { display: flex; gap: 10px; line-height: 1.75; padding: 7px 0; border-bottom: 1px solid var(--bg); }
+.fg-row:last-child { border-bottom: none; }
+.fg-lbl { flex: 0 0 68px; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .4px; padding-top: 3px; }
+.fg-val { flex: 1; font-size: 13px; color: var(--text); }
+.fg-val .sub { font-size: 11px; color: var(--sub); }
+.tackle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.tk { background: var(--bg); border-radius: 6px; padding: 6px 8px; }
+.tk-lbl { font-size: 9px; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
+.tk-val { font-size: 11px; color: var(--text); margin-top: 1px; line-height: 1.45; }
+
+/* ── エリアガイド ── */
+.area-guide { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 16px; }
+.area-guide > h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+.ag-row { display: flex; gap: 10px; line-height: 1.75; padding: 7px 0; border-bottom: 1px solid var(--bg); }
+.ag-row:last-child { border-bottom: none; }
+.ag-lbl { flex: 0 0 68px; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .4px; padding-top: 3px; }
+.ag-val { flex: 1; font-size: 13px; color: var(--text); }
+.access-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.ac { background: var(--bg); border-radius: 6px; padding: 6px 8px; }
+.ac-lbl { font-size: 9px; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
+.ac-val { font-size: 11px; color: var(--text); margin-top: 1px; line-height: 1.45; }
+
+/* ── 概況テキスト ── */
+.overview { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 16px; }
+.overview-title { font-size: 11px; font-weight: 700; color: var(--sub); margin-bottom: 6px; }
+.overview-body { font-size: 13px; color: var(--text); line-height: 1.8; }
+
+/* ── AdSense ── */
+ins.adsbygoogle { display: block; min-height: 0 !important; height: auto !important; }
+ins.adsbygoogle[data-ad-status="unfilled"] { display: none !important; }
+
+/* ── レスポンシブ補完 ── */
+@media (max-width: 640px) {
+  header { padding: 10px 14px; }
+  .stat-cards { grid-template-columns: 1fr 1fr; }
+  table { font-size: 11px; }
+  th, td { padding: 5px 4px; }
+  .bar-wrap { width: 50px; }
+}
