@@ -8184,7 +8184,7 @@ def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_descript
         if desc_full:
             first_para = desc_full.split("\n\n")[0]
             first_sentence = first_para.split("。")[0] + "。" if first_para else ""
-            if len(first_sentence) >= 20:
+            if len(first_sentence) >= 10:
                 area_intro = first_sentence
 
     total_ships = len(ship_counts)
