@@ -45,8 +45,11 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .fish-section h3 .h-range{color:var(--cta);font-size:15px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.today{opacity:1;background:var(--pos)}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .fish-meta{font-size:11px;color:var(--sub);margin-top:8px;padding-top:8px;border-top:1px solid var(--bg)}
 .fish-meta strong{color:var(--accent)}
 .rank-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
@@ -116,8 +119,8 @@ footer a{color:rgba(255,255,255,.7)}
 <h2 class="st">季節別の狙い物</h2><div class="spec-card"><div class="season-grid"><div class="sg"><div class="sg-label">春 (3〜5月)</div><div class="sg-fish">アジ、サバ</div></div><div class="sg"><div class="sg-label">夏 (6〜8月)</div><div class="sg-fish">BBQ、遊覧</div></div><div class="sg"><div class="sg-label">秋 (9〜11月)</div><div class="sg-fish">スミイカ</div></div><div class="sg"><div class="sg-label">冬 (12〜2月)</div><div class="sg-fish">スミイカ</div></div></div></div>
 
 <h2 class="st">最近の釣果実績（直近7日・船宿実績）</h2>
-<div class="fish-section"><h3>アジ <span class="h-range">35〜121匹</span></h3><div class="chart-bars"><div class="cb" style="height:99%"></div><div class="cb" style="height:72%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:95%"></div><div class="cb" style="height:90%"></div><div class="cb" style="height:5%"></div><div class="cb today" style="height:100%"></div></div><div class="chart-labels"><span>5/2</span><span>5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span>5/7</span><span>5/8</span></div></div>
-<div class="fish-section"><h3>タチウオ <span class="h-range">3〜16匹</span></h3><div class="chart-bars"><div class="cb" style="height:18%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:100%"></div><div class="cb" style="height:18%"></div><div class="cb" style="height:5%"></div><div class="cb today" style="height:5%"></div></div><div class="chart-labels"><span>5/2</span><span>5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span>5/7</span><span>5/8</span></div></div>
+<div class="fish-section"><h3>アジ <span class="h-range">35〜121匹</span></h3><div class="chart-bars"><div class="cb weekend" style="height:99%"></div><div class="cb weekend" style="height:72%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:95%"></div><div class="cb" style="height:90%"></div><div class="cb" style="height:5%"></div><div class="cb today" style="height:100%"></div></div><div class="chart-labels"><span class="weekend">5/2</span><span class="weekend">5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span>5/7</span><span class="today">5/8</span></div></div>
+<div class="fish-section"><h3>タチウオ <span class="h-range">3〜16匹</span></h3><div class="chart-bars"><div class="cb weekend" style="height:18%"></div><div class="cb weekend" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:100%"></div><div class="cb" style="height:18%"></div><div class="cb" style="height:5%"></div><div class="cb today" style="height:5%"></div></div><div class="chart-labels"><span class="weekend">5/2</span><span class="weekend">5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span>5/7</span><span class="today">5/8</span></div></div>
 
 <div class="ad-slot">広告スペース（レクタングル）</div>
 
@@ -151,7 +154,7 @@ footer a{color:rgba(255,255,255,.7)}
 <footer>
 <a href="../pages/privacy.html">プライバシーポリシー</a> · <a href="../pages/terms.html">利用規約</a> · <a href="../pages/about.html">サイトについて</a><br>
 <div style="margin-top:6px"><a href="../">トップ</a> · <a href="../area/koshiba.html">小柴港</a></div>
-<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/09 08:56</span>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/09 09:24</span>
 </footer>
 
 <div class="bn"><a href="/index.html"><span class="i">🎣</span>釣果</a><a href="/fish/"><span class="i">🐟</span>魚種</a><a href="/area/"><span class="i">📍</span>エリア</a><a href="/calendar.html"><span class="i">📅</span>カレンダー</a><a href="/forecast/index.html" class="prem"><span class="i">⭐</span>有料</a></div>

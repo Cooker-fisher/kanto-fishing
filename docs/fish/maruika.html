@@ -254,8 +254,11 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.today{opacity:1;background:var(--pos)}.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 .chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}</style>
 </head>
@@ -285,7 +288,7 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
   <h2 class="st">今週の概況 <span class="tag free">無料</span></h2>
   <div class="comment-wrap">
     <img src="../assets/fish/maruika/maruika_illustration.png" alt="マルイカ" class="comment-img" width="160" height="160" loading="lazy" onerror="this.style.display='none'">
-    <div class="comment"><span class="comment-fish-name">マルイカ（丸烏賊）</span>旬だが今週は中位の釣れ具合。
+    <div class="comment"><span class="comment-fish-name">マルイカ（丸烏賊）</span>ピーク期ながら爆発力に欠ける。型狙いで。
 今週は43件の釣果報告があり、平均18匹・最高52匹とまずまずの釣れ具合。平均サイズは29cmと標準的なサイズ感。
 数より型を意識した釣りにシフトするとよい結果が得られやすい。</div>
   </div>
@@ -293,7 +296,7 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
 <div class="chart7">
   <h3>匹数上限（上ヒゲ）の7日推移</h3>
   <div class="chart-bars"><div class="cb weekend" style="height:72%"></div><div class="cb weekend" style="height:100%"></div><div class="cb" style="height:4%"></div><div class="cb" style="height:85%"></div><div class="cb" style="height:80%"></div><div class="cb" style="height:70%"></div><div class="cb today" style="height:75%"></div></div>
-  <div class="chart-labels"><span>5/2</span><span>5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span>5/7</span><span>5/8</span></div>
+  <div class="chart-labels"><span class="weekend">5/2</span><span class="weekend">5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span>5/7</span><span class="today">5/8</span></div>
   <div class="chart-trend down">↓ 下降トレンド</div>
 </div>
   <h2 class="st">5/8(金)の釣果 <span class="tag free">無料</span></h2>

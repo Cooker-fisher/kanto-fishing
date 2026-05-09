@@ -251,8 +251,11 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.today{opacity:1;background:var(--pos)}.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 .chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}</style>
 </head>
@@ -282,15 +285,15 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none !important}
   <h2 class="st">今週の概況 <span class="tag free">無料</span></h2>
   <div class="comment-wrap">
     <img src="../assets/fish/mahata/mahata_illustration.png" alt="マハタ" class="comment-img" width="160" height="160" loading="lazy" onerror="this.style.display='none'">
-    <div class="comment"><span class="comment-fish-name">マハタ（真羽太）</span>安定した釣果だが爆発力はない。
+    <div class="comment"><span class="comment-fish-name">マハタ（真羽太）</span>好シーズン中のまずまずの状況。
 今週は16件の釣果報告があり、平均3匹・最高12匹と型狙い主体の展開。
-安定感はある。確実に釣果を出すなら腕と場所選びが重要。</div>
+まずまずの水準。丁寧な釣りで十分楽しめる。</div>
   </div>
   <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
 <div class="chart7">
   <h3>匹数上限（上ヒゲ）の7日推移</h3>
   <div class="chart-bars"><div class="cb" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb weekend" style="height:33%"></div><div class="cb" style="height:4%"></div><div class="cb" style="height:25%"></div><div class="cb" style="height:100%"></div><div class="cb today" style="height:25%"></div></div>
-  <div class="chart-labels"><span>5/1</span><span>5/2</span><span>5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span>5/7</span></div>
+  <div class="chart-labels"><span>5/1</span><span class="weekend">5/2</span><span class="weekend">5/3</span><span>5/4</span><span>5/5</span><span>5/6</span><span class="today">5/7</span></div>
   <div class="chart-trend">↑ 上昇トレンド</div>
 </div>
   <h2 class="st">5/7(木)の釣果 <span class="tag free">無料</span></h2>

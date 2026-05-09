@@ -4549,9 +4549,14 @@ def build_fish_7day_chart_html(fish, catches, display_date=None, display_label=N
         cls = "cb today" if d == base_date else ("cb weekend" if d.weekday() >= 5 else "cb")
         bars.append(f'<div class="{cls}" style="height:{h}%"></div>')
     # ラベル: 最右列は M/D 形式（T19: 「今日」廃止・データ日付明示）
+    # T20: today/weekend クラスをラベルにも付与（色覚補助）
     labels = []
     for d in days:
-        labels.append(f"<span>{d.month}/{d.day}</span>")
+        _lcls_parts = []
+        if d == base_date: _lcls_parts.append("today")
+        if d.weekday() >= 5: _lcls_parts.append("weekend")
+        _lcls = f' class="{" ".join(_lcls_parts)}"' if _lcls_parts else ""
+        labels.append(f"<span{_lcls}>{d.month}/{d.day}</span>")
     # トレンド（後半3日 vs 前半4日の平均比較）
     first4 = [v for v in values[:4] if v > 0]
     last3  = [v for v in values[4:] if v > 0]
@@ -6137,12 +6142,16 @@ def build_html(catches, crawled_at, history, weather_data=None):
             _label_parts = []
             for _i, _v in enumerate(_vals):
                 _h = max(8, int(_v / _wmax * 100)) if _v > 0 else 4
-                _cls = " today" if _i == 6 else ""
-                _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
                 _d = _today - timedelta(days=6 - _i)
+                # T20 (2026/05/09): weekend クラス追加（土日色分け・WCAG 1.4.1 対応）
+                _bar_cls_parts = []
+                if _i == 6: _bar_cls_parts.append("today")
+                if _d.weekday() >= 5: _bar_cls_parts.append("weekend")
+                _cls = " " + " ".join(_bar_cls_parts) if _bar_cls_parts else ""
+                _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
                 # R2 (2026/05/06): 中間日も M/D ラベル。T19: 最右列も M/D 形式統一
-                _today_cls = " today" if _i == 6 else ""
-                _label_parts.append(f'<span class="bl{_today_cls}">{_d.month}/{_d.day}</span>')
+                # T20: ラベルにも weekend クラス付与（色覚補助）
+                _label_parts.append(f'<span class="bl{_cls}">{_d.month}/{_d.day}</span>')
             mini_bars = (
                 f'<div class="bars">{"".join(_bar_parts)}</div>'
                 f'<div class="bar-labels">{"".join(_label_parts)}</div>'
@@ -6391,10 +6400,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .fc .fb{font-size:10px;color:var(--pos);font-weight:600;margin-top:3px}
 .fc .bars{display:flex;align-items:flex-end;gap:1px;height:20px;margin-top:4px}
 .fc .bars .b{flex:1;background:var(--cta);border-radius:1px 1px 0 0;opacity:.6;min-width:4px}
-.fc .bars .b.today{opacity:1;background:var(--pos)}
+.fc .bars .b.weekend{opacity:.85;background:#f4a043}
+.fc .bars .b.today{opacity:1;background:var(--pos);outline:1px solid var(--accent);outline-offset:-1px}
 .fc .bar-labels{display:flex;gap:1px;margin-top:1px}
 .fc .bar-labels .bl{flex:1;font-size:8px;color:var(--muted);text-align:center;min-width:4px}
-.fc .bar-labels .bl.today{color:var(--pos);font-weight:700}
+.fc .bar-labels .bl.weekend{color:#c66a14}
+.fc .bar-labels .bl.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .fc .trend{font-size:9px;font-weight:700;margin-top:2px}
 .fc .trend.up{color:var(--pos)}.fc .trend.dn{color:var(--neg)}.fc .trend.flat{color:var(--muted)}
 .fc.stale{opacity:.6}
@@ -7153,8 +7164,11 @@ def build_fish_pages(data, history, crawled_at=""):
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.today{opacity:1;background:var(--pos)}.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 .chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}"""
         html = f"""<!DOCTYPE html>
@@ -9724,8 +9738,11 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .fish-section h3 .h-range{color:var(--cta);font-size:15px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
-.chart-bars .cb.today{opacity:1;background:var(--pos)}
+.chart-bars .cb.weekend{opacity:.8;background:#f4a043}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
 .chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
 .fish-meta{font-size:11px;color:var(--sub);margin-top:8px;padding-top:8px;border-top:1px solid var(--bg)}
 .fish-meta strong{color:var(--accent)}
 .rank-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
@@ -9893,6 +9910,17 @@ def _ship_recent_fish_html(catches, ship_name, today_dt, display_label=None):
         d = today_dt - timedelta(days=i)
         day_keys.append(d.strftime("%Y/%m/%d"))
         day_labels.append(d.strftime("%-m/%-d") if os.name != "nt" else d.strftime("%#m/%#d"))
+    # T20 (2026/05/09): 各日の today/weekend クラスを一度だけ計算（bars/labels で共通利用）
+    day_cls_list = []
+    for k in day_keys:
+        _cp = []
+        if k == today_iso: _cp.append("today")
+        try:
+            _kd = datetime.strptime(k, "%Y/%m/%d").date()
+            if _kd.weekday() >= 5: _cp.append("weekend")
+        except Exception:
+            pass
+        day_cls_list.append(" ".join(_cp))
     for fish, _ in top_fish:
         all_cnts = []
         for cnts in fish_daily[fish].values():
@@ -9902,13 +9930,16 @@ def _ship_recent_fish_html(catches, ship_name, today_dt, display_label=None):
         max_v = max(all_cnts) or 1
         # 日別 max 値
         bars_html = ""
-        for k in day_keys:
+        for idx, k in enumerate(day_keys):
             day_cnts = fish_daily[fish].get(k, [])
             day_max = max(day_cnts) if day_cnts else 0
             h = int(100 * day_max / max_v) if max_v else 0
-            today_cls = " today" if k == today_iso else ""
-            bars_html += f'<div class="cb{today_cls}" style="height:{max(h,5)}%"></div>'
-        labels_html = "".join(f'<span>{lab}</span>' for lab in day_labels)
+            _cls = " " + day_cls_list[idx] if day_cls_list[idx] else ""
+            bars_html += f'<div class="cb{_cls}" style="height:{max(h,5)}%"></div>'
+        labels_html = ""
+        for idx, lab in enumerate(day_labels):
+            _lcls = f' class="{day_cls_list[idx]}"' if day_cls_list[idx] else ""
+            labels_html += f'<span{_lcls}>{lab}</span>'
         sz_str = ""
         if fish_size[fish]:
             sz_lo = int(min(fish_size[fish]))
