@@ -493,33 +493,6 @@ def build(ctx, commentary_html, output_path, png_url=None):
     </div>
   </section>
 
-  <section class="sec">
-    <h2><span class="num">4</span>X 投稿画像プレビュー</h2>
-    <p class="x-image-intro">毎日17時頃、X（旧 Twitter）に @funatsuri_yoso から投稿している釣果まとめ画像です。</p>
-    <div class="x-image-wrap">
-      <div class="x-image-label">この日の釣果まとめ画像（funatsuri-yoso.com）</div>
-      <div class="x-card">
-        <div class="x-header">
-          <span class="a">船釣り予想</span>
-          <span class="b">{date_label} 関東船釣り 釣果まとめ</span>
-          <span class="c">{n_ships}船宿 {ctx.get("n_areas", 0)}港</span>
-        </div>
-        <div class="x-body">
-          <table>
-            <thead><tr><th>魚種</th><th>釣果</th><th>型</th><th>港</th></tr></thead>
-            <tbody>
-{x_table_rows}
-            </tbody>
-          </table>
-        </div>
-        <div class="x-footer">
-          <span class="l">funatsuri-yoso.com</span>
-          <span class="r">神奈川・東京・千葉・茨城・静岡対応</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <div class="related">
     <h3>関連ページ</h3>
     <a href="/x_post/index.html">&larr; 釣果速報トップへ戻る</a>
