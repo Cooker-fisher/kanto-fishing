@@ -3761,13 +3761,14 @@ def _format_date_label(date_str: str) -> str:
 
 def _resolve_display_dataset(catches, today_str):
     """
-    当日データありなら (today_catches, '今日', today_str)
+    当日データありなら (today_catches, 'M/D(曜)', today_str)
     なければ catches 内の最新日にフォールバック → (latest_catches, 'M/D(曜)', latest_date)
     両者とも0件なら (catches, '—', today_str)
+    T19(2026/05/09): 常にデータ日付ラベルを返す（「今日」は誤認の原因になるため廃止）
     """
     today_catches = [c for c in catches if c.get("date") == today_str]
     if today_catches:
-        return today_catches, "今日", today_str
+        return today_catches, _format_date_label(today_str), today_str
     dates = [c["date"] for c in catches if c.get("date")]
     if not dates:
         return catches, "—", today_str
@@ -4063,7 +4064,7 @@ def build_teaser_rotator_html():
   </div>
 </div>"""
 
-def build_index_overview_text(catches, history, crawled_at=""):
+def build_index_overview_text(catches, history, crawled_at="", hero_label=""):
     """今日の関東船釣り概況テキスト（200〜300字）を生成"""
     now = datetime.now(JST).replace(tzinfo=None)
     today_str = now.strftime("%Y/%m/%d")
@@ -4118,8 +4119,10 @@ def build_index_overview_text(catches, history, crawled_at=""):
         body += f"{f1}は{area_str}を中心に{yoy_text}"
     body += "最新の釣果情報・船宿ランキングは各魚種・エリアページをご確認ください。"
     title_str = crawled_at + " 更新" if crawled_at else now.strftime("%Y/%m/%d") + " 更新"
+    # T19: hero_label 未渡し時は today_str から算出（呼び出し順の制約があるため）
+    h2_label = hero_label if hero_label else _format_date_label(today_str)
     return (
-        f'<h2 class="st">今日の関東船釣り概況 <span class="tag free">無料</span></h2>'
+        f'<h2 class="st">{h2_label}の関東船釣り概況 <span class="tag free">無料</span></h2>'
         f'<div class="overview">'
         f'<div class="overview-title">{title_str} — {len(areas_set)}エリア・{len(ships_set)}船宿から集計</div>'
         f'<div class="overview-body">{body}</div>'
@@ -4510,17 +4513,17 @@ def build_fish_guide_html(fish, tackle_data):
   {rows}
 </div>"""
 
-def build_fish_7day_chart_html(fish, catches, display_date=None, display_label="今日"):
+def build_fish_7day_chart_html(fish, catches, display_date=None, display_label=None):
     """直近7日間の釣果推移バーチャート（匹数上限）
 
-    最右列は **常に今日** を基準とする（トップページ ZONE B のミニバーと整合）。
-    display_date / display_label は当日が空のときの「最新釣果日ラベル」用に
-    引数として残しているが、days 軸は今日基準で固定する。
+    T19 (2026/05/09): base_date を「今日固定」から「データ最新日 (display_date)」に変更。
+    display_date 未指定時のみ今日基準にフォールバック。
+    HERO subline と最右列ラベルが常に同じデータ日付を指すようにする。
     """
     from datetime import datetime, timedelta
     today = datetime.now(JST).replace(tzinfo=None).date()
-    base_date = today  # 軸は常に今日。display_date は label 切替用にのみ使う
-    days = [(base_date - timedelta(days=i)) for i in range(6, -1, -1)]  # 6日前〜今日
+    base_date = display_date if display_date else today
+    days = [(base_date - timedelta(days=i)) for i in range(6, -1, -1)]  # 6日前〜base_date
     # 日付→最大釣果
     daily_max = {}
     for c in catches:
@@ -4545,13 +4548,10 @@ def build_fish_7day_chart_html(fish, catches, display_date=None, display_label="
         h = max(8, int(v / week_max * 100)) if v > 0 else 4
         cls = "cb today" if d == base_date else ("cb weekend" if d.weekday() >= 5 else "cb")
         bars.append(f'<div class="{cls}" style="height:{h}%"></div>')
-    # ラベル: 最右列は常に「今日」（base_date = 今日固定のため）
+    # ラベル: 最右列は M/D 形式（T19: 「今日」廃止・データ日付明示）
     labels = []
     for d in days:
-        if d == base_date:
-            labels.append('<span>今日</span>')
-        else:
-            labels.append(f"<span>{d.month}/{d.day}</span>")
+        labels.append(f"<span>{d.month}/{d.day}</span>")
     # トレンド（後半3日 vs 前半4日の平均比較）
     first4 = [v for v in values[:4] if v > 0]
     last3  = [v for v in values[4:] if v > 0]
@@ -5959,6 +5959,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
                           and any(f != "不明" for f in (c.get("fish") or [])))
     SPARSE_THRESHOLD = 30
     is_sparse_today = today_with_fish < SPARSE_THRESHOLD
+    # T19 (2026/05/09): hero_label / hero_date を冒頭で確定。
+    # ZONE B ミニバー軸 / fish_others / 概況 / セクション見出し で使用するため。
+    today_str = today_str_local
+    hero_base, hero_label, hero_date = _resolve_display_dataset(catches, today_str)
     try:
         _recent7 = _load_recent_catches_for_index(now, days=7)
     except Exception:
@@ -5980,10 +5984,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 fish_summary.setdefault(f, []).append(c)
     areas = sorted(set(c["area"] for c in catches_for_summary))
     cards = ""
-    # ミニバーグラフ最右列ラベル: 軸が今日基準で固定なので常に「今日」
-    # （以前は当日 sparse 時に fallback 日付（5/1(金)等）を表示し fish page と
-    # 不整合だった）
-    _mini_today_label = "今日"
+    # ミニバーグラフ最右列ラベル: M/D 形式でデータ日付を明示（T19: 「今日」廃止）
+    # .today CSS クラスは土日色分け等の視覚効果のため維持する
 
     def _trend_key(fish):
         tw = get_yoy_data(history, fish, year, week_num)[0]
@@ -6115,7 +6117,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
         trend_tag = f'<div class="trend {v2_trend_cls}">{v2_trend_txt}</div>' if v2_trend_txt else ""
         fb_tag    = f'<div class="fb">{fb_text}</div>' if fb_text else ""
         # ミニバー（7日間）
-        _today = now.date()
+        # T19 (2026/05/09): 軸を hero_date 基準に変更（HERO subline と最右列ラベル整合）
+        try:
+            _today = datetime.strptime(hero_date, "%Y/%m/%d").date() if hero_date else now.date()
+        except Exception:
+            _today = now.date()
         _daily_max = {}
         for c in cs:
             try: _d = datetime.strptime(c["date"], "%Y/%m/%d").date()
@@ -6134,12 +6140,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
                 _cls = " today" if _i == 6 else ""
                 _bar_parts.append(f'<div class="b{_cls}" style="height:{_h}%"></div>')
                 _d = _today - timedelta(days=6 - _i)
-                # R2 (2026/05/06): 中間日も M/D ラベルを出して 7日チャートが
-                # 視覚的に機能するようにする（旧仕様: 両端のみで中5日が空白）
-                if _i == 6:
-                    _label_parts.append(f'<span class="bl today">{_mini_today_label}</span>')
-                else:
-                    _label_parts.append(f'<span class="bl">{_d.month}/{_d.day}</span>')
+                # R2 (2026/05/06): 中間日も M/D ラベル。T19: 最右列も M/D 形式統一
+                _today_cls = " today" if _i == 6 else ""
+                _label_parts.append(f'<span class="bl{_today_cls}">{_d.month}/{_d.day}</span>')
             mini_bars = (
                 f'<div class="bars">{"".join(_bar_parts)}</div>'
                 f'<div class="bar-labels">{"".join(_label_parts)}</div>'
@@ -6236,8 +6239,9 @@ def build_html(catches, crawled_at, history, weather_data=None):
         f'<a href="area/{area_slug(a)}.html">{a}</a>'
         for a in sorted(active_areas)[:12]
     )
-    # V2 概況テキスト
-    overview_html = build_index_overview_text(catches, history, crawled_at)
+    # T19: hero_label / hero_date は冒頭（line 5963 付近）で既に確定済み
+    # V2 概況テキスト（T19: hero_label 渡しでデータ日付を反映）
+    overview_html = build_index_overview_text(catches, history, crawled_at, hero_label=hero_label)
     # V2 ティザー
     teaser_html = build_teaser_rotator_html()
     # R3 (2026/05/06): 今週末の見どころ TOP3
@@ -6284,13 +6288,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
         )
         fish_others_html = (
             f'<div class="fish-others">'
-            f'<div class="fo-title">今日ほかに釣れている魚</div>'
+            f'<div class="fo-title">{hero_label}ほかに釣れている魚</div>'
             f'<div class="fo-list">{other_links}</div>'
             f'</div>'
         )
-    # HERO 数値（当日分があれば当日、なければ最新データ日）
-    today_str = now.strftime("%Y/%m/%d")
-    hero_base, hero_label, hero_date = _resolve_display_dataset(catches, today_str)
+    # HERO 数値（hero_label / hero_base は上で確定済み・T19）
     hero_count = len(hero_base)
     hero_ships = len(set(c["ship"] for c in hero_base))
     hero_areas = len(set(c["area"] for c in hero_base))
@@ -6511,11 +6513,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <!-- TOP COMBOS: R3 今週末の見どころ -->
 {top_combos_html}
 <!-- ZONE B: 釣れている魚 -->
-<h2 class="st">{"直近1週間 釣れている魚" if is_sparse_today else "今日 釣れている魚"} <span class="tag free">無料</span></h2>
+<h2 class="st">{"直近1週間 釣れている魚" if is_sparse_today else f"{hero_label} 釣れている魚"} <span class="tag free">無料</span></h2>
 <div class="fish-grid">{cards}</div>
 {fish_others_html}
 <!-- ZONE B2: エリア別今日の釣果 -->
-<h2 class="st">{"エリア別 直近1週間の釣果" if is_sparse_today else "エリア別 今日の釣果"} <span class="tag free">無料</span></h2>
+<h2 class="st">{"エリア別 直近1週間の釣果" if is_sparse_today else f"エリア別 {hero_label}の釣果"} <span class="tag free">無料</span></h2>
 <div class="area-today">{area_today_html}</div>
 {f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>{risk_grid_html}' if risk_grid_html else ''}
 <!-- TEASER ROTATOR -->
@@ -9843,8 +9845,9 @@ def _ship_calc_sailrate(catches, ship_name, today_dt):
     return sail, cancel, rate
 
 
-def _ship_recent_fish_html(catches, ship_name, today_dt, display_label="今日"):
-    """直近7日 × 上位3魚種の7日推移バーチャート HTML"""
+def _ship_recent_fish_html(catches, ship_name, today_dt, display_label=None):
+    """直近7日 × 上位3魚種の7日推移バーチャート HTML
+    T19: display_label デフォルトを None に変更（内部で M/D 形式を自動算出）"""
     from datetime import timedelta
     from collections import defaultdict
     cutoff = today_dt - timedelta(days=7)
@@ -9882,13 +9885,14 @@ def _ship_recent_fish_html(catches, ship_name, today_dt, display_label="今日")
     out = []
     today_iso = today_dt.strftime("%Y/%m/%d")
     # 過去7日のラベル
+    # T19: バーグラフ最右列も他の列と同じ M/D 形式で統一（連続日付列で曜日省略・A案）
+    # display_label 引数は後方互換のため残置・但し最右列ラベルには使わない
     day_labels = []
     day_keys = []
     for i in range(6, -1, -1):
         d = today_dt - timedelta(days=i)
         day_keys.append(d.strftime("%Y/%m/%d"))
         day_labels.append(d.strftime("%-m/%-d") if os.name != "nt" else d.strftime("%#m/%#d"))
-    day_labels[-1] = display_label
     for fish, _ in top_fish:
         all_cnts = []
         for cnts in fish_daily[fish].values():
@@ -10050,11 +10054,17 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     sail, cancel, rate = _ship_calc_sailrate(catches, name, today_dt)
     primary_fish = _ship_primary_fish_list(catches, name)
     main_points = _ship_main_points(catches, name)
-    # 当日データ有無で最右列ラベルを決定（fish/area ページと同じ方式）
+    # 当日データ有無で最右列ラベル/軸日付を決定（fish/area ページと同じ方式）
+    # T19 (2026/05/09): バーグラフ軸を ship 個別の最新データ日に揃える
     _ship_catches = [c for c in catches if c.get("ship") == name]
     _today_str_s = today_dt.strftime("%Y/%m/%d")
-    _, ship_today_label, _ = _resolve_display_dataset(_ship_catches, _today_str_s)
-    recent_html = _ship_recent_fish_html(catches, name, today_dt, display_label=ship_today_label)
+    _, ship_today_label, _ship_data_date = _resolve_display_dataset(_ship_catches, _today_str_s)
+    try:
+        # T19: today_dt は datetime 型のため _ship_axis_dt も datetime 型で揃える
+        _ship_axis_dt = datetime.strptime(_ship_data_date, "%Y/%m/%d") if _ship_data_date else today_dt
+    except Exception:
+        _ship_axis_dt = today_dt
+    recent_html = _ship_recent_fish_html(catches, name, _ship_axis_dt, display_label=ship_today_label)
     area_rank_html = _ship_area_ranking_html(catches, area, name, today_dt)
 
     # area の slug（パンくず・リンク用）
