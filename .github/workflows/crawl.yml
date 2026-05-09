@@ -14,6 +14,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: install Japanese fonts (x_post PNG 用)
+        # x_post/generate_image.py が Pillow で日本語 PNG を描画する際に必要。
+        # 未インストール時は ImageFont.load_default() (英数字のみ) にフォールバックし
+        # PNG 内の日本語が「□」豆腐化する。
+        run: sudo apt-get install -y fonts-noto-cjk
       - name: discover ships (月1日のみ)
         if: github.event.schedule == '0 7 1 * *'
         run: python3 crawl/discover_ships.py
