@@ -7,13 +7,27 @@ import re
 
 
 def _find_font(root_dir, variant="Regular"):
-    """Noto Sans JP TTF を探す。見つからない場合 None を返す。"""
+    """Noto Sans JP TTF を探す。見つからない場合 None を返す。
+    Windows / Linux / Mac すべて対応のフォールバック順。"""
+    # Windows のメイリオは Bold/Regular が同 ttc 内別 face index で実装されている
+    # truetype(path, size, index=N) で Bold = index 1, Regular = index 0
     candidates = [
+        # 1. リポジトリ同梱（最優先・GitHub Actions 用）
         os.path.join(root_dir, "assets", "fonts", f"NotoSansJP-{variant}.ttf"),
         os.path.join(root_dir, "assets", "fonts", f"NotoSansJP-{variant}.otf"),
-        # システムフォント fallback (Linux/Mac)
-        f"/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        f"/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+        # 2. Windows 標準フォント
+        "C:/Windows/Fonts/meiryo.ttc",
+        "C:/Windows/Fonts/Meiryo.ttc",
+        "C:/Windows/Fonts/YuGothM.ttc",
+        "C:/Windows/Fonts/yugothic.ttf",
+        "C:/Windows/Fonts/msgothic.ttc",
+        # 3. Linux 標準フォント
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        # 4. macOS 標準フォント
+        "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+        "/System/Library/Fonts/Hiragino Sans GB.ttc",
     ]
     for p in candidates:
         if os.path.exists(p):
