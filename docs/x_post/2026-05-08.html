@@ -141,6 +141,13 @@ body {
 }
 .fish-row:last-child { border-bottom: none; }
 .fish-row:nth-child(odd) { background: var(--bg-alt); }
+.fish-row .icon-fallback {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px; line-height: 1;
+  background: var(--bg-alt); border-radius: 50%;
+  border: 1px dashed var(--border);
+}
 .fish-row .icon { width: 32px; height: 32px; object-fit: contain; }
 .fish-row .name { font-weight: 800; color: var(--accent); font-size: 14px; }
 .fish-row .name .badge {
@@ -295,21 +302,21 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="name">アジ<span class="badge">14便</span></div>
         <div class="catch">7〜148匹</div>
         <span class="size">16〜45cm</span>
-        <div class="port">横浜港･新山下・金沢八景</div>
+        <div class="port">小柴港・飯岡港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
         <div class="name">マダイ<span class="badge">14便</span></div>
         <div class="catch">0〜17匹</div>
         <span class="size kg">0.3〜4.8kg</span>
-        <div class="port">金沢八景・日立久慈港</div>
+        <div class="port">飯岡港・日立久慈港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'">
         <div class="name">シロギス<span class="badge">4便</span></div>
         <div class="catch">6〜180匹</div>
         <span class="size">12〜26cm</span>
-        <div class="port">東葛西・浦安</div>
+        <div class="port">金沢八景・東葛西</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/kawahagi/kawahagi_emoji.webp" alt="カワハギ" onerror="this.style.display='none'">
@@ -326,7 +333,7 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="port">横浜港･新山下・浦安</div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/ハナダイ/ハナダイ_emoji.webp" alt="ハナダイ" onerror="this.style.display='none'">
+        <span class="icon-fallback" aria-label="魚アイコン">🐟</span>
         <div class="name">ハナダイ<span class="badge">2便</span></div>
         <div class="catch">1〜15匹</div>
         <span class="size">20〜30cm</span>
@@ -375,7 +382,7 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="port">浦安</div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/イシモチ/イシモチ_emoji.webp" alt="イシモチ" onerror="this.style.display='none'">
+        <span class="icon-fallback" aria-label="魚アイコン">🐟</span>
         <div class="name">イシモチ<span class="badge">1便</span></div>
         <div class="catch">2〜10匹</div>
         <span class="size">24〜36cm</span>
@@ -389,7 +396,7 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="port">長井新宿港</div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/キントキ/キントキ_emoji.webp" alt="キントキ" onerror="this.style.display='none'">
+        <span class="icon-fallback" aria-label="魚アイコン">🐟</span>
         <div class="name">キントキ<span class="badge">1便</span></div>
         <div class="catch">0〜2匹</div>
         <span class="size">35〜40cm</span>
@@ -404,9 +411,9 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
       </div>
     </div>
 <div class="commentary"><p>全体感としては、今日は<b>「アジ・マダイ・シロギス」のシーズン安定組</b>と<b>「カンパチ」の単発大物・好機組</b>に分かれる構成でした。
-<b>アジ</b>は横浜港･新山下・金沢八景エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/konaya-maru.html">こなや丸</a>の148匹</b>は今週の全便でも上位の記録です。
-<b>マダイ</b>は金沢八景・日立久慈港で0〜17匹レンジ。4.8kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
-<b>シロギス</b>は東葛西・浦安の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の180匹</b>は今期トップ級の記録です。
+<b>アジ</b>は小柴港・飯岡港エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/konaya-maru.html">こなや丸</a>の148匹</b>は今週の全便でも上位の記録です。
+<b>マダイ</b>は飯岡港・日立久慈港で0〜17匹レンジ。4.8kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
+<b>シロギス</b>は金沢八景・東葛西の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の180匹</b>は今期トップ級の記録です。
 <b>カワハギ</b>は久比里港で1〜15匹・17〜31cm。底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、本日も複数船宿で安定した釣果が記録されました。
 <b>タチウオ</b>は横浜港･新山下・浦安方面で0〜12匹、サイズは<b>60〜100cm</b>と大型揃い。冬の名残のドラゴン級が春の早朝便で出ているパターンです。
 <b>カンパチ</b>は下田港で1〜3匹レンジ・<b>1.5〜15.64kg</b>。<a href="/ship/ryusei-maru.html">龍正丸</a>が大物記録を出した遠征便で、近海では狙えないサイズ帯です。

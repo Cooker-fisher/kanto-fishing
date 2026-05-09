@@ -158,6 +158,13 @@ body {
 }
 .fish-row:last-child { border-bottom: none; }
 .fish-row:nth-child(odd) { background: var(--bg-alt); }
+.fish-row .icon-fallback {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px; line-height: 1;
+  background: var(--bg-alt); border-radius: 50%;
+  border: 1px dashed var(--border);
+}
 .fish-row .icon { width: 32px; height: 32px; object-fit: contain; }
 .fish-row .name { font-weight: 800; color: var(--accent); font-size: 14px; }
 .fish-row .name .badge {
@@ -260,8 +267,13 @@ def _fish_table_rows_html(fish_rows, depth="../"):
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
         # asset フォルダ名はハイフンなし（例: bishi-aji → bishiaji）
-        romaji = _romaji.get(fish_name, fish_name.lower()).replace("-", "")
-        icon_path = f"{icon_base}{romaji}/{romaji}_emoji.webp"
+        # マップ未登録魚種は emoji フォールバック
+        romaji = _romaji.get(fish_name)
+        if romaji:
+            romaji = romaji.replace("-", "")
+            icon_html = f'<img class="icon" src="{icon_base}{romaji}/{romaji}_emoji.webp" alt="{fish_name}" onerror="this.style.display=\'none\'">'
+        else:
+            icon_html = '<span class="icon-fallback" aria-label="魚アイコン">🐟</span>'
         # M3: 型表示を min-max 形式に（補遺3 遵守）
         if kg_max and kg_max > 0:
             if kg_min and kg_min > 0 and kg_min < kg_max:
@@ -277,7 +289,7 @@ def _fish_table_rows_html(fish_rows, depth="../"):
             size_html = '<span class="size">—</span>'
 
         rows.append(f"""      <div class="fish-row">
-        <img class="icon" src="{icon_path}" alt="{fish_name}" onerror="this.style.display='none'">
+        {icon_html}
         <div class="name">{fish_name}<span class="badge">{n_trips}便</span></div>
         <div class="catch">{cnt_min}〜{cnt_max}匹</div>
         {size_html}
