@@ -41,6 +41,22 @@
 | 10 | `fish/*.html` HERO 統一 | fish-hero 直下が `<h2>`・古い `fh-sub` / `<div class="c">` 無し |
 | 11 | 全 `docs/*/*.html` | ネストアンカー (`<a>...<a>`) 無し |
 | 12 | `area/*.html` 海況セクション | 潮汐が名称（大潮/中潮等）・月相が名称（満月/新月等）・1行コメント有り |
+| 13 | `forecast/index.html` | `<meta name="robots" content="noindex">` 存在（T22-H1 暫定対応・T23 で実コンテンツ化後に解除） |
+| 14 | `ship/*.html` | noindex 付与ページが 1 件以上（T22-H2 が動作している証拠） |
+| 15 | `pages/faq.html` | ファイル存在 + 本文 800 字以上（T22-M1 共通 FAQ 切り出し先） |
+| 16 | `fish/*.html` サンプル | 共通 FAQ 見出し『船釣り共通の基礎知識』が消滅 + `/pages/faq.html` リンク存在（T22-M1） |
+| 17 | `fish_area/*.html` サンプル | intro 冒頭にエリア固有文（位置/県/湾/外房/内房/面し/市/町 のいずれか含む 10 字以上）（T22-H3） |
+| 18 | `sitemap.xml` | `forecast/` URL が含まれない（T22-H1 sitemap 除外） |
+
+### T22 関連の設計契約（H1 noindex 解除手順）
+
+T23（forecast/index.html 実コンテンツ化）完了時に以下をセットで反転する。手順を T23 着手前に必ず確認すること:
+
+1. `crawler.py` `_forecast_page_head()` の `<meta name="robots" content="noindex, follow">` 削除
+2. `build_sitemap()` に forecast/ URL 列挙を追加（現状未収録）
+3. `validate_output.py` 不変条件 13・18 を反転（noindex タグが **存在しない** こと、sitemap に forecast/ が **含まれる** ことを検証）
+4. `REGRESSION_PREVENTION.md` の本テーブル 13・18 を更新
+5. `90_決定ログ.md` に T23 完了記録を追記
 
 ---
 
