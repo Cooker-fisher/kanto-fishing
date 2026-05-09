@@ -218,16 +218,24 @@ def _fish_table_rows_html(fish_rows, depth="../../"):
         cnt_min = row.get("cnt_min", 0)
         cnt_max = row.get("cnt_max", 0)
         kg_max = row.get("kg_max", 0.0)
+        kg_min = row.get("kg_min", 0.0)
         cm_max = row.get("cm_max", 0)
+        cm_min = row.get("cm_min", 0)
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
         romaji = _romaji.get(fish_name, fish_name.lower())
         icon_path = f"{icon_base}{romaji}/{romaji}_icon_sm.png"
-        # 型表示
+        # M3: 型表示を min-max 形式に（補遺3 遵守）
         if kg_max and kg_max > 0:
-            size_html = f'<span class="size kg">{kg_max:.1f}kg</span>'
+            if kg_min and kg_min > 0 and kg_min < kg_max:
+                size_html = f'<span class="size kg">{kg_min:.1f}〜{kg_max:.1f}kg</span>'
+            else:
+                size_html = f'<span class="size kg">最大{kg_max:.1f}kg</span>'
         elif cm_max and cm_max > 0:
-            size_html = f'<span class="size">{cm_max}cm</span>'
+            if cm_min and cm_min > 0 and cm_min < cm_max:
+                size_html = f'<span class="size">{cm_min}〜{cm_max}cm</span>'
+            else:
+                size_html = f'<span class="size">最大{cm_max}cm</span>'
         else:
             size_html = '<span class="size">—</span>'
 
@@ -290,7 +298,9 @@ def _umi_cards_html(ctx):
     n_ships = ctx.get("n_ships", 0)
     n_cancellations = ctx.get("n_cancellations", 0)
     ship_rate = f"{int((n_ships - n_cancellations) / max(n_ships, 1) * 100)}%"
-    warn_cls = " warn" if n_cancellations > 0 else ""
+    # C5: warn クラスは出船率 < 0.7（欠航 > 30%）のときのみ
+    _ship_rate_val = (n_ships - n_cancellations) / max(n_ships, 1)
+    warn_cls = " warn" if _ship_rate_val < 0.7 else ""
     sst_str = f"+{sst_anom:.1f}℃" if sst_anom >= 0 else f"{sst_anom:.1f}℃"
 
     return f"""    <div class="umi-grid">
@@ -403,10 +413,14 @@ def build(ctx, commentary_html, output_path, png_url=None):
     # X カードテーブル
     x_table_rows = _x_card_table_rows_html(fish_rows)
 
-    # 大物ラベル
+    # 大物ラベル（C3: kg_min〜kg_max 表記に統一）
+    top_kg_min = ctx.get("top_kg_min", 0.0)
     kg_label = ""
     if top_kg_max > 0:
-        kg_label = f'<span class="stat"><b>{top_kg_max:.2f}</b>kg 大物記録</span>'
+        if top_kg_min and top_kg_min > 0 and top_kg_min < top_kg_max:
+            kg_label = f'<span class="stat"><b>{top_kg_min:.1f}〜{top_kg_max:.2f}</b>kg 大物記録</span>'
+        else:
+            kg_label = f'<span class="stat">最大<b>{top_kg_max:.2f}</b>kg 大物記録</span>'
 
     html = f"""<!DOCTYPE html>
 <html lang="ja">
@@ -472,7 +486,7 @@ def build(ctx, commentary_html, output_path, png_url=None):
   <section class="sec">
     <h2><span class="num">3</span>魚種別 釣果報告</h2>
     <p class="lead">
-      件数の多い順に最大10魚種。便数と釣果レンジ（{top_cnt_max}匹台まで）・型・主な港。
+      本日の全{n_fish_species}魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
     </p>
     <div class="fish-list">
 {fish_rows_html}
@@ -481,6 +495,7 @@ def build(ctx, commentary_html, output_path, png_url=None):
 
   <section class="sec">
     <h2><span class="num">4</span>X 投稿画像プレビュー</h2>
+    <p class="x-image-intro">毎日17時頃、X（旧 Twitter）に @funatsuri_yoso から投稿している釣果まとめ画像です。</p>
     <div class="x-image-wrap">
       <div class="x-image-label">この日の釣果まとめ画像（funatsuri-yoso.com）</div>
       <div class="x-card">

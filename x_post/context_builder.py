@@ -390,10 +390,17 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
                 "cnt_min": d["cnt_min"],
                 "cnt_max": d["cnt_max"],
                 "kg_max": d["kg_max"],
+                "kg_min": d["kg_min"],   # M3: kg min-max 表記用
                 "cm_max": d["cm_max"],
+                "cm_min": d["cm_min"],   # M3: cm min-max 表記用
                 "top_port": d["top_areas"],
                 "n_trips": d["n"],
             })
+
+    # C4修正: top_cnt_min を全便 min に統一（hl-card と fish-list で同一値）
+    # top_cnt_data["cnt_min"] は最多便のみの min なので、全便 min を再集計
+    _top_cnt_all_data = _fish_data(top_cnt_fish) if top_cnt_fish else None
+    _top_cnt_min_unified = (_top_cnt_all_data or {}).get("cnt_min", 0)
 
     # 先週比文字列
     wow_pct_top_cnt = wow_pct.get(top_cnt_fish, 1.0)
@@ -532,10 +539,10 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         "season_ratio_top_kg": season_ratio_top_kg,
         "kg_threshold": kg_threshold,
         "ship_specialty": ship_specialty,
-        # top_cnt
+        # top_cnt（C4: cnt_min は全便 min に統一）
         "top_cnt_fish": (top_cnt_data or {}).get("fish", ""),
         "top_cnt_max": (top_cnt_data or {}).get("cnt_max", 0),
-        "top_cnt_min": (top_cnt_data or {}).get("cnt_min", 0),
+        "top_cnt_min": _top_cnt_min_unified,  # 全便 min（hl-card と fish-list で同値）
         "top_cnt_ship": (top_cnt_data or {}).get("ship", ""),
         "top_cnt_port": (top_cnt_data or {}).get("port", ""),
         "wow_pct_top_cnt": wow_pct_top_cnt,

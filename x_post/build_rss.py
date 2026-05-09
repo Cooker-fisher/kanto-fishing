@@ -33,7 +33,7 @@ _ITEM_TEMPLATE = """\
       <pubDate>{pub_date}</pubDate>
       <guid isPermaLink="true">{link}</guid>
       <media:content url="{png_url}" medium="image" width="800" height="500"/>
-      <enclosure url="{png_url}" length="0" type="image/png"/>
+      <enclosure url="{png_url}" length="{png_size}" type="image/png"/>
     </item>"""
 
 
@@ -90,6 +90,17 @@ def build(ctx, png_url, daily_url, output_path, existing_feed_path=None):
     pub_date = _rfc822(now_jst)
     last_build_date = _rfc822(now_jst)
 
+    # PNG ファイルサイズ取得（実ファイルがあればその bytes、なければ 0）
+    # PNG は output_path の隣の x_post/ サブディレクトリに存在する
+    # 例: output_path=docs/feed.xml → docs/x_post/{date}.png
+    png_size = 0
+    _date_part = ctx.get("date_iso", "")
+    if _date_part:
+        _docs_dir = os.path.dirname(output_path)  # "docs"
+        _png_local = os.path.join(_docs_dir, "x_post", f"{_date_part}.png")
+        if os.path.exists(_png_local):
+            png_size = os.path.getsize(_png_local)
+
     # 新規 item
     new_item = _ITEM_TEMPLATE.format(
         title=xml_escape(title),
@@ -97,6 +108,7 @@ def build(ctx, png_url, daily_url, output_path, existing_feed_path=None):
         description=xml_escape(description),
         pub_date=pub_date,
         png_url=xml_escape(png_url),
+        png_size=png_size,
     )
 
     # 既存 feed から過去 item を読み込み（最大29件 = 合計30件）

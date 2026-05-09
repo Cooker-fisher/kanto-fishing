@@ -514,23 +514,11 @@ S_TEMPLATES = [
     {
         "id": "S20",
         "priority": 20,
-        "conds": [
-            ("consecutive_calm_days", ">=", 3),
-        ],
+        "conds": [],  # フォールバック（全条件不一致時に必ず選択）
         "text": (
             "{consecutive_calm_days}日連続の安定凪で、各船宿とも余裕を持った運航。"
             "{stable_calm_top_fish}は数日間の好海況で食いが上向き、本日も好実績が出ています。"
             "未経験者・家族連れの釣行にも適した時期です。"
-        ),
-    },
-    # 最終フォールバック（S_TEMPLATES の最後は常にこれ）
-    {
-        "id": "S_fallback",
-        "priority": 99,
-        "conds": [],
-        "text": (
-            "本日の海況は{tide_type}で、関東各港からの出船報告が{n_ships}船宿から届きました。"
-            "詳細は funatsuri-yoso.com をご参照ください。"
         ),
     },
 ]

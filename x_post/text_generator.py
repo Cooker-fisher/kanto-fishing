@@ -1,7 +1,61 @@
 # text_generator.py — 文型 → f-string 展開して散文 HTML 生成
 # 補遺3 最終ガード: 出力テキストに「平均」「avg」「ave」が含まれないことを assert
 
+import json
+import os
 import re
+
+# ship_romaji_map.json をモジュールレベルでキャッシュ
+_SHIP_ROMAJI: dict = {}
+_SHIP_ROMAJI_LOADED = False
+
+
+def _load_ship_romaji() -> dict:
+    """normalize/ship_romaji_map.json を読み込んでキャッシュ（M5）"""
+    global _SHIP_ROMAJI, _SHIP_ROMAJI_LOADED
+    if not _SHIP_ROMAJI_LOADED:
+        _this_dir = os.path.dirname(os.path.abspath(__file__))
+        _root_dir = os.path.dirname(_this_dir)
+        _path = os.path.join(_root_dir, "normalize", "ship_romaji_map.json")
+        try:
+            with open(_path, encoding="utf-8") as f:
+                _SHIP_ROMAJI = json.load(f)
+        except Exception:
+            _SHIP_ROMAJI = {}
+        _SHIP_ROMAJI_LOADED = True
+    return _SHIP_ROMAJI
+
+
+def _linkify_ship_names(text: str) -> str:
+    """
+    散文 HTML 内の船宿名を <a href="/ship/{romaji}.html"> に変換する（M5）。
+    - ship_romaji_map.json に登録済みの船宿名のみリンク化
+    - 未登録船宿はプレーンテキストのまま（404 防止）
+    - HTML タグ内は変換しない（属性値への混入防止）
+    - 長い名前を先に処理（部分一致による誤変換防止）
+    """
+    romaji_map = _load_ship_romaji()
+    if not romaji_map:
+        return text
+
+    # 長さ降順でソート（部分一致誤変換防止）
+    sorted_ships = sorted(romaji_map.items(), key=lambda x: len(x[0]), reverse=True)
+
+    # HTML タグと非タグ部分に分割して処理（タグ内は変換しない）
+    parts = re.split(r"(<[^>]+>)", text)
+    result = []
+    for part in parts:
+        if part.startswith("<"):
+            result.append(part)  # タグ部分はそのまま
+        else:
+            for ship_name, romaji in sorted_ships:
+                if ship_name in part:
+                    part = part.replace(
+                        ship_name,
+                        f'<a href="/ship/{romaji}.html">{ship_name}</a>'
+                    )
+            result.append(part)
+    return "".join(result)
 
 
 def _safe_format(template_text, ctx):
@@ -86,6 +140,9 @@ def build_commentary_html(hl_text, ocean_text, fish_texts, ctx):
     html_parts.append("</div>")
 
     full_text = "\n".join(html_parts)
+
+    # M5: commentary 内の船宿名をリンク化
+    full_text = _linkify_ship_names(full_text)
 
     # 補遺3 最終ガード
     # HTML タグを除去して純テキストで確認
