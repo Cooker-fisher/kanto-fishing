@@ -8126,8 +8126,10 @@ def _fa_catches_stats(fa_catches):
     return n, round(med, 1), int(maxes[-1]), int(p25), int(p75), max_boat
 
 
-def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar):
-    """fish_area 説明文（200字以上・自サイトデータのみ）"""
+def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_description=None):
+    """fish_area 説明文（200字以上・自サイトデータのみ）
+    H3 (T22): area_description を渡すとエリア固有の1文を冒頭に差し込む。
+    """
     N = len(fa_catches)
     n_personal, avg_med, max_val, p25, p75, max_boat = _fa_catches_stats(fa_catches)
 
@@ -8150,8 +8152,22 @@ def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar):
         y0, y1 = dates[0][:4], dates[-1][:4]
         years_str = f"（{y0}年〜{y1}年）" if y0 != y1 else f"（{y0}年）"
 
+    # H3 (T22): area_description.json からエリア固有の1文を抽出して冒頭に差し込む
+    area_intro = ""
+    if area_description and isinstance(area_description, dict):
+        desc_entry = area_description.get(area) or area_description.get(area + "港") or {}
+        desc_full = desc_entry.get("description", "") if isinstance(desc_entry, dict) else ""
+        if desc_full:
+            first_para = desc_full.split("\n\n")[0]
+            first_sentence = first_para.split("。")[0] + "。" if first_para else ""
+            if len(first_sentence) >= 20:
+                area_intro = first_sentence
+
     total_ships = len(ship_counts)
-    lines = [f"{area}での{fish}の釣果データは{N}件記録されています{years_str}。"]
+    lines = []
+    if area_intro:
+        lines.append(area_intro)
+    lines.append(f"{area}での{fish}の釣果データは{N}件記録されています{years_str}。")
     if peak_label:
         lines.append(f"月別の集計では{peak_label}前後に釣果が集中する傾向があります。")
     if n_personal >= 5:
@@ -8275,6 +8291,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     os.makedirs(os.path.join(WEB_DIR, "fish_area"), exist_ok=True)
     if decadal_calendar is None:
         decadal_calendar = load_decadal_calendar()
+    # H3 (T22): area_description.json をロード（エリア固有1文をイントロに差し込む）
+    _area_desc_fa = load_area_description()
     # 年間シーズンバーを実データで生成するため過去CSVを一度だけロード
     _hist_rows_for_fa = _load_historical_catches()
     fa_summary: dict = {}
@@ -8415,7 +8433,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 f'</div>'
             )
         # 説明文 + FAQ（AdSense コンテンツ充実）
-        fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar)
+        # H3 (T22): area_description を渡してエリア固有1文を冒頭に差し込む
+        fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar, area_description=_area_desc_fa)
         fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, catches, decadal_calendar)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
