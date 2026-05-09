@@ -21,18 +21,79 @@ from x_post.build_rss import build as build_rss
 from x_post.generate_image import create as create_image
 
 
+def _load_day_catches_from_csv(root_dir, date_str):
+    """data/V2/{ym}.csv から指定日のレコードを catches.json と同形式（dict list）で返す"""
+    import csv as _csv
+    from datetime import datetime as _dt
+    dt = _dt.strptime(date_str, "%Y-%m-%d")
+    ym = dt.strftime("%Y-%m")
+    date_slash = dt.strftime("%Y/%m/%d")
+    csv_path = os.path.join(root_dir, "data", "V2", f"{ym}.csv")
+    if not os.path.exists(csv_path):
+        return []
+    rows = []
+    with open(csv_path, encoding="utf-8") as f:
+        reader = _csv.DictReader(f)
+        for r in reader:
+            if r.get("date") != date_slash:
+                continue
+            if r.get("is_cancellation") == "1":
+                continue
+            tsuri = (r.get("tsuri_mono") or "").strip()
+            fish_list = [tsuri] if tsuri and tsuri != "不明" else []
+            def _i(k):
+                v = r.get(k, "").strip()
+                try:
+                    return int(float(v)) if v else None
+                except (ValueError, TypeError):
+                    return None
+            def _f(k):
+                v = r.get(k, "").strip()
+                try:
+                    return float(v) if v else None
+                except (ValueError, TypeError):
+                    return None
+            cnt_min = _i("cnt_min")
+            cnt_max = _i("cnt_max")
+            sz_min = _i("size_min")
+            sz_max = _i("size_max")
+            kg_min = _f("kg_min")
+            kg_max = _f("kg_max")
+            rec = {
+                "ship": r.get("ship", ""),
+                "area": r.get("area", ""),
+                "date": r.get("date", ""),
+                "fish": fish_list,
+                "count_range": {
+                    "min": cnt_min if cnt_min is not None else 0,
+                    "max": cnt_max if cnt_max is not None else 0,
+                    "is_boat": r.get("is_boat") == "1",
+                },
+                "size_cm": ({"min": sz_min, "max": sz_max}
+                            if (sz_min is not None or sz_max is not None) else {}),
+                "weight_kg": ({"min": kg_min, "max": kg_max}
+                              if (kg_min is not None or kg_max is not None) else {}),
+                "trip_no": r.get("trip_no", ""),
+                "point_place": r.get("point_place1", ""),
+                "kanso_raw": r.get("kanso_raw", ""),
+            }
+            rows.append(rec)
+    return rows
+
+
 def _load_catches(root_dir, date_str):
-    """catches.json を読み込み、指定日 or 全データを返す"""
+    """指定日のレコードを返す。CSV を優先（過去日対応）、なければ catches.json (当日のみ)"""
+    csv_rows = _load_day_catches_from_csv(root_dir, date_str)
+    if csv_rows:
+        return csv_rows
+    # フォールバック: catches.json (当日スナップショット)
     path = os.path.join(root_dir, "catches.json")
     with open(path, encoding="utf-8") as f:
         snap = json.load(f)
     data = snap.get("data", snap) if isinstance(snap, dict) else snap
-    # 指定日付でフィルタ
-    date_slash = date_str.replace("-", "/")  # 2026/05/08
-    day_data = [c for c in data if c.get("date", "").startswith(date_slash[:7])]
-    # 完全一致があればそちらを優先
+    date_slash = date_str.replace("-", "/")
     exact = [c for c in data if c.get("date") == date_slash]
-    return exact if exact else day_data
+    return exact
 
 
 def _load_history(root_dir):
