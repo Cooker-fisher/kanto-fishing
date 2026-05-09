@@ -552,9 +552,6 @@ def build(ctx, commentary_html, output_path, png_url=None):
   <section class="sec">
     <h2><span class="num">2</span>海況レポート</h2>
 {sea_grid}
-    <p class="lead" style="margin-top:10px">
-      詳細な予報・長期見通しは<a href="/forecast/index.html">予報ページ</a>をご参照ください。
-    </p>
   </section>
 
   <section class="sec">

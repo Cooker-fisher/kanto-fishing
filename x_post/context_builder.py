@@ -6,6 +6,7 @@ import os
 import json
 import sqlite3
 from datetime import datetime, timedelta, timezone
+from urllib.request import urlopen, Request
 
 # JST 定義（crawler.py と同じ方式）
 JST = timezone(timedelta(hours=9))
@@ -220,6 +221,78 @@ def _load_pressure_from_cache(root_dir, date_str, lat_range=(35.1, 35.5), lon_ra
     return None
 
 
+# Open-Meteo API 代表座標（内海・外海）
+_INNER_LAT, _INNER_LON = 35.3, 139.7   # 神奈川・東京湾
+_OUTER_LAT, _OUTER_LON = 35.3, 140.6   # 千葉・外房
+
+_OM_USER_AGENT = "funatsuri-yoso.com/context_builder"
+
+
+def _fetch_wx_for_date(lat, lon, date_str):
+    """Open-Meteo Marine + Forecast API から当日の海況値を取得。
+    戻り値: {wave, sst, wind_spd, wind_dir, pressure} 取得失敗時は空 dict。
+    """
+    # Marine API: 波高・SST
+    marine_url = (
+        f"https://marine-api.open-meteo.com/v1/marine"
+        f"?latitude={lat}&longitude={lon}"
+        f"&hourly=wave_height,sea_surface_temperature"
+        f"&start_date={date_str}&end_date={date_str}"
+        f"&timezone=Asia/Tokyo"
+    )
+    # Forecast API: 風速・風向・気圧
+    wind_url = (
+        f"https://api.open-meteo.com/v1/forecast"
+        f"?latitude={lat}&longitude={lon}"
+        f"&hourly=wind_speed_10m,wind_direction_10m,surface_pressure"
+        f"&start_date={date_str}&end_date={date_str}"
+        f"&timezone=Asia/Tokyo&wind_speed_unit=ms"
+    )
+    result = {}
+    try:
+        # Marine
+        req = Request(marine_url, headers={"User-Agent": _OM_USER_AGENT})
+        with urlopen(req, timeout=12) as r:
+            mdata = json.loads(r.read())
+        hourly = mdata.get("hourly", {})
+        times  = hourly.get("time", [])
+        wave_vals, sst_vals = [], []
+        for i, t in enumerate(times):
+            hour = int(t.split("T")[1].split(":")[0])
+            if 6 <= hour <= 15:
+                v = hourly.get("wave_height", [None]*(i+1))[i]
+                s = hourly.get("sea_surface_temperature", [None]*(i+1))[i]
+                if v is not None: wave_vals.append(v)
+                if s is not None: sst_vals.append(s)
+        if wave_vals: result["wave"] = round(sum(wave_vals)/len(wave_vals), 1)
+        if sst_vals:  result["sst"]  = round(sum(sst_vals)/len(sst_vals), 1)
+    except Exception:
+        pass
+    try:
+        # Wind + Pressure
+        req = Request(wind_url, headers={"User-Agent": _OM_USER_AGENT})
+        with urlopen(req, timeout=12) as r:
+            wdata = json.loads(r.read())
+        hourly = wdata.get("hourly", {})
+        times  = hourly.get("time", [])
+        ws_vals, wd_vals, sp_vals = [], [], []
+        for i, t in enumerate(times):
+            hour = int(t.split("T")[1].split(":")[0])
+            if 6 <= hour <= 15:
+                ws = hourly.get("wind_speed_10m",    [None]*(i+1))[i]
+                wd = hourly.get("wind_direction_10m", [None]*(i+1))[i]
+                sp = hourly.get("surface_pressure",  [None]*(i+1))[i]
+                if ws is not None: ws_vals.append(ws)
+                if wd is not None: wd_vals.append(wd)
+                if sp is not None: sp_vals.append(sp)
+        if ws_vals: result["wind_spd"] = round(sum(ws_vals)/len(ws_vals), 1)
+        if wd_vals: result["wind_dir"] = _wind_dir_label(round(sum(wd_vals)/len(wd_vals)))
+        if sp_vals: result["pressure"] = round(sum(sp_vals)/len(sp_vals), 0)
+    except Exception:
+        pass
+    return result
+
+
 def build_context(valid_catches, history, analysis_db, date_str, weather_dir=None):
     """
     ctx 辞書を組み立てる。
@@ -368,6 +441,13 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
 
     # 海況データ（内海・外海 2 セット）
     inner_wx, outer_wx, all_wx = _parse_weather_csv_split(weather_dir, date_str)
+    # CSV 不在時は Open-Meteo Forecast API にフォールバック
+    if not inner_wx:
+        inner_wx = _fetch_wx_for_date(_INNER_LAT, _INNER_LON, date_str)
+    if not outer_wx:
+        outer_wx = _fetch_wx_for_date(_OUTER_LAT, _OUTER_LON, date_str)
+    if not all_wx:
+        all_wx = inner_wx  # 後方互換用スカラーは内海代表で代替
     # 後方互換用スカラー（テンプレート変数 max_wind 等を維持）
     wave_inner     = inner_wx.get("wave",     all_wx.get("wave",     1.0))
     max_wind       = all_wx.get("wind_spd",   5.0)
@@ -379,11 +459,16 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     sst_norm = {1: 15, 2: 14, 3: 15, 4: 16, 5: 17, 6: 19, 7: 22, 8: 24,
                 9: 23, 10: 21, 11: 18, 12: 16}
     sst_anom = round(sst_mean - sst_norm.get(dt.month, 17), 1)
-    # 気圧: weather_cache.sqlite から取得（内海: 東京湾 / 外海: 外房沖相当）
-    pressure_inner = _load_pressure_from_cache(
-        _root_dir, date_str, lat_range=(35.1, 35.5), lon_range=(139.6, 140.0))
-    pressure_outer = _load_pressure_from_cache(
-        _root_dir, date_str, lat_range=(34.5, 35.1), lon_range=(138.8, 140.2))
+    # 気圧: Open-Meteo フォールバック時は inner_wx/outer_wx に pressure が入っている
+    # weather_cache.sqlite からの取得も試みる（より精度が高い場合に上書き）
+    pressure_inner = (
+        _load_pressure_from_cache(_root_dir, date_str, lat_range=(35.1, 35.5), lon_range=(139.6, 140.0))
+        or inner_wx.get("pressure")
+    )
+    pressure_outer = (
+        _load_pressure_from_cache(_root_dir, date_str, lat_range=(34.5, 35.1), lon_range=(138.8, 140.2))
+        or outer_wx.get("pressure")
+    )
     pressure_hpa = pressure_inner  # 後方互換
     # 内海 / 外海の sea_data dict（build_daily_page で使用）
     inner_sea_data = {
