@@ -3151,6 +3151,10 @@ _AREA_ROMAJI = load_area_romaji()
 _SHIP_ROMAJI = load_ship_romaji()
 _SHIP_INFO = load_ship_info()
 
+# H2 (T22): 空ページ（noindex 対象）の romaji_slug を蓄積するセット
+# _ship_build_page_html() が書き込み、build_sitemap() が参照して URL 除外に使う
+_SHIP_NOINDEX_SLUGS: set = set()
+
 def fish_slug(fish: str) -> str:
     """魚種名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _FISH_ROMAJI.get(fish, fish)
@@ -10099,6 +10103,21 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     recent_html = _ship_recent_fish_html(catches, name, _ship_axis_dt, display_label=ship_today_label)
     area_rank_html = _ship_area_ranking_html(catches, area, name, today_dt)
 
+    # H2 (T22): 空ページ判定 — 以下 OR 条件のいずれかで noindex 付与
+    # 条件1: 直近7日データなし（_ship_recent_fish_html が該当テキストを返す）
+    # 条件2: _SHIP_INFO 未登録（住所・電話・基本情報が全欠如）
+    has_recent_data = "直近7日のデータがありません" not in recent_html
+    has_ship_info = name in _SHIP_INFO
+    is_empty_ship_page = (not has_recent_data) or (not has_ship_info)
+    ship_noindex_tag = (
+        '<meta name="robots" content="noindex, follow">'
+        if is_empty_ship_page
+        else ""
+    )
+    # sitemap 除外用にスラグをモジュールセットに蓄積
+    if is_empty_ship_page and slug:
+        _SHIP_NOINDEX_SLUGS.add(slug)
+
     # area の slug（パンくず・リンク用）
     area_slug_str = area_slug(area)
 
@@ -10318,6 +10337,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{ship_noindex_tag}
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{page_url}">
@@ -10483,9 +10503,11 @@ def build_sitemap(data):
         if cnt >= 5:
             urls.append((f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html", "0.7", "weekly"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
+    # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
     for s in SHIPS:
-        if s.get("romaji_slug") and s["name"] in _SHIP_INFO:
-            urls.append((f"{SITE_URL}/ship/{s['romaji_slug']}.html", "0.6", "weekly"))
+        slug_s = s.get("romaji_slug")
+        if slug_s and s["name"] in _SHIP_INFO and slug_s not in _SHIP_NOINDEX_SLUGS:
+            urls.append((f"{SITE_URL}/ship/{slug_s}.html", "0.6", "weekly"))
     # premium/plan.html（静的・月次更新）
     urls.append((f"{SITE_URL}/premium/plan.html", "0.7", "monthly"))
     entries = "\n".join(
