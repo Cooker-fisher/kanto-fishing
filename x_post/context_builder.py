@@ -321,6 +321,19 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     season_label = _DECADE_LABELS.get(decade_no, f"{dt.month}月")
     is_weekend_eve = weekdays_en[wd_idx] in ("friday", "thursday")
 
+    # 前日・翌日（ナビ用）
+    from datetime import timedelta as _td
+    prev_dt = dt - _td(days=1)
+    next_dt = dt + _td(days=1)
+    prev_date_iso = prev_dt.strftime("%Y-%m-%d")
+    next_date_iso = next_dt.strftime("%Y-%m-%d")
+    prev_date_label = f"{prev_dt.month}/{prev_dt.day}({weekdays_jp[prev_dt.weekday()]})"
+    next_date_label = f"{next_dt.month}/{next_dt.day}({weekdays_jp[next_dt.weekday()]})"
+    # 該当 HTML が存在するかで「リンク有効」フラグを立てる
+    _x_post_dir = os.path.join(_root_dir, "docs", "x_post")
+    prev_exists = os.path.exists(os.path.join(_x_post_dir, f"{prev_date_iso}.html"))
+    next_exists = os.path.exists(os.path.join(_x_post_dir, f"{next_date_iso}.html"))
+
     # 潮汐
     tide_info = _load_tide_moon(tide_db, date_str)
 
@@ -718,6 +731,12 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         "date_label": date_label,
         "date_iso": date_str,
         "season_label": season_label,
+        "prev_date_iso": prev_date_iso,
+        "prev_date_label": prev_date_label,
+        "prev_exists": prev_exists,
+        "next_date_iso": next_date_iso,
+        "next_date_label": next_date_label,
+        "next_exists": next_exists,
         "decade_no": decade_no,
         "weekday": weekdays_en[wd_idx],
         "weekday_jp": weekdays_jp[wd_idx] + "曜日",

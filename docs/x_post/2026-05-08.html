@@ -158,6 +158,14 @@ body {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
+.day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
+.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; }
+.day-nav a { color: var(--port); font-weight: 700; }
+.day-nav a:hover { background: var(--cta-soft); border-color: var(--cta); color: var(--cta); }
+.day-nav .prev { text-align: left; }
+.day-nav .next { text-align: right; }
+.day-nav .disabled { color: #aab4bf; cursor: default; }
+.day-nav small { display: block; font-size: 10px; color: var(--sub); margin-bottom: 2px; font-weight: normal; }
 .commentary { margin-top: 12px; font-size: 14px; line-height: 1.85; color: var(--text); }
 .commentary b { color: var(--accent); }
 .commentary .highlight { color: var(--cta); font-weight: 700; }
@@ -287,21 +295,21 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="name">アジ<span class="badge">14便</span></div>
         <div class="catch">7〜148匹</div>
         <span class="size">16〜45cm</span>
-        <div class="port">飯岡港・小柴港</div>
+        <div class="port">横浜港･新山下・金沢八景</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
         <div class="name">マダイ<span class="badge">14便</span></div>
         <div class="catch">0〜17匹</div>
         <span class="size kg">0.3〜4.8kg</span>
-        <div class="port">御前崎港・日立久慈港</div>
+        <div class="port">金沢八景・日立久慈港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'">
         <div class="name">シロギス<span class="badge">4便</span></div>
         <div class="catch">6〜180匹</div>
         <span class="size">12〜26cm</span>
-        <div class="port">東葛西・横浜本牧港</div>
+        <div class="port">東葛西・浦安</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/kawahagi/kawahagi_emoji.webp" alt="カワハギ" onerror="this.style.display='none'">
@@ -396,9 +404,9 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
       </div>
     </div>
 <div class="commentary"><p>全体感としては、今日は<b>「アジ・マダイ・シロギス」のシーズン安定組</b>と<b>「カンパチ」の単発大物・好機組</b>に分かれる構成でした。
-<b>アジ</b>は飯岡港・小柴港エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/konaya-maru.html">こなや丸</a>の148匹</b>は今週の全便でも上位の記録です。
-<b>マダイ</b>は御前崎港・日立久慈港で0〜17匹レンジ。4.8kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
-<b>シロギス</b>は東葛西・横浜本牧港の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の180匹</b>は今期トップ級の記録です。
+<b>アジ</b>は横浜港･新山下・金沢八景エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/konaya-maru.html">こなや丸</a>の148匹</b>は今週の全便でも上位の記録です。
+<b>マダイ</b>は金沢八景・日立久慈港で0〜17匹レンジ。4.8kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
+<b>シロギス</b>は東葛西・浦安の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の180匹</b>は今期トップ級の記録です。
 <b>カワハギ</b>は久比里港で1〜15匹・17〜31cm。底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、本日も複数船宿で安定した釣果が記録されました。
 <b>タチウオ</b>は横浜港･新山下・浦安方面で0〜12匹、サイズは<b>60〜100cm</b>と大型揃い。冬の名残のドラゴン級が春の早朝便で出ているパターンです。
 <b>カンパチ</b>は下田港で1〜3匹レンジ・<b>1.5〜15.64kg</b>。<a href="/ship/ryusei-maru.html">龍正丸</a>が大物記録を出した遠征便で、近海では狙えないサイズ帯です。
@@ -407,6 +415,8 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 <b>スルメイカ</b>は長井新宿港方面で0〜8匹。ローテーション釣行に組み込みやすい魚種です。
 全16魚種が顔を揃えた幅広い釣果構成。アジ・マダイ・シロギスが三本柱として件数を稼ぎ、カワハギ・タチウオ・ハナダイも少数ながら確実に記録されています。同日に複数魚種を狙えるため、釣行の自由度が高いタイミングと言えます。</p></div>
   </section>
+
+<div class="day-nav"><span class="prev disabled"><small>← 前日</small>5/7(木)（記録なし）</span><a class="next" href="./2026-05-09.html"><small>翌日 →</small>5/9(土) の釣果まとめ</a></div>
 
   <div class="related">
     <h3>関連ページ</h3>

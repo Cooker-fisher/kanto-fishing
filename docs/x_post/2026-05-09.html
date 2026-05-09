@@ -158,6 +158,14 @@ body {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
+.day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
+.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; }
+.day-nav a { color: var(--port); font-weight: 700; }
+.day-nav a:hover { background: var(--cta-soft); border-color: var(--cta); color: var(--cta); }
+.day-nav .prev { text-align: left; }
+.day-nav .next { text-align: right; }
+.day-nav .disabled { color: #aab4bf; cursor: default; }
+.day-nav small { display: block; font-size: 10px; color: var(--sub); margin-bottom: 2px; font-weight: normal; }
 .commentary { margin-top: 12px; font-size: 14px; line-height: 1.85; color: var(--text); }
 .commentary b { color: var(--accent); }
 .commentary .highlight { color: var(--cta); font-weight: 700; }
@@ -287,98 +295,98 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="name">アジ<span class="badge">23便</span></div>
         <div class="catch">2〜130匹</div>
         <span class="size">16〜45cm</span>
-        <div class="port">浦安・久比里港</div>
+        <div class="port">茅ヶ崎港・日立久慈港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
         <div class="name">マダイ<span class="badge">11便</span></div>
         <div class="catch">0〜9匹</div>
         <span class="size kg">0.3〜7.2kg</span>
-        <div class="port">金谷港・大原港</div>
+        <div class="port">日立久慈港・金谷港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'">
         <div class="name">シロギス<span class="badge">10便</span></div>
         <div class="catch">2〜148匹</div>
         <span class="size">5〜23cm</span>
-        <div class="port">浦安・久比里港</div>
+        <div class="port">由比・東葛西</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/maruika/maruika_emoji.webp" alt="マルイカ" onerror="this.style.display='none'">
         <div class="name">マルイカ<span class="badge">8便</span></div>
         <div class="catch">0〜90匹</div>
         <span class="size">13〜40cm</span>
-        <div class="port">久比里港・長井漆山港</div>
+        <div class="port">長井漆山港・久比里港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/isaki/isaki_emoji.webp" alt="イサキ" onerror="this.style.display='none'">
         <div class="name">イサキ<span class="badge">5便</span></div>
         <div class="catch">0〜50匹</div>
         <span class="size">23〜36cm</span>
-        <div class="port">片貝港・大原港</div>
+        <div class="port">大原港・片貝港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/kasago/kasago_emoji.webp" alt="カサゴ" onerror="this.style.display='none'">
         <div class="name">カサゴ<span class="badge">4便</span></div>
         <div class="catch">0〜65匹</div>
         <span class="size">13〜28cm</span>
-        <div class="port">浦安・久比里港</div>
+        <div class="port">大原港・金沢八景</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/tachiuo/tachiuo_emoji.webp" alt="タチウオ" onerror="this.style.display='none'">
         <div class="name">タチウオ<span class="badge">4便</span></div>
         <div class="catch">0〜17匹</div>
         <span class="size">60〜105cm</span>
-        <div class="port">横浜港･新山下・小柴港</div>
+        <div class="port">鴨居大室港・横浜港･新山下</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/kawahagi/kawahagi_emoji.webp" alt="カワハギ" onerror="this.style.display='none'">
         <div class="name">カワハギ<span class="badge">3便</span></div>
         <div class="catch">0〜29匹</div>
         <span class="size">5〜32cm</span>
-        <div class="port">長井港・久比里港</div>
+        <div class="port">久比里港・長井港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/mahata/mahata_emoji.webp" alt="マハタ" onerror="this.style.display='none'">
         <div class="name">マハタ<span class="badge">3便</span></div>
         <div class="catch">0〜3匹</div>
         <span class="size kg">0.8〜2.7kg</span>
-        <div class="port">金谷港・大原港</div>
+        <div class="port">大原港・金谷港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/bishiaji/bishiaji_emoji.webp" alt="ビシアジ" onerror="this.style.display='none'">
         <div class="name">ビシアジ<span class="badge">3便</span></div>
         <div class="catch">11〜50匹</div>
         <span class="size">22〜53cm</span>
-        <div class="port">金谷港・平塚港</div>
+        <div class="port">平塚港・金谷港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/ハナダイ/ハナダイ_emoji.webp" alt="ハナダイ" onerror="this.style.display='none'">
         <div class="name">ハナダイ<span class="badge">3便</span></div>
         <div class="catch">0〜15匹</div>
         <span class="size kg">0.6〜0.7kg</span>
-        <div class="port">片貝港・平塚港</div>
+        <div class="port">平塚港・片貝港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/surumeika/surumeika_emoji.webp" alt="スルメイカ" onerror="this.style.display='none'">
         <div class="name">スルメイカ<span class="badge">3便</span></div>
         <div class="catch">4〜55匹</div>
         <span class="size">20〜35cm</span>
-        <div class="port">長井港・長井新宿港</div>
+        <div class="port">松輪間口港・長井新宿港</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/magochi/magochi_emoji.webp" alt="マゴチ" onerror="this.style.display='none'">
         <div class="name">マゴチ<span class="badge">2便</span></div>
         <div class="catch">0〜5匹</div>
         <span class="size">35〜57cm</span>
-        <div class="port">江戸川放水路･原木中山・金沢八景</div>
+        <div class="port">金沢八景・江戸川放水路･原木中山</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/kurodai/kurodai_emoji.webp" alt="クロダイ" onerror="this.style.display='none'">
         <div class="name">クロダイ<span class="badge">2便</span></div>
         <div class="catch">1〜13匹</div>
         <span class="size kg">1.3〜1.6kg</span>
-        <div class="port">江戸川放水路･原木中山・金谷港</div>
+        <div class="port">金谷港・江戸川放水路･原木中山</div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/warasa/warasa_emoji.webp" alt="ワラサ" onerror="this.style.display='none'">
@@ -494,16 +502,18 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
       </div>
     </div>
 <div class="commentary"><p>全体感としては、今日は<b>「アジ・マダイ・シロギス」のシーズン安定組</b>と<b>「ワラサ・サワラ」の単発大物・好機組</b>に分かれる構成でした。
-<b>アジ</b>は浦安・久比里港エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/onuki-maru.html">大貫丸</a>の130匹</b>は今週の全便でも上位の記録です。
-<b>マダイ</b>は金谷港・大原港で0〜9匹レンジ。7.2kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
-<b>シロギス</b>は浦安・久比里港の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の148匹</b>は今期トップ級の記録です。
-<b>カワハギ</b>は長井港・久比里港で0〜29匹・5〜32cm。底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、本日も複数船宿で安定した釣果が記録されました。
-<b>タチウオ</b>は横浜港･新山下・小柴港方面で0〜17匹、サイズは<b>60〜105cm</b>と大型揃い。冬の名残のドラゴン級が春の早朝便で出ているパターンです。
-<b>マルイカ</b>は久比里港・長井漆山港で0〜90匹。<a href="/ship/kiheiji-maru.html">喜平治丸</a>が継続的な好実績で、剣崎沖の良型群が継続中です。
+<b>アジ</b>は茅ヶ崎港・日立久慈港エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/onuki-maru.html">大貫丸</a>の130匹</b>は今週の全便でも上位の記録です。
+<b>マダイ</b>は日立久慈港・金谷港で0〜9匹レンジ。7.2kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
+<b>シロギス</b>は由比・東葛西の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の148匹</b>は今期トップ級の記録です。
+<b>カワハギ</b>は久比里港・長井港で0〜29匹・5〜32cm。底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、本日も複数船宿で安定した釣果が記録されました。
+<b>タチウオ</b>は鴨居大室港・横浜港･新山下方面で0〜17匹、サイズは<b>60〜105cm</b>と大型揃い。冬の名残のドラゴン級が春の早朝便で出ているパターンです。
+<b>マルイカ</b>は長井漆山港・久比里港で0〜90匹。<a href="/ship/kiheiji-maru.html">喜平治丸</a>が継続的な好実績で、剣崎沖の良型群が継続中です。
 <b>ヤリイカ</b>は勝浦川津港方面で4〜24匹。<a href="/ship/fudo-maru.html">不動丸</a>など継続的に良型が記録されています。
-<b>スルメイカ</b>は長井港・長井新宿港方面で4〜55匹。ローテーション釣行に組み込みやすい魚種です。
+<b>スルメイカ</b>は松輪間口港・長井新宿港方面で4〜55匹。ローテーション釣行に組み込みやすい魚種です。
 全30魚種が顔を揃えた幅広い釣果構成。アジ・マダイ・シロギスが三本柱として件数を稼ぎ、マルイカ・イサキ・カサゴも少数ながら確実に記録されています。同日に複数魚種を狙えるため、釣行の自由度が高いタイミングと言えます。</p></div>
   </section>
+
+<div class="day-nav"><a class="prev" href="./2026-05-08.html"><small>← 前日</small>5/8(金) の釣果まとめ</a><span class="next disabled"><small>翌日 →</small>5/10(日)（記録なし）</span></div>
 
   <div class="related">
     <h3>関連ページ</h3>

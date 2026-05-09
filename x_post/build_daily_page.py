@@ -175,6 +175,14 @@ body {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
+.day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
+.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; }
+.day-nav a { color: var(--port); font-weight: 700; }
+.day-nav a:hover { background: var(--cta-soft); border-color: var(--cta); color: var(--cta); }
+.day-nav .prev { text-align: left; }
+.day-nav .next { text-align: right; }
+.day-nav .disabled { color: #aab4bf; cursor: default; }
+.day-nav small { display: block; font-size: 10px; color: var(--sub); margin-bottom: 2px; font-weight: normal; }
 .commentary { margin-top: 12px; font-size: 14px; line-height: 1.85; color: var(--text); }
 .commentary b { color: var(--accent); }
 .commentary .highlight { color: var(--cta); font-weight: 700; }
@@ -511,6 +519,19 @@ def build(ctx, commentary, output_path, png_url=None):
     if top_cnt_fish and top_cnt_max:
         og_desc += f"{top_cnt_fish}{ctx.get('top_cnt_min',0)}〜{top_cnt_max}匹など。"
 
+    # 前日・翌日ナビ
+    prev_iso = ctx.get("prev_date_iso", "")
+    next_iso = ctx.get("next_date_iso", "")
+    prev_label = ctx.get("prev_date_label", "")
+    next_label = ctx.get("next_date_label", "")
+    prev_html = (f'<a class="prev" href="./{prev_iso}.html"><small>← 前日</small>{prev_label} の釣果まとめ</a>'
+                 if ctx.get("prev_exists") else
+                 f'<span class="prev disabled"><small>← 前日</small>{prev_label}（記録なし）</span>')
+    next_html = (f'<a class="next" href="./{next_iso}.html"><small>翌日 →</small>{next_label} の釣果まとめ</a>'
+                 if ctx.get("next_exists") else
+                 f'<span class="next disabled"><small>翌日 →</small>{next_label}（記録なし）</span>')
+    day_nav = f'<div class="day-nav">{prev_html}{next_html}</div>'
+
     # ハイライトカード
     hl_cards = _hl_cards_html(ctx)
     # 海況グリッド（6カード・area ページと同スタイル）
@@ -596,6 +617,8 @@ def build(ctx, commentary, output_path, png_url=None):
     </div>
 {fish_commentary}
   </section>
+
+{day_nav}
 
   <div class="related">
     <h3>関連ページ</h3>
