@@ -298,53 +298,84 @@ def _x_card_table_rows_html(fish_rows):
     return "\n".join(rows)
 
 
-def _sea_grid_html(ctx):
-    """area ページと同スタイルの 6 カード海況グリッド + 1 行サマリ + 出船率バー"""
-    # 各値を整形
-    sst = ctx.get("sst_mean")
-    wave = ctx.get("wave_inner")
-    wind_spd = ctx.get("max_wind")
-    wind_dir = ctx.get("wind_dir_label", "")
-    tide_type = ctx.get("tide_type", "—")
-    moon_phase = ctx.get("moon_phase", "—")
-    pressure_hpa = ctx.get("pressure_hpa")
-    n_ships = ctx.get("n_ships", 0)
-    n_cancellations = ctx.get("n_cancellations", 0)
+def _fmt_sea_cards(sea):
+    """sea_data dict → 6 カード .sea-item HTML 文字列"""
+    sst  = sea.get("sst")
+    wave = sea.get("wave")
+    wspd = sea.get("wind_spd")
+    wdir = sea.get("wind_dir", "")
+    tide = sea.get("tide", "—")
+    moon = sea.get("moon", "—")
+    pres = sea.get("pressure")
 
-    sst_str = f"{sst:.1f}℃" if sst else "—"
-    wave_str = f"{wave:.1f}m" if wave is not None else "—"
-    if wind_dir and wind_spd is not None:
-        wind_str = f"{wind_dir}{wind_spd:.1f}m/s"
-    elif wind_spd is not None:
-        wind_str = f"{wind_spd:.1f}m/s"
+    sst_str  = f"{sst:.1f}℃"       if sst  is not None else "—"
+    wave_str = f"{wave:.1f}m"       if wave is not None else "—"
+    if wdir and wspd is not None:
+        wind_str = f"{wdir}{wspd:.1f}m/s"
+    elif wspd is not None:
+        wind_str = f"{wspd:.1f}m/s"
     else:
         wind_str = "—"
-    pressure_str = f"{int(pressure_hpa)}hPa" if pressure_hpa else "—"
+    pres_str = f"{int(pres)}hPa"   if pres is not None else "—"
 
-    # 1 行サマリ
-    summary_parts = []
+    return (
+        f'<div class="sea-item"><div class="sv">{sst_str}</div><div class="sl2">水温</div></div>'
+        f'<div class="sea-item"><div class="sv">{wave_str}</div><div class="sl2">波高</div></div>'
+        f'<div class="sea-item"><div class="sv">{wind_str}</div><div class="sl2">風</div></div>'
+        f'<div class="sea-item"><div class="sv">{tide}</div><div class="sl2">潮汐</div></div>'
+        f'<div class="sea-item"><div class="sv">{moon}</div><div class="sl2">月相</div></div>'
+        f'<div class="sea-item"><div class="sv">{pres_str}</div><div class="sl2">気圧</div></div>'
+    )
+
+
+def _sea_grid_html(ctx):
+    """内海・外海 2 セット × 6 カード海況グリッド + サマリ + 出船率バー"""
+    inner = ctx.get("inner_sea_data") or {}
+    outer = ctx.get("outer_sea_data") or {}
+    n_ships        = ctx.get("n_ships", 0)
+    n_cancellations = ctx.get("n_cancellations", 0)
+
+    # フォールバック: inner が空なら後方互換スカラーから組み立て
+    if not inner:
+        inner = {
+            "sst":      ctx.get("sst_mean"),
+            "wave":     ctx.get("wave_inner"),
+            "wind_spd": ctx.get("max_wind"),
+            "wind_dir": ctx.get("wind_dir_label", ""),
+            "tide":     ctx.get("tide_type", "—"),
+            "moon":     ctx.get("moon_phase", "—"),
+            "pressure": ctx.get("pressure_hpa"),
+        }
+    if not outer:
+        outer = inner.copy()  # データなければ内海と同値で表示
+
+    # 1 行サマリ（内海基準）
     sst_norm = {1: 15, 2: 14, 3: 15, 4: 16, 5: 17, 6: 19, 7: 22, 8: 24,
                 9: 23, 10: 21, 11: 18, 12: 16}
-    if sst is not None:
-        from datetime import datetime as _dt
-        _m = _dt.now().month
-        diff = sst - sst_norm.get(_m, 17)
+    from datetime import datetime as _dt
+    _m = _dt.now().month
+    sst_i  = inner.get("sst")
+    wave_i = inner.get("wave")
+    wspd_i = inner.get("wind_spd")
+    summary_parts = []
+    if sst_i is not None:
+        diff = sst_i - sst_norm.get(_m, 17)
         if diff >= 1.5:
-            summary_parts.append(f"水温は平年比+{diff:.1f}℃と高め（{sst:.1f}℃）")
+            summary_parts.append(f"水温は平年比+{diff:.1f}℃と高め（{sst_i:.1f}℃）")
         elif diff <= -1.5:
-            summary_parts.append(f"水温は平年比{diff:.1f}℃と低め（{sst:.1f}℃）")
+            summary_parts.append(f"水温は平年比{diff:.1f}℃と低め（{sst_i:.1f}℃）")
         else:
-            summary_parts.append(f"水温は平年並み（{sst:.1f}℃）")
-    if wave is not None and wind_spd is not None:
-        if wave >= 2.0 or wind_spd >= 10:
-            summary_parts.append(f"波{wave:.1f}m・風{wind_spd:.0f}m/sの荒天で欠航警戒")
-        elif wave >= 1.0 or wind_spd >= 6:
-            summary_parts.append(f"波{wave:.1f}m・風{wind_spd:.0f}m/sでやや荒れ気味、出船注意")
+            summary_parts.append(f"水温は平年並み（{sst_i:.1f}℃）")
+    if wave_i is not None and wspd_i is not None:
+        if wave_i >= 2.0 or wspd_i >= 10:
+            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sの荒天で欠航警戒")
+        elif wave_i >= 1.0 or wspd_i >= 6:
+            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sでやや荒れ気味")
         else:
-            summary_parts.append(f"波{wave:.1f}m・風{wind_spd:.0f}m/sと穏やかで出船日和")
+            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sで出船日和")
     summary_html = ""
     if summary_parts:
-        summary_html = f'<p class="sea-summary">{"。".join(summary_parts)}。</p>'
+        summary_html = f'<p class="sea-summary">{"。".join(summary_parts)}。</p>\n'
 
     # 出船率バー
     _rate_val = (n_ships - n_cancellations) / max(n_ships, 1)
@@ -353,18 +384,20 @@ def _sea_grid_html(ctx):
     rate_html = (
         f'<div class="ship-rate-bar{warn_cls}">'
         f'出船率 <b>{ship_rate_str}</b>（{n_ships}船宿中・{n_cancellations}欠航）'
-        f'</div>'
+        f'</div>\n'
     )
 
-    return f"""{summary_html}    <div class="sea-grid">
-      <div class="sea-item"><div class="sv">{sst_str}</div><div class="sl2">水温</div></div>
-      <div class="sea-item"><div class="sv">{wave_str}</div><div class="sl2">波高</div></div>
-      <div class="sea-item"><div class="sv">{wind_str}</div><div class="sl2">風</div></div>
-      <div class="sea-item"><div class="sv">{tide_type}</div><div class="sl2">潮汐</div></div>
-      <div class="sea-item"><div class="sv">{moon_phase}</div><div class="sl2">月相</div></div>
-      <div class="sea-item"><div class="sv">{pressure_str}</div><div class="sl2">気圧</div></div>
-    </div>
-{rate_html}"""
+    inner_cards = _fmt_sea_cards(inner)
+    outer_cards = _fmt_sea_cards(outer)
+
+    return (
+        f"{summary_html}"
+        f'<h3 class="sea-section-title">内海（東京湾・相模湾）</h3>\n'
+        f'<div class="sea-grid">{inner_cards}</div>\n'
+        f'<h3 class="sea-section-title">外海（外房・銚子方面）</h3>\n'
+        f'<div class="sea-grid">{outer_cards}</div>\n'
+        f"{rate_html}"
+    )
 
 
 def _hl_cards_html(ctx):

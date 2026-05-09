@@ -95,82 +95,126 @@ def _wind_dir_label(deg):
     return dirs[int((deg + 11.25) / 22.5) % 16]
 
 
-def _parse_weather_csv(weather_dir, date_str):
-    """weather/YYYY-MM.csv から当日の代表値を取得"""
-    ym = date_str[:7]  # "2026-05"
+# 内海 / 外海 の代表 point 名（weather/YYYY-MM.csv の point 列と一致させる）
+_INNER_POINTS = frozenset({
+    "八景沖", "中ノ瀬", "神奈川・東京湾", "東京", "浦安沖", "羽田沖",
+    "猿島沖", "走水沖", "鶴見沖", "小柴沖", "本牧沖", "根岸沖", "観音崎沖",
+    "横浜沖", "横須賀沖", "大津沖", "久里浜沖", "盤洲沖", "木更津沖",
+    "千葉・東京湾奥", "五井沖", "富津沖", "富津南沖", "大貫沖",
+})
+_OUTER_POINTS = frozenset({
+    "洲崎沖", "神奈川・相模湾", "相模湾", "城ヶ島沖", "城ヶ島西沖",
+    "千葉・外房", "千葉・内房", "外川沖", "犬吠沖", "犬吠南沖", "波崎沖",
+    "鹿島沖", "鹿島北沖", "茨城", "神栖沖", "勝浦沖", "大原沖", "館山沖",
+    "太海沖", "岩和田沖", "岩船沖", "片貝沖", "飯岡沖",
+    "勝浦灯台沖", "一宮沖",
+})
+
+
+def _aggregate_wx_rows(rows_pairs):
+    """[(wind, wind_dir, wave, sst), ...] から統計値を計算して dict で返す。"""
+    winds = [r[0] for r in rows_pairs if r[0] is not None]
+    wind_dirs = [r[1] for r in rows_pairs if r[1] is not None]
+    waves = [r[2] for r in rows_pairs if r[2] is not None]
+    ssts = [r[3] for r in rows_pairs if r[3] is not None]
+    result = {}
+    if waves:
+        result["wave"] = round(sum(waves) / len(waves), 1)
+    if winds:
+        result["wind_spd"] = round(max(winds), 1)
+        if wind_dirs:
+            paired = sorted(zip(winds, wind_dirs), key=lambda x: -x[0])
+            result["wind_dir"] = _wind_dir_label(paired[0][1])
+    if ssts:
+        result["sst"] = round(sum(ssts) / len(ssts), 1)
+    return result
+
+
+def _parse_weather_csv_split(weather_dir, date_str):
+    """weather/YYYY-MM.csv から当日の内海・外海別代表値を取得。
+    戻り値: (inner_dict, outer_dict, all_dict)
+      各 dict: {wave, wind_spd, wind_dir, sst}
+    """
+    ym = date_str[:7]
     csv_path = os.path.join(weather_dir, f"{ym}.csv")
     if not os.path.exists(csv_path):
-        return {}
-    waves, winds, wind_dirs, ssts = [], [], [], []
+        return {}, {}, {}
+
+    inner_rows, outer_rows, all_rows = [], [], []
     try:
         with open(csv_path, encoding="utf-8") as f:
             lines = f.readlines()
         if not lines:
-            return {}
+            return {}, {}, {}
         header = lines[0].strip().split(",")
-        idx_date = header.index("date") if "date" in header else -1
+        idx_pt   = header.index("point")       if "point"       in header else -1
+        idx_date = header.index("date")        if "date"        in header else -1
         idx_wave = header.index("wave_height") if "wave_height" in header else -1
-        idx_wind = header.index("wind_speed") if "wind_speed" in header else -1
-        idx_wdir = header.index("wind_dir") if "wind_dir" in header else -1
-        idx_sst = header.index("sst") if "sst" in header else -1
+        idx_wind = header.index("wind_speed")  if "wind_speed"  in header else -1
+        idx_wdir = header.index("wind_dir")    if "wind_dir"    in header else -1
+        idx_sst  = header.index("sst")         if "sst"         in header else -1
         for line in lines[1:]:
             parts = line.strip().split(",")
-            if len(parts) <= max(idx_date, idx_wave, idx_wind):
+            if len(parts) < 4:
                 continue
             if idx_date >= 0 and not parts[idx_date].startswith(date_str):
                 continue
-            try:
-                if idx_wave >= 0 and parts[idx_wave]:
-                    waves.append(float(parts[idx_wave]))
-                if idx_wind >= 0 and parts[idx_wind]:
-                    winds.append(float(parts[idx_wind]))
-                if idx_wdir >= 0 and parts[idx_wdir]:
-                    wind_dirs.append(float(parts[idx_wdir]))
-                if idx_sst >= 0 and parts[idx_sst]:
-                    ssts.append(float(parts[idx_sst]))
-            except ValueError:
-                pass
+            pt = parts[idx_pt] if idx_pt >= 0 else ""
+            def _fv(idx):
+                try:
+                    return float(parts[idx]) if idx >= 0 and idx < len(parts) and parts[idx] else None
+                except ValueError:
+                    return None
+            row = (_fv(idx_wind), _fv(idx_wdir), _fv(idx_wave), _fv(idx_sst))
+            all_rows.append(row)
+            if pt in _INNER_POINTS:
+                inner_rows.append(row)
+            elif pt in _OUTER_POINTS:
+                outer_rows.append(row)
     except Exception:
         pass
 
+    return (
+        _aggregate_wx_rows(inner_rows),
+        _aggregate_wx_rows(outer_rows),
+        _aggregate_wx_rows(all_rows),
+    )
+
+
+# 後方互換: 旧 _parse_weather_csv を split 版で実装
+def _parse_weather_csv(weather_dir, date_str):
+    _, _, all_wx = _parse_weather_csv_split(weather_dir, date_str)
     result = {}
-    if waves:
-        result["wave_inner"] = round(sum(waves) / len(waves), 1)
-    if winds:
-        result["wind_inner_max"] = max(winds)
-        result["wind_inner_min"] = min(winds)
-        result["max_wind"] = max(winds)
-        # 最頻出風速に対応する風向を代表値とする
-        if wind_dirs:
-            # 最大風速時刻の風向を採用（zip で同インデックス対応）
-            paired = sorted(zip(winds, wind_dirs), key=lambda x: -x[0])
-            result["wind_dir_deg"] = paired[0][1]
-            result["wind_dir_label"] = _wind_dir_label(paired[0][1])
-    if ssts:
-        result["sst_mean"] = round(sum(ssts) / len(ssts), 1)
+    if "wave" in all_wx:
+        result["wave_inner"] = all_wx["wave"]
+    if "wind_spd" in all_wx:
+        result["max_wind"] = all_wx["wind_spd"]
+        result["wind_inner_max"] = all_wx["wind_spd"]
+        result["wind_inner_min"] = all_wx.get("wind_spd", 2.0)
+    if "wind_dir" in all_wx:
+        result["wind_dir_label"] = all_wx["wind_dir"]
+    if "sst" in all_wx:
+        result["sst_mean"] = all_wx["sst"]
     return result
 
 
-def _load_pressure_from_cache(root_dir, date_str):
-    """weather_cache.sqlite から気圧中央値を取得。
-    代表座標: 東京湾 (35.3N, 139.8E) 付近。存在しなければ None を返す。"""
+def _load_pressure_from_cache(root_dir, date_str, lat_range=(35.1, 35.5), lon_range=(139.6, 140.0)):
+    """weather_cache.sqlite から気圧中央値を取得。座標範囲を引数で切り替え可能。"""
     cache_path = os.path.join(root_dir, "ocean", "weather_cache.sqlite")
     if not os.path.exists(cache_path):
         return None
     try:
         con = sqlite3.connect(cache_path, timeout=5)
-        # 当日の圧力値（35.2〜35.4N, 139.7〜139.9E の範囲で集計）
         rows = con.execute(
             "SELECT pressure FROM weather WHERE dt LIKE ? "
-            "AND lat BETWEEN 35.1 AND 35.5 AND lon BETWEEN 139.6 AND 140.0 "
+            "AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? "
             "AND pressure IS NOT NULL LIMIT 48",
-            (f"{date_str}%",)
+            (f"{date_str}%", lat_range[0], lat_range[1], lon_range[0], lon_range[1])
         ).fetchall()
         con.close()
         if rows:
-            vals = [r[0] for r in rows]
-            vals.sort()
-            return round(vals[len(vals) // 2], 0)  # 中央値
+            vals = sorted(r[0] for r in rows)
+            return round(vals[len(vals) // 2], 0)
     except Exception:
         pass
     return None
@@ -322,20 +366,44 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
 
     season_ratio_kanpachi = wow_pct.get("カンパチ", 1.0)
 
-    # 海況データ
-    wx = _parse_weather_csv(weather_dir, date_str)
-    wave_inner = wx.get("wave_inner", 1.0)
-    max_wind = wx.get("max_wind", 5.0)
-    wind_inner_max = wx.get("wind_inner_max", 5.0)
-    wind_inner_min = wx.get("wind_inner_min", 2.0)
-    wind_dir_label = wx.get("wind_dir_label", "")  # 16方位テキスト（例: "南南西"）
-    sst_mean = wx.get("sst_mean", 18.0)
-    # 気候平年値（簡易）: 5月の平均 SST = 17℃
+    # 海況データ（内海・外海 2 セット）
+    inner_wx, outer_wx, all_wx = _parse_weather_csv_split(weather_dir, date_str)
+    # 後方互換用スカラー（テンプレート変数 max_wind 等を維持）
+    wave_inner     = inner_wx.get("wave",     all_wx.get("wave",     1.0))
+    max_wind       = all_wx.get("wind_spd",   5.0)
+    wind_inner_max = inner_wx.get("wind_spd", 5.0)
+    wind_inner_min = inner_wx.get("wind_spd", 2.0)
+    wind_dir_label = inner_wx.get("wind_dir", all_wx.get("wind_dir", ""))
+    sst_mean       = all_wx.get("sst",        18.0)
+    # 気候平年値（簡易）
     sst_norm = {1: 15, 2: 14, 3: 15, 4: 16, 5: 17, 6: 19, 7: 22, 8: 24,
                 9: 23, 10: 21, 11: 18, 12: 16}
     sst_anom = round(sst_mean - sst_norm.get(dt.month, 17), 1)
-    # 気圧: weather_cache.sqlite から取得（なければ None）
-    pressure_hpa = _load_pressure_from_cache(_root_dir, date_str)
+    # 気圧: weather_cache.sqlite から取得（内海: 東京湾 / 外海: 外房沖相当）
+    pressure_inner = _load_pressure_from_cache(
+        _root_dir, date_str, lat_range=(35.1, 35.5), lon_range=(139.6, 140.0))
+    pressure_outer = _load_pressure_from_cache(
+        _root_dir, date_str, lat_range=(34.5, 35.1), lon_range=(138.8, 140.2))
+    pressure_hpa = pressure_inner  # 後方互換
+    # 内海 / 外海の sea_data dict（build_daily_page で使用）
+    inner_sea_data = {
+        "sst":      inner_wx.get("sst"),
+        "wave":     inner_wx.get("wave"),
+        "wind_spd": inner_wx.get("wind_spd"),
+        "wind_dir": inner_wx.get("wind_dir", ""),
+        "tide":     tide_info["tide_type"],
+        "moon":     tide_info["moon_phase"],
+        "pressure": pressure_inner,
+    }
+    outer_sea_data = {
+        "sst":      outer_wx.get("sst"),
+        "wave":     outer_wx.get("wave"),
+        "wind_spd": outer_wx.get("wind_spd"),
+        "wind_dir": outer_wx.get("wind_dir", ""),
+        "tide":     tide_info["tide_type"],
+        "moon":     tide_info["moon_phase"],
+        "pressure": pressure_outer,
+    }
 
     # inner / outer 釣果割合
     inner_cnt = sum(1 for c in day_catches if c.get("area", "") in _INNER_PORTS)
@@ -364,8 +432,8 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         not rare_fish_present
     )
 
-    # 主力魚種リスト（件数上位3）
-    top_fish_list = sorted(fish_counter, key=lambda f: fish_counter[f], reverse=True)[:5]
+    # 主力魚種リスト（件数降順・全件。fish_rows は全魚種を表示する）
+    top_fish_list = sorted(fish_counter, key=lambda f: fish_counter[f], reverse=True)[:30]
     mainstream_count = min(len(top_fish_list), 3)
     opportunistic_count = len([f for f in top_fish_list if f in _RARE_FISH or _PELAGIC_FISH])
     mainstream_fish_list = "・".join(top_fish_list[:3]) if top_fish_list else "各魚種"
@@ -430,9 +498,9 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
                            "top_areas", "top_ship", "top_count"]:
                 fish_ctx[f"{key}_{suffix}"] = 0 if "max" in suffix or "min" in suffix else ""
 
-    # fish_rows: B案 PNG / テーブル用
+    # fish_rows: B案 PNG / テーブル用（全魚種を含める。HTML テーブル側は全件表示・PNG 側は build_daily_page で制限）
     fish_rows = []
-    for fish_name in top_fish_list[:10]:
+    for fish_name in top_fish_list:
         d = _fish_data(fish_name)
         if d:
             fish_rows.append({
@@ -617,6 +685,8 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         "sst_mean": sst_mean,
         "pressure_hpa": pressure_hpa,  # None の場合は "—" 表示
         "sst_anom": sst_anom,
+        "inner_sea_data": inner_sea_data,
+        "outer_sea_data": outer_sea_data,
         "kuroshio_state": "stable",  # cmems_data が無いためデフォルト
         "rain_yesterday_mm": rain_yesterday_mm,
         "weather_today": "晴れ",  # デフォルト

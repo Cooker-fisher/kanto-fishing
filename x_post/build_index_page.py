@@ -101,21 +101,14 @@ def _extract_page_meta(html_path: str) -> dict:
 def _extract_body_content(html_path: str) -> str:
     """YYYY-MM-DD.html の <body> 内から main コンテンツ部分を抽出する。
     <header class="gnav">...</header> と <footer> は除いて、
-    <div class="wrap"> 内の本文だけを返す。"""
+    <body> 内の残り全部を返す（ネスト div の正しい処理）。"""
     try:
         with open(html_path, encoding="utf-8") as f:
             content = f.read()
-        # <div class="wrap"> ... </div> の最外を取得
-        m = re.search(r'(<div class="wrap">.*?</div>\s*\n)', content, re.DOTALL)
-        if m:
-            return m.group(1)
-        # fallback: body 全体から header と footer を除く
         body_m = re.search(r"<body>(.*?)</body>", content, re.DOTALL)
         if body_m:
             body = body_m.group(1)
-            # gnav 除去
             body = re.sub(r"<header class=\"gnav\">.*?</header>", "", body, flags=re.DOTALL)
-            # footer 除去
             body = re.sub(r"<footer>.*?</footer>", "", body, flags=re.DOTALL)
             return body.strip()
     except Exception:
