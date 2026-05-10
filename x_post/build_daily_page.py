@@ -233,14 +233,28 @@ body {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
+/* day-nav 基本（旧 2列レイアウト・後方互換として残す） */
 .day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
-.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; }
+.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; min-height: 44px; box-sizing: border-box; }
 .day-nav a { color: var(--port); font-weight: 700; }
 .day-nav a:hover { background: var(--cta-soft); border-color: var(--cta); color: var(--cta); }
 .day-nav .prev { text-align: left; }
 .day-nav .next { text-align: right; }
 .day-nav .disabled { color: #aab4bf; cursor: default; }
 .day-nav small { display: block; font-size: 10px; color: var(--sub); margin-bottom: 2px; font-weight: normal; }
+/* day-nav-5: 案A 5ボタン（モバイル 2行3列 / PC 1行5列） */
+.day-nav-5 { grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+  grid-template-areas: "a1 a3 a5" "a2 a2 a4"; }
+.day-nav-5 .prev7 { grid-area: a1; text-align: left; }
+.day-nav-5 .prev  { grid-area: a2; text-align: left; }
+.day-nav-5 .archive-cta { grid-area: a3; text-align: center;
+  background: var(--cta-soft); border-color: var(--cta); color: var(--cta); font-weight: 800; }
+.day-nav-5 .next  { grid-area: a4; text-align: right; }
+.day-nav-5 .next7 { grid-area: a5; text-align: right; }
+@media (min-width: 600px) {
+  .day-nav-5 { grid-template-columns: repeat(5, 1fr);
+    grid-template-areas: "a1 a2 a3 a4 a5"; }
+}
 .commentary { margin-top: 12px; font-size: 14px; line-height: 1.85; color: var(--text); }
 .commentary b { color: var(--accent); }
 .commentary .highlight { color: var(--cta); font-weight: 700; }
@@ -584,18 +598,33 @@ def build(ctx, commentary, output_path, png_url=None):
     if top_cnt_fish and top_cnt_max:
         og_desc += f"{top_cnt_fish}{ctx.get('top_cnt_min',0)}〜{top_cnt_max}匹など。"
 
-    # 前日・翌日ナビ
+    # 5ボタン日付ナビ（案A: ±7日 + ±1日 + 全アーカイブ）
     prev_iso = ctx.get("prev_date_iso", "")
     next_iso = ctx.get("next_date_iso", "")
     prev_label = ctx.get("prev_date_label", "")
     next_label = ctx.get("next_date_label", "")
+    prev7_iso = ctx.get("prev7_date_iso", "")
+    next7_iso = ctx.get("next7_date_iso", "")
+    prev7_label = ctx.get("prev7_date_label", "")
+    next7_label = ctx.get("next7_date_label", "")
+    # ±1日ボタン
     prev_html = (f'<a class="prev" href="./{prev_iso}.html"><small>← 前日</small>{prev_label} の釣果まとめ</a>'
                  if ctx.get("prev_exists") else
                  f'<span class="prev disabled"><small>← 前日</small>{prev_label}（記録なし）</span>')
     next_html = (f'<a class="next" href="./{next_iso}.html"><small>翌日 →</small>{next_label} の釣果まとめ</a>'
                  if ctx.get("next_exists") else
                  f'<span class="next disabled"><small>翌日 →</small>{next_label}（記録なし）</span>')
-    day_nav = f'<div class="day-nav">{prev_html}{next_html}</div>'
+    # ±7日ボタン
+    prev7_html = (f'<a class="prev7" href="./{prev7_iso}.html"><small>← 7日前</small>{prev7_label}</a>'
+                  if ctx.get("prev7_exists") else
+                  f'<span class="prev7 disabled" aria-disabled="true"><small>← 7日前</small>{prev7_label}（記録なし）</span>')
+    next7_html = (f'<a class="next7" href="./{next7_iso}.html"><small>7日後 →</small>{next7_label}</a>'
+                  if ctx.get("next7_exists") else
+                  f'<span class="next7 disabled" aria-disabled="true"><small>7日後 →</small>{next7_label}（記録なし）</span>')
+    # 中央: 全アーカイブ CTA（常にリンク）
+    archive_html = '<a class="archive-cta" href="./index.html"><small>全日程</small>一覧へ</a>'
+    day_nav = (f'<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション">'
+               f'{prev7_html}{prev_html}{archive_html}{next_html}{next7_html}</nav>')
 
     # ハイライトカード
     hl_cards = _hl_cards_html(ctx)

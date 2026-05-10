@@ -165,14 +165,28 @@ body {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
+/* day-nav 基本（旧 2列レイアウト・後方互換として残す） */
 .day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
-.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; }
+.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; min-height: 44px; box-sizing: border-box; }
 .day-nav a { color: var(--port); font-weight: 700; }
 .day-nav a:hover { background: var(--cta-soft); border-color: var(--cta); color: var(--cta); }
 .day-nav .prev { text-align: left; }
 .day-nav .next { text-align: right; }
 .day-nav .disabled { color: #aab4bf; cursor: default; }
 .day-nav small { display: block; font-size: 10px; color: var(--sub); margin-bottom: 2px; font-weight: normal; }
+/* day-nav-5: 案A 5ボタン（モバイル 2行3列 / PC 1行5列） */
+.day-nav-5 { grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+  grid-template-areas: "a1 a3 a5" "a2 a2 a4"; }
+.day-nav-5 .prev7 { grid-area: a1; text-align: left; }
+.day-nav-5 .prev  { grid-area: a2; text-align: left; }
+.day-nav-5 .archive-cta { grid-area: a3; text-align: center;
+  background: var(--cta-soft); border-color: var(--cta); color: var(--cta); font-weight: 800; }
+.day-nav-5 .next  { grid-area: a4; text-align: right; }
+.day-nav-5 .next7 { grid-area: a5; text-align: right; }
+@media (min-width: 600px) {
+  .day-nav-5 { grid-template-columns: repeat(5, 1fr);
+    grid-template-areas: "a1 a2 a3 a4 a5"; }
+}
 .commentary { margin-top: 12px; font-size: 14px; line-height: 1.85; color: var(--text); }
 .commentary b { color: var(--accent); }
 .commentary .highlight { color: var(--cta); font-weight: 700; }
@@ -296,14 +310,14 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="name"><a href="../fish/mugiika.html" class="fl">ムギイカ</a><span class="badge">2便</span></div>
         <div class="catch">3〜27匹</div>
         <span class="size">15〜30cm</span>
-        <div class="port"><a href="../area/numazu-naiko.html" class="pl">沼津内港</a>・<a href="../area/numazu-shizuura.html" class="pl">沼津静浦</a></div>
+        <div class="port"><a href="../area/numazu-shizuura.html" class="pl">沼津静浦</a>・<a href="../area/numazu-naiko.html" class="pl">沼津内港</a></div>
       </div>
     </div>
 <div class="commentary"><p>本日は1魚種のみという特殊な構成。ムギイカが記録の大部分を占め、シーズン的に他魚種が動きにくい時期に入ったのか、海況に偏りがあった可能性があります。
 本日は件数こそ控えめでしたが、出船した船宿からはムギイカの手堅い釣果が記録されました。明日以降の好転に期待です。</p></div>
   </section>
 
-<div class="day-nav"><a class="prev" href="./2026-05-03.html"><small>← 前日</small>5/3(日) の釣果まとめ</a><a class="next" href="./2026-05-05.html"><small>翌日 →</small>5/5(火) の釣果まとめ</a></div>
+<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション"><span class="prev7 disabled" aria-disabled="true"><small>← 7日前</small>4/27(月)（記録なし）</span><a class="prev" href="./2026-05-03.html"><small>← 前日</small>5/3(日) の釣果まとめ</a><a class="archive-cta" href="./index.html"><small>全日程</small>一覧へ</a><a class="next" href="./2026-05-05.html"><small>翌日 →</small>5/5(火) の釣果まとめ</a><span class="next7 disabled" aria-disabled="true"><small>7日後 →</small>5/11(月)（記録なし）</span></nav>
 
   <div class="related">
     <h3>関連ページ</h3>

@@ -354,6 +354,16 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     prev_exists = os.path.exists(os.path.join(_x_post_dir, f"{prev_date_iso}.html"))
     next_exists = os.path.exists(os.path.join(_x_post_dir, f"{next_date_iso}.html"))
 
+    # ±7日（案A 5ボタンナビ用）
+    prev7_dt = dt - _td(days=7)
+    next7_dt = dt + _td(days=7)
+    prev7_date_iso = prev7_dt.strftime("%Y-%m-%d")
+    next7_date_iso = next7_dt.strftime("%Y-%m-%d")
+    prev7_date_label = f"{prev7_dt.month}/{prev7_dt.day}({weekdays_jp[prev7_dt.weekday()]})"
+    next7_date_label = f"{next7_dt.month}/{next7_dt.day}({weekdays_jp[next7_dt.weekday()]})"
+    prev7_exists = os.path.exists(os.path.join(_x_post_dir, f"{prev7_date_iso}.html"))
+    next7_exists = os.path.exists(os.path.join(_x_post_dir, f"{next7_date_iso}.html"))
+
     # 潮汐
     tide_info = _load_tide_moon(tide_db, date_str)
 
@@ -767,6 +777,12 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         "next_date_iso": next_date_iso,
         "next_date_label": next_date_label,
         "next_exists": next_exists,
+        "prev7_date_iso": prev7_date_iso,
+        "prev7_date_label": prev7_date_label,
+        "prev7_exists": prev7_exists,
+        "next7_date_iso": next7_date_iso,
+        "next7_date_label": next7_date_label,
+        "next7_exists": next7_exists,
         "decade_no": decade_no,
         "weekday": weekdays_en[wd_idx],
         "weekday_jp": weekdays_jp[wd_idx] + "曜日",

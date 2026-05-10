@@ -165,14 +165,28 @@ body {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
+/* day-nav 基本（旧 2列レイアウト・後方互換として残す） */
 .day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
-.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; }
+.day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; min-height: 44px; box-sizing: border-box; }
 .day-nav a { color: var(--port); font-weight: 700; }
 .day-nav a:hover { background: var(--cta-soft); border-color: var(--cta); color: var(--cta); }
 .day-nav .prev { text-align: left; }
 .day-nav .next { text-align: right; }
 .day-nav .disabled { color: #aab4bf; cursor: default; }
 .day-nav small { display: block; font-size: 10px; color: var(--sub); margin-bottom: 2px; font-weight: normal; }
+/* day-nav-5: 案A 5ボタン（モバイル 2行3列 / PC 1行5列） */
+.day-nav-5 { grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+  grid-template-areas: "a1 a3 a5" "a2 a2 a4"; }
+.day-nav-5 .prev7 { grid-area: a1; text-align: left; }
+.day-nav-5 .prev  { grid-area: a2; text-align: left; }
+.day-nav-5 .archive-cta { grid-area: a3; text-align: center;
+  background: var(--cta-soft); border-color: var(--cta); color: var(--cta); font-weight: 800; }
+.day-nav-5 .next  { grid-area: a4; text-align: right; }
+.day-nav-5 .next7 { grid-area: a5; text-align: right; }
+@media (min-width: 600px) {
+  .day-nav-5 { grid-template-columns: repeat(5, 1fr);
+    grid-template-areas: "a1 a2 a3 a4 a5"; }
+}
 .commentary { margin-top: 12px; font-size: 14px; line-height: 1.85; color: var(--text); }
 .commentary b { color: var(--accent); }
 .commentary .highlight { color: var(--cta); font-weight: 700; }
@@ -302,21 +316,21 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="name"><a href="../fish/aji.html" class="fl">アジ</a><span class="badge">14便</span></div>
         <div class="catch">7〜148匹</div>
         <span class="size">16〜45cm</span>
-        <div class="port"><a href="../area/kubiri.html" class="pl">久比里港</a>・<a href="../area/haneda.html" class="pl">羽田</a></div>
+        <div class="port"><a href="../area/haneda.html" class="pl">羽田</a>・<a href="../area/kanazawa-hakkei.html" class="pl">金沢八景</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
         <div class="name"><a href="../fish/madai.html" class="fl">マダイ</a><span class="badge">14便</span></div>
         <div class="catch">0〜17匹</div>
         <span class="size kg">0.3〜4.8kg</span>
-        <div class="port"><a href="../area/matsuwa-ena.html" class="pl">松輪江奈港</a>・<a href="../area/chigasaki.html" class="pl">茅ヶ崎港</a></div>
+        <div class="port"><a href="../area/matsuwa-ena.html" class="pl">松輪江奈港</a>・<a href="../area/omaezaki.html" class="pl">御前崎港</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'">
         <div class="name"><a href="../fish/shirogisu.html" class="fl">シロギス</a><span class="badge">4便</span></div>
         <div class="catch">6〜180匹</div>
         <span class="size">12〜26cm</span>
-        <div class="port"><a href="../area/urayasu.html" class="pl">浦安</a>・<a href="../area/kanazawa-hakkei.html" class="pl">金沢八景</a></div>
+        <div class="port"><a href="../area/higashi-kasai.html" class="pl">東葛西</a>・<a href="../area/urayasu.html" class="pl">浦安</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/kawahagi/kawahagi_emoji.webp" alt="カワハギ" onerror="this.style.display='none'">
@@ -330,7 +344,7 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="name"><a href="../fish/tachiuo.html" class="fl">タチウオ</a><span class="badge">2便</span></div>
         <div class="catch">0〜12匹</div>
         <span class="size">60〜100cm</span>
-        <div class="port"><a href="../area/urayasu.html" class="pl">浦安</a>・<a href="../area/yokohama-shinyamashita.html" class="pl">横浜港･新山下</a></div>
+        <div class="port"><a href="../area/yokohama-shinyamashita.html" class="pl">横浜港･新山下</a>・<a href="../area/urayasu.html" class="pl">浦安</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/hanadai/hanadai_emoji.webp" alt="ハナダイ" onerror="this.style.display='none'">
@@ -411,11 +425,11 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
       </div>
     </div>
 <div class="commentary"><p>全体感としては、今日は<b>「アジ・マダイ・シロギス」のシーズン安定組</b>と<b>「カンパチ」の単発大物・好機組</b>に分かれる構成でした。
-<b>アジ</b>は久比里港・羽田エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/konaya-maru.html">こなや丸</a>の148匹</b>は今週の全便でも上位の記録です。
-<b>マダイ</b>は松輪江奈港・茅ヶ崎港で0〜17匹レンジ。4.8kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
-<b>シロギス</b>は浦安・金沢八景の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の180匹</b>は今期トップ級の記録です。
+<b>アジ</b>は羽田・金沢八景エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/konaya-maru.html">こなや丸</a>の148匹</b>は今週の全便でも上位の記録です。
+<b>マダイ</b>は松輪江奈港・御前崎港で0〜17匹レンジ。4.8kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
+<b>シロギス</b>は東葛西・浦安の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/nagasakiya.html">長崎屋</a>の180匹</b>は今期トップ級の記録です。
 <b>カワハギ</b>は久比里港で1〜15匹・17〜31cm。底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、本日も複数船宿で安定した釣果が記録されました。
-<b>タチウオ</b>は浦安・横浜港･新山下方面で0〜12匹、サイズは<b>60〜100cm</b>と大型揃い。冬の名残のドラゴン級が春の早朝便で出ているパターンです。
+<b>タチウオ</b>は横浜港･新山下・浦安方面で0〜12匹、サイズは<b>60〜100cm</b>と大型揃い。冬の名残のドラゴン級が春の早朝便で出ているパターンです。
 <b>カンパチ</b>は下田港で1〜3匹レンジ・<b>1.5〜15.64kg</b>。<a href="/ship/ryusei-maru.html">龍正丸</a>が大物記録を出した遠征便で、近海では狙えないサイズ帯です。
 <b>マルイカ</b>は松輪間口港で13〜46匹。<a href="/ship/kiheiji-maru.html">喜平治丸</a>が継続的な好実績で、剣崎沖の良型群が継続中です。
 <b>ヤリイカ</b>は勝浦川津港方面で1〜21匹。<a href="/ship/fudo-maru.html">不動丸</a>など継続的に良型が記録されています。
@@ -423,7 +437,7 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 全16魚種が顔を揃えた幅広い釣果構成。アジ・マダイ・シロギスが三本柱として件数を稼ぎ、カワハギ・タチウオ・ハナダイも少数ながら確実に記録されています。同日に複数魚種を狙えるため、釣行の自由度が高いタイミングと言えます。</p></div>
   </section>
 
-<div class="day-nav"><a class="prev" href="./2026-05-07.html"><small>← 前日</small>5/7(木) の釣果まとめ</a><a class="next" href="./2026-05-09.html"><small>翌日 →</small>5/9(土) の釣果まとめ</a></div>
+<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション"><a class="prev7" href="./2026-05-01.html"><small>← 7日前</small>5/1(金)</a><a class="prev" href="./2026-05-07.html"><small>← 前日</small>5/7(木) の釣果まとめ</a><a class="archive-cta" href="./index.html"><small>全日程</small>一覧へ</a><a class="next" href="./2026-05-09.html"><small>翌日 →</small>5/9(土) の釣果まとめ</a><span class="next7 disabled" aria-disabled="true"><small>7日後 →</small>5/15(金)（記録なし）</span></nav>
 
   <div class="related">
     <h3>関連ページ</h3>
