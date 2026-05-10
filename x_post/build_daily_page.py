@@ -54,10 +54,13 @@ def _fish_link_html(fish_name: str, depth: str = "../") -> str:
 
 def _port_links_html(top_port: str, depth: str = "../") -> str:
     """港名（中黒で複数連結された文字列）を area ページへのリンクに変換。
-    未登録港はテキストのまま。「・」で再結合して返す。"""
+    未登録港はテキストのまま。「・」で再結合して返す。
+    半角中黒「･」と全角中黒「・」を正規化してマッチング。"""
     if not top_port:
         return ""
-    area_map = _load_area_romaji()
+    raw_map = _load_area_romaji()
+    # area_romaji_map のキーを正規化（半角中黒→全角中黒）した検索辞書を用意
+    area_map = {k.replace("･", "・"): v for k, v in raw_map.items()}
     out = []
     # 区切り文字: 全角中黒「・」/ 半角中黒「･」両対応
     for sep in ("・", "･"):
@@ -70,7 +73,9 @@ def _port_links_html(top_port: str, depth: str = "../") -> str:
         p = p.strip()
         if not p:
             continue
-        romaji = area_map.get(p)
+        # 港名を正規化してから検索
+        p_norm = p.replace("･", "・")
+        romaji = area_map.get(p_norm)
         if romaji:
             out.append(f'<a href="{depth}area/{romaji}.html" class="pl">{p}</a>')
         else:
