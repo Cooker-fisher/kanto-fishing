@@ -96,11 +96,18 @@ def fetch_choka(site: str, select: int, page: int) -> list:
     # choka_no を持つ dict のみ返す
     return [r for r in choka if isinstance(r, dict) and "choka_no" in r]
 
-def fetch_all_choka(site: str) -> list:
-    """全 select × 全 page を取得して全釣果レコードを返す。"""
+def fetch_all_choka(site: str, recent_only: bool = True) -> list:
+    """select × page を取得して釣果レコードを返す。
+
+    recent_only=True (デフォルト): select=0（最新60件）のみ取得。
+        日次 CI 用。約 1〜2秒で完了。
+    recent_only=False: select=0〜19 × 全 page を全件取得（約 5分）。
+        手動で過去データの一括補完が必要なときのみ使用。
+    """
     all_rows = []
     seen_ids = set()
-    for select in range(0, 20):  # select=0(最新60件), 1〜max月別
+    select_range = [0] if recent_only else list(range(0, 20))
+    for select in select_range:
         page = 0
         while True:
             rows = fetch_choka(site, select, page)
@@ -149,7 +156,7 @@ def build_point_lookup(choka_rows: list, tsuri_map: dict) -> dict:
                     lookup[key] = point
     return lookup
 
-def run(dry_run: bool = False):
+def run(dry_run: bool = False, recent_only: bool = True):
     print("=== 庄治郎丸 ポイント補完クローラー ===")
 
     # 0. 補完対象 0件なら早期終了（CI で毎日 5分かかっていた問題対策）
@@ -168,11 +175,12 @@ def run(dry_run: bool = False):
 
     tsuri_map = _load_tsuri_map()
 
-    # 1. API から全釣果取得
+    # 1. API から釣果取得（デフォルトは select=0 の最新60件のみ・約1〜2秒）
     print("SiteNo 取得中...", flush=True)
     site = fetch_site_no()
-    print(f"SiteNo={site}  釣果データ取得中...", flush=True)
-    choka_rows = fetch_all_choka(site)
+    mode_label = "最新60件のみ" if recent_only else "全期間"
+    print(f"SiteNo={site}  釣果データ取得中（{mode_label}）...", flush=True)
+    choka_rows = fetch_all_choka(site, recent_only=recent_only)
     print(f"取得: {len(choka_rows)}件", flush=True)
 
     # 2. lookup 構築
@@ -210,4 +218,7 @@ def run(dry_run: bool = False):
 
 if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv
-    run(dry_run=dry_run)
+    # --full: 全期間取得（過去レコードの一括補完が必要なときのみ）。
+    # デフォルト (recent_only=True) は select=0 の最新60件のみで日次 CI 用。
+    recent_only = "--full" not in sys.argv
+    run(dry_run=dry_run, recent_only=recent_only)
