@@ -36,7 +36,7 @@
 変更点(v5.8):
 - 推薦コメント整合性: build_reason_tagsに先週比タグ追加（📈先週比UP/📉先週比DOWN）
 - build_comment: WoW矛盾注記（top/highでwow≦-30%→「直近は急減傾向・注意」）
-- 魚種×港ページ新設: build_fish_area_pages()（≥5件の組み合わせのみ fish_area/ に生成）
+- 魚種×港ページ新設: build_fish_area_pages()（≥1件の組み合わせ全て fish_area/ に生成・2026-05-10 閾値 5→1 変更）
 - build_fish_pages: 「エリア別の釣果」セクション追加（fish_area/へのリンク）
 変更点(v5.7):
 - point列を point_place / point_depth に分割（「水深」を区切りに前後を分割）
@@ -8422,8 +8422,11 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     year_fa_g, week_num_fa_g = current_iso_week()
 
     count = 0
+    # 生成閾値: 2026-05-10 ユーザー判断で 5 件 → 1 件に変更（記録ボリューム重視）。
+    # 旧: 統計カード/ランキングが薄くならない最低件数として 5 件
+    # 新: 1 件でも記録があれば fish_area ページを生成（薄いページが増えても網羅性優先）
     for (fish, area), catches in fa_summary.items():
-        if len(catches) < 5:
+        if len(catches) < 1:
             continue
         max_cnt = 0
         personal_catches = []
@@ -10720,14 +10723,14 @@ def build_sitemap(data):
     area_set = {a for a in area_set if a in _AREA_ROMAJI}
     for area in sorted(area_set):
         urls.append((f"{SITE_URL}/area/{area_slug(area)}.html", "0.7", "daily"))
-    # fish_area/*.html（≥5件の組み合わせ）
+    # fish_area/*.html（≥1件の組み合わせ・2026-05-10 閾値 5→1 変更で build_fish_area_pages と同期）
     fa_counts: dict = {}
     for c in data:
         for f in c["fish"]:
             if f not in _SKIP:
                 fa_counts[(f, c["area"])] = fa_counts.get((f, c["area"]), 0) + 1
     for (fish, area), cnt in sorted(fa_counts.items()):
-        if cnt >= 5:
+        if cnt >= 1:
             urls.append((f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html", "0.7", "weekly"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
