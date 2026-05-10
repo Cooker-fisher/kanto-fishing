@@ -99,6 +99,11 @@ _PAGE_CSS = """
   --port: #0a7ea4;
   --warn: #c44402;
   --good: #06d6a0;
+  /* 統一 navbar 用（design/V2/style.css と同期） */
+  --hdr: #0d2b4a;
+  --nav: #f0f3f7;
+  --white: #fff;
+  --prem: #7c3aed;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -108,15 +113,54 @@ body {
   line-height: 1.7;
   font-size: 15px;
 }
-.gnav {
-  background: var(--accent);
+/* 統一 navbar（design/V2/style.css と同等。サイト全体と統一） */
+header {
+  background: var(--hdr);
+  color: var(--white);
   padding: 12px 20px;
+  border-bottom: 3px solid var(--cta);
+}
+header .inner {
+  max-width: 880px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.gnav .logo { color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; }
-.gnav nav a { color: #fff; font-size: 12px; margin-left: 14px; text-decoration: none; opacity: .85; }
+header .site-logo { text-decoration: none; }
+header h1 { font-size: 19px; font-weight: 700; color: var(--white); }
+header h1 span { color: var(--cta); }
+header .domain { font-size: 11px; opacity: .5; color: var(--white); }
+nav.gnav {
+  background: var(--nav);
+  padding: 7px 20px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+nav.gnav a {
+  color: var(--sub);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 16px;
+  text-decoration: none;
+}
+nav.gnav a:hover,
+nav.gnav a.on { background: var(--accent); color: var(--white); text-decoration: none; }
+nav.gnav a.prem { color: var(--prem); }
+nav.gnav a.prem::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--prem);
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
 .wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
 .crumbs { font-size: 12px; color: var(--sub); margin-bottom: 14px; }
 .crumbs a { color: var(--port); text-decoration: none; }
@@ -699,15 +743,20 @@ def build(ctx, commentary, output_path, png_url=None):
 </head>
 <body>
 
-<header class="gnav">
-  <a class="logo" href="/">船釣り予想</a>
-  <nav>
-    <a href="/">トップ</a>
-    <a href="/calendar.html">カレンダー</a>
-    <a href="/x_post/index.html">釣果速報</a>
-    <a href="/pages/about.html">サイトについて</a>
-  </nav>
+<header>
+  <div class="inner">
+    <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <span class="domain">funatsuri-yoso.com</span>
+  </div>
 </header>
+<nav class="gnav">
+  <a href="/index.html">今日の釣果</a>
+  <a href="/x_post/index.html" class="on">釣果速報</a>
+  <a href="/fish/">魚種</a>
+  <a href="/area/">エリア</a>
+  <a href="/calendar.html">カレンダー</a>
+  <a href="/forecast/index.html" class="prem">有料プラン</a>
+</nav>
 
 <div class="wrap">
 
