@@ -6690,10 +6690,12 @@ def build_fish_pages(data, history, crawled_at=""):
         if f in _FISH_ROMAJI and f not in fish_summary:
             fish_summary[f] = []
     for fish, catches in fish_summary.items():
+        # catches=0 でもメバル形式（rich path）で統一。
+        # 過去1年サマリーを HERO / comment 文言に使うために先取りする。
+        _fish_hist_0 = None
         if len(catches) < 1:
-            # 当日 catches=0 → 過去データを使った充実版「準備中」ページ
-            # （月別釣果トレンド / TOPエリア / TOP船宿 / 大物実績 / 旬カレンダー / 釣り方 / タックル / FAQ / 有料ティザー）
-            fish_hist = _summarize_fish_history(fish, _hist_rows_for_fish, now)
+            _fish_hist_0 = _summarize_fish_history(fish, _hist_rows_for_fish, now)
+        if False:  # 旧シーバス形式ブロック削除 — 以下は dead code placeholder
 
             # tackle 情報（fish_tackle.json）
             tackle_obj = tackle_data.get(fish, {}) if isinstance(tackle_data, dict) else {}
@@ -7065,8 +7067,12 @@ def build_fish_pages(data, history, crawled_at=""):
             cnt_range_str = f"{_mn}〜{_mx}匹"
         elif _mx is not None:
             cnt_range_str = f"{_mx}匹"
-        else:
+        elif catches:
             cnt_range_str = f"釣果{len(catches)}件"
+        else:
+            # catches=0: fh-r に過去1年件数を表示（_fish_hist_0 が設定済みのはず）
+            _py_n = (_fish_hist_0 or {}).get("recent_365_records", 0)
+            cnt_range_str = f"過去1年 {_py_n:,}件" if _py_n else ""
         # サイズ: this_w.size_avg があれば「平均{X}cm」、無ければ catches から min〜max
         sz_str = ""
         if this_w and this_w.get("size_avg"):
@@ -7271,7 +7277,7 @@ def build_fish_pages(data, history, crawled_at=""):
   <h2><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
   {f'<div class="fh-r">{cnt_range_str}</div>' if cnt_range_str else ''}
   {f'<div class="fh-s">{sz_str}</div>' if sz_str else ''}
-  <div class="fh-m">今週 {len(catches)}件・{len(set(c['ship'] for c in catches))}船宿</div>
+  <div class="fh-m">{'本日の釣果報告は集計待ち' if not catches else f'今週 {len(catches)}件・{len(set(c["ship"] for c in catches))}船宿'}</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
