@@ -8,6 +8,8 @@ import json
 
 _FISH_ROMAJI: dict = {}
 _FISH_ROMAJI_LOADED = False
+_AREA_ROMAJI: dict = {}
+_AREA_ROMAJI_LOADED = False
 
 
 def _load_fish_romaji() -> dict:
@@ -25,6 +27,55 @@ def _load_fish_romaji() -> dict:
             _FISH_ROMAJI = {}
         _FISH_ROMAJI_LOADED = True
     return _FISH_ROMAJI
+
+
+def _load_area_romaji() -> dict:
+    """normalize/area_romaji_map.json を読み込んでキャッシュ。"""
+    global _AREA_ROMAJI, _AREA_ROMAJI_LOADED
+    if not _AREA_ROMAJI_LOADED:
+        _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        _path = os.path.join(_root, "normalize", "area_romaji_map.json")
+        try:
+            with open(_path, encoding="utf-8") as f:
+                _AREA_ROMAJI = json.load(f)
+        except Exception:
+            _AREA_ROMAJI = {}
+        _AREA_ROMAJI_LOADED = True
+    return _AREA_ROMAJI
+
+
+def _fish_link_html(fish_name: str, depth: str = "../") -> str:
+    """魚種名を fish ページへのリンクに変換。未登録ならテキストのまま。"""
+    romaji = _load_fish_romaji().get(fish_name)
+    if not romaji:
+        return fish_name
+    return f'<a href="{depth}fish/{romaji}.html" class="fl">{fish_name}</a>'
+
+
+def _port_links_html(top_port: str, depth: str = "../") -> str:
+    """港名（中黒で複数連結された文字列）を area ページへのリンクに変換。
+    未登録港はテキストのまま。「・」で再結合して返す。"""
+    if not top_port:
+        return ""
+    area_map = _load_area_romaji()
+    out = []
+    # 区切り文字: 全角中黒「・」/ 半角中黒「･」両対応
+    for sep in ("・", "･"):
+        if sep in top_port:
+            ports = top_port.split(sep)
+            break
+    else:
+        ports = [top_port]
+    for p in ports:
+        p = p.strip()
+        if not p:
+            continue
+        romaji = area_map.get(p)
+        if romaji:
+            out.append(f'<a href="{depth}area/{romaji}.html" class="pl">{p}</a>')
+        else:
+            out.append(p)
+    return "・".join(out)
 
 
 # ── CSS（mockup-x-post-daily.html から抽出・CSS 変数のみ使用） ──
@@ -288,12 +339,14 @@ def _fish_table_rows_html(fish_rows, depth="../"):
         else:
             size_html = '<span class="size">—</span>'
 
+        fish_link = _fish_link_html(fish_name, depth)
+        port_links = _port_links_html(top_port, depth)
         rows.append(f"""      <div class="fish-row">
         {icon_html}
-        <div class="name">{fish_name}<span class="badge">{n_trips}便</span></div>
+        <div class="name">{fish_link}<span class="badge">{n_trips}便</span></div>
         <div class="catch">{cnt_min}〜{cnt_max}匹</div>
         {size_html}
-        <div class="port">{top_port}</div>
+        <div class="port">{port_links}</div>
       </div>""")
     return "\n".join(rows)
 
