@@ -2863,8 +2863,10 @@ def _parse_text_section_gyo(section_html, ship, area, date_str, month):
 
     results = []
     # canonical → [読み方リスト] の逆引き辞書（長い名前を先にマッチ）
+    # 旧 FISH_MAP (24魚種) では gyo.ne.jp のテキストでシーバス・クロダイ等が
+    # 検出漏れしていた。TSURI_MONO_MAP (73魚種) ベースに変更（2026-05-10）
     all_fish = {}  # fish_name → canonical
-    for canon, names in FISH_MAP.items():
+    for canon, names in TSURI_MONO_MAP.items():
         for n in names:
             all_fish[n] = canon
     sorted_fish = sorted(all_fish.keys(), key=len, reverse=True)
