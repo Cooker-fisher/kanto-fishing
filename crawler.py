@@ -2504,7 +2504,30 @@ class TableParser(HTMLParser):
 # パース補助
 # ============================================================
 def guess_fish(t):
-    return [f for f, kws in FISH_MAP.items() if any(k in t for k in kws)] or ["不明"]
+    """fish_raw 文字列から魚種を抽出してリスト返却。
+    tsuri_mono_map_draft.json の 73 魚種に対応（旧 FISH_MAP は 24 魚種しか登録されておらず、
+    シーバス・クロダイ・キンメダイ・ハナダイ・イシモチ・カンパチ等が「不明」になるバグを修正）。
+
+    複数魚種が混在する場合は全て返す（既存仕様）。長いパターンを優先してマッチさせ、
+    マッチした文字列を削除してから次を探すことで「クロダイ」→「タイ」誤マッチを防ぐ。
+    """
+    if not t:
+        return ["不明"]
+    # patterns を長さ降順で展開（長いパターン優先 → 「クロダイ」が「タイ」にマッチする前に消費）
+    items = []
+    for canon, patterns in TSURI_MONO_MAP.items():
+        for p in patterns:
+            items.append((canon, p))
+    items.sort(key=lambda x: -len(x[1]))
+
+    remaining = t
+    found = []
+    for canon, p in items:
+        if p in remaining:
+            if canon not in found:
+                found.append(canon)
+            remaining = remaining.replace(p, " ")
+    return found or ["不明"]
 
 def parse_num(s):
     return s.translate(Z2H)
