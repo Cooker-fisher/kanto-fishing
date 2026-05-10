@@ -655,6 +655,14 @@ def validate_ogp_meta():
             missing.append("twitter:site")
         if missing:
             fail(f"{label}: メタタグ欠落 → {', '.join(missing)}")
+            # DEBUG: head 部分を出力して原因特定（CI でローカル不在の事象を診断するため）
+            head_start = html.find('<head>')
+            head_end = html.find('</head>')
+            if head_start >= 0 and head_end >= 0:
+                head_excerpt = html[head_start:head_end+7]
+                print(f"  [DEBUG] {label} <head> ({len(head_excerpt)} chars):")
+                for line in head_excerpt.splitlines()[:30]:
+                    print(f"    {line[:200]}")
         else:
             ok(f"{label}: og:image / twitter:card / twitter:site OK")
 
@@ -696,6 +704,13 @@ def validate_share_buttons():
             continue
         if 'class="share-bar"' not in html:
             fail(f"{label}: share-bar 欠落（X シェアボタン未設置）")
+            # DEBUG: body 部分の冒頭を出力
+            body_start = html.find('<body>')
+            if body_start >= 0:
+                body_excerpt = html[body_start:body_start+1500]
+                print(f"  [DEBUG] {label} <body> 冒頭:")
+                for line in body_excerpt.splitlines()[:20]:
+                    print(f"    {line[:200]}")
         elif "twitter.com/intent/tweet" not in html:
             fail(f"{label}: share-bar はあるが twitter.com/intent/tweet リンク不在")
         else:

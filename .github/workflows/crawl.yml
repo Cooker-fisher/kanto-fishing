@@ -11,6 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: show commit info (CI debug)
+        # CI で「最新コミットの crawler.py が動いているか」確認用
+        run: |
+          echo "=== CI 起動時の commit ==="
+          git log --oneline -3
+          echo "=== crawler.py 最終更新者 ==="
+          git log -1 --format="%H %s" -- crawler.py
+          echo "=== build_fish_area_pages cleanup ロジック確認 ==="
+          grep -n "fa_out_dir = os.path.join" crawler.py | head -3
+          grep -n "閾値: 2026-05-10" crawler.py | head -3
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
