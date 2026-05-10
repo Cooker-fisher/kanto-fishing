@@ -47,6 +47,8 @@
 | 16 | `fish/*.html` サンプル | 共通 FAQ 見出し『船釣り共通の基礎知識』が消滅 + `/pages/faq.html` リンク存在（T22-M1） |
 | 17 | `fish_area/*.html` サンプル | intro 冒頭にエリア固有文（位置/県/湾/外房/内房/面し/市/町 のいずれか含む 10 字以上）（T22-H3） |
 | 18 | `sitemap.xml` | `forecast/` URL が含まれない（T22-H1 sitemap 除外） |
+| 19 | 全主要HTML（index・calendar・fish/\*・area/\*・fish_area/\*・ship/\*・fish/index・area/index） | `og:image` + `twitter:card` + `twitter:site` 全て存在（X 手動投稿時のリッチカード描画保証） |
+| 20 | index・fish/\*・area/\*・fish_area/\*・ship/\*・x_post/YYYY-MM-DD | `class="share-bar"` + `twitter.com/intent/tweet` リンクあり（ユーザー側拡散経路） |
 
 ### T22 関連の設計契約（H1 noindex 解除手順）
 
