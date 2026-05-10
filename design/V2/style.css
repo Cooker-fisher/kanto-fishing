@@ -773,3 +773,14 @@ ins.adsbygoogle[data-ad-status="unfilled"] { display: none !important; }
 
 /* ── ティザーインタイトル ── */
 .teaser-title-in { font-size: 14px; font-weight: 800; color: var(--prem); }
+
+/* ── X / SNS シェアバー（手動投稿運用・各ページ bread 直後に挿入） ── */
+.share-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; align-items: center; }
+.share-bar a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; border: 1px solid var(--border); transition: opacity .15s; }
+.share-x { background: #000; color: #fff; border-color: #000; }
+.share-x:hover { opacity: .85; text-decoration: none; }
+.share-follow { background: var(--card); color: var(--accent); }
+.share-follow:hover { background: var(--bg); text-decoration: none; }
+@media (max-width: 480px) {
+  .share-bar a { padding: 7px 12px; font-size: 12px; }
+}

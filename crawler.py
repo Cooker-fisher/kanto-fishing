@@ -216,6 +216,11 @@ USER_AGENT   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH
 SITE_URL = "https://funatsuri-yoso.com"
 WEB_DIR  = "docs"  # Web出力フォルダ（GitHub Pages /docs から配信）
 
+# X (Twitter) アカウント設定（手動投稿時の URL 貼付け時にカードを描画するための twitter:site 値）
+TWITTER_HANDLE = "@funatsuri_yoso"
+# 共通 OGP 画像（1200x630 推奨・docs/ogp-default.png）。未配置時は最新 x_post PNG を fallback コピーで充填
+OGP_DEFAULT_IMG = f"{SITE_URL}/ogp-default.png"
+
 # Google AdSense
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
 # Google Analytics
@@ -6567,11 +6572,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
   <title>関東船釣り釣果情報 | 今日何が釣れてる？ | 船釣り予想</title>
   <meta name="description" content="関東エリア（神奈川・東京・千葉・茨城）の船宿釣果を毎日更新。今日釣れている魚・エリア別速報・船宿ランキング。">
   <link rel="canonical" href="{SITE_URL}/">
-  <meta property="og:title" content="関東船釣り釣果情報 | 今日何が釣れてる？">
-  <meta property="og:description" content="関東エリアの船宿釣果を毎日自動集計。今日釣れている魚・エリア別速報。">
-  <meta property="og:url" content="{SITE_URL}/">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="船釣り予想">
+  {_build_share_meta(
+      title="関東船釣り釣果情報 | 今日何が釣れてる？",
+      desc="関東エリアの船宿釣果を毎日自動集計。今日釣れている魚・エリア別速報。",
+      url=f"{SITE_URL}/",
+      og_image=(_latest_x_post_image_url() or OGP_DEFAULT_IMG),
+  )}
   <script type="application/ld+json">{jsonld_website}</script>
   {GA_TAG}
   {ADSENSE_TAG}
@@ -6592,6 +6598,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
 {live_ticker_html}
 </div>
 <div class="c">
+{_build_share_buttons(
+    share_text="今日の関東船釣り釣果まとめ | 船釣り予想",
+    share_url=f"{SITE_URL}/",
+)}
 <!-- TOP COMBOS: R3 今週末の見どころ -->
 {top_combos_html}
 <!-- ZONE B: 釣れている魚 -->
@@ -6929,11 +6939,12 @@ def build_fish_pages(data, history, crawled_at=""):
 <title>{title_f_min}</title>
 <meta name="description" content="{desc_f_min}">
 <link rel="canonical" href="{SITE_URL}/fish/{fish_slug(fish)}.html">
-<meta property="og:title" content="{title_f_min}">
-<meta property="og:description" content="{desc_f_min}">
-<meta property="og:url" content="{SITE_URL}/fish/{fish_slug(fish)}.html">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="船釣り予想">
+{_build_share_meta(
+    title=title_f_min,
+    desc=desc_f_min,
+    url=f"{SITE_URL}/fish/{fish_slug(fish)}.html",
+    og_image=_resolve_fish_ogp_image(fish),
+)}
 <script type="application/ld+json">{crumb_jsonld_f}</script>
 <script type="application/ld+json">{faq_jsonld_f}</script>
 {GA_TAG}{ADSENSE_TAG}
@@ -6990,6 +7001,10 @@ def build_fish_pages(data, history, crawled_at=""):
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="index.html">魚種一覧</a> &rsaquo; {fish}</p>
+  {_build_share_buttons(
+      share_text=f"{fish}の最新釣果と旬カレンダー | 船釣り予想",
+      share_url=f"{SITE_URL}/fish/{fish_slug(fish)}.html",
+  )}
   <div class="notice">
     <strong>本日の{fish}の釣果報告はまだ届いていません。</strong>
     出船情報は各船宿のWebサイト・電話で直接ご確認ください。
@@ -7259,11 +7274,12 @@ def build_fish_pages(data, history, crawled_at=""):
   <title>関東の{fish}釣果・船宿ランキング【今週{len(catches)}件】| 船釣り予想</title>
   <meta name="description" content="{fish_desc}">
   <link rel="canonical" href="{fish_url}">
-  <meta property="og:title" content="関東の{fish}釣果・船宿ランキング【今週{len(catches)}件】">
-  <meta property="og:description" content="{fish_desc}">
-  <meta property="og:url" content="{fish_url}">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="船釣り予想">
+  {_build_share_meta(
+      title=f"関東の{fish}釣果・船宿ランキング【今週{len(catches)}件】",
+      desc=fish_desc,
+      url=fish_url,
+      og_image=_resolve_fish_ogp_image(fish),
+  )}
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"魚種一覧","item":"{SITE_URL}/fish/"}},{{"@type":"ListItem","position":3,"name":"{fish}の釣果情報","item":"{fish_url}"}}]}}</script>
   {faq_jsonld}
   {GA_TAG}
@@ -7281,6 +7297,10 @@ def build_fish_pages(data, history, crawled_at=""):
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
+  {_build_share_buttons(
+      share_text=f"{fish}の最新釣果と旬カレンダー | 船釣り予想",
+      share_url=fish_url,
+  )}
   {season_entry_html}
   <h2 class="st">今週の概況 <span class="tag free">無料</span></h2>
   <div class="comment-wrap">
@@ -7345,6 +7365,11 @@ def build_fish_pages(data, history, crawled_at=""):
   <title>魚種別釣果一覧 | 船釣り予想</title>
   <meta name="description" content="関東の船釣り魚種別釣果一覧。アジ・マダイ・ヒラメ・タチウオなど今週釣れている魚種をまとめて確認できます。">
   <link rel="canonical" href="{SITE_URL}/fish/">
+  {_build_share_meta(
+      title="魚種別釣果一覧 | 船釣り予想",
+      desc="関東の船釣り魚種別釣果一覧。アジ・マダイ・ヒラメ・タチウオなど今週釣れている魚種をまとめて確認できます。",
+      url=f"{SITE_URL}/fish/",
+  )}
   {GA_TAG}{ADSENSE_TAG}
   <link rel="stylesheet" href="../style.css">
   <style>{fish_index_css}</style>
@@ -7642,11 +7667,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 <title>{title_min}</title>
 <meta name="description" content="{desc_meta_min}">
 <link rel="canonical" href="{SITE_URL}/area/{area_slug(area)}.html">
-<meta property="og:title" content="{title_min}">
-<meta property="og:description" content="{desc_meta_min}">
-<meta property="og:url" content="{SITE_URL}/area/{area_slug(area)}.html">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="船釣り予想">
+{_build_share_meta(
+    title=title_min,
+    desc=desc_meta_min,
+    url=f"{SITE_URL}/area/{area_slug(area)}.html",
+)}
 <script type="application/ld+json">{crumb_jsonld}</script>
 <script type="application/ld+json">{faq_jsonld}</script>
 <script type="application/ld+json">{place_jsonld}</script>
@@ -7684,6 +7709,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
+  {_build_share_buttons(
+      share_text=f"{area}の船釣り釣果情報 | 船釣り予想",
+      share_url=f"{SITE_URL}/area/{area_slug(area)}.html",
+  )}
   <div class="notice">
     <strong>本日の{area}からの出船報告はまだ届いていません。</strong>
     出船情報は各船宿のWebサイト・電話で直接ご確認ください。
@@ -7998,11 +8027,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <title>{area}の釣果情報・おすすめ船宿【{fish_label}{today_cnt}件】| 船釣り予想</title>
   <meta name="description" content="{area_desc}">
   <link rel="canonical" href="{area_url}">
-  <meta property="og:title" content="{area}の釣果情報・おすすめ船宿【{fish_label}{today_cnt}件】">
-  <meta property="og:description" content="{area_desc}">
-  <meta property="og:url" content="{area_url}">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="船釣り予想">
+  {_build_share_meta(
+      title=f"{area}の釣果情報・おすすめ船宿【{fish_label}{today_cnt}件】",
+      desc=area_desc,
+      url=area_url,
+  )}
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"エリア一覧","item":"{SITE_URL}/area/"}},{{"@type":"ListItem","position":3,"name":"{area}の釣果","item":"{area_url}"}}]}}</script>
   {area_faq_jsonld}
   {GA_TAG}
@@ -8022,6 +8051,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
+  {_build_share_buttons(
+      share_text=f"{area}の船釣り釣果情報 | 船釣り予想",
+      share_url=area_url,
+  )}
   <h2 class="st">このエリアで今週釣れている魚 <span class="tag free">無料</span></h2>
   {fia_desc_html}<div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">今週の釣果はまだ集計中です</p>'}</div>
   {sea_section_html}
@@ -8104,6 +8137,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <title>エリア別釣果一覧 | 船釣り予想</title>
   <meta name="description" content="関東の船釣りエリア別釣果一覧。茨城・千葉・東京・神奈川エリアの今週の釣果件数と釣れている魚種を確認できます。">
   <link rel="canonical" href="{SITE_URL}/area/">
+  {_build_share_meta(
+      title="エリア別釣果一覧 | 船釣り予想",
+      desc="関東の船釣りエリア別釣果一覧。茨城・千葉・東京・神奈川エリアの今週の釣果件数と釣れている魚種を確認できます。",
+      url=f"{SITE_URL}/area/",
+  )}
   {GA_TAG}{ADSENSE_TAG}
   <link rel="stylesheet" href="../style.css">
   <style>{area_index_css}</style>
@@ -8479,11 +8517,12 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   <title>{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}件】| 船釣り予想</title>
   <meta name="description" content="{desc}">
   <link rel="canonical" href="{page_url}">
-  <meta property="og:title" content="{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}件】">
-  <meta property="og:description" content="{desc}">
-  <meta property="og:url" content="{page_url}">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="船釣り予想">
+  {_build_share_meta(
+      title=f"{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}件】",
+      desc=desc,
+      url=page_url,
+      og_image=_resolve_fish_ogp_image(fish),
+  )}
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"魚種一覧","item":"{SITE_URL}/fish/"}},{{"@type":"ListItem","position":3,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_slug(fish)}.html"}},{{"@type":"ListItem","position":4,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
   {fa_faq_ld}
   {GA_TAG}
@@ -8497,6 +8536,10 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 {_v2_header_nav('')}
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}</p>
+  {_build_share_buttons(
+      share_text=f"{area}の{fish}釣果情報 | 船釣り予想",
+      share_url=page_url,
+  )}
   <h2 class="st">{area}の{fish}釣果情報</h2>
   {fa_intro_html}
   {stat_cards_fa}
@@ -8603,6 +8646,11 @@ def build_calendar_page(crawled_at=""):
   <title>関東船釣り 旬カレンダー | 月別釣りものガイド | 船釣り予想</title>
   <meta name="description" content="関東エリアの船釣り旬カレンダー。アジ・マダイ・タチウオ・ヒラメなど50魚種以上の月別シーズン表。数釣り・型釣りのピーク月が一目でわかる。">
   <link rel="canonical" href="{SITE_URL}/calendar.html">
+  {_build_share_meta(
+      title="関東船釣り 旬カレンダー | 月別釣りものガイド",
+      desc="関東エリアの船釣り旬カレンダー。50魚種以上の月別シーズン表。数釣り・型釣りのピーク月が一目でわかる。",
+      url=f"{SITE_URL}/calendar.html",
+  )}
   {GA_TAG}
   {ADSENSE_TAG}
   <link rel="stylesheet" href="style.css">
@@ -10497,10 +10545,11 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{page_url}">
-<meta property="og:title" content="{title}">
-<meta property="og:description" content="{desc}">
-<meta property="og:url" content="{page_url}">
-<meta property="og:type" content="website">
+{_build_share_meta(
+    title=title,
+    desc=desc,
+    url=page_url,
+)}
 {ld_json}
 <link rel="stylesheet" href="../style.css">
 <style>{_SHIP_EXTRA_CSS}</style>
@@ -10517,6 +10566,10 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
 <div class="c">
 <div class="bread"><a href="../">トップ</a> &gt; <a href="../area/{area_slug_str}.html">{area}</a> &gt; {name}</div>
+{_build_share_buttons(
+    share_text=f"{name}（{area}）の船宿情報 | 船釣り予想",
+    share_url=page_url,
+)}
 
 <h2 class="st">基本情報</h2>
 <div class="info-box">
@@ -11344,6 +11397,112 @@ def build_main_js():
         print(f"pages/: {len([f for f in os.listdir(pages_src) if f.endswith('.html')])} ファイル → docs/pages/")
 
 
+def _build_share_meta(title, desc, url, og_image=None, og_type="website"):
+    """OGP + twitter:card 共通メタタグブロックを返す。
+
+    - title / desc: HTML エスケープ済みの想定（呼び出し側で f-string 中の文字を渡す既存規約に準拠）
+    - url: 絶対 URL（SITE_URL から始まる完全 URL）
+    - og_image: 省略時は OGP_DEFAULT_IMG。絶対 URL 必須
+    - og_type: "website" / "article" 等
+    """
+    img = og_image or OGP_DEFAULT_IMG
+    return (
+        f'<meta property="og:title" content="{title}">'
+        f'<meta property="og:description" content="{desc}">'
+        f'<meta property="og:url" content="{url}">'
+        f'<meta property="og:type" content="{og_type}">'
+        f'<meta property="og:site_name" content="船釣り予想">'
+        f'<meta property="og:image" content="{img}">'
+        f'<meta property="og:image:width" content="1200">'
+        f'<meta property="og:image:height" content="630">'
+        f'<meta name="twitter:card" content="summary_large_image">'
+        f'<meta name="twitter:site" content="{TWITTER_HANDLE}">'
+        f'<meta name="twitter:title" content="{title}">'
+        f'<meta name="twitter:description" content="{desc}">'
+        f'<meta name="twitter:image" content="{img}">'
+    )
+
+
+def _build_share_buttons(share_text, share_url, hashtags="船釣り,釣果"):
+    """X シェアボタン + フォローボタンの HTML を返す。
+
+    - share_text / share_url / hashtags は urllib.parse.quote でエンコード
+    - <a> を含む block の外側で使うこと（ネストアンカー禁止規約）
+    """
+    from urllib.parse import quote
+    intent_url = (
+        "https://twitter.com/intent/tweet?"
+        f"text={quote(share_text)}&url={quote(share_url)}&hashtags={quote(hashtags)}"
+    )
+    handle = TWITTER_HANDLE.lstrip("@")
+    follow_url = f"https://twitter.com/intent/follow?screen_name={handle}"
+    return (
+        '<div class="share-bar" role="group" aria-label="シェア">'
+        f'<a class="share-x" href="{intent_url}" target="_blank" rel="noopener nofollow" '
+        f'aria-label="X（旧Twitter）でシェア">𝕏 でシェア</a>'
+        f'<a class="share-follow" href="{follow_url}" target="_blank" rel="noopener nofollow" '
+        f'aria-label="@{handle} をフォロー">フォロー</a>'
+        '</div>'
+    )
+
+
+def _latest_x_post_image_url():
+    """docs/x_post/ 配下の最新 YYYY-MM-DD.png の絶対 URL を返す。なければ None。"""
+    d = os.path.join(WEB_DIR, "x_post")
+    if not os.path.isdir(d):
+        return None
+    pat = re.compile(r"^(\d{4}-\d{2}-\d{2})\.png$")
+    dates = []
+    for fn in os.listdir(d):
+        m = pat.match(fn)
+        if m:
+            dates.append(m.group(1))
+    if not dates:
+        return None
+    dates.sort(reverse=True)
+    return f"{SITE_URL}/x_post/{dates[0]}.png"
+
+
+def _resolve_fish_ogp_image(fish):
+    """魚種別 og:image を docs/assets/fish/{slug}/{slug}_photo.png → _illustration.png → 共通ロゴ
+    の段階フォールバックで返す。webp は X 互換性のため使わず png 優先。"""
+    try:
+        slug = fish_img_slug(fish)
+    except Exception:
+        return OGP_DEFAULT_IMG
+    base = os.path.join(WEB_DIR, "assets", "fish", slug)
+    for suffix in ("_photo.png", "_illustration.png"):
+        path = os.path.join(base, f"{slug}{suffix}")
+        if os.path.isfile(path):
+            return f"{SITE_URL}/assets/fish/{slug}/{slug}{suffix}"
+    return OGP_DEFAULT_IMG
+
+
+def _ensure_ogp_default_image():
+    """docs/ogp-default.png が未配置なら最新 x_post PNG をコピーして fallback 画像を作る。
+
+    crawler.py 起動時 / build 系の冒頭で呼ぶ。共通ロゴ画像が未作成のうちでも
+    リッチカードが描画されるようにする暫定対応。
+    """
+    import shutil as _shutil
+    dst = os.path.join(WEB_DIR, "ogp-default.png")
+    if os.path.isfile(dst):
+        return
+    src_url = _latest_x_post_image_url()
+    if not src_url:
+        return
+    src_name = src_url.rsplit("/", 1)[-1]
+    src_path = os.path.join(WEB_DIR, "x_post", src_name)
+    if not os.path.isfile(src_path):
+        return
+    try:
+        os.makedirs(WEB_DIR, exist_ok=True)
+        _shutil.copy2(src_path, dst)
+        print(f"[ogp] {src_name} を {dst} に複製（共通 OGP fallback）")
+    except Exception as e:
+        print(f"[ogp] fallback 複製失敗: {e}")
+
+
 def _page_head(title, desc="", canonical=""):
     """V2 共通 <head>〜<body> 開きタグを返す"""
     if not desc:
@@ -11455,6 +11614,8 @@ def main():
         os.makedirs(WEB_DIR, exist_ok=True)
         build_style_css()
         build_main_js()
+        # OGP fallback: docs/ogp-default.png が未配置なら最新 x_post PNG を複製
+        _ensure_ogp_default_image()
         # catches.json はスナップショット（当日のみ・魚データ空）なので
         # データ依存ページ（index/fish/area/ship/forecast/sitemap）は生成しない。
         # GitHub Actions のフルクロール版を保護するためスキップする。
@@ -11568,6 +11729,8 @@ def main():
         f.write("funatsuri-yoso.com")
     build_style_css()
     build_main_js()
+    # OGP fallback: docs/ogp-default.png が未配置なら最新 x_post PNG を複製
+    _ensure_ogp_default_image()
     with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
     build_fish_pages(valid_catches, history, crawled_at)

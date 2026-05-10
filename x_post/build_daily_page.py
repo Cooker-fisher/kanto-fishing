@@ -4,6 +4,7 @@
 import os
 import re
 import json
+from urllib.parse import quote as _urlquote
 
 
 _FISH_ROMAJI: dict = {}
@@ -313,10 +314,17 @@ body {
 .char-count { font-size: 11px; color: var(--sub); margin-top: 12px; text-align: right; border-top: 1px dashed var(--border); padding-top: 8px; }
 .char-count b { color: var(--good); font-weight: 800; }
 footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11px; text-align: center; padding: 16px; margin-top: 40px; }
+.share-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 18px; align-items: center; }
+.share-bar a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; border: 1px solid var(--border); transition: opacity .15s; }
+.share-x { background: #000; color: #fff; border-color: #000; }
+.share-x:hover { opacity: .85; }
+.share-follow { background: #fff; color: var(--accent); }
+.share-follow:hover { background: var(--bg-alt); }
 @media (max-width: 600px) {
   .hl-grid, .umi-grid { grid-template-columns: 1fr; }
   .fish-row { grid-template-columns: 40px 90px 90px 1fr; }
   .fish-row .port { display: none; }
+  .share-bar a { padding: 7px 12px; font-size: 12px; }
 }
 """
 
@@ -649,6 +657,24 @@ def build(ctx, commentary, output_path, png_url=None):
         else:
             kg_label = f'<span class="stat">最大<b>{top_kg_max:.2f}</b>kg 大物記録</span>'
 
+    # X シェアボタン
+    _share_url_full = f"https://funatsuri-yoso.com/x_post/{date_str_for_file}.html"
+    _share_text = f"{date_label} の関東船釣り釣果まとめ | 船釣り予想"
+    _share_intent = (
+        "https://twitter.com/intent/tweet?"
+        f"text={_urlquote(_share_text)}&url={_urlquote(_share_url_full)}"
+        f"&hashtags={_urlquote('船釣り,釣果')}"
+    )
+    _follow_intent = "https://twitter.com/intent/follow?screen_name=funatsuri_yoso"
+    share_bar_html = (
+        '<div class="share-bar" role="group" aria-label="シェア">'
+        f'<a class="share-x" href="{_share_intent}" target="_blank" rel="noopener nofollow" '
+        f'aria-label="X（旧Twitter）でシェア">𝕏 でシェア</a>'
+        f'<a class="share-follow" href="{_follow_intent}" target="_blank" rel="noopener nofollow" '
+        f'aria-label="@funatsuri_yoso をフォロー">フォロー</a>'
+        '</div>'
+    )
+
     html = f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -659,8 +685,15 @@ def build(ctx, commentary, output_path, png_url=None):
 <meta property="og:title" content="{date_label} 関東船釣り 釣果まとめ | 船釣り予想">
 <meta property="og:description" content="{og_desc}">
 <meta property="og:image" content="{png_url}?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="船釣り予想">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<meta name="twitter:title" content="{date_label} 関東船釣り 釣果まとめ | 船釣り予想">
+<meta name="twitter:description" content="{og_desc}">
+<meta name="twitter:image" content="{png_url}?v=2">
 <link rel="canonical" href="https://funatsuri-yoso.com/x_post/{date_str_for_file}.html">
 <style>{_PAGE_CSS}</style>
 </head>
@@ -681,6 +714,8 @@ def build(ctx, commentary, output_path, png_url=None):
   <div class="crumbs">
     <a href="/">トップ</a> &raquo; <a href="/x_post/index.html">釣果速報</a> &raquo; {date_label} 釣果まとめ
   </div>
+
+  {share_bar_html}
 
   <div class="hero">
     <h1>{date_label} 関東船釣り 釣果まとめ</h1>
