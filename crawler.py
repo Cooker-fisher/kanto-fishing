@@ -8360,7 +8360,24 @@ def build_fish_area_faq_html(fish, area, fa_catches, decadal_calendar):
 
 
 def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=None):
-    os.makedirs(os.path.join(WEB_DIR, "fish_area"), exist_ok=True)
+    fa_out_dir = os.path.join(WEB_DIR, "fish_area")
+    os.makedirs(fa_out_dir, exist_ok=True)
+    # 古いフォーマット (OGP なし = PR #34 以前) を削除。
+    # 当日 5件未満の魚×エリアコンボは再生成スキップされるため、古いまま残り続けると
+    # validate_output.py の不変条件 [19] OGP メタタグ / [20] share-bar で永続 fail する。
+    # 新フォーマットでない HTML は責任を持って削除し、当日条件を満たすコンボのみ
+    # 新フォーマットで再生成する設計に揃える。
+    for _fn in os.listdir(fa_out_dir):
+        if not _fn.endswith(".html") or _fn == "index.html":
+            continue
+        _p = os.path.join(fa_out_dir, _fn)
+        try:
+            with open(_p, encoding="utf-8") as _f:
+                _h = _f.read()
+            if 'property="og:image"' not in _h:
+                os.remove(_p)
+        except Exception:
+            pass
     if decadal_calendar is None:
         decadal_calendar = load_decadal_calendar()
     # H3 (T22): area_description.json をロード（エリア固有1文をイントロに差し込む）
