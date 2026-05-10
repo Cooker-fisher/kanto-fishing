@@ -152,6 +152,20 @@ def build_point_lookup(choka_rows: list, tsuri_map: dict) -> dict:
 def run(dry_run: bool = False):
     print("=== 庄治郎丸 ポイント補完クローラー ===")
 
+    # 0. 補完対象 0件なら早期終了（CI で毎日 5分かかっていた問題対策）
+    #    catches_raw.json を先に確認し、point_raw 空の庄治郎丸レコードが
+    #    無ければ API 取得をスキップする
+    with open(CATCHES_RAW, encoding="utf-8") as f:
+        catches = json.load(f)
+    target_count = sum(
+        1 for r in catches
+        if r.get("ship") == SHIP_NAME and not r.get("point_raw")
+    )
+    if target_count == 0:
+        print(f"point_raw 補完対象 0件 → API 取得スキップ（早期終了）")
+        return
+    print(f"point_raw 空のレコード: {target_count}件 → API 取得開始")
+
     tsuri_map = _load_tsuri_map()
 
     # 1. API から全釣果取得
@@ -165,10 +179,7 @@ def run(dry_run: bool = False):
     lookup = build_point_lookup(choka_rows, tsuri_map)
     print(f"ポイントルックアップ: {len(lookup)}エントリ")
 
-    # 3. catches_raw.json の庄治郎丸レコードを更新
-    with open(CATCHES_RAW, encoding="utf-8") as f:
-        catches = json.load(f)
-
+    # 3. catches_raw.json の庄治郎丸レコードを更新（catches は冒頭で既にロード済み）
     updated = 0
     for rec in catches:
         if rec.get("ship") != SHIP_NAME:
