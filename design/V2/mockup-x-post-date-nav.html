@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>x_post 日付ジャンプ UI 4案 比較モック</title>
+<style>
+:root {
+  --bg:       #f5f7fa;
+  --bg-alt:   #fafbfd;
+  --card:     #fff;
+  --border:   #d0d8e0;
+  --text:     #1a2332;
+  --sub:      #5a6a7a;
+  --muted:    #8a96a4;
+  --accent:   #0d2b4a;
+  --cta:      #e85d04;
+  --cta2:     #d04e00;
+  --cta-soft: #fff3e0;
+  --port:     #0a7ea4;
+  --pos:      #1a9d56;
+  --neg:      #d43333;
+  --white:    #fff;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;
+  background: var(--bg); color: var(--text); margin: 0; padding: 0;
+  line-height: 1.6;
+}
+.wrap { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+header.page-head {
+  background: linear-gradient(135deg, var(--accent), #163d5c);
+  color: var(--white); padding: 20px 16px; margin-bottom: 24px;
+}
+.page-head h1 { margin: 0 0 6px; font-size: 18px; }
+.page-head p { margin: 0; font-size: 12px; opacity: .85; }
+.viewport-toggle {
+  position: sticky; top: 0; background: var(--card);
+  border-bottom: 1px solid var(--border); padding: 8px 16px;
+  z-index: 100; text-align: center; font-size: 12px;
+}
+.viewport-toggle button {
+  background: var(--bg-alt); border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 12px; margin: 0 4px; cursor: pointer; font-size: 12px;
+}
+.viewport-toggle button.on { background: var(--accent); color: var(--white); border-color: var(--accent); }
+.case {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  margin-bottom: 32px; overflow: hidden;
+}
+.case-head {
+  background: var(--bg-alt); padding: 14px 18px; border-bottom: 1px solid var(--border);
+}
+.case-head h2 { margin: 0 0 4px; font-size: 16px; color: var(--accent); }
+.case-head p { margin: 0; font-size: 12px; color: var(--sub); }
+.case-body { padding: 20px 18px; }
+.preview-frame {
+  background: var(--bg); border: 2px dashed var(--border); border-radius: 8px;
+  padding: 16px; margin: 0 auto;
+  transition: max-width .2s ease;
+}
+body.mobile-view .preview-frame { max-width: 360px; }
+.preview-context {
+  background: var(--bg-alt); padding: 8px 12px; border-radius: 6px;
+  font-size: 11px; color: var(--sub); margin-bottom: 8px;
+  text-align: center;
+}
+.note { font-size: 11px; color: var(--sub); margin-top: 12px; }
+.note strong { color: var(--accent); }
+
+/* ── 共通 day-nav ベース ── */
+.day-nav { display: grid; gap: 8px; margin: 0; }
+.day-nav a, .day-nav span {
+  display: block; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--bg-alt); text-decoration: none;
+  font-size: 12px; min-height: 44px; box-sizing: border-box;
+}
+.day-nav a { color: var(--port); font-weight: 700; }
+.day-nav a:hover { background: var(--cta-soft); border-color: var(--cta); color: var(--cta); }
+.day-nav .disabled { color: #aab4bf; cursor: default; }
+.day-nav small { display: block; font-size: 10px; color: var(--sub); margin-bottom: 2px; font-weight: normal; }
+
+/* === 案A: 5ボタン === */
+.day-nav-A { grid-template-columns: 1fr 1fr 1fr; grid-template-areas: "a1 a3 a5" "a2 a2 a4"; }
+.day-nav-A .prev7 { grid-area: a1; text-align: left; }
+.day-nav-A .prev  { grid-area: a2; text-align: left; }
+.day-nav-A .archive-cta { grid-area: a3; text-align: center; background: var(--cta-soft); border-color: var(--cta); color: var(--cta); font-weight: 800; }
+.day-nav-A .next  { grid-area: a4; text-align: right; }
+.day-nav-A .next7 { grid-area: a5; text-align: right; }
+@media (min-width: 600px) {
+  .day-nav-A { grid-template-columns: repeat(5, 1fr); grid-template-areas: "a1 a2 a3 a4 a5"; }
+}
+
+/* === 案B: カレンダーピッカー === */
+.day-nav-B { grid-template-columns: 1fr 1.5fr 1fr; align-items: stretch; }
+.day-nav-B .prev { text-align: left; }
+.day-nav-B .next { text-align: right; }
+.day-nav-B .picker-wrap {
+  border: 1px solid var(--cta); background: var(--cta-soft); border-radius: 8px;
+  padding: 8px 10px; text-align: center; min-height: 44px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.day-nav-B .picker-wrap label { font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+.day-nav-B .picker-wrap input[type=date] {
+  font-size: 13px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--white); color: var(--text); width: 100%; max-width: 140px;
+}
+.day-nav-B .picker-note { font-size: 9px; color: var(--sub); margin: 4px 0 0; }
+
+/* === 案C: 全アーカイブCTA === */
+.day-nav-C { grid-template-columns: 1fr 1.2fr 1fr; }
+.day-nav-C .prev { text-align: left; }
+.day-nav-C .archive-hub {
+  text-align: center; background: var(--cta-soft); border-color: var(--cta);
+  color: var(--cta); font-weight: 800;
+}
+.day-nav-C .next { text-align: right; }
+
+/* === 案D: タイムラインバー === */
+.timeline-nav { margin: 0 0 12px; padding: 8px 0; background: var(--bg-alt); border-radius: 8px; }
+.tl-track {
+  display: flex; gap: 4px; overflow-x: auto; padding: 12px 8px 24px;
+  scroll-snap-type: x mandatory; scrollbar-width: thin;
+}
+.tl-track::-webkit-scrollbar { height: 6px; }
+.tl-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.tl-dot {
+  flex: 0 0 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; scroll-snap-align: center; text-decoration: none;
+  cursor: pointer; font-size: 0;
+}
+.tl-dot .tl-label {
+  position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; white-space: nowrap; color: var(--sub); font-weight: 700;
+}
+.tl-dot.has-record { background: var(--port); }
+.tl-dot.has-record:hover { background: var(--cta); transform: scale(1.15); }
+.tl-dot.current { background: var(--cta); border: 3px solid var(--accent); }
+.tl-dot.current .tl-label { color: var(--cta); font-weight: 800; }
+.tl-dot.no-record { background: var(--white); border: 2px solid var(--border); cursor: default; }
+.tl-dot.no-record .tl-label { color: var(--muted); font-weight: normal; }
+
+/* === 比較サマリー === */
+.summary {
+  background: var(--cta-soft); border: 2px solid var(--cta); border-radius: 12px;
+  padding: 16px 18px; margin-top: 16px;
+}
+.summary h3 { margin: 0 0 8px; color: var(--cta2); font-size: 14px; }
+.summary table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.summary th, .summary td { padding: 6px 8px; border-bottom: 1px solid rgba(0,0,0,.08); text-align: center; }
+.summary th { background: var(--white); }
+.summary td:first-child { text-align: left; font-weight: 700; }
+.recommend { font-size: 12px; color: var(--accent); margin-top: 12px; line-height: 1.7; }
+.recommend strong { color: var(--cta); }
+</style>
+</head>
+<body class="mobile-view">
+
+<header class="page-head">
+  <h1>x_post 日付ジャンプ UI 4案 比較モック</h1>
+  <p>2026-05-10 designer 提案 / 各案の day-nav HTML を実 CSS で表示</p>
+</header>
+
+<div class="viewport-toggle">
+  ビュー幅:
+  <button onclick="document.body.classList.add('mobile-view')" id="btn-m" class="on">📱 モバイル (360px)</button>
+  <button onclick="document.body.classList.remove('mobile-view')" id="btn-p">🖥 PC (フル幅)</button>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== 案A ===== -->
+  <section class="case">
+    <div class="case-head">
+      <h2>案A. ±N日ジャンプボタン拡張（5ボタン）</h2>
+      <p>±7日 + ±1日 + 中央に「全アーカイブ」CTA。モバイルは2行・PCは1行5列</p>
+    </div>
+    <div class="case-body">
+      <div class="preview-frame">
+        <div class="preview-context">↑ ここまで本文（魚種別 釣果報告 など）</div>
+        <nav class="day-nav day-nav-A" aria-label="日付ナビゲーション">
+          <a class="prev7" href="#"><small>← 7日前</small>5/3(土)</a>
+          <a class="prev" href="#"><small>← 前日</small>5/9(金)</a>
+          <a class="archive-cta" href="#"><small>全日程</small>一覧へ</a>
+          <a class="next" href="#"><small>翌日 →</small>5/11(日)</a>
+          <span class="next7 disabled"><small>7日後 →</small>記録なし</span>
+        </nav>
+        <div class="preview-context" style="margin-top:8px;">↓ 関連ページ・footer</div>
+      </div>
+      <p class="note"><strong>実装コスト:</strong> 約 50 行（ctx 6 フィールド追加・JS 不要）<br>
+      <strong>強み:</strong> ±7 で「3日前」「5日前」要求を上位互換／<strong>弱み:</strong> 「最新→最古」一発不可</p>
+    </div>
+  </section>
+
+  <!-- ===== 案B ===== -->
+  <section class="case">
+    <div class="case-head">
+      <h2>案B. <code>&lt;input type="date"&gt;</code> カレンダーピッカー</h2>
+      <p>HTML5 ネイティブ picker で任意日に直ジャンプ。OS 標準 UI</p>
+    </div>
+    <div class="case-body">
+      <div class="preview-frame">
+        <div class="preview-context">↑ ここまで本文</div>
+        <nav class="day-nav day-nav-B" aria-label="日付ナビゲーション">
+          <a class="prev" href="#"><small>← 前日</small>5/9(金)</a>
+          <div class="picker-wrap">
+            <label for="date-jump">日付選択 📅</label>
+            <input type="date" id="date-jump" value="2026-05-10" min="2026-05-01" max="2026-05-10">
+            <p class="picker-note">記録なし日は空ページ</p>
+          </div>
+          <a class="next disabled"><small>翌日 →</small>記録なし</a>
+        </nav>
+        <div class="preview-context" style="margin-top:8px;">↓ 関連ページ・footer</div>
+      </div>
+      <p class="note"><strong>実装コスト:</strong> 約 30 行 + JS 5 行 + 404.html 整備推奨<br>
+      <strong>強み:</strong> 任意日へ1操作／<strong>弱み:</strong> 記録なし日選択時の404 UX 問題、JS 必須</p>
+    </div>
+  </section>
+
+  <!-- ===== 案C ===== -->
+  <section class="case">
+    <div class="case-head">
+      <h2>案C. 「全アーカイブへ」CTA を中央に追加（推奨）</h2>
+      <p>±1日ナビは維持、中央に「30日一覧」CTA。既存 index.html を「ジャンプハブ」化</p>
+    </div>
+    <div class="case-body">
+      <div class="preview-frame">
+        <div class="preview-context">↑ ここまで本文</div>
+        <nav class="day-nav day-nav-C" aria-label="日付ナビゲーション">
+          <a class="prev" href="#"><small>← 前日</small>5/9(金)</a>
+          <a class="archive-hub" href="#" aria-label="全30日の釣果速報一覧を見る">
+            <small>30日分一覧</small>全アーカイブ
+          </a>
+          <a class="next disabled"><small>翌日 →</small>記録なし</a>
+        </nav>
+        <div class="preview-context" style="margin-top:8px;">↓ 関連ページ・footer</div>
+      </div>
+      <p class="note"><strong>実装コスト:</strong> <strong style="color:var(--cta)">約 10 行未満（ctx 拡張ゼロ）</strong><br>
+      <strong>強み:</strong> 既存 index.html 30日アーカイブを直接活用／<strong>弱み:</strong> 「3日前」は2ステップ（個別→index→3日前）</p>
+    </div>
+  </section>
+
+  <!-- ===== 案D ===== -->
+  <section class="case">
+    <div class="case-head">
+      <h2>案D. タイムラインバー（ドット型）</h2>
+      <p>30日のドット横一列。記録あり=塗り・記録なし=白抜き・現在地=ハイライト。1タップで任意日へ</p>
+    </div>
+    <div class="case-body">
+      <div class="preview-frame">
+        <div class="preview-context">↑ ここまで本文</div>
+        <div class="timeline-nav" role="navigation" aria-label="日付タイムライン">
+          <div class="tl-track" role="list">
+            <a class="tl-dot has-record" href="#" role="listitem" aria-label="4/26"><span class="tl-label">4/26</span></a>
+            <span class="tl-dot no-record" role="listitem" aria-disabled="true" tabindex="-1"><span class="tl-label">4/27</span></span>
+            <span class="tl-dot no-record" role="listitem" aria-disabled="true" tabindex="-1"><span class="tl-label">4/28</span></span>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">4/29</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">4/30</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/1</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/2</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/3</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/4</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/5</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/6</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/7</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/8</span></a>
+            <a class="tl-dot has-record" href="#" role="listitem"><span class="tl-label">5/9</span></a>
+            <span class="tl-dot current" role="listitem" aria-current="page"><span class="tl-label">5/10</span></span>
+            <span class="tl-dot no-record" role="listitem" aria-disabled="true" tabindex="-1"><span class="tl-label">5/11</span></span>
+            <span class="tl-dot no-record" role="listitem" aria-disabled="true" tabindex="-1"><span class="tl-label">5/12</span></span>
+          </div>
+        </div>
+        <nav class="day-nav" style="grid-template-columns:1fr 1fr;" aria-label="日付ナビゲーション">
+          <a class="prev" href="#" style="text-align:left;"><small>← 前日</small>5/9(金)</a>
+          <a class="next disabled" style="text-align:right;"><small>翌日 →</small>記録なし</a>
+        </nav>
+        <div class="preview-context" style="margin-top:8px;">↓ 関連ページ・footer</div>
+      </div>
+      <p class="note"><strong>実装コスト:</strong> 約 90 行（ctx 1 フィールド + JS 3 行）<br>
+      <strong>強み:</strong> 「最新↔最古」「3日前」どちらも 1 タップ・記録あり日が視覚化／<strong>弱み:</strong> モバイル横スクロール必須・実装最大</p>
+    </div>
+  </section>
+
+  <!-- ===== 比較サマリー ===== -->
+  <div class="summary">
+    <h3>📊 4案 比較サマリー</h3>
+    <table>
+      <tr><th>観点</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+      <tr><td>実装コスト</td><td>中</td><td>中</td><td><strong style="color:var(--cta)">小</strong></td><td>大</td></tr>
+      <tr><td>「3日前へ一気」</td><td>△</td><td>◎</td><td>△</td><td>◎</td></tr>
+      <tr><td>「最新↔最古」</td><td>×</td><td>◎</td><td>○</td><td>◎</td></tr>
+      <tr><td>モバイル UX</td><td>△</td><td>◎</td><td>◎</td><td>△</td></tr>
+      <tr><td>既存30日アーカイブ活用</td><td>×</td><td>×</td><td>◎</td><td>×</td></tr>
+      <tr><td>JS 依存</td><td>なし</td><td>あり</td><td>なし</td><td>あり</td></tr>
+    </table>
+    <p class="recommend">
+      <strong>designer 推奨:</strong> 案C 即時 + 案A 段階追加。<br>
+      案C はコスト 10行未満で既存 index.html 30日アーカイブを「ハブ」として即活用可能。
+      蓄積日数が 30 日超になる 2か月後に案A の「±7日」を追加して個別ページ内完結性を高める2段階。
+      案B は 404 問題、案D はタップ領域問題が解決コスト大のため後回し。
+    </p>
+  </div>
+
+</div>
+
+<script>
+// viewport toggle
+document.getElementById('btn-m').addEventListener('click', function(){
+  this.classList.add('on'); document.getElementById('btn-p').classList.remove('on');
+});
+document.getElementById('btn-p').addEventListener('click', function(){
+  this.classList.add('on'); document.getElementById('btn-m').classList.remove('on');
+});
+// 案D: 現在地へ自動スクロール（モック内のみ）
+const cur = document.querySelector('.tl-dot.current');
+if (cur) cur.scrollIntoView({ inline: 'center', behavior: 'auto', block: 'nearest' });
+</script>
+
+</body>
+</html>
