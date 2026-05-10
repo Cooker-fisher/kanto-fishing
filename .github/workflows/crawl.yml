@@ -24,6 +24,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: install Python dependencies (Pillow for x_post PNG)
+        # requirements.txt に Pillow>=10.0.0 が定義されている。
+        # 未インストール時は x_post/generate_image.py が ImportError で graceful skip し、
+        # docs/x_post/{date}.png が生成されず X 投稿時のリッチカード画像が欠落する。
+        run: pip install -r requirements.txt
       - name: install Japanese fonts (x_post PNG 用)
         # x_post/generate_image.py が Pillow で日本語 PNG を描画する際に必要。
         # 未インストール時は ImageFont.load_default() (英数字のみ) にフォールバックし
