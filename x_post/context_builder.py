@@ -35,6 +35,26 @@ _DECADE_LABELS = {
 }
 
 
+def _load_cancellations(date_str: str) -> list:
+    """data/V2/cancellations.csv から該当日 (YYYY/MM/DD) の欠航レコードを返す。
+    valid_catches に含まれない欠航データを別経路で取得し、出船率計算に使う。"""
+    import csv
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    _path = os.path.join(_root, "data", "V2", "cancellations.csv")
+    rows = []
+    if not os.path.exists(_path):
+        return rows
+    try:
+        with open(_path, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for r in reader:
+                if r.get("date") == date_str:
+                    rows.append(r)
+    except Exception:
+        pass
+    return rows
+
+
 def _get_decade_no(dt):
     """datetime → decade_no (1-36)"""
     month = dt.month
@@ -345,9 +365,16 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     if day_exact:
         day_catches = day_exact
 
-    # 出船統計
-    ships_set = {c["ship"] for c in day_catches}
-    areas_set = {c.get("area", "") for c in day_catches}
+    # 欠航データを cancellations.csv から取得（valid_catches に含まれない別経路）
+    cancellations_csv = _load_cancellations(date_slash)
+    cancel_ships_csv = {c["ship"] for c in cancellations_csv if c.get("ship")}
+    cancel_areas_csv = {c.get("area", "") for c in cancellations_csv if c.get("area")}
+
+    # 出船統計（釣果あり船宿 + 欠航船宿の和集合）
+    ships_with_catch = {c["ship"] for c in day_catches}
+    areas_with_catch = {c.get("area", "") for c in day_catches}
+    ships_set = ships_with_catch | cancel_ships_csv
+    areas_set = areas_with_catch | cancel_areas_csv
     n_ships = len(ships_set)
     n_areas = len(areas_set)
 
@@ -411,10 +438,13 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
                     "port": c.get("area", ""),
                 }
 
-    # 欠航数
-    n_cancellations = sum(1 for c in day_catches if c.get("is_cancellation") or
-                          "欠航" in str(c.get("catch_raw", "")) or
-                          "出船中止" in str(c.get("catch_raw", "")))
+    # 欠航数（cancellations.csv 由来 + day_catches の is_cancellation フラグの OR で重複排除）
+    cancel_ships_in_catches = {c["ship"] for c in day_catches
+                                if c.get("is_cancellation")
+                                or "欠航" in str(c.get("catch_raw", ""))
+                                or "出船中止" in str(c.get("catch_raw", ""))}
+    all_cancel_ships = cancel_ships_csv | cancel_ships_in_catches
+    n_cancellations = len(all_cancel_ships)
 
     # wow_pct (先週比)
     weekly = history.get("weekly", {})
