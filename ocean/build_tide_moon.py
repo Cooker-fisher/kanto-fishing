@@ -90,7 +90,7 @@ def calc_tide_coeff(moon_age: float) -> int:
 
 
 def calc_moon_phase(moon_age: float) -> str:
-    """月相ラベル"""
+    """月相ラベル（crawler.py _moon_phase_name と表記統一）"""
     age = moon_age % _SYNODIC_MONTH
     if age < 1.5 or age > 28.0:
         return "新月"
@@ -107,7 +107,7 @@ def calc_moon_phase(moon_age: float) -> str:
     elif age < 22.5:
         return "下弦"
     else:
-        return "晦日前"
+        return "有明月"  # 旧「晦日前」は天文用語で一般馴染み薄いため変更（2026-05-10）
 
 
 def init_db(conn):
