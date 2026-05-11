@@ -4743,28 +4743,161 @@ def build_fish_fixed_faq_html(fish, fixed_faq_data):
     return html, faq_pairs
 
 
-def build_fish_faq_html(fish, catches, decadal_calendar, site_url=""):
-    """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル"""
-    # Q1: 旬はいつ？
-    fish_decades = decadal_calendar.get(fish, {})
-    if fish_decades:
-        monthly_scores = {}
-        for decade_no, data in fish_decades.items():
-            month = ((decade_no - 1) // 3) + 1
-            score = data.get("cnt_index", 0)
-            if month not in monthly_scores:
-                monthly_scores[month] = []
-            monthly_scores[month].append(score)
-        monthly_avg = {m: sum(s) / len(s) for m, s in monthly_scores.items()}
-        top_3_months = sorted(monthly_avg.items(), key=lambda x: -x[1])[:3]
-        if top_3_months:
-            month_names = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
-            month_strs = [month_names[m - 1] for m, _ in sorted(top_3_months, key=lambda x: x[0])]
-            q1_ans = f"直近のデータでは{month_strs[0]}・{month_strs[1] if len(month_strs) > 1 else ''}・{month_strs[2] if len(month_strs) > 2 else ''}が実績が多い傾向です。旬カレンダーで詳しい月別推移をご確認ください。"
+def _format_months_range(months):
+    """月リスト [int] を旬カレンダー文章用に整形。
+    例: [6,7,8] → "6〜8月", [4,7,10] → "4月・7月・10月", [4,5,9,10,11] → "4〜5月・9〜11月",
+        12ヶ月全て → "通年", [] → ""
+    年跨ぎ連続（11,12,1 等）も結合する。"""
+    if not months:
+        return ""
+    ms = sorted(set(int(m) for m in months if 1 <= int(m) <= 12))
+    if not ms:
+        return ""
+    if len(ms) == 12:
+        return "通年"
+    # 年跨ぎ連続を検出（12 と 1 が両方含まれる場合のみ結合候補）
+    wrap = (12 in ms and 1 in ms)
+    if wrap:
+        # 12 を起点に巡回連続を取り、それ以外を通常処理
+        head_end = 12
+        while (head_end - 1) in ms and head_end > 1:
+            head_end -= 1
+        head = list(range(head_end, 13))
+        tail_start = 1
+        while (tail_start + 1) in ms and tail_start < 12:
+            tail_start += 1
+        tail = list(range(1, tail_start + 1))
+        # head と tail が ms をカバーしてなければ wrap は無効
+        # wrap span が 7ヶ月超なら「ほぼ通年」相当で読みづらい→通常分割に倒す
+        wrap_months = set(head) | set(tail)
+        if not wrap_months.issubset(set(ms)) or len(wrap_months) > 7:
+            wrap = False
         else:
-            q1_ans = f"関東の{fish}船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"
-    else:
-        q1_ans = f"関東の{fish}船釣りの旬はエリアや年度によって異なります。このページの旬カレンダーで月別の釣れ具合をご確認ください。"
+            remaining = sorted(set(ms) - wrap_months)
+            # 通常処理に渡すために残月をランに分割
+            runs = []
+            if remaining:
+                cur = [remaining[0]]
+                for m in remaining[1:]:
+                    if m == cur[-1] + 1:
+                        cur.append(m)
+                    else:
+                        runs.append(cur)
+                        cur = [m]
+                runs.append(cur)
+            # wrap ラン: 11〜2月 形式
+            wrap_label = f"{head[0]}〜{tail[-1]}月"
+            parts = [wrap_label]
+            for run in runs:
+                if len(run) == 1:
+                    parts.append(f"{run[0]}月")
+                else:
+                    parts.append(f"{run[0]}〜{run[-1]}月")
+            return "・".join(parts)
+    # 通常: 連続月を「X〜Y月」、単月を「X月」、間を「・」で結合
+    runs = []
+    cur = [ms[0]]
+    for m in ms[1:]:
+        if m == cur[-1] + 1:
+            cur.append(m)
+        else:
+            runs.append(cur)
+            cur = [m]
+    runs.append(cur)
+    parts = []
+    for run in runs:
+        if len(run) == 1:
+            parts.append(f"{run[0]}月")
+        else:
+            parts.append(f"{run[0]}〜{run[-1]}月")
+    return "・".join(parts)
+
+
+def _build_fish_season_q1_text(fish, hist_rows, decadal_calendar):
+    """FAQ Q1「{魚}の旬はいつですか？」を旬カレンダーと同じデータソース・同じレベル判定で文章化。
+
+    旬カレンダー（build_fish_season_map_html）と同じ優先順位:
+    1. hist_rows（CSV から fish 全エリア合算の月別件数）← 最優先（max>=5）
+    2. decadal_calendar（analysis.sqlite cnt_index 由来）
+    3. SEASON_DATA（ハードコード）
+
+    レベル判定（旬カレンダー本体と完全一致）:
+      ratio = cnt / max_v
+      ratio>=0.7 → lv4 (◎)・ratio>=0.4 → lv3 (良)・ratio>=0.15 → lv2 (普通)・cnt>0 → lv1 (渋)・0 → lv0
+    """
+    levels = None  # [12] int 0-4
+
+    # 1. hist_rows 優先
+    if hist_rows:
+        counts = compute_fish_month_records(fish, hist_rows)
+        max_v = max(counts) if counts else 0
+        if max_v >= 5:
+            levels = []
+            for cnt in counts:
+                ratio = cnt / max_v
+                if ratio >= 0.7:    levels.append(4)
+                elif ratio >= 0.4:  levels.append(3)
+                elif ratio >= 0.15: levels.append(2)
+                elif cnt > 0:       levels.append(1)
+                else:               levels.append(0)
+
+    # 2. decadal_calendar フォールバック
+    if levels is None:
+        fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
+        if fish_decades:
+            try:
+                levels = _decadal_to_monthly_index(fish_decades)
+            except Exception:
+                levels = None
+
+    # 3. SEASON_DATA フォールバック（ハードコードを 0-4 レベルに正規化）
+    if levels is None:
+        scores = SEASON_DATA.get(fish, [])
+        if scores:
+            levels = [max(0, min(4, s - 1)) for s in scores]
+
+    if not levels or all(lv == 0 for lv in levels):
+        return f"{fish}の月別釣果データは現在集計中です。本ページの旬カレンダーで月別推移をご確認ください。"
+
+    peak = [m for m, lv in enumerate(levels, 1) if lv == 4]
+    good = [m for m, lv in enumerate(levels, 1) if lv == 3]
+    weak = [m for m, lv in enumerate(levels, 1) if lv == 0]
+
+    peak_str = _format_months_range(peak)
+    good_str = _format_months_range(good)
+    weak_str = _format_months_range(weak)
+
+    # ピーク月の有無で文章を分岐（最大3パート）
+    if peak_str:
+        head = f"関東{fish}船釣りの釣果は{peak_str}に実績が集中しています。"
+        if good_str and weak_str:
+            return head + f"{good_str}も狙える時期で、{weak_str}は釣果が少なくなります。"
+        if good_str:
+            return head + f"{good_str}も狙える時期です。"
+        if weak_str:
+            return head + f"{weak_str}は釣果が少なくなります。"
+        return head
+    # ピークなし・shoulder のみ
+    if good_str:
+        if weak_str:
+            return f"関東{fish}船釣りの釣果は{good_str}に実績があります。{weak_str}は釣果が少なくなります。"
+        return f"関東{fish}船釣りの釣果は{good_str}に実績があります。"
+    # peak/good ともになし・「普通」レベル(lv=2)以下のみ
+    normal = [m for m, lv in enumerate(levels, 1) if lv == 2]
+    normal_str = _format_months_range(normal)
+    if normal_str and weak_str:
+        return f"関東{fish}船釣りの釣果は{normal_str}に少しずつ見られます。{weak_str}は釣果ほぼなしです。"
+    if normal_str:
+        return f"関東{fish}船釣りの釣果は{normal_str}に少しずつ見られます。"
+    if weak_str:
+        return f"関東{fish}船釣りの釣果は限られた月にのみ記録されています。{weak_str}は釣果ほぼなしです。"
+    return f"{fish}の月別釣果データは現在集計中です。本ページの旬カレンダーで月別推移をご確認ください。"
+
+
+def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=None):
+    """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル"""
+    # Q1: 旬はいつ？ → 旬カレンダーと同じデータソース・レベル判定で固定文章化
+    q1_ans = _build_fish_season_q1_text(fish, hist_rows, decadal_calendar)
 
     # Q2: 主なエリア
     if catches:
@@ -7235,7 +7368,7 @@ def build_fish_pages(data, history, crawled_at=""):
         # V2 season map / guide / FAQ / chart
         season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=_hist_rows_for_fish)
         guide_html = build_fish_guide_html(fish, tackle_data)
-        auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL)
+        auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL, hist_rows=_hist_rows_for_fish)
         # M1 (T22): 共通 FAQ 9 問を faq.html に切り出し。固有 FAQ + リンクのみ出力
         fixed_faq_html, fixed_faq_pairs = build_fish_fixed_faq_html(fish, fixed_faq_data)
         faq_html = auto_faq_html + fixed_faq_html
