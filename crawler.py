@@ -6902,6 +6902,22 @@ def build_html(catches, crawled_at, history, weather_data=None):
 # #6: 魚種別ページ
 # ============================================================
 
+def _is_plausible_size_cm(lo, hi):
+    """size_cm ペアが妥当か判定。抽出失敗の典型パターン（「5〜5cm」等の単一極小値）を除外。
+
+    船釣り対象魚で 10cm 未満の単一値は抽出ロジックの誤拾い（水深・船便番号等を size と誤読）
+    が圧倒的に多い。10cm 以上のレンジは正常データとみなす。
+    """
+    if lo is None or hi is None:
+        return False
+    if lo <= 0 or hi <= 0:
+        return False
+    # 単一極小値（5〜5cm 等）は抽出失敗の可能性大
+    if lo == hi and lo < 10:
+        return False
+    return True
+
+
 def _aggregate_area_cmp_from_catches(catches_list):
     """catches dict 形式（catches.json/recent_fp 由来）から area_cmp 用集計を返す。
 
@@ -6909,6 +6925,7 @@ def _aggregate_area_cmp_from_catches(catches_list):
                         "ships":[], "trips":int}}
     is_boat=True の便は cnt 集計から除外（船全体集計は個人釣果と粒度が違うため）。
     size_cm / weight_kg 両方を拾い、表示時に cm 優先 → kg フォールバックで型表示する。
+    size 外れ値（_is_plausible_size_cm で False）は除外。
     """
     area_dict = {}
     for c in catches_list:
@@ -6922,9 +6939,9 @@ def _aggregate_area_cmp_from_catches(catches_list):
             if cr.get("max") is not None: d["hi"].append(cr["max"])
             if cr.get("min") is not None: d["lo"].append(cr["min"])
         sz = c.get("size_cm")
-        if sz:
-            if sz.get("min") is not None and sz["min"] > 0: d["sz_lo"].append(sz["min"])
-            if sz.get("max") is not None and sz["max"] > 0: d["sz_hi"].append(sz["max"])
+        if sz and _is_plausible_size_cm(sz.get("min"), sz.get("max")):
+            d["sz_lo"].append(sz["min"])
+            d["sz_hi"].append(sz["max"])
         kg = c.get("weight_kg")
         if kg:
             if kg.get("min") is not None and kg["min"] > 0: d["kg_lo"].append(kg["min"])
@@ -6975,22 +6992,24 @@ def _aggregate_area_cmp_from_hist(fish, hist_rows, days=365):
                     ad["lo"].append(int(float(cmin)))
             except (ValueError, TypeError):
                 pass
+        # size_cm: 妥当性チェック後にペアで追加（外れ値「5〜5cm」等を除外）
+        _smin_v = None
+        _smax_v = None
         try:
             smin = r.get("size_min", "")
             if smin not in ("", None):
-                v = float(smin)
-                if v > 0:
-                    ad["sz_lo"].append(v)
+                _smin_v = float(smin)
         except (ValueError, TypeError):
             pass
         try:
             smax = r.get("size_max", "")
             if smax not in ("", None):
-                v = float(smax)
-                if v > 0:
-                    ad["sz_hi"].append(v)
+                _smax_v = float(smax)
         except (ValueError, TypeError):
             pass
+        if _is_plausible_size_cm(_smin_v, _smax_v):
+            ad["sz_lo"].append(_smin_v)
+            ad["sz_hi"].append(_smax_v)
         try:
             kmin = r.get("kg_min", "")
             if kmin not in ("", None):
@@ -7509,14 +7528,19 @@ def build_fish_pages(data, history, crawled_at=""):
             _py_n = (_fish_hist_0 or {}).get("recent_365_records", 0)
             cnt_range_str = f"過去1年 {_py_n:,}件" if _py_n else ""
         # サイズ: this_w.size_avg があれば「平均{X}cm」、無ければ catches から min〜max
+        # 外れ値「5〜5cm」等の抽出失敗パターンは _is_plausible_size_cm で除外
         sz_str = ""
         if this_w and this_w.get("size_avg"):
             sz_str = f"{this_w['size_avg']:.0f}cm"
         else:
-            w_sz_lo = [c["size_cm"]["min"] for c in catches if c.get("size_cm") and c["size_cm"].get("min") is not None]
-            w_sz_hi = [c["size_cm"]["max"] for c in catches if c.get("size_cm") and c["size_cm"].get("max") is not None]
-            if w_sz_lo and w_sz_hi:
-                sz_str = f"{int(min(w_sz_lo))}〜{int(max(w_sz_hi))}cm"
+            _sz_pairs = [(c["size_cm"]["min"], c["size_cm"]["max"])
+                         for c in catches
+                         if c.get("size_cm")
+                         and c["size_cm"].get("min") is not None
+                         and c["size_cm"].get("max") is not None
+                         and _is_plausible_size_cm(c["size_cm"]["min"], c["size_cm"]["max"])]
+            if _sz_pairs:
+                sz_str = f"{int(min(p[0] for p in _sz_pairs))}〜{int(max(p[1] for p in _sz_pairs))}cm"
         # area-cmp 充足版: 3段階フォールバック
         # Stage 1: today_catches_f（_resolve_display_dataset の最新日 or 7日窓）
         # Stage 2: catches 全体（直近7日マージ済）
