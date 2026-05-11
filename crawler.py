@@ -4894,6 +4894,52 @@ def _build_fish_season_q1_text(fish, hist_rows, decadal_calendar):
     return f"{fish}の月別釣果データは現在集計中です。本ページの旬カレンダーで月別推移をご確認ください。"
 
 
+def _build_fish_count_q3_text(fish, hist_rows):
+    """FAQ Q3「{魚}の一日の釣果はどのくらいですか？」を hist_rows ベースで固定文章化。
+
+    catches（当日スナップショット）参照だとオフシーズン魚種でフォールバック汎用文に落ちる問題への対策。
+    hist_rows（全期間 CSV）から tsuri_mono=fish かつ is_boat≠1 のレコードの cnt_max を集計し、
+    P25〜P75 を「標準的なレンジ」・最大値を「最高実績」として出力する固定文章。
+
+    cnt_max=0（ボウズ便）は除外（「典型的な釣果」を表現するため）。
+
+    補遺3 遵守: 「平均」「avg」「ave」表現は使わず、「標準的なレンジ」「最高実績」を使う。
+    """
+    fallback = f"{fish}の釣果データは集計中です。本ページの最新釣果テーブルで実績をご確認ください。"
+    if not hist_rows:
+        return fallback
+    maxes = []
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish:
+            continue
+        ib = str(r.get("is_boat", "")).strip().lower()
+        if ib in ("1", "true"):
+            continue
+        cmax = r.get("cnt_max", "")
+        if cmax == "" or cmax is None:
+            continue
+        try:
+            v = int(float(cmax))
+        except (ValueError, TypeError):
+            continue
+        if v > 0:  # ボウズ便は典型レンジ算出から除外
+            maxes.append(v)
+    if not maxes:
+        return fallback
+    n = len(maxes)
+    sorted_maxes = sorted(maxes)
+    max_max = sorted_maxes[-1]
+    if n >= 4:
+        p25 = sorted_maxes[int(n * 0.25)]
+        p75 = sorted_maxes[int(n * 0.75)]
+    else:
+        p25 = sorted_maxes[0]
+        p75 = sorted_maxes[-1]
+    if p25 == p75:
+        return f"関東{fish}船釣りの一日の釣果は{p25}匹前後が標準的です。最高実績は{max_max}匹です。"
+    return f"関東{fish}船釣りの一日の釣果は{p25}〜{p75}匹が標準的なレンジです。最高実績は{max_max}匹です。"
+
+
 def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=None):
     """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル"""
     # Q1: 旬はいつ？ → 旬カレンダーと同じデータソース・レベル判定で固定文章化
@@ -4915,23 +4961,8 @@ def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=
     else:
         q2_ans = f"神奈川・東京湾エリアをはじめ、千葉・外房、茨城など幅広いエリアで船が出ています。エリア別釣果ページで各エリアの状況をご確認ください。"
 
-    # Q3: 一日の釣果
-    if catches:
-        _q3_crs = [c.get("count_range") for c in catches if c.get("count_range") and not c["count_range"].get("is_boat")]
-        cnt_maxes = [cr["max"] for cr in _q3_crs if cr.get("max") is not None]
-        cnt_mins  = [cr["min"] for cr in _q3_crs if cr.get("min") is not None]
-        if cnt_mins and cnt_maxes:
-            p25_val = sorted(cnt_mins)[int(len(cnt_mins) * 0.25)] if len(cnt_mins) >= 4 else min(cnt_mins)
-            p75_val = sorted(cnt_maxes)[int(len(cnt_maxes) * 0.75)] if len(cnt_maxes) >= 4 else max(cnt_maxes)
-            max_val = max(cnt_maxes)
-            q3_ans = f"直近{len(catches)}件のデータでは{int(p25_val)}〜{int(p75_val)}匹が標準的なレンジです。最高実績は{int(max_val)}匹です。"
-        elif cnt_maxes:
-            max_val = max(cnt_maxes)
-            q3_ans = f"直近データでは最高{int(max_val)}匹の実績があります。釣果は潮回り・季節によって変動します。"
-        else:
-            q3_ans = f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"
-    else:
-        q3_ans = f"釣果は日・潮回り・季節によって大きく変動します。このページの最新釣果テーブルで実績をご確認ください。"
+    # Q3: 一日の釣果 → hist_rows（全期間 CSV）ベースで固定文章化（オフシーズンでも値が出る）
+    q3_ans = _build_fish_count_q3_text(fish, hist_rows)
 
     # Q4: 初心者向け（魚種別）
     _FISH_BEGINNER = {
