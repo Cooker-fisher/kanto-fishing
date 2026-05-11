@@ -1,0 +1,266 @@
+{
+  "fish": "イシモチ",
+  "ship": "小柴丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 39.33,
+    "bl2_wmape": 46.18,
+    "oos_r": 0.442,
+    "n_records": 402,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "小柴沖",
+      "n": 29,
+      "wmape_h0": 25.4,
+      "bl2_wmape": 57.7,
+      "oos_r": 0.802,
+      "improvement_pt": 13.89
+    },
+    {
+      "name": "本牧沖",
+      "n": 92,
+      "wmape_h0": 31.0,
+      "bl2_wmape": 42.1,
+      "oos_r": 0.596,
+      "improvement_pt": 8.34
+    },
+    {
+      "name": "富岡沖",
+      "n": 204,
+      "wmape_h0": 33.7,
+      "bl2_wmape": 39.8,
+      "oos_r": 0.453,
+      "improvement_pt": 5.66
+    },
+    {
+      "name": "赤灯沖",
+      "n": 45,
+      "wmape_h0": 36.3,
+      "bl2_wmape": 46.8,
+      "oos_r": 0.527,
+      "improvement_pt": 2.99
+    }
+  ],
+  "best_point": {
+    "name": "小柴沖",
+    "wmape_h0": 25.4,
+    "improvement_pt": 13.89
+  },
+  "improvement_pt": 13.89,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=小柴沖 wmape=25.4% imp=13.89pt"
+    }
+  ],
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.4028,
+      "n_valid": 401
+    },
+    {
+      "factor": "typhoon_dist",
+      "corr": 0.3072,
+      "n_valid": 94
+    },
+    {
+      "factor": "water_color_prev_n",
+      "corr": 0.273,
+      "n_valid": 202
+    },
+    {
+      "factor": "temp_min",
+      "corr": -0.2504,
+      "n_valid": 402
+    },
+    {
+      "factor": "typhoon_wind",
+      "corr": -0.2396,
+      "n_valid": 94
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.2351,
+      "n_valid": 402
+    },
+    {
+      "factor": "temp_max",
+      "corr": -0.1986,
+      "n_valid": 402
+    },
+    {
+      "factor": "wind_dir_n",
+      "corr": 0.1945,
+      "n_valid": 402
+    },
+    {
+      "factor": "sst_spring",
+      "corr": -0.1787,
+      "n_valid": 402
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.178,
+      "n_valid": 397
+    },
+    {
+      "factor": "temp_range",
+      "corr": 0.1708,
+      "n_valid": 402
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.1542,
+      "n_valid": 402
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.1445,
+      "n_valid": 402
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.109,
+      "n_valid": 402
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.0858,
+      "n_valid": 402
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.071,
+      "n_valid": 402
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.0602,
+      "n_valid": 402
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.0582,
+      "n_valid": 402
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.0078,
+      "n_valid": 402
+    },
+    {
+      "factor": "moon_age",
+      "corr": 0.0077,
+      "n_valid": 402
+    },
+    {
+      "factor": "moon_sin",
+      "corr": -0.007,
+      "n_valid": 402
+    }
+  ],
+  "rejected_factors": [],
+  "overrides": {},
+  "insights": [],
+  "points": [
+    {
+      "name": "富岡沖",
+      "n": 213,
+      "pct": 59
+    },
+    {
+      "name": "本牧沖",
+      "n": 92,
+      "pct": 26
+    },
+    {
+      "name": "小柴沖",
+      "n": 32,
+      "pct": 9
+    },
+    {
+      "name": "猿島沖",
+      "n": 13,
+      "pct": 4
+    },
+    {
+      "name": "横浜沖",
+      "n": 10,
+      "pct": 3
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.36,
+    "lon": 139.62
+  },
+  "multi_point_risk": "medium",
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 378,
+      "wmape_h0": 38.2,
+      "bl2_wmape": 44.4,
+      "improvement_pt": 1.1
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 38.2,
+    "improvement_pt": 1.1
+  },
+  "point_depth_models": [
+    {
+      "key": "本牧沖_浅場(~40m)",
+      "n": 91,
+      "wmape_h0": 30.7,
+      "bl2_wmape": 42.2,
+      "improvement_pt": 8.6
+    },
+    {
+      "key": "赤灯沖_浅場(~40m)",
+      "n": 40,
+      "wmape_h0": 32.6,
+      "bl2_wmape": 43.7,
+      "improvement_pt": 6.7
+    },
+    {
+      "key": "富岡沖_浅場(~40m)",
+      "n": 194,
+      "wmape_h0": 34.3,
+      "bl2_wmape": 40.3,
+      "improvement_pt": 5.0
+    }
+  ],
+  "best_point_depth": {
+    "key": "本牧沖_浅場(~40m)",
+    "wmape_h0": 30.7,
+    "improvement_pt": 8.6
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 134,
+      "wmape_h0": 33.0,
+      "bl2_wmape": 39.7,
+      "improvement_pt": 6.3
+    },
+    {
+      "cat": "濁り",
+      "n": 199,
+      "wmape_h0": 35.6,
+      "bl2_wmape": 49.5,
+      "improvement_pt": 3.7
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 33.0,
+    "improvement_pt": 6.3
+  }
+}

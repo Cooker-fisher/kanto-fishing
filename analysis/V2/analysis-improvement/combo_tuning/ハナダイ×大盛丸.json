@@ -1,12 +1,12 @@
 {
   "fish": "ハナダイ",
   "ship": "大盛丸",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.22,
+    "wmape_h0": 31.92,
     "bl2_wmape": 47.17,
-    "oos_r": 0.543,
+    "oos_r": 0.609,
     "n_records": 57,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,20 +18,141 @@
       "wmape_h0": 30.2,
       "bl2_wmape": 44.8,
       "oos_r": 0.58,
-      "improvement_pt": 6.03
+      "improvement_pt": 1.75
     }
   ],
   "best_point": {
     "name": "外川沖",
     "wmape_h0": 30.2,
-    "improvement_pt": 6.03
+    "improvement_pt": 1.75
   },
-  "improvement_pt": 6.03,
+  "improvement_pt": 1.75,
   "history": [
     {
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=外川沖 wmape=30.2% imp=6.03pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=外川沖 wmape=30.2% imp=1.75pt"
     }
-  ]
+  ],
+  "adopted_factors": [
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.4515,
+      "n_valid": 57
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.3703,
+      "n_valid": 56
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.3472,
+      "n_valid": 57
+    },
+    {
+      "factor": "tide_grp_chusho_winter",
+      "corr": -0.3213,
+      "n_valid": 57
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.2855,
+      "n_valid": 57
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.2794,
+      "n_valid": 57
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.2323,
+      "n_valid": 57
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.2042,
+      "n_valid": 57
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": -0.1855,
+      "n_valid": 57
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.1535,
+      "n_valid": 57
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.1535,
+      "n_valid": 57
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.1249,
+      "n_valid": 57
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.1104,
+      "n_valid": 57
+    },
+    {
+      "factor": "temp_avg",
+      "corr": -0.1089,
+      "n_valid": 57
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": -0.0858,
+      "n_valid": 57
+    },
+    {
+      "factor": "sst_avg",
+      "corr": -0.0228,
+      "n_valid": 57
+    }
+  ],
+  "rejected_factors": [],
+  "overrides": {},
+  "insights": [],
+  "points": [
+    {
+      "name": "外川沖",
+      "n": 40,
+      "pct": 70
+    },
+    {
+      "name": "外川前",
+      "n": 17,
+      "pct": 30
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.67,
+    "lon": 140.89
+  },
+  "multi_point_risk": "low",
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 48,
+      "wmape_h0": 32.5,
+      "bl2_wmape": 46.6,
+      "improvement_pt": -0.6
+    }
+  ],
+  "best_trip": null,
+  "point_depth_models": [],
+  "best_point_depth": null,
+  "water_color_models": [],
+  "best_water_color": null
 }

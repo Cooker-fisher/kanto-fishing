@@ -1,0 +1,186 @@
+{
+  "fish": "ハナダイ",
+  "ship": "勇幸丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 28.94,
+    "bl2_wmape": 39.03,
+    "oos_r": 0.441,
+    "n_records": 44,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "片貝沖",
+      "n": 44,
+      "wmape_h0": 18.6,
+      "bl2_wmape": 39.0,
+      "oos_r": 0.789,
+      "improvement_pt": 10.33
+    }
+  ],
+  "best_point": {
+    "name": "片貝沖",
+    "wmape_h0": 18.6,
+    "improvement_pt": 10.33
+  },
+  "improvement_pt": 10.33,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=片貝沖 wmape=18.6% imp=10.33pt"
+    }
+  ],
+  "adopted_factors": [
+    {
+      "factor": "typhoon_wind",
+      "corr": 0.5501,
+      "n_valid": 8
+    },
+    {
+      "factor": "tide_grp_chusho_spring",
+      "corr": -0.4445,
+      "n_valid": 44
+    },
+    {
+      "factor": "kuroshio_sla_monthly",
+      "corr": 0.4128,
+      "n_valid": 44
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.3995,
+      "n_valid": 44
+    },
+    {
+      "factor": "sla_pelagic_monthly",
+      "corr": 0.3932,
+      "n_valid": 44
+    },
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.3863,
+      "n_valid": 43
+    },
+    {
+      "factor": "water_color_pred_n",
+      "corr": 0.3533,
+      "n_valid": 44
+    },
+    {
+      "factor": "tide_grp_chusho_summer",
+      "corr": -0.3245,
+      "n_valid": 44
+    },
+    {
+      "factor": "precip_sum1",
+      "corr": -0.3159,
+      "n_valid": 44
+    },
+    {
+      "factor": "tide_grp_chusho_autumn",
+      "corr": 0.2959,
+      "n_valid": 44
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.1067,
+      "n_valid": 44
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.0962,
+      "n_valid": 44
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.0917,
+      "n_valid": 44
+    },
+    {
+      "factor": "moon_cos",
+      "corr": 0.0638,
+      "n_valid": 44
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.057,
+      "n_valid": 44
+    },
+    {
+      "factor": "is_holiday",
+      "corr": 0.0438,
+      "n_valid": 44
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": -0.041,
+      "n_valid": 44
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.0274,
+      "n_valid": 44
+    }
+  ],
+  "rejected_factors": [],
+  "overrides": {},
+  "insights": [],
+  "points": [
+    {
+      "name": "片貝沖",
+      "n": 44,
+      "pct": 100
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.43,
+    "lon": 140.62
+  },
+  "multi_point_risk": "low",
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 44,
+      "wmape_h0": 18.6,
+      "bl2_wmape": 39.0,
+      "improvement_pt": 10.3
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 18.6,
+    "improvement_pt": 10.3
+  },
+  "point_depth_models": [
+    {
+      "key": "片貝沖_浅場(~40m)",
+      "n": 43,
+      "wmape_h0": 17.2,
+      "bl2_wmape": 38.8,
+      "improvement_pt": 11.7
+    }
+  ],
+  "best_point_depth": {
+    "key": "片貝沖_浅場(~40m)",
+    "wmape_h0": 17.2,
+    "improvement_pt": 11.7
+  },
+  "water_color_models": [
+    {
+      "cat": "澄み",
+      "n": 29,
+      "wmape_h0": 16.6,
+      "bl2_wmape": 27.7,
+      "improvement_pt": 12.3
+    }
+  ],
+  "best_water_color": {
+    "cat": "澄み",
+    "wmape_h0": 16.6,
+    "improvement_pt": 12.3
+  }
+}

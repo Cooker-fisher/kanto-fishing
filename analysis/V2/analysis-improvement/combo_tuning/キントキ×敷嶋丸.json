@@ -1,0 +1,209 @@
+{
+  "fish": "キントキ",
+  "ship": "敷嶋丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 48.28,
+    "bl2_wmape": 62.8,
+    "oos_r": 0.39,
+    "n_records": 77,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "太東沖",
+      "n": 42,
+      "wmape_h0": 42.4,
+      "bl2_wmape": 64.2,
+      "oos_r": 0.577,
+      "improvement_pt": 5.87
+    }
+  ],
+  "best_point": {
+    "name": "太東沖",
+    "wmape_h0": 42.4,
+    "improvement_pt": 5.87
+  },
+  "improvement_pt": 5.87,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=太東沖 wmape=42.4% imp=5.87pt"
+    }
+  ],
+  "adopted_factors": [
+    {
+      "factor": "prev_week_cnt",
+      "corr": 0.4105,
+      "n_valid": 76
+    },
+    {
+      "factor": "temp_50m",
+      "corr": 0.3577,
+      "n_valid": 26
+    },
+    {
+      "factor": "current_dir_mode",
+      "corr": 0.3384,
+      "n_valid": 54
+    },
+    {
+      "factor": "wave_clamp",
+      "corr": -0.2859,
+      "n_valid": 54
+    },
+    {
+      "factor": "wave_height_avg",
+      "corr": -0.2847,
+      "n_valid": 54
+    },
+    {
+      "factor": "deepwater_score",
+      "corr": 0.283,
+      "n_valid": 21
+    },
+    {
+      "factor": "wave_height_max",
+      "corr": -0.2678,
+      "n_valid": 54
+    },
+    {
+      "factor": "pressure_min",
+      "corr": 0.2587,
+      "n_valid": 77
+    },
+    {
+      "factor": "current_speed_max",
+      "corr": -0.2572,
+      "n_valid": 54
+    },
+    {
+      "factor": "current_speed_avg",
+      "corr": -0.2559,
+      "n_valid": 54
+    },
+    {
+      "factor": "swell_height_avg",
+      "corr": -0.2524,
+      "n_valid": 54
+    },
+    {
+      "factor": "swell_height_max",
+      "corr": -0.2517,
+      "n_valid": 54
+    },
+    {
+      "factor": "moon_cos",
+      "corr": -0.2252,
+      "n_valid": 77
+    },
+    {
+      "factor": "pressure_avg",
+      "corr": 0.2047,
+      "n_valid": 77
+    },
+    {
+      "factor": "is_holiday",
+      "corr": -0.163,
+      "n_valid": 77
+    },
+    {
+      "factor": "tide_delta",
+      "corr": 0.1007,
+      "n_valid": 77
+    },
+    {
+      "factor": "is_summer_vacation",
+      "corr": 0.0707,
+      "n_valid": 77
+    },
+    {
+      "factor": "moon_sin",
+      "corr": 0.0423,
+      "n_valid": 77
+    },
+    {
+      "factor": "tide_type_n",
+      "corr": 0.0395,
+      "n_valid": 77
+    },
+    {
+      "factor": "moon_age",
+      "corr": -0.0314,
+      "n_valid": 77
+    },
+    {
+      "factor": "spawn_season_n",
+      "corr": -0.0296,
+      "n_valid": 77
+    },
+    {
+      "factor": "sst_avg",
+      "corr": 0.0271,
+      "n_valid": 54
+    },
+    {
+      "factor": "temp_avg",
+      "corr": 0.0257,
+      "n_valid": 77
+    }
+  ],
+  "rejected_factors": [],
+  "overrides": {},
+  "insights": [],
+  "points": [
+    {
+      "name": "太東沖",
+      "n": 42,
+      "pct": 55
+    },
+    {
+      "name": "御宿沖",
+      "n": 24,
+      "pct": 32
+    },
+    {
+      "name": "大原沖",
+      "n": 10,
+      "pct": 13
+    }
+  ],
+  "modal_coord": {
+    "lat": 35.31,
+    "lon": 140.49
+  },
+  "multi_point_risk": "medium",
+  "trip_models": [
+    {
+      "trip_no": 1,
+      "n": 75,
+      "wmape_h0": 47.3,
+      "bl2_wmape": 63.8,
+      "improvement_pt": 1.0
+    }
+  ],
+  "best_trip": {
+    "trip_no": 1,
+    "wmape_h0": 47.3,
+    "improvement_pt": 1.0
+  },
+  "point_depth_models": [
+    {
+      "key": "太東沖_浅場(~40m)",
+      "n": 41,
+      "wmape_h0": 42.7,
+      "bl2_wmape": 62.8,
+      "improvement_pt": 5.6
+    }
+  ],
+  "best_point_depth": {
+    "key": "太東沖_浅場(~40m)",
+    "wmape_h0": 42.7,
+    "improvement_pt": 5.6
+  },
+  "water_color_models": [],
+  "best_water_color": null
+}

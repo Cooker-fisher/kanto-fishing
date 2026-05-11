@@ -1,6 +1,54 @@
-現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定）
-最終更新: 2026/05/09 早朝
-最新コミット: 本コミット（Phase C 採用確定・composite_promise_break P50 13.94%）
+現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 55→59種）
+最終更新: 2026/05/12
+最新コミット: 本コミット（ALL_FISH 4魚種追加・新規5コンボの combo tuning 完了）
+
+---
+
+## ✅ 直近完了（2026/05/12・main agent）
+
+### ALL_FISH 4魚種追加・新規5コンボの combo tuning 完了
+
+**背景**: `docs/fish/` には 62 種の魚種ページがあるが、`run_full_deepdive.py` の `ALL_FISH` には 55 種しか入っておらず、CSVデータがあるのに分析対象から漏れている魚種が 4 種あった（イシモチ・キントキ・ハナダイ・アナゴ）。
+
+**実行1: run_full_deepdive.py イシモチ キントキ ハナダイ アナゴ --workers 4**（1分26秒・4/4 OK）
+
+combo_meta 追加（5コンボ・全て BL-2 勝利）:
+
+| 魚種 | 船宿 | n | wMAPE | composite pb |
+|---|---|---|---|---|
+| アナゴ | 吉野屋 | 54 | 34.1% | 11.1% |
+| イシモチ | 小柴丸 | 414 | 39.3% | 23.3% |
+| キントキ | 敷嶋丸 | 78 | 48.3% | 20.2% |
+| ハナダイ | 大盛丸 | 57 | 31.9% | 15.8% |
+| ハナダイ | 勇幸丸 | 45 | 28.9% | 22.0% |
+
+- wMAPE 28.9〜48.3%（全体 P50=37.3% と同水準）
+- composite pb 11.1〜23.3%（既存 P50=13.94% に対し概ね許容範囲）
+- 未生成2コンボ（キントキ×勇盛丸・ハナダイ×孝徳丸）: MIN_N_COMBO=30 の有効レコード閾値で除外（自然蓄積待ち）
+
+**実行2: combo_tuning JSON 充填**
+
+5コンボの combo_tuning JSON に以下を充填:
+- adopted_factors（16〜23件/コンボ）
+- points / modal_coord / multi_point_risk
+- trip_models（0〜1件/コンボ）
+- point_depth_models（0〜3件/コンボ）
+- water_color_models（0〜2件/コンボ）
+
+`update_combo_tuning_segments.py` に以下を追加（149行）:
+- `--target` オプション（特定コンボのみ処理）
+- `fill_missing_fields()` 関数（adopted_factors / points 系の補完）
+
+**code-reviewer 指摘の MAJOR 2件を修正済み:**
+- `n_valid=null` フォールバック（フラグ系・天文系因子で `combo_deep_params` に該当行が無い場合 0 に）
+- `points.pct` の母数をフィルタ後の `total` で計算（合計 100±1%）
+- `TODAY` を `date.today().isoformat()` に動的化（MINOR-4）
+
+**変更ファイル**:
+- `analysis/V2/methods/run_full_deepdive.py`（ALL_FISH 55→59種）
+- `analysis/V2/analysis-improvement/update_combo_tuning_segments.py`（149行追記 + 修正）
+- `analysis/V2/analysis-improvement/combo_tuning/`（新規3 + 更新2 = 5ファイル）
+- `analysis/V2/results/analysis.sqlite`（combo数 323→328・gitignore）
 
 ---
 
