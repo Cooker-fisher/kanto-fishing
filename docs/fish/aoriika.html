@@ -21,10 +21,17 @@
 .fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
 .area-cmp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .area-cmp h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;text-decoration:none;color:inherit}
+.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;flex-wrap:wrap;color:inherit}
 .ar:last-child{border-bottom:none}
-.ar .ar-name{flex:0 0 85px;font-size:13px;font-weight:700;color:var(--cta)}
-.ar .ar-range{flex:0 0 85px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-name{flex:0 0 90px;font-size:13px;font-weight:700;color:var(--cta);text-decoration:none}
+.ar .ar-range{flex:0 0 80px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-size{flex:0 0 80px;font-size:12px;color:var(--muted)}
+.ar .ar-trips{flex:0 0 48px;font-size:12px;color:var(--muted)}
+.ar .ar-ships{flex:1 1 200px;font-size:12px;color:var(--sub);min-width:0;line-height:1.5}
+.ar .ar-ships a{color:var(--cta);text-decoration:none}
+.ar .ar-ships a:hover{text-decoration:underline}
+.ar .ar-more{color:var(--muted);font-size:11px}
+@media(max-width:520px){.ar .ar-name{flex:0 0 100%}.ar .ar-range{flex:0 0 auto}.ar .ar-size{flex:0 0 auto}.ar .ar-trips{flex:0 0 auto}.ar .ar-ships{flex:1 1 100%}}
 .ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
@@ -98,7 +105,7 @@
   
 </div>
   <h2 class="st">—の釣果 <span class="tag free">無料</span></h2>
-  <p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>
+  <div class="area-cmp"><h3>過去1年の主なエリアと釣果</h3><div class="ar"><a class="ar-name" href="../area/matsuwa-maguchi.html">松輪間口港</a><span class="ar-range">0〜88匹</span><span class="ar-size"></span><span class="ar-trips">213便</span><span class="ar-ships"><a href="../ship/kiheiji-maru.html">喜平治丸</a></span></div><div class="ar"><a class="ar-name" href="../area/susaki.html">洲崎港</a><span class="ar-range">0〜13匹</span><span class="ar-size"></span><span class="ar-trips">15便</span><span class="ar-ships"><a href="../ship/saemi-maru.html">佐衛美丸</a></span></div><div class="ar"><a class="ar-name" href="../area/kanazawa-hakkei.html">金沢八景</a><span class="ar-range">0〜11匹</span><span class="ar-size"></span><span class="ar-trips">10便</span><span class="ar-ships">野毛屋釣船店</span></div><div class="ar"><a class="ar-name" href="../area/tomiura.html">富浦港</a><span class="ar-range">0〜11匹</span><span class="ar-size"></span><span class="ar-trips">30便</span><span class="ar-ships"><a href="../ship/kyoei-maru.html">共栄丸</a></span></div><div class="ar"><a class="ar-name" href="../area/kanaya.html">金谷港</a><span class="ar-range">0〜8匹</span><span class="ar-size">40〜50cm</span><span class="ar-trips">131便</span><span class="ar-ships"><a href="../ship/saemu-maru.html">さえむ丸</a></span></div></div>
   
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>

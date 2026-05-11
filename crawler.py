@@ -6901,6 +6901,144 @@ def build_html(catches, crawled_at, history, weather_data=None):
 # ============================================================
 # #6: 魚種別ページ
 # ============================================================
+
+def _aggregate_area_cmp_from_catches(catches_list):
+    """catches dict 形式（catches.json/recent_fp 由来）から area_cmp 用集計を返す。
+
+    戻り値: {area_name: {"hi":[], "lo":[], "sz_hi":[], "sz_lo":[], "ships":[], "trips":int}}
+    is_boat=True の便は cnt 集計から除外（船全体集計は個人釣果と粒度が違うため）。
+    """
+    area_dict = {}
+    for c in catches_list:
+        area = (c.get("area") or "").strip()
+        if not area:
+            continue
+        d = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [], "ships": [], "trips": 0})
+        cr = c.get("count_range")
+        if cr and not cr.get("is_boat"):
+            if cr.get("max") is not None: d["hi"].append(cr["max"])
+            if cr.get("min") is not None: d["lo"].append(cr["min"])
+        sz = c.get("size_cm")
+        if sz:
+            if sz.get("min") is not None and sz["min"] > 0: d["sz_lo"].append(sz["min"])
+            if sz.get("max") is not None and sz["max"] > 0: d["sz_hi"].append(sz["max"])
+        sname = (c.get("ship") or "").strip()
+        if sname and sname not in d["ships"]:
+            d["ships"].append(sname)
+        d["trips"] += 1
+    return area_dict
+
+
+def _aggregate_area_cmp_from_hist(fish, hist_rows, days=365):
+    """過去N日の CSV 履歴（dict 形式）から area_cmp 用集計を返す。
+
+    catches dict 経由と同じ戻り値形式で _render_area_cmp_rows に渡せる。
+    cnt_max/cnt_min/size_min/size_max の各列を読む。is_boat=1 は cnt 集計から除外。
+    """
+    if not hist_rows or not fish:
+        return {}
+    try:
+        cutoff_dt = (datetime.now(JST).replace(tzinfo=None) - timedelta(days=days))
+        cutoff = cutoff_dt.strftime("%Y/%m/%d")
+    except Exception:
+        cutoff = ""
+    area_dict = {}
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish:
+            continue
+        d = r.get("date", "")
+        if cutoff and d < cutoff:
+            continue
+        area = (r.get("area") or "").strip()
+        if not area:
+            continue
+        ad = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [], "ships": [], "trips": 0})
+        ib = str(r.get("is_boat", "") or "").strip().lower()
+        if ib not in ("1", "true"):
+            try:
+                cmax = r.get("cnt_max", "")
+                if cmax not in ("", None):
+                    ad["hi"].append(int(float(cmax)))
+            except (ValueError, TypeError):
+                pass
+            try:
+                cmin = r.get("cnt_min", "")
+                if cmin not in ("", None):
+                    ad["lo"].append(int(float(cmin)))
+            except (ValueError, TypeError):
+                pass
+        try:
+            smin = r.get("size_min", "")
+            if smin not in ("", None):
+                v = float(smin)
+                if v > 0:
+                    ad["sz_lo"].append(v)
+        except (ValueError, TypeError):
+            pass
+        try:
+            smax = r.get("size_max", "")
+            if smax not in ("", None):
+                v = float(smax)
+                if v > 0:
+                    ad["sz_hi"].append(v)
+        except (ValueError, TypeError):
+            pass
+        ship = (r.get("ship") or "").strip()
+        if ship and ship not in ad["ships"]:
+            ad["ships"].append(ship)
+        ad["trips"] += 1
+    return area_dict
+
+
+def _render_area_cmp_rows(area_dict, max_areas=5, depth=1):
+    """area_dict（{area: {hi, lo, sz_hi, sz_lo, ships, trips}}）から area_cmp の HTML rows を生成。
+
+    ネストアンカー回避のため、親 <div class="ar"> + 内部に <a class="ar-name"> と <a> (船宿リンク) を並列配置。
+    """
+    if not area_dict:
+        return ""
+    rows = ""
+    for aname, ad in sorted(area_dict.items(), key=lambda x: -(max(x[1]["hi"] or [0])))[:max_areas]:
+        # 匹数レンジ
+        a_lo = int(min(ad["lo"])) if ad["lo"] else None
+        a_hi = int(max(ad["hi"])) if ad["hi"] else None
+        if a_lo is not None and a_hi is not None and a_lo != a_hi:
+            a_range = f"{a_lo}〜{a_hi}匹"
+        elif a_hi is not None:
+            a_range = f"{a_hi}匹"
+        else:
+            a_range = "—"
+        # サイズレンジ
+        sz_str = ""
+        if ad["sz_hi"]:
+            _szlo_src = ad["sz_lo"] if ad["sz_lo"] else ad["sz_hi"]
+            sz_lo = int(min(_szlo_src))
+            sz_hi = int(max(ad["sz_hi"]))
+            if sz_lo and sz_lo != sz_hi:
+                sz_str = f"{sz_lo}〜{sz_hi}cm"
+            else:
+                sz_str = f"{sz_hi}cm"
+        sz_html = f'<span class="ar-size">{sz_str}</span>' if sz_str else '<span class="ar-size"></span>'
+        # 便数
+        trip_str = f"{ad['trips']}便"
+        # 船宿リンク（最大5・以降は ほかN船宿）
+        ship_links_list = [_ship_link(s, depth=depth) for s in ad["ships"][:5]]
+        ships_str = "、".join(ship_links_list)
+        if len(ad["ships"]) > 5:
+            ships_str += f'<span class="ar-more"> ほか{len(ad["ships"]) - 5}船宿</span>'
+        area_href = ("../" * depth if depth > 0 else "") + f"area/{area_slug(aname)}.html"
+        rows += (
+            f'<div class="ar">'
+            f'<a class="ar-name" href="{area_href}">{aname}</a>'
+            f'<span class="ar-range">{a_range}</span>'
+            f'{sz_html}'
+            f'<span class="ar-trips">{trip_str}</span>'
+            f'<span class="ar-ships">{ships_str}</span>'
+            f'</div>'
+        )
+    return rows
+
+
 def build_fish_pages(data, history, crawled_at=""):
     os.makedirs(os.path.join(WEB_DIR, "fish"), exist_ok=True)
     # 旧バージョンで生成された数字ファイル名（正規化失敗）を削除
@@ -7343,31 +7481,22 @@ def build_fish_pages(data, history, crawled_at=""):
             w_sz_hi = [c["size_cm"]["max"] for c in catches if c.get("size_cm") and c["size_cm"].get("max") is not None]
             if w_sz_lo and w_sz_hi:
                 sz_str = f"{int(min(w_sz_lo))}〜{int(max(w_sz_hi))}cm"
-        # area-cmp（今日のエリア別）
-        area_today_f: dict = {}
-        for c in today_catches_f:
-            d = area_today_f.setdefault(c["area"], {"hi": [], "lo": []})
-            cr = c.get("count_range")
-            if cr and not cr.get("is_boat"):
-                if cr.get("max") is not None: d["hi"].append(cr["max"])
-                if cr.get("min") is not None: d["lo"].append(cr["min"])
-        area_cmp_rows = ""
-        for aname, ad in sorted(area_today_f.items(), key=lambda x: -(max(x[1]["hi"] or [0])))[:5]:
-            a_lo = int(min(ad["lo"])) if ad["lo"] else None
-            a_hi = int(max(ad["hi"])) if ad["hi"] else None
-            if a_lo is not None and a_hi is not None and a_lo != a_hi:
-                a_range = f"{a_lo}〜{a_hi}匹"
-            elif a_hi is not None:
-                a_range = f"{a_hi}匹"
-            else:
-                a_range = "—"
-            area_cmp_rows += (
-                f'<a class="ar" href="../area/{area_slug(aname)}.html">'
-                f'<span class="ar-name">{aname}</span>'
-                f'<span class="ar-range">{a_range}</span>'
-                f'</a>'
-            )
-        area_cmp_html = f'<div class="area-cmp"><h3>エリア別の{fish_today_label}の釣果</h3>{area_cmp_rows}</div>' if area_cmp_rows else ""
+        # area-cmp 充足版: 3段階フォールバック
+        # Stage 1: today_catches_f（_resolve_display_dataset の最新日 or 7日窓）
+        # Stage 2: catches 全体（直近7日マージ済）
+        # Stage 3: _hist_rows_for_fish から過去1年集計（CSV）
+        area_today_f = _aggregate_area_cmp_from_catches(today_catches_f)
+        area_label = f"エリア別の{fish_today_label}の釣果"
+        if not area_today_f and catches:
+            area_today_f = _aggregate_area_cmp_from_catches(catches)
+            if area_today_f:
+                area_label = "エリア別の直近1週間の釣果"
+        if not area_today_f:
+            area_today_f = _aggregate_area_cmp_from_hist(fish, _hist_rows_for_fish, days=365)
+            if area_today_f:
+                area_label = "過去1年の主なエリアと釣果"
+        area_cmp_rows = _render_area_cmp_rows(area_today_f, max_areas=5, depth=1)
+        area_cmp_html = f'<div class="area-cmp"><h3>{area_label}</h3>{area_cmp_rows}</div>' if area_cmp_rows else ""
         # ship-rank（今週・今日優先）
         ship_data_f: dict = {}
         for c in catches:
@@ -7478,10 +7607,17 @@ def build_fish_pages(data, history, crawled_at=""):
 .fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
 .area-cmp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .area-cmp h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;text-decoration:none;color:inherit}
+.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;flex-wrap:wrap;color:inherit}
 .ar:last-child{border-bottom:none}
-.ar .ar-name{flex:0 0 85px;font-size:13px;font-weight:700;color:var(--cta)}
-.ar .ar-range{flex:0 0 85px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-name{flex:0 0 90px;font-size:13px;font-weight:700;color:var(--cta);text-decoration:none}
+.ar .ar-range{flex:0 0 80px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-size{flex:0 0 80px;font-size:12px;color:var(--muted)}
+.ar .ar-trips{flex:0 0 48px;font-size:12px;color:var(--muted)}
+.ar .ar-ships{flex:1 1 200px;font-size:12px;color:var(--sub);min-width:0;line-height:1.5}
+.ar .ar-ships a{color:var(--cta);text-decoration:none}
+.ar .ar-ships a:hover{text-decoration:underline}
+.ar .ar-more{color:var(--muted);font-size:11px}
+@media(max-width:520px){.ar .ar-name{flex:0 0 100%}.ar .ar-range{flex:0 0 auto}.ar .ar-size{flex:0 0 auto}.ar .ar-trips{flex:0 0 auto}.ar .ar-ships{flex:1 1 100%}}
 .ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}

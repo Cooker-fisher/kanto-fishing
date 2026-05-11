@@ -21,10 +21,17 @@
 .fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
 .area-cmp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .area-cmp h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;text-decoration:none;color:inherit}
+.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;flex-wrap:wrap;color:inherit}
 .ar:last-child{border-bottom:none}
-.ar .ar-name{flex:0 0 85px;font-size:13px;font-weight:700;color:var(--cta)}
-.ar .ar-range{flex:0 0 85px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-name{flex:0 0 90px;font-size:13px;font-weight:700;color:var(--cta);text-decoration:none}
+.ar .ar-range{flex:0 0 80px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-size{flex:0 0 80px;font-size:12px;color:var(--muted)}
+.ar .ar-trips{flex:0 0 48px;font-size:12px;color:var(--muted)}
+.ar .ar-ships{flex:1 1 200px;font-size:12px;color:var(--sub);min-width:0;line-height:1.5}
+.ar .ar-ships a{color:var(--cta);text-decoration:none}
+.ar .ar-ships a:hover{text-decoration:underline}
+.ar .ar-more{color:var(--muted);font-size:11px}
+@media(max-width:520px){.ar .ar-name{flex:0 0 100%}.ar .ar-range{flex:0 0 auto}.ar .ar-size{flex:0 0 auto}.ar .ar-trips{flex:0 0 auto}.ar .ar-ships{flex:1 1 100%}}
 .ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
@@ -88,7 +95,7 @@
     <img src="../assets/fish/warasa/warasa_illustration.png" alt="ワラサ" class="comment-img" width="160" height="160" loading="lazy" onerror="this.style.display='none'">
     <div class="comment"><span class="comment-fish-name">ワラサ</span>今週の普通の状況。安定してはいる。
 ワラサは今週11件の釣果報告がありました。潮回りや時合によって差が出やすい時期です。
-平均的な状況。腕次第で差が出る時期だ。</div>
+可もなく不可もなく。腕の見せどころでもある。</div>
   </div>
   <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
 <div class="chart7">
@@ -98,7 +105,7 @@
   <div class="chart-trend">↑ 上昇トレンド</div>
 </div>
   <h2 class="st">5/11(月)の釣果 <span class="tag free">無料</span></h2>
-  <div class="area-cmp"><h3>エリア別の5/11(月)の釣果</h3><a class="ar" href="../area/kashima.html"><span class="ar-name">鹿島港</span><span class="ar-range">2〜11匹</span></a></div>
+  <div class="area-cmp"><h3>エリア別の5/11(月)の釣果</h3><div class="ar"><a class="ar-name" href="../area/kashima.html">鹿島港</a><span class="ar-range">2〜11匹</span><span class="ar-size"></span><span class="ar-trips">1便</span><span class="ar-ships"><a href="../ship/koei-maru.html">幸栄丸</a></span></div></div>
   <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name"><a href="../ship/shinei-maru.html">信栄丸</a></span><span class="sr-range">0〜15匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">2</span><span class="sr-name"><a href="../ship/koei-maru.html">幸栄丸</a></span><span class="sr-range">0〜11匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">3</span><span class="sr-name"><a href="../ship/heian-maru.html">平安丸</a></span><span class="sr-range">1件</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">4</span><span class="sr-name"><a href="../ship/bozura-maru.html">棒面丸</a></span><span class="sr-range">1件</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">5</span><span class="sr-name"><a href="../ship/amasakeya-maru.html">あまさけや丸</a></span><span class="sr-range">1件</span><span class="sr-pt"></span></div></div>
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>

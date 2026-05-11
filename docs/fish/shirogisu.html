@@ -21,10 +21,17 @@
 .fish-hero .fh-m{font-size:11px;color:rgba(255,255,255,.5);margin-top:8px}
 .area-cmp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .area-cmp h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;text-decoration:none;color:inherit}
+.ar{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--bg);gap:8px;flex-wrap:wrap;color:inherit}
 .ar:last-child{border-bottom:none}
-.ar .ar-name{flex:0 0 85px;font-size:13px;font-weight:700;color:var(--cta)}
-.ar .ar-range{flex:0 0 85px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-name{flex:0 0 90px;font-size:13px;font-weight:700;color:var(--cta);text-decoration:none}
+.ar .ar-range{flex:0 0 80px;font-size:14px;font-weight:700;color:var(--accent)}
+.ar .ar-size{flex:0 0 80px;font-size:12px;color:var(--muted)}
+.ar .ar-trips{flex:0 0 48px;font-size:12px;color:var(--muted)}
+.ar .ar-ships{flex:1 1 200px;font-size:12px;color:var(--sub);min-width:0;line-height:1.5}
+.ar .ar-ships a{color:var(--cta);text-decoration:none}
+.ar .ar-ships a:hover{text-decoration:underline}
+.ar .ar-more{color:var(--muted);font-size:11px}
+@media(max-width:520px){.ar .ar-name{flex:0 0 100%}.ar .ar-range{flex:0 0 auto}.ar .ar-size{flex:0 0 auto}.ar .ar-trips{flex:0 0 auto}.ar .ar-ships{flex:1 1 100%}}
 .ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
@@ -98,7 +105,7 @@
   <div class="chart-trend flat">→ 横ばい</div>
 </div>
   <h2 class="st">5/11(月)の釣果 <span class="tag free">無料</span></h2>
-  <div class="area-cmp"><h3>エリア別の5/11(月)の釣果</h3><a class="ar" href="../area/yokohama-honmoku.html"><span class="ar-name">横浜本牧港</span><span class="ar-range">10〜120匹</span></a><a class="ar" href="../area/higashi-kasai.html"><span class="ar-name">東葛西</span><span class="ar-range">14〜68匹</span></a><a class="ar" href="../area/chigasaki.html"><span class="ar-name">茅ヶ崎港</span><span class="ar-range">12〜18匹</span></a></div>
+  <div class="area-cmp"><h3>エリア別の5/11(月)の釣果</h3><div class="ar"><a class="ar-name" href="../area/yokohama-honmoku.html">横浜本牧港</a><span class="ar-range">10〜120匹</span><span class="ar-size">13〜23cm</span><span class="ar-trips">1便</span><span class="ar-ships"><a href="../ship/nagasakiya.html">長崎屋</a></span></div><div class="ar"><a class="ar-name" href="../area/higashi-kasai.html">東葛西</a><span class="ar-range">14〜68匹</span><span class="ar-size">12〜23cm</span><span class="ar-trips">1便</span><span class="ar-ships"><a href="../ship/suharaya.html">須原屋</a></span></div><div class="ar"><a class="ar-name" href="../area/chigasaki.html">茅ヶ崎港</a><span class="ar-range">12〜18匹</span><span class="ar-size">13〜21cm</span><span class="ar-trips">1便</span><span class="ar-ships"><a href="../ship/chigasaki-maru.html">ちがさき丸</a></span></div></div>
   <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name"><a href="../ship/nagasakiya.html">長崎屋</a></span><span class="sr-range">10〜180匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">2</span><span class="sr-name"><a href="../ship/yoshinoya.html">吉野屋</a></span><span class="sr-range">10〜164匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">3</span><span class="sr-name"><a href="../ship/suharaya.html">須原屋</a></span><span class="sr-range">0〜126匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">4</span><span class="sr-name"><a href="../ship/bentenya.html">弁天屋</a></span><span class="sr-range">1〜62匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">5</span><span class="sr-name"><a href="../ship/kamedaya.html">かめだや</a></span><span class="sr-range">13〜60匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">6</span><span class="sr-name"><a href="../ship/arakawaya.html">荒川屋</a></span><span class="sr-range">2〜52匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">7</span><span class="sr-name"><a href="../ship/kaio-maru.html">海桜丸</a></span><span class="sr-range">12〜40匹</span><span class="sr-pt"></span></div><div class="sr"><span class="sr-rank">8</span><span class="sr-name"><a href="../ship/yamaten-maru.html">山天丸</a></span><span class="sr-range">25〜37匹</span><span class="sr-pt"></span></div></div>
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
