@@ -6905,15 +6905,18 @@ def build_html(catches, crawled_at, history, weather_data=None):
 def _aggregate_area_cmp_from_catches(catches_list):
     """catches dict 形式（catches.json/recent_fp 由来）から area_cmp 用集計を返す。
 
-    戻り値: {area_name: {"hi":[], "lo":[], "sz_hi":[], "sz_lo":[], "ships":[], "trips":int}}
+    戻り値: {area_name: {"hi":[], "lo":[], "sz_hi":[], "sz_lo":[], "kg_hi":[], "kg_lo":[],
+                        "ships":[], "trips":int}}
     is_boat=True の便は cnt 集計から除外（船全体集計は個人釣果と粒度が違うため）。
+    size_cm / weight_kg 両方を拾い、表示時に cm 優先 → kg フォールバックで型表示する。
     """
     area_dict = {}
     for c in catches_list:
         area = (c.get("area") or "").strip()
         if not area:
             continue
-        d = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [], "ships": [], "trips": 0})
+        d = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [],
+                                        "kg_hi": [], "kg_lo": [], "ships": [], "trips": 0})
         cr = c.get("count_range")
         if cr and not cr.get("is_boat"):
             if cr.get("max") is not None: d["hi"].append(cr["max"])
@@ -6922,6 +6925,10 @@ def _aggregate_area_cmp_from_catches(catches_list):
         if sz:
             if sz.get("min") is not None and sz["min"] > 0: d["sz_lo"].append(sz["min"])
             if sz.get("max") is not None and sz["max"] > 0: d["sz_hi"].append(sz["max"])
+        kg = c.get("weight_kg")
+        if kg:
+            if kg.get("min") is not None and kg["min"] > 0: d["kg_lo"].append(kg["min"])
+            if kg.get("max") is not None and kg["max"] > 0: d["kg_hi"].append(kg["max"])
         sname = (c.get("ship") or "").strip()
         if sname and sname not in d["ships"]:
             d["ships"].append(sname)
@@ -6952,7 +6959,8 @@ def _aggregate_area_cmp_from_hist(fish, hist_rows, days=365):
         area = (r.get("area") or "").strip()
         if not area:
             continue
-        ad = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [], "ships": [], "trips": 0})
+        ad = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [],
+                                          "kg_hi": [], "kg_lo": [], "ships": [], "trips": 0})
         ib = str(r.get("is_boat", "") or "").strip().lower()
         if ib not in ("1", "true"):
             try:
@@ -6983,6 +6991,22 @@ def _aggregate_area_cmp_from_hist(fish, hist_rows, days=365):
                     ad["sz_hi"].append(v)
         except (ValueError, TypeError):
             pass
+        try:
+            kmin = r.get("kg_min", "")
+            if kmin not in ("", None):
+                v = float(kmin)
+                if v > 0:
+                    ad["kg_lo"].append(v)
+        except (ValueError, TypeError):
+            pass
+        try:
+            kmax = r.get("kg_max", "")
+            if kmax not in ("", None):
+                v = float(kmax)
+                if v > 0:
+                    ad["kg_hi"].append(v)
+        except (ValueError, TypeError):
+            pass
         ship = (r.get("ship") or "").strip()
         if ship and ship not in ad["ships"]:
             ad["ships"].append(ship)
@@ -7008,7 +7032,7 @@ def _render_area_cmp_rows(area_dict, max_areas=5, depth=1):
             a_range = f"{a_hi}匹"
         else:
             a_range = "—"
-        # サイズレンジ
+        # 型レンジ: cm 優先、無ければ kg にフォールバック（マダイ等は kg 表記が主流）
         sz_str = ""
         if ad["sz_hi"]:
             _szlo_src = ad["sz_lo"] if ad["sz_lo"] else ad["sz_hi"]
@@ -7018,6 +7042,18 @@ def _render_area_cmp_rows(area_dict, max_areas=5, depth=1):
                 sz_str = f"{sz_lo}〜{sz_hi}cm"
             else:
                 sz_str = f"{sz_hi}cm"
+        elif ad.get("kg_hi"):
+            _kglo_src = ad["kg_lo"] if ad["kg_lo"] else ad["kg_hi"]
+            kg_lo = min(_kglo_src)
+            kg_hi = max(ad["kg_hi"])
+            # 小数1桁・末尾の .0 は除去
+            def _fmt_kg(v):
+                s = f"{v:.1f}"
+                return s[:-2] if s.endswith(".0") else s
+            if kg_lo != kg_hi:
+                sz_str = f"{_fmt_kg(kg_lo)}〜{_fmt_kg(kg_hi)}kg"
+            else:
+                sz_str = f"{_fmt_kg(kg_hi)}kg"
         sz_html = f'<span class="ar-size">{sz_str}</span>' if sz_str else '<span class="ar-size"></span>'
         # 便数
         trip_str = f"{ad['trips']}便"
