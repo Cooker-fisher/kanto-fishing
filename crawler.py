@@ -4648,62 +4648,6 @@ def _faq_source_html(sources):
     return f'<small class="faq-src">出典: {joined}</small>'
 
 
-def build_fixed_faq_html(scope_type, scope_key, fixed_faq_data):
-    """
-    固定FAQブロック (faq-static) を生成する。
-    scope_type: "fish" or "area"
-    scope_key : 魚種名 or エリア名
-    fixed_faq_data: _load_fixed_faq() の戻り値
-    戻り値: (html, faq_pairs)  faq_pairs = [(q, a), ...]
-    """
-    import html as _html
-    common_items = fixed_faq_data.get("common", [])
-    scoped_items = (fixed_faq_data.get(scope_type) or {}).get(scope_key, [])
-
-    faq_pairs = []
-    inner = ""
-
-    # ── 固有FAQ ────────────────────────────────────────────
-    if scoped_items:
-        if scope_type == "fish":
-            block_ttl = f"{_html.escape(scope_key)}船釣りの基礎知識"
-        else:
-            block_ttl = f"{_html.escape(scope_key)}を釣り場として知る"
-        inner += f'<h3 class="faq-block-ttl">{block_ttl}</h3>\n'
-        for item in scoped_items:
-            q = item.get("q", "")
-            a = item.get("a", "")
-            sources = item.get("sources", [])
-            src_html = _faq_source_html(sources)
-            inner += (
-                f'  <details><summary>{_html.escape(q)}</summary>'
-                f'<p class="faq-ans">{_html.escape(a)}{src_html}</p></details>\n'
-            )
-            faq_pairs.append((q, a))
-
-    # ── 共通FAQ ───────────────────────────────────────────
-    if common_items:
-        common_cls = "faq-block-ttl faq-block-ttl--common" if scoped_items else "faq-block-ttl"
-        inner += f'<h3 class="{common_cls}">船釣り共通の基礎知識</h3>\n'
-        for item in common_items:
-            q = item.get("q", "")
-            a = item.get("a", "")
-            sources = item.get("sources", [])
-            src_html = _faq_source_html(sources)
-            inner += (
-                f'  <details><summary>{_html.escape(q)}</summary>'
-                f'<p class="faq-ans">{_html.escape(a)}{src_html}</p></details>\n'
-            )
-            faq_pairs.append((q, a))
-
-    if not inner:
-        return "", []
-
-    scope_attr = _html.escape(f"{scope_type}-{scope_key}")
-    html = f'<div class="faq-list faq-static" data-scope="{scope_attr}">\n{inner}</div>'
-    return html, faq_pairs
-
-
 def build_fish_fixed_faq_html(fish, fixed_faq_data):
     """
     M1 (T22): 魚種ページ用の固定FAQ。
