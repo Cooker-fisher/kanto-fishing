@@ -2816,8 +2816,20 @@ def _parse_tables(tables, ship, area, date, month):
     return results
 
 def fetch(url):
+    # T31 (2026/05/12): ブラウザ風の自然なリクエストヘッダ。
+    # Accept-Language: 日本語優先・Referer: 親ドメイン・Accept: HTML優先で fishing-v.jp の
+    # 検知回避を強化（過去クロールスクリプトの一括実行時に使用）。
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+        "Accept-Encoding": "identity",
+        "Referer": "https://www.fishing-v.jp/",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+    }
     try:
-        req = Request(url, headers={"User-Agent": USER_AGENT})
+        req = Request(url, headers=headers)
         with urlopen(req, timeout=20) as r:
             raw = r.read()
         for enc in ("utf-8","shift_jis","euc-jp"):
