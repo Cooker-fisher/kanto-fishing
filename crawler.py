@@ -9602,6 +9602,8 @@ def build_calendar_page(crawled_at=""):
       desc="関東エリアの船釣り旬カレンダー。50魚種以上の月別シーズン表。数釣り・型釣りのピーク月が一目でわかる。",
       url=f"{SITE_URL}/calendar.html",
   )}
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"旬カレンダー","item":"{SITE_URL}/calendar.html"}}]}}</script>
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"WebPage","name":"関東船釣り 旬カレンダー","description":"関東エリアの船釣り旬カレンダー。50魚種以上の月別シーズン表。","url":"{SITE_URL}/calendar.html","isPartOf":{{"@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/"}}}}</script>
   {GA_TAG}
   {ADSENSE_TAG}
   <link rel="stylesheet" href="style.css">

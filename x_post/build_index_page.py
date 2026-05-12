@@ -178,7 +178,13 @@ def build_index(output_path: str, docs_x_post_dir: str | None = None) -> None:
 <meta property="og:title" content="{page_title}｜船釣り予想">
 <meta property="og:description" content="関東5県の船釣り釣果速報。毎日の釣果まとめと30日アーカイブ。">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
+<meta property="og:url" content="{canonical_url}">
+<meta property="og:image" content="{('https://funatsuri-yoso.com/x_post/' + latest_date + '.png') if latest_date else 'https://funatsuri-yoso.com/ogp-default.png'}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<meta name="twitter:image" content="{('https://funatsuri-yoso.com/x_post/' + latest_date + '.png') if latest_date else 'https://funatsuri-yoso.com/ogp-default.png'}">
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"}},{{"@type":"ListItem","position":2,"name":"釣果速報","item":"https://funatsuri-yoso.com/x_post/index.html"}}]}}</script>
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"CollectionPage","name":"{page_title}","description":"関東5県の船釣り釣果速報。毎日の釣果まとめと30日アーカイブ。","url":"{canonical_url}","isPartOf":{{"@type":"WebSite","name":"船釣り予想","url":"https://funatsuri-yoso.com/"}}}}</script>
 </head>
 <body>
 
