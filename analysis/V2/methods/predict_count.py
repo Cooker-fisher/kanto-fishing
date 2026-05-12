@@ -1313,16 +1313,31 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
                     multi_point_risk = round(mp_risk, 3)
                     multi_point_corr = round(mp_correction, 3)
 
-    # ── min/max 予測（直接モデル予測 → ratio フォールバック） ────────────────
-    # 優先: cnt_min / cnt_max モデルが combo_wx_params にある場合は直接予測
-    #       （ratio法より Coverage が良い可能性が高い）
+    # ── min/max 予測（trip 優先 → combo直接モデル → ratio フォールバック） ──────
+    # 優先1 (trip): predicted_trip_no が確定している場合は便別 cnt_min/cnt_max モデルを使用
+    #               （便別補正は cnt_avg と同様に最高優先チェーンの末尾）
+    # 優先2 (combo): cnt_min / cnt_max モデルが combo_wx_params にある場合は直接予測
+    #                （ratio法より Coverage が良い可能性が高い）
     # フォールバック: モデルなし または use_fallback=True
     #       → avg_cnt_min/max の旬別比率を cnt_predicted に適用（従来方式）
     #       → 旬別データもない場合は ±cnt_mae で信頼区間
     cnt_lo = cnt_hi = None
 
-    if lat and lon and not use_fb:
-        # cnt_min モデルが存在するか確認してから直接予測
+    if lat and lon and not use_fb and predicted_trip_no:
+        # trip 優先: 便別モデルで cnt_min / cnt_max を直接予測
+        bl_min = avg_cnt_min if avg_cnt_min is not None else avg_cnt * 0.5
+        bl_max = avg_cnt_max if avg_cnt_max is not None else avg_cnt * 1.5
+        trip_lo = _apply_trip_wx_correction(
+            conn, fish, ship, predicted_trip_no, target_date, bl_min, lat, lon, 'cnt_min')
+        trip_hi = _apply_trip_wx_correction(
+            conn, fish, ship, predicted_trip_no, target_date, bl_max, lat, lon, 'cnt_max')
+        if trip_lo is not None:
+            cnt_lo = round(max(0, trip_lo * slot_ratio), 1)
+        if trip_hi is not None:
+            cnt_hi = round(trip_hi * slot_ratio, 1)
+
+    if (cnt_lo is None or cnt_hi is None) and lat and lon and not use_fb:
+        # combo直接モデル: cnt_min モデルが存在するか確認してから直接予測
         bl_min = avg_cnt_min if avg_cnt_min is not None else avg_cnt * 0.5
         bl_max = avg_cnt_max if avg_cnt_max is not None else avg_cnt * 1.5
         pred_lo_direct = _apply_wx_correction(conn, fish, ship, target_date, bl_min, lat, lon,
@@ -1330,10 +1345,11 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         pred_hi_direct = _apply_wx_correction(conn, fish, ship, target_date, bl_max, lat, lon,
                                               metric='cnt_max')
         # _apply_wx_correction はパラメータなければ baseline をそのまま返す
-        # bl_min/bl_max と同値 = モデルなし（baseline返し）の判定は不要
-        # → 直接予測値をそのまま採用（cnt_avgモデルがあれば cnt_min/maxモデルもある）
-        cnt_lo = round(max(0, pred_lo_direct * slot_ratio), 1)
-        cnt_hi = round(pred_hi_direct * slot_ratio, 1)
+        # → trip 経路で片方だけ None になったケースも両方 combo で統一する
+        if cnt_lo is None:
+            cnt_lo = round(max(0, pred_lo_direct * slot_ratio), 1)
+        if cnt_hi is None:
+            cnt_hi = round(pred_hi_direct * slot_ratio, 1)
 
     if cnt_lo is None:
         # フォールバック: ratio法 または ±MAE
@@ -1472,9 +1488,30 @@ def predict_all(fish: str = None, target_date: str = None,
                 "SELECT DISTINCT fish, ship FROM combo_decadal ORDER BY fish, ship"
             ).fetchall()
 
+        # 便別最良モデルマップ: (fish, ship) -> trip_no（H=0, n>=30, wmape 最小便）
+        # combo_trip_backtest が存在しない場合は空 dict（trip_no=0 フォールバックへ）
+        best_trip_map: dict = {}
+        try:
+            trip_rows = conn.execute(
+                """SELECT fish, ship, trip_no, wmape
+                   FROM combo_trip_backtest
+                   WHERE metric='cnt_avg' AND horizon=0 AND n >= 30
+                     AND wmape IS NOT NULL"""
+            ).fetchall()
+            for f, s, tn, wm in trip_rows:
+                if (f, s) not in best_trip_map or wm < best_trip_map[(f, s)][1]:
+                    best_trip_map[(f, s)] = (tn, wm)
+            # (fish, ship) -> trip_no だけを残す
+            best_trip_map = {k: v[0] for k, v in best_trip_map.items()}
+        except Exception:
+            best_trip_map = {}
+
+        print(f"best_trip_map: {len(best_trip_map)}件 先頭3: {list(best_trip_map.items())[:3]}")
+
         results = []
         for f, s in combos:
-            r = predict_combo(conn, f, s, target_date)
+            best_tn = best_trip_map.get((f, s), 0)
+            r = predict_combo(conn, f, s, target_date, trip_no=best_tn)
             if r and r["stars"] >= min_stars:
                 results.append(r)
     finally:
