@@ -4974,6 +4974,148 @@ _FISH_BEGINNER_MAP = {
 }
 
 
+# T30 (2026/05/12): fish_area FAQ 固定文章化用マップ群
+# 妥当範囲外の cm/kg 値（CSV 誤入力）を異常値として除外するための魚種別上限マップ。
+# primary は「主単位」: cm 主流の魚は "cm"・kg 主流の大型魚は "kg"。
+# 範囲を保守的に設定（実際の最大記録より厳しめ）して明らかな異常値のみ除外。
+_FISH_SIZE_RANGE_MAP = {
+    "アジ":         {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "ビシアジ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
+    "シマアジ":     {"cm_max": 80,  "kg_max": 8,   "primary": "cm"},
+    "サバ":         {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "マダイ":       {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
+    "クロダイ":     {"cm_max": 60,  "kg_max": 4,   "primary": "cm"},
+    "ハナダイ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "イサキ":       {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "タチウオ":     {"cm_max": 150, "kg_max": 5,   "primary": "cm"},
+    "シロギス":     {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
+    "カワハギ":     {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
+    "カレイ":       {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
+    "ヒラメ":       {"cm_max": 100, "kg_max": 10,  "primary": "kg"},
+    "マゴチ":       {"cm_max": 80,  "kg_max": 4,   "primary": "cm"},
+    "ホウボウ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "メバル":       {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
+    "カサゴ":       {"cm_max": 40,  "kg_max": 2,   "primary": "cm"},
+    "アマダイ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
+    "シロアマダイ": {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
+    "オニカサゴ":   {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "クロムツ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
+    "アカムツ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "キンメダイ":   {"cm_max": 50,  "kg_max": 3,   "primary": "cm"},
+    "アコウダイ":   {"cm_max": 60,  "kg_max": 4,   "primary": "kg"},
+    "ベニアコウ":   {"cm_max": 80,  "kg_max": 8,   "primary": "kg"},
+    "メヌケ":       {"cm_max": 60,  "kg_max": 4,   "primary": "kg"},
+    "マハタ":       {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
+    "ハタ":         {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
+    "イシダイ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
+    "アラ":         {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
+    "イシモチ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "スズキ":       {"cm_max": 100, "kg_max": 8,   "primary": "cm"},
+    "シーバス":     {"cm_max": 100, "kg_max": 8,   "primary": "cm"},
+    "ブリ":         {"cm_max": 120, "kg_max": 12,  "primary": "kg"},
+    "ワラサ":       {"cm_max": 90,  "kg_max": 6,   "primary": "kg"},
+    "イナダ":       {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
+    "カンパチ":     {"cm_max": 120, "kg_max": 15,  "primary": "kg"},
+    "ヒラマサ":     {"cm_max": 130, "kg_max": 15,  "primary": "kg"},
+    "サワラ":       {"cm_max": 130, "kg_max": 10,  "primary": "kg"},
+    "カツオ":       {"cm_max": 100, "kg_max": 6,   "primary": "kg"},
+    "キハダマグロ": {"cm_max": 200, "kg_max": 80,  "primary": "kg"},
+    "キメジ":       {"cm_max": 100, "kg_max": 10,  "primary": "kg"},
+    "シイラ":       {"cm_max": 180, "kg_max": 15,  "primary": "cm"},
+    "メダイ":       {"cm_max": 100, "kg_max": 8,   "primary": "kg"},
+    "カマス":       {"cm_max": 50,  "kg_max": 1,   "primary": "cm"},
+    "アナゴ":       {"cm_max": 100, "kg_max": 2,   "primary": "cm"},
+    "ハゼ":         {"cm_max": 30,  "kg_max": 1,   "primary": "cm"},
+    "マダコ":       {"cm_max": 80,  "kg_max": 5,   "primary": "kg"},
+    "アオリイカ":   {"cm_max": 60,  "kg_max": 5,   "primary": "kg"},
+    "スミイカ":     {"cm_max": 30,  "kg_max": 2,   "primary": "kg"},
+    "モンゴウイカ": {"cm_max": 40,  "kg_max": 3,   "primary": "kg"},
+    "マルイカ":     {"cm_max": 30,  "kg_max": 1,   "primary": "cm"},
+    "スルメイカ":   {"cm_max": 40,  "kg_max": 1,   "primary": "cm"},
+    "ヤリイカ":     {"cm_max": 50,  "kg_max": 1,   "primary": "cm"},
+    "ムギイカ":     {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
+    "スジイカ":     {"cm_max": 40,  "kg_max": 1,   "primary": "cm"},
+    "ショウサイフグ": {"cm_max": 50, "kg_max": 2,   "primary": "cm"},
+    "トラフグ":     {"cm_max": 80,  "kg_max": 4,   "primary": "kg"},
+    "アブラボウズ": {"cm_max": 200, "kg_max": 100, "primary": "kg"},
+    "タイ五目":     {"cm_max": 80,  "kg_max": 5,   "primary": "kg"},
+    "キントキ":     {"cm_max": 40,  "kg_max": 2,   "primary": "cm"},
+    "アカメフグ":   {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "オキカサゴ":   {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "オキメバル":   {"cm_max": 40,  "kg_max": 1,   "primary": "cm"},
+    "クロウシノシタ": {"cm_max": 40,"kg_max": 1,   "primary": "cm"},
+    "メジナ":       {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
+    "タカベ":       {"cm_max": 30,  "kg_max": 1,   "primary": "cm"},
+    "コハダ":       {"cm_max": 20,  "kg_max": 1,   "primary": "cm"},
+}
+_FISH_SIZE_DEFAULT = {"cm_max": 200, "kg_max": 100, "primary": "cm"}
+
+# 魚種別の釣法主流テキスト。「マダイ=コマセダイ」など正確な釣法名で書く。
+# 「ビシ釣り」は本来アジ用語のため、マダイには使わない（T30 ユーザー指摘で修正）。
+_FISH_METHOD_MAP = {
+    "アジ":         "コマセを使ったライトアジ（LTアジ）・ビシアジが代表的な釣り方",
+    "ビシアジ":     "重めのビシを使った深場アジ釣り（大型狙い）",
+    "シマアジ":     "コマセを使ったコマセシマアジ釣りが主流",
+    "サバ":         "コマセ釣り・ジギング・サビキ釣りが代表的",
+    "マダイ":       "コマセを使ったコマセダイ（コマセマダイ）が主流。タイラバや一つテンヤも人気",
+    "クロダイ":     "船からはコマセを使ったクロダイ釣り（落とし込みやヘチ釣りも）",
+    "ハナダイ":     "コマセダイ・サビキ釣りが主流",
+    "イサキ":       "コマセを使ったコマセイサキ釣りが主流",
+    "タチウオ":     "テンヤ・コマセ・ジギングが代表的な釣り方",
+    "シロギス":     "テンビン仕掛けのキス釣りが主流",
+    "カワハギ":     "テンヤ・胴突き仕掛けでの繊細なアタリ取りが特徴",
+    "カレイ":       "船からは胴突き仕掛けのカレイ釣りが主流",
+    "ヒラメ":       "活きエサ泳がせ釣りが代表的",
+    "マゴチ":       "活きエサ泳がせ釣り・テンヤが主流",
+    "ホウボウ":     "テンビン仕掛けや五目釣りで狙う",
+    "メバル":       "サビキ・胴突き仕掛けのメバル釣り",
+    "カサゴ":       "胴突き仕掛けでの根魚釣り",
+    "アマダイ":     "テンビン仕掛けでの深場狙い",
+    "シロアマダイ": "テンビン仕掛けでの深場狙い（希少な高級魚）",
+    "オニカサゴ":   "胴突き仕掛けでの深場根魚釣り（毒棘に注意）",
+    "クロムツ":     "胴突き仕掛けでの深場釣り（電動リール推奨）",
+    "アカムツ":     "胴突き仕掛けでの深場釣り（電動リール推奨）",
+    "キンメダイ":   "胴突き仕掛けでの深場釣り（電動リール使用）",
+    "アコウダイ":   "胴突き仕掛けでの深場釣り",
+    "ベニアコウ":   "深場専門の胴突き仕掛け釣り",
+    "メヌケ":       "胴突き仕掛けでの深場釣り",
+    "マハタ":       "胴突き仕掛けでの根魚釣り",
+    "ハタ":         "胴突き仕掛けでの根魚釣り",
+    "イシダイ":     "ウニ・サザエなどのエサで狙う底物釣り",
+    "アラ":         "胴突き仕掛けでの深場大物釣り",
+    "イシモチ":     "テンビン仕掛け・サビキ釣りが主流",
+    "スズキ":       "ルアー釣り・活きエサのエサ釣りの両方が主流",
+    "シーバス":     "ルアー釣りが代表的",
+    "ブリ":         "コマセ・ジギング・泳がせ釣りが主流",
+    "ワラサ":       "コマセ・ジギング・泳がせ釣りが主流",
+    "イナダ":       "コマセ・ジギングが主流",
+    "カンパチ":     "ジギング・コマセ・泳がせ釣りが主流",
+    "ヒラマサ":     "ジギング・キャスティングが主流",
+    "サワラ":       "ジギング・キャスティングが主流",
+    "カツオ":       "コマセを使ったコマセ釣りが代表的",
+    "キハダマグロ": "コマセ・ジギング・キャスティングが主流",
+    "キメジ":       "コマセ・ジギングが主流",
+    "シイラ":       "キャスティング・ジギングが代表的",
+    "メダイ":       "胴突き仕掛けでの中深場釣り",
+    "カマス":       "サビキ・コマセ釣りが主流",
+    "アナゴ":       "テンビン仕掛けでの夜釣りが代表的",
+    "ハゼ":         "ミャク釣り・ウキ釣りが代表的",
+    "マダコ":       "テンヤ・エギを使ったタコ釣りが主流",
+    "アオリイカ":   "エギング・活きエサ泳がせ（ヤエン）が代表的",
+    "スミイカ":     "スッテ釣りが主流",
+    "モンゴウイカ": "スッテ釣りが主流",
+    "マルイカ":     "直結仕掛けの専門的な釣り",
+    "スルメイカ":   "ブランコ仕掛け・直結仕掛けが主流",
+    "ヤリイカ":     "ブランコ仕掛けが主流",
+    "ムギイカ":     "ブランコ仕掛けが主流（スルメイカ若魚）",
+    "ショウサイフグ": "カットウ釣り・テンヤ釣りが代表的",
+    "トラフグ":     "カットウ釣り・テンヤ釣りが代表的",
+    "アブラボウズ": "深場専門の胴突き仕掛け釣り",
+    "タイ五目":     "コマセを使ったコマセ五目釣り",
+    "キントキ":     "胴突き仕掛けでの中深場釣り",
+}
+
+
 def _build_fish_beginner_q4_text(fish, hist_rows):
     """FAQ Q4「初心者でも{魚}釣りは楽しめますか？」を hist_rows ベースで固定文章化。
 
@@ -8709,81 +8851,236 @@ def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_descript
     return f'<p class="fa-intro">{text}</p>'
 
 
-def build_fish_area_faq_html(fish, area, fa_catches, decadal_calendar):
-    """fish_area ページ用 FAQ 3問 + FAQPage JSON-LD を返す (html, jsonld) タプル"""
-    N = len(fa_catches)
-    n_personal, avg_med, max_val, p25, p75, max_boat = _fa_catches_stats(fa_catches)
+def _build_fish_area_season_q1_text(fish, area, hist_rows):
+    """fish_area FAQ Q1（T30 2026/05/12）: 月別件数・三大ピーク・同魚種他エリア順位の固定文章。
 
-    # Q1: 最も釣れる時期
-    fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
-    if fish_decades and N >= 5:
-        sorted_dns = sorted(fish_decades.items(), key=lambda x: -x[1].get("cnt_index", 0))
-        top3 = sorted_dns[:3]
-        top_labels = "、".join(_decade_label(dn) for dn, _ in top3)
-        top_score = round(top3[0][1].get("cnt_index", 0), 1)
-        q1_ans = (
-            f"{area}での{fish}は{_decade_label(top3[0][0])}に釣果指数が最も高くなります"
-            f"（釣果指数{top_score}）。"
-            f"上位3旬は{top_labels}で、この時期に釣果が集中しています。"
-            f"シーズン外でも釣果報告はあり、直近{N}件のデータに基づく集計です。"
-        )
-    elif N >= 5:
-        q1_ans = (
-            f"直近{N}件の釣果データをもとに季節傾向を集計中です。"
-            f"このページの年間シーズンバーで月別の傾向をご確認ください。"
-        )
+    hist_rows（3年分 CSV）から (tsuri_mono=fish, area=area) を抽出し、月別件数の三大ピーク、
+    同魚種における全エリア順位（1位=最大集積地・etc）を併記する。
+    """
+    if not hist_rows:
+        return f"{area}での{fish}の釣果データは集計中です。本ページの旬カレンダーで月別推移をご確認ください。"
+    fa_rows = []
+    fish_area_counts = {}
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish:
+            continue
+        a = (r.get("area") or "").strip()
+        if not a:
+            continue
+        fish_area_counts[a] = fish_area_counts.get(a, 0) + 1
+        if a == area:
+            fa_rows.append(r)
+    N = len(fa_rows)
+    if N == 0:
+        return f"{area}での{fish}の釣果データは現在集計中です。本ページの最新釣果カードをご確認ください。"
+    months = [0] * 12
+    for r in fa_rows:
+        d = r.get("date", "")
+        if len(d) >= 7:
+            try:
+                m = int(d[5:7])
+                if 1 <= m <= 12:
+                    months[m - 1] += 1
+            except (ValueError, TypeError):
+                pass
+    total_records = sum(fish_area_counts.values())
+    total_areas = len(fish_area_counts)
+    ranks = sorted(fish_area_counts.items(), key=lambda x: -x[1])
+    area_rank = next((i for i, (a, _) in enumerate(ranks, 1) if a == area), None)
+    if area_rank == 1 and total_records > 0:
+        pct = round(N / total_records * 100)
+        rank_str = f"関東の{fish}釣果{total_records:,}件のうち約{pct}%を占める関東最大の集積地（{total_areas}エリア中1位）"
+    elif area_rank is not None:
+        rank_str = f"関東の{fish}釣果{total_records:,}件のうち{area_rank}番目の集積地（{total_areas}エリア中）"
     else:
-        q1_ans = f"データ蓄積中（{N}件）のため、季節ピークの特定には十分なサンプルが必要です。今後のデータ追加をお待ちください。"
-
-    # Q2: 釣果レンジ
-    if n_personal >= 10:
-        q2_ans = (
-            f"直近{N}件のデータでは{p25}〜{p75}匹が標準的なレンジです（中央値{avg_med:.0f}匹）。"
-            f"{area}での{fish}の最高記録は{max_val}匹です。"
-            f"釣果は潮回り・水温・季節によって変動します。直近の釣果カードおよびページ上部のシーズンバーもご参考ください。"
+        rank_str = f"関東の{fish}釣果集積地の一つ"
+    months_indexed = [(i + 1, c) for i, c in enumerate(months) if c > 0]
+    if not months_indexed:
+        return (
+            f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}件で、{rank_str}です。"
+            f"月別データは取得中で、最新の釣果報告をご確認ください。"
         )
-    elif n_personal >= 3:
-        q2_ans = (
-            f"直近データ（{n_personal}件の実釣記録）では最高{max_val}匹の記録があります。"
-            f"釣果は潮回り・水温・季節によって大きく変動します。"
-            f"引き続きサンプルを蓄積中のため、今後より精度の高い釣果レンジをお伝えできる予定です。"
-            f"直近の実績はこのページの釣果カードをご参照ください。"
-        )
-    elif max_boat > 0:
-        q2_ans = (
-            f"{area}での{fish}は直近{N}件の釣果記録があります。"
-            f"乗合船全体での最大釣果は{max_boat}匹の記録があります（船全体の合計数）。"
-            f"個人別釣果の統計的レンジは引き続きデータ収集中のため、直近の釣果カードをご確認ください。"
-        )
+    sorted_months = sorted(months_indexed, key=lambda x: -x[1])
+    top3 = sorted_months[: min(3, len(sorted_months))]
+    top3_str = "、".join(f"{m}月（{c}件）" for m, c in top3)
+    n_months_with_data = len(months_indexed)
+    extra = ""
+    if len(sorted_months) >= 4:
+        min_m, min_c = sorted_months[-1]
+        if min_c < top3[0][1] * 0.6:
+            extra = f"最も少ない{min_m}月でも{min_c}件と"
+    if n_months_with_data == 12:
+        months_text = "通年で実績が記録されています"
+    elif n_months_with_data >= 8:
+        months_text = "ほぼ通年で実績があります"
+    elif n_months_with_data >= 4:
+        months_text = f"年間{n_months_with_data}ヶ月で実績があります"
     else:
-        q2_ans = (
-            f"{area}での{fish}は現在データ蓄積中（{N}件）です。"
-            f"釣果レンジの統計的な算出には一定のサンプル数が必要なため、引き続き釣果データを収集しています。"
-            f"データが蓄積され次第、より詳細な情報を提供します。直近の実績はこのページの釣果カードをご確認ください。"
-        )
+        months_text = f"年間{n_months_with_data}ヶ月のみに実績が記録されています"
+    peak_label = "三大ピーク" if len(top3) >= 3 else ("二大ピーク" if len(top3) == 2 else "ピーク月")
+    return (
+        f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}件で、{rank_str}です。"
+        f"月別では{top3_str}が{peak_label}。{extra}{months_text}。"
+        f"釣果は潮回り・水温・群れの回遊で日々変動するため、最新の釣果報告も併せてご確認ください。"
+    )
 
-    # Q3: 船宿
-    ship_counts: dict = {}
-    for c in fa_catches:
-        sn = c.get("ship", "")
+
+def _build_fish_area_count_q2_text(fish, area, hist_rows):
+    """fish_area FAQ Q2（T30）: 釣果レンジ + cm/kg 統計（妥当範囲フィルタ付き）の固定文章。
+
+    cnt_max は cnt_max>0 かつ is_boat≠1 でフィルタ。サイズは _FISH_SIZE_RANGE_MAP の
+    cm_max・kg_max を超える値を異常値として除外し、主単位（cm or kg）に応じて表示。
+    """
+    if not hist_rows:
+        return f"{area}での{fish}の釣果データは集計中です。直近の釣果カードをご確認ください。"
+    sz_range = _FISH_SIZE_RANGE_MAP.get(fish, _FISH_SIZE_DEFAULT)
+    cm_limit = sz_range["cm_max"]
+    kg_limit = sz_range["kg_max"]
+    primary = sz_range.get("primary", "cm")
+    cnts, cms, kgs = [], [], []
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish or r.get("area") != area:
+            continue
+        ib = str(r.get("is_boat", "")).strip().lower()
+        if ib not in ("1", "true"):
+            try:
+                v = int(float(r.get("cnt_max", "") or 0))
+                if v > 0:
+                    cnts.append(v)
+            except (ValueError, TypeError):
+                pass
+        try:
+            v = int(float(r.get("size_max", "") or 0))
+            if 0 < v <= cm_limit:
+                cms.append(v)
+        except (ValueError, TypeError):
+            pass
+        try:
+            v = float(r.get("kg_max", "") or 0)
+            if 0 < v <= kg_limit:
+                kgs.append(v)
+        except (ValueError, TypeError):
+            pass
+    if not cnts:
+        return f"{area}での{fish}の釣果データは集計中です。直近の釣果カードをご確認ください。"
+    cnts.sort()
+    cn = len(cnts)
+    cnt_p25 = cnts[int(cn * 0.25)] if cn >= 4 else cnts[0]
+    cnt_p75 = cnts[int(cn * 0.75)] if cn >= 4 else cnts[-1]
+    cnt_max = cnts[-1]
+    # n>=10 は「標準的なレンジ」・n>=4 は「実績レンジ」・n<4 は「参考値」（少データで断定を避ける）
+    if cn >= 10:
+        if cnt_p25 == cnt_p75:
+            cnt_text = f"一日{cnt_p25}匹前後が標準的で、最高実績は{cnt_max}匹です"
+        else:
+            cnt_text = f"一日{cnt_p25}〜{cnt_p75}匹が標準的なレンジで、最高実績は{cnt_max}匹です"
+    elif cn >= 4:
+        if cnt_p25 == cnt_p75:
+            cnt_text = f"釣果実績は{cnt_p25}匹前後、最高実績は{cnt_max}匹です（サンプル{cn}件）"
+        else:
+            cnt_text = f"釣果レンジは{cnt_p25}〜{cnt_p75}匹、最高実績は{cnt_max}匹です（サンプル{cn}件）"
+    else:
+        cnt_text = f"最高実績は{cnt_max}匹です（サンプル{cn}件と少なく標準的なレンジの推定は困難）"
+    head = f"過去3年間の{area}での{fish}実釣記録{cn:,}件（個人釣果のみ・乗合便除く）を集計すると、{cnt_text}。"
+    cms.sort()
+    kgs.sort()
+    # kg 表示は整数なら "1.0" → "1" に詰める（自然な読み）
+    def _fkg(v):
+        s = f"{v:.1f}"
+        return s[:-2] if s.endswith(".0") else s
+    size_text = ""
+    if primary == "kg" and len(kgs) >= 5:
+        kg_med = kgs[len(kgs) // 2]
+        size_text = (
+            f"重量データは{len(kgs):,}件で、{_fkg(kgs[0])}〜{_fkg(kgs[-1])}kgのレンジで記録されており中位は約{_fkg(kg_med)}kg。"
+        )
+        if len(cms) < 5:
+            size_text += "サイズ（cm）データは取得数が少ないため省略します。"
+        else:
+            cm_med = cms[len(cms) // 2]
+            size_text += f"サイズデータ{len(cms):,}件では中央値{cm_med}cm・最大{cms[-1]}cmです。"
+    elif primary == "cm" and len(cms) >= 5:
+        cm_med = cms[len(cms) // 2]
+        size_text = f"サイズは中央値{cm_med}cm・最大{cms[-1]}cmで記録されています。"
+        if len(kgs) >= 5:
+            kg_med = kgs[len(kgs) // 2]
+            size_text += f"重量データ{len(kgs):,}件では中位約{_fkg(kg_med)}kgです。"
+    elif len(kgs) >= 5:
+        kg_med = kgs[len(kgs) // 2]
+        size_text = (
+            f"重量データは{len(kgs):,}件で、{_fkg(kgs[0])}〜{_fkg(kgs[-1])}kgのレンジで記録されており中位は約{_fkg(kg_med)}kg。"
+        )
+    elif len(cms) >= 5:
+        cm_med = cms[len(cms) // 2]
+        size_text = f"サイズは中央値{cm_med}cm・最大{cms[-1]}cmで記録されています。"
+    tail = "釣果は潮回り・水温・群れの密度で大きく変動するため、本ページの最新の釣果カードも併せてご参考ください。"
+    return head + size_text + tail
+
+
+def _build_fish_area_ships_q3_text(fish, area, hist_rows, area_description=None):
+    """fish_area FAQ Q3（T30）: 船宿リスト + 釣法 + 難易度 + 地理特性の固定文章。
+
+    船宿は hist_rows 件数の TOP5。釣法は _FISH_METHOD_MAP・難易度は _FISH_BEGINNER_MAP
+    から取得。地理特性は area_description.json の冒頭1文（80字以下）を採用。
+    """
+    if not hist_rows:
+        return f"{area}での{fish}の船宿情報は集計中です。直近の釣果カードをご確認ください。"
+    ship_counts = {}
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish or r.get("area") != area:
+            continue
+        sn = (r.get("ship") or "").strip()
         if sn:
             ship_counts[sn] = ship_counts.get(sn, 0) + 1
-    top3_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
-    total_ships = len(ship_counts)
-    if top3_ships:
-        ship_strs = "、".join(f"{sn}（{cnt}件）" for sn, cnt in top3_ships)
-        q3_ans = (
-            f"{area}での{fish}釣果データがある船宿は計{total_ships}船宿です。"
-            f"記録件数が多い順に{ship_strs}が上位です。"
-            f"出船スケジュールや仕掛けのレンタル・販売の有無は各船宿に直接お問い合わせください。"
-            f"予約方法は電話またはWebから確認できます。"
-        )
-    else:
-        q3_ans = (
-            f"{area}での{fish}の船宿情報はデータ蓄積中です。"
-            f"引き続き釣果データを収集しており、出船実績のある船宿が確認でき次第、このページに反映します。"
-        )
+    if not ship_counts:
+        return f"{area}での{fish}の船宿情報は集計中です。直近の釣果カードをご確認ください。"
+    top5 = sorted(ship_counts.items(), key=lambda x: -x[1])[:5]
+    ship_str = "、".join(f"{sn}（{cnt:,}件）" for sn, cnt in top5)
+    n_ships = len(ship_counts)
+    head = (
+        f"過去3年間の{area}での{fish}釣果データがある船宿は計{n_ships}船宿です。"
+        f"記録件数の多い順に{ship_str}が出船実績豊富です。"
+    )
+    method = _FISH_METHOD_MAP.get(fish, "")
+    beginner_info = _FISH_BEGINNER_MAP.get(fish)
+    method_text = ""
+    if method:
+        # _FISH_METHOD_MAP がある魚種は desc を使わない（釣法説明が重複・矛盾する恐れがあるため）
+        method_text = f"{fish}釣りは{method}"
+        if beginner_info:
+            level, _desc = beginner_info
+            method_text += f"で、難易度は{level}の釣り"
+        method_text += "。"
+    elif beginner_info:
+        # _FISH_METHOD_MAP 未登録魚種のみ _FISH_BEGINNER_MAP の desc を使う
+        level, desc = beginner_info
+        method_text = f"{fish}釣りは難易度{level}の釣りです。{desc}。"
+    geo_text = ""
+    if area_description and isinstance(area_description, dict):
+        entry = area_description.get(area) or area_description.get(area + "港") or {}
+        if isinstance(entry, dict):
+            desc_full = entry.get("description", "") or ""
+            if desc_full:
+                first_sentence = desc_full.split("。")[0]
+                if first_sentence and len(first_sentence) <= 80:
+                    geo_text = first_sentence + "。"
+    tail = "各船宿で仕掛け・タックルの貸出有無や出船スケジュールが異なるため、予約時にお問い合わせください。"
+    return head + method_text + geo_text + tail
 
+
+def build_fish_area_faq_html(fish, area, hist_rows, decadal_calendar=None, area_description=None):
+    """fish_area ページ用 FAQ 3問 + FAQPage JSON-LD を返す (html, jsonld) タプル。
+
+    T30 (2026/05/12): catches（当日スナップショット）依存から hist_rows（3年分 CSV）依存に変更。
+    - 各回答 200〜350字目安・3年間の実績データに基づく具体的なコメント
+    - _FISH_SIZE_RANGE_MAP で cm/kg 妥当範囲外の異常値を除外
+    - _FISH_METHOD_MAP で魚種別釣法を正確に記述（マダイ=コマセダイ・「ビシ釣り」誤用排除）
+    - area_description.json から地理特性の1文を Q3 末尾に組込み
+    - 同魚種他エリア順位を Q1 に組込み（相対比較で意味出し）
+    """
+    q1_ans = _build_fish_area_season_q1_text(fish, area, hist_rows)
+    q2_ans = _build_fish_area_count_q2_text(fish, area, hist_rows)
+    q3_ans = _build_fish_area_ships_q3_text(fish, area, hist_rows, area_description)
     faqs = [
         (f"{area}で{fish}が最も釣れる時期はいつですか？", q1_ans),
         (f"{area}での{fish}の釣果はどのくらいですか？", q2_ans),
@@ -8816,7 +9113,12 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         try:
             with open(_p, encoding="utf-8") as _f:
                 _h = _f.read()
-            if 'property="og:image"' not in _h:
+            # T30 (2026/05/12): OGP無し（PR#34以前）または 古い FAQ v1 形式
+            # （T28以前・当日 fa_catches 依存で「直近{N}件」「データ蓄積中」表現を含む）を削除
+            is_old_ogp = 'property="og:image"' not in _h
+            is_old_faq_v1 = ('直近データ（' in _h or 'データ蓄積中（' in _h or
+                            'を集計中です。このページの年間シーズンバー' in _h)
+            if is_old_ogp or is_old_faq_v1:
                 os.remove(_p)
         except Exception:
             pass
@@ -8969,7 +9271,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         # 説明文 + FAQ（AdSense コンテンツ充実）
         # H3 (T22): area_description を渡してエリア固有1文を冒頭に差し込む
         fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar, area_description=_area_desc_fa)
-        fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, catches, decadal_calendar)
+        # T30 (2026/05/12): catches → _hist_rows_for_fa（3年分CSV）に変更で固定文章化。
+        fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, _hist_rows_for_fa, decadal_calendar, _area_desc_fa)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         desc = f"{area}での{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
