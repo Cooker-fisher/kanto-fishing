@@ -7977,15 +7977,24 @@ def build_fish_pages(data, history, crawled_at=""):
             '<div class="chip-wrap">' + _rel_links + '</div>'
         ) if _rel_links else ""
         # エリア別釣果リンク（fish_area/）
+        # 直近7日マージ済 catches から area 別件数を集計。船宿ランキング（同 catches・TOP-8）
+        # と粒度を揃えるため、5件未満エリアも表示する（旧仕様 c>=5 は数件報告の港を弾き
+        # ランキング側の船宿が属する港と不整合だった・2026/05/12 ユーザー指摘）。
+        # area_romaji 未登録エリアは URL 不正のため除外。TOP-12 で打ち止め。
         _fa_counts: dict = {}
         for _c in catches:
             _fa_counts[_c["area"]] = _fa_counts.get(_c["area"], 0) + 1
-        _fa_links = "".join(
-            '<a href="../fish_area/' + fish_slug(fish) + '-' + area_slug(a) + '.html" class="chip-link">'
-            + a + f'（{c}件）</a>'
-            for a, c in sorted(_fa_counts.items(), key=lambda x: -x[1])
-            if c >= 5
-        )
+        _fa_link_items = []
+        for a, c in sorted(_fa_counts.items(), key=lambda x: -x[1]):
+            if a not in _AREA_ROMAJI:
+                continue
+            _fa_link_items.append(
+                '<a href="../fish_area/' + fish_slug(fish) + '-' + area_slug(a) + '.html" class="chip-link">'
+                + a + f'（{c}件）</a>'
+            )
+            if len(_fa_link_items) >= 12:
+                break
+        _fa_links = "".join(_fa_link_items)
         fish_area_section_html = (
             '<h2 class="st">エリア別の釣果</h2>'
             '<div class="chip-wrap">' + _fa_links + '</div>'
