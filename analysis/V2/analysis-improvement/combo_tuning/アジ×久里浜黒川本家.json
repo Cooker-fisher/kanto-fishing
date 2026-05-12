@@ -1,0 +1,45 @@
+{
+  "fish": "アジ",
+  "ship": "久里浜黒川本家",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 32.21,
+    "bl2_wmape": 26.68,
+    "oos_r": -0.286,
+    "n_records": 119,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 41,
+      "wmape_h0": 17.5,
+      "bl2_wmape": 27.5,
+      "oos_r": 0.695,
+      "improvement_pt": 14.7
+    },
+    {
+      "name": "観音崎沖",
+      "n": 75,
+      "wmape_h0": 20.4,
+      "bl2_wmape": 27.0,
+      "oos_r": 0.642,
+      "improvement_pt": 11.85
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 17.5,
+    "improvement_pt": 14.7
+  },
+  "improvement_pt": 14.7,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=17.5% imp=14.7pt"
+    }
+  ]
+}

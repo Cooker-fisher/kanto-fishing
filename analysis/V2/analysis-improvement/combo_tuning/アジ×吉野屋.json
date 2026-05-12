@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 35.92,
@@ -31,10 +31,10 @@
     {
       "name": "観音崎沖",
       "n": 105,
-      "wmape_h0": 18.7,
+      "wmape_h0": 18.8,
       "bl2_wmape": 28.0,
-      "oos_r": 0.581,
-      "improvement_pt": 17.26
+      "oos_r": 0.584,
+      "improvement_pt": 17.08
     },
     {
       "name": "本牧沖",
@@ -291,6 +291,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=横須賀沖 wmape=13.7% imp=22.24pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=横須賀沖 wmape=13.7% imp=22.24pt"
     }

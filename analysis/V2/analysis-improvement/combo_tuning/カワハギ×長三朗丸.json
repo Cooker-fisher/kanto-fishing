@@ -1,0 +1,37 @@
+{
+  "fish": "カワハギ",
+  "ship": "長三朗丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 46.28,
+    "bl2_wmape": 37.79,
+    "oos_r": 0.066,
+    "n_records": 89,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "葉山沖",
+      "n": 56,
+      "wmape_h0": 29.0,
+      "bl2_wmape": 43.5,
+      "oos_r": 0.637,
+      "improvement_pt": 17.31
+    }
+  ],
+  "best_point": {
+    "name": "葉山沖",
+    "wmape_h0": 29.0,
+    "improvement_pt": 17.31
+  },
+  "improvement_pt": 17.31,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=葉山沖 wmape=29.0% imp=17.31pt"
+    }
+  ]
+}

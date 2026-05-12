@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "洋征丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 21.3,
@@ -23,10 +23,10 @@
     {
       "name": "城ヶ島沖",
       "n": 95,
-      "wmape_h0": 16.8,
+      "wmape_h0": 16.6,
       "bl2_wmape": 20.6,
-      "oos_r": 0.457,
-      "improvement_pt": 4.54
+      "oos_r": 0.486,
+      "improvement_pt": 4.66
     },
     {
       "name": "鎌倉沖",
@@ -94,6 +94,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=秋谷沖 wmape=15.5% imp=5.82pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=秋谷沖 wmape=15.5% imp=5.82pt"
     }

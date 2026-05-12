@@ -1,0 +1,37 @@
+{
+  "fish": "アマダイ",
+  "ship": "五エム丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 36.57,
+    "bl2_wmape": 46.01,
+    "oos_r": -0.041,
+    "n_records": 93,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "葉山沖",
+      "n": 83,
+      "wmape_h0": 28.5,
+      "bl2_wmape": 39.4,
+      "oos_r": 0.587,
+      "improvement_pt": 8.11
+    }
+  ],
+  "best_point": {
+    "name": "葉山沖",
+    "wmape_h0": 28.5,
+    "improvement_pt": 8.11
+  },
+  "improvement_pt": 8.11,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=葉山沖 wmape=28.5% imp=8.11pt"
+    }
+  ]
+}

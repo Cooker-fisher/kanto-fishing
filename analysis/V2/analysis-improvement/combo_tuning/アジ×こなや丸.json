@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "こなや丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 32.66,
-    "bl2_wmape": 39.61,
+    "wmape_h0": 32.68,
+    "bl2_wmape": 39.64,
     "oos_r": 0.612,
-    "n_records": 418,
+    "n_records": 415,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,23 +18,23 @@
       "wmape_h0": 24.1,
       "bl2_wmape": 45.6,
       "oos_r": 0.794,
-      "improvement_pt": 8.55
+      "improvement_pt": 8.57
     },
     {
       "name": "木更津沖",
-      "n": 345,
-      "wmape_h0": 32.2,
+      "n": 342,
+      "wmape_h0": 32.1,
       "bl2_wmape": 40.1,
       "oos_r": 0.626,
-      "improvement_pt": 0.48
+      "improvement_pt": 0.56
     }
   ],
   "best_point": {
     "name": "長浦沖",
     "wmape_h0": 24.1,
-    "improvement_pt": 8.55
+    "improvement_pt": 8.57
   },
-  "improvement_pt": 8.55,
+  "improvement_pt": 8.57,
   "points": [
     {
       "name": "木更津沖",
@@ -237,6 +237,11 @@
       "date": "2026-05-09",
       "action": "point_backtest_updated",
       "note": "best=長浦沖 wmape=24.1% imp=8.55pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=長浦沖 wmape=24.1% imp=8.57pt"
     }
   ],
   "trip_models": [

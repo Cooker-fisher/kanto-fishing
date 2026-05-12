@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 35.96,
@@ -31,10 +31,10 @@
     {
       "name": "鴨居沖",
       "n": 339,
-      "wmape_h0": 37.7,
+      "wmape_h0": 37.3,
       "bl2_wmape": 46.2,
-      "oos_r": 0.519,
-      "improvement_pt": -1.75
+      "oos_r": 0.525,
+      "improvement_pt": -1.38
     }
   ],
   "best_point": {
@@ -200,6 +200,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=23.4% imp=12.57pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=久里浜沖 wmape=23.4% imp=12.57pt"
     }

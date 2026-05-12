@@ -1,0 +1,37 @@
+{
+  "fish": "アジ",
+  "ship": "深田家",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 53.38,
+    "bl2_wmape": 40.59,
+    "oos_r": -0.231,
+    "n_records": 32,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "佐島沖",
+      "n": 32,
+      "wmape_h0": 33.0,
+      "bl2_wmape": 40.6,
+      "oos_r": 0.448,
+      "improvement_pt": 20.4
+    }
+  ],
+  "best_point": {
+    "name": "佐島沖",
+    "wmape_h0": 33.0,
+    "improvement_pt": 20.4
+  },
+  "improvement_pt": 20.4,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=佐島沖 wmape=33.0% imp=20.4pt"
+    }
+  ]
+}

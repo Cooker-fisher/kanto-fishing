@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "渡辺釣船店",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 26.93,
@@ -15,18 +15,18 @@
     {
       "name": "横浜沖",
       "n": 437,
-      "wmape_h0": 26.9,
+      "wmape_h0": 26.8,
       "bl2_wmape": 30.1,
-      "oos_r": 0.397,
-      "improvement_pt": 0.07
+      "oos_r": 0.399,
+      "improvement_pt": 0.13
     }
   ],
   "best_point": {
     "name": "横浜沖",
-    "wmape_h0": 26.9,
-    "improvement_pt": 0.07
+    "wmape_h0": 26.8,
+    "improvement_pt": 0.13
   },
-  "improvement_pt": 0.07,
+  "improvement_pt": 0.13,
   "points": [
     {
       "name": "横浜沖",
@@ -214,6 +214,11 @@
       "date": "2026-05-09",
       "action": "point_backtest_updated",
       "note": "best=横浜沖 wmape=26.9% imp=0.07pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=横浜沖 wmape=26.8% imp=0.13pt"
     }
   ],
   "trip_models": [

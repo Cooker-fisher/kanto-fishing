@@ -1,7 +1,7 @@
 {
   "fish": "ビシアジ",
   "ship": "さえむ丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 35.09,
@@ -161,6 +161,11 @@
       "date": "2026-05-09",
       "action": "point_backtest_updated",
       "note": "best=竹岡沖 wmape=25.5% imp=9.57pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=竹岡沖 wmape=25.5% imp=9.57pt"
     }
   ],
   "rejected_factors": [
@@ -237,10 +242,10 @@
     {
       "name": "金谷沖",
       "n": 47,
-      "wmape_h0": 37.8,
+      "wmape_h0": 36.8,
       "bl2_wmape": 45.4,
-      "oos_r": 0.623,
-      "improvement_pt": -2.76
+      "oos_r": 0.646,
+      "improvement_pt": -1.73
     }
   ],
   "best_point": {

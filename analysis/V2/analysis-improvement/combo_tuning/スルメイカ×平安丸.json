@@ -1,7 +1,7 @@
 {
   "fish": "スルメイカ",
   "ship": "平安丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 49.21,
@@ -161,6 +161,11 @@
       "date": "2026-05-09",
       "action": "point_backtest_updated",
       "note": "best=南沖 wmape=43.3% imp=5.86pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=南沖 wmape=43.3% imp=5.86pt"
     }
   ],
   "rejected_factors": [
@@ -233,6 +238,22 @@
       "bl2_wmape": 62.1,
       "oos_r": 0.666,
       "improvement_pt": 5.86
+    },
+    {
+      "name": "小田原南沖",
+      "n": 92,
+      "wmape_h0": 43.3,
+      "bl2_wmape": 62.1,
+      "oos_r": 0.666,
+      "improvement_pt": 5.86
+    },
+    {
+      "name": "小田原西沖",
+      "n": 49,
+      "wmape_h0": 45.1,
+      "bl2_wmape": 57.2,
+      "oos_r": 0.522,
+      "improvement_pt": 4.14
     },
     {
       "name": "西沖",

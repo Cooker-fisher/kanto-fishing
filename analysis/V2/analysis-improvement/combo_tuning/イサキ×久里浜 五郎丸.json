@@ -1,0 +1,37 @@
+{
+  "fish": "イサキ",
+  "ship": "久里浜 五郎丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 49.46,
+    "bl2_wmape": 48.5,
+    "oos_r": -0.083,
+    "n_records": 91,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 56,
+      "wmape_h0": 34.6,
+      "bl2_wmape": 61.9,
+      "oos_r": 0.649,
+      "improvement_pt": 14.9
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 34.6,
+    "improvement_pt": 14.9
+  },
+  "improvement_pt": 14.9,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=34.6% imp=14.9pt"
+    }
+  ]
+}

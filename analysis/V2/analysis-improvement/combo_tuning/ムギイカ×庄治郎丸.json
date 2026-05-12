@@ -1,14 +1,14 @@
 {
   "fish": "ムギイカ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-27",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 72.55,
-    "bl2_wmape": 55.89,
-    "oos_r": 0.002,
-    "n_records": 38,
-    "use_fallback": true,
+    "wmape_h0": 52.96,
+    "bl2_wmape": 56.16,
+    "oos_r": 0.285,
+    "n_records": 37,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "points": [
@@ -100,6 +100,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=平塚沖 wmape=50.4% imp=22.16pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=51.5% imp=1.42pt"
     }
   ],
   "rejected_factors": [
@@ -186,16 +191,16 @@
     {
       "name": "平塚沖",
       "n": 35,
-      "wmape_h0": 50.4,
+      "wmape_h0": 51.5,
       "bl2_wmape": 56.8,
-      "oos_r": 0.377,
-      "improvement_pt": 22.16
+      "oos_r": 0.378,
+      "improvement_pt": 1.42
     }
   ],
   "best_point": {
     "name": "平塚沖",
-    "wmape_h0": 50.4,
-    "improvement_pt": 22.16
+    "wmape_h0": 51.5,
+    "improvement_pt": 1.42
   },
-  "improvement_pt": 22.16
+  "improvement_pt": 1.42
 }

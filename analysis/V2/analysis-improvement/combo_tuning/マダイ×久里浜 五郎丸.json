@@ -1,0 +1,37 @@
+{
+  "fish": "マダイ",
+  "ship": "久里浜 五郎丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 58.31,
+    "bl2_wmape": 45.06,
+    "oos_r": -0.032,
+    "n_records": 64,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "久里浜沖",
+      "n": 63,
+      "wmape_h0": 35.4,
+      "bl2_wmape": 48.1,
+      "oos_r": 0.481,
+      "improvement_pt": 22.89
+    }
+  ],
+  "best_point": {
+    "name": "久里浜沖",
+    "wmape_h0": 35.4,
+    "improvement_pt": 22.89
+  },
+  "improvement_pt": 22.89,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=35.4% imp=22.89pt"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "光進丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 31.37,
@@ -34,7 +34,7 @@
       "wmape_h0": 31.3,
       "bl2_wmape": 33.9,
       "oos_r": 0.602,
-      "improvement_pt": 0.04
+      "improvement_pt": 0.03
     }
   ],
   "best_point": {
@@ -212,6 +212,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=金谷沖超浅場 wmape=28.2% imp=3.12pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=金谷沖超浅場 wmape=28.2% imp=3.12pt"
     }

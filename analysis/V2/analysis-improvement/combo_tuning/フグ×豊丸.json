@@ -1,0 +1,37 @@
+{
+  "fish": "フグ",
+  "ship": "豊丸",
+  "last_reviewed": "2026-05-12",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 71.09,
+    "bl2_wmape": 63.15,
+    "oos_r": -0.161,
+    "n_records": 46,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "鹿島沖",
+      "n": 46,
+      "wmape_h0": 48.2,
+      "bl2_wmape": 63.2,
+      "oos_r": 0.432,
+      "improvement_pt": 22.91
+    }
+  ],
+  "best_point": {
+    "name": "鹿島沖",
+    "wmape_h0": 48.2,
+    "improvement_pt": 22.91
+  },
+  "improvement_pt": 22.91,
+  "history": [
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島沖 wmape=48.2% imp=22.91pt"
+    }
+  ]
+}

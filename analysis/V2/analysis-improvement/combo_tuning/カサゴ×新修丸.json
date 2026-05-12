@@ -1,7 +1,7 @@
 {
   "fish": "カサゴ",
   "ship": "新修丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 28.62,
@@ -15,10 +15,10 @@
     {
       "name": "本牧沖",
       "n": 223,
-      "wmape_h0": 25.6,
+      "wmape_h0": 25.7,
       "bl2_wmape": 29.0,
       "oos_r": 0.435,
-      "improvement_pt": 2.98
+      "improvement_pt": 2.88
     },
     {
       "name": "猿島沖",
@@ -31,10 +31,10 @@
   ],
   "best_point": {
     "name": "本牧沖",
-    "wmape_h0": 25.6,
-    "improvement_pt": 2.98
+    "wmape_h0": 25.7,
+    "improvement_pt": 2.88
   },
-  "improvement_pt": 2.98,
+  "improvement_pt": 2.88,
   "history": [
     {
       "date": "2026-04-24",
@@ -80,6 +80,11 @@
       "date": "2026-05-09",
       "action": "point_backtest_updated",
       "note": "best=本牧沖 wmape=25.6% imp=2.98pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=本牧沖 wmape=25.7% imp=2.88pt"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "fish": "カワハギ",
   "ship": "山天丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 32.24,
@@ -47,10 +47,10 @@
     {
       "name": "鴨居沖",
       "n": 84,
-      "wmape_h0": 32.2,
+      "wmape_h0": 32.3,
       "bl2_wmape": 44.8,
-      "oos_r": 0.482,
-      "improvement_pt": 0.06
+      "oos_r": 0.483,
+      "improvement_pt": -0.06
     }
   ],
   "best_point": {
@@ -269,6 +269,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=15.7% imp=16.54pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=15.7% imp=16.54pt"
     }

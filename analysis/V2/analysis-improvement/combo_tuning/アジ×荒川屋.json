@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "荒川屋",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 46.1,
@@ -23,10 +23,10 @@
     {
       "name": "富岡沖",
       "n": 140,
-      "wmape_h0": 37.7,
+      "wmape_h0": 37.8,
       "bl2_wmape": 47.2,
-      "oos_r": 0.456,
-      "improvement_pt": 8.39
+      "oos_r": 0.457,
+      "improvement_pt": 8.31
     },
     {
       "name": "小柴沖",
@@ -47,10 +47,10 @@
     {
       "name": "根岸沖",
       "n": 72,
-      "wmape_h0": 46.1,
+      "wmape_h0": 45.1,
       "bl2_wmape": 55.6,
-      "oos_r": 0.234,
-      "improvement_pt": -0.04
+      "oos_r": 0.271,
+      "improvement_pt": 1.04
     },
     {
       "name": "横須賀沖",
@@ -118,6 +118,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=本牧沖 wmape=31.4% imp=14.72pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=本牧沖 wmape=31.4% imp=14.72pt"
     }

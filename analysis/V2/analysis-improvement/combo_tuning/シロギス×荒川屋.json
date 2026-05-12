@@ -1,7 +1,7 @@
 {
   "fish": "シロギス",
   "ship": "荒川屋",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 43.55,
@@ -49,8 +49,8 @@
       "n": 490,
       "wmape_h0": 40.7,
       "bl2_wmape": 46.4,
-      "oos_r": 0.52,
-      "improvement_pt": 2.85
+      "oos_r": 0.518,
+      "improvement_pt": 2.81
     }
   ],
   "best_point": {
@@ -102,6 +102,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=14.4% imp=29.16pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=14.4% imp=29.16pt"
     }

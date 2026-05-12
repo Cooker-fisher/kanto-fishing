@@ -1,7 +1,7 @@
 {
   "fish": "マダイ",
   "ship": "新幸丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 41.53,
@@ -39,10 +39,10 @@
     {
       "name": "岩船沖",
       "n": 155,
-      "wmape_h0": 39.3,
+      "wmape_h0": 39.8,
       "bl2_wmape": 54.9,
-      "oos_r": 0.73,
-      "improvement_pt": 2.2
+      "oos_r": 0.729,
+      "improvement_pt": 1.75
     }
   ],
   "best_point": {
@@ -256,6 +256,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=太東沖 wmape=37.5% imp=4.04pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=太東沖 wmape=37.5% imp=4.04pt"
     }

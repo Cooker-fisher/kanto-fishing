@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "三喜丸釣船店",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 36.23,
@@ -37,20 +37,20 @@
       "improvement_pt": 7.37
     },
     {
+      "name": "走水沖",
+      "n": 78,
+      "wmape_h0": 29.4,
+      "bl2_wmape": 38.7,
+      "oos_r": 0.67,
+      "improvement_pt": 6.82
+    },
+    {
       "name": "港前",
       "n": 77,
       "wmape_h0": 29.6,
       "bl2_wmape": 57.3,
       "oos_r": 0.729,
       "improvement_pt": 6.62
-    },
-    {
-      "name": "走水沖",
-      "n": 78,
-      "wmape_h0": 29.8,
-      "bl2_wmape": 38.7,
-      "oos_r": 0.666,
-      "improvement_pt": 6.46
     },
     {
       "name": "横須賀沖",
@@ -110,6 +110,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=19.1% imp=17.14pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=19.1% imp=17.14pt"
     }

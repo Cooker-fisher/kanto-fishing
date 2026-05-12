@@ -1,7 +1,7 @@
 {
   "fish": "マダコ",
   "ship": "吉久",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 37.79,
@@ -13,6 +13,14 @@
   },
   "point_models": [
     {
+      "name": "浦安湾内",
+      "n": 235,
+      "wmape_h0": 37.3,
+      "bl2_wmape": 48.5,
+      "oos_r": 0.492,
+      "improvement_pt": 0.45
+    },
+    {
       "name": "湾内",
       "n": 235,
       "wmape_h0": 37.3,
@@ -22,7 +30,7 @@
     }
   ],
   "best_point": {
-    "name": "湾内",
+    "name": "浦安湾内",
     "wmape_h0": 37.3,
     "improvement_pt": 0.45
   },
@@ -224,6 +232,11 @@
       "date": "2026-05-09",
       "action": "point_backtest_updated",
       "note": "best=湾内 wmape=37.3% imp=0.45pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=浦安湾内 wmape=37.3% imp=0.45pt"
     }
   ],
   "trip_models": [

@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "米元釣船店",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 37.1,
@@ -25,8 +25,8 @@
       "n": 194,
       "wmape_h0": 36.0,
       "bl2_wmape": 40.8,
-      "oos_r": 0.344,
-      "improvement_pt": 1.05
+      "oos_r": 0.347,
+      "improvement_pt": 1.14
     }
   ],
   "best_point": {
@@ -78,6 +78,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=赤灯沖 wmape=35.5% imp=1.56pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=赤灯沖 wmape=35.5% imp=1.56pt"
     }

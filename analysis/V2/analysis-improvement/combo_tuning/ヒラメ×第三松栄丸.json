@@ -1,7 +1,7 @@
 {
   "fish": "ヒラメ",
   "ship": "第三松栄丸",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 31.61,
@@ -161,6 +161,11 @@
       "date": "2026-05-09",
       "action": "point_backtest_updated",
       "note": "best=大原沖 wmape=27.0% imp=4.59pt"
+    },
+    {
+      "date": "2026-05-12",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=27.0% imp=4.59pt"
     }
   ],
   "rejected_factors": [
@@ -231,7 +236,7 @@
       "n": 52,
       "wmape_h0": 27.0,
       "bl2_wmape": 43.0,
-      "oos_r": 0.688,
+      "oos_r": 0.692,
       "improvement_pt": 4.59
     },
     {

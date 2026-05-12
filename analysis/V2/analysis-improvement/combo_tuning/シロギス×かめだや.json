@@ -1,7 +1,7 @@
 {
   "fish": "シロギス",
   "ship": "かめだや",
-  "last_reviewed": "2026-05-09",
+  "last_reviewed": "2026-05-12",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 30.12,
@@ -31,10 +31,10 @@
     {
       "name": "木更津沖",
       "n": 119,
-      "wmape_h0": 31.7,
+      "wmape_h0": 30.7,
       "bl2_wmape": 39.1,
-      "oos_r": 0.642,
-      "improvement_pt": -1.6
+      "oos_r": 0.659,
+      "improvement_pt": -0.59
     }
   ],
   "best_point": {
@@ -248,6 +248,11 @@
     },
     {
       "date": "2026-05-09",
+      "action": "point_backtest_updated",
+      "note": "best=富津沖 wmape=26.2% imp=3.9pt"
+    },
+    {
+      "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=富津沖 wmape=26.2% imp=3.9pt"
     }
