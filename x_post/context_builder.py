@@ -368,12 +368,12 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     tide_info = _load_tide_moon(tide_db, date_str)
 
     # 当日 catches を絞り込み
+    # T31 (2026/05/12) バグ修正: 日付完全一致のみ。
+    # 旧コードは day_exact 空のとき month マッチで fallback したため、
+    # 5/12（当日0件）の x_post/2026-05-12.html が 5月全件 709件・76船宿と
+    # 異常表示されていた。当日0件は「データなし」が正しい表現。
     date_slash = dt.strftime("%Y/%m/%d")
-    day_catches = [c for c in valid_catches if c.get("date", "").startswith(date_slash[:7])]
-    # 日付完全一致も試みる
-    day_exact = [c for c in valid_catches if c.get("date") == date_slash]
-    if day_exact:
-        day_catches = day_exact
+    day_catches = [c for c in valid_catches if c.get("date") == date_slash]
 
     # 欠航データを cancellations.csv から取得（valid_catches に含まれない別経路）
     cancellations_csv = _load_cancellations(date_slash)
