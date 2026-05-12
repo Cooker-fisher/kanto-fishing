@@ -5256,49 +5256,184 @@ def build_area_description_html(area, desc_data):
     return '<div class="area-desc">' + "".join(f"<p>{p}</p>" for p in paras) + "</div>"
 
 
-def build_area_faq_html(area, desc_data, area_coords=None, top_fish_items=None, area_catches=None):
-    """エリア別FAQ（データ駆動型）＋ FAQPage+Place JSON-LD を返す (html, jsonld) のタプル"""
-    ad = (desc_data.get(area) or {}) if desc_data else {}
+_AREA_SKIP_FISH = {"不明", "欠航", ""}
 
-    # Q1: 釣れる魚は何？
-    if top_fish_items:
-        top_3_str = "、".join(f"{f}（{r['records']}件）" for f, r in top_fish_items[:3])
-        q1_ans = f"直近の釣果データでは{top_3_str}が中心です。"
-    else:
-        top_fish_str = ad.get("top_fish_text", "複数の魚種")
-        q1_ans = f"{top_fish_str}が主力です。季節によって釣れる魚が変わります。旬カレンダーで月別の状況をご確認ください。"
 
-    # Q2: アクセス方法
-    if ad.get("access_summary"):
-        q2_ans = ad.get("access_summary")
-    elif ad.get("access_train") or ad.get("access_car"):
-        q2_ans = (ad.get("access_train") or "") + ("、" if ad.get("access_train") and ad.get("access_car") else "") + (ad.get("access_car") or "")
-    else:
-        q2_ans = f"{area}への詳細なアクセスは各船宿のウェブサイトをご確認ください。"
+def _is_cancelled_row(r):
+    """is_cancellation == '1' のレコードを欠航として除外判定（T31 2026/05/12 追加）。"""
+    return str(r.get("is_cancellation", "")).strip() == "1"
 
-    # Q3: おすすめの釣り物と時期
-    if top_fish_items and top_fish_items[0]:
-        top_f = top_fish_items[0][0]
-        q3_ans = f"直近データでは{top_f}の実績が最多です。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"
-    else:
-        q3_ans = f"魚種によって旬が異なります。このページの旬カレンダーで各魚種の月別釣れ具合をご確認ください。"
 
-    # Q4: よく出船する船宿
-    if area_catches:
-        ship_counts = {}
-        for c in area_catches:
-            ship = c.get("ship", "")
-            if ship:
-                ship_counts[ship] = ship_counts.get(ship, 0) + 1
-        top_3_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
-        if top_3_ships:
-            ship_strs = "、".join(f"{s}（{n}件）" for s, n in top_3_ships)
-            q4_ans = f"直近の釣果では{ship_strs}などの実績が確認されています。"
+def _build_area_top_fish_q1_text(area, hist_rows):
+    """area FAQ Q1（T31 2026/05/12）: TOP3魚種 + 件数 + 各魚種のピーク月特徴を hist_rows から固定文章化。"""
+    if not hist_rows:
+        return f"{area}の釣果データは集計中です。最新の釣果カードをご確認ください。"
+    fish_counts = {}
+    fish_month_counts = {}
+    total = 0
+    for r in hist_rows:
+        if r.get("area") != area:
+            continue
+        if _is_cancelled_row(r):
+            continue
+        f = (r.get("tsuri_mono") or "").strip()
+        if not f or f in _AREA_SKIP_FISH or f.isdigit():
+            continue
+        fish_counts[f] = fish_counts.get(f, 0) + 1
+        total += 1
+        d = r.get("date", "")
+        if len(d) >= 7:
+            try:
+                m = int(d[5:7])
+                if 1 <= m <= 12:
+                    fish_month_counts.setdefault(f, [0] * 12)[m - 1] += 1
+            except (ValueError, TypeError):
+                pass
+    if total == 0:
+        return f"{area}の釣果データは集計中です。最新の釣果カードをご確認ください。"
+    n_kinds = len(fish_counts)
+    top3 = sorted(fish_counts.items(), key=lambda x: -x[1])[:3]
+    parts = []
+    for fname, fcnt in top3:
+        mc = fish_month_counts.get(fname, [0] * 12)
+        max_v = max(mc) if any(mc) else 0
+        if max_v > 0:
+            peak_months = [i + 1 for i, v in enumerate(mc) if v >= max_v * 0.7]
+            peak_str = _format_months_range(peak_months) if peak_months else ""
+            if peak_str and peak_str != "通年":
+                parts.append(f"{fname}（{fcnt:,}件・{peak_str}が好機）")
+            else:
+                parts.append(f"{fname}（{fcnt:,}件）")
         else:
-            q4_ans = f"{area}の船宿一覧はこのページでご確認ください。"
-    else:
-        q4_ans = f"{area}の船宿一覧はこのページでご確認ください。"
+            parts.append(f"{fname}（{fcnt:,}件）")
+    head = f"過去3年間（2023〜2026）の{area}の釣果データは{total:,}件・{n_kinds}魚種が記録されています。"
+    body = f"件数の多い順に{'、'.join(parts)}が主力です。"
+    tail = "潮回り・水温・季節で構成は変動するため、本ページの旬カレンダーや最新の釣果カードも併せてご確認ください。"
+    return head + body + tail
 
+
+def _build_area_access_q2_text(area, area_description):
+    """area FAQ Q2（T31 2026/05/12）: area_description.json の nearest_ic / nearest_station から
+    最寄りIC + 最寄り駅を固定文章化。両方未登録のときは「各船宿のウェブサイトでご確認ください」。"""
+    nearest_ic = ""
+    nearest_station = ""
+    if area_description and isinstance(area_description, dict):
+        entry = area_description.get(area) or {}
+        if isinstance(entry, dict):
+            nearest_ic = (entry.get("nearest_ic") or "").strip()
+            nearest_station = (entry.get("nearest_station") or "").strip()
+    parts = []
+    if nearest_ic:
+        parts.append(f"最寄りICは{nearest_ic}")
+    if nearest_station:
+        parts.append(f"最寄り駅は{nearest_station}")
+    if parts:
+        return (
+            f"{area}への{'、'.join(parts)}です。"
+            f"集合場所や駐車場の有無は船宿ごとに異なるため、予約時または本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
+        )
+    return (
+        f"{area}への詳細なアクセス情報は準備中です。"
+        f"最寄りIC・最寄り駅は本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
+    )
+
+
+def _build_area_recommendation_q3_text(area, hist_rows):
+    """area FAQ Q3（T31）: 季節別TOP魚種で推奨時期を固定文章化（春夏秋冬の4区分）。"""
+    if not hist_rows:
+        return f"{area}の釣果データは集計中です。本ページの旬カレンダーで月別の状況をご確認ください。"
+    month_fish = {}
+    fish_total = {}
+    for r in hist_rows:
+        if r.get("area") != area:
+            continue
+        if _is_cancelled_row(r):
+            continue
+        f = (r.get("tsuri_mono") or "").strip()
+        if not f or f in _AREA_SKIP_FISH or f.isdigit():
+            continue
+        d = r.get("date", "")
+        if len(d) < 7:
+            continue
+        try:
+            m = int(d[5:7])
+            if not (1 <= m <= 12):
+                continue
+        except (ValueError, TypeError):
+            continue
+        mf = month_fish.setdefault(m, {})
+        mf[f] = mf.get(f, 0) + 1
+        fish_total[f] = fish_total.get(f, 0) + 1
+    if not fish_total:
+        return f"{area}の月別実績は集計中です。本ページの旬カレンダーで詳細をご確認ください。"
+    season_groups = [
+        ("春（3〜5月）", [3, 4, 5]),
+        ("夏（6〜8月）", [6, 7, 8]),
+        ("秋（9〜11月）", [9, 10, 11]),
+        ("冬（12〜2月）", [12, 1, 2]),
+    ]
+    season_top = []
+    for sname, months in season_groups:
+        sf_counts = {}
+        for m in months:
+            for f, c in month_fish.get(m, {}).items():
+                sf_counts[f] = sf_counts.get(f, 0) + c
+        if sf_counts:
+            top1 = max(sf_counts.items(), key=lambda x: x[1])
+            season_top.append((sname, top1[0], top1[1]))
+    if not season_top:
+        return f"{area}の月別実績は集計中です。本ページの旬カレンダーで詳細をご確認ください。"
+    parts = [f"{s}は{f}（{c:,}件）" for s, f, c in season_top]
+    head = f"過去3年間の{area}での月別実績を集計すると、"
+    body = "、".join(parts) + "が代表的なターゲットです。"
+    tail = "魚種ごとに釣れる時期が異なるため、本ページの旬カレンダーで詳細な月別釣れ具合をご確認ください。"
+    return head + body + tail
+
+
+def _build_area_ships_q4_text(area, hist_rows):
+    """area FAQ Q4（T31）: 船宿TOP5 + 船宿総数で固定文章化。"""
+    if not hist_rows:
+        return f"{area}の船宿情報は集計中です。本ページの船宿一覧をご確認ください。"
+    ship_counts = {}
+    for r in hist_rows:
+        if r.get("area") != area:
+            continue
+        if _is_cancelled_row(r):
+            continue
+        sn = (r.get("ship") or "").strip()
+        if sn:
+            ship_counts[sn] = ship_counts.get(sn, 0) + 1
+    if not ship_counts:
+        return f"{area}の船宿情報は集計中です。本ページの船宿一覧をご確認ください。"
+    n_ships = len(ship_counts)
+    top5 = sorted(ship_counts.items(), key=lambda x: -x[1])[:5]
+    ship_str = "、".join(f"{sn}（{cnt:,}件）" for sn, cnt in top5)
+    if n_ships == 1:
+        sn, cnt = top5[0]
+        return (
+            f"過去3年間の{area}での釣果データは{sn}が{cnt:,}件記録されており、"
+            f"現状は{sn}に集約されています。出船日・料金・対象魚種の詳細は本ページの船宿一覧からご確認ください。"
+        )
+    head = f"過去3年間の{area}での釣果データは計{n_ships}船宿で記録されています。"
+    if n_ships >= 5:
+        body = f"件数の多い順に{ship_str}が出船実績豊富です。"
+    else:
+        body = f"{ship_str}が記録上の主力船宿です。"
+    tail = "各船宿で出船日・料金・対象魚種が異なるため、本ページの船宿一覧から詳細をご確認ください。"
+    return head + body + tail
+
+
+def build_area_faq_html(area, desc_data, hist_rows=None, area_coords=None):
+    """エリア別 FAQ（T31 2026/05/12）: 3年分 hist_rows ベース固定文章化。
+
+    旧版（catches/top_fish_items 依存）から、hist_rows 依存に変更。
+    Q1=魚種実績、Q2=地理特徴（area_description + 3年件数）、Q3=季節別推奨、Q4=船宿実績。
+    戻り値: (html, faq_pairs)
+    """
+    q1_ans = _build_area_top_fish_q1_text(area, hist_rows)
+    q2_ans = _build_area_access_q2_text(area, desc_data)
+    q3_ans = _build_area_recommendation_q3_text(area, hist_rows)
+    q4_ans = _build_area_ships_q4_text(area, hist_rows)
     faqs = [
         (f"{area}で釣れる魚は何ですか？", q1_ans),
         (f"{area}エリアへのアクセス方法は？", q2_ans),
@@ -5312,6 +5447,41 @@ def build_area_faq_html(area, desc_data, area_coords=None, top_fish_items=None, 
         html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}</p></details>\n'
     html += '</div>'
     return html, faqs
+
+
+def build_area_fixed_faq_html(area, fixed_faq_data):
+    """エリアページ用の固定 FAQ（T31 2026/05/12）。
+
+    T22-M1（fish）と同じパターン: エリア固有の固定FAQ（fixed_faq.json の area スコープ）のみを
+    <details> で出力し、共通 7 問は faq.html へのリンクブロックに差し替える（HTML には含めない）。
+    戻り値: (html, faq_pairs)  faq_pairs はエリア固有 FAQ の (q, a) のみ（JSON-LD 用）
+    """
+    import html as _html
+    scoped_items = (fixed_faq_data.get("area") or {}).get(area, [])
+
+    faq_pairs = []
+    inner = ""
+
+    if scoped_items:
+        block_ttl = f"{_html.escape(area)}を釣り場として知る"
+        inner += f'<h3 class="faq-block-ttl">{block_ttl}</h3>\n'
+        for item in scoped_items:
+            q = item.get("q", "")
+            a = item.get("a", "")
+            sources = item.get("sources", [])
+            src_html = _faq_source_html(sources)
+            inner += (
+                f'  <details><summary>{_html.escape(q)}</summary>'
+                f'<p class="faq-ans">{_html.escape(a)}{src_html}</p></details>\n'
+            )
+            faq_pairs.append((q, a))
+
+    if inner:
+        html_out = f'<div class="faq-list faq-static" data-scope="area-{_html.escape(area)}">\n{inner}</div>'
+    else:
+        html_out = ""
+
+    return html_out, faq_pairs
 
 # ============================================================
 # シーズンデータ
@@ -8165,33 +8335,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             guide_html = "\n".join(guide_parts)
 
             top_fish_names = [f for f, _ in hist["top_fish"][:3]]
-            top_fish_str = "・".join(top_fish_names) if top_fish_names else "（過去1年の集計データなし）"
-            top_ship_names = [s for s, _ in hist["top_ships"][:3]]
-            top_ship_str = "・".join(top_ship_names) if top_ship_names else "（出船実績データを準備中）"
-            faq_q1 = f"{area}で釣れる魚は何ですか？"
-            faq_a1 = (f"過去1年の実績では{top_fish_str}が中心です。本ページの月別トレンドや旬カレンダーで詳細をご確認いただけます。"
-                      if top_fish_names else "現在このエリアの過去データを収集中です。")
-            faq_q2 = f"{area}でよく出船する船宿は？"
-            faq_a2 = (f"過去1年の実績では{top_ship_str}などが出船しています。"
-                      if top_ship_names else "現在このエリアの出船データを収集中です。")
-            faq_q3 = f"{area}で今日は出船していますか？"
-            faq_a3 = ("本日の釣果報告はまだ届いていません。出船情報は各船宿のWebサイト・電話で直接ご確認ください。"
-                      "出船報告があり次第このページに反映されます。")
-            faq_q4 = f"{area}でおすすめの時期は？"
-            faq_a4 = "本ページの旬カレンダーで魚種別の月別釣れ具合をご確認いただけます。過去3年の実績から集計しています。"
-            faq_q5 = f"{area}へのアクセス方法は？"
-            faq_a5 = _access if _access else f"{area}への詳細なアクセスは各船宿のウェブサイトをご確認ください。"
-            auto_faq_html_thin = (
-                '<div class="faq-list faq-data">'
-                f'<h3 class="faq-block-ttl">{area}釣果データから分かること</h3>'
-                f'<details><summary>{faq_q1}</summary><p class="faq-ans">{faq_a1}</p></details>'
-                f'<details><summary>{faq_q2}</summary><p class="faq-ans">{faq_a2}</p></details>'
-                f'<details><summary>{faq_q3}</summary><p class="faq-ans">{faq_a3}</p></details>'
-                f'<details><summary>{faq_q4}</summary><p class="faq-ans">{faq_a4}</p></details>'
-                f'<details><summary>{faq_q5}</summary><p class="faq-ans">{faq_a5}</p></details>'
-                '</div>'
-            )
-            fixed_faq_html_thin, fixed_faq_pairs_thin = build_fixed_faq_html("area", area, fixed_faq_data_area)
+            # T31: thin パスも normal と同じ build_area_faq_html / build_area_fixed_faq_html を呼ぶ
+            # （hist_rows ベース固定文章化・共通 7 問は faq.html リンクへ）
+            auto_faq_html_thin, auto_faq_pairs_thin = build_area_faq_html(area, area_desc_data, hist_rows=_hist_rows_for_placeholder)
+            fixed_faq_html_thin, fixed_faq_pairs_thin = build_area_fixed_faq_html(area, fixed_faq_data_area)
             faq_html = auto_faq_html_thin + fixed_faq_html_thin
 
             teaser_html = (
@@ -8203,14 +8350,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             )
 
             import json as _json
-            _thin_main_entity = [
-                {"@type":"Question","name":faq_q1,"acceptedAnswer":{"@type":"Answer","text":faq_a1}},
-                {"@type":"Question","name":faq_q2,"acceptedAnswer":{"@type":"Answer","text":faq_a2}},
-                {"@type":"Question","name":faq_q3,"acceptedAnswer":{"@type":"Answer","text":faq_a3}},
-                {"@type":"Question","name":faq_q4,"acceptedAnswer":{"@type":"Answer","text":faq_a4}},
-                {"@type":"Question","name":faq_q5,"acceptedAnswer":{"@type":"Answer","text":faq_a5}},
-            ]
-            for _q, _a in fixed_faq_pairs_thin:
+            _thin_main_entity = []
+            for _q, _a in (auto_faq_pairs_thin + fixed_faq_pairs_thin):
                 _thin_main_entity.append(
                     {"@type":"Question","name":_q,"acceptedAnswer":{"@type":"Answer","text":_a}}
                 )
@@ -8321,6 +8462,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
+  <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>
   <h2 class="st">よくある質問</h2>
   {faq_html}
   {teaser_html}
@@ -8559,8 +8701,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
         top_fish_list = [f for f, _ in top_fish_items]
         area_season_html = build_area_season_map_html(area, area_decadal, top_fish_list, hist_rows=_hist_rows_for_placeholder)
         area_guide_html = build_area_guide_html(area, area_desc_data)
-        auto_area_faq_html, auto_area_faq_pairs = build_area_faq_html(area, area_desc_data, top_fish_items=top_fish_items, area_catches=catches)
-        fixed_area_faq_html, fixed_area_faq_pairs = build_fixed_faq_html("area", area, fixed_faq_data_area)
+        auto_area_faq_html, auto_area_faq_pairs = build_area_faq_html(area, area_desc_data, hist_rows=_hist_rows_for_placeholder)
+        fixed_area_faq_html, fixed_area_faq_pairs = build_area_fixed_faq_html(area, fixed_faq_data_area)
         area_faq_html = auto_area_faq_html + fixed_area_faq_html
         _area_all_faq_pairs = auto_area_faq_pairs + fixed_area_faq_pairs
         area_description_html = build_area_description_html(area, area_desc_data)
@@ -8656,6 +8798,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
   {('<h2 class="st">このエリアについて</h2>' + area_description_html) if area_description_html else ''}
+  <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>
   <h2 class="st">よくある質問</h2>
   {area_faq_html}
   {area_teaser_html}
