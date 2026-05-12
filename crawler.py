@@ -11496,9 +11496,12 @@ def build_ship_pages(catches, crawled_at=""):
     out_dir = os.path.join(WEB_DIR, "ship")
     os.makedirs(out_dir, exist_ok=True)
     # ships.json に romaji_slug があるすべての船宿を対象
+    # fishing_v_zero=True（fishing-v.jp で釣果0件確認済み・T31 2026/05/12）はスキップ
     target_ships = [
         s for s in SHIPS
-        if s.get("romaji_slug") and not s.get("exclude")
+        if s.get("romaji_slug")
+        and not s.get("exclude")
+        and not s.get("fishing_v_zero")
     ]
     today_dt = datetime.now(JST).replace(tzinfo=None)
     area_coords = _ship_load_area_coords()
@@ -11578,7 +11581,10 @@ def build_sitemap(data):
             urls.append((f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html", "0.7", "weekly"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
+    # T31 (2026/05/12): fishing_v_zero=True の船宿はページ自体生成しないため除外
     for s in SHIPS:
+        if s.get("fishing_v_zero"):
+            continue
         slug_s = s.get("romaji_slug")
         if slug_s and s["name"] in _SHIP_INFO and slug_s not in _SHIP_NOINDEX_SLUGS:
             urls.append((f"{SITE_URL}/ship/{slug_s}.html", "0.6", "weekly"))
