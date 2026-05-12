@@ -10626,6 +10626,73 @@ def _split_depth(depth_str):
         return v, v
     return "", ""
 
+def append_to_catches_raw(catches):
+    """T31 リカバリ (2026/05/12): in-memory catches を catches_raw.json にも追記。
+
+    背景: 過去 save_daily_csv() は data/V2/*.csv にのみ追記し、catches_raw.json は
+    手動 history_crawl_* 経由でしか更新されない設計だった。このため
+    `--export-csv` で catches_raw.json から CSV を全再生成すると、save_daily_csv
+    で追記されていた最新分（数百件単位）が wipe される regression が再発した。
+
+    対策: 毎日のクロール時に catches_raw.json にも同期追記することで、
+    catches_raw.json が常に最新化され、--export-csv で上書きされても data 消失を防ぐ。
+
+    dedup キー: (ship, area, date, fish_raw, trip_no) — history_crawl_single.py と同じ
+    """
+    RAW_PATH = os.path.join(os.path.dirname(__file__), "crawl", "catches_raw.json")
+    if not os.path.exists(RAW_PATH):
+        print(f"  catches_raw.json が存在しないためスキップ: {RAW_PATH}")
+        return 0
+    try:
+        with open(RAW_PATH, encoding="utf-8") as f:
+            all_records = json.load(f)
+    except Exception as e:
+        print(f"  catches_raw.json 読込失敗・スキップ: {e}")
+        return 0
+    existing_keys = {
+        (r.get("ship", ""), r.get("area", ""), r.get("date", ""),
+         r.get("fish_raw", ""), str(r.get("trip_no", "")))
+        for r in all_records if r.get("date")
+    }
+    added = []
+    for c in catches:
+        if not c.get("date") or not c.get("ship"):
+            continue
+        if c.get("is_cancellation"):
+            continue
+        if not c.get("fish_raw"):
+            continue
+        key = (c["ship"], c.get("area", ""), c["date"],
+               c.get("fish_raw", ""), str(c.get("trip_no", "")))
+        if key in existing_keys:
+            continue
+        existing_keys.add(key)
+        # V2 形式に変換（history_crawl_single.to_v2_record と同パターン）
+        added.append({
+            "ship":            c.get("ship", ""),
+            "area":            c.get("area", ""),
+            "date":            c.get("date", ""),
+            "trip_no":         c.get("trip_no"),
+            "is_cancellation": c.get("is_cancellation", False),
+            "reason_text":     c.get("reason_text", ""),
+            "fish_raw":        c.get("fish_raw", ""),
+            "count_raw":       c.get("count_raw", ""),
+            "size_raw":        c.get("size_raw", ""),
+            "weight_raw":      c.get("weight_raw", ""),
+            "tokki_raw":       c.get("tokki_raw", ""),
+            "point_raw":       c.get("point_raw", ""),
+            "kanso_raw":       c.get("kanso_raw") or c.get("trip_comment", ""),
+            "suion_raw":       c.get("suion_raw"),
+            "suishoku_raw":    c.get("suishoku_raw"),
+        })
+    if added:
+        all_records.extend(added)
+        all_records.sort(key=lambda r: (r.get("ship", ""), r.get("date", ""), r.get("trip_no") or 0))
+        with open(RAW_PATH, "w", encoding="utf-8") as f:
+            json.dump(all_records, f, ensure_ascii=False, indent=2)
+    return len(added)
+
+
 def save_daily_csv(catches):
     """釣果を data/V2/YYYY-MM.csv に V2形式（38列）で追記（重複スキップ）。
     pageID=1 は複数日分を返すが、既存行との (ship, area, date, fish_raw) キーで
@@ -12691,6 +12758,12 @@ def main():
     csv_added = save_daily_csv(all_catches)
     if csv_added:
         print(f"CSV保存: {csv_added} 件追記 → {_DATA_DIR}/")
+
+    # T31 (2026/05/12) リカバリ: catches_raw.json にも同期追記
+    # save_daily_csv との二重書きで、--export-csv の wipe regression を防止
+    raw_added = append_to_catches_raw(all_catches)
+    if raw_added:
+        print(f"catches_raw.json: {raw_added} 件追記")
 
     # 休船・出船中止の記録
     cancel_added = save_cancellations_csv(all_catches)
