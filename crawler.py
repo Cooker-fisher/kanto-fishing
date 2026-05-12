@@ -8681,6 +8681,13 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
                 if f not in ("不明", "欠航"):
                     ship_week_fish.setdefault(c["ship"], {}).setdefault(f, 0)
                     ship_week_fish[c["ship"]][f] += 1
+        # T31 (2026/05/12): ships.json で area マッチする active 船宿も補完
+        # （過去7日 catches に居なくても hist_rows に存在する船宿を一覧から漏らさない）
+        for s in SHIPS:
+            if s.get("exclude") or s.get("boat_only") or s.get("fishing_v_zero"):
+                continue
+            if s.get("area") == area and s.get("name") and s["name"] not in ship_week_fish:
+                ship_week_fish[s["name"]] = {}  # 過去7日釣果なし扱い
         sorted_ships = sorted(ship_week_fish.keys(), key=lambda s: (0 if s in ship_today_set else 1, -sum(ship_week_fish[s].values())))[:8]
         ship_items_html = ""
         for sn in sorted_ships:
