@@ -27,6 +27,7 @@
 .sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
+.sr .sr-size{flex:0 0 70px;font-size:11px;color:var(--sub)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
 .season-bar{display:flex;gap:2px;margin-top:8px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
 .sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}
@@ -41,7 +42,20 @@
 .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
 .chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
+.chip-emoji{vertical-align:middle}
 .fa-related{margin-bottom:16px}
+.fa-h2-emoji{vertical-align:middle;margin-right:6px}
+.chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
+.chart-bars .cb.weekend{opacity:.8;background:var(--weekend)}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
+.chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
+.chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
+.chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}
 .fa-intro{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:16px}</style>
 </head>
 <body>
@@ -62,21 +76,29 @@
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/menuke.html">メヌケ</a> &rsaquo; 波崎港</p>
   <div class="share-bar" role="group" aria-label="シェア"><a class="share-x" href="https://twitter.com/intent/tweet?text=%E6%B3%A2%E5%B4%8E%E6%B8%AF%E3%81%AE%E3%83%A1%E3%83%8C%E3%82%B1%E9%87%A3%E6%9E%9C%E6%83%85%E5%A0%B1%20%7C%20%E8%88%B9%E9%87%A3%E3%82%8A%E4%BA%88%E6%83%B3&url=https%3A//funatsuri-yoso.com/fish_area/menuke-hasaki.html&hashtags=%E8%88%B9%E9%87%A3%E3%82%8A%2C%E9%87%A3%E6%9E%9C" target="_blank" rel="noopener nofollow" aria-label="X（旧Twitter）でシェア">𝕏 でシェア</a><a class="share-follow" href="https://twitter.com/intent/follow?screen_name=funatsuri_yoso" target="_blank" rel="noopener nofollow" aria-label="@funatsuri_yoso をフォロー">フォロー</a></div>
-  <h2 class="st">波崎港のメヌケ釣果情報</h2>
-  <p class="fa-intro">茨城県神栖市の鹿島灘に面する港。波崎港でのメヌケの釣果データは2件記録されています（2026年）。最高釣果は11匹の記録があります（データ蓄積中：2件）。釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。出船実績の多い船宿は仁徳丸（1件）、信栄丸（1件）です。このエリアでは計2船宿がメヌケの出船実績を持ちます。各船宿の出船スケジュールは直接ご確認ください。</p>
+  <h2 class="st"><img src="../assets/fish/menuke/menuke_emoji.webp" alt="メヌケ" class="fa-h2-emoji" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none'">波崎港のメヌケ釣果情報</h2>
+  <p class="fa-intro">茨城県神栖市の鹿島灘に面する港。波崎港でのメヌケの釣果データは2件記録されています（2026年）。月別の集計では4月中旬前後に釣果が集中する傾向があります。最高釣果は11匹の記録があります（データ蓄積中：2件）。釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。出船実績の多い船宿は仁徳丸（1件）、信栄丸（1件）です。このエリアでは計2船宿がメヌケの出船実績を持ちます。各船宿の出船スケジュールは直接ご確認ください。</p>
   <div class="stat-cards">
   <div class="stat-card"><div class="sv">2船宿</div><div class="sl">出船船宿数</div></div>
   <div class="stat-card"><div class="sv">6匹</div><div class="sl">釣果目安</div></div>
   <div class="stat-card trend-down"><div class="sv">11匹</div><div class="sl">最高釣果</div></div>
 </div>
+  <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
+<div class="chart7">
+  <h3>匹数上限（上ヒゲ）の7日推移</h3>
+  <div class="chart-bars"><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb today" style="height:100%"></div></div>
+  <div class="chart-labels"><span>5/7</span><span>5/8</span><span class="weekend">5/9</span><span class="weekend">5/10</span><span>5/11</span><span>5/12</span><span class="today">5/13</span></div>
+  
+</div>
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   <div class="season-map">
+  <div class="sm-fish-title"><img src="../assets/fish/menuke/menuke_emoji.webp" alt="メヌケ" class="sm-fish-emoji" width="20" height="20" loading="lazy" decoding="async" onerror="this.style.display='none'">メヌケ</div>
   <div class="sm-wrap">
     <table class="sm-table">
       <thead><tr><th style="width:28px"></th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th><th>9月</th><th>10月</th><th>11月</th><th>12月</th></tr></thead>
       <tbody>
         <tr><th class="sm-th-mo">数釣</th><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="1"></td></tr>
-        <tr><th class="sm-th-mo">型釣</th><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="1"></td><td class="sm-cell" data-v="1"></td></tr>
+        
       </tbody>
     </table>
   </div>
@@ -94,8 +116,8 @@
   <h2 class="st">船宿ランキング <span class="tag free">無料</span></h2>
   <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name"><a href="../ship/nintoku-maru.html">仁徳丸</a></span><span class="sr-range">10〜11匹</span><span class="sr-pt">1件</span></div><div class="sr"><span class="sr-rank">2</span><span class="sr-name"><a href="../ship/shinei-maru.html">信栄丸</a></span><span class="sr-range">0〜2匹</span><span class="sr-pt">1件</span></div></div>
   <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
-  <div class="sl-card"><div class="sl-head"><span class="sl-name"><a href="../ship/nintoku-maru.html">仁徳丸</a></span><span class="sl-date">05/13</span></div><div class="sl-sub">10〜11</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name"><a href="../ship/shinei-maru.html">信栄丸</a></span><span class="sl-date">05/13</span></div><div class="sl-sub">0〜2</div></div>
-  <div class="fa-related"><h2 class="st">波崎港の他の魚種</h2><div class="chip-wrap"><a href="../fish_area/ara-hasaki.html" class="chip-link">アラ（19便）</a><a href="../fish_area/warasa-hasaki.html" class="chip-link">ワラサ（17便）</a><a href="../fish_area/oki-kasago-hasaki.html" class="chip-link">沖カサゴ（3便）</a><a href="../fish_area/hiramasa-hasaki.html" class="chip-link">ヒラマサ（3便）</a><a href="../fish_area/inada-hasaki.html" class="chip-link">イナダ（1便）</a></div></div>
+  <div class="sl-card"><div class="sl-head"><span class="sl-name"><a href="../ship/nintoku-maru.html">仁徳丸</a></span><span class="sl-date">05/13</span></div><div class="sl-sub">10〜11匹</div></div><div class="sl-card"><div class="sl-head"><span class="sl-name"><a href="../ship/shinei-maru.html">信栄丸</a></span><span class="sl-date">05/13</span></div><div class="sl-sub">0〜2匹</div></div>
+  <div class="fa-related"><h2 class="st">波崎港の他の魚種</h2><div class="chip-wrap"><a href="../fish_area/ara-hasaki.html" class="chip-link"><img src="../assets/fish/ara/ara_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">アラ（19便）</a><a href="../fish_area/warasa-hasaki.html" class="chip-link"><img src="../assets/fish/warasa/warasa_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">ワラサ（17便）</a><a href="../fish_area/oki-kasago-hasaki.html" class="chip-link"><img src="../assets/fish/okikasago/okikasago_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">沖カサゴ（3便）</a><a href="../fish_area/hiramasa-hasaki.html" class="chip-link"><img src="../assets/fish/hiramasa/hiramasa_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">ヒラマサ（3便）</a><a href="../fish_area/inada-hasaki.html" class="chip-link"><img src="../assets/fish/inada/inada_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">イナダ（1便）</a></div></div>
   <h2 class="st">よくある質問</h2>
   <div class="faq-list">
   <details><summary>波崎港でメヌケが最も釣れる時期はいつですか？</summary><p class="faq-ans">過去3年間（2023〜2026）の波崎港でのメヌケ釣果データは89件で、関東のメヌケ釣果96件のうち約93%を占める関東最大の集積地（3エリア中1位）です。月別では4月（36件）、3月（20件）、5月（18件）が三大ピーク。最も少ない7月でも1件とほぼ通年で実績があります。釣果は潮回り・水温・群れの回遊で日々変動するため、最新の釣果報告も併せてご確認ください。</p></details>

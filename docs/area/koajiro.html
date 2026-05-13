@@ -58,7 +58,8 @@
 .area-desc p:last-child{margin-bottom:0}
 .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
-.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}</style>
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
+.chip-emoji{vertical-align:middle}</style>
 </head>
 <body>
 <header>
@@ -98,23 +99,27 @@
   
   <div class="related"><h3>近隣エリア</h3><div class="rl"><a href="../area/koshiba.html">小柴港</a><a href="../area/kanazawa-hakkei.html">金沢八景</a><a href="../area/yokohama-honmoku.html">横浜本牧港</a><a href="../area/kubiri.html">久比里港</a><a href="../area/kurihama.html">久里浜港</a><a href="../area/kamoi-omuro.html">鴨居大室港</a><a href="../area/kotsubo.html">小坪港</a><a href="../area/sajima.html">佐島</a></div></div>
   <h2 class="st">魚種別 旬カレンダー <span class="tag free">無料</span></h2>
-  <div class="area-season">
-  <div class="as-wrap">
-    <table class="as-table">
-      <thead><tr><th class="as-th-fish"></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr></thead>
-      <tbody><tr><th class="as-th-fish"><img src="../assets/fish/maruika/maruika_emoji.webp" alt="" class="as-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">マルイカ</th><td class="as-cell" data-v="2"></td><td class="as-cell" data-v="3"></td><td class="as-cell" data-v="3"></td><td class="as-cell" data-v="3"></td><td class="as-cell" data-v="4"></td><td class="as-cell" data-v="4"></td><td class="as-cell" data-v="4"></td><td class="as-cell" data-v="2"></td><td class="as-cell" data-v="0"></td><td class="as-cell" data-v="0"></td><td class="as-cell" data-v="0"></td><td class="as-cell" data-v="2"></td></tr>
-</tbody>
+  <div class="season-map">
+  <div class="sm-fish-title"><img src="../assets/fish/maruika/maruika_emoji.webp" alt="マルイカ" class="sm-fish-emoji" width="20" height="20" loading="lazy" decoding="async" onerror="this.style.display='none'">マルイカ</div>
+  <div class="sm-wrap">
+    <table class="sm-table">
+      <thead><tr><th style="width:28px"></th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th><th>9月</th><th>10月</th><th>11月</th><th>12月</th></tr></thead>
+      <tbody>
+        <tr><th class="sm-th-mo">数釣</th><td class="sm-cell" data-v="2"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="2"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="2"></td></tr>
+        <tr><th class="sm-th-mo">型釣</th><td class="sm-cell" data-v="2"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="3"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="4"></td><td class="sm-cell" data-v="2"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="0"></td><td class="sm-cell" data-v="2"></td></tr>
+      </tbody>
     </table>
   </div>
-  <div class="as-legend">
-    <span>釣れ具合：</span>
-    <span class="as-lc as-lc-0"></span>なし
-    <span class="as-lc as-lc-1"></span>渋
-    <span class="as-lc as-lc-2"></span>普通
-    <span class="as-lc as-lc-3"></span>良
-    <span class="as-lc as-lc-4"></span>◎
-  </div>
-  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の釣果データより集計（2023〜2025年）</p>
+
+</div>
+<div class="sm-legend" style="margin-top:0;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px">
+  <span>釣れ具合：</span>
+  <span class="sm-lc sm-lc-0"></span>なし
+  <span class="sm-lc sm-lc-1"></span>渋
+  <span class="sm-lc sm-lc-2"></span>普通
+  <span class="sm-lc sm-lc-3"></span>良
+  <span class="sm-lc sm-lc-4"></span>◎
+  <span style="margin-left:auto;font-size:10px">※ 過去3年の釣果データより集計（2023〜2025年）</span>
 </div>
   
   <!-- 広告② -->

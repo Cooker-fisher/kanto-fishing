@@ -3795,6 +3795,8 @@ footer .cp{margin-top:10px;display:block;opacity:.5}
 .sm-cell[data-v="2"]{background:#66bb6a;color:#fff}
 .sm-cell[data-v="3"]{background:#388e3c;color:#fff}
 .sm-cell[data-v="4"]{background:#1b5e20;color:#fff}
+.sm-fish-title{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px}
+.sm-fish-emoji{vertical-align:middle;width:20px;height:20px;object-fit:contain}
 .sm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)}
 .sm-lc{width:14px;height:14px;border-radius:2px;display:inline-block}
 .sm-lc-0{background:#eef2f5}
@@ -4298,16 +4300,52 @@ def _decadal_to_monthly_size_index(fish_decades: dict) -> list:
         avgs.append(sum(vals) / 3)
     return _to_relative_levels(avgs)
 
+def _render_season_map_block(fish, cnt_levels, size_levels, ths, source_note, depth=1, show_legend=True):
+    """旬カレンダーの共通レンダリング（魚種名+アイコン見出し + 数釣/型釣 行 + 凡例 + 出典）。
+    型データが全て 0（lv==0）の場合は「型釣」行を省略する。
+    show_legend=False で凡例・出典を省略（複数魚種を並べる場合に最後にまとめて表示するため）。"""
+    cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
+    size_row_html = ""
+    if any(lv > 0 for lv in size_levels):
+        size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
+        size_row_html = f'<tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>'
+    fish_emoji_src = ("../" * depth if depth > 0 else "") + f"assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp"
+    legend_html = ""
+    if show_legend:
+        legend_html = f"""  <div class="sm-legend">
+    <span>釣れ具合：</span>
+    <span class="sm-lc sm-lc-0"></span>なし
+    <span class="sm-lc sm-lc-1"></span>渋
+    <span class="sm-lc sm-lc-2"></span>普通
+    <span class="sm-lc sm-lc-3"></span>良
+    <span class="sm-lc sm-lc-4"></span>◎
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ {source_note}</p>"""
+    return f"""<div class="season-map">
+  <div class="sm-fish-title"><img src="{fish_emoji_src}" alt="{fish}" class="sm-fish-emoji" width="20" height="20" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</div>
+  <div class="sm-wrap">
+    <table class="sm-table">
+      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
+      <tbody>
+        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
+        {size_row_html}
+      </tbody>
+    </table>
+  </div>
+{legend_html}
+</div>"""
+
+
 def build_combo_season_map_html(fish, area, hist_rows, current_month=None, decadal_calendar=None):
     """fish × area の旬カレンダー（数釣/型釣 × 12ヶ月 ヒートマップ）。
     fish_area ページ用に build_fish_season_map_html と同じフォーマットでコンボ別件数を描画する。
+    型データはコンボ別 size_max 集計から計算（データ無ければ型釣行省略）。
 
     優先順位:
     1. hist_rows × area で fish×area の月別件数（max>=3）
     2. hist_rows × 全エリアで fish 全体の月別件数（コンボ件数不足時の fallback）
     3. decadal_calendar / SEASON_DATA fallback（build_fish_season_map_html に委譲）
     """
-    types = SEASON_TYPE.get(fish, [""] * 12)
     month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
     ths = "".join(f"<th>{m}</th>" for m in month_labels)
     counts = compute_combo_month_records(fish, area, hist_rows) if hist_rows else [0] * 12
@@ -4315,8 +4353,8 @@ def build_combo_season_map_html(fish, area, hist_rows, current_month=None, decad
     if max_v < 3:
         # コンボ件数が少ない場合は fish 全体の月別件数 fallback
         return build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=hist_rows)
+    # 数釣レベル: cnt 件数の正規化
     cnt_levels = []
-    size_levels = []
     for i in range(12):
         cnt = counts[i]
         ratio = cnt / max_v if max_v else 0
@@ -4325,38 +4363,24 @@ def build_combo_season_map_html(fish, area, hist_rows, current_month=None, decad
         elif ratio >= 0.15: lv = 2
         elif cnt > 0:       lv = 1
         else:               lv = 0
-        tp = types[i] if i < len(types) else ""
-        if tp == "数" and lv >= 3:
-            cnt_levels.append(lv)
-            size_levels.append(max(0, lv - 1))
-        elif tp == "型" and lv >= 3:
-            cnt_levels.append(max(0, lv - 1))
-            size_levels.append(lv)
-        else:
-            cnt_levels.append(lv)
-            size_levels.append(lv)
-    cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
-    size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
-    return f"""<div class="season-map">
-  <div class="sm-wrap">
-    <table class="sm-table">
-      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
-      <tbody>
-        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
-        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="sm-legend">
-    <span>釣れ具合：</span>
-    <span class="sm-lc sm-lc-0"></span>なし
-    <span class="sm-lc sm-lc-1"></span>渋
-    <span class="sm-lc sm-lc-2"></span>普通
-    <span class="sm-lc sm-lc-3"></span>良
-    <span class="sm-lc sm-lc-4"></span>◎
-  </div>
-  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ {area}での{fish}釣果データから集計（過去3年）</p>
-</div>"""
+        cnt_levels.append(lv)
+    # 型釣レベル: size_max を持つレコードの月別件数を正規化
+    size_counts = compute_combo_month_size_records(fish, area, hist_rows) if hist_rows else [0] * 12
+    size_max_v = max(size_counts) if any(size_counts) else 0
+    size_levels = []
+    for i in range(12):
+        if size_max_v < 3:
+            size_levels.append(0)
+            continue
+        sz = size_counts[i]
+        ratio = sz / size_max_v if size_max_v else 0
+        if ratio >= 0.7:    lv = 4
+        elif ratio >= 0.4:  lv = 3
+        elif ratio >= 0.15: lv = 2
+        elif sz > 0:        lv = 1
+        else:               lv = 0
+        size_levels.append(lv)
+    return _render_season_map_block(fish, cnt_levels, size_levels, ths, f"{area}での{fish}釣果データから集計（過去3年）", depth=1)
 
 
 def build_fish_season_map_html(fish, decadal_calendar, current_month=None, hist_rows=None):
@@ -4365,11 +4389,26 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None, hist_
     1. hist_rows（CSV から fish 全エリア合算の月別件数を計算）← 最優先
     2. decadal_calendar（analysis.sqlite 由来・cnt_index/size_index）
     3. SEASON_DATA + SEASON_TYPE（ハードコード fallback）
+
+    型釣レベルは hist_rows の size_max を持つレコード月別件数から実データ計算。データなし時は型行省略。
     """
     fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
     month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
     ths = "".join(f"<th>{m}</th>" for m in month_labels)
-    types = SEASON_TYPE.get(fish, [""] * 12)
+    source_note = "過去3年の関東船釣り釣果データより集計（2023〜2025年）"
+    # ヘルパー: counts/max から levels (1..4) 配列を構築
+    def _counts_to_levels(counts, max_v):
+        out = []
+        for i in range(12):
+            cnt = counts[i]
+            ratio = cnt / max_v if max_v else 0
+            if ratio >= 0.7:    lv = 4
+            elif ratio >= 0.4:  lv = 3
+            elif ratio >= 0.15: lv = 2
+            elif cnt > 0:       lv = 1
+            else:               lv = 0
+            out.append(lv)
+        return out
     # 2026/05/06: hist_rows を最優先で使用
     hist_counts = None
     if hist_rows:
@@ -4377,55 +4416,16 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None, hist_
         if max(hc) >= 5:
             hist_counts = hc
     if hist_counts is not None:
-        cnt_levels = []
-        size_levels = []
-        max_v = max(hist_counts)
-        for i in range(12):
-            cnt = hist_counts[i]
-            ratio = cnt / max_v if max_v else 0
-            if ratio >= 0.7:    lv = 4
-            elif ratio >= 0.4:  lv = 3
-            elif ratio >= 0.15: lv = 2
-            elif cnt > 0:       lv = 1
-            else:               lv = 0
-            tp = types[i] if i < len(types) else ""
-            if tp == "数" and lv >= 3:
-                cnt_levels.append(lv)
-                size_levels.append(max(0, lv - 1))
-            elif tp == "型" and lv >= 3:
-                cnt_levels.append(max(0, lv - 1))
-                size_levels.append(lv)
-            else:
-                cnt_levels.append(lv)
-                size_levels.append(lv)
-        cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
-        size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
-        return f"""<div class="season-map">
-  <div class="sm-wrap">
-    <table class="sm-table">
-      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
-      <tbody>
-        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
-        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="sm-legend">
-    <span>釣れ具合：</span>
-    <span class="sm-lc sm-lc-0"></span>なし
-    <span class="sm-lc sm-lc-1"></span>渋
-    <span class="sm-lc sm-lc-2"></span>普通
-    <span class="sm-lc sm-lc-3"></span>良
-    <span class="sm-lc sm-lc-4"></span>◎
-  </div>
-  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
-</div>"""
+        cnt_levels = _counts_to_levels(hist_counts, max(hist_counts))
+        # 型レベル: hist_rows から size_max を持つレコード月別件数を正規化
+        size_counts = compute_fish_month_size_records(fish, hist_rows)
+        size_max_v = max(size_counts) if any(size_counts) else 0
+        size_levels = _counts_to_levels(size_counts, size_max_v) if size_max_v >= 3 else [0] * 12
+        return _render_season_map_block(fish, cnt_levels, size_levels, ths, source_note, depth=1)
     if not fish_decades:
         # SEASON_DATA + SEASON_TYPE fallback（hist_rows も decadal_calendar も無い場合）
         scores = SEASON_DATA.get(fish, [3] * 12)
         types  = SEASON_TYPE.get(fish, [""] * 12)
-        month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
-        ths = "".join(f"<th>{m}</th>" for m in month_labels)
         cnt_levels  = []
         size_levels = []
         for s, t in zip(scores, types):
@@ -4439,127 +4439,57 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None, hist_
             else:
                 cnt_levels.append(base)
                 size_levels.append(base)
-        cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
-        size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
-        return f"""<div class="season-map">
-  <div class="sm-wrap">
-    <table class="sm-table">
-      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
-      <tbody>
-        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
-        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="sm-legend">
-    <span>釣れ具合：</span>
-    <span class="sm-lc sm-lc-0"></span>なし
-    <span class="sm-lc sm-lc-1"></span>渋
-    <span class="sm-lc sm-lc-2"></span>普通
-    <span class="sm-lc sm-lc-3"></span>良
-    <span class="sm-lc sm-lc-4"></span>◎
-  </div>
-  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
-</div>"""
+        return _render_season_map_block(fish, cnt_levels, size_levels, ths, source_note, depth=1)
     cnt_levels   = _decadal_to_monthly_index(fish_decades)
     size_levels  = _decadal_to_monthly_size_index(fish_decades)
-    month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
-    ths = "".join(f"<th>{m}</th>" for m in month_labels)
-    cnt_cells  = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in cnt_levels)
-    size_cells = "".join(f'<td class="sm-cell" data-v="{lv}"></td>' for lv in size_levels)
-    return f"""<div class="season-map">
-  <div class="sm-wrap">
-    <table class="sm-table">
-      <thead><tr><th style="width:28px"></th>{ths}</tr></thead>
-      <tbody>
-        <tr><th class="sm-th-mo">数釣</th>{cnt_cells}</tr>
-        <tr><th class="sm-th-mo">型釣</th>{size_cells}</tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="sm-legend">
-    <span>釣れ具合：</span>
-    <span class="sm-lc sm-lc-0"></span>なし
-    <span class="sm-lc sm-lc-1"></span>渋
-    <span class="sm-lc sm-lc-2"></span>普通
-    <span class="sm-lc sm-lc-3"></span>良
-    <span class="sm-lc sm-lc-4"></span>◎
-  </div>
-  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
-</div>"""
+    return _render_season_map_block(fish, cnt_levels, size_levels, ths, source_note, depth=1)
 
 def build_area_season_map_html(area, area_decadal, top_fish_list, hist_rows=None):
-    """エリアの魚種別旬カレンダー（魚種×12か月 ヒートマップ）
+    """エリアの魚種別旬カレンダー。
+    各魚種ごとに「{魚種アイコン}{魚種名} + 数釣 + 型釣」のブロックを並べる
+    （fish/* fish_area/* の旬カレンダーと同じフォーマットで統一）。
+    型データが無い魚種は型釣行を省略。
 
     データソース優先順位:
-    1. area_decadal（analysis.sqlite 由来・cnt_index 集計値）
-    2. hist_rows（CSV から fish×area の月別件数を計算）— 2026/05/06 追加
+    1. hist_rows（CSV から fish×area の月別件数を計算）← 最優先
+    2. area_decadal（analysis.sqlite 由来・cnt_index 集計値）
     3. SEASON_DATA（ハードコード fallback）
-
-    （2）が hist_rows を渡せば動作。analysis.sqlite が無くても CSV からエリア×魚種
-    の月別実態を反映できる。
     """
-    # 港名で直接引けなければ座標→分析地域名に変換してlookup
     area_data = area_decadal.get(area) if area_decadal else None
     if area_data is None:
         region = _port_to_analysis_region(area)
         area_data = area_decadal.get(region, {}) if (area_decadal and region) else {}
-    month_labels = ["1","2","3","4","5","6","7","8","9","10","11","12"]
+    month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
     ths = "".join(f"<th>{m}</th>" for m in month_labels)
-    rows = ""
+    blocks_html = ""
     for fish in top_fish_list[:6]:
-        fish_decades = area_data.get(fish, {})
-        # area_decadal は cnt_index のみ
+        # 数釣 cnt_levels: hist_rows 優先 → area_decadal → SEASON_DATA fallback
         cnt_levels = []
-        # 2026/05/06: hist_rows を**最優先**で使用。area_decadal の cnt_index 集計値より
-        # 実 CSV 件数の方が正確（cnt_index しきい値 50/90/130/160 が実態と乖離するケースあり）。
         hist_counts = None
-        fallback_scores = None
         if hist_rows:
             hc = compute_combo_month_records(fish, area, hist_rows)
             if max(hc) >= 3:
                 hist_counts = hc
-        if hist_counts is None and not fish_decades:
-            fallback_scores = SEASON_DATA.get(fish)
-        for m in range(1, 13):
-            if hist_counts is not None:
-                # 実データ正規化: max=4, ratio>=0.7=4 / 0.4=3 / 0.15=2 / >0=1 / 0=0
-                max_v = max(hist_counts)
-                cnt = hist_counts[m - 1]
+        fish_decades = area_data.get(fish, {})
+        if hist_counts is not None:
+            max_v = max(hist_counts)
+            for i in range(12):
+                cnt = hist_counts[i]
                 ratio = cnt / max_v if max_v else 0
                 if ratio >= 0.7:    lv = 4
                 elif ratio >= 0.4:  lv = 3
                 elif ratio >= 0.15: lv = 2
                 elif cnt > 0:       lv = 1
                 else:               lv = 0
-            elif fallback_scores is not None:
-                # SEASON_DATA score 1〜5 → level 0〜4
-                lv = max(0, min(4, fallback_scores[m - 1] - 1))
-            else:
+                cnt_levels.append(lv)
+        elif fish_decades:
+            for m in range(1, 13):
                 d1 = (m - 1) * 3 + 1
-                d2 = d1 + 1
-                d3 = d1 + 2
-                raw_vals = [fish_decades.get(d) for d in (d1, d2, d3)]
+                raw_vals = [fish_decades.get(d) for d in (d1, d1 + 1, d1 + 2)]
                 present = [v for v in raw_vals if v is not None]
                 if not present:
-                    # 部分データ欠落 → hist_rows があれば実データ計算
-                    if hist_rows:
-                        hc2 = compute_combo_month_records(fish, area, hist_rows)
-                        if max(hc2) >= 3:
-                            max_v = max(hc2)
-                            cnt = hc2[m - 1]
-                            ratio = cnt / max_v if max_v else 0
-                            if ratio >= 0.7:    lv = 4
-                            elif ratio >= 0.4:  lv = 3
-                            elif ratio >= 0.15: lv = 2
-                            elif cnt > 0:       lv = 1
-                            else:               lv = 0
-                        else:
-                            sd = SEASON_DATA.get(fish)
-                            lv = max(0, min(4, sd[m - 1] - 1)) if sd else -1
-                    else:
-                        sd = SEASON_DATA.get(fish)
-                        lv = max(0, min(4, sd[m - 1] - 1)) if sd else -1
+                    sd = SEASON_DATA.get(fish)
+                    lv = max(0, min(4, sd[m - 1] - 1)) if sd else 0
                 else:
                     avg = sum(present) / len(present)
                     if avg >= 160:   lv = 4
@@ -4567,27 +4497,48 @@ def build_area_season_map_html(area, area_decadal, top_fish_list, hist_rows=None
                     elif avg >= 90:  lv = 2
                     elif avg >= 50:  lv = 1
                     else:            lv = 0
-            cnt_levels.append(lv)
-        cells = "".join(f'<td class="as-cell" data-v="{lv}"></td>' for lv in cnt_levels)
-        rows += f'<tr><th class="as-th-fish"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="" class="as-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</th>{cells}</tr>\n'
-    if not rows:
+                cnt_levels.append(lv)
+        else:
+            sd = SEASON_DATA.get(fish)
+            for m in range(1, 13):
+                lv = max(0, min(4, sd[m - 1] - 1)) if sd else 0
+                cnt_levels.append(lv)
+        # 全部 0 ならスキップ
+        if all(lv == 0 for lv in cnt_levels):
+            continue
+        # 型釣 size_levels: hist_rows から実データ計算（無ければ全0 → 型行省略）
+        size_levels = [0] * 12
+        if hist_rows:
+            size_counts = compute_combo_month_size_records(fish, area, hist_rows)
+            size_max_v = max(size_counts) if any(size_counts) else 0
+            if size_max_v >= 3:
+                for i in range(12):
+                    sz = size_counts[i]
+                    ratio = sz / size_max_v if size_max_v else 0
+                    if ratio >= 0.7:    lv = 4
+                    elif ratio >= 0.4:  lv = 3
+                    elif ratio >= 0.15: lv = 2
+                    elif sz > 0:        lv = 1
+                    else:               lv = 0
+                    size_levels[i] = lv
+        # 凡例は最後にまとめて表示するため show_legend=False
+        blocks_html += _render_season_map_block(
+            fish, cnt_levels, size_levels, ths,
+            f"{area}での{fish}釣果データから集計（過去3年）",
+            depth=1, show_legend=False
+        )
+    if not blocks_html:
         return ""
-    return f"""<div class="area-season">
-  <div class="as-wrap">
-    <table class="as-table">
-      <thead><tr><th class="as-th-fish"></th>{ths}</tr></thead>
-      <tbody>{rows}</tbody>
-    </table>
-  </div>
-  <div class="as-legend">
-    <span>釣れ具合：</span>
-    <span class="as-lc as-lc-0"></span>なし
-    <span class="as-lc as-lc-1"></span>渋
-    <span class="as-lc as-lc-2"></span>普通
-    <span class="as-lc as-lc-3"></span>良
-    <span class="as-lc as-lc-4"></span>◎
-  </div>
-  <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の釣果データより集計（2023〜2025年）</p>
+    # 全体凡例 + 出典を最後に1回表示
+    return f"""{blocks_html}
+<div class="sm-legend" style="margin-top:0;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px">
+  <span>釣れ具合：</span>
+  <span class="sm-lc sm-lc-0"></span>なし
+  <span class="sm-lc sm-lc-1"></span>渋
+  <span class="sm-lc sm-lc-2"></span>普通
+  <span class="sm-lc sm-lc-3"></span>良
+  <span class="sm-lc sm-lc-4"></span>◎
+  <span style="margin-left:auto;font-size:10px">※ 過去3年の釣果データより集計（2023〜2025年）</span>
 </div>"""
 
 def build_fish_guide_html(fish, tackle_data):
@@ -5628,6 +5579,52 @@ def compute_combo_month_records(fish, area, hist_rows):
         if r.get("tsuri_mono") != fish:
             continue
         if r.get("area") != area:
+            continue
+        d = r.get("date", "")
+        try:
+            mm = int(d.split("/")[1])
+            if 1 <= mm <= 12:
+                counts[mm - 1] += 1
+        except (ValueError, IndexError):
+            continue
+    return counts
+
+
+def compute_fish_month_size_records(fish, hist_rows):
+    """fish 全エリアの過去CSV から、size_max が記録されている月別件数を返す（list[12]）"""
+    counts = [0] * 12
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish:
+            continue
+        try:
+            sz_mx = float(r.get("size_max") or 0)
+        except (ValueError, TypeError):
+            sz_mx = 0
+        if sz_mx <= 0:
+            continue
+        d = r.get("date", "")
+        try:
+            mm = int(d.split("/")[1])
+            if 1 <= mm <= 12:
+                counts[mm - 1] += 1
+        except (ValueError, IndexError):
+            continue
+    return counts
+
+
+def compute_combo_month_size_records(fish, area, hist_rows):
+    """fish × area の過去CSV から、size_max が記録されている月別件数を返す（list[12]）"""
+    counts = [0] * 12
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish:
+            continue
+        if r.get("area") != area:
+            continue
+        try:
+            sz_mx = float(r.get("size_max") or 0)
+        except (ValueError, TypeError):
+            sz_mx = 0
+        if sz_mx <= 0:
             continue
         d = r.get("date", "")
         try:
@@ -7404,7 +7401,7 @@ def _aggregate_area_cmp_from_hist(fish, hist_rows, days=365):
     return area_dict
 
 
-def _render_area_cmp_rows(area_dict, max_areas=5, depth=1, fish=None):
+def _render_area_cmp_rows(area_dict, max_areas=20, depth=1, fish=None):
     """area_dict（{area: {hi, lo, sz_hi, sz_lo, ships, trips}}）から area_cmp の HTML rows を生成。
 
     ネストアンカー回避のため、親 <div class="ar"> + 内部に <a class="ar-name"> と <a> (船宿リンク) を並列配置。
@@ -7922,20 +7919,21 @@ def build_fish_pages(data, history, crawled_at=""):
             # catches=0: fh-r に過去1年件数を表示（_fish_hist_0 が設定済みのはず）
             _py_n = (_fish_hist_0 or {}).get("recent_365_records", 0)
             cnt_range_str = f"過去1年 {_py_n:,}件" if _py_n else ""
-        # サイズ: this_w.size_avg があれば「平均{X}cm」、無ければ catches から min〜max
+        # サイズ: catches から min〜max レンジを優先、無ければ this_w.size_avg を fallback
         # 外れ値「5〜5cm」等の抽出失敗パターンは _is_plausible_size_cm で除外
         sz_str = ""
-        if this_w and this_w.get("size_avg"):
+        _sz_pairs = [(c["size_cm"]["min"], c["size_cm"]["max"])
+                     for c in catches
+                     if c.get("size_cm")
+                     and c["size_cm"].get("min") is not None
+                     and c["size_cm"].get("max") is not None
+                     and _is_plausible_size_cm(c["size_cm"]["min"], c["size_cm"]["max"])]
+        if _sz_pairs:
+            _sz_lo = int(min(p[0] for p in _sz_pairs))
+            _sz_hi = int(max(p[1] for p in _sz_pairs))
+            sz_str = f"{_sz_lo}〜{_sz_hi}cm" if _sz_lo != _sz_hi else f"{_sz_hi}cm"
+        elif this_w and this_w.get("size_avg"):
             sz_str = f"{this_w['size_avg']:.0f}cm"
-        else:
-            _sz_pairs = [(c["size_cm"]["min"], c["size_cm"]["max"])
-                         for c in catches
-                         if c.get("size_cm")
-                         and c["size_cm"].get("min") is not None
-                         and c["size_cm"].get("max") is not None
-                         and _is_plausible_size_cm(c["size_cm"]["min"], c["size_cm"]["max"])]
-            if _sz_pairs:
-                sz_str = f"{int(min(p[0] for p in _sz_pairs))}〜{int(max(p[1] for p in _sz_pairs))}cm"
         # area-cmp 充足版: 3段階フォールバック
         # Stage 1: today_catches_f（_resolve_display_dataset の最新日 or 7日窓）
         # Stage 2: catches 全体（直近7日マージ済）
@@ -7950,17 +7948,23 @@ def build_fish_pages(data, history, crawled_at=""):
             area_today_f = _aggregate_area_cmp_from_hist(fish, _hist_rows_for_fish, days=365)
             if area_today_f:
                 area_label = "過去1年の主なエリアと釣果"
-        area_cmp_rows = _render_area_cmp_rows(area_today_f, max_areas=5, depth=1, fish=fish)
+        area_cmp_rows = _render_area_cmp_rows(area_today_f, max_areas=20, depth=1, fish=fish)
         area_cmp_html = f'<div class="area-cmp"><h3>{area_label}</h3>{area_cmp_rows}</div>' if area_cmp_rows else ""
         # ship-rank（今週・今日優先）
         ship_data_f: dict = {}
         for c in catches:
-            d = ship_data_f.setdefault(c["ship"], {"cnt": 0, "cnt_his": [], "cnt_los": [], "pts": [], "today": False})
+            d = ship_data_f.setdefault(c["ship"], {"cnt": 0, "cnt_his": [], "cnt_los": [], "sz_his": [], "sz_los": [], "pts": [], "today": False})
             d["cnt"] += 1
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
                 d["cnt_his"].append(cr["max"])
                 d["cnt_los"].append(cr.get("min", cr["max"]))
+            sz = c.get("size_cm")
+            if sz:
+                if sz.get("max") is not None:
+                    d["sz_his"].append(sz["max"])
+                if sz.get("min") is not None:
+                    d["sz_los"].append(sz["min"])
             if c.get("point_place1"): d["pts"].append(c["point_place1"])
             if c.get("date") == today_str_f: d["today"] = True
         sr_items = ""
@@ -7974,13 +7978,22 @@ def build_fish_pages(data, history, crawled_at=""):
                 s_range = f"{s_hi}匹"
             else:
                 s_range = f"{sd['cnt']}件"
+            sz_lo = int(min(sd["sz_los"])) if sd["sz_los"] else None
+            sz_hi = int(max(sd["sz_his"])) if sd["sz_his"] else None
+            if sz_lo is not None and sz_hi is not None and sz_lo != sz_hi:
+                sz_range = f"{sz_lo}〜{sz_hi}cm"
+            elif sz_hi is not None:
+                sz_range = f"{sz_hi}cm"
+            else:
+                sz_range = ""
             top_pt = _CtrF(sd["pts"]).most_common(1)[0][0] if sd["pts"] else ""
             sr_items += (
                 f'<div class="sr">'
                 f'<span class="sr-rank">{i+1}</span>'
                 f'<span class="sr-name">{_ship_link(sn, depth=1)}</span>'
                 f'<span class="sr-range">{s_range}</span>'
-                f'<span class="sr-pt">{top_pt}</span></div>'
+                + (f'<span class="sr-size">{sz_range}</span>' if sz_range else "")
+                + f'<span class="sr-pt">{top_pt}</span></div>'
             )
         ship_rank_html = f'<div class="ship-rank"><h3>船宿ランキング（今週）</h3>{sr_items}</div>' if sr_items else ""
         # 有料ティザー
@@ -8092,6 +8105,7 @@ def build_fish_pages(data, history, crawled_at=""):
 .sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
+.sr .sr-size{flex:0 0 70px;font-size:11px;color:var(--sub)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
 .comment{font-size:13px;color:var(--text);white-space:pre-line;min-width:0}
 .comment-fish-name{display:block;font-size:15px;font-weight:800;color:var(--accent);margin-bottom:6px}
@@ -8335,7 +8349,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 .area-desc p:last-child{margin-bottom:0}
 .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
-.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}"""
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
+.chip-emoji{vertical-align:middle}"""
 
     for area, catches in area_summary.items():
         group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
@@ -8750,7 +8765,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             if not os.path.exists(_fa_file):
                 continue
             _past_chips_items.append(
-                f'<a href="../fish_area/{fish_slug(_f_past)}-{area_slug(area)}.html" class="chip-link">{_f_past}（{_n_past}便）</a>'
+                f'<a href="../fish_area/{fish_slug(_f_past)}-{area_slug(area)}.html" class="chip-link">'
+                f'<img src="../assets/fish/{fish_img_slug(_f_past)}/{fish_img_slug(_f_past)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                f'{_f_past}（{_n_past}便）</a>'
             )
             if len(_past_chips_items) >= 6:
                 break
@@ -9449,6 +9466,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 .sr .sr-rank{font-size:11px;font-weight:700;color:var(--muted);flex:0 0 18px;text-align:center}
 .sr .sr-name{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--accent)}
 .sr .sr-range{flex:0 0 80px;font-size:13px;font-weight:700;color:var(--cta)}
+.sr .sr-size{flex:0 0 70px;font-size:11px;color:var(--sub)}
 .sr .sr-pt{flex:1;font-size:10px;color:var(--muted);text-align:right}
 .season-bar{display:flex;gap:2px;margin-top:8px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
 .sb-cell{min-width:20px;height:18px;border-radius:3px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 2px}
@@ -9463,7 +9481,20 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
 .chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
-.fa-related{margin-bottom:16px}"""
+.chip-emoji{vertical-align:middle}
+.fa-related{margin-bottom:16px}
+.fa-h2-emoji{vertical-align:middle;margin-right:6px}
+.chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
+.chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
+.chart-bars .cb.weekend{opacity:.8;background:var(--weekend)}
+.chart-bars .cb.today{opacity:1;background:var(--pos);outline:1.5px solid var(--accent);outline-offset:-1.5px}
+.chart-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px}
+.chart-labels span.weekend{color:#c66a14}
+.chart-labels span.today{color:var(--pos);font-weight:700;border-bottom:2px solid var(--pos);padding-bottom:1px}
+.chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
+.chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}"""
 
     # 深夜0時境界で _now_fa とズレないよう統一（reviewer 指摘）
     now_fa_global = _now_fa
@@ -9566,7 +9597,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         today_str_fa = now_fa_global.strftime("%Y/%m/%d")
         ship_data_fa: dict = {}
         for c in catches:
-            d = ship_data_fa.setdefault(c["ship"], {"cnt": 0, "his": [], "los": [], "today": False})
+            d = ship_data_fa.setdefault(c["ship"], {"cnt": 0, "his": [], "los": [], "sz_his": [], "sz_los": [], "today": False})
             d["cnt"] += 1
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
@@ -9576,6 +9607,12 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                     d["los"].append(cr["min"])
                 elif cr.get("max") is not None:
                     d["los"].append(cr["max"])
+            sz = c.get("size_cm")
+            if sz:
+                if sz.get("max") is not None:
+                    d["sz_his"].append(sz["max"])
+                if sz.get("min") is not None:
+                    d["sz_los"].append(sz["min"])
             if c.get("date") == today_str_fa:
                 d["today"] = True
         sr_items_fa = ""
@@ -9588,18 +9625,29 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 s_range = f"{s_hi}匹"
             else:
                 s_range = f"{sd['cnt']}件"
+            sz_lo = int(min(sd["sz_los"])) if sd["sz_los"] else None
+            sz_hi = int(max(sd["sz_his"])) if sd["sz_his"] else None
+            if sz_lo is not None and sz_hi is not None and sz_lo != sz_hi:
+                sz_range = f"{sz_lo}〜{sz_hi}cm"
+            elif sz_hi is not None:
+                sz_range = f"{sz_hi}cm"
+            else:
+                sz_range = ""
             sr_items_fa += (
                 f'<div class="sr">'
                 f'<span class="sr-rank">{i+1}</span>'
                 f'<span class="sr-name">{_ship_link(sn, depth=1)}</span>'
                 f'<span class="sr-range">{s_range}</span>'
-                f'<span class="sr-pt">{sd["cnt"]}件</span></div>'
+                + (f'<span class="sr-size">{sz_range}</span>' if sz_range else "")
+                + f'<span class="sr-pt">{sd["cnt"]}件</span></div>'
             )
         ship_rank_fa_html = f'<div class="ship-rank"><h3>船宿ランキング（今週）</h3>{sr_items_fa}</div>' if sr_items_fa else ""
         # V2: 最近の釣果（sl-card スタイル）
         recent_cards_fa = ""
         for c in sorted(catches, key=lambda x: x.get("date") or "", reverse=True)[:10]:
             cnt_str = fmt_count(c)
+            if cnt_str:
+                cnt_str = cnt_str + "匹"
             sz_cm = fmt_size_cm(c)
             sub = " / ".join(filter(None, [cnt_str, sz_cm]))
             recent_cards_fa += (
@@ -9632,7 +9680,9 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                          if f2 != fish and _fa_page_available(f2, area)]
         if len(_other_fishes) >= 3:
             _chips_of = "".join(
-                f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">{f2}（{n}便）</a>'
+                f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">'
+                f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                f'{f2}（{n}便）</a>'
                 for (f2, n) in _other_fishes[:6]
             )
             _related_blocks.append(
@@ -9640,6 +9690,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 f'<div class="chip-wrap">{_chips_of}</div>'
             )
         fa_related_html = f'<div class="fa-related">{"".join(_related_blocks)}</div>' if _related_blocks else ""
+        # 直近7日間の釣果推移チャート（fish/* と同じ関数を流用）
+        chart7_html_fa = build_fish_7day_chart_html(fish, catches)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         desc = f"{area}での{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
@@ -9672,9 +9724,10 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
       share_text=f"{area}の{fish}釣果情報 | 船釣り予想",
       share_url=page_url,
   )}
-  <h2 class="st">{area}の{fish}釣果情報</h2>
+  <h2 class="st"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fa-h2-emoji" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none'">{area}の{fish}釣果情報</h2>
   {fa_intro_html}
   {stat_cards_fa}
+  {chart7_html_fa}
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   {combo_season_map_fa}
   {combo_comment_html}
