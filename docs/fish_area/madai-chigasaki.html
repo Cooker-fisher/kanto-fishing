@@ -38,6 +38,10 @@
 .sb-legend{font-size:9px;color:var(--muted);text-align:center;margin-top:3px;margin-bottom:14px}
 .sb-legend .leg-count::before{content:"";display:inline-block;width:8px;height:8px;background:#e85d04;border-radius:2px;margin-right:3px;vertical-align:middle}
 .sb-legend .leg-size::before{content:"";display:inline-block;width:8px;height:8px;background:#7209b7;border-radius:2px;margin-right:3px;vertical-align:middle}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
+.fa-related{margin-bottom:16px}
 .fa-intro{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:16px}</style>
 </head>
 <body>
@@ -59,7 +63,7 @@
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/madai.html">マダイ</a> &rsaquo; 茅ヶ崎港</p>
   <div class="share-bar" role="group" aria-label="シェア"><a class="share-x" href="https://twitter.com/intent/tweet?text=%E8%8C%85%E3%83%B6%E5%B4%8E%E6%B8%AF%E3%81%AE%E3%83%9E%E3%83%80%E3%82%A4%E9%87%A3%E6%9E%9C%E6%83%85%E5%A0%B1%20%7C%20%E8%88%B9%E9%87%A3%E3%82%8A%E4%BA%88%E6%83%B3&url=https%3A//funatsuri-yoso.com/fish_area/madai-chigasaki.html&hashtags=%E8%88%B9%E9%87%A3%E3%82%8A%2C%E9%87%A3%E6%9E%9C" target="_blank" rel="noopener nofollow" aria-label="X（旧Twitter）でシェア">𝕏 でシェア</a><a class="share-follow" href="https://twitter.com/intent/follow?screen_name=funatsuri_yoso" target="_blank" rel="noopener nofollow" aria-label="@funatsuri_yoso をフォロー">フォロー</a></div>
   <h2 class="st">茅ヶ崎港のマダイ釣果情報</h2>
-  <p class="fa-intro">神奈川県茅ヶ崎市の相模湾に位置する主要漁港。茅ヶ崎港でのマダイの釣果データは1件記録されています。月別の集計では11月下旬前後に釣果が集中する傾向があります。最高釣果は2匹の記録があります（データ蓄積中：1件）。釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。出船実績の多い船宿はちがさき丸（1件）です。このエリアでは計1船宿がマダイの出船実績を持ちます。各船宿の出船スケジュールは直接ご確認ください。</p>
+  <p class="fa-intro">神奈川県茅ヶ崎市の相模湾に位置する主要漁港。茅ヶ崎港でのマダイの釣果データは1件記録されています。最高釣果は2匹の記録があります（データ蓄積中：1件）。釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。出船実績の多い船宿はちがさき丸（1件）です。このエリアでは計1船宿がマダイの出船実績を持ちます。各船宿の出船スケジュールは直接ご確認ください。このページのシーズンバーと釣果カードで最新の傾向を確認の上、釣行計画にお役立てください。</p>
   <div class="stat-cards">
   <div class="stat-card"><div class="sv">1船宿</div><div class="sl">出船船宿数</div></div>
   <div class="stat-card"><div class="sv">1匹</div><div class="sl">釣果目安</div></div>
@@ -91,6 +95,7 @@
   <div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name"><a href="../ship/chigasaki-maru.html">ちがさき丸</a></span><span class="sr-range">0〜2匹</span><span class="sr-pt">1件</span></div></div>
   <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
   <div class="sl-card"><div class="sl-head"><span class="sl-name"><a href="../ship/chigasaki-maru.html">ちがさき丸</a></span><span class="sl-date">05/13</span></div><div class="sl-sub">0〜2</div></div>
+  <div class="fa-related"><h2 class="st">マダイを他のエリアで探す</h2><div class="chip-wrap"><a href="../fish_area/madai-omaezaki.html" class="chip-link">御前崎港（2927便）</a><a href="../fish_area/madai-iioka.html" class="chip-link">飯岡港（2354便）</a><a href="../fish_area/madai-matsuwa-ena.html" class="chip-link">松輪江奈港（1910便）</a><a href="../fish_area/madai-hitachi-kuji.html" class="chip-link">日立久慈港（1440便）</a><a href="../fish_area/madai-kashima.html" class="chip-link">鹿島港（1357便）</a><a href="../fish_area/madai-ohara.html" class="chip-link">大原港（1188便）</a></div><h2 class="st">茅ヶ崎港の他の魚種</h2><div class="chip-wrap"><a href="../fish_area/amadai-chigasaki.html" class="chip-link">アマダイ（404便）</a><a href="../fish_area/aji-chigasaki.html" class="chip-link">アジ（247便）</a><a href="../fish_area/shirogisu-chigasaki.html" class="chip-link">シロギス（222便）</a><a href="../fish_area/kihada-maguro-chigasaki.html" class="chip-link">キハダマグロ（147便）</a><a href="../fish_area/fugu-chigasaki.html" class="chip-link">フグ（105便）</a><a href="../fish_area/katsuo-chigasaki.html" class="chip-link">カツオ（103便）</a></div></div>
   <h2 class="st">よくある質問</h2>
   <div class="faq-list">
   <details><summary>茅ヶ崎港でマダイが最も釣れる時期はいつですか？</summary><p class="faq-ans">過去3年間（2023〜2026）の茅ヶ崎港でのマダイ釣果データは239件で、関東のマダイ釣果14,419件のうち10番目の集積地（41エリア中）です。月別では5月（54件）、11月（26件）、10月（25件）が三大ピーク。最も少ない2月でも1件と通年で実績が記録されています。釣果は潮回り・水温・群れの回遊で日々変動するため、最新の釣果報告も併せてご確認ください。</p></details>

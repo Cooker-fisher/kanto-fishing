@@ -50,6 +50,8 @@
 | 19 | 全主要HTML（index・calendar・fish/\*・area/\*・fish_area/\*・ship/\*・fish/index・area/index） | `og:image` + `twitter:card` + `twitter:site` 全て存在（X 手動投稿時のリッチカード描画保証） |
 | 20 | index・fish/\*・area/\*・fish_area/\*・ship/\*・x_post/YYYY-MM-DD | `class="share-bar"` + `twitter.com/intent/tweet` リンクあり（ユーザー側拡散経路） |
 | 21 | `area/*.html` サンプル（T31） | 共通 FAQ 見出し『船釣り共通の基礎知識』が消滅 + `/pages/faq.html` リンク存在 + Q2 アクセス文章に「最寄りIC」「最寄り駅」キーワード含む（hist_rows ベース固定文章化） |
+| 22 | `fish/*.html` サンプル（aji/shirogisu/tachiuo/madai）（T29） | area_cmp 内に `class="ar-fa"` を持つ fish_area への詳細リンク存在。全件 area_cmp なしの場合は warn 格上げ |
+| 23 | `fish_area/*.html` サンプル（aji-yokohama-honmoku/madai-iioka/aji-kanazawa-hakkei）（T29） | FAQ 直前に `class="fa-related"` セクション + 内部に `class="chip-link"` 1件以上（fish_area 同士の相互リンク） |
 
 ### T22 関連の設計契約（H1 noindex 解除手順）
 

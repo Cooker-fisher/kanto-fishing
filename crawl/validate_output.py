@@ -706,6 +706,75 @@ def validate_ogp_meta():
             ok(f"{label}: og:image / twitter:card / twitter:site OK")
 
 
+def validate_fish_area_cmp_link():
+    """[22] docs/fish/*.html サンプル: area_cmp 内に fish_area への「{エリア}の{魚種}釣果」リンク（T29）
+
+    AdSense 観点で fish_area/* を内部リンクで包囲し、Google クロール経路を確保するため。
+    既存 fish_area ページが存在するエリアで .ar 行に span.ar-fa リンクが出力されている
+    ことを確認する。全サンプルが area_cmp なしの場合は warn。
+    """
+    print("\n[22] docs/fish/*.html サンプル: area_cmp に fish_area リンク（T29 孤立解消）")
+    fish_dir = os.path.join(DOCS, "fish")
+    if not os.path.isdir(fish_dir):
+        fail("docs/fish/ ディレクトリが存在しない")
+        return
+    samples = ["aji.html", "shirogisu.html", "tachiuo.html", "madai.html"]
+    samples = [s for s in samples if os.path.isfile(os.path.join(fish_dir, s))]
+    if not samples:
+        warn("fish サンプル候補が一つも存在しない（skip）")
+        return
+    failed = []
+    skipped = 0
+    for fn in samples:
+        content = open(os.path.join(fish_dir, fn), encoding="utf-8").read()
+        # area-cmp セクションがある場合のみ .ar-fa を要求（area_cmp 自体がなければ skip）
+        if 'class="area-cmp"' not in content:
+            skipped += 1
+            continue
+        if 'class="ar-fa"' not in content:
+            failed.append(fn)
+    if failed:
+        fail(f"[22] fish/*.html area_cmp 内 .ar-fa リンク欠如: {', '.join(failed)}")
+    elif skipped == len(samples):
+        warn(f"[22] サンプル {len(samples)} 件全て area_cmp なしで skip（要確認）")
+    else:
+        ok(f"fish サンプル {len(samples)} 件で area_cmp に .ar-fa リンクあり（または area_cmp なし skip={skipped}）")
+
+
+def validate_fish_area_related():
+    """[23] docs/fish_area/*.html サンプル: FAQ 直前に fa-related セクション存在（T29）
+
+    fish_area/* 同士の相互リンクを確保するため、データ件数が一定以上ある主要コンボの
+    fish_area ページに fa-related セクションが出力されていることを確認する。
+    """
+    print("\n[23] docs/fish_area/*.html サンプル: fa-related 相互リンク（T29 孤立解消）")
+    fa_dir = os.path.join(DOCS, "fish_area")
+    if not os.path.isdir(fa_dir):
+        fail("docs/fish_area/ ディレクトリが存在しない")
+        return
+    # 主要・多データのコンボ（同魚種他エリア・同エリア他魚種共に十分にある想定）
+    samples = ["aji-yokohama-honmoku.html", "madai-iioka.html", "aji-kanazawa-hakkei.html"]
+    samples = [s for s in samples if os.path.isfile(os.path.join(fa_dir, s))]
+    if not samples:
+        warn("fish_area サンプル候補が一つも存在しない（skip）")
+        return
+    failed = []
+    for fn in samples:
+        content = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
+        if 'class="fa-related"' not in content:
+            failed.append(f"{fn}（fa-related セクション欠如）")
+            continue
+        # fa-related ブロック全体（FAQ 見出しまで）に chip-link が 1 件以上あること
+        m = re.search(r'<div class="fa-related">(.+?)<h2 class="st">よくある質問', content, re.DOTALL)
+        block = m.group(1) if m else ""
+        if block.count('class="chip-link"') < 1:
+            failed.append(f"{fn}（fa-related 内に chip-link なし）")
+    if failed:
+        fail(f"[23] fish_area/*.html fa-related 不備: {'; '.join(failed)}")
+    else:
+        ok(f"fish_area サンプル {len(samples)} 件全て fa-related + chip-link あり")
+
+
 def validate_share_buttons():
     """[20] 主要ページに X シェアボタン（class="share-bar"）が設置されているか。
 
@@ -786,6 +855,8 @@ def main():
     validate_fish_area_intro()
     validate_sitemap_no_forecast()
     validate_ogp_meta()
+    validate_fish_area_cmp_link()
+    validate_fish_area_related()
     validate_share_buttons()
 
     print("\n" + "=" * 60)

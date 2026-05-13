@@ -7404,10 +7404,11 @@ def _aggregate_area_cmp_from_hist(fish, hist_rows, days=365):
     return area_dict
 
 
-def _render_area_cmp_rows(area_dict, max_areas=5, depth=1):
+def _render_area_cmp_rows(area_dict, max_areas=5, depth=1, fish=None):
     """area_dict（{area: {hi, lo, sz_hi, sz_lo, ships, trips}}）から area_cmp の HTML rows を生成。
 
     ネストアンカー回避のため、親 <div class="ar"> + 内部に <a class="ar-name"> と <a> (船宿リンク) を並列配置。
+    fish を指定した場合、fish_area ページが存在するエリアに「{エリア}の{魚種}釣果」リンク（ar-fa）を追加（T29）。
     """
     if not area_dict:
         return ""
@@ -7453,6 +7454,14 @@ def _render_area_cmp_rows(area_dict, max_areas=5, depth=1):
         if len(ad["ships"]) > 5:
             ships_str += f'<span class="ar-more"> ほか{len(ad["ships"]) - 5}船宿</span>'
         area_href = ("../" * depth if depth > 0 else "") + f"area/{area_slug(aname)}.html"
+        # T29: fish_area ページが存在する場合のみ「{エリア}の{魚種}釣果」リンクを追加。
+        # ネストアンカー回避: <span class="ar-fa"> として <a class="ar-name"> と並列配置。
+        ar_fa_html = ""
+        if fish and aname in _AREA_ROMAJI:
+            _fa_file = os.path.join(WEB_DIR, f"fish_area/{fish_slug(fish)}-{area_slug(aname)}.html")
+            if os.path.exists(_fa_file):
+                _fa_href = ("../" * depth if depth > 0 else "") + f"fish_area/{fish_slug(fish)}-{area_slug(aname)}.html"
+                ar_fa_html = f'<span class="ar-fa"><a href="{_fa_href}">{aname}の{fish}釣果</a></span>'
         rows += (
             f'<div class="ar">'
             f'<a class="ar-name" href="{area_href}">{aname}</a>'
@@ -7460,6 +7469,7 @@ def _render_area_cmp_rows(area_dict, max_areas=5, depth=1):
             f'{sz_html}'
             f'<span class="ar-trips">{trip_str}</span>'
             f'<span class="ar-ships">{ships_str}</span>'
+            f'{ar_fa_html}'
             f'</div>'
         )
     return rows
@@ -7940,7 +7950,7 @@ def build_fish_pages(data, history, crawled_at=""):
             area_today_f = _aggregate_area_cmp_from_hist(fish, _hist_rows_for_fish, days=365)
             if area_today_f:
                 area_label = "過去1年の主なエリアと釣果"
-        area_cmp_rows = _render_area_cmp_rows(area_today_f, max_areas=5, depth=1)
+        area_cmp_rows = _render_area_cmp_rows(area_today_f, max_areas=5, depth=1, fish=fish)
         area_cmp_html = f'<div class="area-cmp"><h3>{area_label}</h3>{area_cmp_rows}</div>' if area_cmp_rows else ""
         # ship-rank（今週・今日優先）
         ship_data_f: dict = {}
@@ -8071,7 +8081,10 @@ def build_fish_pages(data, history, crawled_at=""):
 .ar .ar-ships a{color:var(--cta);text-decoration:none}
 .ar .ar-ships a:hover{text-decoration:underline}
 .ar .ar-more{color:var(--muted);font-size:11px}
-@media(max-width:520px){.ar .ar-name{flex:0 0 100%}.ar .ar-range{flex:0 0 auto}.ar .ar-size{flex:0 0 auto}.ar .ar-trips{flex:0 0 auto}.ar .ar-ships{flex:1 1 100%}}
+.ar .ar-fa{flex:0 0 auto}
+.ar .ar-fa a{font-size:11px;color:var(--cta);text-decoration:none;padding:8px 12px;border:1px solid var(--cta);border-radius:10px;white-space:nowrap;display:inline-block;line-height:1.2}
+.ar .ar-fa a:hover{background:var(--cta);color:#fff}
+@media(max-width:520px){.ar .ar-name{flex:0 0 100%}.ar .ar-range{flex:0 0 auto}.ar .ar-size{flex:0 0 auto}.ar .ar-trips{flex:0 0 auto}.ar .ar-ships{flex:1 1 100%}.ar .ar-fa{flex:0 0 auto}}
 .ship-rank{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .ship-rank h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .sr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);gap:6px}
@@ -8319,7 +8332,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
 .related .rl a:hover{background:var(--accent);color:#fff;text-decoration:none}
 .area-desc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px}
 .area-desc p{font-size:14px;line-height:1.8;color:var(--sub);margin:0 0 10px}
-.area-desc p:last-child{margin-bottom:0}"""
+.area-desc p:last-child{margin-bottom:0}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}"""
 
     for area, catches in area_summary.items():
         group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
@@ -8711,6 +8727,39 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
             if cm_parts:
                 sea_comment = f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">{"。".join(cm_parts)}。</p>'
 
+        # T29 (2026/05/13): 過去に釣れた魚（今週データなしの fish_area へのリンク補完）。
+        # fia-grid に出ていない魚種で、本エリア×魚種の fish_area ページが存在し、
+        # 過去3年に実績があるものを hist 件数降順 TOP-6 で chip-link 表示。
+        _today_fish_set = {f for f, _ in top_fish_items}
+        _past_fish_counts: dict = {}
+        for r in _hist_rows_for_placeholder:
+            if r.get("area") != area:
+                continue
+            if _is_cancelled_row(r):  # MAJOR-2 修正: 欠航除外
+                continue
+            _f_hist = r.get("tsuri_mono")
+            if not _f_hist or _f_hist in ("不明", "欠航"):
+                continue
+            if _f_hist in _today_fish_set:
+                continue
+            _past_fish_counts[_f_hist] = _past_fish_counts.get(_f_hist, 0) + 1
+        _past_fish_sorted = sorted(_past_fish_counts.items(), key=lambda x: -x[1])
+        _past_chips_items = []
+        for _f_past, _n_past in _past_fish_sorted:
+            _fa_file = os.path.join(WEB_DIR, f"fish_area/{fish_slug(_f_past)}-{area_slug(area)}.html")
+            if not os.path.exists(_fa_file):
+                continue
+            _past_chips_items.append(
+                f'<a href="../fish_area/{fish_slug(_f_past)}-{area_slug(area)}.html" class="chip-link">{_f_past}（{_n_past}便）</a>'
+            )
+            if len(_past_chips_items) >= 6:
+                break
+        past_fish_section_html = (
+            f'<h2 class="st">過去に釣れた魚（今週データなし）</h2>'
+            f'<div class="chip-wrap">{"".join(_past_chips_items)}</div>'
+            if _past_chips_items else ""
+        )
+
         sea_section_html = ""
         if sea_fc:
             sea_section_html = (
@@ -8879,6 +8928,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
   )}
   <h2 class="st">このエリアで今週釣れている魚 <span class="tag free">無料</span></h2>
   {fia_desc_html}<div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">今週の釣果はまだ集計中です</p>'}</div>
+  {past_fish_section_html}
   {sea_section_html}
   <h2 class="st">船宿一覧 <span class="tag free">無料</span></h2>
   <div class="sl-card">{ship_items_html}</div>
@@ -9409,12 +9459,52 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 .sb-cell.now{outline:2px solid #fff;outline-offset:1px}
 .sb-legend{font-size:9px;color:var(--muted);text-align:center;margin-top:3px;margin-bottom:14px}
 .sb-legend .leg-count::before{content:"";display:inline-block;width:8px;height:8px;background:#e85d04;border-radius:2px;margin-right:3px;vertical-align:middle}
-.sb-legend .leg-size::before{content:"";display:inline-block;width:8px;height:8px;background:#7209b7;border-radius:2px;margin-right:3px;vertical-align:middle}"""
+.sb-legend .leg-size::before{content:"";display:inline-block;width:8px;height:8px;background:#7209b7;border-radius:2px;margin-right:3px;vertical-align:middle}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
+.fa-related{margin-bottom:16px}"""
 
     # 深夜0時境界で _now_fa とズレないよう統一（reviewer 指摘）
     now_fa_global = _now_fa
     current_month_fa = now_fa_global.month
     year_fa_g, week_num_fa_g = current_iso_week()
+
+    # T29: fish_area 同士の相互リンク用に、3年分 hist の (fish, area) 件数を集計。
+    # _is_cancelled_row フィルタで欠航除外（MAJOR-1 修正）。
+    fa_hist_count: dict = {}
+    for r in _hist_rows_for_fa:
+        if _is_cancelled_row(r):
+            continue
+        _f = r.get("tsuri_mono")
+        _a = r.get("area")
+        if _f and _a and _f != "不明":
+            fa_hist_count[(_f, _a)] = fa_hist_count.get((_f, _a), 0) + 1
+    will_generate_fa = {(f, a) for (f, a), cs in fa_summary.items() if len(cs) >= 1}
+    # ディスク上に既に存在する fish_area HTML も link 対象に含める（T29: 通年リンク網）
+    fa_out_dir = os.path.join(WEB_DIR, "fish_area")
+    existing_fa_files: set = set()
+    if os.path.isdir(fa_out_dir):
+        for _fn in os.listdir(fa_out_dir):
+            if _fn.endswith(".html") and _fn != "index.html":
+                existing_fa_files.add(_fn[:-5])  # slug-slug 形式
+    # 同魚種他エリア・同エリア他魚種の件数を事前集計（ループ内で再利用）
+    same_fish_areas: dict = {}  # fish -> [(area, hist_count), ...] sorted desc
+    same_area_fishes: dict = {}  # area -> [(fish, hist_count), ...] sorted desc
+    for (_f, _a), _n in fa_hist_count.items():
+        same_fish_areas.setdefault(_f, []).append((_a, _n))
+        same_area_fishes.setdefault(_a, []).append((_f, _n))
+    for _f in same_fish_areas:
+        same_fish_areas[_f].sort(key=lambda x: -x[1])
+    for _a in same_area_fishes:
+        same_area_fishes[_a].sort(key=lambda x: -x[1])
+
+    def _fa_page_available(_f, _a):
+        """fish_area ページが今回生成される or 既存ディスクにあるなら True"""
+        if (_f, _a) in will_generate_fa:
+            return True
+        slug = f"{fish_slug(_f)}-{area_slug(_a)}"
+        return slug in existing_fa_files
 
     count = 0
     # 生成閾値: 2026-05-10 ユーザー判断で 5 件 → 1 件に変更（記録ボリューム重視）。
@@ -9524,6 +9614,32 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar, area_description=_area_desc_fa)
         # T30 (2026/05/12): catches → _hist_rows_for_fa（3年分CSV）に変更で固定文章化。
         fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, _hist_rows_for_fa, decadal_calendar, _area_desc_fa)
+        # T29 (2026/05/13): fish_area 同士の相互リンク（FAQ 直前に挿入）。
+        # 同魚種他エリア・同エリア他魚種の TOP-6・3件未満なら当該セクション非表示。
+        _related_blocks = []
+        _other_areas = [(a, n) for (a, n) in same_fish_areas.get(fish, [])
+                        if a != area and _fa_page_available(fish, a)]
+        if len(_other_areas) >= 3:
+            _chips_oa = "".join(
+                f'<a href="../fish_area/{fish_slug(fish)}-{area_slug(a)}.html" class="chip-link">{a}（{n}便）</a>'
+                for (a, n) in _other_areas[:6]
+            )
+            _related_blocks.append(
+                f'<h2 class="st">{fish}を他のエリアで探す</h2>'
+                f'<div class="chip-wrap">{_chips_oa}</div>'
+            )
+        _other_fishes = [(f2, n) for (f2, n) in same_area_fishes.get(area, [])
+                         if f2 != fish and _fa_page_available(f2, area)]
+        if len(_other_fishes) >= 3:
+            _chips_of = "".join(
+                f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">{f2}（{n}便）</a>'
+                for (f2, n) in _other_fishes[:6]
+            )
+            _related_blocks.append(
+                f'<h2 class="st">{area}の他の魚種</h2>'
+                f'<div class="chip-wrap">{_chips_of}</div>'
+            )
+        fa_related_html = f'<div class="fa-related">{"".join(_related_blocks)}</div>' if _related_blocks else ""
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         desc = f"{area}での{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
@@ -9566,6 +9682,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   {ship_rank_fa_html}
   <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
   {recent_cards_fa}
+  {fa_related_html}
   <h2 class="st">よくある質問</h2>
   {fa_faq_html}
 </div>
