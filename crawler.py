@@ -8220,6 +8220,15 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
     _hist_rows_for_placeholder = _load_historical_catches()
     # area_coords.json（Place JSON-LD の geo に使用）
     _area_coords_for_placeholder = _ship_load_area_coords()
+    # 2026/05/13 T34拡張: valid_catches を直近7日窓に絞る。
+    # fishing-v.jp の船宿ページは最新ページ(pageID=1)を返す仕様だが、
+    # シーズンオフ魚種・休止中船宿では数ヶ月前の釣果が最新ページに残ったまま
+    # 更新されない場合があり、当日クロール結果に混入する。
+    # T34 (build_fish_pages) と同じ7日窓フィルタを area にも適用。
+    # 注: T34本体は data_recent 別名だが、ここでは下流の処理が全て同じ変数名を
+    # 使うため破壊的上書きで簡潔化。呼び出し側で同一リストの再参照なし。
+    _cutoff_date_T34 = (now - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
+    data = [c for c in data if c.get("date", "") >= _cutoff_date_T34]
     area_summary = {}
     for c in data:
         area_summary.setdefault(c["area"], []).append(c)
@@ -9337,6 +9346,17 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     _area_desc_fa = load_area_description()
     # 年間シーズンバーを実データで生成するため過去CSVを一度だけロード
     _hist_rows_for_fa = _load_historical_catches()
+    # 2026/05/13 T34拡張: valid_catches を直近7日窓に絞る。
+    # fishing-v.jp の船宿ページは最新ページ(pageID=1)を返す仕様だが、
+    # シーズンオフ魚種・休止中船宿では数ヶ月前の釣果が最新ページに残ったまま
+    # 更新されない場合があり、当日クロール結果に混入する。
+    # T34 (build_fish_pages) と同じ7日窓フィルタを fish_area にも適用。
+    # 注: T34本体は data_recent 別名だが、ここでは下流の処理が全て同じ変数名を
+    # 使うため破壊的上書きで簡潔化。呼び出し側で同一リストの再参照なし。
+    # _now_fa は後段の now_fa_global と共用（深夜0時境界のズレ防止・reviewer 指摘）
+    _now_fa = datetime.now(JST).replace(tzinfo=None)
+    _cutoff_date_T34_fa = (_now_fa - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
+    data = [c for c in data if c.get("date", "") >= _cutoff_date_T34_fa]
     fa_summary: dict = {}
     for c in data:
         for f in c["fish"]:
@@ -9370,7 +9390,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 .sb-legend .leg-count::before{content:"";display:inline-block;width:8px;height:8px;background:#e85d04;border-radius:2px;margin-right:3px;vertical-align:middle}
 .sb-legend .leg-size::before{content:"";display:inline-block;width:8px;height:8px;background:#7209b7;border-radius:2px;margin-right:3px;vertical-align:middle}"""
 
-    now_fa_global = datetime.now(JST).replace(tzinfo=None)
+    # 深夜0時境界で _now_fa とズレないよう統一（reviewer 指摘）
+    now_fa_global = _now_fa
     current_month_fa = now_fa_global.month
     year_fa_g, week_num_fa_g = current_iso_week()
 
@@ -11737,6 +11758,15 @@ def build_ship_pages(catches, crawled_at=""):
         and not s.get("fishing_v_zero")
     ]
     today_dt = datetime.now(JST).replace(tzinfo=None)
+    # 2026/05/13 T34拡張: valid_catches を直近7日窓に絞る。
+    # fishing-v.jp の船宿ページは最新ページ(pageID=1)を返す仕様だが、
+    # シーズンオフ魚種・休止中船宿では数ヶ月前の釣果が最新ページに残ったまま
+    # 更新されない場合があり、当日クロール結果に混入する。
+    # T34 (build_fish_pages) と同じ7日窓フィルタを ship にも適用。
+    # 注: T34本体は data_recent 別名だが、ここでは下流の処理が全て同じ変数名を
+    # 使うため破壊的上書きで簡潔化。crawler.py 内で本関数の呼び出しは1箇所のみ。
+    _cutoff_date_T34_ship = (today_dt - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
+    catches = [c for c in catches if c.get("date", "") >= _cutoff_date_T34_ship]
     area_coords = _ship_load_area_coords()
     generated = 0
     for ship in target_ships:
