@@ -5890,6 +5890,24 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
                 "flat" if yoy_pct >= -20 else
                 "down"
             )
+    # T36 (2026/05/13): N=0 専用早期 return。
+    # シーズンオフ魚種（アオリイカ等）が直近7日0件のとき、
+    # 「普通の状況」「少なめ」「腕次第で差が出る」等の不適切な文言を完全に回避する。
+    # season_tier (off/dead/na vs peak/good/mid) で文言を分岐。
+    if count == 0:
+        if season_tier in ("off", "dead", "na"):
+            return (
+                f"{fish}は今週0件の釣果報告。\n"
+                f"シーズン外のため船宿の出船自体が少なく、釣果データが集まっていない時期。\n"
+                f"本格的なシーズンインまで待つのが現実的。"
+            )
+        else:
+            # 期待月（peak/good/mid）なのに0件 = 海況不良・船宿休業等
+            return (
+                f"{fish}は今週0件の釣果報告。\n"
+                f"本来は釣れる時期だが、海況や出船状況の影響で報告が上がっていない。\n"
+                f"船宿に直接最新状況を確認してから出船判断するのが安全だ。"
+            )
     # 完全一致 → yoy=na → mid season → na全部 の順でフォールバック
     key = (comp_tier, season_tier, yoy_tier)
     pool = (
@@ -6650,7 +6668,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
         if k not in seen:
             merged.append(c)
             seen.add(k)
-    catches_for_summary = merged
+    # T36 (2026/05/13): pageID=1 が古い釣果を返す船宿対策（T34/T35 拡張）。
+    # シーズンオフ魚種（アオリイカ等）が「直近7日0件」なのに index 魚種カードに
+    # 「7件・3船宿」と表示される regression を防ぐ。catches 側に2025/11等の古いレコードが
+    # 混入していると merged にも残る → fish_summary でカード生成される。今日含む7日窓で限定。
+    _cutoff_date_T36 = (now - timedelta(days=6)).strftime("%Y/%m/%d")
+    catches_for_summary = [c for c in merged if c.get("date", "") >= _cutoff_date_T36]
 
     fish_summary = {}
     for c in catches_for_summary:
@@ -8121,9 +8144,7 @@ def build_fish_pages(data, history, crawled_at=""):
     <div class="comment"><span class="comment-fish-name">{fish}{"（" + FISH_KANJI[fish] + "）" if fish in FISH_KANJI and FISH_KANJI[fish] != fish else ""}</span>{comment}</div>
   </div>
   {chart7_html}
-  <h2 class="st">{fish_today_label}の釣果 <span class="tag free">無料</span></h2>
-  {area_cmp_html if area_cmp_html else '<p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>'}
-  {ship_rank_html}
+  {('<h2 class="st">' + fish_today_label + 'の釣果 <span class="tag free">無料</span></h2>' + (area_cmp_html if area_cmp_html else '<p style="color:var(--muted);font-size:13px;padding:8px 0">本日の釣果はまだ集計中です</p>') + ship_rank_html) if (fish_today_label and fish_today_label != '—') else ''}
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
