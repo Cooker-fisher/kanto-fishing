@@ -5890,7 +5890,7 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
                 "flat" if yoy_pct >= -20 else
                 "down"
             )
-    # T36 (2026/05/13): N=0 専用早期 return。
+    # T37 (2026/05/13): N=0 専用早期 return。
     # シーズンオフ魚種（アオリイカ等）が直近7日0件のとき、
     # 「普通の状況」「少なめ」「腕次第で差が出る」等の不適切な文言を完全に回避する。
     # season_tier (off/dead/na vs peak/good/mid) で文言を分岐。
@@ -6668,12 +6668,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
         if k not in seen:
             merged.append(c)
             seen.add(k)
-    # T36 (2026/05/13): pageID=1 が古い釣果を返す船宿対策（T34/T35 拡張）。
+    # T37 (2026/05/13): pageID=1 が古い釣果を返す船宿対策（T34/T35 拡張）。
     # シーズンオフ魚種（アオリイカ等）が「直近7日0件」なのに index 魚種カードに
     # 「7件・3船宿」と表示される regression を防ぐ。catches 側に2025/11等の古いレコードが
     # 混入していると merged にも残る → fish_summary でカード生成される。今日含む7日窓で限定。
-    _cutoff_date_T36 = (now - timedelta(days=6)).strftime("%Y/%m/%d")
-    catches_for_summary = [c for c in merged if c.get("date", "") >= _cutoff_date_T36]
+    _cutoff_date_T37 = (now - timedelta(days=6)).strftime("%Y/%m/%d")
+    catches_for_summary = [c for c in merged if c.get("date", "") >= _cutoff_date_T37]
 
     fish_summary = {}
     for c in catches_for_summary:
