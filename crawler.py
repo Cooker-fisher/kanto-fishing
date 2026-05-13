@@ -7469,8 +7469,22 @@ def build_fish_pages(data, history, crawled_at=""):
         _recent7_fp = _load_recent_catches_for_index(now, days=7)
     except Exception:
         _recent7_fp = []
-    seen_fp = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in data}
-    merged_data = list(data)
+
+    # 2026/05/13 修正: valid_catches を直近7日窓に絞る。
+    # fishing-v.jp の船宿ページは最新ページ(pageID=1)を返す仕様だが、
+    # シーズンオフ魚種では数ヶ月前の釣果が最新ページに残ったまま更新されない
+    # 場合があり、当日クロール結果に混入する。これにより
+    # _resolve_display_dataset が「最新日=半年前」とフォールバックし、
+    # HERO サブライン・7日チャート・area-cmp・ship-rank が
+    # 一斉に半年前基準で描画される regression が発生した
+    # （fish/アオリイカ.html・fish/シロアマダイ.html で確認）。
+    # 直近7日窓に絞れば、シーズンオフ魚種は len(catches)<1 経路
+    # (placeholder形式) に自動的に流れる。
+    _fish_cutoff_date = (now - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
+    data_recent = [c for c in data if c.get("date", "") >= _fish_cutoff_date]
+
+    seen_fp = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in data_recent}
+    merged_data = list(data_recent)
     for c in _recent7_fp:
         k = (c.get("ship"), c.get("date"), c.get("fish_raw", ""))
         if k not in seen_fp:
