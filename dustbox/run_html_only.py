@@ -28,16 +28,28 @@ with open("history.json", encoding="utf-8") as f:
 
 crawled_at = datetime.now(crawler.JST).replace(tzinfo=None).strftime("%Y/%m/%d %H:%M")
 
+# weather_data: ZONE C 出船リスク予報を出すため forecast.json (disk) を補完。
+# クロールスキップで weather_data を構築しないと build_html は risk_grid_html=""
+# となり「出船リスク予報」セクションが消える regression の対策。
+weather_data = {}
+if os.path.exists("forecast.json"):
+    try:
+        with open("forecast.json", encoding="utf-8") as f:
+            weather_data["_forecast_data"] = json.load(f)
+        print(f"  forecast.json: {len(weather_data['_forecast_data'].get('days', {}))} 日分 (出船リスク予報用)")
+    except Exception as e:
+        print(f"  forecast.json 読込失敗: {e}")
+
 print("build_html (index.html) 実行中...")
 import os as _os
 with open(_os.path.join(crawler.WEB_DIR, "index.html"), "w", encoding="utf-8") as f:
-    f.write(crawler.build_html(valid_catches, crawled_at, history))
+    f.write(crawler.build_html(valid_catches, crawled_at, history, weather_data))
 
 print("build_fish_pages 実行中...")
 crawler.build_fish_pages(valid_catches, history, crawled_at)
 
 print("build_area_pages 実行中...")
-crawler.build_area_pages(valid_catches, history, crawled_at)
+crawler.build_area_pages(valid_catches, history, crawled_at, weather_data)
 
 print("build_fish_area_pages 実行中...")
 crawler.build_fish_area_pages(valid_catches, crawled_at, history)
