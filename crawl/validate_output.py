@@ -760,10 +760,12 @@ def validate_fish_area_related():
         if 'class="fa-related"' not in content:
             failed.append(f"{fn}（fa-related セクション欠如）")
             continue
-        # fa-related ブロック内に chip-link が 1 件以上あること
-        m = re.search(r'<div class="fa-related">(.*?)</div>\s*<h2', content, re.DOTALL)
+        # fa-related ブロック全体（FAQ 見出しまで）に chip-link が 1 件以上あること。
+        # 非貪欲 .+? は内部の chip-wrap </div> で止まり 1 つ目のサブセクションしか取れない
+        # ため、終端を「よくある質問」見出しに固定して全範囲をキャプチャする。
+        m = re.search(r'<div class="fa-related">(.+?)<h2 class="st">よくある質問', content, re.DOTALL)
         block = m.group(1) if m else ""
-        if 'class="chip-link"' not in block:
+        if block.count('class="chip-link"') < 1:
             failed.append(f"{fn}（fa-related 内に chip-link なし）")
     if failed:
         fail(f"[23] fish_area/*.html fa-related 不備: {'; '.join(failed)}")
