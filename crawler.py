@@ -7646,6 +7646,11 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
     # T38-A9: fish_area_summary は将来「chip 便数表示の高速化」等に活用予定（現状未使用）
     _ = fish_area_summary  # mark as intentionally unused
     _fish_top_areas = fish_top_areas or {}
+    # T38 fish-related 上段判定用: 直近7日 catches を 1回ロード（魚種ループ内の重複排除）
+    # 旧仕様（catches=当該魚種便のみ）では「アマダイ単独便」の場合 _week_cooc_fish が常に空となり
+    # 共起魚種が全件下段（折り畳み）に行く問題があった（2026/05/14 ユーザー指摘）。
+    # 主要エリアの全 catches を見るように修正。
+    _recent7_for_related = _load_recent_catches_for_index(now, days=7)
     fish_summary = {}
     _SKIP_FISH = {"不明", "欠航"}
 
@@ -8179,9 +8184,14 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}便{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
         # T38-A6: fish-related-species（共起便数ベース・Layer 1 固定・折り畳み付き）
         _cooc_fish = compute_fish_related_via_cooccurrence(_hist_rows_for_fish, fish, _fish_top_areas)
-        # 直近7日に共起ある魚種 = active / なし = fold
+        # 上段判定: {fish} の主要エリア（TOP-3）で直近7日に出ている魚種
+        # 旧仕様（catches = 当該魚種便のみ）では「アマダイ単独便」のような状況で
+        # 常に空セットになり、共起魚種が全件下段に行ってしまう問題があった。
+        _top_areas_for_rel = [a for a, _n in (_fish_top_areas.get(fish) or [])[:3]]
         _week_cooc_fish = set()
-        for c in catches:
+        for c in _recent7_for_related:
+            if c.get("area") not in _top_areas_for_rel:
+                continue
             for _bf in c.get("fish", []):
                 if _bf and _bf != fish and _bf != "不明":
                     _week_cooc_fish.add(_bf)
