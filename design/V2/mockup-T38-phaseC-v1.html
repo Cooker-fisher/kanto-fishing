@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T38 Phase C mockup（fish/index + area/index 全fish_area網羅）| 船釣り予想</title>
+<style>
+body { background:#f5f7fa; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
+       margin:0; line-height:1.5; color:#1a3a52; }
+.mock-wrap { max-width:800px; margin:0 auto; padding:16px; }
+.mock-h { font-size:12px; color:#6b7785; padding:4px 8px; background:#eef3f8;
+          border-radius:4px; display:inline-block; margin-bottom:8px; font-weight:700; }
+.mock-note { font-size:12px; color:#666; padding:8px 12px; background:#fffaeb;
+             border-left:3px solid #f5c542; margin:8px 0 12px; line-height:1.5; }
+.mock-divider { border-top:2px dashed #ccc; margin:32px 0; padding-top:16px; }
+.mock-page-title { font-size:22px; color:#1a3a52; border-bottom:3px solid #2d6ea8;
+                   padding-bottom:8px; margin-top:0; }
+
+/* 既存 docs/style.css 簡易再現 */
+.bread { font-size:12px; color:#5a6470; padding:6px 0; }
+.bread a { color:#1a4a72; text-decoration:none; }
+.bread a:hover { text-decoration:underline; }
+
+.st { font-size:16px; font-weight:700; color:#1a3a52;
+      border-left:4px solid #2d6ea8; padding:4px 0 4px 10px; margin:16px 0 8px; }
+
+.chip-wrap { display:flex; flex-wrap:wrap; gap:6px; padding:4px 0 8px; }
+.chip-link { display:inline-flex; align-items:center; gap:4px;
+             font-size:12px; padding:4px 10px;
+             background:#fff; border:1px solid #c5d4e0;
+             border-radius:14px; color:#1a4a72; text-decoration:none;
+             transition:background .15s; }
+.chip-link:hover { background:#eaf2fa; }
+.chip-emoji { width:14px; height:14px; object-fit:contain; flex-shrink:0; }
+.chip-pref  { width:14px; height:14px; object-fit:contain; flex-shrink:0; }
+
+.fold-chips { margin-top:10px; }
+.fold-chips > summary { font-size:12px; color:#5a6470; cursor:pointer;
+                        padding:6px 12px; background:#eef3f8;
+                        border-radius:14px; display:inline-block;
+                        user-select:none; list-style:none; border:1px dashed #c5d4e0; }
+.fold-chips > summary::-webkit-details-marker { display:none; }
+.fold-chips > summary::before { content:"▶"; font-size:9px; padding-right:6px;
+                                transition:transform .15s; display:inline-block; }
+.fold-chips[open] > summary::before { transform:rotate(90deg); }
+.fold-chips > summary:hover { background:#dfe8f0; }
+.fold-chips .chip-wrap { margin-top:8px; padding-top:0; }
+
+.tier-label { font-size:11px; color:#888; padding:4px 0 2px;
+              font-weight:600; letter-spacing:0.05em; }
+
+/* 既存 fi-grid / ai-grid 簡易再現 */
+.fi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+           gap:8px; margin:16px 0; }
+.fi-card { background:#fff; border:1px solid #c5d4e0; border-radius:8px;
+           padding:12px; display:block; text-decoration:none; color:inherit; }
+.fi-name { font-size:14px; font-weight:700; color:#1a3a52;
+           display:flex; align-items:center; gap:6px; }
+.fi-cnt { font-size:11px; color:#888; margin-top:4px; }
+.ai-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+           gap:8px; margin:12px 0 20px; }
+.ai-card { background:#fff; border:1px solid #c5d4e0; border-radius:8px;
+           padding:12px; display:block; }
+.ai-card .ai-name { font-size:14px; font-weight:700; color:#1a3a52;
+                     display:block; text-decoration:none; }
+.ai-card .ai-name:hover { text-decoration:underline; }
+.ai-fish { font-size:11px; color:#5a6470; margin-top:4px;
+           line-height:1.7; }
+.ai-fish a { color:#1a4a72; text-decoration:none;
+             padding:0 2px; border-radius:3px;
+             white-space:nowrap; }
+.ai-fish a:hover { background:#eaf2fa; text-decoration:underline; }
+.ai-fish .ai-sep { color:#aaa; }
+.ai-cnt { font-size:11px; color:#d44; font-weight:600; margin-top:4px;
+          display:block; text-decoration:none; }
+.ai-cnt:hover { text-decoration:underline; }
+
+/* Phase C 新規セクション CSS */
+.idx-all-grid { background:#fff; border:1px solid #e0e6ed; border-radius:8px;
+                padding:12px 14px; margin:8px 0 20px; }
+.idx-block { padding:8px 0; border-bottom:1px solid #eef0f5; }
+.idx-block:last-child { border-bottom:none; }
+.idx-block-h { font-size:14px; font-weight:700; color:#1a3a52;
+               display:flex; align-items:center; gap:6px;
+               padding:6px 0 4px; }
+.idx-block-h .ib-emoji { width:20px; height:20px; object-fit:contain; }
+.idx-block-h .ib-cnt { font-size:11px; color:#888; font-weight:400; margin-left:auto; }
+.idx-block-h a { color:#1a4a72; text-decoration:none; }
+.idx-block-h a:hover { text-decoration:underline; }
+
+/* 上段（今週実績）chip 強調 */
+.chip-link.chip-active { background:#fff8e7; border-color:#f5c542; }
+.chip-link.chip-active:hover { background:#fff3d0; }
+
+.faa-note { font-size:13px; color:#555; margin:0 0 8px; }
+
+@media (max-width:480px) {
+  .mock-wrap { padding:8px; }
+  .idx-block-h .ib-cnt { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="mock-wrap">
+
+<h1 class="mock-page-title">T38 Phase C: fish/index + area/index 全 fish_area 網羅セクション</h1>
+
+<p class="mock-note">
+  <b>背景:</b> Phase A で個別ページ（fish/{魚種}.html・area/{エリア}.html）には
+  「全エリア・全魚種一覧（折り畳み付き）」が常駐するようになった。<br>
+  <b>Phase C で追加:</b> ハブページ（fish/index.html・area/index.html）から
+  <b>258本の fish_area 全件への直リンク</b>を確保し、Google クローラーが <code>fish/</code>・<code>area/</code> 経由で
+  全 fish_area に到達できるようにする。<br>
+  <b>UX:</b> 同じ折り畳み機構（上段=今週実績／下段=過去実績）を流用し、密度を抑える。
+</p>
+
+<!-- ============================================================ -->
+<!-- fish/index.html mockup -->
+<!-- ============================================================ -->
+<div class="mock-h">PAGE 1 / 2: fish/index.html</div>
+
+<div style="background:#1a3a52;color:#fff;padding:18px 14px 20px;margin-bottom:0;border-radius:8px 8px 0 0;">
+  <div style="font-size:26px;font-weight:800">魚種別 釣果一覧</div>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり 38種</div>
+</div>
+<div style="background:#fff;padding:8px 14px 0;">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; 魚種一覧</p>
+
+  <h2 class="st">今日の釣果</h2>
+  <p class="mock-note" style="margin:0 0 8px;">↓ 既存カード（魚emoji は実装済み・mockup 反映済）</p>
+  <div class="fi-grid">
+    <a class="fi-card" href="aji.html">
+      <div class="fi-name"><img src="fish_aji_emoji.webp" alt="" class="fi-emoji" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'">アジ</div>
+      <div class="fi-cnt">今週釣果142便</div>
+    </a>
+    <a class="fi-card" href="madai.html">
+      <div class="fi-name"><img src="fish_madai_emoji.webp" alt="" class="fi-emoji" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'">マダイ</div>
+      <div class="fi-cnt">今週釣果88便</div>
+    </a>
+    <a class="fi-card" href="kawahagi.html">
+      <div class="fi-name"><img src="fish_kawahagi_emoji.webp" alt="" class="fi-emoji" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'">カワハギ</div>
+      <div class="fi-cnt">今週釣果54便</div>
+    </a>
+    <a class="fi-card" href="hirame.html">
+      <div class="fi-name"><img src="fish_hirame_emoji.webp" alt="" class="fi-emoji" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'">ヒラメ</div>
+      <div class="fi-cnt">今週釣果31便</div>
+    </a>
+  </div>
+
+  <!-- ★ Phase C 新規セクション ★ -->
+  <h2 class="st">魚種</h2>
+  <p class="faa-note">
+    各魚種について、関東で釣れる<b>全エリアへの直リンク</b>を網羅。
+    便数は過去3年の実績報告数。<b>★今週実績あり</b>を上段に、
+    <b>過去実績のみ</b>を下段（折り畳み）に分離。
+  </p>
+
+  <div class="idx-all-grid">
+
+    <!-- 魚種ブロック1: アジ -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        🐟 <a href="aji.html">アジ</a>
+        <span class="ib-cnt">今週142便・全12エリア</span>
+      </div>
+      <p class="tier-label">★ 今週実績あり（5エリア）</p>
+      <div class="chip-wrap">
+        <a href="../fish_area/aji-yokohama-honmoku.html" class="chip-link chip-active">
+          <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          横浜本牧港（3,042便）
+        </a>
+        <a href="../fish_area/aji-kanazawa-hakkei.html" class="chip-link chip-active">
+          <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          金沢八景（2,810便）
+        </a>
+        <a href="../fish_area/aji-kawasaki.html" class="chip-link chip-active">
+          <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          川崎（1,520便）
+        </a>
+        <a href="../fish_area/aji-haneda.html" class="chip-link chip-active">
+          <img src="area_tokyo_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          羽田（982便）
+        </a>
+        <a href="../fish_area/aji-fukagawa.html" class="chip-link chip-active">
+          <img src="area_tokyo_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          深川（650便）
+        </a>
+      </div>
+      <details class="fold-chips">
+        <summary>過去実績あり（今週ゼロ・7エリア）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/aji-kanaya.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            金谷港（1,639便）
+          </a>
+          <a href="../fish_area/aji-futtsu.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            富津（1,245便）
+          </a>
+          <a href="../fish_area/aji-tateyama.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            館山（820便）
+          </a>
+          <a href="../fish_area/aji-kurihama.html" class="chip-link">
+            <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            久里浜（512便）
+          </a>
+          <a href="../fish_area/aji-kisarazu.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            木更津（420便)
+          </a>
+          <a href="../fish_area/aji-yokosuka.html" class="chip-link">
+            <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            横須賀（285便）
+          </a>
+          <a href="../fish_area/aji-ito.html" class="chip-link">
+            <img src="area_shizuoka_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            伊東（180便）
+          </a>
+        </div>
+      </details>
+    </div>
+
+    <!-- 魚種ブロック2: マダイ -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        🐟 <a href="madai.html">マダイ</a>
+        <span class="ib-cnt">今週88便・全14エリア</span>
+      </div>
+      <p class="tier-label">★ 今週実績あり（4エリア）</p>
+      <div class="chip-wrap">
+        <a href="../fish_area/madai-iioka.html" class="chip-link chip-active">
+          <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          飯岡（1,820便）
+        </a>
+        <a href="../fish_area/madai-ohara.html" class="chip-link chip-active">
+          <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          大原（1,210便）
+        </a>
+        <a href="../fish_area/madai-katsuura.html" class="chip-link chip-active">
+          <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          勝浦（680便）
+        </a>
+        <a href="../fish_area/madai-sunosaki.html" class="chip-link chip-active">
+          <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          洲崎（420便）
+        </a>
+      </div>
+      <details class="fold-chips">
+        <summary>過去実績あり（今週ゼロ・10エリア）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/madai-tateyama.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            館山（350便）
+          </a>
+          <a href="../fish_area/madai-sajima.html" class="chip-link">
+            <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            佐島（210便）
+          </a>
+          <a href="../fish_area/madai-shimoda.html" class="chip-link">
+            <img src="area_shizuoka_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            下田（185便）
+          </a>
+          <a href="../fish_area/madai-numazu.html" class="chip-link">
+            <img src="area_shizuoka_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            沼津（120便）
+          </a>
+          <a href="../fish_area/madai-kannonzaki.html" class="chip-link">
+            <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            観音崎（95便）
+          </a>
+          <a href="../fish_area/madai-kominato.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            小湊（80便）
+          </a>
+        </div>
+      </details>
+    </div>
+
+    <!-- 魚種ブロック3: カワハギ -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        🐟 <a href="kawahagi.html">カワハギ</a>
+        <span class="ib-cnt">今週54便・全8エリア</span>
+      </div>
+      <p class="tier-label">★ 今週実績あり（3エリア）</p>
+      <div class="chip-wrap">
+        <a href="../fish_area/kawahagi-yokohama-honmoku.html" class="chip-link chip-active">
+          <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          横浜本牧港（820便）
+        </a>
+        <a href="../fish_area/kawahagi-sajima.html" class="chip-link chip-active">
+          <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          佐島（510便）
+        </a>
+        <a href="../fish_area/kawahagi-kenzaki.html" class="chip-link chip-active">
+          <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+          剣崎（320便）
+        </a>
+      </div>
+      <details class="fold-chips">
+        <summary>過去実績あり（今週ゼロ・5エリア）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/kawahagi-sunosaki.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            洲崎（260便）
+          </a>
+          <a href="../fish_area/kawahagi-haneda.html" class="chip-link">
+            <img src="area_tokyo_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            羽田（180便）
+          </a>
+          <a href="../fish_area/kawahagi-tateyama.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            館山（95便）
+          </a>
+        </div>
+      </details>
+    </div>
+
+    <!-- 魚種ブロック4: ヒラメ（過去実績のみ・今週ゼロケース） -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        <img src="fish_hirame_emoji.webp" alt="" class="ib-emoji" onerror="this.style.display='none'">
+        <a href="hirame.html">ヒラメ</a>
+        <span class="ib-cnt">今週0便・全6エリア</span>
+      </div>
+      <p class="tier-label" style="color:#aaa;">今週実績なし</p>
+      <details class="fold-chips" open>
+        <summary>過去実績あり（今週ゼロ・6エリア）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/hirame-iioka.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            飯岡（820便）
+          </a>
+          <a href="../fish_area/hirame-ohara.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            大原（710便）
+          </a>
+          <a href="../fish_area/hirame-katakai.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            片貝（510便）
+          </a>
+          <a href="../fish_area/hirame-sajima.html" class="chip-link">
+            <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            佐島（420便）
+          </a>
+          <a href="../fish_area/hirame-kannonzaki.html" class="chip-link">
+            <img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            観音崎（180便）
+          </a>
+          <a href="../fish_area/hirame-tateyama.html" class="chip-link">
+            <img src="area_chiba_emoji.webp" alt="" class="chip-pref" onerror="this.style.display='none'">
+            館山（120便）
+          </a>
+        </div>
+      </details>
+    </div>
+
+    <!-- … 残り51魚種同様に展開 … -->
+    <div class="idx-block" style="text-align:center; color:#999; font-size:13px;">
+      …（残り 51 魚種同様・全 55 種展開・合計 258 fish_area リンク網羅）…
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- area/index.html mockup -->
+<!-- ============================================================ -->
+<div class="mock-divider"></div>
+<div class="mock-h">PAGE 2 / 2: area/index.html</div>
+
+<div style="background:#1a3a52;color:#fff;padding:18px 14px 20px;margin-bottom:0;border-radius:8px 8px 0 0;">
+  <div style="font-size:26px;font-weight:800">エリア別 釣果一覧</div>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり 18エリア</div>
+</div>
+<div style="background:#fff;padding:8px 14px 0;">
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; エリア一覧</p>
+
+  <h2 class="st">神奈川・東京湾</h2>
+  <p class="mock-note" style="margin:0 0 8px;">↓ 既存の AREA_GROUPS 別カードゾーン（県emoji を追加実装する）</p>
+  <div class="ai-grid">
+    <div class="ai-card">
+      <a class="ai-name" href="yokohama-honmoku.html"><img src="area_kanagawa_emoji.webp" alt="" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px" onerror="this.style.display='none'">横浜本牧港</a>
+      <div class="ai-fish">
+        <a href="../fish_area/aji-yokohama-honmoku.html">アジ</a><span class="ai-sep">・</span><a href="../fish_area/kawahagi-yokohama-honmoku.html">カワハギ</a><span class="ai-sep">・</span><a href="../fish_area/tachiuo-yokohama-honmoku.html">タチウオ</a>
+      </div>
+      <a class="ai-cnt" href="yokohama-honmoku.html">今週釣果48便</a>
+    </div>
+    <div class="ai-card">
+      <a class="ai-name" href="kanazawa-hakkei.html"><img src="area_kanagawa_emoji.webp" alt="" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px" onerror="this.style.display='none'">金沢八景</a>
+      <div class="ai-fish">
+        <a href="../fish_area/aji-kanazawa-hakkei.html">アジ</a><span class="ai-sep">・</span><a href="../fish_area/shirogisu-kanazawa-hakkei.html">シロギス</a><span class="ai-sep">・</span><a href="../fish_area/seabass-kanazawa-hakkei.html">シーバス</a>
+      </div>
+      <a class="ai-cnt" href="kanazawa-hakkei.html">今週釣果42便</a>
+    </div>
+    <div class="ai-card">
+      <a class="ai-name" href="iioka.html"><img src="area_chiba_emoji.webp" alt="" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px" onerror="this.style.display='none'">飯岡</a>
+      <div class="ai-fish">
+        <a href="../fish_area/madai-iioka.html">マダイ</a><span class="ai-sep">・</span><a href="../fish_area/hirame-iioka.html">ヒラメ</a><span class="ai-sep">・</span><a href="../fish_area/isaki-iioka.html">イサキ</a>
+      </div>
+      <a class="ai-cnt" href="iioka.html">今週釣果28便</a>
+    </div>
+    <div class="ai-card">
+      <a class="ai-name" href="kashima.html"><img src="area_ibaraki_emoji.webp" alt="" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px" onerror="this.style.display='none'">鹿島</a>
+      <div class="ai-fish">
+        <a href="../fish_area/madai-kashima.html">マダイ</a><span class="ai-sep">・</span><a href="../fish_area/hirame-kashima.html">ヒラメ</a>
+      </div>
+      <a class="ai-cnt" href="kashima.html">今週釣果12便</a>
+    </div>
+  </div>
+
+  <!-- ★ Phase C 新規セクション ★ -->
+  <h2 class="st">エリア</h2>
+  <p class="faa-note">
+    各エリアについて、過去に釣果報告のある<b>全魚種への直リンク</b>を網羅。
+    便数は過去3年の実績報告数。<b>★今週実績あり</b>を上段に、
+    <b>過去実績のみ</b>を下段（折り畳み）に分離。
+  </p>
+
+  <div class="idx-all-grid">
+
+    <!-- エリアブロック1: 横浜本牧港 -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        <img src="area_kanagawa_emoji.webp" alt="" class="ib-emoji" onerror="this.style.display='none'">
+        <a href="yokohama-honmoku.html">横浜本牧港</a>
+        <span class="ib-cnt">今週48便・全12魚種</span>
+      </div>
+      <p class="tier-label">★ 今週実績あり（5魚種）</p>
+      <div class="chip-wrap">
+        <a href="../fish_area/aji-yokohama-honmoku.html" class="chip-link chip-active">🐟 アジ（3,042便）</a>
+        <a href="../fish_area/tachiuo-yokohama-honmoku.html" class="chip-link chip-active">🐟 タチウオ（1,210便）</a>
+        <a href="../fish_area/kawahagi-yokohama-honmoku.html" class="chip-link chip-active">🐟 カワハギ（820便）</a>
+        <a href="../fish_area/shirogisu-yokohama-honmoku.html" class="chip-link chip-active">🐟 シロギス（520便）</a>
+        <a href="../fish_area/anago-yokohama-honmoku.html" class="chip-link chip-active">🐟 アナゴ（210便）</a>
+      </div>
+      <details class="fold-chips">
+        <summary>過去実績あり（今週ゼロ・7魚種）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/madai-yokohama-honmoku.html" class="chip-link">🐟 マダイ（180便）</a>
+          <a href="../fish_area/saba-yokohama-honmoku.html" class="chip-link">🐟 サバ（150便）</a>
+          <a href="../fish_area/kasago-yokohama-honmoku.html" class="chip-link">🐟 カサゴ（92便）</a>
+          <a href="../fish_area/seabass-yokohama-honmoku.html" class="chip-link">🐟 シーバス（85便）</a>
+          <a href="../fish_area/mebaru-yokohama-honmoku.html" class="chip-link">🐟 メバル（48便）</a>
+          <a href="../fish_area/kisu-yokohama-honmoku.html" class="chip-link">🐟 マゴチ（35便）</a>
+          <a href="../fish_area/aoriika-yokohama-honmoku.html" class="chip-link">
+            <img src="fish_aoriika_emoji.webp" alt="" class="chip-emoji" onerror="this.style.display='none'">
+            アオリイカ（20便）
+          </a>
+        </div>
+      </details>
+    </div>
+
+    <!-- エリアブロック2: 金沢八景 -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        <img src="area_kanagawa_emoji.webp" alt="" class="ib-emoji" onerror="this.style.display='none'">
+        <a href="kanazawa-hakkei.html">金沢八景</a>
+        <span class="ib-cnt">今週42便・全10魚種</span>
+      </div>
+      <p class="tier-label">★ 今週実績あり（4魚種）</p>
+      <div class="chip-wrap">
+        <a href="../fish_area/aji-kanazawa-hakkei.html" class="chip-link chip-active">
+          <img src="fish_aji_emoji.webp" alt="" class="chip-emoji" onerror="this.style.display='none'">
+          アジ（2,810便）
+        </a>
+        <a href="../fish_area/shirogisu-kanazawa-hakkei.html" class="chip-link chip-active">🐟 シロギス（620便）</a>
+        <a href="../fish_area/seabass-kanazawa-hakkei.html" class="chip-link chip-active">🐟 シーバス（420便）</a>
+        <a href="../fish_area/anago-kanazawa-hakkei.html" class="chip-link chip-active">
+          <img src="fish_anago_emoji.webp" alt="" class="chip-emoji" onerror="this.style.display='none'">
+          アナゴ（180便）
+        </a>
+      </div>
+      <details class="fold-chips">
+        <summary>過去実績あり（今週ゼロ・6魚種）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/kasago-kanazawa-hakkei.html" class="chip-link">
+            <img src="fish_kasago_emoji.webp" alt="" class="chip-emoji" onerror="this.style.display='none'">
+            カサゴ（210便）
+          </a>
+          <a href="../fish_area/tachiuo-kanazawa-hakkei.html" class="chip-link">🐟 タチウオ（150便）</a>
+          <a href="../fish_area/kawahagi-kanazawa-hakkei.html" class="chip-link">🐟 カワハギ（92便）</a>
+          <a href="../fish_area/madai-kanazawa-hakkei.html" class="chip-link">🐟 マダイ（55便）</a>
+          <a href="../fish_area/mebaru-kanazawa-hakkei.html" class="chip-link">🐟 メバル（38便）</a>
+        </div>
+      </details>
+    </div>
+
+    <!-- エリアブロック3: 飯岡（千葉・外房） -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        <img src="area_chiba_emoji.webp" alt="" class="ib-emoji" onerror="this.style.display='none'">
+        <a href="iioka.html">飯岡</a>
+        <span class="ib-cnt">今週28便・全8魚種</span>
+      </div>
+      <p class="tier-label">★ 今週実績あり（3魚種）</p>
+      <div class="chip-wrap">
+        <a href="../fish_area/madai-iioka.html" class="chip-link chip-active">🐟 マダイ（1,820便）</a>
+        <a href="../fish_area/hirame-iioka.html" class="chip-link chip-active">
+          <img src="fish_hirame_emoji.webp" alt="" class="chip-emoji" onerror="this.style.display='none'">
+          ヒラメ（820便）
+        </a>
+        <a href="../fish_area/isaki-iioka.html" class="chip-link chip-active">
+          <img src="fish_isaki_emoji.webp" alt="" class="chip-emoji" onerror="this.style.display='none'">
+          イサキ（310便）
+        </a>
+      </div>
+      <details class="fold-chips">
+        <summary>過去実績あり（今週ゼロ・5魚種）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/taigomoku-iioka.html" class="chip-link">🐟 タイ五目（420便）</a>
+          <a href="../fish_area/yariika-iioka.html" class="chip-link">🐟 ヤリイカ（185便）</a>
+          <a href="../fish_area/aoriika-iioka.html" class="chip-link">
+            <img src="fish_aoriika_emoji.webp" alt="" class="chip-emoji" onerror="this.style.display='none'">
+            アオリイカ（120便）
+          </a>
+          <a href="../fish_area/saba-iioka.html" class="chip-link">🐟 サバ（85便）</a>
+          <a href="../fish_area/wahoo-iioka.html" class="chip-link">🐟 ワラサ（60便）</a>
+        </div>
+      </details>
+    </div>
+
+    <!-- エリアブロック4: 茨城エリア（2026/05/14 県emoji 追加） -->
+    <div class="idx-block">
+      <div class="idx-block-h">
+        <img src="area_ibaraki_emoji.webp" alt="" class="ib-emoji" onerror="this.style.display='none'">
+        <a href="kashima.html">鹿島</a>
+        <span class="ib-cnt">今週12便・全7魚種</span>
+      </div>
+      <p class="tier-label">★ 今週実績あり（2魚種）</p>
+      <div class="chip-wrap">
+        <a href="../fish_area/madai-kashima.html" class="chip-link chip-active">🐟 マダイ（510便）</a>
+        <a href="../fish_area/hirame-kashima.html" class="chip-link chip-active">🐟 ヒラメ（380便）</a>
+      </div>
+      <details class="fold-chips">
+        <summary>過去実績あり（今週ゼロ・5魚種）を表示</summary>
+        <div class="chip-wrap">
+          <a href="../fish_area/yariika-kashima.html" class="chip-link">🐟 ヤリイカ（210便）</a>
+          <a href="../fish_area/sukoshi-kashima.html" class="chip-link">🐟 アジ（180便）</a>
+          <a href="../fish_area/saba-kashima.html" class="chip-link">🐟 サバ（95便）</a>
+          <a href="../fish_area/isaki-kashima.html" class="chip-link">🐟 イサキ（48便）</a>
+          <a href="../fish_area/aoriika-kashima.html" class="chip-link">🐟 アオリイカ（28便）</a>
+        </div>
+      </details>
+    </div>
+
+    <!-- … 残り43エリア同様 … -->
+    <div class="idx-block" style="text-align:center; color:#999; font-size:13px;">
+      …（残り 43 エリア同様・全 47 エリア展開・合計 258 fish_area リンク網羅）…
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- レビュー観点メモ -->
+<!-- ============================================================ -->
+<div class="mock-divider"></div>
+
+<h2 style="font-size:18px;color:#1a3a52;">レビュー観点</h2>
+<ul style="font-size:14px;color:#444;line-height:1.9;padding-left:24px;">
+  <li><b>密度:</b> 55魚種 × 平均5エリア = ~258本リンクをこの形式で並べた時に重くないか</li>
+  <li><b>折り畳み既定:</b> 今週実績ゼロ魚種/エリア（ヒラメブロック例）は <code>open</code> 既定にすべきか・閉じておくか</li>
+  <li><b>魚emoji slot:</b> idx-block-h の魚アイコン（20px）と chip 内の魚 emoji（14px）併用 OK か</li>
+  <li><b>件数表記:</b> idx-block-h の右側「今週N便・全Mエリア」と chip 内の「N便」の二重表示は冗長でないか</li>
+  <li><b>chip-active 強調:</b> 上段（黄色背景）下段（白背景）の差は十分視認できるか</li>
+  <li><b>未マッピングエリア:</b> 茨城ブロック（県emojiなし）はテキストのみで不自然でないか</li>
+  <li><b>並び順:</b> fish/index は今週便数降順 → 全件便数降順 で OK か（今週ゼロ魚種は末尾） / area/index は AREA_GROUPS 順 → その他</li>
+  <li><b>セクション位置:</b> 既存「今週カード」直下に追加か、AREA_GROUPS 別ブロック後（area の場合）に追加か</li>
+  <li><b>SEO:</b> 同一ページ内に同じ chip リンクが「今週カード」「全件展開」両方に出る可能性 → 重複扱いされないか</li>
+</ul>
+
+</div>
+</body>
+</html>
