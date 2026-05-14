@@ -10242,7 +10242,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         today_str_fa = now_fa_global.strftime("%Y/%m/%d")
         ship_data_fa: dict = {}
         for c in catches:
-            d = ship_data_fa.setdefault(c["ship"], {"cnt": 0, "his": [], "los": [], "sz_his": [], "sz_los": [], "today": False})
+            d = ship_data_fa.setdefault(c["ship"], {"cnt": 0, "his": [], "los": [], "boat_his": [], "boat_los": [], "sz_his": [], "sz_los": [], "today": False})
             d["cnt"] += 1
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
@@ -10252,6 +10252,13 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                     d["los"].append(cr["min"])
                 elif cr.get("max") is not None:
                     d["los"].append(cr["max"])
+            elif cr and cr.get("is_boat"):
+                if cr.get("max") is not None:
+                    d["boat_his"].append(cr["max"])
+                if cr.get("min") is not None:
+                    d["boat_los"].append(cr["min"])
+                elif cr.get("max") is not None:
+                    d["boat_los"].append(cr["max"])
             sz = c.get("size_cm")
             if sz:
                 if sz.get("max") is not None:
@@ -10261,13 +10268,23 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             if c.get("date") == today_str_fa:
                 d["today"] = True
         sr_items_fa = ""
-        for i, (sn, sd) in enumerate(sorted(ship_data_fa.items(), key=lambda x: -(max(x[1]["his"]) if x[1]["his"] else 0))[:8]):
+        def _sr_sort_key(item):
+            sd = item[1]
+            return -(max(sd["his"]) if sd["his"] else (max(sd["boat_his"]) if sd["boat_his"] else 0))
+        for i, (sn, sd) in enumerate(sorted(ship_data_fa.items(), key=_sr_sort_key)[:8]):
             s_lo = int(min(sd["los"])) if sd["los"] else None
             s_hi = int(max(sd["his"])) if sd["his"] else None
             if s_lo is not None and s_hi is not None and s_lo != s_hi:
                 s_range = f"{s_lo}〜{s_hi}匹"
             elif s_hi is not None:
                 s_range = f"{s_hi}匹"
+            elif sd["boat_his"]:
+                b_lo = int(min(sd["boat_los"])) if sd["boat_los"] else None
+                b_hi = int(max(sd["boat_his"]))
+                if b_lo is not None and b_lo != b_hi:
+                    s_range = f"船中{b_lo}〜{b_hi}匹"
+                else:
+                    s_range = f"船中{b_hi}匹"
             else:
                 s_range = f"{sd['cnt']}件"
             sz_lo = int(min(sd["sz_los"])) if sd["sz_los"] else None
