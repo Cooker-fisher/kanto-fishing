@@ -998,6 +998,100 @@ def validate_fa_related_3axis():
         ok(f"fa-related 3jiku: {found}/{len(samples)} all present (h2>=3 + chip-wrap>=3)")
 
 
+def validate_fish_index_phaseC():
+    """30: fish/index.html の .idx-all-grid 内に .chip-link.chip-active が 1件以上存在
+    （Phase C「魚種」セクションが全件展開され、今週実績ありの chip が出力されている）"""
+    print("\n[30] fish/index.html - .idx-all-grid 内に .chip-link.chip-active（Phase C）")
+    path = os.path.join(DOCS, "fish", "index.html")
+    if not os.path.isfile(path):
+        fail("fish/index.html が存在しない")
+        return
+    content = open(path, encoding="utf-8").read()
+    # idx-all-grid セクション内を抽出
+    m = re.search(r'class="idx-all-grid"(.*)', content, re.DOTALL)
+    if not m:
+        fail("fish/index.html: .idx-all-grid セクションが存在しない（Phase C「魚種」セクション未生成）")
+        return
+    idx_section = m.group(1)
+    active_count = idx_section.count('class="chip-link chip-active"')
+    if active_count < 1:
+        fail(f"fish/index.html: .idx-all-grid 内に chip-active が {active_count} 件（1件以上必要）")
+    else:
+        ok(f"fish/index .idx-all-grid chip-active: {active_count} 件")
+
+
+def validate_area_index_phaseC():
+    """31: area/index.html の .idx-all-grid 内に .chip-link が 1件以上存在
+    （Phase C「エリア」セクションが全件展開されている）"""
+    print("\n[31] area/index.html - .idx-all-grid 内に .chip-link（Phase C）")
+    path = os.path.join(DOCS, "area", "index.html")
+    if not os.path.isfile(path):
+        fail("area/index.html が存在しない")
+        return
+    content = open(path, encoding="utf-8").read()
+    m = re.search(r'class="idx-all-grid"(.*)', content, re.DOTALL)
+    if not m:
+        fail("area/index.html: .idx-all-grid セクションが存在しない（Phase C「エリア」セクション未生成）")
+        return
+    idx_section = m.group(1)
+    chip_count = idx_section.count('class="chip-link')
+    if chip_count < 1:
+        fail(f"area/index.html: .idx-all-grid 内に chip-link が {chip_count} 件（1件以上必要）")
+    else:
+        ok(f"area/index .idx-all-grid chip-link: {chip_count} 件")
+
+
+def validate_area_index_pref_emoji():
+    """32: area/index.html の <div class="ai-card"> 内に class="chip-pref" img が 1件以上存在
+    （ai-card の直リンク化 + 県emoji 表示が動作している）"""
+    print("\n[32] area/index.html - ai-card 内に chip-pref img（県emoji）")
+    path = os.path.join(DOCS, "area", "index.html")
+    if not os.path.isfile(path):
+        fail("area/index.html が存在しない")
+        return
+    content = open(path, encoding="utf-8").read()
+    # ai-card div の存在確認
+    ai_card_count = content.count('<div class="ai-card">')
+    if ai_card_count < 1:
+        fail(f"area/index.html: <div class='ai-card'> が {ai_card_count} 件（旧 <a class='ai-card'> が残存している可能性）")
+        return
+    # chip-pref の存在確認（ai-grid 内）
+    m = re.search(r'class="ai-grid"(.*?)(?=class="idx-all-grid"|</div>\s*</div>\s*{DATA_NOTE|$)', content, re.DOTALL)
+    if m:
+        ai_grid_section = m.group(1)
+    else:
+        ai_grid_section = content  # フォールバック: 全体を対象
+    pref_count = ai_grid_section.count('class="chip-pref"')
+    if pref_count < 1:
+        fail(f"area/index.html: ai-card 内に chip-pref img が {pref_count} 件（県emoji 未出力）")
+    else:
+        ok(f"area/index ai-card chip-pref: {pref_count} 件")
+
+
+def validate_area_index_fish_links():
+    """33: area/index.html の <div class="ai-fish"> 内に <a href="../fish_area/..."> が 1件以上存在
+    （ai-fish 内の魚種が fish_area 直リンク化されている）"""
+    print("\n[33] area/index.html - ai-fish 内に fish_area 直リンク")
+    path = os.path.join(DOCS, "area", "index.html")
+    if not os.path.isfile(path):
+        fail("area/index.html が存在しない")
+        return
+    content = open(path, encoding="utf-8").read()
+    # ai-fish div ブロックを全て収集
+    ai_fish_blocks = re.findall(r'<div class="ai-fish">(.*?)</div>', content, re.DOTALL)
+    if not ai_fish_blocks:
+        fail("area/index.html: ai-fish div が存在しない")
+        return
+    fish_link_count = sum(
+        1 for block in ai_fish_blocks
+        if re.search(r'href="../fish_area/', block)
+    )
+    if fish_link_count < 1:
+        fail(f"area/index.html: ai-fish 内に fish_area リンクを持つブロックが {fish_link_count} 件（1件以上必要）")
+    else:
+        ok(f"area/index ai-fish fish_area links: {fish_link_count} ブロックに存在")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1037,6 +1131,10 @@ def main():
     validate_fish_page_h1()
     validate_fish_area_breadcrumb_2axis()
     validate_fa_related_3axis()
+    validate_fish_index_phaseC()
+    validate_area_index_phaseC()
+    validate_area_index_pref_emoji()
+    validate_area_index_fish_links()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
