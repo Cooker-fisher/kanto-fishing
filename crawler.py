@@ -13729,10 +13729,51 @@ def main():
                           hist_rows=_shared_hist_rows,
                           fish_area_summary=_shared_fish_area_summary,
                           fish_top_areas=_shared_fish_top_areas)
+    # T38-C: fish/index・area/index は fish_area HTML 生成後に呼ぶ
+    # （_fa_exists() が全 fish_area HTML を正確に参照するため）
+    _shared_recent7 = _load_recent_catches_for_index(now, days=7)
+    # fish_summary（今週の魚種キーセット）を build_fish_index_html 用に再構築。
+    # build_fish_pages 内と同等の軽量集計（valid_catches から直近7日を除く → 共通処理）
+    _fi_cutoff = (now - timedelta(days=6)).strftime("%Y/%m/%d")
+    _fi_data_recent = [c for c in valid_catches if c.get("date", "") >= _fi_cutoff]
+    _fi_seen = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in _fi_data_recent}
+    _fi_merged = list(_fi_data_recent)
+    for _c in _shared_recent7:
+        _k = (_c.get("ship"), _c.get("date"), _c.get("fish_raw", ""))
+        if _k not in _fi_seen:
+            _fi_merged.append(_c)
+            _fi_seen.add(_k)
+    _shared_fish_summary_keys: dict = {}
+    _SKIP_FISH_MAIN = {"不明", "欠航"}
+    for _c in _fi_merged:
+        for _f in _c.get("fish", []):
+            if _f not in _SKIP_FISH_MAIN and not _f.isdigit():
+                _shared_fish_summary_keys.setdefault(_f, []).append(_c)
+    # fish_tackle.json で説明がある魚種もキーセットに追加（build_fish_pages と整合）
+    _shared_tackle_data = load_fish_tackle()
+    for _f in _shared_tackle_data.keys():
+        if _f in _FISH_ROMAJI and _f not in _shared_fish_summary_keys:
+            _shared_fish_summary_keys[_f] = []
+    build_fish_index_html(
+        now=now,
+        hist_rows=_shared_hist_rows,
+        fish_area_summary=_shared_fish_area_summary,
+        recent7=_shared_recent7,
+        fish_summary=_shared_fish_summary_keys,
+        crawled_at=crawled_at,
+    )
     build_area_pages(valid_catches, history, crawled_at, weather_data,
                      hist_rows=_shared_hist_rows,
                      fish_area_summary=_shared_fish_area_summary,
                      area_top_fishes=_shared_area_top_fishes)
+    build_area_index_html(
+        now=now,
+        hist_rows=_shared_hist_rows,
+        fish_area_summary=_shared_fish_area_summary,
+        area_top_fishes=_shared_area_top_fishes,
+        recent7=_shared_recent7,
+        crawled_at=crawled_at,
+    )
     build_ship_pages(valid_catches, crawled_at)
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
