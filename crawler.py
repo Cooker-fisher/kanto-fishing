@@ -8295,6 +8295,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
   <div class="fh-m">{'本日の釣果報告は集計待ち' if not catches else f'今週 {len(catches)}便・{len(set(c["ship"] for c in catches))}船宿'}</div>
 </div>
 <div class="c">
+  <h1 class="page-h1">関東の{fish}船釣り釣果情報</h1>
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
   {_build_share_buttons(
       share_text=f"{fish}の最新釣果と旬カレンダー | 船釣り予想",
