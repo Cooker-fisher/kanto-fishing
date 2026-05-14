@@ -13,10 +13,23 @@ _AREA_ROMAJI: dict = {}
 _AREA_ROMAJI_LOADED = False
 
 
+# crawler.py の _FISH_IMG_OVERRIDES と同期（ハイフン削除と画像フォルダ名が一致しない魚種）
+# 同期対象: アブラボウズ（romaji=abura-bouzu → 画像フォルダ aburabozu「ボズ」表記）
+# 他の override 候補（ビシアジ等）はハイフン削除結果と一致するためここでは不要
+_FISH_IMG_OVERRIDES = {
+    "アブラボウズ": "aburabozu",
+}
+
+def _fish_img_folder(fish_name: str, romaji: str) -> str:
+    """画像 asset フォルダ名を取得（_FISH_IMG_OVERRIDES が優先）。
+    crawler.py の fish_img_slug() と同等ロジック。"""
+    return _FISH_IMG_OVERRIDES.get(fish_name, romaji.replace("-", ""))
+
+
 def _load_fish_romaji() -> dict:
     """normalize/fish_romaji_map.json を読み込んでキャッシュ。
     全 60 魚種対応（ハイフン付き形式・例: 'bishi-aji'）。
-    asset フォルダ用にハイフン除去が必要なケースは呼出側で .replace('-', '') する。"""
+    asset フォルダ用にハイフン除去が必要なケースは呼出側で _fish_img_folder() を使う。"""
     global _FISH_ROMAJI, _FISH_ROMAJI_LOADED
     if not _FISH_ROMAJI_LOADED:
         _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -389,11 +402,12 @@ def _fish_table_rows_html(fish_rows, depth="../"):
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
         # asset フォルダ名はハイフンなし（例: bishi-aji → bishiaji）
+        # アブラボウズ等の表記揺れは _fish_img_folder() で吸収
         # マップ未登録魚種は emoji フォールバック
         romaji = _romaji.get(fish_name)
         if romaji:
-            romaji = romaji.replace("-", "")
-            icon_html = f'<img class="icon" src="{icon_base}{romaji}/{romaji}_emoji.webp" alt="{fish_name}" onerror="this.style.display=\'none\'">'
+            folder = _fish_img_folder(fish_name, romaji)
+            icon_html = f'<img class="icon" src="{icon_base}{folder}/{folder}_emoji.webp" alt="{fish_name}" onerror="this.style.display=\'none\'">'
         else:
             icon_html = '<span class="icon-fallback" aria-label="魚アイコン">🐟</span>'
         # M3: 型表示を min-max 形式に（補遺3 遵守）
@@ -435,8 +449,9 @@ def _x_card_table_rows_html(fish_rows):
         cm_max = row.get("cm_max", 0)
         top_port = row.get("top_port", "")
         n_trips = row.get("n_trips", 0)
-        # asset フォルダ名はハイフンなし
-        romaji = _romaji.get(fish_name, fish_name.lower()).replace("-", "")
+        # asset フォルダ名はハイフンなし（_fish_img_folder で表記揺れ吸収）
+        _raw_romaji = _romaji.get(fish_name, fish_name.lower())
+        romaji = _fish_img_folder(fish_name, _raw_romaji)
         icon_path = f"{icon_base}{romaji}/{romaji}_icon_sm.png"
         # 型
         if kg_max and kg_max > 0:
