@@ -840,6 +840,16 @@ def validate_share_buttons():
             ok(f"{label}: share-bar OK")
 
 
+_T38_FISH_SAMPLES = ["aji.html", "madai.html", "shirogisu.html"]
+_T38_AREA_SAMPLES = ["yokohama-honmoku.html", "kanazawa-hakkei.html"]
+_T38_FA_SAMPLES = ["aji-yokohama-honmoku.html", "madai-iioka.html", "aji-kanazawa-hakkei.html"]
+
+
+def _t38_pick_samples(base_dir, sample_list):
+    """固定サンプルリストから実在ファイルのみ返す（reviewer M-2 対策）"""
+    return [fn for fn in sample_list if os.path.exists(os.path.join(base_dir, fn))]
+
+
 def validate_fish_areas_all_section():
     """24: fish/*.html に fish-areas-all セクション存在（T38-A4 Layer 1 固定エリア）"""
     print("\n[24] fish/*.html - fish-areas-all セクション")
@@ -847,19 +857,19 @@ def validate_fish_areas_all_section():
     if not os.path.isdir(fish_dir):
         fail("fish/ ディレクトリが存在しない")
         return
-    samples = [f for f in os.listdir(fish_dir) if f.endswith(".html") and f != "index.html"][:5]
+    samples = _t38_pick_samples(fish_dir, _T38_FISH_SAMPLES)
     if not samples:
-        warn("fish/*.html サンプルが無い → skip")
+        warn("fish/ 固定サンプルが存在しない → skip")
         return
     found = 0
     for fn in samples:
         html = open(os.path.join(fish_dir, fn), encoding="utf-8").read()
         if 'class="fish-areas-all"' in html:
             found += 1
-    if found == 0:
-        fail(f"fish/ サンプル {len(samples)} 件中 fish-areas-all セクションが 0 件")
+    if found < len(samples):
+        fail(f"fish/ 固定サンプル {len(samples)} 件中 fish-areas-all が {found} 件のみ（全件必須）")
     else:
-        ok(f"fish-areas-all: {found}/{len(samples)} サンプルに存在")
+        ok(f"fish-areas-all: {found}/{len(samples)} 全件存在")
 
 
 def validate_fish_related_species_section():
@@ -869,19 +879,19 @@ def validate_fish_related_species_section():
     if not os.path.isdir(fish_dir):
         fail("fish/ ディレクトリが存在しない")
         return
-    samples = [f for f in os.listdir(fish_dir) if f.endswith(".html") and f != "index.html"][:5]
+    samples = _t38_pick_samples(fish_dir, _T38_FISH_SAMPLES)
     if not samples:
-        warn("fish/*.html サンプルが無い → skip")
+        warn("fish/ 固定サンプルが存在しない → skip")
         return
     found = 0
     for fn in samples:
         html = open(os.path.join(fish_dir, fn), encoding="utf-8").read()
         if 'class="fish-related-species"' in html:
             found += 1
-    if found == 0:
-        fail(f"fish/ サンプル {len(samples)} 件中 fish-related-species セクションが 0 件")
+    if found < len(samples):
+        fail(f"fish/ 固定サンプル {len(samples)} 件中 fish-related-species が {found} 件のみ（全件必須）")
     else:
-        ok(f"fish-related-species: {found}/{len(samples)} サンプルに存在")
+        ok(f"fish-related-species: {found}/{len(samples)} 全件存在")
 
 
 def validate_area_all_fish_section():
@@ -891,19 +901,19 @@ def validate_area_all_fish_section():
     if not os.path.isdir(area_dir):
         fail("area/ ディレクトリが存在しない")
         return
-    samples = [f for f in os.listdir(area_dir) if f.endswith(".html") and f != "index.html"][:5]
+    samples = _t38_pick_samples(area_dir, _T38_AREA_SAMPLES)
     if not samples:
-        warn("area/*.html サンプルが無い → skip")
+        warn("area/ 固定サンプルが存在しない → skip")
         return
     found = 0
     for fn in samples:
         html = open(os.path.join(area_dir, fn), encoding="utf-8").read()
         if 'class="area-all-fish"' in html:
             found += 1
-    if found == 0:
-        fail(f"area/ サンプル {len(samples)} 件中 area-all-fish セクションが 0 件")
+    if found < len(samples):
+        fail(f"area/ 固定サンプル {len(samples)} 件中 area-all-fish が {found} 件のみ（全件必須）")
     else:
-        ok(f"area-all-fish: {found}/{len(samples)} サンプルに存在")
+        ok(f"area-all-fish: {found}/{len(samples)} 全件存在")
 
 
 def validate_fish_page_h1():
@@ -913,19 +923,19 @@ def validate_fish_page_h1():
     if not os.path.isdir(fish_dir):
         fail("fish/ ディレクトリが存在しない")
         return
-    samples = [f for f in os.listdir(fish_dir) if f.endswith(".html") and f != "index.html"][:5]
+    samples = _t38_pick_samples(fish_dir, _T38_FISH_SAMPLES)
     if not samples:
-        warn("fish/*.html サンプルが無い → skip")
+        warn("fish/ 固定サンプルが存在しない → skip")
         return
     found = 0
     for fn in samples:
         html = open(os.path.join(fish_dir, fn), encoding="utf-8").read()
         if 'class="page-h1"' in html:
             found += 1
-    if found == 0:
-        fail(f"fish/ サンプル {len(samples)} 件中 page-h1 が 0 件")
+    if found < len(samples):
+        fail(f"fish/ 固定サンプル {len(samples)} 件中 page-h1 が {found} 件のみ（全件必須）")
     else:
-        ok(f"page-h1: {found}/{len(samples)} サンプルに存在")
+        ok(f"page-h1: {found}/{len(samples)} 全件存在")
 
 
 def validate_fish_area_breadcrumb_2axis():
@@ -935,9 +945,9 @@ def validate_fish_area_breadcrumb_2axis():
     if not os.path.isdir(fa_dir):
         fail("fish_area/ ディレクトリが存在しない")
         return
-    samples = [f for f in os.listdir(fa_dir) if f.endswith(".html")][:5]
+    samples = _t38_pick_samples(fa_dir, _T38_FA_SAMPLES)
     if not samples:
-        warn("fish_area/*.html サンプルが無い → skip")
+        warn("fish_area/ 固定サンプルが存在しない → skip")
         return
     found = 0
     for fn in samples:
@@ -945,10 +955,42 @@ def validate_fish_area_breadcrumb_2axis():
         bread_m = re.search(r'<p class="bread">(.*?)</p>', html, re.DOTALL)
         if bread_m and '../area/' in bread_m.group(1):
             found += 1
-    if found == 0:
-        fail(f"fish_area/ サンプル {len(samples)} 件中 2軸パンくず（area/ リンク）が 0 件")
+    if found < len(samples):
+        fail(f"fish_area/ 固定サンプル {len(samples)} 件中 2軸パンくずが {found} 件のみ（全件必須）")
     else:
-        ok(f"2軸パンくず: {found}/{len(samples)} サンプルに存在")
+        ok(f"2軸パンくず: {found}/{len(samples)} 全件存在")
+
+
+def validate_fa_related_3axis():
+    """29: fish_area/*.html fa-related が3軸構造（reviewer C-2 対応・T38-A2 検証）"""
+    print("\n[29] fish_area/*.html - fa-related 3軸構造（軸1+軸2+軸3 各 chip-wrap 必須）")
+    fa_dir = os.path.join(DOCS, "fish_area")
+    if not os.path.isdir(fa_dir):
+        fail("fish_area/ ディレクトリが存在しない")
+        return
+    samples = _t38_pick_samples(fa_dir, _T38_FA_SAMPLES)
+    if not samples:
+        warn("fish_area/ 固定サンプルが存在しない → skip")
+        return
+    found = 0
+    detail = []
+    for fn in samples:
+        html = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
+        fa_m = re.search(r'<section class="fa-related">(.*?)</section>', html, re.DOTALL)
+        if not fa_m:
+            detail.append(f"{fn}: fa-related セクション無し")
+            continue
+        fa_html = fa_m.group(1)
+        h2_count = len(re.findall(r'<h2[^>]*>', fa_html))
+        chip_wrap_count = len(re.findall(r'<div class="chip-wrap">', fa_html))
+        if h2_count >= 3 and chip_wrap_count >= 3:
+            found += 1
+        else:
+            detail.append(f"{fn}: h2={h2_count}・chip-wrap={chip_wrap_count}（3+3 必須）")
+    if found < len(samples):
+        fail(f"fish_area/ 固定サンプル {len(samples)} 件中 fa-related 3軸が {found} 件のみ: {'; '.join(detail)}")
+    else:
+        ok(f"fa-related 3軸: {found}/{len(samples)} 全件存在（h2≥3 + chip-wrap≥3）")
 
 
 def main():
@@ -989,6 +1031,7 @@ def main():
     validate_area_all_fish_section()
     validate_fish_page_h1()
     validate_fish_area_breadcrumb_2axis()
+    validate_fa_related_3axis()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

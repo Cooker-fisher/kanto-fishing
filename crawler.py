@@ -3356,24 +3356,44 @@ _SHIP_INFO = load_ship_info()
 # docs/assets/area/{pref}_emoji.webp が存在する県のみ設定
 # 茨城は emoji 未作成のため None（chip-pref img 出力スキップ）
 AREA_TO_PREFECTURE = {
-    # 神奈川
+    # 神奈川（ships.json area 値ベース）
     '金沢八景': 'kanagawa', '横浜本牧港': 'kanagawa', '川崎': 'kanagawa',
-    '久里浜': 'kanagawa', '茅ヶ崎': 'kanagawa', '小田原': 'kanagawa',
-    '下浦': 'kanagawa', '葉山': 'kanagawa', '平塚': 'kanagawa',
+    '久里浜港': 'kanagawa', '久里浜': 'kanagawa', '茅ヶ崎港': 'kanagawa',
+    '茅ヶ崎': 'kanagawa', '小田原': 'kanagawa', '小田原早川港': 'kanagawa',
+    '下浦': 'kanagawa', '葉山': 'kanagawa', '葉山あぶずり港': 'kanagawa',
+    '平塚港': 'kanagawa', '平塚': 'kanagawa',
     '剣崎': 'kanagawa', '佐島': 'kanagawa', '横須賀': 'kanagawa',
+    '久比里港': 'kanagawa', '小坪港': 'kanagawa', '小柴港': 'kanagawa',
+    '小網代港': 'kanagawa', '大磯港': 'kanagawa',
+    '松輪江奈港': 'kanagawa', '松輪間口港': 'kanagawa',
+    '横浜港･新山下': 'kanagawa', '鴨居大室港': 'kanagawa',
+    '長井港': 'kanagawa', '長井新宿港': 'kanagawa', '長井漆山港': 'kanagawa',
     # 東京
     '羽田': 'tokyo', '深川': 'tokyo', '江戸川': 'tokyo',
+    '平和島': 'tokyo', '東葛西': 'tokyo',
     # 千葉
-    '金谷港': 'chiba', '浦安': 'chiba', '大原': 'chiba', '勝山': 'chiba',
-    '館山': 'chiba', '洲崎': 'chiba', '勝浦': 'chiba', '片貝': 'chiba',
-    '飯岡': 'chiba', '鴨川': 'chiba', '和田浦': 'chiba',
+    '金谷港': 'chiba', '浦安': 'chiba', '大原': 'chiba', '大原港': 'chiba',
+    '勝山': 'chiba', '館山': 'chiba',
+    '洲崎': 'chiba', '洲崎港': 'chiba', '勝浦': 'chiba',
+    '片貝': 'chiba', '片貝港': 'chiba',
+    '飯岡': 'chiba', '飯岡港': 'chiba',
+    '鴨川': 'chiba', '和田浦': 'chiba',
     '富津': 'chiba', '木更津': 'chiba', '千倉': 'chiba',
+    '天津港': 'chiba', '富浦港': 'chiba',
+    '御宿岩和田港': 'chiba', '長浦': 'chiba',
+    '江戸川放水路･原木中山': 'chiba',
     # 静岡
     '伊東': 'shizuoka', '熱海': 'shizuoka', '網代': 'shizuoka',
-    '下田': 'shizuoka', '稲取': 'shizuoka', '沼津': 'shizuoka',
-    '御前崎': 'shizuoka', '南伊豆': 'shizuoka',
+    '下田': 'shizuoka', '下田港': 'shizuoka', '稲取': 'shizuoka',
+    '沼津': 'shizuoka', '沼津内港': 'shizuoka', '沼津静浦': 'shizuoka',
+    '御前崎': 'shizuoka', '御前崎港': 'shizuoka', '南伊豆': 'shizuoka',
+    '由比': 'shizuoka', '福田港': 'shizuoka',
     # 茨城（emoji 未作成・None で chip-pref 出力スキップ）
-    '鹿島': None, '日立': None, '波崎': None, '大洗': None,
+    '鹿島': None, '鹿島港': None, '日立': None, '日立久慈港': None,
+    '波崎': None, '波崎港': None, '大洗': None,
+    '勝浦川津港': None,  # 茨城県鹿嶋市
+    # 不明（住所未記載・None でスキップ）
+    '保田港': None, '大津港': None, '松崎港': None, '田子の浦港': None,
 }
 
 
@@ -3834,7 +3854,7 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .st .tag{font-size:9px;padding:2px 7px;border-radius:8px;color:#fff;font-weight:700}
 .st .tag.free{background:var(--pos)}.st .tag.coming{background:var(--prem)}
 .ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:22px;text-align:center;margin:16px 0;font-size:11px;color:#999}
-.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.bread{font-size:11px;color:var(--muted);padding:10px 0;line-height:1.6}.bread a{color:var(--sub)}.bread .bread-sep{white-space:nowrap;display:inline-block;padding:0 4px;color:var(--muted)}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{background:var(--accent);color:#fff;padding:8px;text-align:left;font-size:12px}
@@ -4358,7 +4378,7 @@ def build_index_overview_text(catches, history, crawled_at="", hero_label=""):
             else:          yoy_text = "先週並みの釣果が続いています。"
     # 組み合わせ文
     body = (
-        f"{label}の関東全域で{total}件の釣果報告が寄せられました（{len(areas_set)}エリア・{len(ships_set)}船宿）。"
+        f"{label}の関東全域で{total}便の釣果報告が寄せられました（{len(areas_set)}エリア・{len(ships_set)}船宿）。"
         f"主力魚種は{top_names}。"
     )
     if top_fish and yoy_text:
@@ -5017,7 +5037,7 @@ def _build_fish_area_q2_text(fish, hist_rows):
     if not area_counts:
         return fallback
     top = sorted(area_counts.items(), key=lambda x: -x[1])[:3]
-    parts = "、".join(f"{a}（{n}件）" for a, n in top)
+    parts = "、".join(f"{a}（{n}便）" for a, n in top)
     return f"関東{fish}船釣りの主なエリアは{parts}です。"
 
 
@@ -5405,12 +5425,12 @@ def _build_area_top_fish_q1_text(area, hist_rows):
             peak_months = [i + 1 for i, v in enumerate(mc) if v >= max_v * 0.7]
             peak_str = _format_months_range(peak_months) if peak_months else ""
             if peak_str and peak_str != "通年":
-                parts.append(f"{fname}（{fcnt:,}件・{peak_str}が好機）")
+                parts.append(f"{fname}（{fcnt:,}便・{peak_str}が好機）")
             else:
-                parts.append(f"{fname}（{fcnt:,}件）")
+                parts.append(f"{fname}（{fcnt:,}便）")
         else:
-            parts.append(f"{fname}（{fcnt:,}件）")
-    head = f"過去3年間（2023〜2026）の{area}の釣果データは{total:,}件・{n_kinds}魚種が記録されています。"
+            parts.append(f"{fname}（{fcnt:,}便）")
+    head = f"過去3年間（2023〜2026）の{area}の釣果データは{total:,}便・{n_kinds}魚種が記録されています。"
     body = f"件数の多い順に{'、'.join(parts)}が主力です。"
     tail = "潮回り・水温・季節で構成は変動するため、本ページの旬カレンダーや最新の釣果カードも併せてご確認ください。"
     return head + body + tail
@@ -5511,11 +5531,11 @@ def _build_area_ships_q4_text(area, hist_rows):
         return f"{area}の船宿情報は集計中です。本ページの船宿一覧をご確認ください。"
     n_ships = len(ship_counts)
     top5 = sorted(ship_counts.items(), key=lambda x: -x[1])[:5]
-    ship_str = "、".join(f"{sn}（{cnt:,}件）" for sn, cnt in top5)
+    ship_str = "、".join(f"{sn}（{cnt:,}便）" for sn, cnt in top5)
     if n_ships == 1:
         sn, cnt = top5[0]
         return (
-            f"過去3年間の{area}での釣果データは{sn}が{cnt:,}件記録されており、"
+            f"過去3年間の{area}での釣果データは{sn}が{cnt:,}便記録されており、"
             f"現状は{sn}に集約されています。出船日・料金・対象魚種の詳細は本ページの船宿一覧からご確認ください。"
         )
     head = f"過去3年間の{area}での釣果データは計{n_ships}船宿で記録されています。"
@@ -6011,14 +6031,14 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
     if count == 0:
         if season_tier in ("off", "dead", "na"):
             return (
-                f"{fish}は今週0件の釣果報告。\n"
+                f"{fish}は今週0便の釣果報告。\n"
                 f"シーズン外のため船宿の出船自体が少なく、釣果データが集まっていない時期。\n"
                 f"本格的なシーズンインまで待つのが現実的。"
             )
         else:
             # 期待月（peak/good/mid）なのに0件 = 海況不良・船宿休業等
             return (
-                f"{fish}は今週0件の釣果報告。\n"
+                f"{fish}は今週0便の釣果報告。\n"
                 f"本来は釣れる時期だが、海況や出船状況の影響で報告が上がっていない。\n"
                 f"船宿に直接最新状況を確認してから出船判断するのが安全だ。"
             )
@@ -6063,35 +6083,35 @@ def build_comment(fish, count, score, this_w, last_w, prev_w=None, max_cnt=1, co
     # パターン優先順位: P3 > P1 > P4 > P2 > P5（P6 は末文付加）
     if N < 5:
         # パターン5: 閑散期・データ少
-        s2 = f"{fish}の釣果報告は今週{N}件と少なめです。本格的なシーズンに向けてデータを注視中です。"
+        s2 = f"{fish}の釣果報告は今週{N}便と少なめです。本格的なシーズンに向けてデータを注視中です。"
     elif N >= 5 and wow_ratio >= 1.5:
         # パターン3: シーズン序盤・急増（P1 より優先）
         s2 = (
-            f"{fish}の釣果報告が増え始めており、今週は{N}件を記録しました。"
+            f"{fish}の釣果報告が増え始めており、今週は{N}便を記録しました。"
             f"水温の上昇とともに本格的なシーズン到来が期待されます。"
         )
     elif N >= 30 and wow_ratio >= 1.2:
         # パターン1: シーズン最盛期・数釣り好調
         max_str = f"{max_v}匹超えの実績も出ており、" if max_v else ""
         s2 = (
-            f"今週は{N}件と多くの釣果報告が集まり、活性が高い状態が続いています。"
+            f"今週は{N}便と多くの釣果報告が集まり、活性が高い状態が続いています。"
             f"{area_str}{max_str}{fish}のシーズンが本格化しています。"
         )
     elif N >= 5 and wow_ratio < 0.7:
         # パターン4: シーズン終盤・終了間近
         s2 = (
-            f"{fish}は今週{N}件の釣果報告がありましたが、先週比で減少傾向にあります。"
+            f"{fish}は今週{N}便の釣果報告がありましたが、先週比で減少傾向にあります。"
             f"シーズン終盤に入りつつある状況で、出かけるなら早めが得策です。"
         )
     elif N >= 10 and 0.8 <= wow_ratio < 1.2:
         # パターン2: シーズン中・平常運転（レンジ表記あり）
         s2 = (
-            f"{fish}は今週{N}件の釣果報告がありました。"
+            f"{fish}は今週{N}便の釣果報告がありました。"
             f"潮回りや時合によって差が出やすい時期です。"
         )
     else:
         # フォールバック（P2 相当・N5〜9 でwow_ratio 0.7〜1.5）
-        s2 = f"今週は{N}件の釣果報告がありました。"
+        s2 = f"今週は{N}便の釣果報告がありました。"
 
     # パターン6: 大型実績・型狙い（末文として付加・P1/P2 と排他でない）
     if p75 is not None and max_v and max_v >= p75 * 2 and N >= 10:
@@ -7604,7 +7624,8 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
     fixed_faq_data = _load_fixed_faq()
     # 過去CSV（引数で渡された共有キャッシュを使用、なければ個別ロード）
     _hist_rows_for_fish = hist_rows if hist_rows is not None else _load_historical_catches()
-    _fish_area_summary = fish_area_summary or {}
+    # T38-A9: fish_area_summary は将来「chip 便数表示の高速化」等に活用予定（現状未使用）
+    _ = fish_area_summary  # mark as intentionally unused
     _fish_top_areas = fish_top_areas or {}
     fish_summary = {}
     _SKIP_FISH = {"不明", "欠航"}
@@ -7837,7 +7858,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                 _max_cnt = max(fish_hist["month_records"].values())
                 _peak_months = [m for m, c in fish_hist["month_records"].items() if c == _max_cnt]
                 _peak_month = "・".join(f"{int(m)}月" for m in _peak_months[:2])
-            _shun_text_parts = [f"過去1年で{past_year_records:,}件の釣果報告。"]
+            _shun_text_parts = [f"過去1年で{past_year_records:,}便の釣果報告。"]
             if _peak_month and not is_thin:
                 _shun_text_parts.append(f"{_peak_month}にピークを迎えています。")
             if top_areas_str:
@@ -8137,20 +8158,44 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         fish_url = f"{SITE_URL}/fish/{fish_slug(fish)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}便{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
-        # T38-A6: fish-related-species（共起便数ベース・Layer 1 固定）
+        # T38-A6: fish-related-species（共起便数ベース・Layer 1 固定・折り畳み付き）
         _cooc_fish = compute_fish_related_via_cooccurrence(_hist_rows_for_fish, fish, _fish_top_areas)
-        _rel_links = "".join(
-            '<a href="../fish/' + fish_slug(rf) + '.html" class="chip-link">'
-            + f'<img src="../assets/fish/{fish_img_slug(rf)}/{fish_img_slug(rf)}_emoji.webp" alt="" class="chip-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
-            + rf + '</a>'
-            for rf, _ in _cooc_fish
-        )
-        related_section_html = (
-            '<section class="fish-related-species">'
-            '<h2 class="st">同じエリアでよく釣れる魚</h2>'
-            '<div class="chip-wrap">' + _rel_links + '</div>'
-            '</section>'
-        ) if _rel_links else ""
+        # 直近7日に共起ある魚種 = active / なし = fold
+        _week_cooc_fish = set()
+        for c in catches:
+            for _bf in c.get("fish", []):
+                if _bf and _bf != fish and _bf != "不明":
+                    _week_cooc_fish.add(_bf)
+        _rel_active = []
+        _rel_fold = []
+        for rf, rn in _cooc_fish:
+            _chip = (
+                '<a href="../fish/' + fish_slug(rf) + '.html" class="chip-link">'
+                + f'<img src="../assets/fish/{fish_img_slug(rf)}/{fish_img_slug(rf)}_emoji.webp" alt="" class="chip-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                + f'{rf}（{rn:,}便）</a>'
+            )
+            if rf in _week_cooc_fish:
+                _rel_active.append(_chip)
+            else:
+                _rel_fold.append(_chip)
+        if _rel_active or _rel_fold:
+            _rel_parts = []
+            if _rel_active:
+                _rel_parts.append(f'<p class="tier-label">★ 今週実績あり（{len(_rel_active)}魚種）</p>')
+                _rel_parts.append(f'<div class="chip-wrap">{"".join(_rel_active)}</div>')
+            if _rel_fold:
+                _rel_parts.append(
+                    f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(_rel_fold)}魚種）を表示</summary>'
+                    f'<div class="chip-wrap">{"".join(_rel_fold)}</div></details>'
+                )
+            related_section_html = (
+                '<section class="fish-related-species">'
+                f'<h2 class="st">{fish}と合わせて釣れる魚</h2>'
+                + "".join(_rel_parts)
+                + '</section>'
+            )
+        else:
+            related_section_html = ""
         # T38-A4: fish-all-areas セクション（Layer 1 固定・全履歴エリア・折り畳み付き）
         # _fish_top_areas から全エリアを取得し、直近7日にある=active / なし=fold に分類
         _week_areas_f = set(c["area"] for c in catches)  # 直近7日のエリア
@@ -9271,7 +9316,7 @@ def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_descript
     lines = []
     if area_intro:
         lines.append(area_intro)
-    lines.append(f"{area}での{fish}の釣果データは{N}件記録されています{years_str}。")
+    lines.append(f"{area}での{fish}の釣果データは{N}便記録されています{years_str}。")
     if peak_label:
         lines.append(f"月別の集計では{peak_label}前後に釣果が集中する傾向があります。")
     if n_personal >= 5:
@@ -9280,7 +9325,7 @@ def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_descript
             lines.append(f"標準的な釣果レンジは{p25}〜{p75}匹です。")
         lines.append(f"釣果は潮回りや水温の影響を受けやすく、旬の時期を選ぶと安定した釣果が期待できます。")
     elif max_val > 0:
-        lines.append(f"最高釣果は{max_val}匹の記録があります（データ蓄積中：{N}件）。")
+        lines.append(f"最高釣果は{max_val}匹の記録があります（データ蓄積中：{N}便）。")
         lines.append(f"釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。")
     elif max_boat > 0:
         lines.append(f"乗合船全体の最大釣果は{max_boat}匹の記録があります。")
@@ -9345,7 +9390,7 @@ def _build_fish_area_season_q1_text(fish, area, hist_rows):
     months_indexed = [(i + 1, c) for i, c in enumerate(months) if c > 0]
     if not months_indexed:
         return (
-            f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}件で、{rank_str}です。"
+            f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}便で、{rank_str}です。"
             f"月別データは取得中で、最新の釣果報告をご確認ください。"
         )
     sorted_months = sorted(months_indexed, key=lambda x: -x[1])
@@ -9367,7 +9412,7 @@ def _build_fish_area_season_q1_text(fish, area, hist_rows):
         months_text = f"年間{n_months_with_data}ヶ月のみに実績が記録されています"
     peak_label = "三大ピーク" if len(top3) >= 3 else ("二大ピーク" if len(top3) == 2 else "ピーク月")
     return (
-        f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}件で、{rank_str}です。"
+        f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}便で、{rank_str}です。"
         f"月別では{top3_str}が{peak_label}。{extra}{months_text}。"
         f"釣果は潮回り・水温・群れの回遊で日々変動するため、最新の釣果報告も併せてご確認ください。"
     )
@@ -9483,7 +9528,7 @@ def _build_fish_area_ships_q3_text(fish, area, hist_rows, area_description=None)
     if not ship_counts:
         return f"{area}での{fish}の船宿情報は集計中です。直近の釣果カードをご確認ください。"
     top5 = sorted(ship_counts.items(), key=lambda x: -x[1])[:5]
-    ship_str = "、".join(f"{sn}（{cnt:,}件）" for sn, cnt in top5)
+    ship_str = "、".join(f"{sn}（{cnt:,}便）" for sn, cnt in top5)
     n_ships = len(ship_counts)
     head = (
         f"過去3年間の{area}での{fish}釣果データがある船宿は計{n_ships}船宿です。"
@@ -10084,7 +10129,7 @@ a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 .plan-hero{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:24px 14px;text-align:center}
 .plan-hero h2{font-size:22px;font-weight:800}
 .plan-hero .ph-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:4px}
-.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.bread{font-size:11px;color:var(--muted);padding:10px 0;line-height:1.6}.bread a{color:var(--sub)}.bread .bread-sep{white-space:nowrap;display:inline-block;padding:0 4px;color:var(--muted)}
 .plans{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px}
 @media(min-width:600px){.plans{grid-template-columns:repeat(3,1fr)}}
 .plan{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;position:relative}
@@ -11383,7 +11428,7 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .ship-hero .sh-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
 .ship-hero .sh-badge{font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);border-radius:10px;color:#fff}
 .ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
-.bread{font-size:11px;color:var(--muted);padding:10px 0}.bread a{color:var(--sub)}
+.bread{font-size:11px;color:var(--muted);padding:10px 0;line-height:1.6}.bread a{color:var(--sub)}.bread .bread-sep{white-space:nowrap;display:inline-block;padding:0 4px;color:var(--muted)}
 .ad-slot{background:#f0f0f0;border:1px dashed #ccc;border-radius:var(--r);padding:20px;text-align:center;margin:12px 0;font-size:11px;color:#999}
 .info-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:12px;color:var(--sub);line-height:1.8}
 .info-box strong{color:var(--text)}
