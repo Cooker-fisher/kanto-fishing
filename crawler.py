@@ -3388,10 +3388,10 @@ AREA_TO_PREFECTURE = {
     '沼津': 'shizuoka', '沼津内港': 'shizuoka', '沼津静浦': 'shizuoka',
     '御前崎': 'shizuoka', '御前崎港': 'shizuoka', '南伊豆': 'shizuoka',
     '由比': 'shizuoka', '福田港': 'shizuoka',
-    # 茨城（emoji 未作成・None で chip-pref 出力スキップ）
-    '鹿島': None, '鹿島港': None, '日立': None, '日立久慈港': None,
-    '波崎': None, '波崎港': None, '大洗': None,
-    '勝浦川津港': None,  # 茨城県鹿嶋市
+    # 茨城（2026/05/14 追加）
+    '鹿島': 'ibaraki', '鹿島港': 'ibaraki', '日立': 'ibaraki', '日立久慈港': 'ibaraki',
+    '波崎': 'ibaraki', '波崎港': 'ibaraki', '大洗': 'ibaraki',
+    '勝浦川津港': 'ibaraki',  # 茨城県鹿嶋市
     # 不明（住所未記載・None でスキップ）
     '保田港': None, '大津港': None, '松崎港': None, '田子の浦港': None,
 }
