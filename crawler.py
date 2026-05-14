@@ -8384,31 +8384,199 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         with open(os.path.join(WEB_DIR, f"fish/{fish_slug(fish)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
-    # fish/index.html: 魚種一覧（今週 = 過去7日間ローリング、CSV由来）
-    # 再クロール禁止: data/V2/*.csv の蓄積データを読み込む
-    _recent7 = _load_recent_catches_for_index(now, days=7)
-    fish_week_summary = {f: [] for f in fish_summary.keys()}
-    for c in _recent7:
-        for f in c["fish"]:
+    # fish/index.html の生成は build_fish_index_html() に分離（Phase C）
+    # build_fish_area_pages 完了後に呼ばれるため _fa_exists() が正確に動作する
+
+
+def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summary, crawled_at=""):
+    """fish/index.html を生成する（Phase C: build_fish_pages から分離）。
+
+    呼出タイミング: build_fish_area_pages 完了後に main() から呼ばれる。
+    これにより _fa_exists() が全 fish_area HTML を正確に参照できる。
+
+    Args:
+        now         : datetime（JST）
+        hist_rows   : _load_historical_catches() の結果（共有キャッシュ）
+        fish_area_summary : {(fish, area): cnt} 過去3年集計（compute_fish_area_summary 結果）
+        recent7     : _load_recent_catches_for_index(now, days=7) の結果（共有）
+        fish_summary: build_fish_pages 内で構築した {fish: catches_list} キーセット（今週魚種集合）
+        crawled_at  : 更新日時文字列
+    """
+    os.makedirs(os.path.join(WEB_DIR, "fish"), exist_ok=True)
+    _SKIP_FISH = {"不明", "欠航"}
+
+    # ── 今週実績判定（recent7 を使用） ──
+    fish_week_cnt: dict[str, int] = {}   # fish -> 今週便数
+    for c in recent7:
+        for f in c.get("fish", []):
             if f in _SKIP_FISH or f.isdigit():
                 continue
-            fish_week_summary.setdefault(f, []).append(c)
+            fish_week_cnt[f] = fish_week_cnt.get(f, 0) + 1
+
+    # 今週カード（fi-card: 既存構造を維持） ──
+    # fish_summary はキーセットとして受け取り、今週便数で並べ直す
+    all_fish_set = set(fish_summary.keys()) | {f for (f, _a) in fish_area_summary.keys()}
+    # 魚種ページが存在するもののみ（_FISH_ROMAJI に登録済み）
+    all_fish_set = {f for f in all_fish_set if f in _FISH_ROMAJI and f not in _SKIP_FISH}
+
     fish_index_cards = ""
-    for fish, cs in sorted(fish_week_summary.items(), key=lambda x: (-len(x[1]), x[0])):
-        cnt = len(cs)
+    # 今週実績ありの魚種を便数降順でカード化
+    for fish in sorted(all_fish_set, key=lambda f: (-fish_week_cnt.get(f, 0), f)):
+        cnt = fish_week_cnt.get(fish, 0)
+        if cnt == 0:
+            continue  # fi-card は今週実績ありのみ（既存動作維持）
         fish_index_cards += (
             f'<a class="fi-card" href="{fish_slug(fish)}.html">'
-            f'<div class="fi-name"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fi-emoji" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
+            f'<div class="fi-name"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp"'
+            f' alt="{fish}" class="fi-emoji" width="28" height="28" loading="lazy" decoding="async"'
+            f' onerror="this.style.display=\'none\'">{fish}</div>'
             f'<div class="fi-cnt">今週釣果{cnt}便</div>'
             f'</a>'
         )
-    _week_active = sum(1 for cs in fish_week_summary.values() if cs)
+    _week_active = sum(1 for f in all_fish_set if fish_week_cnt.get(f, 0) > 0)
+
+    # ── 「魚種」セクション（Phase C 新規） ──
+    # hist_rows から (fish, area) 別便数を集計
+    fa_hist_cnt: dict[tuple, int] = {}  # (fish, area) -> 過去3年便数
+    for (f, a), cnt in fish_area_summary.items():
+        fa_hist_cnt[(f, a)] = cnt
+
+    # fish ごとの今週エリア集合（recent7 から）
+    fish_week_areas: dict[str, set] = {}  # fish -> {area, ...} 今週実績あり
+    for c in recent7:
+        area = c.get("area", "")
+        for f in c.get("fish", []):
+            if f in _SKIP_FISH or f.isdigit():
+                continue
+            fish_week_areas.setdefault(f, set()).add(area)
+
+    # 対象魚種リスト: fish_area ページが1件以上存在するものだけ
+    def _has_any_fa(fish):
+        return any(
+            _fa_exists(fish, area)
+            for (_f, area) in fa_hist_cnt
+            if _f == fish
+        )
+
+    target_fishes = [f for f in all_fish_set if _has_any_fa(f)]
+
+    # 並び順: 今週実績あり → 今週便数降順、その後 → 過去3年便数降順
+    def _fish_sort_key(f):
+        week_cnt = fish_week_cnt.get(f, 0)
+        hist_total = sum(fa_hist_cnt.get((f, a), 0)
+                         for (_f, a) in fa_hist_cnt if _f == f)
+        # 今週0は末尾（week_cnt=0 → sort key の第1要素を 1 にする）
+        return (0 if week_cnt > 0 else 1, -week_cnt, -hist_total, f)
+
+    target_fishes.sort(key=_fish_sort_key)
+
+    idx_blocks_html = ""
+    for fish in target_fishes:
+        slug_f = fish_slug(fish)
+        slug_fi = fish_img_slug(fish)
+
+        # このfruitのエリア一覧（hist_rows 由来・便数降順）
+        fish_areas_with_cnt = sorted(
+            [(area, fa_hist_cnt[(fish, area)])
+             for (f, area) in fa_hist_cnt
+             if f == fish and _fa_exists(fish, area)],
+            key=lambda x: -x[1]
+        )
+        if not fish_areas_with_cnt:
+            continue  # 空ブロック禁止
+
+        week_areas_set = fish_week_areas.get(fish, set())
+        active_areas = [(a, cnt) for a, cnt in fish_areas_with_cnt if a in week_areas_set]
+        inactive_areas = [(a, cnt) for a, cnt in fish_areas_with_cnt if a not in week_areas_set]
+
+        week_cnt = fish_week_cnt.get(fish, 0)
+        total_areas = len(fish_areas_with_cnt)
+
+        # idx-block-h
+        block_h = (
+            f'<div class="idx-block-h">'
+            f'<img src="../assets/fish/{slug_fi}/{slug_fi}_emoji.webp" alt="{fish}" class="ib-emoji"'
+            f' width="20" height="20" loading="lazy" onerror="this.style.display=\'none\'">'
+            f'<a href="{slug_f}.html">{fish}</a>'
+            f'<span class="ib-cnt">今週{week_cnt}便・全{total_areas}エリア</span>'
+            f'</div>'
+        )
+
+        # 上段（今週実績あり）
+        if active_areas:
+            active_chips = "".join(
+                f'<a href="../fish_area/{slug_f}-{area_slug(a)}.html" class="chip-link chip-active">'
+                f'{_chip_pref_img(a, depth=1)}'
+                f'{a}（{cnt}便）'
+                f'</a>'
+                for a, cnt in active_areas
+            )
+            active_section = (
+                f'<p class="tier-label">★ 今週実績あり（{len(active_areas)}エリア）</p>'
+                f'<div class="chip-wrap">{active_chips}</div>'
+            )
+        else:
+            active_section = '<p class="tier-label" style="color:#aaa;">今週実績なし</p>'
+
+        # 下段（過去実績のみ）
+        if inactive_areas:
+            inactive_chips = "".join(
+                f'<a href="../fish_area/{slug_f}-{area_slug(a)}.html" class="chip-link">'
+                f'{_chip_pref_img(a, depth=1)}'
+                f'{a}（{cnt}便）'
+                f'</a>'
+                for a, cnt in inactive_areas
+            )
+            # 今週ゼロのブロックは open（展開済み）
+            open_attr = " open" if not active_areas else ""
+            inactive_section = (
+                f'<details class="fold-chips"{open_attr}>'
+                f'<summary>過去実績あり（今週ゼロ・{len(inactive_areas)}エリア）を表示</summary>'
+                f'<div class="chip-wrap">{inactive_chips}</div>'
+                f'</details>'
+            )
+        else:
+            inactive_section = ""
+
+        idx_blocks_html += (
+            f'<div class="idx-block">'
+            f'{block_h}'
+            f'{active_section}'
+            f'{inactive_section}'
+            f'</div>'
+        )
+
+    idx_all_section = ""
+    if idx_blocks_html:
+        idx_all_section = f"""<h2 class="st">魚種</h2>
+<p class="faa-note">
+  各魚種について、関東で釣れる<b>全エリアへの直リンク</b>を網羅。
+  便数は過去3年の実績報告数。<b>★今週実績あり</b>を上段に、
+  <b>過去実績のみ</b>を下段（折り畳み）に分離。
+</p>
+<div class="idx-all-grid">{idx_blocks_html}</div>"""
+
+    # ── CSS ──
     fish_index_css = """.fi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:16px 0}
 .fi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;text-decoration:none;color:inherit;transition:border-color .15s}
 .fi-card:hover{border-color:var(--cta);text-decoration:none}
 .fi-name{font-size:14px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px}
 .fi-emoji{width:28px;height:28px;object-fit:contain;flex-shrink:0}
-.fi-cnt{font-size:11px;color:var(--muted);margin-top:4px}"""
+.fi-cnt{font-size:11px;color:var(--muted);margin-top:4px}
+.idx-all-grid{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin:8px 0 20px}
+.idx-block{padding:8px 0;border-bottom:1px solid var(--border)}
+.idx-block:last-child{border-bottom:none}
+.idx-block-h{font-size:14px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px;padding:6px 0 4px}
+.idx-block-h .ib-emoji{width:20px;height:20px;object-fit:contain}
+.idx-block-h .ib-cnt{font-size:11px;color:var(--muted);font-weight:400;margin-left:auto}
+.idx-block-h a{color:var(--accent);text-decoration:none}
+.idx-block-h a:hover{text-decoration:underline}
+.chip-link.chip-active{background:#fff8e7;border-color:#f5c542}
+.chip-link.chip-active:hover{background:#fff3d0}
+.faa-note{font-size:13px;color:var(--sub);margin:0 0 8px}
+@media(max-width:480px){.idx-block-h .ib-cnt{display:none}}"""
+
+    # ── HTML 組立 ──
     fish_index_html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8432,8 +8600,9 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; 魚種一覧</p>
-  <h2 class="st">今週釣れている魚種（過去7日間）</h2>
+  <h2 class="st">今日の釣果</h2>
   <div class="fi-grid">{fish_index_cards}</div>
+  {idx_all_section}
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
@@ -8441,6 +8610,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
 </body></html>"""
     with open(os.path.join(WEB_DIR, "fish/index.html"), "w", encoding="utf-8") as f:
         f.write(fish_index_html)
+
 
 # ============================================================
 # #10: エリア別ページ
