@@ -8033,7 +8033,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         elif _mx is not None:
             cnt_range_str = f"{_mx}匹"
         elif catches:
-            cnt_range_str = f"釣果{len(catches)}件"
+            cnt_range_str = f"釣果{len(catches)}便"
         else:
             # catches=0: fh-r に過去1年件数を表示（_fish_hist_0 が設定済みのはず）
             _py_n = (_fish_hist_0 or {}).get("recent_365_records", 0)
@@ -8136,7 +8136,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         )
         fish_url = f"{SITE_URL}/fish/{fish_slug(fish)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
-        fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
+        fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}便{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
         # T38-A6: fish-related-species（共起便数ベース・Layer 1 固定）
         _cooc_fish = compute_fish_related_via_cooccurrence(_hist_rows_for_fish, fish, _fish_top_areas)
         _rel_links = "".join(
@@ -8270,11 +8270,11 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>関東の{fish}釣果・船宿ランキング【今週{len(catches)}件】| 船釣り予想</title>
+  <title>関東の{fish}釣果・船宿ランキング【今週{len(catches)}便】| 船釣り予想</title>
   <meta name="description" content="{fish_desc}">
   <link rel="canonical" href="{fish_url}">
   {_build_share_meta(
-      title=f"関東の{fish}釣果・船宿ランキング【今週{len(catches)}件】",
+      title=f"関東の{fish}釣果・船宿ランキング【今週{len(catches)}便】",
       desc=fish_desc,
       url=fish_url,
       og_image=_resolve_fish_ogp_image(fish),
@@ -8292,7 +8292,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
   <h2><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">{fish}</h2>
   {f'<div class="fh-r">{cnt_range_str}</div>' if cnt_range_str else ''}
   {f'<div class="fh-s">{sz_str}</div>' if sz_str else ''}
-  <div class="fh-m">{'本日の釣果報告は集計待ち' if not catches else f'今週 {len(catches)}件・{len(set(c["ship"] for c in catches))}船宿'}</div>
+  <div class="fh-m">{'本日の釣果報告は集計待ち' if not catches else f'今週 {len(catches)}便・{len(set(c["ship"] for c in catches))}船宿'}</div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
@@ -8346,7 +8346,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         fish_index_cards += (
             f'<a class="fi-card" href="{fish_slug(fish)}.html">'
             f'<div class="fi-name"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fi-emoji" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
-            f'<div class="fi-cnt">今週釣果{cnt}件</div>'
+            f'<div class="fi-cnt">今週釣果{cnt}便</div>'
             f'</a>'
         )
     _week_active = sum(1 for cs in fish_week_summary.values() if cs)
@@ -9134,7 +9134,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                 f'<a class="ai-card" href="{area_slug(area)}.html">'
                 f'<div class="ai-name">{area}</div>'
                 f'<div class="ai-fish">{"・".join(top_f)}</div>'
-                f'<div class="ai-cnt">今週釣果{len(catches)}件</div>'
+                f'<div class="ai-cnt">今週釣果{len(catches)}便</div>'
                 f'</a>'
             )
         area_index_sections += f'<h2 class="st">{grp}</h2><div class="ai-grid">{cards}</div>'
@@ -9151,7 +9151,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                 f'<a class="ai-card" href="{area_slug(area)}.html">'
                 f'<div class="ai-name">{area}</div>'
                 f'<div class="ai-fish">{"・".join(top_f)}</div>'
-                f'<div class="ai-cnt">今週釣果{len(catches)}件</div>'
+                f'<div class="ai-cnt">今週釣果{len(catches)}便</div>'
                 f'</a>'
             )
         area_index_sections += f'<h2 class="st">その他</h2><div class="ai-grid">{cards}</div>'
@@ -9887,15 +9887,15 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         chart7_html_fa = build_fish_7day_chart_html(fish, catches)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
-        desc = f"{area}での{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
+        desc = f"{area}での{fish}釣果情報。今週{len(catches)}便{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}件】| 船釣り予想</title>
+  <title>{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}便】| 船釣り予想</title>
   <meta name="description" content="{desc}">
   <link rel="canonical" href="{page_url}">
   {_build_share_meta(
-      title=f"{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}件】",
+      title=f"{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}便】",
       desc=desc,
       url=page_url,
       og_image=_resolve_fish_ogp_image(fish),
