@@ -12671,53 +12671,35 @@ def build_sitemap(data):
         (f"{SITE_URL}/", "1.0", "daily"),
         (f"{SITE_URL}/calendar.html", "0.6", "weekly"),
     ]
-    # fish/*.html
-    fish_set = set()
-    _SKIP = {"不明", "欠航"}
-    for c in data:
-        for f in c["fish"]:
-            if f not in _SKIP:
-                fish_set.add(f)
-    # fish_tackle.json で説明があり最低限ページが生成される魚種も sitemap に含める（build_fish_pages と整合）
-    try:
-        for f in load_fish_tackle().keys():
-            if f in _FISH_ROMAJI:
-                fish_set.add(f)
-    except Exception:
-        pass
-    fish_set = {f for f in fish_set if f in _FISH_ROMAJI}
-    for fish in sorted(fish_set):
-        urls.append((f"{SITE_URL}/fish/{fish_slug(fish)}.html", "0.8", "daily"))
-    # area/*.html
-    area_set = set(c["area"] for c in data if c.get("area"))
-    # ship_info / 有効船宿 / area_description で言及される area も含める（build_area_pages と整合）
-    for _ship_name, _info in _SHIP_INFO.items():
-        _a = _info.get("area")
-        if _a:
-            area_set.add(_a)
-    for _s in SHIPS:
-        if _s.get("exclude") or _s.get("boat_only"):
-            continue
-        _a = _s.get("area")
-        if _a:
-            area_set.add(_a)
-    try:
-        for _a in load_area_description().keys():
-            area_set.add(_a)
-    except Exception:
-        pass
-    area_set = {a for a in area_set if a in _AREA_ROMAJI}
-    for area in sorted(area_set):
-        urls.append((f"{SITE_URL}/area/{area_slug(area)}.html", "0.7", "daily"))
-    # fish_area/*.html（≥1件の組み合わせ・2026-05-10 閾値 5→1 変更で build_fish_area_pages と同期）
-    fa_counts: dict = {}
-    for c in data:
-        for f in c["fish"]:
-            if f not in _SKIP:
-                fa_counts[(f, c["area"])] = fa_counts.get((f, c["area"]), 0) + 1
-    for (fish, area), cnt in sorted(fa_counts.items()):
-        if cnt >= 1:
-            urls.append((f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html", "0.7", "weekly"))
+    # fish/*.html・area/*.html（実ファイルベース・2026/05/14 修正）
+    # 旧: data (valid_catches) + tackle/ship_info/area_description ベース → 過去実績のみのページが漏れる
+    # 新: docs/fish/*.html / docs/area/*.html を直接スキャン → 生成済み全ファイルをカバー
+    # index.html はトップ URL `/` で別掲載のため除外
+    _SKIP = {"不明", "欠航"}  # 後方の参照用に残す
+    fish_dir = os.path.join(WEB_DIR, "fish")
+    if os.path.isdir(fish_dir):
+        for fname in sorted(os.listdir(fish_dir)):
+            if fname.endswith(".html") and fname != "index.html":
+                urls.append((f"{SITE_URL}/fish/{fname}", "0.8", "daily"))
+    # fish/index.html (魚種一覧ハブ)
+    if os.path.isfile(os.path.join(fish_dir, "index.html")):
+        urls.append((f"{SITE_URL}/fish/", "0.8", "daily"))
+    area_dir = os.path.join(WEB_DIR, "area")
+    if os.path.isdir(area_dir):
+        for fname in sorted(os.listdir(area_dir)):
+            if fname.endswith(".html") and fname != "index.html":
+                urls.append((f"{SITE_URL}/area/{fname}", "0.7", "daily"))
+    # area/index.html (エリア一覧ハブ)
+    if os.path.isfile(os.path.join(area_dir, "index.html")):
+        urls.append((f"{SITE_URL}/area/", "0.7", "daily"))
+    # fish_area/*.html（実ファイルベース・2026/05/14 修正）
+    # 旧: data (valid_catches=直近7日 sparse) ベース → 過去実績のみのコンボが漏れる
+    # 新: docs/fish_area/*.html を直接スキャン → build_fish_area_pages が生成した全件カバー
+    fa_dir = os.path.join(WEB_DIR, "fish_area")
+    if os.path.isdir(fa_dir):
+        for fname in sorted(os.listdir(fa_dir)):
+            if fname.endswith(".html"):
+                urls.append((f"{SITE_URL}/fish_area/{fname}", "0.7", "weekly"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
     # T31 (2026/05/12): fishing_v_zero=True の船宿はページ自体生成しないため除外
