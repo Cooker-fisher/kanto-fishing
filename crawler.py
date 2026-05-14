@@ -9337,54 +9337,287 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         with open(os.path.join(WEB_DIR, f"area/{area_slug(area)}.html"), "w", encoding="utf-8") as f:
             f.write(html)
 
-    # area/index.html: エリア一覧（今週 = 過去7日間ローリング、CSV由来）
-    # 再クロール禁止: data/V2/*.csv の蓄積データを読み込む
-    _recent7_area = _load_recent_catches_for_index(now, days=7)
-    area_week_summary = {a: [] for a in area_summary.keys()}
-    for c in _recent7_area:
-        area_week_summary.setdefault(c["area"], []).append(c)
+    # area/index.html の生成は build_area_index_html() に分離（Phase C）
+    # build_fish_area_pages 完了後に main() から呼ばれる
+
+
+def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, recent7, crawled_at=""):
+    """area/index.html を生成する（Phase C: build_area_pages から分離）。
+
+    呼出タイミング: build_fish_area_pages 完了後に main() から呼ばれる。
+    これにより _fa_exists() が全 fish_area HTML を正確に参照できる。
+
+    Args:
+        now              : datetime（JST）
+        hist_rows        : _load_historical_catches() の結果（共有キャッシュ）
+        fish_area_summary: {(fish, area): cnt} 過去3年集計
+        area_top_fishes  : compute_area_top_fishes(hist_rows) の結果
+        recent7          : _load_recent_catches_for_index(now, days=7) の結果（共有）
+        crawled_at       : 更新日時文字列
+    """
+    os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
+    _SKIP_FISH = {"不明", "欠航"}
     _group_order = ["茨城", "千葉・外房", "千葉・内房", "千葉・東京湾奥", "東京", "神奈川・東京湾", "神奈川・相模湾", "静岡"]
+
+    # ── 今週エリア別集計（recent7 から） ──
+    area_week_cnt: dict[str, int] = {}   # area -> 今週便数
+    area_week_fish: dict[str, dict] = {}  # area -> {fish: cnt}（今週）
+    for c in recent7:
+        area = c.get("area", "")
+        if not area:
+            continue
+        area_week_cnt[area] = area_week_cnt.get(area, 0) + 1
+        for f in c.get("fish", []):
+            if f in _SKIP_FISH or f.isdigit():
+                continue
+            area_week_fish.setdefault(area, {})
+            area_week_fish[area][f] = area_week_fish[area].get(f, 0) + 1
+
+    # ── 既存 AREA_GROUPS 別カードゾーン（ai-card を直リンク化） ──
     area_index_sections = ""
     for grp in _group_order:
-        grp_areas = [(area, area_week_summary[area]) for area in area_week_summary
-                     if area in AREA_GROUPS.get(grp, []) and len(area_week_summary[area]) >= 2]
-        if not grp_areas: continue
+        grp_areas = [(a, area_week_cnt.get(a, 0))
+                     for a in AREA_GROUPS.get(grp, [])
+                     if area_week_cnt.get(a, 0) >= 2]
+        if not grp_areas:
+            continue
         cards = ""
-        for area, catches in sorted(grp_areas, key=lambda x: -len(x[1])):
-            top_f = sorted({f for c in catches for f in c["fish"] if f != "不明"},
-                           key=lambda f: -sum(1 for c in catches if f in c["fish"]))[:3]
+        for area_nm, week_cnt in sorted(grp_areas, key=lambda x: -x[1]):
+            slug_a = area_slug(area_nm)
+            pref_img = _chip_pref_img(area_nm, depth=1)
+            # ai-name の img は width:18px
+            pref = AREA_TO_PREFECTURE.get(area_nm)
+            if pref:
+                pref_img_name = (
+                    f'<img src="../assets/area/{pref}_emoji.webp" alt="" class="chip-pref"'
+                    f' style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px"'
+                    f' onerror="this.style.display=\'none\'">'
+                )
+            else:
+                pref_img_name = ""
+
+            # 今週実績魚種（最大3件・便数降順）→ fish_area 直リンク化
+            fish_sorted = sorted(
+                area_week_fish.get(area_nm, {}).items(),
+                key=lambda x: -x[1]
+            )[:3]
+            fish_links = []
+            for i, (f, _) in enumerate(fish_sorted):
+                if _fa_exists(f, area_nm):
+                    fish_links.append(
+                        f'<a href="../fish_area/{fish_slug(f)}-{slug_a}.html">{f}</a>'
+                    )
+                else:
+                    fish_links.append(f)
+            ai_fish_html = '<span class="ai-sep">・</span>'.join(fish_links) if fish_links else "—"
+
             cards += (
-                f'<a class="ai-card" href="{area_slug(area)}.html">'
-                f'<div class="ai-name">{area}</div>'
-                f'<div class="ai-fish">{"・".join(top_f)}</div>'
-                f'<div class="ai-cnt">今週釣果{len(catches)}便</div>'
-                f'</a>'
+                f'<div class="ai-card">'
+                f'<a class="ai-name" href="{slug_a}.html">{pref_img_name}{area_nm}</a>'
+                f'<div class="ai-fish">{ai_fish_html}</div>'
+                f'<a class="ai-cnt" href="{slug_a}.html">今週釣果{week_cnt}便</a>'
+                f'</div>'
             )
         area_index_sections += f'<h2 class="st">{grp}</h2><div class="ai-grid">{cards}</div>'
-    # 未分類エリア
-    _matched = {a for areas in AREA_GROUPS.values() for a in areas}
-    _other = [(area, area_week_summary[area]) for area in area_week_summary
-              if area not in _matched and len(area_week_summary[area]) >= 2]
-    if _other:
+
+    # 未分類エリア（その他）
+    _matched_areas = {a for areas in AREA_GROUPS.values() for a in areas}
+    _other_areas = [(a, area_week_cnt.get(a, 0))
+                    for a in area_week_cnt
+                    if a not in _matched_areas and area_week_cnt.get(a, 0) >= 2]
+    if _other_areas:
         cards = ""
-        for area, catches in sorted(_other, key=lambda x: -len(x[1])):
-            top_f = sorted({f for c in catches for f in c["fish"] if f != "不明"},
-                           key=lambda f: -sum(1 for c in catches if f in c["fish"]))[:3]
+        for area_nm, week_cnt in sorted(_other_areas, key=lambda x: -x[1]):
+            slug_a = area_slug(area_nm)
+            pref = AREA_TO_PREFECTURE.get(area_nm)
+            if pref:
+                pref_img_name = (
+                    f'<img src="../assets/area/{pref}_emoji.webp" alt="" class="chip-pref"'
+                    f' style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px"'
+                    f' onerror="this.style.display=\'none\'">'
+                )
+            else:
+                pref_img_name = ""
+            fish_sorted = sorted(
+                area_week_fish.get(area_nm, {}).items(),
+                key=lambda x: -x[1]
+            )[:3]
+            fish_links = []
+            for i, (f, _) in enumerate(fish_sorted):
+                if _fa_exists(f, area_nm):
+                    fish_links.append(
+                        f'<a href="../fish_area/{fish_slug(f)}-{slug_a}.html">{f}</a>'
+                    )
+                else:
+                    fish_links.append(f)
+            ai_fish_html = '<span class="ai-sep">・</span>'.join(fish_links) if fish_links else "—"
             cards += (
-                f'<a class="ai-card" href="{area_slug(area)}.html">'
-                f'<div class="ai-name">{area}</div>'
-                f'<div class="ai-fish">{"・".join(top_f)}</div>'
-                f'<div class="ai-cnt">今週釣果{len(catches)}便</div>'
-                f'</a>'
+                f'<div class="ai-card">'
+                f'<a class="ai-name" href="{slug_a}.html">{pref_img_name}{area_nm}</a>'
+                f'<div class="ai-fish">{ai_fish_html}</div>'
+                f'<a class="ai-cnt" href="{slug_a}.html">今週釣果{week_cnt}便</a>'
+                f'</div>'
             )
         area_index_sections += f'<h2 class="st">その他</h2><div class="ai-grid">{cards}</div>'
 
+    _week_active_area = sum(1 for cnt in area_week_cnt.values() if cnt >= 2)
+
+    # ── 「エリア」セクション（Phase C 新規） ──
+    # (fish, area) 別便数を参照
+    fa_hist_cnt: dict[tuple, int] = {}
+    for (f, a), cnt in fish_area_summary.items():
+        fa_hist_cnt[(f, a)] = cnt
+
+    # エリアごとの今週魚種集合（recent7 から）
+    area_week_fish_set: dict[str, set] = {}
+    for c in recent7:
+        area_nm = c.get("area", "")
+        for f in c.get("fish", []):
+            if f in _SKIP_FISH or f.isdigit():
+                continue
+            area_week_fish_set.setdefault(area_nm, set()).add(f)
+
+    # 全エリアリスト: hist_rows と today エリアの和集合から _AREA_ROMAJI 登録済みのもの
+    all_areas = set(a for (_, a) in fa_hist_cnt) | set(area_week_cnt.keys())
+    all_areas = {a for a in all_areas if a in _AREA_ROMAJI}
+
+    def _has_any_fa_area(area_nm):
+        return any(
+            _fa_exists(f, area_nm)
+            for (f, _a) in fa_hist_cnt
+            if _a == area_nm
+        )
+
+    target_areas = [a for a in all_areas if _has_any_fa_area(a)]
+
+    # 並び順: _group_order 順 → グループ内今週便数降順 → 未分類
+    def _area_group_idx(a):
+        for i, grp in enumerate(_group_order):
+            if a in AREA_GROUPS.get(grp, []):
+                return i
+        return len(_group_order)  # 未分類は末尾
+
+    target_areas.sort(key=lambda a: (_area_group_idx(a), -area_week_cnt.get(a, 0), a))
+
+    idx_blocks_html = ""
+    for area_nm in target_areas:
+        slug_a = area_slug(area_nm)
+        pref_img = _chip_pref_img(area_nm, depth=1)
+        pref = AREA_TO_PREFECTURE.get(area_nm)
+        if pref:
+            pref_img_ib = (
+                f'<img src="../assets/area/{pref}_emoji.webp" alt="" class="ib-emoji"'
+                f' width="20" height="20" loading="lazy" onerror="this.style.display=\'none\'">'
+            )
+        else:
+            pref_img_ib = ""
+
+        # このエリアの魚種一覧（hist_rows 由来・便数降順）
+        area_fishes_with_cnt = sorted(
+            [(f, fa_hist_cnt[(f, area_nm)])
+             for (f, a) in fa_hist_cnt
+             if a == area_nm and _fa_exists(f, area_nm)],
+            key=lambda x: -x[1]
+        )
+        if not area_fishes_with_cnt:
+            continue  # 空ブロック禁止
+
+        week_fish_set = area_week_fish_set.get(area_nm, set())
+        active_fishes = [(f, cnt) for f, cnt in area_fishes_with_cnt if f in week_fish_set]
+        inactive_fishes = [(f, cnt) for f, cnt in area_fishes_with_cnt if f not in week_fish_set]
+
+        week_cnt = area_week_cnt.get(area_nm, 0)
+        total_fish = len(area_fishes_with_cnt)
+
+        # idx-block-h
+        block_h = (
+            f'<div class="idx-block-h">'
+            f'{pref_img_ib}'
+            f'<a href="{slug_a}.html">{area_nm}</a>'
+            f'<span class="ib-cnt">今週{week_cnt}便・全{total_fish}魚種</span>'
+            f'</div>'
+        )
+
+        # 上段（今週実績あり）
+        if active_fishes:
+            active_chips = "".join(
+                f'<a href="../fish_area/{fish_slug(f)}-{slug_a}.html" class="chip-link chip-active">'
+                f'<img src="../assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="{f}" class="chip-emoji"'
+                f' width="14" height="14" loading="lazy" onerror="this.style.display=\'none\'">'
+                f'{f}（{cnt}便）'
+                f'</a>'
+                for f, cnt in active_fishes
+            )
+            active_section = (
+                f'<p class="tier-label">★ 今週実績あり（{len(active_fishes)}魚種）</p>'
+                f'<div class="chip-wrap">{active_chips}</div>'
+            )
+        else:
+            active_section = '<p class="tier-label" style="color:#aaa;">今週実績なし</p>'
+
+        # 下段（過去実績のみ）
+        if inactive_fishes:
+            inactive_chips = "".join(
+                f'<a href="../fish_area/{fish_slug(f)}-{slug_a}.html" class="chip-link">'
+                f'<img src="../assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="{f}" class="chip-emoji"'
+                f' width="14" height="14" loading="lazy" onerror="this.style.display=\'none\'">'
+                f'{f}（{cnt}便）'
+                f'</a>'
+                for f, cnt in inactive_fishes
+            )
+            open_attr = " open" if not active_fishes else ""
+            inactive_section = (
+                f'<details class="fold-chips"{open_attr}>'
+                f'<summary>過去実績あり（今週ゼロ・{len(inactive_fishes)}魚種）を表示</summary>'
+                f'<div class="chip-wrap">{inactive_chips}</div>'
+                f'</details>'
+            )
+        else:
+            inactive_section = ""
+
+        idx_blocks_html += (
+            f'<div class="idx-block">'
+            f'{block_h}'
+            f'{active_section}'
+            f'{inactive_section}'
+            f'</div>'
+        )
+
+    idx_all_section = ""
+    if idx_blocks_html:
+        idx_all_section = f"""<h2 class="st">エリア</h2>
+<p class="faa-note">
+  各エリアについて、過去に釣果報告のある<b>全魚種への直リンク</b>を網羅。
+  便数は過去3年の実績報告数。<b>★今週実績あり</b>を上段に、
+  <b>過去実績のみ</b>を下段（折り畳み）に分離。
+</p>
+<div class="idx-all-grid">{idx_blocks_html}</div>"""
+
+    # ── CSS ──
     area_index_css = """.ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0 20px}
-.ai-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;text-decoration:none;color:inherit;transition:border-color .15s}
-.ai-card:hover{border-color:var(--cta);text-decoration:none}
-.ai-name{font-size:14px;font-weight:700;color:var(--accent)}
-.ai-fish{font-size:11px;color:var(--sub);margin-top:4px}
-.ai-cnt{font-size:11px;color:var(--cta);font-weight:600;margin-top:4px}"""
+.ai-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block}
+.ai-name{display:block;font-size:14px;font-weight:700;color:var(--accent);text-decoration:none}
+.ai-name:hover{text-decoration:underline}
+.ai-fish{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.7}
+.ai-fish a{color:#1a4a72;text-decoration:none;white-space:nowrap;padding:0 2px;border-radius:3px}
+.ai-fish a:hover{background:#eaf2fa;text-decoration:underline}
+.ai-sep{color:#aaa}
+.ai-cnt{display:block;font-size:11px;color:var(--cta);font-weight:600;margin-top:4px;text-decoration:none}
+.ai-cnt:hover{text-decoration:underline}
+.idx-all-grid{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin:8px 0 20px}
+.idx-block{padding:8px 0;border-bottom:1px solid var(--border)}
+.idx-block:last-child{border-bottom:none}
+.idx-block-h{font-size:14px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px;padding:6px 0 4px}
+.idx-block-h .ib-emoji{width:20px;height:20px;object-fit:contain}
+.idx-block-h .ib-cnt{font-size:11px;color:var(--muted);font-weight:400;margin-left:auto}
+.idx-block-h a{color:var(--accent);text-decoration:none}
+.idx-block-h a:hover{text-decoration:underline}
+.chip-link.chip-active{background:#fff8e7;border-color:#f5c542}
+.chip-link.chip-active:hover{background:#fff3d0}
+.faa-note{font-size:13px;color:var(--sub);margin:0 0 8px}
+@media(max-width:480px){.idx-block-h .ib-cnt{display:none}}"""
+
+    # ── HTML 組立 ──
     area_index_html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9404,11 +9637,12 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 {_v2_header_nav('area')}
 <div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
   <div class="c"><div style="font-size:26px;font-weight:800">エリア別 釣果一覧</div>
-  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {len([a for a,cs in area_week_summary.items() if len(cs)>=2])}エリア</div></div>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {_week_active_area}エリア</div></div>
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; エリア一覧</p>
   {area_index_sections}
+  {idx_all_section}
 </div>
 {DATA_NOTE_HTML}
 {_v2_footer(crawled_at)}
@@ -9416,6 +9650,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 </body></html>"""
     with open(os.path.join(WEB_DIR, "area/index.html"), "w", encoding="utf-8") as f:
         f.write(area_index_html)
+
 
 # ============================================================
 # #11: 魚種×港ページ（fish_area/）
