@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>県emoji 検証</title>
+<style>
+body { font-family: sans-serif; padding: 20px; background: #f5f7fa; }
+h1 { font-size: 18px; }
+.note { background: #fffaeb; border-left: 3px solid #f5c542; padding: 10px; margin: 12px 0; font-size: 13px; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 600px; }
+.cell { background: #fff; border: 1px solid #c5d4e0; border-radius: 8px; padding: 16px; text-align: center; }
+.cell img { width: 96px; height: 96px; }
+.cell .label { font-size: 16px; font-weight: 700; margin-top: 8px; color: #1a3a52; }
+.cell .file { font-size: 11px; color: #666; margin-top: 4px; font-family: monospace; }
+</style>
+</head>
+<body>
+<h1>県名 emoji 画像検証</h1>
+<div class="note">
+各画像が <b>ラベルの県のシルエット</b> と一致しているか確認してください。<br>
+ファイル名（label）と中身（画像）が逆転していたら、リネームで修正します。
+</div>
+
+<div class="grid">
+  <div class="cell">
+    <img src="area_kanagawa_emoji.webp" alt="kanagawa">
+    <div class="label">神奈川県 (kanagawa)</div>
+    <div class="file">area_kanagawa_emoji.webp</div>
+  </div>
+  <div class="cell">
+    <img src="area_tokyo_emoji.webp" alt="tokyo">
+    <div class="label">東京都 (tokyo)</div>
+    <div class="file">area_tokyo_emoji.webp</div>
+  </div>
+  <div class="cell">
+    <img src="area_chiba_emoji.webp" alt="chiba">
+    <div class="label">千葉県 (chiba)</div>
+    <div class="file">area_chiba_emoji.webp</div>
+  </div>
+  <div class="cell">
+    <img src="area_shizuoka_emoji.webp" alt="shizuoka">
+    <div class="label">静岡県 (shizuoka)</div>
+    <div class="file">area_shizuoka_emoji.webp</div>
+  </div>
+</div>
+</body>
+</html>

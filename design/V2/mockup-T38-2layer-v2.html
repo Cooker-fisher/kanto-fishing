@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T38 2層アーキテクチャ mockup | 船釣り予想</title>
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+/* mockup レビュー用補助 */
+body { background: #f5f7fa; }
+.mock-wrap { max-width: 800px; margin: 0 auto; padding: 16px; }
+.mock-section {
+  background: #fff;
+  border: 1px solid #e0e6ed;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.mock-h { font-size: 12px; color: #6b7785; padding: 4px 8px; background: #eef3f8;
+          border-radius: 4px; display: inline-block; margin-bottom: 8px; font-weight: 700; }
+.mock-note { font-size: 12px; color: #666; padding: 8px 12px; background: #fffaeb;
+             border-left: 3px solid #f5c542; margin: 8px 0 12px; line-height: 1.5; }
+.mock-divider { border-top: 2px dashed #ccc; margin: 32px 0; padding-top: 16px; }
+.mock-title { font-size: 18px; font-weight: 700; color: #1a3a52; margin: 0 0 8px; }
+.mock-sub { font-size: 13px; color: #666; margin: 0 0 16px; }
+
+/* 既存 CSS 再現（簡易版） */
+.bread { font-size: 12px; color: #5a6470; padding: 6px 0; }
+.bread a { color: #1a4a72; text-decoration: none; }
+.bread a:hover { text-decoration: underline; }
+.bread-sep { color: #aaa; padding: 0 4px; }
+
+.st { font-size: 16px; font-weight: 700; color: #1a3a52;
+      border-left: 4px solid #2d6ea8; padding: 4px 0 4px 10px; margin: 16px 0 8px; }
+
+.chip-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 8px; }
+.chip-link { display: inline-flex; align-items: center; gap: 4px;
+             font-size: 12px; padding: 4px 10px;
+             background: #fff; border: 1px solid #c5d4e0;
+             border-radius: 14px; color: #1a4a72; text-decoration: none;
+             transition: background .15s; }
+.chip-link:hover { background: #eaf2fa; }
+.chip-emoji { width: 14px; height: 14px; object-fit: contain; flex-shrink: 0; }
+/* 県名emojiスロット（将来 assets/area/{県}_emoji.webp 追加で表示）*/
+.chip-pref { width: 14px; height: 14px; object-fit: contain; flex-shrink: 0; }
+
+/* 折り畳み（実績なし下段） */
+.fold-chips { margin-top: 10px; }
+.fold-chips > summary { font-size: 12px; color: #5a6470; cursor: pointer;
+                        padding: 6px 12px; background: #eef3f8;
+                        border-radius: 14px; display: inline-block;
+                        user-select: none; list-style: none; border: 1px dashed #c5d4e0; }
+.fold-chips > summary::-webkit-details-marker { display: none; }
+.fold-chips > summary::before { content: "▶"; font-size: 9px; padding-right: 6px;
+                                transition: transform .15s; display: inline-block; }
+.fold-chips[open] > summary::before { transform: rotate(90deg); }
+.fold-chips > summary:hover { background: #dfe8f0; }
+.fold-chips .chip-wrap { margin-top: 8px; padding-top: 0; }
+
+.tier-label { font-size: 11px; color: #888; padding: 4px 0 2px;
+              font-weight: 600; letter-spacing: 0.05em; }
+
+.fish-hero { background: linear-gradient(135deg, #1a3a52, #2d6ea8); color: #fff;
+             padding: 22px 14px 18px; border-radius: 8px; margin-bottom: 12px;
+             text-align: center; }
+.fish-hero h2 { font-size: 26px; font-weight: 800; margin: 0; color: #fff;
+                display: flex; align-items: center; justify-content: center; gap: 8px; }
+.fh-emoji { width: 40px; height: 40px; vertical-align: middle; }
+.fh-r { font-size: 24px; font-weight: 800; color: #ffd54f; margin-top: 4px; line-height: 1.1; }
+.fh-s { font-size: 16px; font-weight: 700; color: #fff; margin-top: 2px; }
+.fh-m { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 8px; }
+
+.faa-note { font-size: 13px; color: #555; margin: 0 0 8px; }
+
+.page-h1 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #5a6470;
+  padding: 8px 0 0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+  .mock-wrap { padding: 8px; }
+  .fish-hero h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="mock-wrap">
+
+<h1 style="font-size:22px;color:#1a3a52;border-bottom:3px solid #2d6ea8;padding-bottom:8px;">
+  T38: 2層アーキテクチャ mockup（レビュー用）
+</h1>
+<p style="font-size:13px;color:#555;line-height:1.7;">
+  新規セクション5種＋title/h1改善案のビジュアル確認。<br>
+  既存 docs/style.css 流用・モバイル375pxでも崩れない構成。<br>
+  レビュー観点: <b>密度・冗長性・釣り人目線で違和感ないか</b>
+</p>
+
+<!-- ========================================================== -->
+<!-- セクション1: page-h1 + 改善後 title -->
+<!-- ========================================================== -->
+<div class="mock-section">
+  <span class="mock-h">セクション 6 — page-h1 追加 + title/description 改善</span>
+  <h2 class="mock-title">fish/aji.html ページ冒頭</h2>
+  <p class="mock-sub">改善後のヘッダ部分。page-h1 は SEO 用・パンくず直前に配置。fish-hero の h2 は維持（不変条件10）。</p>
+
+  <div class="mock-note">
+    <b>title (rich path):</b> 関東のアジ船釣り釣果【今週24便・15船宿】| 船釣り予想<br>
+    <b>title (placeholder):</b> 関東のアジ船釣り釣果・シーズン・釣り方 | 船釣り予想<br>
+    <b>description:</b> 関東エリアのアジ船釣り釣果情報。今週24便・15船宿。横浜本牧港エリアを中心に船宿別釣果ランキングを毎日更新。
+  </div>
+
+  <h1 class="page-h1">関東のアジ船釣り釣果情報</h1>
+  <p class="bread">
+    <a href="#">トップ</a> <span class="bread-sep">›</span> アジ
+  </p>
+  <div class="fish-hero">
+    <h2><img src="fish_aji_emoji.webp" alt="アジ" class="fh-emoji" width="40" height="40" loading="lazy" onerror="this.style.display='none'">アジ</h2>
+    <div class="fh-r">0〜155匹</div>
+    <div class="fh-s">13〜52cm</div>
+    <div class="fh-m">過去1年 3,042便 ・ 関東主要15エリアで実績 ・ 5/14(水)の釣果 24便・15船宿</div>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- セクション2: fish-all-areas -->
+<!-- ========================================================== -->
+<div class="mock-section">
+  <span class="mock-h">セクション 1 — fish-all-areas（fish/{魚種}.html 固定セクション）</span>
+  <h2 class="mock-title">エリア別のアジ釣果情報（全件常駐）</h2>
+  <p class="mock-sub">条件: hist_rows 便数降順・fish_area/aji-*.html 存在するもの全便・便数下限なし</p>
+
+  <div class="mock-note">
+    🆕 これは <b>固定セクション</b>。当日データの有無に関わらず、過去の実績がある全エリアへの内部リンクが常に表示される。GoogleBot がいつクロールしても同じ骨格を見られる。
+  </div>
+
+  <h2 class="st">エリア別のアジ釣果情報</h2>
+  <p class="faa-note">アジの釣果情報が確認できる関東の船釣りエリア一覧です。便数は過去3年の実績報告数。</p>
+
+  <p class="tier-label">★ 今週実績あり（5便）</p>
+  <div class="chip-wrap">
+    <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">金沢八景（3,042便）</a>
+    <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">金谷港（1,639便）</a>
+    <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">浦安（908便）</a>
+    <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">久里浜（756便）</a>
+    <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">川崎（612便）</a>
+  </div>
+
+  <details class="fold-chips">
+    <summary>過去実績あり（今週ゼロ・15便）を表示</summary>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">横浜本牧港（487便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_tokyo_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">羽田（412便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_tokyo_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">深川（388便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">茅ヶ崎（302便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">大原（287便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">勝山（245便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">館山（198便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">洲崎（156便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">下浦（132便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_tokyo_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">江戸川（98便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">勝浦（76便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">片貝（54便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">飯岡（42便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">鴨川（28便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">和田浦（12便）</a>
+    </div>
+  </details>
+</div>
+
+<!-- ========================================================== -->
+<!-- セクション3: fish-related -->
+<!-- ========================================================== -->
+<div class="mock-section">
+  <span class="mock-h">セクション 2 — fish-related（fish/{魚種}.html 固定セクション・同港共起ベース）</span>
+  <h2 class="mock-title">アジと合わせて釣れる魚（同港共起TOP6）</h2>
+  <p class="mock-sub">データソース: hist_rows の (魚, エリア) 共起集計。アジの主要エリアで同時期に釣れている魚種を自動抽出</p>
+
+  <div class="mock-note">
+    🆕 同港共起ベースなので、現場で本当に同船で釣れる魚種が並ぶ。<b>手書き辞書（FISH_RELATED_GROUPS）不要</b>・データ駆動。fish/ ページが存在する55種内から選ばれるため emoji も常に表示される。
+  </div>
+
+  <h2 class="st">アジと合わせて釣れる魚</h2>
+
+  <p class="tier-label">★ 今週実績あり（3便）</p>
+  <div class="chip-wrap">
+    <a href="#" class="chip-link"><img src="fish_madai_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マダイ（512便）</a>
+    <a href="#" class="chip-link"><img src="fish_tachiuo_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">タチウオ（487便）</a>
+    <a href="#" class="chip-link"><img src="fish_shirogisu_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">シロギス（412便）</a>
+  </div>
+
+  <details class="fold-chips">
+    <summary>過去実績あり（今週ゼロ・3便）を表示</summary>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link"><img src="fish_kasago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カサゴ（298便）</a>
+      <a href="#" class="chip-link"><img src="fish_maruika_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マルイカ（187便）</a>
+      <a href="#" class="chip-link"><img src="fish_anago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">アナゴ（132便）</a>
+    </div>
+  </details>
+</div>
+
+<!-- ========================================================== -->
+<!-- セクション4: area-all-fish -->
+<!-- ========================================================== -->
+<div class="mock-section">
+  <span class="mock-h">セクション 3 — area-all-fish（area/{エリア}.html 固定セクション）</span>
+  <h2 class="mock-title">金沢八景で釣れる魚（全実績）</h2>
+  <p class="mock-sub">条件: hist_rows 便数降順・fish_area/*-kanazawa-hakkei.html 存在するもの全件</p>
+
+  <div class="mock-note">
+    🆕 これは <b>固定セクション</b>。当日データなしでも過去実績ある全魚種への内部リンクが常駐。既存 fia-grid（今週データあり魚種）と並立し、「現在の活況」と「歴史的な豊富さ」両方を伝える。
+  </div>
+
+  <h2 class="st">金沢八景で釣れる魚（全実績）</h2>
+
+  <p class="tier-label">★ 今週実績あり（5便）</p>
+  <div class="chip-wrap">
+    <a href="#" class="chip-link"><img src="fish_aji_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">アジ（3,042便）</a>
+    <a href="#" class="chip-link"><img src="fish_tachiuo_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">タチウオ（1,516便）</a>
+    <a href="#" class="chip-link"><img src="fish_shirogisu_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">シロギス（748便）</a>
+    <a href="#" class="chip-link"><img src="fish_madai_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マダイ（512便）</a>
+    <a href="#" class="chip-link"><img src="fish_kasago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カサゴ（423便）</a>
+  </div>
+
+  <details class="fold-chips">
+    <summary>過去実績あり（今週ゼロ・10便）を表示</summary>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link"><img src="fish_saba_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">サバ（387便）</a>
+      <a href="#" class="chip-link"><img src="fish_maruika_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マルイカ（298便）</a>
+      <a href="#" class="chip-link"><img src="fish_anago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">アナゴ（245便）</a>
+      <a href="#" class="chip-link"><img src="fish_kaiwari_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カイワリ（187便）</a>
+      <a href="#" class="chip-link"><img src="fish_isaki_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">イサキ（156便）</a>
+      <a href="#" class="chip-link"><img src="fish_surumeika_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">スルメイカ（128便）</a>
+      <a href="#" class="chip-link"><img src="fish_mebaru_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">メバル（98便）</a>
+      <a href="#" class="chip-link"><img src="fish_kawahagi_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カワハギ（76便）</a>
+      <a href="#" class="chip-link"><img src="fish_aoriika_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">アオリイカ（54便）</a>
+      <a href="#" class="chip-link"><img src="fish_hirame_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">ヒラメ（32便）</a>
+    </div>
+  </details>
+</div>
+
+<!-- ========================================================== -->
+<!-- セクション5: fa-breadcrumb-3axis -->
+<!-- ========================================================== -->
+<div class="mock-section">
+  <span class="mock-h">セクション 5 — fa-breadcrumb-3axis（fish_area パンくず2軸）</span>
+  <h2 class="mock-title">アジ×横浜本牧港 のパンくず</h2>
+  <p class="mock-sub">魚種軸 + エリア軸の2軸表示。BreadcrumbList JSON-LD は変更しない（直線階層維持）</p>
+
+  <div class="mock-note">
+    🔁 <b>改修</b>: 現状の魚種軸のみ → 2軸化。area/エリアページへの往復クロール経路を確立。<br>
+    <b>Before:</b> トップ › アジ › 横浜本牧港<br>
+    <b>After:</b>  トップ › アジ › 横浜本牧港 | 横浜本牧港エリア › アジ
+  </div>
+
+  <p class="bread">
+    <a href="#">トップ</a> <span class="bread-sep">›</span>
+    <a href="#">アジ</a> <span class="bread-sep">›</span>
+    横浜本牧港
+    <span class="bread-sep" style="color:#999;padding:0 8px;">|</span>
+    <a href="#">横浜本牧港エリア</a> <span class="bread-sep">›</span>
+    アジ
+  </p>
+</div>
+
+<!-- ========================================================== -->
+<!-- セクション6: fa-related-3axis -->
+<!-- ========================================================== -->
+<div class="mock-section">
+  <span class="mock-h">セクション 4 — fa-related-3axis（fish_area 関連リンク3軸・閾値廃止）</span>
+  <h2 class="mock-title">アジ×横浜本牧港 ページ末尾</h2>
+  <p class="mock-sub">★最大インパクト施策: 現状 fa-related ≥3件閾値で <b>199本(77%)が非表示</b> → 閾値廃止で全件常駐</p>
+
+  <div class="mock-note">
+    🔁 <b>改修</b>: 軸1（同魚種他エリア）・軸2（同エリア他魚種）の閾値 ≥3件 → ≥1件 全件常駐に変更。<br>
+    軸3（関連魚種・FISH_RELATED_GROUPS）を新規追加。<br>
+    軸3 のリンク先は fish/ ページ（fish_area ではない）= 関連魚種の総合ページへ誘導。
+  </div>
+
+  <!-- 軸1: 同魚種・他エリア -->
+  <h2 class="st">アジを他のエリアで探す</h2>
+  <p class="tier-label">★ 今週実績あり（3便）</p>
+  <div class="chip-wrap">
+    <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">金沢八景（3,042便）</a>
+    <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">金谷港（1,639便）</a>
+    <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">浦安（908便）</a>
+  </div>
+  <details class="fold-chips">
+    <summary>過去実績あり（今週ゼロ・9便）を表示</summary>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">久里浜（756便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">川崎（612便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_tokyo_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">羽田（412便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_tokyo_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">深川（388便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">茅ヶ崎（302便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">大原（287便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">勝山（245便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">館山（198便）</a>
+      <a href="#" class="chip-link chip-area"><img src="area_chiba_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">洲崎（156便）</a>
+    </div>
+  </details>
+
+  <!-- 軸2: 同エリア・他魚種 -->
+  <h2 class="st">横浜本牧港の他の魚種</h2>
+  <p class="tier-label">★ 今週実績あり（3便）</p>
+  <div class="chip-wrap">
+    <a href="#" class="chip-link"><img src="fish_shirogisu_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">シロギス（748便）</a>
+    <a href="#" class="chip-link"><img src="fish_kasago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カサゴ（423便）</a>
+    <a href="#" class="chip-link"><img src="fish_tachiuo_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">タチウオ（387便）</a>
+  </div>
+  <details class="fold-chips">
+    <summary>過去実績あり（今週ゼロ・3便）を表示</summary>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link"><img src="fish_kaiwari_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カイワリ（187便）</a>
+      <a href="#" class="chip-link"><img src="fish_maruika_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マルイカ（128便）</a>
+      <a href="#" class="chip-link"><img src="fish_anago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">アナゴ（98便）</a>
+    </div>
+  </details>
+
+  <!-- 軸3: 関連魚種（同港共起・hist_rows ベース） -->
+  <h2 class="st">アジと合わせて釣れる魚</h2>
+  <div class="chip-wrap">
+    <a href="#" class="chip-link"><img src="fish_madai_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マダイ（512便）</a>
+    <a href="#" class="chip-link"><img src="fish_tachiuo_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">タチウオ（487便）</a>
+    <a href="#" class="chip-link"><img src="fish_shirogisu_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">シロギス（412便）</a>
+    <a href="#" class="chip-link"><img src="fish_kasago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カサゴ（298便）</a>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- 比較セクション: Before/After -->
+<!-- ========================================================== -->
+<div class="mock-section" style="background:#f0f4f8;">
+  <span class="mock-h">参考: Before/After 比較</span>
+  <h2 class="mock-title">マイナーコンボ（メバル×小田原）の変化</h2>
+
+  <div class="mock-note">
+    マイナーコンボ（同魚種他エリア 1件しかない場合）の Before/After。<br>
+    <b>Before:</b> 閾値 ≥3 で <b>fa-related セクション全体が非表示</b>（孤立）<br>
+    <b>After:</b>  1件でも常駐表示
+  </div>
+
+  <h3 style="font-size:14px;color:#888;margin:8px 0 4px;">Before（現状・199本がこの状態）</h3>
+  <div style="background:#fff;padding:12px;border-radius:4px;border:1px dashed #ccc;color:#999;font-size:12px;text-align:center;">
+    （fa-related セクション 非表示。Google から見ると孤立ページ）
+  </div>
+
+  <h3 style="font-size:14px;color:#888;margin:16px 0 4px;">After（閾値廃止後）</h3>
+  <div style="background:#fff;padding:12px;border-radius:4px;border:1px solid #c5d4e0;">
+    <h2 class="st" style="font-size:13px;">メバルを他のエリアで探す</h2>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link chip-area"><img src="area_kanagawa_emoji.webp" alt="" class="chip-pref" width="14" height="14" onerror="this.style.display='none'">久里浜（28便）</a>
+    </div>
+    <h2 class="st" style="font-size:13px;">小田原の他の魚種</h2>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link"><img src="fish_madai_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マダイ（156便）</a>
+      <a href="#" class="chip-link"><img src="fish_kasago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カサゴ（87便）</a>
+    </div>
+    <h2 class="st" style="font-size:13px;">メバルと合わせて釣れる魚</h2>
+    <div class="chip-wrap">
+      <a href="#" class="chip-link"><img src="fish_madai_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">マダイ（156便）</a>
+      <a href="#" class="chip-link"><img src="fish_kasago_emoji.webp" alt="" class="chip-emoji" width="14" height="14" onerror="this.style.display='none'">カサゴ（87便）</a>
+    </div>
+  </div>
+</div>
+
+<div class="mock-divider"></div>
+
+<div style="background:#fff;border:2px solid #2d6ea8;border-radius:8px;padding:16px;">
+  <h2 style="color:#1a3a52;margin:0 0 12px;">レビューポイント</h2>
+  <ol style="font-size:13px;line-height:1.8;color:#333;">
+    <li><b>chip 肥大化:</b> fish-all-areas で 20便・area-all-fish で 15便・fa-related 軸1で 12件並ぶ。多すぎる？適切？</li>
+    <li><b>「N件」表記:</b> 釣り人目線で「件」「便」「投稿」どれが自然？</li>
+    <li><b>パンくず2軸:</b> `›` `|` `›` の区切りは分かる？冗長？</li>
+    <li><b>軸3 リンク先:</b> fish/{魚種}.html へリンク（fish_area ではない）。混在 OK？</li>
+    <li><b>page-h1 のサイズ:</b> 14px 控えめ表示。SEO 用なので目立つ必要なし。OK？</li>
+    <li><b>fish-hero と page-h1 並び:</b> 違和感ない？</li>
+  </ol>
+</div>
+
+</div>
+</body>
+</html>
