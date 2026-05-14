@@ -8880,40 +8880,43 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             if cm_parts:
                 sea_comment = f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">{"。".join(cm_parts)}。</p>'
 
-        # T29 (2026/05/13): 過去に釣れた魚（今週データなしの fish_area へのリンク補完）。
-        # fia-grid に出ていない魚種で、本エリア×魚種の fish_area ページが存在し、
-        # 過去3年に実績があるものを hist 件数降順 TOP-6 で chip-link 表示。
-        _today_fish_set = {f for f, _ in top_fish_items}
-        _past_fish_counts: dict = {}
-        for r in _hist_rows_for_placeholder:
-            if r.get("area") != area:
-                continue
-            if _is_cancelled_row(r):  # MAJOR-2 修正: 欠航除外
-                continue
-            _f_hist = r.get("tsuri_mono")
-            if not _f_hist or _f_hist in ("不明", "欠航"):
-                continue
-            if _f_hist in _today_fish_set:
-                continue
-            _past_fish_counts[_f_hist] = _past_fish_counts.get(_f_hist, 0) + 1
-        _past_fish_sorted = sorted(_past_fish_counts.items(), key=lambda x: -x[1])
-        _past_chips_items = []
-        for _f_past, _n_past in _past_fish_sorted:
-            _fa_file = os.path.join(WEB_DIR, f"fish_area/{fish_slug(_f_past)}-{area_slug(area)}.html")
+        # T38-A5: area-all-fish セクション（Layer 1 固定・全履歴魚種・折り畳み付き）
+        # T29 past_fish_section_html を廃止し、全履歴魚種を常時表示
+        _week_fish_set = {f for f, _ in top_fish_items}  # 直近7日に実績あり
+        _all_area_fishes = _area_top_fishes.get(area, [])  # [(fish, cnt), ...]
+        _aaf_active_chips = []
+        _aaf_fold_chips = []
+        for _f_hist, _n_hist in _all_area_fishes:
+            _fa_file = os.path.join(WEB_DIR, f"fish_area/{fish_slug(_f_hist)}-{area_slug(area)}.html")
             if not os.path.exists(_fa_file):
                 continue
-            _past_chips_items.append(
-                f'<a href="../fish_area/{fish_slug(_f_past)}-{area_slug(area)}.html" class="chip-link">'
-                f'<img src="../assets/fish/{fish_img_slug(_f_past)}/{fish_img_slug(_f_past)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
-                f'{_f_past}（{_n_past}便）</a>'
+            _chip = (
+                f'<a href="../fish_area/{fish_slug(_f_hist)}-{area_slug(area)}.html" class="chip-link">'
+                f'<img src="../assets/fish/{fish_img_slug(_f_hist)}/{fish_img_slug(_f_hist)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                f'{_f_hist}（{_n_hist}便）</a>'
             )
-            if len(_past_chips_items) >= 6:
-                break
-        past_fish_section_html = (
-            f'<h2 class="st">過去に釣れた魚（今週データなし）</h2>'
-            f'<div class="chip-wrap">{"".join(_past_chips_items)}</div>'
-            if _past_chips_items else ""
-        )
+            if _f_hist in _week_fish_set:
+                _aaf_active_chips.append(_chip)
+            else:
+                _aaf_fold_chips.append(_chip)
+        if _aaf_active_chips or _aaf_fold_chips:
+            _aaf_parts = []
+            if _aaf_active_chips:
+                _aaf_parts.append(f'<p class="tier-label">★ 今週実績あり（{len(_aaf_active_chips)}魚種）</p>')
+                _aaf_parts.append(f'<div class="chip-wrap">{"".join(_aaf_active_chips)}</div>')
+            if _aaf_fold_chips:
+                _aaf_parts.append(
+                    f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(_aaf_fold_chips)}魚種）を表示</summary>'
+                    f'<div class="chip-wrap">{"".join(_aaf_fold_chips)}</div></details>'
+                )
+            past_fish_section_html = (
+                '<section class="area-all-fish">'
+                f'<h2 class="st">{area}エリアで釣れる魚種</h2>'
+                + "".join(_aaf_parts)
+                + '</section>'
+            )
+        else:
+            past_fish_section_html = ""
 
         sea_section_html = ""
         if sea_fc:
