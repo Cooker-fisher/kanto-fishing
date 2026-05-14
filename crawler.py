@@ -3408,17 +3408,28 @@ AREA_TO_PREFECTURE = {
     '大津港': None, '松崎港': None,
 }
 
+# 県スラグ → 表示用ラベル（img alt 属性等の SEO 用）
+PREF_LABEL = {
+    'kanagawa': '神奈川県',
+    'tokyo':    '東京都',
+    'chiba':    '千葉県',
+    'shizuoka': '静岡県',
+    'ibaraki':  '茨城県',
+}
+
 
 def _chip_pref_img(area, depth=1):
     """エリアに対応する県 emoji img タグを返す。マッピングなし・None なら空文字。
     depth: 相対パスの深さ（fish_area/ なら 1、area/ なら 1）
+    alt 属性に県名（神奈川県/東京都/千葉県/静岡県/茨城県）を設定し SEO 強化。
     """
     pref = AREA_TO_PREFECTURE.get(area)
     if not pref:
         return ""
     prefix = "../" * depth
+    label = PREF_LABEL.get(pref, "")
     return (
-        f'<img src="{prefix}assets/area/{pref}_emoji.webp" alt="" class="chip-pref"'
+        f'<img src="{prefix}assets/area/{pref}_emoji.webp" alt="{label}" class="chip-pref"'
         f' width="14" height="14" loading="lazy" onerror="this.style.display=\'none\'">'
     )
 
@@ -9411,7 +9422,7 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
             pref = AREA_TO_PREFECTURE.get(area_nm)
             if pref:
                 pref_img_name = (
-                    f'<img src="../assets/area/{pref}_emoji.webp" alt="" class="chip-pref"'
+                    f'<img src="../assets/area/{pref}_emoji.webp" alt="{PREF_LABEL.get(pref, "")}" class="chip-pref"'
                     f' style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px"'
                     f' onerror="this.style.display=\'none\'">'
                 )
@@ -9454,7 +9465,7 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
             pref = AREA_TO_PREFECTURE.get(area_nm)
             if pref:
                 pref_img_name = (
-                    f'<img src="../assets/area/{pref}_emoji.webp" alt="" class="chip-pref"'
+                    f'<img src="../assets/area/{pref}_emoji.webp" alt="{PREF_LABEL.get(pref, "")}" class="chip-pref"'
                     f' style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px"'
                     f' onerror="this.style.display=\'none\'">'
                 )
