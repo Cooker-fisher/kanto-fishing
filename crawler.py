@@ -8137,47 +8137,56 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         fish_url = f"{SITE_URL}/fish/{fish_slug(fish)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}件{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
-        # 同エリアで釣れる関連魚種
-        _this_areas = set(c["area"] for c in catches)
-        _rel_counts: dict = {}
-        for _c in data:
-            if _c["area"] in _this_areas:
-                for _f in _c["fish"]:
-                    if _f != fish and _f != "不明":
-                        _rel_counts[_f] = _rel_counts.get(_f, 0) + 1
+        # T38-A6: fish-related-species（共起便数ベース・Layer 1 固定）
+        _cooc_fish = compute_fish_related_via_cooccurrence(_hist_rows_for_fish, fish, _fish_top_areas)
         _rel_links = "".join(
             '<a href="../fish/' + fish_slug(rf) + '.html" class="chip-link">'
             + f'<img src="../assets/fish/{fish_img_slug(rf)}/{fish_img_slug(rf)}_emoji.webp" alt="" class="chip-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
             + rf + '</a>'
-            for rf, _ in sorted(_rel_counts.items(), key=lambda x: -x[1])[:6]
+            for rf, _ in _cooc_fish
         )
         related_section_html = (
-            '<h2 class="st">同じエリアで釣れる魚</h2>'
+            '<section class="fish-related-species">'
+            '<h2 class="st">同じエリアでよく釣れる魚</h2>'
             '<div class="chip-wrap">' + _rel_links + '</div>'
+            '</section>'
         ) if _rel_links else ""
-        # エリア別釣果リンク（fish_area/）
-        # 直近7日マージ済 catches から area 別件数を集計。船宿ランキング（同 catches・TOP-8）
-        # と粒度を揃えるため、5件未満エリアも表示する（旧仕様 c>=5 は数件報告の港を弾き
-        # ランキング側の船宿が属する港と不整合だった・2026/05/12 ユーザー指摘）。
-        # area_romaji 未登録エリアは URL 不正のため除外。TOP-12 で打ち止め。
-        _fa_counts: dict = {}
-        for _c in catches:
-            _fa_counts[_c["area"]] = _fa_counts.get(_c["area"], 0) + 1
-        _fa_link_items = []
-        for a, c in sorted(_fa_counts.items(), key=lambda x: -x[1]):
-            if a not in _AREA_ROMAJI:
+        # T38-A4: fish-all-areas セクション（Layer 1 固定・全履歴エリア・折り畳み付き）
+        # _fish_top_areas から全エリアを取得し、直近7日にある=active / なし=fold に分類
+        _week_areas_f = set(c["area"] for c in catches)  # 直近7日のエリア
+        _all_areas_f = _fish_top_areas.get(fish, [])  # [(area, cnt), ...]
+        _fa_active_chips = []
+        _fa_fold_chips = []
+        for _a, _n in _all_areas_f:
+            if _a not in _AREA_ROMAJI:
                 continue
-            _fa_link_items.append(
-                '<a href="../fish_area/' + fish_slug(fish) + '-' + area_slug(a) + '.html" class="chip-link">'
-                + a + f'（{c}件）</a>'
+            _fa_url = f"../fish_area/{fish_slug(fish)}-{area_slug(_a)}.html"
+            _chip = (
+                f'<a href="{_fa_url}" class="chip-link">'
+                f'{_chip_pref_img(_a)}{_a}（{_n}便）</a>'
             )
-            if len(_fa_link_items) >= 12:
-                break
-        _fa_links = "".join(_fa_link_items)
-        fish_area_section_html = (
-            '<h2 class="st">エリア別の釣果</h2>'
-            '<div class="chip-wrap">' + _fa_links + '</div>'
-        ) if _fa_links else ""
+            if _a in _week_areas_f:
+                _fa_active_chips.append(_chip)
+            else:
+                _fa_fold_chips.append(_chip)
+        if _fa_active_chips or _fa_fold_chips:
+            _faa_parts = []
+            if _fa_active_chips:
+                _faa_parts.append(f'<p class="tier-label">★ 今週実績あり（{len(_fa_active_chips)}エリア）</p>')
+                _faa_parts.append(f'<div class="chip-wrap">{"".join(_fa_active_chips)}</div>')
+            if _fa_fold_chips:
+                _faa_parts.append(
+                    f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(_fa_fold_chips)}エリア）を表示</summary>'
+                    f'<div class="chip-wrap">{"".join(_fa_fold_chips)}</div></details>'
+                )
+            fish_area_section_html = (
+                '<section class="fish-areas-all">'
+                f'<h2 class="st">エリア別の{fish}釣果情報</h2>'
+                + "".join(_faa_parts)
+                + '</section>'
+            )
+        else:
+            fish_area_section_html = ""
         # V2 season map / guide / FAQ / chart
         season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=_hist_rows_for_fish)
         guide_html = build_fish_guide_html(fish, tackle_data)
