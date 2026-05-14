@@ -10170,6 +10170,11 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     for _a in same_area_fishes:
         same_area_fishes[_a].sort(key=lambda x: -x[1])
 
+    # T38-A2 修正 (2026/05/15): 直近7日 (fish, area) ペアは fa_summary のキーから全コンボ横断で構築。
+    # 旧実装は per-page catches から構築していたため、軸1（同魚種・他エリア）は area が固定で常に空、
+    # 軸2（同エリア・他魚種）も bycatch しか拾えず、tsuri_mono が主対象の他魚種が全てfoldに落ちていた。
+    _recent7_fish_area_global = set(fa_summary.keys())
+
     def _fa_page_available(_f, _a):
         """fish_area ページが今回生成される or 既存ディスクにあるなら True"""
         if (_f, _a) in will_generate_fa:
@@ -10303,8 +10308,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         # T30 (2026/05/12): catches → _hist_rows_for_fa（3年分CSV）に変更で固定文章化。
         fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, _hist_rows_for_fa, decadal_calendar, _area_desc_fa)
         # T38-A2: fa-related 3軸構造（閾値廃止・全件常駐・折り畳み付き）
-        # 直近7日 catches の (fish, area) ペアセット（上段判定用）
-        _recent7_fish_area = {(f2, c2["area"]) for c2 in catches for f2 in c2.get("fish", [])}
+        # 直近7日 (fish, area) ペアは fa_summary 全体から構築（per-page catches だと area 固定で軸1が機能しない）
+        _recent7_fish_area = _recent7_fish_area_global
         _related_blocks = []
 
         # 軸1: 同魚種・他エリア
@@ -10413,7 +10418,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   {fa_intro_html}
   {stat_cards_fa}
   {chart7_html_fa}
-  <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
+  <h2 class="st">{area}の{fish}旬カレンダー <span class="tag free">無料</span></h2>
   {combo_season_map_fa}
   {combo_comment_html}
   <h2 class="st">船宿ランキング <span class="tag free">無料</span></h2>
