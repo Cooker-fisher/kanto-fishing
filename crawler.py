@@ -7073,7 +7073,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         top_fish = sorted(area_fish_map.get(area, {}).items(), key=lambda x: -x[1])[:4]
         fish_tags = "".join(
             f'<a href="fish/{fish_slug(f)}.html" class="at-ftag">'
-            f'<img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="at-ftag-emoji" width="12" height="12" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
+            f'<img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="{f}" class="at-ftag-emoji" width="12" height="12" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</a>'
             for f, _ in top_fish
         )
         # NOTE: <a> の中に <a> をネストすると HTML 違反 → div で囲い、上部のみ area リンク
@@ -7179,7 +7179,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         key = (f, s)
         if key not in _seen_ticker:
             _seen_ticker.add(key)
-            _ticker_items_list.append(f'<span>{hero_label} <img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="lt-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f} × {s} {n}匹</span>')
+            _ticker_items_list.append(f'<span>{hero_label} <img src="assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="{f}" class="lt-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f} × {s} {n}匹</span>')
         if len(_ticker_items_list) >= 5:
             break
     # R10 (2026/05/06): 大物（kg級）トロフィーティッカーを末尾に追加
@@ -8211,7 +8211,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         for rf, rn in _cooc_fish:
             _chip = (
                 '<a href="../fish/' + fish_slug(rf) + '.html" class="chip-link">'
-                + f'<img src="../assets/fish/{fish_img_slug(rf)}/{fish_img_slug(rf)}_emoji.webp" alt="" class="chip-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                + f'<img src="../assets/fish/{fish_img_slug(rf)}/{fish_img_slug(rf)}_emoji.webp" alt="{rf}" class="chip-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
                 + f'{rf}（{rn:,}便）</a>'
             )
             if rf in _week_cooc_fish:
@@ -9069,7 +9069,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             # 表示される事故になる（過去発生済み）。船宿名はプレーンテキストで。
             fia_cards += (
                 f'<a class="fia" href="{_fish_area_link_or_fish(fish, area, depth=1)}">'
-                f'<div class="fn"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="" class="fn-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
+                f'<div class="fn"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fn-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
                 + (f'<div class="fr">{cnt_str}</div>' if cnt_str else "")
                 + f'<div class="fs">{" | ".join(detail_parts)}</div>'
                 + (f'<div class="fb">◎{best_ship}</div>' if best_ship else "")
@@ -9148,7 +9148,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                 continue
             _chip = (
                 f'<a href="../fish_area/{fish_slug(_f_hist)}-{area_slug(area)}.html" class="chip-link">'
-                f'<img src="../assets/fish/{fish_img_slug(_f_hist)}/{fish_img_slug(_f_hist)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                f'<img src="../assets/fish/{fish_img_slug(_f_hist)}/{fish_img_slug(_f_hist)}_emoji.webp" alt="{_f_hist}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
                 f'{_f_hist}（{_n_hist}便）</a>'
             )
             if _f_hist in _week_fish_set:
@@ -9211,7 +9211,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             top_f = sorted(fish_dict.items(), key=lambda x: -x[1])[:3]
             badges = "".join(
                 f'<span class="{"g" if i == 0 else "o"}">'
-                f'<img src="../assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="" class="sl-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</span>'
+                f'<img src="../assets/fish/{fish_img_slug(f)}/{fish_img_slug(f)}_emoji.webp" alt="{f}" class="sl-emoji" width="14" height="14" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{f}</span>'
                 for i, (f, _) in enumerate(top_f)
             )
             pts = [c["point_place1"] for c in catches if c["ship"] == sn and c.get("point_place1")]
@@ -9539,7 +9539,7 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
         pref = AREA_TO_PREFECTURE.get(area_nm)
         if pref:
             pref_img_ib = (
-                f'<img src="../assets/area/{pref}_emoji.webp" alt="" class="ib-emoji"'
+                f'<img src="../assets/area/{pref}_emoji.webp" alt="{PREF_LABEL.get(pref, "")}" class="ib-emoji"'
                 f' width="20" height="20" loading="lazy" onerror="this.style.display=\'none\'">'
             )
         else:
@@ -10346,7 +10346,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 for f2, n2 in _of_active[:6]:
                     _axis2_html += (
                         f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">'
-                        f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                        f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="{f2}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
                         f'{f2}（{n2}便）</a>'
                     )
                 _axis2_html += '</div>'
@@ -10355,7 +10355,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 for f2, n2 in _of_fold[:12]:
                     _axis2_html += (
                         f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">'
-                        f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                        f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="{f2}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
                         f'{f2}（{n2}便）</a>'
                     )
                 _axis2_html += '</div></details>'
@@ -10368,7 +10368,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             for f2, n2 in _co_fish_list:
                 _axis3_html += (
                     f'<a href="../fish/{fish_slug(f2)}.html" class="chip-link">'
-                    f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                    f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="{f2}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
                     f'{f2}（{n2}便）</a>'
                 )
             _axis3_html += '</div>'
