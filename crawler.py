@@ -9667,7 +9667,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         _related_blocks = []
         _other_areas = [(a, n) for (a, n) in same_fish_areas.get(fish, [])
                         if a != area and _fa_page_available(fish, a)]
-        if len(_other_areas) >= 3:
+        if len(_other_areas) >= 1:
             _chips_oa = "".join(
                 f'<a href="../fish_area/{fish_slug(fish)}-{area_slug(a)}.html" class="chip-link">{a}（{n}便）</a>'
                 for (a, n) in _other_areas[:6]
@@ -9678,7 +9678,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             )
         _other_fishes = [(f2, n) for (f2, n) in same_area_fishes.get(area, [])
                          if f2 != fish and _fa_page_available(f2, area)]
-        if len(_other_fishes) >= 3:
+        if len(_other_fishes) >= 1:
             _chips_of = "".join(
                 f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">'
                 f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
