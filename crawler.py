@@ -3352,6 +3352,44 @@ _AREA_ROMAJI = load_area_romaji()
 _SHIP_ROMAJI = load_ship_romaji()
 _SHIP_INFO = load_ship_info()
 
+# T38-A10: エリア→県マッピング（chip-pref 県emoji 表示用）
+# docs/assets/area/{pref}_emoji.webp が存在する県のみ設定
+# 茨城は emoji 未作成のため None（chip-pref img 出力スキップ）
+AREA_TO_PREFECTURE = {
+    # 神奈川
+    '金沢八景': 'kanagawa', '横浜本牧港': 'kanagawa', '川崎': 'kanagawa',
+    '久里浜': 'kanagawa', '茅ヶ崎': 'kanagawa', '小田原': 'kanagawa',
+    '下浦': 'kanagawa', '葉山': 'kanagawa', '平塚': 'kanagawa',
+    '剣崎': 'kanagawa', '佐島': 'kanagawa', '横須賀': 'kanagawa',
+    # 東京
+    '羽田': 'tokyo', '深川': 'tokyo', '江戸川': 'tokyo',
+    # 千葉
+    '金谷港': 'chiba', '浦安': 'chiba', '大原': 'chiba', '勝山': 'chiba',
+    '館山': 'chiba', '洲崎': 'chiba', '勝浦': 'chiba', '片貝': 'chiba',
+    '飯岡': 'chiba', '鴨川': 'chiba', '和田浦': 'chiba',
+    '富津': 'chiba', '木更津': 'chiba', '千倉': 'chiba',
+    # 静岡
+    '伊東': 'shizuoka', '熱海': 'shizuoka', '網代': 'shizuoka',
+    '下田': 'shizuoka', '稲取': 'shizuoka', '沼津': 'shizuoka',
+    '御前崎': 'shizuoka', '南伊豆': 'shizuoka',
+    # 茨城（emoji 未作成・None で chip-pref 出力スキップ）
+    '鹿島': None, '日立': None, '波崎': None, '大洗': None,
+}
+
+
+def _chip_pref_img(area, depth=1):
+    """エリアに対応する県 emoji img タグを返す。マッピングなし・None なら空文字。
+    depth: 相対パスの深さ（fish_area/ なら 1、area/ なら 1）
+    """
+    pref = AREA_TO_PREFECTURE.get(area)
+    if not pref:
+        return ""
+    prefix = "../" * depth
+    return (
+        f'<img src="{prefix}assets/area/{pref}_emoji.webp" alt="" class="chip-pref"'
+        f' width="14" height="14" loading="lazy" onerror="this.style.display=\'none\'">'
+    )
+
 # H2 (T22): 空ページ（noindex 対象）の romaji_slug を蓄積するセット
 # _ship_build_page_html() が書き込み、build_sitemap() が参照して URL 除外に使う
 _SHIP_NOINDEX_SLUGS: set = set()
@@ -8199,6 +8237,14 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
 .chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
 .chip-link .chip-emoji{width:14px;height:14px;object-fit:contain;flex-shrink:0}
+.chip-pref{width:14px;height:14px;object-fit:contain;flex-shrink:0}
+.chip-area{display:inline-flex;align-items:center;gap:4px}
+.tier-label{font-size:11px;color:var(--muted);margin:8px 0 2px;font-weight:600}
+.fold-chips{margin:4px 0 8px}
+.fold-chips summary{font-size:12px;color:var(--accent);cursor:pointer;padding:4px 0}
+.fold-chips .chip-wrap{margin-top:6px}
+.fish-areas-all{margin-bottom:16px}.fish-related-species{margin-bottom:16px}.area-all-fish{margin-bottom:16px}
+.page-h1{font-size:14px;font-weight:700;color:var(--sub);padding:8px 0 0;margin:0;line-height:1.4}
 .chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .chart7 h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
@@ -9566,6 +9612,12 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 .chip-link{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px}
 .chip-link:hover{background:var(--accent);color:#fff;text-decoration:none}
 .chip-emoji{vertical-align:middle}
+.chip-pref{width:14px;height:14px;object-fit:contain;flex-shrink:0}
+.chip-area{display:inline-flex;align-items:center;gap:4px}
+.tier-label{font-size:11px;color:var(--muted);margin:8px 0 2px;font-weight:600}
+.fold-chips{margin:4px 0 8px}
+.fold-chips summary{font-size:12px;color:var(--accent);cursor:pointer;padding:4px 0}
+.fold-chips .chip-wrap{margin-top:6px}
 .fa-related{margin-bottom:16px}
 .fa-h2-emoji{vertical-align:middle;margin-right:6px}
 .chart7{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
