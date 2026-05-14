@@ -9900,7 +9900,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 <body>
 {_v2_header_nav('')}
 <div class="c">
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}</p>
+  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}<span class="bread-sep"> ／ </span><a href="../area/{area_slug(area)}.html">{area}エリア</a> &rsaquo; {fish}</p>
   {_build_share_buttons(
       share_text=f"{area}の{fish}釣果情報 | 船釣り予想",
       share_url=page_url,
