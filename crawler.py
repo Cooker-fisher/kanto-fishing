@@ -9595,11 +9595,12 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
 
     # ── CSS ──
     area_index_css = """.ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0 20px}
-.ai-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block}
+.ai-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:block;transition:border-color .15s}
+.ai-card:hover{border-color:var(--cta)}
 .ai-name{display:block;font-size:14px;font-weight:700;color:var(--accent);text-decoration:none}
 .ai-name:hover{text-decoration:underline}
-.ai-fish{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.7}
-.ai-fish a{color:#1a4a72;text-decoration:none;white-space:nowrap;padding:0 2px;border-radius:3px}
+.ai-fish{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.9}
+.ai-fish a{color:#1a4a72;text-decoration:none;white-space:nowrap;padding:3px 6px;border-radius:3px;display:inline-block}
 .ai-fish a:hover{background:#eaf2fa;text-decoration:underline}
 .ai-sep{color:#aaa}
 .ai-cnt{display:block;font-size:11px;color:var(--cta);font-weight:600;margin-top:4px;text-decoration:none}
