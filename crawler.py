@@ -9798,34 +9798,79 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar, area_description=_area_desc_fa)
         # T30 (2026/05/12): catches → _hist_rows_for_fa（3年分CSV）に変更で固定文章化。
         fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, _hist_rows_for_fa, decadal_calendar, _area_desc_fa)
-        # T29 (2026/05/13): fish_area 同士の相互リンク（FAQ 直前に挿入）。
-        # 同魚種他エリア・同エリア他魚種の TOP-6・3件未満なら当該セクション非表示。
+        # T38-A2: fa-related 3軸構造（閾値廃止・全件常駐・折り畳み付き）
+        # 直近7日 catches の (fish, area) ペアセット（上段判定用）
+        _recent7_fish_area = {(f2, c2["area"]) for c2 in catches for f2 in c2.get("fish", [])}
         _related_blocks = []
-        _other_areas = [(a, n) for (a, n) in same_fish_areas.get(fish, [])
-                        if a != area and _fa_page_available(fish, a)]
-        if len(_other_areas) >= 1:
-            _chips_oa = "".join(
-                f'<a href="../fish_area/{fish_slug(fish)}-{area_slug(a)}.html" class="chip-link">{a}（{n}便）</a>'
-                for (a, n) in _other_areas[:6]
-            )
-            _related_blocks.append(
-                f'<h2 class="st">{fish}を他のエリアで探す</h2>'
-                f'<div class="chip-wrap">{_chips_oa}</div>'
-            )
-        _other_fishes = [(f2, n) for (f2, n) in same_area_fishes.get(area, [])
+
+        # 軸1: 同魚種・他エリア
+        _other_areas = [(a2, n2) for (a2, n2) in same_fish_areas.get(fish, [])
+                        if a2 != area and _fa_page_available(fish, a2)]
+        if _other_areas:
+            _oa_active = [(a2, n2) for (a2, n2) in _other_areas if (fish, a2) in _recent7_fish_area]
+            _oa_fold   = [(a2, n2) for (a2, n2) in _other_areas if (fish, a2) not in _recent7_fish_area]
+            _axis1_html = f'<h2 class="st">{fish}を他のエリアで探す</h2>'
+            if _oa_active:
+                _axis1_html += f'<p class="tier-label">★ 今週実績あり（{sum(n2 for _,n2 in _oa_active)}便）</p>'
+                _axis1_html += '<div class="chip-wrap">'
+                for a2, n2 in _oa_active[:6]:
+                    _axis1_html += (
+                        f'<a href="../fish_area/{fish_slug(fish)}-{area_slug(a2)}.html" class="chip-link chip-area">'
+                        f'{_chip_pref_img(a2)}{a2}（{n2}便）</a>'
+                    )
+                _axis1_html += '</div>'
+            if _oa_fold:
+                _axis1_html += f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{sum(n2 for _,n2 in _oa_fold)}便）を表示</summary><div class="chip-wrap">'
+                for a2, n2 in _oa_fold[:12]:
+                    _axis1_html += (
+                        f'<a href="../fish_area/{fish_slug(fish)}-{area_slug(a2)}.html" class="chip-link chip-area">'
+                        f'{_chip_pref_img(a2)}{a2}（{n2}便）</a>'
+                    )
+                _axis1_html += '</div></details>'
+            _related_blocks.append(_axis1_html)
+
+        # 軸2: 同エリア・他魚種
+        _other_fishes = [(f2, n2) for (f2, n2) in same_area_fishes.get(area, [])
                          if f2 != fish and _fa_page_available(f2, area)]
-        if len(_other_fishes) >= 1:
-            _chips_of = "".join(
-                f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">'
-                f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
-                f'{f2}（{n}便）</a>'
-                for (f2, n) in _other_fishes[:6]
-            )
-            _related_blocks.append(
-                f'<h2 class="st">{area}の他の魚種</h2>'
-                f'<div class="chip-wrap">{_chips_of}</div>'
-            )
-        fa_related_html = f'<div class="fa-related">{"".join(_related_blocks)}</div>' if _related_blocks else ""
+        if _other_fishes:
+            _of_active = [(f2, n2) for (f2, n2) in _other_fishes if (f2, area) in _recent7_fish_area]
+            _of_fold   = [(f2, n2) for (f2, n2) in _other_fishes if (f2, area) not in _recent7_fish_area]
+            _axis2_html = f'<h2 class="st">{area}で実績のある他の魚種</h2>'
+            if _of_active:
+                _axis2_html += f'<p class="tier-label">★ 今週実績あり（{sum(n2 for _,n2 in _of_active)}便）</p>'
+                _axis2_html += '<div class="chip-wrap">'
+                for f2, n2 in _of_active[:6]:
+                    _axis2_html += (
+                        f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">'
+                        f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                        f'{f2}（{n2}便）</a>'
+                    )
+                _axis2_html += '</div>'
+            if _of_fold:
+                _axis2_html += f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{sum(n2 for _,n2 in _of_fold)}便）を表示</summary><div class="chip-wrap">'
+                for f2, n2 in _of_fold[:12]:
+                    _axis2_html += (
+                        f'<a href="../fish_area/{fish_slug(f2)}-{area_slug(area)}.html" class="chip-link">'
+                        f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                        f'{f2}（{n2}便）</a>'
+                    )
+                _axis2_html += '</div></details>'
+            _related_blocks.append(_axis2_html)
+
+        # 軸3: 関連魚種（同港共起）
+        _co_fish_list = compute_fish_related_via_cooccurrence(_hist_rows_for_fa, fish, _fish_top_areas_fa)
+        if _co_fish_list:
+            _axis3_html = f'<h2 class="st">{fish}と合わせて釣れる魚</h2><div class="chip-wrap">'
+            for f2, n2 in _co_fish_list:
+                _axis3_html += (
+                    f'<a href="../fish/{fish_slug(f2)}.html" class="chip-link">'
+                    f'<img src="../assets/fish/{fish_img_slug(f2)}/{fish_img_slug(f2)}_emoji.webp" alt="" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+                    f'{f2}（{n2}便）</a>'
+                )
+            _axis3_html += '</div>'
+            _related_blocks.append(_axis3_html)
+
+        fa_related_html = f'<div class="fa-related">{"".join(_related_blocks)}</div>' if _related_blocks else '<div class="fa-related"></div>'
         # 直近7日間の釣果推移チャート（fish/* と同じ関数を流用）
         chart7_html_fa = build_fish_7day_chart_html(fish, catches)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
