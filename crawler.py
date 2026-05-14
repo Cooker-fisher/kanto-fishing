@@ -760,6 +760,85 @@ def _load_historical_catches():
             continue
     return rows
 
+def _hist_is_cancelled(r):
+    """hist_rows CSV 行が欠航または不明かどうか判定（compute_* 系関数用）"""
+    return str(r.get("is_cancellation", "")).strip() == "1" or r.get("tsuri_mono") in ("欠航", "不明", "")
+
+
+def compute_fish_area_summary(hist_rows):
+    """hist_rows から (fish, area) → 件数 の辞書を計算する（共有キャッシュ用）"""
+    summary = {}
+    for r in hist_rows:
+        if _hist_is_cancelled(r):
+            continue
+        f = r.get("tsuri_mono")
+        a = r.get("area")
+        if f and a:
+            key = (f, a)
+            summary[key] = summary.get(key, 0) + 1
+    return summary
+
+
+def compute_fish_top_areas(hist_rows):
+    """hist_rows から fish → [(area, cnt), ...] 件数降順 の辞書を計算する"""
+    tmp = {}
+    for r in hist_rows:
+        if _hist_is_cancelled(r):
+            continue
+        f = r.get("tsuri_mono")
+        a = r.get("area")
+        if f and a:
+            tmp.setdefault(f, {})
+            tmp[f][a] = tmp[f].get(a, 0) + 1
+    result = {}
+    for f, ac in tmp.items():
+        result[f] = sorted(ac.items(), key=lambda x: -x[1])
+    return result
+
+
+def compute_area_top_fishes(hist_rows):
+    """hist_rows から area → [(fish, cnt), ...] 件数降順 の辞書を計算する"""
+    tmp = {}
+    for r in hist_rows:
+        if _hist_is_cancelled(r):
+            continue
+        f = r.get("tsuri_mono")
+        a = r.get("area")
+        if f and a:
+            tmp.setdefault(a, {})
+            tmp[a][f] = tmp[a].get(f, 0) + 1
+    result = {}
+    for a, fc in tmp.items():
+        result[a] = sorted(fc.items(), key=lambda x: -x[1])
+    return result
+
+
+def compute_fish_related_via_cooccurrence(hist_rows, fish, fish_top_areas_dict, top_n=6):
+    """
+    {fish} の主要エリアで同時期に釣れている魚種を共起便数降順で返す。
+    戻り値: [(fish_name, cnt), ...] （fish/{slug}.html が存在するもののみ）
+    fish_top_areas_dict: compute_fish_top_areas() の戻り値
+    """
+    top_areas = [a for a, _ in (fish_top_areas_dict.get(fish) or [])[:3]]
+    if not top_areas:
+        return []
+    co_fish = {}
+    for r in hist_rows:
+        if _hist_is_cancelled(r):
+            continue
+        if r.get("area") in top_areas and r.get("tsuri_mono") != fish:
+            f2 = r.get("tsuri_mono")
+            if f2:
+                co_fish[f2] = co_fish.get(f2, 0) + 1
+    result = []
+    for f2, n in sorted(co_fish.items(), key=lambda x: -x[1]):
+        if f2 in _FISH_ROMAJI:
+            result.append((f2, n))
+        if len(result) >= top_n:
+            break
+    return result
+
+
 def _load_recent_catches_for_index(now, days=7):
     """過去 days 日（today 含む）の catches を data/V2/*.csv から読み込み、
     fish/index.html・area/index.html の「今週」集計用に dict-list を返す。
@@ -7472,7 +7551,7 @@ def _render_area_cmp_rows(area_dict, max_areas=20, depth=1, fish=None):
     return rows
 
 
-def build_fish_pages(data, history, crawled_at=""):
+def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_summary=None, fish_top_areas=None):
     os.makedirs(os.path.join(WEB_DIR, "fish"), exist_ok=True)
     # 旧バージョンで生成された数字ファイル名（正規化失敗）を削除
     fish_dir = os.path.join(WEB_DIR, "fish")
@@ -7485,8 +7564,10 @@ def build_fish_pages(data, history, crawled_at=""):
     decadal_calendar = load_decadal_calendar()
     tackle_data = load_fish_tackle()
     fixed_faq_data = _load_fixed_faq()
-    # 過去CSVを一度だけロード（catches=0 魚種の準備中ページ用）
-    _hist_rows_for_fish = _load_historical_catches()
+    # 過去CSV（引数で渡された共有キャッシュを使用、なければ個別ロード）
+    _hist_rows_for_fish = hist_rows if hist_rows is not None else _load_historical_catches()
+    _fish_area_summary = fish_area_summary or {}
+    _fish_top_areas = fish_top_areas or {}
     fish_summary = {}
     _SKIP_FISH = {"不明", "欠航"}
 
@@ -8256,7 +8337,7 @@ def build_fish_pages(data, history, crawled_at=""):
 # ============================================================
 # #10: エリア別ページ
 # ============================================================
-def build_area_pages(data, history, crawled_at="", weather_data=None):
+def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=None, fish_area_summary=None, area_top_fishes=None):
     os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
     now = datetime.now(JST).replace(tzinfo=None)
     today_str = now.strftime("%Y/%m/%d")
@@ -8264,8 +8345,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None):
     area_desc_data = load_area_description()
     area_decadal = load_area_decadal()
     fixed_faq_data_area = _load_fixed_faq()
-    # 過去CSVを一度だけロード（catches=0 エリアの準備中ページに使う）
-    _hist_rows_for_placeholder = _load_historical_catches()
+    # 過去CSV（引数で渡された共有キャッシュを使用、なければ個別ロード）
+    _hist_rows_for_placeholder = hist_rows if hist_rows is not None else _load_historical_catches()
+    _fish_area_summary_area = fish_area_summary or {}
+    _area_top_fishes = area_top_fishes or {}
     # area_coords.json（Place JSON-LD の geo に使用）
     _area_coords_for_placeholder = _ship_load_area_coords()
     # 2026/05/13 T34拡張: valid_catches を直近7日窓に絞る。
@@ -9404,7 +9487,7 @@ def build_fish_area_faq_html(fish, area, hist_rows, decadal_calendar=None, area_
     return html, jsonld
 
 
-def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=None):
+def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=None, hist_rows=None, fish_area_summary=None, fish_top_areas=None):
     fa_out_dir = os.path.join(WEB_DIR, "fish_area")
     os.makedirs(fa_out_dir, exist_ok=True)
     # 古いフォーマット (OGP なし = PR #34 以前) を削除。
@@ -9432,8 +9515,9 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         decadal_calendar = load_decadal_calendar()
     # H3 (T22): area_description.json をロード（エリア固有1文をイントロに差し込む）
     _area_desc_fa = load_area_description()
-    # 年間シーズンバーを実データで生成するため過去CSVを一度だけロード
-    _hist_rows_for_fa = _load_historical_catches()
+    # 年間シーズンバーを実データで生成するため過去CSV（共有キャッシュまたは個別ロード）
+    _hist_rows_for_fa = hist_rows if hist_rows is not None else _load_historical_catches()
+    _fish_top_areas_fa = fish_top_areas or {}
     # 2026/05/13 T34拡張: valid_catches を直近7日窓に絞る。
     # fishing-v.jp の船宿ページは最新ページ(pageID=1)を返す仕様だが、
     # シーズンオフ魚種・休止中船宿では数ヶ月前の釣果が最新ページに残ったまま
@@ -13063,11 +13147,25 @@ def main():
     _ensure_ogp_default_image()
     with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(build_html(valid_catches, crawled_at, history, weather_data))
-    build_fish_pages(valid_catches, history, crawled_at)
+    # T38-A9: hist_rows を1回ロードして各 build_* 関数で共有（重複ロード排除）
+    _shared_hist_rows = _load_historical_catches()
+    _shared_fish_area_summary = compute_fish_area_summary(_shared_hist_rows)
+    _shared_fish_top_areas = compute_fish_top_areas(_shared_hist_rows)
+    _shared_area_top_fishes = compute_area_top_fishes(_shared_hist_rows)
+    build_fish_pages(valid_catches, history, crawled_at,
+                     hist_rows=_shared_hist_rows,
+                     fish_area_summary=_shared_fish_area_summary,
+                     fish_top_areas=_shared_fish_top_areas)
     # fish_area を先に生成 → build_area_pages 内の _fish_area_link_or_fish が
     # 当日生成された fish_area ページを正しく検出できる
-    build_fish_area_pages(valid_catches, crawled_at, history)
-    build_area_pages(valid_catches, history, crawled_at, weather_data)
+    build_fish_area_pages(valid_catches, crawled_at, history,
+                          hist_rows=_shared_hist_rows,
+                          fish_area_summary=_shared_fish_area_summary,
+                          fish_top_areas=_shared_fish_top_areas)
+    build_area_pages(valid_catches, history, crawled_at, weather_data,
+                     hist_rows=_shared_hist_rows,
+                     fish_area_summary=_shared_fish_area_summary,
+                     area_top_fishes=_shared_area_top_fishes)
     build_ship_pages(valid_catches, crawled_at)
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
