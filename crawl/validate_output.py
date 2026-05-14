@@ -976,11 +976,16 @@ def validate_fa_related_3axis():
     detail = []
     for fn in samples:
         html = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
-        fa_m = re.search(r'<section class="fa-related">(.*?)</section>', html, re.DOTALL)
-        if not fa_m:
+        # fa-related の class 開始位置を起点に、次の主要セクション（FAQ等）までを範囲とする
+        m_start = re.search(r'class="fa-related"', html)
+        if not m_start:
             detail.append(f"{fn}: fa-related セクション無し")
             continue
-        fa_html = fa_m.group(1)
+        start = m_start.end()
+        # 終端: よくある質問 (FAQ) の見出し or </body>
+        m_end = re.search(r'<h2[^>]*>よくある質問|</body>', html[start:])
+        end = start + (m_end.start() if m_end else 5000)
+        fa_html = html[start:end]
         h2_count = len(re.findall(r'<h2[^>]*>', fa_html))
         chip_wrap_count = len(re.findall(r'<div class="chip-wrap">', fa_html))
         if h2_count >= 3 and chip_wrap_count >= 3:
@@ -990,7 +995,7 @@ def validate_fa_related_3axis():
     if found < len(samples):
         fail(f"fish_area/ 固定サンプル {len(samples)} 件中 fa-related 3軸が {found} 件のみ: {'; '.join(detail)}")
     else:
-        ok(f"fa-related 3軸: {found}/{len(samples)} 全件存在（h2≥3 + chip-wrap≥3）")
+        ok(f"fa-related 3jiku: {found}/{len(samples)} all present (h2>=3 + chip-wrap>=3)")
 
 
 def main():
