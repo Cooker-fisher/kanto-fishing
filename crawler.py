@@ -3410,6 +3410,13 @@ def _chip_pref_img(area, depth=1):
         f' width="14" height="14" loading="lazy" onerror="this.style.display=\'none\'">'
     )
 
+
+def _fa_exists(fish, area):
+    """docs/fish_area/{fish_slug}-{area_slug}.html が存在するか確認。Phase C で使用。"""
+    fname = f"{fish_slug(fish)}-{area_slug(area)}.html"
+    return os.path.exists(os.path.join(WEB_DIR, "fish_area", fname))
+
+
 # H2 (T22): 空ページ（noindex 対象）の romaji_slug を蓄積するセット
 # _ship_build_page_html() が書き込み、build_sitemap() が参照して URL 除外に使う
 _SHIP_NOINDEX_SLUGS: set = set()
