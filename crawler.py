@@ -10286,7 +10286,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 else:
                     s_range = f"船中{b_hi}匹"
             else:
-                s_range = f"{sd['cnt']}件"
+                s_range = f"{sd['cnt']}便"
             sz_lo = int(min(sd["sz_los"])) if sd["sz_los"] else None
             sz_hi = int(max(sd["sz_his"])) if sd["sz_his"] else None
             if sz_lo is not None and sz_hi is not None and sz_lo != sz_hi:
@@ -10301,7 +10301,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 f'<span class="sr-name">{_ship_link(sn, depth=1)}</span>'
                 f'<span class="sr-range">{s_range}</span>'
                 + (f'<span class="sr-size">{sz_range}</span>' if sz_range else "")
-                + f'<span class="sr-pt">{sd["cnt"]}件</span></div>'
+                + f'<span class="sr-pt">{sd["cnt"]}便</span></div>'
             )
         ship_rank_fa_html = f'<div class="ship-rank"><h3>船宿ランキング（今週）</h3>{sr_items_fa}</div>' if sr_items_fa else ""
         # V2: 最近の釣果（sl-card スタイル）
