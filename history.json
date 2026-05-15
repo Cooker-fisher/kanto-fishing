@@ -101,11 +101,11 @@
     },
     "2026/W08": {
       "マダイ": {
-        "ships": 1,
+        "ships": 2,
         "avg": 0.0,
         "max": 0,
         "size_avg": 62.0,
-        "weight_avg": 0
+        "weight_avg": 4.1
       },
       "ワラサ": {
         "ships": 2,
@@ -168,20 +168,20 @@
         "weight_avg": 0
       },
       "アジ": {
-        "ships": 1,
-        "avg": 59.0,
+        "ships": 2,
+        "avg": 44.0,
         "max": 70,
-        "size_avg": 27.0,
+        "size_avg": 26.5,
         "weight_avg": 0
       }
     },
     "2026/W09": {
       "マダイ": {
-        "ships": 2,
-        "avg": 0.0,
-        "max": 0,
+        "ships": 3,
+        "avg": 0.7,
+        "max": 5,
         "size_avg": 61.0,
-        "weight_avg": 0
+        "weight_avg": 1.93
       },
       "カンパチ": {
         "ships": 1,
@@ -191,10 +191,10 @@
         "weight_avg": 2.1
       },
       "アジ": {
-        "ships": 2,
-        "avg": 50.5,
+        "ships": 6,
+        "avg": 38.0,
         "max": 101,
-        "size_avg": 27.5,
+        "size_avg": 26.3,
         "weight_avg": 0
       },
       "タチウオ": {
@@ -217,6 +217,13 @@
         "max": 2,
         "size_avg": 0,
         "weight_avg": 4.65
+      },
+      "シロギス": {
+        "ships": 2,
+        "avg": 34.5,
+        "max": 47,
+        "size_avg": 23.0,
+        "weight_avg": 0
       }
     },
     "2026/W02": {
@@ -240,6 +247,20 @@
         "max": 21,
         "size_avg": 33.0,
         "weight_avg": 0
+      },
+      "ヒラメ": {
+        "ships": 2,
+        "avg": 1.5,
+        "max": 7,
+        "size_avg": 0,
+        "weight_avg": 1.35
+      },
+      "マダコ": {
+        "ships": 1,
+        "avg": 0.0,
+        "max": 0,
+        "size_avg": 0,
+        "weight_avg": 1.4
       }
     },
     "2026/W01": {
@@ -413,32 +434,12 @@
       }
     },
     "2026/W18": {
-<<<<<<< HEAD
       "マハタ": {
         "ships": 2,
         "avg": 0.0,
-=======
-      "クロダイ": {
-        "ships": 3,
-        "avg": 0,
-        "max": 15,
-        "size_avg": 43.0,
-        "weight_avg": 0
-      },
-      "マダイ": {
-        "ships": 9,
-        "avg": 2.1,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "max": 7,
         "size_avg": 0,
-        "weight_avg": 1.59
-      },
-      "マハタ": {
-        "ships": 1,
-        "avg": 0.0,
-        "max": 0,
-        "size_avg": 0,
-        "weight_avg": 0
+        "weight_avg": 8.07
       },
       "ヒラメ": {
         "ships": 1,
@@ -551,52 +552,54 @@
         "max": 6,
         "size_avg": 112.0,
         "weight_avg": 0
+      },
+      "メダイ": {
+        "ships": 1,
+        "avg": 0,
+        "max": 2,
+        "size_avg": 0,
+        "weight_avg": 2.75
+      },
+      "カンパチ": {
+        "ships": 1,
+        "avg": 0.0,
+        "max": 0,
+        "size_avg": 0,
+        "weight_avg": 3.5
       }
     },
     "2026/W19": {
       "カンパチ": {
-        "ships": 3,
-        "avg": 0,
+        "ships": 4,
+        "avg": 0.0,
         "max": 3,
         "size_avg": 0,
-        "weight_avg": 8.08
+        "weight_avg": 7.69
       },
       "不明": {
-<<<<<<< HEAD
         "ships": 8,
         "avg": 3.2,
         "max": 16,
         "size_avg": 57.5,
         "weight_avg": 2.92
-=======
-        "ships": 10,
-        "avg": 5.7,
-        "max": 23,
-        "size_avg": 44.0,
-        "weight_avg": 2.38
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       },
       "カワハギ": {
-        "ships": 5,
-        "avg": 8.2,
+        "ships": 4,
+        "avg": 8.8,
         "max": 29,
-        "size_avg": 28.8,
+        "size_avg": 29.0,
         "weight_avg": 0
       },
       "アジ": {
-        "ships": 62,
-        "avg": 38.0,
+        "ships": 61,
+        "avg": 37.9,
         "max": 148,
-        "size_avg": 32.7,
+        "size_avg": 32.6,
         "weight_avg": 0
       },
       "カサゴ": {
         "ships": 6,
-<<<<<<< HEAD
         "avg": 23.5,
-=======
-        "avg": 28.7,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "max": 65,
         "size_avg": 26.5,
         "weight_avg": 0
@@ -623,19 +626,11 @@
         "weight_avg": 0
       },
       "マダイ": {
-<<<<<<< HEAD
         "ships": 43,
         "avg": 2.3,
         "max": 15,
         "size_avg": 68.0,
         "weight_avg": 1.86
-=======
-        "ships": 53,
-        "avg": 2.3,
-        "max": 12,
-        "size_avg": 65.0,
-        "weight_avg": 1.37
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       },
       "ヤリイカ": {
         "ships": 3,
@@ -674,11 +669,7 @@
       },
       "フグ": {
         "ships": 4,
-<<<<<<< HEAD
         "avg": 6.0,
-=======
-        "avg": 8.8,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "max": 19,
         "size_avg": 36.3,
         "weight_avg": 0
@@ -698,11 +689,11 @@
         "weight_avg": 0
       },
       "メダイ": {
-        "ships": 1,
+        "ships": 2,
         "avg": 4.0,
-        "max": 8,
+        "max": 10,
         "size_avg": 0,
-        "weight_avg": 1.5
+        "weight_avg": 2.75
       },
       "ビシアジ": {
         "ships": 6,
@@ -718,16 +709,6 @@
         "size_avg": 30.0,
         "weight_avg": 0
       },
-<<<<<<< HEAD
-=======
-      "ワラサ": {
-        "ships": 7,
-        "avg": 5.4,
-        "max": 15,
-        "size_avg": 0,
-        "weight_avg": 4.26
-      },
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       "シロギス": {
         "ships": 18,
         "avg": 31.6,
@@ -834,8 +815,8 @@
         "weight_avg": 0.75
       },
       "イナダ": {
-        "ships": 2,
-        "avg": 1.5,
+        "ships": 6,
+        "avg": 1.0,
         "max": 6,
         "size_avg": 55.0,
         "weight_avg": 0
@@ -859,7 +840,6 @@
         "avg": 1.0,
         "max": 3,
         "size_avg": 0,
-<<<<<<< HEAD
         "weight_avg": 1.6
       },
       "アカイカ": {
@@ -882,26 +862,15 @@
         "max": 0,
         "size_avg": 0,
         "weight_avg": 0
-=======
-        "weight_avg": 1.57
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       }
     },
     "2026/W20": {
       "カンパチ": {
-<<<<<<< HEAD
         "ships": 4,
-=======
-        "ships": 2,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "avg": 0,
-        "max": 3,
+        "max": 5,
         "size_avg": 0,
-<<<<<<< HEAD
         "weight_avg": 7.77
-=======
-        "weight_avg": 8.71
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       },
       "不明": {
         "ships": 15,
@@ -911,24 +880,24 @@
         "weight_avg": 1.64
       },
       "カワハギ": {
-        "ships": 7,
-        "avg": 4.3,
+        "ships": 8,
+        "avg": 4.2,
         "max": 17,
-        "size_avg": 27.0,
+        "size_avg": 27.4,
         "weight_avg": 0
       },
       "カサゴ": {
-        "ships": 8,
-        "avg": 17.9,
+        "ships": 9,
+        "avg": 22.0,
         "max": 61,
-        "size_avg": 27.5,
+        "size_avg": 27.4,
         "weight_avg": 0
       },
       "アジ": {
-        "ships": 76,
-        "avg": 39.3,
+        "ships": 77,
+        "avg": 39.2,
         "max": 155,
-        "size_avg": 35.1,
+        "size_avg": 35.2,
         "weight_avg": 0
       },
       "マルイカ": {
@@ -953,19 +922,11 @@
         "weight_avg": 1.26
       },
       "マダイ": {
-<<<<<<< HEAD
         "ships": 82,
         "avg": 1.9,
         "max": 12,
         "size_avg": 73.2,
         "weight_avg": 1.7
-=======
-        "ships": 66,
-        "avg": 1.9,
-        "max": 12,
-        "size_avg": 74.3,
-        "weight_avg": 1.59
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       },
       "イサキ": {
         "ships": 19,
@@ -1073,11 +1034,11 @@
         "weight_avg": 0.6
       },
       "メダイ": {
-        "ships": 2,
+        "ships": 3,
         "avg": 0.0,
-        "max": 0,
+        "max": 6,
         "size_avg": 0,
-        "weight_avg": 0
+        "weight_avg": 4.0
       },
       "マハタ": {
         "ships": 3,
@@ -1603,6 +1564,13 @@
         "weight_avg": 0
       },
       "キハダマグロ": {
+        "ships": 2,
+        "avg": 0.0,
+        "max": 0,
+        "size_avg": 0,
+        "weight_avg": 0
+      },
+      "ヒラマサ": {
         "ships": 1,
         "avg": 0.0,
         "max": 0,
@@ -1907,10 +1875,10 @@
         "weight_avg": 0
       },
       "アジ": {
-        "ships": 1,
-        "avg": 91.0,
+        "ships": 2,
+        "avg": 65.5,
         "max": 130,
-        "size_avg": 29.0,
+        "size_avg": 27.5,
         "weight_avg": 0
       }
     },
@@ -2263,13 +2231,8 @@
       },
       "マダイ": {
         "ships": 5,
-<<<<<<< HEAD
         "avg": 3.0,
         "max": 16,
-=======
-        "avg": 3.2,
-        "max": 8,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "size_avg": 0,
         "weight_avg": 2.2
       },
@@ -2308,7 +2271,6 @@
         "size_avg": 0,
         "weight_avg": 0
       },
-<<<<<<< HEAD
       "マハタ": {
         "ships": 1,
         "avg": 0,
@@ -2324,25 +2286,11 @@
         "weight_avg": 2.75
       },
       "カンパチ": {
-=======
-      "カサゴ": {
-        "ships": 1,
-        "avg": 47.0,
-        "max": 65,
-        "size_avg": 26.0,
-        "weight_avg": 0
-      },
-      "アカムツ": {
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "ships": 1,
         "avg": 0.0,
         "max": 0,
         "size_avg": 0,
-<<<<<<< HEAD
         "weight_avg": 3.5
-=======
-        "weight_avg": 0
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       }
     },
     "2026/03": {
@@ -2389,17 +2337,17 @@
         "weight_avg": 0
       },
       "マダイ": {
-        "ships": 2,
-        "avg": 4.0,
+        "ships": 3,
+        "avg": 3.3,
         "max": 10,
         "size_avg": 0,
-        "weight_avg": 0.85
+        "weight_avg": 1.39
       },
       "アジ": {
-        "ships": 2,
-        "avg": 42.0,
+        "ships": 4,
+        "avg": 35.0,
         "max": 70,
-        "size_avg": 28.0,
+        "size_avg": 27.0,
         "weight_avg": 0
       },
       "ヒラメ": {
@@ -2415,15 +2363,22 @@
         "max": 2,
         "size_avg": 0,
         "weight_avg": 4.65
+      },
+      "シロギス": {
+        "ships": 1,
+        "avg": 34.0,
+        "max": 46,
+        "size_avg": 23.0,
+        "weight_avg": 0
       }
     },
     "2026/02": {
       "マダイ": {
-        "ships": 4,
+        "ships": 5,
         "avg": 0.0,
         "max": 0,
         "size_avg": 60.5,
-        "weight_avg": 0
+        "weight_avg": 4.1
       },
       "カンパチ": {
         "ships": 2,
@@ -2468,18 +2423,32 @@
         "weight_avg": 0
       },
       "アジ": {
-        "ships": 2,
-        "avg": 83.5,
+        "ships": 6,
+        "avg": 51.2,
         "max": 130,
-        "size_avg": 27.5,
+        "size_avg": 26.3,
         "weight_avg": 0
       },
       "ヒラメ": {
-        "ships": 4,
-        "avg": 0.2,
-        "max": 3,
+        "ships": 5,
+        "avg": 1.0,
+        "max": 7,
         "size_avg": 0,
-        "weight_avg": 1.51
+        "weight_avg": 1.59
+      },
+      "シロギス": {
+        "ships": 1,
+        "avg": 35.0,
+        "max": 47,
+        "size_avg": 23.0,
+        "weight_avg": 0
+      },
+      "ヤリイカ": {
+        "ships": 1,
+        "avg": 50.0,
+        "max": 76,
+        "size_avg": 55.0,
+        "weight_avg": 0
       }
     },
     "2026/01": {
@@ -2517,6 +2486,20 @@
         "max": 3,
         "size_avg": 33.0,
         "weight_avg": 0
+      },
+      "ヒラメ": {
+        "ships": 2,
+        "avg": 1.5,
+        "max": 7,
+        "size_avg": 0,
+        "weight_avg": 1.35
+      },
+      "マダコ": {
+        "ships": 1,
+        "avg": 0.0,
+        "max": 0,
+        "size_avg": 0,
+        "weight_avg": 1.4
       }
     },
     "2025/09": {
@@ -2553,6 +2536,13 @@
         "avg": 16.0,
         "max": 23,
         "size_avg": 35.0,
+        "weight_avg": 0
+      },
+      "アジ": {
+        "ships": 1,
+        "avg": 70.0,
+        "max": 97,
+        "size_avg": 28.0,
         "weight_avg": 0
       }
     },
@@ -2608,7 +2598,6 @@
     },
     "2026/05": {
       "カンパチ": {
-<<<<<<< HEAD
         "ships": 8,
         "avg": 0.0,
         "max": 5,
@@ -2621,43 +2610,24 @@
         "max": 16,
         "size_avg": 51.2,
         "weight_avg": 2.15
-=======
-        "ships": 5,
-        "avg": 0,
-        "max": 3,
-        "size_avg": 0,
-        "weight_avg": 8.33
-      },
-      "不明": {
-        "ships": 20,
-        "avg": 3.4,
-        "max": 23,
-        "size_avg": 44.5,
-        "weight_avg": 2.24
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       },
       "カワハギ": {
         "ships": 12,
-        "avg": 5.9,
+        "avg": 5.8,
         "max": 29,
-        "size_avg": 27.8,
+        "size_avg": 27.9,
         "weight_avg": 0
       },
       "カサゴ": {
-<<<<<<< HEAD
-        "ships": 16,
-        "avg": 20.9,
-=======
-        "ships": 14,
-        "avg": 23.6,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
+        "ships": 17,
+        "avg": 22.8,
         "max": 65,
         "size_avg": 26.8,
         "weight_avg": 0
       },
       "アジ": {
         "ships": 145,
-        "avg": 38.6,
+        "avg": 38.5,
         "max": 155,
         "size_avg": 33.7,
         "weight_avg": 0
@@ -2684,19 +2654,11 @@
         "weight_avg": 1.26
       },
       "マダイ": {
-<<<<<<< HEAD
         "ships": 130,
         "avg": 2.0,
         "max": 15,
         "size_avg": 72.2,
         "weight_avg": 1.73
-=======
-        "ships": 125,
-        "avg": 2.1,
-        "max": 12,
-        "size_avg": 72.0,
-        "weight_avg": 1.48
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
       },
       "イサキ": {
         "ships": 29,
@@ -2741,13 +2703,8 @@
         "weight_avg": 2.81
       },
       "フグ": {
-<<<<<<< HEAD
         "ships": 9,
         "avg": 5.8,
-=======
-        "ships": 8,
-        "avg": 7.4,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "max": 19,
         "size_avg": 36.6,
         "weight_avg": 0
@@ -2795,22 +2752,16 @@
         "weight_avg": 0
       },
       "メダイ": {
-        "ships": 3,
+        "ships": 5,
         "avg": 1.3,
-        "max": 8,
+        "max": 10,
         "size_avg": 0,
-        "weight_avg": 1.5
+        "weight_avg": 3.17
       },
       "ワラサ": {
-<<<<<<< HEAD
         "ships": 13,
         "avg": 5.4,
         "max": 18,
-=======
-        "ships": 14,
-        "avg": 5.2,
-        "max": 15,
->>>>>>> 84a5898a (fix(fish_area): 船宿ランキングの「件」→「便」表記に統一)
         "size_avg": 0,
         "weight_avg": 4.79
       },
@@ -2927,8 +2878,8 @@
         "weight_avg": 1.6
       },
       "イナダ": {
-        "ships": 2,
-        "avg": 1.5,
+        "ships": 6,
+        "avg": 1.0,
         "max": 6,
         "size_avg": 55.0,
         "weight_avg": 0
@@ -2941,11 +2892,25 @@
         "weight_avg": 0
       },
       "トラフグ": {
-        "ships": 3,
-        "avg": 0.3,
+        "ships": 4,
+        "avg": 0.2,
         "max": 2,
         "size_avg": 0,
         "weight_avg": 2.25
+      },
+      "アカイカ": {
+        "ships": 1,
+        "avg": 0,
+        "max": 250,
+        "size_avg": 0,
+        "weight_avg": 0
+      },
+      "ホウボウ": {
+        "ships": 1,
+        "avg": 0.0,
+        "max": 0,
+        "size_avg": 0,
+        "weight_avg": 0
       }
     },
     "2024/11": {
@@ -3259,6 +3224,13 @@
         "max": 0,
         "size_avg": 0,
         "weight_avg": 0
+      },
+      "クロムツ": {
+        "ships": 1,
+        "avg": 10.0,
+        "max": 10,
+        "size_avg": 0,
+        "weight_avg": 0
       }
     },
     "2023/07": {
@@ -3284,9 +3256,9 @@
         "weight_avg": 0.28
       },
       "タチウオ": {
-        "ships": 1,
-        "avg": 2.0,
-        "max": 4,
+        "ships": 3,
+        "avg": 17.7,
+        "max": 51,
         "size_avg": 0,
         "weight_avg": 0
       },
@@ -3324,6 +3296,27 @@
         "max": 30,
         "size_avg": 35.0,
         "weight_avg": 0
+      },
+      "キハダマグロ": {
+        "ships": 2,
+        "avg": 0.0,
+        "max": 0,
+        "size_avg": 0,
+        "weight_avg": 0
+      },
+      "ヒラマサ": {
+        "ships": 3,
+        "avg": 0.0,
+        "max": 3,
+        "size_avg": 0,
+        "weight_avg": 16.0
+      },
+      "不明": {
+        "ships": 1,
+        "avg": 0.0,
+        "max": 0,
+        "size_avg": 0,
+        "weight_avg": 30.0
       }
     },
     "2025/12": {
@@ -3370,6 +3363,13 @@
         "max": 8,
         "size_avg": 0,
         "weight_avg": 2.8
+      },
+      "タチウオ": {
+        "ships": 1,
+        "avg": 23.0,
+        "max": 39,
+        "size_avg": 106.0,
+        "weight_avg": 0
       }
     },
     "2025/10": {
@@ -3393,6 +3393,13 @@
         "max": 1,
         "size_avg": 0,
         "weight_avg": 7.5
+      },
+      "タチウオ": {
+        "ships": 1,
+        "avg": 30.0,
+        "max": 54,
+        "size_avg": 109.0,
+        "weight_avg": 0
       }
     },
     "2024/12": {
@@ -3497,6 +3504,13 @@
         "max": 7,
         "size_avg": 0,
         "weight_avg": 0.92
+      },
+      "タチウオ": {
+        "ships": 2,
+        "avg": 31.0,
+        "max": 60,
+        "size_avg": 0,
+        "weight_avg": 1.0
       }
     },
     "2023/10": {
