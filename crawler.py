@@ -6811,15 +6811,18 @@ def build_html(catches, crawled_at, history, weather_data=None):
     # HERO カウント・LIVE ティッカーは別途 catches（当日 sparse 含む）を使うため
     # is_sparse_today フラグはセクションラベル切替のみで使用する。
     today_str_local = now.strftime("%Y/%m/%d")
-    today_with_fish = sum(1 for c in catches
-                          if c.get("date") == today_str_local
-                          and any(f != "不明" for f in (c.get("fish") or [])))
     SPARSE_THRESHOLD = 30
-    is_sparse_today = today_with_fish < SPARSE_THRESHOLD
     # T19 (2026/05/09): hero_label / hero_date を冒頭で確定。
     # ZONE B ミニバー軸 / fish_others / 概況 / セクション見出し で使用するため。
     today_str = today_str_local
     hero_base, hero_label, hero_date = _resolve_display_dataset(catches, today_str)
+    # 2026/05/16 修正: sparse 判定を hero_date 基準に変更。
+    # 当日0件で前日にフォールバックした場合、前日データが充実していれば sparse 扱いにしない。
+    # （旧仕様だと「5/15 釣れている魚」見出しのまま 7日max が出て、5/14 ピークの 132 等が紛れ込む）
+    hero_with_fish = sum(1 for c in catches
+                         if c.get("date") == hero_date
+                         and any(f != "不明" for f in (c.get("fish") or [])))
+    is_sparse_today = hero_with_fish < SPARSE_THRESHOLD
     try:
         _recent7 = _load_recent_catches_for_index(now, days=7)
     except Exception:
@@ -6939,8 +6942,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
             )
         # V2 カード用データ計算（補遺3: min〜max のみ・avg は出さない）
         cnt_range_str = ""
-        # this_w に min が無い（旧スキーマ）ため、min は cs から直接集計
-        _cs_p = [c for c in cs if c.get("count_range") and not c["count_range"].get("is_boat")]
+        # 2026/05/16 修正: sparse でなければカードの数値は hero_date 当日のみで集計。
+        # 7日窓のままだと「5/15 釣れている魚」見出しなのに 5/14 ピークの値が出るバグの解消。
+        _cs_scope = [c for c in cs if c.get("date") == hero_date] if not is_sparse_today else cs
+        _cs_p = [c for c in _cs_scope if c.get("count_range") and not c["count_range"].get("is_boat")]
         _mn = None
         _mx = None
         if _cs_p:
@@ -6948,8 +6953,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
             _mxs = [c["count_range"].get("max") for c in _cs_p if c["count_range"].get("max") is not None]
             if _mns: _mn = int(min(_mns))
             if _mxs: _mx = int(max(_mxs))
-        # this_w.max があれば優先（history.json で集計済み・cs と同期している前提）
-        if this_w and (this_w.get("max") or 0):
+        # this_w.max は週max なので sparse 時のみ採用（hero_date 当日値を尊重）
+        if is_sparse_today and this_w and (this_w.get("max") or 0):
             _mx = int(this_w.get("max"))
         if _mn is not None and _mx is not None and _mn != _mx:
             cnt_range_str = f"{_mn}〜{_mx}匹"
@@ -7018,7 +7023,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html" data-signal="{signal_key}">'
             f'<span class="fc-signal">{signal_label}</span>'
             f'<div class="fn"><img src="assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fc-emoji" width="32" height="32" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
-            f'<div class="fr">{cnt_range_str} <small>釣果{len(cs)}件・{ship_num}船宿</small></div>'
+            f'<div class="fr">{cnt_range_str} <small>釣果{len(_cs_scope)}件・{len(set(c["ship"] for c in _cs_scope))}船宿</small></div>'
             f'<div class="fs">{detail_str}</div>'
             f'{fb_tag}{mini_bars}{trend_tag}'
             f'</a>'
