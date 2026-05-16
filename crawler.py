@@ -11010,6 +11010,78 @@ SHIP_TRIP_RULES = {
 }
 
 
+# ============================================================
+# 複合主役船ルール（オプトイン制・2026/05/16 追加）
+# ============================================================
+# 「マダイ五目のアジは外道扱い」を維持しつつ、明示登録した便種のみ複合メインを許容。
+# 列挙にない便種は単一メイン（既存ロジック維持・五目分岐込み）
+#
+# SHIP_KANSO_MULTI_MAIN: kanso_raw 先頭プレフィックスで判定
+#   船宿が kanso 冒頭に船種名を書く場合（仁徳丸・清勝丸・丸天丸・浜べ丸・稲荷丸・治久丸ほか）
+SHIP_KANSO_MULTI_MAIN = {
+    "仁徳丸": [
+        ("オニカサゴ・アラ五目", frozenset({"オニカサゴ", "アラ"})),
+        ("アラ・オニカサゴ五目", frozenset({"アラ", "オニカサゴ"})),
+    ],
+    "清勝丸": [
+        ("アジ+ハナダイ五目",   frozenset({"アジ", "ハナダイ"})),
+        ("アジハナダイ五目",     frozenset({"アジ", "ハナダイ"})),
+        ("アジ・ハナダイ五目",   frozenset({"アジ", "ハナダイ"})),
+        ("沖根魚",               frozenset({"アラ", "オニカサゴ"})),
+    ],
+    "丸天丸": [
+        ("メヌケ船",     frozenset({"メヌケ", "アブラボウズ"})),
+        ("アラ五目",     frozenset({"アラ", "オニカサゴ"})),
+    ],
+    "浜べ丸": [
+        ("鬼五目",         frozenset({"オニカサゴ", "アラ"})),
+        ("ジギング青物",   frozenset({"ワラサ", "イナダ"})),
+        # 「ジギング五目」は単独主役（ヒラメ）→ 登録しない
+    ],
+    "稲荷丸": [
+        # 鴨川稲荷丸（江見漁港）のみ該当・既存「稲荷丸（由比/静岡）」とは別船宿
+        ("アラ釣り＋アマダイ五目",   frozenset({"アラ", "アマダイ"})),
+        ("アラ＋アマダイ五目",       frozenset({"アラ", "アマダイ"})),
+        ("アラ五目＋アマダイ五目",   frozenset({"アラ", "アマダイ"})),
+        ("マダイ五目＋アマダイ五目", frozenset({"マダイ", "アマダイ"})),
+        ("マダイ＋アマダイ五目",     frozenset({"マダイ", "アマダイ"})),
+    ],
+    "治久丸": [
+        ("カイワリ・イサキ",       frozenset({"カイワリ", "イサキ"})),
+        ("カイワリからのイサキ",   frozenset({"カイワリ", "イサキ"})),
+        ("カイワリ＋イサキ",       frozenset({"カイワリ", "イサキ"})),
+    ],
+}
+
+# SHIP_TRIP_FISHSET_MULTI_MAIN: 同一trip内の魚種セットで判定
+#   kanso に船種ワードが無い船宿用（三次郎丸タイプ）
+SHIP_TRIP_FISHSET_MULTI_MAIN = {
+    "三次郎丸": [
+        # trip内に {アラ, オニカサゴ} 両方あれば → 両方メイン
+        (frozenset({"アラ", "オニカサゴ"}), frozenset({"アラ", "オニカサゴ"})),
+    ],
+}
+
+
+def _get_multi_main(ship, kanso_raw, trip_fish_set):
+    """複数主役の判定（オプトイン制）。
+    1) ship + kanso_raw 先頭プレフィックス → 該当ルールの主役セット
+    2) ship + trip 内魚種セット部分一致 → 該当ルールの主役セット
+    3) 該当なし → frozenset() （既存ロジックに落ちる）"""
+    # (1) Kanso先頭マッチ
+    if ship and ship in SHIP_KANSO_MULTI_MAIN and kanso_raw:
+        head = kanso_raw.lstrip()
+        for prefix, main_set in SHIP_KANSO_MULTI_MAIN[ship]:
+            if head.startswith(prefix):
+                return main_set
+    # (2) 同一trip魚種セット
+    if ship and ship in SHIP_TRIP_FISHSET_MULTI_MAIN and trip_fish_set:
+        for required_set, main_set in SHIP_TRIP_FISHSET_MULTI_MAIN[ship]:
+            if required_set.issubset(trip_fish_set):
+                return main_set
+    return frozenset()
+
+
 def normalize_tsuri_mono(raw, ship=""):
     """釣りもの生テキスト → 正規化名（58種MAP）。マッチしなければ空文字を返す"""
     if not raw:
@@ -11074,8 +11146,25 @@ def _extract_tsuri_mono(r, same_trip_records, ship):
     return ""
 
 
-def _classify_main_sub(fish_raw, tsuri_mono):
-    """メイン/サブを判定。fish_rawがtsuri_monoのMAPリストに含まれるかで判定"""
+def _classify_main_sub(fish_raw, tsuri_mono, ship="", kanso_raw="", trip_fish_set=None):
+    """メイン/サブを判定。
+
+    2026/05/16 拡張: 複合主役船ルール（SHIP_KANSO_MULTI_MAIN / SHIP_TRIP_FISHSET_MULTI_MAIN）
+    が該当する便のみ複数メインを許容。それ以外は既存ロジック維持。
+
+    引数:
+        fish_raw: 当該レコードの魚種名（生）
+        tsuri_mono: trip 単位の正規化釣り物（_extract_tsuri_mono 由来）
+        ship: 船宿名（複合主役ルール参照用・後方互換のためデフォルト ""）
+        kanso_raw: 感想生テキスト（先頭から船種名抽出）
+        trip_fish_set: 同一trip 内の fish_raw 集合（複合主役ルール用）
+    """
+    # 複合主役船の限定許容（マダイ五目のアジ等は通常ロジックに落ちる）
+    multi_mains = _get_multi_main(ship, kanso_raw, trip_fish_set)
+    if multi_mains:
+        fish_norm = normalize_tsuri_mono(fish_raw, ship)
+        return "メイン" if fish_norm in multi_mains else "サブ"
+    # 既存ロジック（変更なし）
     if not tsuri_mono or not fish_raw:
         return "メイン"
     if "五目" in tsuri_mono:
@@ -11513,7 +11602,13 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
             # 幸栄丸専用: フグ便でfish_rawがカワハギの場合はカワハギに再分類
             if r.get("ship") == "幸栄丸" and tsuri_norm == "フグ" and r.get("fish_raw", "").strip() == "カワハギ":
                 tsuri_raw, tsuri_norm = "カワハギ", "カワハギ"
-            main_sub   = _classify_main_sub(r.get("fish_raw", ""), tsuri_norm)
+            # 2026/05/16: 複合主役船ルール用に ship / kanso / trip_fish_set を渡す
+            _trip_fish_set = frozenset(x.get("fish_raw", "") for x in same_trip if x.get("fish_raw"))
+            main_sub   = _classify_main_sub(
+                r.get("fish_raw", ""), tsuri_norm,
+                ship=r.get("ship", ""), kanso_raw=comment,
+                trip_fish_set=_trip_fish_set,
+            )
 
             _parts = comment.split("。")
             kanso_short = "。".join(_parts[:2]) + ("。" if len(_parts) > 1 else "")
@@ -11762,6 +11857,12 @@ def save_daily_csv(catches):
                            row.get("date",""), row.get("fish_raw",""))
                     existing_keys.add(key)
 
+        # 2026/05/16: 複合主役船ルール用に trip 単位の魚種セットを事前構築
+        _trip_idx = defaultdict(set)
+        for c in month_catches:
+            if c.get("fish_raw"):
+                _trip_idx[(c["ship"], c["date"], c.get("trip_no"))].add(c["fish_raw"])
+
         new_rows = []
         for c in month_catches:
             fish_raw = c.get("fish_raw", "")
@@ -11772,7 +11873,12 @@ def save_daily_csv(catches):
 
             # V2 正規化
             tsuri_norm = normalize_tsuri_mono(fish_raw, c["ship"])
-            main_sub   = _classify_main_sub(fish_raw, tsuri_norm)
+            _trip_fish_set = frozenset(_trip_idx.get((c["ship"], c["date"], c.get("trip_no")), set()))
+            main_sub   = _classify_main_sub(
+                fish_raw, tsuri_norm,
+                ship=c["ship"], kanso_raw=c.get("kanso_raw", "") or "",
+                trip_fish_set=_trip_fish_set,
+            )
             time_slot  = _extract_time_slot(fish_raw, c.get("kanso_raw", ""), int(c.get("trip_no") or 1), c.get("ship", ""))
             pp1, pp2   = _split_place_pair(c.get("point_place") or "")
             d_min, d_max = _split_depth(c.get("point_depth") or "")

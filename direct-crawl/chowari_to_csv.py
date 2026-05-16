@@ -32,6 +32,13 @@ from hirono_to_csv import (
     NULL, normalize_tsuri_mono, parse_range,
     _v, _num, extract_points, COLUMNS,
 )
+# crawler.py の複合主役ルール（SHIP_KANSO_MULTI_MAIN / SHIP_TRIP_FISHSET_MULTI_MAIN / _get_multi_main）を import
+# chowari クロール由来のレコードに対しても複合主役判定を適用する
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from crawler import _get_multi_main as _crawler_get_multi_main
+except ImportError:
+    _crawler_get_multi_main = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT, "data", "V2")
@@ -54,10 +61,24 @@ def convert(records, tmap):
     for r in records:
         wd = r.get("weather_detail", {})
         tsuri_mono = normalize_tsuri_mono(r["fish_raw"], tmap) or NULL
-        main_sub = "メイン" if r.get("tokki_raw") == "メイン" else "サブ"
+
+        # 2026/05/16: 複合主役船ルールを適用
+        # 1次判定: HTML <h2> 由来の tokki_raw='メイン'
+        # 2次判定: _get_multi_main で複合主役セットに含まれる魚種を「メイン」に昇格
+        key = (r["ship"], r["date"], r["trip_no"])
+        trip_fish_set = frozenset(trip_fish[key])
+        multi_mains = None
+        if _crawler_get_multi_main is not None:
+            multi_mains = _crawler_get_multi_main(r["ship"], r.get("kanso_raw", "") or "", trip_fish_set)
+        if multi_mains:
+            # 複合主役船便: ルールセットに含まれる正規化魚種なら「メイン」
+            fish_norm = normalize_tsuri_mono(r["fish_raw"], tmap)
+            main_sub = "メイン" if fish_norm in multi_mains else "サブ"
+        else:
+            # 通常便: HTML <h2> 由来の tokki_raw を採用
+            main_sub = "メイン" if r.get("tokki_raw") == "メイン" else "サブ"
 
         if main_sub == "メイン":
-            key = (r["ship"], r["date"], r["trip_no"])
             others = [f for f in trip_fish[key] if f != r["fish_raw"]]
             by_catch_list = "・".join(others) if others else ""
         else:
