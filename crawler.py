@@ -10045,11 +10045,72 @@ def build_fish_area_faq_html(fish, area, hist_rows, decadal_calendar=None, area_
 def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=None, hist_rows=None, fish_area_summary=None, fish_top_areas=None):
     fa_out_dir = os.path.join(WEB_DIR, "fish_area")
     os.makedirs(fa_out_dir, exist_ok=True)
-    # 古いフォーマット (OGP なし = PR #34 以前) を削除。
+
+    # 孤児削除用: hist_rows を先にロード（パージブロックで使用するため前倒し）
+    _hist_rows_for_fa = hist_rows if hist_rows is not None else _load_historical_catches()
+
+    # 孤児削除用: hist_rows ベースの (fish, area) セットを構築
+    _hist_fa_set: set = set()
+    for _r in _hist_rows_for_fa:
+        if _r.get("is_cancellation") == "1":
+            continue
+        _f = _r.get("tsuri_mono")
+        _a = _r.get("area")
+        if _f and _a:
+            _hist_fa_set.add((_f, _a))
+
+    # 孤児削除用: fish_area_summary が渡されていれば追加
+    _fas_fa_set: set = set()
+    if fish_area_summary:
+        _fas_fa_set = set(fish_area_summary.keys())
+
+    # 孤児削除用: 引数 data（当日 catches）から (fish, area) セットを構築
+    # T34 の 7日窓フィルタを孤児判定にも適用する。
+    # catches.json が _today_only=False（全件フォールバック）のとき全過去データが混入し
+    # 孤児ペアが _today_fa_set に入って削除されなくなる問題を防ぐ。
+    # ここで cutoff を先算しておき、T34 本体（後段の data 上書き）と同じ7日窓を適用する。
+    _now_fa = datetime.now(JST).replace(tzinfo=None)
+    _cutoff_date_T34_fa = (_now_fa - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
+    _today_fa_set: set = set()
+    for _c in data:
+        if _c.get("date", "") < _cutoff_date_T34_fa:
+            continue
+        _ca = _c.get("area", "")
+        for _cf in _c.get("fish", []):
+            if _cf and _cf != "不明":
+                _today_fa_set.add((_cf, _ca))
+
+    # 有効 (fish, area) セット = hist + fish_area_summary + 当日 catches いずれかに存在
+    _valid_fa_set = _hist_fa_set | _fas_fa_set | _today_fa_set
+
+    # 孤児削除用: fish slug → 日本語 / area slug → 日本語 の逆引き辞書
+    # 重複なし（事前確認済み）のためシンプルに dict comprehension
+    _fish_slug_rev: dict = {v: k for k, v in _FISH_ROMAJI.items()}
+    _area_slug_rev: dict = {v: k for k, v in _AREA_ROMAJI.items()}
+    # 長いslugを優先してマッチするためキーを長い順にソート
+    _fish_slugs_sorted = sorted(_fish_slug_rev.keys(), key=len, reverse=True)
+
+    def _parse_fa_filename(stem: str):
+        """'{fish_slug}-{area_slug}' を (fish_jp, area_jp) に分解。
+        逆引き不可・曖昧な場合は (None, None) を返す（パージ対象外＝安全側）。"""
+        for fs in _fish_slugs_sorted:
+            if stem.startswith(fs + "-"):
+                area_slug = stem[len(fs) + 1:]
+                fish_jp = _fish_slug_rev.get(fs)
+                area_jp = _area_slug_rev.get(area_slug)
+                if fish_jp and area_jp:
+                    return fish_jp, area_jp
+                # area_slug が一致しない場合はさらに短い fish slug を試す
+                # （ループが続くので continue）
+                continue
+        return None, None
+
+    # 古いフォーマット (OGP なし = PR #34 以前) および孤児 HTML を削除。
     # 当日 5件未満の魚×エリアコンボは再生成スキップされるため、古いまま残り続けると
     # validate_output.py の不変条件 [19] OGP メタタグ / [20] share-bar で永続 fail する。
     # 新フォーマットでない HTML は責任を持って削除し、当日条件を満たすコンボのみ
     # 新フォーマットで再生成する設計に揃える。
+    _orphan_purge_count = 0
     for _fn in os.listdir(fa_out_dir):
         if not _fn.endswith(".html") or _fn == "index.html":
             continue
@@ -10064,14 +10125,28 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                             'を集計中です。このページの年間シーズンバー' in _h)
             if is_old_ogp or is_old_faq_v1:
                 os.remove(_p)
+                continue
+            # T38 孤児削除: hist_rows・当日 catches・fish_area_summary のいずれにも
+            # 存在しない (fish, area) ペアの HTML を削除する。
+            # 逆引き不可 / 曖昧なファイル名は安全側に倒してパージ対象外。
+            _stem = _fn[:-5]  # ".html" を除いたstem
+            _fj, _aj = _parse_fa_filename(_stem)
+            if _fj is not None and _aj is not None:
+                if (_fj, _aj) not in _valid_fa_set:
+                    print(f"[orphan-purge] {_fn}: hist=0 today=0 -> delete")
+                    os.remove(_p)
+                    _orphan_purge_count += 1
         except Exception:
             pass
+    if _orphan_purge_count > 0:
+        print(f"[orphan-purge] 孤児 HTML {_orphan_purge_count} 本削除完了")
+
     if decadal_calendar is None:
         decadal_calendar = load_decadal_calendar()
     # H3 (T22): area_description.json をロード（エリア固有1文をイントロに差し込む）
     _area_desc_fa = load_area_description()
     # 年間シーズンバーを実データで生成するため過去CSV（共有キャッシュまたは個別ロード）
-    _hist_rows_for_fa = hist_rows if hist_rows is not None else _load_historical_catches()
+    # ※ _hist_rows_for_fa は孤児削除ブロックで既にロード済み
     _fish_top_areas_fa = fish_top_areas or {}
     # 2026/05/13 T34拡張: valid_catches を直近7日窓に絞る。
     # fishing-v.jp の船宿ページは最新ページ(pageID=1)を返す仕様だが、
@@ -10080,9 +10155,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     # T34 (build_fish_pages) と同じ7日窓フィルタを fish_area にも適用。
     # 注: T34本体は data_recent 別名だが、ここでは下流の処理が全て同じ変数名を
     # 使うため破壊的上書きで簡潔化。呼び出し側で同一リストの再参照なし。
-    # _now_fa は後段の now_fa_global と共用（深夜0時境界のズレ防止・reviewer 指摘）
-    _now_fa = datetime.now(JST).replace(tzinfo=None)
-    _cutoff_date_T34_fa = (_now_fa - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
+    # _now_fa / _cutoff_date_T34_fa は孤児削除ブロックで既に算出済み（同値）
     data = [c for c in data if c.get("date", "") >= _cutoff_date_T34_fa]
     fa_summary: dict = {}
     for c in data:
