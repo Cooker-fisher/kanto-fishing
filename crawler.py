@@ -734,10 +734,15 @@ def build_weather_section(weather_data):
 # 釣果予測エンジン（海況予報 × 過去実績）
 # ============================================================
 def _load_historical_catches():
-    """data/V2/*.csv から全釣果を読み込み（V2正規化済み、約82,000行）
+    """data/V2/*.csv から全釣果を読み込み（V2正規化済み、約100,000行）
     修正 2026/04/16: data/*.csv (V1スタブ・数行のみ) ではなく
     data/V2/*.csv (active_version=V2、正規化済み全件) を参照するよう変更。
     V2はカラム名が tsuri_mono（旧: fish）。_build_catch_weather_index 側で吸収済み。
+
+    2026/05/16 追記: chowari 等の直クロール由来CSV (hirono_YYYY-MM.csv 等) も
+    同ディレクトリに置かれており、sorted(os.listdir) で自動的に取り込まれる。
+    既存V2 39列 + 末尾に source 列を持つ40列スキーマ。各レコードの取得元は
+    'source' 列で識別可能 ('釣りビジョン' / 'chowari/ひろの丸' 等)。
     """
     base = os.path.dirname(__file__) or "."
     try:
@@ -11354,6 +11359,8 @@ RAW_CSV_HEADER = [
     "by_catch",
     "cancel_reason", "cancel_type",
     "kanso_raw", "suion_raw", "suishoku_raw",
+    # 2026/05/16: データソース識別（釣りビジョン / chowari/ひろの丸 / 直サイト/gyo 等）
+    "source",
 ]
 
 
@@ -11483,6 +11490,7 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                     "kanso_raw":      r.get("reason_text", ""),
                     "suion_raw":      "",
                     "suishoku_raw":   "",
+                    "source":         r.get("source") or "釣りビジョン",
                 })
                 continue
 
@@ -11598,6 +11606,7 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 "kanso_raw":      kanso_short,
                 "suion_raw":      r.get("suion_raw") or "",
                 "suishoku_raw":   r.get("suishoku_raw") or "",
+                "source":         r.get("source") or "釣りビジョン",
             })
 
         filepath = os.path.join(output_dir, f"{ym}.csv")
@@ -11690,6 +11699,7 @@ def append_to_catches_raw(catches):
             continue
         existing_keys.add(key)
         # V2 形式に変換（history_crawl_single.to_v2_record と同パターン）
+        # 2026/05/16: source 列追加。catches_raw.json には A1 釣りビジョン経由分のみ書く想定。
         added.append({
             "ship":            c.get("ship", ""),
             "area":            c.get("area", ""),
@@ -11706,6 +11716,7 @@ def append_to_catches_raw(catches):
             "kanso_raw":       c.get("kanso_raw") or c.get("trip_comment", ""),
             "suion_raw":       c.get("suion_raw"),
             "suishoku_raw":    c.get("suishoku_raw"),
+            "source":          c.get("source") or "釣りビジョン",
         })
     if added:
         all_records.extend(added)
