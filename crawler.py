@@ -11051,6 +11051,27 @@ SHIP_KANSO_MULTI_MAIN = {
         ("カイワリからのイサキ",   frozenset({"カイワリ", "イサキ"})),
         ("カイワリ＋イサキ",       frozenset({"カイワリ", "イサキ"})),
     ],
+    # 2026/05/17: 千葉外房 B群拡張で追加
+    "幸辰丸": [
+        # kanso 例: 「朝便、午前イサキ良型混じりで釣れました 後半ハナダイは…」
+        #          「イサキハナダイリレー船」「イサキハナダイリレー」
+        ("イサキハナダイリレー",   frozenset({"イサキ", "ハナダイ"})),
+        ("イサキ・ハナダイリレー", frozenset({"イサキ", "ハナダイ"})),
+        # 単発 startswith 用 prefix
+        ("朝便", frozenset({"イサキ", "ハナダイ"})),  # 「朝便、午前イサキ…後半ハナダイ」=リレー船
+    ],
+    "第三孝徳丸": [
+        # kanso 例: 「朝便はイサキ花鯛リレー釣りで出船…」「朝便は花鯛五目で出船…」
+        ("イサキ花鯛リレー",   frozenset({"イサキ", "ハナダイ"})),
+        ("イサキ・花鯛リレー", frozenset({"イサキ", "ハナダイ"})),
+        ("花鯛五目",           frozenset({"ハナダイ"})),  # 単独便（複合主役ではないが正しい主役を確定）
+    ],
+    "新栄丸": [
+        # kanso 例: 「黒ムツ・マダイ五目で出船」「マダイ五目で出船」
+        ("黒ムツ・マダイ五目", frozenset({"クロムツ", "マダイ"})),
+        ("黒ムツ＋マダイ",     frozenset({"クロムツ", "マダイ"})),
+        ("クロムツ・マダイ",   frozenset({"クロムツ", "マダイ"})),
+    ],
 }
 
 # SHIP_TRIP_FISHSET_MULTI_MAIN: 同一trip内の魚種セットで判定
@@ -11065,14 +11086,18 @@ SHIP_TRIP_FISHSET_MULTI_MAIN = {
 
 def _get_multi_main(ship, kanso_raw, trip_fish_set):
     """複数主役の判定（オプトイン制）。
-    1) ship + kanso_raw 先頭プレフィックス → 該当ルールの主役セット
+    1) ship + kanso_raw 先頭プレフィックス（startswith）または先頭80字以内に含む → 該当ルール
     2) ship + trip 内魚種セット部分一致 → 該当ルールの主役セット
-    3) 該当なし → frozenset() （既存ロジックに落ちる）"""
-    # (1) Kanso先頭マッチ
+    3) 該当なし → frozenset() （既存ロジックに落ちる）
+
+    2026/05/17: 「リレー船」「五目」が kanso 先頭ではなく中間に来る船宿
+    （幸辰丸・第三孝徳丸・新栄丸 等）対応のため、head[:80] に含むかも判定。"""
+    # (1) Kansoマッチ（先頭プレフィックス or 先頭80字以内に含む）
     if ship and ship in SHIP_KANSO_MULTI_MAIN and kanso_raw:
         head = kanso_raw.lstrip()
+        head_80 = head[:80]
         for prefix, main_set in SHIP_KANSO_MULTI_MAIN[ship]:
-            if head.startswith(prefix):
+            if head.startswith(prefix) or prefix in head_80:
                 return main_set
     # (2) 同一trip魚種セット
     if ship and ship in SHIP_TRIP_FISHSET_MULTI_MAIN and trip_fish_set:
