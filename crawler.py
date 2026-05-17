@@ -3433,12 +3433,42 @@ AREA_TO_PREFECTURE = {
     '由比': 'shizuoka', '福田港': 'shizuoka',
     '宇佐美': 'shizuoka', '戸田': 'shizuoka',
     '田子の浦港': 'shizuoka',
-    # 茨城（2026/05/14 追加・勝浦川津港は千葉に修正）
+    # 茨城
     '鹿島': 'ibaraki', '鹿島港': 'ibaraki', '鹿島市新浜': 'ibaraki',
+    '鹿嶋新港': 'ibaraki', '鹿嶋旧港': 'ibaraki',
     '日立': 'ibaraki', '日立久慈港': 'ibaraki',
-    '波崎': 'ibaraki', '波崎港': 'ibaraki', '大洗': 'ibaraki',
+    '波崎': 'ibaraki', '波崎港': 'ibaraki', '波崎新港': 'ibaraki',
+    '大洗': 'ibaraki', '大洗港': 'ibaraki',
+    '久慈': 'ibaraki', '会瀬漁港': 'ibaraki',
+    '平潟': 'ibaraki', '那珂湊港': 'ibaraki',
+    # 千葉（追加）
+    '江見': 'chiba', '江見漁港': 'chiba', '相浜': 'chiba', '浜行川': 'chiba',
+    '伊戸': 'chiba',
+    '江戸川区今井水門': 'tokyo', '江戸川区新今井橋': 'tokyo', '江戸川区鹿本橋': 'tokyo',
+    # 東京（追加）
+    '品川区品川堀': 'tokyo', '品川区立会川勝島運河': 'tokyo', '品川区鮫洲勝島運河': 'tokyo',
+    '大田区六郷水門': 'tokyo', '大田区呑川': 'tokyo', '大田区海老取川': 'tokyo',
+    '大田区羽田': 'tokyo',
+    '江東区夢の島桟橋': 'tokyo', '江東区小名木川': 'tokyo', '江東区木場': 'tokyo',
+    '江東区東京湾マリーナ': 'tokyo', '江東区釣船橋': 'tokyo',
+    '港区京浜運河': 'tokyo', '足立区千住大橋': 'tokyo',
+    # 神奈川（追加）
+    '横浜港': 'kanagawa', '横浜': 'kanagawa', '横浜市八幡橋': 'kanagawa',
+    '横浜市金沢八景乙舳': 'kanagawa', '横浜市金沢八景平潟': 'kanagawa',
+    '佐島港': 'kanagawa', '柴漁港': 'kanagawa', '川名': 'kanagawa',
+    '葉山町葉山鐙摺港': 'kanagawa', '平塚漁港': 'kanagawa',
+    '腰越港': 'kanagawa', '片瀬漁港': 'kanagawa',
+    '小田原新港': 'kanagawa', '早川漁港': 'kanagawa',
+    '湯河原町福浦港': 'kanagawa', '真鶴町真鶴港': 'kanagawa',
+    # 静岡（追加）
+    '宇佐美港': 'shizuoka', '熱海港': 'shizuoka', '網代港': 'shizuoka',
+    '戸又港': 'shizuoka', '戸田港': 'shizuoka', '久料港': 'shizuoka',
+    '南伊豆町手石港': 'shizuoka', '松崎港': 'shizuoka', '松崎町松崎港': 'shizuoka',
+    '西伊豆町安良里港': 'shizuoka', '清水港': 'shizuoka', '須崎港': 'shizuoka',
+    '焼津港': 'shizuoka', '焼津小川港': 'shizuoka',
+    '沼津市江の浦港': 'shizuoka', '静浦漁港': 'shizuoka', '寸座マリーナ': 'shizuoka',
     # 不明（住所未確認・None でスキップ）
-    '大津港': None, '松崎港': None,
+    '大津港': None,
 }
 
 # 県スラグ → 表示用ラベル（img alt 属性等の SEO 用）
