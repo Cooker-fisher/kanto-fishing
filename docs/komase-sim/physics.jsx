@@ -458,7 +458,10 @@ window.SimPhysics = (function() {
     let shakuriTimer = 0;
     let leakAccum = 0;
     let elapsed = 0;
-    const warmup = durationSec * 0.4;
+    // warmup: 短くしてユーザー体感 (cycle 投入後すぐ評価開始) に近づける
+    //   旧 40% (240s sim で 96s) は steady-state 寄りで楽観的すぎ、ユーザーが
+    //   見る 30-60s 区間と乖離していた。固定 15s = 落とし込み + 初期しゃくり 1-2発分。
+    const warmup = Math.min(15, durationSec * 0.1);
     // 5基準スコア用カウンタ
     const scoreCounters = {
       totalFrames: 0,
