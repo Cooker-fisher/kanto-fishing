@@ -122,6 +122,47 @@ html, body {
   letter-spacing: 0.06em;
   margin-left: 6px;
 }
+.head__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.head__link {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  padding: 4px 0;
+}
+.head__link:hover { color: var(--cta); }
+.head__btn {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.15s, border-color 0.15s;
+}
+.head__btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.head__btn--x { }
+.head__btn--follow {
+  background: var(--cta);
+  border-color: var(--cta);
+  color: #fff;
+}
+.head__btn--follow:hover {
+  background: var(--cta);
+  filter: brightness(1.1);
+}
 .head__sub {
   font-size: 11px;
   color: rgba(255,255,255,0.7);

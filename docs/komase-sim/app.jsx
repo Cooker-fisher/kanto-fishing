@@ -995,6 +995,24 @@ function App() {
       <header className="head app__head">
         <div>
           <h1 className="head__title">マダイコマセシミュレーター <span className="head__ver">ver.1.0</span></h1>
+          <div className="head__actions">
+            <a href="/" className="head__link" aria-label="船釣り予想 トップへ戻る">← 船釣り予想 トップへ</a>
+            <a
+              className="head__btn head__btn--x"
+              href={"https://twitter.com/intent/tweet?text=" +
+                encodeURIComponent("マダイコマセシミュレーターで関東のコマセマダイ釣りを物理シミュレーション。ハリス長・ガン玉・しゃくりの最適解を探せます。") +
+                "&url=" + encodeURIComponent("https://funatsuri-yoso.com/komase-sim/") +
+                "&hashtags=" + encodeURIComponent("マダイ,コマセ釣り,船釣り")}
+              target="_blank" rel="noopener nofollow"
+              aria-label="X（旧Twitter）でシェア"
+            >𝕏 でシェア</a>
+            <a
+              className="head__btn head__btn--follow"
+              href="https://twitter.com/intent/follow?screen_name=funatsuri_yoso"
+              target="_blank" rel="noopener nofollow"
+              aria-label="@funatsuri_yoso をフォロー"
+            >フォロー</a>
+          </div>
         </div>
         <div className="head__meta">
           <div>SIM <b>● LIVE</b>　{Math.round(particlesRef.current.length)}粒</div>
