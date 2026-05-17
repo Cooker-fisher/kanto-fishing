@@ -449,28 +449,14 @@ function App() {
   const triggerRef = useRef(triggerShakuri);
   triggerRef.current = triggerShakuri;
 
-  // 手動巻く（makiAmount だけ巻き上げ）。コマセ枯渇でのみ自動回収。
+  // 手動巻く（makiAmount だけ巻き上げ）。コマセ枯渇でも自動回収しない（仕掛け回収は手動のみ）。
   const triggerMaki = () => {
     if (phaseRef.current !== "fishing") return;
     const pp = physicsParamsRef.current;
     const physicalMaxMaki = Math.max(2, pp.tanaDepth - 1);
     const nextTarget = rigStateRef.current.makiTarget + (pp.makiAmount || 0);
-    if (chumRef.current <= 0.05) {
-      // コマセ枯渇 → 自動回収 → 落とし込み再開 (drop phase で makiOffset が再計算される)
-      rigStateRef.current.makiTarget = 0;
-      rigStateRef.current.makiOffset = 0;
-      chumRef.current = 1.0;
-      phaseRef.current = "dropping";
-      bishiAbsYRef.current = 0;
-      setPhase("dropping");
-      flashRef.current = 1.4;
-      pendingShakuriRef.current = [];
-      pendingMakiRef.current = [];
-      autoStateRef.current = { state: "idle", biteTimer: 0 };
-    } else {
-      rigStateRef.current.makiTarget = Math.min(physicalMaxMaki, nextTarget);
-      flashRef.current = 0.5;
-    }
+    rigStateRef.current.makiTarget = Math.min(physicalMaxMaki, nextTarget);
+    flashRef.current = 0.5;
   };
   const makiRef = useRef(triggerMaki);
   makiRef.current = triggerMaki;
