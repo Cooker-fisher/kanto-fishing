@@ -13717,8 +13717,15 @@ def main():
     print(f"=== 関東船釣りクローラー v5.15 開始: {crawled_at} ===")
     print(f"対象: {len(active_ships)} 船宿（釣りビジョン:{fv_count} / gyo.ne.jp:{gyo_count}）\n")
 
+    # 2026/05/17: 釣りビジョン sid=None の船宿はクロール対象外（chowari 等の代替ソース経由）
+    # 修正前: 150隻分の HTTP 404 リクエスト（2-3分のロス + ログ汚染）
+    skipped_no_sid = 0
     for s in active_ships:
         source = s.get("source", "fishing-v")
+        # 釣りビジョン経由 だが sid=None → 代替ソース利用（chowari 等）なのでスキップ
+        if source != "gyo" and not s.get("sid"):
+            skipped_no_sid += 1
+            continue
         print(f"  [{s['area']}] {s['name']} ({source}) ...", end=" ", flush=True)
         if source == "gyo":
             url  = GYO_BASE_URL.format(cid=s["cid"])
@@ -13735,6 +13742,8 @@ def main():
         print(f"{len(catches)} 件")
         all_catches.extend(catches)
         time.sleep(0.8)
+    if skipped_no_sid:
+        print(f"\n釣りビジョン sid=None スキップ: {skipped_no_sid}隻（chowari 等別ソース利用）")
 
     # 重複排除
     before = len(all_catches)
