@@ -630,13 +630,11 @@ window.SimPhysics = (function() {
     const peakSync    = scoreCounters.peakRatio || 0;
 
     // ★ リアルタイム合否表示と完全に同じスコア式 (app.jsx cycleScore と整合)
-    //   旧式はアクション妥当性ボーナス・コマセ消費ボーナスを多数含み、
-    //   実物理で sync しない config でも 100+ 点を取れてしまい、
-    //   live mode のスコア 0 と乖離していた。
-    //   コマセマダイの実釣評価は「ビシ指示棚 + 付け餌コマセ帯 + 同調」が全て。
-    const baseScore = sustainRate * 60 + okRate * 15;
+    //   配点: sustain 50 + ok 15 + meanSync 15 + peak 20 = max 100
+    //   peakBonus を min(20, peak*0.4) に: 短時間でも sync 達成を強く評価
+    const baseScore = sustainRate * 50 + okRate * 15;
     const syncBonus = Math.min(15, meanRatio * 1.5);
-    const peakBonus = Math.min(10, peakSync * 0.8);
+    const peakBonus = Math.min(20, peakSync * 0.4);
     const total = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
 
     if (typeof window !== 'undefined' && window.__lastScoreDump !== false) {

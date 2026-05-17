@@ -198,7 +198,7 @@ function App() {
   // ===== 1サイクル評価 (投入→仕掛け回収 までの集計) =====
   //   実釣感: 投入してから回収するまでの 1 往復で「うまく釣れる配置を維持できたか」を採点
   //   フレームベースで sync/cage位置/hook位置を集計し、回収時にスコア確定
-  const cycleStatsRef = useRef({ goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: 0 });
+  const cycleStatsRef = useRef({ goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 });
   const [lastCycleResult, setLastCycleResult] = useState(null);  // { score, grade, note, sustainRate, meanSync, durationSec, cycleNo }
   const cycleCountRef = useRef(0);
 
@@ -294,7 +294,7 @@ function App() {
     metricsRef.current.totalSpawned = 0;
     metricsRef.current.hitRateEMA = 0;
     // サイクル評価リセット
-    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: performance.now() };
+    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
     cycleCountRef.current = 0;
     setLastCycleResult(null);
   }
@@ -520,7 +520,7 @@ function App() {
     autoStateRef.current = { state: "idle", biteTimer: 0 };
     chumRef.current = 1.0;
     // 新サイクル開始: 集計リセット
-    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: performance.now() };
+    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
   };
   const castRef = useRef(castRig);
   castRef.current = castRig;
@@ -545,7 +545,7 @@ function App() {
     dropVelRef.current = physicsParamsRef.current.dropSpeed || 1.5;
     flashRef.current = 1.4;
     // 次サイクルの集計開始
-    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: performance.now() };
+    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
   };
 
   // ===== 1サイクル完了処理 (仕掛け回収時に呼ばれる) =====
@@ -823,21 +823,26 @@ function App() {
         cycSt.okFrames += okFrame;
         cycSt.sumSync += syncRate;
         if (syncRate > cycSt.peakSync) cycSt.peakSync = syncRate;
+        // シミュ経過時間累積 (倍速時は実時間より速く進む)
+        cycSt.simElapsed += dt;
         // リアルタイムスコア: 累積フレーム数に応じて秒ごとに更新
         //   フレーム数が少ない初期はスコアが伸びていく感覚を出す
         if (cycSt.totalFrames > 0) {
           const sustainRate = cycSt.goodFrames / cycSt.totalFrames;
           const okRate = cycSt.okFrames / cycSt.totalFrames;
           const meanSync = cycSt.sumSync / cycSt.totalFrames;
-          const baseScore = sustainRate * 60 + okRate * 15;
+          // 配点: sustain 50 + ok 15 + meanSync 15 + peak 20 = max 100
+          //   peakBonus を min(20, peak*0.4) に変更 (旧: min(10, peak*0.8) → 12%以上で頭打ち)
+          //   peakSync 50% で 20pt 満点 → 「短時間でも sync 達成」を強く評価
+          const baseScore = sustainRate * 50 + okRate * 15;
           const syncBonus = Math.min(15, meanSync * 1.5);
-          const peakBonus = Math.min(10, cycSt.peakSync * 0.8);
+          const peakBonus = Math.min(20, cycSt.peakSync * 0.4);
           metricsRef.current.cycleScore = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
           metricsRef.current.cycleSustainRate = sustainRate * 100;
           metricsRef.current.cycleOkRate = okRate * 100;
           metricsRef.current.cycleMeanSync = meanSync;
           metricsRef.current.cyclePeakSync = cycSt.peakSync;
-          metricsRef.current.cycleDurationSec = (performance.now() - cycSt.cycleStartAt) / 1000;
+          metricsRef.current.cycleDurationSec = cycSt.simElapsed;
         }
       }
       const histo = SimPhysics.depthHistogram(particlesRef.current, pp.depth, 24, rig.hook.y);
