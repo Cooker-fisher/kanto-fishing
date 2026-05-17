@@ -220,15 +220,13 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
             <span className="field__value" style={{color:"var(--vermilion)"}}>{hookW.toFixed(2)}<span className="unit">g</span></span>
           </div>
         </div>
-        <Segmented label="ガン玉位置"
-          value={params.ganDamaPos}
-          onChange={v => sp({ ganDamaPos: v })}
-          lockKey="ganDamaPos" locks={locks} toggleLock={toggleLock}
-          options={[
-            { v: "chimoto",   label: "チモト" },
-            { v: "mid",       label: "中" },
-            { v: "near-hook", label: "ハリス下" },
-          ]} />
+        <Slider label="ガン玉位置 (ビシ側0%→針側100%)"
+          value={params.ganDamaPct != null ? params.ganDamaPct : 50}
+          min={0} max={100} step={5} unit="%"
+          onChange={v => sp({ ganDamaPct: v,
+            ganDamaPos: v <= 15 ? "chimoto" : v >= 85 ? "near-hook" : "mid" })}
+          lockKey="ganDamaPct" locks={locks} toggleLock={toggleLock}
+          format={v => (v <= 15 ? "チモト " : v >= 85 ? "ハリス下 " : "中 ") + v} />
         <Slider label="ガン玉サイズ" value={params.ganDamaSize} min={0} max={1.5} step={0.05} unit="g"
           onChange={v => sp({ ganDamaSize: v })}
           lockKey="ganDamaSize" locks={locks} toggleLock={toggleLock}
@@ -467,13 +465,16 @@ const LOCK_LABEL = {
   ganDamaPos: "ガン玉位置", ganDamaSize: "ガン玉サイズ",
   shakuriStrokeCm: "しゃくり振り幅", shakuriCountPerTrigger: "しゃくり数",
   makiAmount: "巻き量", dropAmount: "落とし込み量", shakuriInterval: "しゃくり間隔",
+  ganDamaPct: "ガン玉位置",
 };
 
 function RecommendationCard({ rec, onApply, params }) {
   const r = rec.best;
   const locked = rec.locked || {};
   const hookLabel = SimPhysics.HOOK_TYPE_LABEL[r.hookType];
-  const ganLabel = r.ganDamaPos === "chimoto" ? "チモト" : r.ganDamaPos === "near-hook" ? "ハリス下" : "中";
+  const ganPct = r.ganDamaPct != null ? r.ganDamaPct
+    : (r.ganDamaPos === "chimoto" ? 5 : r.ganDamaPos === "near-hook" ? 92 : 50);
+  const ganLabel = ganPct <= 15 ? "チモト" : ganPct >= 85 ? "ハリス下" : "中";
   const cell = (key, value) => (
     <RecRow label={LOCK_LABEL[key] || key} value={value} locked={!!locked[key]} />
   );
@@ -504,7 +505,7 @@ function RecommendationCard({ rec, onApply, params }) {
         {r.cushionLength != null && cell("cushionLength", `${r.cushionLength.toFixed(1)}m`)}
         {cell("harrisLength", `${r.harrisLength.toFixed(1)}m`)}
         {cell("harrisNo", `${r.harrisNo}号`)}
-        {cell("ganDamaPos", `${ganLabel} ${r.ganDamaSize === 0 ? "なし" : r.ganDamaSize.toFixed(2)+"g"}`)}
+        {cell("ganDamaPct", `${ganLabel} ${ganPct}% ${r.ganDamaSize === 0 ? "なし" : r.ganDamaSize.toFixed(2)+"g"}`)}
         {r.cageUpperOpening != null && cell("cageUpperOpening", `${Math.round(r.cageUpperOpening*100)}%`)}
         {r.cageLowerOpening != null && cell("cageLowerOpening", `${Math.round(r.cageLowerOpening*100)}%`)}
         {r.komaseSize != null && cell("komaseSize", `${r.komaseSize}`)}

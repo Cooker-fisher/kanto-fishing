@@ -315,12 +315,21 @@ window.SimRenderer = (function() {
     const rodTipX = map.x(window.SimPhysics ? window.SimPhysics.ROD_X_M : 6);
     const cx = map.x(rig.cage.x);
     const cy = map.y(rig.cage.y) - ofs * 0.35; // ビシは波の 35% 程度同期して揺れる
-    // PE は基本まっすぐ。潮流があれば中間点を下流に膨らませる。
-    const ctrlX = cx + (rodTipX - cx) * 0.3 + Math.min(18, (params.tideSpeed || 0) * 14);
-    const ctrlY = (rodTipY + cy) * 0.55;
+    // ★ 仕掛け構成: PE → 天秤(yajiri arm) → クッションゴム → ハリス → 針
+    //   天秤の左端にコマセカゴ (cage)、右端 (= rig 接続点) からクッションゴム
+    //   tenbinApex は PE 接続点 = カゴと cushion の中間やや右上
+    const tenbinApexX = cx + 1;
+    const tenbinApexY = cy - 18;
+    const cageCenterX = cx - 12;  // カゴは右側接続点より左に 12px
+    const cageW = 10, cageH = 20;
+    const cageTopY = cy - cageH/2 + 2;
+
+    // PE は基本まっすぐ。潮流があれば中間点を下流に膨らませる。終点は天秤の apex。
+    const ctrlX = tenbinApexX + (rodTipX - tenbinApexX) * 0.3 + Math.min(18, (params.tideSpeed || 0) * 14);
+    const ctrlY = (rodTipY + tenbinApexY) * 0.55;
     ctx.beginPath();
     ctx.moveTo(rodTipX, rodTipY);
-    ctx.quadraticCurveTo(ctrlX, ctrlY, cx, cy);
+    ctx.quadraticCurveTo(ctrlX, ctrlY, tenbinApexX, tenbinApexY);
     ctx.stroke();
 
     // 竿先 → ビシ 鉛直距離表示（縦点線＋ラベル）
@@ -356,63 +365,120 @@ window.SimRenderer = (function() {
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillText(`(ライン長${peTotalM.toFixed(1)}m)`, peGuideX - 100, peMidY + 10);
 
-    // ビシ本体 (籠 + 錘)
-    const cageW = 12, cageH = 22;
-    // 錘の蓋
+    // 天秤 (yajiri arm): 左端→カゴ上、右端→クッション接続点
+    //   形状: apex から L 字に折れ曲がる金属棒
+    ctx.strokeStyle = "rgba(220, 230, 240, 0.85)";
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    // 左腕: apex → カゴ上中心
+    ctx.moveTo(tenbinApexX, tenbinApexY);
+    ctx.lineTo(cageCenterX, cageTopY - 4);
+    // 右腕: apex → クッション接続点 (cx, cy)
+    ctx.moveTo(tenbinApexX, tenbinApexY);
+    ctx.lineTo(cx, cy);
+    ctx.stroke();
+    // apex リング (PE 結束点)
+    ctx.fillStyle = "rgba(220, 230, 240, 0.95)";
+    ctx.beginPath();
+    ctx.arc(tenbinApexX, tenbinApexY, 1.8, 0, Math.PI*2);
+    ctx.fill();
+
+    // ビシ本体 (カゴ): 上が広く・下が少し角ばった形 (底面が小さく台形)
+    //   形状: 八角形/台形ベース
+    //     top L:    (cageCenterX - cageW/2, cageTopY)
+    //     top R:    (cageCenterX + cageW/2, cageTopY)
+    //     side L:   ...垂直
+    //     side R:   ...垂直
+    //     底面 angle: 左右内側に折れて底辺 (cageW - 4) で平らに
+    const cageBotY = cageTopY + cageH;
+    const cageTopL = cageCenterX - cageW/2;
+    const cageTopR = cageCenterX + cageW/2;
+    const cageBotL = cageCenterX - (cageW/2 - 2);
+    const cageBotR = cageCenterX + (cageW/2 - 2);
+    const cageAngleY = cageBotY - 4;  // ここから底面の角がつく
+    // 錘の蓋 (上端の金属蓋)
     ctx.fillStyle = "#1e293b";
-    ctx.fillRect(cx - cageW/2 - 1, cy - cageH/2 - 3, cageW + 2, 4);
-    // 籠 (背景)
+    ctx.fillRect(cageTopL - 1, cageTopY - 3, cageW + 2, 4);
+    // カゴ本体パス
+    ctx.beginPath();
+    ctx.moveTo(cageTopL, cageTopY);
+    ctx.lineTo(cageTopR, cageTopY);
+    ctx.lineTo(cageTopR, cageAngleY);
+    ctx.lineTo(cageBotR, cageBotY);
+    ctx.lineTo(cageBotL, cageBotY);
+    ctx.lineTo(cageTopL, cageAngleY);
+    ctx.closePath();
     ctx.fillStyle = "#475569";
-    ctx.fillRect(cx - cageW/2, cy - cageH/2, cageW, cageH);
-    // コマセ充填レベル (内側を朱で塗る)
+    ctx.fill();
+    // コマセ充填レベル (内側を coral で塗る・台形クリップ風)
     if (chumLevel > 0.01) {
       const innerW = cageW - 3;
       const fullH = cageH - 4;
       const fillH = fullH * Math.max(0, Math.min(1, chumLevel));
-      const fy = cy + cageH/2 - 2 - fillH;
+      const fy = cageBotY - 2 - fillH;
       const gd = ctx.createLinearGradient(0, fy, 0, fy + fillH);
       gd.addColorStop(0, "rgba(253, 186, 116, 0.95)");
       gd.addColorStop(1, "rgba(232, 93, 4, 0.95)");
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(cageTopL+1, cageTopY+1);
+      ctx.lineTo(cageTopR-1, cageTopY+1);
+      ctx.lineTo(cageTopR-1, cageAngleY);
+      ctx.lineTo(cageBotR-0.5, cageBotY-0.5);
+      ctx.lineTo(cageBotL+0.5, cageBotY-0.5);
+      ctx.lineTo(cageTopL+1, cageAngleY);
+      ctx.closePath();
+      ctx.clip();
       ctx.fillStyle = gd;
-      ctx.fillRect(cx - innerW/2, fy, innerW, fillH);
+      ctx.fillRect(cageCenterX - innerW/2, fy, innerW, fillH);
+      ctx.restore();
     }
     // 枠線
     ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(cx - cageW/2, cy - cageH/2, cageW, cageH);
-    // メッシュ (前面)
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(cageTopL, cageTopY);
+    ctx.lineTo(cageTopR, cageTopY);
+    ctx.lineTo(cageTopR, cageAngleY);
+    ctx.lineTo(cageBotR, cageBotY);
+    ctx.lineTo(cageBotL, cageBotY);
+    ctx.lineTo(cageTopL, cageAngleY);
+    ctx.closePath();
+    ctx.stroke();
+    // メッシュ (前面横線・3-4本に減らす)
     ctx.strokeStyle = "rgba(13, 43, 74, 0.55)";
     ctx.lineWidth = 0.4;
-    for (let i = 1; i < 5; i++) {
-      const ly = cy - cageH/2 + (cageH/5) * i;
+    for (let i = 1; i < 4; i++) {
+      const ly = cageTopY + (cageH/4) * i;
       ctx.beginPath();
-      ctx.moveTo(cx - cageW/2, ly);
-      ctx.lineTo(cx + cageW/2, ly);
+      ctx.moveTo(cageTopL+1, ly);
+      ctx.lineTo(cageTopR-1, ly);
       ctx.stroke();
     }
-    // 開口部 — 上窓と下窓を別々に。開きと残量で目立たせる
+    // 開口部 — 上窓と下窓
     const upperOp = params.cageUpperOpening != null ? params.cageUpperOpening : (params.cageOpening || 0);
     const lowerOp = params.cageLowerOpening != null ? params.cageLowerOpening : (params.cageOpening || 0);
     if (upperOp > 0.05 && chumLevel > 0.05) {
       const op = Math.min(cageW - 2, upperOp * cageW);
       ctx.fillStyle = "#f97316";
-      ctx.fillRect(cx - op/2, cy - cageH/2 - 1, op, 2);
+      ctx.fillRect(cageCenterX - op/2, cageTopY - 1, op, 2);
     }
     if (lowerOp > 0.05 && chumLevel > 0.05) {
-      const op = Math.min(cageW - 2, lowerOp * cageW);
+      const op = Math.min(cageW - 4, lowerOp * (cageW - 4));
       ctx.fillStyle = "rgba(249, 115, 22, 0.7)";
-      ctx.fillRect(cx - op/2, cy + cageH/2 - 1, op, 2);
+      ctx.fillRect(cageCenterX - op/2, cageBotY - 1, op, 2);
     }
 
     // 仕掛け描画: クッションゴム区間 → ハリス区間 を別スタイルで
     const yShift = ofs * 0.35;
     const cushionEndIdx = rig.cushionEndIdx != null ? rig.cushionEndIdx : 0;
     // クッションゴム区間（太めの朱色・ゴムを表現）
+    // 起点は天秤右腕の末端 (cx, cy) — カゴ底ではなく天秤接続点から
     if (cushionEndIdx > 0) {
       ctx.strokeStyle = "rgba(232, 93, 4, 0.75)";
       ctx.lineWidth = 2.2;
       ctx.beginPath();
-      ctx.moveTo(cx, cy + cageH/2);
+      ctx.moveTo(cx, cy);
       for (let i = 0; i <= cushionEndIdx; i++) {
         const p = rig.harris[i];
         ctx.lineTo(map.x(p.x), map.y(p.y) - yShift);

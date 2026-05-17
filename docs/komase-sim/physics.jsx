@@ -202,9 +202,12 @@ window.SimPhysics = (function() {
     const cCage = current(cage.y, params);
     const dv = dropVel || 0;
 
-    // ガン玉位置 t (0..1): chimoto=0.05 (ビシ直下), mid=0.50 (中央), near-hook=0.92 (hook近傍)
+    // ガン玉位置 t (0..1): 0=ビシ直下, 1=hook 近傍
+    // 優先順位: params.ganDamaPct (0-100) > params.ganDamaPos (legacy strings)
     let tGan;
-    if (ganDamaPos === "chimoto") tGan = 0.05;
+    if (params.ganDamaPct != null) {
+      tGan = Math.max(0.02, Math.min(0.98, params.ganDamaPct / 100));
+    } else if (ganDamaPos === "chimoto") tGan = 0.05;
     else if (ganDamaPos === "near-hook") tGan = 0.92;
     else tGan = 0.50;
 
@@ -617,7 +620,7 @@ window.SimPhysics = (function() {
       shakuriInterval:        [30, 45, 60, 90, 120],
       harrisLength:           env.depth > 60 ? [7, 9, 11] : [5, 7, 9, 11],
       harrisNo:               [2, 3, 4],
-      ganDamaPos:             ["chimoto", "mid", "near-hook"],
+      ganDamaPct:             [5, 25, 50, 75, 95],  // ビシ側→針側%
       ganDamaSize:            [0, 0.3, 0.5, 0.8],
       cushionLength:          [1.0, 1.5],
       hookType:               ["madai", "iseama"],
@@ -637,7 +640,7 @@ window.SimPhysics = (function() {
       cageUpperOpening: 0.25, cageLowerOpening: 0,
       makiAmount: 2.5, shakuriInterval: 60,
       harrisLength: env.depth > 60 ? 9 : 8,
-      harrisNo: 3, ganDamaPos: "mid", ganDamaSize: 0.3,
+      harrisNo: 3, ganDamaPct: 50, ganDamaSize: 0.3,
       cushionLength: 1.0,
       hookType: "madai", hookSize: 10,
       komaseSize: "L", smokeLevel: "weak",
@@ -682,7 +685,7 @@ window.SimPhysics = (function() {
     const axisOrder = [
       "shakuriCountPerTrigger", "cageUpperOpening", "shakuriStrokeCm",
       "shakuriInterval", "makiAmount",
-      "harrisLength", "harrisNo", "ganDamaPos", "ganDamaSize",
+      "harrisLength", "harrisNo", "ganDamaPct", "ganDamaSize",
       "cageLowerOpening", "cushionLength",
       "komaseSize", "smokeLevel", "hookType", "hookSize",
     ];

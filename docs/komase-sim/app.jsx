@@ -27,6 +27,7 @@ const DEFAULT_PARAMS = {
   hookSize: 10,
 
   ganDamaPos: "mid",
+  ganDamaPct: 50,  // ガン玉位置: ビシ側(0)→針側(100) % で連続指定
   ganDamaSize: 0.2,
 
   // 関東コマセマダイ標準: 70-80cm 刻みで3回しゃくり、合計約5m 巻き上げ、3分待ち
@@ -545,36 +546,6 @@ function App() {
         swellOffsetYRef.current = amp * Math.sin(swellPhaseRef.current * 2 * Math.PI / period);
       }
 
-      // DEBUG: 状態を window に公開
-      const prevState = window.__debugAuto && window.__debugAuto.autoState ? window.__debugAuto.autoState.state : null;
-      const newState = autoStateRef.current.state;
-      if (prevState !== newState) {
-        window.__stateLog = window.__stateLog || [];
-        window.__stateLog.push({
-          t: performance.now().toFixed(0),
-          from: prevState, to: newState,
-          makiT: rigStateRef.current.makiTarget.toFixed(2),
-          makiO: rigStateRef.current.makiOffset.toFixed(2),
-          pendS: pendingShakuriRef.current.length,
-          pendM: pendingMakiRef.current.length,
-        });
-        if (window.__stateLog.length > 40) window.__stateLog.shift();
-      }
-      window.__debugAuto = {
-        autoState: { ...autoStateRef.current },
-        phase: phaseRef.current,
-        rs: { ...rigStateRef.current },
-        pendingShakuri: pendingShakuriRef.current.length,
-        pendingMaki: pendingMakiRef.current.length,
-        autoShakuriParam: params.autoShakuri,
-        intervalParam: pp.shakuriInterval,
-        shakuriCountPerTrigger: pp.shakuriCountPerTrigger,
-        running: running,
-        dt: dt,
-        makiAmount: pp.makiAmount,
-        chumLevel: chumRef.current,
-      };
-
       // 自動最適動作 (fishing 中のみ): 状態マシンで shakuri→biting→dropping→shakuri を回す
       //   shakuri:  N発撃ち中 (最終発のみ maki) → 終わって maki が完了したら biting
       //   biting:   高位置で食わせ待ち (shakuriInterval 秒)
@@ -881,12 +852,30 @@ function App() {
     const rate = metricsRef.current.hitRateEMA;
     const tanaDiff = metricsRef.current.hookDepth - params.tanaDepth;
     const absDiff = Math.abs(tanaDiff);
+    // 合否は「付けエサとコマセの一致」AND「付けエサが指示棚にいる」の両方が必要。
+    //   タナ ズレ ≤ 1.5m: タナ取り OK
+    //   タナ ズレ 1.5-3m: タナ取り NG (△)
+    //   タナ ズレ > 3m: タナ取り 大幅 NG (×)
     let g, note;
-    if (absDiff > 3) { g = "×"; note = "付けエサがタナから大きく外れている。ガン玉/ハリスの調整を。"; }
-    else if (rate >= 4) { g = "◎"; note = "コマセ雲と付けエサが同調。理想的な配置。"; }
-    else if (rate >= 2) { g = "○"; note = "悪くない。微調整でさらに上を狙える。"; }
-    else if (rate >= 0.5) { g = "△"; note = "コマセが付けエサに届きにくい。ハリス長 or 潮対策を。"; }
-    else { g = "×"; note = "コマセ雲が付けエサに届いていない。仕掛けを見直そう。"; }
+    if (absDiff > 3) {
+      g = "×";
+      note = "付けエサがタナから大きく外れている。ガン玉/ハリス長で調整。";
+    } else if (absDiff > 1.5) {
+      g = "△";
+      note = `付けエサが指示棚から ${absDiff.toFixed(1)}m ズレ。ガン玉/ハリス長を調整して付けエサをタナに合わせる。`;
+    } else if (rate < 0.5) {
+      g = "×";
+      note = "付けエサはタナだがコマセ雲が届いていない。しゃくり振り幅/上窓を増やす。";
+    } else if (rate < 2) {
+      g = "△";
+      note = "タナ OK だがコマセ薄い。しゃくり間隔/巻き量を見直し。";
+    } else if (rate < 4) {
+      g = "○";
+      note = "タナ OK + コマセ雲と同調。微調整で更に上を狙える。";
+    } else {
+      g = "◎";
+      note = "タナ OK + コマセ雲と完全同調。理想的な配置。";
+    }
 
     // 「待ち推奨」判定: 付けエサ位置にコマセ雲が重なっており、かつタナズレが小さい
     // この状態では追加のしゃくりは不要、待って魚を食わせる時間
