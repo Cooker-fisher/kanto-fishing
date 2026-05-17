@@ -759,15 +759,17 @@ function App() {
       metricsRef.current.peHorizontal = peHoriz;
       metricsRef.current.peTotal = peTotal;
 
-      // タナ到達検出（付けエサ y がタナ ±0.5m に入った瞬間のみ）
+      // タナ取り完了検出 (ビシが指示棚に着いた瞬間)
+      //   コマセマダイの実釣: 「タナ取り」= ビシを船長指示の指示棚に止める作業
+      //   付け餌はビシより下のコマセ帯に自然に流れるので、付け餌の y は判定対象外
       if (running && phaseRef.current === "fishing") {
-        const onTana = Math.abs(rig.hook.y - pp.tanaDepth) < 0.5;
-        if (onTana && !tanaArrivalLastRef.current) {
+        const cageOnTana = Math.abs(rig.cage.y - pp.tanaDepth) < 0.5;
+        if (cageOnTana && !tanaArrivalLastRef.current) {
           tanaArrivalLastRef.current = true;
-          flashRef.current = 1.6; // 大きめのフラッシュ
+          flashRef.current = 1.6;
           showToast("✓ タナ取り完了 — 待ち時間", "var(--moss)");
         }
-        if (!onTana && Math.abs(rig.hook.y - pp.tanaDepth) > 1.0) {
+        if (!cageOnTana && Math.abs(rig.cage.y - pp.tanaDepth) > 1.0) {
           tanaArrivalLastRef.current = false;
         }
       }
