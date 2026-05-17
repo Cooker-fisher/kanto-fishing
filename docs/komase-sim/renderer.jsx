@@ -133,7 +133,9 @@ window.SimRenderer = (function() {
     const baseX = map.W - 110;
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-    ctx.fillText("潮流 →", baseX, map.y(0) + 14);
+    // 凡例ボックス (canvas top:16 + 高さ ~125px ≈ y=140 まで) と重ならないよう
+    // ラベルは固定 y=155 に配置 (canvas 高さに依存しない)。
+    ctx.fillText("潮流 →", baseX, 155);
 
     ctx.strokeStyle = "rgba(251, 191, 36, 0.85)";
     ctx.fillStyle = "rgba(251, 191, 36, 0.85)";
