@@ -881,7 +881,10 @@ function App() {
     setOptimizing(true);
     setRecommendation(null);
     await new Promise(r => setTimeout(r, 50));
-    const baseline = SimPhysics.scoreParams(physicsParams);
+    // ★ baseline は optimizer 内部評価 (240s×2run) と必ず同条件にする
+    //   旧: scoreParams(120s×3run) で baseline 計測 → 推奨候補と比較条件が違って
+    //       「推奨 < 現行」の矛盾が頻発していた
+    const baseline = SimPhysics.evalParams(physicsParams, 240, 2);
     const lockedValues = {};
     for (const k of LOCKABLE_PARAMS) {
       if (locks[k]) lockedValues[k] = physicsParams[k];

@@ -834,9 +834,28 @@ window.SimPhysics = (function() {
       axes[k] = locked[k] != null ? [locked[k]] : AXES[k];
     }
 
-    // ★ 多点出発戦略: harris長 × ガン玉構成 × interval を変えた 6 seed から座標降下を回し、最良を採用
+    // ★ 多点出発戦略: harris長 × ガン玉構成 × interval を変えた seed から座標降下を回し、最良を採用
     //   局所最適固定を解消 (短harris + chimoto + 長interval が最強パターンを取り逃さないように)
+    //   先頭は ENV ベース seed (現行ユーザー設定) - これを必ず探索範囲に入れて
+    //   「推奨 < 現行」の矛盾を防ぐ
+    const userSeed = {
+      harrisLength: envParams.harrisLength, cushionLength: envParams.cushionLength,
+      shakuriCountPerTrigger: envParams.shakuriCountPerTrigger,
+      makiAmount: envParams.makiAmount, shakuriStrokeCm: envParams.shakuriStrokeCm,
+      cageUpperOpening: envParams.cageUpperOpening,
+      cageLowerOpening: envParams.cageLowerOpening != null ? envParams.cageLowerOpening : 0,
+      shakuriInterval: envParams.shakuriInterval,
+      harrisNo: envParams.harrisNo,
+      ganDamaPct: envParams.ganDamaPct != null ? envParams.ganDamaPct : 50,
+      ganDamaSize: envParams.ganDamaSize,
+      hookType: envParams.hookType, hookSize: envParams.hookSize,
+      komaseSize: envParams.komaseSize, smokeLevel: envParams.smokeLevel,
+      motosLength: envParams.motosLength != null ? envParams.motosLength : 1.5,
+      motosNo: envParams.motosNo != null ? envParams.motosNo : 5,
+      dropOffsetM: envParams.dropOffsetM != null ? envParams.dropOffsetM : 5,
+    };
     const SEEDS = [
+      userSeed,
       // A: 短ハリス + ガン玉mid 0.3g + 長interval (標準シナリオ)
       { harrisLength: 5,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.0,
         shakuriStrokeCm: 80, cageUpperOpening: 0.25, cageLowerOpening: 0,
