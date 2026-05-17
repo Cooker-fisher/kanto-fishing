@@ -667,21 +667,8 @@ function App() {
       for (let i = pendingMakiRef.current.length - 1; i >= 0; i--) {
         if (now >= pendingMakiRef.current[i].at) {
           const nextTarget = rigStateRef.current.makiTarget + pendingMakiRef.current[i].amount;
-          if (chumRef.current <= 0.05) {
-            // コマセ空 → 自動回収＋落とし込み再開 (drop phase で makiOffset 再計算)
-            rigStateRef.current.makiTarget = 0;
-            rigStateRef.current.makiOffset = 0;
-            chumRef.current = 1.0;
-            phaseRef.current = "dropping";
-            bishiAbsYRef.current = 0;
-            setPhase("dropping");
-            flashRef.current = 1.4;
-            pendingShakuriRef.current = [];
-            pendingMakiRef.current = [];
-            autoStateRef.current = { state: "idle", biteTimer: 0 };
-            break;
-          }
           // 巻きすぎは物理的上限でクランプするだけ（リセットしない）
+          // コマセ空でも自動リセットしない: 回収はユーザーが「仕掛け回収」で明示
           rigStateRef.current.makiTarget = Math.min(physicalMaxMaki, nextTarget);
           pendingMakiRef.current.splice(i, 1);
         }
