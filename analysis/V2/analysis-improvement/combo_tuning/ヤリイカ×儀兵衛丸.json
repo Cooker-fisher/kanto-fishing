@@ -1,12 +1,12 @@
 {
   "fish": "ヤリイカ",
   "ship": "儀兵衛丸",
-  "last_reviewed": "2026-05-12",
+  "last_reviewed": "2026-05-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.24,
+    "wmape_h0": 46.0,
     "bl2_wmape": 58.72,
-    "oos_r": 0.339,
+    "oos_r": 0.348,
     "n_records": 208,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 30.2,
       "bl2_wmape": 52.8,
       "oos_r": 0.634,
-      "improvement_pt": 16.01
+      "improvement_pt": 15.77
     },
     {
       "name": "長井沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 34.7,
       "bl2_wmape": 48.1,
       "oos_r": 0.567,
-      "improvement_pt": 11.56
+      "improvement_pt": 11.31
     },
     {
       "name": "複数ポイント",
@@ -34,7 +34,7 @@
       "wmape_h0": 38.3,
       "bl2_wmape": 67.0,
       "oos_r": 0.635,
-      "improvement_pt": 7.9
+      "improvement_pt": 7.65
     },
     {
       "name": "城ヶ島沖_単独",
@@ -42,7 +42,7 @@
       "wmape_h0": 40.5,
       "bl2_wmape": 56.9,
       "oos_r": 0.426,
-      "improvement_pt": 5.7
+      "improvement_pt": 5.46
     },
     {
       "name": "城ヶ島沖",
@@ -50,15 +50,15 @@
       "wmape_h0": 41.8,
       "bl2_wmape": 65.0,
       "oos_r": 0.548,
-      "improvement_pt": 4.45
+      "improvement_pt": 4.2
     }
   ],
   "best_point": {
     "name": "長井沖_単独",
     "wmape_h0": 30.2,
-    "improvement_pt": 16.01
+    "improvement_pt": 15.77
   },
-  "improvement_pt": 16.01,
+  "improvement_pt": 15.77,
   "overrides": {
     "factor_blacklist": [],
     "wave_clamp": null,
@@ -120,6 +120,11 @@
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=長井沖_単独 wmape=30.2% imp=16.01pt"
+    },
+    {
+      "date": "2026-05-17",
+      "action": "point_backtest_updated",
+      "note": "best=長井沖_単独 wmape=30.2% imp=15.77pt"
     }
   ]
 }

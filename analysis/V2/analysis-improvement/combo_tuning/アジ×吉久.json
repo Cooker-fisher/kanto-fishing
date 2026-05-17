@@ -1,12 +1,12 @@
 {
   "fish": "アジ",
   "ship": "吉久",
-  "last_reviewed": "2026-05-12",
+  "last_reviewed": "2026-05-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 21.44,
+    "wmape_h0": 21.64,
     "bl2_wmape": 31.98,
-    "oos_r": 0.653,
+    "oos_r": 0.654,
     "n_records": 115,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -161,6 +161,11 @@
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=18.6% imp=2.88pt"
+    },
+    {
+      "date": "2026-05-17",
+      "action": "point_backtest_updated",
+      "note": "best=木更津沖 wmape=18.6% imp=3.08pt"
     }
   ],
   "rejected_factors": [
@@ -232,7 +237,7 @@
       "wmape_h0": 18.6,
       "bl2_wmape": 31.7,
       "oos_r": 0.685,
-      "improvement_pt": 2.88
+      "improvement_pt": 3.08
     },
     {
       "name": "横浜沖",
@@ -240,15 +245,15 @@
       "wmape_h0": 18.7,
       "bl2_wmape": 31.0,
       "oos_r": 0.744,
-      "improvement_pt": 2.7
+      "improvement_pt": 2.9
     }
   ],
   "best_point": {
     "name": "木更津沖",
     "wmape_h0": 18.6,
-    "improvement_pt": 2.88
+    "improvement_pt": 3.08
   },
-  "improvement_pt": 2.88,
+  "improvement_pt": 3.08,
   "trip_models": [
     {
       "trip_no": 3,

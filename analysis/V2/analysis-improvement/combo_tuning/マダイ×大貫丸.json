@@ -1,16 +1,15 @@
 {
   "fish": "マダイ",
   "ship": "大貫丸",
-  "last_reviewed": "2026-04-24",
-  "status": "pending",
+  "last_reviewed": "2026-05-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.0,
-    "bl0_wmape": 48.2,
-    "bl2_wmape": 42.3,
-    "oos_r": 0.552,
-    "n_records": 465,
-    "alpha_scale": 0.525,
-    "use_fallback": false
+    "wmape_h0": 39.21,
+    "bl2_wmape": 42.25,
+    "oos_r": 0.568,
+    "n_records": 374,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,6 +91,11 @@
       "date": "2026-04-24",
       "action": "tsuri_mono_reclassify",
       "note": "アマダイ船100件のマダイ誤分類をSHIP_TRIP_RULES追加で修正。n減少見込み。"
+    },
+    {
+      "date": "2026-05-17",
+      "action": "point_backtest_updated",
+      "note": "best=日立沖 wmape=39.2% imp=0.01pt"
     }
   ],
   "rejected_factors": [
@@ -180,5 +184,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "日立沖",
+      "n": 374,
+      "wmape_h0": 39.2,
+      "bl2_wmape": 42.3,
+      "oos_r": 0.568,
+      "improvement_pt": 0.01
+    }
+  ],
+  "best_point": {
+    "name": "日立沖",
+    "wmape_h0": 39.2,
+    "improvement_pt": 0.01
+  },
+  "improvement_pt": 0.01
 }

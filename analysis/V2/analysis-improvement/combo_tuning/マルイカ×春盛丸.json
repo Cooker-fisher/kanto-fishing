@@ -1,12 +1,12 @@
 {
   "fish": "マルイカ",
   "ship": "春盛丸",
-  "last_reviewed": "2026-05-12",
+  "last_reviewed": "2026-05-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.78,
+    "wmape_h0": 37.73,
     "bl2_wmape": 51.4,
-    "oos_r": 0.538,
+    "oos_r": 0.539,
     "n_records": 117,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "長井沖",
       "n": 104,
-      "wmape_h0": 36.5,
+      "wmape_h0": 36.6,
       "bl2_wmape": 51.3,
-      "oos_r": 0.562,
-      "improvement_pt": 1.26
+      "oos_r": 0.549,
+      "improvement_pt": 1.18
     }
   ],
   "best_point": {
     "name": "長井沖",
-    "wmape_h0": 36.5,
-    "improvement_pt": 1.26
+    "wmape_h0": 36.6,
+    "improvement_pt": 1.18
   },
-  "improvement_pt": 1.26,
+  "improvement_pt": 1.18,
   "history": [
     {
       "date": "2026-04-24",
@@ -77,6 +77,11 @@
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=長井沖 wmape=36.5% imp=1.26pt"
+    },
+    {
+      "date": "2026-05-17",
+      "action": "point_backtest_updated",
+      "note": "best=長井沖 wmape=36.6% imp=1.18pt"
     }
   ]
 }

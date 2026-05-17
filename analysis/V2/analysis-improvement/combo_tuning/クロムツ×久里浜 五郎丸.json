@@ -1,12 +1,12 @@
 {
   "fish": "クロムツ",
   "ship": "久里浜 五郎丸",
-  "last_reviewed": "2026-05-12",
+  "last_reviewed": "2026-05-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 58.32,
+    "wmape_h0": 31.1,
     "bl2_wmape": 57.3,
-    "oos_r": 0.169,
+    "oos_r": 0.741,
     "n_records": 69,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 24.5,
       "bl2_wmape": 59.0,
       "oos_r": 0.84,
-      "improvement_pt": 33.86
+      "improvement_pt": 6.64
     },
     {
       "name": "久里浜沖",
@@ -26,20 +26,25 @@
       "wmape_h0": 32.6,
       "bl2_wmape": 85.5,
       "oos_r": 0.9,
-      "improvement_pt": 25.72
+      "improvement_pt": -1.5
     }
   ],
   "best_point": {
     "name": "下浦沖",
     "wmape_h0": 24.5,
-    "improvement_pt": 33.86
+    "improvement_pt": 6.64
   },
-  "improvement_pt": 33.86,
+  "improvement_pt": 6.64,
   "history": [
     {
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=24.5% imp=33.86pt"
+    },
+    {
+      "date": "2026-05-17",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=24.5% imp=6.64pt"
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
   "fish": "カンパチ",
   "ship": "重郎平丸",
-  "last_reviewed": "2026-05-12",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-05-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 50.56,
+    "wmape_h0": 32.33,
     "bl2_wmape": 51.67,
-    "oos_r": 0.397,
+    "oos_r": 0.744,
     "n_records": 70,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,23 +15,28 @@
     {
       "name": "神津島",
       "n": 70,
-      "wmape_h0": 32.3,
+      "wmape_h0": 32.0,
       "bl2_wmape": 51.7,
-      "oos_r": 0.744,
-      "improvement_pt": 18.23
+      "oos_r": 0.743,
+      "improvement_pt": 0.37
     }
   ],
   "best_point": {
     "name": "神津島",
-    "wmape_h0": 32.3,
-    "improvement_pt": 18.23
+    "wmape_h0": 32.0,
+    "improvement_pt": 0.37
   },
-  "improvement_pt": 18.23,
+  "improvement_pt": 0.37,
   "history": [
     {
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=神津島 wmape=32.3% imp=18.23pt"
+    },
+    {
+      "date": "2026-05-17",
+      "action": "point_backtest_updated",
+      "note": "best=神津島 wmape=32.0% imp=0.37pt"
     }
   ]
 }

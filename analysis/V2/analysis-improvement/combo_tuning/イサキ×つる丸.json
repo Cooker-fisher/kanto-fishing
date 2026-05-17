@@ -1,16 +1,15 @@
 {
   "fish": "イサキ",
   "ship": "つる丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-05-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.7,
-    "bl0_wmape": 46.5,
-    "bl2_wmape": 56.4,
-    "oos_r": 0.667,
+    "wmape_h0": 29.34,
+    "bl2_wmape": 56.44,
+    "oos_r": 0.71,
     "n_records": 141,
-    "alpha_scale": 0.563,
-    "use_fallback": false
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "夏休み期間以外に釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-05-17",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=29.3% imp=0.01pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp",
@@ -167,5 +172,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "大原沖",
+      "n": 141,
+      "wmape_h0": 29.3,
+      "bl2_wmape": 56.4,
+      "oos_r": 0.711,
+      "improvement_pt": 0.01
+    }
+  ],
+  "best_point": {
+    "name": "大原沖",
+    "wmape_h0": 29.3,
+    "improvement_pt": 0.01
+  },
+  "improvement_pt": 0.01
 }
