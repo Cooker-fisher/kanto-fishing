@@ -21,10 +21,21 @@ const DEFAULT_PARAMS = {
   smokeLevel: "weak",
 
   cushionLength: 1.0,
-  harrisLength: 8,
+  // モトス (上の太ハリス・サル管の上): 通常 4-7号 フロロカーボン
+  motosEnabled: true,
+  motosLength: 1.5,
+  motosNo: 5,
+  // サル管 (モトス-ハリス連結金具): 10-22号 程度。流体抵抗ほぼ無視
+  saruKanEnabled: true,
+  saruKanSize: 14,
+  // ハリス (下の細ハリス・サル管の下〜針): 通常 2-5号 フロロカーボン
+  harrisLength: 6.5,
   harrisNo: 3,
   hookType: "madai",
   hookSize: 10,
+
+  // ビシ落としこみ位置: 指示棚 +dropOffsetM が hook 初期目標 (default = タナ下 5m)
+  dropOffsetM: 5,
 
   ganDamaPos: "mid",
   ganDamaPct: 50,  // ガン玉位置: ビシ側(0)→針側(100) % で連続指定
@@ -47,11 +58,14 @@ const LOCKABLE_PARAMS = [
   "peNo", "bishiNo",
   "cageUpperOpening", "cageLowerOpening",
   "komaseSize", "smokeLevel",
-  "cushionLength", "harrisLength", "harrisNo",
+  "cushionLength",
+  "motosEnabled", "motosLength", "motosNo",
+  "saruKanEnabled", "saruKanSize",
+  "harrisLength", "harrisNo",
   "hookType", "hookSize",
-  "ganDamaPos", "ganDamaSize",
+  "ganDamaPos", "ganDamaPct", "ganDamaSize",
   "shakuriStrokeCm", "shakuriCountPerTrigger",
-  "makiAmount", "dropAmount", "shakuriInterval",
+  "makiAmount", "dropAmount", "shakuriInterval", "dropOffsetM",
 ];
 
 const PRESETS = [
@@ -130,7 +144,8 @@ const MAX_PARTICLES = 1500;
 
 function App() {
   const [params, setParams] = useState(DEFAULT_PARAMS);
-  const [presetKey, setPresetKey] = useState("default");
+  // 各グループ独立: cycle/cond/area から 1 つずつ or null。複数同時アクティブ可
+  const [selectedPresets, setSelectedPresets] = useState({ cycle: "default", cond: null, area: null });
   const [running, setRunning] = useState(true);
   const [tick, setTick] = useState(0);
   const [optimizing, setOptimizing] = useState(false);
@@ -202,24 +217,56 @@ function App() {
   const physicsParamsRef = useRef(physicsParams);
   physicsParamsRef.current = physicsParams;
 
+  // パッチ合成: DEFAULT → area → cond → cycle の順で上書き
+  // (area = 環境ベース / cond = 海況上書き / cycle = 動作上書き)
+  function rebuildFromPresets(sel) {
+    let p = { ...DEFAULT_PARAMS };
+    for (const g of ["area", "cond", "cycle"]) {
+      const key = sel[g];
+      if (key) {
+        const preset = PRESETS.find(x => x.key === key);
+        if (preset) p = { ...p, ...preset.patch };
+      }
+    }
+    return p;
+  }
+
   const set = (patch) => {
     setParams(prev => ({ ...prev, ...patch }));
-    setPresetKey("default");
+    // 手動編集: 全プリセット解除 (params が乖離するので)
+    setSelectedPresets({ cycle: null, cond: null, area: null });
   };
 
-  const applyPreset = (key) => {
+  // プリセット トグル: 同グループ内で 1 つ選択 (再クリックで解除)
+  const togglePreset = (key) => {
     const p = PRESETS.find(x => x.key === key);
     if (!p) return;
-    setParams({ ...DEFAULT_PARAMS, ...p.patch });
-    setPresetKey(key);
+    const g = p.group;
+    const newSel = { ...selectedPresets, [g]: selectedPresets[g] === key ? null : key };
+    setSelectedPresets(newSel);
+    setParams(rebuildFromPresets(newSel));
     resetSim();
-    showToast("プリセット適用: " + p.label, "var(--vermilion)");
+    const active = ["area","cond","cycle"].map(gg => {
+      const k = newSel[gg];
+      const pp = k ? PRESETS.find(x => x.key === k) : null;
+      return pp ? pp.label : null;
+    }).filter(Boolean);
+    showToast(active.length ? "プリセット: " + active.join(" + ") : "プリセット解除", "var(--vermilion)");
   };
+  // 互換: applyPreset 名で呼ばれる箇所用
+  const applyPreset = togglePreset;
 
   function resetSim() {
     particlesRef.current = [];
     heatmapRef.current = null;
-    rigStateRef.current = { shakuriOffsetY: 0, shakuriVelY: 0, shakuriOffsetX: SimPhysics.ROD_X_M, makiOffset: 0, makiTarget: 0 };
+    // ★ 落とし込み目安 = ビシ位置 (指示棚 + dropOffsetM)
+    //   実釣標準: dropOffsetM = +5 → ビシは指示棚 5m 下 (タナ下5m)
+    //   その後 shakuri × N + maki でビシを徐々に上げ、付け餌をタナへ寄せる
+    //   makiOffset = -dropOffsetM (負値で cage が指示棚より下に位置)
+    const pp = physicsParamsRef.current || DEFAULT_PARAMS;
+    const _drop = pp.dropOffsetM != null ? pp.dropOffsetM : 5;
+    const _initMaki = -_drop;
+    rigStateRef.current = { shakuriOffsetY: 0, shakuriVelY: 0, shakuriOffsetX: SimPhysics.ROD_X_M, makiOffset: _initMaki, makiTarget: _initMaki };
     chumRef.current = 1.0;
     pendingMakiRef.current = [];
     pendingShakuriRef.current = [];
@@ -380,21 +427,16 @@ function App() {
     }
   };
 
-  // ===== 自動最適動作用: N発撃ち、最後の1発のみ maki を伴う =====
-  // 全 N 発で makiAmount × N 巻くと、サイクル毎にビシが上昇しすぎる。
-  // 1サイクル = 1 maki に統一して、shakuri 列を打ってから 1 回だけ maki を発動。
+  // ===== 自動最適動作用: N発撃ちそれぞれが maki を伴う (per-stroke maki) =====
+  // 実釣準拠: 1サイクルで N×makiAmount だけビシが上昇 → 食わせ待ち → drop で元に戻る
+  // (rigLen=6, init=1, N=2, makiAmount=2.5 → peakMaki=6 → 付け餌が指示棚に到達)
   const _doOptimalShakuriBurst = () => {
     if (phaseRef.current !== "fishing") return;
     const pp = physicsParamsRef.current;
     const n = Math.max(1, Math.round(pp.shakuriCountPerTrigger || 1));
-    if (n === 1) {
-      _executeOneStroke(true);  // 単発+maki
-    } else {
-      _executeOneStroke(false);  // 1発目: maki なし
-      for (let i = 1; i < n - 1; i++) {
-        pendingShakuriRef.current.push({ withMaki: false });
-      }
-      pendingShakuriRef.current.push({ withMaki: true });  // 最終発で maki
+    _executeOneStroke(true);  // 1発目 + maki
+    for (let i = 1; i < n; i++) {
+      pendingShakuriRef.current.push({ withMaki: true });  // 後続も maki
     }
   };
 
@@ -410,6 +452,7 @@ function App() {
     const physicalMaxMaki = Math.max(2, pp.tanaDepth - 1);
     const nextTarget = rigStateRef.current.makiTarget + (pp.makiAmount || 0);
     if (chumRef.current <= 0.05) {
+      // コマセ枯渇 → 自動回収 → 落とし込み再開 (drop phase で makiOffset が再計算される)
       rigStateRef.current.makiTarget = 0;
       rigStateRef.current.makiOffset = 0;
       chumRef.current = 1.0;
@@ -419,6 +462,7 @@ function App() {
       flashRef.current = 1.4;
       pendingShakuriRef.current = [];
       pendingMakiRef.current = [];
+      autoStateRef.current = { state: "idle", biteTimer: 0 };
     } else {
       rigStateRef.current.makiTarget = Math.min(physicalMaxMaki, nextTarget);
       flashRef.current = 0.5;
@@ -440,16 +484,16 @@ function App() {
   const dropManualRef = useRef(triggerDropOnly);
   dropManualRef.current = triggerDropOnly;
 
-  // ===== 落とし込みスキップ（付けエサがタナ下5m へ即着） =====
+  // ===== 落とし込みスキップ（ビシが指示棚 + dropOffsetM へ即着） =====
   const skipDrop = () => {
     if (phaseRef.current !== "dropping") return;
     const pp = physicsParamsRef.current;
-    const rigLen = (pp.cushionLength || 1) + (pp.harrisLength || 8);
-    bishiAbsYRef.current = Math.max(1, pp.tanaDepth - rigLen + 5);
+    const drop = pp.dropOffsetM != null ? pp.dropOffsetM : 5;
+    bishiAbsYRef.current = Math.max(1, pp.tanaDepth + drop);
     phaseRef.current = "fishing";
     dropVelRef.current = 0;
-    rigStateRef.current.makiOffset = rigLen - 5;
-    rigStateRef.current.makiTarget = rigLen - 5;
+    rigStateRef.current.makiOffset = -drop;
+    rigStateRef.current.makiTarget = -drop;
     setPhase("fishing");
   };
   const skipRef = useRef(skipDrop);
@@ -522,16 +566,16 @@ function App() {
         const vel = pp.dropSpeed || 1.5;
         dropVelRef.current = vel;
         bishiAbsYRef.current += vel * dt;
-        const rigLen = (pp.cushionLength || 1) + (pp.harrisLength || 8);
-        const dropTarget = Math.max(1, pp.tanaDepth - rigLen + 5);
+        // ★ ビシ落としこみ目安: 指示棚 + dropOffsetM
+        const drop = pp.dropOffsetM != null ? pp.dropOffsetM : 5;
+        const dropTarget = Math.max(1, pp.tanaDepth + drop);
         if (bishiAbsYRef.current >= dropTarget) {
           bishiAbsYRef.current = dropTarget;
           phaseRef.current = "fishing";
           dropVelRef.current = 0;
-          // ビシは tana - rigLen + 5 にいる → makiOffset = rigLen - 5
-          // 付けエサ y = bishi y + rigLen = tana + 5
-          rigStateRef.current.makiOffset = rigLen - 5;
-          rigStateRef.current.makiTarget = rigLen - 5;
+          // ビシは tana + drop にいる → makiOffset = -drop
+          rigStateRef.current.makiOffset = -drop;
+          rigStateRef.current.makiTarget = -drop;
           setPhase("fishing");
         }
       } else {
@@ -572,9 +616,11 @@ function App() {
         } else if (auto.state === "biting") {
           auto.biteTimer += dt;
           if (auto.biteTimer >= (pp.shakuriInterval || 60)) {
-            // 食わせ時間終了 → 直前サイクル分の maki を逆向きに巻き戻す
-            // (makiOffset = 0 まで戻すと初期落とし込み位置を超えてしまうので makiAmount だけ下げる)
-            rs.makiTarget = Math.max(0, (rs.makiTarget || 0) - (pp.makiAmount || 0));
+            // 食わせ時間終了 → ビシを落としこみ目安位置 (tana + dropOffsetM) に戻す
+            // 「巻きすぎ累積で cage が tana より上に固定」のドリフトを防ぐため、
+            // dropBack ではなく ALWAYS baseMaki にスナップ。
+            const drop = pp.dropOffsetM != null ? pp.dropOffsetM : 5;
+            rs.makiTarget = -drop;
             auto.state = "dropping";
           }
         } else if (auto.state === "dropping") {
@@ -618,7 +664,7 @@ function App() {
         if (now >= pendingMakiRef.current[i].at) {
           const nextTarget = rigStateRef.current.makiTarget + pendingMakiRef.current[i].amount;
           if (chumRef.current <= 0.05) {
-            // コマセ空 → 自動回収＋落とし込み再開
+            // コマセ空 → 自動回収＋落とし込み再開 (drop phase で makiOffset 再計算)
             rigStateRef.current.makiTarget = 0;
             rigStateRef.current.makiOffset = 0;
             chumRef.current = 1.0;
@@ -628,6 +674,7 @@ function App() {
             flashRef.current = 1.4;
             pendingShakuriRef.current = [];
             pendingMakiRef.current = [];
+            autoStateRef.current = { state: "idle", biteTimer: 0 };
             break;
           }
           // 巻きすぎは物理的上限でクランプするだけ（リセットしない）
@@ -843,7 +890,7 @@ function App() {
   const applyRecommendation = () => {
     if (!recommendation) return;
     setParams(prev => ({ ...prev, ...recommendation.best }));
-    setPresetKey("default");
+    setSelectedPresets({ cycle: null, cond: null, area: null });  // 手動 override 扱い
     resetSim();
   };
 
@@ -894,9 +941,9 @@ function App() {
     const belowRatio = metricsRef.current.belowTanaRatio || 0;
     const cageOver = metricsRef.current.cageOverrun || 0;
     let belowWarning = null;
-    if (cageOver >= 2.0) {
+    if (cageOver >= 8.0) {
       belowWarning = { level: "high", text: `⚠ ビシが指示棚より ${cageOver.toFixed(1)}m 下 — タナ取り直しを!`, color: "var(--vermilion)" };
-    } else if (cageOver >= 0.8) {
+    } else if (cageOver >= 6.0) {
       belowWarning = { level: "mid", text: `⚠ ビシが指示棚より ${cageOver.toFixed(1)}m 下 — 巻き上げて`, color: "var(--brass)" };
     }
 
@@ -968,8 +1015,10 @@ function App() {
           <div>指示ダナ {phase === "dropping" && <span style={{color:"var(--vermilion)", fontFamily:"var(--mono)", fontSize:10, marginLeft:6}}>● 落とし込み中</span>}</div>
           <span className="hud-big">{params.tanaDepth}<small style={{fontSize:14, opacity:.6, marginLeft:3}}>m</small></span>
           {phase === "dropping" && (() => {
-            const rigLen = (params.cushionLength || 1) + (params.harrisLength || 8);
-            const bishiTarget = Math.max(1, params.tanaDepth - rigLen + 5);
+            const motosLen = (params.motosEnabled === false ? 0 : (params.motosLength || 0));
+            const rigLen = (params.cushionLength || 1) + motosLen + (params.harrisLength || 8);
+            const drop = params.dropOffsetM != null ? params.dropOffsetM : 5;
+            const bishiTarget = Math.max(1, params.tanaDepth + drop);
             const hookY = bishiAbsYRef.current + rigLen;
             return (
               <div style={{marginTop:6, fontFamily:"var(--mono)", fontSize:11, color:"var(--paper)"}}>
@@ -1076,8 +1125,8 @@ function App() {
         metrics={grade}
         params={params}
         presets={PRESETS}
-        presetKey={presetKey}
-        onPreset={applyPreset}
+        selectedPresets={selectedPresets}
+        onPreset={togglePreset}
         onOptimize={runOptimize}
         optimizing={optimizing}
         recommendation={recommendation}

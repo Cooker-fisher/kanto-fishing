@@ -4,6 +4,32 @@
    ============================================================ */
 const { useState, useEffect, useRef, useMemo } = React;
 
+// ガン玉の標準号数表 (g) — 0.05g step スライダー値を直近の標準サイズ名に変換
+const GAN_DAMA_SIZES = [
+  { w: 0.07, name: "8号" },
+  { w: 0.09, name: "7号" },
+  { w: 0.12, name: "6号" },
+  { w: 0.16, name: "5号" },
+  { w: 0.20, name: "4号" },
+  { w: 0.25, name: "3号" },
+  { w: 0.31, name: "2号" },
+  { w: 0.40, name: "1号" },
+  { w: 0.55, name: "B" },
+  { w: 0.75, name: "2B" },
+  { w: 0.95, name: "3B" },
+  { w: 1.20, name: "4B" },
+  { w: 1.85, name: "5B" },
+];
+function ganDamaSizeName(g) {
+  if (g == null || g <= 0.01) return "";
+  let best = GAN_DAMA_SIZES[0], dmin = Infinity;
+  for (const s of GAN_DAMA_SIZES) {
+    const d = Math.abs(s.w - g);
+    if (d < dmin) { dmin = d; best = s; }
+  }
+  return "(" + best.name + ")";
+}
+
 function CollapsibleSection({ title, defaultOpen, children }) {
   const key = "komase.section." + title;
   const [open, setOpen] = useState(() => {
@@ -174,12 +200,57 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="クッションゴム・ハリス" defaultOpen={true}>
+      <CollapsibleSection title="クッションゴム・モトス・ハリス" defaultOpen={true}>
         <Slider label="クッションゴム長" value={params.cushionLength} min={0.5} max={3.0} step={0.1} unit="m"
           onChange={v => sp({ cushionLength: v })}
           lockKey="cushionLength" locks={locks} toggleLock={toggleLock}
           format={v => v.toFixed(1)} />
-        <Slider label="ハリス長" value={params.harrisLength} min={3} max={15} step={0.5} unit="m"
+
+        {/* モトス (上ハリス・太め): 有無 + 号数 + 長さ */}
+        <div className="tog-row" title="サル管上の太い上ハリス">
+          <span>モトス有り</span>
+          <div className={"tog " + (params.motosEnabled !== false ? "is-on" : "")}
+               onClick={() => sp({ motosEnabled: !(params.motosEnabled !== false) })} />
+        </div>
+        {params.motosEnabled !== false && (<>
+          <Segmented label="モトス号数"
+            value={params.motosNo != null ? params.motosNo : 5}
+            onChange={v => sp({ motosNo: v })}
+            lockKey="motosNo" locks={locks} toggleLock={toggleLock}
+            options={[
+              { v: 4, label: "4号" },
+              { v: 5, label: "5号" },
+              { v: 6, label: "6号" },
+              { v: 7, label: "7号" },
+            ]} />
+          <Slider label="モトス長" value={params.motosLength != null ? params.motosLength : 1.5}
+            min={0.5} max={3.0} step={0.1} unit="m"
+            onChange={v => sp({ motosLength: v })}
+            lockKey="motosLength" locks={locks} toggleLock={toggleLock}
+            format={v => v.toFixed(1)} />
+        </>)}
+
+        {/* サル管: 有無 + 号数 */}
+        <div className="tog-row" title="モトスとハリスを繋ぐ連結金具">
+          <span>サル管有り</span>
+          <div className={"tog " + (params.saruKanEnabled !== false ? "is-on" : "")}
+               onClick={() => sp({ saruKanEnabled: !(params.saruKanEnabled !== false) })} />
+        </div>
+        {params.saruKanEnabled !== false && (
+          <Segmented label="サル管号数"
+            value={params.saruKanSize != null ? params.saruKanSize : 14}
+            onChange={v => sp({ saruKanSize: v })}
+            lockKey="saruKanSize" locks={locks} toggleLock={toggleLock}
+            options={[
+              { v: 10, label: "10号" },
+              { v: 14, label: "14号" },
+              { v: 18, label: "18号" },
+              { v: 22, label: "22号" },
+            ]} />
+        )}
+
+        {/* ハリス (下・細め): サル管→針。ガン玉はハリスに付く */}
+        <Slider label="ハリス長" value={params.harrisLength} min={2} max={12} step={0.5} unit="m"
           onChange={v => sp({ harrisLength: v })}
           lockKey="harrisLength" locks={locks} toggleLock={toggleLock}
           format={v => v.toFixed(1)} />
@@ -227,13 +298,19 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
             ganDamaPos: v <= 15 ? "chimoto" : v >= 85 ? "near-hook" : "mid" })}
           lockKey="ganDamaPct" locks={locks} toggleLock={toggleLock}
           format={v => (v <= 15 ? "チモト " : v >= 85 ? "ハリス下 " : "中 ") + v} />
-        <Slider label="ガン玉サイズ" value={params.ganDamaSize} min={0} max={1.5} step={0.05} unit="g"
+        <Slider label="ガン玉サイズ" value={params.ganDamaSize} min={0} max={1.5} step={0.05} unit=""
           onChange={v => sp({ ganDamaSize: v })}
           lockKey="ganDamaSize" locks={locks} toggleLock={toggleLock}
-          format={v => v === 0 ? "なし" : v.toFixed(2)} />
+          format={v => v === 0 ? "なし" : v.toFixed(2) + "g " + ganDamaSizeName(v)} />
       </CollapsibleSection>
 
-      <CollapsibleSection title="しゃくり・巻き" defaultOpen={true}>
+      <CollapsibleSection title="動作・タナ取り" defaultOpen={true}>
+        <Slider label="ビシ落としこみ位置 (指示棚 ±)"
+          value={params.dropOffsetM != null ? params.dropOffsetM : 5}
+          min={-10} max={10} step={0.5} unit="m"
+          onChange={v => sp({ dropOffsetM: v })}
+          lockKey="dropOffsetM" locks={locks} toggleLock={toggleLock}
+          format={v => v > 0 ? `タナ下${v.toFixed(1)}` : v < 0 ? `タナ上${(-v).toFixed(1)}` : "指示棚"} />
         <Slider label="しゃくり振り幅" value={params.shakuriStrokeCm} min={30} max={150} step={5} unit="cm"
           onChange={v => sp({ shakuriStrokeCm: v })}
           lockKey="shakuriStrokeCm" locks={locks} toggleLock={toggleLock}
@@ -279,8 +356,9 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
 // 右パネル
 // =====================================================================
 window.RightPanel = function RightPanel(props) {
-  const { metrics, params, presets, presetKey, onPreset,
+  const { metrics, params, presets, selectedPresets, onPreset,
           onOptimize, optimizing, recommendation, onApplyRec, locks } = props;
+  const sel = selectedPresets || {};
   const grade = metrics.grade;
   const gradeClass = grade === "◎" || grade === "○" ? "grade--ok" : grade === "×" ? "grade--bad" : "";
 
@@ -310,7 +388,7 @@ window.RightPanel = function RightPanel(props) {
                 <div className="chips chips--compact">
                   {list.map(p => (
                     <button key={p.key}
-                            className={"chip chip--compact " + (presetKey === p.key ? "is-on" : "")}
+                            className={"chip chip--compact " + (sel[g.key] === p.key ? "is-on" : "")}
                             onClick={() => onPreset(p.key)}>{p.label}</button>
                   ))}
                 </div>
@@ -466,6 +544,7 @@ const LOCK_LABEL = {
   shakuriStrokeCm: "しゃくり振り幅", shakuriCountPerTrigger: "しゃくり数",
   makiAmount: "巻き量", dropAmount: "落とし込み量", shakuriInterval: "しゃくり間隔",
   ganDamaPct: "ガン玉位置",
+  motosLength: "モトス長", motosNo: "モトス号数", dropOffsetM: "ビシ落とし込み",
 };
 
 function RecommendationCard({ rec, onApply, params }) {
@@ -503,9 +582,12 @@ function RecommendationCard({ rec, onApply, params }) {
         color:"var(--text)",
       }}>
         {r.cushionLength != null && cell("cushionLength", `${r.cushionLength.toFixed(1)}m`)}
-        {cell("harrisLength", `${r.harrisLength.toFixed(1)}m`)}
-        {cell("harrisNo", `${r.harrisNo}号`)}
-        {cell("ganDamaPct", `${ganLabel} ${ganPct}% ${r.ganDamaSize === 0 ? "なし" : r.ganDamaSize.toFixed(2)+"g"}`)}
+        {r.motosLength != null && cell("motosLength",
+          r.motosLength === 0 ? "なし" : `${r.motosLength.toFixed(1)}m ${r.motosNo || 5}号`)}
+        {cell("harrisLength", `${r.harrisLength.toFixed(1)}m ${r.harrisNo}号`)}
+        {r.dropOffsetM != null && cell("dropOffsetM",
+          r.dropOffsetM > 0 ? `タナ下${r.dropOffsetM.toFixed(1)}m` : r.dropOffsetM < 0 ? `タナ上${(-r.dropOffsetM).toFixed(1)}m` : "指示棚")}
+        {cell("ganDamaPct", `${ganLabel} ${ganPct}% ${r.ganDamaSize === 0 ? "なし" : r.ganDamaSize.toFixed(2)+"g " + ganDamaSizeName(r.ganDamaSize)}`)}
         {r.cageUpperOpening != null && cell("cageUpperOpening", `${Math.round(r.cageUpperOpening*100)}%`)}
         {r.cageLowerOpening != null && cell("cageLowerOpening", `${Math.round(r.cageLowerOpening*100)}%`)}
         {r.komaseSize != null && cell("komaseSize", `${r.komaseSize}`)}

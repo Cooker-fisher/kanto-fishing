@@ -93,14 +93,17 @@ window.SimPhysics = (function() {
   }
   function shakuriConsumption(params) {
     const strokeFactor = (params.shakuriStrokeCm != null ? params.shakuriStrokeCm : 50) / 50;
-    // しゃくり消費は主に上窓に依存（下窓は持続漏れに寄与）
-    return 0.012 + cageUpper(params) * 0.04 * strokeFactor;
+    // ★ 実釣のリアルな放出量に合わせて係数強化
+    //   上窓 0.35 + ストローク 100cm (factor=2) で 1ストローク ≈ 33% 放出
+    //     → 3発撃てば 1ビシほぼ空 (実釣で 1回投入で 1ビシ使い切る感覚)
+    //   上窓 0.10 + ストローク 50cm で ≈ 4% (穴ほぼ閉=ためてポロポロ)
+    return 0.005 + cageUpper(params) * 0.16 * strokeFactor;
   }
   // 連続漏れ (毎秒) 容量比 — 下窓開けると漂う
-  // cageLower=0.15 で 0.00042/s → 1ビシ 40分相当 (実釣感覚と一致)
-  // cageLower=0.50 で 0.0014/s → 12分 (開け切ると速い)
+  //   下窓 0.15 で 0.012/s → 約 80秒で1ビシ空 (実釣で 1-2分での持続放出感覚)
+  //   下窓 0.50 で 0.04/s → 25秒で1ビシ
   function leakRate(params) {
-    return cageLower(params) * 0.0028;
+    return cageLower(params) * 0.08;
   }
 
   // ====== コマセ粒 物性（オキアミサイズ / 煙幕度） ======
@@ -202,8 +205,12 @@ window.SimPhysics = (function() {
     const cCage = current(cage.y, params);
     const dv = dropVel || 0;
 
-    // ガン玉位置 t (0..1): 0=ビシ直下, 1=hook 近傍
-    // 優先順位: params.ganDamaPct (0-100) > params.ganDamaPos (legacy strings)
+    // モトス区間 (上のハリス): cushion 下〜サル管。モトス無効なら長さ 0
+    const motosEnabled = params.motosEnabled !== false;
+    const motosLength = motosEnabled ? (params.motosLength != null ? params.motosLength : 0) : 0;
+    const motosNo = params.motosNo != null ? params.motosNo : 5;
+
+    // ガン玉位置 t (0..1) は HARRIS 内 (サル管〜針) の比率: 0=サル管直下, 1=hook近傍
     let tGan;
     if (params.ganDamaPct != null) {
       tGan = Math.max(0.02, Math.min(0.98, params.ganDamaPct / 100));
@@ -211,11 +218,11 @@ window.SimPhysics = (function() {
     else if (ganDamaPos === "near-hook") tGan = 0.92;
     else tGan = 0.50;
 
-    // ハリス抗力: 0.5 × ρ × Cd × dia × len × v² (gf 換算済み)
-    // ナイロン直径: 2号≈0.235mm, 3号≈0.286mm, 4号≈0.330mm → harrisNo に√相関
-    // 係数 10.0 は実釣傾き (8m #3 で 0.25m/s で 60-70度) に合わせて経験的にチューニング
-    const harrisDragCoef = (0.04 + harrisNo * 0.045) * 10.0;
-    const ganW = ganDamaSize * 0.9;  // ガン玉の質量 (g 相当) — 位置で割引せず物理的に支える
+    // 抗力係数: ナイロン直径 ∝ √号数。係数 10.0 は実釣傾きに合わせ調整済
+    const dragCoefByNo = (no) => (0.04 + no * 0.045) * 10.0;
+    const harrisDragCoef = dragCoefByNo(harrisNo);
+    const motosDragCoef = dragCoefByNo(motosNo);
+    const ganW = ganDamaSize * 0.9;
     const harrisFrontLen = harrisLength * tGan;
     const harrisBackLen = harrisLength * (1 - tGan);
 
@@ -223,20 +230,44 @@ window.SimPhysics = (function() {
     const dragBack = harrisDragCoef * harrisBackLen * cCage * cCage;
     const weightBack = Math.max(0.10, hookWeight);
     let thetaBack = Math.atan2(dragBack, weightBack);
-    thetaBack = Math.min(thetaBack, 1.40);  // 80度上限
+    thetaBack = Math.min(thetaBack, 1.40);
 
-    // 前半セクション (ビシ→ガン玉): 後半から伝達される抗力も含めて支える
-    // 水平力 = 前半自身の抗力 + 後半から張力で伝わる水平成分 (dragBack × sin(thetaBack)/sin(90°)≈ dragBack)
-    const dragFront = harrisDragCoef * harrisFrontLen * cCage * cCage;
-    const totalHorizForce = dragFront + dragBack;
+    // 前半セクション (サル管→ガン玉): 後半から伝達される抗力も含めて支える
+    const dragHarrisFront = harrisDragCoef * harrisFrontLen * cCage * cCage;
+    const harrisHorizForce = dragHarrisFront + dragBack;
     const weightFront = Math.max(0.15, hookWeight + ganW);
-    let thetaFront = Math.atan2(totalHorizForce, weightFront);
-    thetaFront = Math.min(thetaFront, 1.30);  // 75度上限
+    let thetaFront = Math.atan2(harrisHorizForce, weightFront);
+    thetaFront = Math.min(thetaFront, 1.30);
 
-    // クッションゴム (ビシ直下): クッション自体の抗力 + ハリス全体を支える → ほぼ垂直
-    const dragCushion = harrisDragCoef * cushionLength * 0.3 * cCage * cCage;
+    // モトス区間 (cushion下〜サル管): ハリス全体+ガン玉+hook の合計重量を支え、抗力は自身+ハリス両半
+    const dragMotos = motosDragCoef * motosLength * cCage * cCage;
+    const motosHorizForce = dragMotos + harrisHorizForce;
+    const weightMotos = Math.max(0.15, hookWeight + ganW);
+    let thetaMotos = motosLength > 0.01 ? Math.atan2(motosHorizForce, weightMotos) : 0;
+    thetaMotos = Math.min(thetaMotos, 1.30);
+
+    // 互換: 旧コードが totalHorizForce / dragFront を見るので alias
+    const dragFront = dragHarrisFront;
+    const totalHorizForce = harrisHorizForce + dragMotos;
+
+    // クッションゴム物理:
+    //   素材: 天然/合成ゴム (NR)、密度 ~1.05 g/cm³
+    //   海水密度: 1.025 g/cm³ → ほぼ中性浮力 (-0.025 g/cm³ で微沈)
+    //   径: 標準 2.5mm (1m あたり質量 5.16g、浮力 5.03g → 水中正味重量 0.13g)
+    //   抗力: 直径比 (2.5 / 0.286mm) = 8.74倍/m vs ハリス #3
+    //   ハリス #3 単位係数 (0.04 + 3*0.045) * 10 = 1.75 → クッション 2.5mm = 1.75 * 8.74 / 9 = 1.70/m
+    //     (ハリス号数項を外しシンプル化: cushion固有定数 1.70/m × 径mm)
+    const cushionDiaMM = params.cushionDiaMM != null ? params.cushionDiaMM : 2.5;
+    const cushionDragCoefPerM = cushionDiaMM * 0.68;  // 2.5mm → 1.70/m, harrisと整合
+    const dragCushion = cushionDragCoefPerM * cushionLength * cCage * cCage;
+    // クッションは天秤(E)に吊られ、下にハリス・ガン玉・hook を支える。
+    // 上方張力 ≈ (ganW + hookW)、水平力 ≈ dragCushion + dragHarrisFront + dragHarrisBack (下から伝達)
+    const cushionHorizForce = dragCushion + totalHorizForce;
     const weightCushion = Math.max(0.20, hookWeight + ganW);
-    const thetaCushion = Math.atan2(dragCushion, weightCushion) * 0.15;  // 弾性で更に抑制
+    // 弾性ゴムのため瞬間張力に対しては伸び・歪みで吸収するが、定常状態では張力方向に揃う
+    // → 物理通りの計算 (旧 0.15 抑制は廃止)
+    let thetaCushion = Math.atan2(cushionHorizForce, weightCushion);
+    thetaCushion = Math.min(thetaCushion, 1.30);  // 75度上限
 
     // 沈降時の落ち遅れ (全セクション共通)
     const dragLenTotal = harrisLength + cushionLength * 0.3;
@@ -244,6 +275,7 @@ window.SimPhysics = (function() {
     const lagRatio = Math.min(1, dropDrag / Math.max(0.1, weightFront + dropDrag));
 
     const segsCushion = 3;
+    const segsMotos = motosLength > 0.01 ? 4 : 0;
     const segsHarrisFront = 7;
     const segsHarrisBack = 7;
     const pts = [];
@@ -262,13 +294,37 @@ window.SimPhysics = (function() {
     }
     const cushionEnd = pts[pts.length - 1];
 
-    // --- ハリス前半 (ビシ側→ガン玉位置)。thetaFront を適用 ---
-    let frontEndX = cushionEnd.x;
-    let frontEndY = cushionEnd.y;
+    // --- モトス区間 (cushion下〜サル管) ---
+    let motosEndX = cushionEnd.x;
+    let motosEndY = cushionEnd.y;
+    if (segsMotos > 0) {
+      for (let i = 1; i <= segsMotos; i++) {
+        const t = i / segsMotos;
+        const segLen = motosLength * t;
+        const localBend = 0.7 + 0.3 * t;
+        const localTheta = thetaMotos * localBend;
+        const vertical = Math.cos(localTheta) * segLen;
+        const horiz = Math.sin(localTheta) * segLen;
+        const yLagged = -vertical * 0.85;
+        const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
+        pts.push({
+          x: cushionEnd.x + horiz,
+          y: cushionEnd.y + yMix,
+          section: "motos",
+        });
+        if (i === segsMotos) {
+          motosEndX = cushionEnd.x + horiz;
+          motosEndY = cushionEnd.y + yMix;
+        }
+      }
+    }
+
+    // --- ハリス前半 (サル管→ガン玉位置)。thetaFront を適用 ---
+    let frontEndX = motosEndX;
+    let frontEndY = motosEndY;
     for (let i = 1; i <= segsHarrisFront; i++) {
       const t = i / segsHarrisFront;
       const segLen = harrisFrontLen * t;
-      // 緩いカーブ: cosh 近似で前半内でも下流寄りで angle が増す (張力分布)
       const localBend = 0.7 + 0.3 * t;
       const localTheta = thetaFront * localBend;
       const vertical = Math.cos(localTheta) * segLen;
@@ -276,13 +332,13 @@ window.SimPhysics = (function() {
       const yLagged = -vertical * 0.85;
       const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
       pts.push({
-        x: cushionEnd.x + horiz,
-        y: cushionEnd.y + yMix,
+        x: motosEndX + horiz,
+        y: motosEndY + yMix,
         section: "harrisFront",
       });
       if (i === segsHarrisFront) {
-        frontEndX = cushionEnd.x + horiz;
-        frontEndY = cushionEnd.y + yMix;
+        frontEndX = motosEndX + horiz;
+        frontEndY = motosEndY + yMix;
       }
     }
 
@@ -305,19 +361,21 @@ window.SimPhysics = (function() {
     }
     const hook = pts[pts.length - 1];
 
-    // ガン玉点: 前半の最終点 (frontEnd)
-    const ganDamaIdx = segsCushion + 1 + segsHarrisFront - 1;  // 前半最終インデックス
+    // 各区間の終端インデックス (描画用)
+    const cushionEndIdx = segsCushion;  // 0..segsCushion (cushion 部)
+    const motosEndIdx = cushionEndIdx + segsMotos;  // モトス区間最終点 = サル管位置
+    const harrisFrontEndIdx = motosEndIdx + segsHarrisFront;  // 前半最終 = ガン玉位置
+    const ganDamaIdx = harrisFrontEndIdx;
     const ganDama = pts[Math.max(0, Math.min(pts.length - 1, ganDamaIdx))];
+    const saruKanPt = segsMotos > 0 ? pts[motosEndIdx] : null;
 
-    // theta (legacy 表示用): 平均角度
     const theta = (thetaFront + thetaBack) * 0.5;
 
     return {
-      cage, harris: pts, hook, ganDama,
-      theta, thetaFront, thetaBack, thetaCushion,
+      cage, harris: pts, hook, ganDama, saruKanPt,
+      theta, thetaFront, thetaBack, thetaCushion, thetaMotos,
       lagRatio,
-      cushionEndIdx: segsCushion,
-      ganDamaIdx,
+      cushionEndIdx, motosEndIdx, harrisFrontEndIdx, ganDamaIdx,
     };
   }
 
@@ -376,24 +434,40 @@ window.SimPhysics = (function() {
     // rng が指定されなければ Math.random (ライブ用)。指定されれば決定論。
     const rnd = rng || Math.random;
     const particles = [];
+    // ★ 実釣準拠: 落とし込み目安 = ビシ位置 (指示棚 + dropOffsetM)
+    //   実釣標準 dropOffsetM=+5 → ビシは指示棚 5m 下 (タナ下5m)
+    //   makiOffset = -dropOffsetM (負値で cage が指示棚より下に位置)
+    const _motosLen = (params.motosEnabled === false ? 0 : (params.motosLength || 0));
+    const _rigLen = (params.cushionLength || 1) + _motosLen + (params.harrisLength || 6.5);
+    const _drop = params.dropOffsetM != null ? params.dropOffsetM : 5;
+    const _initMaki = -_drop;
     const rs = {
       shakuriOffsetY: 0, shakuriVelY: 0, shakuriOffsetX: ROD_X_M,
-      makiOffset: 0, makiTarget: 0,
+      makiOffset: _initMaki, makiTarget: _initMaki,
       pendingMaki: [],
       pendingShakuri: [],
     };
     let chumLevel = 1.0;
     let shakuriTimer = 0;
     let leakAccum = 0;
-    let scoreSum = 0;
-    let scoreSamples = 0;
     let elapsed = 0;
     const warmup = durationSec * 0.4;
+    // 5基準スコア用カウンタ
+    const scoreCounters = {
+      totalFrames: 0,
+      goodFrames: 0,    // 同調 (rate>=2) かつタナ OK のフレーム
+      okFrames: 0,      // 緩い基準
+      sumTanaDiff: 0,
+      sumRatio: 0,
+      sumNear: 0,
+    };
     const MAX_P = 1200;
     const hookW = getHookWeight(params.hookType, params.hookSize);
     const strokeCm = params.shakuriStrokeCm != null ? params.shakuriStrokeCm : 50;
     const strokeIntensity = strokeCm / 50;
     const countPerTrigger = Math.max(1, Math.round(params.shakuriCountPerTrigger || 1));
+    // 巻き上げ上限: ビシが水面手前まで来ない範囲 (rigLen + 1m バッファ)
+    const _maxMaki = _initMaki + _rigLen + 1;
 
     let lastStrokeAt = -Infinity;
     const doStroke = () => {
@@ -406,22 +480,53 @@ window.SimPhysics = (function() {
       chumLevel -= shakuriConsumption(params);
       lastStrokeAt = elapsed;
       rs.pendingMaki.push({ at: elapsed + 0.5, amount: params.makiAmount });
-      if (rs.makiTarget + params.makiAmount > 4.5 || chumLevel <= 0.05) {
-        rs.makiTarget = 0;
-        rs.makiOffset = 0;
-        chumLevel = 1.0;
-      }
     };
 
+    // === UI 側と整合する state machine ===
+    //   shakuri (N発撃ち中) → biting (食わせ待ち shakuriInterval秒) → dropping (drop back) → shakuri
+    let autoState = "idle";
+    let biteTimer = 0;
+
     while (elapsed < durationSec) {
-      // 自動しゃくり (N連発)
-      shakuriTimer += dt;
-      if (shakuriTimer >= params.shakuriInterval) {
-        shakuriTimer = 0;
+      // === 状態遷移 ===
+      if (autoState === "idle") {
         doStroke();
-        for (let i = 1; i < countPerTrigger; i++) {
-          rs.pendingShakuri.push({});
+        for (let i = 1; i < countPerTrigger; i++) rs.pendingShakuri.push({});
+        autoState = "shakuri";
+        biteTimer = 0;
+      } else if (autoState === "shakuri") {
+        // 全 N 発 + maki 完了 + 動的収束 を待つ
+        const allStrokesDone = rs.pendingShakuri.length === 0;
+        const allMakiDone = rs.pendingMaki.length === 0;
+        const rigSettled = Math.abs(rs.shakuriVelY) < 0.12 && Math.abs(rs.shakuriOffsetY) < 0.05;
+        const makiSettled = Math.abs(rs.makiTarget - rs.makiOffset) < 0.08;
+        if (allStrokesDone && allMakiDone && rigSettled && makiSettled) {
+          autoState = "biting";
+          biteTimer = 0;
         }
+      } else if (autoState === "biting") {
+        biteTimer += dt;
+        if (biteTimer >= params.shakuriInterval) {
+          // サイクル分 (N×makiAmount) を巻き戻して落とし込み位置へ
+          // ビシを落としこみ位置 (_initMaki) に直接戻す (累積 drift 防止)
+          rs.makiTarget = _initMaki;
+          autoState = "dropping";
+        }
+      } else if (autoState === "dropping") {
+        const makiSettled = Math.abs(rs.makiTarget - rs.makiOffset) < 0.08;
+        if (makiSettled) {
+          // 次サイクル開始
+          autoState = "idle";
+        }
+      }
+      // コマセ枯渇 → リセット (ビシ回収相当)
+      if (chumLevel <= 0.05) {
+        rs.makiTarget = _initMaki;
+        rs.makiOffset = _initMaki;
+        chumLevel = 1.0;
+        rs.pendingShakuri = [];
+        rs.pendingMaki = [];
+        autoState = "idle";
       }
       // pending shakuri (連発の2発目以降): 前ストロークが収束(settled)してから発火
       if (rs.pendingShakuri.length > 0) {
@@ -469,24 +574,99 @@ window.SimPhysics = (function() {
       rigStep(rs, params, dt);
       stepParticles(particles, params, dt, rnd);
       const rig = rigShape(params.tanaDepth - rs.makiOffset, rs.shakuriOffsetY, rs.shakuriOffsetX, params, hookW, 0);
-      if (elapsed > warmup && particles.length > 0) {
-        const near = nearHook(particles, rig.hook, 1.8);
-        // 比率 + 絶対値ボーナス: 退化解（粒子ほぼ無し＋たまたま近く）を抑え
-        // 「コマセが豊富で針近くに留まる」設定を高評価
-        const ratio = near / particles.length * 100;
-        const absBonus = Math.min(8, near * 0.08);
-        // 王道ペナルティ: しゃくりすぎ (>3) と 窓開けすぎ (上>0.65 / 下>0.25) を抑制
-        // 下窓は「オキアミ体幅」が標準なので、開きすぎ閾値はかなり厳しめ
-        const excessStrokes = Math.max(0, (params.shakuriCountPerTrigger || 1) - 3);
-        const excessOpenU = Math.max(0, cageUpper(params) - 0.65);
-        const excessOpenL = Math.max(0, cageLower(params) - 0.25);
-        const ohdoPenalty = excessStrokes * 1.2 + excessOpenU * 12 + excessOpenL * 30;
-        scoreSum += ratio + absBonus - ohdoPenalty;
-        scoreSamples++;
+      if (elapsed > warmup) {
+        // === 5基準評価 ===
+        // 1. 付け餌とコマセの同調率 (粒子/hook 近傍 1.8m)
+        const near = particles.length > 0 ? nearHook(particles, rig.hook, 1.8) : 0;
+        const ratio = particles.length > 0 ? (near / particles.length * 100) : 0;
+        // 2. 付け餌が指示棚にあるか (|hook.y - tana| <= 1.5m)
+        const tanaDiffAbs = Math.abs(rig.hook.y - params.tanaDepth);
+        const tanaOK = tanaDiffAbs <= 1.5;
+        // 「同調 (rate>=2) かつタナ OK」のフレーム数を累積 → 持続的な良い状態
+        const goodFrame = (ratio >= 2.0 && tanaOK) ? 1 : 0;
+        const okFrame = (ratio >= 0.5 && tanaDiffAbs <= 2.5) ? 1 : 0;
+        scoreCounters.totalFrames += 1;
+        scoreCounters.goodFrames += goodFrame;
+        scoreCounters.okFrames += okFrame;
+        scoreCounters.sumTanaDiff += tanaDiffAbs;
+        scoreCounters.sumRatio += ratio;
+        scoreCounters.sumNear += near;
       }
       elapsed += dt;
     }
-    return scoreSamples > 0 ? scoreSum / scoreSamples : 0;
+
+    // === 最終スコア計算 (5基準) ===
+    //   #1 sustained alignment: goodFrames/totalFrames の割合 (高いほど良)
+    //   #2 hook at tana (held): 平均タナズレを penalty 化
+    //   #3 cycle duration: shakuriInterval が標準範囲 (60-180s) にあれば加点
+    //   #4 chum usage: 1サイクル消費が 8-15% に近いほど良
+    //   #5 action validity: しゃくり/巻き/落とし が機能していること
+    if (scoreCounters.totalFrames === 0) return 0;
+    const sustainRate = scoreCounters.goodFrames / scoreCounters.totalFrames;
+    const okRate      = scoreCounters.okFrames   / scoreCounters.totalFrames;
+    const meanTanaDiff = scoreCounters.sumTanaDiff / scoreCounters.totalFrames;
+    const meanRatio    = scoreCounters.sumRatio    / scoreCounters.totalFrames;
+
+    // ベース: 持続同調率を主軸 (max 60pt)
+    const baseScore = sustainRate * 60 + okRate * 15;
+    // 補助: 平均同調率 (粒子量も加味) max 15pt
+    const ratioBonus = Math.min(15, meanRatio * 1.5);
+    // タナ整合性 penalty: 平均ズレ > 1.5m で線形減点 (3m ズレ → -30pt)
+    let tanaPenalty = 0;
+    if (meanTanaDiff > 1.5) {
+      tanaPenalty = (meanTanaDiff - 1.5) * 20;
+    }
+    if (meanTanaDiff > 3.0) {
+      tanaPenalty += 30;  // 大幅外れは硬性 penalty
+    }
+    // サイクル時間: 実釣プリセットに整合
+    //   活性高 120s, 標準 180s, 食い渋り 240-300s
+    const interval = params.shakuriInterval || 60;
+    let cycleScore = 0;
+    if (interval >= 110 && interval <= 195)      cycleScore = 12;  // 活性高〜標準
+    else if (interval >= 200 && interval <= 280) cycleScore = 10;  // 食い渋り
+    else if (interval >= 90 && interval < 110)   cycleScore = 5;   // やや短い
+    else if (interval >= 60 && interval < 90)    cycleScore = -3;  // 短すぎ
+    else if (interval < 60)                      cycleScore = -15; // 速回しすぎ (実釣ありえない)
+    else                                         cycleScore = -5;  // 300秒超 (遅すぎ)
+    // コマセ消費: 1サイクル合計 = しゃくり消費 + biting 中の連続漏れ
+    //   ★ 理想は「1サイクル = 1ビシ消費」(80-95%) → 3分前後で回収・再投入の実釣リズム
+    const shakuriCons = (params.shakuriCountPerTrigger || 1) * shakuriConsumption(params);
+    const leakCons = leakRate(params) * interval;  // biting 中の連続漏れ (interval は上で定義済)
+    const perCycleConsumption = shakuriCons + leakCons;
+    let chumScore = 0;
+    if (perCycleConsumption >= 0.70 && perCycleConsumption <= 0.95) chumScore = 18;       // 理想 (1ビシ消費)
+    else if (perCycleConsumption >= 0.50 && perCycleConsumption <= 1.0)  chumScore = 10;  // 許容
+    else if (perCycleConsumption >= 0.30 && perCycleConsumption <= 1.0)  chumScore = 3;   // 半分以上
+    else if (perCycleConsumption < 0.15) chumScore = -20;  // 全然使ってない
+    else chumScore = -5;
+    // アクション妥当性: maki と shakuri 両方が機能
+    let actionScore = 0;
+    if ((params.makiAmount || 0) >= 1.0) actionScore += 3;  // 巻く有効
+    if ((params.shakuriCountPerTrigger || 0) >= 2) actionScore += 3;  // 複数しゃくり
+    if ((params.shakuriStrokeCm || 0) >= 60) actionScore += 2;  // しゃくり振り幅十分
+    if ((params.makiAmount || 0) < 0.5) actionScore -= 8;  // 巻かない＝落とすが機能しない
+    // 1サイクル合計巻き上げ過剰ペナルティ: 実釣標準 4-6m (3 stroke × 1.5-2m)
+    // 6m 超で線形減点・8m で -10、9m で -15
+    const cycleRise = (params.shakuriCountPerTrigger || 1) * (params.makiAmount || 0);
+    if (cycleRise > 6) actionScore -= (cycleRise - 6) * 5;
+    // 王道ペナルティ (既存)
+    const excessStrokes = Math.max(0, (params.shakuriCountPerTrigger || 1) - 3);
+    const excessOpenU = Math.max(0, cageUpper(params) - 0.65);
+    const excessOpenL = Math.max(0, cageLower(params) - 0.25);
+    const ohdoPenalty = excessStrokes * 1.2 + excessOpenU * 12 + excessOpenL * 30;
+
+    const total = baseScore + ratioBonus + cycleScore + chumScore + actionScore - tanaPenalty - ohdoPenalty;
+    // デバッグ用 (グローバルにエクスポートはしないが、return には main 値だけ)
+    if (typeof window !== 'undefined' && window.__lastScoreDump !== false) {
+      window.__lastScoreDump = {
+        total, baseScore, ratioBonus, cycleScore, chumScore, actionScore, tanaPenalty, ohdoPenalty,
+        sustainRate, okRate, meanTanaDiff, meanRatio,
+        totalFrames: scoreCounters.totalFrames,
+        goodFrames: scoreCounters.goodFrames,
+      };
+    }
+    return total;
   }
 
   // 候補生成: 環境固定で、仕掛け側パラメータをランダム化
@@ -616,10 +796,13 @@ window.SimPhysics = (function() {
       shakuriCountPerTrigger: [1, 2, 3],
       cageUpperOpening:       [0.10, 0.15, 0.20, 0.25, 0.30, 0.35],
       cageLowerOpening:       [0, 0.05, 0.10, 0.15],
-      makiAmount:             [1.5, 2.0, 2.5, 3.0],
-      shakuriInterval:        [30, 45, 60, 90, 120],
-      harrisLength:           env.depth > 60 ? [7, 9, 11] : [5, 7, 9, 11],
+      makiAmount:             [1.0, 1.5, 2.0, 2.5],  // 実釣標準 1.5-2m/ストローク (3m超は不自然)
+      shakuriInterval:        [60, 90, 120, 180, 240, 300],  // 活性高 120 / 標準 180 / 食い渋り 240-300
+      harrisLength:           env.depth > 60 ? [5, 7, 9] : [3, 5, 7, 9],
       harrisNo:               [2, 3, 4],
+      motosLength:            [0, 1.0, 1.5, 2.0],  // 0 = モトス無効相当 (実質サル管なし)
+      motosNo:                [4, 5, 6, 7],
+      dropOffsetM:            [3, 5, 7],  // 落とし込み目安 タナ下3-7m
       ganDamaPct:             [5, 25, 50, 75, 95],  // ビシ側→針側%
       ganDamaSize:            [0, 0.3, 0.5, 0.8],
       cushionLength:          [1.0, 1.5],
@@ -634,35 +817,69 @@ window.SimPhysics = (function() {
       axes[k] = locked[k] != null ? [locked[k]] : AXES[k];
     }
 
-    // 初期推測 (王道セットアップ)
-    const start = {
-      shakuriStrokeCm: 80, shakuriCountPerTrigger: 2,
-      cageUpperOpening: 0.25, cageLowerOpening: 0,
-      makiAmount: 2.5, shakuriInterval: 60,
-      harrisLength: env.depth > 60 ? 9 : 8,
-      harrisNo: 3, ganDamaPct: 50, ganDamaSize: 0.3,
-      cushionLength: 1.0,
-      hookType: "madai", hookSize: 10,
-      komaseSize: "L", smokeLevel: "weak",
-    };
-    // ロックを優先
-    for (const k of Object.keys(start)) {
-      if (locked[k] != null) start[k] = locked[k];
-    }
-    // 各軸の値がリストに無ければ最も近い値にスナップ
-    for (const k of Object.keys(start)) {
-      if (axes[k] && !axes[k].includes(start[k])) {
-        if (typeof start[k] === "number") {
-          let nearest = axes[k][0], d = Infinity;
-          for (const v of axes[k]) {
-            const dd = Math.abs(v - start[k]);
-            if (dd < d) { d = dd; nearest = v; }
+    // ★ 多点出発戦略: harris長 × ガン玉構成 × interval を変えた 6 seed から座標降下を回し、最良を採用
+    //   局所最適固定を解消 (短harris + chimoto + 長interval が最強パターンを取り逃さないように)
+    const SEEDS = [
+      // A: 短ハリス + ガン玉mid 0.3g + 長interval (標準シナリオ)
+      { harrisLength: 5,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.0,
+        shakuriStrokeCm: 80, cageUpperOpening: 0.25, cageLowerOpening: 0,
+        shakuriInterval: 240, harrisNo: 3, ganDamaPct: 50, ganDamaSize: 0.3,
+        hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
+        motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
+      // B: 中ハリス + ガン玉mid 0.5g + 標準サイクル
+      { harrisLength: 7,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.5,
+        shakuriStrokeCm: 80, cageUpperOpening: 0.30, cageLowerOpening: 0,
+        shakuriInterval: 180, harrisNo: 3, ganDamaPct: 50, ganDamaSize: 0.5,
+        hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
+        motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
+      // C: 長ハリス (深場/速潮)
+      { harrisLength: env.depth > 60 ? 11 : 9, cushionLength: 1.5,
+        shakuriCountPerTrigger: 3, makiAmount: 1.5,
+        shakuriStrokeCm: 90, cageUpperOpening: 0.30, cageLowerOpening: 0,
+        shakuriInterval: 180, harrisNo: 4, ganDamaPct: 50, ganDamaSize: 0.5,
+        hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
+        motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
+      // D: 短ハリス + チモト + ガン玉なし + 長interval (流し釣り系)
+      { harrisLength: 5,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.0,
+        shakuriStrokeCm: 90, cageUpperOpening: 0.35, cageLowerOpening: 0.10,
+        shakuriInterval: 240, harrisNo: 4, ganDamaPct: 5, ganDamaSize: 0,
+        hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
+        motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
+      // E: 中ハリス + ハリス下 + ガン玉中 (重ガン玉戦法)
+      { harrisLength: 7,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.5,
+        shakuriStrokeCm: 90, cageUpperOpening: 0.30, cageLowerOpening: 0,
+        shakuriInterval: 180, harrisNo: 3, ganDamaPct: 95, ganDamaSize: 0.5,
+        hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
+        motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
+      // F: 長ハリス + チモト軽 + 速サイクル (活性高)
+      { harrisLength: env.depth > 60 ? 11 : 9, cushionLength: 1.0,
+        shakuriCountPerTrigger: 3, makiAmount: 1.5,
+        shakuriStrokeCm: 100, cageUpperOpening: 0.30, cageLowerOpening: 0,
+        shakuriInterval: 120, harrisNo: 4, ganDamaPct: 5, ganDamaSize: 0.3,
+        hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
+        motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
+    ];
+    // 各 seed を「ロック反映 + axes 内最近接スナップ」で正規化するヘルパ
+    function normalizeStart(seed) {
+      const s = { ...seed };
+      for (const k of Object.keys(s)) {
+        if (locked[k] != null) s[k] = locked[k];
+      }
+      for (const k of Object.keys(s)) {
+        if (axes[k] && !axes[k].includes(s[k])) {
+          if (typeof s[k] === "number") {
+            let nearest = axes[k][0], d = Infinity;
+            for (const v of axes[k]) {
+              const dd = Math.abs(v - s[k]);
+              if (dd < d) { d = dd; nearest = v; }
+            }
+            s[k] = nearest;
+          } else {
+            s[k] = axes[k][0];
           }
-          start[k] = nearest;
-        } else {
-          start[k] = axes[k][0];
         }
       }
+      return s;
     }
 
     // 評価ヘルパ: params 全体を merged して評価
@@ -671,35 +888,35 @@ window.SimPhysics = (function() {
       const merged = { ...env, ...cand };
       const k = JSON.stringify(cand);
       if (evalCache[k] != null) return evalCache[k];
-      const s = evalParams(merged, 90, 2);  // 90秒×2run で速度優先
+      const s = evalParams(merged, 240, 2);  // 240秒×2run で 標準サイクル 1-2回 評価可能
       evalCache[k] = s;
       return s;
     }
 
-    // Coordinate descent: 各軸を順番にスイープして best を更新
-    // 全軸 1pass = 約 (6+3+6+4+4+5+4+3+3+4+2+2+3+2+2) = 53 evals
-    // 2pass で 106 evals 程度 → 1.5-2秒
-    let best = { ...start };
-    let bestScore = evalCand(best);
-    const PASSES = 2;
+    // Coordinate descent サブルーチン
     const axisOrder = [
       "shakuriCountPerTrigger", "cageUpperOpening", "shakuriStrokeCm",
       "shakuriInterval", "makiAmount",
-      "harrisLength", "harrisNo", "ganDamaPct", "ganDamaSize",
+      "harrisLength", "harrisNo", "motosLength", "motosNo", "dropOffsetM",
+      "ganDamaPct", "ganDamaSize",
       "cageLowerOpening", "cushionLength",
       "komaseSize", "smokeLevel", "hookType", "hookSize",
     ];
-    for (let pass = 0; pass < PASSES; pass++) {
-      let improved = false;
-      for (const axis of axisOrder) {
-        const values = axes[axis];
-        if (!values || values.length <= 1) continue;
-        let localBest = best[axis];
-        let localScore = bestScore;
-        for (const v of values) {
-          if (v === best[axis]) continue;
-          const cand = { ...best, [axis]: v };
-          const s = evalCand(cand);
+    function descendFromStart(startSeed) {
+      let best = normalizeStart(startSeed);
+      let bestScore = evalCand(best);
+      const PASSES = 2;
+      for (let pass = 0; pass < PASSES; pass++) {
+        let improved = false;
+        for (const axis of axisOrder) {
+          const values = axes[axis];
+          if (!values || values.length <= 1) continue;
+          let localBest = best[axis];
+          let localScore = bestScore;
+          for (const v of values) {
+            if (v === best[axis]) continue;
+            const cand = { ...best, [axis]: v };
+            const s = evalCand(cand);
           if (s > localScore) {
             localScore = s;
             localBest = v;
@@ -713,8 +930,20 @@ window.SimPhysics = (function() {
       }
       if (!improved) break;  // 収束
     }
+      return { best, score: bestScore };
+    }
 
-    return { best, score: bestScore };
+    // 各 seed から座標降下を実行し、最良を採用
+    let globalBest = null;
+    let globalScore = -Infinity;
+    for (const seed of SEEDS) {
+      const r = descendFromStart(seed);
+      if (r.score > globalScore) {
+        globalScore = r.score;
+        globalBest = r.best;
+      }
+    }
+    return { best: globalBest, score: globalScore };
   }
 
   // 現行設定のスコア（再現性のため複数回平均・seed 派生で完全決定論）

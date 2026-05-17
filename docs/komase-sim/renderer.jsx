@@ -315,21 +315,32 @@ window.SimRenderer = (function() {
     const rodTipX = map.x(window.SimPhysics ? window.SimPhysics.ROD_X_M : 6);
     const cx = map.x(rig.cage.x);
     const cy = map.y(rig.cage.y) - ofs * 0.35; // ビシは波の 35% 程度同期して揺れる
-    // ★ 仕掛け構成: PE → 天秤(yajiri arm) → クッションゴム → ハリス → 針
-    //   天秤の左端にコマセカゴ (cage)、右端 (= rig 接続点) からクッションゴム
-    //   tenbinApex は PE 接続点 = カゴと cushion の中間やや右上
-    const tenbinApexX = cx + 1;
-    const tenbinApexY = cy - 18;
-    const cageCenterX = cx - 12;  // カゴは右側接続点より左に 12px
-    const cageW = 10, cageH = 20;
-    const cageTopY = cy - cageH/2 + 2;
+    // ★ 仕掛け構成 (ユーザー指示の天秤レイアウト):
+    //     PE → 天秤の左端(J = カゴ吊下点 + PE接続点)
+    //     天秤の腕 J → E (右下) に伸びる
+    //     カゴは J から真下に吊り下げ
+    //     クッションゴム は E から下方へ → ハリス → 針
+    const cageW = 11, cageH = 22;
+    // 天秤実寸 = 0.5m。クッションやハリスと同じ世界座標で描画して長さを正しく見せる。
+    // 1m あたりピクセル: map.sy (≒12) を使用。水平方向は map.sx を使うが
+    // 天秤の長さは Euclidean なので最小スケールで近似 (map.sy 基準)。
+    const TENBIN_LEN_M = 0.5;
+    const TENBIN_ANGLE_DEG = 25;  // 水平から (鈍角寄り = 水平に近い)
+    const tenDxM = TENBIN_LEN_M * Math.cos(TENBIN_ANGLE_DEG * Math.PI / 180);  // 約 0.453m
+    const tenDyM = TENBIN_LEN_M * Math.sin(TENBIN_ANGLE_DEG * Math.PI / 180);  // 約 0.211m
+    // 世界座標 (m) で J 位置を計算 → pixel に変換
+    const junctionX = map.x(rig.cage.x - tenDxM);
+    const junctionY = map.y(rig.cage.y - tenDyM);
+    // カゴ中心は J から真下に (画面上で 6px の吊り紐)
+    const cageCenterX = junctionX;
+    const cageTopY = junctionY + 6;
 
-    // PE は基本まっすぐ。潮流があれば中間点を下流に膨らませる。終点は天秤の apex。
-    const ctrlX = tenbinApexX + (rodTipX - tenbinApexX) * 0.3 + Math.min(18, (params.tideSpeed || 0) * 14);
-    const ctrlY = (rodTipY + tenbinApexY) * 0.55;
+    // PE は基本まっすぐ。終点は J (天秤の左端 = PE接続点)。
+    const ctrlX = junctionX + (rodTipX - junctionX) * 0.3 + Math.min(18, (params.tideSpeed || 0) * 14);
+    const ctrlY = (rodTipY + junctionY) * 0.55;
     ctx.beginPath();
     ctx.moveTo(rodTipX, rodTipY);
-    ctx.quadraticCurveTo(ctrlX, ctrlY, tenbinApexX, tenbinApexY);
+    ctx.quadraticCurveTo(ctrlX, ctrlY, junctionX, junctionY);
     ctx.stroke();
 
     // 竿先 → ビシ 鉛直距離表示（縦点線＋ラベル）
@@ -365,22 +376,28 @@ window.SimRenderer = (function() {
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillText(`(ライン長${peTotalM.toFixed(1)}m)`, peGuideX - 100, peMidY + 10);
 
-    // 天秤 (yajiri arm): 左端→カゴ上、右端→クッション接続点
-    //   形状: apex から L 字に折れ曲がる金属棒
-    ctx.strokeStyle = "rgba(220, 230, 240, 0.85)";
-    ctx.lineWidth = 1.6;
+    // 天秤 (yajiri arm): 左端 J → 右下 E (= cushion 接続点 cx, cy) に伸びる金属棒
+    ctx.strokeStyle = "rgba(220, 230, 240, 0.90)";
+    ctx.lineWidth = 1.8;
     ctx.beginPath();
-    // 左腕: apex → カゴ上中心
-    ctx.moveTo(tenbinApexX, tenbinApexY);
-    ctx.lineTo(cageCenterX, cageTopY - 4);
-    // 右腕: apex → クッション接続点 (cx, cy)
-    ctx.moveTo(tenbinApexX, tenbinApexY);
+    ctx.moveTo(junctionX, junctionY);
     ctx.lineTo(cx, cy);
     ctx.stroke();
-    // apex リング (PE 結束点)
+    // カゴ吊下紐 (J → カゴ上端)
+    ctx.strokeStyle = "rgba(220, 230, 240, 0.55)";
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(junctionX, junctionY);
+    ctx.lineTo(cageCenterX, cageTopY);
+    ctx.stroke();
+    // J リング (PE 結束点)
     ctx.fillStyle = "rgba(220, 230, 240, 0.95)";
     ctx.beginPath();
-    ctx.arc(tenbinApexX, tenbinApexY, 1.8, 0, Math.PI*2);
+    ctx.arc(junctionX, junctionY, 2.0, 0, Math.PI*2);
+    ctx.fill();
+    // E リング (天秤の cushion 接続点)
+    ctx.beginPath();
+    ctx.arc(cx, cy, 1.5, 0, Math.PI*2);
     ctx.fill();
 
     // ビシ本体 (カゴ): 上が広く・下が少し角ばった形 (底面が小さく台形)
@@ -469,11 +486,11 @@ window.SimRenderer = (function() {
       ctx.fillRect(cageCenterX - op/2, cageBotY - 1, op, 2);
     }
 
-    // 仕掛け描画: クッションゴム区間 → ハリス区間 を別スタイルで
+    // 仕掛け描画: クッションゴム → モトス → サル管 → ハリス を別スタイルで
     const yShift = ofs * 0.35;
     const cushionEndIdx = rig.cushionEndIdx != null ? rig.cushionEndIdx : 0;
+    const motosEndIdx = rig.motosEndIdx != null ? rig.motosEndIdx : cushionEndIdx;
     // クッションゴム区間（太めの朱色・ゴムを表現）
-    // 起点は天秤右腕の末端 (cx, cy) — カゴ底ではなく天秤接続点から
     if (cushionEndIdx > 0) {
       ctx.strokeStyle = "rgba(232, 93, 4, 0.75)";
       ctx.lineWidth = 2.2;
@@ -485,11 +502,34 @@ window.SimRenderer = (function() {
       }
       ctx.stroke();
     }
+    // モトス区間（太めの薄白・上ハリス）
+    if (motosEndIdx > cushionEndIdx) {
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      const motosStart = rig.harris[cushionEndIdx];
+      ctx.moveTo(map.x(motosStart.x), map.y(motosStart.y) - yShift);
+      for (let i = cushionEndIdx + 1; i <= motosEndIdx; i++) {
+        const p = rig.harris[i];
+        ctx.lineTo(map.x(p.x), map.y(p.y) - yShift);
+      }
+      ctx.stroke();
+      // サル管 (モトス末端の小リング)
+      const sk = rig.harris[motosEndIdx];
+      const skX = map.x(sk.x), skY = map.y(sk.y) - yShift;
+      ctx.fillStyle = "rgba(220, 230, 240, 0.95)";
+      ctx.strokeStyle = "rgba(50, 60, 70, 0.6)";
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.arc(skX, skY, 2.2, 0, Math.PI*2);
+      ctx.fill();
+      ctx.stroke();
+    }
     // ハリス区間（細い透明白）
     ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
     ctx.lineWidth = 0.7;
     ctx.beginPath();
-    const startIdx = Math.max(0, cushionEndIdx);
+    const startIdx = Math.max(0, motosEndIdx);
     const startPt = rig.harris[startIdx];
     ctx.moveTo(map.x(startPt.x), map.y(startPt.y) - yShift);
     for (let i = startIdx + 1; i < rig.harris.length; i++) {
@@ -682,8 +722,9 @@ window.SimRenderer = (function() {
     ctx.fillStyle = "rgba(251, 191, 36, 0.85)";
     ctx.fillText(`指示ダナ ${params.tanaDepth}m`, 8, taX - 4);
 
-    // 落とし込み目安 (指示ダナ下 5m)
-    const dropTargetY = map.y(params.tanaDepth + 5);
+    // 落とし込み目安 = ビシの初期位置 (指示棚 + dropOffsetM)
+    const dropOff = params.dropOffsetM != null ? params.dropOffsetM : 5;
+    const dropTargetY = map.y(params.tanaDepth + dropOff);
     ctx.strokeStyle = "rgba(212, 160, 23, 0.30)";
     ctx.setLineDash([3, 6]);
     ctx.lineWidth = 0.7;
@@ -693,7 +734,8 @@ window.SimRenderer = (function() {
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = "rgba(212, 160, 23, 0.65)";
-    ctx.fillText(`▼ 落とし込み目安 ${params.tanaDepth + 5}m (タナ下5m)`, 8, dropTargetY - 3);
+    const offLabel = dropOff === 0 ? "指示棚" : (dropOff > 0 ? `タナ下${dropOff.toFixed(1)}m` : `タナ上${(-dropOff).toFixed(1)}m`);
+    ctx.fillText(`▼ ビシ落としこみ目安 ${(params.tanaDepth + dropOff).toFixed(1)}m (${offLabel})`, 8, dropTargetY - 3);
 
     // コマセ雲の中心深度（外部から渡されたら描画）
     if (params._komaseDepth != null && isFinite(params._komaseDepth)) {
