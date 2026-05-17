@@ -68,7 +68,8 @@ window.SimPhysics = (function() {
     for (let i = 1; i <= N; i++) {
       const y = depth * i / N;
       const c = current(y, params);
-      acc += peCoef * c * c * dy;
+      // sign を保存 (c*|c| = sign(c)*c²) → 二枚潮で上層 + 下層 - が打ち消し合う
+      acc += peCoef * c * Math.abs(c) * dy;
     }
     return acc;
   }

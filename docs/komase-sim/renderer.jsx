@@ -334,8 +334,13 @@ window.SimRenderer = (function() {
     const TENBIN_ANGLE_DEG = 25;  // 水平から (鈍角寄り = 水平に近い)
     const tenDxM = TENBIN_LEN_M * Math.cos(TENBIN_ANGLE_DEG * Math.PI / 180);  // 約 0.453m
     const tenDyM = TENBIN_LEN_M * Math.sin(TENBIN_ANGLE_DEG * Math.PI / 180);  // 約 0.211m
+    // 二枚潮対応: cage 深度の current 符号で天秤方向を反転
+    //   正値 (上層→右流れ): J は cage の左上 → 天秤は左上から右下 (cage) へ
+    //   負値 (底層→左流れ): J は cage の右上 → 天秤は右上から左下 (cage) へ
+    const cageCurrent = window.SimPhysics ? window.SimPhysics.current(rig.cage.y, params) : 1;
+    const tenbinSign = cageCurrent >= 0 ? 1 : -1;
     // 世界座標 (m) で J 位置を計算 → pixel に変換
-    const junctionX = map.x(rig.cage.x - tenDxM);
+    const junctionX = map.x(rig.cage.x - tenDxM * tenbinSign);
     const junctionY = map.y(rig.cage.y - tenDyM);
     // カゴ中心は J から真下に (画面上で 6px の吊り紐)
     const cageCenterX = junctionX;
