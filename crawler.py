@@ -4119,6 +4119,7 @@ def _v2_header_nav(active_page=""):
   <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
+  <a href="/komase-sim/"{' class="on"' if active_page == 'sim' else ''}>コマセSim</a>
   <a href="/forecast/index.html" class="prem{' on' if active_page == 'forecast' else ''}">有料プラン</a>
 </nav>"""
 
