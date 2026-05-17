@@ -151,6 +151,11 @@ function App() {
   const pendingMakiRef = useRef([]);
   const pendingShakuriRef = useRef([]);
   const lastShakuriAtRef = useRef(0);
+  // 自動最適動作の状態マシン: "shakuri" | "biting" | "dropping" | "idle"
+  //   shakuri: N発撃ち中 → 撃ち終わって maki が落ち着いたら biting
+  //   biting: 高位置 (tana - makiAmount) で食わせ待ち (shakuriInterval 秒)
+  //   dropping: タナへ戻る (makiTarget=0) → 着いたら shakuri 再開
+  const autoStateRef = useRef({ state: "idle", biteTimer: 0 });
   const phaseRef = useRef("fishing");
   const bishiAbsYRef = useRef(0);
   const dropVelRef = useRef(0);
@@ -217,6 +222,7 @@ function App() {
     chumRef.current = 1.0;
     pendingMakiRef.current = [];
     pendingShakuriRef.current = [];
+    autoStateRef.current = { state: "idle", biteTimer: 0 };
     phaseRef.current = "fishing";
     bishiAbsYRef.current = 0;
     dropVelRef.current = 0;
@@ -373,6 +379,24 @@ function App() {
     }
   };
 
+  // ===== 自動最適動作用: N発撃ち、最後の1発のみ maki を伴う =====
+  // 全 N 発で makiAmount × N 巻くと、サイクル毎にビシが上昇しすぎる。
+  // 1サイクル = 1 maki に統一して、shakuri 列を打ってから 1 回だけ maki を発動。
+  const _doOptimalShakuriBurst = () => {
+    if (phaseRef.current !== "fishing") return;
+    const pp = physicsParamsRef.current;
+    const n = Math.max(1, Math.round(pp.shakuriCountPerTrigger || 1));
+    if (n === 1) {
+      _executeOneStroke(true);  // 単発+maki
+    } else {
+      _executeOneStroke(false);  // 1発目: maki なし
+      for (let i = 1; i < n - 1; i++) {
+        pendingShakuriRef.current.push({ withMaki: false });
+      }
+      pendingShakuriRef.current.push({ withMaki: true });  // 最終発で maki
+    }
+  };
+
   // 手動しゃくる（巻きなし）
   const triggerShakuri = () => _doShakuriCycle(false);
   const triggerRef = useRef(triggerShakuri);
@@ -443,6 +467,7 @@ function App() {
     particlesRef.current = [];
     pendingMakiRef.current = [];
     pendingShakuriRef.current = [];
+    autoStateRef.current = { state: "idle", biteTimer: 0 };
     chumRef.current = 1.0;
   };
   const castRef = useRef(castRig);
@@ -457,6 +482,7 @@ function App() {
     rigStateRef.current.shakuriVelY = 0;
     pendingMakiRef.current = [];
     pendingShakuriRef.current = [];
+    autoStateRef.current = { state: "idle", biteTimer: 0 };
     chumRef.current = 1.0;
     particlesRef.current = [];
     phaseRef.current = "dropping";
@@ -519,13 +545,48 @@ function App() {
         swellOffsetYRef.current = amp * Math.sin(swellPhaseRef.current * 2 * Math.PI / period);
       }
 
-      // Auto shakuri (fishing 中のみ・自動モードは shakuri+maki サイクル)
+      // 自動最適動作 (fishing 中のみ): 状態マシンで shakuri→biting→dropping→shakuri を回す
+      //   shakuri:  N発撃ち中 (最終発のみ maki) → 終わって maki が完了したら biting
+      //   biting:   高位置で食わせ待ち (shakuriInterval 秒)
+      //   dropping: makiTarget=0 でタナへ戻す → 着いたら次の shakuri 開始
       if (running && params.autoShakuri && phaseRef.current === "fishing") {
-        shakuriTimerRef.current += dt;
-        if (shakuriTimerRef.current >= params.shakuriInterval) {
-          shakuriTimerRef.current = 0;
-          _doShakuriCycle(true);
+        const auto = autoStateRef.current;
+        const rs = rigStateRef.current;
+
+        if (auto.state === "idle") {
+          // 初回: shakuri 開始
+          _doOptimalShakuriBurst();
+          auto.state = "shakuri";
+          auto.biteTimer = 0;
+        } else if (auto.state === "shakuri") {
+          // 全 N 発と maki が完了したら biting へ
+          const allStrokesDone = pendingShakuriRef.current.length === 0;
+          const allMakiDone = pendingMakiRef.current.length === 0;
+          const rigSettled = Math.abs(rs.shakuriVelY) < 0.12 && Math.abs(rs.shakuriOffsetY) < 0.05;
+          const makiSettled = Math.abs((rs.makiTarget || 0) - (rs.makiOffset || 0)) < 0.08;
+          if (allStrokesDone && allMakiDone && rigSettled && makiSettled) {
+            auto.state = "biting";
+            auto.biteTimer = 0;
+          }
+        } else if (auto.state === "biting") {
+          auto.biteTimer += dt;
+          if (auto.biteTimer >= (pp.shakuriInterval || 60)) {
+            // 食わせ時間終了 → タナへ戻す
+            rs.makiTarget = 0;
+            auto.state = "dropping";
+          }
+        } else if (auto.state === "dropping") {
+          // ビシがタナ (makiOffset≈0) に戻ったら次サイクル
+          if (Math.abs(rs.makiOffset || 0) < 0.08) {
+            _doOptimalShakuriBurst();
+            auto.state = "shakuri";
+            auto.biteTimer = 0;
+          }
         }
+      } else {
+        // 自動 OFF または fishing 外 → idle にリセット
+        autoStateRef.current.state = "idle";
+        autoStateRef.current.biteTimer = 0;
       }
 
       // Pending shakuri (N連発の2発目以降)
@@ -677,6 +738,14 @@ function App() {
         : metricsRef.current.belowTanaRatio * (1 - a) + belowRatio * a;
       metricsRef.current.komaseDepth = countY > 0 ? sumY / countY : null;
 
+      // ビシ深度 (fishing 中) — 指示棚より深ければ警告対象
+      // shakuriOffsetY の瞬間的なオシレーションは無視したいので、makiOffset ベースで判定
+      const cageDepthBase = pp.tanaDepth - (rigStateRef.current.makiOffset || 0);
+      const cageOverrun = cageDepthBase - pp.tanaDepth;  // 正の値 = ビシが指示棚より深い
+      metricsRef.current.cageOverrun = metricsRef.current.cageOverrun == null
+        ? cageOverrun
+        : metricsRef.current.cageOverrun * (1 - a) + cageOverrun * a;
+
       // 描画
       const canvas = canvasRef.current;
       if (canvas && canvas.__cssW) {
@@ -798,13 +867,16 @@ function App() {
       };
     }
 
-    // タナ下流出警告: 粒子の25%以上がタナ下1m超に流出 → 船中釣果悪化リスク
+    // ビシ位置警告: ビシ自体が指示棚より深く沈んでいたら警告 (タナ取り失敗)
+    //   指示棚下にビシが居ると、コマセは指示棚より深い位置から放出される → 魚のタナ外しまで散らす
+    //   原因: 落とし込み過ぎ・巻き上げ不足・ガン玉重すぎでハリスが沈む
     const belowRatio = metricsRef.current.belowTanaRatio || 0;
+    const cageOver = metricsRef.current.cageOverrun || 0;
     let belowWarning = null;
-    if (belowRatio >= 40) {
-      belowWarning = { level: "high", text: `⚠ コマセが大幅にタナ下に流出 (${belowRatio.toFixed(0)}%) — 船中の釣果を下げる`, color: "var(--vermilion)" };
-    } else if (belowRatio >= 25) {
-      belowWarning = { level: "mid", text: `⚠ コマセがタナ下に流出 (${belowRatio.toFixed(0)}%) — 巻き上げ早めに`, color: "var(--brass)" };
+    if (cageOver >= 2.0) {
+      belowWarning = { level: "high", text: `⚠ ビシが指示棚より ${cageOver.toFixed(1)}m 下 — タナ取り直しを!`, color: "var(--vermilion)" };
+    } else if (cageOver >= 0.8) {
+      belowWarning = { level: "mid", text: `⚠ ビシが指示棚より ${cageOver.toFixed(1)}m 下 — 巻き上げて`, color: "var(--brass)" };
     }
 
     return {

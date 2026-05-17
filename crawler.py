@@ -878,57 +878,64 @@ def _load_recent_catches_for_index(now, days=7):
 
     rows_out = []
     for ym in sorted(months_needed):
-        path = os.path.join(data_dir, f"{ym}.csv")
-        if not os.path.isfile(path):
-            continue
-        try:
-            with open(path, encoding="utf-8", newline="") as f:
-                for row in csv.DictReader(f):
-                    d = row.get("date", "")
-                    if not d or d < cutoff or d > today_str:
-                        continue
-                    if row.get("is_cancellation") == "1":
-                        continue
-                    fish_raw = row.get("fish_raw", "") or row.get("tsuri_mono_raw", "")
-                    if not fish_raw:
-                        continue
-                    # count_range / size_cm 構築（ミニバー・サイズ表示で使用）
-                    def _to_int(s):
-                        try: return int(float(s))
-                        except (ValueError, TypeError): return None
-                    def _to_float(s):
-                        try: return float(s)
-                        except (ValueError, TypeError): return None
-                    cmin = _to_int(row.get("cnt_min", ""))
-                    cmax = _to_int(row.get("cnt_max", ""))
-                    cavg = _to_int(row.get("cnt_avg", ""))
-                    is_boat = row.get("is_boat", "") == "1"
-                    count_range = None
-                    if cmin is not None and cmax is not None:
-                        count_range = {"min": cmin, "max": cmax, "is_boat": is_boat}
-                    smin = _to_float(row.get("size_min", ""))
-                    smax = _to_float(row.get("size_max", ""))
-                    size_cm = None
-                    if smin is not None and smax is not None:
-                        size_cm = {"min": smin, "max": smax}
-                    kgmin = _to_float(row.get("kg_min", ""))
-                    kgmax = _to_float(row.get("kg_max", ""))
-                    weight_kg = None
-                    if kgmin is not None and kgmax is not None:
-                        weight_kg = {"min": kgmin, "max": kgmax}
-                    rows_out.append({
-                        "ship":        row.get("ship", ""),
-                        "area":        row.get("area", ""),
-                        "date":        d,
-                        "fish":        guess_fish(fish_raw),
-                        "fish_raw":    fish_raw,
-                        "count_range": count_range,
-                        "count_avg":   cavg,
-                        "size_cm":     size_cm,
-                        "weight_kg":   weight_kg,
-                    })
-        except Exception:
-            continue
+        # 釣りビジョン経由 (YYYY-MM.csv) + chowari 経由 (chowari_YYYY-MM.csv) を両方読み込み
+        # 2026/05/17: 新規 chowari 船宿 (150隻) の直近7日データを fish/area HTML の
+        # 「今週」「直近1週間」集計に反映するため
+        paths = [
+            os.path.join(data_dir, f"{ym}.csv"),
+            os.path.join(data_dir, f"chowari_{ym}.csv"),
+        ]
+        for path in paths:
+            if not os.path.isfile(path):
+                continue
+            try:
+                with open(path, encoding="utf-8", newline="") as f:
+                    for row in csv.DictReader(f):
+                        d = row.get("date", "")
+                        if not d or d < cutoff or d > today_str:
+                            continue
+                        if row.get("is_cancellation") == "1":
+                            continue
+                        fish_raw = row.get("fish_raw", "") or row.get("tsuri_mono_raw", "")
+                        if not fish_raw:
+                            continue
+                        # count_range / size_cm 構築（ミニバー・サイズ表示で使用）
+                        def _to_int(s):
+                            try: return int(float(s))
+                            except (ValueError, TypeError): return None
+                        def _to_float(s):
+                            try: return float(s)
+                            except (ValueError, TypeError): return None
+                        cmin = _to_int(row.get("cnt_min", ""))
+                        cmax = _to_int(row.get("cnt_max", ""))
+                        cavg = _to_int(row.get("cnt_avg", ""))
+                        is_boat = row.get("is_boat", "") == "1"
+                        count_range = None
+                        if cmin is not None and cmax is not None:
+                            count_range = {"min": cmin, "max": cmax, "is_boat": is_boat}
+                        smin = _to_float(row.get("size_min", ""))
+                        smax = _to_float(row.get("size_max", ""))
+                        size_cm = None
+                        if smin is not None and smax is not None:
+                            size_cm = {"min": smin, "max": smax}
+                        kgmin = _to_float(row.get("kg_min", ""))
+                        kgmax = _to_float(row.get("kg_max", ""))
+                        weight_kg = None
+                        if kgmin is not None and kgmax is not None:
+                            weight_kg = {"min": kgmin, "max": kgmax}
+                        rows_out.append({
+                            "ship":        row.get("ship", ""),
+                            "area":        row.get("area", ""),
+                            "date":        d,
+                            "fish":        guess_fish(fish_raw),
+                            "fish_raw":    fish_raw,
+                            "count_range": count_range,
+                            "count_avg":   cavg,
+                            "size_cm":     size_cm,
+                            "weight_kg":   weight_kg,
+                        })
+            except Exception:
+                continue
     return rows_out
 
 def _summarize_area_history(area: str, hist_rows: list, today_dt) -> dict:

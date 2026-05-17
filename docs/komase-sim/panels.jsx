@@ -267,8 +267,8 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
             ビシ {params.bishiNo}号 ({(params.bishiNo * 3.75).toFixed(0)}g) のフリー落下終端速度
           </div>
         </div>
-        <div className="tog-row">
-          <span>自動しゃくり</span>
+        <div className="tog-row" title="しゃくり N発 → 巻き → 食わせ待ち → タナへ戻す のサイクルを自動で回す">
+          <span>自動最適動作</span>
           <div className={"tog " + (params.autoShakuri ? "is-on" : "")}
                onClick={() => sp({ autoShakuri: !params.autoShakuri })} />
         </div>
@@ -385,8 +385,8 @@ window.RightPanel = function RightPanel(props) {
           }}>
             {metrics.belowWarning.text}
             <div style={{fontSize: "10px", color: "var(--sub)", marginTop: 4, fontFamily: "var(--sans)", letterSpacing: 0, fontWeight: 400}}>
-              指示ダナより下にコマセが大量に流出すると、他船客の釣り座（タナ下狙い・反対舷）に魚を散らす結果に。<br/>
-              コマセは指示ダナで止めて、無駄に深く撒かない。
+              ビシ自体が指示棚より下に沈むと、コマセ放出点が指示棚より深くなり、魚のタナを外す。<br/>
+              「巻く」ボタンで指示棚まで持ち上げて、コマセは指示棚で振る。
             </div>
           </div>
         )}
@@ -474,7 +474,7 @@ function RecommendationCard({ rec, onApply, params }) {
   const locked = rec.locked || {};
   const hookLabel = SimPhysics.HOOK_TYPE_LABEL[r.hookType];
   const ganLabel = r.ganDamaPos === "chimoto" ? "チモト" : r.ganDamaPos === "near-hook" ? "ハリス下" : "中";
-  const fmtCell = (key, value) => (
+  const cell = (key, value) => (
     <RecRow label={LOCK_LABEL[key] || key} value={value} locked={!!locked[key]} />
   );
   return (
@@ -482,44 +482,52 @@ function RecommendationCard({ rec, onApply, params }) {
       marginTop: 12,
       border: "1px solid var(--cta)",
       borderRadius: "6px",
-      padding: "12px 14px",
+      padding: "10px 12px",
       background: "rgba(232, 93, 4, 0.06)",
     }}>
       <div style={{
-        fontFamily: "var(--sans)", fontSize: 12, fontWeight: 700,
-        color: "var(--cta)", letterSpacing: ".16em", marginBottom: 8
+        fontFamily: "var(--sans)", fontSize: 11, fontWeight: 700,
+        color: "var(--cta)", letterSpacing: ".14em", marginBottom: 6
       }}>推奨設定</div>
-      <div className="note" style={{lineHeight: 1.9, color: "var(--paper)"}}>
-        {fmtCell("hookType", `${hookLabel} ${r.hookSize}号 (${SimPhysics.getHookWeight(r.hookType, r.hookSize).toFixed(2)}g)`)}
-        {r.cushionLength != null && fmtCell("cushionLength", `${r.cushionLength.toFixed(1)} m`)}
-        {fmtCell("harrisLength", `${r.harrisLength.toFixed(1)} m`)}
-        {fmtCell("harrisNo", `${r.harrisNo}号`)}
-        {fmtCell("ganDamaPos", `${ganLabel} ${r.ganDamaSize === 0 ? "なし" : r.ganDamaSize.toFixed(2)+"g"}`)}
-        {r.cageUpperOpening != null && fmtCell("cageUpperOpening", `${Math.round(r.cageUpperOpening*100)}%`)}
-        {r.cageLowerOpening != null && fmtCell("cageLowerOpening", `${Math.round(r.cageLowerOpening*100)}%`)}
-        {r.komaseSize != null && fmtCell("komaseSize", `${r.komaseSize}`)}
-        {r.smokeLevel != null && fmtCell("smokeLevel", r.smokeLevel === "weak" ? "弱" : r.smokeLevel === "medium" ? "中" : "強")}
-        {fmtCell("shakuriStrokeCm", `${r.shakuriStrokeCm}cm`)}
-        {fmtCell("shakuriCountPerTrigger", `${r.shakuriCountPerTrigger}回`)}
-        {fmtCell("makiAmount", r.makiAmount === 0 ? "なし" : r.makiAmount.toFixed(2)+"m")}
-        {fmtCell("shakuriInterval", `${r.shakuriInterval.toFixed(1)} s`)}
+      {/* 針タイプは長いので 2列スパン */}
+      <div style={{marginBottom: 4}}>
+        {cell("hookType", `${hookLabel} ${r.hookSize}号 (${SimPhysics.getHookWeight(r.hookType, r.hookSize).toFixed(2)}g)`)}
+      </div>
+      {/* 残りの 12 項目を 2列グリッドに */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        columnGap: "10px",
+        rowGap: "2px",
+        color:"var(--text)",
+      }}>
+        {r.cushionLength != null && cell("cushionLength", `${r.cushionLength.toFixed(1)}m`)}
+        {cell("harrisLength", `${r.harrisLength.toFixed(1)}m`)}
+        {cell("harrisNo", `${r.harrisNo}号`)}
+        {cell("ganDamaPos", `${ganLabel} ${r.ganDamaSize === 0 ? "なし" : r.ganDamaSize.toFixed(2)+"g"}`)}
+        {r.cageUpperOpening != null && cell("cageUpperOpening", `${Math.round(r.cageUpperOpening*100)}%`)}
+        {r.cageLowerOpening != null && cell("cageLowerOpening", `${Math.round(r.cageLowerOpening*100)}%`)}
+        {r.komaseSize != null && cell("komaseSize", `${r.komaseSize}`)}
+        {r.smokeLevel != null && cell("smokeLevel", r.smokeLevel === "weak" ? "弱" : r.smokeLevel === "medium" ? "中" : "強")}
+        {cell("shakuriStrokeCm", `${r.shakuriStrokeCm}cm`)}
+        {cell("shakuriCountPerTrigger", `${r.shakuriCountPerTrigger}回`)}
+        {cell("makiAmount", r.makiAmount === 0 ? "なし" : r.makiAmount.toFixed(2)+"m")}
+        {cell("shakuriInterval", `${r.shakuriInterval.toFixed(0)}s`)}
       </div>
       <div style={{
-        marginTop: 10, paddingTop: 10, borderTop: "1px dashed var(--line)",
-        display: "flex", justifyContent: "space-between", alignItems: "center"
+        marginTop: 8, paddingTop: 8, borderTop: "1px dashed var(--border)",
+        fontSize:11, color:"var(--sub)",
       }}>
-        <div style={{fontSize:11, color:"var(--paper-dim)"}}>
-          予測到達率 <b style={{color:"var(--vermilion)", fontSize:14}}>{rec.score.toFixed(1)}%</b>
-          {rec.baseline != null && (
-            <span style={{marginLeft:6, fontFamily:"var(--mono)"}}>
-              (現行 {rec.baseline.toFixed(1)}% / <span style={{color: rec.score >= rec.baseline ? "var(--moss)" : "var(--paper-dim)"}}>
-                {rec.score - rec.baseline >= 0 ? "+" : ""}{(rec.score - rec.baseline).toFixed(1)}pt
-              </span>)
-            </span>
-          )}
-        </div>
+        予測到達率 <b style={{color:"var(--cta)", fontSize:14}}>{rec.score.toFixed(1)}%</b>
+        {rec.baseline != null && (
+          <span style={{marginLeft:6, fontFamily:"var(--mono)"}}>
+            (現行 {rec.baseline.toFixed(1)}% / <span style={{color: rec.score >= rec.baseline ? "var(--pos)" : "var(--sub)"}}>
+              {rec.score - rec.baseline >= 0 ? "+" : ""}{(rec.score - rec.baseline).toFixed(1)}pt
+            </span>)
+          </span>
+        )}
       </div>
-      <button className="btn is-primary" style={{width:"100%", marginTop:10}}
+      <button className="btn is-primary" style={{width:"100%", marginTop:8}}
               onClick={onApply}>この設定を適用</button>
     </div>
   );
@@ -527,13 +535,30 @@ function RecommendationCard({ rec, onApply, params }) {
 
 function RecRow({ label, value, locked }) {
   return (
-    <div style={{display:"flex", justifyContent:"space-between"}}>
-      <span style={{color: locked ? "var(--brass)" : "var(--paper-dim)"}}>
-        {locked && <span style={{marginRight:4}}>🔒</span>}{label}
+    <div style={{
+      display:"flex",
+      justifyContent:"space-between",
+      alignItems:"baseline",
+      fontSize: 10.5,
+      lineHeight: 1.4,
+      minWidth: 0,
+    }}>
+      <span style={{
+        color: locked ? "var(--gold-deep)" : "var(--sub)",
+        overflow:"hidden",
+        textOverflow:"ellipsis",
+        whiteSpace:"nowrap",
+        flex: "0 1 auto",
+        marginRight: 4,
+      }}>
+        {locked && <span style={{marginRight:2}}>🔒</span>}{label}
       </span>
       <span style={{
-        fontFamily:"var(--mono)", fontSize:11,
-        color: locked ? "var(--brass)" : "var(--paper)"
+        fontFamily:"var(--mono)",
+        fontSize: 10.5,
+        fontWeight: 600,
+        color: locked ? "var(--gold-deep)" : "var(--text)",
+        flexShrink: 0,
       }}>{value}</span>
     </div>
   );
