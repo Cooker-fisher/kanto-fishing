@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>モックアップD: PC配置維持・横スクロール型</title>
+<link rel="stylesheet" href="styles.css?v=107">
+<style>
+/* === Mockup D overrides: PC配置維持・横スクロール型 ===
+   レイアウト・サイズ・ボタンを PC 版と完全に同一に保つ。
+   画面外に出る分は body の overflow-x: auto で横スクロール。 */
+html { overflow-x: auto; }
+body { overflow-x: auto; min-width: 0 !important; }
+/* min-width: 1280px は維持 = PC配置の固定幅を保つ */
+
+.mockup-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: #fbbf24; color: #4a3500; padding: 4px 10px;
+  font-size: 11px; text-align: center; font-weight: 700;
+  letter-spacing: 0.08em;
+  /* バナーはビューポート幅で固定 (横スクロールに追従しない) */
+}
+.mockup-banner a {
+  color: #4a3500; margin: 0 6px; text-decoration: underline;
+}
+.mockup-frame { padding-top: 22px; }
+
+/* canvas placeholder */
+.stage__placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.85); font-size: 14px;
+  text-align: center; pointer-events: none;
+  letter-spacing: 0.12em;
+}
+.stage__placeholder b { font-size: 28px; display: block; margin-bottom: 8px; }
+.stage {
+  background: linear-gradient(180deg, var(--sea-up) 0%, var(--sea-mid) 45%, var(--sea-deep) 85%, var(--seabed) 100%);
+}
+
+.scroll-hint-h {
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+  z-index: 99; background: rgba(13,43,74,0.92); color: #fff;
+  padding: 6px 12px; border-radius: 16px;
+  font-size: 11px; letter-spacing: 0.10em;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<div class="mockup-banner">
+  📱 モックアップD: PC配置維持・横スクロール型 (画面を指でスワイプして移動)
+  &nbsp;|&nbsp;
+  <a href="mockup-mobile-A.html">A</a>
+  <a href="mockup-mobile-B.html">B</a>
+  <a href="mockup-mobile-C.html">C</a>
+  <a href="mockup-mobile-D.html">D</a>
+</div>
+
+<div class="mockup-frame">
+<div class="app">
+  <header class="head app__head">
+    <div>
+      <h1 class="head__title"><span class="kanji-accent">◆</span>マダイコマセシミュレーター<span class="head__ver">ver.1.0</span></h1>
+      <div class="head__actions">
+        <a href="#" class="head__link">← 船釣り予想 トップへ</a>
+        <a href="#" class="head__btn">𝕏 でシェア</a>
+        <a href="#" class="head__btn head__btn--follow">フォロー</a>
+      </div>
+    </div>
+    <div class="head__meta">
+      <div>SIM <b>● LIVE</b>　320粒</div>
+      <div>累計しゃくり 24回</div>
+    </div>
+  </header>
+
+  <aside class="panel app__left">
+    <section class="panel__section">
+      <h3 class="panel__h">仕掛け</h3>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ハリス長</span><span class="field__value">8.0<span class="unit">m</span></span></div>
+        <input type="range" min="2" max="12" value="8">
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ハリス号数</span><span class="field__value">3<span class="unit">号</span></span></div>
+        <input type="range" min="2" max="6" value="3">
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ガン玉</span><span class="field__value">0.5<span class="unit">g</span></span></div>
+        <div class="seg">
+          <button class="seg__btn">なし</button>
+          <button class="seg__btn">0.3</button>
+          <button class="seg__btn is-on">0.5</button>
+          <button class="seg__btn">1.0</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">針</span><span class="field__value">⊜ 8号</span></div>
+        <input type="range" min="6" max="12" value="8">
+      </div>
+    </section>
+    <section class="panel__section">
+      <h3 class="panel__h">海流</h3>
+      <div class="field">
+        <div class="field__row"><span class="field__label">表層流速</span><span class="field__value">0.4<span class="unit">m/s</span></span></div>
+        <input type="range" min="0" max="2" step="0.1" value="0.4">
+      </div>
+    </section>
+    <section class="panel__section">
+      <h3 class="panel__h">タナ・水深</h3>
+      <div class="field">
+        <div class="field__row"><span class="field__label">指示ダナ</span><span class="field__value">20<span class="unit">m</span></span></div>
+        <input type="range" min="5" max="60" value="20">
+      </div>
+    </section>
+    <section class="panel__section">
+      <h3 class="panel__h">プリセット</h3>
+      <div class="chips">
+        <button class="chip is-on">標準</button>
+        <button class="chip">渋い日</button>
+        <button class="chip">乗っ込み</button>
+      </div>
+    </section>
+  </aside>
+
+  <main class="stage app__main">
+    <div class="stage__placeholder">
+      <div>
+        <b>🐟 シミュレーション画面</b>
+        PC と完全に同一サイズ<br>
+        指で横スワイプして移動
+      </div>
+    </div>
+    <div class="stage__hud">
+      <div>指示ダナ</div>
+      <span class="hud-big">20<small style="font-size:14px;opacity:.6">m</small></span>
+      <div style="margin-top:14px;font-size:11px;letter-spacing:.15em">コマセ残量</div>
+      <div style="width:120px;height:8px;margin-top:5px;background:rgba(255,255,255,0.18);border-radius:4px;overflow:hidden">
+        <div style="width:75%;height:100%;background:var(--paper)"></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:11px;margin-top:3px">75%</div>
+    </div>
+    <div class="stage__legend">
+      <div style="font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:.12em">凡例</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#fdba74"></span><b>コマセ粒子</b></div>
+      <div class="legend-row"><span class="legend-dot" style="background:#e85d04"></span>付けエサ</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#1e293b;border:1px solid #94a3b8"></span>ガン玉</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#475569"></span>ビシ</div>
+    </div>
+  </main>
+
+  <div class="controls app__controls">
+    <div class="controls__group">
+      <button class="btn-action btn-cast">投入<small>落とし込み</small></button>
+    </div>
+    <div class="controls__group">
+      <button class="btn-action shakuri-btn">しゃくる</button>
+      <button class="btn-action maki-btn">巻く</button>
+      <button class="btn-action drop-btn">落とす</button>
+    </div>
+    <div class="controls__group">
+      <button class="btn-action btn-rig">仕掛け回収<small>コマセ補充</small></button>
+    </div>
+    <div class="controls__group">
+      <button class="btn-action btn-sim is-running">一時停止</button>
+      <div class="speed-group">
+        <button class="speed-btn is-active">1x</button>
+        <button class="speed-btn">2x</button>
+        <button class="speed-btn">3x</button>
+      </div>
+      <button class="btn-action btn-sim">リセット</button>
+    </div>
+    <div class="controls__group controls__group--stats">
+      <div class="ctl-stat">
+        <div class="ctl-stat__label">粒子</div>
+        <div class="ctl-stat__value">320<small>/500</small></div>
+      </div>
+      <div class="ctl-stat">
+        <div class="ctl-stat__label">巻き上げ</div>
+        <div class="ctl-stat__value">2.40<small>m</small></div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="panel panel--right app__right">
+    <section class="panel__section">
+      <h3 class="panel__h">成績</h3>
+      <div class="metric">
+        <div class="metric__label">到達率</div>
+        <div class="metric__num">85.3<span class="small">%</span></div>
+        <div class="metric__bar"><i style="width:85%"></i></div>
+      </div>
+      <div class="metric">
+        <div class="metric__label">ヒット回数</div>
+        <span class="grade grade--ok">◎</span><span style="font-size:32px;color:var(--text);font-weight:700">12</span>
+        <span style="font-size:16px;color:var(--muted);margin-left:6px">回</span>
+      </div>
+      <div class="histogram">
+        <i style="height:80%"></i><i style="height:70%"></i><i style="height:55%" class="is-hook"></i>
+        <i style="height:45%"></i><i style="height:30%"></i><i style="height:18%"></i>
+        <i style="height:10%"></i><i style="height:7%"></i>
+      </div>
+      <div class="histogram__axis"><span>0m</span><span>タナ20m</span><span>40m</span></div>
+    </section>
+    <section class="panel__section">
+      <h3 class="panel__h">最適化候補</h3>
+      <div class="note">
+        <b>推奨設定</b>: ハリス 10m / ガン玉 なし / シャクリ 30cm / 巻 0.5m<br>
+        予測到達率 <b>91.2%</b>
+      </div>
+    </section>
+  </aside>
+</div>
+</div>
+
+<div class="scroll-hint-h">← 画面を指で左右にスワイプ →</div>
+
+</body>
+</html>

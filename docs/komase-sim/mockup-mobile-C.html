@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>モックアップC: コンパクト型</title>
+<link rel="stylesheet" href="styles.css?v=107">
+<style>
+/* === Mockup C overrides: コンパクト型 (canvas 40vh + 主要4ボタン + 隠しサブ) === */
+html, body { min-width: 0 !important; }
+
+.mockup-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: #fbbf24; color: #4a3500; padding: 4px 10px;
+  font-size: 11px; text-align: center; font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.mockup-banner a {
+  color: #4a3500; margin: 0 6px; text-decoration: underline;
+}
+.mockup-frame { padding-top: 22px; }
+
+.app {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  max-width: 100% !important;
+  min-height: 100vh;
+}
+
+.head { padding: 8px 14px 6px; flex-direction: column; align-items: stretch; }
+.head__title { font-size: 15px; }
+.head__ver { font-size: 10px; }
+.head__actions { margin-top: 4px; gap: 6px; }
+.head__link, .head__btn { font-size: 10px; padding: 3px 6px; }
+.head__meta { display: none; }
+
+/* canvas small */
+.stage {
+  min-height: 40vh !important;
+  height: 40vh;
+  flex: none;
+  position: relative;
+  background: linear-gradient(180deg, var(--sea-up) 0%, var(--sea-mid) 45%, var(--sea-deep) 85%, var(--seabed) 100%);
+}
+.stage__placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.85); font-size: 12px;
+  text-align: center; pointer-events: none;
+  letter-spacing: 0.10em;
+}
+.stage__placeholder b { font-size: 19px; display: block; margin-bottom: 4px; }
+.stage__hud {
+  width: 110px !important;
+  font-size: 9px !important;
+  padding: 6px 8px !important;
+}
+.stage__hud .hud-big { font-size: 17px !important; }
+.stage__legend { display: none; }
+
+/* controls (主要4のみ + その他展開) */
+.controls {
+  flex-direction: column !important;
+  padding: 8px 10px !important;
+  gap: 4px !important;
+  border-right: none !important;
+  min-height: auto !important;
+  align-items: stretch !important;
+}
+.controls__group {
+  padding: 0 !important;
+  border-right: none !important;
+  gap: 4px !important;
+  width: 100%;
+  display: flex;
+}
+.controls__row1 {
+  display: flex; gap: 4px; width: 100%;
+}
+.controls__row1 .btn-action {
+  flex: 1 1 0;
+  min-height: 52px !important;
+  font-size: 13px !important;
+  min-width: 0 !important;
+  padding: 4px 2px !important;
+}
+.btn-more {
+  width: 100%;
+  background: var(--border-soft);
+  border: 1px dashed var(--border);
+  color: var(--sub);
+  padding: 6px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.controls__sub {
+  display: flex; gap: 4px; width: 100%; margin-top: 4px;
+  padding: 6px; background: var(--border-soft); border-radius: 4px;
+}
+.controls__sub .btn-action,
+.controls__sub .speed-btn {
+  min-height: 38px !important;
+  height: 38px !important;
+  font-size: 11px !important;
+  min-width: 0 !important;
+  padding: 4px 6px !important;
+  flex: 1;
+}
+.controls__sub .speed-group { height: 38px !important; flex: 1.4; }
+
+/* hud-row: tana + chum below canvas, freeing canvas overlay */
+.hud-row {
+  display: flex; padding: 8px 14px; gap: 14px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.hud-row__item { display: flex; align-items: baseline; gap: 6px; }
+.hud-row__label { color: var(--sub); font-size: 11px; letter-spacing: 0.06em; }
+.hud-row__val { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--text); }
+
+/* panels */
+.panel {
+  max-height: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: 1px solid var(--border) !important;
+  padding: 12px 14px !important;
+}
+.panel__section { margin-bottom: 10px; padding-bottom: 10px; }
+.panel__section--closed { padding-bottom: 4px; margin-bottom: 4px; }
+.panel__h--clickable { font-size: 13px; }
+
+input[type="range"] { height: 8px; }
+input[type="range"]::-webkit-slider-thumb { width: 22px; height: 22px; }
+input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; }
+.seg__btn { padding: 9px 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="mockup-banner">
+  📱 モックアップC: コンパクト型 (canvas 40vh / 主要4ボタンのみ + その他展開)
+  &nbsp;|&nbsp;
+  <a href="mockup-mobile-A.html">A</a>
+  <a href="mockup-mobile-B.html">B</a>
+  <a href="mockup-mobile-C.html">C</a>
+  <a href="mockup-mobile-D.html">D</a>
+</div>
+
+<div class="mockup-frame">
+<div class="app">
+  <header class="head app__head">
+    <h1 class="head__title"><span class="kanji-accent">◆</span>マダイコマセシミュレーター<span class="head__ver">ver.1.0</span></h1>
+    <div class="head__actions">
+      <a href="#" class="head__link">← トップへ</a>
+      <a href="#" class="head__btn">𝕏</a>
+      <a href="#" class="head__btn head__btn--follow">フォロー</a>
+    </div>
+  </header>
+
+  <main class="stage app__main">
+    <div class="stage__placeholder">
+      <div>
+        <b>🐟 シミュ画面</b>
+        小さめ (40vh)
+      </div>
+    </div>
+    <div class="stage__hud">
+      <div>指示ダナ</div>
+      <span class="hud-big">20m</span>
+    </div>
+  </main>
+
+  <div class="hud-row">
+    <div class="hud-row__item"><span class="hud-row__label">指示ダナ</span><span class="hud-row__val">20m</span></div>
+    <div class="hud-row__item"><span class="hud-row__label">コマセ</span><span class="hud-row__val">75%</span></div>
+    <div class="hud-row__item"><span class="hud-row__label">粒子</span><span class="hud-row__val">320</span></div>
+  </div>
+
+  <div class="controls app__controls">
+    <div class="controls__row1">
+      <button class="btn-action btn-cast">投入</button>
+      <button class="btn-action shakuri-btn">しゃくる</button>
+      <button class="btn-action maki-btn">巻く</button>
+      <button class="btn-action drop-btn">落とす</button>
+    </div>
+    <button class="btn-more">▼ その他 (回収・一時停止・速度・リセット) ▼</button>
+    <div class="controls__sub">
+      <button class="btn-action btn-rig">回収</button>
+      <button class="btn-action btn-sim is-running">⏸</button>
+      <div class="speed-group">
+        <button class="speed-btn is-active">1x</button>
+        <button class="speed-btn">2x</button>
+        <button class="speed-btn">3x</button>
+      </div>
+      <button class="btn-action btn-sim">↺</button>
+    </div>
+  </div>
+
+  <aside class="panel app__left">
+    <section class="panel__section">
+      <h3 class="panel__h panel__h--clickable"><span class="panel__chevron">▼</span>仕掛け</h3>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ハリス長</span><span class="field__value">8.0<span class="unit">m</span></span></div>
+        <input type="range" min="2" max="12" value="8">
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ガン玉</span><span class="field__value">0.5<span class="unit">g</span></span></div>
+        <div class="seg">
+          <button class="seg__btn">なし</button>
+          <button class="seg__btn">0.3</button>
+          <button class="seg__btn is-on">0.5</button>
+          <button class="seg__btn">1.0</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">針</span><span class="field__value">⊜ 8号</span></div>
+        <input type="range" min="6" max="12" value="8">
+      </div>
+    </section>
+    <section class="panel__section panel__section--closed">
+      <h3 class="panel__h panel__h--clickable"><span class="panel__chevron">▶</span>海流 / タナ / プリセット</h3>
+    </section>
+  </aside>
+
+  <aside class="panel panel--right app__right">
+    <section class="panel__section">
+      <h3 class="panel__h">成績</h3>
+      <div class="metric">
+        <div class="metric__label">到達率</div>
+        <div class="metric__num">85.3<span class="small">%</span></div>
+        <div class="metric__bar"><i style="width:85%"></i></div>
+      </div>
+      <div class="metric">
+        <div class="metric__label">ヒット回数</div>
+        <span class="grade grade--ok">◎</span><span style="font-size:24px;color:var(--text);font-weight:700">12</span>
+      </div>
+    </section>
+  </aside>
+</div>
+</div>
+</body>
+</html>

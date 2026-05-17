@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>モックアップA: バランス型</title>
+<link rel="stylesheet" href="styles.css?v=107">
+<style>
+/* === Mockup A overrides: バランス型 (canvas 50vh + 主要4ボタン上 / サブ下) === */
+html, body { min-width: 0 !important; }
+body { background: var(--bg); }
+
+.mockup-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: #fbbf24; color: #4a3500; padding: 4px 10px;
+  font-size: 11px; text-align: center; font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.mockup-banner a {
+  color: #4a3500; margin: 0 6px; text-decoration: underline;
+}
+.mockup-frame { padding-top: 22px; }
+
+.app {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  max-width: 100% !important;
+  min-height: 100vh;
+}
+
+/* header */
+.head {
+  padding: 10px 14px 8px;
+  flex-direction: column;
+  align-items: stretch;
+}
+.head__title { font-size: 17px; }
+.head__ver { font-size: 11px; margin-left: 4px; }
+.head__actions { margin-top: 6px; gap: 6px; }
+.head__link { font-size: 10px; }
+.head__btn { font-size: 10px; padding: 3px 8px; }
+.head__meta { display: none; }
+
+/* canvas area */
+.stage {
+  min-height: 50vh !important;
+  height: 50vh;
+  flex: none;
+  position: relative;
+  background: linear-gradient(180deg, var(--sea-up) 0%, var(--sea-mid) 45%, var(--sea-deep) 85%, var(--seabed) 100%);
+}
+.stage__placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.85); font-size: 13px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  pointer-events: none;
+}
+.stage__placeholder b { font-size: 22px; display: block; margin-bottom: 6px; }
+.stage__hud {
+  width: 130px !important;
+  font-size: 10px !important;
+  padding: 8px 10px !important;
+}
+.stage__hud .hud-big { font-size: 20px !important; }
+.stage__legend {
+  font-size: 9px !important;
+  padding: 6px 8px !important;
+  line-height: 1.5 !important;
+}
+
+/* controls */
+.controls {
+  flex-wrap: wrap !important;
+  padding: 8px 10px !important;
+  gap: 6px 4px !important;
+  border-right: none !important;
+  min-height: auto !important;
+}
+.controls__group {
+  padding: 0 4px !important;
+  border-right: none !important;
+  gap: 4px !important;
+}
+.controls__group:nth-child(1),
+.controls__group:nth-child(2),
+.controls__group:nth-child(3) {
+  /* 主要4ボタン: 投入/しゃくる/巻く/落とす */
+  flex: 1 1 auto;
+}
+.controls__row1, .controls__row2 {
+  display: flex; gap: 4px; width: 100%;
+}
+.controls__row1 .btn-action {
+  flex: 1 1 0;
+  min-height: 52px !important;
+  font-size: 13px !important;
+  min-width: 0 !important;
+  padding: 4px 2px !important;
+}
+.controls__row2 .btn-action,
+.controls__row2 .speed-btn {
+  min-height: 38px !important;
+  height: 38px !important;
+  font-size: 11px !important;
+  min-width: 0 !important;
+  padding: 4px 6px !important;
+}
+.controls__row2 { margin-top: 4px; }
+.controls__row2 .speed-group { height: 38px !important; }
+.controls__row2 .btn-action small { font-size: 8px !important; }
+.controls__group--stats {
+  width: 100%;
+  border-top: 1px dashed var(--border);
+  margin-top: 4px;
+  padding-top: 6px !important;
+  gap: 14px !important;
+  justify-content: flex-start !important;
+}
+.ctl-stat__label { font-size: 8px !important; }
+.ctl-stat__value { font-size: 14px !important; }
+
+/* panels */
+.panel {
+  max-height: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: 1px solid var(--border) !important;
+  padding: 12px 14px !important;
+}
+.panel__section {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+.panel__h--clickable { font-size: 13px; }
+.panel__section--closed { padding-bottom: 4px; margin-bottom: 4px; }
+
+/* metric */
+.metric__num { font-size: 30px; }
+input[type="range"] { height: 8px; }
+input[type="range"]::-webkit-slider-thumb { width: 22px; height: 22px; }
+input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; }
+.seg__btn { padding: 9px 4px; font-size: 12px; }
+.chip { padding: 7px 10px; font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="mockup-banner">
+  📱 モックアップA: バランス型 (canvas 50vh + 主要4ボタン上 / サブ下 + セクション折りたたみ)
+  &nbsp;|&nbsp;
+  <a href="mockup-mobile-A.html">A</a>
+  <a href="mockup-mobile-B.html">B</a>
+  <a href="mockup-mobile-C.html">C</a>
+  <a href="mockup-mobile-D.html">D</a>
+</div>
+
+<div class="mockup-frame">
+<div class="app">
+  <header class="head app__head">
+    <div>
+      <h1 class="head__title"><span class="kanji-accent">◆</span>マダイコマセシミュレーター<span class="head__ver">ver.1.0</span></h1>
+      <div class="head__actions">
+        <a href="#" class="head__link">← 船釣り予想 トップへ</a>
+        <a href="#" class="head__btn">𝕏 でシェア</a>
+        <a href="#" class="head__btn head__btn--follow">フォロー</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="stage app__main">
+    <div class="stage__placeholder">
+      <div>
+        <b>🐟 シミュレーション画面</b>
+        海中の絵が描かれるエリア<br>
+        ビシ・コマセ粒子・付けエサが動く
+      </div>
+    </div>
+    <div class="stage__hud">
+      <div>指示ダナ</div>
+      <span class="hud-big">20<small style="font-size:12px;opacity:.6">m</small></span>
+      <div style="margin-top:10px;font-size:9px;letter-spacing:.12em">コマセ残量</div>
+      <div style="width:90px;height:6px;margin-top:4px;background:rgba(255,255,255,0.18);border-radius:3px;overflow:hidden">
+        <div style="width:75%;height:100%;background:var(--paper)"></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:10px;margin-top:2px">75%</div>
+    </div>
+    <div class="stage__legend">
+      <div style="font-weight:700;color:var(--text);margin-bottom:3px">凡例</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#fdba74"></span><b>コマセ</b></div>
+      <div class="legend-row"><span class="legend-dot" style="background:#e85d04"></span>付けエサ</div>
+    </div>
+  </main>
+
+  <div class="controls app__controls">
+    <div class="controls__row1" style="display:flex;gap:4px;width:100%">
+      <button class="btn-action btn-cast">投入<small>落とし込み</small></button>
+      <button class="btn-action shakuri-btn">しゃくる</button>
+      <button class="btn-action maki-btn">巻く</button>
+      <button class="btn-action drop-btn">落とす</button>
+    </div>
+    <div class="controls__row2" style="display:flex;gap:4px;width:100%;margin-top:4px">
+      <button class="btn-action btn-rig" style="flex:1.5">仕掛け回収</button>
+      <button class="btn-action btn-sim is-running" style="flex:1">一時停止</button>
+      <div class="speed-group" style="flex:1.4">
+        <button class="speed-btn is-active">1x</button>
+        <button class="speed-btn">2x</button>
+        <button class="speed-btn">3x</button>
+      </div>
+      <button class="btn-action btn-sim" style="flex:0.9">リセット</button>
+    </div>
+    <div class="controls__group controls__group--stats">
+      <div class="ctl-stat">
+        <div class="ctl-stat__label">粒子</div>
+        <div class="ctl-stat__value">320<small>/500</small></div>
+      </div>
+      <div class="ctl-stat">
+        <div class="ctl-stat__label">巻き上げ</div>
+        <div class="ctl-stat__value">2.40<small>m</small></div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="panel app__left">
+    <section class="panel__section">
+      <h3 class="panel__h panel__h--clickable"><span class="panel__chevron">▼</span>仕掛け</h3>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ハリス長</span><span class="field__value">8.0<span class="unit">m</span></span></div>
+        <input type="range" min="2" max="12" value="8">
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ハリス号数</span><span class="field__value">3<span class="unit">号</span></span></div>
+        <input type="range" min="2" max="6" value="3">
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">ガン玉</span><span class="field__value">0.5<span class="unit">g</span></span></div>
+        <div class="seg">
+          <button class="seg__btn is-on">なし</button>
+          <button class="seg__btn">0.3</button>
+          <button class="seg__btn">0.5</button>
+          <button class="seg__btn">1.0</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field__row"><span class="field__label">針</span><span class="field__value">⊜ 8号</span></div>
+        <input type="range" min="6" max="12" value="8">
+      </div>
+    </section>
+    <section class="panel__section panel__section--closed">
+      <h3 class="panel__h panel__h--clickable"><span class="panel__chevron">▶</span>海流</h3>
+    </section>
+    <section class="panel__section panel__section--closed">
+      <h3 class="panel__h panel__h--clickable"><span class="panel__chevron">▶</span>タナ・水深</h3>
+    </section>
+    <section class="panel__section panel__section--closed">
+      <h3 class="panel__h panel__h--clickable"><span class="panel__chevron">▶</span>プリセット</h3>
+    </section>
+  </aside>
+
+  <aside class="panel panel--right app__right">
+    <section class="panel__section">
+      <h3 class="panel__h">成績</h3>
+      <div class="metric">
+        <div class="metric__label">到達率</div>
+        <div class="metric__num">85.3<span class="small">%</span></div>
+        <div class="metric__bar"><i style="width:85%"></i></div>
+      </div>
+      <div class="metric">
+        <div class="metric__label">ヒット回数</div>
+        <span class="grade grade--ok">◎</span><span style="font-size:24px;color:var(--text);font-weight:700">12</span>
+        <span style="font-size:13px;color:var(--muted);margin-left:6px">回</span>
+      </div>
+      <div class="histogram">
+        <i style="height:80%"></i><i style="height:70%"></i><i style="height:55%" class="is-hook"></i>
+        <i style="height:45%"></i><i style="height:30%"></i><i style="height:18%"></i>
+        <i style="height:10%"></i><i style="height:7%"></i>
+      </div>
+      <div class="histogram__axis"><span>0m</span><span>タナ20m</span><span>40m</span></div>
+    </section>
+    <section class="panel__section panel__section--closed">
+      <h3 class="panel__h panel__h--clickable"><span class="panel__chevron">▶</span>最適化候補</h3>
+    </section>
+  </aside>
+</div>
+</div>
+</body>
+</html>
