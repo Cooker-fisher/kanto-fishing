@@ -3942,6 +3942,7 @@ nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;bord
 nav.gnav a:hover,nav.gnav a.on{background:var(--accent);color:#fff;text-decoration:none}
 nav.gnav a.prem{color:var(--prem)}
 nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;background:var(--prem);border-radius:50%;margin-right:4px;vertical-align:middle}
+nav.gnav .nav-disabled{color:var(--border);font-size:12px;font-weight:600;padding:5px 12px;cursor:default}
 .st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .st.teaser-title{color:var(--prem);border-color:var(--prem)}
 .st .tag{font-size:9px;padding:2px 7px;border-radius:8px;color:#fff;font-weight:700}
@@ -4149,7 +4150,7 @@ def _v2_header_nav(active_page=""):
   <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
-  <a href="/komase-sim/"{' class="on"' if active_page == 'sim' else ''}>コマセSim</a>
+  <span class="nav-disabled">コマセSim</span>
   <a href="/forecast/index.html" class="prem{' on' if active_page == 'forecast' else ''}">有料プラン</a>
 </nav>"""
 
