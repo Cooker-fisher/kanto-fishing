@@ -50,15 +50,11 @@ body { background: var(--bg); }
   position: relative;
   background: linear-gradient(180deg, var(--sea-up) 0%, var(--sea-mid) 45%, var(--sea-deep) 85%, var(--seabed) 100%);
 }
-.stage__placeholder {
+.stage__svg {
   position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.85); font-size: 13px;
-  letter-spacing: 0.12em;
-  text-align: center;
-  pointer-events: none;
+  width: 100%; height: 100%;
+  display: block;
 }
-.stage__placeholder b { font-size: 22px; display: block; margin-bottom: 6px; }
 .stage__hud {
   width: 130px !important;
   font-size: 10px !important;
@@ -170,13 +166,104 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; }
   </header>
 
   <main class="stage app__main">
-    <div class="stage__placeholder">
-      <div>
-        <b>🐟 シミュレーション画面</b>
-        海中の絵が描かれるエリア<br>
-        ビシ・コマセ粒子・付けエサが動く
-      </div>
-    </div>
+    <svg class="stage__svg" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky-a" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#dbeafe"/>
+          <stop offset="0.6" stop-color="#93c5fd"/>
+          <stop offset="1" stop-color="#60a5fa"/>
+        </linearGradient>
+        <linearGradient id="sea-a" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1c4870"/>
+          <stop offset="0.35" stop-color="#0f3157"/>
+          <stop offset="0.75" stop-color="#0a213b"/>
+          <stop offset="1" stop-color="#061525"/>
+        </linearGradient>
+      </defs>
+      <!-- 空 -->
+      <rect x="0" y="0" width="400" height="55" fill="url(#sky-a)"/>
+      <!-- 海面波線 -->
+      <path d="M 0 55 Q 50 51 100 55 T 200 55 T 300 55 T 400 55" stroke="rgba(255,255,255,0.6)" stroke-width="1" fill="none"/>
+      <!-- 海中 -->
+      <rect x="0" y="55" width="400" height="505" fill="url(#sea-a)"/>
+      <!-- 深さグリッド + ラベル -->
+      <g stroke="rgba(255,255,255,0.08)" stroke-width="0.5" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(255,255,255,0.5)">
+        <line x1="0" y1="155" x2="400" y2="155"/><text x="6" y="152">-10m</text>
+        <line x1="0" y1="255" x2="400" y2="255"/><text x="6" y="252">-20m</text>
+        <line x1="0" y1="355" x2="400" y2="355"/><text x="6" y="352">-30m</text>
+        <line x1="0" y1="455" x2="400" y2="455"/><text x="6" y="452">-40m</text>
+      </g>
+      <!-- 海底 -->
+      <rect x="0" y="560" width="400" height="40" fill="#3a2e1c"/>
+      <line x1="0" y1="560" x2="400" y2="560" stroke="rgba(255,255,255,0.4)" stroke-width="0.8"/>
+      <!-- 砂粒テクスチャ -->
+      <g fill="rgba(255,255,255,0.10)">
+        <rect x="30" y="568" width="1" height="1"/><rect x="70" y="575" width="1" height="1"/>
+        <rect x="110" y="572" width="1" height="1"/><rect x="150" y="580" width="1" height="1"/>
+        <rect x="190" y="565" width="1" height="1"/><rect x="230" y="585" width="1" height="1"/>
+        <rect x="270" y="570" width="1" height="1"/><rect x="310" y="578" width="1" height="1"/>
+        <rect x="350" y="582" width="1" height="1"/>
+      </g>
+      <!-- 潮流矢印 (右側) -->
+      <g stroke="rgba(251,191,36,0.85)" fill="rgba(251,191,36,0.85)" stroke-width="1.2">
+        <line x1="290" y1="155" x2="345" y2="155"/>
+        <polygon points="345,155 340,152 340,158"/>
+        <line x1="290" y1="255" x2="335" y2="255"/>
+        <polygon points="335,255 330,252 330,258"/>
+        <line x1="290" y1="355" x2="320" y2="355"/>
+        <polygon points="320,355 315,352 315,358"/>
+      </g>
+      <text x="290" y="135" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(255,255,255,0.6)">潮流 →</text>
+      <!-- 船体 (側面) -->
+      <g>
+        <path d="M 140 47 L 150 43 L 250 43 L 256 45 L 256 59 L 144 59 Z" fill="#0d2b4a" stroke="rgba(255,255,255,0.85)" stroke-width="1.3"/>
+        <!-- デッキ上面 -->
+        <line x1="150" y1="43" x2="250" y2="43" stroke="rgba(255,255,255,0.55)" stroke-width="0.8"/>
+        <!-- 釣り人シルエット -->
+        <rect x="178" y="27" width="7" height="16" fill="rgba(253,186,116,0.42)"/>
+        <circle cx="181.5" cy="22" r="2" fill="rgba(253,186,116,0.9)"/>
+        <!-- 竿 (船から斜め下) -->
+        <line x1="190" y1="30" x2="220" y2="55" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+      </g>
+      <!-- 道糸 (竿先 → ビシ) -->
+      <line x1="220" y1="55" x2="218" y2="262" stroke="rgba(255,255,255,0.45)" stroke-width="0.8"/>
+      <!-- ビシ (タナ20m 付近) -->
+      <rect x="212" y="258" width="12" height="20" fill="#475569" stroke="rgba(255,255,255,0.7)" stroke-width="0.6"/>
+      <!-- ビシ網目 -->
+      <line x1="212" y1="263" x2="224" y2="263" stroke="rgba(255,255,255,0.3)"/>
+      <line x1="212" y1="268" x2="224" y2="268" stroke="rgba(255,255,255,0.3)"/>
+      <line x1="212" y1="273" x2="224" y2="273" stroke="rgba(255,255,255,0.3)"/>
+      <text x="232" y="272" font-family="system-ui, sans-serif" font-size="8" fill="rgba(255,255,255,0.7)">ビシ</text>
+      <!-- ハリス (ビシ → 付けエサ・8m分) -->
+      <path d="M 218 278 Q 222 320 224 360" stroke="rgba(255,255,255,0.55)" stroke-width="0.6" fill="none"/>
+      <!-- ガン玉 (ハリス中央) -->
+      <circle cx="222" cy="320" r="2.2" fill="#1e293b" stroke="rgba(148,163,184,0.8)" stroke-width="0.5"/>
+      <!-- 付けエサ (ハリス先端) -->
+      <circle cx="224" cy="360" r="3.5" fill="#e85d04"/>
+      <text x="232" y="364" font-family="system-ui, sans-serif" font-size="8" fill="rgba(255,255,255,0.7)">付けエサ</text>
+      <!-- コマセ粒子 (ビシ周辺・初期は少なめ散布) -->
+      <g fill="#fdba74" opacity="0.85">
+        <circle cx="205" cy="285" r="1.2"/><circle cx="232" cy="290" r="1.2"/>
+        <circle cx="200" cy="298" r="1.2"/><circle cx="240" cy="302" r="1.2"/>
+        <circle cx="195" cy="310" r="1.2"/><circle cx="248" cy="315" r="1.2"/>
+        <circle cx="210" cy="322" r="1.2"/><circle cx="255" cy="328" r="1.2"/>
+        <circle cx="188" cy="335" r="1.2"/><circle cx="262" cy="338" r="1.2"/>
+        <circle cx="215" cy="345" r="1.2"/><circle cx="270" cy="350" r="1.2"/>
+      </g>
+      <!-- 魚影 (タナ付近) -->
+      <g fill="rgba(220,200,180,0.4)" stroke="rgba(255,255,255,0.2)" stroke-width="0.3">
+        <ellipse cx="80" cy="340" rx="14" ry="4"/>
+        <polygon points="66,340 60,337 60,343" fill="rgba(220,200,180,0.4)"/>
+        <ellipse cx="120" cy="370" rx="11" ry="3.5"/>
+        <polygon points="109,370 104,367 104,373" fill="rgba(220,200,180,0.4)"/>
+        <ellipse cx="320" cy="380" rx="13" ry="4"/>
+        <polygon points="333,380 339,377 339,383" fill="rgba(220,200,180,0.4)"/>
+        <ellipse cx="340" cy="350" rx="10" ry="3"/>
+        <polygon points="350,350 355,348 355,352" fill="rgba(220,200,180,0.4)"/>
+      </g>
+      <!-- 中央深度大型文字 -->
+      <text x="200" y="200" font-family="system-ui, sans-serif" font-size="44" font-weight="700" fill="rgba(255,255,255,0.08)" text-anchor="middle">20m</text>
+    </svg>
     <div class="stage__hud">
       <div>指示ダナ</div>
       <span class="hud-big">20<small style="font-size:12px;opacity:.6">m</small></span>
