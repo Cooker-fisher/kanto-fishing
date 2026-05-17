@@ -259,6 +259,7 @@ function App() {
   function resetSim() {
     particlesRef.current = [];
     heatmapRef.current = null;
+    if (SimRenderer.resetFishShadows) SimRenderer.resetFishShadows();
     // ★ 落とし込み目安 = ビシ位置 (指示棚 + dropOffsetM)
     //   実釣標準: dropOffsetM = +5 → ビシは指示棚 5m 下 (タナ下5m)
     //   その後 shakuri × N + maki でビシを徐々に上げ、付け餌をタナへ寄せる
@@ -814,7 +815,7 @@ function App() {
 
         const rodTipY = map.y(0) - 36 - swellPx;
         SimRenderer.drawBoat(ctx, map, rodTipY, swellPx);
-        SimRenderer.drawFishShadows(ctx, map, pp);
+        SimRenderer.drawFishShadows(ctx, map, pp, particlesRef.current);
         SimRenderer.drawRig(ctx, map, rig, pp, rodTipY, chumRef.current, swellPx);
         SimRenderer.drawParticles(ctx, map, particlesRef.current);
         const ppLabels = Object.assign({}, pp, { _komaseDepth: metricsRef.current.komaseDepth });
@@ -862,7 +863,7 @@ function App() {
     SimRenderer.drawBackground(ctx, map, physicsParams, 0);
     SimRenderer.drawCurrent(ctx, map, physicsParams);
     SimRenderer.drawBoat(ctx, map, map.y(0) - 36, 0);
-    SimRenderer.drawFishShadows(ctx, map, physicsParams);
+    SimRenderer.drawFishShadows(ctx, map, physicsParams, particlesRef.current);
     SimRenderer.drawRig(ctx, map, rig, physicsParams, map.y(0) - 36, chumRef.current, 0);
     SimRenderer.drawLabels(ctx, map, physicsParams, rig, phaseRef.current, 0);
     if (!minimapPosRef.current) {
@@ -895,39 +896,52 @@ function App() {
   };
 
   // ===== Grade =====
+  // コマセマダイの実釣ロジック:
+  //   指示棚 = ビシを止める作戦水深 (船長指示・絶対遵守)
+  //   付け餌 = ビシより下〜潮下のコマセ帯に自然に漂う (指示棚に合わせる必要はない)
+  //   マダイ = 底寄りにいる → コマセに誘われて浮上 → ハリス先の付け餌を食う
   const grade = useMemo(() => {
     const rate = metricsRef.current.hitRateEMA;
-    const tanaDiff = metricsRef.current.hookDepth - params.tanaDepth;
-    const absDiff = Math.abs(tanaDiff);
-    // 合否は「付けエサとコマセの一致」AND「付けエサが指示棚にいる」の両方が必要。
-    //   タナ ズレ ≤ 1.5m: タナ取り OK
-    //   タナ ズレ 1.5-3m: タナ取り NG (△)
-    //   タナ ズレ > 3m: タナ取り 大幅 NG (×)
+    const hookY = metricsRef.current.hookDepth;
+    const cageY = (params.tanaDepth - (rigStateRef.current.makiOffset || 0));
+    const cageDiff = cageY - params.tanaDepth;       // ビシのタナズレ (船長指示基準)
+    const absCageDiff = Math.abs(cageDiff);
+    const hookBelowCage = hookY - cageY;             // 付け餌がビシより下にある量 (m)
+    const hookInZone = hookY >= params.tanaDepth - 1 && hookY <= params.depth - 1;
     let g, note;
-    if (absDiff > 3) {
+    // 1. ビシが指示棚から大きく外れている = 船長指示違反 (最優先で×)
+    if (absCageDiff > 3) {
       g = "×";
-      note = "付けエサがタナから大きく外れている。ガン玉/ハリス長で調整。";
-    } else if (absDiff > 1.5) {
+      note = `ビシが指示棚から ${absCageDiff.toFixed(1)}m ズレ — 船全体のコマセ棚を崩す。巻きで調整。`;
+    } else if (absCageDiff > 1.5) {
       g = "△";
-      note = `付けエサが指示棚から ${absDiff.toFixed(1)}m ズレ。ガン玉/ハリス長を調整して付けエサをタナに合わせる。`;
+      note = `ビシが指示棚から ${absCageDiff.toFixed(1)}m ズレ — 巻きで指示棚に戻す。`;
+    } else if (hookBelowCage < 0.5) {
+      // 2. 付け餌がビシより上にある = 不自然 (落とし遅れ・ハリス絡み)
+      g = "×";
+      note = "付け餌がビシより上にある。落とし込みの潮なじみが不十分。";
+    } else if (!hookInZone) {
+      // 3. 付け餌が深場ゾーンから外れている (底に着く or 浅すぎ)
+      g = "△";
+      note = "付け餌の位置が深場ゾーンから外れている。ガン玉/ハリス長/底潮を見直し。";
     } else if (rate < 0.5) {
       g = "×";
-      note = "付けエサはタナだがコマセ雲が届いていない。しゃくり振り幅/上窓を増やす。";
+      note = "コマセ雲が付け餌に届いていない。しゃくり振り幅/上窓・下窓を増やす。";
     } else if (rate < 2) {
       g = "△";
-      note = "タナ OK だがコマセ薄い。しゃくり間隔/巻き量を見直し。";
+      note = "コマセ雲が薄い。しゃくり間隔/巻き量を見直し、コマセ帯を維持。";
     } else if (rate < 4) {
       g = "○";
-      note = "タナ OK + コマセ雲と同調。微調整で更に上を狙える。";
+      note = "ビシ指示棚 + 付け餌がコマセ帯に同調。マダイが浮く配置。";
     } else {
       g = "◎";
-      note = "タナ OK + コマセ雲と完全同調。理想的な配置。";
+      note = "ビシ指示棚 + 付け餌が濃いコマセ帯に同調。底からマダイを誘導する理想配置。";
     }
 
-    // 「待ち推奨」判定: 付けエサ位置にコマセ雲が重なっており、かつタナズレが小さい
-    // この状態では追加のしゃくりは不要、待って魚を食わせる時間
+    // 「待ち推奨」判定: 付け餌がコマセ帯に入っていて、ビシも指示棚にいる
+    // → 追加しゃくりは不要、待ってマダイが浮いて食うのを待つ
     let waitHint = null;
-    if (absDiff <= 2 && rate >= 2.5 && phaseRef.current === "fishing") {
+    if (absCageDiff <= 1.5 && hookBelowCage >= 0.5 && rate >= 2.5 && phaseRef.current === "fishing") {
       waitHint = {
         active: true,
         label: rate >= 4 ? "✓ ベスト重なり中 — 待つ！" : "✓ 重なり良好 — 追いコマセ控えめに",
@@ -952,7 +966,8 @@ function App() {
       hitRate: rate,
       hookDepth: metricsRef.current.hookDepth,
       harrisAngleDeg: metricsRef.current.harrisAngleDeg,
-      tanaDiff,
+      tanaDiff: cageDiff,
+      hookBelowCage,
       histogram: metricsRef.current.histogram,
       hookBin: metricsRef.current.hookBin,
       shakuriCount: metricsRef.current.shakuriCount,

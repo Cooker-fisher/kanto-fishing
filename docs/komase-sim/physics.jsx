@@ -582,20 +582,29 @@ window.SimPhysics = (function() {
       stepParticles(particles, params, dt, rnd);
       const rig = rigShape(params.tanaDepth - rs.makiOffset, rs.shakuriOffsetY, rs.shakuriOffsetX, params, hookW, 0);
       if (elapsed > warmup) {
-        // === 5基準評価 ===
+        // === 評価基準 (コマセマダイの実釣に整合) ===
+        //   指示棚 = ビシを止める作戦水深、付け餌は指示棚に置く必要は無い。
+        //   マダイは底寄り→コマセに誘われて上がる。付け餌はビシより下の
+        //   コマセ帯 (潮で流れたコマセ雲) に自然に置かれていれば良い。
         // 1. 付け餌とコマセの同調率 (粒子/hook 近傍 1.8m)
         const near = particles.length > 0 ? nearHook(particles, rig.hook, 1.8) : 0;
         const ratio = particles.length > 0 ? (near / particles.length * 100) : 0;
-        // 2. 付け餌が指示棚にあるか (|hook.y - tana| <= 1.5m)
-        const tanaDiffAbs = Math.abs(rig.hook.y - params.tanaDepth);
-        const tanaOK = tanaDiffAbs <= 1.5;
-        // 「同調 (rate>=2) かつタナ OK」のフレーム数を累積 → 持続的な良い状態
-        const goodFrame = (ratio >= 2.0 && tanaOK) ? 1 : 0;
-        const okFrame = (ratio >= 0.5 && tanaDiffAbs <= 2.5) ? 1 : 0;
+        // 2. 付け餌がビシより下にあるか (実釣の鉄則: ビシ下のコマセ帯)
+        const hookBelowCage = rig.hook.y > rig.cage.y + 0.5;
+        // 3. 付け餌が中〜深場ゾーンか (タナ以深〜底1m上まで)
+        //    マダイが底からコマセで上がってきて食う範囲
+        const hookDeepEnough = rig.hook.y >= params.tanaDepth - 1
+                            && rig.hook.y <= params.depth - 1;
+        // 4. ビシが指示棚に近いか (船長指示の絶対遵守)
+        const cageDiff = Math.abs(rig.cage.y - params.tanaDepth);
+        const cageOnTana = cageDiff <= 1.5;
+        // 「ビシ指示棚 & 付け餌ビシ下のコマセ帯 & 同調」が良いフレーム
+        const goodFrame = (ratio >= 2.0 && hookBelowCage && hookDeepEnough && cageOnTana) ? 1 : 0;
+        const okFrame = (ratio >= 0.5 && hookBelowCage && cageDiff <= 2.5) ? 1 : 0;
         scoreCounters.totalFrames += 1;
         scoreCounters.goodFrames += goodFrame;
         scoreCounters.okFrames += okFrame;
-        scoreCounters.sumTanaDiff += tanaDiffAbs;
+        scoreCounters.sumCageDiff = (scoreCounters.sumCageDiff || 0) + cageDiff;
         scoreCounters.sumRatio += ratio;
         scoreCounters.sumNear += near;
       }
@@ -611,20 +620,21 @@ window.SimPhysics = (function() {
     if (scoreCounters.totalFrames === 0) return 0;
     const sustainRate = scoreCounters.goodFrames / scoreCounters.totalFrames;
     const okRate      = scoreCounters.okFrames   / scoreCounters.totalFrames;
-    const meanTanaDiff = scoreCounters.sumTanaDiff / scoreCounters.totalFrames;
+    const meanCageDiff = (scoreCounters.sumCageDiff || 0) / scoreCounters.totalFrames;
     const meanRatio    = scoreCounters.sumRatio    / scoreCounters.totalFrames;
 
     // ベース: 持続同調率を主軸 (max 60pt)
     const baseScore = sustainRate * 60 + okRate * 15;
     // 補助: 平均同調率 (粒子量も加味) max 15pt
     const ratioBonus = Math.min(15, meanRatio * 1.5);
-    // タナ整合性 penalty: 平均ズレ > 1.5m で線形減点 (3m ズレ → -30pt)
+    // ビシ位置 penalty: ビシは船長指示の指示棚に正確に止める (付け餌は流れて良い)
+    //   平均ズレ > 1.5m で線形減点 (3m ズレ → -30pt)
     let tanaPenalty = 0;
-    if (meanTanaDiff > 1.5) {
-      tanaPenalty = (meanTanaDiff - 1.5) * 20;
+    if (meanCageDiff > 1.5) {
+      tanaPenalty = (meanCageDiff - 1.5) * 20;
     }
-    if (meanTanaDiff > 3.0) {
-      tanaPenalty += 30;  // 大幅外れは硬性 penalty
+    if (meanCageDiff > 3.0) {
+      tanaPenalty += 30;  // 船全体のコマセ棚を崩す
     }
     // サイクル時間: 実釣プリセットに整合
     //   活性高 120s, 標準 180s, 食い渋り 240-300s
@@ -668,7 +678,7 @@ window.SimPhysics = (function() {
     if (typeof window !== 'undefined' && window.__lastScoreDump !== false) {
       window.__lastScoreDump = {
         total, baseScore, ratioBonus, cycleScore, chumScore, actionScore, tanaPenalty, ohdoPenalty,
-        sustainRate, okRate, meanTanaDiff, meanRatio,
+        sustainRate, okRate, meanCageDiff, meanRatio,
         totalFrames: scoreCounters.totalFrames,
         goodFrames: scoreCounters.goodFrames,
       };

@@ -601,29 +601,91 @@ window.SimRenderer = (function() {
     }
   }
 
-  // ------- 指示ダナの魚影（マダイのシルエット） -------
-  // 指示ダナ周辺にマダイの群れが漂う。コマセを誘い込む対象。
-  function drawFishShadows(ctx, map, params) {
-    const t = Date.now() * 0.001;
+  // ------- 魚影 (底寄りの小魚 + マダイがコマセに釣られて浮上) -------
+  // コマセマダイの実釣:
+  //   小魚 (エサ取り) = 底近くに常駐
+  //   マダイ = 底寄りにいる → コマセに誘われて徐々に浮上 → ハリス先の付け餌を食う
+  // 浮上は「コマセ濃度がマダイ位置で高いほど上向き引力」のシンプルモデル。
+  const _madaiState = [];  // 永続: マダイ Y 位置を記憶 (フレーム間で滑らかに更新)
+  let _madaiLastT = 0;
+  function drawFishShadows(ctx, map, params, particles) {
+    const now = Date.now() * 0.001;
+    const dt = _madaiLastT > 0 ? Math.min(0.1, now - _madaiLastT) : 0.016;
+    _madaiLastT = now;
+    const depth = params.depth || 60;
     const tanaY = params.tanaDepth;
-    // 4匹のマダイ。それぞれ独立に揺らぎ動作
-    const fish = [
-      { baseX: 14, baseY: tanaY - 0.3, phase: 0.0, speed: 0.7, size: 1.0 },
-      { baseX: 22, baseY: tanaY + 0.6, phase: 1.8, speed: 0.55, size: 1.1 },
-      { baseX: 32, baseY: tanaY - 0.8, phase: 3.1, speed: 0.65, size: 0.95 },
-      { baseX: 42, baseY: tanaY + 0.4, phase: 4.5, speed: 0.5, size: 1.05 },
-    ];
-    fish.forEach((f) => {
-      const fx = map.x(f.baseX + Math.sin(t * f.speed + f.phase) * 2.5);
-      const fy = map.y(f.baseY + Math.sin(t * f.speed * 1.3 + f.phase) * 0.8);
-      // 影 (赤茶のマダイらしい色、半透明)
+
+    // 初回 init: マダイは底寄り、小魚は底直上
+    if (_madaiState.length === 0) {
+      _madaiState.push(
+        { kind: "madai", baseX: 12, y: depth - 2.0, phase: 0.0, speed: 0.45, size: 1.0 },
+        { kind: "madai", baseX: 18, y: depth - 2.5, phase: 1.8, speed: 0.4,  size: 1.1 },
+        { kind: "madai", baseX: 24, y: depth - 1.8, phase: 3.1, speed: 0.5,  size: 0.95 },
+        { kind: "madai", baseX: 7,  y: depth - 2.8, phase: 4.5, speed: 0.42, size: 1.05 },
+        // 小魚 (エサ取り): 底直上に小さく群れる
+        { kind: "baitfish", baseX: 9,  y: depth - 1.2, phase: 0.5, speed: 1.4, size: 0.35 },
+        { kind: "baitfish", baseX: 11, y: depth - 0.9, phase: 1.2, speed: 1.6, size: 0.32 },
+        { kind: "baitfish", baseX: 15, y: depth - 1.4, phase: 2.0, speed: 1.5, size: 0.30 },
+        { kind: "baitfish", baseX: 19, y: depth - 1.0, phase: 2.7, speed: 1.7, size: 0.34 },
+        { kind: "baitfish", baseX: 21, y: depth - 1.5, phase: 3.5, speed: 1.4, size: 0.33 },
+      );
+    }
+
+    // マダイ浮上ロジック: 自身の近傍 (3m) に粒子が多いほど浮上、無ければ底へ戻る
+    const FALLBACK_DEPTH = (y) => Math.max(tanaY + 2, depth - 2);
+    _madaiState.forEach((f) => {
+      if (f.kind !== "madai") return;
+      // 自身近傍の粒子密度 (半径 3m)
+      let nearby = 0;
+      if (particles && particles.length > 0) {
+        const r2 = 3 * 3;
+        for (const p of particles) {
+          const dx = p.x - f.baseX, dy = p.y - f.y;
+          if (dx*dx + dy*dy < r2) nearby += 1;
+        }
+      }
+      // 浮上引力: 粒子密度が 5 個超で本格浮上。最大引力で 0.5 m/s 浮上。
+      const chumPull = Math.min(1, nearby / 8);
+      // 引力先 Y: コマセ近傍にいたら粒子重心へ、無ければ底寄り
+      let targetY;
+      if (chumPull > 0.05 && particles && particles.length > 0) {
+        // 近傍粒子の重心 Y (なければ自分の y を使う)
+        let sumY = 0, cnt = 0;
+        const r2 = 5 * 5;
+        for (const p of particles) {
+          const dx = p.x - f.baseX, dy = p.y - f.y;
+          if (dx*dx + dy*dy < r2) { sumY += p.y; cnt += 1; }
+        }
+        targetY = cnt > 0 ? sumY / cnt : FALLBACK_DEPTH(f.y);
+      } else {
+        targetY = FALLBACK_DEPTH(f.y);
+      }
+      // 浮上速度: 上向き ~0.5 m/s (chum濃)、降下 ~0.3 m/s (chum薄)
+      const maxVel = (targetY < f.y) ? (0.5 * chumPull + 0.05) : 0.3;
+      const diff = targetY - f.y;
+      const step = Math.sign(diff) * Math.min(Math.abs(diff), maxVel * dt);
+      f.y += step;
+      // 物理範囲: 底超え禁止、タナ上1m まで
+      f.y = Math.max(tanaY - 1, Math.min(depth - 0.5, f.y));
+    });
+
+    // 描画
+    _madaiState.forEach((f) => {
+      const yJit = Math.sin(now * f.speed * 1.3 + f.phase) * (f.kind === "madai" ? 0.6 : 0.3);
+      const xJit = Math.sin(now * f.speed + f.phase) * (f.kind === "madai" ? 2.5 : 1.0);
+      const fx = map.x(f.baseX + xJit);
+      const fy = map.y(f.y + yJit);
       ctx.save();
-      ctx.fillStyle = "rgba(232, 93, 4, 0.32)";
-      ctx.strokeStyle = "rgba(232, 93, 4, 0.55)";
+      if (f.kind === "madai") {
+        ctx.fillStyle = "rgba(232, 93, 4, 0.34)";
+        ctx.strokeStyle = "rgba(232, 93, 4, 0.6)";
+      } else {
+        ctx.fillStyle = "rgba(180, 180, 200, 0.45)";
+        ctx.strokeStyle = "rgba(180, 180, 200, 0.7)";
+      }
       ctx.lineWidth = 0.5;
-      const bodyLen = 11 * f.size;
-      const bodyH = 4.2 * f.size;
-      // 体（楕円）
+      const bodyLen = (f.kind === "madai" ? 11 : 4) * f.size;
+      const bodyH = (f.kind === "madai" ? 4.2 : 1.6) * f.size;
       ctx.beginPath();
       ctx.ellipse(fx, fy, bodyLen, bodyH, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -637,21 +699,25 @@ window.SimRenderer = (function() {
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-      // 背びれ（小さな三角）
-      ctx.beginPath();
-      ctx.moveTo(fx - 2, fy - bodyH);
-      ctx.lineTo(fx + 2, fy - bodyH);
-      ctx.lineTo(fx, fy - bodyH - 2.5);
-      ctx.closePath();
-      ctx.fill();
-      // 目（白ドット）
-      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-      ctx.beginPath();
-      ctx.arc(fx + bodyLen * 0.55, fy - 0.5, 0.9, 0, Math.PI * 2);
-      ctx.fill();
+      if (f.kind === "madai") {
+        // 背びれ
+        ctx.beginPath();
+        ctx.moveTo(fx - 2, fy - bodyH);
+        ctx.lineTo(fx + 2, fy - bodyH);
+        ctx.lineTo(fx, fy - bodyH - 2.5);
+        ctx.closePath();
+        ctx.fill();
+        // 目
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.beginPath();
+        ctx.arc(fx + bodyLen * 0.55, fy - 0.5, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
     });
   }
+  // ステート リセット (params 大変更時に呼ぶ — depth 等が変わったら底位置も変わるため)
+  function resetFishShadows() { _madaiState.length = 0; _madaiLastT = 0; }
 
   // ------- ラベル: タナ、ビシ深さ等 -------
   function drawLabels(ctx, map, params, rig, phase, swellOffsetM) {
@@ -955,7 +1021,7 @@ window.SimRenderer = (function() {
     BOW_VIEW_W, BOW_VIEW_H,
     BOW_VIEW_TOGGLE_X, BOW_VIEW_TOGGLE_Y, BOW_VIEW_TOGGLE_W, BOW_VIEW_TOGGLE_H,
     makeMap, makeHeatmap, heatmapStep, drawHeatmap,
-    drawBackground, drawCurrent, drawBoat, drawFishShadows,
+    drawBackground, drawCurrent, drawBoat, drawFishShadows, resetFishShadows,
     drawRig, drawParticles, drawLabels, drawBowView,
   };
 })();
