@@ -1,22 +1,23 @@
 name: direct-crawl
-# 釣りビジョン経由ではないクローラの独立 workflow。
-# 既存 crawl.yml (釣りビジョン)とは別ファイル/別 job で並列起動・失敗時に独立再実行可能。
+# chowari.jp 経由の独立クローラ。釣りビジョン crawl.yml と並列起動・失敗時に独立再実行可能。
 #
 # 書き込み先（crawl.yml と競合しないファイル）:
-#   - direct-crawl/catches_raw_hirono.json
-#   - data/V2/hirono_YYYY-MM.csv
+#   - direct-crawl/catches_raw_chowari_*.json （150隻分）
+#   - data/V2/chowari_YYYY-MM.csv             （月別統合）
+#
+# 旧 catches_raw_hirono.json / data/V2/hirono_*.csv は 2026/05/17 で chowari 汎用化に統合
+# （hirono は 150隻の一部として chowari_crawler.py で取得される）
 #
 # HTML 反映タイミング:
-#   この workflow は HTML を直接生成しない。data/V2/hirono_*.csv を更新するのみ。
+#   この workflow は HTML を直接生成しない。data/V2/chowari_*.csv を更新するのみ。
 #   crawl.yml が翌日 (or 同日後続実行) で _load_historical_catches() 経由で
-#   hirono_*.csv を読み込み、HTML を再生成する。
-#   → ひろの丸データの HTML 反映は最大1日遅れ。
+#   chowari_*.csv を読み込み、HTML を再生成する。
 on:
   schedule:
     - cron: '30 7 * * *'   # 毎日 16:30 JST（crawl.yml と同時刻 = 並列起動）
   workflow_dispatch:        # 手動再実行用
 jobs:
-  hirono:
+  chowari:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,23 +25,24 @@ jobs:
         run: |
           echo "=== CI 起動時の commit ==="
           git log --oneline -3
-          echo "=== hirono_crawler.py 最終更新 ==="
-          git log -1 --format="%H %s" -- direct-crawl/hirono_crawler.py
+          echo "=== chowari_crawler.py 最終更新 ==="
+          git log -1 --format="%H %s" -- direct-crawl/chowari_crawler.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: install Python dependencies
         run: pip install -r requirements.txt
-      - name: hirono crawler (chowari.jp HTML スクレイプ・直近7日)
-        run: python3 direct-crawl/hirono_crawler.py --days 7
-      - name: hirono CSV化 (data/V2/hirono_YYYY-MM.csv 生成)
-        run: python3 direct-crawl/hirono_to_csv.py
+      - name: chowari crawler (ships.json source_priority=chowari 全船宿・直近7日)
+        # 約150隻 × 1秒間隔（SLEEP_SEC）≈ 約3〜5分
+        run: python3 direct-crawl/chowari_crawler.py --from-ships-json --days 7
+      - name: chowari CSV化 (data/V2/chowari_YYYY-MM.csv 月別統合)
+        run: python3 direct-crawl/chowari_to_csv.py
       - name: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # 書き込み先は crawl.yml が触らないファイル/ディレクトリに限定
-          git add direct-crawl/catches_raw_hirono.json data/V2/hirono_*.csv
-          git commit -m "chore(direct-crawl): hirono 直近7日更新 $(date +'%Y/%m/%d')" || echo "nothing to commit"
+          git add direct-crawl/catches_raw_chowari_*.json data/V2/chowari_*.csv
+          git commit -m "chore(direct-crawl): chowari 直近7日更新 $(date +'%Y/%m/%d')" || echo "nothing to commit"
           git pull --rebase origin main
           git push origin main

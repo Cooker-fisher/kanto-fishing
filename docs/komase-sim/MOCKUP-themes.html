@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>コマセ巻きシミュレーター — 配色テーマ比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a1a;
+    color: #eee;
+    font-family: "Noto Sans JP", sans-serif;
+    padding: 24px;
+    min-width: 1400px;
+  }
+  .page-title {
+    font-family: "Shippori Mincho", serif;
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  .page-sub {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 28px;
+    letter-spacing: 0.05em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .theme-card {
+    border: 1px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #222;
+  }
+  .theme-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid #444;
+    background: #2a2a2a;
+  }
+  .theme-name {
+    font-family: "Shippori Mincho", serif;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .theme-tag {
+    font-size: 11px;
+    color: #999;
+    letter-spacing: 0.08em;
+  }
+  .swatch-row {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: help;
+  }
+
+  /* === Common mini-mockup structure === */
+  .mockup {
+    height: 380px;
+    display: grid;
+    grid-template-columns: 130px 1fr 130px;
+    grid-template-rows: 36px 1fr 60px;
+    grid-template-areas:
+      "head head head"
+      "left main right"
+      "left ctrl right";
+  }
+  .mk-head { grid-area: head; display: flex; align-items: center; padding: 0 14px; font-family: "Shippori Mincho", serif; font-size: 14px; letter-spacing: 0.15em; }
+  .mk-left { grid-area: left; padding: 10px 8px; font-size: 9px; overflow: hidden; }
+  .mk-main { grid-area: main; position: relative; overflow: hidden; }
+  .mk-right { grid-area: right; padding: 10px 8px; font-size: 9px; overflow: hidden; }
+  .mk-ctrl { grid-area: ctrl; display: flex; align-items: center; gap: 6px; padding: 0 12px; }
+  .mk-btn {
+    padding: 6px 10px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-family: "Shippori Mincho", serif;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .mk-slider { display: block; height: 4px; background: rgba(0,0,0,0.2); margin: 4px 0 12px; position: relative; }
+  .mk-slider::after { content: ""; position: absolute; width: 10px; height: 10px; border-radius: 50%; top: -3px; left: 40%; }
+  .mk-label { font-size: 9px; margin-bottom: 2px; letter-spacing: 0.05em; opacity: 0.7; }
+  .mk-h { font-size: 10px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.15em; }
+  .mk-canvas-illust {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%; height: 80%;
+  }
+  .mk-boat {
+    position: absolute; top: 18%; left: 35%;
+    width: 50px; height: 10px;
+    border-radius: 4px 4px 0 0;
+  }
+  .mk-line {
+    position: absolute;
+    top: 22%; left: 55%;
+    width: 1.5px; height: 40%;
+  }
+  .mk-bishi {
+    position: absolute;
+    top: 58%; left: 53.5%;
+    width: 8px; height: 14px;
+    border-radius: 2px;
+  }
+  .mk-hook {
+    position: absolute;
+    top: 75%; left: 53%;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+  .mk-fish {
+    position: absolute;
+    width: 8px; height: 3px;
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+  .mk-particles {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+  }
+  .mk-stat { font-size: 10px; margin-left: auto; opacity: 0.7; }
+
+  /* ====================================================
+     A. ハイブリッド (本体準拠)
+     ==================================================== */
+  .theme-a .mockup { background: #f5f7fa; color: #1a2332; }
+  .theme-a .mk-head { background: #0d2b4a; color: #fff; border-bottom: 1px solid #163d5c; }
+  .theme-a .mk-left, .theme-a .mk-right { background: #fff; border-right: 1px solid #d0d8e0; }
+  .theme-a .mk-right { border-right: none; border-left: 1px solid #d0d8e0; }
+  .theme-a .mk-main { background: linear-gradient(180deg, #0b1d33 0%, #061525 100%); }
+  .theme-a .mk-ctrl { background: #f0f3f7; border-top: 1px solid #d0d8e0; }
+  .theme-a .mk-btn-cast { background: rgba(26, 157, 86, 0.15); border-color: #1a9d56; color: #1a9d56; }
+  .theme-a .mk-btn-shakuri { background: #e85d04; color: #fff; }
+  .theme-a .mk-btn-maki { background: #d4a017; color: #1a2332; }
+  .theme-a .mk-btn-drop { background: #1a9d56; color: #fff; }
+  .theme-a .mk-btn-sim { background: transparent; border-color: #d0d8e0; color: #5a6a7a; }
+  .theme-a .mk-slider::after { background: #0d2b4a; }
+  .theme-a .mk-boat { background: #0d2b4a; }
+  .theme-a .mk-line { background: rgba(255,255,255,0.8); }
+  .theme-a .mk-bishi { background: #3d3f44; border: 1px solid #fff; }
+  .theme-a .mk-hook { background: #d4a017; }
+  .theme-a .mk-fish { background: #e85d04; }
+  .theme-a .mk-particles { background: #e85d04; }
+  .theme-a .mk-h { color: #0d2b4a; }
+
+  /* ====================================================
+     B. 完全ライト海図
+     ==================================================== */
+  .theme-b .mockup { background: #faf5e8; color: #3a2820; }
+  .theme-b .mk-head { background: #ede0c2; color: #3a2820; border-bottom: 1px solid #c8b48a; }
+  .theme-b .mk-left, .theme-b .mk-right { background: #f5edd6; border-right: 1px solid #c8b48a; }
+  .theme-b .mk-right { border-right: none; border-left: 1px solid #c8b48a; }
+  .theme-b .mk-main {
+    background:
+      linear-gradient(180deg, #d4e5f0 0%, #a8c5dc 100%),
+      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(58,40,32,0.05) 18px, rgba(58,40,32,0.05) 19px);
+  }
+  .theme-b .mk-ctrl { background: #ede0c2; border-top: 1px solid #c8b48a; }
+  .theme-b .mk-btn-cast { background: #faf5e8; border-color: #b8420f; color: #b8420f; }
+  .theme-b .mk-btn-shakuri { background: #b8420f; color: #faf5e8; }
+  .theme-b .mk-btn-maki { background: #d4a017; color: #3a2820; }
+  .theme-b .mk-btn-drop { background: #6b8e23; color: #faf5e8; }
+  .theme-b .mk-btn-sim { background: transparent; border-color: #c8b48a; color: #3a2820; }
+  .theme-b .mk-slider { background: rgba(58,40,32,0.15); }
+  .theme-b .mk-slider::after { background: #b8420f; }
+  .theme-b .mk-boat { background: #3a2820; }
+  .theme-b .mk-line { background: #3a2820; }
+  .theme-b .mk-bishi { background: #3a2820; }
+  .theme-b .mk-hook { background: #b8420f; }
+  .theme-b .mk-fish { background: #b8420f; }
+  .theme-b .mk-particles { background: #b8420f; }
+  .theme-b .mk-h { color: #b8420f; font-family: "Shippori Mincho", serif; }
+
+  /* ====================================================
+     C. ヘッダーのみ統一 (現状ダーク維持)
+     ==================================================== */
+  .theme-c .mockup { background: #0f1a2b; color: #f3ead7; }
+  .theme-c .mk-head { background: #0d2b4a; color: #fff; border-bottom: 1px solid #163d5c; }
+  .theme-c .mk-left, .theme-c .mk-right { background: #0a1322; border-right: 1px solid rgba(243,234,215,0.18); }
+  .theme-c .mk-right { border-right: none; border-left: 1px solid rgba(243,234,215,0.18); }
+  .theme-c .mk-main { background: linear-gradient(180deg, #1c4870 0%, #061525 100%); }
+  .theme-c .mk-ctrl { background: #07101c; border-top: 1px solid rgba(243,234,215,0.18); }
+  .theme-c .mk-btn-cast { background: rgba(93,107,58,0.12); border-color: #5d6b3a; color: #f3ead7; }
+  .theme-c .mk-btn-shakuri { background: #c84427; color: #faf4e4; }
+  .theme-c .mk-btn-maki { background: #9d7a3a; color: #faf4e4; }
+  .theme-c .mk-btn-drop { background: #5d6b3a; color: #faf4e4; }
+  .theme-c .mk-btn-sim { background: transparent; border-color: rgba(243,234,215,0.32); color: #e7dcc3; }
+  .theme-c .mk-slider::after { background: #c84427; }
+  .theme-c .mk-boat { background: #f3ead7; }
+  .theme-c .mk-line { background: rgba(243,234,215,0.75); }
+  .theme-c .mk-bishi { background: #3d3f44; border: 1px solid rgba(243,234,215,0.5); }
+  .theme-c .mk-hook { background: #c84427; }
+  .theme-c .mk-fish { background: #c84427; }
+  .theme-c .mk-particles { background: #e58460; }
+  .theme-c .mk-h { color: #f3ead7; }
+
+  /* ====================================================
+     D. モダンマリン
+     ==================================================== */
+  .theme-d .mockup { background: #f0f9ff; color: #0c4a6e; }
+  .theme-d .mk-head { background: linear-gradient(90deg, #0891b2 0%, #06b6d4 100%); color: #fff; }
+  .theme-d .mk-left, .theme-d .mk-right { background: #fff; border-right: 1px solid #e0f2fe; }
+  .theme-d .mk-right { border-right: none; border-left: 1px solid #e0f2fe; }
+  .theme-d .mk-main { background: linear-gradient(180deg, #0891b2 0%, #075985 100%); }
+  .theme-d .mk-ctrl { background: #e0f2fe; border-top: 1px solid #bae6fd; }
+  .theme-d .mk-btn-cast { background: rgba(132,204,22,0.15); border-color: #84cc16; color: #65a30d; }
+  .theme-d .mk-btn-shakuri { background: #f97316; color: #fff; box-shadow: 0 2px 4px rgba(249,115,22,0.3); }
+  .theme-d .mk-btn-maki { background: #fbbf24; color: #422006; }
+  .theme-d .mk-btn-drop { background: #84cc16; color: #fff; }
+  .theme-d .mk-btn-sim { background: transparent; border-color: #bae6fd; color: #0c4a6e; }
+  .theme-d .mk-slider::after { background: #f97316; }
+  .theme-d .mk-boat { background: #0c4a6e; }
+  .theme-d .mk-line { background: #fff; }
+  .theme-d .mk-bishi { background: #1e293b; border: 1px solid #fff; }
+  .theme-d .mk-hook { background: #f97316; }
+  .theme-d .mk-fish { background: #fbbf24; }
+  .theme-d .mk-particles { background: #fbbf24; }
+  .theme-d .mk-h { color: #0891b2; }
+
+  /* ====================================================
+     E. 墨絵ミニマル
+     ==================================================== */
+  .theme-e .mockup { background: #fafaf7; color: #1a1a1a; }
+  .theme-e .mk-head { background: #fff; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; font-family: "Shippori Mincho", serif; }
+  .theme-e .mk-left, .theme-e .mk-right { background: #fafaf7; border-right: 1px solid #1a1a1a; }
+  .theme-e .mk-right { border-right: none; border-left: 1px solid #1a1a1a; }
+  .theme-e .mk-main {
+    background:
+      radial-gradient(ellipse at top, #fff 0%, #e8e8e3 100%);
+  }
+  .theme-e .mk-ctrl { background: #fff; border-top: 1px solid #1a1a1a; }
+  .theme-e .mk-btn-cast { background: transparent; border-color: #1a1a1a; color: #1a1a1a; }
+  .theme-e .mk-btn-shakuri { background: #c8423a; color: #fff; }
+  .theme-e .mk-btn-maki { background: transparent; border-color: #666; color: #1a1a1a; }
+  .theme-e .mk-btn-drop { background: transparent; border-color: #1a1a1a; color: #1a1a1a; }
+  .theme-e .mk-btn-sim { background: transparent; border-color: #999; color: #666; }
+  .theme-e .mk-slider { background: rgba(0,0,0,0.1); }
+  .theme-e .mk-slider::after { background: #1a1a1a; border: 2px solid #c8423a; }
+  .theme-e .mk-boat { background: #1a1a1a; }
+  .theme-e .mk-line { background: #1a1a1a; }
+  .theme-e .mk-bishi { background: #1a1a1a; }
+  .theme-e .mk-hook { background: #c8423a; }
+  .theme-e .mk-fish { background: #666; }
+  .theme-e .mk-particles { background: #c8423a; opacity: 0.5; }
+  .theme-e .mk-h { color: #1a1a1a; font-family: "Shippori Mincho", serif; }
+
+  /* ====================================================
+     F. 現状改善 (ダーク海図 + 役割整理)
+     ==================================================== */
+  .theme-f .mockup { background: #0f1a2b; color: #f3ead7; }
+  .theme-f .mk-head { background: linear-gradient(180deg, #08111e 0%, #0f1a2b 100%); color: #f3ead7; border-bottom: 1px solid rgba(243,234,215,0.18); }
+  .theme-f .mk-left, .theme-f .mk-right { background: #0a1322; border-right: 1px solid rgba(243,234,215,0.18); }
+  .theme-f .mk-right { border-right: none; border-left: 1px solid rgba(243,234,215,0.18); }
+  .theme-f .mk-main {
+    background:
+      radial-gradient(ellipse at 50% 30%, #1c4870 0%, #0a213b 70%, #061525 100%);
+  }
+  .theme-f .mk-ctrl { background: #07101c; border-top: 1px solid rgba(243,234,215,0.18); }
+  .theme-f .mk-btn-cast { background: rgba(93,107,58,0.12); border-color: #5d6b3a; color: #f3ead7; }
+  .theme-f .mk-btn-shakuri { background: #c84427; color: #faf4e4; }
+  .theme-f .mk-btn-maki { background: #9d7a3a; color: #faf4e4; }
+  .theme-f .mk-btn-drop { background: #5d6b3a; color: #faf4e4; }
+  .theme-f .mk-btn-sim { background: transparent; border-color: rgba(243,234,215,0.32); color: #e7dcc3; }
+  .theme-f .mk-slider::after { background: #c84427; }
+  .theme-f .mk-boat { background: #f3ead7; }
+  .theme-f .mk-line { background: rgba(243,234,215,0.85); }
+  .theme-f .mk-bishi { background: #3d3f44; border: 1px solid rgba(243,234,215,0.65); }
+  .theme-f .mk-hook { background: #d4a850; }    /* ★ 琥珀 — 朱から区別 */
+  .theme-f .mk-fish { background: #c84427; }
+  .theme-f .mk-particles { background: #e58460; }
+  .theme-f .mk-h { color: #f3ead7; }
+
+  /* Common sliders */
+  .mk-left .mk-slider, .mk-right .mk-slider {}
+  .swatch-with-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: #aaa;
+  }
+  .footer-note {
+    margin-top: 24px;
+    padding: 16px;
+    background: #2a2a2a;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+  .footer-note b { color: #e85d04; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">コマセ巻きシミュレーター — 配色テーマ比較</h1>
+<div class="page-sub">funatsuri-yoso.com (本体ライトテーマ・濃紺+オレンジ) との整合 vs 独立美意識</div>
+
+<div class="grid">
+
+  <!-- A. ハイブリッド -->
+  <div class="theme-card theme-a">
+    <div class="theme-head">
+      <div class="theme-name">A. ハイブリッド (本体準拠)</div>
+      <div class="theme-tag">「海中を覗く窓」/ 推奨 / メインサイト完全整合</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#0d2b4a" title="ヘッダー濃紺"></div>
+        <div class="swatch" style="background:#f5f7fa" title="背景"></div>
+        <div class="swatch" style="background:#0b1d33" title="海中"></div>
+        <div class="swatch" style="background:#e85d04" title="CTA朱橙"></div>
+        <div class="swatch" style="background:#d4a017" title="warn"></div>
+        <div class="swatch" style="background:#1a9d56" title="pos緑"></div>
+        <div class="swatch" style="background:#d43333" title="neg赤"></div>
+        <div class="swatch" style="background:#7c3aed" title="prem紫"></div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mk-head">朱コマセ巻きシミュレーター</div>
+      <div class="mk-left">
+        <div class="mk-h">海況</div>
+        <div class="mk-label">水深 50m</div><div class="mk-slider"></div>
+        <div class="mk-label">指示ダナ 30m</div><div class="mk-slider"></div>
+        <div class="mk-label">潮流 0.35m/s</div><div class="mk-slider"></div>
+      </div>
+      <div class="mk-main">
+        <div class="mk-boat"></div>
+        <div class="mk-line"></div>
+        <div class="mk-bishi"></div>
+        <div class="mk-hook"></div>
+        <div class="mk-fish" style="top:62%; left:30%"></div>
+        <div class="mk-fish" style="top:65%; left:75%"></div>
+        <div class="mk-particles" style="top:67%; left:48%"></div>
+        <div class="mk-particles" style="top:70%; left:50%"></div>
+        <div class="mk-particles" style="top:73%; left:46%"></div>
+      </div>
+      <div class="mk-right">
+        <div class="mk-h">プリセット</div>
+        <div class="mk-label">標準 / 食い渋り</div>
+        <div class="mk-h" style="margin-top:8px">合否</div>
+        <div class="mk-label">○ 微調整で更に</div>
+      </div>
+      <div class="mk-ctrl">
+        <button class="mk-btn mk-btn-cast">投入</button>
+        <button class="mk-btn mk-btn-shakuri">しゃくる</button>
+        <button class="mk-btn mk-btn-maki">巻く</button>
+        <button class="mk-btn mk-btn-drop">落とす</button>
+        <button class="mk-btn mk-btn-sim">一時停止</button>
+        <span class="mk-stat">巻き上げ 4.0m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. 完全ライト海図 -->
+  <div class="theme-card theme-b">
+    <div class="theme-head">
+      <div class="theme-name">B. 完全ライト海図</div>
+      <div class="theme-tag">「江戸期航海図」/ ノスタルジック / 視認性最高</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#faf5e8" title="クリーム紙"></div>
+        <div class="swatch" style="background:#ede0c2" title="セピア"></div>
+        <div class="swatch" style="background:#d4e5f0" title="海(薄)"></div>
+        <div class="swatch" style="background:#a8c5dc" title="海(深)"></div>
+        <div class="swatch" style="background:#3a2820" title="茶インク"></div>
+        <div class="swatch" style="background:#b8420f" title="レンガ赤"></div>
+        <div class="swatch" style="background:#d4a017" title="アンバー"></div>
+        <div class="swatch" style="background:#6b8e23" title="苔緑"></div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mk-head">朱コマセ巻きシミュレーター</div>
+      <div class="mk-left">
+        <div class="mk-h">海況</div>
+        <div class="mk-label">水深 50m</div><div class="mk-slider"></div>
+        <div class="mk-label">指示ダナ 30m</div><div class="mk-slider"></div>
+        <div class="mk-label">潮流 0.35m/s</div><div class="mk-slider"></div>
+      </div>
+      <div class="mk-main">
+        <div class="mk-boat"></div>
+        <div class="mk-line"></div>
+        <div class="mk-bishi"></div>
+        <div class="mk-hook"></div>
+        <div class="mk-fish" style="top:62%; left:30%"></div>
+        <div class="mk-fish" style="top:65%; left:75%"></div>
+        <div class="mk-particles" style="top:67%; left:48%"></div>
+        <div class="mk-particles" style="top:70%; left:50%"></div>
+        <div class="mk-particles" style="top:73%; left:46%"></div>
+      </div>
+      <div class="mk-right">
+        <div class="mk-h">プリセット</div>
+        <div class="mk-label">標準 / 食い渋り</div>
+        <div class="mk-h" style="margin-top:8px">合否</div>
+        <div class="mk-label">○ 微調整で更に</div>
+      </div>
+      <div class="mk-ctrl">
+        <button class="mk-btn mk-btn-cast">投入</button>
+        <button class="mk-btn mk-btn-shakuri">しゃくる</button>
+        <button class="mk-btn mk-btn-maki">巻く</button>
+        <button class="mk-btn mk-btn-drop">落とす</button>
+        <button class="mk-btn mk-btn-sim">一時停止</button>
+        <span class="mk-stat">巻き上げ 4.0m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- C. ヘッダーのみ統一 -->
+  <div class="theme-card theme-c">
+    <div class="theme-head">
+      <div class="theme-name">C. ヘッダーのみ統一</div>
+      <div class="theme-tag">最低限の整合 / 工数最小 / 現状ダーク維持</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#0d2b4a" title="ヘッダー (本体準拠)"></div>
+        <div class="swatch" style="background:#0f1a2b" title="ボディ ink"></div>
+        <div class="swatch" style="background:#0a1322" title="パネル"></div>
+        <div class="swatch" style="background:#c84427" title="朱"></div>
+        <div class="swatch" style="background:#9d7a3a" title="真鍮"></div>
+        <div class="swatch" style="background:#5d6b3a" title="苔"></div>
+        <div class="swatch" style="background:#f3ead7" title="紙白"></div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mk-head">朱コマセ巻きシミュレーター</div>
+      <div class="mk-left">
+        <div class="mk-h">海況</div>
+        <div class="mk-label">水深 50m</div><div class="mk-slider"></div>
+        <div class="mk-label">指示ダナ 30m</div><div class="mk-slider"></div>
+        <div class="mk-label">潮流 0.35m/s</div><div class="mk-slider"></div>
+      </div>
+      <div class="mk-main">
+        <div class="mk-boat"></div>
+        <div class="mk-line"></div>
+        <div class="mk-bishi"></div>
+        <div class="mk-hook"></div>
+        <div class="mk-fish" style="top:62%; left:30%"></div>
+        <div class="mk-fish" style="top:65%; left:75%"></div>
+        <div class="mk-particles" style="top:67%; left:48%"></div>
+        <div class="mk-particles" style="top:70%; left:50%"></div>
+        <div class="mk-particles" style="top:73%; left:46%"></div>
+      </div>
+      <div class="mk-right">
+        <div class="mk-h">プリセット</div>
+        <div class="mk-label">標準 / 食い渋り</div>
+        <div class="mk-h" style="margin-top:8px">合否</div>
+        <div class="mk-label">○ 微調整で更に</div>
+      </div>
+      <div class="mk-ctrl">
+        <button class="mk-btn mk-btn-cast">投入</button>
+        <button class="mk-btn mk-btn-shakuri">しゃくる</button>
+        <button class="mk-btn mk-btn-maki">巻く</button>
+        <button class="mk-btn mk-btn-drop">落とす</button>
+        <button class="mk-btn mk-btn-sim">一時停止</button>
+        <span class="mk-stat">巻き上げ 4.0m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- D. モダンマリン -->
+  <div class="theme-card theme-d">
+    <div class="theme-head">
+      <div class="theme-name">D. モダンマリン</div>
+      <div class="theme-tag">「南国リゾート」/ 若年層向け / Stripe/Apple系</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#0891b2" title="ターコイズ"></div>
+        <div class="swatch" style="background:#f0f9ff" title="淡シアン"></div>
+        <div class="swatch" style="background:#f97316" title="コーラル"></div>
+        <div class="swatch" style="background:#fbbf24" title="サンドゴールド"></div>
+        <div class="swatch" style="background:#84cc16" title="ライム"></div>
+        <div class="swatch" style="background:#0c4a6e" title="ダークシアン"></div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mk-head">🌊 コマセ巻きシミュレーター</div>
+      <div class="mk-left">
+        <div class="mk-h">海況</div>
+        <div class="mk-label">水深 50m</div><div class="mk-slider"></div>
+        <div class="mk-label">指示ダナ 30m</div><div class="mk-slider"></div>
+        <div class="mk-label">潮流 0.35m/s</div><div class="mk-slider"></div>
+      </div>
+      <div class="mk-main">
+        <div class="mk-boat"></div>
+        <div class="mk-line"></div>
+        <div class="mk-bishi"></div>
+        <div class="mk-hook"></div>
+        <div class="mk-fish" style="top:62%; left:30%"></div>
+        <div class="mk-fish" style="top:65%; left:75%"></div>
+        <div class="mk-particles" style="top:67%; left:48%"></div>
+        <div class="mk-particles" style="top:70%; left:50%"></div>
+        <div class="mk-particles" style="top:73%; left:46%"></div>
+      </div>
+      <div class="mk-right">
+        <div class="mk-h">プリセット</div>
+        <div class="mk-label">標準 / 食い渋り</div>
+        <div class="mk-h" style="margin-top:8px">合否</div>
+        <div class="mk-label">○ 微調整で更に</div>
+      </div>
+      <div class="mk-ctrl">
+        <button class="mk-btn mk-btn-cast">投入</button>
+        <button class="mk-btn mk-btn-shakuri">しゃくる</button>
+        <button class="mk-btn mk-btn-maki">巻く</button>
+        <button class="mk-btn mk-btn-drop">落とす</button>
+        <button class="mk-btn mk-btn-sim">一時停止</button>
+        <span class="mk-stat">巻き上げ 4.0m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- E. 墨絵ミニマル -->
+  <div class="theme-card theme-e">
+    <div class="theme-head">
+      <div class="theme-name">E. 墨絵ミニマル</div>
+      <div class="theme-tag">「侘び寂び」/ 超高級感 / 一切無駄なし</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#fafaf7" title="白"></div>
+        <div class="swatch" style="background:#e8e8e3" title="紙テクスチャ"></div>
+        <div class="swatch" style="background:#1a1a1a" title="墨黒"></div>
+        <div class="swatch" style="background:#666" title="墨灰"></div>
+        <div class="swatch" style="background:#c8423a" title="朱(唯一)"></div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mk-head">朱 コマセ巻きシミュレーター</div>
+      <div class="mk-left">
+        <div class="mk-h">海況</div>
+        <div class="mk-label">水深 50m</div><div class="mk-slider"></div>
+        <div class="mk-label">指示ダナ 30m</div><div class="mk-slider"></div>
+        <div class="mk-label">潮流 0.35m/s</div><div class="mk-slider"></div>
+      </div>
+      <div class="mk-main">
+        <div class="mk-boat"></div>
+        <div class="mk-line"></div>
+        <div class="mk-bishi"></div>
+        <div class="mk-hook"></div>
+        <div class="mk-fish" style="top:62%; left:30%"></div>
+        <div class="mk-fish" style="top:65%; left:75%"></div>
+        <div class="mk-particles" style="top:67%; left:48%"></div>
+        <div class="mk-particles" style="top:70%; left:50%"></div>
+        <div class="mk-particles" style="top:73%; left:46%"></div>
+      </div>
+      <div class="mk-right">
+        <div class="mk-h">プリセット</div>
+        <div class="mk-label">標準 / 食い渋り</div>
+        <div class="mk-h" style="margin-top:8px">合否</div>
+        <div class="mk-label">○ 微調整で更に</div>
+      </div>
+      <div class="mk-ctrl">
+        <button class="mk-btn mk-btn-cast">投入</button>
+        <button class="mk-btn mk-btn-shakuri">しゃくる</button>
+        <button class="mk-btn mk-btn-maki">巻く</button>
+        <button class="mk-btn mk-btn-drop">落とす</button>
+        <button class="mk-btn mk-btn-sim">一時停止</button>
+        <span class="mk-stat">巻き上げ 4.0m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- F. 現状改善 -->
+  <div class="theme-card theme-f">
+    <div class="theme-head">
+      <div class="theme-name">F. 現状改善 (ダーク海図 + 役割整理)</div>
+      <div class="theme-tag">最小改修 / 朱使いすぎ解消 / 付けエサ=琥珀</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#0f1a2b" title="深藍 ink"></div>
+        <div class="swatch" style="background:#0a1322" title="パネル"></div>
+        <div class="swatch" style="background:#f3ead7" title="紙白"></div>
+        <div class="swatch" style="background:#c84427" title="朱(コマセ系のみ)"></div>
+        <div class="swatch" style="background:#d4a850" title="琥珀(付けエサ・針)"></div>
+        <div class="swatch" style="background:#9d7a3a" title="真鍮(巻く・ロック)"></div>
+        <div class="swatch" style="background:#5d6b3a" title="苔(落とす・成功)"></div>
+        <div class="swatch" style="background:#d44530" title="錆赤(警告のみ)"></div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mk-head">朱コマセ巻きシミュレーター</div>
+      <div class="mk-left">
+        <div class="mk-h">海況</div>
+        <div class="mk-label">水深 50m</div><div class="mk-slider"></div>
+        <div class="mk-label">指示ダナ 30m</div><div class="mk-slider"></div>
+        <div class="mk-label">潮流 0.35m/s</div><div class="mk-slider"></div>
+      </div>
+      <div class="mk-main">
+        <div class="mk-boat"></div>
+        <div class="mk-line"></div>
+        <div class="mk-bishi"></div>
+        <div class="mk-hook"></div>
+        <div class="mk-fish" style="top:62%; left:30%"></div>
+        <div class="mk-fish" style="top:65%; left:75%"></div>
+        <div class="mk-particles" style="top:67%; left:48%"></div>
+        <div class="mk-particles" style="top:70%; left:50%"></div>
+        <div class="mk-particles" style="top:73%; left:46%"></div>
+      </div>
+      <div class="mk-right">
+        <div class="mk-h">プリセット</div>
+        <div class="mk-label">標準 / 食い渋り</div>
+        <div class="mk-h" style="margin-top:8px">合否</div>
+        <div class="mk-label">○ 微調整で更に</div>
+      </div>
+      <div class="mk-ctrl">
+        <button class="mk-btn mk-btn-cast">投入</button>
+        <button class="mk-btn mk-btn-shakuri">しゃくる</button>
+        <button class="mk-btn mk-btn-maki">巻く</button>
+        <button class="mk-btn mk-btn-drop">落とす</button>
+        <button class="mk-btn mk-btn-sim">一時停止</button>
+        <span class="mk-stat">巻き上げ 4.0m</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-note">
+  <b>選択基準:</b><br/>
+  ・本体 funatsuri-yoso.com と <b>強整合</b> → A (ハイブリッド) / B (完全ライト) / C (ヘッダー統一)<br/>
+  ・本体と <b>独立美意識</b> → D (モダンマリン) / E (墨絵) / F (現状改善ダーク)<br/>
+  ・<b>実装工数</b> 小→大: C ≒ F &lt; A &lt; B &lt; E &lt; D<br/>
+  ・<b>視認性 (粒子・仕掛けの見やすさ)</b>: F &gt; C &gt; A &gt; D &gt; E &gt; B
+</div>
+
+</body>
+</html>

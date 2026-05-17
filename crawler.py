@@ -9209,9 +9209,15 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                     ship_week_fish[c["ship"]][f] += 1
         # T31 (2026/05/12): ships.json で area マッチする active 船宿も補完
         # （過去7日 catches に居なくても hist_rows に存在する船宿を一覧から漏らさない）
+        # 2026/05/17: source_priority に "chowari" 等の代替ソースがあれば fishing_v_zero でも対象
         for s in SHIPS:
-            if s.get("exclude") or s.get("boat_only") or s.get("fishing_v_zero"):
+            if s.get("exclude") or s.get("boat_only"):
                 continue
+            if s.get("fishing_v_zero"):
+                # 代替ソース（chowari 等）がある船宿は対象に含める
+                _sp = s.get("source_priority") or []
+                if not any(src != "fishing_v" for src in _sp):
+                    continue
             if s.get("area") == area and s.get("name") and s["name"] not in ship_week_fish:
                 ship_week_fish[s["name"]] = {}  # 過去7日釣果なし扱い
         sorted_ships = sorted(ship_week_fish.keys(), key=lambda s: (0 if s in ship_today_set else 1, -sum(ship_week_fish[s].values())))[:8]
@@ -12868,12 +12874,19 @@ def build_ship_pages(catches, crawled_at=""):
     out_dir = os.path.join(WEB_DIR, "ship")
     os.makedirs(out_dir, exist_ok=True)
     # ships.json に romaji_slug があるすべての船宿を対象
-    # fishing_v_zero=True（fishing-v.jp で釣果0件確認済み・T31 2026/05/12）はスキップ
+    # fishing_v_zero=True（fishing-v.jp で釣果0件確認済み）はスキップ
+    # ただし source_priority に "chowari" 等の代替ソースがあれば対象に含める
+    # （2026/05/17 chowari 経由船宿 150隻対応・元の T31 fishing_v_zero=True スキップは
+    #  「釣りビジョン以外にデータ取得手段なし」前提だったが、chowari クロール導入で
+    #  fishing_v_zero でも chowari 経由データがある船宿が登場）
+    def _has_alt_source(s):
+        sp = s.get("source_priority") or []
+        return any(src != "fishing_v" for src in sp)
     target_ships = [
         s for s in SHIPS
         if s.get("romaji_slug")
         and not s.get("exclude")
-        and not s.get("fishing_v_zero")
+        and (not s.get("fishing_v_zero") or _has_alt_source(s))
     ]
     today_dt = datetime.now(JST).replace(tzinfo=None)
     # 2026/05/13 T34拡張: valid_catches を直近7日窓に絞る。
@@ -12944,12 +12957,14 @@ def build_sitemap(data):
                 urls.append((f"{SITE_URL}/fish_area/{fname}", "0.7", "weekly"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
-    # T31 (2026/05/12): fishing_v_zero=True の船宿はページ自体生成しないため除外
+    # 2026/05/17: fishing_v_zero でも代替ソース（chowari等）あれば対象
     for s in SHIPS:
         if s.get("fishing_v_zero"):
-            continue
+            _sp = s.get("source_priority") or []
+            if not any(src != "fishing_v" for src in _sp):
+                continue
         slug_s = s.get("romaji_slug")
-        if slug_s and s["name"] in _SHIP_INFO and slug_s not in _SHIP_NOINDEX_SLUGS:
+        if slug_s and slug_s not in _SHIP_NOINDEX_SLUGS:
             urls.append((f"{SITE_URL}/ship/{slug_s}.html", "0.6", "weekly"))
     # premium/plan.html（静的・月次更新）
     urls.append((f"{SITE_URL}/premium/plan.html", "0.7", "monthly"))
