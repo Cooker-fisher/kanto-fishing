@@ -482,6 +482,34 @@ select.select:focus { border-color: var(--cta); }
 }
 .btn-action:disabled small { opacity: 0.5; }
 
+/* シミュ速度切替 (1x/2x/3x) */
+.speed-group {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  height: 50px;
+}
+.speed-btn {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  padding: 0 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sub);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  letter-spacing: 0.04em;
+}
+.speed-btn:last-child { border-right: none; }
+.speed-btn:hover { background: rgba(13, 43, 74, 0.06); color: var(--text); }
+.speed-btn.is-active {
+  background: var(--cta);
+  color: #fff;
+}
+
 /* Variant: primary action CTAオレンジ (しゃくる) */
 .btn-action.is-primary,
 .shakuri-btn.btn-action {

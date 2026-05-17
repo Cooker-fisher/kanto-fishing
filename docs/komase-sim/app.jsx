@@ -149,6 +149,7 @@ function App() {
   // 各グループ独立: cycle/cond/area から 1 つずつ or null。複数同時アクティブ可
   const [selectedPresets, setSelectedPresets] = useState({ cycle: "default", cond: null, area: null });
   const [running, setRunning] = useState(true);
+  const [speedMul, setSpeedMul] = useState(1);  // 1x / 2x / 3x シミュレーション速度
   const [tick, setTick] = useState(0);
   const [optimizing, setOptimizing] = useState(false);
   const [recommendation, setRecommendation] = useState(null);
@@ -563,6 +564,8 @@ function App() {
   paramsRef.current = params;
   const runningRef = useRef(running);
   runningRef.current = running;
+  const speedRef = useRef(speedMul);
+  speedRef.current = speedMul;
 
   // ===== Animation loop =====
   useEffect(() => {
@@ -573,6 +576,9 @@ function App() {
       let dt = (t - lastTimeRef.current) / 1000;
       lastTimeRef.current = t;
       if (dt > 0.1) dt = 0.1;
+      // 倍速適用 (実時間 dt × 倍率)。物理積分は本来 dt が大きいと不安定だが、
+      // 0.1 × 3 = 0.3 程度なら粒子・rigStep は安定範囲内。
+      dt *= (speedRef.current || 1);
       const params = paramsRef.current;
       const pp = physicsParamsRef.current;
       const running = runningRef.current;
@@ -1217,6 +1223,16 @@ function App() {
             className={"btn-action btn-sim " + (running ? "is-running" : "")}
             onClick={() => setRunning(r => !r)}
           >{running ? "一時停止" : "再開"}</button>
+          <div className="speed-group" role="group" aria-label="シミュ速度">
+            {[1, 2, 3].map(m => (
+              <button
+                key={m}
+                className={"speed-btn" + (speedMul === m ? " is-active" : "")}
+                onClick={() => setSpeedMul(m)}
+                aria-pressed={speedMul === m}
+              >{m}x</button>
+            ))}
+          </div>
           <button className="btn-action btn-sim" onClick={resetSim}>リセット</button>
         </div>
 
