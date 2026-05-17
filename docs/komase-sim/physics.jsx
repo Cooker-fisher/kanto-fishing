@@ -553,14 +553,19 @@ window.SimPhysics = (function() {
           rs.pendingMaki.splice(i, 1);
         }
       }
-      // 連続漏れ
+      // 連続漏れ (live mode の app.jsx と同条件)
+      //   下窓 > 5% & chum > 1% のときのみ粒子放出
+      //   旧 headless は下窓 0% でも leakRatePart=0.4 で無限スポーンしていて
+      //   live (下窓0% → 漏れなし) と乖離する原因だった
       const leak = leakRate(params);
       chumLevel = Math.max(0, chumLevel - leak * dt);
       leakAccum += dt;
-      // 下窓開きで漏れ粒数も決まる (cageOpening は legacy なので cageLower に統一)
-      const leakRatePart = (0.4 + cageLower(params) * 4) * Math.max(0, chumLevel);
+      const _lowerOpen = cageLower(params);
+      const leakRatePart = (_lowerOpen > 0.05 && chumLevel > 0.01)
+        ? (0.4 + _lowerOpen * 4) * chumLevel
+        : 0;
       const need = leakAccum * leakRatePart;
-      if (need >= 1) {
+      if (need >= 1 && leakRatePart > 0) {
         const n = Math.floor(need);
         leakAccum -= n / leakRatePart;
         const cage = {
