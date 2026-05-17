@@ -569,12 +569,23 @@ function App() {
             // dropVel はここでゼロにしない (settling で指数減衰させて潮なじみを再現)
           }
         } else {
-          // 着定後の潮なじみ: dropVel が指数減衰してハリス傾き (lagRatio) が
-          // 沈降中の真下→静止時の潮下流drift へ滑らかに遷移する。
-          // 時定数 0.7s (k=1.4) → 約 1.5〜2 秒でほぼ静定。
-          const k = 1.4;
-          dropVelRef.current = (dropVelRef.current || 0) * Math.exp(-k * dt);
-          if (dropVelRef.current < 0.05) {
+          // 着定後の潮なじみ (物理ベース・二次抗力モデル):
+          //   dv/dt = -k * v²  (高Re域の流体抗力 = 0.5*ρ*Cd*A*v²)
+          //   解: v(t) = v0 / (1 + k*v0*t) — 初期は急減速、終盤はゆっくり=実釣のなじみ感
+          //
+          //   k の係数は ハリス全長×抗力係数 / (ガン玉+hook 重量) に比例:
+          //     重いガン玉 → 速く落ちる (k_drag 大)
+          //     長い/太いハリス → ゆっくり落ちる (k_drag 小)
+          //
+          //   典型例 (ガン玉5号, ハリス8m #3, hook 0.5g): k_drag ~ 3-5 → なじみ ~3-5秒
+          const ganW = (pp.ganDamaSize || 0) * 0.9;
+          const hookW = pp.hookWeight || 0.5;
+          const harrisDragCoef = (0.04 + (pp.harrisNo || 3) * 0.045) * 10;
+          const harrisLen = pp.harrisLength || 8;
+          const k_drag = Math.max(1.5, Math.min(15, 40 * (ganW + hookW) / (harrisLen * harrisDragCoef)));
+          const v = dropVelRef.current || 0;
+          dropVelRef.current = v / (1 + k_drag * v * dt);
+          if (dropVelRef.current < 0.03) {
             dropVelRef.current = 0;
             phaseRef.current = "fishing";
             setPhase("fishing");

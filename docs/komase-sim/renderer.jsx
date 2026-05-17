@@ -6,9 +6,10 @@ window.SimRenderer = (function() {
   function makeMap(canvas, params) {
     const W = canvas.width;
     const H = canvas.height;
-    // World viewport: 船(x=0)を画面 35% 付近に置き、潮下流へ充分なスペースを確保
-    const xMin = -26;
-    const xMax = Math.max(48, 22 + params.tideSpeed * 75);
+    // World viewport: 船(x=0)を画面 30% 付近に置き、リグ＋潮下drift＋粒子流が見える範囲だけ表示
+    // 旧 xMin=-26 / xMax=48 (74m幅) は潮下に余白が出すぎてキャンバス右側が空く問題があった
+    const xMin = -12;
+    const xMax = Math.max(28, 14 + params.tideSpeed * 40);
     const yMin = -7;
     const yMax = params.depth + 4;
     const sx = W / (xMax - xMin);
