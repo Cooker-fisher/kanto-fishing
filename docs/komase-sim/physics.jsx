@@ -280,6 +280,13 @@ window.SimPhysics = (function() {
     const segsHarrisBack = 7;
     const pts = [];
 
+    // ★ 落とし込み中の水平drift抑制:
+    //   cage が速く落ちると harris にかかる drag は vertical 方向が支配的になる
+    //   (drop drag >> current drag) → 水平 drift は無視できる。
+    //   x オフセットを (1 - lagRatio) で混合し、lagRatio=1 (フル沈降) では
+    //   x = cage.x (真上トレイル)、lagRatio=0 (静定) では通常の current drift。
+    const xMix = 1 - lagRatio;
+
     // --- クッションゴム区間 ---
     for (let i = 0; i <= segsCushion; i++) {
       const t = i / segsCushion;
@@ -287,7 +294,7 @@ window.SimPhysics = (function() {
       const yLagged = -vertical * 0.85;
       const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
       pts.push({
-        x: cage.x + Math.sin(thetaCushion) * cushionLength * t,
+        x: cage.x + Math.sin(thetaCushion) * cushionLength * t * xMix,
         y: cage.y + yMix,
         section: "cushion",
       });
@@ -304,7 +311,7 @@ window.SimPhysics = (function() {
         const localBend = 0.7 + 0.3 * t;
         const localTheta = thetaMotos * localBend;
         const vertical = Math.cos(localTheta) * segLen;
-        const horiz = Math.sin(localTheta) * segLen;
+        const horiz = Math.sin(localTheta) * segLen * xMix;
         const yLagged = -vertical * 0.85;
         const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
         pts.push({
@@ -328,7 +335,7 @@ window.SimPhysics = (function() {
       const localBend = 0.7 + 0.3 * t;
       const localTheta = thetaFront * localBend;
       const vertical = Math.cos(localTheta) * segLen;
-      const horiz = Math.sin(localTheta) * segLen;
+      const horiz = Math.sin(localTheta) * segLen * xMix;
       const yLagged = -vertical * 0.85;
       const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
       pts.push({
@@ -350,7 +357,7 @@ window.SimPhysics = (function() {
       const localBend = 0.6 + 0.4 * t;
       const localTheta = thetaBack * localBend;
       const vertical = Math.cos(localTheta) * segLen;
-      const horiz = Math.sin(localTheta) * segLen;
+      const horiz = Math.sin(localTheta) * segLen * xMix;
       const yLagged = -vertical * 0.85;
       const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
       pts.push({
