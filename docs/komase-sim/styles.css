@@ -337,6 +337,8 @@ select.select:focus { border-color: var(--cta); }
 .stage__hud {
   position: absolute;
   top: 14px; left: 14px;
+  width: 180px;
+  box-sizing: border-box;
   padding: 10px 14px;
   background: rgba(13, 43, 74, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.18);

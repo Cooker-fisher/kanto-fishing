@@ -553,20 +553,32 @@ function App() {
       // → ビシ(cage) は付けエサより (cushion+harris) m 上、つまり tana - (cushion+harris) + 5
       // その後 3回しゃくり×1.7m巻きで付けエサが指示ダナに到達 → 待ち時間 → 回収
       if (running && phaseRef.current === "dropping") {
-        const vel = pp.dropSpeed || 1.5;
-        dropVelRef.current = vel;
-        bishiAbsYRef.current += vel * dt;
         // ★ ビシ落としこみ目安: 指示棚 + dropOffsetM
         const drop = pp.dropOffsetM != null ? pp.dropOffsetM : 5;
         const dropTarget = Math.max(1, pp.tanaDepth + drop);
-        if (bishiAbsYRef.current >= dropTarget) {
-          bishiAbsYRef.current = dropTarget;
-          phaseRef.current = "fishing";
-          dropVelRef.current = 0;
-          // ビシは tana + drop にいる → makiOffset = -drop
-          rigStateRef.current.makiOffset = -drop;
-          rigStateRef.current.makiTarget = -drop;
-          setPhase("fishing");
+        if (bishiAbsYRef.current < dropTarget) {
+          // 沈降中
+          const vel = pp.dropSpeed || 1.5;
+          dropVelRef.current = vel;
+          bishiAbsYRef.current += vel * dt;
+          if (bishiAbsYRef.current >= dropTarget) {
+            bishiAbsYRef.current = dropTarget;
+            // ビシは tana + drop に固定 → makiOffset = -drop
+            rigStateRef.current.makiOffset = -drop;
+            rigStateRef.current.makiTarget = -drop;
+            // dropVel はここでゼロにしない (settling で指数減衰させて潮なじみを再現)
+          }
+        } else {
+          // 着定後の潮なじみ: dropVel が指数減衰してハリス傾き (lagRatio) が
+          // 沈降中の真下→静止時の潮下流drift へ滑らかに遷移する。
+          // 時定数 0.7s (k=1.4) → 約 1.5〜2 秒でほぼ静定。
+          const k = 1.4;
+          dropVelRef.current = (dropVelRef.current || 0) * Math.exp(-k * dt);
+          if (dropVelRef.current < 0.05) {
+            dropVelRef.current = 0;
+            phaseRef.current = "fishing";
+            setPhase("fishing");
+          }
         }
       } else {
         dropVelRef.current = 0;
