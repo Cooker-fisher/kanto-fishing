@@ -633,38 +633,41 @@ window.SimRenderer = (function() {
       );
     }
 
-    // マダイ浮上ロジック: 自身の近傍 (3m) に粒子が多いほど浮上、無ければ底へ戻る
-    //   反応のある層 (底上5〜10m) まで浮上するのが典型。コマセが薄ければ底寄りへ戻る。
-    const FALLBACK_DEPTH = (y) => depth - 2;  // 底上2m に戻る
+    // マダイ浮上ロジック (実魚の嗅覚モデル):
+    //   実マダイはコマセの匂いを 10m 単位の広範囲で感知し、上方にあるコマセ帯へ
+    //   ゆっくり浮上する。底寄りに潜伏 → コマセを嗅ぐ → 反応のある層 (底上5〜10m)
+    //   まで浮上 → ハリス先の付け餌を食う、という流れ。
+    //   実装: 自身の x±12m 横範囲、自身より上 (y < f.y) の粒子を集計し、その
+    //         "下端" (最も深い粒子) を target に。粒子数が多いほど引力強。
+    const FALLBACK_DEPTH = depth - 2;  // 底上2m に戻る
     _madaiState.forEach((f) => {
       if (f.kind !== "madai") return;
-      // 自身近傍の粒子密度 (半径 3m)
-      let nearby = 0;
+      let aboveCount = 0;
+      let deepestChumY = -1;  // 自身より上のコマセ粒子のうち最も深い (= 最も近い) Y
       if (particles && particles.length > 0) {
-        const r2 = 3 * 3;
+        const horizR = 12;
         for (const p of particles) {
-          const dx = p.x - f.baseX, dy = p.y - f.y;
-          if (dx*dx + dy*dy < r2) nearby += 1;
+          const dx = Math.abs(p.x - f.baseX);
+          if (dx > horizR) continue;
+          if (p.y < f.y - 0.3) {
+            aboveCount += 1;
+            if (p.y > deepestChumY) deepestChumY = p.y;
+          }
         }
       }
-      // 浮上引力: 粒子密度が 5 個超で本格浮上。最大引力で 0.5 m/s 浮上。
-      const chumPull = Math.min(1, nearby / 8);
-      // 引力先 Y: コマセ近傍にいたら粒子重心へ、無ければ底寄り
+      // 引力強度: 自身より上のコマセが 10 個超で本格浮上 (max chumPull=1.0)
+      const chumPull = Math.min(1, aboveCount / 12);
+      // 引力先 Y: コマセの下端 (最も深い粒子) より 1.5m 下 = 反応のある層
+      //   (実釣: マダイは反応群の上辺ではなく少し下から付け餌を見上げる)
       let targetY;
-      if (chumPull > 0.05 && particles && particles.length > 0) {
-        // 近傍粒子の重心 Y (なければ自分の y を使う)
-        let sumY = 0, cnt = 0;
-        const r2 = 5 * 5;
-        for (const p of particles) {
-          const dx = p.x - f.baseX, dy = p.y - f.y;
-          if (dx*dx + dy*dy < r2) { sumY += p.y; cnt += 1; }
-        }
-        targetY = cnt > 0 ? sumY / cnt : FALLBACK_DEPTH(f.y);
+      if (chumPull > 0.05 && deepestChumY > 0) {
+        targetY = deepestChumY + 1.5;
       } else {
-        targetY = FALLBACK_DEPTH(f.y);
+        targetY = FALLBACK_DEPTH;
       }
-      // 浮上速度: 上向き ~0.5 m/s (chum濃)、降下 ~0.3 m/s (chum薄)
-      const maxVel = (targetY < f.y) ? (0.5 * chumPull + 0.05) : 0.3;
+      // 浮上速度: 上向き ~0.3 m/s (chum濃)、降下 ~0.15 m/s (chum薄)
+      //   実魚は警戒しながらゆっくり浮上 (秒速 cm 単位)
+      const maxVel = (targetY < f.y) ? (0.3 * chumPull + 0.03) : 0.15;
       const diff = targetY - f.y;
       const step = Math.sign(diff) * Math.min(Math.abs(diff), maxVel * dt);
       f.y += step;
