@@ -70,7 +70,9 @@ html, body {
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  min-width: 1280px;
+}
+@media (min-width: 769px) {
+  html, body { min-width: 1280px; }
 }
 
 /* ===== layout ===== */
@@ -850,3 +852,160 @@ select.select:focus { border-color: var(--cta); }
 }
 .tog.is-on { background: var(--cta); }
 .tog.is-on::after { left: 18px; }
+
+/* ============================================
+   モバイル対応 (~768px)
+   A案: canvas 50vh + 主要4ボタン上段(52px) + サブ下段(38px)
+   左上HUDはCサイズ採用 (110px/9px/hud-big 17px)
+   2026-05-17 確定
+   ============================================ */
+@media (max-width: 768px) {
+  /* レイアウト: 3カラム → 縦積み */
+  .app {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+    max-width: 100%;
+    min-height: 100vh;
+  }
+
+  /* ヘッダー */
+  .head {
+    padding: 10px 14px 8px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .head__title { font-size: 17px; }
+  .head__ver { font-size: 11px; margin-left: 4px; }
+  .head__actions { margin-top: 6px; gap: 6px; }
+  .head__link { font-size: 10px; }
+  .head__btn { font-size: 10px; padding: 3px 8px; }
+  .head__meta { display: none; }
+
+  /* キャンバスエリア: 50vh 固定 */
+  .stage {
+    min-height: 50vh;
+    height: 50vh;
+    flex: none;
+  }
+
+  /* 左上HUD: Cサイズ */
+  .stage__hud {
+    width: 110px;
+    font-size: 9px;
+    padding: 6px 8px;
+    top: 10px;
+    left: 10px;
+  }
+  .stage__hud .hud-big { font-size: 17px; }
+
+  /* 凡例: 小さく */
+  .stage__legend {
+    font-size: 9px;
+    padding: 6px 8px;
+    line-height: 1.5;
+    top: 10px;
+    right: 10px;
+  }
+
+  /* controls: 縦積み (主要4 上段 / サブ 下段 / stats)
+     flex-wrap で自然改行: Group1+Group2 で1行満たし、Group3+Group4 が次行で並ぶ */
+  .controls {
+    flex-wrap: wrap;
+    padding: 8px 10px;
+    gap: 4px;
+    border-right: none;
+    min-height: auto;
+    align-items: stretch;
+  }
+  .controls__group {
+    padding: 0;
+    border-right: none;
+    gap: 4px;
+    display: flex;
+  }
+  /* 1行目: 投入(+optional skip) + しゃくる/巻く/落とす
+     2行目: 回収 + 一時停止/速度/リセット
+     min-width で改行を強制 (各行の合計 basis が 95% → 次の Group が入らず wrap) */
+  .controls__group:nth-child(1),
+  .controls__group:nth-child(3) {
+    flex: 1 1 22%;
+    min-width: 22%;
+  }
+  .controls__group:nth-child(2),
+  .controls__group:nth-child(4) {
+    flex: 3 1 73%;
+    min-width: 73%;
+  }
+  /* タッチターゲット: 主要52px / サブ38px */
+  .controls__group:nth-child(1) .btn-action,
+  .controls__group:nth-child(2) .btn-action {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 52px;
+    height: 52px;
+    font-size: 13px;
+    padding: 4px 2px;
+  }
+  .controls__group:nth-child(3) .btn-action,
+  .controls__group:nth-child(4) .btn-action,
+  .controls__group:nth-child(4) .speed-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 38px;
+    height: 38px;
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+  .controls__group:nth-child(4) .speed-group {
+    flex: 1.4 1 0;
+    height: 38px;
+  }
+  .controls__group:nth-child(1) .btn-action small,
+  .controls__group:nth-child(2) .btn-action small,
+  .controls__group:nth-child(3) .btn-action small {
+    font-size: 8px;
+  }
+
+  /* stats: 3行目に占有 */
+  .controls__group--stats {
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 14px;
+    border-top: 1px dashed var(--border);
+    padding-top: 6px;
+    margin-top: 4px;
+  }
+  .ctl-stat__label { font-size: 8px; }
+  .ctl-stat__value { font-size: 14px; }
+
+  /* パネル: 縦並び全幅 */
+  .panel {
+    max-height: none;
+    border-right: none;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+  .panel__section {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+  .panel__section--closed {
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+  }
+  .panel__h, .panel__h--clickable { font-size: 13px; }
+
+  /* タッチ操作向け拡大 */
+  input[type="range"] { height: 8px; }
+  input[type="range"]::-webkit-slider-thumb { width: 22px; height: 22px; }
+  input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; }
+  .seg__btn { padding: 9px 4px; font-size: 12px; min-height: 36px; }
+  .chip { padding: 7px 10px; font-size: 11px; min-height: 32px; }
+
+  /* metric 縮小 */
+  .metric__num { font-size: 30px; }
+  .grade { font-size: 36px; }
+}
