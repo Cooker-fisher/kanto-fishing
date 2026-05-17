@@ -7728,7 +7728,12 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         _fish_hist_0 = None
         if len(catches) < 1:
             _fish_hist_0 = _summarize_fish_history(fish, _hist_rows_for_fish, now)
-        if False:  # 旧シーバス形式ブロック削除 — 以下は dead code placeholder
+        # DEAD CODE: 旧シーバス形式ブロック（7731-7959 約230行）
+        # 2026/05/17 確認: この if False ブロックは実行されない。
+        # 実 fish ページ生成は 7960行目以降の html_f_min テンプレートで行われる。
+        # 旧コードは参照用に残置（fish_hist 利用例として）。
+        # 削除する場合は build_fish_pages 全体の構造を要確認。
+        if False:  # 旧シーバス形式ブロック・実行されない placeholder
 
             # tackle 情報（fish_tackle.json）
             tackle_obj = tackle_data.get(fish, {}) if isinstance(tackle_data, dict) else {}
@@ -12924,6 +12929,161 @@ def build_ship_pages(catches, crawled_at=""):
 
 
 # ============================================================
+# Kanso由来ポイント area_pages（2026/05/17 追加）
+# build_area_pages は ships.json area のみ対象だが、hist_rows の
+# point_place1/2/3（剣崎沖・大原沖・鹿島沖等）も独立 area_pages として
+# 簡易生成して SEO/UX を強化する
+# ============================================================
+def build_point_pages(hist_rows, crawled_at=""):
+    """Kanso由来主要ポイントの area_pages を docs/area/ に簡易生成する。
+    対象: area_romaji_map.json にスラッグがあり ships.json area に含まれない
+          point_place の上位40件（point_place1/2/3 のいずれかで N>=10 件出現）
+    出力: docs/area/{slug}.html （既存 area_pages と同ディレクトリ・URL）
+    """
+    from collections import Counter
+    out_dir = os.path.join(WEB_DIR, "area")
+    os.makedirs(out_dir, exist_ok=True)
+
+    # 既存 ships.json area（除外対象）
+    ship_areas = set(s.get("area") for s in SHIPS if s.get("area"))
+
+    # hist_rows から point_place 集計
+    point_counter = Counter()
+    for r in hist_rows:
+        for k in ("point_place1", "point_place2", "point_place3"):
+            p = (r.get(k) or "").strip()
+            if not p or p == "NULL" or len(p) > 15:
+                continue
+            # 既存 area_pages と被るものは除外（重複生成防止）
+            if p in ship_areas:
+                continue
+            # area_romaji_map にスラッグがあるもののみ
+            if p not in _AREA_ROMAJI:
+                continue
+            point_counter[p] += 1
+
+    target_points = [p for p, n in point_counter.most_common(40) if n >= 10]
+    print(f"build_point_pages: 対象ポイント {len(target_points)}件 (Kanso由来)")
+
+    today_dt = datetime.now(JST).replace(tzinfo=None)
+    cutoff_365 = (today_dt - timedelta(days=365)).strftime("%Y/%m/%d")
+
+    generated = 0
+    for point in target_points:
+        slug = _AREA_ROMAJI[point]
+        # このポイントを使う hist_rows レコード抽出
+        point_rows = [
+            r for r in hist_rows
+            if (r.get("point_place1") == point
+                or r.get("point_place2") == point
+                or r.get("point_place3") == point)
+            and r.get("is_cancellation") != "1"
+            and r.get("date", "") >= cutoff_365
+        ]
+        if not point_rows:
+            continue
+
+        # 主要魚種 TOP5
+        fish_cnt = Counter()
+        ship_cnt = Counter()
+        port_cnt = Counter()
+        for r in point_rows:
+            tm = r.get("tsuri_mono", "") or ""
+            if tm and tm != "NULL":
+                fish_cnt[tm] += 1
+            s = r.get("ship", "")
+            if s:
+                ship_cnt[s] += 1
+            a = r.get("area", "")
+            if a:
+                port_cnt[a] += 1
+
+        top_fish = fish_cnt.most_common(5)
+        top_ships = ship_cnt.most_common(8)
+        top_ports = port_cnt.most_common(3)
+        n_records = len(point_rows)
+        n_ships = len(ship_cnt)
+        n_ports = len(port_cnt)
+
+        # HTML 生成（既存 area_pages 簡易版）
+        fish_items = "".join(
+            f'<div class="sl-item"><div class="sl-top">'
+            f'<span class="sl-name"><a href="../fish/{_FISH_ROMAJI.get(f, f)}.html">{f}</a></span>'
+            f'<span class="sl-detail">過去1年 {n}件</span></div></div>'
+            for f, n in top_fish
+        )
+        fish_card = f'<div class="sl-card">{fish_items}</div>' if fish_items else ""
+
+        ship_items = "".join(
+            f'<div class="sl-item"><div class="sl-top">'
+            f'<span class="sl-name">{_ship_link(s, depth=1)}</span>'
+            f'<span class="sl-detail">過去1年 {n}件</span></div></div>'
+            for s, n in top_ships
+        )
+        ship_card = f'<div class="sl-card">{ship_items}</div>' if ship_items else ""
+
+        port_items = "".join(
+            f'<div class="sl-item"><div class="sl-top">'
+            f'<span class="sl-name"><a href="../area/{_AREA_ROMAJI.get(p, p)}.html">{p}</a></span>'
+            f'<span class="sl-detail">過去1年 {n}件</span></div></div>'
+            for p, n in top_ports if _AREA_ROMAJI.get(p)
+        )
+        port_card = f'<div class="sl-card">{port_items}</div>' if port_items else ""
+
+        # FAQ
+        top_fish_str = "・".join(f for f, _ in top_fish[:3])
+        top_ship_str = "・".join(s for s, _ in top_ships[:3])
+        faq_html = (
+            f'<details><summary>{point}でよく釣れる魚は？</summary>'
+            f'<p class="faq-ans">過去1年で{point}で記録された主要魚種は{top_fish_str}です。'
+            f'計{len(fish_cnt)}魚種・{n_records}件の釣果記録があります。</p></details>'
+            f'<details><summary>{point}に出船する船宿は？</summary>'
+            f'<p class="faq-ans">過去1年で{point}を利用した船宿は{n_ships}船宿で、'
+            f'主な出船港は{"、".join(p for p, _ in top_ports[:3])}です。'
+            f'件数の多い順に{top_ship_str}が実績豊富です。</p></details>'
+        )
+
+        # 簡易テンプレート
+        html = f"""<!doctype html><html lang="ja"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{point}の釣果情報・船宿一覧 | 船釣り予想</title>
+<meta name="description" content="関東の釣り場「{point}」の過去1年の釣果データ。{n_records}件・{n_ships}船宿・主要魚種{top_fish_str}。">
+<meta property="og:title" content="{point}の釣果情報">
+<meta property="og:description" content="{point}を利用する{n_ships}船宿・{n_records}件の過去釣果サマリー">
+<meta property="og:url" content="{SITE_URL}/area/{slug}.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="船釣り予想">
+<meta property="og:image" content="{SITE_URL}/ogp-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<link rel="canonical" href="{SITE_URL}/area/{slug}.html">
+<link rel="stylesheet" href="../style.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
+</head><body>
+<header class="hd"><a href="../" class="hd-name">船釣り予想</a><div class="hd-sub">{crawled_at} 更新</div></header>
+<main>
+<div class="area-hero"><h2>{point}</h2><div class="ah-sub">釣り場ポイント情報</div>
+<div class="ah-m">過去1年 <strong>{n_records}件</strong><small> {n_ships}船宿・{n_ports}港経由</small></div></div>
+<h2 class="st">主要魚種（過去1年） <span class="tag free">無料</span></h2>{fish_card}
+<h2 class="st">出船する船宿（過去1年） <span class="tag free">無料</span></h2>{ship_card}
+<h2 class="st">主な出船港 <span class="tag free">無料</span></h2>{port_card}
+<h2 class="st">{point} よくある質問</h2><div class="faq">{faq_html}</div>
+<div class="share-bar"><a href="https://twitter.com/intent/tweet?url={SITE_URL}/area/{slug}.html&text={point}の釣果情報" target="_blank" rel="noopener">Xでシェア</a></div>
+</main>
+<footer class="ft"><a href="../">トップへ戻る</a> | <a href="../area/">エリア一覧</a> | <a href="../fish/">魚種一覧</a></footer>
+</body></html>"""
+
+        with open(os.path.join(out_dir, f"{slug}.html"), "w", encoding="utf-8") as f:
+            f.write(html)
+        generated += 1
+
+    print(f"build_point_pages: {generated} 件生成 → docs/area/")
+    return generated
+
+
+# ============================================================
 # sitemap.xml 自動生成
 # ============================================================
 def build_sitemap(data):
@@ -14046,6 +14206,9 @@ def main():
                      hist_rows=_shared_hist_rows,
                      fish_area_summary=_shared_fish_area_summary,
                      area_top_fishes=_shared_area_top_fishes)
+    # 2026/05/17: Kanso由来ポイント（剣崎沖・大原沖等）の area_pages 簡易生成
+    # build_area_pages の対象外（ships.json area のみ）を補完
+    build_point_pages(_shared_hist_rows, crawled_at=crawled_at)
     build_area_index_html(
         now=now,
         hist_rows=_shared_hist_rows,

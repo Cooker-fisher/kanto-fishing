@@ -545,6 +545,36 @@ function App() {
         swellOffsetYRef.current = amp * Math.sin(swellPhaseRef.current * 2 * Math.PI / period);
       }
 
+      // DEBUG: 状態を window に公開
+      const prevState = window.__debugAuto && window.__debugAuto.autoState ? window.__debugAuto.autoState.state : null;
+      const newState = autoStateRef.current.state;
+      if (prevState !== newState) {
+        window.__stateLog = window.__stateLog || [];
+        window.__stateLog.push({
+          t: performance.now().toFixed(0),
+          from: prevState, to: newState,
+          makiT: rigStateRef.current.makiTarget.toFixed(2),
+          makiO: rigStateRef.current.makiOffset.toFixed(2),
+          pendS: pendingShakuriRef.current.length,
+          pendM: pendingMakiRef.current.length,
+        });
+        if (window.__stateLog.length > 40) window.__stateLog.shift();
+      }
+      window.__debugAuto = {
+        autoState: { ...autoStateRef.current },
+        phase: phaseRef.current,
+        rs: { ...rigStateRef.current },
+        pendingShakuri: pendingShakuriRef.current.length,
+        pendingMaki: pendingMakiRef.current.length,
+        autoShakuriParam: params.autoShakuri,
+        intervalParam: pp.shakuriInterval,
+        shakuriCountPerTrigger: pp.shakuriCountPerTrigger,
+        running: running,
+        dt: dt,
+        makiAmount: pp.makiAmount,
+        chumLevel: chumRef.current,
+      };
+
       // 自動最適動作 (fishing 中のみ): 状態マシンで shakuri→biting→dropping→shakuri を回す
       //   shakuri:  N発撃ち中 (最終発のみ maki) → 終わって maki が完了したら biting
       //   biting:   高位置で食わせ待ち (shakuriInterval 秒)
@@ -571,13 +601,15 @@ function App() {
         } else if (auto.state === "biting") {
           auto.biteTimer += dt;
           if (auto.biteTimer >= (pp.shakuriInterval || 60)) {
-            // 食わせ時間終了 → タナへ戻す
-            rs.makiTarget = 0;
+            // 食わせ時間終了 → 直前サイクル分の maki を逆向きに巻き戻す
+            // (makiOffset = 0 まで戻すと初期落とし込み位置を超えてしまうので makiAmount だけ下げる)
+            rs.makiTarget = Math.max(0, (rs.makiTarget || 0) - (pp.makiAmount || 0));
             auto.state = "dropping";
           }
         } else if (auto.state === "dropping") {
-          // ビシがタナ (makiOffset≈0) に戻ったら次サイクル
-          if (Math.abs(rs.makiOffset || 0) < 0.08) {
+          // ビシが目標位置に戻ったら次サイクル開始
+          const makiSettled = Math.abs((rs.makiTarget || 0) - (rs.makiOffset || 0)) < 0.08;
+          if (makiSettled) {
             _doOptimalShakuriBurst();
             auto.state = "shakuri";
             auto.biteTimer = 0;
