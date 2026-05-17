@@ -424,38 +424,43 @@ window.RightPanel = function RightPanel(props) {
       </CollapsibleSection>
 
       <CollapsibleSection title="合否" defaultOpen={true}>
-        {lastCycleResult && (
-          <div style={{
-            marginBottom: 12,
-            padding: "10px 12px",
-            background: "rgba(232, 93, 4, 0.08)",
-            borderLeft: "3px solid var(--cta)",
-            borderRadius: "4px",
-          }}>
-            <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: 6}}>
-              <span style={{fontSize: 11, color: "var(--sub)", letterSpacing: ".08em", fontWeight: 600}}>
-                サイクル {lastCycleResult.cycleNo} 評価 ({lastCycleResult.durationSec}秒)
-              </span>
-              <span className={"grade " + cycResGradeClass} style={{fontSize: 22, marginLeft: 8}}>
-                {lastCycleResult.grade}
-              </span>
+        {(() => {
+          const cycScore = metrics.cycleScore || 0;
+          const cycGrade = metrics.cycleGrade || "×";
+          const cycGradeClass = cycGrade === "◎" || cycGrade === "○" ? "grade--ok" : cycGrade === "×" ? "grade--bad" : "";
+          return (
+            <div style={{
+              marginBottom: 12,
+              padding: "10px 12px",
+              background: "rgba(232, 93, 4, 0.08)",
+              borderLeft: "3px solid var(--cta)",
+              borderRadius: "4px",
+            }}>
+              <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: 6}}>
+                <span style={{fontSize: 11, color: "var(--sub)", letterSpacing: ".08em", fontWeight: 600}}>
+                  サイクル {metrics.cycleNo + 1} 進行中 ({(metrics.cycleDurationSec || 0).toFixed(0)}秒)
+                </span>
+                <span className={"grade " + cycGradeClass} style={{fontSize: 22, marginLeft: 8}}>
+                  {cycGrade}
+                </span>
+              </div>
+              <div style={{display:"flex", alignItems:"baseline", gap: 8, marginBottom: 6}}>
+                <span style={{fontSize: 28, fontWeight: 700, color: "var(--cta)", fontFamily: "var(--mono)"}}>
+                  {cycScore.toFixed(1)}
+                </span>
+                <span style={{fontSize: 14, color: "var(--sub)"}}>/ 100</span>
+              </div>
+              <div style={{fontSize: 11, color: "var(--paper-dim)", lineHeight: 1.5, marginBottom: 6}}>
+                {metrics.cycleNote}
+              </div>
+              <div style={{fontSize: 10, color: "var(--sub)", fontFamily: "var(--mono)", letterSpacing: ".03em"}}>
+                良 {(metrics.cycleSustainRate || 0).toFixed(1)}% / 可 {(metrics.cycleOkRate || 0).toFixed(1)}% / 平均同調 {(metrics.cycleMeanSync || 0).toFixed(2)}% / ピーク {(metrics.cyclePeakSync || 0).toFixed(2)}%
+              </div>
             </div>
-            <div style={{display:"flex", alignItems:"baseline", gap: 8, marginBottom: 6}}>
-              <span style={{fontSize: 28, fontWeight: 700, color: "var(--cta)", fontFamily: "var(--mono)"}}>
-                {lastCycleResult.score}
-              </span>
-              <span style={{fontSize: 14, color: "var(--sub)"}}>/ 100</span>
-            </div>
-            <div style={{fontSize: 11, color: "var(--paper-dim)", lineHeight: 1.5, marginBottom: 6}}>
-              {lastCycleResult.note}
-            </div>
-            <div style={{fontSize: 10, color: "var(--sub)", fontFamily: "var(--mono)", letterSpacing: ".03em"}}>
-              良 {lastCycleResult.sustainRate}% / 可 {lastCycleResult.okRate}% / 平均同調 {lastCycleResult.meanSync}% / ピーク {lastCycleResult.peakSync}%
-            </div>
-          </div>
-        )}
+          );
+        })()}
         <div style={{fontSize: 10, color: "var(--sub)", letterSpacing: ".05em", marginBottom: 6}}>
-          現在 (リアルタイム)
+          配置のリアルタイム判定
         </div>
         <div style={{display:"flex", alignItems:"center"}}>
           <span className={"grade " + gradeClass}>{grade}</span>

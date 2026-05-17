@@ -22,11 +22,13 @@ const DEFAULT_PARAMS = {
 
   cushionLength: 1.0,
   // モトス (上の太ハリス・サル管の上): 通常 4-7号 フロロカーボン
-  motosEnabled: true,
+  // デフォルト OFF (シンプル仕掛けが標準・必要に応じて有効化)
+  motosEnabled: false,
   motosLength: 1.5,
   motosNo: 5,
   // サル管 (モトス-ハリス連結金具): 10-22号 程度。流体抵抗ほぼ無視
-  saruKanEnabled: true,
+  // デフォルト OFF (モトスと併用)
+  saruKanEnabled: false,
   saruKanSize: 14,
   // ハリス (下の細ハリス・サル管の下〜針): 通常 2-5号 フロロカーボン
   harrisLength: 6.5,
@@ -545,38 +547,14 @@ function App() {
     cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: performance.now() };
   };
 
-  // ===== 1サイクル評価の確定 (仕掛け回収時に呼ばれる) =====
+  // ===== 1サイクル完了処理 (仕掛け回収時に呼ばれる) =====
+  //   リアルタイムスコアは grade メモで毎フレーム更新中なので、ここでは
+  //   サイクル番号をインクリメントして次サイクルへ進むだけ。
   function finalizeCycle() {
     const st = cycleStatsRef.current;
-    if (!st || st.totalFrames < 30) {
-      // フレーム少なすぎ (1秒未満) は評価対象外
-      return;
+    if (st && st.totalFrames >= 30) {
+      cycleCountRef.current += 1;
     }
-    const sustainRate = st.goodFrames / st.totalFrames;
-    const okRate = st.okFrames / st.totalFrames;
-    const meanSync = st.sumSync / st.totalFrames;
-    // スコア (0-100): sustainRate を主軸 (60pt) + okRate (15pt) + meanSync (15pt) + peakSync ボーナス (10pt)
-    const baseScore = sustainRate * 60 + okRate * 15;
-    const syncBonus = Math.min(15, meanSync * 1.5);
-    const peakBonus = Math.min(10, st.peakSync * 0.8);
-    const score = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
-    cycleCountRef.current += 1;
-    // グレード判定
-    let grade, note;
-    if (score >= 70)      { grade = "◎"; note = "ビシ指示棚 + コマセ帯と完全同調を持続。理想的なサイクル。"; }
-    else if (score >= 50) { grade = "○"; note = "コマセ帯と同調できた。微調整で更に上が狙える。"; }
-    else if (score >= 25) { grade = "△"; note = "同調率が薄い。しゃくり振り幅・上窓・タナ取りを見直し。"; }
-    else                   { grade = "×"; note = "コマセ帯と付け餌がズレた。ハリス長・ガン玉・指示棚を再調整。"; }
-    setLastCycleResult({
-      score: +score.toFixed(1),
-      grade, note,
-      sustainRate: +(sustainRate * 100).toFixed(1),
-      okRate: +(okRate * 100).toFixed(1),
-      meanSync: +meanSync.toFixed(2),
-      peakSync: +st.peakSync.toFixed(2),
-      durationSec: +((performance.now() - st.cycleStartAt) / 1000).toFixed(1),
-      cycleNo: cycleCountRef.current,
-    });
   }
   const retrieveRef = useRef(retrieveRig);
   retrieveRef.current = retrieveRig;
@@ -824,7 +802,7 @@ function App() {
           tanaArrivalLastRef.current = false;
         }
 
-        // 1サイクル集計: フレーム毎の良否を累積
+        // 1サイクル集計: フレーム毎の良否を累積 (リアルタイムスコア計算)
         //   good: ビシ指示棚 ±1.5m & 付け餌ビシ下0.5m以上 & 付け餌深場ゾーン & 同調 >=2%
         //   ok:   ビシ ±2.5m & 付け餌ビシ下 & 同調 >=0.5%
         const cycSt = cycleStatsRef.current;
@@ -839,6 +817,22 @@ function App() {
         cycSt.okFrames += okFrame;
         cycSt.sumSync += syncRate;
         if (syncRate > cycSt.peakSync) cycSt.peakSync = syncRate;
+        // リアルタイムスコア: 累積フレーム数に応じて秒ごとに更新
+        //   フレーム数が少ない初期はスコアが伸びていく感覚を出す
+        if (cycSt.totalFrames > 0) {
+          const sustainRate = cycSt.goodFrames / cycSt.totalFrames;
+          const okRate = cycSt.okFrames / cycSt.totalFrames;
+          const meanSync = cycSt.sumSync / cycSt.totalFrames;
+          const baseScore = sustainRate * 60 + okRate * 15;
+          const syncBonus = Math.min(15, meanSync * 1.5);
+          const peakBonus = Math.min(10, cycSt.peakSync * 0.8);
+          metricsRef.current.cycleScore = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
+          metricsRef.current.cycleSustainRate = sustainRate * 100;
+          metricsRef.current.cycleOkRate = okRate * 100;
+          metricsRef.current.cycleMeanSync = meanSync;
+          metricsRef.current.cyclePeakSync = cycSt.peakSync;
+          metricsRef.current.cycleDurationSec = (performance.now() - cycSt.cycleStartAt) / 1000;
+        }
       }
       const histo = SimPhysics.depthHistogram(particlesRef.current, pp.depth, 24, rig.hook.y);
       metricsRef.current.histogram = histo.bins;
@@ -889,11 +883,9 @@ function App() {
         SimRenderer.drawParticles(ctx, map, particlesRef.current);
         const ppLabels = Object.assign({}, pp, { _komaseDepth: metricsRef.current.komaseDepth });
         SimRenderer.drawLabels(ctx, map, ppLabels, rig, phaseRef.current, swellOffsetYRef.current);
-        // ミニビュー位置 (未設定なら右下デフォルト)
+        // ミニビュー位置 (未設定なら左側 HUD ボックス下)
         if (!minimapPosRef.current) {
-          const mw = SimRenderer.BOW_VIEW_W || 178;
-          const mh = SimRenderer.BOW_VIEW_H || 150;
-          minimapPosRef.current = { x: W - mw - 18, y: H - mh - 18 };
+          minimapPosRef.current = { x: 14, y: 200 };
         }
         SimRenderer.drawBowView(ctx, minimapPosRef.current.x, minimapPosRef.current.y, pp, rig, bowViewSideRef.current);
 
@@ -936,9 +928,7 @@ function App() {
     SimRenderer.drawRig(ctx, map, rig, physicsParams, map.y(0) - 36, chumRef.current, 0);
     SimRenderer.drawLabels(ctx, map, physicsParams, rig, phaseRef.current, 0);
     if (!minimapPosRef.current) {
-      const mw = SimRenderer.BOW_VIEW_W || 178;
-      const mh = SimRenderer.BOW_VIEW_H || 150;
-      minimapPosRef.current = { x: canvas.__cssW - mw - 18, y: canvas.__cssH - mh - 18 };
+      minimapPosRef.current = { x: 14, y: 200 };
     }
     SimRenderer.drawBowView(ctx, minimapPosRef.current.x, minimapPosRef.current.y, physicsParams, rig, bowViewSideRef.current);
   }, [physicsParams, bowViewSide]);
@@ -1033,6 +1023,14 @@ function App() {
       belowWarning = { level: "mid", text: `⚠ ビシが指示棚より ${cageOver.toFixed(1)}m 下 — 巻き上げて`, color: "var(--brass)" };
     }
 
+    // リアルタイムサイクルスコア (毎フレーム更新中の値を grade メモへ反映)
+    const cycScore = metricsRef.current.cycleScore || 0;
+    let cycGrade, cycNote;
+    if (cycScore >= 70)      { cycGrade = "◎"; cycNote = "ビシ指示棚 + コマセ帯と完全同調を持続中。理想的。"; }
+    else if (cycScore >= 50) { cycGrade = "○"; cycNote = "コマセ帯と同調中。微調整で更に上を狙える。"; }
+    else if (cycScore >= 25) { cycGrade = "△"; cycNote = "同調率が薄い。しゃくり/タナ取りを見直し。"; }
+    else                     { cycGrade = "×"; cycNote = "コマセ帯と付け餌がズレている。再調整を。"; }
+
     return {
       grade: g, gradeNote: note,
       hitRate: rate,
@@ -1054,6 +1052,16 @@ function App() {
       peVertical: metricsRef.current.peVertical,
       peHorizontal: metricsRef.current.peHorizontal,
       peTotal: metricsRef.current.peTotal,
+      // リアルタイムサイクルスコア
+      cycleScore: cycScore,
+      cycleGrade: cycGrade,
+      cycleNote: cycNote,
+      cycleSustainRate: metricsRef.current.cycleSustainRate || 0,
+      cycleOkRate: metricsRef.current.cycleOkRate || 0,
+      cycleMeanSync: metricsRef.current.cycleMeanSync || 0,
+      cyclePeakSync: metricsRef.current.cyclePeakSync || 0,
+      cycleDurationSec: metricsRef.current.cycleDurationSec || 0,
+      cycleNo: cycleCountRef.current,
     };
   }, [tick, params.tanaDepth, phase]);
 
