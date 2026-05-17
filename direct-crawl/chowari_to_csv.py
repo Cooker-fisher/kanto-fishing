@@ -1,19 +1,18 @@
 """
 chowari_to_csv.py — chowari クロール出力（catches_raw_chowari_*.json）を data/V2 月別CSV化
 
-hirono_to_csv.py の汎用版。船宿スラッグごとに別 CSV を生成。
+hirono_to_csv.py の汎用版。**全船宿を月別 1 ファイルに統合出力**（旧版の船宿別分割は廃止）。
+旧船宿別 CSV（{slug}_YYYY-MM.csv）は combo_deep_dive.py 側で二重カウント原因となったため、
+2026/05/17 に 59 ファイル一括削除。今後は chowari_YYYY-MM.csv のみが正。
 
 入力:
-    direct-crawl/catches_raw_chowari_{slug}.json
+    direct-crawl/catches_raw_chowari_*.json （全船宿）
 出力:
-    data/V2/{slug}_YYYY-MM.csv
+    data/V2/chowari_YYYY-MM.csv （月別統合・釣りビジョン側 YYYY-MM.csv と同設計）
 
 実行:
-    # 全16隻分一括変換
     python direct-crawl/chowari_to_csv.py
-
-    # 単一船宿
-    python direct-crawl/chowari_to_csv.py --slug masakatsu-maru
+    # --slug は旧互換のため受け取るが現在は無視される（常に全船宿統合出力）
 """
 
 import argparse
