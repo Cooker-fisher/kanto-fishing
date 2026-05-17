@@ -192,6 +192,13 @@ function App() {
   };
   const tanaArrivalLastRef = useRef(false);
 
+  // ===== 1サイクル評価 (投入→仕掛け回収 までの集計) =====
+  //   実釣感: 投入してから回収するまでの 1 往復で「うまく釣れる配置を維持できたか」を採点
+  //   フレームベースで sync/cage位置/hook位置を集計し、回収時にスコア確定
+  const cycleStatsRef = useRef({ goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: 0 });
+  const [lastCycleResult, setLastCycleResult] = useState(null);  // { score, grade, note, sustainRate, meanSync, durationSec, cycleNo }
+  const cycleCountRef = useRef(0);
+
   const toggleLock = (name) => {
     setLocks(prev => ({ ...prev, [name]: !prev[name] }));
   };
@@ -283,6 +290,10 @@ function App() {
     metricsRef.current.shakuriCount = 0;
     metricsRef.current.totalSpawned = 0;
     metricsRef.current.hitRateEMA = 0;
+    // サイクル評価リセット
+    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: performance.now() };
+    cycleCountRef.current = 0;
+    setLastCycleResult(null);
   }
 
   function getCageY() {
@@ -505,6 +516,8 @@ function App() {
     pendingShakuriRef.current = [];
     autoStateRef.current = { state: "idle", biteTimer: 0 };
     chumRef.current = 1.0;
+    // 新サイクル開始: 集計リセット
+    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: performance.now() };
   };
   const castRef = useRef(castRig);
   castRef.current = castRig;
@@ -512,6 +525,8 @@ function App() {
   // ===== 仕掛け回収(コマセ補充 + 巻きリセット + 自動再投入) =====
   // 自動回収 (triggerMaki の上限到達時) と同じ挙動。回収して dropping フェーズへ。
   const retrieveRig = () => {
+    // 1サイクル評価を確定 (回収前に集計結果からスコア算出)
+    finalizeCycle();
     rigStateRef.current.makiTarget = 0;
     rigStateRef.current.makiOffset = 0;
     rigStateRef.current.shakuriOffsetY = 0;
@@ -526,7 +541,43 @@ function App() {
     bishiAbsYRef.current = 0;
     dropVelRef.current = physicsParamsRef.current.dropSpeed || 1.5;
     flashRef.current = 1.4;
+    // 次サイクルの集計開始
+    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, cycleStartAt: performance.now() };
   };
+
+  // ===== 1サイクル評価の確定 (仕掛け回収時に呼ばれる) =====
+  function finalizeCycle() {
+    const st = cycleStatsRef.current;
+    if (!st || st.totalFrames < 30) {
+      // フレーム少なすぎ (1秒未満) は評価対象外
+      return;
+    }
+    const sustainRate = st.goodFrames / st.totalFrames;
+    const okRate = st.okFrames / st.totalFrames;
+    const meanSync = st.sumSync / st.totalFrames;
+    // スコア (0-100): sustainRate を主軸 (60pt) + okRate (15pt) + meanSync (15pt) + peakSync ボーナス (10pt)
+    const baseScore = sustainRate * 60 + okRate * 15;
+    const syncBonus = Math.min(15, meanSync * 1.5);
+    const peakBonus = Math.min(10, st.peakSync * 0.8);
+    const score = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
+    cycleCountRef.current += 1;
+    // グレード判定
+    let grade, note;
+    if (score >= 70)      { grade = "◎"; note = "ビシ指示棚 + コマセ帯と完全同調を持続。理想的なサイクル。"; }
+    else if (score >= 50) { grade = "○"; note = "コマセ帯と同調できた。微調整で更に上が狙える。"; }
+    else if (score >= 25) { grade = "△"; note = "同調率が薄い。しゃくり振り幅・上窓・タナ取りを見直し。"; }
+    else                   { grade = "×"; note = "コマセ帯と付け餌がズレた。ハリス長・ガン玉・指示棚を再調整。"; }
+    setLastCycleResult({
+      score: +score.toFixed(1),
+      grade, note,
+      sustainRate: +(sustainRate * 100).toFixed(1),
+      okRate: +(okRate * 100).toFixed(1),
+      meanSync: +meanSync.toFixed(2),
+      peakSync: +st.peakSync.toFixed(2),
+      durationSec: +((performance.now() - st.cycleStartAt) / 1000).toFixed(1),
+      cycleNo: cycleCountRef.current,
+    });
+  }
   const retrieveRef = useRef(retrieveRig);
   retrieveRef.current = retrieveRig;
 
@@ -772,6 +823,22 @@ function App() {
         if (!cageOnTana && Math.abs(rig.cage.y - pp.tanaDepth) > 1.0) {
           tanaArrivalLastRef.current = false;
         }
+
+        // 1サイクル集計: フレーム毎の良否を累積
+        //   good: ビシ指示棚 ±1.5m & 付け餌ビシ下0.5m以上 & 付け餌深場ゾーン & 同調 >=2%
+        //   ok:   ビシ ±2.5m & 付け餌ビシ下 & 同調 >=0.5%
+        const cycSt = cycleStatsRef.current;
+        const syncRate = metricsRef.current.hitRateEMA;  // %
+        const cageDiff = Math.abs(rig.cage.y - pp.tanaDepth);
+        const hookBelowCage = rig.hook.y - rig.cage.y;
+        const hookInDeepZone = rig.hook.y >= pp.tanaDepth - 1 && rig.hook.y <= pp.depth - 1;
+        const goodFrame = (cageDiff <= 1.5 && hookBelowCage > 0.5 && hookInDeepZone && syncRate >= 2) ? 1 : 0;
+        const okFrame = (cageDiff <= 2.5 && hookBelowCage > 0 && syncRate >= 0.5) ? 1 : 0;
+        cycSt.totalFrames += 1;
+        cycSt.goodFrames += goodFrame;
+        cycSt.okFrames += okFrame;
+        cycSt.sumSync += syncRate;
+        if (syncRate > cycSt.peakSync) cycSt.peakSync = syncRate;
       }
       const histo = SimPhysics.depthHistogram(particlesRef.current, pp.depth, 24, rig.hook.y);
       metricsRef.current.histogram = histo.bins;
@@ -1169,6 +1236,7 @@ function App() {
         recommendation={recommendation}
         onApplyRec={applyRecommendation}
         locks={locks}
+        lastCycleResult={lastCycleResult}
       />
     </div>
   );

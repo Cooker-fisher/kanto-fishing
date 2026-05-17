@@ -357,10 +357,14 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
 // =====================================================================
 window.RightPanel = function RightPanel(props) {
   const { metrics, params, presets, selectedPresets, onPreset,
-          onOptimize, optimizing, recommendation, onApplyRec, locks } = props;
+          onOptimize, optimizing, recommendation, onApplyRec, locks, lastCycleResult } = props;
   const sel = selectedPresets || {};
   const grade = metrics.grade;
   const gradeClass = grade === "◎" || grade === "○" ? "grade--ok" : grade === "×" ? "grade--bad" : "";
+  const cycResGradeClass = lastCycleResult
+    ? (lastCycleResult.grade === "◎" || lastCycleResult.grade === "○" ? "grade--ok"
+       : lastCycleResult.grade === "×" ? "grade--bad" : "")
+    : "";
 
   const lockedKeys = locks ? Object.keys(locks).filter(k => locks[k]) : [];
 
@@ -420,6 +424,39 @@ window.RightPanel = function RightPanel(props) {
       </CollapsibleSection>
 
       <CollapsibleSection title="合否" defaultOpen={true}>
+        {lastCycleResult && (
+          <div style={{
+            marginBottom: 12,
+            padding: "10px 12px",
+            background: "rgba(232, 93, 4, 0.08)",
+            borderLeft: "3px solid var(--cta)",
+            borderRadius: "4px",
+          }}>
+            <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: 6}}>
+              <span style={{fontSize: 11, color: "var(--sub)", letterSpacing: ".08em", fontWeight: 600}}>
+                サイクル {lastCycleResult.cycleNo} 評価 ({lastCycleResult.durationSec}秒)
+              </span>
+              <span className={"grade " + cycResGradeClass} style={{fontSize: 22, marginLeft: 8}}>
+                {lastCycleResult.grade}
+              </span>
+            </div>
+            <div style={{display:"flex", alignItems:"baseline", gap: 8, marginBottom: 6}}>
+              <span style={{fontSize: 28, fontWeight: 700, color: "var(--cta)", fontFamily: "var(--mono)"}}>
+                {lastCycleResult.score}
+              </span>
+              <span style={{fontSize: 14, color: "var(--sub)"}}>/ 100</span>
+            </div>
+            <div style={{fontSize: 11, color: "var(--paper-dim)", lineHeight: 1.5, marginBottom: 6}}>
+              {lastCycleResult.note}
+            </div>
+            <div style={{fontSize: 10, color: "var(--sub)", fontFamily: "var(--mono)", letterSpacing: ".03em"}}>
+              良 {lastCycleResult.sustainRate}% / 可 {lastCycleResult.okRate}% / 平均同調 {lastCycleResult.meanSync}% / ピーク {lastCycleResult.peakSync}%
+            </div>
+          </div>
+        )}
+        <div style={{fontSize: 10, color: "var(--sub)", letterSpacing: ".05em", marginBottom: 6}}>
+          現在 (リアルタイム)
+        </div>
         <div style={{display:"flex", alignItems:"center"}}>
           <span className={"grade " + gradeClass}>{grade}</span>
           <span style={{fontSize:"12px", color:"var(--paper-dim)", lineHeight:1.5}}>
