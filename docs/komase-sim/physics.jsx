@@ -883,7 +883,10 @@ window.SimPhysics = (function() {
       const merged = { ...env, ...cand };
       const k = JSON.stringify(cand);
       if (evalCache[k] != null) return evalCache[k];
-      const s = evalParams(merged, 240, 2);  // 240秒×2run で 標準サイクル 1-2回 評価可能
+      // 120秒×3run: ユーザーが実際に確認する 1-2 サイクル分の時間スケールで評価。
+      // 旧 240×2 (warmup 96s で steady-state 寄り) では立ち上がりの遅い config を
+      // 過大評価していた。
+      const s = evalParams(merged, 120, 3);
       evalCache[k] = s;
       return s;
     }
