@@ -615,24 +615,27 @@ window.SimRenderer = (function() {
     const depth = params.depth || 60;
     const tanaY = params.tanaDepth;
 
-    // 初回 init: マダイは底寄り、小魚は底直上
+    // 初回 init: マダイは底寄り (底上1〜4m)、小魚は底直上 (底上0.3〜1.5m)
+    //   関東コマセマダイの典型: マダイは底上0〜5m に潜伏、コマセで底上5〜10m
+    //   (= 反応のある層) まで浮上して付け餌を食う。
     if (_madaiState.length === 0) {
       _madaiState.push(
         { kind: "madai", baseX: 12, y: depth - 2.0, phase: 0.0, speed: 0.45, size: 1.0 },
-        { kind: "madai", baseX: 18, y: depth - 2.5, phase: 1.8, speed: 0.4,  size: 1.1 },
-        { kind: "madai", baseX: 24, y: depth - 1.8, phase: 3.1, speed: 0.5,  size: 0.95 },
-        { kind: "madai", baseX: 7,  y: depth - 2.8, phase: 4.5, speed: 0.42, size: 1.05 },
-        // 小魚 (エサ取り): 底直上に小さく群れる
+        { kind: "madai", baseX: 18, y: depth - 3.5, phase: 1.8, speed: 0.4,  size: 1.1 },
+        { kind: "madai", baseX: 24, y: depth - 1.3, phase: 3.1, speed: 0.5,  size: 0.95 },
+        { kind: "madai", baseX: 7,  y: depth - 3.0, phase: 4.5, speed: 0.42, size: 1.05 },
+        // 小魚 (エサ取り): 底直上に小さく群れる (底上0.3〜1.5m)
         { kind: "baitfish", baseX: 9,  y: depth - 1.2, phase: 0.5, speed: 1.4, size: 0.35 },
-        { kind: "baitfish", baseX: 11, y: depth - 0.9, phase: 1.2, speed: 1.6, size: 0.32 },
-        { kind: "baitfish", baseX: 15, y: depth - 1.4, phase: 2.0, speed: 1.5, size: 0.30 },
-        { kind: "baitfish", baseX: 19, y: depth - 1.0, phase: 2.7, speed: 1.7, size: 0.34 },
-        { kind: "baitfish", baseX: 21, y: depth - 1.5, phase: 3.5, speed: 1.4, size: 0.33 },
+        { kind: "baitfish", baseX: 11, y: depth - 0.5, phase: 1.2, speed: 1.6, size: 0.32 },
+        { kind: "baitfish", baseX: 15, y: depth - 1.0, phase: 2.0, speed: 1.5, size: 0.30 },
+        { kind: "baitfish", baseX: 19, y: depth - 0.7, phase: 2.7, speed: 1.7, size: 0.34 },
+        { kind: "baitfish", baseX: 21, y: depth - 1.3, phase: 3.5, speed: 1.4, size: 0.33 },
       );
     }
 
     // マダイ浮上ロジック: 自身の近傍 (3m) に粒子が多いほど浮上、無ければ底へ戻る
-    const FALLBACK_DEPTH = (y) => Math.max(tanaY + 2, depth - 2);
+    //   反応のある層 (底上5〜10m) まで浮上するのが典型。コマセが薄ければ底寄りへ戻る。
+    const FALLBACK_DEPTH = (y) => depth - 2;  // 底上2m に戻る
     _madaiState.forEach((f) => {
       if (f.kind !== "madai") return;
       // 自身近傍の粒子密度 (半径 3m)
