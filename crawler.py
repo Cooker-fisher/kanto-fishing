@@ -7837,7 +7837,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         # ship-rank（今週・今日優先）
         ship_data_f: dict = {}
         for c in catches:
-            d = ship_data_f.setdefault(c["ship"], {"cnt": 0, "cnt_his": [], "cnt_los": [], "sz_his": [], "sz_los": [], "pts": [], "today": False})
+            d = ship_data_f.setdefault(c["ship"], {"cnt": 0, "cnt_his": [], "cnt_los": [], "sz_his": [], "sz_los": [], "kg_his": [], "kg_los": [], "pts": [], "today": False})
             d["cnt"] += 1
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
@@ -7849,6 +7849,12 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                     d["sz_his"].append(sz["max"])
                 if sz.get("min") is not None:
                     d["sz_los"].append(sz["min"])
+            wkg = c.get("weight_kg")
+            if wkg:
+                if wkg.get("max") is not None:
+                    d["kg_his"].append(wkg["max"])
+                if wkg.get("min") is not None:
+                    d["kg_los"].append(wkg["min"])
             if c.get("point_place1"): d["pts"].append(c["point_place1"])
             if c.get("date") == today_str_f: d["today"] = True
         sr_items = ""
@@ -7869,7 +7875,14 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
             elif sz_hi is not None:
                 sz_range = f"{sz_hi}cm"
             else:
-                sz_range = ""
+                kg_lo = sd["kg_los"] and min(sd["kg_los"])
+                kg_hi = sd["kg_his"] and max(sd["kg_his"])
+                if kg_lo and kg_hi and round(kg_lo, 1) != round(kg_hi, 1):
+                    sz_range = f"{kg_lo:.1f}〜{kg_hi:.1f}kg"
+                elif kg_hi:
+                    sz_range = f"{kg_hi:.1f}kg"
+                else:
+                    sz_range = ""
             top_pt = _CtrF(sd["pts"]).most_common(1)[0][0] if sd["pts"] else ""
             sr_items += (
                 f'<div class="sr">'
