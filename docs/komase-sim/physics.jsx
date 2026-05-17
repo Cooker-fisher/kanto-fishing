@@ -464,9 +464,8 @@ window.SimPhysics = (function() {
       totalFrames: 0,
       goodFrames: 0,    // 同調 (rate>=2) かつタナ OK のフレーム
       okFrames: 0,      // 緩い基準
-      sumTanaDiff: 0,
       sumRatio: 0,
-      sumNear: 0,
+      peakRatio: 0,     // ピーク同調率 (live cycleScore の peakSync と整合)
     };
     const MAX_P = 1200;
     const hookW = getHookWeight(params.hookType, params.hookSize);
@@ -604,9 +603,8 @@ window.SimPhysics = (function() {
         scoreCounters.totalFrames += 1;
         scoreCounters.goodFrames += goodFrame;
         scoreCounters.okFrames += okFrame;
-        scoreCounters.sumCageDiff = (scoreCounters.sumCageDiff || 0) + cageDiff;
         scoreCounters.sumRatio += ratio;
-        scoreCounters.sumNear += near;
+        if (ratio > scoreCounters.peakRatio) scoreCounters.peakRatio = ratio;
       }
       elapsed += dt;
     }
@@ -620,65 +618,23 @@ window.SimPhysics = (function() {
     if (scoreCounters.totalFrames === 0) return 0;
     const sustainRate = scoreCounters.goodFrames / scoreCounters.totalFrames;
     const okRate      = scoreCounters.okFrames   / scoreCounters.totalFrames;
-    const meanCageDiff = (scoreCounters.sumCageDiff || 0) / scoreCounters.totalFrames;
     const meanRatio    = scoreCounters.sumRatio    / scoreCounters.totalFrames;
+    const peakSync    = scoreCounters.peakRatio || 0;
 
-    // ベース: 持続同調率を主軸 (max 60pt)
+    // ★ リアルタイム合否表示と完全に同じスコア式 (app.jsx cycleScore と整合)
+    //   旧式はアクション妥当性ボーナス・コマセ消費ボーナスを多数含み、
+    //   実物理で sync しない config でも 100+ 点を取れてしまい、
+    //   live mode のスコア 0 と乖離していた。
+    //   コマセマダイの実釣評価は「ビシ指示棚 + 付け餌コマセ帯 + 同調」が全て。
     const baseScore = sustainRate * 60 + okRate * 15;
-    // 補助: 平均同調率 (粒子量も加味) max 15pt
-    const ratioBonus = Math.min(15, meanRatio * 1.5);
-    // ビシ位置 penalty: ビシは船長指示の指示棚に正確に止める (付け餌は流れて良い)
-    //   平均ズレ > 1.5m で線形減点 (3m ズレ → -30pt)
-    let tanaPenalty = 0;
-    if (meanCageDiff > 1.5) {
-      tanaPenalty = (meanCageDiff - 1.5) * 20;
-    }
-    if (meanCageDiff > 3.0) {
-      tanaPenalty += 30;  // 船全体のコマセ棚を崩す
-    }
-    // サイクル時間: 実釣プリセットに整合
-    //   活性高 120s, 標準 180s, 食い渋り 240-300s
-    const interval = params.shakuriInterval || 60;
-    let cycleScore = 0;
-    if (interval >= 110 && interval <= 195)      cycleScore = 12;  // 活性高〜標準
-    else if (interval >= 200 && interval <= 280) cycleScore = 10;  // 食い渋り
-    else if (interval >= 90 && interval < 110)   cycleScore = 5;   // やや短い
-    else if (interval >= 60 && interval < 90)    cycleScore = -3;  // 短すぎ
-    else if (interval < 60)                      cycleScore = -15; // 速回しすぎ (実釣ありえない)
-    else                                         cycleScore = -5;  // 300秒超 (遅すぎ)
-    // コマセ消費: 1サイクル合計 = しゃくり消費 + biting 中の連続漏れ
-    //   ★ 理想は「1サイクル = 1ビシ消費」(80-95%) → 3分前後で回収・再投入の実釣リズム
-    const shakuriCons = (params.shakuriCountPerTrigger || 1) * shakuriConsumption(params);
-    const leakCons = leakRate(params) * interval;  // biting 中の連続漏れ (interval は上で定義済)
-    const perCycleConsumption = shakuriCons + leakCons;
-    let chumScore = 0;
-    if (perCycleConsumption >= 0.70 && perCycleConsumption <= 0.95) chumScore = 18;       // 理想 (1ビシ消費)
-    else if (perCycleConsumption >= 0.50 && perCycleConsumption <= 1.0)  chumScore = 10;  // 許容
-    else if (perCycleConsumption >= 0.30 && perCycleConsumption <= 1.0)  chumScore = 3;   // 半分以上
-    else if (perCycleConsumption < 0.15) chumScore = -20;  // 全然使ってない
-    else chumScore = -5;
-    // アクション妥当性: maki と shakuri 両方が機能
-    let actionScore = 0;
-    if ((params.makiAmount || 0) >= 1.0) actionScore += 3;  // 巻く有効
-    if ((params.shakuriCountPerTrigger || 0) >= 2) actionScore += 3;  // 複数しゃくり
-    if ((params.shakuriStrokeCm || 0) >= 60) actionScore += 2;  // しゃくり振り幅十分
-    if ((params.makiAmount || 0) < 0.5) actionScore -= 8;  // 巻かない＝落とすが機能しない
-    // 1サイクル合計巻き上げ過剰ペナルティ: 実釣標準 4-6m (3 stroke × 1.5-2m)
-    // 6m 超で線形減点・8m で -10、9m で -15
-    const cycleRise = (params.shakuriCountPerTrigger || 1) * (params.makiAmount || 0);
-    if (cycleRise > 6) actionScore -= (cycleRise - 6) * 5;
-    // 王道ペナルティ (既存)
-    const excessStrokes = Math.max(0, (params.shakuriCountPerTrigger || 1) - 3);
-    const excessOpenU = Math.max(0, cageUpper(params) - 0.65);
-    const excessOpenL = Math.max(0, cageLower(params) - 0.25);
-    const ohdoPenalty = excessStrokes * 1.2 + excessOpenU * 12 + excessOpenL * 30;
+    const syncBonus = Math.min(15, meanRatio * 1.5);
+    const peakBonus = Math.min(10, peakSync * 0.8);
+    const total = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
 
-    const total = baseScore + ratioBonus + cycleScore + chumScore + actionScore - tanaPenalty - ohdoPenalty;
-    // デバッグ用 (グローバルにエクスポートはしないが、return には main 値だけ)
     if (typeof window !== 'undefined' && window.__lastScoreDump !== false) {
       window.__lastScoreDump = {
-        total, baseScore, ratioBonus, cycleScore, chumScore, actionScore, tanaPenalty, ohdoPenalty,
-        sustainRate, okRate, meanCageDiff, meanRatio,
+        total, baseScore, syncBonus, peakBonus,
+        sustainRate, okRate, meanRatio, peakSync,
         totalFrames: scoreCounters.totalFrames,
         goodFrames: scoreCounters.goodFrames,
       };
