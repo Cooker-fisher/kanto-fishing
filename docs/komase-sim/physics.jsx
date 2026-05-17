@@ -41,10 +41,14 @@ window.SimPhysics = (function() {
 
   // --- 潮流速度プロファイル (m/s) ---
   // 海面 (y=0) で tideSpeed、海底 (y=depth) で tideSpeed × tideDepthFactor の線形補間
+  //   tideDepthFactor:
+  //     0.0〜1.0  全層同方向 (1.0 = 全層同速、0.0 = 底で停止)
+  //     -1.0〜0.0 二枚潮 (底潮が上潮と逆方向に流れる)
+  //   返り値の符号: 正=潮下方向、負=潮上方向
   function current(y, params) {
     const depth = Math.max(0.5, params.depth);
     const t = Math.max(0, Math.min(1, y / depth));
-    const factor = (1 - t) * (1 - params.tideDepthFactor) + params.tideDepthFactor;
+    const factor = (1 - t) * 1.0 + t * params.tideDepthFactor;
     return params.tideSpeed * factor;
   }
 
@@ -204,6 +208,9 @@ window.SimPhysics = (function() {
     const hookWeight = hookWeightG != null ? hookWeightG : (params.hookWeight || 0.5);
     const cCage = current(cage.y, params);
     const dv = dropVel || 0;
+    // 二枚潮対応: 各セクションが自身の深度の current を持つ。
+    // 上下逆潮では section ごとに sign が反転して harris が S字に曲がる。
+    // セクションは「サル管 → ガン玉 (front)」「ガン玉 → hook (back)」「モトス」「クッション」
 
     // モトス区間 (上のハリス): cushion 下〜サル管。モトス無効なら長さ 0
     const motosEnabled = params.motosEnabled !== false;
@@ -226,21 +233,37 @@ window.SimPhysics = (function() {
     const harrisFrontLen = harrisLength * tGan;
     const harrisBackLen = harrisLength * (1 - tGan);
 
+    // 各セクションの代表深度 (二枚潮で正しく方向反転するため section ごとに current 取得)
+    //   cage より下方に harris/motos/cushion が垂れる前提で深度を加算
+    const cushionMidY = cage.y + cushionLength * 0.5;
+    const motosMidY = cage.y + cushionLength + motosLength * 0.5;
+    const harrisFrontMidY = cage.y + cushionLength + motosLength + harrisFrontLen * 0.5;
+    const harrisBackMidY = cage.y + cushionLength + motosLength + harrisFrontLen + harrisBackLen * 0.5;
+    const cCushion = current(cushionMidY, params);
+    const cMotos = current(motosMidY, params);
+    const cFront = current(harrisFrontMidY, params);
+    const cBack = current(harrisBackMidY, params);
+    // 各セクションの符号 (drag は大きさ・direction は符号で別管理)
+    const sCushion = Math.sign(cCushion) || 1;
+    const sMotos = Math.sign(cMotos) || 1;
+    const sFront = Math.sign(cFront) || 1;
+    const sBack = Math.sign(cBack) || 1;
+
     // 後半セクション (ガン玉→hook): 流体抗力 vs hook 重量のみ
-    const dragBack = harrisDragCoef * harrisBackLen * cCage * cCage;
+    const dragBack = harrisDragCoef * harrisBackLen * cBack * cBack;
     const weightBack = Math.max(0.10, hookWeight);
     let thetaBack = Math.atan2(dragBack, weightBack);
     thetaBack = Math.min(thetaBack, 1.40);
 
     // 前半セクション (サル管→ガン玉): 後半から伝達される抗力も含めて支える
-    const dragHarrisFront = harrisDragCoef * harrisFrontLen * cCage * cCage;
+    const dragHarrisFront = harrisDragCoef * harrisFrontLen * cFront * cFront;
     const harrisHorizForce = dragHarrisFront + dragBack;
     const weightFront = Math.max(0.15, hookWeight + ganW);
     let thetaFront = Math.atan2(harrisHorizForce, weightFront);
     thetaFront = Math.min(thetaFront, 1.30);
 
     // モトス区間 (cushion下〜サル管): ハリス全体+ガン玉+hook の合計重量を支え、抗力は自身+ハリス両半
-    const dragMotos = motosDragCoef * motosLength * cCage * cCage;
+    const dragMotos = motosDragCoef * motosLength * cMotos * cMotos;
     const motosHorizForce = dragMotos + harrisHorizForce;
     const weightMotos = Math.max(0.15, hookWeight + ganW);
     let thetaMotos = motosLength > 0.01 ? Math.atan2(motosHorizForce, weightMotos) : 0;
@@ -259,7 +282,7 @@ window.SimPhysics = (function() {
     //     (ハリス号数項を外しシンプル化: cushion固有定数 1.70/m × 径mm)
     const cushionDiaMM = params.cushionDiaMM != null ? params.cushionDiaMM : 2.5;
     const cushionDragCoefPerM = cushionDiaMM * 0.68;  // 2.5mm → 1.70/m, harrisと整合
-    const dragCushion = cushionDragCoefPerM * cushionLength * cCage * cCage;
+    const dragCushion = cushionDragCoefPerM * cushionLength * cCushion * cCushion;
     // クッションは天秤(E)に吊られ、下にハリス・ガン玉・hook を支える。
     // 上方張力 ≈ (ganW + hookW)、水平力 ≈ dragCushion + dragHarrisFront + dragHarrisBack (下から伝達)
     const cushionHorizForce = dragCushion + totalHorizForce;
@@ -287,14 +310,14 @@ window.SimPhysics = (function() {
     //   x = cage.x (真上トレイル)、lagRatio=0 (静定) では通常の current drift。
     const xMix = 1 - lagRatio;
 
-    // --- クッションゴム区間 ---
+    // --- クッションゴム区間 (符号 sCushion で 二枚潮 対応) ---
     for (let i = 0; i <= segsCushion; i++) {
       const t = i / segsCushion;
       const vertical = cushionLength * t;
       const yLagged = -vertical * 0.85;
       const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
       pts.push({
-        x: cage.x + Math.sin(thetaCushion) * cushionLength * t * xMix,
+        x: cage.x + Math.sin(thetaCushion) * cushionLength * t * xMix * sCushion,
         y: cage.y + yMix,
         section: "cushion",
       });
@@ -311,7 +334,7 @@ window.SimPhysics = (function() {
         const localBend = 0.7 + 0.3 * t;
         const localTheta = thetaMotos * localBend;
         const vertical = Math.cos(localTheta) * segLen;
-        const horiz = Math.sin(localTheta) * segLen * xMix;
+        const horiz = Math.sin(localTheta) * segLen * xMix * sMotos;
         const yLagged = -vertical * 0.85;
         const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
         pts.push({
@@ -335,7 +358,7 @@ window.SimPhysics = (function() {
       const localBend = 0.7 + 0.3 * t;
       const localTheta = thetaFront * localBend;
       const vertical = Math.cos(localTheta) * segLen;
-      const horiz = Math.sin(localTheta) * segLen * xMix;
+      const horiz = Math.sin(localTheta) * segLen * xMix * sFront;
       const yLagged = -vertical * 0.85;
       const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
       pts.push({
@@ -357,7 +380,7 @@ window.SimPhysics = (function() {
       const localBend = 0.6 + 0.4 * t;
       const localTheta = thetaBack * localBend;
       const vertical = Math.cos(localTheta) * segLen;
-      const horiz = Math.sin(localTheta) * segLen * xMix;
+      const horiz = Math.sin(localTheta) * segLen * xMix * sBack;
       const yLagged = -vertical * 0.85;
       const yMix = vertical * (1 - lagRatio) + yLagged * lagRatio;
       pts.push({

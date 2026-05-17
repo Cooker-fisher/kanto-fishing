@@ -137,9 +137,9 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
         <Slider label="潮流速度" value={params.tideSpeed} min={0} max={1.2} step={0.05} unit="m/s"
           onChange={v => sp({ tideSpeed: v })}
           format={v => v.toFixed(2)} />
-        <Slider label="底潮の効き" value={params.tideDepthFactor} min={0.1} max={1.0} step={0.05} unit="×"
+        <Slider label="底潮の効き" value={params.tideDepthFactor} min={-1.0} max={1.0} step={0.05} unit="×"
           onChange={v => sp({ tideDepthFactor: v })}
-          format={v => v.toFixed(2)} />
+          format={v => v < 0 ? `${v.toFixed(2)} (二枚潮)` : v.toFixed(2)} />
         <Slider label="うねり高さ" value={params.swellHeight} min={0} max={2.5} step={0.1} unit="m"
           onChange={v => sp({ swellHeight: v })}
           format={v => v === 0 ? "なし(凪)" : v.toFixed(1)} />

@@ -86,7 +86,7 @@ const PRESETS = [
 
   // ── 海況系 ──
   { key: "trendrun", label: "二枚潮", group: "cond",
-    patch: { tideSpeed: 0.55, tideDepthFactor: 0.25, harrisNo: 3,
+    patch: { tideSpeed: 0.55, tideDepthFactor: -0.4, harrisNo: 3,
              ganDamaPos: "near-hook", ganDamaSize: 0.5, makiAmount: 1.7 } },
   { key: "fastide",  label: "速潮", group: "cond",
     patch: { tideSpeed: 0.8, tideDepthFactor: 0.6, bishiNo: 100, harrisLength: 6,

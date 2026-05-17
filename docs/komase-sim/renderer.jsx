@@ -146,21 +146,24 @@ window.SimRenderer = (function() {
       if (d >= params.depth - 2) break;
       const c = SimPhysics.current(d, params);
       const py = map.y(d);
-      const len = Math.min(85, c * 80);
-      if (len < 4) continue;
+      const absC = Math.abs(c);
+      const sign = c >= 0 ? 1 : -1;  // 二枚潮: 負値で矢印を左向きに反転
+      const len = Math.min(85, absC * 80) * sign;
+      if (Math.abs(len) < 4) continue;
       ctx.beginPath();
       ctx.moveTo(baseX, py);
       ctx.lineTo(baseX + len, py);
       ctx.stroke();
-      // 矢頭
+      // 矢頭 (方向反転対応)
       ctx.beginPath();
       ctx.moveTo(baseX + len, py);
-      ctx.lineTo(baseX + len - 5, py - 3);
-      ctx.lineTo(baseX + len - 5, py + 3);
+      ctx.lineTo(baseX + len - 5 * sign, py - 3);
+      ctx.lineTo(baseX + len - 5 * sign, py + 3);
       ctx.closePath();
       ctx.fill();
       ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-      ctx.fillText(`${c.toFixed(2)}m/s`, baseX + 0, py - 4);
+      // ラベルは矢印の左側 (baseX) に表示・絶対値 + 方向矢印
+      ctx.fillText(`${absC.toFixed(2)}m/s${sign < 0 ? " ←" : ""}`, baseX - (sign < 0 ? 30 : 0), py - 4);
       ctx.fillStyle = "rgba(251, 191, 36, 0.85)";
     }
   }
