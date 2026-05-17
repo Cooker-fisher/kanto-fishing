@@ -9867,6 +9867,17 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     # 使うため破壊的上書きで簡潔化。呼び出し側で同一リストの再参照なし。
     # _now_fa / _cutoff_date_T34_fa は孤児削除ブロックで既に算出済み（同値）
     data = [c for c in data if c.get("date", "") >= _cutoff_date_T34_fa]
+    # build_fish_pages と同様に chowari 等 CSV ソース（valid_catches 未収録）をマージ
+    try:
+        _recent7_fa = _load_recent_catches_for_index(_now_fa, days=7)
+    except Exception:
+        _recent7_fa = []
+    _seen_fa = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in data}
+    for _c in _recent7_fa:
+        _k = (_c.get("ship"), _c.get("date"), _c.get("fish_raw", ""))
+        if _k not in _seen_fa:
+            data.append(_c)
+            _seen_fa.add(_k)
     fa_summary: dict = {}
     for c in data:
         for f in c["fish"]:
@@ -13855,16 +13866,16 @@ def main():
     _shared_fish_area_summary = compute_fish_area_summary(_shared_hist_rows)
     _shared_fish_top_areas = compute_fish_top_areas(_shared_hist_rows)
     _shared_area_top_fishes = compute_area_top_fishes(_shared_hist_rows)
-    build_fish_pages(valid_catches, history, crawled_at,
-                     hist_rows=_shared_hist_rows,
-                     fish_area_summary=_shared_fish_area_summary,
-                     fish_top_areas=_shared_fish_top_areas)
-    # fish_area を先に生成 → build_area_pages 内の _fish_area_link_or_fish が
-    # 当日生成された fish_area ページを正しく検出できる
+    # fish_area を先に生成 → build_fish_pages の area-cmp / build_area_pages の
+    # _fish_area_link_or_fish が当日生成された fish_area ページを正しく検出できる
     build_fish_area_pages(valid_catches, crawled_at, history,
                           hist_rows=_shared_hist_rows,
                           fish_area_summary=_shared_fish_area_summary,
                           fish_top_areas=_shared_fish_top_areas)
+    build_fish_pages(valid_catches, history, crawled_at,
+                     hist_rows=_shared_hist_rows,
+                     fish_area_summary=_shared_fish_area_summary,
+                     fish_top_areas=_shared_fish_top_areas)
     # T38-C: fish/index・area/index は fish_area HTML 生成後に呼ぶ
     # （_fa_exists() が全 fish_area HTML を正確に参照するため）
     _shared_recent7 = _load_recent_catches_for_index(now, days=7)
