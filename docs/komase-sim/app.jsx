@@ -266,7 +266,11 @@ function App() {
     const pp = physicsParamsRef.current || DEFAULT_PARAMS;
     const _drop = pp.dropOffsetM != null ? pp.dropOffsetM : 5;
     const _initMaki = -_drop;
-    rigStateRef.current = { shakuriOffsetY: 0, shakuriVelY: 0, shakuriOffsetX: SimPhysics.ROD_X_M, makiOffset: _initMaki, makiTarget: _initMaki };
+    // ★ リセット直後は潮で流れ切った状態からスタート (shakuriOffsetX を settle 済みの位置で初期化)
+    //   理由: 旧実装は ROD_X_M から徐々に潮下へ流れていく途中でしゃくり開始 → 釣り座基準の X 想定とずれる
+    const _tanaY = pp.tanaDepth + _drop;
+    const _settledX = SimPhysics.ROD_X_M + SimPhysics.pelineDrift(pp, Math.max(0, _tanaY));
+    rigStateRef.current = { shakuriOffsetY: 0, shakuriVelY: 0, shakuriOffsetX: _settledX, makiOffset: _initMaki, makiTarget: _initMaki };
     chumRef.current = 1.0;
     pendingMakiRef.current = [];
     pendingShakuriRef.current = [];
