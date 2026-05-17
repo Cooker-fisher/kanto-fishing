@@ -994,8 +994,7 @@ function App() {
     <div className="app">
       <header className="head app__head">
         <div>
-          <h1 className="head__title"><span className="kanji-accent">朱</span>コマセ巻きシミュレーター</h1>
-          <div className="head__sub">TOKYO BAY ・ 紅鯛 コマセ釣り 物理モデル</div>
+          <h1 className="head__title">マダイコマセシミュレーター <span className="head__ver">ver.1.0</span></h1>
         </div>
         <div className="head__meta">
           <div>SIM <b>● LIVE</b>　{Math.round(particlesRef.current.length)}粒</div>
