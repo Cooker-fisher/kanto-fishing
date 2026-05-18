@@ -12251,11 +12251,11 @@ def _ship_area_ranking_html(catches, area, self_name, today_dt):
         # 自船宿は強調
         is_self = (sn == self_name)
         cls = "rk self" if is_self else "rk"
-        slug = _SHIP_ROMAJI.get(sn)
-        # T8 決定通り: ship_romaji_map と ship_info の両方にあるときだけリンク化（404防止）
+        # ships.json romaji_slug 優先（chowari 船宿を含む全船宿をリンク化）
+        slug = ship_slug(sn) or _SHIP_ROMAJI.get(sn)
         if is_self:
             name_html = f'{sn}（このページ）'
-        elif slug and sn in _SHIP_INFO:
+        elif slug:
             name_html = f'<a href="{slug}.html">{sn}</a>'
         else:
             name_html = sn
@@ -12355,12 +12355,12 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     recent_html = _ship_recent_fish_html(catches, name, _ship_axis_dt, display_label=ship_today_label)
     area_rank_html = _ship_area_ranking_html(catches, area, name, today_dt)
 
-    # H2 (T22): 空ページ判定 — 以下 OR 条件のいずれかで noindex 付与
-    # 条件1: 直近7日データなし（_ship_recent_fish_html が該当テキストを返す）
-    # 条件2: _SHIP_INFO 未登録（住所・電話・基本情報が全欠如）
+    # H2 (T22): 空ページ判定 — 直近7日データがない場合のみ noindex
+    # 旧: _SHIP_INFO 未登録でも noindex（T22 AdSense 対応）
+    # 新: chowari 経由 114 船宿は ship_info 未登録でも釣果データがあればインデックス対象とする
     has_recent_data = "直近7日のデータがありません" not in recent_html
     has_ship_info = name in _SHIP_INFO
-    is_empty_ship_page = (not has_recent_data) or (not has_ship_info)
+    is_empty_ship_page = not has_recent_data
     ship_noindex_tag = (
         '<meta name="robots" content="noindex, follow">'
         if is_empty_ship_page
@@ -13803,6 +13803,42 @@ def main():
     # --export-csv: catches_raw.json から data/V2/ を全再生成して終了
     if "--export-csv" in _sys.argv:
         export_csv_from_raw()
+        return
+
+    # --ships-only: data/V2/*.csv から全釣果を読み込み、船宿ページのみ再生成（クロールなし）
+    if "--ships-only" in _sys.argv:
+        crawled_at = datetime.now(JST).replace(tzinfo=None).strftime("%Y/%m/%d %H:%M")
+        print("=== 船宿ページ再生成（--ships-only: data/V2/*.csv から読み込み）===")
+        # CSV 行を build_ship_pages が期待する catches 形式に変換
+        # catches 形式: fish=[str], count_range={max, min, avg}, is_cancellation=bool等
+        def _csv_to_catch(r):
+            fish_str = (r.get("tsuri_mono") or "").strip()
+            fish_list = [fish_str] if fish_str and fish_str not in ("欠航", "不明", "") else []
+            try: cnt_max = float(r.get("cnt_max") or 0) or None
+            except: cnt_max = None
+            try: cnt_min = float(r.get("cnt_min") or 0) or None
+            except: cnt_min = None
+            try: cnt_avg = float(r.get("cnt_avg") or 0) or None
+            except: cnt_avg = None
+            try: sz_min = float(r.get("size_min") or 0) or None
+            except: sz_min = None
+            try: sz_max = float(r.get("size_max") or 0) or None
+            except: sz_max = None
+            return {
+                "ship": r.get("ship", ""),
+                "area": r.get("area", ""),
+                "date": r.get("date", ""),
+                "fish": fish_list,
+                "count_range": {"max": cnt_max, "min": cnt_min, "avg": cnt_avg},
+                "size_range_cm": {"min": sz_min, "max": sz_max},
+                "point_place1": r.get("point_place1"),
+                "is_cancellation": r.get("is_cancellation") == "1",
+            }
+        raw_rows = list(_load_historical_catches())
+        valid_catches = [_csv_to_catch(r) for r in raw_rows]
+        print(f"釣果レコード変換: {len(valid_catches)}件")
+        build_ship_pages(valid_catches, crawled_at)
+        print("=== 船宿ページ再生成完了 ===")
         return
 
     # --html-only: catches.json + history.json を使ってHTML生成だけを実行（クロールなし）
