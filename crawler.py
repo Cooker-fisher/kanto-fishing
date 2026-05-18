@@ -8574,6 +8574,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 .chip-emoji{vertical-align:middle}"""
 
     for area, catches in area_summary.items():
+        # area_romaji_map.json に slug が無いエリアはスキップ（日本語ファイル名生成防止）
+        if area not in _AREA_ROMAJI:
+            continue
         group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
 
         if len(catches) < 2:
