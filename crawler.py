@@ -954,6 +954,8 @@ def _load_recent_catches_for_index(now, days=7):
                             "count_avg":   cavg,
                             "size_cm":     size_cm,
                             "weight_kg":   weight_kg,
+                            "point_place1": row.get("point_place1", "") or None,
+                            "is_cancellation": False,
                         })
             except Exception:
                 continue
@@ -8483,6 +8485,19 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
     # 使うため破壊的上書きで簡潔化。呼び出し側で同一リストの再参照なし。
     _cutoff_date_T34 = (now - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
     data = [c for c in data if c.get("date", "") >= _cutoff_date_T34]
+    # 2026/05/19: chowari 経由 / 遅延到着データの補完
+    # valid_catches は fishing-v.jp 当日クロール分のみだが、CSV には chowari 経由データや
+    # 過去7日内の遅延到着レコードも含まれる。これらを取り込まないと一部エリア・船宿が
+    # area_summary に登場せず、thin path（古いフォーマット）に分岐したり、
+    # 船宿一覧の魚バッジが空のままになる（例: 大田区呑川・房丸）。
+    _recent7_csv = _load_recent_catches_for_index(now, days=7)
+    _existing_keys = {(c.get("date"), c.get("ship"), c.get("area"), c.get("fish_raw") or tuple(c.get("fish") or [])) for c in data}
+    for r in _recent7_csv:
+        key = (r.get("date"), r.get("ship"), r.get("area"), r.get("fish_raw") or tuple(r.get("fish") or []))
+        if key in _existing_keys:
+            continue
+        _existing_keys.add(key)
+        data.append(r)
     area_summary = {}
     for c in data:
         area_summary.setdefault(c["area"], []).append(c)
@@ -11945,6 +11960,8 @@ nav.gnav a.prem::before{content:"";display:inline-block;width:8px;height:8px;bac
 .info-box .info-val{flex:1}
 .fish-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
 .fish-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.fish-section h3 .h-fish{display:inline-flex;align-items:center;gap:6px}
+.fish-section h3 .fs-emoji{vertical-align:middle}
 .fish-section h3 .h-range{color:var(--cta);font-size:15px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
@@ -12014,6 +12031,8 @@ _SHIP_EXTRA_CSS = """\
 .info-box .info-val{flex:1}
 .fish-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
 .fish-section h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.fish-section h3 .h-fish{display:inline-flex;align-items:center;gap:6px}
+.fish-section h3 .fs-emoji{vertical-align:middle}
 .fish-section h3 .h-range{color:var(--cta);font-size:15px}
 .chart-bars{display:flex;align-items:flex-end;gap:3px;height:40px}
 .chart-bars .cb{flex:1;background:var(--cta);border-radius:2px 2px 0 0;opacity:.7;min-width:10px}
@@ -12220,7 +12239,7 @@ def _ship_recent_fish_html(catches, ship_name, today_dt, display_label=None):
         meta_html = " | ".join(meta_parts) if meta_parts else ""
         out.append(
             f'<div class="fish-section">'
-            f'<h3>{fish} <span class="h-range">{range_str}</span></h3>'
+            f'<h3><span class="h-fish"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fs-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</span><span class="h-range">{range_str}</span></h3>'
             f'<div class="chart-bars">{bars_html}</div>'
             f'<div class="chart-labels">{labels_html}</div>'
             + (f'<div class="fish-meta">{meta_html}</div>' if meta_html else "")
@@ -12298,7 +12317,7 @@ def _ship_primary_fish_list(catches, ship_name, limit=5):
         if d < cutoff:
             continue
         for f in c.get("fish") or []:
-            if f not in ("不明", "欠航"):
+            if f and f not in ("不明", "欠航", "NULL"):
                 counter[f] += 1
     return [n for n, _ in counter.most_common(limit)]
 
@@ -12711,6 +12730,17 @@ def build_ship_pages(catches, crawled_at=""):
     # 使うため破壊的上書きで簡潔化。crawler.py 内で本関数の呼び出しは1箇所のみ。
     _cutoff_date_T34_ship = (today_dt - timedelta(days=6)).strftime("%Y/%m/%d")  # today含めて7日
     catches = [c for c in catches if c.get("date", "") >= _cutoff_date_T34_ship]
+    # 2026/05/19: chowari 経由 / 遅延到着データの補完（build_area_pages と同じ理由）
+    try:
+        _recent7_ship = _load_recent_catches_for_index(today_dt, days=7)
+    except Exception:
+        _recent7_ship = []
+    _seen_ship = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in catches}
+    for _c in _recent7_ship:
+        _k = (_c.get("ship"), _c.get("date"), _c.get("fish_raw", ""))
+        if _k not in _seen_ship:
+            _seen_ship.add(_k)
+            catches.append(_c)
     area_coords = _ship_load_area_coords()
     generated = 0
     for ship in target_ships:
@@ -13820,7 +13850,7 @@ def main():
         # catches 形式: fish=[str], count_range={max, min, avg}, is_cancellation=bool等
         def _csv_to_catch(r):
             fish_str = (r.get("tsuri_mono") or "").strip()
-            fish_list = [fish_str] if fish_str and fish_str not in ("欠航", "不明", "") else []
+            fish_list = [fish_str] if fish_str and fish_str not in ("欠航", "不明", "", "NULL") else []
             try: cnt_max = float(r.get("cnt_max") or 0) or None
             except: cnt_max = None
             try: cnt_min = float(r.get("cnt_min") or 0) or None
@@ -13846,6 +13876,46 @@ def main():
         print(f"釣果レコード変換: {len(valid_catches)}件")
         build_ship_pages(valid_catches, crawled_at)
         print("=== 船宿ページ再生成完了 ===")
+        return
+
+    # --area-only: CSV から area ページを再生成（クロールなし・thin path フォールバック検証用）
+    if "--area-only" in _sys.argv:
+        crawled_at = datetime.now(JST).replace(tzinfo=None).strftime("%Y/%m/%d %H:%M")
+        print("=== エリアページ再生成（--area-only: data/V2/*.csv から読み込み）===")
+        def _csv_to_catch_a(r):
+            fish_str = (r.get("tsuri_mono") or "").strip()
+            fish_list = [fish_str] if fish_str and fish_str not in ("欠航", "不明", "", "NULL") else []
+            try: cnt_max = float(r.get("cnt_max") or 0) or None
+            except: cnt_max = None
+            try: cnt_min = float(r.get("cnt_min") or 0) or None
+            except: cnt_min = None
+            try: cnt_avg = float(r.get("cnt_avg") or 0) or None
+            except: cnt_avg = None
+            return {
+                "ship": r.get("ship", ""),
+                "area": r.get("area", ""),
+                "date": r.get("date", ""),
+                "fish": fish_list,
+                "fish_raw": r.get("fish_raw", "") or (fish_list[0] if fish_list else ""),
+                "count_range": {"max": cnt_max, "min": cnt_min, "avg": cnt_avg, "is_boat": r.get("is_boat") == "1"},
+                "count_avg": cnt_avg,
+                "point_place1": r.get("point_place1") or None,
+                "is_cancellation": r.get("is_cancellation") == "1",
+            }
+        raw_rows = list(_load_historical_catches())
+        valid_catches = [_csv_to_catch_a(r) for r in raw_rows]
+        with open("history.json", encoding="utf-8") as _f:
+            history = json.load(_f)
+        weather_data = load_weather_data()
+        os.makedirs(WEB_DIR, exist_ok=True)
+        # area-all-fish セクション用に hist 派生集計を算出
+        _fish_area_summary_aonly = compute_fish_area_summary(raw_rows)
+        _area_top_fishes_aonly = compute_area_top_fishes(raw_rows)
+        build_area_pages(valid_catches, history, crawled_at, weather_data,
+                         hist_rows=raw_rows,
+                         fish_area_summary=_fish_area_summary_aonly,
+                         area_top_fishes=_area_top_fishes_aonly)
+        print("=== エリアページ再生成完了 ===")
         return
 
     # --html-only: catches.json + history.json を使ってHTML生成だけを実行（クロールなし）
