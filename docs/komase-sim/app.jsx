@@ -971,7 +971,7 @@ function App() {
     for (const k of LOCKABLE_PARAMS) {
       if (locks[k]) lockedValues[k] = physicsParams[k];
     }
-    const result = SimPhysics.optimize(physicsParams, 64, lockedValues);
+    const result = await SimPhysics.optimizeAsync(physicsParams, 64, lockedValues);
     setRecommendation({ ...result, baseline, locked: { ...lockedValues } });
     setOptimizing(false);
   };

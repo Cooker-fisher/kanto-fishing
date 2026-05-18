@@ -779,7 +779,8 @@ window.SimPhysics = (function() {
   //   Phase 2: Phase 1 の TOP-K を起点に、各軸 ±1 ステップの近傍を試して改善が止まるまで反復
   //   Phase 3: ハリス/ガン玉の細部を Phase 2 ベストを固定して局所探索
   // 全工程で Math.random() は一切使用しない → 同じ環境では毎回同じ best が返る。
-  function optimize(envParams, iterations, locked) {
+  // optimize/optimizeAsync 共通コンテキスト生成
+  function _makeOptCtx(envParams, locked) {
     locked = locked || {};
     const env = {
       depth: envParams.depth,
@@ -958,15 +959,28 @@ window.SimPhysics = (function() {
       return { best, score: bestScore };
     }
 
-    // 各 seed から座標降下を実行し、最良を採用
-    let globalBest = null;
-    let globalScore = -Infinity;
+    return { SEEDS, descendFromStart };
+  }
+
+  function optimize(envParams, iterations, locked) {
+    const { SEEDS, descendFromStart } = _makeOptCtx(envParams, locked);
+    let globalBest = null, globalScore = -Infinity;
     for (const seed of SEEDS) {
       const r = descendFromStart(seed);
-      if (r.score > globalScore) {
-        globalScore = r.score;
-        globalBest = r.best;
-      }
+      if (r.score > globalScore) { globalScore = r.score; globalBest = r.best; }
+    }
+    return { best: globalBest, score: globalScore };
+  }
+
+  // seed 間で setTimeout(0) を挟み UI スレッドをブロックしない非同期版
+  async function optimizeAsync(envParams, iterations, locked, onProgress) {
+    const { SEEDS, descendFromStart } = _makeOptCtx(envParams, locked);
+    let globalBest = null, globalScore = -Infinity;
+    for (let si = 0; si < SEEDS.length; si++) {
+      const r = descendFromStart(SEEDS[si]);
+      if (r.score > globalScore) { globalScore = r.score; globalBest = r.best; }
+      if (onProgress) onProgress((si + 1) / SEEDS.length);
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
     return { best: globalBest, score: globalScore };
   }
@@ -984,7 +998,7 @@ window.SimPhysics = (function() {
     nearHook, depthHistogram,
     HOOK_WEIGHTS, HOOK_TYPE_LABEL, HOOK_SIZE_RANGE, getHookWeight,
     shakuriConsumption, leakRate,
-    simulateHeadless, optimize, scoreParams, evalParams,
+    simulateHeadless, optimize, optimizeAsync, scoreParams, evalParams,
     makeRng,
   };
 })();
