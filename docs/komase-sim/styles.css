@@ -860,7 +860,10 @@ select.select:focus { border-color: var(--cta); }
    2026-05-17 確定
    ============================================ */
 @media (max-width: 768px) {
-  /* レイアウト: 3カラム → 縦積み */
+  /* レイアウト: 3カラム → 縦積み
+     DOM 順: header → LeftPanel → stage → controls → RightPanel
+     A案要求順: header → stage → controls → LeftPanel → RightPanel
+     CSS order で並べ替え (DOM 非変更) */
   .app {
     display: flex;
     flex-direction: column;
@@ -868,6 +871,11 @@ select.select:focus { border-color: var(--cta); }
     max-width: 100%;
     min-height: 100vh;
   }
+  .app__head     { order: 1; }
+  .app__main     { order: 2; }  /* stage (canvas) */
+  .app__controls { order: 3; }
+  .app__left     { order: 4; }  /* 海況/仕掛け等の設定 */
+  .app__right    { order: 5; }  /* 成績/最適化 */
 
   /* ヘッダー */
   .head {
