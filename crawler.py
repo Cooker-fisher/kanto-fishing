@@ -3386,6 +3386,13 @@ _AREA_ROMAJI = load_area_romaji()
 _SHIP_ROMAJI = load_ship_romaji()
 _SHIP_INFO = load_ship_info()
 
+# ships.json の romaji_slug で _SHIP_ROMAJI を拡張（chowari 船宿を含む全船宿を対象に）
+for _s in SHIPS:
+    _n = _s.get("name")
+    _slug = _s.get("romaji_slug")
+    if _n and _slug and _n not in _SHIP_ROMAJI:
+        _SHIP_ROMAJI[_n] = _slug
+
 # T38-A10: エリア→県マッピング（chip-pref 県emoji 表示用）
 # docs/assets/area/{pref}_emoji.webp が存在する県のみ設定
 # 茨城は emoji 未作成のため None（chip-pref img 出力スキップ）
