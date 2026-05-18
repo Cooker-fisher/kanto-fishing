@@ -700,18 +700,20 @@ window.SimRenderer = (function() {
         ctx.strokeStyle = "rgba(180, 180, 200, 0.7)";
       }
       ctx.lineWidth = 0.5;
-      const bodyLen = (f.kind === "madai" ? 11 : 4) * f.size;
-      const bodyH = (f.kind === "madai" ? 4.2 : 1.6) * f.size;
+      const bodyLen = (f.kind === "madai" ? 11 : 15) * f.size;
+      const bodyH   = (f.kind === "madai" ? 4.2 : 6)  * f.size;
       ctx.beginPath();
       ctx.ellipse(fx, fy, bodyLen, bodyH, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
-      // 尾びれ
+      // 尾びれ (小魚はボディ比例サイズ)
+      const tailLen = f.kind === "madai" ? 5 : bodyLen * 0.8;
+      const tailH   = f.kind === "madai" ? 4 : bodyLen * 0.6;
       ctx.beginPath();
       ctx.moveTo(fx - bodyLen + 1, fy);
-      ctx.lineTo(fx - bodyLen - 5, fy - 4);
-      ctx.lineTo(fx - bodyLen - 4, fy);
-      ctx.lineTo(fx - bodyLen - 5, fy + 4);
+      ctx.lineTo(fx - bodyLen - tailLen, fy - tailH);
+      ctx.lineTo(fx - bodyLen - tailLen + 1, fy);
+      ctx.lineTo(fx - bodyLen - tailLen, fy + tailH);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
@@ -727,6 +729,12 @@ window.SimRenderer = (function() {
         ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
         ctx.beginPath();
         ctx.arc(fx + bodyLen * 0.55, fy - 0.5, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // 小魚の目
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.beginPath();
+        ctx.arc(fx + bodyLen * 0.55, fy - 0.3, 0.7, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();

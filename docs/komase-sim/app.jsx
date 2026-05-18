@@ -45,8 +45,8 @@ const DEFAULT_PARAMS = {
 
   // 関東コマセマダイ標準: 70-80cm 刻みで3回しゃくり、合計約5m 巻き上げ、3分待ち
   shakuriStrokeCm: 80,
-  shakuriCountPerTrigger: 3,
-  makiAmount: 1.7,
+  shakuriCountPerTrigger: 1,
+  makiAmount: 1.0,
   dropAmount: 0.5,
   shakuriInterval: 30.0,
   autoShakuri: false,
@@ -1097,7 +1097,7 @@ function App() {
     <div className="app">
       <header className="head app__head">
         <div>
-          <h1 className="head__title">マダイコマセシミュレーター <span className="head__ver">ver.1.0</span></h1>
+          <h1 className="head__title">マダイコマセシミュレーター <span className="head__ver">ベータ版</span></h1>
           <div className="head__actions">
             <a href="/" className="head__link" aria-label="船釣り予想 トップへ戻る">← 船釣り予想 トップへ</a>
             <a
