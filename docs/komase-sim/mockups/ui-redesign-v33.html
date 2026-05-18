@@ -1,0 +1,19 @@
+<!doctype html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ui-redesign-v33</title><style>
+:root{--bg:#f5f7f9;--card:#fff;--line:#d9e1e8;--text:#21313c;--sub:#60717f;--accent:#3c6476}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,sans-serif;color:var(--text)}
+.wrap{max-width:1160px;margin:0 auto;padding:16px 16px 92px;display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 320px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.water{height:200px;border-radius:10px;background:linear-gradient(#edf4f8,#e2ecf2);position:relative;overflow:hidden}.node{position:absolute;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px}.komase{left:25%;top:48%}.bait{left:46%;top:44%}.bishi{left:64%;top:62%}.current{position:absolute;right:12px;top:10px;color:var(--sub);font-size:12px}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}h1,h2,h3,p{margin:0}.muted{color:var(--sub);font-size:13px}.side details{border:1px solid var(--line);border-radius:12px;background:#fff}.side summary{padding:12px;font-weight:700;cursor:pointer}.inner{padding:0 12px 12px;display:grid;gap:10px}
+.fix{position:fixed;left:0;right:0;bottom:0;padding:10px;background:#ffffffe3;border-top:1px solid var(--line);display:none;gap:8px}.fix button{flex:1;padding:10px;border:0;border-radius:10px;background:var(--accent);color:#fff}
+@media (max-width:960px){.wrap{grid-template-columns:1fr}}@media (max-width:768px){.wrap{padding:12px 12px 92px}.metrics{grid-template-columns:1fr 1fr}.fix{display:flex}}@media (max-width:375px){.wrap{padding-inline:10px}.metrics{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+  <main>
+    <section class="card"><p class="muted">診断結果カード</p><h1>食わせ位置判定: 〇</h1><p>付けエサがコマセに入る確率 72%</p></section>
+    <section class="card" style="margin-top:12px"><h2>可視化</h2><div class="water"><div class="current">潮流 →</div><div class="node komase">コマセ帯</div><div class="node bait">付けエサ</div><div class="node bishi">ビシ</div></div></section>
+    <section class="metrics" style="margin-top:12px"><article class="card"><h3>到達秒数</h3><p>14.2s</p></article><article class="card"><h3>流距離</h3><p>1.8m</p></article><article class="card"><h3>棚ズレ</h3><p>0.3m</p></article></section>
+    <section class="card" style="margin-top:12px"><h2>釣れる設定を探す</h2><p class="muted">候補条件を比較表示</p></section>
+  </main>
+  <aside class="side"><details><summary>設定パネル</summary><div class="inner"><section class="card"><h3>道糸・ビシ</h3></section><section class="card"><h3>撒き方・待ち方</h3></section><section class="card"><h3>詳細ログ</h3></section></div></details></aside>
+</div>
+<div class="fix"><button>投入</button><button>しゃくる</button><button>巻く</button><button>落とす</button><button>回収</button></div>
+</body></html>
