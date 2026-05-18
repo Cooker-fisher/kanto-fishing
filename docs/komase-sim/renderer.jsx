@@ -130,12 +130,12 @@ window.SimRenderer = (function() {
 
   // ------- 潮流矢印 -------
   function drawCurrent(ctx, map, params) {
-    const baseX = map.W - 110;
+    // モバイル(≤480px)では右上の船上から見た図と重ならないよう左にシフト
+    const baseX = map.W <= 480 ? map.W - 145 : map.W - 110;
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-    // 凡例ボックス (canvas top:16 + 高さ ~125px ≈ y=140 まで) と重ならないよう
-    // ラベルは固定 y=155 に配置 (canvas 高さに依存しない)。
-    ctx.fillText("潮流 →", baseX, 155);
+    // ラベルを 9m 深度位置に配置（最初の矢印 10m の直上）
+    ctx.fillText("潮流 →", baseX, map.y(7));
 
     ctx.strokeStyle = "rgba(251, 191, 36, 0.85)";
     ctx.fillStyle = "rgba(251, 191, 36, 0.85)";
@@ -382,10 +382,10 @@ window.SimRenderer = (function() {
     ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
     ctx.font = '10px "JetBrains Mono", monospace';
     const peMidY = (peVertY1 + peVertY2) / 2;
-    ctx.fillText(`↕ ${peVertM.toFixed(1)}m`, peGuideX - 70, peMidY - 2);
+    ctx.fillText(`↕ ${peVertM.toFixed(1)}m`, peGuideX - 30, peMidY - 2);
     ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
     ctx.font = '9px "JetBrains Mono", monospace';
-    ctx.fillText(`(ライン長${peTotalM.toFixed(1)}m)`, peGuideX - 100, peMidY + 10);
+    ctx.fillText(`(ライン長${peTotalM.toFixed(1)}m)`, peGuideX - 60, peMidY + 10);
 
     // 天秤 (yajiri arm): 左端 J → 右下 E (= cushion 接続点 cx, cy) に伸びる金属棒
     ctx.strokeStyle = "rgba(220, 230, 240, 0.90)";
@@ -803,7 +803,7 @@ window.SimRenderer = (function() {
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = "rgba(251, 191, 36, 0.85)";
-    ctx.fillText(`指示ダナ ${params.tanaDepth}m`, 8, taX - 4);
+    ctx.fillText(`指示ダナ ${params.tanaDepth}m`, 50, taX - 4);
 
     // 落とし込み目安 = ビシの初期位置 (指示棚 + dropOffsetM)
     const dropOff = params.dropOffsetM != null ? params.dropOffsetM : 5;
@@ -866,37 +866,42 @@ window.SimRenderer = (function() {
   const BOW_VIEW_TOGGLE_Y = 32;
   const BOW_VIEW_TOGGLE_W = 56;
   const BOW_VIEW_TOGGLE_H = 16;
-  function drawBowView(ctx, bx, by, params, rig, side) {
+  function drawBowView(ctx, bx, by, params, rig, side, scale = 1.0) {
     const boxW = BOW_VIEW_W;
     const boxH = BOW_VIEW_H;
     const isStarboard = side === "starboard";
     const xs = isStarboard ? -1 : 1;
+
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.scale(scale, scale);
+
     ctx.fillStyle = "rgba(13, 43, 74, 0.92)";
     ctx.strokeStyle = "rgba(255, 255, 255, 0.32)";
     ctx.lineWidth = 0.8;
-    ctx.fillRect(bx, by, boxW, boxH);
-    ctx.strokeRect(bx, by, boxW, boxH);
+    ctx.fillRect(0, 0, boxW, boxH);
+    ctx.strokeRect(0, 0, boxW, boxH);
 
     ctx.font = '11px "Shippori Mincho", serif';
     ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
-    ctx.fillText("船上から見た図", bx + 8, by + 16);
+    ctx.fillText("船上から見た図", 8, 16);
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    ctx.fillText("（真俯瞰・PE 入水方向）", bx + 8, by + 28);
+    ctx.fillText("（真俯瞰・PE 入水方向）", 8, 28);
     // ドラッグハンドル
     ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
     ctx.lineWidth = 1.0;
     for (let i = 0; i < 3; i++) {
-      const hy = by + 10 + i * 4;
+      const hy = 10 + i * 4;
       ctx.beginPath();
-      ctx.moveTo(bx + boxW - 18, hy);
-      ctx.lineTo(bx + boxW - 8, hy);
+      ctx.moveTo(boxW - 18, hy);
+      ctx.lineTo(boxW - 8, hy);
       ctx.stroke();
     }
 
     // 左舷/右舷切替ボタン
-    const tgX = bx + boxW - BOW_VIEW_TOGGLE_X - BOW_VIEW_TOGGLE_W;
-    const tgY = by + BOW_VIEW_TOGGLE_Y;
+    const tgX = boxW - BOW_VIEW_TOGGLE_X - BOW_VIEW_TOGGLE_W;
+    const tgY = BOW_VIEW_TOGGLE_Y;
     ctx.fillStyle = "rgba(232, 93, 4, 0.15)";
     ctx.strokeStyle = "rgba(232, 93, 4, 0.55)";
     ctx.lineWidth = 0.8;
@@ -908,8 +913,8 @@ window.SimRenderer = (function() {
     ctx.fillText(isStarboard ? "▶ 右舷" : "◀ 左舷", tgX + BOW_VIEW_TOGGLE_W / 2, tgY + 11);
     ctx.textAlign = "start";
 
-    const cx = bx + boxW * 0.4;
-    const cy = by + 78;
+    const cx = boxW * 0.4;
+    const cy = 78;
 
     // 水面リング
     ctx.strokeStyle = "rgba(186, 230, 253, 0.55)";
@@ -961,8 +966,8 @@ window.SimRenderer = (function() {
     ctx.fillStyle = "rgba(251, 191, 36, 0.9)";
     ctx.lineWidth = 1.0;
     if (arrowLen > 4) {
-      const ay = by + boxH - 30;
-      const ax = isStarboard ? (bx + 16) : (bx + boxW - 16);
+      const ay = boxH - 30;
+      const ax = isStarboard ? 16 : (boxW - 16);
       const aEnd = ax + (isStarboard ? arrowLen : -arrowLen);
       ctx.beginPath();
       ctx.moveTo(ax, ay);
@@ -1020,17 +1025,19 @@ window.SimRenderer = (function() {
     // 角度・評価
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillStyle = "rgba(253, 186, 116, 0.95)";
-    ctx.fillText(`入水角 ${lineAngleDeg.toFixed(0)}°`, bx + 8, by + boxH - 16);
+    ctx.fillText(`入水角 ${lineAngleDeg.toFixed(0)}°`, 8, boxH - 16);
     let judge, judgeColor;
     if (lineAngleDeg < 10) { judge = "ほぼ真下 ・凪"; judgeColor = "rgba(26,157,86,0.95)"; }
     else if (lineAngleDeg < 22) { judge = "緩い流れ ・標準"; judgeColor = "rgba(255,255,255,0.92)"; }
     else if (lineAngleDeg < 38) { judge = "流れ強 ・警戒"; judgeColor = "rgba(251,191,36,0.95)"; }
     else { judge = "速潮 ・オモリ↑"; judgeColor = "rgba(232,93,4,0.95)"; }
     ctx.fillStyle = judgeColor;
-    ctx.fillText(judge, bx + 60, by + boxH - 16);
+    ctx.fillText(judge, 60, boxH - 16);
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    ctx.fillText(`潮 ${tide.toFixed(2)}m/s`, bx + boxW - 60, by + boxH - 6);
+    ctx.fillText(`潮 ${tide.toFixed(2)}m/s`, boxW - 60, boxH - 6);
+
+    ctx.restore();
   }
 
   return {

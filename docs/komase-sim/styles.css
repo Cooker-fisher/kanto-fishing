@@ -70,7 +70,6 @@ html, body {
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  min-width: 1280px;
 }
 
 /* ===== layout ===== */
@@ -850,3 +849,180 @@ select.select:focus { border-color: var(--cta); }
 }
 .tog.is-on { background: var(--cta); }
 .tog.is-on::after { left: 18px; }
+
+/* ── Mobile: PC では mob-only 要素を非表示 ── */
+.mob-strip, .mob-overlay, .mob-drawer { display: none; }
+.mob-settings-btn { display: none; }
+
+@media (max-width: 768px) {
+  html, body { min-width: 0; }
+
+  /* ── レイアウト ── */
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas: "head" "strip" "main" "controls";
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .app__left, .app__right { display: none; }
+
+  /* ── ヘッダー: タイトル + ⚙ ボタンの1行に圧縮 ── */
+  .head {
+    padding: 8px 14px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+  .head > div:first-child {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .head__title { font-size: 15px; }
+  .head__ver { font-size: 11px; }
+  .head__actions { margin-top: 0; flex-wrap: nowrap; }
+  .head__link,
+  .head__btn--x,
+  .head__btn--follow,
+  .head__meta { display: none; }
+
+  /* ⚙ 設定ボタン: オレンジで目立たせる */
+  .mob-settings-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--cta); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 8px 16px; font-size: 13px; font-weight: 700;
+    font-family: var(--sans); cursor: pointer;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .mob-settings-btn:active { filter: brightness(0.9); }
+
+  /* ── mob-strip ── */
+  .mob-strip {
+    grid-area: strip; display: flex; gap: 0; align-items: stretch;
+    background: var(--hdr);
+    border-bottom: 1px solid rgba(186,230,253,.15); flex-shrink: 0;
+  }
+  .mob-strip__item {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; flex: 1;
+    padding: 5px 4px;
+    border-right: 1px solid rgba(186,230,253,.1);
+  }
+  .mob-strip__item:last-of-type { border-right: none; }
+  .mob-strip__lbl { font-size: 9px; color: rgba(255,255,255,.5); margin-bottom: 1px; }
+  .mob-strip__val { font-size: 15px; font-weight: 700; color: #fff; line-height: 1; }
+  .mob-strip__phase {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 12px; font-size: 10px; font-weight: 700;
+    color: var(--cta); white-space: nowrap;
+    border-left: 1px solid rgba(186,230,253,.1);
+  }
+
+  /* ── キャンバスエリア ── */
+  .stage { min-height: 0; }
+  .stage__legend { display: none; }
+  /* HUD: 左上の小さなチップ。コマセ残量は mob-strip に表示済みなので非表示 */
+  .stage__hud {
+    top: 6px; left: 6px; right: auto;
+    padding: 4px 8px; width: auto; min-width: 60px;
+    font-size: 9px; text-align: center;
+    background: rgba(13,43,74,.82);
+  }
+  .stage__hud > div:first-child { font-size: 9px; letter-spacing: .05em; opacity: .7; }
+  .stage__hud .hud-big { font-size: 17px; }
+  .hud__chum { display: none; }
+  .hud__drop-detail { display: none; }
+
+  /* ── コントロールバー: 2段・画面下部固定 ── */
+  .controls {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    border-right: none;
+    padding: 4px 6px env(safe-area-inset-bottom, 6px);
+    background: var(--hdr);
+    border-top: 1px solid rgba(186,230,253,.25);
+    flex-wrap: wrap;
+    overflow: hidden;
+    gap: 0;
+    min-height: auto;
+    align-items: stretch;
+  }
+  /* キャンバスが fixed controls に隠れないよう下に余白 */
+  .stage { padding-bottom: 120px; }
+  /* 段1: 投入 ・ しゃくる/巻く/落とす ・ 仕掛け回収 */
+  .controls__group:nth-child(1),
+  .controls__group:nth-child(2),
+  .controls__group:nth-child(3) {
+    flex: 1;
+    min-width: 0;
+    padding: 2px 4px;
+    border-right: 1px dashed rgba(186,230,253,.15);
+    justify-content: center;
+    gap: 4px;
+  }
+  .controls__group:nth-child(3) { border-right: none; }
+  /* 段2: 一時停止・速度・リセット（全幅） */
+  .controls__group:nth-child(4) {
+    width: 100%;
+    border-right: none;
+    border-top: 1px dashed rgba(186,230,253,.15);
+    padding: 3px 8px 2px;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .controls__group--stats { display: none; }
+
+  /* ボタンサイズ調整 */
+  .btn-action {
+    min-width: 0; height: 46px;
+    font-size: 10px; padding: 4px 2px;
+    flex: 1;
+    overflow: hidden; white-space: nowrap;
+  }
+  .controls__group:nth-child(4) .btn-action {
+    flex: 0 0 auto; min-width: 68px; height: 36px; font-size: 11px;
+  }
+  .speed-group { height: 36px; }
+
+  /* ── ドロワー ── */
+  .mob-overlay {
+    display: block; position: fixed; inset: 0;
+    background: rgba(0,0,0,.45); z-index: 60;
+  }
+  .mob-drawer {
+    display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+    height: 75%; background: var(--bg); border-radius: 18px 18px 0 0;
+    z-index: 70; flex-direction: column; overflow: hidden;
+    box-shadow: 0 -4px 32px rgba(13,43,74,.3);
+  }
+  .mob-drawer__handle {
+    width: 36px; height: 4px; background: var(--border); border-radius: 2px;
+    margin: 10px auto 0; flex-shrink: 0; cursor: pointer;
+  }
+  .mob-drawer__title {
+    font-size: 13px; font-weight: 700; padding: 8px 16px 0;
+    color: var(--text); flex-shrink: 0;
+  }
+  .mob-drawer__tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+    flex-shrink: 0; margin-top: 6px;
+  }
+  .mob-drawer__tab {
+    flex: 1; padding: 9px 4px; text-align: center;
+    font-size: 12px; font-weight: 600; color: var(--sub);
+    border-bottom: 2px solid transparent; cursor: pointer;
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: var(--sans);
+  }
+  .mob-drawer__tab.is-active { color: var(--text); border-bottom-color: var(--cta); }
+  .mob-drawer__body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .mob-drawer .panel {
+    max-height: none; border-right: none; border-left: none; padding: 12px 16px;
+  }
+}

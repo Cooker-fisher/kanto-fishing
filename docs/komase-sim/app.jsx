@@ -154,6 +154,8 @@ function App() {
   const [optimizing, setOptimizing] = useState(false);
   const [recommendation, setRecommendation] = useState(null);
   const [locks, setLocks] = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerTab, setDrawerTab] = useState(0);
 
   const canvasRef = useRef(null);
   const particlesRef = useRef([]);
@@ -320,13 +322,17 @@ function App() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       canvas.__cssW = rect.width;
       canvas.__cssH = rect.height;
-      // resize 時に minimap が画面外なら右下に再配置
-      const mw = SimRenderer.BOW_VIEW_W || 178;
-      const mh = SimRenderer.BOW_VIEW_H || 150;
+      // resize 時に minimap を画面内に収める（スケール考慮）
+      const bowScale = rect.width <= 480 ? 0.70 : 1.0;
+      const mw = (SimRenderer.BOW_VIEW_W || 178) * bowScale;
+      const mh = (SimRenderer.BOW_VIEW_H || 150) * bowScale;
       const mm = minimapPosRef.current;
       if (mm) {
         mm.x = Math.max(0, Math.min(rect.width - mw, mm.x));
         mm.y = Math.max(0, Math.min(rect.height - mh, mm.y));
+      } else if (rect.width <= 480) {
+        // モバイル初期位置: 右上
+        minimapPosRef.current = { x: rect.width - mw - 6, y: 6 };
       }
     };
     resize();
@@ -338,8 +344,9 @@ function App() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const MW = SimRenderer.BOW_VIEW_W || 178;
-    const MH = SimRenderer.BOW_VIEW_H || 150;
+    const getBowScale = () => (canvas.__cssW || 9999) <= 480 ? 0.70 : 1.0;
+    const getMW = () => (SimRenderer.BOW_VIEW_W || 178) * getBowScale();
+    const getMH = () => (SimRenderer.BOW_VIEW_H || 150) * getBowScale();
 
     const getPos = (e) => {
       const rect = canvas.getBoundingClientRect();
@@ -349,16 +356,17 @@ function App() {
     const inMinimap = (p) => {
       const mm = minimapPosRef.current;
       if (!mm) return false;
-      return p.x >= mm.x && p.x <= mm.x + MW && p.y >= mm.y && p.y <= mm.y + MH;
+      return p.x >= mm.x && p.x <= mm.x + getMW() && p.y >= mm.y && p.y <= mm.y + getMH();
     };
 
     const inToggle = (p) => {
       const mm = minimapPosRef.current;
       if (!mm) return false;
-      const tgX = mm.x + MW - (SimRenderer.BOW_VIEW_TOGGLE_X || 8) - (SimRenderer.BOW_VIEW_TOGGLE_W || 56);
-      const tgY = mm.y + (SimRenderer.BOW_VIEW_TOGGLE_Y || 32);
-      const tgW = SimRenderer.BOW_VIEW_TOGGLE_W || 56;
-      const tgH = SimRenderer.BOW_VIEW_TOGGLE_H || 16;
+      const s = getBowScale();
+      const tgX = mm.x + (SimRenderer.BOW_VIEW_W || 178) * s - (SimRenderer.BOW_VIEW_TOGGLE_X || 8) * s - (SimRenderer.BOW_VIEW_TOGGLE_W || 56) * s;
+      const tgY = mm.y + (SimRenderer.BOW_VIEW_TOGGLE_Y || 32) * s;
+      const tgW = (SimRenderer.BOW_VIEW_TOGGLE_W || 56) * s;
+      const tgH = (SimRenderer.BOW_VIEW_TOGGLE_H || 16) * s;
       return p.x >= tgX && p.x <= tgX + tgW && p.y >= tgY && p.y <= tgY + tgH;
     };
 
@@ -382,8 +390,8 @@ function App() {
       if (minimapDragRef.current) {
         const W = canvas.__cssW || canvas.width;
         const H = canvas.__cssH || canvas.height;
-        const nx = Math.max(0, Math.min(W - MW, p.x - minimapDragRef.current.dx));
-        const ny = Math.max(0, Math.min(H - MH, p.y - minimapDragRef.current.dy));
+        const nx = Math.max(0, Math.min(W - getMW(), p.x - minimapDragRef.current.dx));
+        const ny = Math.max(0, Math.min(H - getMH(), p.y - minimapDragRef.current.dy));
         minimapPosRef.current = { x: nx, y: ny };
         e.preventDefault();
       } else {
@@ -895,10 +903,14 @@ function App() {
         const ppLabels = Object.assign({}, pp, { _komaseDepth: metricsRef.current.komaseDepth });
         SimRenderer.drawLabels(ctx, map, ppLabels, rig, phaseRef.current, swellOffsetYRef.current);
         // ミニビュー位置 (未設定なら左側 HUD ボックス下)
+        const bowScaleTick = (canvasRef.current.__cssW || 9999) <= 480 ? 0.70 : 1.0;
         if (!minimapPosRef.current) {
-          minimapPosRef.current = { x: 14, y: 200 };
+          const cssW = canvasRef.current.__cssW || 500;
+          minimapPosRef.current = cssW <= 480
+            ? { x: cssW - (SimRenderer.BOW_VIEW_W || 178) * 0.70 - 6, y: 6 }
+            : { x: 14, y: 200 };
         }
-        SimRenderer.drawBowView(ctx, minimapPosRef.current.x, minimapPosRef.current.y, pp, rig, bowViewSideRef.current);
+        SimRenderer.drawBowView(ctx, minimapPosRef.current.x, minimapPosRef.current.y, pp, rig, bowViewSideRef.current, bowScaleTick);
 
         if (flashRef.current > 0) {
           flashRef.current -= dt * 3.5;
@@ -938,10 +950,14 @@ function App() {
     SimRenderer.drawFishShadows(ctx, map, physicsParams, particlesRef.current);
     SimRenderer.drawRig(ctx, map, rig, physicsParams, map.y(0) - 36, chumRef.current, 0);
     SimRenderer.drawLabels(ctx, map, physicsParams, rig, phaseRef.current, 0);
+    const bowScaleStatic = (canvasRef.current.__cssW || 9999) <= 480 ? 0.70 : 1.0;
     if (!minimapPosRef.current) {
-      minimapPosRef.current = { x: 14, y: 200 };
+      const cssW = canvasRef.current.__cssW || 500;
+      minimapPosRef.current = cssW <= 480
+        ? { x: cssW - (SimRenderer.BOW_VIEW_W || 178) * 0.70 - 6, y: 6 }
+        : { x: 14, y: 200 };
     }
-    SimRenderer.drawBowView(ctx, minimapPosRef.current.x, minimapPosRef.current.y, physicsParams, rig, bowViewSideRef.current);
+    SimRenderer.drawBowView(ctx, minimapPosRef.current.x, minimapPosRef.current.y, physicsParams, rig, bowViewSideRef.current, bowScaleStatic);
   }, [physicsParams, bowViewSide]);
 
   // ===== 自動最適化 =====
@@ -1099,6 +1115,7 @@ function App() {
               target="_blank" rel="noopener nofollow"
               aria-label="@funatsuri_yoso をフォロー"
             >フォロー</a>
+            <button className="head__btn mob-settings-btn" onClick={() => setDrawerOpen(true)} aria-label="設定パネルを開く">⚙ 設定</button>
           </div>
         </div>
         <div className="head__meta">
@@ -1106,6 +1123,22 @@ function App() {
           <div>累計しゃくり {metricsRef.current.shakuriCount}回</div>
         </div>
       </header>
+
+      <div className="mob-strip">
+        <div className="mob-strip__item">
+          <span className="mob-strip__lbl">ヒット率</span>
+          <span className="mob-strip__val" style={{color: grade.hitRate >= 4 ? "var(--pos)" : grade.hitRate >= 2 ? "var(--gold)" : "var(--neg)"}}>{grade.hitRate.toFixed(0)}%</span>
+        </div>
+        <div className="mob-strip__item">
+          <span className="mob-strip__lbl">コマセ残量</span>
+          <span className="mob-strip__val" style={{color: chumColor}}>{Math.round(chum * 100)}%</span>
+        </div>
+        <div className="mob-strip__item">
+          <span className="mob-strip__lbl">タナ下流出</span>
+          <span className="mob-strip__val" style={{color: (grade.belowRatio || 0) > 30 ? "var(--neg)" : "var(--gold)"}}>{(grade.belowRatio || 0).toFixed(0)}%</span>
+        </div>
+        <span className="mob-strip__phase">{phase}</span>
+      </div>
 
       <LeftPanel params={params} set={set} locks={locks} toggleLock={toggleLock} />
 
@@ -1133,7 +1166,8 @@ function App() {
           }}>{toast.text}</div>
         )}
         <div className="stage__hud">
-          <div>指示ダナ {phase === "dropping" && <span style={{color:"var(--vermilion)", fontFamily:"var(--mono)", fontSize:10, marginLeft:6}}>● 落とし込み中</span>}</div>
+          <div>指示ダナ</div>
+          {phase === "dropping" && <div style={{color:"var(--vermilion)", fontFamily:"var(--mono)", fontSize:10, marginTop:2}}>フォール中</div>}
           <span className="hud-big">{params.tanaDepth}<small style={{fontSize:14, opacity:.6, marginLeft:3}}>m</small></span>
           {phase === "dropping" && (() => {
             const motosLen = (params.motosEnabled === false ? 0 : (params.motosLength || 0));
@@ -1142,31 +1176,33 @@ function App() {
             const bishiTarget = Math.max(1, params.tanaDepth + drop);
             const hookY = bishiAbsYRef.current + rigLen;
             return (
-              <div style={{marginTop:6, fontFamily:"var(--mono)", fontSize:11, color:"var(--paper)"}}>
+              <div className="hud__drop-detail" style={{marginTop:6, fontFamily:"var(--mono)", fontSize:11, color:"var(--paper)"}}>
                 ビシ {bishiAbsYRef.current.toFixed(1)}/{bishiTarget.toFixed(0)}m<br/>
                 付けエサ {hookY.toFixed(1)}m → {(params.tanaDepth + 5).toFixed(0)}m (下5m)
               </div>
             );
           })()}
-          <div style={{marginTop:14, fontSize:11, letterSpacing:".15em"}}>コマセ残量</div>
-          <div style={{
-            width: 120, height: 8, marginTop: 5,
-            background: "rgba(255,255,255,0.18)",
-            border: "1px solid rgba(255,255,255,0.35)",
-            borderRadius: "4px",
-            overflow: "hidden",
-          }}>
+          <div className="hud__chum">
+            <div style={{marginTop:14, fontSize:11, letterSpacing:".15em"}}>コマセ残量</div>
             <div style={{
-              height:"100%",
-              width: Math.max(0, Math.min(100, chum * 100)) + "%",
-              background: chumColor,
-              transition: "background 0.2s",
-            }}></div>
+              width: 120, height: 8, marginTop: 5,
+              background: "rgba(255,255,255,0.18)",
+              border: "1px solid rgba(255,255,255,0.35)",
+              borderRadius: "4px",
+              overflow: "hidden",
+            }}>
+              <div style={{
+                height:"100%",
+                width: Math.max(0, Math.min(100, chum * 100)) + "%",
+                background: chumColor,
+                transition: "background 0.2s",
+              }}></div>
+            </div>
+            <div style={{
+              fontFamily:"var(--mono)", fontSize:11, marginTop:3,
+              color: chumColor
+            }}>{Math.round(chum * 100)}%</div>
           </div>
-          <div style={{
-            fontFamily:"var(--mono)", fontSize:11, marginTop:3,
-            color: chumColor
-          }}>{Math.round(chum * 100)}%</div>
         </div>
         <div className="stage__legend">
           <div style={{fontFamily:"var(--sans)", fontWeight:700, fontSize:12, color:"var(--text)", marginBottom:6, letterSpacing:".12em"}}>凡例</div>
@@ -1265,6 +1301,24 @@ function App() {
         locks={locks}
         lastCycleResult={lastCycleResult}
       />
+
+      {drawerOpen && (
+        <>
+          <div className="mob-overlay" onClick={() => setDrawerOpen(false)} />
+          <div className="mob-drawer">
+            <div className="mob-drawer__handle" onClick={() => setDrawerOpen(false)} />
+            <div className="mob-drawer__title">設定パネル</div>
+            <div className="mob-drawer__tabs">
+              <button className={"mob-drawer__tab" + (drawerTab === 0 ? " is-active" : "")} onClick={() => setDrawerTab(0)}>設定</button>
+              <button className={"mob-drawer__tab" + (drawerTab === 1 ? " is-active" : "")} onClick={() => setDrawerTab(1)}>診断・最適化</button>
+            </div>
+            <div className="mob-drawer__body">
+              {drawerTab === 0 && <LeftPanel params={params} set={set} locks={locks} toggleLock={toggleLock} />}
+              {drawerTab === 1 && <RightPanel metrics={grade} params={params} presets={PRESETS} selectedPresets={selectedPresets} onPreset={togglePreset} onOptimize={runOptimize} optimizing={optimizing} recommendation={recommendation} onApplyRec={applyRecommendation} locks={locks} lastCycleResult={lastCycleResult} />}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
