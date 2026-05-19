@@ -523,6 +523,7 @@ function App() {
     rigStateRef.current.shakuriOffsetY = 0;
     rigStateRef.current.shakuriVelY = 0;
     particlesRef.current = [];
+    heatmapRef.current = null;
     pendingMakiRef.current = [];
     pendingShakuriRef.current = [];
     autoStateRef.current = { state: "idle", biteTimer: 0 };
@@ -547,6 +548,7 @@ function App() {
     autoStateRef.current = { state: "idle", biteTimer: 0 };
     chumRef.current = 1.0;
     particlesRef.current = [];
+    heatmapRef.current = null;
     phaseRef.current = "dropping";
     setPhase("dropping");
     bishiAbsYRef.current = 0;
