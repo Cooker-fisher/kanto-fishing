@@ -1026,6 +1026,6 @@ select.select:focus { border-color: var(--cta); }
   .mob-drawer__tab.is-active { color: var(--text); border-bottom-color: var(--cta); }
   .mob-drawer__body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .mob-drawer .panel {
-    max-height: none; border-right: none; border-left: none; padding: 12px 16px;
+    display: block; max-height: none; border-right: none; border-left: none; padding: 12px 16px;
   }
 }
