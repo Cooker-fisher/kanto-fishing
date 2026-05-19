@@ -978,8 +978,10 @@ function App() {
   const applyRecommendation = () => {
     if (!recommendation) return;
     setParams(prev => ({ ...prev, ...recommendation.best }));
-    setSelectedPresets({ cycle: null, cond: null, area: null });  // 手動 override 扱い
+    setSelectedPresets({ cycle: null, cond: null, area: null });
     resetSim();
+    setDrawerOpen(false);
+    showToast("✓ 推奨設定を適用しました", "var(--moss)");
   };
 
   // ===== Grade =====
@@ -1316,6 +1318,12 @@ function App() {
               {drawerTab === 0 && <LeftPanel params={params} set={set} locks={locks} toggleLock={toggleLock} />}
               {drawerTab === 1 && <RightPanel metrics={grade} params={params} presets={PRESETS} selectedPresets={selectedPresets} onPreset={togglePreset} onOptimize={runOptimize} optimizing={optimizing} recommendation={recommendation} onApplyRec={applyRecommendation} locks={locks} lastCycleResult={lastCycleResult} />}
             </div>
+            {optimizing && (
+              <div className="mob-drawer__loading">
+                <div className="mob-drawer__spinner" />
+                <div className="mob-drawer__loading-text">最適な設定を探索中...</div>
+              </div>
+            )}
           </div>
         </>
       )}
