@@ -7087,7 +7087,13 @@ def build_html(catches, crawled_at, history, weather_data=None):
         elif _mx is not None:
             cnt_range_str = f"{_mx}匹"
         else:
-            cnt_range_str = f"{len(cs)}件"
+            # fallback: 当日スコープ件数を優先。0件なら「今週N件」と明示して7日集計と分かるようにする。
+            cnt_range_str = f"今週{len(cs)}件" if not _cs_scope else f"{len(_cs_scope)}件"
+        # 当日スコープが空のとき「釣果0件・0船宿」を出さない（件数との矛盾を防ぐ）
+        _scope_small = (
+            f' <small>釣果{len(_cs_scope)}件・{len({c["ship"] for c in _cs_scope})}船宿</small>'
+            if _cs_scope else ""
+        )
         sz_val = (this_w.get("size_avg") or 0) if this_w else 0
         sz_str = f"{sz_val:.0f}cm" if sz_val else ""
         areas_str2 = "・".join(areas_list[:2])
@@ -7149,7 +7155,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<a class="fc{stale_cls}" href="fish/{fish_slug(fish)}.html" data-signal="{signal_key}">'
             f'<span class="fc-signal">{signal_label}</span>'
             f'<div class="fn"><img src="assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fc-emoji" width="32" height="32" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">{fish}</div>'
-            f'<div class="fr">{cnt_range_str} <small>釣果{len(_cs_scope)}件・{len(set(c["ship"] for c in _cs_scope))}船宿</small></div>'
+            f'<div class="fr">{cnt_range_str}{_scope_small}</div>'
             f'<div class="fs">{detail_str}</div>'
             f'{fb_tag}{mini_bars}{trend_tag}'
             f'</a>'
@@ -7346,7 +7352,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'<div class="hero-live">'
             f'<span class="live-badge"><span class="live-pulse"></span>LIVE</span>'
             f'<div class="live-track-wrap">'
-            f'<div class="live-track">{ticker_items}{ticker_items}</div>'
+            f'<div class="live-track">{ticker_items}<span class="lt-dup" aria-hidden="true">{ticker_items}</span></div>'
             f'</div>'
             f'</div>'
         )
@@ -7365,6 +7371,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .live-track-wrap{flex:1;overflow:hidden}
 .live-track{display:flex;white-space:nowrap;font-size:12px;color:rgba(255,255,255,.85)}
 .live-track span{display:inline-block;padding:0 32px}
+.lt-dup{display:contents}
 .live-track .lt-emoji{vertical-align:-3px;margin:0 4px;object-fit:contain}
 .live-track .lt-trophy{display:inline-block;background:var(--cta);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;margin-right:4px;letter-spacing:.5px}
 .live-track .lt-trophy::after{content:none}
@@ -8253,13 +8260,15 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
     os.makedirs(os.path.join(WEB_DIR, "fish"), exist_ok=True)
     _SKIP_FISH = {"不明", "欠航"}
 
-    # ── 今週実績判定（recent7 を使用） ──
-    fish_week_cnt: dict[str, int] = {}   # fish -> 今週便数
-    for c in recent7:
-        for f in c.get("fish", []):
-            if f in _SKIP_FISH or f.isdigit():
-                continue
-            fish_week_cnt[f] = fish_week_cnt.get(f, 0) + 1
+    # ── 今週実績判定（fish_summary を使用・fish 詳細ページと同じ数値にする） ──
+    # 旧実装は recent7 を再集計していたため fish/aji.html の len(catches) と
+    # 数十件の差が生じることがあった。fish_summary は build_fish_pages が
+    # data_for_fish から構築した同一データのため乖離ゼロになる。
+    fish_week_cnt: dict[str, int] = {
+        f: len(cats)
+        for f, cats in fish_summary.items()
+        if f not in _SKIP_FISH and not f.isdigit()
+    }
 
     # 今週カード（fi-card: 既存構造を維持） ──
     # fish_summary はキーセットとして受け取り、今週便数で並べ直す
@@ -9121,7 +9130,13 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         _top_fish_str = "・".join(f for f, _ in top_fish_items[:3])
         _area_desc_fish = f"{_top_fish_str}など" if _top_fish_str else ""
         today_cnt = len(today_catches)
-        area_desc = f"{area}（{group}）の船釣り釣果。{fish_label}{today_cnt}件。{_area_desc_fish}釣れている魚種と船宿情報を毎日更新。"
+        # Bug5修正: ヒーローは直近7日集計を表示。特定日の件数を出すと
+        # 「その日だけ更新されていない」と誤解されるため。
+        _week_cnt = len(catches)
+        _week_ships = len({c["ship"] for c in catches})
+        # 最新釣果日ラベル（area_date = _resolve_display_dataset が返す最新日付）
+        _latest_label = fish_label  # 既に "M/D(曜)" or "—" 形式
+        area_desc = f"{area}（{group}）の船釣り釣果。直近7日{_week_cnt}件・{_week_ships}船宿。{_area_desc_fish}釣れている魚種と船宿情報を毎日更新。"
 
         # 有料ティザー
         area_teaser_html = (
@@ -9146,11 +9161,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{area}の釣果情報・おすすめ船宿【{fish_label}{today_cnt}件】| 船釣り予想</title>
+  <title>{area}の釣果情報・おすすめ船宿【直近7日{_week_cnt}件】| 船釣り予想</title>
   <meta name="description" content="{area_desc}">
   <link rel="canonical" href="{area_url}">
   {_build_share_meta(
-      title=f"{area}の釣果情報・おすすめ船宿【{fish_label}{today_cnt}件】",
+      title=f"{area}の釣果情報・おすすめ船宿【直近7日{_week_cnt}件】",
       desc=area_desc,
       url=area_url,
   )}
@@ -9167,7 +9182,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
   <div class="c">
     <h2>{area}</h2>
     <div class="ah-sub">{group}</div>
-    <div class="ah-m">{today_cnt}件 <small>({len(set(c['ship'] for c in today_catches))}船宿・{fish_label})</small></div>
+    <div class="ah-m">直近7日: {_week_cnt}件・{_week_ships}船宿 <small>(最新: {_latest_label})</small></div>
     {ah_sea_html}
   </div>
 </div>
@@ -14210,17 +14225,24 @@ def main():
                 existing_feed_path=_feed_path if os.path.exists(_feed_path) else None,
             )
 
-            print("[x_post] index.html 生成...")
-            from x_post.build_index_page import build_index as _build_x_index
-            _build_x_index(
-                output_path=os.path.join(_x_post_dir, "index.html"),
-                docs_x_post_dir=_x_post_dir,
-            )
-            print(f"[x_post] 完了 → docs/x_post/{_today_str}.html / docs/x_post/index.html / docs/feed.xml")
+            print(f"[x_post] 完了 → docs/x_post/{_today_str}.html / docs/feed.xml")
         except Exception as _e:
             print(f"[x_post] ERROR: {_e}")
             import traceback as _tb
             _tb.print_exc()
+
+        # index.html は日次生成失敗時もアーカイブから再構築して常に最新を保つ
+        try:
+            print("[x_post] index.html 再構築...")
+            from x_post.build_index_page import build_index as _build_x_index
+            _x_post_dir2 = os.path.join(WEB_DIR, "x_post")
+            _build_x_index(
+                output_path=os.path.join(_x_post_dir2, "index.html"),
+                docs_x_post_dir=_x_post_dir2,
+            )
+            print("[x_post] index.html 完了")
+        except Exception as _e2:
+            print(f"[x_post] index rebuild ERROR: {_e2}")
 
     print(f"\n=== 完了 ===")
     _today_label = f"当日: {len(today_all)} 件" if today_all else f"当日0件→全件フォールバック: {len(all_catches)} 件"
