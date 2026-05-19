@@ -163,22 +163,16 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
         >{beginner ? "⚙ くわしい設定へ" : "🔰 かんたんモード"}</button>
       </div>
 
-      {/* ───── かんたんモード（5項目） ───── */}
+      {/* ───── かんたんモード（7項目） ───── */}
       {beginner && (
         <div className="panel__section">
-          <h3 className="panel__h">かんたん設定（5項目）</h3>
+          <h3 className="panel__h">かんたん設定（7項目）</h3>
           <div className="panel__body">
             <div style={{fontSize:11, color:"var(--sub)", marginBottom:14, lineHeight:1.65,
                          padding:"8px 10px", background:"rgba(232,93,4,0.07)",
                          borderRadius:4, border:"1px solid rgba(232,93,4,0.2)"}}>
-              この5項目だけで基本的な釣り方をシミュレーションできます。<br/>
+              この7項目で基本的な釣り方をシミュレーションできます。<br/>
               右パネルの<b style={{color:"var(--cta)"}}>「おすすめを計算」</b>で残りの設定も自動調整されます。
-            </div>
-
-            <Slider label="水深" value={params.depth} min={20} max={100} step={1} unit="m"
-              onChange={v => sp({ depth: v, tanaDepth: Math.min(params.tanaDepth, v - 5) })} />
-            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
-              船長アナウンスの数値を入力。底まで何メートルあるか。
             </div>
 
             <Slider label="指示ダナ（海面から）" value={params.tanaDepth} min={5} max={params.depth - 3} step={1} unit="m"
@@ -201,11 +195,32 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
               針とビシを繋ぐ細い糸。長いほど食いがいい。標準は6〜8m。
             </div>
 
-            <Slider label="しゃくり間隔（待ち）" value={params.shakuriInterval} min={10} max={300} step={5} unit=""
-              onChange={v => sp({ shakuriInterval: v })}
-              format={v => v >= 60 ? Math.floor(v/60) + "分" + (v%60 ? (v%60)+"秒" : "") : v + "秒"} />
+            <Slider label="上窓の開き（しゃくり放出）" value={params.cageUpperOpening} min={0} max={1.0} step={0.05} unit=""
+              onChange={v => sp({ cageUpperOpening: v })}
+              format={v => v === 0 ? "全閉" : Math.round(v * 100) + "%"} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
+              しゃくり時にコマセが出る量。多いとコマセが早く尽きる。標準は25〜30%。
+            </div>
+
+            <Slider label="下窓の開き（連続漏れ）" value={params.cageLowerOpening} min={0} max={1.0} step={0.05} unit=""
+              onChange={v => sp({ cageLowerOpening: v })}
+              format={v => v === 0 ? "全閉" : Math.round(v * 100) + "%"} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
+              待ち時間にじわじわ出るコマセ量。全閉が基本。開けると煙幕を維持しやすい。
+            </div>
+
+            <Slider label="ガン玉サイズ" value={params.ganDamaSize} min={0} max={1.5} step={0.05} unit=""
+              onChange={v => sp({ ganDamaSize: v })}
+              format={v => v === 0 ? "なし" : v.toFixed(2) + "g " + ganDamaSizeName(v)} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
+              ハリスに付けるオモリ。重いほどハリスが立ち、コマセ帯との同調がしやすい。
+            </div>
+
+            <Slider label="しゃくり振り幅" value={params.shakuriStrokeCm} min={30} max={150} step={5} unit="cm"
+              onChange={v => sp({ shakuriStrokeCm: v })}
+              format={v => v.toFixed(0)} />
             <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:4, lineHeight:1.55}}>
-              コマセを振ってから次に振るまでの待ち時間。食い渋り時は長め（60〜120秒）。
+              1回のしゃくりで竿を動かす幅。大きいほどコマセが多く出る。標準は70〜80cm。
             </div>
           </div>
         </div>
