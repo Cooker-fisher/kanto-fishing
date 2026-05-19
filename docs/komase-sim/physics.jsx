@@ -49,7 +49,13 @@ window.SimPhysics = (function() {
     const depth = Math.max(0.5, params.depth);
     const t = Math.max(0, Math.min(1, y / depth));
     const factor = (1 - t) * 1.0 + t * params.tideDepthFactor;
-    return params.tideSpeed * factor;
+    let c = params.tideSpeed * factor;
+    // 風による表層流 (エクマン層近似): 表面で最大、深度 7m で e^-1
+    if (params.windSpeed > 0) {
+      const wdir = (params.windDir != null ? params.windDir : 90) * Math.PI / 180;
+      c += params.windSpeed * Math.cos(wdir) * 0.022 * Math.exp(-y / 7);
+    }
+    return c;
   }
 
   // --- PEラインの累積横変位 [m] ---
