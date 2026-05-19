@@ -146,19 +146,6 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
         <Slider label="うねり周期" value={params.swellPeriod} min={3} max={12} step={0.5} unit="s"
           onChange={v => sp({ swellPeriod: v })}
           format={v => v.toFixed(1)} />
-        <Slider label="風速" value={params.windSpeed != null ? params.windSpeed : 0}
-          min={0} max={15} step={0.5} unit="m/s"
-          onChange={v => sp({ windSpeed: v })}
-          format={v => v === 0 ? "なし(無風)" : v.toFixed(1)} />
-        <Segmented label="風向 (船首基準)"
-          value={params.windDir != null ? params.windDir : 90}
-          onChange={v => sp({ windDir: v })}
-          options={[
-            { v: 0,   label: "向かい風" },
-            { v: 90,  label: "横風" },
-            { v: 135, label: "斜め追い" },
-            { v: 180, label: "追い風" },
-          ]} />
       </CollapsibleSection>
 
       <CollapsibleSection title="本線・ビシ" defaultOpen={true}>
@@ -366,70 +353,11 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
 };
 
 // =====================================================================
-// カスタムプリセット UI
-// =====================================================================
-function CustomPresetPanel({ customPresets, onSave, onLoad, onDelete }) {
-  const [name, setName] = useState('');
-  return (
-    <div>
-      <div style={{display:'flex', gap:4, marginBottom:8}}>
-        <input
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && name.trim()) { onSave(name); setName(''); } }}
-          placeholder="プリセット名を入力"
-          style={{
-            flex: 1, padding: '6px 8px', fontSize: 12,
-            background: 'var(--sea-mid)', border: '1px solid var(--line-strong)',
-            color: 'var(--paper)', borderRadius: 4, fontFamily: 'var(--sans)',
-            outline: 'none',
-          }}
-        />
-        <button
-          className="btn"
-          style={{padding:'6px 10px', fontSize:11, whiteSpace:'nowrap'}}
-          disabled={!name.trim()}
-          onClick={() => { if (name.trim()) { onSave(name); setName(''); } }}
-        >保存</button>
-      </div>
-      {customPresets.length === 0 && (
-        <div className="note" style={{textAlign:'center', opacity:0.5, padding:'8px 0'}}>保存済みプリセットなし</div>
-      )}
-      {customPresets.map(p => (
-        <div key={p.name} style={{
-          display:'flex', alignItems:'center', gap:4,
-          padding:'6px 8px', marginBottom:4,
-          background:'rgba(29,58,95,0.6)', borderRadius:4,
-          border:'1px solid var(--line)',
-        }}>
-          <span style={{flex:1, fontSize:12, color:'var(--paper)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{p.name}</span>
-          <button
-            className="btn"
-            style={{padding:'4px 8px', fontSize:10, flexShrink:0}}
-            onClick={() => onLoad(p)}
-          >読込</button>
-          <button
-            className="btn"
-            style={{padding:'4px 8px', fontSize:10, color:'var(--vermilion)', borderColor:'var(--vermilion)', flexShrink:0}}
-            onClick={() => onDelete(p.name)}
-          >削除</button>
-        </div>
-      ))}
-      <div className="note" style={{marginTop:6, opacity:0.65}}>
-        現在の全設定をブラウザに保存。再訪時も残ります。
-      </div>
-    </div>
-  );
-}
-
-// =====================================================================
 // 右パネル
 // =====================================================================
 window.RightPanel = function RightPanel(props) {
   const { metrics, params, presets, selectedPresets, onPreset,
-          onOptimize, optimizing, recommendation, onApplyRec, locks, lastCycleResult,
-          customPresets, onSavePreset, onLoadPreset, onDeletePreset } = props;
+          onOptimize, optimizing, recommendation, onApplyRec, locks, lastCycleResult } = props;
   const sel = selectedPresets || {};
   const grade = metrics.grade;
   const gradeClass = grade === "◎" || grade === "○" ? "grade--ok" : grade === "×" ? "grade--bad" : "";
@@ -472,15 +400,6 @@ window.RightPanel = function RightPanel(props) {
             );
           });
         })()}
-      </CollapsibleSection>
-
-      <CollapsibleSection title="マイプリセット" defaultOpen={false}>
-        <CustomPresetPanel
-          customPresets={customPresets || []}
-          onSave={onSavePreset}
-          onLoad={onLoadPreset}
-          onDelete={onDeletePreset}
-        />
       </CollapsibleSection>
 
       <CollapsibleSection title="自動最適化" defaultOpen={true}>

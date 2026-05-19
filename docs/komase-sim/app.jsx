@@ -54,9 +54,6 @@ const DEFAULT_PARAMS = {
   // うねり (海況セクション)
   swellHeight: 0.5,
   swellPeriod: 6.0,
-  // 風 (0=向かい風 / 90=横風 / 180=追い風)
-  windSpeed: 0,
-  windDir: 90,
 };
 
 const LOCKABLE_PARAMS = [
@@ -190,10 +187,6 @@ function App() {
   const [bowViewSide, setBowViewSide] = useState("port");
   const bowViewSideRef = useRef("port");
   bowViewSideRef.current = bowViewSide;
-  // ハリス弾性振動: しゃくり後のハリスのしなり余韻
-  const harrisOscRef = useRef({ active: false, amplitude: 0, elapsed: 0 });
-  // 風による船のローリング
-  const windRollRef = useRef({ phase: 0, offsetY: 0 });
   const [phase, setPhase] = useState("fishing");
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
@@ -442,8 +435,6 @@ function App() {
     metricsRef.current.shakuriCount += 1;
     chumRef.current = Math.max(0, chumRef.current - SimPhysics.shakuriConsumption(pp));
     flashRef.current = 1.0;
-    // ハリス弾性振動トリガー: 振り幅に比例した振幅でしなりを起こす
-    harrisOscRef.current = { active: true, amplitude: (pp.shakuriStrokeCm || 80) / 200, elapsed: 0 };
     lastShakuriAtRef.current = performance.now();
     if (withMaki && pp.makiAmount > 0.01) {
       pendingMakiRef.current.push({ at: performance.now() + 500, amount: pp.makiAmount });
@@ -658,18 +649,6 @@ function App() {
         swellOffsetYRef.current = amp * Math.sin(swellPhaseRef.current * 2 * Math.PI / period);
       }
 
-      // === 風によるローリング ===
-      // 横風成分がローリング振幅を決める。自然ローリング周期 ≈ 2.6s (0.38 Hz)
-      if (running) {
-        const wdir = (pp.windDir != null ? pp.windDir : 90) * Math.PI / 180;
-        const beamWind = (pp.windSpeed || 0) * Math.abs(Math.sin(wdir));
-        const rollAmpRad = beamWind * 0.012; // 10m/s 横風 → ±0.12 rad (≈ ±7°)
-        windRollRef.current.phase += dt * 0.38 * 2 * Math.PI;
-        const rollAngle = rollAmpRad * Math.sin(windRollRef.current.phase);
-        // 竿先(舷側から約4m)がロール角で上下する量 [m]
-        windRollRef.current.offsetY = 4 * (1 - Math.cos(rollAngle));
-      }
-
       // 自動最適動作 (fishing 中のみ): 状態マシンで shakuri→biting→dropping→shakuri を回す
       //   shakuri:  N発撃ち中 (最終発のみ maki) → 終わって maki が完了したら biting
       //   biting:   高位置で食わせ待ち (shakuriInterval 秒)
@@ -880,26 +859,6 @@ function App() {
       metricsRef.current.histogram = histo.bins;
       metricsRef.current.hookBin = histo.hookBin;
 
-      // ハリス弾性振動: しゃくり後にハリスが横に振れる余韻（描画用・物理指標には影響しない）
-      if (harrisOscRef.current.active) {
-        harrisOscRef.current.elapsed += dt;
-        const { amplitude, elapsed } = harrisOscRef.current;
-        const decay = Math.exp(-elapsed * 2.8);
-        if (decay < 0.02) {
-          harrisOscRef.current.active = false;
-        } else {
-          const nPts = rig.harris.length;
-          const T = 0.72; // ハリス固有振動周期 (秒)
-          for (let i = 0; i < nPts; i++) {
-            const frac = nPts > 1 ? i / (nPts - 1) : 0; // 0=ビシ側 1=針側
-            // 進行波: ビシ側を節、針先を腹とする横振れ
-            const wave = Math.sin(2 * Math.PI * elapsed / T - frac * Math.PI * 2.5);
-            rig.harris[i].x += amplitude * decay * wave * frac;
-          }
-          rig.hook = rig.harris[nPts - 1];
-        }
-      }
-
       // タナ下流出率 + コマセ雲の中心深度
       let belowTana = 0;
       let sumY = 0, countY = 0;
@@ -933,7 +892,7 @@ function App() {
         SimRenderer.heatmapStep(heatmapRef.current, map, particlesRef.current, dt);
 
         ctx.clearRect(0, 0, W, H);
-        const swellPx = (swellOffsetYRef.current + (windRollRef.current.offsetY || 0)) * map.sy;
+        const swellPx = swellOffsetYRef.current * map.sy;
         SimRenderer.drawBackground(ctx, map, pp, swellPhaseRef.current);
         SimRenderer.drawHeatmap(ctx, heatmapRef.current, map);
         SimRenderer.drawCurrent(ctx, map, pp);
@@ -1137,29 +1096,6 @@ function App() {
 
   const chum = chumRef.current;
   const chumColor = chum > 0.3 ? "var(--paper)" : chum > 0.1 ? "var(--brass)" : "var(--vermilion)";
-
-  // ===== カスタムプリセット (localStorage 永続化) =====
-  const [customPresets, setCustomPresets] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('komase-custom-presets') || '[]'); } catch { return []; }
-  });
-  const saveCustomPreset = (name) => {
-    const entry = { name: name.trim(), params: { ...params } };
-    const next = [...customPresets.filter(p => p.name !== entry.name), entry];
-    setCustomPresets(next);
-    try { localStorage.setItem('komase-custom-presets', JSON.stringify(next)); } catch {}
-    showToast('✓ 「' + entry.name + '」を保存', 'var(--moss)');
-  };
-  const loadCustomPreset = (preset) => {
-    setParams({ ...DEFAULT_PARAMS, ...preset.params });
-    setSelectedPresets({ cycle: null, cond: null, area: null });
-    resetSim();
-    showToast('「' + preset.name + '」を読込', 'var(--brass)');
-  };
-  const deleteCustomPreset = (name) => {
-    const next = customPresets.filter(p => p.name !== name);
-    setCustomPresets(next);
-    try { localStorage.setItem('komase-custom-presets', JSON.stringify(next)); } catch {}
-  };
 
   return (
     <div className="app">
@@ -1368,10 +1304,6 @@ function App() {
         onApplyRec={applyRecommendation}
         locks={locks}
         lastCycleResult={lastCycleResult}
-        customPresets={customPresets}
-        onSavePreset={saveCustomPreset}
-        onLoadPreset={loadCustomPreset}
-        onDeletePreset={deleteCustomPreset}
       />
 
       {drawerOpen && (
