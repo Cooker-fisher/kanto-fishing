@@ -7976,7 +7976,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                     sz_range = f"{kg_hi:.1f}kg"
                 else:
                     sz_range = ""
-            top_pt = (_CtrF(sd["pts"]).most_common(1)[0][0] if sd["pts"] else "") or sd.get("area", "")
+            top_pt = sd.get("area", "")
             sr_items += (
                 f'<div class="sr">'
                 f'<span class="sr-rank">{i+1}</span>'
