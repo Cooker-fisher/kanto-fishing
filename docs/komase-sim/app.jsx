@@ -1320,8 +1320,8 @@ function App() {
             </div>
             {optimizing && (
               <div className="mob-drawer__loading">
+                <div className="mob-drawer__loading-text">計算中...</div>
                 <div className="mob-drawer__spinner" />
-                <div className="mob-drawer__loading-text">最適な設定を探索中...</div>
               </div>
             )}
           </div>
