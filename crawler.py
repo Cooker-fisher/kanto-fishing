@@ -7929,8 +7929,9 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         # ship-rank（今週・今日優先）
         ship_data_f: dict = {}
         for c in catches:
-            d = ship_data_f.setdefault(c["ship"], {"cnt": 0, "cnt_his": [], "cnt_los": [], "sz_his": [], "sz_los": [], "kg_his": [], "kg_los": [], "pts": [], "today": False})
+            d = ship_data_f.setdefault(c["ship"], {"cnt": 0, "cnt_his": [], "cnt_los": [], "sz_his": [], "sz_los": [], "kg_his": [], "kg_los": [], "pts": [], "area": "", "today": False})
             d["cnt"] += 1
+            if not d["area"] and c.get("area"): d["area"] = c["area"]
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
                 d["cnt_his"].append(cr["max"])
@@ -7975,7 +7976,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                     sz_range = f"{kg_hi:.1f}kg"
                 else:
                     sz_range = ""
-            top_pt = _CtrF(sd["pts"]).most_common(1)[0][0] if sd["pts"] else ""
+            top_pt = (_CtrF(sd["pts"]).most_common(1)[0][0] if sd["pts"] else "") or sd.get("area", "")
             sr_items += (
                 f'<div class="sr">'
                 f'<span class="sr-rank">{i+1}</span>'
