@@ -127,8 +127,92 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
   const hookW = SimPhysics.getHookWeight(params.hookType, params.hookSize);
   const [hLo, hHi] = SimPhysics.HOOK_SIZE_RANGE[params.hookType] || [7, 12];
 
+  // ビギナーモード (localStorage で永続)
+  const [beginner, setBeginner] = useState(() => {
+    try { return localStorage.getItem("komase.beginner") === "1"; } catch(e) {}
+    return false;
+  });
+  const toggleBeginner = () => {
+    setBeginner(prev => {
+      const next = !prev;
+      try { localStorage.setItem("komase.beginner", next ? "1" : "0"); } catch(e) {}
+      return next;
+    });
+  };
+
   return (
     <aside className="panel app__left">
+
+      {/* ───── モード切替バー ───── */}
+      <div style={{
+        display:"flex", alignItems:"center", justifyContent:"space-between",
+        padding:"8px 12px", borderBottom:"1px solid var(--line)",
+      }}>
+        <span style={{fontSize:11, letterSpacing:".08em", color: beginner ? "var(--cta)" : "var(--sub)"}}>
+          {beginner ? "🔰 かんたんモード" : "⚙ くわしい設定"}
+        </span>
+        <button
+          onClick={toggleBeginner}
+          style={{
+            fontSize:10.5, padding:"3px 10px", cursor:"pointer",
+            background: beginner ? "rgba(255,255,255,0.08)" : "rgba(232,93,4,0.15)",
+            color: beginner ? "var(--sub)" : "var(--cta)",
+            border:"1px solid " + (beginner ? "var(--line)" : "var(--cta)"),
+            borderRadius:4, letterSpacing:".05em",
+          }}
+        >{beginner ? "⚙ くわしい設定へ" : "🔰 かんたんモード"}</button>
+      </div>
+
+      {/* ───── かんたんモード（5項目） ───── */}
+      {beginner && (
+        <div className="panel__section">
+          <h3 className="panel__h">かんたん設定（5項目）</h3>
+          <div className="panel__body">
+            <div style={{fontSize:11, color:"var(--sub)", marginBottom:14, lineHeight:1.65,
+                         padding:"8px 10px", background:"rgba(232,93,4,0.07)",
+                         borderRadius:4, border:"1px solid rgba(232,93,4,0.2)"}}>
+              この5項目だけで基本的な釣り方をシミュレーションできます。<br/>
+              右パネルの<b style={{color:"var(--cta)"}}>「おすすめを計算」</b>で残りの設定も自動調整されます。
+            </div>
+
+            <Slider label="水深" value={params.depth} min={20} max={100} step={1} unit="m"
+              onChange={v => sp({ depth: v, tanaDepth: Math.min(params.tanaDepth, v - 5) })} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
+              船長アナウンスの数値を入力。底まで何メートルあるか。
+            </div>
+
+            <Slider label="指示ダナ（海面から）" value={params.tanaDepth} min={5} max={params.depth - 3} step={1} unit="m"
+              onChange={v => sp({ tanaDepth: v })} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
+              コマセを振る深さ。船長の指示通りに合わせる。<b style={{color:"var(--cta)"}}>コマセ釣りで最重要。</b>
+            </div>
+
+            <Slider label="潮流速度" value={params.tideSpeed} min={0} max={1.2} step={0.05} unit="m/s"
+              onChange={v => sp({ tideSpeed: v })}
+              format={v => v.toFixed(2)} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
+              潮の速さ。普通の潮は0.3〜0.5。速いとコマセと仕掛けが離れやすい。
+            </div>
+
+            <Slider label="ハリス長" value={params.harrisLength} min={2} max={12} step={0.5} unit="m"
+              onChange={v => sp({ harrisLength: v })}
+              format={v => v.toFixed(1)} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
+              針とビシを繋ぐ細い糸。長いほど食いがいい。標準は6〜8m。
+            </div>
+
+            <Slider label="しゃくり間隔（待ち）" value={params.shakuriInterval} min={10} max={300} step={5} unit=""
+              onChange={v => sp({ shakuriInterval: v })}
+              format={v => v >= 60 ? Math.floor(v/60) + "分" + (v%60 ? (v%60)+"秒" : "") : v + "秒"} />
+            <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:4, lineHeight:1.55}}>
+              コマセを振ってから次に振るまでの待ち時間。食い渋り時は長め（60〜120秒）。
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───── くわしい設定（既存セクション） ───── */}
+      {!beginner && <>
       <CollapsibleSection title="海況" defaultOpen={true}>
         <Slider label="水深" value={params.depth} min={20} max={100} step={1} unit="m"
           onChange={v => sp({ depth: v, tanaDepth: Math.min(params.tanaDepth, v - 5) })} />
@@ -348,6 +432,7 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
                onClick={() => sp({ autoShakuri: !params.autoShakuri })} />
         </div>
       </CollapsibleSection>
+      </>}
     </aside>
   );
 };
