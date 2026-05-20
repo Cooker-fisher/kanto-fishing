@@ -27,55 +27,45 @@ import openpyxl
 
 HERE = Path(__file__).resolve().parent
 SPECIES_MAP = HERE / 'fish-species-map.json'
+URLS_MANIFEST = HERE / 'urls_manifest.json'
 OUTPUT = HERE / 'wholesale-prices.json'
 
 GEPPO_PAGE = 'https://www.shijou.metro.tokyo.lg.jp/torihiki/geppo'
 GEPPO_HOST = 'https://www.shijou.metro.tokyo.lg.jp'
-UA = 'Mozilla/5.0 (compatible; funatsuri-yoso-bot/1.0; +https://funatsuri-yoso.com)'
+# Chrome 風UA（東京都サイトは UA で配信内容を切り替える挙動が観測されたため）
+UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36')
 WAIT_SEC = 0.8
 
 TARGET_CATEGORIES = {'鮮　魚', '活魚類'}  # 鮮魚 + 活魚のみ（冷凍/加工は除外）
 
 
 def fetch(url: str, binary: bool = False):
-    req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': '*/*'})
+    req = urllib.request.Request(url, headers={
+        'User-Agent': UA,
+        'Accept': '*/*',
+        'Accept-Language': 'ja,en;q=0.9',
+    })
     with urllib.request.urlopen(req, timeout=120) as r:
         data = r.read()
         return data if binary else data.decode('utf-8', errors='ignore')
 
 
+def load_manifest() -> dict[str, str]:
+    """urls_manifest.json から yyyymm -> URL の辞書を返す"""
+    with open(URLS_MANIFEST, encoding='utf-8') as f:
+        m = json.load(f)
+    return {row['yyyymm']: row['url'] for row in m['months']}
+
+
 def list_available_months() -> dict[str, str]:
-    """月報ページから s{YYYYMM}meisai_{YYYYMMDD} の絶対URLを抽出
+    """URLマニフェスト (urls_manifest.json) から月別URLを返す
 
-    実URL形式: https://www.shijou.metro.tokyo.lg.jp/documents/d/shijou/s{YYYYMM}meisai_{YYYYMMDD}
-    （拡張子 .xlsx は URL に付かない。サーバー側で Content-Disposition で xlsx として配信）
+    月報ページのHTMLパースに依存しない方式に変更（2026/05/20）。
+    Actions runner からは月報ページが Cookie 同意ページ等を返してリンク抽出に失敗していた。
+    マニフェストは人間が月1で新月分を追記する運用とする（公開日は毎月20日頃）。
     """
-    html = fetch(GEPPO_PAGE)
-    pat = re.compile(
-        r'(https?://[^\s"\'<>]*?/s(\d{6})meisai_(\d{8}))(?=[\s"\'<>]|$|\.xlsx)'
-    )
-    found: dict[str, str] = {}
-    for m in pat.finditer(html):
-        yyyymm = m.group(2)
-        found.setdefault(yyyymm, m.group(1))
-
-    if not found:
-        # 診断: HTMLサイズと特徴文字列の出現数・先頭1000文字をstderrに出す
-        # 完全なHTMLは geppo_debug.html に保存（workflow が artifact として拾う）
-        print(f'[診断] HTMLサイズ: {len(html)} chars', file=sys.stderr)
-        print(f'[診断] "meisai" 出現数: {html.count("meisai")}', file=sys.stderr)
-        print(f'[診断] "s2026" 出現数: {html.count("s2026")}', file=sys.stderr)
-        print(f'[診断] "documents/d/shijou" 出現数: {html.count("documents/d/shijou")}', file=sys.stderr)
-        print(f'[診断] "<script" 出現数: {html.count("<script")}', file=sys.stderr)
-        print(f'[診断] HTML先頭1000文字:', file=sys.stderr)
-        print(html[:1000], file=sys.stderr)
-        try:
-            debug_path = HERE / 'geppo_debug.html'
-            debug_path.write_text(html, encoding='utf-8')
-            print(f'[診断] 完全HTML保存: {debug_path}', file=sys.stderr)
-        except Exception as e:
-            print(f'[診断] HTML保存失敗: {e}', file=sys.stderr)
-    return found
+    return load_manifest()
 
 
 def parse_xlsx(xlsx_bytes: bytes) -> tuple[str, dict]:
