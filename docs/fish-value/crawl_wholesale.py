@@ -58,6 +58,23 @@ def list_available_months() -> dict[str, str]:
     for m in pat.finditer(html):
         yyyymm = m.group(2)
         found.setdefault(yyyymm, m.group(1))
+
+    if not found:
+        # 診断: HTMLサイズと特徴文字列の出現数・先頭1000文字をstderrに出す
+        # 完全なHTMLは geppo_debug.html に保存（workflow が artifact として拾う）
+        print(f'[診断] HTMLサイズ: {len(html)} chars', file=sys.stderr)
+        print(f'[診断] "meisai" 出現数: {html.count("meisai")}', file=sys.stderr)
+        print(f'[診断] "s2026" 出現数: {html.count("s2026")}', file=sys.stderr)
+        print(f'[診断] "documents/d/shijou" 出現数: {html.count("documents/d/shijou")}', file=sys.stderr)
+        print(f'[診断] "<script" 出現数: {html.count("<script")}', file=sys.stderr)
+        print(f'[診断] HTML先頭1000文字:', file=sys.stderr)
+        print(html[:1000], file=sys.stderr)
+        try:
+            debug_path = HERE / 'geppo_debug.html'
+            debug_path.write_text(html, encoding='utf-8')
+            print(f'[診断] 完全HTML保存: {debug_path}', file=sys.stderr)
+        except Exception as e:
+            print(f'[診断] HTML保存失敗: {e}', file=sys.stderr)
     return found
 
 
