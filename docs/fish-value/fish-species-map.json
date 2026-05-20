@@ -4,8 +4,8 @@
   "source": {
     "wholesale": "東京都中央卸売市場 市場統計情報 明細データ（月報）",
     "url": "https://www.shijou.metro.tokyo.lg.jp/torihiki/geppo",
-    "file_pattern": "s{YYYYMM}meisai_*.xlsx",
-    "available_since": "202502",
+    "file_pattern": "s{YYYYMM}meisai_{YYYYMMDD} (URLは拡張子なし・配信時に xlsx 付与)",
+    "available_since": "202501",
     "columns_16": [
       "年月(yyyy/m)", "年月(yyyymm)", "年", "月",
       "市場コード", "市場",
