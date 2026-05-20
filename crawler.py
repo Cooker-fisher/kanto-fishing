@@ -7193,11 +7193,12 @@ def build_html(catches, crawled_at, history, weather_data=None):
         )
     area_nav = "".join(area_nav_parts)
     # V2 ZONE B2: エリア別今日の釣果カード（当日 sparse 時は7日窓を使用）
-    today_str = now.strftime("%Y/%m/%d")
+    # 2026/05/20 修正: today_str (実日付) ではなく hero_date で絞る。
+    # hero_date が前日に解決された場合 today_str でフィルタすると空になり 0件になるため。
     if is_sparse_today:
         today_catches = catches_for_summary
     else:
-        today_catches = [c for c in catches if c.get("date") == today_str]
+        today_catches = [c for c in catches if c.get("date") == hero_date]
     area_today_html = ""
     area_fish_map = {}  # area -> {fish: count}
     for c in today_catches:
