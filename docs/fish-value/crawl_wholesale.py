@@ -45,19 +45,19 @@ def fetch(url: str, binary: bool = False):
 
 
 def list_available_months() -> dict[str, str]:
-    """月報ページから s{YYYYMM}meisai_{YYYYMMDD}.xlsx の絶対URLを抽出"""
+    """月報ページから s{YYYYMM}meisai_{YYYYMMDD} の絶対URLを抽出
+
+    実URL形式: https://www.shijou.metro.tokyo.lg.jp/documents/d/shijou/s{YYYYMM}meisai_{YYYYMMDD}
+    （拡張子 .xlsx は URL に付かない。サーバー側で Content-Disposition で xlsx として配信）
+    """
     html = fetch(GEPPO_PAGE)
-    pat = re.compile(r'(?:href=["\'])?([^"\'\s<>]*s(\d{6})meisai_(\d{8})\.xlsx)')
+    pat = re.compile(
+        r'(https?://[^\s"\'<>]*?/s(\d{6})meisai_(\d{8}))(?=[\s"\'<>]|$|\.xlsx)'
+    )
     found: dict[str, str] = {}
     for m in pat.finditer(html):
-        href, yyyymm, _ = m.group(1), m.group(2), m.group(3)
-        if href.startswith('//'):
-            href = 'https:' + href
-        elif href.startswith('/'):
-            href = GEPPO_HOST + href
-        elif not href.startswith('http'):
-            href = GEPPO_PAGE.rstrip('/') + '/' + href.lstrip('/')
-        found.setdefault(yyyymm, href)
+        yyyymm = m.group(2)
+        found.setdefault(yyyymm, m.group(1))
     return found
 
 
@@ -212,7 +212,7 @@ def main() -> int:
         yyyymm, by_item = parse_xlsx(xlsx_bytes)
         md = aggregate(yyyymm, by_item, item_to_pfid)
         md['source_url'] = url
-        md['source_file'] = url.rsplit('/', 1)[-1]
+        md['source_file'] = url.rsplit('/', 1)[-1] + '.xlsx'  # URLに拡張子ないので付加
         upsert_month(doc, md)
         save(doc)
         print(f'  品目 {len(md["prices"])} 件')
