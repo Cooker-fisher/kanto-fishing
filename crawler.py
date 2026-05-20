@@ -7071,6 +7071,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
         # 2026/05/16 修正: sparse でなければカードの数値は hero_date 当日のみで集計。
         # 7日窓のままだと「5/15 釣れている魚」見出しなのに 5/14 ピークの値が出るバグの解消。
         _cs_scope = [c for c in cs if c.get("date") == hero_date] if not is_sparse_today else cs
+        # 2026/05/20 修正: 当日釣果ゼロの魚は "{date} 釣れている魚" セクションから除外。
+        # 7日集計値しかない魚が当日セクションに混入すると「釣れている魚」の意味が破綻するため。
+        if not _cs_scope and not is_sparse_today:
+            continue
         _cs_p = [c for c in _cs_scope if c.get("count_range") and not c["count_range"].get("is_boat")]
         _mn = None
         _mx = None
@@ -8457,7 +8461,7 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
 </div>
 <div class="c">
   <p class="bread"><a href="../index.html">トップ</a> &rsaquo; 魚種一覧</p>
-  <h2 class="st">今日の釣果</h2>
+  <h2 class="st">今週よく釣れている魚</h2>
   <div class="fi-grid">{fish_index_cards}</div>
   {idx_all_section}
 </div>
