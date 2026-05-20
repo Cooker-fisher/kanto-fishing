@@ -149,7 +149,7 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
         padding:"8px 12px", borderBottom:"1px solid var(--line)",
       }}>
         <span style={{fontSize:11, letterSpacing:".08em", color: beginner ? "var(--cta)" : "var(--sub)"}}>
-          {beginner ? "🔰 かんたんモード" : "⚙ 上級者設定"}
+          {beginner ? "🔰 かんたんモード" : "⚓ 上級者設定"}
         </span>
         <button
           onClick={toggleBeginner}
@@ -160,7 +160,7 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
             border:"1px solid " + (beginner ? "var(--line)" : "var(--cta)"),
             borderRadius:4, letterSpacing:".05em",
           }}
-        >{beginner ? "⚙ 上級者設定へ" : "🔰 かんたんモード"}</button>
+        >{beginner ? "⚓ 上級者設定へ" : "🔰 かんたんモード"}</button>
       </div>
 
       {/* ───── かんたんモード（7項目） ───── */}
