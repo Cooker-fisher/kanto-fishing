@@ -377,6 +377,26 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 .share-x:hover { opacity: .85; }
 .share-follow { background: #fff; color: var(--accent); }
 .share-follow:hover { background: var(--bg-alt); }
+/* 0件日: 集計中通知 */
+.empty-day-notice {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--port);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-top: 8px;
+}
+.empty-day-notice .ed-main { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.empty-day-notice .ed-sub  { font-size: 13px; color: var(--sub); margin-bottom: 14px; }
+.empty-day-notice .ed-recent-title {
+  font-size: 11px; color: var(--sub); font-weight: 800;
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+}
+.empty-day-notice .ed-recent-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.empty-day-notice .ed-recent-list li { font-size: 14px; }
+.empty-day-notice .ed-recent-list a { color: var(--port); font-weight: 700; text-decoration: none; }
+.empty-day-notice .ed-recent-list a:hover { text-decoration: underline; }
+.empty-day-notice .ed-stat { color: var(--sub); font-size: 13px; margin-left: 4px; }
 @media (max-width: 600px) {
   .hl-grid, .umi-grid { grid-template-columns: 1fr; }
   .fish-row { grid-template-columns: 40px 90px 90px 1fr; }
@@ -384,6 +404,70 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
   .share-bar a { padding: 7px 12px; font-size: 12px; }
 }
 """
+
+
+def _find_recent_dates_with_data(x_post_dir, current_date_iso, limit=2):
+    """current_date_iso から遡って n_records>0 の最近の日次ページを探す。
+    各 dict は {"iso", "label", "n_ships", "n_records"} を持つ。"""
+    from datetime import datetime, timedelta
+    weekday_jp = ["月", "火", "水", "木", "金", "土", "日"]
+    results = []
+    try:
+        current = datetime.strptime(current_date_iso, "%Y-%m-%d")
+    except (ValueError, TypeError):
+        return results
+    if not os.path.isdir(x_post_dir):
+        return results
+    for delta in range(1, 31):
+        check_date = current - timedelta(days=delta)
+        date_str = check_date.strftime("%Y-%m-%d")
+        path = os.path.join(x_post_dir, f"{date_str}.html")
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                content = f.read()
+        except Exception:
+            continue
+        m_ships = re.search(r"<b>(\d+)</b>船宿出船", content)
+        m_recs = re.search(r"<b>(\d+)</b>件の釣果報告", content)
+        n_ships = int(m_ships.group(1)) if m_ships else 0
+        n_recs = int(m_recs.group(1)) if m_recs else 0
+        if n_recs > 0:
+            label = f"{check_date.month}/{check_date.day}({weekday_jp[check_date.weekday()]})"
+            results.append({
+                "iso": date_str,
+                "label": label,
+                "n_ships": n_ships,
+                "n_records": n_recs,
+            })
+            if len(results) >= limit:
+                break
+    return results
+
+
+def _empty_day_notice_html(date_label, recent_days):
+    """0件日用「集計中」通知 HTML。recent_days が空でも main/sub 2 行は出す。"""
+    recent_html = ""
+    if recent_days:
+        items = "".join(
+            f'<li><a href="./{d["iso"]}.html">{d["label"]}</a>'
+            f' <span class="ed-stat">{d["n_ships"]}船宿・{d["n_records"]}件</span></li>'
+            for d in recent_days
+        )
+        recent_html = (
+            '<div class="ed-recent">'
+            '<div class="ed-recent-title">直近の釣果を見る</div>'
+            f'<ul class="ed-recent-list">{items}</ul>'
+            '</div>'
+        )
+    return (
+        f'<div class="empty-day-notice">'
+        f'<p class="ed-main">{date_label}の釣果は現在集計中です。</p>'
+        f'<p class="ed-sub">船宿からの釣果公開後、順次反映します。</p>'
+        f'{recent_html}'
+        f'</div>'
+    )
 
 
 def _fish_table_rows_html(fish_rows, depth="../"):
@@ -502,8 +586,9 @@ def _fmt_sea_cards(sea):
     )
 
 
-def _sea_grid_html(ctx):
-    """内海・外海 2 セット × 6 カード海況グリッド + サマリ + 出船率バー"""
+def _sea_grid_html(ctx, hide_ship_rate=False):
+    """内海・外海 2 セット × 6 カード海況グリッド + サマリ + 出船率バー。
+    hide_ship_rate=True のとき出船率バーは省略する（0件日用）。"""
     inner = ctx.get("inner_sea_data") or {}
     outer = ctx.get("outer_sea_data") or {}
     n_ships        = ctx.get("n_ships", 0)
@@ -551,15 +636,18 @@ def _sea_grid_html(ctx):
     if summary_parts:
         summary_html = f'<p class="sea-summary">{"。".join(summary_parts)}。</p>\n'
 
-    # 出船率バー
-    _rate_val = (n_ships - n_cancellations) / max(n_ships, 1)
-    ship_rate_str = f"{int(_rate_val * 100)}%"
-    warn_cls = " warn" if _rate_val < 0.7 else ""
-    rate_html = (
-        f'<div class="ship-rate-bar{warn_cls}">'
-        f'出船率 <b>{ship_rate_str}</b>（{n_ships}船宿中・{n_cancellations}欠航）'
-        f'</div>\n'
-    )
+    # 出船率バー（0件日は非表示。出船率 0% の誤解を招くため）
+    if hide_ship_rate or n_ships <= 0:
+        rate_html = ""
+    else:
+        _rate_val = (n_ships - n_cancellations) / max(n_ships, 1)
+        ship_rate_str = f"{int(_rate_val * 100)}%"
+        warn_cls = " warn" if _rate_val < 0.7 else ""
+        rate_html = (
+            f'<div class="ship-rate-bar{warn_cls}">'
+            f'出船率 <b>{ship_rate_str}</b>（{n_ships}船宿中・{n_cancellations}欠航）'
+            f'</div>\n'
+        )
 
     inner_cards = _fmt_sea_cards(inner)
     outer_cards = _fmt_sea_cards(outer)
@@ -654,6 +742,17 @@ def build(ctx, commentary, output_path, png_url=None):
     fish_rows = ctx.get("fish_rows", [])
     season_label = ctx.get("season_label", "")
 
+    # 0件日（n_records==0）は通常テンプレートが「アジは食いが活発化…0件」など
+    # 矛盾文章を生成するため、専用の「集計中」通知に差し替える。
+    no_data = (n_records <= 0)
+    if no_data:
+        _x_post_dir_for_recent = os.path.dirname(output_path)
+        _recent_days = _find_recent_dates_with_data(_x_post_dir_for_recent, date_iso, limit=2)
+        intro_block = ""
+        hl_commentary = _empty_day_notice_html(date_label, _recent_days)
+        ocean_commentary = ""
+        fish_commentary = ""
+
     # PNG の相対パス（docs/x_post/ からは同ディレクトリ）
     date_str_for_file = date_iso  # YYYY-MM-DD
     png_filename = f"{date_str_for_file}.png"
@@ -663,12 +762,18 @@ def build(ctx, commentary, output_path, png_url=None):
 
     # OGP
     top_cnt_fish = ctx.get("top_cnt_fish", "")
-    og_desc = (
-        f"{date_label} 関東5県の船釣り釣果まとめ。"
-        f"{n_ships}船宿・{n_fish_species}魚種・{n_records}件の釣果報告と海況レポート。"
-    )
-    if top_cnt_fish and top_cnt_max:
-        og_desc += f"{top_cnt_fish}{ctx.get('top_cnt_min',0)}〜{top_cnt_max}匹など。"
+    if no_data:
+        og_desc = (
+            f"{date_label} 関東5県の船釣り釣果速報。"
+            "釣果は現在集計中で、船宿からの公開後に順次反映します。"
+        )
+    else:
+        og_desc = (
+            f"{date_label} 関東5県の船釣り釣果まとめ。"
+            f"{n_ships}船宿・{n_fish_species}魚種・{n_records}件の釣果報告と海況レポート。"
+        )
+        if top_cnt_fish and top_cnt_max:
+            og_desc += f"{top_cnt_fish}{ctx.get('top_cnt_min',0)}〜{top_cnt_max}匹など。"
 
     # 5ボタン日付ナビ（案A: ±7日 + ±1日 + 全アーカイブ）
     prev_iso = ctx.get("prev_date_iso", "")
@@ -698,10 +803,10 @@ def build(ctx, commentary, output_path, png_url=None):
     day_nav = (f'<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション">'
                f'{prev7_html}{prev_html}{archive_html}{next_html}{next7_html}</nav>')
 
-    # ハイライトカード
+    # ハイライトカード（0件日は ctx の top_kg_max/top_cnt_max が 0 のため空文字が返る）
     hl_cards = _hl_cards_html(ctx)
-    # 海況グリッド（6カード・area ページと同スタイル）
-    sea_grid = _sea_grid_html(ctx)
+    # 海況グリッド（0件日は出船率バーを隠す。「0船宿中・0欠航」表示の誤解防止）
+    sea_grid = _sea_grid_html(ctx, hide_ship_rate=no_data)
     # 魚種テーブル
     fish_rows_html = _fish_table_rows_html(fish_rows, depth="../")
     # X カードテーブル
@@ -715,6 +820,22 @@ def build(ctx, commentary, output_path, png_url=None):
             kg_label = f'<span class="stat"><b>{top_kg_min:.1f}〜{top_kg_max:.2f}</b>kg 大物記録</span>'
         else:
             kg_label = f'<span class="stat">最大<b>{top_kg_max:.2f}</b>kg 大物記録</span>'
+
+    # section 3 (魚種別釣果報告): 0件日は完全非表示
+    # 「本日の全0魚種のうち…」のリード文と空の fish-list が誤解を招くため
+    if no_data:
+        section3_html = ""
+    else:
+        section3_html = f"""  <section class="sec">
+    <h2><span class="num">3</span>魚種別 釣果報告</h2>
+    <p class="lead">
+      本日の全{n_fish_species}魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
+    </p>
+    <div class="fish-list">
+{fish_rows_html}
+    </div>
+{fish_commentary}
+  </section>"""
 
     # X シェアボタン
     _share_url_full = f"https://funatsuri-yoso.com/x_post/{date_str_for_file}.html"
@@ -805,16 +926,7 @@ def build(ctx, commentary, output_path, png_url=None):
 {ocean_commentary}
   </section>
 
-  <section class="sec">
-    <h2><span class="num">3</span>魚種別 釣果報告</h2>
-    <p class="lead">
-      本日の全{n_fish_species}魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
-    </p>
-    <div class="fish-list">
-{fish_rows_html}
-    </div>
-{fish_commentary}
-  </section>
+{section3_html}
 
 {day_nav}
 
