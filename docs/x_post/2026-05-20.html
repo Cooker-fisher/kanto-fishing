@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>5/20(水) 関東船釣り 釣果まとめ | 船釣り予想</title>
-<meta name="description" content="5/20(水) 関東5県の船釣り釣果まとめ。0船宿・0魚種・0件の釣果報告と海況レポート。">
+<meta name="description" content="5/20(水) 関東5県の船釣り釣果速報。釣果は現在集計中で、船宿からの公開後に順次反映します。">
 <meta property="og:title" content="5/20(水) 関東船釣り 釣果まとめ | 船釣り予想">
-<meta property="og:description" content="5/20(水) 関東5県の船釣り釣果まとめ。0船宿・0魚種・0件の釣果報告と海況レポート。">
+<meta property="og:description" content="5/20(水) 関東5県の船釣り釣果速報。釣果は現在集計中で、船宿からの公開後に順次反映します。">
 <meta property="og:image" content="https://funatsuri-yoso.com/x_post/2026-05-20.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@funatsuri_yoso">
 <meta name="twitter:title" content="5/20(水) 関東船釣り 釣果まとめ | 船釣り予想">
-<meta name="twitter:description" content="5/20(水) 関東5県の船釣り釣果まとめ。0船宿・0魚種・0件の釣果報告と海況レポート。">
+<meta name="twitter:description" content="5/20(水) 関東5県の船釣り釣果速報。釣果は現在集計中で、船宿からの公開後に順次反映します。">
 <meta name="twitter:image" content="https://funatsuri-yoso.com/x_post/2026-05-20.png?v=2">
 <link rel="canonical" href="https://funatsuri-yoso.com/x_post/2026-05-20.html">
 <style>
@@ -297,6 +297,26 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 .share-x:hover { opacity: .85; }
 .share-follow { background: #fff; color: var(--accent); }
 .share-follow:hover { background: var(--bg-alt); }
+/* 0件日: 集計中通知 */
+.empty-day-notice {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--port);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-top: 8px;
+}
+.empty-day-notice .ed-main { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.empty-day-notice .ed-sub  { font-size: 13px; color: var(--sub); margin-bottom: 14px; }
+.empty-day-notice .ed-recent-title {
+  font-size: 11px; color: var(--sub); font-weight: 800;
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+}
+.empty-day-notice .ed-recent-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.empty-day-notice .ed-recent-list li { font-size: 14px; }
+.empty-day-notice .ed-recent-list a { color: var(--port); font-weight: 700; text-decoration: none; }
+.empty-day-notice .ed-recent-list a:hover { text-decoration: underline; }
+.empty-day-notice .ed-stat { color: var(--sub); font-size: 13px; margin-left: 4px; }
 @media (max-width: 600px) {
   .hl-grid, .umi-grid { grid-template-columns: 1fr; }
   .fish-row { grid-template-columns: 40px 90px 90px 1fr; }
@@ -343,31 +363,19 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 
   <section class="sec">
     <h2><span class="num">1</span>今日のハイライト</h2>
-<p class="lead">5/20(水)は<b>0船宿</b>が出船し、<b>0魚種</b>で<b>0件</b>の釣果報告が寄せられました。5月中旬の釣況をデータでお届けします。</p>
 
-<div class="commentary"><p>水曜日で、各船宿とも比較的空席のある状況。<b>常連が休む合間の穴場狙い</b>には絶好のタイミングです。アジは食いが活発化しており、本日も0件の釣果が出ています。</p></div>
+
+<div class="empty-day-notice"><p class="ed-main">5/20(水)の釣果は現在集計中です。</p><p class="ed-sub">船宿からの釣果公開後、順次反映します。</p><div class="ed-recent"><div class="ed-recent-title">直近の釣果を見る</div><ul class="ed-recent-list"><li><a href="./2026-05-19.html">5/19(火)</a> <span class="ed-stat">39船宿・65件</span></li><li><a href="./2026-05-18.html">5/18(月)</a> <span class="ed-stat">41船宿・70件</span></li></ul></div></div>
   </section>
 
   <section class="sec">
     <h2><span class="num">2</span>海況レポート</h2>
-<p class="sea-summary">水温は平年比+2.4℃と高め（19.4℃）。波0.6m・風4m/sで出船日和。</p>
-<div class="sea-pair"><div class="sea-section"><div class="sea-section-title">内海（東京湾・相模湾）</div><div class="sea-grid"><div class="sea-item"><div class="sv">19.4℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">0.6m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">南南西3.7m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">三日月</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">1014hPa</div><div class="sl2">気圧</div></div></div></div><div class="sea-section"><div class="sea-section-title">外海（外房・銚子方面）</div><div class="sea-grid"><div class="sea-item"><div class="sv">18.5℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">1.4m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">南西8.9m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">三日月</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">1014hPa</div><div class="sl2">気圧</div></div></div></div></div>
-<div class="ship-rate-bar warn">出船率 <b>0%</b>（0船宿中・0欠航）</div>
+<div class="sea-pair"><div class="sea-section"><div class="sea-section-title">内海（東京湾・相模湾）</div><div class="sea-grid"><div class="sea-item"><div class="sv">—</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">—</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">—</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">三日月</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">—</div><div class="sl2">気圧</div></div></div></div><div class="sea-section"><div class="sea-section-title">外海（外房・銚子方面）</div><div class="sea-grid"><div class="sea-item"><div class="sv">—</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">—</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">—</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">三日月</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">—</div><div class="sl2">気圧</div></div></div></div></div>
 
-<div class="commentary"><p>本日は<b>内海・外海ともに穏やかな海況</b>に恵まれ、関東圏0船宿の出船率は高い好スコア。<b>内海（東京湾・相模湾）</b>は風4〜4m/s、波0.6mと凪に近い状態で、アジの数釣りに集中できる好条件でした。<b>外海（外房・銭洲）</b>もうねり0.4mと許容範囲内。カンパチの遠征便も予定通り運航しました。</p></div>
+
   </section>
 
-  <section class="sec">
-    <h2><span class="num">3</span>魚種別 釣果報告</h2>
-    <p class="lead">
-      本日の全0魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
-    </p>
-    <div class="fish-list">
 
-    </div>
-<div class="commentary"><p>本日は0魚種のみという特殊な構成。各魚種が記録の大部分を占め、シーズン的に他魚種が動きにくい時期に入ったのか、海況に偏りがあった可能性があります。
-本日は件数こそ控えめでしたが、出船した船宿からは各魚種の手堅い釣果が記録されました。明日以降の好転に期待です。</p></div>
-  </section>
 
 <nav class="day-nav day-nav-5" aria-label="日付ナビゲーション"><a class="prev7" href="./2026-05-13.html"><small>← 7日前</small>5/13(水)</a><a class="prev" href="./2026-05-19.html"><small>← 前日</small>5/19(火) の釣果まとめ</a><a class="archive-cta" href="./index.html"><small>全日程</small>一覧へ</a><span class="next disabled"><small>翌日 →</small>5/21(木)（記録なし）</span><span class="next7 disabled" aria-disabled="true"><small>7日後 →</small>5/27(水)（記録なし）</span></nav>
 
