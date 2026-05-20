@@ -132,35 +132,22 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
     try { return localStorage.getItem("komase.beginner") === "1"; } catch(e) {}
     return false;
   });
-  const toggleBeginner = () => {
-    setBeginner(prev => {
-      const next = !prev;
-      try { localStorage.setItem("komase.beginner", next ? "1" : "0"); } catch(e) {}
-      return next;
-    });
+  const setBegMode = (val) => {
+    setBeginner(val);
+    try { localStorage.setItem("komase.beginner", val ? "1" : "0"); } catch(e) {}
   };
 
   return (
     <aside className="panel app__left">
 
       {/* ───── モード切替バー ───── */}
-      <div style={{
-        display:"flex", alignItems:"center", justifyContent:"space-between",
-        padding:"8px 12px", borderBottom:"1px solid var(--line)",
-      }}>
-        <span style={{fontSize:11, letterSpacing:".08em", color: beginner ? "var(--cta)" : "var(--sub)"}}>
-          {beginner ? "🔰 かんたんモード" : "⚓ 上級者設定"}
-        </span>
-        <button
-          onClick={toggleBeginner}
-          style={{
-            fontSize:10.5, padding:"3px 10px", cursor:"pointer",
-            background: beginner ? "rgba(255,255,255,0.08)" : "rgba(232,93,4,0.15)",
-            color: beginner ? "var(--sub)" : "var(--cta)",
-            border:"1px solid " + (beginner ? "var(--line)" : "var(--cta)"),
-            borderRadius:4, letterSpacing:".05em",
-          }}
-        >{beginner ? "⚓ 上級者設定へ" : "🔰 かんたんモード"}</button>
+      <div style={{padding:"10px 12px", borderBottom:"1px solid var(--line)"}}>
+        <div className="seg">
+          <button className={"seg__btn " + (beginner ? "is-on" : "")}
+            onClick={() => setBegMode(true)}>🔰 かんたん</button>
+          <button className={"seg__btn " + (!beginner ? "is-on" : "")}
+            onClick={() => setBegMode(false)}>⚓ 上級者</button>
+        </div>
       </div>
 
       {/* ───── かんたんモード（7項目） ───── */}
