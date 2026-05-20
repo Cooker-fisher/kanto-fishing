@@ -35,6 +35,7 @@ jobs:
       - name: install dependencies
         run: pip install openpyxl
       - name: run wholesale crawler
+        id: crawl
         run: |
           ARGS=""
           MODE="${{ github.event.inputs.mode }}"
@@ -52,6 +53,14 @@ jobs:
           fi
           echo "Running: python3 docs/fish-value/crawl_wholesale.py $ARGS"
           python3 docs/fish-value/crawl_wholesale.py $ARGS
+      - name: upload geppo debug html on failure
+        if: failure() && steps.crawl.conclusion == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: geppo-debug-html
+          path: docs/fish-value/geppo_debug.html
+          if-no-files-found: ignore
+          retention-days: 7
       - name: push if changed
         run: |
           git config user.name "github-actions[bot]"
