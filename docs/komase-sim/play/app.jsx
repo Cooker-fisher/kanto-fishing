@@ -1347,6 +1347,45 @@ function App() {
           </div>
         </>
       )}
+      {/* 結果連動シェアバー: cycleScore と主要パラメータを含むテキスト生成 */}
+      {(() => {
+        const score = Math.round(grade.cycleScore || 0);
+        const cg = grade.cycleGrade || "×";
+        const tana = Math.round(params.tanaDepth || 0);
+        const harris = (params.harrisLength || 0).toFixed(1).replace(/\.0$/, "");
+        const cnt = params.shakuriCountPerTrigger || 1;
+        const interval = params.shakuriInterval || 60;
+        // 判定別 枕詞 (cycleScore=0 = 未計測時はプロモ文)
+        let intro;
+        if (score === 0)         intro = "🎣 マダイコマセシミュ、触ってみた";
+        else if (cg === "◎")     intro = "🎣 マダイコマセ、理想配置きた！";
+        else if (cg === "○")     intro = "🎣 マダイコマセ、手応えあり";
+        else if (cg === "△")     intro = "🎣 マダイコマセ、まだ調整中";
+        else                     intro = "🎣 マダイコマセ、特訓中";
+        const body = score === 0
+          ? "コマセマダイ釣りを物理シミュレーション"
+          : `スコア ${score}点 (${cg}判定)\nタナ${tana}m・ハリス${harris}m・しゃくり${cnt}発/${interval}s`;
+        const tweetText = intro + "\n" + body;
+        const pageUrl = "https://funatsuri-yoso.com/komase-sim/play/";
+        const tweetUrl =
+          "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText) +
+          "&url=" + encodeURIComponent(pageUrl) +
+          "&hashtags=" + encodeURIComponent("マダイ,コマセ釣り,船釣り");
+        const btnLabel = score === 0 ? "📤 シミュをXでシェア" : "📤 結果をXに投稿";
+        return (
+          <div className="share-bar share-bar--sim" role="group" aria-label="結果シェア">
+            <a
+              className="share-x"
+              href={tweetUrl}
+              target="_blank"
+              rel="noopener nofollow"
+              aria-label={btnLabel}
+            >
+              {btnLabel}
+            </a>
+          </div>
+        );
+      })()}
       <footer className="sim-footer">
         <small>
           参考: TSURINEWS / DAIWA / SHIMANO / サニー商事 / 一之瀬丸 他　|
