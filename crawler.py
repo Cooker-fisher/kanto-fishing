@@ -7487,7 +7487,15 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .topc-period{font-size:10px;font-weight:600;color:var(--muted);margin-left:6px}
 @media(max-width:640px){.topc-grid{grid-template-columns:1fr}}
 .ship-chips a{display:inline-flex;align-items:center;gap:4px}
-.ship-chips .ship-cnt{font-size:10px;color:var(--cta);font-weight:700}"""
+.ship-chips .ship-cnt{font-size:10px;color:var(--cta);font-weight:700}
+.komase-sim-card-section{margin:16px 0;padding:0 12px}
+.komase-sim-card{display:block;padding:16px;background:linear-gradient(135deg,#0b1d33 0%,#14406a 100%);color:#f3ead7;border-radius:8px;text-decoration:none;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s}
+.komase-sim-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.3);transform:translateY(-1px)}
+.kc-badge{display:inline-block;padding:2px 8px;background:#c84427;color:#fff;font-size:11px;font-weight:700;border-radius:3px;margin-bottom:6px}
+.komase-sim-card h3{margin:6px 0;font-size:18px;color:#f3ead7}
+.komase-sim-card p{margin:6px 0;font-size:13px;line-height:1.6;color:#e7dcc3}
+.kc-cta{display:inline-block;margin-top:8px;padding:6px 14px;background:#c84427;color:#fff;border-radius:3px;font-weight:700;font-size:13px}
+@media(max-width:600px){.komase-sim-card h3{font-size:16px}.komase-sim-card p{font-size:12px}}"""
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -7543,6 +7551,15 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
 <!-- 概況テキスト -->
 {overview_html}
+<!-- NEW: コマセシミュレーターカード -->
+<section class="komase-sim-card-section">
+  <a href="/komase-sim/" class="komase-sim-card" aria-label="マダイコマセシミュレーターを開く">
+    <span class="kc-badge">🆕 NEW</span>
+    <h3>🎣 マダイコマセシミュレーター</h3>
+    <p>ハリス・ガン玉・しゃくり方を変えると、コマセ帯と付けエサの「同調」がどう変わるか。物理シミュで可視化する無料ツール。</p>
+    <span class="kc-cta">試してみる →</span>
+  </a>
+</section>
 <!-- ZONE E: ナビ -->
 <div class="nav-section">
   <h3>人気の魚種から探す</h3>
@@ -8178,6 +8195,9 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
 .chart-trend{text-align:center;margin-top:6px;font-size:12px;font-weight:700;color:var(--pos)}
 .chart-trend.down{color:var(--warn)}.chart-trend.flat{color:var(--sub)}
 .faq-common-link{font-size:14px;color:var(--accent);margin:16px 0;padding:12px 16px;background:var(--card);border:2px solid var(--accent);border-radius:var(--r);line-height:1.6}
+.related-sim{margin:20px 0;padding:14px;background:#f5f5f5;border-left:4px solid #c84427;border-radius:4px;font-size:14px}
+.related-sim a{color:#0b1d33;font-weight:700;text-decoration:none}
+.related-sim a:hover{text-decoration:underline}
 .faq-common-link a{color:var(--cta);text-decoration:underline}"""
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
@@ -8229,6 +8249,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   {season_map_html}
   {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ''}
+  {'<div class="related-sim">🎣 <a href="/komase-sim/">マダイコマセシミュレーターで仕掛けを試す →</a></div>' if fish == 'マダイ' else ''}
   <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>
   <!-- 広告② -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
