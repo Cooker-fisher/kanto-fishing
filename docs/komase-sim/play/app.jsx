@@ -1136,6 +1136,17 @@ function App() {
       </header>
 
       <div className="mob-strip">
+        {/* T-9: 合否グレード常時表示 */}
+        {(() => {
+          const cg = grade.cycleGrade || "×";
+          const cgColor = cg === "◎" ? "#5d6b3a" : cg === "○" ? "#9d7a3a" : cg === "△" ? "#c84427" : "#8a3a1c";
+          return (
+            <div className="mob-strip__item">
+              <span className="mob-strip__lbl">合否</span>
+              <span className="mob-strip__val" style={{color: cgColor, fontSize: "18px"}}>{cg}</span>
+            </div>
+          );
+        })()}
         <div className="mob-strip__item">
           <span className="mob-strip__lbl">ヒット率</span>
           <span className="mob-strip__val" style={{color: grade.hitRate >= 4 ? "var(--pos)" : grade.hitRate >= 2 ? "var(--gold)" : "var(--neg)"}}>{grade.hitRate.toFixed(0)}%</span>
