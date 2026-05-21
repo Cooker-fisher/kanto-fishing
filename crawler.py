@@ -13963,6 +13963,98 @@ def main():
         print("=== エリアページ再生成完了 ===")
         return
 
+    # --fish-index-only: CSV から index.html + fish pages を再生成（クロールなし）
+    # T39 で追加: コマセシミュレーターカード (T-4) と マダイページ sim リンク (T-5) の反映用
+    if "--fish-index-only" in _sys.argv:
+        crawled_at = datetime.now(JST).replace(tzinfo=None).strftime("%Y/%m/%d %H:%M")
+        print("=== index.html + fish pages 再生成（--fish-index-only: data/V2/*.csv から読み込み）===")
+        def _csv_to_catch_fi(r):
+            fish_str = (r.get("tsuri_mono") or "").strip()
+            fish_list = [fish_str] if fish_str and fish_str not in ("欠航", "不明", "", "NULL") else []
+            try: cnt_max = float(r.get("cnt_max") or 0) or None
+            except: cnt_max = None
+            try: cnt_min = float(r.get("cnt_min") or 0) or None
+            except: cnt_min = None
+            try: cnt_avg = float(r.get("cnt_avg") or 0) or None
+            except: cnt_avg = None
+            try: sz_min = float(r.get("size_min") or 0) or None
+            except: sz_min = None
+            try: sz_max = float(r.get("size_max") or 0) or None
+            except: sz_max = None
+            return {
+                "ship": r.get("ship", ""),
+                "area": r.get("area", ""),
+                "date": r.get("date", ""),
+                "fish": fish_list,
+                "fish_raw": r.get("fish_raw", "") or (fish_list[0] if fish_list else ""),
+                "count_range": {"max": cnt_max, "min": cnt_min, "avg": cnt_avg, "is_boat": r.get("is_boat") == "1"},
+                "count_avg": cnt_avg,
+                "size_range_cm": {"min": sz_min, "max": sz_max},
+                "point_place1": r.get("point_place1") or None,
+                "is_cancellation": r.get("is_cancellation") == "1",
+            }
+        raw_rows = list(_load_historical_catches())
+        valid_catches = [_csv_to_catch_fi(r) for r in raw_rows]
+        print(f"釣果レコード変換: {len(valid_catches)}件")
+        with open("history.json", encoding="utf-8") as _f:
+            history = json.load(_f)
+        weather_data = load_weather_data()
+        forecast_data = None
+        if os.path.exists("forecast.json"):
+            try:
+                with open("forecast.json", encoding="utf-8") as _f:
+                    forecast_data = json.load(_f)
+            except Exception as _e:
+                print(f"forecast.json load failed: {_e}")
+        if forecast_data:
+            weather_data["_forecast_data"] = forecast_data
+        os.makedirs(WEB_DIR, exist_ok=True)
+        build_style_css()
+        build_main_js()
+        _ensure_ogp_default_image()
+        now_fi = datetime.now(JST).replace(tzinfo=None)
+        with open(os.path.join(WEB_DIR, "index.html"), "w", encoding="utf-8") as _f:
+            _f.write(build_html(valid_catches, crawled_at, history, weather_data))
+        print("index.html 生成完了")
+        _fi_hist_rows = raw_rows
+        _fi_fish_area_summary = compute_fish_area_summary(_fi_hist_rows)
+        _fi_fish_top_areas = compute_fish_top_areas(_fi_hist_rows)
+        build_fish_pages(valid_catches, history, crawled_at,
+                         hist_rows=_fi_hist_rows,
+                         fish_area_summary=_fi_fish_area_summary,
+                         fish_top_areas=_fi_fish_top_areas)
+        print("fish pages 生成完了")
+        _fi_recent7 = _load_recent_catches_for_index(now_fi, days=7)
+        _fi_cutoff = (now_fi - timedelta(days=6)).strftime("%Y/%m/%d")
+        _fi_data_recent = [c for c in valid_catches if c.get("date", "") >= _fi_cutoff]
+        _fi_seen = {(c.get("ship"), c.get("date"), c.get("fish_raw", "")) for c in _fi_data_recent}
+        _fi_merged2 = list(_fi_data_recent)
+        for _c in _fi_recent7:
+            _k = (_c.get("ship"), _c.get("date"), _c.get("fish_raw", ""))
+            if _k not in _fi_seen:
+                _fi_merged2.append(_c)
+                _fi_seen.add(_k)
+        _fi_summary_keys: dict = {}
+        _SKIP_FISH_FI = {"不明", "欠航"}
+        for _c in _fi_merged2:
+            for _f in _c.get("fish", []):
+                if _f not in _SKIP_FISH_FI and not _f.isdigit():
+                    _fi_summary_keys.setdefault(_f, []).append(_c)
+        _fi_tackle_data = load_fish_tackle()
+        for _f in _fi_tackle_data.keys():
+            if _f in _FISH_ROMAJI and _f not in _fi_summary_keys:
+                _fi_summary_keys[_f] = []
+        build_fish_index_html(
+            now=now_fi,
+            recent_catches=_fi_recent7,
+            fish_summary=_fi_summary_keys,
+            crawled_at=crawled_at,
+        )
+        print("fish/index.html 生成完了")
+        build_sitemap(crawled_at)
+        print("=== index.html + fish pages 再生成完了 ===")
+        return
+
     # --html-only: catches.json + history.json を使ってHTML生成だけを実行（クロールなし）
     if "--html-only" in _sys.argv:
         crawled_at = datetime.now(JST).replace(tzinfo=None).strftime("%Y/%m/%d %H:%M")
