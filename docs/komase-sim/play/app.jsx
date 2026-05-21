@@ -145,7 +145,14 @@ const PRESETS = [
 const MAX_PARTICLES = 1500;
 
 function App() {
-  const [params, setParams] = useState(DEFAULT_PARAMS);
+  // T-7/T-10: 初回訪問時はかんたんモード + 自動しゃくり ON をデフォルトに
+  const _isFirstVisit = (() => {
+    try { return !localStorage.getItem("komase.visited"); } catch(e) { return true; }
+  })();
+  const [params, setParams] = useState(_isFirstVisit
+    ? { ...DEFAULT_PARAMS, autoShakuri: true }
+    : DEFAULT_PARAMS
+  );
   // 各グループ独立: cycle/cond/area から 1 つずつ or null。複数同時アクティブ可
   const [selectedPresets, setSelectedPresets] = useState({ cycle: "default", cond: null, area: null });
   const [running, setRunning] = useState(true);
@@ -1129,6 +1136,17 @@ function App() {
       </header>
 
       <div className="mob-strip">
+        {/* T-9: 合否グレード常時表示 */}
+        {(() => {
+          const cg = grade.cycleGrade || "×";
+          const cgColor = cg === "◎" ? "#5d6b3a" : cg === "○" ? "#9d7a3a" : cg === "△" ? "#c84427" : "#8a3a1c";
+          return (
+            <div className="mob-strip__item">
+              <span className="mob-strip__lbl">合否</span>
+              <span className="mob-strip__val" style={{color: cgColor, fontSize: "18px"}}>{cg}</span>
+            </div>
+          );
+        })()}
         <div className="mob-strip__item">
           <span className="mob-strip__lbl">ヒット率</span>
           <span className="mob-strip__val" style={{color: grade.hitRate >= 4 ? "var(--pos)" : grade.hitRate >= 2 ? "var(--gold)" : "var(--neg)"}}>{grade.hitRate.toFixed(0)}%</span>
@@ -1329,6 +1347,14 @@ function App() {
           </div>
         </>
       )}
+      <footer className="sim-footer">
+        <small>
+          参考: TSURINEWS / DAIWA / SHIMANO / サニー商事 / 一之瀬丸 他　|
+          教育・設計検証目的・実釣の判断は船長指示に従ってください　|
+          © 2026 <a href="/" target="_top">funatsuri-yoso.com</a>　|
+          <a href="/komase-sim/" target="_top">紹介ページ</a>
+        </small>
+      </footer>
     </div>
   );
 }

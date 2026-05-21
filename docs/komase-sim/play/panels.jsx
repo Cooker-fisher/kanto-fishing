@@ -128,9 +128,18 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
   const [hLo, hHi] = SimPhysics.HOOK_SIZE_RANGE[params.hookType] || [7, 12];
 
   // ビギナーモード (localStorage で永続)
+  // 初回訪問判定: komase.visited フラグがなければ「かんたんモード」をデフォルトに
   const [beginner, setBeginner] = useState(() => {
-    try { return localStorage.getItem("komase.beginner") === "1"; } catch(e) {}
-    return false;
+    try {
+      const isFirstVisit = !localStorage.getItem("komase.visited");
+      if (isFirstVisit) {
+        localStorage.setItem("komase.visited", "1");
+        localStorage.setItem("komase.beginner", "1");
+        return true;
+      }
+      return localStorage.getItem("komase.beginner") === "1";
+    } catch(e) {}
+    return true;  // localStorage 利用不可の場合もかんたんモードで起動
   });
   const setBegMode = (val) => {
     setBeginner(val);

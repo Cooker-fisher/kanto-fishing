@@ -1,24 +1,667 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>マダイコマセシミュレーター ベータ版</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=119" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>マダイコマセシミュレーター｜東京湾・相模湾・外房の仕掛けを物理演算で可視化｜船釣り予想</title>
+<meta name="description" content="東京湾コマセマダイ釣りの仕掛けを物理演算で再現する無料シミュレーター。コマセ粒子の落下・拡散・潮流による流動をリアルタイム計算。ハリス・ガン玉・ビシ窓・しゃくり方を調整して付けエサとコマセ帯の同調を可視化。剣崎・松輪・相模湾(標準/LT/深場)・外房カモシなど関東主要エリアのコマセマダイ釣りプリセット完備。">
+<meta name="keywords" content="コマセマダイ,コマセ釣り,マダイ釣り,物理シミュレーション,物理演算,ハリス,ビシ,しゃくり,剣崎,松輪,東京湾,相模湾,LT,外房,カモシ,船釣り">
+<link rel="canonical" href="https://funatsuri-yoso.com/komase-sim/">
+
+<meta property="og:title" content="マダイコマセシミュレーター｜東京湾・相模湾・外房を物理演算で可視化">
+<meta property="og:description" content="コマセ粒子の落下・拡散・潮流流動を物理演算でリアルタイム計算。東京湾(剣崎/松輪)・相模湾(標準/LT/深場)・外房カモシなど関東主要エリアのマダイコマセ釣りプリセット完備の無料シミュレーター。">
+<meta property="og:image" content="https://funatsuri-yoso.com/komase-sim/ogp-komase-sim.png">
+<meta property="og:url" content="https://funatsuri-yoso.com/komase-sim/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="船釣り予想">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<meta name="twitter:title" content="マダイコマセシミュレーター｜東京湾・相模湾・外房を物理演算で可視化">
+<meta name="twitter:description" content="コマセ粒子の落下・拡散・潮流流動を物理演算でリアルタイム計算。東京湾・相模湾・外房の主要エリアのマダイコマセ釣りプリセット完備。">
+<meta name="twitter:image" content="https://funatsuri-yoso.com/komase-sim/ogp-komase-sim.png">
+
+<style>
+/* ── リセット・ベース ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  background: #f8f9fa;
+  color: #1a2535;
+  line-height: 1.7;
+}
+a { color: #1a6fd8; text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+
+/* ── CSS 変数 ── */
+:root {
+  --navy: #0d2137;
+  --navy-mid: #1a3452;
+  --accent: #1a6fd8;
+  --accent-hover: #1558b0;
+  --text: #1a2535;
+  --text-sub: #556070;
+  --bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --border: #dde3ec;
+  --green: #2e7d32;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(13,33,55,.10);
+}
+
+/* ── ヘッダ・ナビ ── */
+.site-header {
+  background: var(--navy);
+  color: #fff;
+  padding: 0 16px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.site-header__inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  gap: 12px;
+}
+.site-header__logo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  letter-spacing: .02em;
+}
+.site-header__logo a { color: #fff; }
+.site-header__nav {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+}
+.site-header__nav a {
+  color: rgba(255,255,255,.80);
+}
+.site-header__nav a:hover { color: #fff; text-decoration: none; }
+
+/* ── コンテンツ幅 ── */
+.c { max-width: 840px; margin: 0 auto; padding: 0 20px; }
+
+/* ── ボタン共通 ── */
+.cta-button {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px 40px;
+  border-radius: 8px;
+  text-decoration: none;
+  letter-spacing: .04em;
+  box-shadow: 0 4px 12px rgba(26,111,216,.35);
+  transition: background .18s, transform .12s;
+}
+.cta-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.sub-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+/* ── HERO セクション ── */
+.hero {
+  background: var(--navy);
+  color: #fff;
+  padding: 60px 20px 56px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: clamp(22px, 5vw, 36px);
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 18px;
+  letter-spacing: .02em;
+}
+.hero .lead {
+  font-size: clamp(13px, 2.5vw, 16px);
+  line-height: 1.85;
+  max-width: 640px;
+  margin: 0 auto 32px;
+  color: rgba(255,255,255,.88);
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  color: rgba(255,255,255,.9);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: .08em;
+}
+
+/* ── プレビューセクション ── */
+.preview {
+  background: var(--card-bg);
+  padding: 48px 0;
+  border-bottom: 1px solid var(--border);
+}
+.preview h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 20px;
+  text-align: center;
+}
+.preview-wrap {
+  position: relative;
+  max-width: 680px;
+  margin: 0 auto;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(13,33,55,.18);
+  border: 1px solid var(--border);
+}
+.preview-wrap a { display: block; }
+.preview-wrap img { width: 100%; }
+.preview-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--navy);
+  color: rgba(255,255,255,.7);
+  height: 320px;
+  font-size: 15px;
+  border-radius: var(--radius);
+}
+.preview-placeholder .ph-icon { font-size: 40px; }
+.preview-caption {
+  max-width: 640px;
+  margin: 16px auto 0;
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.75;
+  text-align: center;
+}
+
+/* ── セクション共通 ── */
+section {
+  padding: 52px 0;
+}
+section:nth-child(odd) { background: var(--bg); }
+section:nth-child(even) { background: var(--card-bg); }
+/* HERO は奇数でも特別塗り */
+.hero, .preview { background: revert; }
+
+section h2 {
+  font-size: clamp(18px, 4vw, 26px);
+  font-weight: 700;
+  margin-bottom: 28px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── 特徴グリッド ── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.feature-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  box-shadow: var(--shadow);
+}
+.feature-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--navy-mid);
+}
+.feature-card p {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.75;
+}
+
+/* ── プリセット一覧 ── */
+.preset-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.preset-group {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.preset-group h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy-mid);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent);
+}
+.preset-group ul {
+  list-style: none;
+  padding: 0;
+}
+.preset-group li {
+  font-size: 13px;
+  color: var(--text-sub);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+.preset-group li:last-child { border-bottom: none; }
+.preset-group li strong { color: var(--text); }
+.preset-note {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-sub);
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: 6px;
+  border-left: 3px solid var(--accent);
+}
+
+/* ── 使い方ステップ ── */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.step {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.step-num {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step-body h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.step-body p {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.75;
+}
+.step-tip {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #e8f5e9;
+  border-left: 4px solid var(--green);
+  border-radius: 0 6px 6px 0;
+  font-size: 14px;
+  color: #1b5e20;
+  line-height: 1.7;
+}
+
+/* ── 学習層別ブロック（初心者・上級者） ── */
+.audience-block {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.audience-block:last-child { margin-bottom: 0; }
+.audience-beginner { border-left: 5px solid #f59e0b; }
+.audience-advanced { border-left: 5px solid #0b1d33; }
+.audience-block h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.audience-block p {
+  font-size: 14.5px;
+  color: var(--text-sub);
+  line-height: 1.85;
+  margin-bottom: 12px;
+}
+.audience-block p:last-child { margin-bottom: 0; }
+.audience-block .tip-line {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  font-size: 13.5px;
+  color: var(--text);
+}
+.audience-block .kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+@media (max-width: 600px) {
+  .audience-block { padding: 18px 16px; }
+  .audience-block h3 { font-size: 16px; }
+  .audience-block p { font-size: 14px; line-height: 1.8; }
+}
+
+/* ── FAQ ── */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.faq-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+}
+.faq-item .q {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy-mid);
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.faq-item .q::before {
+  content: 'Q';
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.faq-item .a {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.8;
+  padding-left: 34px;
+}
+
+/* ── CTA bottom ── */
+.cta-bottom {
+  background: var(--navy);
+  color: #fff;
+  text-align: center;
+  padding: 52px 20px;
+}
+.cta-bottom h2 {
+  font-size: clamp(18px, 4vw, 24px);
+  margin-bottom: 24px;
+  color: #fff;
+}
+
+/* ── フッタ ── */
+.site-footer {
+  background: var(--navy-mid);
+  color: rgba(255,255,255,.7);
+  padding: 36px 20px 28px;
+  font-size: 13px;
+}
+.site-footer .c { max-width: 840px; }
+.site-footer h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,.85);
+  margin-bottom: 8px;
+}
+.site-footer p { margin-bottom: 10px; line-height: 1.75; }
+.site-footer a { color: rgba(255,255,255,.7); }
+.site-footer a:hover { color: #fff; }
+.site-footer .disclaimer {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(0,0,0,.2);
+  border-radius: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+}
+.site-footer .copyright {
+  margin-top: 16px;
+  font-size: 12px;
+  color: rgba(255,255,255,.45);
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+
+/* ── レスポンシブ ── */
+@media (max-width: 600px) {
+  .site-header__nav { display: none; }
+  .cta-button { font-size: 16px; padding: 14px 28px; }
+  .preview-placeholder { height: 220px; }
+  .step { flex-direction: column; }
+  .step-num { margin: 0; }
+}
+</style>
 </head>
 <body>
-  <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__logo">
+      <a href="/">船釣り予想</a>
+    </div>
+    <nav class="site-header__nav">
+      <a href="/">今日の釣果</a>
+      <a href="/fish/">魚種</a>
+      <a href="/area/">エリア</a>
+      <a href="/calendar.html">カレンダー</a>
+    </nav>
+  </div>
+</header>
 
-  <script type="text/babel" src="physics.jsx?v=119"></script>
-  <script type="text/babel" src="renderer.jsx?v=119"></script>
-  <script type="text/babel" src="panels.jsx?v=119"></script>
-  <script type="text/babel" src="app.jsx?v=119"></script>
+<main>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="c">
+      <div class="hero-badge">🆕 新機能 ベータ版公開</div>
+      <h1>マダイコマセシミュレーター<br>ベータ版</h1>
+      <p class="lead">コマセ粒子の落下・拡散・潮流による流動を<strong>物理演算でリアルタイム計算</strong>。ハリス長・ガン玉・ビシ窓・しゃくり方を変えると、コマセ帯と付けエサの「同調」がどう変わるかを可視化します。<strong>東京湾(剣崎/松輪)・相模湾(湘南/LT/深場)・外房カモシ</strong>など関東主要エリアのコマセマダイ釣りプリセット完備。スマホ対応／登録不要／無料</p>
+      <a class="cta-button" href="/komase-sim/play/">🎣 シミュレーターを開く →</a>
+      <p class="sub-note">ベータ版・登録不要・無料</p>
+    </div>
+  </section>
+
+  <!-- ── プレビュー ── -->
+  <section class="preview">
+    <div class="c">
+      <h2>▼ こんな画面で動きます（タップで開きます）</h2>
+      <div class="preview-wrap">
+        <a href="/komase-sim/play/">
+          <img
+            src="preview-komase-sim.png"
+            alt="コマセマダイシミュレーターの画面プレビュー"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="preview-placeholder" style="display:none">
+            <span class="ph-icon">📸</span>
+            <span>プレビュー画像は近日掲載</span>
+          </div>
+        </a>
+      </div>
+      <p class="preview-caption">横断面で見るコマセマダイ釣りの世界。船・PE・ビシ・クッションゴム・ハリス・付けエサ・コマセ粒子・マダイ・潮流——全要素を物理演算でリアルタイム計算します。</p>
+    </div>
+  </section>
+
+  <!-- ── 特徴 ── -->
+  <section id="features">
+    <div class="c">
+      <h2>🎯 4つの観点で仕掛けを検証できます</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>🪝 ハリス・ガン玉・クッション</h3>
+          <p>ハリス号数（2〜5号）と長さ（3〜15m）、ガン玉の位置（チモト/中央/針上）と重さ（0〜1.5g）、クッションゴム長さ（0.5〜3.0m）を自由に組み替え。各要素に<strong>重力・潮流抗力・浮力</strong>のベクトルを物理演算で適用し、仕掛けの落ち方・潮への流され方・付けエサ位置を毎フレーム再計算します。</p>
+        </div>
+        <div class="feature-card">
+          <h3>🦐 ビシ・コマセ・煙幕</h3>
+          <p>ビシ号数（30〜100号）、上窓・下窓の開け具合（0〜100%）、コマセ粒サイズ（M/L/2L/3L）、煙幕度（弱/中/強）を調整。コマセ粒子1個1個に<strong>自由落下・潮流移流・拡散</strong>の物理演算を適用し、サニー商事マニュアル準拠の窓上下分離で煙幕の広がりを精密にシミュレートします。</p>
+        </div>
+        <div class="feature-card">
+          <h3>🌊 潮流・うねり・タナ</h3>
+          <p>水深（20〜100m）、指示ダナ、潮流速度（0〜1.2 m/s）、底潮の効き、うねり高さ・周期。<strong>深度依存の潮流ベクトル</strong>と<strong>正弦波うねり</strong>を物理演算で再現し、二枚潮・速潮など東京湾・相模湾・外房で実際にあるパターンをプリセット化済み。</p>
+        </div>
+        <div class="feature-card">
+          <h3>🧠 自動最適化</h3>
+          <p>「おすすめを計算」ボタンで、コマセ帯と付けエサの同調率を最大化する仕掛け・コマセワークの組み合わせを約1秒で探索。複数回の物理シミュレーション結果を平均評価することで、揺らぎを抑えた安定した推奨設定を提示します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── プリセット ── -->
+  <section id="presets">
+    <div class="c">
+      <h2>🗺 対応エリア・プリセット</h2>
+      <div class="preset-list">
+        <div class="preset-group">
+          <h3>東京湾</h3>
+          <ul>
+            <li><strong>剣崎沖</strong>（一之瀬丸・美喜丸の標準仕掛けに準拠）<br>ビシ80号 / PE3号 / ハリス4号10m / 窓上25%・下10%</li>
+          </ul>
+        </div>
+        <div class="preset-group">
+          <h3>相模湾</h3>
+          <ul>
+            <li><strong>標準</strong>（ビシ60号 / PE2号）</li>
+            <li><strong>LT（ライトタックル）</strong>（ビシ40号 / PE1.5号）</li>
+            <li><strong>深場・冬季</strong>（タナ70m / ガン玉0.5g）</li>
+          </ul>
+        </div>
+        <div class="preset-group">
+          <h3>外房</h3>
+          <ul>
+            <li><strong>カモシ釣り</strong>（PE4号 / 煙幕強 / 粒M / 下窓ほぼ全閉）<br>信照丸・第二沖合丸の仕掛けを参考に再現</li>
+          </ul>
+        </div>
+        <div class="preset-group">
+          <h3>海況プリセット</h3>
+          <ul>
+            <li><strong>標準サイクル</strong>（3分間隔）</li>
+            <li><strong>食い渋り</strong>（4〜5分・控えめ）</li>
+            <li><strong>活性高</strong>（2〜3分・速めサイクル）</li>
+            <li><strong>二枚潮 / 速潮</strong></li>
+          </ul>
+        </div>
+      </div>
+      <p class="preset-note">※ 今後アジ・シマアジ・イサキ・ワラサ釣り向けの拡張も検討中</p>
+    </div>
+  </section>
+
+  <!-- ── この釣りの本質を理解する ── -->
+  <section id="usage">
+    <div class="c">
+      <h2>🎓 この釣りの本質を、目で見て理解する</h2>
+
+      <!-- 初心者向け -->
+      <div class="audience-block audience-beginner">
+        <h3>🔰 初心者の方へ — 「坊主からの脱却」を視覚で学ぶ</h3>
+        <p>「指示ダナ」とは何か？ 指示ダナと付けエサ、コマセと付けエサの「同調」はどのように成り立つのか。水中でガン玉によって付けエサの位置がどう変わるのか。潮流によって付けエサがどう流されるのか——船釣りで先輩や船長に説明してもらってもイメージしにくい要素を、<strong>物理演算でリアルタイムに可視化</strong>します。</p>
+        <p>しゃくった後になぜ竿を1m落とすのか、YouTubeでプロがアドバイスしている理由が映像で理解できる。なぜ指示ダナから落としすぎてはいけないのか、どのように本命を浮かしていくのか——目で見て、手で動かして、コマセマダイ釣りの「本質」を体感してください。</p>
+        <p class="tip-line">▶ 左パネル上部の <span class="kbd">🔰 かんたんモード</span> なら、調整項目を7つに絞った初心者向け画面で迷わず始められます。</p>
+      </div>
+
+      <!-- 上級者向け -->
+      <div class="audience-block audience-advanced">
+        <h3>⚓ 上級者の方へ — 釣果"10匹を11匹"にする「もう一声」を物理演算で支える</h3>
+        <p>細かい仕掛け調整による微妙なセッティングの差異を、物理演算で再現します。<strong>しゃくり幅・ガン玉位置・ガン玉号数</strong>はもちろん、<strong>ハリス・モトス・間のサル管</strong>まで仕掛けの全要素を物理パラメータとして取り込み、号数や重さの違いが付けエサの流れ方にどう効くかを精密に計算。各要素の微調整が付けエサ位置にどう影響するかを具体的にイメージできます。</p>
+        <p>さらに、<strong>二枚潮のシチュエーション・うねり・速潮</strong>といった海況条件が仕掛けに与える影響を深く理解できます。経験で掴んできた「あの状況ではこう」という勘どころを、定量的に検証する場として活用してください。<strong>10匹を11匹に伸ばす「もう一声」</strong>を、データと物理演算で支える上級者のための裏方ツールです。</p>
+        <p class="tip-line">▶ 左パネル上部の <span class="kbd">⚓ 上級者モード</span> で全パラメータを開放できます。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section id="faq">
+    <div class="c">
+      <h2>❓ よくある質問</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="q">この設定をそのまま実釣で使えば釣れますか？</div>
+          <div class="a">このツールは「物理シミュレーション」であり、釣果を保証するものではありません。コマセ帯と付けエサの同調・潮への流され方など、釣り場でイメージしづらい部分を視覚的に学ぶ教育・設計検証目的のツールです。実釣では当日の魚の活性・船長の指示・船の流し方などが大きく影響します。当日の判断は必ず現地の船長・乗船員の指示に従ってください。</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">スマホでも使えますか？</div>
+          <div class="a">はい。スマホ向けのレイアウトに最適化されています。設定パネルは画面右上の「⚙ 設定」ボタンから開閉できます。ただし物理計算量が多いため、最新の機種（iPhone 12 以降・Android 高性能機種）での動作を推奨します。</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">コマセマダイ以外の釣りも対応していますか？</div>
+          <div class="a">現在はコマセマダイと外房カモシ釣り（マダイ・ヒラマサ・ワラサ）のプリセットがあります。今後アジ・シマアジ・イサキ・ワラサのコマセ釣りプリセットを追加予定です。</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">物理計算の精度はどこまで信頼できますか？</div>
+          <div class="a">コマセ粒子の落下・拡散・潮流による流動を実物理に基づいてリアルタイム計算しています。実釣ノウハウの根拠は TSURINEWS・DAIWA・SHIMANO・サニー商事マニュアル・各船宿の公開記事に依拠。ただしシミュレーションは仕掛け挙動を学ぶための教材であり、実釣の判断は当日の海況・船長指示を優先してください。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA 末尾 ── -->
+  <section class="cta-bottom">
+    <div class="c">
+      <h2>仕掛けの「なぜ」を物理で確かめる</h2>
+      <a class="cta-button" href="/komase-sim/play/">🎣 シミュレーターを開く →</a>
+      <p class="sub-note" style="color:rgba(255,255,255,.6)">ベータ版・登録不要・無料</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="c">
+    <h3>参考文献</h3>
+    <p>TSURINEWS / DAIWA 入門・船最前線 / SHIMANO 大原則 / サニー商事マニュアル / oretsuri / TSURI HACK / 一之瀬丸（剣崎）/ 美喜丸（松輪）/ 信照丸（外房）/ 第二沖合丸（外房）/ 平安丸（相模湾）/ 一俊丸（湘南）</p>
+    <p class="disclaimer">本ツールは教育・設計検証目的のシミュレーターです。釣果を保証するものではありません。実釣の判断は現地の船長指示に従ってください。</p>
+    <p class="copyright">© 2026 funatsuri-yoso.com　｜　<a href="/">サイトトップ</a>　｜　<a href="/pages/about.html">このサイトについて</a>　｜　<a href="/pages/privacy.html">プライバシーポリシー</a></p>
+  </div>
+</footer>
+
 </body>
 </html>

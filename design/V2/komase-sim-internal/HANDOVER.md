@@ -20,17 +20,22 @@
 
 ```
 docs/komase-sim/
-├── index.html      — Entry. React 18 + Babel standalone + 4 jsx をロード
-├── app.jsx         — メインApp、state、animation loop、UI 配置
-├── physics.jsx     — 物理シミュ (particles, rig shape, current, tides, optimizer)
-├── panels.jsx      — 左右パネル（Slider / Segmented / CollapsibleSection / Recommendation）
-├── renderer.jsx    — Canvas 描画 (background, boat, rig, particles, fish, labels, bow minimap)
-├── styles.css      — 海図風配色 (deep ink + paper + vermilion + brass + moss)
-└── HANDOVER.md     — このファイル
+├── index.html           — 紹介ページ（SEO/AdSense 向け静的 HTML）
+├── ogp-komase-sim.png   — OGP 画像（ユーザーが別途配置）
+├── play/
+│   ├── index.html       — Entry. React 18 + Babel standalone + 4 jsx をロード
+│   ├── app.jsx          — メインApp、state、animation loop、UI 配置
+│   ├── physics.jsx      — 物理シミュ (particles, rig shape, current, tides, optimizer)
+│   ├── panels.jsx       — 左右パネル（Slider / Segmented / CollapsibleSection / Recommendation）
+│   ├── renderer.jsx     — Canvas 描画 (background, boat, rig, particles, fish, labels, bow minimap)
+│   └── styles.css       — 海図風配色 (deep ink + paper + vermilion + brass + moss)
+├── MOCKUP-themes.html
+├── HANDOVER.md          — このファイル
+└── mockups/
 ```
 
 ビルド不要。`<script type="text/babel" src="...">` で in-browser 変換。
-**キャッシュバスト**: `index.html` の `<script src="*.jsx?v=N">` を版上げ。
+**キャッシュバスト**: `play/index.html` の `<script src="*.jsx?v=N">` を版上げ。
 
 ---
 
@@ -263,7 +268,8 @@ score = ratio + absBonus - ohdoPenalty
 ```bash
 # kanto-fishing リポジトリ直下で
 python -m http.server 8000
-# → http://localhost:8000/docs/komase-sim/
+# 紹介ページ → http://localhost:8000/docs/komase-sim/
+# シミュ本体 → http://localhost:8000/docs/komase-sim/play/
 ```
 
 ### 検証ポイント
