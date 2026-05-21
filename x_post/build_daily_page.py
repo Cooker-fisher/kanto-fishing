@@ -799,7 +799,7 @@ def build(ctx, commentary, output_path, png_url=None):
                   if ctx.get("next7_exists") else
                   f'<span class="next7 disabled" aria-disabled="true"><small>7日後 →</small>{next7_label}（記録なし）</span>')
     # 中央: 全アーカイブ CTA（常にリンク）
-    archive_html = '<a class="archive-cta" href="./index.html"><small>全日程</small>一覧へ</a>'
+    archive_html = '<a class="archive-cta" href="./"><small>全日程</small>一覧へ</a>'
     day_nav = (f'<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション">'
                f'{prev7_html}{prev_html}{archive_html}{next_html}{next7_html}</nav>')
 
@@ -881,23 +881,23 @@ def build(ctx, commentary, output_path, png_url=None):
 
 <header>
   <div class="inner">
-    <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>
 <nav class="gnav">
-  <a href="/index.html">今日の釣果</a>
-  <a href="/x_post/index.html" class="on">釣果速報</a>
+  <a href="/">今日の釣果</a>
+  <a href="/x_post/" class="on">釣果速報</a>
   <a href="/fish/">魚種</a>
   <a href="/area/">エリア</a>
   <a href="/calendar.html">カレンダー</a>
-  <a href="/forecast/index.html" class="prem">有料プラン</a>
+  <a href="/forecast/" class="prem">有料プラン</a>
 </nav>
 
 <div class="wrap">
 
   <div class="crumbs">
-    <a href="/">トップ</a> &raquo; <a href="/x_post/index.html">釣果速報</a> &raquo; {date_label} 釣果まとめ
+    <a href="/">トップ</a> &raquo; <a href="/x_post/">釣果速報</a> &raquo; {date_label} 釣果まとめ
   </div>
 
   {share_bar_html}
@@ -932,10 +932,10 @@ def build(ctx, commentary, output_path, png_url=None):
 
   <div class="related">
     <h3>関連ページ</h3>
-    <a href="/x_post/index.html">&larr; 釣果速報トップへ戻る</a>
+    <a href="/x_post/">&larr; 釣果速報トップへ戻る</a>
     <a href="/">トップ（今日の釣果）</a>
     <a href="/calendar.html">釣りものカレンダー</a>
-    <a href="/forecast/index.html">海況予報</a>
+    <a href="/forecast/">海況予報</a>
   </div>
 
 </div>

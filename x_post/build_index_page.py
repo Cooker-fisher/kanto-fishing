@@ -190,17 +190,17 @@ def build_index(output_path: str, docs_x_post_dir: str | None = None) -> None:
 
 <header>
   <div class="inner">
-    <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>
 <nav class="gnav">
-  <a href="/index.html">今日の釣果</a>
-  <a href="/x_post/index.html" class="on">釣果速報</a>
+  <a href="/">今日の釣果</a>
+  <a href="/x_post/" class="on">釣果速報</a>
   <a href="/fish/">魚種</a>
   <a href="/area/">エリア</a>
   <a href="/calendar.html">カレンダー</a>
-  <a href="/forecast/index.html" class="prem">有料プラン</a>
+  <a href="/forecast/" class="prem">有料プラン</a>
 </nav>
 
 {latest_body}
