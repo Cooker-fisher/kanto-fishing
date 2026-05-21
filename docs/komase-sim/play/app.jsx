@@ -1111,15 +1111,44 @@ function App() {
           <h1 className="head__title">マダイコマセシミュレーター <span className="head__ver">ベータ版</span></h1>
           <div className="head__actions">
             <a href="/" className="head__link" aria-label="船釣り予想 トップへ戻る">← 船釣り予想 トップへ</a>
-            <a
-              className="head__btn head__btn--x"
-              href={"https://twitter.com/intent/tweet?text=" +
-                encodeURIComponent("マダイコマセシミュレーターで関東のコマセマダイ釣りを物理シミュレーション。ハリス長・ガン玉・しゃくりの最適解を探せます。") +
-                "&url=" + encodeURIComponent("https://funatsuri-yoso.com/komase-sim/") +
-                "&hashtags=" + encodeURIComponent("マダイ,コマセ釣り,船釣り")}
-              target="_blank" rel="noopener nofollow"
-              aria-label="X（旧Twitter）でシェア"
-            >𝕏 でシェア</a>
+            {/* X シェアボタン (結果連動): cycleScore が出ていれば結果文・無ければプロモ文 */}
+            {(() => {
+              const score = Math.round(grade.cycleScore || 0);
+              const cg = grade.cycleGrade || "×";
+              const tana = Math.round(params.tanaDepth || 0);
+              const harris = (params.harrisLength || 0).toFixed(1).replace(/\.0$/, "");
+              const cnt = params.shakuriCountPerTrigger || 1;
+              const interval = params.shakuriInterval || 60;
+              let intro;
+              if (score === 0)         intro = "🎣 マダイコマセシミュ、触ってみた";
+              else if (cg === "◎")     intro = "🎣 マダイコマセ、理想配置きた！";
+              else if (cg === "○")     intro = "🎣 マダイコマセ、手応えあり";
+              else if (cg === "△")     intro = "🎣 マダイコマセ、まだ調整中";
+              else                     intro = "🎣 マダイコマセ、特訓中";
+              const body = score === 0
+                ? "ハリス長・ガン玉・しゃくりの最適解を物理シミュレーション"
+                : `スコア ${score}点 (${cg}判定)\nタナ${tana}m・ハリス${harris}m・しゃくり${cnt}発/${interval}s`;
+              const tweetText = intro + "\n" + body;
+              const pageUrl = score === 0
+                ? "https://funatsuri-yoso.com/komase-sim/"
+                : "https://funatsuri-yoso.com/komase-sim/play/";
+              const tweetUrl =
+                "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText) +
+                "&url=" + encodeURIComponent(pageUrl) +
+                "&hashtags=" + encodeURIComponent("マダイ,コマセ釣り,船釣り");
+              const ariaLbl = score === 0
+                ? "シミュレーターをXでシェア"
+                : `結果スコア${score}点をXに投稿`;
+              return (
+                <a
+                  className="head__btn head__btn--x"
+                  href={tweetUrl}
+                  target="_blank" rel="noopener nofollow"
+                  aria-label={ariaLbl}
+                  title={ariaLbl}
+                >𝕏 でシェア</a>
+              );
+            })()}
             <a
               className="head__btn head__btn--follow"
               href="https://twitter.com/intent/follow?screen_name=funatsuri_yoso"
@@ -1347,45 +1376,6 @@ function App() {
           </div>
         </>
       )}
-      {/* 結果連動シェアバー: cycleScore と主要パラメータを含むテキスト生成 */}
-      {(() => {
-        const score = Math.round(grade.cycleScore || 0);
-        const cg = grade.cycleGrade || "×";
-        const tana = Math.round(params.tanaDepth || 0);
-        const harris = (params.harrisLength || 0).toFixed(1).replace(/\.0$/, "");
-        const cnt = params.shakuriCountPerTrigger || 1;
-        const interval = params.shakuriInterval || 60;
-        // 判定別 枕詞 (cycleScore=0 = 未計測時はプロモ文)
-        let intro;
-        if (score === 0)         intro = "🎣 マダイコマセシミュ、触ってみた";
-        else if (cg === "◎")     intro = "🎣 マダイコマセ、理想配置きた！";
-        else if (cg === "○")     intro = "🎣 マダイコマセ、手応えあり";
-        else if (cg === "△")     intro = "🎣 マダイコマセ、まだ調整中";
-        else                     intro = "🎣 マダイコマセ、特訓中";
-        const body = score === 0
-          ? "コマセマダイ釣りを物理シミュレーション"
-          : `スコア ${score}点 (${cg}判定)\nタナ${tana}m・ハリス${harris}m・しゃくり${cnt}発/${interval}s`;
-        const tweetText = intro + "\n" + body;
-        const pageUrl = "https://funatsuri-yoso.com/komase-sim/play/";
-        const tweetUrl =
-          "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText) +
-          "&url=" + encodeURIComponent(pageUrl) +
-          "&hashtags=" + encodeURIComponent("マダイ,コマセ釣り,船釣り");
-        const btnLabel = score === 0 ? "📤 シミュをXでシェア" : "📤 結果をXに投稿";
-        return (
-          <div className="share-bar share-bar--sim" role="group" aria-label="結果シェア">
-            <a
-              className="share-x"
-              href={tweetUrl}
-              target="_blank"
-              rel="noopener nofollow"
-              aria-label={btnLabel}
-            >
-              {btnLabel}
-            </a>
-          </div>
-        );
-      })()}
       <footer className="sim-footer">
         <small>
           参考: TSURINEWS / DAIWA / SHIMANO / サニー商事 / 一之瀬丸 他　|

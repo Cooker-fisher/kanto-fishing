@@ -1047,38 +1047,6 @@ select.select:focus { border-color: var(--cta); }
   }
 }
 
-/* ── 結果連動シェアバー (cycleScore + 主要パラメータを含む X 投稿) ── */
-.share-bar--sim {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px 4px;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-}
-.share-bar--sim .share-x {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  background: #000;
-  color: #fff;
-  border: 1px solid #000;
-  transition: opacity .15s, transform .12s;
-}
-.share-bar--sim .share-x:hover { opacity: .85; }
-.share-bar--sim .share-x:active { transform: scale(.97); }
-@media (max-width: 480px) {
-  .share-bar--sim { padding: 8px 8px 2px; }
-  .share-bar--sim .share-x { padding: 7px 14px; font-size: 12px; }
-}
-
 /* ── sim-footer (T-8: 出典・免責) ── */
 .sim-footer {
   grid-column: 1 / -1;
