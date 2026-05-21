@@ -46,6 +46,11 @@
 - review_T33_{code,stat,data,domain}_2026-05-21.md
 - ocean/weather_cache.sqlite（5/21 まで更新済み）
 
+**T34 流用可能成果物の物理削除（2026-05-22）:**
+- 補遺12 で「流用可能」と記述した tmp_3ships/ tmp_exp/ tmp_shotamaru/ tmp_survey/ tmp_hidemaru_rdf.xml を全削除（640MB 解放）
+- 理由: T34 は「効果ゼロ」実証済みで再分析モチベーション低・SQLite/JSON は再生成可能
+- 必要時は catches_raw.json (96,697件) + ships.json から再クロール可
+
 **学んだこと（次回検討時必読）:**
 1. **小幅な統計改善 (≤0.5pt) は事業価値に変換しにくい** → 次回は wMAPE/promise_break -2pt 以上が見込める改善のみ着手
 2. **MAX_DO=1 制限の副作用を事前に試算すべき** → Plan 段階で「両採用→1採用への絞り込み」効果を計算していなかった
