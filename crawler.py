@@ -13987,7 +13987,7 @@ def main():
                 "date": r.get("date", ""),
                 "fish": fish_list,
                 "fish_raw": r.get("fish_raw", "") or (fish_list[0] if fish_list else ""),
-                "count_range": {"max": cnt_max, "min": cnt_min, "avg": cnt_avg, "is_boat": r.get("is_boat") == "1"},
+                "count_range": {"max": cnt_max or 0.0, "min": cnt_min or 0.0, "avg": cnt_avg or 0.0, "is_boat": r.get("is_boat") == "1"},
                 "count_avg": cnt_avg,
                 "size_range_cm": {"min": sz_min, "max": sz_max},
                 "point_place1": r.get("point_place1") or None,
@@ -14046,7 +14046,9 @@ def main():
                 _fi_summary_keys[_f] = []
         build_fish_index_html(
             now=now_fi,
-            recent_catches=_fi_recent7,
+            hist_rows=_fi_hist_rows,
+            fish_area_summary=_fi_fish_area_summary,
+            recent7=_fi_recent7,
             fish_summary=_fi_summary_keys,
             crawled_at=crawled_at,
         )
