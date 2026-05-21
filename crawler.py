@@ -2157,7 +2157,7 @@ def _forecast_page_head(title, depth_prefix="../"):
 </head><body>
 {_v2_header_nav('forecast')}
 <div class="c">
-<p class="bread"><a href="/index.html">トップ</a> &rsaquo; <a href="/forecast/index.html">釣果予測</a> &rsaquo; {title}</p>"""
+<p class="bread"><a href="/">トップ</a> &rsaquo; <a href="/forecast/">釣果予測</a> &rsaquo; {title}</p>"""
 
 
 def _forecast_page_foot():
@@ -2260,7 +2260,7 @@ def _build_teaser_predictions(preds, free_count=1, max_count=5):
     if hidden_count > 0:
         html += f'''<div class="paywall">
 <p style="font-size:13px;color:#5a6a7a;margin-bottom:16px">残り<strong>{hidden_count}件</strong>の予測と詳細分析は有料プランで閲覧できます。</p>
-<a href="/forecast/index.html" class="paywall-btn">月額500円で全て見る</a>
+<a href="/forecast/" class="paywall-btn">月額500円で全て見る</a>
 <p class="paywall-sub">スポット閲覧 100円〜 ・ 決済システム準備中</p>
 </div>'''
     return html
@@ -4149,18 +4149,18 @@ def _v2_header_nav(active_page=""):
     """V2共通ヘッダー + グローバルナビ"""
     return f"""<header>
   <div class="inner">
-    <a href="/index.html" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>
 <nav class="gnav">
-  <a href="/index.html"{' class="on"' if active_page == 'index' else ''}>今日の釣果</a>
-  <a href="/x_post/index.html"{' class="on"' if active_page == 'xpost' else ''}>釣果速報</a>
+  <a href="/"{' class="on"' if active_page == 'index' else ''}>今日の釣果</a>
+  <a href="/x_post/"{' class="on"' if active_page == 'xpost' else ''}>釣果速報</a>
   <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
 
-  <a href="/forecast/index.html" class="prem{' on' if active_page == 'forecast' else ''}">有料プラン</a>
+  <a href="/forecast/" class="prem{' on' if active_page == 'forecast' else ''}">有料プラン</a>
 </nav>"""
 
 def _v2_footer(crawled_at=""):
@@ -4184,12 +4184,12 @@ def _v2_bottom_nav(active_page=""):
         "prem":   '<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>',
     }
     items = [
-        ("index", "/index.html",         "釣果",     ""),
-        ("xpost", "/x_post/index.html",  "速報",     ""),
+        ("index", "/",                    "釣果",     ""),
+        ("xpost", "/x_post/",  "速報",     ""),
         ("fish",  "/fish/",              "魚種",     ""),
         ("area",  "/area/",              "エリア",   ""),
         ("cal",   "/calendar.html",      "カレンダー", ""),
-        ("prem",  "/forecast/index.html", "有料",    "prem"),
+        ("prem",  "/forecast/", "有料",    "prem"),
     ]
     nav = '<nav class="bn">'
     for key, href, label, cls in items:
@@ -4432,7 +4432,7 @@ def build_teaser_rotator_html():
   </div>
   <div class="teaser-cta-wrap">
     <div class="teaser-cta-msg">現在開発中。<strong>有料プランページ</strong>で最新の釣果予測をご確認ください。</div>
-    <div class="teaser-cta-btns"><a class="cta-btn" href="/forecast/index.html">今週末、どこに乗るべきか見る → 1回100円</a></div>
+    <div class="teaser-cta-btns"><a class="cta-btn" href="/forecast/">今週末、どこに乗るべきか見る → 1回100円</a></div>
     <div class="teaser-price">※ 全機能まとめて <em>月額500円</em> / スポット <em>1回100円</em></div>
   </div>
 </div>"""
@@ -8208,7 +8208,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
 </div>
 <div class="c">
   <h1 class="page-h1">関東の{fish}船釣り釣果情報</h1>
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; {fish}</p>
+  <p class="bread"><a href="../">トップ</a> &rsaquo; {fish}</p>
   {_build_share_buttons(
       share_text=f"{fish}の最新釣果と旬カレンダー | 船釣り予想",
       share_url=fish_url,
@@ -8461,7 +8461,7 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
   <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {_week_active}種</div></div>
 </div>
 <div class="c">
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; 魚種一覧</p>
+  <p class="bread"><a href="../">トップ</a> &rsaquo; 魚種一覧</p>
   <h2 class="st">今週よく釣れている魚</h2>
   <div class="fi-grid">{fish_index_cards}</div>
   {idx_all_section}
@@ -8792,7 +8792,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
   </div>
 </div>
 <div class="c">
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
+  <p class="bread"><a href="../">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
   {_build_share_buttons(
       share_text=f"{area}の船釣り釣果情報 | 船釣り予想",
       share_url=f"{SITE_URL}/area/{area_slug(area)}.html",
@@ -9192,7 +9192,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
   </div>
 </div>
 <div class="c">
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
+  <p class="bread"><a href="../">トップ</a> &rsaquo; <a href="../area/">エリア一覧</a> &rsaquo; {area}</p>
   {_build_share_buttons(
       share_text=f"{area}の船釣り釣果情報 | 船釣り予想",
       share_url=area_url,
@@ -9531,7 +9531,7 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
   <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {_week_active_area}エリア</div></div>
 </div>
 <div class="c">
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; エリア一覧</p>
+  <p class="bread"><a href="../">トップ</a> &rsaquo; エリア一覧</p>
   {area_index_sections}
   {idx_all_section}
 </div>
@@ -10367,7 +10367,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 <body>
 {_v2_header_nav('')}
 <div class="c">
-  <p class="bread"><a href="../index.html">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}<span class="bread-sep"> ／ </span><a href="../area/{area_slug(area)}.html">{area}エリア</a> &rsaquo; {fish}</p>
+  <p class="bread"><a href="../">トップ</a> &rsaquo; <a href="../fish/{fish_slug(fish)}.html">{fish}</a> &rsaquo; {area}<span class="bread-sep"> ／ </span><a href="../area/{area_slug(area)}.html">{area}エリア</a> &rsaquo; {fish}</p>
   {_build_share_buttons(
       share_text=f"{area}の{fish}釣果情報 | 船釣り予想",
       share_url=page_url,
@@ -10497,7 +10497,7 @@ def build_calendar_page(crawled_at=""):
 <body>
 {_v2_header_nav('calendar')}
 <div class="c">
-  <p class="bread"><a href="index.html">トップ</a> &rsaquo; 旬カレンダー</p>
+  <p class="bread"><a href="/">トップ</a> &rsaquo; 旬カレンダー</p>
   <h2 class="st">月別 釣りものカレンダー <span class="tag free">無料</span></h2>
   <div class="legend">
     <div class="leg"><div class="leg-dot" style="background:#fde8d4;border:1px solid #b84500"></div>数釣りピーク◎</div>
@@ -10527,7 +10527,7 @@ def build_premium_plan_page():
       - 「人気No.1」バッジ（CSS は残すが HTML class は削除）
       - 機能比較表の「30日詳細履歴」「釣行プラン提案機能」「マイページ・通知」行
       - 月額・スポットCTA → disabled ボタン「準備中」
-      - 無料プランCTA のみ有効（href="../index.html"）
+      - 無料プランCTA のみ有効（href="../"）
     """
     plan_css = """:root{--bg:#f5f7fa;--card:#fff;--border:#d0d8e0;--text:#1a2332;--sub:#5a6a7a;--muted:#8a96a4;--accent:#0d2b4a;--cta:#e85d04;--pos:#1a9d56;--neg:#d43333;--prem:#7c3aed;--prem2:#6d28d9;--hdr:#0d2b4a;--nav:#f0f3f7;--r:10px;--mx:900px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -10601,7 +10601,7 @@ a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 </div>
 
 <div class="c">
-<div class="bread"><a href="../index.html">トップ</a> &gt; <a href="../index.html">有料プラン</a> &gt; プラン比較</div>
+<div class="bread"><a href="../">トップ</a> &gt; <a href="../forecast/">有料プラン</a> &gt; プラン比較</div>
 
 <!-- 価値訴求 -->
 <div class="value">
@@ -10630,7 +10630,7 @@ a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 <li class="no">因果分析コメント</li>
 <li class="no">最適仕掛け推奨</li>
 </ul>
-<a class="plan-cta" href="../index.html">無料で使う</a>
+<a class="plan-cta" href="../">無料で使う</a>
 </div>
 
 <div class="plan">
@@ -12600,24 +12600,24 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     # ヘッダ・ナビ・ボトムナビ（fish/area ページと同じ構成・5項目）
     header_html = (
         '<header><div class="inner">'
-        '<h1><a href="/index.html">船釣り<span>予想</span></a></h1>'
+        '<h1><a href="/">船釣り<span>予想</span></a></h1>'
         '<span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span>'
         '</div></header>'
         '<nav class="gnav">'
-        '<a href="/index.html">今日の釣果</a>'
+        '<a href="/">今日の釣果</a>'
         '<a href="/fish/">魚種</a>'
         '<a href="/area/">エリア</a>'
         '<a href="/calendar.html">カレンダー</a>'
-        '<a href="/forecast/index.html" class="prem">有料プラン</a>'
+        '<a href="/forecast/" class="prem">有料プラン</a>'
         '</nav>'
     )
     bottom_nav = (
         '<div class="bn">'
-        '<a href="/index.html"><span class="i">🎣</span>釣果</a>'
+        '<a href="/"><span class="i">🎣</span>釣果</a>'
         '<a href="/fish/"><span class="i">🐟</span>魚種</a>'
         '<a href="/area/"><span class="i">📍</span>エリア</a>'
         '<a href="/calendar.html"><span class="i">📅</span>カレンダー</a>'
-        '<a href="/forecast/index.html" class="prem"><span class="i">⭐</span>有料</a>'
+        '<a href="/forecast/" class="prem"><span class="i">⭐</span>有料</a>'
         '</div>'
     )
 
@@ -13825,7 +13825,7 @@ def _page_nav(current_page=""):
         f'<a href="/fish/"{fish}>魚種</a>'
         f'<a href="/area/"{area}>エリア</a>'
         f'<a href="/calendar.html"{cal}>カレンダー</a>'
-        f'<a href="/forecast/index.html"{prem}>有料</a>'
+        f'<a href="/forecast/"{prem}>有料</a>'
         '</nav>'
         '</div>'
         '</header>'
@@ -13834,7 +13834,7 @@ def _page_nav(current_page=""):
         f'<a href="/fish/"{fish}>{svg_fish}<span>魚種</span></a>'
         f'<a href="/area/"{area}>{svg_area}<span>エリア</span></a>'
         f'<a href="/calendar.html"{cal}>{svg_cal}<span>カレンダー</span></a>'
-        f'<a href="/forecast/index.html" {prem_cls}>{svg_prem}<span>有料</span></a>'
+        f'<a href="/forecast/" {prem_cls}>{svg_prem}<span>有料</span></a>'
         '</nav>'
     )
 
