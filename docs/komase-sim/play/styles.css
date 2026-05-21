@@ -1046,3 +1046,20 @@ select.select:focus { border-color: var(--cta); }
     animation: mob-spin 0.75s linear infinite;
   }
 }
+
+/* ── sim-footer (T-8: 出典・免責) ── */
+.sim-footer {
+  grid-column: 1 / -1;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.45);
+  color: rgba(243, 234, 215, 0.75);
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+.sim-footer a {
+  color: rgba(243, 234, 215, 0.75);
+  text-decoration: underline;
+}
+.sim-footer a:hover { color: var(--paper); }
