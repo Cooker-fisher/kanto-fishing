@@ -866,6 +866,23 @@ def compute_fish_related_via_cooccurrence(hist_rows, fish, fish_top_areas_dict, 
     return result
 
 
+def _display_today_str(now):
+    """表示用の『今日』日付 (YYYY/MM/DD)。
+
+    朝10時前 (0:00〜9:59) は前日を返す。船宿は釣果ブログを当日夕方〜翌日朝に
+    投稿するため、深夜〜早朝にビルドした HTML では当日データが極端に少なく、
+    HERO・ZONE B/B2・LIVE ティッカーが空表示になりやすい。
+    表示用の『今日』を前日にシフトすることで、十分なデータがある日を基準に
+    組まれる。10時以降は当日を返す。
+
+    実日付（catches_raw 追記・dedup・x_post ファイル名など）には使わない。
+    あくまで HTML 生成時の HERO 日付・概況・LIVE 等の表示基準のみ。
+    """
+    if now.hour < 10:
+        return (now - timedelta(days=1)).strftime("%Y/%m/%d")
+    return now.strftime("%Y/%m/%d")
+
+
 def _load_recent_catches_for_index(now, days=7):
     """過去 days 日（today 含む）の catches を data/V2/*.csv から読み込み、
     fish/index.html・area/index.html の「今週」集計用に dict-list を返す。
@@ -880,8 +897,8 @@ def _load_recent_catches_for_index(now, days=7):
     Day N+1 に正しく CSV へ追加される（既存キーに該当しないため）。
     7日窓で読めば遅延到着 records も自然に含まれる。
     """
-    cutoff = (now - timedelta(days=days-1)).strftime("%Y/%m/%d")
-    today_str = now.strftime("%Y/%m/%d")
+    today_str = _display_today_str(now)
+    cutoff = (datetime.strptime(today_str, "%Y/%m/%d") - timedelta(days=days-1)).strftime("%Y/%m/%d")
     months_needed = set()
     for d in range(days):
         dt = now - timedelta(days=d)
@@ -4260,8 +4277,8 @@ def build_top_combos_html(catches_for_summary, history, now):
     選定ロジック: 件数 TOP10 → 先週比+優先（先週比+ で3件揃ったらそこで終了、
     足りなければ件数順で補充）→ TOP3
     """
-    today_str = now.strftime("%Y/%m/%d")
-    cutoff_str = (now - timedelta(days=6)).strftime("%Y/%m/%d")
+    today_str = _display_today_str(now)
+    cutoff_str = (datetime.strptime(today_str, "%Y/%m/%d") - timedelta(days=6)).strftime("%Y/%m/%d")
     # 直近1週間 (fish, area) → set of (ship, date)
     combo = {}
     for c in catches_for_summary:
@@ -4275,14 +4292,14 @@ def build_top_combos_html(catches_for_summary, history, now):
             combo.setdefault(key, set()).add((c.get("ship"), d))
     if not combo:
         return ""
-    # 先週同期間 (8〜14日前)
+    # 先週同期間 (8〜14日前。表示用 today を基準にずらす)
     prev_now = now - timedelta(days=7)
     try:
         prev_recs = _load_recent_catches_for_index(prev_now, days=7)
     except Exception:
         prev_recs = []
-    prev_cutoff = (prev_now - timedelta(days=6)).strftime("%Y/%m/%d")
-    prev_today = prev_now.strftime("%Y/%m/%d")
+    prev_today = _display_today_str(prev_now)
+    prev_cutoff = (datetime.strptime(prev_today, "%Y/%m/%d") - timedelta(days=6)).strftime("%Y/%m/%d")
     prev_combo = {}
     for c in prev_recs:
         d = c.get("date")
@@ -4440,7 +4457,7 @@ def build_teaser_rotator_html():
 def build_index_overview_text(catches, history, crawled_at="", hero_label=""):
     """今日の関東船釣り概況テキスト（200〜300字）を生成"""
     now = datetime.now(JST).replace(tzinfo=None)
-    today_str = now.strftime("%Y/%m/%d")
+    today_str = _display_today_str(now)
     year, week_num = current_iso_week()
     # 今日分のみで集計
     today_catches = [c for c in catches if c.get("date") == today_str]
@@ -6936,7 +6953,10 @@ def build_html(catches, crawled_at, history, weather_data=None):
     # regression（カンパチ問題）の原因だった。
     # HERO カウント・LIVE ティッカーは別途 catches（当日 sparse 含む）を使うため
     # is_sparse_today フラグはセクションラベル切替のみで使用する。
-    today_str_local = now.strftime("%Y/%m/%d")
+    # 2026/05/22 修正: 朝10時前 (0:00〜9:59) は表示用『今日』を前日にシフト。
+    # 船宿は釣果ブログを翌朝に投稿することが多く、深夜〜早朝の HTML 生成では
+    # 当日データがほぼ無く HERO/ZONE B/B2 が空表示になっていたため。
+    today_str_local = _display_today_str(now)
     SPARSE_THRESHOLD = 30
     # T19 (2026/05/09): hero_label / hero_date を冒頭で確定。
     # ZONE B ミニバー軸 / fish_others / 概況 / セクション見出し で使用するため。
@@ -7895,8 +7915,8 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                 f'今年の初釣果: 第{entry_this}週 ／ 昨年: 第{entry_last}週'
                 f'<span class="entry-trend">（{trend_txt}）</span></div>'
             )
-        # V2: 今日・今週の集計
-        today_str_f = now.strftime("%Y/%m/%d")
+        # V2: 今日・今週の集計（朝10時前は前日を『今日』として表示）
+        today_str_f = _display_today_str(now)
         today_catches_f, fish_today_label, fish_display_date_str = _resolve_display_dataset(catches, today_str_f)
         max_cnt = 0
         for c in catches:
@@ -8501,7 +8521,9 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
 def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=None, fish_area_summary=None, area_top_fishes=None):
     os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
     now = datetime.now(JST).replace(tzinfo=None)
-    today_str = now.strftime("%Y/%m/%d")
+    # 朝10時前は表示用『今日』を前日にシフト（船宿ブログの翌朝投稿パターン対応）
+    today_str = _display_today_str(now)
+    # today_iso は海況予報（weather_data.forecast）の検索キーなので実日付のまま
     today_iso = now.strftime("%Y-%m-%d")
     area_desc_data = load_area_description()
     area_decadal = load_area_decadal()
