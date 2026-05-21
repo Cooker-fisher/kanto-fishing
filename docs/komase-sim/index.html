@@ -35,15 +35,15 @@ a { color: #1a6fd8; text-decoration: none; }
 a:hover { text-decoration: underline; }
 img { max-width: 100%; height: auto; display: block; }
 
-/* ── CSS 変数 ── */
+/* ── CSS 変数（サイト本体 docs/style.css と統一） ── */
 :root {
-  --navy: #0d2137;
-  --navy-mid: #1a3452;
-  --accent: #1a6fd8;
-  --accent-hover: #1558b0;
+  --navy: #0d2b4a;        /* サイト本体 --accent と統一 */
+  --navy-mid: #163d5c;    /* サイト本体 --accent2 と統一 */
+  --accent: #e85d04;      /* サイト本体 --cta と統一（朱） */
+  --accent-hover: #d04e00;/* サイト本体 --cta2 と統一 */
   --text: #1a2535;
   --text-sub: #556070;
-  --bg: #f8f9fa;
+  --bg: #f5f7fa;          /* サイト本体 --bg と統一 */
   --card-bg: #ffffff;
   --border: #dde3ec;
   --green: #2e7d32;
@@ -200,8 +200,9 @@ section {
 }
 section:nth-child(odd) { background: var(--bg); }
 section:nth-child(even) { background: var(--card-bg); }
-/* HERO は奇数でも特別塗り */
-.hero, .preview { background: revert; }
+/* HERO は濃紺背景・PREVIEW は白カード（nth-child より勝つために section.* で specificity 合わせ + 後置で勝つ） */
+section.hero { background: var(--navy); }
+section.preview { background: var(--card-bg); }
 
 section h2 {
   font-size: clamp(18px, 4vw, 26px);
