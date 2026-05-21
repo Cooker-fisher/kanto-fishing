@@ -1,10 +1,68 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/05/21
-最新コミット: T34 イカ系船宿ブログクロール路線・効果検証→撤退
+最終更新: 2026/05/22
+最新コミット: T33 DO魚種別+水色再predict+MIN_MONTHS=4 → 撤回（時間対効果不足）
 
 ---
 
-## ✅ 直近完了（2026/05/21・main agent）
+## ✅ 直近完了（2026/05/22・main agent）
+
+### T33 DO魚種別+水色再predict+MIN_MONTHS=4 全コンボ再実行→撤回
+
+**結論: 撤回（ユーザー判断「時間のわりに効果がほぼない」）**
+
+**Plan v2-balanced 内容:**
+- DO_FACTORS 独立カテゴリ化 + DO_EFFECTIVE_FISH 6魚種 / DO_INEFFECTIVE_FISH 6魚種の魚種別制御
+- MAX_DO=1（多重共線性対策）
+- MIN_MONTHS=4 緩和 + MIN_TRAIN_MONTHS_CMEMS=4 同期
+- predict_count.py に DO=NULL フォールバック実装
+- weather_cache rebuild + 水色再 predict 前処理
+
+**Phase 6 全コンボ再実行結果 (T32 比):**
+
+| 指標 | T32 | T33 | 撤回基準 | 判定 |
+|---|---|---|---|---|
+| H=0 cnt_avg wMAPE P50 | 37.27% | 37.71% | 38.0% | ⚠️ +0.44pt 微悪化 |
+| BL-2 勝率 | 95.8% | 95.9% | 94.0% | ✅ 維持 |
+| cnt promise_break P50 | 6.38% | 6.33% | 7.5% | ✅ -0.05pt |
+| composite promise_break P50 | 13.93% | 13.80% | 15.0% | ✅ -0.13pt |
+| size promise_break P50 | 31.58% | 31.25% | - | ✅ -0.33pt |
+| **DO EFFECTIVE 採用** | 44 | 23 | ≥70 | ❌ **-21件 減少** |
+| DO INEFFECTIVE 採用 | 99 | 2 | 0 | ⚠️ ほぼ達成 |
+
+**撤回理由:**
+1. promise_break 系の改善 (-0.05〜-0.33pt) は誤差範囲・wMAPE 微悪化を相殺できない
+2. MAX_DO=1 制限で do_surface + do_bottom 両採用コンボが 1 因子に絞られ DO EFFECTIVE 採用 44→23 に減少（予期しない副作用）
+3. 前処理 (weather rebuild + water_color predict) で 2 時間+ Phase 6 で 60-70 分 = **総計 3-4 時間** に対してリターン薄い
+4. 質的改善（DO 過学習除去 99→2件・0-factor 31→26件）は KPI 化できず事業価値に直結しない
+
+**撤回実施:**
+- analysis.sqlite を bak_T33 から T32 状態に復元（wMAPE P50=37.29% で T32 一致）
+- combo_deep_dive.py / predict_count.py を main HEAD 状態に戻し
+- weather_cache.sqlite の更新 (2026-04-24→05-21) は valid なデータなので残す
+
+**残す成果物（次回検討時の参考資料）:**
+- diag_T33_2026-05-20.md / diag_T33_domain_2026-05-20.md
+- plan_T33_2026-05-21_v2.md
+- review_T33_{code,stat,data,domain}_2026-05-21.md
+- ocean/weather_cache.sqlite（5/21 まで更新済み）
+
+**学んだこと（次回検討時必読）:**
+1. **小幅な統計改善 (≤0.5pt) は事業価値に変換しにくい** → 次回は wMAPE/promise_break -2pt 以上が見込める改善のみ着手
+2. **MAX_DO=1 制限の副作用を事前に試算すべき** → Plan 段階で「両採用→1採用への絞り込み」効果を計算していなかった
+3. **前処理コストを所要時間見積もりに含めるべき** → 「30分」と書いたが実際は weather_cache rebuild が必須で 2 時間+
+4. **Phase 6 全コンボ再実行は 60-70 分の固定コスト** → 小幅改善のために毎回実行は投資対効果悪い・複数改善を 1 実行にまとめる戦略が必要
+
+**次セッション以降の優先候補（事業価値 × 投資対効果ベース）:**
+1. **D 層予測モデル本番化** - Phase B/C で評価指標が揃った状態を E 層に表示。実装で見える価値が最大
+2. **size 30-50% 帯張り付き救済** - 中央予測モデル改善（size_avg 精度向上）
+3. **マルイカ×秀丸 n=950 wMAPE 65% 個別診断** - 最悪精度コンボの真因特定
+4. **域外改善**: E 層表示・SEO・コンテンツ拡充など全コンボ再実行を伴わない改善
+
+T33 系（小幅統計改善）は **後回し or 棚上げ** が妥当。詳細: `analysis/V2/analysis-improvement/90_決定ログ.md` 補遺13
+
+---
+
+## ✅ 過去完了（2026/05/21・main agent）
 
 ### T34 イカ系船宿ブログクロール路線・効果検証→撤退
 
