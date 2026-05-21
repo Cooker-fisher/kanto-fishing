@@ -52,6 +52,8 @@
 | 21 | `area/*.html` サンプル（T31） | 共通 FAQ 見出し『船釣り共通の基礎知識』が消滅 + `/pages/faq.html` リンク存在 + Q2 アクセス文章に「最寄りIC」「最寄り駅」キーワード含む（hist_rows ベース固定文章化） |
 | 22 | `fish/*.html` サンプル（aji/shirogisu/tachiuo/madai）（T29） | area_cmp 内に `class="ar-fa"` を持つ fish_area への詳細リンク存在。全件 area_cmp なしの場合は warn 格上げ |
 | 23 | `fish_area/*.html` サンプル（aji-yokohama-honmoku/madai-iioka/aji-kanazawa-hakkei）（T29） | FAQ 直前に `class="fa-related"` セクション + 内部に `class="chip-link"` 1件以上（fish_area 同士の相互リンク） |
+| ※ | — | #24〜#33 は T38 系で `validate_output.py` 側に存在（実装先行・本表未掲載・別タスクで追記予定） |
+| 34 | 全 `docs/**/*.html`（2026-05-21） | `href` の値が `index.html` で終わる内部リンクが 0件（正規表現 `href=["'][^"']*index\.html["']`）。GitHub Pages Fastly CDN の root + 全 subdir レベルキャッシュキー別問題対策・内部リンクから `index.html` 末尾を完全排除 |
 
 ### T22 関連の設計契約（H1 noindex 解除手順）
 
