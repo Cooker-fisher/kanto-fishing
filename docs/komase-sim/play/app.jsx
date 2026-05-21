@@ -987,7 +987,7 @@ function App() {
   const applyRecommendation = () => {
     if (!recommendation) return;
     setParams(prev => ({ ...prev, ...recommendation.best }));
-    setSelectedPresets({ cycle: null, cond: null, area: null });
+    // プリセット選択は維持する（「東京湾・剣崎ベース + 推奨適用」を視覚的に追えるように）
     resetSim();
     setDrawerOpen(false);
     showToast("✓ 推奨設定を適用しました", "var(--moss)");
