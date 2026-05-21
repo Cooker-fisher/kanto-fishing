@@ -1111,7 +1111,7 @@ function App() {
           <h1 className="head__title">マダイコマセシミュレーター <span className="head__ver">ベータ版</span></h1>
           <div className="head__actions">
             <a href="/" className="head__link" aria-label="船釣り予想 トップへ戻る">← 船釣り予想 トップへ</a>
-            {/* X シェアボタン (結果連動): cycleScore が出ていれば結果文・無ければプロモ文 */}
+            {/* X シェアボタン (結果連動): ラベルに現在のスコアを含めて投稿前に見える */}
             {(() => {
               const score = Math.round(grade.cycleScore || 0);
               const cg = grade.cycleGrade || "×";
@@ -1136,9 +1136,12 @@ function App() {
                 "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText) +
                 "&url=" + encodeURIComponent(pageUrl) +
                 "&hashtags=" + encodeURIComponent("マダイ,コマセ釣り,船釣り");
+              const btnLabel = score === 0
+                ? "𝕏 でシェア"
+                : `𝕏 シェア (${score}点${cg})`;
               const ariaLbl = score === 0
                 ? "シミュレーターをXでシェア"
-                : `結果スコア${score}点をXに投稿`;
+                : `現在の結果 ${score}点 ${cg}判定 をXに投稿`;
               return (
                 <a
                   className="head__btn head__btn--x"
@@ -1146,7 +1149,7 @@ function App() {
                   target="_blank" rel="noopener nofollow"
                   aria-label={ariaLbl}
                   title={ariaLbl}
-                >𝕏 でシェア</a>
+                >{btnLabel}</a>
               );
             })()}
             <a

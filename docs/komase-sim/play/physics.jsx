@@ -459,21 +459,15 @@ window.SimPhysics = (function() {
   // ============================================================
   // 自動最適化: ランダム検索でハリス/ガン玉/しゃくり/巻きを探索
   // 環境(水深・タナ・潮)は固定。
-  // 評価: 30秒の高速シミュレーションで付けエサ周辺の平均粒子比率
-  //
-  // opts:
-  //   useEMA      true → 同調率を a=0.04 EMA で平滑化してから sustain/peak 判定
-  //               false (既定) → 瞬間 ratio をそのまま判定 (歴史的挙動)
-  //   warmupSec   評価開始までの猶予秒。既定 min(15, durationSec*0.1)
-  //               0 を渡すと live と同じ「サイクル開始から累積」になる
-  // ※ EMA on + warmup=0 が app.jsx 側 cycleScore (live) と最も整合する設定。
-  //    既存呼び出し (optimize/scoreParams) は opts 省略で従来挙動を維持する。
+  // 評価関数は app.jsx の cycleScore (live) と完全一致:
+  //   - 同調率は EMA (α=0.04) で平滑化 (app.jsx:796 と同係数)
+  //   - warmup なし (live と同じくサイクル開始から累積)
+  //   - 判定基準・スコア式は live cycleScore と同一
+  // 「画面で見える値」を直接最大化する。最適化と体感の乖離を作らない。
   // ============================================================
-  function simulateHeadless(params, durationSec, dt, rng, opts) {
+  function simulateHeadless(params, durationSec, dt, rng) {
     // rng が指定されなければ Math.random (ライブ用)。指定されれば決定論。
     const rnd = rng || Math.random;
-    opts = opts || {};
-    const useEMA = !!opts.useEMA;
     const EMA_ALPHA = 0.04;  // app.jsx hitRateEMA と同じ係数
     const particles = [];
     // ★ 実釣準拠: 落とし込み目安 = ビシ位置 (指示棚 + dropOffsetM)
@@ -493,12 +487,9 @@ window.SimPhysics = (function() {
     let shakuriTimer = 0;
     let leakAccum = 0;
     let elapsed = 0;
-    // warmup: 既定は 短く (cycle 投入後すぐ評価開始) してユーザー体感に近づける
-    //   旧 40% (240s sim で 96s) は steady-state 寄りで楽観的すぎ、ユーザーが
-    //   見る 30-60s 区間と乖離していた。固定 15s = 落とし込み + 初期しゃくり 1-2発分。
-    //   opts.warmupSec=0 で live と同じ「サイクル開始から累積」になる。
-    const warmup = (opts.warmupSec != null) ? opts.warmupSec : Math.min(15, durationSec * 0.1);
-    let hitRateEMA = 0;  // useEMA 時の平滑化値 (warmup 中も更新するので外で持つ)
+    // warmup なし。live (app.jsx) は phase=fishing になった瞬間から
+    // cycleStatsRef を累積するので、headless も同じく 0 から評価する。
+    let hitRateEMA = 0;  // app.jsx:796 と同じく EMA で平滑化
     // 5基準スコア用カウンタ
     const scoreCounters = {
       totalFrames: 0,
@@ -625,15 +616,12 @@ window.SimPhysics = (function() {
       rigStep(rs, params, dt);
       stepParticles(particles, params, dt, rnd);
       const rig = rigShape(params.tanaDepth - rs.makiOffset, rs.shakuriOffsetY, rs.shakuriOffsetX, params, hookW, 0);
-      // 同調率は warmup 中も毎フレーム計算する (EMA を live と同じく
-      // サイクル開始から成長させるため)。評価カウントだけ warmup で gate。
+      // 同調率は毎フレーム計算 + EMA で平滑化 (app.jsx:796 と完全同等)
       const near = particles.length > 0 ? nearHook(particles, rig.hook, 1.8) : 0;
       const ratio = particles.length > 0 ? (near / particles.length * 100) : 0;
-      // app.jsx:796 と同じ係数で EMA を更新 (useEMA=false でも更新だけは
-      // しておくがスコアには使わない。コストは無視できる)。
       hitRateEMA = hitRateEMA * (1 - EMA_ALPHA) + ratio * EMA_ALPHA;
-      const syncRate = useEMA ? hitRateEMA : ratio;
-      if (elapsed > warmup) {
+      const syncRate = hitRateEMA;
+      {
         // === 評価基準 (コマセマダイの実釣に整合) ===
         //   指示棚 = ビシを止める作戦水深、付け餌は指示棚に置く必要は無い。
         //   マダイは底寄り→コマセに誘われて上がる。付け餌はビシより下の
@@ -774,8 +762,7 @@ window.SimPhysics = (function() {
 
   // 評価: 同じ params なら毎回同じ score (rng seed を params ハッシュから派生)
   // EVAL_RUNS=3 だが、各 run の seed を派生して "物理ノイズの平均化" を維持
-  // opts は simulateHeadless にそのまま透過 (useEMA / warmupSec)。
-  function evalParams(params, simDuration, evalRuns, opts) {
+  function evalParams(params, simDuration, evalRuns) {
     simDuration = simDuration || 120;
     evalRuns = evalRuns || 3;
     // params のシリアライズ → ハッシュ → 各 run の seed
@@ -788,7 +775,7 @@ window.SimPhysics = (function() {
     for (let r = 0; r < evalRuns; r++) {
       const runSeed = Math.imul(hash ^ (r + 1), 2654435761) >>> 0;
       const runRng = makeRng(runSeed);
-      sum += simulateHeadless({...params, autoShakuri: true}, simDuration, 0.1, runRng, opts);
+      sum += simulateHeadless({...params, autoShakuri: true}, simDuration, 0.1, runRng);
     }
     return sum / evalRuns;
   }
@@ -979,73 +966,22 @@ window.SimPhysics = (function() {
       return { best, score: bestScore };
     }
 
-    // ===== 診断ハーネス =====
-    //   optimize 完了後に best と全 seed を 2モードで再評価し、
-    //   live (app.jsx cycleScore) と headless スコアの乖離を可視化する。
-    //   - head: 既存挙動 (瞬間 ratio + warmup 15s)
-    //   - live: useEMA=true + warmupSec=0 で live cycleScore と整合
-    //   gap = head - live が正なら headless が過大評価、負なら過小評価。
-    //   既存 best 選定ロジックは変更しない (診断観察のみ)。
-    function runDiagnostic(globalBest) {
-      const _seedLabels = ["userSeed(現行)", "A(短ハリス+mid)", "B(中ハリス+標準)", "C(長ハリス)", "D(短+チモト)", "E(ハリス下+重ガン玉)", "F(長+速サイクル)"];
-      const rows = [];
-      const pushRow = (name, candParams) => {
-        const merged = { ...env, ...candParams };
-        const sH = evalParams(merged, 120, 3, { useEMA: false });
-        const sL = evalParams(merged, 120, 3, { useEMA: true, warmupSec: 0 });
-        rows.push({
-          name,
-          head: +sH.toFixed(2),
-          live: +sL.toFixed(2),
-          gap:  +(sH - sL).toFixed(2),
-        });
-      };
-      pushRow("★best (recommend)", globalBest);
-      for (let i = 0; i < SEEDS.length; i++) {
-        pushRow(_seedLabels[i] || `seed-${i}`, normalizeStart(SEEDS[i]));
-      }
-      return rows;
-    }
-
-    return { SEEDS, descendFromStart, runDiagnostic };
-  }
-
-  // 診断結果を console + window.__lastOptimizeDiagnostic に出力する共通処理
-  function _emitDiagnostic(rows, globalBest) {
-    try {
-      if (typeof window !== "undefined") {
-        window.__lastOptimizeDiagnostic = {
-          best_params: globalBest,
-          rows,
-          ts: Date.now(),
-          legend: "head=既存headless評価 / live=EMA+warmup0でlive相当 / gap=head-live (正なら過大評価)",
-        };
-      }
-      // 開発者がコンソールから一目で乖離を見られるように
-      if (typeof console !== "undefined" && console.table) {
-        console.groupCollapsed("[komase-sim] Optimize diagnostic (head vs live)");
-        console.table(rows);
-        console.log("legend: head=既存 / live=EMA+warmup0 / gap=head-live");
-        console.log("window.__lastOptimizeDiagnostic で再アクセス可");
-        console.groupEnd();
-      }
-    } catch (e) { /* SSR/旧ブラウザでは黙る */ }
+    return { SEEDS, descendFromStart };
   }
 
   function optimize(envParams, iterations, locked) {
-    const { SEEDS, descendFromStart, runDiagnostic } = _makeOptCtx(envParams, locked);
+    const { SEEDS, descendFromStart } = _makeOptCtx(envParams, locked);
     let globalBest = null, globalScore = -Infinity;
     for (const seed of SEEDS) {
       const r = descendFromStart(seed);
       if (r.score > globalScore) { globalScore = r.score; globalBest = r.best; }
     }
-    _emitDiagnostic(runDiagnostic(globalBest), globalBest);
     return { best: globalBest, score: globalScore };
   }
 
   // seed 間で setTimeout(0) を挟み UI スレッドをブロックしない非同期版
   async function optimizeAsync(envParams, iterations, locked, onProgress) {
-    const { SEEDS, descendFromStart, runDiagnostic } = _makeOptCtx(envParams, locked);
+    const { SEEDS, descendFromStart } = _makeOptCtx(envParams, locked);
     let globalBest = null, globalScore = -Infinity;
     for (let si = 0; si < SEEDS.length; si++) {
       const r = descendFromStart(SEEDS[si]);
@@ -1053,8 +989,6 @@ window.SimPhysics = (function() {
       if (onProgress) onProgress((si + 1) / SEEDS.length);
       await new Promise(resolve => setTimeout(resolve, 0));
     }
-    // 診断: best 確定後に同期で評価 (8パターン×2モード×3run = 約48 sim)
-    _emitDiagnostic(runDiagnostic(globalBest), globalBest);
     return { best: globalBest, score: globalScore };
   }
 
