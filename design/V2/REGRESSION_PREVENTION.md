@@ -100,6 +100,13 @@ T23（forecast/index.html 実コンテンツ化）完了時に以下をセット
 - gatekeeper を回避する変更は禁止
 - 新規 regression 検出時: 修正 + 新不変条件追加 + 決定ログ更新 を必ずセットで行う
 
+### ローカル crawler.py 再実行（2026-05-22 追加）
+- **ローカルで `python crawler.py` を実行する前に必ず `git pull` する。**
+- 理由: GitHub Actions が catches.json / docs/ を更新した後にローカル古い catches.json で `crawler.py` を再実行すると、`_resolve_display_dataset` が `max(dates)` フォールバックで古い日付を選び、`docs/index.html` の HERO 表示日が**巻き戻る**。実例: 5/21 23:11 の手動 commit が、5/21 20:01 Actions の「5/21(木) 釣果」表示を「5/19(火) 釣果」に上書きした（決定ログ 2026-05-22）。
+- **HTML の文字列置換だけが目的**（リンク変換・URL置換など）なら `crawler.py` を実行せず、`sed` または独立した Python script で `docs/` を直接書き換える。
+- crawler.py のロジック変更を反映したいケースでは: `git pull` → `python crawler.py` → `python crawl/validate_output.py` → commit & push の順を厳守。
+- クロール結果だけ最新化したいケースは GitHub Actions の workflow_dispatch を使う（ローカル `crawler.py` を回さない）。
+
 ---
 
 ## 開発者向けチェックリスト
@@ -108,6 +115,7 @@ T23（forecast/index.html 実コンテンツ化）完了時に以下をセット
 
 - [ ] `design/V2/90_決定ログ.md` の該当セクションを読んだ
 - [ ] 本ドキュメントの設計契約を読んだ
+- [ ] **ローカルで `crawler.py` を実行する場合は事前に `git pull` した**（2026-05-22 追加）
 
 実装後・コミット前に:
 
@@ -115,6 +123,7 @@ T23（forecast/index.html 実コンテンツ化）完了時に以下をセット
 - [ ] 「閾値を緩めて gatekeeper を黙らせる」修正をしていない
 - [ ] 新しい regression を発見したら不変条件を追加し決定ログを更新
 - [ ] 失敗を抑制する `--warn-only` を CI に組み込もうとしていない
+- [ ] **`crawler.py` 再実行を伴う commit の場合、`docs/index.html` の `<div class="updated">` 日時が現在時刻に近い・HERO 日付ラベルが catches_raw 最新日に近いことを目視確認**（2026-05-22 追加）
 
 ---
 
