@@ -1,0 +1,75 @@
+name: wholesale-price
+on:
+  schedule:
+    - cron: '30 7 21 * *'   # 毎月21日 16:30 JST（前月分が公開済の想定）
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'クロールモード'
+        required: true
+        default: 'incremental'
+        type: choice
+        options:
+          - incremental  # 未取得月のみ追加（デフォルト・月次運用）
+          - backfill     # 202502〜直近 全月取得（初回 or 全再生成）
+      month:
+        description: '特定月 YYYYMM（mode=incremental 時に指定）'
+        required: false
+        type: string
+      force:
+        description: '既存月も上書き'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: install dependencies
+        run: pip install openpyxl
+      - name: run wholesale crawler
+        id: crawl
+        run: |
+          ARGS=""
+          MODE="${{ github.event.inputs.mode }}"
+          MONTH="${{ github.event.inputs.month }}"
+          FORCE="${{ github.event.inputs.force }}"
+          # schedule trigger は incremental 固定
+          if [ -z "$MODE" ]; then MODE="incremental"; fi
+          if [ "$MODE" = "backfill" ]; then
+            ARGS="--backfill"
+          elif [ -n "$MONTH" ]; then
+            ARGS="--month $MONTH"
+          fi
+          if [ "$FORCE" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          echo "Running: python3 docs/fish-value/crawl_wholesale.py $ARGS"
+          python3 docs/fish-value/crawl_wholesale.py $ARGS
+      - name: upload geppo debug html on failure
+        if: failure() && steps.crawl.conclusion == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: geppo-debug-html
+          path: docs/fish-value/geppo_debug.html
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/fish-value/wholesale-prices.json
+          if git diff --staged --quiet; then
+            echo "no changes"
+          else
+            git commit -m "data(fish-value): wholesale-prices $(date -u +'%Y-%m-%d')"
+            git pull --rebase origin main
+            git push origin main
+          fi
