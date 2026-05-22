@@ -210,7 +210,9 @@ function App() {
   // ===== 1サイクル評価 (投入→仕掛け回収 までの集計) =====
   //   実釣感: 投入してから回収するまでの 1 往復で「うまく釣れる配置を維持できたか」を採点
   //   フレームベースで sync/cage位置/hook位置を集計し、回収時にスコア確定
-  const cycleStatsRef = useRef({ goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 });
+  const cycleStatsRef = useRef({ edgeFrames: 0, centerFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 });
+  // ハリス一次遅れ用 (physics.jsx simulateHeadless と同じロジック)
+  const hookLagRef = useRef({ x: null, y: null });
   const [lastCycleResult, setLastCycleResult] = useState(null);  // { score, grade, note, sustainRate, meanSync, durationSec, cycleNo }
   const cycleCountRef = useRef(0);
 
@@ -306,7 +308,7 @@ function App() {
     metricsRef.current.totalSpawned = 0;
     metricsRef.current.hitRateEMA = 0;
     // サイクル評価リセット
-    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
+    cycleStatsRef.current = { edgeFrames: 0, centerFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
     cycleCountRef.current = 0;
     setLastCycleResult(null);
   }
@@ -539,7 +541,7 @@ function App() {
     autoStateRef.current = { state: "idle", biteTimer: 0 };
     chumRef.current = 1.0;
     // 新サイクル開始: 集計リセット
-    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
+    cycleStatsRef.current = { edgeFrames: 0, centerFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
   };
   const castRef = useRef(castRig);
   castRef.current = castRig;
@@ -565,7 +567,7 @@ function App() {
     dropVelRef.current = physicsParamsRef.current.dropSpeed || 1.5;
     flashRef.current = 1.4;
     // 次サイクルの集計開始
-    cycleStatsRef.current = { goodFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
+    cycleStatsRef.current = { edgeFrames: 0, centerFrames: 0, okFrames: 0, totalFrames: 0, peakSync: 0, sumSync: 0, simElapsed: 0 };
   };
 
   // ===== 1サイクル完了処理 (仕掛け回収時に呼ばれる) =====
@@ -795,9 +797,29 @@ function App() {
         dropVelRef.current
       );
 
-      // メトリクス (圏内 1.8m = 魚が匂いで感知する範囲)
-      // 同調判定半径 3.0m: physics.jsx simulateHeadless と一致 (実釣感覚)
-      const near = SimPhysics.nearHook(particlesRef.current, rig.hook, 3.0);
+      // ハリス一次遅れ: 静的形状 rig.hook を τ秒で漂着 (physics.jsx と一致)
+      const _tau = SimPhysics.calcSettleTau(pp);
+      const _hookAlpha = 1 - Math.exp(-dt / _tau);
+      if (hookLagRef.current.x === null) {
+        hookLagRef.current.x = rig.hook.x;
+        hookLagRef.current.y = rig.hook.y;
+      }
+      hookLagRef.current.x += (rig.hook.x - hookLagRef.current.x) * _hookAlpha;
+      hookLagRef.current.y += (rig.hook.y - hookLagRef.current.y) * _hookAlpha;
+      const laggedHook = { x: hookLagRef.current.x, y: hookLagRef.current.y };
+
+      // 付け餌周辺の粒子分布 (edge/center 判定用)
+      let _centerCount = 0, _edgeCount = 0;
+      for (const p of particlesRef.current) {
+        const dxh = p.x - laggedHook.x;
+        const dyh = p.y - laggedHook.y;
+        const d2 = dxh*dxh + dyh*dyh;
+        if (d2 < 2.25) _centerCount++;        // 1.5² (エサ取り過密ゾーン)
+        else if (d2 < 64) _edgeCount++;        // 8² (マダイ食い場ゾーン)
+      }
+
+      // メトリクス (球同調 3.0m: 後方互換のため残す)
+      const near = SimPhysics.nearHook(particlesRef.current, laggedHook, 3.0);
       const total = particlesRef.current.length;
       const ratio = total > 0 ? near / total * 100 : 0;
       const a = 0.04;
@@ -833,37 +855,42 @@ function App() {
           tanaArrivalLastRef.current = false;
         }
 
-        // 1サイクル集計: フレーム毎の良否を累積 (リアルタイムスコア計算)
-        //   good: ビシ指示棚 ±1.5m & 付け餌ビシ下0.5m以上 & 付け餌深場ゾーン & 同調 >=2%
-        //   ok:   ビシ ±2.5m & 付け餌ビシ下 & 同調 >=0.5%
+        // 1サイクル集計: フレーム毎の良否を累積 (physics.jsx simulateHeadless と一致)
+        //   edge: マダイの食い場 (外縁に粒子 3+ かつ 中心過密でない 10未満)
+        //         + ビシ指示棚 ±1.5m + 付け餌 ビシ下0.5m+ + 深場ゾーン
+        //   center: コマセ雲中心過密 (エサ取り集中・ペナルティ対象)
+        //   ok: 緩い基準
         const cycSt = cycleStatsRef.current;
         const syncRate = metricsRef.current.hitRateEMA;  // %
         const cageDiff = Math.abs(rig.cage.y - pp.tanaDepth);
-        const hookBelowCage = rig.hook.y - rig.cage.y;
-        const hookInDeepZone = rig.hook.y >= pp.tanaDepth - 1 && rig.hook.y <= pp.depth - 1;
-        const goodFrame = (cageDiff <= 1.5 && hookBelowCage > 0.5 && hookInDeepZone && syncRate >= 2) ? 1 : 0;
-        const okFrame = (cageDiff <= 2.5 && hookBelowCage > 0 && syncRate >= 0.5) ? 1 : 0;
+        const hookBelowCageVal = laggedHook.y - rig.cage.y;
+        const hookInDeepZone = laggedHook.y >= pp.tanaDepth - 1 && laggedHook.y <= pp.depth - 1;
+        const cageOnTana = cageDiff <= 1.5;
+        const hookBelowCage = hookBelowCageVal > 0.5;
+        const isEdge = _edgeCount >= 3 && _centerCount < 10
+                    && hookBelowCage && hookInDeepZone && cageOnTana;
+        const isCenter = _centerCount >= 10;
+        const okFrame = (cageDiff <= 2.5 && hookBelowCageVal > 0 && syncRate >= 0.5) ? 1 : 0;
         cycSt.totalFrames += 1;
-        cycSt.goodFrames += goodFrame;
+        if (isEdge) cycSt.edgeFrames += 1;
+        if (isCenter) cycSt.centerFrames += 1;
         cycSt.okFrames += okFrame;
         cycSt.sumSync += syncRate;
         if (syncRate > cycSt.peakSync) cycSt.peakSync = syncRate;
-        // シミュ経過時間累積 (倍速時は実時間より速く進む)
         cycSt.simElapsed += dt;
         // リアルタイムスコア: 累積フレーム数に応じて秒ごとに更新
-        //   フレーム数が少ない初期はスコアが伸びていく感覚を出す
         if (cycSt.totalFrames > 0) {
-          const sustainRate = cycSt.goodFrames / cycSt.totalFrames;
+          const edgeSustainRate = cycSt.edgeFrames / cycSt.totalFrames;
+          const centerRate = cycSt.centerFrames / cycSt.totalFrames;
           const okRate = cycSt.okFrames / cycSt.totalFrames;
           const meanSync = cycSt.sumSync / cycSt.totalFrames;
-          // 配点: sustain 50 + ok 15 + meanSync 15 + peak 20 = max 100
-          //   peakBonus を min(20, peak*0.4) に変更 (旧: min(10, peak*0.8) → 12%以上で頭打ち)
-          //   peakSync 50% で 20pt 満点 → 「短時間でも sync 達成」を強く評価
-          const baseScore = sustainRate * 50 + okRate * 15;
+          // 配点 (physics.jsx と完全一致): edge 55 + ok 15 + meanSync 15 + peak 5 - center 10
+          const baseScore = edgeSustainRate * 55 + okRate * 15;
           const syncBonus = Math.min(15, meanSync * 1.5);
-          const peakBonus = Math.min(20, cycSt.peakSync * 0.4);
-          metricsRef.current.cycleScore = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
-          metricsRef.current.cycleSustainRate = sustainRate * 100;
+          const peakBonus = Math.min(5, cycSt.peakSync * 0.1);
+          const centerPenalty = centerRate * 10;
+          metricsRef.current.cycleScore = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus - centerPenalty));
+          metricsRef.current.cycleSustainRate = edgeSustainRate * 100;
           metricsRef.current.cycleOkRate = okRate * 100;
           metricsRef.current.cycleMeanSync = meanSync;
           metricsRef.current.cyclePeakSync = cycSt.peakSync;
