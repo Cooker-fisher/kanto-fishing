@@ -12201,7 +12201,318 @@ _SHIP_EXTRA_CSS = """\
 .ma-collapse[open] .ma-grid{margin-top:12px}
 .ma-archive-links{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
 .ma-archive-links a{display:inline-block;padding:3px 8px;background:var(--bg);color:var(--accent);border-radius:10px;text-decoration:none;margin:2px;font-size:11px}
-.ma-archive-links a:hover{background:var(--accent);color:#fff}"""
+.ma-archive-links a:hover{background:var(--accent);color:#fff}
+.weekly-report{background:#fff;border-top:4px solid var(--cta);border-left:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:16px 18px 14px;margin:14px 0;position:relative}
+.weekly-report .wr-label{position:absolute;top:-10px;left:14px;background:var(--cta);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.weekly-report .wr-period{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.wr-kpi-row{display:flex;align-items:baseline;gap:12px;background:rgba(255,255,255,.7);border-radius:8px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(232,93,4,.15);flex-wrap:wrap}
+.wr-kpi-row .wkr-label{font-size:11px;color:var(--muted)}
+.wr-kpi-row .wkr-main{font-size:20px;font-weight:800;color:var(--cta)}
+.wr-kpi-row .wkr-diff{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(26,157,86,.12);color:var(--pos);font-weight:700}
+.wr-kpi-row .wkr-diff.neg{background:rgba(212,51,51,.12);color:var(--neg)}
+.wr-kpi-row .wkr-sub{font-size:11px;color:var(--sub);margin-left:auto}
+.wr-section{margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed var(--border)}
+.wr-section:last-child{border-bottom:none;padding-bottom:0}
+.wr-section h4{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.wr-fish-list{list-style:none;padding:0;font-size:12px}
+.wr-fish-list li{padding:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.wr-fish-list .wfl-fish{font-weight:700;color:var(--accent)}
+.wr-fish-list .wfl-count{color:var(--cta);font-weight:700}
+.wr-fish-list .wfl-diff{font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(26,157,86,.12);color:var(--pos);font-weight:700}
+.wr-fish-list .wfl-diff.neg{background:rgba(212,51,51,.12);color:var(--neg)}
+.wr-fish-list .wfl-detail{font-size:11px;color:var(--sub);flex:1 1 100%;padding-left:8px}
+.wr-trophy{display:inline-block;padding:4px 10px;border-radius:14px;background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1px solid #f4d03f;font-size:12px;color:#856404;font-weight:700}
+.wr-trophy .wrt-date{font-size:10px;color:#7a6500;font-weight:600;margin-left:4px}
+.wr-next-week{font-size:12px;color:var(--text);line-height:1.7}
+.wr-next-week .wnw-row{display:flex;gap:6px;align-items:baseline;margin-bottom:4px;flex-wrap:wrap}
+.wr-next-week .wnw-tag{flex:0 0 auto;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(13,43,74,.08);color:var(--accent);font-weight:700}
+.wr-next-week .wnw-text{font-size:12px;color:var(--sub);flex:1}
+.wr-next-week .wnw-text strong{color:var(--accent);background:rgba(232,93,4,.1);padding:1px 4px;border-radius:3px}
+.wr-yoy{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px}
+.wr-yoy .wy-card{padding:8px 10px;background:var(--bg);border-radius:6px}
+.wr-yoy .wy-year{font-size:10px;color:var(--muted);margin-bottom:2px}
+.wr-yoy .wy-val{font-size:13px;font-weight:700;color:var(--accent)}
+.wr-yoy .wy-val .wyv-unit{font-size:11px;color:var(--sub);font-weight:400}
+.wr-yoy .wy-card.now{background:#fff;border:1px solid var(--cta)}
+.wr-yoy .wy-card.now .wy-val{color:var(--cta)}
+.weekly-report .wr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
+.weekly-report .wr-stat{text-align:center;padding:6px 4px}
+.weekly-report .wr-stat .wrs-n{font-size:18px;font-weight:800;color:var(--cta);line-height:1}
+.weekly-report .wr-stat .wrs-l{font-size:10px;color:var(--muted);margin-top:4px}"""
+
+
+# ============================================================
+# F2 (2026/05/22): 魚種別シーズン文マップ
+# 主要 16 魚種 × 12 月の短文 (20-30字)。
+# 船宿の主要魚種に合わせて「来週の見どころ」セクションで表示する。
+# 主要外の魚種は _fish_season_phrase_auto() で SEASON_DATA から自動生成。
+# ============================================================
+_FISH_SEASON_PHRASE = {
+    "マダイ": {
+        1: "深場狙いで寒鯛の良型期待",
+        2: "産卵前の好機・型揃う",
+        3: "ノッコミ開幕・3〜5kg良型出始め",
+        4: "ノッコミ前期・数型ともに最盛期",
+        5: "ノッコミ後期・産卵明けの荒食い最終週",
+        6: "乗っ込み後期・深場狙いで型物",
+        7: "高水温期・深場と早朝勝負",
+        8: "夏枯れ・早朝時合いを逃すな",
+        9: "秋型シーズン入り・活性上向き",
+        10: "秋の数釣り好機・型も期待",
+        11: "深場中心・型物の良型期待",
+        12: "寒鯛の良型シーズン突入",
+    },
+    "アジ": {
+        1: "寒アジ絶好調・身が締まる最高期",
+        2: "寒の底・良型揃いで数釣り継続",
+        3: "春の旬ピーク開幕・釣果上向き",
+        4: "春の数釣り全盛期",
+        5: "数釣り絶好調・束釣りも現実的",
+        6: "夏アジ・中型混じる好シーズン",
+        7: "夏の数釣り好調・早朝便おすすめ",
+        8: "中アジ盛期・型狙いに最適",
+        9: "秋の荒食い・束釣り炸裂",
+        10: "秋の数型ともに絶好調",
+        11: "良型混じり・脂のりが向上",
+        12: "寒アジ開幕・脂のった良型シーズン",
+    },
+    "タチウオ": {
+        1: "シーズン終盤・大型のドラゴン狙い",
+        2: "オフシーズン・解禁待ち",
+        3: "オフシーズン・解禁待ち",
+        4: "解禁前・準備期",
+        5: "東京湾解禁・シーズン開幕",
+        6: "本格シーズン・数も型も期待",
+        7: "最盛期・指4本超えドラゴン狙い",
+        8: "最盛期継続・夏のメインターゲット",
+        9: "秋型シーズン・大型のチャンス",
+        10: "秋の大型シーズン・指5本も",
+        11: "シーズン終盤・型狙い最後の好機",
+        12: "終盤・寒タチの大型期待",
+    },
+    "ヒラメ": {
+        1: "外房乗っ込みシーズン真っ只中",
+        2: "乗っ込み継続・大型のチャンス",
+        3: "シーズン終盤・最後の型狙い",
+        4: "オフ移行期・浅場で散発",
+        5: "オフシーズン・他魚種狙い推奨",
+        6: "オフシーズン継続",
+        7: "オフシーズン継続",
+        8: "オフシーズン継続",
+        9: "シーズン開幕・浅場の活性UP",
+        10: "秋の数型シーズン突入",
+        11: "本格シーズン・乗っ込み前の荒食い",
+        12: "乗っ込み開幕・型物期待",
+    },
+    "カワハギ": {
+        1: "肝パン継続・脂ノリ最高",
+        2: "終盤・型物の良型期待",
+        3: "シーズン終盤・最後の型狙い",
+        4: "オフ移行期・散発的",
+        5: "オフシーズン",
+        6: "オフシーズン",
+        7: "オフシーズン",
+        8: "シーズン開幕・浅場で顔",
+        9: "本格化・数釣りシーズン入り",
+        10: "肝が肥え始める好シーズン",
+        11: "肝パンピーク・年間ベストタイミング",
+        12: "肝パン継続・刺身/肝和え絶品",
+    },
+    "シロギス": {
+        1: "オフシーズン・深場で散発",
+        2: "オフシーズン継続",
+        3: "暖かい日は浅場で顔・準備期",
+        4: "シーズン開幕・浅場で数釣り",
+        5: "本格シーズン突入・束釣り狙い",
+        6: "数釣り最盛期・浅場で良釣果",
+        7: "夏の浅場釣り好調継続",
+        8: "夏の数釣り安定・型も出る",
+        9: "シーズン後半・型狙いに切替",
+        10: "良型シーズン・型釣り楽しい",
+        11: "深場移行期・終盤の型物",
+        12: "オフ移行期・深場で散発",
+    },
+    "タイ五目": {
+        1: "深場の根魚混じり・寒鯛も期待",
+        2: "深場メインで多彩",
+        3: "春の浅場狙い・マダイ混じる",
+        4: "春の盛期・五目で多彩",
+        5: "ゴールデンシーズン・多種混じる",
+        6: "夏入りで多種多彩",
+        7: "高水温期・深場の五目",
+        8: "夏型の五目・早朝勝負",
+        9: "秋の活性UP・多種揃う",
+        10: "秋の数型シーズン",
+        11: "深場根魚混じり・型物期待",
+        12: "寒の深場五目・良型シーズン",
+    },
+    "アマダイ": {
+        1: "深場の脂ノリ最高シーズン",
+        2: "良型シーズン継続",
+        3: "春の浅場移行期・型狙い",
+        4: "産卵前の好機・型物期待",
+        5: "シーズン後半・浅場狙い",
+        6: "オフ移行期・型は出る",
+        7: "オフシーズン・水温高い",
+        8: "オフシーズン継続",
+        9: "シーズン開幕・深場の活性UP",
+        10: "本格シーズン入り・数型期待",
+        11: "良型シーズン・脂のり向上",
+        12: "脂ノリ最高・寒甘鯛シーズン",
+    },
+    "マルイカ": {
+        1: "オフシーズン",
+        2: "オフシーズン",
+        3: "シーズン開幕・浅場で釣れ始め",
+        4: "シーズン入り・数釣り期待",
+        5: "本格シーズン・数型ともに好調",
+        6: "数釣りピーク・束釣りも現実",
+        7: "シーズン後半・型狙い好機",
+        8: "終盤・大型のチャンス",
+        9: "シーズン終了間際",
+        10: "オフ移行期",
+        11: "オフシーズン",
+        12: "オフシーズン",
+    },
+    "ヤリイカ": {
+        1: "本格シーズン・大型の良型期待",
+        2: "シーズン継続・型物狙い",
+        3: "シーズン終盤・最後の好機",
+        4: "オフ移行期・終盤戦",
+        5: "オフシーズン",
+        6: "オフシーズン",
+        7: "オフシーズン",
+        8: "オフシーズン",
+        9: "オフシーズン",
+        10: "シーズン開幕・浅場で釣れ始め",
+        11: "本格シーズン入り・数型期待",
+        12: "シーズン入り・大型狙い",
+    },
+    "スルメイカ": {
+        1: "オフ・深場で散発",
+        2: "オフ移行期",
+        3: "オフシーズン",
+        4: "シーズン入り・沖合で散発",
+        5: "シーズン開幕・沖合で釣れ始め",
+        6: "数釣りシーズン入り",
+        7: "本格シーズン・好調期",
+        8: "最盛期・数釣り炸裂",
+        9: "秋の好調期継続",
+        10: "シーズン終盤・最後の数釣り",
+        11: "終盤・型狙い",
+        12: "オフ移行期",
+    },
+    "マダコ": {
+        1: "オフ・湾内で散発",
+        2: "オフシーズン",
+        3: "オフ移行期",
+        4: "シーズン入り・湾内で釣れ始め",
+        5: "解禁港増加・船タコシーズン入り",
+        6: "本格シーズン突入",
+        7: "旬ピーク・湾内活性最高",
+        8: "夏のピーク継続・数型期待",
+        9: "シーズン後半・良型狙い",
+        10: "終盤・最後の数釣り",
+        11: "終盤・型狙い",
+        12: "オフ移行期",
+    },
+    "イサキ": {
+        1: "オフ・深場で散発",
+        2: "オフシーズン",
+        3: "シーズン開幕の兆し・浅場移行",
+        4: "シーズン入り・千葉・静岡で開幕",
+        5: "本格シーズン・型釣り楽しい",
+        6: "最盛期・数釣り炸裂",
+        7: "数釣り好調継続",
+        8: "夏の好調期・型物も",
+        9: "シーズン後半・型狙い",
+        10: "終盤・最後の数釣り",
+        11: "オフ移行期",
+        12: "オフシーズン",
+    },
+    "フグ": {
+        1: "乗っ込み真っ最中・型揃う",
+        2: "産卵前の荒食い・型物期待",
+        3: "産卵期終盤・型物多い",
+        4: "オフ移行期・産卵明け",
+        5: "オフシーズン",
+        6: "オフシーズン",
+        7: "オフシーズン",
+        8: "オフシーズン",
+        9: "オフシーズン",
+        10: "シーズン入り・活性上向き",
+        11: "本格シーズン入り・関東全域好調",
+        12: "数釣り・型物ともに好調",
+    },
+    "カサゴ": {
+        1: "産卵前の荒食い・良型期待",
+        2: "産卵期入り・型狙い",
+        3: "シーズン継続・浅場で数釣り",
+        4: "シーズン後半・型物も期待",
+        5: "終盤戦・浅場で散発",
+        6: "オフ移行期",
+        7: "オフシーズン",
+        8: "オフシーズン",
+        9: "シーズン入り・活性上向き",
+        10: "本格シーズン入り・数釣り好調",
+        11: "数釣り好調・脂ノリ向上",
+        12: "良型シーズン・寒カサゴ",
+    },
+    "マハタ": {
+        1: "深場の高級魚・脂ノリ最高",
+        2: "深場狙い継続・大型期待",
+        3: "シーズン継続・型物狙い",
+        4: "シーズン継続・春の活性UP",
+        5: "本格シーズン・大原で良型",
+        6: "夏型・深場の活性UP",
+        7: "シーズン継続・型狙い",
+        8: "シーズン継続",
+        9: "秋型・型物のチャンス",
+        10: "秋の良型シーズン",
+        11: "深場の高級魚シーズン",
+        12: "脂ノリ最高・寒マハタ",
+    },
+}
+
+
+def _fish_season_phrase(fish, month):
+    """魚種・月から短いシーズン文を返す。
+    主要 16 魚種は _FISH_SEASON_PHRASE を参照。
+    それ以外は SEASON_DATA (1〜5 スコア) から自動生成。
+    取れない場合は空文字列を返す。
+    """
+    if not fish or not month:
+        return ""
+    # 主要魚種
+    phrase_map = _FISH_SEASON_PHRASE.get(fish)
+    if phrase_map:
+        return phrase_map.get(month, "")
+    # 自動生成: SEASON_DATA スコアからラベル化
+    try:
+        scores = SEASON_DATA.get(fish)
+        if not scores or len(scores) < 12:
+            return ""
+        s = scores[month - 1]
+        next_s = scores[month % 12]  # 翌月 (12 月 → 1 月)
+        if s >= 5:
+            base = "シーズンピーク"
+        elif s >= 4:
+            base = "好調期"
+        elif s >= 3:
+            base = "通常期"
+        elif s >= 2:
+            base = "やや低迷"
+        else:
+            base = "オフシーズン"
+        if next_s > s:
+            trend = "上向き"
+        elif next_s < s:
+            trend = "後半戦"
+        else:
+            trend = "安定"
+        return f"{base}・{trend}"
+    except Exception:
+        return ""
 
 
 def _ship_load_area_coords():
@@ -12223,6 +12534,218 @@ def _ship_load_area_coords():
 # SEO: 各船宿で「{船宿名} {YYYY年MM月} 釣果」ロングテール獲得・コンテンツ量 4倍
 # 配置: 予約CTA 下・FAQ 上 (rev2 確定)
 # ============================================================
+
+def _ship_load_weekly_data(ship_name, today_dt):
+    """直近14日分の catches を data/V2 から読んで今週/前週に分割集計。
+    返り値: {
+      'period_start': 'YYYY/MM/DD',
+      'period_end': 'YYYY/MM/DD',
+      'this_week': {trips, cancels, fish_count{}, fish_cnt{}, fish_size_max{}, fish_kg_max{}, fish_max_record{}},
+      'prev_week': 同上
+    }
+    """
+    if not ship_name:
+        return None
+    today = today_dt.date()
+    week_start = today - timedelta(days=6)
+    prev_start = today - timedelta(days=13)
+    prev_end = week_start - timedelta(days=1)
+
+    months = set()
+    cur = prev_start
+    while cur <= today:
+        months.add(cur.strftime("%Y-%m"))
+        cur += timedelta(days=1)
+
+    this_rows = []
+    prev_rows = []
+    for month in months:
+        for fname in (f"{month}.csv", f"chowari_{month}.csv"):
+            path = os.path.join(_DATA_DIR, fname)
+            if not os.path.exists(path):
+                continue
+            try:
+                with open(path, encoding="utf-8") as fp:
+                    for row in csv.DictReader(fp):
+                        if row.get("ship") != ship_name:
+                            continue
+                        try:
+                            d = datetime.strptime(row.get("date", ""), "%Y/%m/%d").date()
+                        except Exception:
+                            continue
+                        if week_start <= d <= today:
+                            this_rows.append(row)
+                        elif prev_start <= d <= prev_end:
+                            prev_rows.append(row)
+            except Exception:
+                continue
+
+    def _summarize(rows):
+        trips = 0
+        cancels = 0
+        fish_count = {}
+        fish_cnt_sum = {}
+        fish_size_max = {}
+        fish_kg_max = {}
+        fish_max_record = {}  # {fish: (kind, value, date)}
+        for r in rows:
+            if r.get("is_cancellation") == "1":
+                cancels += 1
+                continue
+            trips += 1
+            fish = (r.get("tsuri_mono") or "").strip()
+            if not fish or fish in ("不明", "欠航"):
+                continue
+            fish_count[fish] = fish_count.get(fish, 0) + 1
+            try:
+                cnt = float(r.get("cnt_avg") or 0)
+                if cnt > 0:
+                    fish_cnt_sum.setdefault(fish, []).append(cnt)
+            except (ValueError, TypeError):
+                pass
+            try:
+                sm = float(r.get("size_max") or 0)
+                if sm > fish_size_max.get(fish, 0):
+                    fish_size_max[fish] = sm
+                    fish_max_record[fish] = ("size", sm, r.get("date", ""))
+            except (ValueError, TypeError):
+                pass
+            try:
+                km = float(r.get("kg_max") or 0)
+                if km > fish_kg_max.get(fish, 0):
+                    fish_kg_max[fish] = km
+                    # kg優先 (size_max より重い情報)
+                    fish_max_record[fish] = ("kg", km, r.get("date", ""))
+            except (ValueError, TypeError):
+                pass
+        return {
+            "trips": trips, "cancels": cancels,
+            "fish_count": fish_count, "fish_cnt_sum": fish_cnt_sum,
+            "fish_size_max": fish_size_max, "fish_kg_max": fish_kg_max,
+            "fish_max_record": fish_max_record,
+        }
+
+    return {
+        "period_start": week_start.strftime("%Y/%m/%d"),
+        "period_end": today.strftime("%Y/%m/%d"),
+        "this_week": _summarize(this_rows),
+        "prev_week": _summarize(prev_rows),
+    }
+
+
+def _ship_load_yoy_data(ship_name, today_dt):
+    """前年同月（全期間）と今年同月（1日〜today まで）の集計を返す。
+    {
+      'last_year_month': 'YYYY-MM',
+      'last_year_fish_count': {fish: n},
+      'last_year_total_trips': int,
+      'this_year_fish_count': {fish: n} (1日〜today),
+      'this_year_total_trips': int,
+    }
+    前年データが無ければ None。
+    """
+    if not ship_name:
+        return None
+    try:
+        last_year_month = today_dt.replace(year=today_dt.year - 1).strftime("%Y-%m")
+    except Exception:
+        return None
+    this_year_month = today_dt.strftime("%Y-%m")
+    today_d = today_dt.date()
+
+    last_year_fish_count = {}
+    last_year_total_trips = 0
+    found_last_year = False
+    for fname in (f"{last_year_month}.csv", f"chowari_{last_year_month}.csv"):
+        path = os.path.join(_DATA_DIR, fname)
+        if not os.path.exists(path):
+            continue
+        found_last_year = True
+        try:
+            with open(path, encoding="utf-8") as fp:
+                for r in csv.DictReader(fp):
+                    if r.get("ship") != ship_name:
+                        continue
+                    if r.get("is_cancellation") == "1":
+                        continue
+                    last_year_total_trips += 1
+                    fish = (r.get("tsuri_mono") or "").strip()
+                    if fish and fish not in ("不明", "欠航"):
+                        last_year_fish_count[fish] = last_year_fish_count.get(fish, 0) + 1
+        except Exception:
+            continue
+    if not found_last_year:
+        return None
+
+    # 今年同月 (1日〜today)
+    this_year_fish_count = {}
+    this_year_total_trips = 0
+    for fname in (f"{this_year_month}.csv", f"chowari_{this_year_month}.csv"):
+        path = os.path.join(_DATA_DIR, fname)
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, encoding="utf-8") as fp:
+                for r in csv.DictReader(fp):
+                    if r.get("ship") != ship_name:
+                        continue
+                    try:
+                        d = datetime.strptime(r.get("date", ""), "%Y/%m/%d").date()
+                    except Exception:
+                        continue
+                    if d > today_d:
+                        continue
+                    if r.get("is_cancellation") == "1":
+                        continue
+                    this_year_total_trips += 1
+                    fish = (r.get("tsuri_mono") or "").strip()
+                    if fish and fish not in ("不明", "欠航"):
+                        this_year_fish_count[fish] = this_year_fish_count.get(fish, 0) + 1
+        except Exception:
+            continue
+
+    return {
+        "last_year_month": last_year_month,
+        "last_year_fish_count": last_year_fish_count,
+        "last_year_total_trips": last_year_total_trips,
+        "this_year_fish_count": this_year_fish_count,
+        "this_year_total_trips": this_year_total_trips,
+    }
+
+
+def _ship_get_next_week_spring_tides(today_dt):
+    """来週 (today+1 ~ today+7) の大潮日を tide_moon.sqlite から取得。
+    返り値: [(date_str 'M/D', tide_type), ...] 大潮のみ。
+    """
+    db_path = os.path.join("ocean", "tide_moon.sqlite")
+    if not os.path.exists(db_path):
+        return []
+    try:
+        import sqlite3
+        start = (today_dt + timedelta(days=1)).strftime("%Y-%m-%d")
+        end = (today_dt + timedelta(days=7)).strftime("%Y-%m-%d")
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        # スキーマ確認: 列名は date, tide_type
+        cur.execute(
+            "SELECT date, tide_type FROM tide_moon "
+            "WHERE date BETWEEN ? AND ? AND tide_type='大潮' "
+            "ORDER BY date",
+            (start, end),
+        )
+        rows = cur.fetchall()
+        conn.close()
+        result = []
+        for date_str, tide_type in rows:
+            try:
+                d = datetime.strptime(date_str, "%Y-%m-%d")
+                result.append((d.strftime("%-m/%-d") if os.name != "nt" else f"{d.month}/{d.day}", tide_type))
+            except Exception:
+                result.append((date_str, tide_type))
+        return result
+    except Exception:
+        return []
+
 
 def _ship_load_monthly_archive(ship_name, max_months=13):
     """data/V2/*.csv から船宿の月別出船・釣果集計を返す。
@@ -12319,6 +12842,236 @@ def _ship_load_monthly_archive(ship_name, max_months=13):
             "rate": rate, "fish": fish_list,
         })
     return result
+
+
+def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
+    """週次レポート HTML を返す。weekly が None or 今週 trips == 0 なら空文字列。
+    weekly: _ship_load_weekly_data() の出力
+    yoy: _ship_load_yoy_data() の出力 (None でも可)
+    tide_days: _ship_get_next_week_spring_tides() の出力 (空でも可)
+    """
+    if not weekly:
+        return ""
+    tw = weekly.get("this_week") or {}
+    pw = weekly.get("prev_week") or {}
+    this_trips = tw.get("trips", 0)
+    if this_trips == 0:
+        return ""  # 今週データなしならセクション全省略
+    import html as _html
+
+    # 期間表示: M/D〜M/D
+    try:
+        ps = datetime.strptime(weekly["period_start"], "%Y/%m/%d")
+        pe = datetime.strptime(weekly["period_end"], "%Y/%m/%d")
+        period_str = f"{ps.year}年{ps.month}月{ps.day}日〜{pe.month}月{pe.day}日（7日間）"
+    except Exception:
+        period_str = f"{weekly['period_start']} 〜 {weekly['period_end']}"
+
+    # KPI 行: 出船率 + 前週比
+    this_total = this_trips + tw.get("cancels", 0)
+    this_rate = round(this_trips / this_total * 100) if this_total else 0
+    prev_trips = pw.get("trips", 0)
+    prev_total = prev_trips + pw.get("cancels", 0)
+    prev_rate = round(prev_trips / prev_total * 100) if prev_total else None
+    if prev_rate is not None:
+        diff = this_rate - prev_rate
+        if diff >= 0:
+            diff_html = f'<span class="wkr-diff">前週比 +{diff}pt</span>'
+        else:
+            diff_html = f'<span class="wkr-diff neg">前週比 {diff}pt</span>'
+    else:
+        diff_html = '<span class="wkr-diff" style="background:rgba(138,150,164,.12);color:var(--muted)">前週データなし</span>'
+    kpi_row = (
+        '<div class="wr-kpi-row">'
+        '<span class="wkr-label">出船率</span>'
+        f'<span class="wkr-main">{this_rate}%</span>'
+        f'{diff_html}'
+        f'<span class="wkr-sub">出船 {this_trips}便 / 欠航 {tw.get("cancels", 0)}便</span>'
+        '</div>'
+    )
+
+    # 主要釣果 Top2 + 大物速報
+    top_fish_items = sorted(tw["fish_count"].items(), key=lambda x: -x[1])[:2]
+    fish_list_rows = []
+    trophy_html = ""
+    best_trophy = None  # (fish, kind, value, date)
+    for fish, cnt in top_fish_items:
+        prev_cnt = pw.get("fish_count", {}).get(fish, 0)
+        cnt_diff = cnt - prev_cnt
+        if cnt_diff > 0:
+            diff_chip = f'<span class="wfl-diff">前週比 +{cnt_diff}便</span>'
+        elif cnt_diff < 0:
+            diff_chip = f'<span class="wfl-diff neg">前週比 {cnt_diff}便</span>'
+        else:
+            diff_chip = ''
+        # 詳細
+        cnt_list = tw["fish_cnt_sum"].get(fish) or []
+        avg = round(sum(cnt_list) / len(cnt_list), 1) if cnt_list else 0
+        sm = tw["fish_size_max"].get(fish, 0)
+        km = tw["fish_kg_max"].get(fish, 0)
+        detail_parts = []
+        if avg > 0:
+            detail_parts.append(f"平均 {avg}匹")
+        if km > 0:
+            detail_parts.append(f"最大 {round(km, 1)}kg")
+        elif sm > 0:
+            detail_parts.append(f"最大 {int(sm)}cm")
+        detail = "・".join(detail_parts)
+        detail_html = f'<span class="wfl-detail">{detail}</span>' if detail else ''
+        fish_list_rows.append(
+            f'<li>'
+            f'<span class="wfl-fish">{_html.escape(fish)}</span>'
+            f'<span class="wfl-count">{cnt}便</span>'
+            f'{diff_chip}'
+            f'{detail_html}'
+            f'</li>'
+        )
+        # 大物候補
+        rec = tw["fish_max_record"].get(fish)
+        if rec:
+            kind, val, date = rec
+            # 比較指標: kg は val そのまま、size は val/100 程度
+            score = val if kind == "kg" else val / 100
+            if best_trophy is None or score > best_trophy[4]:
+                best_trophy = (fish, kind, val, date, score)
+    if fish_list_rows:
+        fish_list_html = (
+            '<div class="wr-section">'
+            '<h4>🎣 今週の主要釣果</h4>'
+            f'<ul class="wr-fish-list">{"".join(fish_list_rows)}</ul>'
+        )
+        if best_trophy:
+            fish, kind, val, date_str, _ = best_trophy
+            try:
+                d = datetime.strptime(date_str, "%Y/%m/%d")
+                date_disp = f"{d.month}/{d.day}"
+            except Exception:
+                date_disp = date_str
+            if kind == "kg":
+                val_str = f"{round(val, 1)}kg"
+            else:
+                val_str = f"{int(val)}cm"
+            fish_list_html += (
+                '<div style="margin-top:8px">'
+                f'<span class="wr-trophy">🏆 今週の大物: {_html.escape(fish)} {val_str}'
+                f'<span class="wrt-date">({date_disp})</span></span>'
+                '</div>'
+            )
+        fish_list_html += '</div>'
+    else:
+        fish_list_html = ''
+
+    # 来週の見どころ
+    next_rows = []
+    # シーズン位置: 主要魚種 Top1 のシーズン文 (来月にかかる場合は来月)
+    next_week_start = today_dt + timedelta(days=1)
+    season_month = next_week_start.month
+    if top_fish_items:
+        top_fish = top_fish_items[0][0]
+        phrase = _fish_season_phrase(top_fish, season_month)
+        if phrase:
+            next_rows.append(
+                '<div class="wnw-row">'
+                '<span class="wnw-tag">シーズン</span>'
+                f'<span class="wnw-text"><strong>{_html.escape(top_fish)}</strong>：{_html.escape(phrase)}</span>'
+                '</div>'
+            )
+        # 2 番目魚種も
+        if len(top_fish_items) >= 2:
+            f2 = top_fish_items[1][0]
+            p2 = _fish_season_phrase(f2, season_month)
+            if p2:
+                next_rows.append(
+                    '<div class="wnw-row">'
+                    '<span class="wnw-tag">シーズン</span>'
+                    f'<span class="wnw-text"><strong>{_html.escape(f2)}</strong>：{_html.escape(p2)}</span>'
+                    '</div>'
+                )
+    # 大潮日
+    if tide_days:
+        first_date = tide_days[0][0]
+        last_date = tide_days[-1][0] if len(tide_days) > 1 else first_date
+        if first_date == last_date:
+            range_str = first_date
+        else:
+            range_str = f"{first_date}〜{last_date}"
+        next_rows.append(
+            '<div class="wnw-row">'
+            '<span class="wnw-tag">潮回り</span>'
+            f'<span class="wnw-text"><strong>{range_str} 大潮</strong> — 朝マズメ活性 UP 期待</span>'
+            '</div>'
+        )
+    next_html = ''
+    if next_rows:
+        end_dt = today_dt + timedelta(days=7)
+        next_html = (
+            '<div class="wr-section">'
+            f'<h4>📅 来週の見どころ ({next_week_start.month}/{next_week_start.day}-{end_dt.month}/{end_dt.day})</h4>'
+            f'<div class="wr-next-week">{"".join(next_rows)}</div>'
+            '</div>'
+        )
+
+    # 前年比較
+    yoy_html = ''
+    if yoy and yoy.get("last_year_fish_count") and top_fish_items:
+        top_fish = top_fish_items[0][0]
+        ly_cnt = yoy["last_year_fish_count"].get(top_fish, 0)
+        ty_cnt = yoy["this_year_fish_count"].get(top_fish, 0)
+        if ly_cnt > 0:
+            try:
+                yym = datetime.strptime(yoy["last_year_month"], "%Y-%m")
+                ly_label = f"{yym.year}年{yym.month}月（全期間）"
+            except Exception:
+                ly_label = yoy["last_year_month"]
+            ty_label = f"{today_dt.year}年{today_dt.month}月（{today_dt.month}/{today_dt.day}時点）"
+            yoy_html = (
+                '<div class="wr-section">'
+                '<h4>📊 過去比較（同月）</h4>'
+                '<div class="wr-yoy">'
+                f'<div class="wy-card"><div class="wy-year">{ly_label}</div>'
+                f'<div class="wy-val">{_html.escape(top_fish)} {ly_cnt}<span class="wyv-unit">便</span></div></div>'
+                f'<div class="wy-card now"><div class="wy-year">{ty_label}</div>'
+                f'<div class="wy-val">{_html.escape(top_fish)} {ty_cnt}<span class="wyv-unit">便（途中）</span></div></div>'
+                '</div>'
+                '</div>'
+            )
+
+    # 統計ハイライト 3 つ
+    # 出船日数 = 出船 row の unique date 数 (1日複数便でも 1 とカウント)
+    # data再取得しないと date 不明なので weekly から渡ってきた構造を使う
+    # ※ weekly に rows 自体は持ってないが period_start/end の日数 = 7
+    # 出船日数は出船便のうち 1日複数便を 1 日として数える必要があるが
+    # 簡略化のため「出船{trips}便 / 7日中」と表記
+    stats_html = ''
+    fish_total_count = sum(tw["fish_count"].values())
+    stats_items = [
+        (f"{this_trips}便", "出船 (7日中)"),
+        (str(fish_total_count), "釣果便数"),
+    ]
+    if top_fish_items:
+        top_fish = top_fish_items[0][0]
+        cnt_list = tw["fish_cnt_sum"].get(top_fish) or []
+        if cnt_list:
+            avg = round(sum(cnt_list) / len(cnt_list), 1)
+            stats_items.append((f"{avg}匹", f"{top_fish}平均"))
+    stats_inner = "".join(
+        f'<div class="wr-stat"><div class="wrs-n">{n}</div><div class="wrs-l">{_html.escape(l)}</div></div>'
+        for n, l in stats_items
+    )
+    if stats_inner:
+        stats_html = f'<div class="wr-stats">{stats_inner}</div>'
+
+    return (
+        '<div class="weekly-report">'
+        '<span class="wr-label">今週の傾向</span>'
+        f'<div class="wr-period">{period_str}</div>'
+        f'{kpi_row}'
+        f'{fish_list_html}'
+        f'{next_html}'
+        f'{yoy_html}'
+        f'{stats_html}'
+        '</div>'
+    )
 
 
 def _ship_monthly_archive_section_html(months, ship_name, area, area_slug):
@@ -12730,6 +13483,13 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     _ma_months = _ship_load_monthly_archive(name, max_months=13)
     monthly_archive_html = _ship_monthly_archive_section_html(_ma_months, name, area, _ma_area_slug)
 
+    # F2 (2026/05/22): 週次レポート (HERO 直下)
+    # 直近14日 catches を今週/前週分割集計・前年同月比較・来週大潮日・魚種別シーズン文
+    _wr_weekly = _ship_load_weekly_data(name, today_dt)
+    _wr_yoy = _ship_load_yoy_data(name, today_dt)
+    _wr_tide = _ship_get_next_week_spring_tides(today_dt)
+    weekly_report_html = _ship_weekly_report_section_html(_wr_weekly, _wr_yoy, _wr_tide, today_dt)
+
     # H2 (T22): 空ページ判定 — 直近7日データがない場合のみ noindex
     # 旧: _SHIP_INFO 未登録でも noindex（T22 AdSense 対応）
     # 新: chowari 経由 114 船宿は ship_info 未登録でも釣果データがあればインデックス対象とする
@@ -12993,6 +13753,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     share_text=f"{name}（{area}）の船宿情報 | 船釣り予想",
     share_url=page_url,
 )}
+
+{weekly_report_html}
 
 <h2 class="st">基本情報</h2>
 <div class="info-box">

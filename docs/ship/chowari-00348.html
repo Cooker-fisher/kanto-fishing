@@ -89,7 +89,44 @@
 .ma-collapse[open] .ma-grid{margin-top:12px}
 .ma-archive-links{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
 .ma-archive-links a{display:inline-block;padding:3px 8px;background:var(--bg);color:var(--accent);border-radius:10px;text-decoration:none;margin:2px;font-size:11px}
-.ma-archive-links a:hover{background:var(--accent);color:#fff}</style>
+.ma-archive-links a:hover{background:var(--accent);color:#fff}
+.weekly-report{background:#fff;border-top:4px solid var(--cta);border-left:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:16px 18px 14px;margin:14px 0;position:relative}
+.weekly-report .wr-label{position:absolute;top:-10px;left:14px;background:var(--cta);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.weekly-report .wr-period{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.wr-kpi-row{display:flex;align-items:baseline;gap:12px;background:rgba(255,255,255,.7);border-radius:8px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(232,93,4,.15);flex-wrap:wrap}
+.wr-kpi-row .wkr-label{font-size:11px;color:var(--muted)}
+.wr-kpi-row .wkr-main{font-size:20px;font-weight:800;color:var(--cta)}
+.wr-kpi-row .wkr-diff{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(26,157,86,.12);color:var(--pos);font-weight:700}
+.wr-kpi-row .wkr-diff.neg{background:rgba(212,51,51,.12);color:var(--neg)}
+.wr-kpi-row .wkr-sub{font-size:11px;color:var(--sub);margin-left:auto}
+.wr-section{margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed var(--border)}
+.wr-section:last-child{border-bottom:none;padding-bottom:0}
+.wr-section h4{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.wr-fish-list{list-style:none;padding:0;font-size:12px}
+.wr-fish-list li{padding:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.wr-fish-list .wfl-fish{font-weight:700;color:var(--accent)}
+.wr-fish-list .wfl-count{color:var(--cta);font-weight:700}
+.wr-fish-list .wfl-diff{font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(26,157,86,.12);color:var(--pos);font-weight:700}
+.wr-fish-list .wfl-diff.neg{background:rgba(212,51,51,.12);color:var(--neg)}
+.wr-fish-list .wfl-detail{font-size:11px;color:var(--sub);flex:1 1 100%;padding-left:8px}
+.wr-trophy{display:inline-block;padding:4px 10px;border-radius:14px;background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1px solid #f4d03f;font-size:12px;color:#856404;font-weight:700}
+.wr-trophy .wrt-date{font-size:10px;color:#7a6500;font-weight:600;margin-left:4px}
+.wr-next-week{font-size:12px;color:var(--text);line-height:1.7}
+.wr-next-week .wnw-row{display:flex;gap:6px;align-items:baseline;margin-bottom:4px;flex-wrap:wrap}
+.wr-next-week .wnw-tag{flex:0 0 auto;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(13,43,74,.08);color:var(--accent);font-weight:700}
+.wr-next-week .wnw-text{font-size:12px;color:var(--sub);flex:1}
+.wr-next-week .wnw-text strong{color:var(--accent);background:rgba(232,93,4,.1);padding:1px 4px;border-radius:3px}
+.wr-yoy{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px}
+.wr-yoy .wy-card{padding:8px 10px;background:var(--bg);border-radius:6px}
+.wr-yoy .wy-year{font-size:10px;color:var(--muted);margin-bottom:2px}
+.wr-yoy .wy-val{font-size:13px;font-weight:700;color:var(--accent)}
+.wr-yoy .wy-val .wyv-unit{font-size:11px;color:var(--sub);font-weight:400}
+.wr-yoy .wy-card.now{background:#fff;border:1px solid var(--cta)}
+.wr-yoy .wy-card.now .wy-val{color:var(--cta)}
+.weekly-report .wr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
+.weekly-report .wr-stat{text-align:center;padding:6px 4px}
+.weekly-report .wr-stat .wrs-n{font-size:18px;font-weight:800;color:var(--cta);line-height:1}
+.weekly-report .wr-stat .wrs-l{font-size:10px;color:var(--muted);margin-top:4px}</style>
 </head>
 <body>
 <header><div class="inner"><h1><a href="/">船釣り<span>予想</span></a></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header><nav class="gnav"><a href="/">今日の釣果</a><a href="/fish/">魚種</a><a href="/area/">エリア</a><a href="/calendar.html">カレンダー</a><a href="/forecast/" class="prem">有料プラン</a></nav>
@@ -104,6 +141,8 @@
 <div class="c">
 <div class="bread"><a href="../">トップ</a> &gt; <a href="../area/kashima-port.html">鹿島</a> &gt; 清栄丸</div>
 <div class="share-bar" role="group" aria-label="シェア"><a class="share-x" href="https://twitter.com/intent/tweet?text=%E6%B8%85%E6%A0%84%E4%B8%B8%EF%BC%88%E9%B9%BF%E5%B3%B6%EF%BC%89%E3%81%AE%E8%88%B9%E5%AE%BF%E6%83%85%E5%A0%B1%20%7C%20%E8%88%B9%E9%87%A3%E3%82%8A%E4%BA%88%E6%83%B3&url=https%3A//funatsuri-yoso.com/ship/chowari-00348.html&hashtags=%E8%88%B9%E9%87%A3%E3%82%8A%2C%E9%87%A3%E6%9E%9C" target="_blank" rel="noopener nofollow" aria-label="X（旧Twitter）でシェア">𝕏 でシェア</a><a class="share-follow" href="https://twitter.com/intent/follow?screen_name=funatsuri_yoso" target="_blank" rel="noopener nofollow" aria-label="@funatsuri_yoso をフォロー">フォロー</a></div>
+
+<div class="weekly-report"><span class="wr-label">今週の傾向</span><div class="wr-period">2026年5月16日〜5月22日（7日間）</div><div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff" style="background:rgba(138,150,164,.12);color:var(--muted)">前週データなし</span><span class="wkr-sub">出船 33便 / 欠航 0便</span></div><div class="wr-section"><h4>🎣 今週の主要釣果</h4><ul class="wr-fish-list"><li><span class="wfl-fish">イナダ</span><span class="wfl-count">4便</span><span class="wfl-diff">前週比 +4便</span></li><li><span class="wfl-fish">カサゴ</span><span class="wfl-count">4便</span><span class="wfl-diff">前週比 +4便</span></li></ul></div><div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4><div class="wr-next-week"><div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>イナダ</strong>：やや低迷・上向き</span></div><div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>カサゴ</strong>：終盤戦・浅場で散発</span></div><div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div></div></div><div class="wr-stats"><div class="wr-stat"><div class="wrs-n">33便</div><div class="wrs-l">出船 (7日中)</div></div><div class="wr-stat"><div class="wrs-n">33</div><div class="wrs-l">釣果便数</div></div></div></div>
 
 <h2 class="st">基本情報</h2>
 <div class="info-box">
@@ -153,7 +192,7 @@
 <footer>
 <a href="../pages/privacy.html">プライバシーポリシー</a> · <a href="../pages/terms.html">利用規約</a> · <a href="../pages/about.html">サイトについて</a><br>
 <div style="margin-top:6px"><a href="../">トップ</a> · <a href="../area/kashima-port.html">鹿島</a></div>
-<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/22 21:31</span>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/22 22:24</span>
 </footer>
 
 <div class="bn"><a href="/"><span class="i">🎣</span>釣果</a><a href="/fish/"><span class="i">🐟</span>魚種</a><a href="/area/"><span class="i">📍</span>エリア</a><a href="/calendar.html"><span class="i">📅</span>カレンダー</a><a href="/forecast/" class="prem"><span class="i">⭐</span>有料</a></div>

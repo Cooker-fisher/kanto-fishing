@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[MOCKUP] 週次レポート 背景パターン比較</title>
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+body{padding:14px;max-width:900px;margin:0 auto;background:#f5f7fa}
+.pattern-label{font-size:14px;font-weight:700;color:#0d2b4a;margin:30px 0 8px;padding:6px 12px;background:#fff;border-radius:6px;display:inline-block;border-left:4px solid #e85d04}
+.pattern-desc{font-size:12px;color:#5a6a7a;margin-bottom:10px}
+
+/* === 共通: weekly-report 内部スタイル (背景以外) === */
+.weekly-report{border-radius:10px;padding:16px 18px 14px;margin:0;position:relative}
+.weekly-report .wr-label{position:absolute;top:-10px;left:14px;background:#e85d04;color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.weekly-report .wr-period{font-size:11px;color:#8a96a4;margin-bottom:12px;margin-top:4px}
+
+.wr-kpi-row{display:flex;align-items:baseline;gap:12px;background:rgba(255,255,255,.7);border-radius:8px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(232,93,4,.15);flex-wrap:wrap}
+.wr-kpi-row .wkr-label{font-size:11px;color:#8a96a4}
+.wr-kpi-row .wkr-main{font-size:20px;font-weight:800;color:#e85d04}
+.wr-kpi-row .wkr-diff{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(26,157,86,.12);color:#1a9d56;font-weight:700}
+.wr-kpi-row .wkr-sub{font-size:11px;color:#5a6a7a;margin-left:auto}
+
+.wr-section{margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #d0d8e0}
+.wr-section:last-child{border-bottom:none;padding-bottom:0}
+.wr-section h4{font-size:12px;font-weight:700;color:#0d2b4a;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+
+.wr-fish-list{list-style:none;padding:0;font-size:12px}
+.wr-fish-list li{padding:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.wr-fish-list .wfl-fish{font-weight:700;color:#0d2b4a}
+.wr-fish-list .wfl-count{color:#e85d04;font-weight:700}
+.wr-fish-list .wfl-diff{font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(26,157,86,.12);color:#1a9d56;font-weight:700}
+.wr-fish-list .wfl-diff.neg{background:rgba(212,51,51,.12);color:#d43333}
+.wr-fish-list .wfl-detail{font-size:11px;color:#5a6a7a;flex:1 1 100%;padding-left:8px}
+
+.wr-trophy{display:inline-block;padding:4px 10px;border-radius:14px;background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1px solid #f4d03f;font-size:12px;color:#856404;font-weight:700}
+.wr-trophy .wrt-date{font-size:10px;color:#7a6500;font-weight:600;margin-left:4px}
+
+.wr-next-week{font-size:12px;color:#1a2332;line-height:1.7}
+.wr-next-week .wnw-row{display:flex;gap:6px;align-items:baseline;margin-bottom:4px;flex-wrap:wrap}
+.wr-next-week .wnw-tag{flex:0 0 auto;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(13,43,74,.08);color:#0d2b4a;font-weight:700}
+.wr-next-week .wnw-text{font-size:12px;color:#5a6a7a;flex:1}
+.wr-next-week .wnw-text strong{color:#0d2b4a;background:rgba(232,93,4,.1);padding:1px 4px;border-radius:3px}
+
+.wr-yoy{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px}
+.wr-yoy .wy-card{padding:8px 10px;background:#f5f7fa;border-radius:6px}
+.wr-yoy .wy-year{font-size:10px;color:#8a96a4;margin-bottom:2px}
+.wr-yoy .wy-val{font-size:13px;font-weight:700;color:#0d2b4a}
+.wr-yoy .wy-val .wyv-unit{font-size:11px;color:#5a6a7a;font-weight:400}
+.wr-yoy .wy-card.now{background:#fff;border:1px solid #e85d04}
+.wr-yoy .wy-card.now .wy-val{color:#e85d04}
+
+.weekly-report .wr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed #d0d8e0}
+.weekly-report .wr-stat{text-align:center;padding:6px 4px}
+.weekly-report .wr-stat .wrs-n{font-size:18px;font-weight:800;color:#e85d04;line-height:1}
+.weekly-report .wr-stat .wrs-l{font-size:10px;color:#8a96a4;margin-top:4px}
+
+/* === 各パターンの背景指定 === */
+
+/* A: 現状 (薄黄色グラデ) */
+.bg-a{background:linear-gradient(135deg,#fff8e1,#fff);border-left:4px solid #e85d04}
+
+/* B: 純白 + 上部CTAカラーバー */
+.bg-b{background:#fff;border-top:4px solid #e85d04;border-left:1px solid #d0d8e0;border-right:1px solid #d0d8e0;border-bottom:1px solid #d0d8e0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+
+/* C: 薄オレンジ単色 */
+.bg-c{background:#fff5ec;border-left:4px solid #e85d04;border-right:1px solid rgba(232,93,4,.15);border-top:1px solid rgba(232,93,4,.15);border-bottom:1px solid rgba(232,93,4,.15)}
+
+/* D: 薄ブルー (海・新鮮さ) */
+.bg-d{background:linear-gradient(135deg,#f0f7ff,#fff);border-left:4px solid #0d6efd}
+.bg-d .wr-label{background:#0d6efd}
+.bg-d .wkr-main{color:#0d6efd}
+.bg-d .wr-stat .wrs-n{color:#0d6efd}
+
+/* E: ダーク (濃紺) + 白文字 (高インパクト) */
+.bg-e{background:linear-gradient(135deg,#0d2b4a,#1a3d5c);color:#fff;border-left:4px solid #e85d04;border-radius:10px}
+.bg-e .wr-period{color:rgba(255,255,255,.6)}
+.bg-e .wr-kpi-row{background:rgba(255,255,255,.08);border-color:rgba(232,93,4,.4)}
+.bg-e .wr-kpi-row .wkr-label{color:rgba(255,255,255,.6)}
+.bg-e .wr-kpi-row .wkr-sub{color:rgba(255,255,255,.7)}
+.bg-e .wr-section{border-bottom-color:rgba(255,255,255,.15)}
+.bg-e .wr-section h4{color:#fff}
+.bg-e .wr-fish-list .wfl-fish{color:#fff}
+.bg-e .wr-fish-list .wfl-detail{color:rgba(255,255,255,.7)}
+.bg-e .wr-next-week{color:rgba(255,255,255,.85)}
+.bg-e .wr-next-week .wnw-tag{background:rgba(255,255,255,.1);color:#fff}
+.bg-e .wr-next-week .wnw-text{color:rgba(255,255,255,.7)}
+.bg-e .wr-next-week .wnw-text strong{color:#fff;background:rgba(232,93,4,.25)}
+.bg-e .wr-yoy .wy-card{background:rgba(255,255,255,.08);color:#fff}
+.bg-e .wr-yoy .wy-card.now{background:rgba(232,93,4,.15);border-color:#e85d04}
+.bg-e .wr-yoy .wy-year{color:rgba(255,255,255,.5)}
+.bg-e .wr-yoy .wy-val{color:#fff}
+.bg-e .wr-yoy .wy-val .wyv-unit{color:rgba(255,255,255,.6)}
+.bg-e .wr-yoy .wy-card.now .wy-val{color:#ffb380}
+.bg-e .wr-stats{border-top-color:rgba(255,255,255,.15)}
+.bg-e .wr-stat .wrs-l{color:rgba(255,255,255,.5)}
+
+/* F: 紙感クリーム + シャドウ深め */
+.bg-f{background:#faf8f4;border:1px solid #e8e2d5;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+
+/* G: 上部HEROっぽい濃紺帯 + 白本体 */
+.bg-g{background:#fff;border-radius:10px;border:1px solid #d0d8e0;overflow:hidden}
+.bg-g .wr-label{background:#0d2b4a;color:#fff;left:0;top:0;border-radius:0 0 8px 0;padding:5px 14px}
+.bg-g{padding-top:32px}
+
+</style>
+</head>
+<body>
+
+<h1 style="font-size:18px;color:#0d2b4a;margin-bottom:6px">週次レポート 背景パターン比較</h1>
+<p style="font-size:12px;color:#5a6a7a;margin-bottom:20px">現状の薄黄色グラデ (A) 含む 7パターン。ご希望のを選んでください。</p>
+
+<!-- A: 現状 -->
+<div class="pattern-label">A. 現状: 薄黄色グラデ (#fff8e1→#fff) + 左オレンジ枠</div>
+<p class="pattern-desc">暖色で注目度高い・新鮮情報を強調するアラート色感</p>
+<div class="weekly-report bg-a">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月16日〜5月22日（7日間）</div>
+  <div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 10便 / 欠航 0便</span></div>
+  <div class="wr-section"><h4>🎣 今週の主要釣果</h4>
+    <ul class="wr-fish-list">
+      <li><span class="wfl-fish">マダイ</span><span class="wfl-count">8便</span><span class="wfl-diff neg">前週比 -9便</span><span class="wfl-detail">平均 4.6匹・最大 5.3kg</span></li>
+      <li><span class="wfl-fish">アマダイ</span><span class="wfl-count">2便</span><span class="wfl-diff">前週比 +2便</span><span class="wfl-detail">平均 5.0匹・最大 42cm</span></li>
+    </ul>
+    <div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: マダイ 5.3kg<span class="wrt-date">(5/17)</span></span></div>
+  </div>
+  <div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4>
+    <div class="wr-next-week">
+      <div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>マダイ</strong>：ノッコミ後期・産卵明けの荒食い最終週</span></div>
+      <div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div>
+    </div>
+  </div>
+  <div class="wr-section"><h4>📊 過去比較（同月）</h4>
+    <div class="wr-yoy">
+      <div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">マダイ 6<span class="wyv-unit">便</span></div></div>
+      <div class="wy-card now"><div class="wy-year">2026年5月（5/22時点）</div><div class="wy-val">マダイ 28<span class="wyv-unit">便（途中）</span></div></div>
+    </div>
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">10便</div><div class="wrs-l">出船 (7日中)</div></div>
+    <div class="wr-stat"><div class="wrs-n">10</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">4.6匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+<!-- B: 純白 + 上CTAバー -->
+<div class="pattern-label">B. 純白 + 上部オレンジバー</div>
+<p class="pattern-desc">サイト統一感優先・既存カード (基本情報・船舶設備) と同じトーン・シンプル</p>
+<div class="weekly-report bg-b">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月16日〜5月22日（7日間）</div>
+  <div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 10便 / 欠航 0便</span></div>
+  <div class="wr-section"><h4>🎣 今週の主要釣果</h4>
+    <ul class="wr-fish-list">
+      <li><span class="wfl-fish">マダイ</span><span class="wfl-count">8便</span><span class="wfl-diff neg">前週比 -9便</span><span class="wfl-detail">平均 4.6匹・最大 5.3kg</span></li>
+      <li><span class="wfl-fish">アマダイ</span><span class="wfl-count">2便</span><span class="wfl-diff">前週比 +2便</span><span class="wfl-detail">平均 5.0匹・最大 42cm</span></li>
+    </ul>
+    <div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: マダイ 5.3kg<span class="wrt-date">(5/17)</span></span></div>
+  </div>
+  <div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4>
+    <div class="wr-next-week">
+      <div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>マダイ</strong>：ノッコミ後期・産卵明けの荒食い最終週</span></div>
+      <div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div>
+    </div>
+  </div>
+  <div class="wr-section"><h4>📊 過去比較（同月）</h4>
+    <div class="wr-yoy">
+      <div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">マダイ 6<span class="wyv-unit">便</span></div></div>
+      <div class="wy-card now"><div class="wy-year">2026年5月（5/22時点）</div><div class="wy-val">マダイ 28<span class="wyv-unit">便（途中）</span></div></div>
+    </div>
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">10便</div><div class="wrs-l">出船 (7日中)</div></div>
+    <div class="wr-stat"><div class="wrs-n">10</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">4.6匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+<!-- C: 薄オレンジ単色 -->
+<div class="pattern-label">C. 薄オレンジ単色 (#fff5ec)</div>
+<p class="pattern-desc">CTAカラーとトーン揃え・温かみある統一感・主張は控えめ</p>
+<div class="weekly-report bg-c">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月16日〜5月22日（7日間）</div>
+  <div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 10便 / 欠航 0便</span></div>
+  <div class="wr-section"><h4>🎣 今週の主要釣果</h4>
+    <ul class="wr-fish-list">
+      <li><span class="wfl-fish">マダイ</span><span class="wfl-count">8便</span><span class="wfl-diff neg">前週比 -9便</span><span class="wfl-detail">平均 4.6匹・最大 5.3kg</span></li>
+      <li><span class="wfl-fish">アマダイ</span><span class="wfl-count">2便</span><span class="wfl-diff">前週比 +2便</span><span class="wfl-detail">平均 5.0匹・最大 42cm</span></li>
+    </ul>
+    <div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: マダイ 5.3kg<span class="wrt-date">(5/17)</span></span></div>
+  </div>
+  <div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4>
+    <div class="wr-next-week">
+      <div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>マダイ</strong>：ノッコミ後期・産卵明けの荒食い最終週</span></div>
+      <div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div>
+    </div>
+  </div>
+  <div class="wr-section"><h4>📊 過去比較（同月）</h4>
+    <div class="wr-yoy">
+      <div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">マダイ 6<span class="wyv-unit">便</span></div></div>
+      <div class="wy-card now"><div class="wy-year">2026年5月（5/22時点）</div><div class="wy-val">マダイ 28<span class="wyv-unit">便（途中）</span></div></div>
+    </div>
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">10便</div><div class="wrs-l">出船 (7日中)</div></div>
+    <div class="wr-stat"><div class="wrs-n">10</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">4.6匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+<!-- D: 薄ブルー (海) -->
+<div class="pattern-label">D. 薄ブルーグラデ (#f0f7ff→#fff) + 青枠</div>
+<p class="pattern-desc">海・釣りテーマと相性◎・新鮮さ・清涼感・サイト色とのコントラスト</p>
+<div class="weekly-report bg-d">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月16日〜5月22日（7日間）</div>
+  <div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 10便 / 欠航 0便</span></div>
+  <div class="wr-section"><h4>🎣 今週の主要釣果</h4>
+    <ul class="wr-fish-list">
+      <li><span class="wfl-fish">マダイ</span><span class="wfl-count">8便</span><span class="wfl-diff neg">前週比 -9便</span><span class="wfl-detail">平均 4.6匹・最大 5.3kg</span></li>
+      <li><span class="wfl-fish">アマダイ</span><span class="wfl-count">2便</span><span class="wfl-diff">前週比 +2便</span><span class="wfl-detail">平均 5.0匹・最大 42cm</span></li>
+    </ul>
+    <div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: マダイ 5.3kg<span class="wrt-date">(5/17)</span></span></div>
+  </div>
+  <div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4>
+    <div class="wr-next-week">
+      <div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>マダイ</strong>：ノッコミ後期・産卵明けの荒食い最終週</span></div>
+      <div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div>
+    </div>
+  </div>
+  <div class="wr-section"><h4>📊 過去比較（同月）</h4>
+    <div class="wr-yoy">
+      <div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">マダイ 6<span class="wyv-unit">便</span></div></div>
+      <div class="wy-card now"><div class="wy-year">2026年5月（5/22時点）</div><div class="wy-val">マダイ 28<span class="wyv-unit">便（途中）</span></div></div>
+    </div>
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">10便</div><div class="wrs-l">出船 (7日中)</div></div>
+    <div class="wr-stat"><div class="wrs-n">10</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">4.6匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+<!-- E: ダーク -->
+<div class="pattern-label">E. ダーク濃紺 + 白文字</div>
+<p class="pattern-desc">HEROカラーと同系・高インパクト・「特別感ある重要情報」感・読みやすさはトレードオフ</p>
+<div class="weekly-report bg-e">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月16日〜5月22日（7日間）</div>
+  <div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 10便 / 欠航 0便</span></div>
+  <div class="wr-section"><h4>🎣 今週の主要釣果</h4>
+    <ul class="wr-fish-list">
+      <li><span class="wfl-fish">マダイ</span><span class="wfl-count">8便</span><span class="wfl-diff neg">前週比 -9便</span><span class="wfl-detail">平均 4.6匹・最大 5.3kg</span></li>
+      <li><span class="wfl-fish">アマダイ</span><span class="wfl-count">2便</span><span class="wfl-diff">前週比 +2便</span><span class="wfl-detail">平均 5.0匹・最大 42cm</span></li>
+    </ul>
+    <div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: マダイ 5.3kg<span class="wrt-date">(5/17)</span></span></div>
+  </div>
+  <div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4>
+    <div class="wr-next-week">
+      <div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>マダイ</strong>：ノッコミ後期・産卵明けの荒食い最終週</span></div>
+      <div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div>
+    </div>
+  </div>
+  <div class="wr-section"><h4>📊 過去比較（同月）</h4>
+    <div class="wr-yoy">
+      <div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">マダイ 6<span class="wyv-unit">便</span></div></div>
+      <div class="wy-card now"><div class="wy-year">2026年5月（5/22時点）</div><div class="wy-val">マダイ 28<span class="wyv-unit">便（途中）</span></div></div>
+    </div>
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">10便</div><div class="wrs-l">出船 (7日中)</div></div>
+    <div class="wr-stat"><div class="wrs-n">10</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">4.6匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+<!-- F: クリーム紙感 -->
+<div class="pattern-label">F. 紙感クリーム (#faf8f4) + シャドウ</div>
+<p class="pattern-desc">落ち着いた読み物感・新聞・雑誌っぽい・長文読みやすい</p>
+<div class="weekly-report bg-f">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月16日〜5月22日（7日間）</div>
+  <div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 10便 / 欠航 0便</span></div>
+  <div class="wr-section"><h4>🎣 今週の主要釣果</h4>
+    <ul class="wr-fish-list">
+      <li><span class="wfl-fish">マダイ</span><span class="wfl-count">8便</span><span class="wfl-diff neg">前週比 -9便</span><span class="wfl-detail">平均 4.6匹・最大 5.3kg</span></li>
+      <li><span class="wfl-fish">アマダイ</span><span class="wfl-count">2便</span><span class="wfl-diff">前週比 +2便</span><span class="wfl-detail">平均 5.0匹・最大 42cm</span></li>
+    </ul>
+    <div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: マダイ 5.3kg<span class="wrt-date">(5/17)</span></span></div>
+  </div>
+  <div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4>
+    <div class="wr-next-week">
+      <div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>マダイ</strong>：ノッコミ後期・産卵明けの荒食い最終週</span></div>
+      <div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div>
+    </div>
+  </div>
+  <div class="wr-section"><h4>📊 過去比較（同月）</h4>
+    <div class="wr-yoy">
+      <div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">マダイ 6<span class="wyv-unit">便</span></div></div>
+      <div class="wy-card now"><div class="wy-year">2026年5月（5/22時点）</div><div class="wy-val">マダイ 28<span class="wyv-unit">便（途中）</span></div></div>
+    </div>
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">10便</div><div class="wrs-l">出船 (7日中)</div></div>
+    <div class="wr-stat"><div class="wrs-n">10</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">4.6匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+<!-- G: 上部濃紺帯 + 白本体 -->
+<div class="pattern-label">G. 上部HEROカラー帯 + 白本体</div>
+<p class="pattern-desc">HERO直下で同色帯が連続・上部にラベル帯・本体は白でクリーンに</p>
+<div class="weekly-report bg-g">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月16日〜5月22日（7日間）</div>
+  <div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 10便 / 欠航 0便</span></div>
+  <div class="wr-section"><h4>🎣 今週の主要釣果</h4>
+    <ul class="wr-fish-list">
+      <li><span class="wfl-fish">マダイ</span><span class="wfl-count">8便</span><span class="wfl-diff neg">前週比 -9便</span><span class="wfl-detail">平均 4.6匹・最大 5.3kg</span></li>
+      <li><span class="wfl-fish">アマダイ</span><span class="wfl-count">2便</span><span class="wfl-diff">前週比 +2便</span><span class="wfl-detail">平均 5.0匹・最大 42cm</span></li>
+    </ul>
+    <div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: マダイ 5.3kg<span class="wrt-date">(5/17)</span></span></div>
+  </div>
+  <div class="wr-section"><h4>📅 来週の見どころ (5/23-5/29)</h4>
+    <div class="wr-next-week">
+      <div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>マダイ</strong>：ノッコミ後期・産卵明けの荒食い最終週</span></div>
+      <div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29 大潮</strong> — 朝マズメ活性 UP 期待</span></div>
+    </div>
+  </div>
+  <div class="wr-section"><h4>📊 過去比較（同月）</h4>
+    <div class="wr-yoy">
+      <div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">マダイ 6<span class="wyv-unit">便</span></div></div>
+      <div class="wy-card now"><div class="wy-year">2026年5月（5/22時点）</div><div class="wy-val">マダイ 28<span class="wyv-unit">便（途中）</span></div></div>
+    </div>
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">10便</div><div class="wrs-l">出船 (7日中)</div></div>
+    <div class="wr-stat"><div class="wrs-n">10</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">4.6匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+</body>
+</html>
