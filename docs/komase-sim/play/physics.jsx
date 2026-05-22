@@ -431,25 +431,6 @@ window.SimPhysics = (function() {
     state.makiOffset += (state.makiTarget - state.makiOffset) * dt * 1.8;
   }
 
-  // ハリス馴染み時定数 [秒] — 付け餌が新しい平衡位置に達する時間
-  // 物理: ハリス長 × 流体抗力 / 張力源 (hook + ガン玉)
-  //   弾性波伝播 (~0.1s) は速すぎ、実物の馴染みは「付け餌が流体抵抗を
-  //   受けながら新位置に漂う時間」が支配的。
-  //   検算: 10m/0.3kn/1g  → τ=30s (DAIWA「ロングハリス20-30秒」と整合)
-  //         7m/0.3kn/1g  → τ=21s
-  //         7m/0.1kn/1g  → τ=64s (低潮で長くなる)
-  //         7m/0.3kn/2g  → τ=11s (重ガン玉で早く馴染む)
-  function calcSettleTau(params) {
-    const harrisLen = Math.max(1, params.harrisLength || 6);
-    const tide = Math.max(0.05, Math.abs(params.tideSpeed || 0.3));
-    const hookW = getHookWeight(params.hookType, params.hookSize);
-    const ganW = (params.ganDamaSize || 0) * 0.9;
-    const totalW = hookW + ganW;
-    // 張力係数: 0.3-1.9 の範囲。重い hook+ガン玉ほど大きく → τ 短縮
-    const tensionFactor = 0.3 + 0.8 * Math.min(2.0, totalW);
-    return harrisLen / (tide * tensionFactor);
-  }
-
   function shakuri(state, params) {
     // 振り幅 = v / ω (ω=√(k/m)=√9=3 → v=3A)
     // shakuriStrokeCm 30 → v=-0.9 / 50(基本) → v=-1.5 / 150 → v=-4.5
@@ -514,11 +495,6 @@ window.SimPhysics = (function() {
     // warmup なし。live (app.jsx) は phase=fishing になった瞬間から
     // cycleStatsRef を累積するので、headless も同じく 0 から評価する。
     let hitRateEMA = 0;  // app.jsx:796 と同じく EMA で平滑化
-    // ハリス一次遅れ: 付け餌位置 (hook) は新しい平衡位置に τ秒で漂着する
-    // τ は流体抵抗 / 張力 から決まる (calcSettleTau)。初期値は null で
-    // 最初のフレームで静的位置を採用 (即収束)。
-    let hookLagX = null;
-    let hookLagY = null;
     // 5基準スコア用カウンタ
     const scoreCounters = {
       totalFrames: 0,
@@ -651,97 +627,66 @@ window.SimPhysics = (function() {
       rigStep(rs, params, dt);
       stepParticles(particles, params, dt, rnd);
       const rig = rigShape(params.tanaDepth - rs.makiOffset, rs.shakuriOffsetY, rs.shakuriOffsetX, params, hookW, 0);
-      // ハリス一次遅れ: 静的形状の rig.hook を τ秒で漂着させる
-      const _tau = calcSettleTau(params);
-      const _alpha = 1 - Math.exp(-dt / _tau);
-      if (hookLagX === null) { hookLagX = rig.hook.x; hookLagY = rig.hook.y; }
-      hookLagX += (rig.hook.x - hookLagX) * _alpha;
-      hookLagY += (rig.hook.y - hookLagY) * _alpha;
-      const laggedHook = { x: hookLagX, y: hookLagY };
-      // === 付け餌周辺の粒子分布で edge/center を判定 ===
-      //   コマセマダイ実釣セオリー (DAIWA/YAMAHA):
-      //   - 中心 (1.5m 内に多数粒子) = エサ取りゾーン (カワハギ/スズメダイ集中)
-      //   - 外縁 (1.5-8m 内に適量粒子) = マダイの食い場 (警戒心強い大型)
-      //   plumeCenter ベースは粒子が潮で広く流される時に破綻するので、
-      //   「付け餌から見て近いコマセ粒子の数」だけで判定する。
-      let _centerCount = 0;  // hook 中心 1.5m 内 (過密=エサ取り集中)
-      let _edgeCount = 0;    // hook から 1.5-8m (外縁=マダイゾーン)
-      for (const p of particles) {
-        const dxh = p.x - laggedHook.x;
-        const dyh = p.y - laggedHook.y;
-        const d2 = dxh*dxh + dyh*dyh;
-        if (d2 < 2.25) _centerCount++;        // 1.5²
-        else if (d2 < 64) _edgeCount++;        // 8²
-      }
-      // 同調率 (従来の球判定 3.0m): EMA で peakBonus 算定用に残す
-      const near = particles.length > 0 ? nearHook(particles, laggedHook, 3.0) : 0;
+      // 同調率は毎フレーム計算 + EMA で平滑化 (app.jsx:796 と完全同等)
+      // 同調判定半径 3.0m: 実釣感覚 (付け餌周りで漂うコマセ雲は 3-5m スケール)
+      // 旧 1.8m は厳しすぎて「真上に重なる」しか拾えず、漂い戦略を不当に低評価
+      const near = particles.length > 0 ? nearHook(particles, rig.hook, 3.0) : 0;
       const ratio = particles.length > 0 ? (near / particles.length * 100) : 0;
       hitRateEMA = hitRateEMA * (1 - EMA_ALPHA) + ratio * EMA_ALPHA;
       const syncRate = hitRateEMA;
       {
-        // === コマセマダイ実釣評価 (中心同調ではなく "潮下外縁同調" が本質) ===
-        //   DAIWA/YAMAHA: コマセ中心はエサ取り (カワハギ/スズメダイ) が集まる場所
-        //   マダイ (警戒心強い) は外縁・やや下側で食う
-        //   → 外縁に適量粒子があり 中心は過密でない 状態が高評価
-        const hookBelowCage = laggedHook.y > rig.cage.y + 0.5;
-        const hookDeepEnough = laggedHook.y >= params.tanaDepth - 1
-                            && laggedHook.y <= params.depth - 1;
+        // === 評価基準 (コマセマダイの実釣に整合) ===
+        //   指示棚 = ビシを止める作戦水深、付け餌は指示棚に置く必要は無い。
+        //   マダイは底寄り→コマセに誘われて上がる。付け餌はビシより下の
+        //   コマセ帯 (潮で流れたコマセ雲) に自然に置かれていれば良い。
+        // 1. 付け餌とコマセの同調率 (粒子/hook 近傍 1.8m)
+        // 2. 付け餌がビシより下にあるか (実釣の鉄則: ビシ下のコマセ帯)
+        const hookBelowCage = rig.hook.y > rig.cage.y + 0.5;
+        // 3. 付け餌が中〜深場ゾーンか (タナ以深〜底1m上まで)
+        //    マダイが底からコマセで上がってきて食う範囲
+        const hookDeepEnough = rig.hook.y >= params.tanaDepth - 1
+                            && rig.hook.y <= params.depth - 1;
+        // 4. ビシが指示棚に近いか (船長指示の絶対遵守)
         const cageDiff = Math.abs(rig.cage.y - params.tanaDepth);
         const cageOnTana = cageDiff <= 1.5;
-
-        // edge 判定: 外縁に粒子 3個以上 かつ 中心過密でない (10個未満)
-        //   + ビシ指示棚 / 付け餌深場ゾーン / ハリ下
-        const isEdge = _edgeCount >= 3 && _centerCount < 10
-                    && hookBelowCage && hookDeepEnough && cageOnTana;
-        // 中心過密 (penalty): 1.5m 内に10粒子以上 = エサ取り集中ゾーン
-        const isCenter = _centerCount >= 10;
-        // ok (緩い): ビシ近傍にいて ハリ下 で 同調率 ≥ 0.5
+        // 「ビシ指示棚 & 付け餌ビシ下のコマセ帯 & 同調」が良いフレーム
+        const goodFrame = (syncRate >= 2.0 && hookBelowCage && hookDeepEnough && cageOnTana) ? 1 : 0;
         const okFrame = (syncRate >= 0.5 && hookBelowCage && cageDiff <= 2.5) ? 1 : 0;
-
         scoreCounters.totalFrames += 1;
-        if (isEdge) scoreCounters.goodFrames += 1;
+        scoreCounters.goodFrames += goodFrame;
         scoreCounters.okFrames += okFrame;
         scoreCounters.sumRatio += syncRate;
-        if (isCenter) scoreCounters.centerFrames = (scoreCounters.centerFrames || 0) + 1;
         if (syncRate > scoreCounters.peakRatio) scoreCounters.peakRatio = syncRate;
       }
       elapsed += dt;
     }
 
-    // === 最終スコア計算 (コマセマダイ実釣セオリー準拠) ===
-    //   edgeSustainRate: 付け餌が「コマセ雲の潮下外縁 + ビシ指示棚」の理想配置で
-    //                    持続している率。マダイ釣りで最も重要。
-    //   okRate         : 緩い基準 (ビシ近傍 + ハリ下)
-    //   meanRatio      : 平均同調率 (球判定 3m)
-    //   peakSync       : 瞬間ピーク同調率 (配点を抑えてピーク稼ぎ防止)
-    //   centerRate     : コマセ雲中心過密ペナルティ (エサ取り集中ゾーン)
+    // === 最終スコア計算 (5基準) ===
+    //   #1 sustained alignment: goodFrames/totalFrames の割合 (高いほど良)
+    //   #2 hook at tana (held): 平均タナズレを penalty 化
+    //   #3 cycle duration: shakuriInterval が標準範囲 (60-180s) にあれば加点
+    //   #4 chum usage: 1サイクル消費が 8-15% に近いほど良
+    //   #5 action validity: しゃくり/巻き/落とし が機能していること
     if (scoreCounters.totalFrames === 0) return 0;
-    const edgeSustainRate = scoreCounters.goodFrames / scoreCounters.totalFrames;
-    const okRate          = scoreCounters.okFrames   / scoreCounters.totalFrames;
-    const meanRatio       = scoreCounters.sumRatio    / scoreCounters.totalFrames;
-    const peakSync        = scoreCounters.peakRatio || 0;
-    const centerRate      = (scoreCounters.centerFrames || 0) / scoreCounters.totalFrames;
+    const sustainRate = scoreCounters.goodFrames / scoreCounters.totalFrames;
+    const okRate      = scoreCounters.okFrames   / scoreCounters.totalFrames;
+    const meanRatio    = scoreCounters.sumRatio    / scoreCounters.totalFrames;
+    const peakSync    = scoreCounters.peakRatio || 0;
 
-    // 配点 (max 100):
-    //   edgeSustain 55 (主役・潮下外縁同調の持続)
-    //   ok          15 (緩い基準)
-    //   meanSync    15 (平均同調)
-    //   peak         5 (旧20→5: 瞬間ピーク稼ぎ configuration 防止)
-    //   center 過密 -10 ペナルティ
-    //   合計レンジ: max 100, 中心居座りで -10
-    const baseScore = edgeSustainRate * 55 + okRate * 15;
+    // ★ リアルタイム合否表示と完全に同じスコア式 (app.jsx cycleScore と整合)
+    //   配点: sustain 50 + ok 15 + meanSync 15 + peak 20 = max 100
+    //   peakBonus を min(20, peak*0.4) に: 短時間でも sync 達成を強く評価
+    const baseScore = sustainRate * 50 + okRate * 15;
     const syncBonus = Math.min(15, meanRatio * 1.5);
-    const peakBonus = Math.min(5, peakSync * 0.1);
-    const centerPenalty = centerRate * 10;
-    const total = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus - centerPenalty));
+    const peakBonus = Math.min(20, peakSync * 0.4);
+    const total = Math.max(0, Math.min(100, baseScore + syncBonus + peakBonus));
 
     if (typeof window !== 'undefined' && window.__lastScoreDump !== false) {
       window.__lastScoreDump = {
-        total, baseScore, syncBonus, peakBonus, centerPenalty,
-        edgeSustainRate, okRate, meanRatio, peakSync, centerRate,
+        total, baseScore, syncBonus, peakBonus,
+        sustainRate, okRate, meanRatio, peakSync,
         totalFrames: scoreCounters.totalFrames,
-        edgeFrames: scoreCounters.goodFrames,
-        centerFrames: scoreCounters.centerFrames || 0,
+        goodFrames: scoreCounters.goodFrames,
       };
     }
     return total;
@@ -1069,7 +1014,7 @@ window.SimPhysics = (function() {
     ROD_X_M,
     current, pelineDrift, computeDropSpeed,
     spawnParticles, stepParticles,
-    rigShape, rigStep, shakuri, calcSettleTau,
+    rigShape, rigStep, shakuri,
     nearHook, depthHistogram,
     HOOK_WEIGHTS, HOOK_TYPE_LABEL, HOOK_SIZE_RANGE, getHookWeight,
     shakuriConsumption, leakRate,
