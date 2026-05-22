@@ -274,9 +274,9 @@ S_TEMPLATES = [
         "id": "S1",
         "priority": 1,
         "conds": [
-            ("wave_inner", "<=", 1.2),
-            ("swell_outer", "<=", 1.5),
             ("total_cancel_rate", "<", 0.1),
+            ("inner_sea_sev", "<=", 0),
+            ("outer_sea_sev", "<=", 0),
         ],
         "text": (
             "本日は<b>内海・外海ともに穏やかな海況</b>に恵まれ、"
@@ -291,15 +291,59 @@ S_TEMPLATES = [
         "id": "S2",
         "priority": 2,
         "conds": [
-            ("wave_inner", "<=", 1.2),
             ("cancel_rate_outer", ">=", 0.15),
+            ("inner_wind_sev", "<=", 0),
         ],
         "text": (
             "本日の海況は<b>内海と外海で対照的な一日</b>。"
             "<b>内海</b>は風{wind_inner_str}と穏やかで、久比里・松輪・金沢八景の各沖は"
             "朝マズメから夕方まで凪が続きました。"
-            "一方<b>外海</b>は中風で、銭洲・神津島方面は<b>{n_cancellations}船が出船中止</b>判断。"
+            "一方<b>外海</b>は風が強く、銭洲・神津島方面は<b>{n_cancellations}船が出船中止</b>判断。"
             "来週末は外海狙いの予約は<b>前日午後に船宿への確認</b>が必須です。"
+        ),
+    },
+    {
+        "id": "S2b",
+        "priority": 2,
+        "conds": [
+            ("cancel_rate_outer", ">=", 0.15),
+            ("inner_wind_sev", "==", 1),
+        ],
+        "text": (
+            "本日の海況は<b>内海と外海で出船判断が割れた一日</b>。"
+            "<b>内海</b>は波{wave_inner:.1f}m・風{wind_inner_str}とそよ風程度で釣り可、"
+            "久比里・松輪・金沢八景の各沖は概ね安定運航。"
+            "一方<b>外海</b>は風が強く、銭洲・神津島方面は<b>{n_cancellations}船が出船中止</b>判断。"
+            "来週末は外海狙いの予約は<b>前日午後に船宿への確認</b>が必須です。"
+        ),
+    },
+    {
+        "id": "S2c",
+        "priority": 2,
+        "conds": [
+            ("cancel_rate_outer", ">=", 0.15),
+            ("inner_wind_sev", "==", 2),
+        ],
+        "text": (
+            "本日の海況は<b>関東一帯で風が強まった一日</b>。"
+            "<b>内海</b>も波{wave_inner:.1f}m・風{wind_inner_str}の強風で出船注意、"
+            "船酔いリスクも高く風裏を選んだ船宿が安定運航。"
+            "一方<b>外海</b>はさらに荒れ、銭洲・神津島方面は<b>{n_cancellations}船が出船中止</b>判断。"
+            "来週末は外海狙いの予約は<b>前日午後に船宿への確認</b>が必須です。"
+        ),
+    },
+    {
+        "id": "S2d",
+        "priority": 2,
+        "conds": [
+            ("cancel_rate_outer", ">=", 0.15),
+            ("inner_wind_sev", ">=", 3),
+        ],
+        "text": (
+            "本日は<b>内海・外海ともに暴風で欠航警戒</b>の一日。"
+            "<b>内海</b>でも風{wind_inner_str}の暴風となり、湾内便も多くが出船を見合わせる事態。"
+            "<b>外海</b>は銭洲・神津島方面で<b>{n_cancellations}船が出船中止</b>。"
+            "明日以降の海況回復まで釣行は控えるのが賢明です。"
         ),
     },
     {
@@ -332,7 +376,7 @@ S_TEMPLATES = [
         "id": "S5",
         "priority": 5,
         "conds": [
-            ("max_wind", ">=", 12),
+            ("max_wind", ">=", 10),
         ],
         "text": (
             "本日は<b>最大{max_wind:.0f}m/sの強風日</b>。"
@@ -359,10 +403,39 @@ S_TEMPLATES = [
         "priority": 7,
         "conds": [
             ("swell_outer", ">=", 2.0),
+            ("inner_wind_sev", "<=", 0),
         ],
         "text": (
             "外海はうねり{swell_outer:.1f}mと高く、{swell_affected_areas}方面では"
             "釣り辛さが顕著な一日でした。内海は別次元で穏やかで、{inner_top_fish}を狙う便には好機。"
+            "明日以降にはうねりが収まる予報ですので、外海狙いの方は明日以降に期待を。"
+        ),
+    },
+    {
+        "id": "S7b",
+        "priority": 7,
+        "conds": [
+            ("swell_outer", ">=", 2.0),
+            ("inner_wind_sev", "==", 1),
+        ],
+        "text": (
+            "外海はうねり{swell_outer:.1f}mと高く、{swell_affected_areas}方面では"
+            "釣り辛さが顕著な一日でした。内海は風{wind_inner_str}とそよ風程度で、"
+            "{inner_top_fish}を狙う便は概ね安定運航。"
+            "明日以降にはうねりが収まる予報ですので、外海狙いの方は明日以降に期待を。"
+        ),
+    },
+    {
+        "id": "S7c",
+        "priority": 7,
+        "conds": [
+            ("swell_outer", ">=", 2.0),
+            ("inner_wind_sev", ">=", 2),
+        ],
+        "text": (
+            "外海はうねり{swell_outer:.1f}mと高く、{swell_affected_areas}方面では"
+            "釣り辛さが顕著な一日でした。内海も風{wind_inner_str}の強風で出船注意、"
+            "風裏を選んだ船宿で{inner_top_fish}が記録されています。"
             "明日以降にはうねりが収まる予報ですので、外海狙いの方は明日以降に期待を。"
         ),
     },

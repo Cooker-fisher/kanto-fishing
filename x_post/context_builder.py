@@ -506,6 +506,7 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     max_wind       = all_wx.get("wind_spd",   5.0)
     wind_inner_max = inner_wx.get("wind_spd", 5.0)
     wind_inner_min = inner_wx.get("wind_spd", 2.0)
+    wind_outer_max = outer_wx.get("wind_spd", max_wind)
     wind_dir_label = inner_wx.get("wind_dir", all_wx.get("wind_dir", ""))
     sst_mean       = all_wx.get("sst",        18.0)
     # 気候平年値（簡易）
@@ -748,8 +749,46 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     swell_affected_areas = "外房・銭洲"
     cancel_rate_inner = 0.0
     cancel_rate_outer = total_cancel_rate
-    wind_inner_str = f"{wind_inner_min:.0f}〜{wind_inner_max:.0f}m/s"
-    wind_outer_max = max_wind
+    if abs(wind_inner_max - wind_inner_min) < 0.5 or round(wind_inner_min) == round(wind_inner_max):
+        wind_inner_str = f"{wind_inner_max:.0f}m/s"
+    else:
+        wind_inner_str = f"{wind_inner_min:.0f}〜{wind_inner_max:.0f}m/s"
+
+    # 船釣り基準の severity（内海/外海別・0=穏, 1=やや, 2=強, 3=暴）
+    # crawler.py:_sea_label と境界値を一致させること
+    def _sev_inner_wind(v):
+        if v is None: return 0
+        if v < 6: return 0
+        if v < 8: return 1
+        if v < 10: return 2
+        return 3
+    def _sev_outer_wind(v):
+        if v is None: return 0
+        if v < 8: return 0
+        if v < 10: return 1
+        if v < 13: return 2
+        return 3
+    def _sev_inner_wave(v):
+        if v is None: return 0
+        if v < 0.5: return 0
+        if v < 1.0: return 1
+        if v < 1.5: return 2
+        return 3
+    def _sev_outer_wave(v):
+        if v is None: return 0
+        if v < 1.0: return 0
+        if v < 2.0: return 1
+        if v < 3.0: return 2
+        return 3
+    inner_wind_sev = _sev_inner_wind(wind_inner_max)
+    outer_wind_sev = _sev_outer_wind(wind_outer_max)
+    inner_wave_sev = _sev_inner_wave(wave_inner)
+    outer_wave_sev = _sev_outer_wave(swell_outer)
+    inner_sea_sev = max(inner_wind_sev, inner_wave_sev)
+    outer_sea_sev = max(outer_wind_sev, outer_wave_sev)
+    # 船釣り基準の風の形容（テンプレ {wind_inner_phrase} 用）
+    _wind_phrase_inner = {0: "穏やかで", 1: "そよ風あり", 2: "やや強く", 3: "の強風で"}[inner_wind_sev]
+    _wind_phrase_outer = {0: "穏やかで", 1: "そよ風あり", 2: "やや強く", 3: "の強風で"}[outer_wind_sev]
     wind_direction_changes = 0
     no_rain_3d = True
     rain_yesterday_mm = 0  # 雨データ取得は省略（デフォルト 0mm）
@@ -831,6 +870,15 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         "wind_inner_min": wind_inner_min,
         "wind_inner_str": wind_inner_str,
         "wind_outer_max": wind_outer_max,
+        # 船釣り基準 severity（内海/外海別・0=穏, 1=やや, 2=強, 3=暴）
+        "inner_wind_sev": inner_wind_sev,
+        "outer_wind_sev": outer_wind_sev,
+        "inner_wave_sev": inner_wave_sev,
+        "outer_wave_sev": outer_wave_sev,
+        "inner_sea_sev": inner_sea_sev,
+        "outer_sea_sev": outer_sea_sev,
+        "wind_phrase_inner": _wind_phrase_inner,
+        "wind_phrase_outer": _wind_phrase_outer,
         "wind_dir_label": wind_dir_label,
         "sst_mean": sst_mean,
         "pressure_hpa": pressure_hpa,  # None の場合は "—" 表示

@@ -290,6 +290,49 @@ _RISK_THR = {
     "内海": (0.8,  6.0, 1.5,  9.0),
 }
 
+# 船釣り基準の風速・波高ベルト（内海/外海別・0=穏, 1=やや, 2=強, 3=暴）
+# 内海 = 東京湾・相模湾・湾内の小型船想定（風6m/s で出船判断微妙、9m/s で多くの船宿欠航）
+# 外海 = 外房・銭洲・神津島の大型船想定（風8m/s 程度なら問題なし、13m/s 超で欠航圏）
+_WIND_BELTS = {
+    "内海": (6.0, 8.0, 10.0),   # sev境界: <6=穏, 6-8=やや, 8-10=強, ≥10=暴
+    "外海": (8.0, 10.0, 13.0),  # sev境界: <8=穏, 8-10=やや, 10-13=強, ≥13=暴
+}
+_WAVE_BELTS = {
+    "内海": (0.5, 1.0, 1.5),    # sev境界: <0.5=穏, 0.5-1.0=やや, 1.0-1.5=強, ≥1.5=暴
+    "外海": (1.0, 2.0, 3.0),    # sev境界: <1.0=穏, 1.0-2.0=やや, 2.0-3.0=強, ≥3.0=暴
+}
+
+def _sev_from_belts(value, belts):
+    """value をベルト境界 (b0, b1, b2) で 0/1/2/3 に分類"""
+    b0, b1, b2 = belts
+    if value < b0: return 0
+    if value < b1: return 1
+    if value < b2: return 2
+    return 3
+
+def _sea_label(wave, wind, sea_type):
+    """波高(m)・風速(m/s)・内海/外海 → (sev, label_text)
+    sev: 0=穏, 1=やや, 2=強, 3=暴
+    label_text: 「波X.Xm・風Ym/sの○○」形式の一行コメント
+    """
+    if sea_type not in _WIND_BELTS:
+        sea_type = "内海"
+    w_val = wave if wave is not None else 0.0
+    wnd_val = wind if wind is not None else 0.0
+    wind_sev = _sev_from_belts(wnd_val, _WIND_BELTS[sea_type])
+    wave_sev = _sev_from_belts(w_val, _WAVE_BELTS[sea_type])
+    sev = max(wind_sev, wave_sev)
+    # severity ごとの定型コメント（validate_output.py のキーワード「出船日和/出船注意/欠航警戒」を含める）
+    if sev == 0:
+        tail = "の好海況で出船日和"
+    elif sev == 1:
+        tail = "でそよ風あり、釣り可"
+    elif sev == 2:
+        tail = "の強風で出船注意、船酔い注意"
+    else:  # 3
+        tail = "の暴風で欠航警戒"
+    return sev, f"波{w_val:.1f}m・風{wnd_val:.0f}m/s{tail}"
+
 def _risk_label(wave, wind, sea_type):
     """波高(m)・風速(m/s)・内海/外海 → (cls, icon, lbl)"""
     warn_w, warn_wnd, bad_w, bad_wnd = _RISK_THR[sea_type]
@@ -9011,16 +9054,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                     cm_parts.append(f"水温は平年並み（{sst:.1f}℃）")
             # 波・風 欠航リスク（内部的に外海/内海の閾値で切替するが、文言には出さない）
             sea_type = "内海" if group in _UCHIUMI_AREAS else "外海"
-            warn_w, warn_wnd, bad_w, bad_wnd = _RISK_THR[sea_type]
             if wave is not None or wind_spd is not None:
                 _w = wave or 0
                 _wd = wind_spd or 0
-                if _w >= bad_w or _wd >= bad_wnd:
-                    cm_parts.append(f"波{_w:.1f}m・風{_wd:.0f}m/sの荒天で欠航警戒")
-                elif _w >= warn_w or _wd >= warn_wnd:
-                    cm_parts.append(f"波{_w:.1f}m・風{_wd:.0f}m/sでやや荒れ気味、出船注意")
-                else:
-                    cm_parts.append(f"波{_w:.1f}m・風{_wd:.0f}m/sと穏やかで出船日和")
+                _, _label = _sea_label(_w, _wd, sea_type)
+                cm_parts.append(_label)
             if cm_parts:
                 sea_comment = f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">{"。".join(cm_parts)}。</p>'
 

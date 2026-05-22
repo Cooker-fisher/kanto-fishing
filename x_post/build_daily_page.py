@@ -626,12 +626,26 @@ def _sea_grid_html(ctx, hide_ship_rate=False):
         else:
             summary_parts.append(f"水温は平年並み（{sst_i:.1f}℃）")
     if wave_i is not None and wspd_i is not None:
-        if wave_i >= 2.0 or wspd_i >= 10:
-            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sの荒天で欠航警戒")
-        elif wave_i >= 1.0 or wspd_i >= 6:
-            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sでやや荒れ気味")
+        # 船釣り基準の内海ベルト（crawler.py:_sea_label と整合）
+        # 内海: 風 <6=穏 / 6-8=やや / 8-10=強 / ≥10=暴
+        # 内海: 波 <0.5=穏 / 0.5-1.0=やや / 1.0-1.5=強 / ≥1.5=暴
+        if wspd_i < 6: _w_sev = 0
+        elif wspd_i < 8: _w_sev = 1
+        elif wspd_i < 10: _w_sev = 2
+        else: _w_sev = 3
+        if wave_i < 0.5: _wv_sev = 0
+        elif wave_i < 1.0: _wv_sev = 1
+        elif wave_i < 1.5: _wv_sev = 2
+        else: _wv_sev = 3
+        sev = max(_w_sev, _wv_sev)
+        if sev == 0:
+            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sの好海況で出船日和")
+        elif sev == 1:
+            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sでそよ風あり、釣り可")
+        elif sev == 2:
+            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sの強風で出船注意")
         else:
-            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sで出船日和")
+            summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sの暴風で欠航警戒")
     summary_html = ""
     if summary_parts:
         summary_html = f'<p class="sea-summary">{"。".join(summary_parts)}。</p>\n'
