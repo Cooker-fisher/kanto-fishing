@@ -13023,7 +13023,11 @@ def build_sitemap(data):
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
     # 2026/05/17: fishing_v_zero でも代替ソース（chowari等）あれば対象
+    # 2026/05/22 B-task: build_ship_pages と対象集合を揃えるため exclude フィルタを追加
+    # （旧: exclude チェック欠落で磯渡船・営業停止船等 54件分の 404 URL が sitemap に残存）
     for s in SHIPS:
+        if s.get("exclude"):
+            continue
         if s.get("fishing_v_zero"):
             _sp = s.get("source_priority") or []
             if not any(src != "fishing_v" for src in _sp):
