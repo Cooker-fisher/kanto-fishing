@@ -12136,7 +12136,34 @@ _SHIP_EXTRA_CSS = """\
 .contact-cta{background:var(--accent);color:#fff;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:16px}
 .contact-cta h3{font-size:14px;margin-bottom:8px}
 .contact-cta p{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px}
-.contact-cta a{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;margin:4px}"""
+.contact-cta a{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;margin:4px}
+.monthly-archive{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.monthly-archive>h3{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.monthly-archive .ma-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.ma-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.ma-card{background:var(--bg);border-radius:8px;padding:12px;border-top:3px solid var(--accent)}
+.ma-card.recent{border-top-color:var(--cta);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ma-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.ma-head .ma-month{font-size:14px;font-weight:800;color:var(--accent)}
+.ma-head .ma-rate{font-size:10px;color:var(--muted)}
+.ma-head .ma-rate strong{color:var(--pos);font-weight:700}
+.ma-trips{font-size:11px;color:var(--sub);margin-bottom:8px}
+.ma-fish-list{font-size:12px;line-height:1.6;list-style:none;padding:0}
+.ma-fish-list .mfl-row{display:flex;justify-content:space-between;gap:6px;padding:4px 0;border-bottom:1px dotted var(--border)}
+.ma-fish-list .mfl-row:last-child{border-bottom:none}
+.ma-fish-list .mfl-fish{font-weight:700;color:var(--accent);flex:0 0 auto}
+.ma-fish-list .mfl-stat{font-size:11px;color:var(--sub);text-align:right}
+.ma-fish-list .mfl-stat .mfl-cnt{color:var(--cta);font-weight:700}
+.ma-collapse{margin-top:12px;border-top:1px dashed var(--border);padding-top:12px}
+.ma-collapse summary{cursor:pointer;font-size:12px;color:var(--accent);font-weight:700;padding:10px 14px;background:var(--bg);border-radius:6px;list-style:none;user-select:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s,color .2s}
+.ma-collapse summary::-webkit-details-marker{display:none}
+.ma-collapse summary::before{content:"\\25B6";font-size:9px;transition:transform .2s}
+.ma-collapse[open] summary::before{transform:rotate(90deg)}
+.ma-collapse summary:hover{background:var(--accent);color:#fff}
+.ma-collapse[open] .ma-grid{margin-top:12px}
+.ma-archive-links{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+.ma-archive-links a{display:inline-block;padding:3px 8px;background:var(--bg);color:var(--accent);border-radius:10px;text-decoration:none;margin:2px;font-size:11px}
+.ma-archive-links a:hover{background:var(--accent);color:#fff}"""
 
 
 def _ship_load_area_coords():
@@ -12148,6 +12175,217 @@ def _ship_load_area_coords():
             return json.load(f)
     except Exception:
         return {}
+
+
+# ============================================================
+# F1 (2026/05/22): 月別釣果実績セクション
+# 各 ship/*.html に「過去 N ヶ月の月別出船・釣果データ」カードを追加
+# 直近3ヶ月のみ常時表示・4ヶ月目以降は <details> 折り畳み
+# データソース: data/V2/YYYY-MM.csv 24ヶ月分蓄積済 + chowari_*.csv 同月key 合算
+# SEO: 各船宿で「{船宿名} {YYYY年MM月} 釣果」ロングテール獲得・コンテンツ量 4倍
+# 配置: 予約CTA 下・FAQ 上 (rev2 確定)
+# ============================================================
+
+def _ship_load_monthly_archive(ship_name, max_months=13):
+    """data/V2/*.csv から船宿の月別出船・釣果集計を返す。
+    返り値: list[dict] — 新月→古月の順、最大 max_months 件
+    各要素: {
+      'month': 'YYYY-MM', 'trips': int, 'cancels': int, 'rate': int (%),
+      'fish': [{'fish': str, 'count': int, 'avg': float, 'size_max': int|None, 'kg_max': float|None}] 上位5魚種
+    }
+    注: data/V2/ には通常 CSV (`YYYY-MM.csv`) と chowari 由来 CSV (`chowari_YYYY-MM.csv`) が
+    共存する。船宿によってどちらか片方にしかレコードが無いため、同じ月 key で両ファイル
+    を集計対象にまとめる (T32 検証で「両ファイルに同船宿存在は 0.02% で許容範囲」確認済)。
+    """
+    if not ship_name:
+        return []
+    try:
+        all_files = os.listdir(_DATA_DIR)
+    except FileNotFoundError:
+        return []
+    month_groups = {}
+    for f in all_files:
+        if not f.endswith(".csv") or f == "cancellations.csv":
+            continue
+        if f.startswith("chowari_"):
+            month_key = f[len("chowari_"):].replace(".csv", "")
+        else:
+            month_key = f.replace(".csv", "")
+        if len(month_key) != 7 or month_key[4] != "-":
+            continue
+        month_groups.setdefault(month_key, []).append(os.path.join(_DATA_DIR, f))
+    if not month_groups:
+        return []
+    sorted_months = sorted(month_groups.keys(), reverse=True)[:max_months]
+    result = []
+    for month_key in sorted_months:
+        trips = 0
+        cancels = 0
+        fish_count = {}
+        fish_cnt_sum = {}
+        fish_size_max = {}
+        fish_kg_max = {}
+        for path in month_groups[month_key]:
+            try:
+                with open(path, encoding="utf-8") as fp:
+                    reader = csv.DictReader(fp)
+                    for row in reader:
+                        if row.get("ship") != ship_name:
+                            continue
+                        if row.get("is_cancellation") == "1":
+                            cancels += 1
+                            continue
+                        trips += 1
+                        fish = (row.get("tsuri_mono") or "").strip()
+                        if not fish or fish in ("不明", "欠航"):
+                            continue
+                        fish_count[fish] = fish_count.get(fish, 0) + 1
+                        try:
+                            cnt = float(row.get("cnt_avg") or 0)
+                            if cnt > 0:
+                                fish_cnt_sum.setdefault(fish, []).append(cnt)
+                        except (ValueError, TypeError):
+                            pass
+                        try:
+                            sm = float(row.get("size_max") or 0)
+                            if sm > fish_size_max.get(fish, 0):
+                                fish_size_max[fish] = sm
+                        except (ValueError, TypeError):
+                            pass
+                        try:
+                            km = float(row.get("kg_max") or 0)
+                            if km > fish_kg_max.get(fish, 0):
+                                fish_kg_max[fish] = km
+                        except (ValueError, TypeError):
+                            pass
+            except Exception:
+                continue
+        if trips == 0 and cancels == 0:
+            continue
+        total = trips + cancels
+        rate = round(trips / total * 100) if total else 0
+        top_fish = sorted(fish_count.items(), key=lambda x: -x[1])[:5]
+        fish_list = []
+        for fish, cnt in top_fish:
+            cnt_list = fish_cnt_sum.get(fish) or []
+            avg = round(sum(cnt_list) / len(cnt_list), 1) if cnt_list else 0
+            sm_v = fish_size_max.get(fish, 0)
+            km_v = fish_kg_max.get(fish, 0)
+            fish_list.append({
+                "fish": fish, "count": cnt, "avg": avg,
+                "size_max": int(sm_v) if sm_v > 0 else None,
+                "kg_max": round(km_v, 1) if km_v > 0 else None,
+            })
+        result.append({
+            "month": month_key, "trips": trips, "cancels": cancels,
+            "rate": rate, "fish": fish_list,
+        })
+    return result
+
+
+def _ship_monthly_archive_section_html(months, ship_name, area, area_slug):
+    """月別釣果実績セクションの HTML を返す。
+    months: _ship_load_monthly_archive の出力（新→古順）
+    最初の3ヶ月を常時表示、4ヶ月目以降は <details> 折り畳み
+    months が空の場合は空文字列を返す（セクション全体省略）。
+    """
+    if not months:
+        return ""
+    import html as _html
+
+    def _month_jp(month_key):
+        try:
+            y, m = month_key.split("-")
+            return f"{int(y)}年{int(m)}月"
+        except Exception:
+            return month_key
+
+    def _card_html(m, is_recent=False):
+        rate = m["rate"]
+        rate_str = f'<strong>出船率{rate}%</strong>' if rate >= 90 else f'出船率{rate}%'
+        rows = []
+        for fi in m["fish"]:
+            stat_parts = [f'<span class="mfl-cnt">{fi["count"]}便</span>']
+            if fi["avg"] > 0:
+                stat_parts.append(f'平均{fi["avg"]}匹')
+            if fi["kg_max"] is not None:
+                stat_parts.append(f'最大{fi["kg_max"]}kg')
+            elif fi["size_max"] is not None:
+                stat_parts.append(f'最大{fi["size_max"]}cm')
+            rows.append(
+                f'<li class="mfl-row">'
+                f'<span class="mfl-fish">{_html.escape(fi["fish"])}</span>'
+                f'<span class="mfl-stat">{"・".join(stat_parts)}</span>'
+                f'</li>'
+            )
+        fish_html = "".join(rows) if rows else '<li class="mfl-row"><span class="mfl-fish" style="color:var(--muted)">釣果データなし</span></li>'
+        cls = "ma-card recent" if is_recent else "ma-card"
+        return (
+            f'<div class="{cls}">'
+            f'<div class="ma-head">'
+            f'<span class="ma-month">{_month_jp(m["month"])}</span>'
+            f'<span class="ma-rate">{rate_str}</span>'
+            f'</div>'
+            f'<div class="ma-trips">出船 {m["trips"]}便 / 欠航 {m["cancels"]}便</div>'
+            f'<ul class="ma-fish-list">{fish_html}</ul>'
+            f'</div>'
+        )
+
+    recent_3 = months[:3]
+    older = months[3:]
+
+    recent_html = "".join(_card_html(m, i == 0) for i, m in enumerate(recent_3))
+    collapse_html = ""
+    if older:
+        older_cards = "".join(_card_html(m) for m in older)
+        summary_text = (
+            f"過去{len(older)}ヶ月分の実績を表示"
+            f"（{_month_jp(older[0]['month'])}〜{_month_jp(older[-1]['month'])}）"
+        )
+        collapse_html = (
+            f'<details class="ma-collapse">'
+            f'<summary>{summary_text}</summary>'
+            f'<div class="ma-grid">{older_cards}</div>'
+            f'</details>'
+        )
+
+    archive_links = ""
+    if months:
+        top_fishes = []
+        for fi in months[0]["fish"][:2]:
+            top_fishes.append(fi["fish"])
+        link_parts = []
+        for fish in top_fishes:
+            fish_slug = _FISH_ROMAJI.get(fish)
+            if fish_slug and area_slug:
+                link_parts.append(
+                    f'<a href="../fish_area/{fish_slug}-{area_slug}.html">'
+                    f'{_html.escape(fish)} × {_html.escape(area)}</a>'
+                )
+        if area_slug:
+            link_parts.append(f'<a href="../area/{area_slug}.html">{_html.escape(area)}全体</a>')
+        for fish in top_fishes:
+            fish_slug = _FISH_ROMAJI.get(fish)
+            if fish_slug:
+                link_parts.append(f'<a href="../fish/{fish_slug}.html">関東の{_html.escape(fish)}釣果</a>')
+                break
+        if link_parts:
+            archive_links = (
+                f'<div class="ma-archive-links">'
+                f'<strong style="color:var(--accent)">関連ページ:</strong>'
+                f'{"".join(link_parts)}'
+                f'</div>'
+            )
+
+    return (
+        f'<div class="monthly-archive">'
+        f'<h3>📊 月別釣果実績</h3>'
+        f'<div class="ma-sub">過去{len(months)}ヶ月の出船・釣果便数データ（毎月1日に前月分を自動追加）</div>'
+        f'<div class="ma-grid">{recent_html}</div>'
+        f'{collapse_html}'
+        f'{archive_links}'
+        f'</div>'
+    )
 
 
 # 料金表記サニタイザ（船宿料金は変動するため一切記載しない・自社サブスク料金「月額500円」は別フローで保持）
@@ -12447,6 +12685,12 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         _ship_axis_dt = today_dt
     recent_html = _ship_recent_fish_html(catches, name, _ship_axis_dt, display_label=ship_today_label)
     area_rank_html = _ship_area_ranking_html(catches, area, name, today_dt)
+
+    # F1 (2026/05/22): 月別釣果実績セクション
+    # data/V2/*.csv から最大13ヶ月分を集計してカード表示 (直近3ヶ月 + 折り畳み)
+    _ma_area_slug = area_slug(area) if area else ""
+    _ma_months = _ship_load_monthly_archive(name, max_months=13)
+    monthly_archive_html = _ship_monthly_archive_section_html(_ma_months, name, area, _ma_area_slug)
 
     # H2 (T22): 空ページ判定 — 直近7日データがない場合のみ noindex
     # 旧: _SHIP_INFO 未登録でも noindex（T22 AdSense 対応）
@@ -12750,6 +12994,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 </div>
 
 <div class="ad-slot">広告スペース（レクタングル）</div>
+
+{monthly_archive_html}
 
 {faq_html}
 

@@ -62,7 +62,34 @@
 .contact-cta{background:var(--accent);color:#fff;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:16px}
 .contact-cta h3{font-size:14px;margin-bottom:8px}
 .contact-cta p{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px}
-.contact-cta a{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;margin:4px}</style>
+.contact-cta a{display:inline-block;padding:10px 24px;background:var(--cta);color:#fff;border-radius:20px;font-weight:700;font-size:13px;margin:4px}
+.monthly-archive{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.monthly-archive>h3{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.monthly-archive .ma-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.ma-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.ma-card{background:var(--bg);border-radius:8px;padding:12px;border-top:3px solid var(--accent)}
+.ma-card.recent{border-top-color:var(--cta);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ma-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.ma-head .ma-month{font-size:14px;font-weight:800;color:var(--accent)}
+.ma-head .ma-rate{font-size:10px;color:var(--muted)}
+.ma-head .ma-rate strong{color:var(--pos);font-weight:700}
+.ma-trips{font-size:11px;color:var(--sub);margin-bottom:8px}
+.ma-fish-list{font-size:12px;line-height:1.6;list-style:none;padding:0}
+.ma-fish-list .mfl-row{display:flex;justify-content:space-between;gap:6px;padding:4px 0;border-bottom:1px dotted var(--border)}
+.ma-fish-list .mfl-row:last-child{border-bottom:none}
+.ma-fish-list .mfl-fish{font-weight:700;color:var(--accent);flex:0 0 auto}
+.ma-fish-list .mfl-stat{font-size:11px;color:var(--sub);text-align:right}
+.ma-fish-list .mfl-stat .mfl-cnt{color:var(--cta);font-weight:700}
+.ma-collapse{margin-top:12px;border-top:1px dashed var(--border);padding-top:12px}
+.ma-collapse summary{cursor:pointer;font-size:12px;color:var(--accent);font-weight:700;padding:10px 14px;background:var(--bg);border-radius:6px;list-style:none;user-select:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s,color .2s}
+.ma-collapse summary::-webkit-details-marker{display:none}
+.ma-collapse summary::before{content:"\25B6";font-size:9px;transition:transform .2s}
+.ma-collapse[open] summary::before{transform:rotate(90deg)}
+.ma-collapse summary:hover{background:var(--accent);color:#fff}
+.ma-collapse[open] .ma-grid{margin-top:12px}
+.ma-archive-links{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+.ma-archive-links a{display:inline-block;padding:3px 8px;background:var(--bg);color:var(--accent);border-radius:10px;text-decoration:none;margin:2px;font-size:11px}
+.ma-archive-links a:hover{background:var(--accent);color:#fff}</style>
 </head>
 <body>
 <header><div class="inner"><h1><a href="/">船釣り<span>予想</span></a></h1><span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span></div></header><nav class="gnav"><a href="/">今日の釣果</a><a href="/fish/">魚種</a><a href="/area/">エリア</a><a href="/calendar.html">カレンダー</a><a href="/forecast/" class="prem">有料プラン</a></nav>
@@ -80,7 +107,7 @@
 
 <h2 class="st">基本情報</h2>
 <div class="info-box">
-<div class="info-row"><span class="info-label">エリア</span><span class="info-val"><a href="../area/ohara.html">大原港</a></span></div><div class="info-row"><span class="info-label">所在地</span><span class="info-val">〒298-0004 千葉県いすみ市大原10105-2</span></div><div class="info-row"><span class="info-label">電話</span><span class="info-val">0470-63-0085</span></div><div class="info-row"><span class="info-label">公式サイト</span><span class="info-val"><a href="https://d3matsueimaru.com/" rel="nofollow noopener" target="_blank">外部サイトを開く →</a></span></div><div class="info-row"><span class="info-label">主要対象魚</span><span class="info-val">イサキ ・ シマアジ ・ マダイ</span></div><div class="info-row"><span class="info-label">アクセス</span><span class="info-val">大原駅（JR外房線） / 駐車場: 有（無料）</span></div><div class="info-row"><span class="info-label">営業時間</span><span class="info-val">6:00～22:00</span></div><div class="info-row"><span class="info-label">定休日</span><span class="info-val">第1・3月曜日、お盆、年末年始、祭事</span></div><div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船4日 / 欠航0日 <span style="color:var(--muted);font-size:11px">(当サイトのクロール記録ベース・実出船日数とは異なります)</span></span></div>
+<div class="info-row"><span class="info-label">エリア</span><span class="info-val"><a href="../area/ohara.html">大原港</a></span></div><div class="info-row"><span class="info-label">所在地</span><span class="info-val">〒298-0004 千葉県いすみ市大原10105-2</span></div><div class="info-row"><span class="info-label">電話</span><span class="info-val">0470-63-0085</span></div><div class="info-row"><span class="info-label">公式サイト</span><span class="info-val"><a href="https://d3matsueimaru.com/" rel="nofollow noopener" target="_blank">外部サイトを開く →</a></span></div><div class="info-row"><span class="info-label">主要対象魚</span><span class="info-val">イサキ ・ シマアジ ・ マダイ</span></div><div class="info-row"><span class="info-label">主要ポイント</span><span class="info-val">大原沖（直近実績より）</span></div><div class="info-row"><span class="info-label">アクセス</span><span class="info-val">大原駅（JR外房線） / 駐車場: 有（無料）</span></div><div class="info-row"><span class="info-label">営業時間</span><span class="info-val">6:00～22:00</span></div><div class="info-row"><span class="info-label">定休日</span><span class="info-val">第1・3月曜日、お盆、年末年始、祭事</span></div><div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船4日 / 欠航0日 <span style="color:var(--muted);font-size:11px">(当サイトのクロール記録ベース・実出船日数とは異なります)</span></span></div>
 </div>
 
 <h2 class="st">船舶・設備</h2><div class="spec-card"><div class="spec-grid"><div class="sg-item"><strong>全長</strong>19 m</div><div class="sg-item"><strong>総トン数</strong>14 t</div><div class="sg-item"><strong>定員</strong>26 名</div></div><div class="facility-tags" style="margin-top:12px"><span class="ft">トイレ</span><span class="ft">キャビン</span><span class="ft">冷蔵庫</span><span class="ft">イケス</span><span class="ft">電子レンジ</span><span class="ft">冷凍庫</span><span class="ft">ポット</span><span class="ft">12V電源</span><span class="ft">24V電源</span><span class="ft">100V電源</span></div></div>
@@ -90,9 +117,9 @@
 <h2 class="st">季節別の狙い物</h2><div class="spec-card"><div class="season-grid"><div class="sg"><div class="sg-label">秋 (9〜11月)</div><div class="sg-fish">ヒラメシーズン（9月～5月GW）</div></div><div class="sg"><div class="sg-label">冬 (12〜2月)</div><div class="sg-fish">ヒラメシーズン（9月～5月GW）</div></div></div></div>
 
 <h2 class="st">最近の釣果実績（直近7日・船宿実績）</h2>
-<div class="fish-section"><h3><span class="h-fish"><img src="../assets/fish/isaki/isaki_emoji.webp" alt="イサキ" class="fs-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display='none'">イサキ</span><span class="h-range">41〜50匹</span></h3><div class="chart-bars"><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb weekend" style="height:100%"></div><div class="cb weekend" style="height:100%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:82%"></div><div class="cb today" style="height:100%"></div></div><div class="chart-labels"><span>5/14</span><span>5/15</span><span class="weekend">5/16</span><span class="weekend">5/17</span><span>5/18</span><span>5/19</span><span class="today">5/20</span></div></div>
+<div class="fish-section"><h3><span class="h-fish"><img src="../assets/fish/isaki/isaki_emoji.webp" alt="イサキ" class="fs-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display='none'">イサキ</span><span class="h-range">41〜50匹</span></h3><div class="chart-bars"><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb weekend" style="height:100%"></div><div class="cb weekend" style="height:100%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:82%"></div><div class="cb today" style="height:100%"></div></div><div class="chart-labels"><span>5/14</span><span>5/15</span><span class="weekend">5/16</span><span class="weekend">5/17</span><span>5/18</span><span>5/19</span><span class="today">5/20</span></div><div class="fish-meta"><strong>主要ポイント:</strong> 大原沖</div></div>
 <div class="fish-section"><h3><span class="h-fish"><img src="../assets/fish/shimaaji/shimaaji_emoji.webp" alt="シマアジ" class="fs-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display='none'">シマアジ</span><span class="h-range">2〜9匹</span></h3><div class="chart-bars"><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb weekend" style="height:5%"></div><div class="cb weekend" style="height:22%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:100%"></div><div class="cb today" style="height:22%"></div></div><div class="chart-labels"><span>5/14</span><span>5/15</span><span class="weekend">5/16</span><span class="weekend">5/17</span><span>5/18</span><span>5/19</span><span class="today">5/20</span></div></div>
-<div class="fish-section"><h3><span class="h-fish"><img src="../assets/fish/madai/madai_emoji.webp" alt="マダイ" class="fs-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display='none'">マダイ</span><span class="h-range">9匹</span></h3><div class="chart-bars"><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb weekend" style="height:100%"></div><div class="cb weekend" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb today" style="height:5%"></div></div><div class="chart-labels"><span>5/14</span><span>5/15</span><span class="weekend">5/16</span><span class="weekend">5/17</span><span>5/18</span><span>5/19</span><span class="today">5/20</span></div></div>
+<div class="fish-section"><h3><span class="h-fish"><img src="../assets/fish/madai/madai_emoji.webp" alt="マダイ" class="fs-emoji" width="18" height="18" loading="lazy" decoding="async" onerror="this.style.display='none'">マダイ</span><span class="h-range">9匹</span></h3><div class="chart-bars"><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb weekend" style="height:100%"></div><div class="cb weekend" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb" style="height:5%"></div><div class="cb today" style="height:5%"></div></div><div class="chart-labels"><span>5/14</span><span>5/15</span><span class="weekend">5/16</span><span class="weekend">5/17</span><span>5/18</span><span>5/19</span><span class="today">5/20</span></div><div class="fish-meta"><strong>主要ポイント:</strong> 大原沖</div></div>
 
 <div class="ad-slot">広告スペース（レクタングル）</div>
 
@@ -109,7 +136,7 @@
 </div>
 </div>
 
-<div class="rank-box"><h3>大原港エリアの船宿ランキング（直近30日・釣果件数）</h3><div class="rk"><span class="rk-rank">1位</span><span class="rk-name"><a href="fuji-maru-oohara.html">富士丸</a></span><span class="rk-pct">18件</span></div><div class="rk"><span class="rk-rank">2位</span><span class="rk-name"><a href="yusei-maru.html">勇盛丸</a></span><span class="rk-pct">15件</span></div><div class="rk"><span class="rk-rank">3位</span><span class="rk-name"><a href="tsuru-maru.html">つる丸</a></span><span class="rk-pct">12件</span></div><div class="rk"><span class="rk-rank">4位</span><span class="rk-name"><a href="shoei-maru-oohara.html">松栄丸</a></span><span class="rk-pct">12件</span></div><div class="rk"><span class="rk-rank">5位</span><span class="rk-name"><a href="yoshi-maru-oohara.html">義丸（大原）</a></span><span class="rk-pct">12件</span></div></div>
+<div class="rank-box"><h3>大原港エリアの船宿ランキング（直近30日・釣果件数）</h3><div class="rk"><span class="rk-rank">1位</span><span class="rk-name"><a href="fuji-maru-oohara.html">富士丸</a></span><span class="rk-pct">18件</span></div><div class="rk"><span class="rk-rank">2位</span><span class="rk-name"><a href="yusei-maru.html">勇盛丸</a></span><span class="rk-pct">15件</span></div><div class="rk"><span class="rk-rank">3位</span><span class="rk-name"><a href="shoei-maru-oohara.html">松栄丸</a></span><span class="rk-pct">14件</span></div><div class="rk"><span class="rk-rank">4位</span><span class="rk-name"><a href="tsuru-maru.html">つる丸</a></span><span class="rk-pct">12件</span></div><div class="rk"><span class="rk-rank">5位</span><span class="rk-name"><a href="yoshi-maru-oohara.html">義丸（大原）</a></span><span class="rk-pct">12件</span></div></div>
 
 <div class="contact-cta">
 <h3>第三松栄丸で釣行を計画する</h3>
@@ -119,6 +146,8 @@
 
 <div class="ad-slot">広告スペース（レクタングル）</div>
 
+<div class="monthly-archive"><h3>📊 月別釣果実績</h3><div class="ma-sub">過去5ヶ月の出船・釣果便数データ（毎月1日に前月分を自動追加）</div><div class="ma-grid"><div class="ma-card recent"><div class="ma-head"><span class="ma-month">2026年5月</span><span class="ma-rate"><strong>出船率100%</strong></span></div><div class="ma-trips">出船 20便 / 欠航 0便</div><ul class="ma-fish-list"><li class="mfl-row"><span class="mfl-fish">イサキ</span><span class="mfl-stat"><span class="mfl-cnt">16便</span>・平均27.3匹・最大2.7kg</span></li><li class="mfl-row"><span class="mfl-fish">シマアジ</span><span class="mfl-stat"><span class="mfl-cnt">3便</span>・平均2.3匹・最大0.7kg</span></li><li class="mfl-row"><span class="mfl-fish">マダイ</span><span class="mfl-stat"><span class="mfl-cnt">1便</span>・平均5.0匹・最大6.3kg</span></li></ul></div><div class="ma-card"><div class="ma-head"><span class="ma-month">2026年4月</span><span class="ma-rate"><strong>出船率100%</strong></span></div><div class="ma-trips">出船 13便 / 欠航 0便</div><ul class="ma-fish-list"><li class="mfl-row"><span class="mfl-fish">ヒラメ</span><span class="mfl-stat"><span class="mfl-cnt">13便</span>・平均1.1匹・最大4.0kg</span></li></ul></div><div class="ma-card"><div class="ma-head"><span class="ma-month">2026年3月</span><span class="ma-rate"><strong>出船率100%</strong></span></div><div class="ma-trips">出船 21便 / 欠航 0便</div><ul class="ma-fish-list"><li class="mfl-row"><span class="mfl-fish">ヒラメ</span><span class="mfl-stat"><span class="mfl-cnt">21便</span>・平均1.3匹・最大6.4kg</span></li></ul></div></div><details class="ma-collapse"><summary>過去2ヶ月分の実績を表示（2026年2月〜2025年5月）</summary><div class="ma-grid"><div class="ma-card"><div class="ma-head"><span class="ma-month">2026年2月</span><span class="ma-rate"><strong>出船率100%</strong></span></div><div class="ma-trips">出船 14便 / 欠航 0便</div><ul class="ma-fish-list"><li class="mfl-row"><span class="mfl-fish">ヒラメ</span><span class="mfl-stat"><span class="mfl-cnt">14便</span>・平均1.2匹・最大7.0kg</span></li></ul></div><div class="ma-card"><div class="ma-head"><span class="ma-month">2025年5月</span><span class="ma-rate"><strong>出船率100%</strong></span></div><div class="ma-trips">出船 2便 / 欠航 0便</div><ul class="ma-fish-list"><li class="mfl-row"><span class="mfl-fish">イサキ</span><span class="mfl-stat"><span class="mfl-cnt">2便</span>・平均43.5匹・最大35cm</span></li></ul></div></div></details><div class="ma-archive-links"><strong style="color:var(--accent)">関連ページ:</strong><a href="../fish_area/isaki-ohara.html">イサキ × 大原港</a><a href="../fish_area/shima-aji-ohara.html">シマアジ × 大原港</a><a href="../area/ohara.html">大原港全体</a><a href="../fish/isaki.html">関東のイサキ釣果</a></div></div>
+
 
 
 </div>
@@ -126,7 +155,7 @@
 <footer>
 <a href="../pages/privacy.html">プライバシーポリシー</a> · <a href="../pages/terms.html">利用規約</a> · <a href="../pages/about.html">サイトについて</a><br>
 <div style="margin-top:6px"><a href="../">トップ</a> · <a href="../area/ohara.html">大原港</a></div>
-<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/22 19:34</span>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/22 21:31</span>
 </footer>
 
 <div class="bn"><a href="/"><span class="i">🎣</span>釣果</a><a href="/fish/"><span class="i">🐟</span>魚種</a><a href="/area/"><span class="i">📍</span>エリア</a><a href="/calendar.html"><span class="i">📅</span>カレンダー</a><a href="/forecast/" class="prem"><span class="i">⭐</span>有料</a></div>
