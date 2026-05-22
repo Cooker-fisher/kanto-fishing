@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[MOCKUP] 幸丸（飯岡港）の月別釣果実績｜5月マダイ28便・出船率100% | 船釣り予想</title>
+<meta name="description" content="[MOCKUP] 幸丸（飯岡港）月別釣果データ。2026年5月: マダイ28便・平均4.2匹・最大7.1kg。13か月分の蓄積データ + 週次傾向レポート。">
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+/* === MOCKUP MARKER === */
+body { position: relative; }
+body::before {
+  content: "🔧 MOCKUP rev2 - design/V2/mockup-ship-monthly-weekly.html";
+  position: fixed; top: 0; right: 0; z-index: 9999;
+  background: #d4a017; color: #fff; padding: 4px 12px; font-size: 11px; font-weight: 700;
+  border-bottom-left-radius: 6px;
+}
+
+/* === 既存 ship hero（変更なし） === */
+.ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2,#1a3d5c));color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+
+/* === 🆕 週次レポート（新鮮・自動更新） === */
+.weekly-report {
+  background: linear-gradient(135deg, #fff8e1, #fff);
+  border-left: 4px solid var(--cta, #e85d04);
+  border-radius: var(--r, 10px);
+  padding: 16px 18px;
+  margin: 14px 0;
+  position: relative;
+}
+.weekly-report .wr-label {
+  position: absolute; top: -10px; left: 14px;
+  background: var(--cta, #e85d04); color: #fff;
+  font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px;
+  letter-spacing: .5px;
+}
+.weekly-report .wr-period {
+  font-size: 11px; color: var(--muted, #8a96a4); margin-bottom: 8px; margin-top: 4px;
+}
+.weekly-report .wr-body {
+  font-size: 13px; line-height: 1.75; color: var(--text, #1a2332);
+}
+.weekly-report .wr-body strong {
+  color: var(--accent, #0d2b4a); background: rgba(232,93,4,.1); padding: 1px 4px; border-radius: 3px;
+}
+.weekly-report .wr-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border, #d0d8e0);
+}
+.weekly-report .wr-stat {
+  text-align: center; padding: 6px 4px;
+}
+.weekly-report .wr-stat .wrs-n {
+  font-size: 18px; font-weight: 800; color: var(--cta, #e85d04); line-height: 1;
+}
+.weekly-report .wr-stat .wrs-l {
+  font-size: 10px; color: var(--muted, #8a96a4); margin-top: 4px;
+}
+
+/* === 🆕 月別釣果実績（蓄積・固定） === */
+.monthly-archive {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #d0d8e0);
+  border-radius: var(--r, 10px);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.monthly-archive > h3 {
+  font-size: 14px; font-weight: 700; color: var(--accent, #0d2b4a);
+  margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
+}
+.monthly-archive .ma-sub {
+  font-size: 11px; color: var(--muted, #8a96a4); margin-bottom: 14px;
+}
+.ma-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px;
+}
+.ma-card {
+  background: var(--bg, #f5f7fa); border-radius: 8px; padding: 12px;
+  border-top: 3px solid var(--accent, #0d2b4a);
+}
+.ma-card.recent { border-top-color: var(--cta, #e85d04); background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+.ma-head {
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;
+}
+.ma-head .ma-month {
+  font-size: 14px; font-weight: 800; color: var(--accent, #0d2b4a);
+}
+.ma-head .ma-rate {
+  font-size: 10px; color: var(--muted, #8a96a4);
+}
+.ma-head .ma-rate strong { color: var(--pos, #1a9d56); font-weight: 700; }
+.ma-trips {
+  font-size: 11px; color: var(--sub, #5a6a7a); margin-bottom: 8px;
+}
+.ma-fish-list {
+  font-size: 12px; line-height: 1.6;
+}
+.ma-fish-list .mfl-row {
+  display: flex; justify-content: space-between; gap: 6px;
+  padding: 4px 0; border-bottom: 1px dotted var(--border, #d0d8e0);
+}
+.ma-fish-list .mfl-row:last-child { border-bottom: none; }
+.ma-fish-list .mfl-fish {
+  font-weight: 700; color: var(--accent, #0d2b4a); flex: 0 0 auto;
+}
+.ma-fish-list .mfl-stat {
+  font-size: 11px; color: var(--sub, #5a6a7a); text-align: right;
+}
+.ma-fish-list .mfl-stat .mfl-cnt { color: var(--cta, #e85d04); font-weight: 700; }
+
+/* === 月別アーカイブ 折り畳み === */
+.ma-collapse {
+  margin-top: 12px;
+  border-top: 1px dashed var(--border, #d0d8e0);
+  padding-top: 12px;
+}
+.ma-collapse summary {
+  cursor: pointer; font-size: 12px; color: var(--accent, #0d2b4a);
+  font-weight: 700; padding: 10px 14px; background: var(--bg, #f5f7fa);
+  border-radius: 6px; list-style: none; user-select: none;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background .2s, color .2s;
+}
+.ma-collapse summary::-webkit-details-marker { display: none; }
+.ma-collapse summary::before { content: "▶"; font-size: 9px; transition: transform .2s; }
+.ma-collapse[open] summary::before { transform: rotate(90deg); }
+.ma-collapse summary:hover { background: var(--accent, #0d2b4a); color: #fff; }
+.ma-collapse[open] .ma-grid { margin-top: 12px; }
+
+/* === 月別アーカイブ用 内部リンク === */
+.ma-archive-links {
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border, #d0d8e0);
+  font-size: 11px; color: var(--muted, #8a96a4);
+}
+.ma-archive-links a {
+  display: inline-block; padding: 3px 8px; background: var(--bg, #f5f7fa);
+  color: var(--accent, #0d2b4a); border-radius: 10px; text-decoration: none;
+  margin: 2px; font-size: 11px;
+}
+.ma-archive-links a:hover { background: var(--accent, #0d2b4a); color: #fff; }
+
+/* === 仕様メモ === */
+.spec-note {
+  background: #f0f4f8; border-left: 4px solid #0d2b4a; padding: 12px 16px;
+  font-size: 12px; line-height: 1.7; color: #1a2332; margin: 20px 14px;
+}
+.spec-note h4 { font-size: 13px; margin-bottom: 6px; color: #0d2b4a; }
+.spec-note code { background: #fff; padding: 1px 6px; border-radius: 3px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div class="spec-note">
+<h4>📋 このページの目的</h4>
+ship/*.html（78 船宿全件）に追加する 2 セクションのモックアップ。<br>
+データソース: <code>data/V2/YYYY-MM.csv</code>（24 ヶ月分蓄積済）+ <code>catches_raw.json</code> 直近7日。<br>
+crawler.py の <code>_ship_build_page_html()</code> 内に <code>_ship_weekly_report_section()</code> + <code>_ship_monthly_archive_section()</code> を追加し、各船宿の HTML 生成時に呼び出す。<br>
+<br>
+<strong>rev2 修正:</strong> ①月別実績は直近3ヶ月のみ表示・以降は折り畳み ②配置を予約CTAの下・FAQの上に変更 ③「件数」→「便数」に統一
+</div>
+
+<!-- ============================================================
+     既存 HERO（変更なし・参考表示）
+     ============================================================ -->
+<div class="ship-hero">
+  <h2>幸丸</h2>
+  <div class="sh-area">飯岡港</div>
+  <div class="sh-overall">直近30日の出船率: 86%（出船6日 / 欠航1日）</div>
+</div>
+
+<div class="c">
+
+<!-- ============================================================
+     🆕 SECTION 1: 週次レポート（鮮度・毎週月曜 crawler 走行時に自動更新）
+     位置: HERO 直下・船宿の「最新の傾向」として最も目立つ位置
+     データ源: 直近7日 catches + weather（テンプレベース自動生成）
+     ============================================================ -->
+<div class="weekly-report">
+  <span class="wr-label">今週の傾向</span>
+  <div class="wr-period">2026年5月15日〜5月21日（7日間）</div>
+  <div class="wr-body">
+    今週は7日中6日出船し<strong>出船率86%</strong>。気温18-22°C・東風優勢で穏やかな海況が続きました。
+    主な釣果は<strong>マダイ12便</strong>（平均5.2匹・最大1.2kg・サイズ45-65cm）、
+    <strong>アマダイ3便</strong>（平均2匹・サイズ40-45cm）。
+    潮回りは中潮中心で活性は中程度。
+    週末（5/19-5/20）は南西風で時化模様、5/19のみ早上がりとなりました。
+    来週は天候安定・水温上昇予測で、<strong>マダイのノッコミ後期</strong>に期待がかかります。
+  </div>
+  <div class="wr-stats">
+    <div class="wr-stat"><div class="wrs-n">6/7</div><div class="wrs-l">出船日数</div></div>
+    <div class="wr-stat"><div class="wrs-n">15</div><div class="wrs-l">釣果便数</div></div>
+    <div class="wr-stat"><div class="wrs-n">5.2匹</div><div class="wrs-l">マダイ平均</div></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     既存セクション群（基本情報・直近7日チャート・エリア順位・料金プラン・予約CTA）
+     ※ mockup では省略
+     ============================================================ -->
+<div style="background:#eee;padding:14px;border-radius:8px;text-align:center;color:#888;font-size:13px;margin:14px 0">
+  〜 既存セクション（基本情報BOX・直近7日チャート・エリア内順位・料金プラン・予約CTA）〜<br>
+  <small>mockup では省略 — 変更なし</small>
+</div>
+
+<!-- ============================================================
+     🆕 SECTION 2: 月別釣果実績（蓄積・固定）
+     位置: 予約CTA の下・FAQ の上（rev2 修正）
+     データ源: data/V2/YYYY-MM.csv 24か月分
+     直近3ヶ月のみ常時表示・それ以降は折り畳み（rev2 修正）
+     ============================================================ -->
+<div class="monthly-archive">
+  <h3>📊 月別釣果実績</h3>
+  <div class="ma-sub">過去13ヶ月の出船・釣果便数データ（毎月1日に前月分を自動追加）</div>
+
+  <!-- 直近3ヶ月のみ常時表示 -->
+  <div class="ma-grid">
+    <!-- 最新月（強調表示） -->
+    <div class="ma-card recent">
+      <div class="ma-head">
+        <span class="ma-month">2026年5月</span>
+        <span class="ma-rate"><strong>出船率100%</strong></span>
+      </div>
+      <div class="ma-trips">出船 30便 / 欠航 0便</div>
+      <ul class="ma-fish-list" style="list-style:none;padding:0">
+        <li class="mfl-row">
+          <span class="mfl-fish">マダイ</span>
+          <span class="mfl-stat"><span class="mfl-cnt">28便</span>・平均4.2匹・最大7.1kg</span>
+        </li>
+        <li class="mfl-row">
+          <span class="mfl-fish">アマダイ</span>
+          <span class="mfl-stat"><span class="mfl-cnt">2便</span>・平均5.0匹・最大42cm</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 前月 -->
+    <div class="ma-card">
+      <div class="ma-head">
+        <span class="ma-month">2026年4月</span>
+        <span class="ma-rate">出船率40%</span>
+      </div>
+      <div class="ma-trips">出船 23便 / 欠航 34便</div>
+      <ul class="ma-fish-list" style="list-style:none;padding:0">
+        <li class="mfl-row">
+          <span class="mfl-fish">マダイ</span>
+          <span class="mfl-stat"><span class="mfl-cnt">22便</span>・平均5.1匹・最大4.5kg</span>
+        </li>
+        <li class="mfl-row">
+          <span class="mfl-fish">アマダイ</span>
+          <span class="mfl-stat"><span class="mfl-cnt">1便</span>・平均4.0匹・最大40cm</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 前々月 -->
+    <div class="ma-card">
+      <div class="ma-head">
+        <span class="ma-month">2026年3月</span>
+        <span class="ma-rate"><strong>出船率91%</strong></span>
+      </div>
+      <div class="ma-trips">出船 79便 / 欠航 8便</div>
+      <ul class="ma-fish-list" style="list-style:none;padding:0">
+        <li class="mfl-row">
+          <span class="mfl-fish">マダイ</span>
+          <span class="mfl-stat"><span class="mfl-cnt">75便</span>・平均6.8匹・最大8.2kg</span>
+        </li>
+        <li class="mfl-row">
+          <span class="mfl-fish">アマダイ</span>
+          <span class="mfl-stat"><span class="mfl-cnt">4便</span>・平均3.5匹・最大48cm</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4ヶ月目以降は折り畳み -->
+  <details class="ma-collapse">
+    <summary>過去10ヶ月分の実績を表示（2026年2月〜2025年5月）</summary>
+    <div class="ma-grid">
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2026年2月</span>
+          <span class="ma-rate"><strong>出船率94%</strong></span>
+        </div>
+        <div class="ma-trips">出船 65便 / 欠航 4便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">58便</span>・平均7.2匹・最大9.5kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">7便</span>・平均4.1匹・最大52cm</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2026年1月</span>
+          <span class="ma-rate"><strong>出船率88%</strong></span>
+        </div>
+        <div class="ma-trips">出船 52便 / 欠航 7便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">48便</span>・平均6.5匹・最大8.8kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">3便</span>・平均3.0匹・最大45cm</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">クロムツ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">1便</span>・平均5.0匹</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年12月</span>
+          <span class="ma-rate"><strong>出船率78%</strong></span>
+        </div>
+        <div class="ma-trips">出船 38便 / 欠航 11便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">34便</span>・平均5.5匹・最大10.2kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">4便</span>・平均2.8匹・最大46cm</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年11月</span>
+          <span class="ma-rate"><strong>出船率96%</strong></span>
+        </div>
+        <div class="ma-trips">出船 89便 / 欠航 4便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">82便</span>・平均7.8匹・最大12.5kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">7便</span>・平均4.2匹・最大55cm</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年10月</span>
+          <span class="ma-rate"><strong>出船率93%</strong></span>
+        </div>
+        <div class="ma-trips">出船 75便 / 欠航 6便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">68便</span>・平均8.5匹・最大11.0kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">5便</span>・平均5.2匹・最大50cm</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">イサキ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">2便</span>・平均6.0匹</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年9月</span>
+          <span class="ma-rate"><strong>出船率89%</strong></span>
+        </div>
+        <div class="ma-trips">出船 71便 / 欠航 9便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">65便</span>・平均9.2匹・最大9.8kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">6便</span>・平均4.8匹・最大52cm</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年8月</span>
+          <span class="ma-rate"><strong>出船率85%</strong></span>
+        </div>
+        <div class="ma-trips">出船 62便 / 欠航 11便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">55便</span>・平均8.8匹・最大9.0kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">イサキ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">5便</span>・平均7.5匹</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年7月</span>
+          <span class="ma-rate"><strong>出船率82%</strong></span>
+        </div>
+        <div class="ma-trips">出船 58便 / 欠航 13便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">51便</span>・平均7.2匹・最大8.5kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">イサキ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">4便</span>・平均6.8匹</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年6月</span>
+          <span class="ma-rate"><strong>出船率90%</strong></span>
+        </div>
+        <div class="ma-trips">出船 81便 / 欠航 9便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">76便</span>・平均6.5匹・最大7.8kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">3便</span>・平均3.8匹・最大44cm</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ma-card">
+        <div class="ma-head">
+          <span class="ma-month">2025年5月</span>
+          <span class="ma-rate"><strong>出船率97%</strong></span>
+        </div>
+        <div class="ma-trips">出船 67便 / 欠航 2便</div>
+        <ul class="ma-fish-list" style="list-style:none;padding:0">
+          <li class="mfl-row">
+            <span class="mfl-fish">マダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">63便</span>・平均5.8匹・最大9.2kg</span>
+          </li>
+          <li class="mfl-row">
+            <span class="mfl-fish">アマダイ</span>
+            <span class="mfl-stat"><span class="mfl-cnt">3便</span>・平均4.0匹・最大46cm</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </details>
+
+  <div class="ma-archive-links">
+    <strong style="color:var(--accent, #0d2b4a)">関連ページ:</strong>
+    <a href="../fish_area/madai-iioka.html">マダイ × 飯岡港</a>
+    <a href="../fish_area/amadai-iioka.html">アマダイ × 飯岡港</a>
+    <a href="../area/iioka.html">飯岡港全体</a>
+    <a href="../fish/madai.html">関東のマダイ釣果</a>
+  </div>
+</div>
+
+<!-- ============================================================
+     既存セクション群（FAQ・座席設備・関連リンク等）
+     ※ mockup では省略
+     ============================================================ -->
+<div style="background:#eee;padding:14px;border-radius:8px;text-align:center;color:#888;font-size:13px;margin:14px 0">
+  〜 既存セクション（FAQ・座席設備・関連リンク等）〜<br>
+  <small>mockup では省略 — 変更なし</small>
+</div>
+
+</div>
+
+<!-- ============================================================
+     技術仕様メモ（実装者向け）
+     ============================================================ -->
+<div class="spec-note">
+<h4>🔧 実装仕様（crawler.py への追加）</h4>
+
+<strong>1. 関数追加（テンプレート再利用のため独立化）</strong><br>
+<code>_ship_weekly_report_section(ship_name, area, today_dt, catches_7d, weather_7d) -> str</code><br>
+<code>_ship_monthly_archive_section(ship_name, months_data: list[dict], today_dt) -> str</code><br>
+
+<br>
+<strong>2. データ取得</strong><br>
+・<code>_load_ship_monthly_archive(ship_name, max_months=13)</code> — data/V2/*.csv から月別集計<br>
+・<code>_generate_weekly_report_text(ship_name, catches_7d, weather_7d)</code> — テンプレート文章生成<br>
+
+<br>
+<strong>3. 配置順（rev2）</strong><br>
+HERO → 週次レポート → 基本情報BOX → 直近7日チャート → エリア内順位 → 料金プラン → 予約CTA → <strong>📊 月別釣果実績</strong>（直近3ヶ月 + 折り畳み）→ FAQ → 座席設備<br>
+
+<br>
+<strong>4. 「便数」表記の根拠</strong><br>
+T29 commit 92b160804 で「件→便（同日複数便での重複カウント明示）」を確立済み・全サイトで統一<br>
+
+<br>
+<strong>5. SEO 効果</strong><br>
+・本文 ~2000字 → ~8000字（コンテンツ量 4倍）<br>
+・「{船宿名} {YYYY年MM月} 釣果」ロングテール 13個獲得<br>
+・新しい月が data/V2 に追加されると自動でカード追加（メンテ不要）<br>
+・週次レポートは毎週月曜 crawler 走行時に自動更新（鮮度シグナル）
+</div>
+
+</body>
+</html>
