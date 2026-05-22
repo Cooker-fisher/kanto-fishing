@@ -36,19 +36,22 @@ const DEFAULT_PARAMS = {
   hookType: "madai",
   hookSize: 10,
 
-  // ビシ落としこみ位置: 指示棚 +dropOffsetM が hook 初期目標 (default = タナ下 5m)
-  dropOffsetM: 5,
+  // ビシ落としこみ位置: 指示棚 +dropOffsetM が hook 初期目標 (default = タナ下 7m)
+  // 実釣セオリー (SHIMANO/TSURI HACK): タナ下 ハリス長分 (6-10m) から始めて指示棚へ
+  dropOffsetM: 7,
 
   ganDamaPos: "mid",
   ganDamaPct: 50,  // ガン玉位置: ビシ側(0)→針側(100) % で連続指定
   ganDamaSize: 0.2,
 
-  // 関東コマセマダイ標準: 70-80cm 刻みで3回しゃくり、合計約5m 巻き上げ、3分待ち
+  // 関東コマセマダイ標準 (SHIMANO/TSURI HACK):
+  //   タナ下 ハリス長分(7m) から大きく2回しゃくり → 指示棚へ → 食わせ待ち1-3分
+  //   2回 × 3.5m = 7m 巻き上げ → dropOffsetM=7 から cage がタナに到達
   shakuriStrokeCm: 80,
-  shakuriCountPerTrigger: 1,
-  makiAmount: 1.0,
+  shakuriCountPerTrigger: 2,
+  makiAmount: 3.5,
   dropAmount: 0.5,
-  shakuriInterval: 30.0,
+  shakuriInterval: 60.0,
   autoShakuri: false,
   // 落とし込み速度はビシ号数から物理計算（dropSpeed は physicsParams で導出）
   // うねり (海況セクション)
@@ -757,15 +760,19 @@ function App() {
           accumRef.current -= n / rate;
           const rs = rigStateRef.current;
           const cage = { x: rs.shakuriOffsetX, y: getCageY() };
+          // 漏れ粒子も komaseSize/smoke 連動に (physics.jsx simulateHeadless と一致)
+          const _sz = SimPhysics.komaseSizeProps(pp);
+          const _sm = SimPhysics.smokeLevelProps(pp);
           for (let i = 0; i < n; i++) {
             if (particlesRef.current.length >= MAX_PARTICLES) break;
             particlesRef.current.push({
               x: cage.x + (Math.random()-0.5)*0.2,
               y: cage.y + (Math.random()-0.5)*0.2 + 0.1,
               vx: 0, vy: 0,
-              life: 0.85,
-              size: 0.5 + Math.random()*0.6,
-              terminal: 0.06 + Math.random()*0.06,
+              life: 0.85 * _sz.lifeMul * _sm.lifeMul,
+              size: _sz.sizeBase * (0.7 + Math.random()*0.4),
+              terminal: _sz.terminalBase * _sm.terminalMul * (0.85 + Math.random()*0.3),
+              alpha: _sm.alphaMul,
             });
             metricsRef.current.totalSpawned += 1;
           }
@@ -789,7 +796,8 @@ function App() {
       );
 
       // メトリクス (圏内 1.8m = 魚が匂いで感知する範囲)
-      const near = SimPhysics.nearHook(particlesRef.current, rig.hook, 1.8);
+      // 同調判定半径 3.0m: physics.jsx simulateHeadless と一致 (実釣感覚)
+      const near = SimPhysics.nearHook(particlesRef.current, rig.hook, 3.0);
       const total = particlesRef.current.length;
       const ratio = total > 0 ? near / total * 100 : 0;
       const a = 0.04;

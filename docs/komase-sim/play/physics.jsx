@@ -105,10 +105,11 @@ window.SimPhysics = (function() {
     return 0.005 + cageUpper(params) * 0.16 * strokeFactor;
   }
   // 連続漏れ (毎秒) 容量比 — 下窓開けると漂う
-  //   下窓 0.15 で 0.012/s → 約 80秒で1ビシ空 (実釣で 1-2分での持続放出感覚)
-  //   下窓 0.50 で 0.04/s → 25秒で1ビシ
+  //   係数 0.04 に修正 (旧 0.08 だと 1サイクル3-5分でコマセ無くなる現場感覚と乖離)
+  //   下窓 0.15 で 0.006/s → 約 165秒(2.75分)で1ビシ空 → ユーザー基準「1サイクル3-5分で消費」に整合
+  //   下窓 0.30 で 0.012/s → 約 80秒で1ビシ空 (活性高で速回しする時のパターン)
   function leakRate(params) {
-    return cageLower(params) * 0.08;
+    return cageLower(params) * 0.04;
   }
 
   // ====== コマセ粒 物性（オキアミサイズ / 煙幕度） ======
@@ -120,10 +121,14 @@ window.SimPhysics = (function() {
     "3L": { terminalBase: 0.22, sizeBase: 1.35, lifeMul: 1.20 },
   };
   // 煙幕度: 粒子の寿命 / 拡散性 / 沈降抗力 / 視覚透明度
+  //   lifeMul 2.5/3.5/4.5: 粒子が付け餌位置(cage から ハリス長 7m 下)まで届く時間を確保
+  //     終端速度 13cm/s で 7m沈下 ≈ 54秒。寿命 2.5*40s=100s で余裕を持って到達
+  //   terminalMul 0.85/0.55/0.35: 沈下を緩めてタナ帯に長く滞留 (旧 1.0/0.65/0.40)
+  //   旧 weak=1.0+1.0 だと 40秒で消えて付け餌に届かなかった
   const SMOKE_LEVEL_PROPS = {
-    "weak":   { lifeMul: 1.0, diffuse: 0.025, terminalMul: 1.00, alphaMul: 1.0 },
-    "medium": { lifeMul: 1.6, diffuse: 0.055, terminalMul: 0.65, alphaMul: 0.78 },
-    "strong": { lifeMul: 2.3, diffuse: 0.095, terminalMul: 0.40, alphaMul: 0.55 },
+    "weak":   { lifeMul: 2.5, diffuse: 0.025, terminalMul: 0.85, alphaMul: 1.0 },
+    "medium": { lifeMul: 3.5, diffuse: 0.055, terminalMul: 0.55, alphaMul: 0.78 },
+    "strong": { lifeMul: 4.5, diffuse: 0.095, terminalMul: 0.35, alphaMul: 0.55 },
   };
   function komaseSizeProps(params) {
     return KOMASE_SIZE_PROPS[params.komaseSize] || KOMASE_SIZE_PROPS["L"];
@@ -600,15 +605,21 @@ window.SimPhysics = (function() {
           x: rs.shakuriOffsetX,
           y: (params.tanaDepth - rs.makiOffset) + rs.shakuriOffsetY,
         };
+        // 漏れ粒子も komaseSize/smoke 連動でしゃくり粒子と一貫させる
+        // (旧 life:0.85 / size:0.6 / terminal:0.06+rnd*0.06 固定はパラメータと無関係に
+        //  寿命34秒で消えていた → 下窓ポロポロでも待ち戦略が機能しない原因)
+        const _sz = komaseSizeProps(params);
+        const _sm = smokeLevelProps(params);
         for (let i = 0; i < n; i++) {
           if (particles.length >= MAX_P) break;
           particles.push({
             x: cage.x + (rnd()-0.5)*0.2,
             y: cage.y + (rnd()-0.5)*0.2 + 0.1,
             vx: 0, vy: 0,
-            life: 0.85,
-            size: 0.6,
-            terminal: 0.06 + rnd()*0.06,
+            life: 0.85 * _sz.lifeMul * _sm.lifeMul,
+            size: _sz.sizeBase * (0.7 + rnd()*0.4),
+            terminal: _sz.terminalBase * _sm.terminalMul * (0.85 + rnd()*0.3),
+            alpha: _sm.alphaMul,
           });
         }
       }
@@ -617,7 +628,9 @@ window.SimPhysics = (function() {
       stepParticles(particles, params, dt, rnd);
       const rig = rigShape(params.tanaDepth - rs.makiOffset, rs.shakuriOffsetY, rs.shakuriOffsetX, params, hookW, 0);
       // 同調率は毎フレーム計算 + EMA で平滑化 (app.jsx:796 と完全同等)
-      const near = particles.length > 0 ? nearHook(particles, rig.hook, 1.8) : 0;
+      // 同調判定半径 3.0m: 実釣感覚 (付け餌周りで漂うコマセ雲は 3-5m スケール)
+      // 旧 1.8m は厳しすぎて「真上に重なる」しか拾えず、漂い戦略を不当に低評価
+      const near = particles.length > 0 ? nearHook(particles, rig.hook, 3.0) : 0;
       const ratio = particles.length > 0 ? (near / particles.length * 100) : 0;
       hitRateEMA = hitRateEMA * (1 - EMA_ALPHA) + ratio * EMA_ALPHA;
       const syncRate = hitRateEMA;
@@ -807,13 +820,13 @@ window.SimPhysics = (function() {
       shakuriCountPerTrigger: [1, 2, 3],
       cageUpperOpening:       [0.10, 0.15, 0.20, 0.25, 0.30, 0.35],
       cageLowerOpening:       [0, 0.05, 0.10, 0.15],
-      makiAmount:             [1.0, 1.5, 2.0, 2.5],  // 実釣標準 1.5-2m/ストローク (3m超は不自然)
+      makiAmount:             [1.5, 2.0, 2.5, 3.0, 3.5],  // 1ストローク 1.5-3.5m (実釣: 大きく1-2回しゃくりでハリス長分=6-10m 巻き上げる)
       shakuriInterval:        [60, 90, 120, 180, 240, 300],  // 活性高 120 / 標準 180 / 食い渋り 240-300
       harrisLength:           env.depth > 60 ? [5, 7, 9] : [3, 5, 7, 9],
       harrisNo:               [2, 3, 4],
       motosLength:            [0, 1.0, 1.5, 2.0],  // 0 = モトス無効相当 (実質サル管なし)
       motosNo:                [4, 5, 6, 7],
-      dropOffsetM:            [3, 5, 7],  // 落とし込み目安 タナ下3-7m
+      dropOffsetM:            [5, 7, 9],  // 落とし込み目安 タナ下5-9m (実釣セオリー: ハリス長分=6-10m)
       ganDamaPct:             [5, 25, 50, 75, 95],  // ビシ側→針側%
       ganDamaSize:            [0, 0.3, 0.5, 0.8],
       cushionLength:          [1.0, 1.5],
@@ -1005,6 +1018,7 @@ window.SimPhysics = (function() {
     nearHook, depthHistogram,
     HOOK_WEIGHTS, HOOK_TYPE_LABEL, HOOK_SIZE_RANGE, getHookWeight,
     shakuriConsumption, leakRate,
+    komaseSizeProps, smokeLevelProps,
     simulateHeadless, optimize, optimizeAsync, scoreParams, evalParams,
     makeRng,
   };
