@@ -1,0 +1,18 @@
+:root { --bg:#f4f6f8; --card:#fff; --text:#1f2933; --sub:#5b6875; --line:#d7dee5; --accent:#2e5668; }
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;max-width:1200px;margin:0 auto;padding:16px 16px 88px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.eyebrow{font-size:12px;color:var(--sub);margin:0 0 6px}.result-card h1{font-size:22px;margin:0 0 6px}
+.viz .water{position:relative;height:180px;background:linear-gradient(#eef4f7,#dfeaf1);border-radius:10px;padding:10px;overflow:hidden}
+.current{position:absolute;top:8px;right:12px;color:var(--sub)}
+.komase,.bait,.bishi{position:absolute;border-radius:999px;padding:6px 10px;font-size:12px;background:#fff;border:1px solid var(--line)}
+.komase{left:22%;top:45%}.bait{left:46%;top:40%}.bishi{left:62%;top:58%}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}.metrics p{font-size:24px;margin:8px 0 0}
+.settings > summary{cursor:pointer;font-weight:700;padding:12px}.settings{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.settings-body{padding:0 12px 12px;display:grid;gap:10px}.settings label{display:grid;gap:6px;font-size:14px;color:var(--sub)}
+.optimize button,.mobile-actions button{background:var(--accent);border:none;color:#fff;border-radius:10px;padding:10px 12px}
+.mobile-actions{position:fixed;left:0;right:0;bottom:0;display:none;gap:8px;padding:10px;background:#ffffffd9;border-top:1px solid var(--line)}
+.mobile-actions button{flex:1;font-size:12px}
+@media (max-width: 960px){.layout{grid-template-columns:1fr}.side{order:2}.main{order:1}.settings{margin-top:0}}
+@media (max-width: 768px){.layout{padding:12px 12px 92px}.metrics{grid-template-columns:1fr 1fr}.mobile-actions{display:flex}.settings:not([open]) .settings-body{display:none}}
+@media (max-width: 375px){.layout{padding-inline:10px}.card{padding:12px}.metrics{grid-template-columns:1fr}}
