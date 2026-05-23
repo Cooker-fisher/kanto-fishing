@@ -13374,6 +13374,105 @@ def _ship_seasonal_fish_section_html(seasonal):
     )
 
 
+def _ship_load_top_trophies(ship_name, today_dt, top_n=10, min_competitors=5):
+    """D 大物実績 cross-ship ranking。月別キャッシュ対応。
+    返り値: [{rank, n_ships, fish, value, unit, date}, ...] (TOP10入りのみ・母集団 min_competitors 以上)
+    """
+    cache = _ship_load_monthly_cache(today_dt)
+    if ship_name in cache and "trophies" in (cache[ship_name] or {}):
+        return cache[ship_name]["trophies"]
+    rank = _ship_compute_cross_ship_rankings()
+    # 各魚種で「この船宿が TOP top_n 入り」をチェック
+    result = []
+    # kg / cm 両方
+    for unit, rank_dict in (("kg", rank["kg"]), ("cm", rank["cm"])):
+        for fish, ranked in rank_dict.items():
+            n_ships = len(ranked)
+            if n_ships < min_competitors:
+                continue  # 母集団小さい魚種は除外
+            for i, (s, v) in enumerate(ranked[:top_n], start=1):
+                if s == ship_name:
+                    # date を CSV から探す (この船宿の fish 最大値 record)
+                    rec_date = ""
+                    for fname in sorted(os.listdir(_DATA_DIR), reverse=True):
+                        if not fname.endswith(".csv"): continue
+                        try:
+                            with open(os.path.join(_DATA_DIR, fname), encoding="utf-8") as fp:
+                                for r in csv.DictReader(fp):
+                                    if r.get("ship") != ship_name or r.get("tsuri_mono") != fish:
+                                        continue
+                                    try:
+                                        val_field = r.get("kg_max" if unit == "kg" else "size_max") or "0"
+                                        val = float(val_field)
+                                        if abs(val - v) < 0.01:
+                                            rec_date = r.get("date", "")
+                                            break
+                                    except: pass
+                            if rec_date: break
+                        except: continue
+                    result.append({
+                        "rank": i, "n_ships": n_ships, "fish": fish,
+                        "value": v, "unit": unit, "date": rec_date,
+                    })
+                    break
+    result.sort(key=lambda x: (x["rank"], -x["value"]))
+    result = result[:10]
+    cache.setdefault(ship_name, {})["trophies"] = result
+    return result
+
+
+def _ship_trophy_section_html(trophies):
+    """D 大物実績ランキング HTML を返す。空の場合は省略 (空文字列)。"""
+    if not trophies:
+        return ""
+    import html as _html
+    rows = []
+    for t in trophies:
+        rank = t["rank"]
+        if rank == 1:
+            medal_html = '<span class="tr-medal">🥇</span>'
+            row_cls = "tr-row r1"
+        elif rank == 2:
+            medal_html = '<span class="tr-medal">🥈</span>'
+            row_cls = "tr-row r2"
+        elif rank == 3:
+            medal_html = '<span class="tr-medal">🥉</span>'
+            row_cls = "tr-row r3"
+        else:
+            medal_html = f'<span class="tr-rank">{rank}位</span>'
+            row_cls = "tr-row"
+        fish_slug = _FISH_ROMAJI.get(t["fish"], "")
+        img_src = f"../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" if fish_slug else ""
+        img_html = f'<img class="tr-img" src="{img_src}" alt="{_html.escape(t["fish"])}" onerror="this.style.display=\'none\'">' if img_src else ''
+        badge_cls = "tr-rank-badge" if rank <= 3 else "tr-rank-badge low"
+        val_str = f'{round(t["value"], 1)} kg' if t["unit"] == "kg" else f'{int(t["value"])} cm'
+        date_disp = ""
+        if t["date"]:
+            try:
+                d = datetime.strptime(t["date"], "%Y/%m/%d")
+                date_disp = f'<span class="tr-date">{d.year}/{d.month:02d}/{d.day:02d}</span>'
+            except Exception:
+                date_disp = f'<span class="tr-date">{t["date"]}</span>'
+        rows.append(
+            f'<li class="{row_cls}">'
+            f'{medal_html}'
+            f'{img_html}'
+            f'<div class="tr-body">'
+            f'<span class="tr-fish">{_html.escape(t["fish"])} <span class="{badge_cls}">全船宿中 {rank}/{t["n_ships"]}位</span></span>'
+            f'{date_disp}'
+            f'</div>'
+            f'<span class="tr-val">{val_str}</span>'
+            f'</li>'
+        )
+    return (
+        '<div class="trophy-rank">'
+        '<span class="tr-label">🏆 関東トップクラス大物実績</span>'
+        '<div class="tr-subtitle">魚種別「船宿別最大値」ランキングで上位入賞した自慢の1本（毎月1日更新）</div>'
+        f'<ul class="tr-list">{"".join(rows)}</ul>'
+        '</div>'
+    )
+
+
 def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
     """週次レポート HTML を返す。weekly が None or 今週 trips == 0 なら空文字列。
     weekly: _ship_load_weekly_data() の出力
