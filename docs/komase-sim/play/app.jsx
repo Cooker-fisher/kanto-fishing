@@ -387,7 +387,17 @@ function App() {
     };
     resize();
     window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    // T40-fix: phase 変化で HUD 高さが変わる → grid 再計算 → main の rect.width が変わるが
+    // canvas.style は window resize 時しか更新されず、main の background が右側に露出する問題対策
+    let ro = null;
+    if (typeof ResizeObserver !== "undefined" && canvas.parentElement) {
+      ro = new ResizeObserver(() => resize());
+      ro.observe(canvas.parentElement);
+    }
+    return () => {
+      window.removeEventListener("resize", resize);
+      if (ro) ro.disconnect();
+    };
   }, []);
 
   // ミニビュー (船上から見た図) のドラッグ機能
