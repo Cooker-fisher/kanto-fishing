@@ -13241,6 +13241,139 @@ def _ship_yearly_summary_section_html(yearly, ship_name, area, seasonal=None, tr
     )
 
 
+def _ship_load_seasonal_fish(ship_name, today_dt):
+    """C 季節別主力魚種 (春夏秋冬 × TOP2 + 詳細)。月別キャッシュ対応。
+    返り値: {"春": [{fish, count, avg_min, avg_max, max_cnt, max_kg, max_size, unit}, ...TOP2], ...}
+    """
+    cache = _ship_load_monthly_cache(today_dt)
+    if ship_name in cache and "seasonal" in (cache[ship_name] or {}):
+        return cache[ship_name]["seasonal"]
+    months = _ship_load_monthly_archive(ship_name, max_months=12)
+    if not months:
+        result = None
+    else:
+        from collections import Counter, defaultdict
+        # 季節別 fish_count
+        season_fish_count = {s[0]: Counter() for s in _SEASON_MAP.values()}
+        season_months = defaultdict(list)
+        for m in months:
+            try:
+                _, mo = m["month"].split("-")
+                mo = int(mo)
+            except:
+                continue
+            sname, _ = _SEASON_MAP.get(mo, (None, None))
+            if not sname:
+                continue
+            season_months[sname].append(m["month"])
+            for fi in m.get("fish", []):
+                season_fish_count[sname][fi["fish"]] += fi["count"]
+        # 各季節 TOP2 + 詳細
+        result = {}
+        for sname in ("春", "夏", "秋", "冬"):
+            top2 = season_fish_count[sname].most_common(2)
+            fish_details = []
+            for fish, n in top2:
+                # 季節月の CSV から cnt_min/max + max_kg/size
+                cnt_mins, cnt_maxes, max_kg, max_size = [], [], 0, 0
+                for month_key in season_months[sname]:
+                    for fname in (f"{month_key}.csv", f"chowari_{month_key}.csv"):
+                        p = os.path.join(_DATA_DIR, fname)
+                        if not os.path.exists(p):
+                            continue
+                        try:
+                            with open(p, encoding="utf-8") as fp:
+                                for r in csv.DictReader(fp):
+                                    if r.get("ship") != ship_name or r.get("tsuri_mono") != fish:
+                                        continue
+                                    try:
+                                        cn = float(r.get("cnt_min") or 0)
+                                        if cn > 0: cnt_mins.append(cn)
+                                    except: pass
+                                    try:
+                                        cx = float(r.get("cnt_max") or 0)
+                                        if cx > 0: cnt_maxes.append(cx)
+                                    except: pass
+                                    try:
+                                        km = float(r.get("kg_max") or 0)
+                                        if km > max_kg: max_kg = km
+                                    except: pass
+                                    try:
+                                        sm = float(r.get("size_max") or 0)
+                                        if sm > max_size: max_size = sm
+                                    except: pass
+                        except Exception:
+                            continue
+                avg_min = round(sum(cnt_mins) / len(cnt_mins), 1) if cnt_mins else 0
+                avg_max = round(sum(cnt_maxes) / len(cnt_maxes), 1) if cnt_maxes else 0
+                max_cnt = int(max(cnt_maxes)) if cnt_maxes else 0
+                fish_details.append({
+                    "fish": fish, "count": n,
+                    "avg_min": avg_min, "avg_max": avg_max, "max_cnt": max_cnt,
+                    "max_kg": round(max_kg, 1) if max_kg > 0 else None,
+                    "max_size": int(max_size) if max_size > 0 else None,
+                    "unit": _fish_unit(fish),
+                })
+            result[sname] = fish_details
+    cache.setdefault(ship_name, {})["seasonal"] = result
+    return result
+
+
+_SEASON_DISPLAY = {
+    "春": ("spring", "🌸", "3-5月"),
+    "夏": ("summer", "☀️", "6-8月"),
+    "秋": ("autumn", "🍁", "9-11月"),
+    "冬": ("winter", "❄️", "12-2月"),
+}
+
+def _ship_seasonal_fish_section_html(seasonal):
+    """C 季節別主力魚種 HTML を返す"""
+    if not seasonal:
+        return ""
+    import html as _html
+    cards = []
+    for sname in ("春", "夏", "秋", "冬"):
+        cls, emoji, months_label = _SEASON_DISPLAY[sname]
+        fishes = seasonal.get(sname, []) or []
+        if not fishes:
+            rows_html = '<li class="sf-fish-row"><span class="sf-fish-rank">-</span><div class="sf-fish-body"><div class="sf-fish-stats" style="color:var(--muted)">この季節のデータなし</div></div></li>'
+        else:
+            rows = []
+            for i, fi in enumerate(fishes, 1):
+                fish_slug = _FISH_ROMAJI.get(fi["fish"], "")
+                img_src = f"../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" if fish_slug else ""
+                img_html = f'<img class="sf-fish-img" src="{img_src}" alt="{_html.escape(fi["fish"])}" onerror="this.style.display=\'none\'">' if img_src else '<span class="sf-fish-img"></span>'
+                max_str = ""
+                if fi["max_kg"]: max_str = f'{fi["max_kg"]} kg'
+                elif fi["max_size"]: max_str = f'{fi["max_size"]} cm'
+                avg_str = f'{fi["avg_min"]}〜{fi["avg_max"]}匹' if (fi["avg_min"] > 0 or fi["avg_max"] > 0) else "—"
+                cnt_str = f'{fi["max_cnt"]}匹' if fi["max_cnt"] > 0 else "—"
+                rows.append(
+                    f'<li class="sf-fish-row">'
+                    f'<span class="sf-fish-rank">{i}</span>'
+                    f'{img_html}'
+                    f'<div class="sf-fish-body">'
+                    f'<div class="sf-fish-head"><span class="sf-fish-name">{_html.escape(fi["fish"])}</span><span class="sf-fish-trips">{fi["count"]}便</span></div>'
+                    f'<div class="sf-fish-stats">平均 <strong>{avg_str}</strong> / 最大匹数 <strong>{cnt_str}</strong> / 最大 <span class="sff-max">{max_str if max_str else "—"}</span></div>'
+                    f'</div>'
+                    f'</li>'
+                )
+            rows_html = "".join(rows)
+        cards.append(
+            f'<div class="sf-card {cls}">'
+            f'<div class="sf-head"><span class="sf-emoji-season">{emoji}</span><span class="sf-season-name">{sname}</span><span class="sf-months">{months_label}</span></div>'
+            f'<ul class="sf-fish-list">{rows_html}</ul>'
+            f'</div>'
+        )
+    return (
+        '<div class="seasonal-fish">'
+        '<span class="sf-label">🌐 季節別 主力魚種</span>'
+        '<div class="sf-subtitle">過去12ヶ月の季節ごと主力魚種 TOP2（毎月1日更新）</div>'
+        f'<div class="sf-grid">{"".join(cards)}</div>'
+        '</div>'
+    )
+
+
 def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
     """週次レポート HTML を返す。weekly が None or 今週 trips == 0 なら空文字列。
     weekly: _ship_load_weekly_data() の出力
