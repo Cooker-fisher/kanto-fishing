@@ -12540,7 +12540,7 @@ def _ship_load_weekly_data(ship_name, today_dt):
                 continue
             trips += 1
             fish = (r.get("tsuri_mono") or "").strip()
-            if not fish or fish in ("不明", "欠航"):
+            if not fish or fish in ("不明", "欠航", "NULL"):
                 continue
             fish_count[fish] = fish_count.get(fish, 0) + 1
             try:
@@ -12616,7 +12616,7 @@ def _ship_load_yoy_data(ship_name, today_dt):
                         continue
                     last_year_total_trips += 1
                     fish = (r.get("tsuri_mono") or "").strip()
-                    if fish and fish not in ("不明", "欠航"):
+                    if fish and fish not in ("不明", "欠航", "NULL"):
                         last_year_fish_count[fish] = last_year_fish_count.get(fish, 0) + 1
         except Exception:
             continue
@@ -12645,7 +12645,7 @@ def _ship_load_yoy_data(ship_name, today_dt):
                         continue
                     this_year_total_trips += 1
                     fish = (r.get("tsuri_mono") or "").strip()
-                    if fish and fish not in ("不明", "欠航"):
+                    if fish and fish not in ("不明", "欠航", "NULL"):
                         this_year_fish_count[fish] = this_year_fish_count.get(fish, 0) + 1
         except Exception:
             continue
@@ -12744,7 +12744,7 @@ def _ship_load_monthly_archive(ship_name, max_months=13):
                             continue
                         trips += 1
                         fish = (row.get("tsuri_mono") or "").strip()
-                        if not fish or fish in ("不明", "欠航"):
+                        if not fish or fish in ("不明", "欠航", "NULL"):
                             continue
                         fish_count[fish] = fish_count.get(fish, 0) + 1
                         try:
