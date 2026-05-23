@@ -4,12 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>5/7(木) 関東船釣り 釣果まとめ | 船釣り予想</title>
-<meta name="description" content="5/7(木) 関東5県の船釣り釣果まとめ。42船宿・25魚種・66件の釣果報告と海況レポート。シロギス11〜126匹など。">
+<meta name="description" content="5/7(木) 関東5県の船釣り釣果まとめ。41船宿・18魚種・72件の釣果報告と海況レポート。シロギス11〜126匹など。">
 <meta property="og:title" content="5/7(木) 関東船釣り 釣果まとめ | 船釣り予想">
-<meta property="og:description" content="5/7(木) 関東5県の船釣り釣果まとめ。42船宿・25魚種・66件の釣果報告と海況レポート。シロギス11〜126匹など。">
+<meta property="og:description" content="5/7(木) 関東5県の船釣り釣果まとめ。41船宿・18魚種・72件の釣果報告と海況レポート。シロギス11〜126匹など。">
 <meta property="og:image" content="https://funatsuri-yoso.com/x_post/2026-05-07.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="船釣り予想">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<meta name="twitter:title" content="5/7(木) 関東船釣り 釣果まとめ | 船釣り予想">
+<meta name="twitter:description" content="5/7(木) 関東5県の船釣り釣果まとめ。41船宿・18魚種・72件の釣果報告と海況レポート。シロギス11〜126匹など。">
+<meta name="twitter:image" content="https://funatsuri-yoso.com/x_post/2026-05-07.png?v=2">
 <link rel="canonical" href="https://funatsuri-yoso.com/x_post/2026-05-07.html">
 <style>
 :root {
@@ -25,6 +32,11 @@
   --port: #0a7ea4;
   --warn: #c44402;
   --good: #06d6a0;
+  /* 統一 navbar 用（design/V2/style.css と同期） */
+  --hdr: #0d2b4a;
+  --nav: #f0f3f7;
+  --white: #fff;
+  --prem: #7c3aed;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -34,15 +46,54 @@ body {
   line-height: 1.7;
   font-size: 15px;
 }
-.gnav {
-  background: var(--accent);
+/* 統一 navbar（design/V2/style.css と同等。サイト全体と統一） */
+header {
+  background: var(--hdr);
+  color: var(--white);
   padding: 12px 20px;
+  border-bottom: 3px solid var(--cta);
+}
+header .inner {
+  max-width: 880px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.gnav .logo { color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; }
-.gnav nav a { color: #fff; font-size: 12px; margin-left: 14px; text-decoration: none; opacity: .85; }
+header .site-logo { text-decoration: none; }
+header h1 { font-size: 19px; font-weight: 700; color: var(--white); }
+header h1 span { color: var(--cta); }
+header .domain { font-size: 11px; opacity: .5; color: var(--white); }
+nav.gnav {
+  background: var(--nav);
+  padding: 7px 20px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+nav.gnav a {
+  color: var(--sub);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 16px;
+  text-decoration: none;
+}
+nav.gnav a:hover,
+nav.gnav a.on { background: var(--accent); color: var(--white); text-decoration: none; }
+nav.gnav a.prem { color: var(--prem); }
+nav.gnav a.prem::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--prem);
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
 .wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
 .crumbs { font-size: 12px; color: var(--sub); margin-bottom: 14px; }
 .crumbs a { color: var(--port); text-decoration: none; }
@@ -240,24 +291,56 @@ body {
 .char-count { font-size: 11px; color: var(--sub); margin-top: 12px; text-align: right; border-top: 1px dashed var(--border); padding-top: 8px; }
 .char-count b { color: var(--good); font-weight: 800; }
 footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11px; text-align: center; padding: 16px; margin-top: 40px; }
+.share-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 18px; align-items: center; }
+.share-bar a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; border: 1px solid var(--border); transition: opacity .15s; }
+.share-x { background: #000; color: #fff; border-color: #000; }
+.share-x:hover { opacity: .85; }
+.share-follow { background: #fff; color: var(--accent); }
+.share-follow:hover { background: var(--bg-alt); }
+/* 0件日: 集計中通知 */
+.empty-day-notice {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--port);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-top: 8px;
+}
+.empty-day-notice .ed-main { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.empty-day-notice .ed-sub  { font-size: 13px; color: var(--sub); margin-bottom: 14px; }
+.empty-day-notice .ed-recent-title {
+  font-size: 11px; color: var(--sub); font-weight: 800;
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+}
+.empty-day-notice .ed-recent-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.empty-day-notice .ed-recent-list li { font-size: 14px; }
+.empty-day-notice .ed-recent-list a { color: var(--port); font-weight: 700; text-decoration: none; }
+.empty-day-notice .ed-recent-list a:hover { text-decoration: underline; }
+.empty-day-notice .ed-stat { color: var(--sub); font-size: 13px; margin-left: 4px; }
 @media (max-width: 600px) {
   .hl-grid, .umi-grid { grid-template-columns: 1fr; }
   .fish-row { grid-template-columns: 40px 90px 90px 1fr; }
   .fish-row .port { display: none; }
+  .share-bar a { padding: 7px 12px; font-size: 12px; }
 }
 </style>
 </head>
 <body>
 
-<header class="gnav">
-  <a class="logo" href="/">船釣り予想</a>
-  <nav>
-    <a href="/">トップ</a>
-    <a href="/calendar.html">カレンダー</a>
-    <a href="/x_post/">釣果速報</a>
-    <a href="/pages/about.html">サイトについて</a>
-  </nav>
+<header>
+  <div class="inner">
+    <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <span class="domain">funatsuri-yoso.com</span>
+  </div>
 </header>
+<nav class="gnav">
+  <a href="/">今日の釣果</a>
+  <a href="/x_post/" class="on">釣果速報</a>
+  <a href="/fish/">魚種</a>
+  <a href="/area/">エリア</a>
+  <a href="/calendar.html">カレンダー</a>
+  <a href="/forecast/" class="prem">有料プラン</a>
+</nav>
 
 <div class="wrap">
 
@@ -265,32 +348,34 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
     <a href="/">トップ</a> &raquo; <a href="/x_post/">釣果速報</a> &raquo; 5/7(木) 釣果まとめ
   </div>
 
+  <div class="share-bar" role="group" aria-label="シェア"><a class="share-x" href="https://twitter.com/intent/tweet?text=5/7%28%E6%9C%A8%29%20%E3%81%AE%E9%96%A2%E6%9D%B1%E8%88%B9%E9%87%A3%E3%82%8A%E9%87%A3%E6%9E%9C%E3%81%BE%E3%81%A8%E3%82%81%20%7C%20%E8%88%B9%E9%87%A3%E3%82%8A%E4%BA%88%E6%83%B3&url=https%3A//funatsuri-yoso.com/x_post/2026-05-07.html&hashtags=%E8%88%B9%E9%87%A3%E3%82%8A%2C%E9%87%A3%E6%9E%9C" target="_blank" rel="noopener nofollow" aria-label="X（旧Twitter）でシェア">𝕏 でシェア</a><a class="share-follow" href="https://twitter.com/intent/follow?screen_name=funatsuri_yoso" target="_blank" rel="noopener nofollow" aria-label="@funatsuri_yoso をフォロー">フォロー</a></div>
+
   <div class="hero">
     <h1>5/7(木) 関東船釣り 釣果まとめ</h1>
     <div class="sub">2026-05-07（小潮・十六夜）｜神奈川・東京・千葉・茨城・静岡</div>
     <div class="stats">
-      <span class="stat"><b>42</b>船宿出船</span>
-      <span class="stat"><b>25</b>魚種</span>
-      <span class="stat"><b>66</b>件の釣果報告</span>
+      <span class="stat"><b>41</b>船宿出船</span>
+      <span class="stat"><b>18</b>魚種</span>
+      <span class="stat"><b>72</b>件の釣果報告</span>
       <span class="stat"><b>2.0〜5.10</b>kg 大物記録</span>
     </div>
   </div>
 
   <section class="sec">
     <h2><span class="num">1</span>今日のハイライト</h2>
-<p class="lead">5/7(木)は<b>42船宿</b>が出船し、<b>25魚種</b>で<b>66件</b>の釣果報告が寄せられました。5月上旬の釣況をデータでお届けします。</p>
+<p class="lead">5/7(木)は<b>41船宿</b>が出船し、<b>18魚種</b>で<b>72件</b>の釣果報告が寄せられました。5月上旬の釣況をデータでお届けします。</p>
     <div class="hl-grid">
       <div class="hl-card">
         <div class="label">大物記録</div>
         <div class="target">ワラサ</div>
         <div class="val">2.0〜5.10kg</div>
-        <div class="meta">波崎港｜信栄丸<br>過去5年同旬比 <span class="up">&times;0.3倍</span></div>
+        <div class="meta">波崎港｜信栄丸</div>
       </div>
       <div class="hl-card">
         <div class="label">数の好調</div>
         <div class="target">シロギス</div>
         <div class="val">11〜126匹</div>
-        <div class="meta">東葛西｜須原屋<br>先週比 <span class="up">+150%</span></div>
+        <div class="meta">東葛西｜須原屋<br>先週比 <span class="up">+6%</span></div>
       </div>
     </div>
 <div class="commentary"><p>注目は<b>ワラサ 2.0〜5.10kg</b>。<b><a href="/ship/shinei-maru.html">信栄丸</a></b>（波崎港）が記録した5.1kg級は良型の実績。波崎港を主戦場とするこの船宿は多魚種対応が看板で、今期は好海況が観測されています。今後1〜2週間は同サイズの再現性が高いと推察されます。</p></div>
@@ -298,39 +383,67 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 
   <section class="sec">
     <h2><span class="num">2</span>海況レポート</h2>
-<p class="sea-summary">水温は平年並み（18.3℃）。波0.4m・風3m/sで出船日和。</p>
+<p class="sea-summary">水温は平年並み（18.3℃）。波0.4m・風3m/sの好海況で出船日和。</p>
 <div class="sea-pair"><div class="sea-section"><div class="sea-section-title">内海（東京湾・相模湾）</div><div class="sea-grid"><div class="sea-item"><div class="sv">18.3℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">0.4m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">南2.7m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">小潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">十六夜</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">1014hPa</div><div class="sl2">気圧</div></div></div></div><div class="sea-section"><div class="sea-section-title">外海（外房・銚子方面）</div><div class="sea-grid"><div class="sea-item"><div class="sv">18.5℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">1.2m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">西南西2.9m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">小潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">十六夜</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">1014hPa</div><div class="sl2">気圧</div></div></div></div></div>
-<div class="ship-rate-bar">出船率 <b>83%</b>（42船宿中・7欠航）</div>
+<div class="ship-rate-bar">出船率 <b>80%</b>（41船宿中・8欠航）</div>
 
-<div class="commentary"><p>本日の海況は<b>内海と外海で対照的な一日</b>。<b>内海</b>は風3〜3m/sと穏やかで、久比里・松輪・金沢八景の各沖は朝マズメから夕方まで凪が続きました。一方<b>外海</b>は中風で、銭洲・神津島方面は<b>7船が出船中止</b>判断。来週末は外海狙いの予約は<b>前日午後に船宿への確認</b>が必須です。</p></div>
+<div class="commentary"><p>本日の海況は<b>内海と外海で対照的な一日</b>。<b>内海</b>は風3m/sと穏やかで、久比里・松輪・金沢八景の各沖は朝マズメから夕方まで凪が続きました。一方<b>外海</b>は風が強く、銭洲・神津島方面は<b>8船が出船中止</b>判断。来週末は外海狙いの予約は<b>前日午後に船宿への確認</b>が必須です。</p></div>
   </section>
 
   <section class="sec">
     <h2><span class="num">3</span>魚種別 釣果報告</h2>
     <p class="lead">
-      本日の全25魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
+      本日の全18魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
     </p>
     <div class="fish-list">
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/aji.html" class="fl">アジ</a><span class="badge">13便</span></div>
-        <div class="catch">0〜118匹</div>
-        <span class="size">16〜52cm</span>
-        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a>・<a href="../area/urayasu.html" class="pl">浦安</a></div>
+        <img class="icon" src="../assets/fish/taigomoku/taigomoku_emoji.webp" alt="タイ五目" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/tai-gomoku.html" class="fl">タイ五目</a><span class="badge">12便</span></div>
+        <div class="catch">0〜25匹</div>
+        <span class="size kg">0.4〜1.0kg</span>
+        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a>・<a href="../area/oarai.html" class="pl">大洗港</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/madai.html" class="fl">マダイ</a><span class="badge">13便</span></div>
-        <div class="catch">0〜18匹</div>
+        <div class="name"><a href="../fish/madai.html" class="fl">マダイ</a><span class="badge">12便</span></div>
+        <div class="catch">0〜13匹</div>
         <span class="size kg">0.3〜4.6kg</span>
-        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a>・<a href="../area/matsuwa-ena.html" class="pl">松輪江奈港</a></div>
+        <div class="port"><a href="../area/odawara-hayakawa.html" class="pl">小田原早川港</a>・<a href="../area/kashima.html" class="pl">鹿島港</a></div>
+      </div>
+      <div class="fish-row">
+        <img class="icon" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/aji.html" class="fl">アジ</a><span class="badge">11便</span></div>
+        <div class="catch">0〜118匹</div>
+        <span class="size">16〜52cm</span>
+        <div class="port"><a href="../area/higashi-kasai.html" class="pl">東葛西</a>・<a href="../area/oiso.html" class="pl">大磯港</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/maruika/maruika_emoji.webp" alt="マルイカ" onerror="this.style.display='none'">
         <div class="name"><a href="../fish/maruika.html" class="fl">マルイカ</a><span class="badge">6便</span></div>
         <div class="catch">0〜43匹</div>
         <span class="size">13〜35cm</span>
-        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a>・<a href="../area/koajiro.html" class="pl">小網代港</a></div>
+        <div class="port"><a href="../area/koajiro.html" class="pl">小網代港</a>・<a href="../area/hiratsuka.html" class="pl">平塚港</a></div>
+      </div>
+      <div class="fish-row">
+        <img class="icon" src="../assets/fish/mugiika/mugiika_emoji.webp" alt="ムギイカ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/mugiika.html" class="fl">ムギイカ</a><span class="badge">6便</span></div>
+        <div class="catch">3〜55匹</div>
+        <span class="size">15〜30cm</span>
+        <div class="port"><a href="../area/odawara-hayakawa.html" class="pl">小田原早川港</a>・<a href="../area/numazu-naiko.html" class="pl">沼津内港</a></div>
+      </div>
+      <div class="fish-row">
+        <img class="icon" src="../assets/fish/warasa/warasa_emoji.webp" alt="ワラサ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/warasa.html" class="fl">ワラサ</a><span class="badge">4便</span></div>
+        <div class="catch">0〜15匹</div>
+        <span class="size kg">2.0〜5.1kg</span>
+        <div class="port"><a href="../area/hasaki.html" class="pl">波崎港</a>・<a href="../area/kashima.html" class="pl">鹿島港</a></div>
+      </div>
+      <div class="fish-row">
+        <img class="icon" src="../assets/fish/kasago/kasago_emoji.webp" alt="カサゴ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/kasago.html" class="fl">カサゴ</a><span class="badge">4便</span></div>
+        <div class="catch">0〜31匹</div>
+        <span class="size kg">1.0〜1.1kg</span>
+        <div class="port"><a href="../area/kubiri.html" class="pl">久比里港</a>・<a href="../area/hiratsuka.html" class="pl">平塚港</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/kawahagi/kawahagi_emoji.webp" alt="カワハギ" onerror="this.style.display='none'">
@@ -340,39 +453,18 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="port"><a href="../area/kubiri.html" class="pl">久比里港</a></div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/mugiika/mugiika_emoji.webp" alt="ムギイカ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/mugiika.html" class="fl">ムギイカ</a><span class="badge">3便</span></div>
-        <div class="catch">3〜47匹</div>
-        <span class="size">15〜30cm</span>
-        <div class="port"><a href="../area/numazu-shizuura.html" class="pl">沼津静浦</a>・<a href="../area/numazu-naiko.html" class="pl">沼津内港</a></div>
+        <img class="icon" src="../assets/fish/onikasago/onikasago_emoji.webp" alt="オニカサゴ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/onikasago.html" class="fl">オニカサゴ</a><span class="badge">2便</span></div>
+        <div class="catch">0〜2匹</div>
+        <span class="size kg">0.5〜3.1kg</span>
+        <div class="port"><a href="../area/iioka.html" class="pl">飯岡港</a></div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/warasa/warasa_emoji.webp" alt="ワラサ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/warasa.html" class="fl">ワラサ</a><span class="badge">3便</span></div>
-        <div class="catch">0〜15匹</div>
-        <span class="size kg">2.0〜5.1kg</span>
-        <div class="port"><a href="../area/kashima.html" class="pl">鹿島港</a>・<a href="../area/odawara-hayakawa.html" class="pl">小田原早川港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/kasago/kasago_emoji.webp" alt="カサゴ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/kasago.html" class="fl">カサゴ</a><span class="badge">2便</span></div>
-        <div class="catch">0〜31匹</div>
-        <span class="size">16〜27cm</span>
-        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a>・<a href="../area/kubiri.html" class="pl">久比里港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/kurodai/kurodai_emoji.webp" alt="クロダイ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/kurodai.html" class="fl">クロダイ</a><span class="badge">2便</span></div>
-        <div class="catch">0〜1匹</div>
-        <span class="size kg">最大0.5kg</span>
-        <div class="port"><a href="../area/matsuwa-maguchi.html" class="pl">松輪間口港</a>・<a href="../area/hiratsuka.html" class="pl">平塚港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/amadai/amadai_emoji.webp" alt="アマダイ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/amadai.html" class="fl">アマダイ</a><span class="badge">2便</span></div>
-        <div class="catch">2〜8匹</div>
-        <span class="size">26〜43cm</span>
-        <div class="port"><a href="../area/hitachi-kuji.html" class="pl">日立久慈港</a>・<a href="../area/iioka.html" class="pl">飯岡港</a></div>
+        <img class="icon" src="../assets/fish/isaki/isaki_emoji.webp" alt="イサキ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/isaki.html" class="fl">イサキ</a><span class="badge">2便</span></div>
+        <div class="catch">19〜50匹</div>
+        <span class="size">23〜38cm</span>
+        <div class="port"><a href="../area/odawara-hayakawa.html" class="pl">小田原早川港</a>・<a href="../area/susaki.html" class="pl">洲崎港</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/tachiuo/tachiuo_emoji.webp" alt="タチウオ" onerror="this.style.display='none'">
@@ -382,60 +474,18 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="port"><a href="../area/kamoi-omuro.html" class="pl">鴨居大室港</a>・<a href="../area/urayasu.html" class="pl">浦安</a></div>
       </div>
       <div class="fish-row">
+        <img class="icon" src="../assets/fish/kinmedai/kinmedai_emoji.webp" alt="キンメダイ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/kinmedai.html" class="fl">キンメダイ</a><span class="badge">2便</span></div>
+        <div class="catch">0〜4匹</div>
+        <span class="size">28〜35cm</span>
+        <div class="port"><a href="../area/hitachi-kuji.html" class="pl">日立久慈港</a></div>
+      </div>
+      <div class="fish-row">
         <img class="icon" src="../assets/fish/yariika/yariika_emoji.webp" alt="ヤリイカ" onerror="this.style.display='none'">
         <div class="name"><a href="../fish/yariika.html" class="fl">ヤリイカ</a><span class="badge">1便</span></div>
         <div class="catch">16〜34匹</div>
         <span class="size">28〜45cm</span>
         <div class="port"><a href="../area/katsuura-kawazu.html" class="pl">勝浦川津港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/bishiaji/bishiaji_emoji.webp" alt="ビシアジ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/bishi-aji.html" class="fl">ビシアジ</a><span class="badge">1便</span></div>
-        <div class="catch">25〜50匹</div>
-        <span class="size">25〜38cm</span>
-        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/hirame/hirame_emoji.webp" alt="ヒラメ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/hirame.html" class="fl">ヒラメ</a><span class="badge">1便</span></div>
-        <div class="catch">0〜2匹</div>
-        <span class="size kg">1.0〜1.1kg</span>
-        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/mahata/mahata_emoji.webp" alt="マハタ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/mahata.html" class="fl">マハタ</a><span class="badge">1便</span></div>
-        <div class="catch">3〜3匹</div>
-        <span class="size kg">1.2〜3.6kg</span>
-        <div class="port"><a href="../area/onjuku-iwawada.html" class="pl">御宿岩和田港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/kinmedai/kinmedai_emoji.webp" alt="キンメダイ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/kinmedai.html" class="fl">キンメダイ</a><span class="badge">1便</span></div>
-        <div class="catch">0〜2匹</div>
-        <span class="size">30〜35cm</span>
-        <div class="port"><a href="../area/hitachi-kuji.html" class="pl">日立久慈港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/mebaru/mebaru_emoji.webp" alt="メバル" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/mebaru.html" class="fl">メバル</a><span class="badge">1便</span></div>
-        <div class="catch">0〜4匹</div>
-        <span class="size">28〜33cm</span>
-        <div class="port"><a href="../area/hitachi-kuji.html" class="pl">日立久慈港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/shirogisu.html" class="fl">シロギス</a><span class="badge">1便</span></div>
-        <div class="catch">11〜126匹</div>
-        <span class="size">12〜23cm</span>
-        <div class="port"><a href="../area/higashi-kasai.html" class="pl">東葛西</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/isaki/isaki_emoji.webp" alt="イサキ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/isaki.html" class="fl">イサキ</a><span class="badge">1便</span></div>
-        <div class="catch">19〜50匹</div>
-        <span class="size">23〜38cm</span>
-        <div class="port"><a href="../area/susaki.html" class="pl">洲崎港</a></div>
       </div>
       <div class="fish-row">
         <img class="icon" src="../assets/fish/shousaifugu/shousaifugu_emoji.webp" alt="ショウサイフグ" onerror="this.style.display='none'">
@@ -445,61 +495,45 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
         <div class="port"><a href="../area/urayasu.html" class="pl">浦安</a></div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/surumeika/surumeika_emoji.webp" alt="スルメイカ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/surumeika.html" class="fl">スルメイカ</a><span class="badge">1便</span></div>
-        <div class="catch">11〜46匹</div>
-        <span class="size">20〜35cm</span>
-        <div class="port"><a href="../area/nagai-shinjuku.html" class="pl">長井新宿港</a></div>
+        <img class="icon" src="../assets/fish/bishiaji/bishiaji_emoji.webp" alt="ビシアジ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/bishi-aji.html" class="fl">ビシアジ</a><span class="badge">1便</span></div>
+        <div class="catch">25〜50匹</div>
+        <span class="size">25〜38cm</span>
+        <div class="port"><a href="../area/hiratsuka.html" class="pl">平塚港</a></div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/onikasago/onikasago_emoji.webp" alt="オニカサゴ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/onikasago.html" class="fl">オニカサゴ</a><span class="badge">1便</span></div>
-        <div class="catch">0〜2匹</div>
-        <span class="size kg">0.6〜2.8kg</span>
-        <div class="port"><a href="../area/iioka.html" class="pl">飯岡港</a></div>
+        <img class="icon" src="../assets/fish/mahata/mahata_emoji.webp" alt="マハタ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/mahata.html" class="fl">マハタ</a><span class="badge">1便</span></div>
+        <div class="catch">3匹</div>
+        <span class="size kg">1.2〜3.6kg</span>
+        <div class="port"><a href="../area/onjuku-iwawada.html" class="pl">御宿岩和田港</a></div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/ara/ara_emoji.webp" alt="アラ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/ara.html" class="fl">アラ</a><span class="badge">1便</span></div>
-        <div class="catch">0〜2匹</div>
-        <span class="size kg">0.5〜3.1kg</span>
-        <div class="port"><a href="../area/iioka.html" class="pl">飯岡港</a></div>
+        <img class="icon" src="../assets/fish/amadai/amadai_emoji.webp" alt="アマダイ" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/amadai.html" class="fl">アマダイ</a><span class="badge">1便</span></div>
+        <div class="catch">2〜6匹</div>
+        <span class="size">30〜43cm</span>
+        <div class="port"><a href="../area/hitachi-kuji.html" class="pl">日立久慈港</a></div>
       </div>
       <div class="fish-row">
-        <img class="icon" src="../assets/fish/hanadai/hanadai_emoji.webp" alt="ハナダイ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/hanadai.html" class="fl">ハナダイ</a><span class="badge">1便</span></div>
-        <div class="catch">0〜13匹</div>
-        <span class="size">—</span>
-        <div class="port"><a href="../area/kashima.html" class="pl">鹿島港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/hiramasa/hiramasa_emoji.webp" alt="ヒラマサ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/hiramasa.html" class="fl">ヒラマサ</a><span class="badge">1便</span></div>
-        <div class="catch">0〜0匹</div>
-        <span class="size kg">最大3.5kg</span>
-        <div class="port"><a href="../area/kashima.html" class="pl">鹿島港</a></div>
-      </div>
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/inada/inada_emoji.webp" alt="イナダ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/inada.html" class="fl">イナダ</a><span class="badge">1便</span></div>
-        <div class="catch">0〜6匹</div>
-        <span class="size">—</span>
-        <div class="port"><a href="../area/kashima.html" class="pl">鹿島港</a></div>
+        <img class="icon" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'">
+        <div class="name"><a href="../fish/shirogisu.html" class="fl">シロギス</a><span class="badge">1便</span></div>
+        <div class="catch">11〜126匹</div>
+        <span class="size">12〜23cm</span>
+        <div class="port"><a href="../area/higashi-kasai.html" class="pl">東葛西</a></div>
       </div>
     </div>
-<div class="commentary"><p>全体感としては、今日は<b>「アジ・マダイ・マルイカ」のシーズン安定組</b>と<b>「ワラサ・イナダ」の単発大物・好機組</b>に分かれる構成でした。
-<b>アジ</b>は平塚港・浦安エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/minosuke-maru.html">巳之助丸</a>の118匹</b>は今週の全便でも上位の記録です。
-<b>マダイ</b>は平塚港・松輪江奈港で0〜18匹レンジ。4.6kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
+<div class="commentary"><p><b>アジ</b>は東葛西・大磯港エリアで<span class="num">3桁釣果</span>が頻発し、群れの動きが継続中。<b><a href="/ship/minosuke-maru.html">巳之助丸</a>の118匹</b>は今週の全便でも上位の記録です。
+<b>マダイ</b>は小田原早川港・鹿島港で0〜13匹レンジ。4.6kgの大型は<span class="highlight">サイズが明確に上向き</span>な印象。
 <b>シロギス</b>は東葛西の浅場で<span class="num">大爆発</span>。湾奥への河川流入と水温上昇でベイト溜まりが形成された影響と推察されます。<b><a href="/ship/suharaya.html">須原屋</a>の126匹</b>は今期トップ級の記録です。
 <b>カワハギ</b>は久比里港で1〜14匹・5〜34cm。底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、本日も複数船宿で安定した釣果が記録されました。
-<b>タチウオ</b>は鴨居大室港・浦安方面で0〜4匹、サイズは<b>65〜100cm</b>と大型揃い。冬の名残のドラゴン級が春の早朝便で出ているパターンです。
-<b>マルイカ</b>は平塚港・小網代港で0〜43匹。<a href="/ship/kiheiji-maru.html">喜平治丸</a>が継続的な好実績で、剣崎沖の良型群が継続中です。
+<b>タチウオ</b>は鴨居大室港・浦安方面で0〜4匹、サイズは<b>65〜100cm</b>と大型揃い。ドラゴン級の良型が出ているパターンで、サイズ狙い派には好機です。
+<b>マルイカ</b>は小網代港・平塚港で0〜43匹。本日は<a href="/ship/kiheiji-maru.html">喜平治丸</a>で良型が記録されています。
 <b>ヤリイカ</b>は勝浦川津港方面で16〜34匹。<a href="/ship/fudo-maru.html">不動丸</a>など継続的に良型が記録されています。
-<b>スルメイカ</b>は長井新宿港方面で11〜46匹。ローテーション釣行に組み込みやすい魚種です。
-全25魚種が顔を揃えた幅広い釣果構成。アジ・マダイ・マルイカが三本柱として件数を稼ぎ、カワハギ・ムギイカ・ワラサも少数ながら確実に記録されています。同日に複数魚種を狙えるため、釣行の自由度が高いタイミングと言えます。</p></div>
+全18魚種が顔を揃えた幅広い釣果構成。タイ五目・マダイ・アジが三本柱として件数を稼ぎ、マルイカ・ムギイカ・ワラサも少数ながら確実に記録されています。同日に複数魚種を狙えるため、釣行の自由度が高いタイミングと言えます。</p></div>
   </section>
 
-<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション"><span class="prev7 disabled" aria-disabled="true"><small>← 7日前</small>4/30(木)（記録なし）</span><a class="prev" href="./2026-05-06.html"><small>← 前日</small>5/6(水) の釣果まとめ</a><a class="archive-cta" href="./"><small>全日程</small>一覧へ</a><a class="next" href="./2026-05-08.html"><small>翌日 →</small>5/8(金) の釣果まとめ</a><span class="next7 disabled" aria-disabled="true"><small>7日後 →</small>5/14(木)（記録なし）</span></nav>
+<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション"><span class="prev7 disabled" aria-disabled="true"><small>← 7日前</small>4/30(木)（記録なし）</span><a class="prev" href="./2026-05-06.html"><small>← 前日</small>5/6(水) の釣果まとめ</a><a class="archive-cta" href="./"><small>全日程</small>一覧へ</a><a class="next" href="./2026-05-08.html"><small>翌日 →</small>5/8(金) の釣果まとめ</a><a class="next7" href="./2026-05-14.html"><small>7日後 →</small>5/14(木)</a></nav>
 
   <div class="related">
     <h3>関連ページ</h3>

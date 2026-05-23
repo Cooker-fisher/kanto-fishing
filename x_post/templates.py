@@ -9,14 +9,12 @@ H_TEMPLATES = [
         "priority": 1,
         "conds": [
             ("top_kg_max", ">=", 10.0),
-            ("season_ratio_top_kg", ">=", 2.0),
         ],
         "text": (
             "本日最大の話題は<b>{top_kg_fish}の{top_kg_max:.2f}kg</b>。{date_label}時点で"
             "{period_label}以降、関東圏での{kg_threshold}kg超え大物記録です。"
             "{top_kg_port}は遠征エリアですが、<b>{top_kg_ship}</b>はこの時期の運航で"
             "近海では狙えないサイズの回遊魚を求める常連層に人気の船宿です。"
-            "シーズン（過去5年同旬比）の {season_ratio_top_kg:.1f}倍という記録的な大物実績で、"
             "この時期ならではの好海況が背景にあると見られます。"
         ),
     },
@@ -42,7 +40,7 @@ H_TEMPLATES = [
             ("top_cnt_max", ">=", 50),
         ],
         "text": (
-            "数の好調枠では<b>{top_cnt_fish} {top_cnt_min}〜{top_cnt_max}匹</b>が目を引きます。"
+            "数の好調枠では<b>{top_cnt_fish} {top_cnt_range}</b>が目を引きます。"
             "{top_cnt_port}・<b>{top_cnt_ship}</b>での記録で、"
             "<span class=\"num\">先週比 {wow_pct_top_cnt_str}</span>の急増。"
             "{season_label}は通常よりも活発な群れ接岸のシグナルが出ています。"
@@ -53,11 +51,10 @@ H_TEMPLATES = [
         "id": "H4",
         "priority": 4,
         "conds": [
-            ("season_ratio_top_cm", ">=", 1.5),
+            ("top_cm_max", ">=", 50),
         ],
         "text": (
             "サイズ面では<b>{top_cm_fish} {top_cm_min}〜{top_cm_max}cm</b>が目立ちます。"
-            "{top_cm_max}cmの良型は過去5年同旬比 {season_ratio_top_cm:.1f}倍のサイズ感。"
             "{top_cm_port}方面でこの傾向が続いており、型狙い派には好機の時期です。"
         ),
     },
@@ -630,7 +627,7 @@ F_TEMPLATES = [
             ("madai_kg_max", ">=", 2.5),
         ],
         "text": (
-            "<b>マダイ</b>は{madai_top_areas}で{madai_cnt_min}〜{madai_cnt_max}匹レンジ。"
+            "<b>マダイ</b>は{madai_top_areas}で{madai_cnt_range}レンジ。"
             "{madai_kg_max:.1f}kgの大型は<span class=\"highlight\">サイズが明確に上向き</span>な印象。"
         ),
     },
@@ -656,7 +653,7 @@ F_TEMPLATES = [
         ],
         "text": (
             "<b>カワハギ</b>は{kawahagi_top_areas}で"
-            "{kawahagi_cnt_min}〜{kawahagi_cnt_max}匹・{kawahagi_cm_min}〜{kawahagi_cm_max}cm。"
+            "{kawahagi_cnt_range}・{kawahagi_cm_range}。"
             "底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、"
             "本日も複数船宿で安定した釣果が記録されました。"
         ),
@@ -669,9 +666,9 @@ F_TEMPLATES = [
             ("tachiuo_cm_max", ">=", 90),
         ],
         "text": (
-            "<b>タチウオ</b>は{tachiuo_top_areas}方面で{tachiuo_cnt_min}〜{tachiuo_cnt_max}匹、"
-            "サイズは<b>{tachiuo_cm_min}〜{tachiuo_cm_max}cm</b>と大型揃い。"
-            "冬の名残のドラゴン級が春の早朝便で出ているパターンです。"
+            "<b>タチウオ</b>は{tachiuo_top_areas}方面で{tachiuo_cnt_range}、"
+            "サイズは<b>{tachiuo_cm_range}</b>と大型揃い。"
+            "ドラゴン級の良型が出ているパターンで、サイズ狙い派には好機です。"
         ),
     },
     {
@@ -682,7 +679,7 @@ F_TEMPLATES = [
             ("kanpachi_kg_max", ">=", 5.0),
         ],
         "text": (
-            "<b>カンパチ</b>は{kanpachi_top_areas}で1〜{kanpachi_cnt_max}匹レンジ・"
+            "<b>カンパチ</b>は{kanpachi_top_areas}で{kanpachi_cnt_range}・"
             "<b>{kanpachi_kg_min:.1f}〜{kanpachi_kg_max:.2f}kg</b>。"
             "{kanpachi_top_ship}が大物記録を出した遠征便で、近海では狙えないサイズ帯です。"
         ),
@@ -695,8 +692,8 @@ F_TEMPLATES = [
             ("maruika_cnt_max", ">=", 30),
         ],
         "text": (
-            "<b>マルイカ</b>は{maruika_top_areas}で{maruika_cnt_min}〜{maruika_cnt_max}匹。"
-            "{maruika_top_ship}が継続的な好実績で、剣崎沖の良型群が継続中です。"
+            "<b>マルイカ</b>は{maruika_top_areas}で{maruika_cnt_range}。"
+            "本日は{maruika_top_ship}で良型が記録されています。"
         ),
     },
     {
@@ -707,7 +704,7 @@ F_TEMPLATES = [
             ("yariika_cnt_max", ">=", 15),
         ],
         "text": (
-            "<b>ヤリイカ</b>は{yariika_top_areas}方面で{yariika_cnt_min}〜{yariika_cnt_max}匹。"
+            "<b>ヤリイカ</b>は{yariika_top_areas}方面で{yariika_cnt_range}。"
             "{yariika_top_ship}など継続的に良型が記録されています。"
         ),
     },
@@ -719,7 +716,7 @@ F_TEMPLATES = [
             ("fugu_cnt_max", "<", 15),
         ],
         "text": (
-            "<b>フグ</b>は{fugu_top_areas}方面で{fugu_cnt_min}〜{fugu_cnt_max}匹。"
+            "<b>フグ</b>は{fugu_top_areas}方面で{fugu_cnt_range}。"
             "少数ながらコンスタントに記録があり、シーズン後半の手堅い狙い目です。"
         ),
     },
@@ -731,7 +728,7 @@ F_TEMPLATES = [
             ("surumeika_cnt_max", ">=", 5),
         ],
         "text": (
-            "<b>スルメイカ</b>は{surumeika_top_areas}方面で{surumeika_cnt_min}〜{surumeika_cnt_max}匹。"
+            "<b>スルメイカ</b>は{surumeika_top_areas}方面で{surumeika_cnt_range}。"
             "ローテーション釣行に組み込みやすい魚種です。"
         ),
     },

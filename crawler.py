@@ -12807,14 +12807,22 @@ def _ship_load_monthly_archive(ship_name, max_months=13):
                                 fish_cnt_sum.setdefault(fish, []).append(cnt)
                         except (ValueError, TypeError):
                             pass
+                        # 魚種別の妥当範囲（_FISH_SIZE_RANGE_MAP）で異常値除外
+                        _range = _FISH_SIZE_RANGE_MAP.get(fish, {})
+                        _cm_cap = _range.get("cm_max")
+                        _kg_cap = _range.get("kg_max")
                         try:
                             sm = float(row.get("size_max") or 0)
+                            if _cm_cap is not None and sm > _cm_cap:
+                                sm = 0  # 異常値は集計から除外
                             if sm > fish_size_max.get(fish, 0):
                                 fish_size_max[fish] = sm
                         except (ValueError, TypeError):
                             pass
                         try:
                             km = float(row.get("kg_max") or 0)
+                            if _kg_cap is not None and km > _kg_cap:
+                                km = 0  # 異常値は集計から除外（例: アジ 8.8kg）
                             if km > fish_kg_max.get(fish, 0):
                                 fish_kg_max[fish] = km
                         except (ValueError, TypeError):

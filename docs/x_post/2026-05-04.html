@@ -4,12 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>5/4(月) 関東船釣り 釣果まとめ | 船釣り予想</title>
-<meta name="description" content="5/4(月) 関東5県の船釣り釣果まとめ。14船宿・1魚種・2件の釣果報告と海況レポート。ムギイカ3〜27匹など。">
+<meta name="description" content="5/4(月) 関東5県の船釣り釣果速報。釣果は現在集計中で、船宿からの公開後に順次反映します。">
 <meta property="og:title" content="5/4(月) 関東船釣り 釣果まとめ | 船釣り予想">
-<meta property="og:description" content="5/4(月) 関東5県の船釣り釣果まとめ。14船宿・1魚種・2件の釣果報告と海況レポート。ムギイカ3〜27匹など。">
+<meta property="og:description" content="5/4(月) 関東5県の船釣り釣果速報。釣果は現在集計中で、船宿からの公開後に順次反映します。">
 <meta property="og:image" content="https://funatsuri-yoso.com/x_post/2026-05-04.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="船釣り予想">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<meta name="twitter:title" content="5/4(月) 関東船釣り 釣果まとめ | 船釣り予想">
+<meta name="twitter:description" content="5/4(月) 関東5県の船釣り釣果速報。釣果は現在集計中で、船宿からの公開後に順次反映します。">
+<meta name="twitter:image" content="https://funatsuri-yoso.com/x_post/2026-05-04.png?v=2">
 <link rel="canonical" href="https://funatsuri-yoso.com/x_post/2026-05-04.html">
 <style>
 :root {
@@ -25,6 +32,11 @@
   --port: #0a7ea4;
   --warn: #c44402;
   --good: #06d6a0;
+  /* 統一 navbar 用（design/V2/style.css と同期） */
+  --hdr: #0d2b4a;
+  --nav: #f0f3f7;
+  --white: #fff;
+  --prem: #7c3aed;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -34,15 +46,54 @@ body {
   line-height: 1.7;
   font-size: 15px;
 }
-.gnav {
-  background: var(--accent);
+/* 統一 navbar（design/V2/style.css と同等。サイト全体と統一） */
+header {
+  background: var(--hdr);
+  color: var(--white);
   padding: 12px 20px;
+  border-bottom: 3px solid var(--cta);
+}
+header .inner {
+  max-width: 880px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.gnav .logo { color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; }
-.gnav nav a { color: #fff; font-size: 12px; margin-left: 14px; text-decoration: none; opacity: .85; }
+header .site-logo { text-decoration: none; }
+header h1 { font-size: 19px; font-weight: 700; color: var(--white); }
+header h1 span { color: var(--cta); }
+header .domain { font-size: 11px; opacity: .5; color: var(--white); }
+nav.gnav {
+  background: var(--nav);
+  padding: 7px 20px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+nav.gnav a {
+  color: var(--sub);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 16px;
+  text-decoration: none;
+}
+nav.gnav a:hover,
+nav.gnav a.on { background: var(--accent); color: var(--white); text-decoration: none; }
+nav.gnav a.prem { color: var(--prem); }
+nav.gnav a.prem::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--prem);
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
 .wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
 .crumbs { font-size: 12px; color: var(--sub); margin-bottom: 14px; }
 .crumbs a { color: var(--port); text-decoration: none; }
@@ -240,24 +291,56 @@ body {
 .char-count { font-size: 11px; color: var(--sub); margin-top: 12px; text-align: right; border-top: 1px dashed var(--border); padding-top: 8px; }
 .char-count b { color: var(--good); font-weight: 800; }
 footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11px; text-align: center; padding: 16px; margin-top: 40px; }
+.share-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 18px; align-items: center; }
+.share-bar a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; border: 1px solid var(--border); transition: opacity .15s; }
+.share-x { background: #000; color: #fff; border-color: #000; }
+.share-x:hover { opacity: .85; }
+.share-follow { background: #fff; color: var(--accent); }
+.share-follow:hover { background: var(--bg-alt); }
+/* 0件日: 集計中通知 */
+.empty-day-notice {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--port);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-top: 8px;
+}
+.empty-day-notice .ed-main { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.empty-day-notice .ed-sub  { font-size: 13px; color: var(--sub); margin-bottom: 14px; }
+.empty-day-notice .ed-recent-title {
+  font-size: 11px; color: var(--sub); font-weight: 800;
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+}
+.empty-day-notice .ed-recent-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.empty-day-notice .ed-recent-list li { font-size: 14px; }
+.empty-day-notice .ed-recent-list a { color: var(--port); font-weight: 700; text-decoration: none; }
+.empty-day-notice .ed-recent-list a:hover { text-decoration: underline; }
+.empty-day-notice .ed-stat { color: var(--sub); font-size: 13px; margin-left: 4px; }
 @media (max-width: 600px) {
   .hl-grid, .umi-grid { grid-template-columns: 1fr; }
   .fish-row { grid-template-columns: 40px 90px 90px 1fr; }
   .fish-row .port { display: none; }
+  .share-bar a { padding: 7px 12px; font-size: 12px; }
 }
 </style>
 </head>
 <body>
 
-<header class="gnav">
-  <a class="logo" href="/">船釣り予想</a>
-  <nav>
-    <a href="/">トップ</a>
-    <a href="/calendar.html">カレンダー</a>
-    <a href="/x_post/">釣果速報</a>
-    <a href="/pages/about.html">サイトについて</a>
-  </nav>
+<header>
+  <div class="inner">
+    <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <span class="domain">funatsuri-yoso.com</span>
+  </div>
 </header>
+<nav class="gnav">
+  <a href="/">今日の釣果</a>
+  <a href="/x_post/" class="on">釣果速報</a>
+  <a href="/fish/">魚種</a>
+  <a href="/area/">エリア</a>
+  <a href="/calendar.html">カレンダー</a>
+  <a href="/forecast/" class="prem">有料プラン</a>
+</nav>
 
 <div class="wrap">
 
@@ -265,59 +348,37 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
     <a href="/">トップ</a> &raquo; <a href="/x_post/">釣果速報</a> &raquo; 5/4(月) 釣果まとめ
   </div>
 
+  <div class="share-bar" role="group" aria-label="シェア"><a class="share-x" href="https://twitter.com/intent/tweet?text=5/4%28%E6%9C%88%29%20%E3%81%AE%E9%96%A2%E6%9D%B1%E8%88%B9%E9%87%A3%E3%82%8A%E9%87%A3%E6%9E%9C%E3%81%BE%E3%81%A8%E3%82%81%20%7C%20%E8%88%B9%E9%87%A3%E3%82%8A%E4%BA%88%E6%83%B3&url=https%3A//funatsuri-yoso.com/x_post/2026-05-04.html&hashtags=%E8%88%B9%E9%87%A3%E3%82%8A%2C%E9%87%A3%E6%9E%9C" target="_blank" rel="noopener nofollow" aria-label="X（旧Twitter）でシェア">𝕏 でシェア</a><a class="share-follow" href="https://twitter.com/intent/follow?screen_name=funatsuri_yoso" target="_blank" rel="noopener nofollow" aria-label="@funatsuri_yoso をフォロー">フォロー</a></div>
+
   <div class="hero">
     <h1>5/4(月) 関東船釣り 釣果まとめ</h1>
     <div class="sub">2026-05-04（中潮・十六夜）｜神奈川・東京・千葉・茨城・静岡</div>
     <div class="stats">
-      <span class="stat"><b>14</b>船宿出船</span>
-      <span class="stat"><b>1</b>魚種</span>
-      <span class="stat"><b>2</b>件の釣果報告</span>
+      <span class="stat"><b>12</b>船宿出船</span>
+      <span class="stat"><b>0</b>魚種</span>
+      <span class="stat"><b>0</b>件の釣果報告</span>
       
     </div>
   </div>
 
   <section class="sec">
     <h2><span class="num">1</span>今日のハイライト</h2>
-<p class="lead">5/4(月)は<b>14船宿</b>が出船し、<b>1魚種</b>で<b>2件</b>の釣果報告が寄せられました。5月上旬の釣況をデータでお届けします。</p>
-    <div class="hl-grid">
-      <div class="hl-card">
-        <div class="label">数の好調</div>
-        <div class="target">ムギイカ</div>
-        <div class="val">3〜27匹</div>
-        <div class="meta">沼津静浦｜第八幸松丸<br>先週比 <span class="up">+0%</span></div>
-      </div>
-    </div>
-<div class="commentary"><p>5/4(月)は釣果報告が2件と控えめでした。それでも出船した船宿からはムギイカの手堅い釣果が報告されており、明日以降の好転に期待が持てます。</p></div>
+
+
+<div class="empty-day-notice"><p class="ed-main">5/4(月)の釣果は現在集計中です。</p><p class="ed-sub">船宿からの釣果公開後、順次反映します。</p><div class="ed-recent"><div class="ed-recent-title">直近の釣果を見る</div><ul class="ed-recent-list"><li><a href="./2026-05-03.html">5/3(日)</a> <span class="ed-stat">18船宿・35件</span></li><li><a href="./2026-05-02.html">5/2(土)</a> <span class="ed-stat">5船宿・7件</span></li></ul></div></div>
   </section>
 
   <section class="sec">
     <h2><span class="num">2</span>海況レポート</h2>
-<p class="sea-summary">水温は平年並み（17.7℃）。波1.9m・風8m/sでやや荒れ気味。</p>
-<div class="sea-pair"><div class="sea-section"><div class="sea-section-title">内海（東京湾・相模湾）</div><div class="sea-grid"><div class="sea-item"><div class="sv">17.7℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">1.9m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">南南西8.2m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">十六夜</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">999hPa</div><div class="sl2">気圧</div></div></div></div><div class="sea-section"><div class="sea-section-title">外海（外房・銚子方面）</div><div class="sea-grid"><div class="sea-item"><div class="sv">16.6℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">3.5m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">南西16.9m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">十六夜</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">1000hPa</div><div class="sl2">気圧</div></div></div></div></div>
-<div class="ship-rate-bar warn">出船率 <b>14%</b>（14船宿中・12欠航）</div>
+<p class="sea-summary">水温は平年並み（17.7℃）。波1.9m・風8m/sの暴風で欠航警戒。</p>
+<div class="sea-pair"><div class="sea-section"><div class="sea-section-title">内海（東京湾・相模湾）</div><div class="sea-grid"><div class="sea-item"><div class="sv">17.7℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">1.9m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">南南西8.2m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">十六夜</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">1000hPa</div><div class="sl2">気圧</div></div></div></div><div class="sea-section"><div class="sea-section-title">外海（外房・銚子方面）</div><div class="sea-grid"><div class="sea-item"><div class="sv">16.6℃</div><div class="sl2">水温</div></div><div class="sea-item"><div class="sv">3.5m</div><div class="sl2">波高</div></div><div class="sea-item"><div class="sv">南西16.9m/s</div><div class="sl2">風</div></div><div class="sea-item"><div class="sv">中潮</div><div class="sl2">潮汐</div></div><div class="sea-item"><div class="sv">十六夜</div><div class="sl2">月相</div></div><div class="sea-item"><div class="sv">1002hPa</div><div class="sl2">気圧</div></div></div></div></div>
 
-<div class="commentary"><p>本日は<b>関東一帯が荒天に見舞われた厳しい一日</b>。12船宿が欠航となり、出船率は低い水準。本日の少ない出船便でもムギイカが記録されており、海況回復後の好機到来の可能性があります。</p></div>
+
   </section>
 
-  <section class="sec">
-    <h2><span class="num">3</span>魚種別 釣果報告</h2>
-    <p class="lead">
-      本日の全1魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
-    </p>
-    <div class="fish-list">
-      <div class="fish-row">
-        <img class="icon" src="../assets/fish/mugiika/mugiika_emoji.webp" alt="ムギイカ" onerror="this.style.display='none'">
-        <div class="name"><a href="../fish/mugiika.html" class="fl">ムギイカ</a><span class="badge">2便</span></div>
-        <div class="catch">3〜27匹</div>
-        <span class="size">15〜30cm</span>
-        <div class="port"><a href="../area/numazu-naiko.html" class="pl">沼津内港</a>・<a href="../area/numazu-shizuura.html" class="pl">沼津静浦</a></div>
-      </div>
-    </div>
-<div class="commentary"><p>本日は1魚種のみという特殊な構成。ムギイカが記録の大部分を占め、シーズン的に他魚種が動きにくい時期に入ったのか、海況に偏りがあった可能性があります。
-本日は件数こそ控えめでしたが、出船した船宿からはムギイカの手堅い釣果が記録されました。明日以降の好転に期待です。</p></div>
-  </section>
 
-<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション"><span class="prev7 disabled" aria-disabled="true"><small>← 7日前</small>4/27(月)（記録なし）</span><a class="prev" href="./2026-05-03.html"><small>← 前日</small>5/3(日) の釣果まとめ</a><a class="archive-cta" href="./"><small>全日程</small>一覧へ</a><a class="next" href="./2026-05-05.html"><small>翌日 →</small>5/5(火) の釣果まとめ</a><span class="next7 disabled" aria-disabled="true"><small>7日後 →</small>5/11(月)（記録なし）</span></nav>
+
+<nav class="day-nav day-nav-5" aria-label="日付ナビゲーション"><span class="prev7 disabled" aria-disabled="true"><small>← 7日前</small>4/27(月)（記録なし）</span><a class="prev" href="./2026-05-03.html"><small>← 前日</small>5/3(日) の釣果まとめ</a><a class="archive-cta" href="./"><small>全日程</small>一覧へ</a><a class="next" href="./2026-05-05.html"><small>翌日 →</small>5/5(火) の釣果まとめ</a><a class="next7" href="./2026-05-11.html"><small>7日後 →</small>5/11(月)</a></nav>
 
   <div class="related">
     <h3>関連ページ</h3>

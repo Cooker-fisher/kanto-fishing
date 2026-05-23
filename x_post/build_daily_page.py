@@ -510,10 +510,12 @@ def _fish_table_rows_html(fish_rows, depth="../"):
 
         fish_link = _fish_link_html(fish_name, depth)
         port_links = _port_links_html(top_port, depth)
+        # min==max のとき単一表記化（「1〜1匹」のような重複を排除）
+        catch_text = f"{cnt_max}匹" if cnt_min == cnt_max else f"{cnt_min}〜{cnt_max}匹"
         rows.append(f"""      <div class="fish-row">
         {icon_html}
         <div class="name">{fish_link}<span class="badge">{n_trips}便</span></div>
-        <div class="catch">{cnt_min}〜{cnt_max}匹</div>
+        <div class="catch">{catch_text}</div>
         {size_html}
         <div class="port">{port_links}</div>
       </div>""")
@@ -549,7 +551,7 @@ def _x_card_table_rows_html(fish_rows):
             f'<img src="{icon_path}" alt="{fish_name}" onerror="this.style.display=\'none\'">'
             f'<span class="n">{fish_name}</span>'
             f'<span class="b">{n_trips}便</span></div></td>'
-            f'<td><span class="xc">{cnt_min}〜{cnt_max}匹</span></td>'
+            f'<td><span class="xc">{cnt_max}匹</span></td>' if cnt_min == cnt_max else f'<td><span class="xc">{cnt_min}〜{cnt_max}匹</span></td>'
             f'<td>{size_html}</td>'
             f'<td class="xp">{top_port}</td></tr>'
         )
@@ -706,15 +708,16 @@ def _hl_cards_html(ctx):
         <div class="label">大物記録</div>
         <div class="target">{top_kg_fish}</div>
         <div class="val">{top_kg_min:.1f}〜{top_kg_max:.2f}kg</div>
-        <div class="meta">{top_kg_port}｜{top_kg_ship}<br>過去5年同旬比 <span class="up">&times;{season_ratio_top_kg:.1f}倍</span></div>
+        <div class="meta">{top_kg_port}｜{top_kg_ship}</div>
       </div>"""
 
     cnt_card = ""
     if top_cnt_fish and top_cnt_max > 0:
+        _cnt_val = f"{top_cnt_max}匹" if top_cnt_min == top_cnt_max else f"{top_cnt_min}〜{top_cnt_max}匹"
         cnt_card = f"""      <div class="hl-card">
         <div class="label">数の好調</div>
         <div class="target">{top_cnt_fish}</div>
-        <div class="val">{top_cnt_min}〜{top_cnt_max}匹</div>
+        <div class="val">{_cnt_val}</div>
         <div class="meta">{top_cnt_port}｜{top_cnt_ship}<br>先週比 <span class="up">{wow_pct_str}</span></div>
       </div>"""
 

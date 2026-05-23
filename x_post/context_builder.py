@@ -28,6 +28,39 @@ _PELAGIC_FISH = {"カンパチ", "ハマチ", "ブリ", "ワラサ", "イナダ"
 # レア魚種（初接岸シグナル用）
 _RARE_FISH = {"カンパチ", "シイラ", "カツオ", "キハダマグロ"}
 
+# 魚種別の妥当 kg/cm 上限（CSV 誤入力フィルタ用）
+# crawler.py:_FISH_SIZE_RANGE_MAP と同期して維持すること（DRY 違反だが循環依存回避のため重複）
+_FISH_KG_MAX = {
+    "アジ": 2, "ビシアジ": 3, "シマアジ": 8, "サバ": 2,
+    "マダイ": 15, "クロダイ": 4, "ハナダイ": 2, "イサキ": 2,
+    "タチウオ": 5, "シロギス": 1, "カワハギ": 1, "カレイ": 3,
+    "ヒラメ": 10, "マゴチ": 4, "ホウボウ": 2, "メバル": 1,
+    "カサゴ": 2, "アマダイ": 3, "シロアマダイ": 3, "オニカサゴ": 2,
+    "クロムツ": 3, "アカムツ": 2, "キンメダイ": 3, "アコウダイ": 4,
+    "ベニアコウ": 8, "メヌケ": 4, "マハタ": 15, "ハタ": 15,
+    "イシダイ": 3, "カンパチ": 25, "ブリ": 20, "ワラサ": 10,
+    "イナダ": 5, "サワラ": 8, "シイラ": 15, "カツオ": 15,
+    "キハダマグロ": 60, "マルイカ": 1, "ヤリイカ": 2, "スルメイカ": 2,
+    "ムギイカ": 1, "アオリイカ": 4, "コウイカ": 3, "モンゴウイカ": 4,
+    "タコ": 5, "ヒラマサ": 15, "メジナ": 3, "イシモチ": 1,
+    "キントキ": 2, "アナゴ": 1, "ウマヅラハギ": 1, "メダイ": 10,
+}
+_FISH_CM_MAX = {
+    "アジ": 50, "ビシアジ": 60, "シマアジ": 80, "サバ": 50,
+    "マダイ": 100, "クロダイ": 60, "ハナダイ": 50, "イサキ": 50,
+    "タチウオ": 150, "シロギス": 35, "カワハギ": 35, "カレイ": 60,
+    "ヒラメ": 100, "マゴチ": 80, "ホウボウ": 50, "メバル": 35,
+    "カサゴ": 40, "アマダイ": 60, "シロアマダイ": 60, "オニカサゴ": 50,
+    "クロムツ": 60, "アカムツ": 50, "キンメダイ": 50, "アコウダイ": 60,
+    "ベニアコウ": 80, "メヌケ": 60, "マハタ": 100, "ハタ": 100,
+    "イシダイ": 60, "カンパチ": 120, "ブリ": 120, "ワラサ": 90,
+    "イナダ": 60, "サワラ": 100, "シイラ": 150, "カツオ": 80,
+    "キハダマグロ": 200, "マルイカ": 30, "ヤリイカ": 50, "スルメイカ": 40,
+    "ムギイカ": 25, "アオリイカ": 50, "コウイカ": 40, "モンゴウイカ": 40,
+    "タコ": 60, "ヒラマサ": 120, "メジナ": 50, "イシモチ": 40,
+    "キントキ": 40, "アナゴ": 80, "ウマヅラハギ": 35, "メダイ": 100,
+}
+
 # 旬ラベル変換
 _DECADE_LABELS = {
     **{i: f"{(i-1)//3+1}月{'上' if (i-1)%3==0 else ('中' if (i-1)%3==1 else '下')}旬"
@@ -414,34 +447,42 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
                     "port": c.get("area", ""),
                 }
 
-    # top_kg (最大重量)
+    # top_kg (最大重量) ※魚種別の妥当上限 _FISH_KG_MAX を超える値は CSV 誤入力として除外
     top_kg_data = None
     best_kg_max = 0.0
     for c in day_catches:
         wk = c.get("weight_kg") or {}
         if isinstance(wk, dict):
             kmax = wk.get("max") or 0
+            _fish = (c.get("fish") or ["不明"])[0]
+            _kg_cap = _FISH_KG_MAX.get(_fish)
+            if _kg_cap is not None and kmax > _kg_cap:
+                continue  # 例: アジ 10kg は除外
             if kmax > best_kg_max:
                 best_kg_max = kmax
                 top_kg_data = {
-                    "fish": (c.get("fish") or ["不明"])[0],
+                    "fish": _fish,
                     "kg_max": kmax,
                     "kg_min": wk.get("min") or 0,
                     "ship": c.get("ship", ""),
                     "port": c.get("area", ""),
                 }
 
-    # top_cm (最大サイズ)
+    # top_cm (最大サイズ) ※魚種別の妥当上限 _FISH_CM_MAX を超える値は CSV 誤入力として除外
     top_cm_data = None
     best_cm_max = 0
     for c in day_catches:
         sc = c.get("size_cm") or {}
         if isinstance(sc, dict):
             cmax = sc.get("max") or 0
+            _fish = (c.get("fish") or ["不明"])[0]
+            _cm_cap = _FISH_CM_MAX.get(_fish)
+            if _cm_cap is not None and cmax > _cm_cap:
+                continue
             if cmax > best_cm_max:
                 best_cm_max = cmax
                 top_cm_data = {
-                    "fish": (c.get("fish") or ["不明"])[0],
+                    "fish": _fish,
                     "cm_max": sc.get("max") or 0,
                     "cm_min": sc.get("min") or 0,
                     "ship": c.get("ship", ""),
@@ -574,9 +615,9 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     # 主力魚種リスト（件数降順・全件。fish_rows は全魚種を表示する）
     top_fish_list = sorted(fish_counter, key=lambda f: fish_counter[f], reverse=True)[:30]
     mainstream_count = min(len(top_fish_list), 3)
-    opportunistic_count = len([f for f in top_fish_list if f in _RARE_FISH or _PELAGIC_FISH])
+    opportunistic_count = len([f for f in top_fish_list if (f in _RARE_FISH) or (f in _PELAGIC_FISH)])
     mainstream_fish_list = "・".join(top_fish_list[:3]) if top_fish_list else "各魚種"
-    opportunistic_fish_list = "・".join([f for f in top_fish_list if f in _PELAGIC_FISH]) or "青物系"
+    opportunistic_fish_list = "・".join([f for f in top_fish_list if (f in _RARE_FISH) or (f in _PELAGIC_FISH)]) or "単発魚種"
 
     # 魚種別データ（F2-F11 用）
     def _fish_data(fish_name):
@@ -632,10 +673,20 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
             fish_ctx[f"{key}_top_areas"] = d["top_areas"]
             fish_ctx[f"{key}_top_ship"] = d["top_ship"]
             fish_ctx[f"{key}_top_count"] = d["cnt_max"]
+            # min==max のとき単一表記の事前整形フィールド
+            _cmin, _cmax = d["cnt_min"], d["cnt_max"]
+            fish_ctx[f"{key}_cnt_range"] = f"{_cmax}匹" if _cmin == _cmax else f"{_cmin}〜{_cmax}匹"
+            _smin, _smax = d["cm_min"], d["cm_max"]
+            if _smax and _smax > 0:
+                fish_ctx[f"{key}_cm_range"] = f"{_smax}cm" if _smin == _smax else f"{_smin}〜{_smax}cm"
+            else:
+                fish_ctx[f"{key}_cm_range"] = ""
         else:
             for suffix in ["cnt_max", "cnt_min", "kg_max", "kg_min", "cm_max", "cm_min",
                            "top_areas", "top_ship", "top_count"]:
                 fish_ctx[f"{key}_{suffix}"] = 0 if "max" in suffix or "min" in suffix else ""
+            fish_ctx[f"{key}_cnt_range"] = ""
+            fish_ctx[f"{key}_cm_range"] = ""
 
     # fish_rows: B案 PNG / テーブル用（全魚種を含める。HTML テーブル側は全件表示・PNG 側は build_daily_page で制限）
     fish_rows = []
@@ -850,6 +901,11 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         "top_cnt_fish": (top_cnt_data or {}).get("fish", ""),
         "top_cnt_max": (top_cnt_data or {}).get("cnt_max", 0),
         "top_cnt_min": _top_cnt_min_unified,  # 全便 min（hl-card と fish-list で同値）
+        "top_cnt_range": (
+            f"{(top_cnt_data or {}).get('cnt_max', 0)}匹"
+            if _top_cnt_min_unified == (top_cnt_data or {}).get("cnt_max", 0)
+            else f"{_top_cnt_min_unified}〜{(top_cnt_data or {}).get('cnt_max', 0)}匹"
+        ),
         "top_cnt_ship": (top_cnt_data or {}).get("ship", ""),
         "top_cnt_port": (top_cnt_data or {}).get("port", ""),
         "wow_pct_top_cnt": wow_pct_top_cnt,
