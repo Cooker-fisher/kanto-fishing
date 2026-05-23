@@ -13737,6 +13737,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     url=page_url,
 )}
 {ld_json}
+{ADSENSE_TAG}
 <link rel="stylesheet" href="../style.css">
 <style>{_SHIP_EXTRA_CSS}</style>
 </head>
@@ -13796,7 +13797,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 {phone_cta_block}
 </div>
 
-<div class="ad-slot">広告スペース（レクタングル）</div>
+<ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({{}});</script>
 
 {monthly_archive_html}
 
