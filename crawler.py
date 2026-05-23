@@ -13473,6 +13473,101 @@ def _ship_trophy_section_html(trophies):
     )
 
 
+def _ship_load_auto_badges(ship_name, today_dt, yearly, seasonal, trophies):
+    """E HEROバッジ自動生成。月別キャッシュ対応。
+    返り値: [{'kind': 'spec/rate/rank/vol/season', 'label': str, 'sub': str, 'fish': str|None}, ...]
+    """
+    cache = _ship_load_monthly_cache(today_dt)
+    if ship_name in cache and "badges" in (cache[ship_name] or {}):
+        return cache[ship_name]["badges"]
+    badges = []
+    if not yearly:
+        cache.setdefault(ship_name, {})["badges"] = []
+        return []
+    total_fish_count = sum(fi["count"] for fi in yearly.get("top_fish", []))
+    # 1. 専門船 (主要魚種 ≥ 50%)
+    if yearly["top_fish"] and total_fish_count > 0:
+        top1 = yearly["top_fish"][0]
+        pct = round(top1["count"] / total_fish_count * 100)
+        if pct >= 50:
+            badges.append({"kind": "spec", "label": f"{top1['fish']}専門", "sub": f"{pct}%", "fish": top1["fish"]})
+    # 2. 出船率 (≥ 95%)
+    if yearly["rate"] >= 95:
+        badges.append({"kind": "rate", "label": "出船率", "sub": f"{yearly['rate']}%", "fish": None})
+    # 3. 順位 (全船宿中 1〜3 位)
+    for t in trophies or []:
+        if t["rank"] <= 3:
+            val_str = f'{round(t["value"], 1)}kg' if t["unit"] == "kg" else f'{int(t["value"])}cm'
+            badges.append({
+                "kind": "rank", "label": f'{t["fish"]} {val_str}',
+                "sub": f'全船宿中 {t["rank"]}/{t["n_ships"]}位', "fish": t["fish"],
+            })
+            break
+    # 4. 便数 (年間 ≥ 500)
+    if yearly["total_trips"] >= 500:
+        badges.append({"kind": "vol", "label": "年間出船", "sub": f"{yearly['total_trips']}便", "fish": None})
+    # 5. 季節得意 (季節 TOP1 魚種で年間 100便以上)
+    if seasonal:
+        max_s, max_fish, max_n = None, None, 0
+        for sname in ("春", "夏", "秋", "冬"):
+            fishes = seasonal.get(sname, []) or []
+            if fishes and fishes[0]["count"] > max_n:
+                max_s = sname
+                max_fish = fishes[0]["fish"]
+                max_n = fishes[0]["count"]
+        if max_s and max_n >= 30:
+            badges.append({
+                "kind": "season", "label": f"{max_s}{max_fish}",
+                "sub": f"{max_n}便", "fish": max_fish,
+            })
+    badges = badges[:5]
+    cache.setdefault(ship_name, {})["badges"] = badges
+    return badges
+
+
+def _ship_auto_badges_html(badges):
+    """E HEROバッジ HTML を返す (HERO 内に挿入)"""
+    if not badges:
+        return ""
+    import html as _html
+    ICONS = {"rate": "✓", "rank": "🥈", "vol": "📅", "season": "🌟"}
+    SEASON_ICONS = {"春": "🌸", "夏": "☀️", "秋": "🍁", "冬": "❄️"}
+    items = []
+    for b in badges:
+        kind = b["kind"]
+        fish_img_html = ""
+        if b.get("fish"):
+            fish_slug = _FISH_ROMAJI.get(b["fish"], "")
+            if fish_slug:
+                fish_img_html = f'<img class="sh-ab-fish-img" width="14" height="14" src="../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" alt="{_html.escape(b["fish"])}" onerror="this.style.display=\'none\'">'
+        icon_html = ""
+        if kind == "rank":
+            t_rank = b["sub"].split("/")[0].replace("全船宿中 ", "").strip()
+            icon_html = f'<span class="sh-ab-icon">{"🥇" if t_rank == "1" else ("🥈" if t_rank == "2" else "🥉")}</span>'
+        elif kind == "season":
+            for sname, ico in SEASON_ICONS.items():
+                if b["label"].startswith(sname):
+                    icon_html = f'<span class="sh-ab-icon">{ico}</span>'
+                    break
+        elif kind == "rate":
+            icon_html = '<span class="sh-ab-icon">✓</span>'
+        elif kind == "vol":
+            icon_html = '<span class="sh-ab-icon">📅</span>'
+        sub_html = f'<span class="sh-ab-sub">{_html.escape(b["sub"])}</span>' if b.get("sub") else ""
+        items.append(
+            f'<span class="sh-ab {kind}">'
+            f'{icon_html}'
+            f'{fish_img_html}'
+            f'{_html.escape(b["label"])}'
+            f'{sub_html}'
+            f'</span>'
+        )
+    return (
+        '<div class="sub-label">🤖 データ分析バッジ</div>'
+        f'<div class="sh-auto-badges">{"".join(items)}</div>'
+    )
+
+
 def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
     """週次レポート HTML を返す。weekly が None or 今週 trips == 0 なら空文字列。
     weekly: _ship_load_weekly_data() の出力
