@@ -13007,6 +13007,240 @@ def _ship_load_monthly_archive(ship_name, max_months=13):
     return result
 
 
+def _ship_load_yearly_summary(ship_name, today_dt):
+    """B 年間サマリー集計 (過去12ヶ月) + B+ 用データを返す。月別キャッシュ対応。
+    返り値: {
+      period_start, period_end (YYYY-MM),
+      total_trips, total_cancels, rate,
+      top_fish: [{fish, count, avg_min, avg_max, max_cnt, max_kg, max_size, unit}] TOP3
+    }
+    """
+    cache = _ship_load_monthly_cache(today_dt)
+    if ship_name in cache and "yearly" in (cache[ship_name] or {}):
+        return cache[ship_name]["yearly"]
+    months = _ship_load_monthly_archive(ship_name, max_months=12)
+    if not months:
+        result = None
+    else:
+        from collections import Counter
+        total_trips = sum(m["trips"] for m in months)
+        total_cancels = sum(m["cancels"] for m in months)
+        total = total_trips + total_cancels
+        rate = round(total_trips / total * 100) if total else 0
+        # 年間 TOP3 + 詳細 (cnt_min/max 平均・max値)
+        fish_count = Counter()
+        for m in months:
+            for fi in m.get("fish", []):
+                fish_count[fi["fish"]] += fi["count"]
+        top3 = fish_count.most_common(3)
+        # 各 TOP3 の詳細: 全期間 CSV から cnt_min/cnt_max 集計
+        top_fish_detail = []
+        for fish, n in top3:
+            cnt_mins, cnt_maxes, max_kg, max_size = [], [], 0, 0
+            month_keys = [m["month"] for m in months]
+            for month_key in month_keys:
+                for fname in (f"{month_key}.csv", f"chowari_{month_key}.csv"):
+                    p = os.path.join(_DATA_DIR, fname)
+                    if not os.path.exists(p):
+                        continue
+                    try:
+                        with open(p, encoding="utf-8") as fp:
+                            for r in csv.DictReader(fp):
+                                if r.get("ship") != ship_name:
+                                    continue
+                                if r.get("tsuri_mono") != fish:
+                                    continue
+                                try:
+                                    cn = float(r.get("cnt_min") or 0)
+                                    if cn > 0: cnt_mins.append(cn)
+                                except: pass
+                                try:
+                                    cx = float(r.get("cnt_max") or 0)
+                                    if cx > 0: cnt_maxes.append(cx)
+                                except: pass
+                                try:
+                                    km = float(r.get("kg_max") or 0)
+                                    if km > max_kg: max_kg = km
+                                except: pass
+                                try:
+                                    sm = float(r.get("size_max") or 0)
+                                    if sm > max_size: max_size = sm
+                                except: pass
+                    except Exception:
+                        continue
+            avg_min = round(sum(cnt_mins) / len(cnt_mins), 1) if cnt_mins else 0
+            avg_max = round(sum(cnt_maxes) / len(cnt_maxes), 1) if cnt_maxes else 0
+            max_cnt = int(max(cnt_maxes)) if cnt_maxes else 0
+            unit = _fish_unit(fish)
+            top_fish_detail.append({
+                "fish": fish, "count": n,
+                "avg_min": avg_min, "avg_max": avg_max, "max_cnt": max_cnt,
+                "max_kg": round(max_kg, 1) if max_kg > 0 else None,
+                "max_size": int(max_size) if max_size > 0 else None,
+                "unit": unit,
+            })
+        result = {
+            "period_start": months[-1]["month"], "period_end": months[0]["month"],
+            "total_trips": total_trips, "total_cancels": total_cancels, "rate": rate,
+            "top_fish": top_fish_detail,
+        }
+    cache.setdefault(ship_name, {})["yearly"] = result
+    return result
+
+
+# 規模カテゴリ (年間出船数)
+def _ship_size_category(total_trips):
+    if total_trips >= 500: return "大型船宿"
+    if total_trips >= 200: return "中規模船宿"
+    if total_trips >= 50:  return "小規模船宿"
+    return "小規模"
+
+
+# 季節分類 (春3-5月・夏6-8月・秋9-11月・冬12-2月)
+_SEASON_MAP = {
+    3: ("春", "spring"), 4: ("春", "spring"), 5: ("春", "spring"),
+    6: ("夏", "summer"), 7: ("夏", "summer"), 8: ("夏", "summer"),
+    9: ("秋", "autumn"), 10: ("秋", "autumn"), 11: ("秋", "autumn"),
+    12: ("冬", "winter"), 1: ("冬", "winter"), 2: ("冬", "winter"),
+}
+
+def _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies):
+    """B+ 船宿特徴文をデータから自動生成 (200-250字)。
+    yearly: _ship_load_yearly_summary 出力 / seasonal: _ship_load_seasonal_fish / trophies: TOP10入りデータ
+    """
+    if not yearly or not yearly.get("top_fish"):
+        return ""
+    size_cat = _ship_size_category(yearly["total_trips"])
+    top = yearly["top_fish"]
+    top1 = top[0]["fish"] if top else ""
+    top2_3 = [t["fish"] for t in top[1:3]] if len(top) > 1 else []
+    # 釣りジャンル推定 (主要魚種から)
+    def _genre(fishes):
+        kg_count = sum(1 for f in fishes if _fish_unit(f) == "kg")
+        if any(f in ("マハタ", "アカムツ", "クロムツ", "キンメダイ", "メダイ", "アラ") for f in fishes):
+            return "深場の高級魚を狙う五目釣り"
+        if any(f in ("マルイカ", "スルメイカ", "ヤリイカ", "アオリイカ", "ムギイカ") for f in fishes):
+            return "イカ狙い"
+        if any(f in ("タチウオ",) for f in fishes):
+            return "タチウオ専門"
+        if any(f in ("カツオ", "キハダマグロ", "ワラサ", "ブリ", "シイラ") for f in fishes):
+            return "青物・回遊魚狙い"
+        if "マダイ" in fishes:
+            return "マダイ五目"
+        if "アジ" in fishes:
+            return "アジ五目"
+        return f"{top1}メイン"
+    genre = _genre([top1] + top2_3)
+    # 季節分析: 最も便数の多い季節
+    season_str = ""
+    if seasonal:
+        max_season = None
+        max_cnt = 0
+        for s, fishes in seasonal.items():
+            cnt = sum(f["count"] for f in fishes) if fishes else 0
+            if cnt > max_cnt:
+                max_cnt = cnt
+                max_season = s
+        if max_season:
+            season_str = f"特に{max_season}に出船が多く"
+    # 大物実績文
+    trophy_str = ""
+    if trophies:
+        n = len(trophies)
+        top_fishes = list({t["fish"] for t in trophies[:3]})[:3]
+        if n >= 3 and top_fishes:
+            trophy_str = "・".join(top_fishes) + "など複数魚種で全船宿上位に名を連ねる"
+        elif n >= 1 and top_fishes:
+            trophy_str = f"{top_fishes[0]}が全船宿上位"
+    # 段落生成
+    paras = []
+    paras.append(f"{area}にある<strong>{ship_name}</strong>は、年間を通して安定した出船を続ける<strong>{size_cat}</strong>。")
+    if top2_3:
+        paras.append(f"主力釣りものは<strong>{top1}</strong>で、{('・'.join(top2_3))}など<strong>{genre}</strong>に強み。")
+    else:
+        paras.append(f"主力釣りものは<strong>{top1}</strong>で、<strong>{genre}</strong>を中心に出船。")
+    if season_str:
+        paras.append(f"{season_str}、年間を通してバランスよく釣果を上げる。")
+    if trophy_str:
+        paras.append(f"大物実績は<strong>関東トップクラス</strong>で、{trophy_str}。<strong>型狙いにも応える</strong>船宿。")
+    return "".join(f"<p>{p}</p>" for p in paras)
+
+
+def _ship_yearly_summary_section_html(yearly, ship_name, area, seasonal=None, trophies=None):
+    """B 年間サマリー (+ B+ 特徴文) HTML を返す"""
+    if not yearly:
+        return ""
+    import html as _html
+    period_start = yearly["period_start"]
+    period_end = yearly["period_end"]
+    try:
+        ps = datetime.strptime(period_start, "%Y-%m")
+        pe = datetime.strptime(period_end, "%Y-%m")
+        period_str = f"{ps.year}年{ps.month}月 〜 {pe.year}年{pe.month}月（過去12ヶ月）"
+    except Exception:
+        period_str = f"{period_start} 〜 {period_end}"
+    # B+ 特徴文
+    portrait_html = ""
+    portrait_text = _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies)
+    if portrait_text:
+        portrait_html = (
+            '<div class="ys-portrait">'
+            '<span class="ysp-label">📝 この船宿の特徴</span>'
+            f'{portrait_text}'
+            '</div>'
+        )
+    # KPI 3
+    kpi_html = (
+        '<div class="ys-kpi-grid">'
+        f'<div class="ys-kpi"><div class="ysk-n cta">{yearly["total_trips"]}<span style="font-size:13px">便</span></div><div class="ysk-l">年間出船数</div></div>'
+        f'<div class="ys-kpi"><div class="ysk-n">{yearly["rate"]}<span style="font-size:13px">%</span></div><div class="ysk-l">年間出船率</div><div class="ysk-sub">欠航 {yearly["total_cancels"]}便</div></div>'
+        f'<div class="ys-kpi"><div class="ysk-n">12<span style="font-size:13px">ヶ月</span></div><div class="ysk-l">記録期間</div><div class="ysk-sub">{period_start}〜{period_end}</div></div>'
+        '</div>'
+    )
+    # TOP3 魚種カード
+    cards = []
+    for i, fi in enumerate(yearly["top_fish"]):
+        medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
+        rank_cls = f"rank{i+1}"
+        fish_slug = _FISH_ROMAJI.get(fi["fish"], "")
+        img_src = f"../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" if fish_slug else ""
+        max_str = ""
+        if fi["max_kg"]:
+            max_str = f'{fi["max_kg"]} kg'
+        elif fi["max_size"]:
+            max_str = f'{fi["max_size"]} cm'
+        avg_str = f'{fi["avg_min"]}〜{fi["avg_max"]}匹' if (fi["avg_min"] > 0 or fi["avg_max"] > 0) else "—"
+        cnt_str = f'{fi["max_cnt"]}匹' if fi["max_cnt"] > 0 else "—"
+        img_html = f'<img class="ys-tf-img" src="{img_src}" alt="{_html.escape(fi["fish"])}" onerror="this.style.display=\'none\'">' if img_src else ''
+        cards.append(
+            f'<div class="ys-tf-card {rank_cls}">'
+            f'<span class="ys-tf-medal">{medal}</span>'
+            f'{img_html}'
+            f'<div class="ys-tf-head"><span class="ys-tf-name">{_html.escape(fi["fish"])}</span><span class="ys-tf-trips">{fi["count"]}便</span></div>'
+            f'<div class="ys-tf-stats">'
+            f'<span class="ystf-row">平均釣果 <strong>{avg_str}</strong></span>'
+            f'<span class="ystf-row">最大匹数 <strong>{cnt_str}</strong></span>'
+            f'<span class="ystf-row">最大型 <span class="ystf-max">{max_str if max_str else "—"}</span></span>'
+            f'</div>'
+            f'</div>'
+        )
+    top3_html = (
+        '<div class="ys-section">'
+        '<h4>🎣 年間 主要魚種 TOP3</h4>'
+        f'<div class="ys-top-fish">{"".join(cards)}</div>'
+        '</div>'
+    )
+    return (
+        '<div class="yearly-summary">'
+        '<span class="ys-label">📅 年間サマリー</span>'
+        f'<div class="ys-period">{period_str}</div>'
+        f'{portrait_html}'
+        f'{kpi_html}'
+        f'{top3_html}'
+        '</div>'
+    )
+
+
 def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
     """週次レポート HTML を返す。weekly が None or 今週 trips == 0 なら空文字列。
     weekly: _ship_load_weekly_data() の出力
