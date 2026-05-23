@@ -5266,77 +5266,23 @@ _FISH_BEGINNER_MAP = {
 # 妥当範囲外の cm/kg 値（CSV 誤入力）を異常値として除外するための魚種別上限マップ。
 # primary は「主単位」: cm 主流の魚は "cm"・kg 主流の大型魚は "kg"。
 # 範囲を保守的に設定（実際の最大記録より厳しめ）して明らかな異常値のみ除外。
-_FISH_SIZE_RANGE_MAP = {
-    "アジ":         {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "ビシアジ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
-    "シマアジ":     {"cm_max": 80,  "kg_max": 8,   "primary": "cm"},
-    "サバ":         {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "マダイ":       {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
-    "クロダイ":     {"cm_max": 60,  "kg_max": 4,   "primary": "cm"},
-    "ハナダイ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "イサキ":       {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "タチウオ":     {"cm_max": 150, "kg_max": 5,   "primary": "cm"},
-    "シロギス":     {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
-    "カワハギ":     {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
-    "カレイ":       {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
-    "ヒラメ":       {"cm_max": 100, "kg_max": 10,  "primary": "kg"},
-    "マゴチ":       {"cm_max": 80,  "kg_max": 4,   "primary": "cm"},
-    "ホウボウ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "メバル":       {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
-    "カサゴ":       {"cm_max": 40,  "kg_max": 2,   "primary": "cm"},
-    "アマダイ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
-    "シロアマダイ": {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
-    "オニカサゴ":   {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "クロムツ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
-    "アカムツ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "キンメダイ":   {"cm_max": 50,  "kg_max": 3,   "primary": "cm"},
-    "アコウダイ":   {"cm_max": 60,  "kg_max": 4,   "primary": "kg"},
-    "ベニアコウ":   {"cm_max": 80,  "kg_max": 8,   "primary": "kg"},
-    "メヌケ":       {"cm_max": 60,  "kg_max": 4,   "primary": "kg"},
-    "マハタ":       {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
-    "ハタ":         {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
-    "イシダイ":     {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
-    "アラ":         {"cm_max": 100, "kg_max": 15,  "primary": "kg"},
-    "イシモチ":     {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "スズキ":       {"cm_max": 100, "kg_max": 8,   "primary": "cm"},
-    "シーバス":     {"cm_max": 100, "kg_max": 8,   "primary": "cm"},
-    "ブリ":         {"cm_max": 120, "kg_max": 12,  "primary": "kg"},
-    "ワラサ":       {"cm_max": 90,  "kg_max": 6,   "primary": "kg"},
-    "イナダ":       {"cm_max": 60,  "kg_max": 3,   "primary": "cm"},
-    "カンパチ":     {"cm_max": 120, "kg_max": 15,  "primary": "kg"},
-    "ヒラマサ":     {"cm_max": 130, "kg_max": 15,  "primary": "kg"},
-    "サワラ":       {"cm_max": 130, "kg_max": 10,  "primary": "kg"},
-    "カツオ":       {"cm_max": 100, "kg_max": 6,   "primary": "kg"},
-    "キハダマグロ": {"cm_max": 200, "kg_max": 80,  "primary": "kg"},
-    "キメジ":       {"cm_max": 100, "kg_max": 10,  "primary": "kg"},
-    "シイラ":       {"cm_max": 180, "kg_max": 15,  "primary": "cm"},
-    "メダイ":       {"cm_max": 100, "kg_max": 8,   "primary": "kg"},
-    "カマス":       {"cm_max": 50,  "kg_max": 1,   "primary": "cm"},
-    "アナゴ":       {"cm_max": 100, "kg_max": 2,   "primary": "cm"},
-    "ハゼ":         {"cm_max": 30,  "kg_max": 1,   "primary": "cm"},
-    "マダコ":       {"cm_max": 80,  "kg_max": 5,   "primary": "kg"},
-    "アオリイカ":   {"cm_max": 60,  "kg_max": 5,   "primary": "kg"},
-    "スミイカ":     {"cm_max": 30,  "kg_max": 2,   "primary": "kg"},
-    "モンゴウイカ": {"cm_max": 40,  "kg_max": 3,   "primary": "kg"},
-    "マルイカ":     {"cm_max": 30,  "kg_max": 1,   "primary": "cm"},
-    "スルメイカ":   {"cm_max": 40,  "kg_max": 1,   "primary": "cm"},
-    "ヤリイカ":     {"cm_max": 50,  "kg_max": 1,   "primary": "cm"},
-    "ムギイカ":     {"cm_max": 35,  "kg_max": 1,   "primary": "cm"},
-    "スジイカ":     {"cm_max": 40,  "kg_max": 1,   "primary": "cm"},
-    "ショウサイフグ": {"cm_max": 50, "kg_max": 2,   "primary": "cm"},
-    "トラフグ":     {"cm_max": 80,  "kg_max": 4,   "primary": "kg"},
-    "アブラボウズ": {"cm_max": 200, "kg_max": 100, "primary": "kg"},
-    "タイ五目":     {"cm_max": 80,  "kg_max": 5,   "primary": "kg"},
-    "キントキ":     {"cm_max": 40,  "kg_max": 2,   "primary": "cm"},
-    "アカメフグ":   {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "オキカサゴ":   {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "オキメバル":   {"cm_max": 40,  "kg_max": 1,   "primary": "cm"},
-    "クロウシノシタ": {"cm_max": 40,"kg_max": 1,   "primary": "cm"},
-    "メジナ":       {"cm_max": 50,  "kg_max": 2,   "primary": "cm"},
-    "タカベ":       {"cm_max": 30,  "kg_max": 1,   "primary": "cm"},
-    "コハダ":       {"cm_max": 20,  "kg_max": 1,   "primary": "cm"},
-}
-_FISH_SIZE_DEFAULT = {"cm_max": 200, "kg_max": 100, "primary": "cm"}
+# 2026/05/23: 単一のソースから crawler.py / x_post 両方で参照するため
+# normalize/fish_size_range.json に外部化（DRY 違反解消）。
+def _load_fish_size_range_map():
+    """normalize/fish_size_range.json から魚種別 cm/kg 上限テーブルを読み込む。
+    返り値: (魚種別 dict, _default dict)
+    """
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "normalize", "fish_size_range.json")
+    try:
+        with open(path, encoding="utf-8") as _f:
+            _raw = json.load(_f)
+    except Exception:
+        return {}, {"cm_max": 200, "kg_max": 100, "primary": "cm"}
+    _default = _raw.pop("_default", {"cm_max": 200, "kg_max": 100, "primary": "cm"})
+    return _raw, _default
+
+_FISH_SIZE_RANGE_MAP, _FISH_SIZE_DEFAULT = _load_fish_size_range_map()
 
 # 魚種別の釣法主流テキスト。「マダイ=コマセダイ」など正確な釣法名で書く。
 # 「ビシ釣り」は本来アジ用語のため、マダイには使わない（T30 ユーザー指摘で修正）。
@@ -13714,16 +13660,65 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         '</div>'
     )
 
-    # メタ
+    # メタ (F3: F1/F2 データを反映して指名検索 CTR を底上げ)
+    # 今月実績 = _ma_months の先頭 (= 今月のはず・データなしなら fallback)
     title = f"{name}（{area}）の釣果情報・船舶・予約方法 — 船釣り予想"
     desc_parts = [f"{name}（{area}）の船釣り情報。"]
-    if vessel.get("length_m") and vessel.get("capacity"):
-        desc_parts.append(f"全長{vessel['length_m']}m・定員{vessel['capacity']}名。")
-    if primary_fish:
-        desc_parts.append(f"主要対象魚: {' ・ '.join(primary_fish[:4])}。")
-    if rate is not None and total_known >= 5:
-        desc_parts.append(f"直近30日の出船率{rate}%。")
-    desc = "".join(desc_parts)[:160]
+    _current_month_data = None
+    if _ma_months:
+        _curr_month_str = today_dt.strftime("%Y-%m")
+        for _md in _ma_months:
+            if _md.get("month") == _curr_month_str:
+                _current_month_data = _md
+                break
+    if _current_month_data and _current_month_data.get("fish"):
+        # 今月データあり: 鮮度+具体性をtitleに反映
+        _cm_jp_month = today_dt.month
+        _top_fish_obj = _current_month_data["fish"][0]
+        _t_fish = _top_fish_obj["fish"]
+        _t_cnt = _top_fish_obj["count"]
+        _t_max_kg = _top_fish_obj.get("kg_max")
+        _t_max_size = _top_fish_obj.get("size_max")
+        _max_str = ""
+        if _t_max_kg:
+            _max_str = f"・最大{_t_max_kg}kg"
+        elif _t_max_size:
+            _max_str = f"・最大{_t_max_size}cm"
+        title = f"{name}（{area}）最新釣果【{_cm_jp_month}月{_t_fish}{_t_cnt}便{_max_str}】| 船釣り予想"
+        # description: 数値+前年比+構造紹介
+        _desc_bits = [f"{name}（{area}）の最新釣果データ。"]
+        _desc_bits.append(f"{today_dt.year}年{_cm_jp_month}月{_t_fish}{_t_cnt}便")
+        _t_avg = _top_fish_obj.get("avg") or 0
+        if _t_avg > 0:
+            _desc_bits.append(f"・平均{_t_avg}匹")
+        if _t_max_kg:
+            _desc_bits.append(f"・最大{_t_max_kg}kg")
+        elif _t_max_size:
+            _desc_bits.append(f"・最大{_t_max_size}cm")
+        _cm_rate = _current_month_data.get("rate")
+        if _cm_rate is not None:
+            _desc_bits.append(f"・出船率{_cm_rate}%")
+        _desc_bits.append("。")
+        # 前年比
+        if _wr_yoy and _wr_yoy.get("last_year_fish_count"):
+            _ly_cnt = _wr_yoy["last_year_fish_count"].get(_t_fish, 0)
+            if _ly_cnt > 0:
+                _diff = _t_cnt - _ly_cnt
+                if _diff > 0:
+                    _desc_bits.append(f"前年同月比+{_diff}便。")
+                elif _diff < 0:
+                    _desc_bits.append(f"前年同月比{_diff}便。")
+        _desc_bits.append("13か月分の月別実績と週次傾向レポートを毎週更新。")
+        desc = "".join(_desc_bits)[:160]
+    else:
+        # 今月データなし: 既存形式を維持 (fallback)
+        if vessel.get("length_m") and vessel.get("capacity"):
+            desc_parts.append(f"全長{vessel['length_m']}m・定員{vessel['capacity']}名。")
+        if primary_fish:
+            desc_parts.append(f"主要対象魚: {' ・ '.join(primary_fish[:4])}。")
+        if rate is not None and total_known >= 5:
+            desc_parts.append(f"直近30日の出船率{rate}%。")
+        desc = "".join(desc_parts)[:160]
 
     page_url = f"{SITE_URL}/ship/{slug}.html"
 
