@@ -14230,6 +14230,16 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     _wr_tide = _ship_get_next_week_spring_tides(today_dt)
     weekly_report_html = _ship_weekly_report_section_html(_wr_weekly, _wr_yoy, _wr_tide, today_dt)
 
+    # J-BCDE (2026/05/23): 25ヶ月データから 5 セクション自動生成 (月別キャッシュ)
+    _jb_yearly = _ship_load_yearly_summary(name, today_dt)
+    _jc_seasonal = _ship_load_seasonal_fish(name, today_dt)
+    _jd_trophies = _ship_load_top_trophies(name, today_dt)
+    _je_badges = _ship_load_auto_badges(name, today_dt, _jb_yearly, _jc_seasonal, _jd_trophies)
+    yearly_summary_html = _ship_yearly_summary_section_html(_jb_yearly, name, area, _jc_seasonal, _jd_trophies)
+    seasonal_fish_html = _ship_seasonal_fish_section_html(_jc_seasonal)
+    trophy_rank_html = _ship_trophy_section_html(_jd_trophies)
+    auto_badges_html = _ship_auto_badges_html(_je_badges)
+
     # H2 (T22): 空ページ判定 — 直近7日データがない場合のみ noindex
     # 旧: _SHIP_INFO 未登録でも noindex（T22 AdSense 対応）
     # 新: chowari 経由 114 船宿は ship_info 未登録でも釣果データがあればインデックス対象とする
@@ -14535,6 +14545,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 <h2>{name}</h2>
 <div class="sh-area">{area}</div>
 <div class="sh-badges">{badges_html}</div>
+{auto_badges_html}
 {f'<div class="sh-overall">{overall_str}</div>' if overall_str else ''}
 </div>
 
@@ -14546,6 +14557,12 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 )}
 
 {weekly_report_html}
+
+{yearly_summary_html}
+
+{seasonal_fish_html}
+
+{trophy_rank_html}
 
 <h2 class="st">基本情報</h2>
 <div class="info-box">

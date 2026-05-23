@@ -91,6 +91,97 @@
 .ma-archive-links{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
 .ma-archive-links a{display:inline-block;padding:3px 8px;background:var(--bg);color:var(--accent);border-radius:10px;text-decoration:none;margin:2px;font-size:11px}
 .ma-archive-links a:hover{background:var(--accent);color:#fff}
+/* J-B/C/D/E 統合実装 (2026/05/23) */
+.sh-auto-badges{display:flex;justify-content:center;gap:6px;margin-top:8px;flex-wrap:wrap;padding-top:8px;border-top:1px dashed rgba(255,255,255,.15)}
+.sub-label{font-size:10px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.5px}
+.sh-ab{font-size:10px;height:22px;line-height:22px;padding:0 10px;border-radius:11px;color:#fff;font-weight:700;letter-spacing:.3px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.sh-ab.spec  {background:linear-gradient(135deg,#e85d04,#d04e00);order:1}
+.sh-ab.rate  {background:linear-gradient(135deg,#1a9d56,#127a42);order:2}
+.sh-ab.rank  {background:linear-gradient(135deg,#f4d03f,#dab500);color:#5a4500;order:3}
+.sh-ab.vol   {background:linear-gradient(135deg,#5a8db8,#3d6e94);order:4}
+.sh-ab.season{background:linear-gradient(135deg,#a070d0,#7c52a8);order:5}
+.sh-ab .sh-ab-icon{font-size:11px;line-height:1}
+.sh-ab .sh-ab-fish-img{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.2);object-fit:contain;flex-shrink:0}
+.sh-ab.rank .sh-ab-fish-img{background:rgba(90,69,0,.15)}
+.sh-ab .sh-ab-sub{font-size:9px;opacity:.85;font-weight:600;padding-left:4px;margin-left:2px;border-left:1px solid rgba(255,255,255,.4)}
+.sh-ab.rank .sh-ab-sub{border-left-color:rgba(90,69,0,.3)}
+/* B 年間サマリー + B+ 船宿特徴文 */
+.yearly-summary{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:14px 16px 12px;margin-bottom:16px;position:relative}
+.yearly-summary .ys-label{position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.yearly-summary .ys-period{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.ys-portrait{background:linear-gradient(135deg,#fff8e1,#fff);border-left:3px solid var(--cta);padding:12px 14px;border-radius:6px;margin-bottom:14px;font-size:13px;line-height:1.8;color:var(--text)}
+.ys-portrait .ysp-label{display:inline-block;font-size:10px;color:#fff;background:var(--cta);padding:2px 8px;border-radius:10px;font-weight:700;margin-bottom:8px;letter-spacing:.3px}
+.ys-portrait p{margin:0 0 6px 0}
+.ys-portrait p:last-child{margin-bottom:0}
+.ys-portrait strong{color:var(--accent);background:rgba(232,93,4,.08);padding:0 3px;border-radius:3px;font-weight:700}
+.ys-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed var(--border)}
+.ys-kpi{text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px}
+.ys-kpi .ysk-n{font-size:22px;font-weight:800;color:var(--accent);line-height:1}
+.ys-kpi .ysk-n.cta{color:var(--cta)}
+.ys-kpi .ysk-l{font-size:10px;color:var(--muted);margin-top:4px}
+.ys-kpi .ysk-sub{font-size:10px;color:var(--sub);margin-top:2px}
+.ys-section{margin-bottom:12px}
+.ys-section:last-child{margin-bottom:0}
+.ys-section h4{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.ys-top-fish{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ys-tf-card{background:var(--bg);border-radius:8px;padding:10px 8px;text-align:center;border-top:3px solid var(--cta);position:relative}
+.ys-tf-card.rank1{border-top-color:#f4d03f;background:linear-gradient(180deg,#fffaeb,#fff8e1)}
+.ys-tf-card.rank2{border-top-color:#a0a8b4;background:#f7f7f9}
+.ys-tf-card.rank3{border-top-color:#c8a878;background:#fbf6ef}
+.ys-tf-medal{position:absolute;top:4px;left:6px;font-size:16px;line-height:1}
+.ys-tf-img{width:44px;height:44px;display:block;margin:4px auto 6px}
+.ys-tf-head{display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:4px}
+.ys-tf-name{font-size:13px;font-weight:800;color:var(--accent)}
+.ys-tf-trips{font-size:12px;color:var(--cta);font-weight:700}
+.ys-tf-stats{margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);font-size:10px;color:var(--sub);line-height:1.6}
+.ys-tf-stats .ystf-row{display:block}
+.ys-tf-stats strong{color:var(--accent);font-weight:700}
+.ys-tf-stats .ystf-max{color:var(--cta);font-weight:700}
+/* C 季節別主力魚種 */
+.seasonal-fish{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:14px 16px 12px;margin-bottom:16px;position:relative}
+.sf-label{position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.sf-subtitle{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.sf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sf-card{background:var(--bg);border-radius:8px;padding:10px;border-left:3px solid var(--accent)}
+.sf-card.spring{border-left-color:#e8a3c7;background:linear-gradient(180deg,#fef0f6,#fff)}
+.sf-card.summer{border-left-color:#4dc3e6;background:linear-gradient(180deg,#e8f6fc,#fff)}
+.sf-card.autumn{border-left-color:#e08c3f;background:linear-gradient(180deg,#fef0e3,#fff)}
+.sf-card.winter{border-left-color:#5a8db8;background:linear-gradient(180deg,#eaf2f8,#fff)}
+.sf-head{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--border)}
+.sf-emoji-season{font-size:18px;line-height:1}
+.sf-season-name{font-size:13px;font-weight:800;color:var(--accent)}
+.sf-months{font-size:10px;color:var(--muted);margin-left:auto}
+.sf-fish-list{list-style:none;padding:0;margin:0}
+.sf-fish-row{display:flex;align-items:flex-start;gap:6px;padding:6px 0;border-bottom:1px dotted var(--border)}
+.sf-fish-row:last-child{border-bottom:none}
+.sf-fish-rank{flex:0 0 16px;font-size:10px;color:var(--muted);font-weight:700;text-align:center;line-height:24px}
+.sf-fish-img{width:24px;height:24px;flex:0 0 24px;margin-top:2px}
+.sf-fish-body{flex:1;min-width:0}
+.sf-fish-head{display:flex;align-items:baseline;gap:6px}
+.sf-fish-name{font-size:12px;font-weight:700;color:var(--accent)}
+.sf-fish-trips{font-size:11px;color:var(--cta);font-weight:700}
+.sf-fish-stats{font-size:10px;color:var(--sub);line-height:1.5;margin-top:2px}
+.sf-fish-stats strong{color:var(--accent);font-weight:700}
+.sf-fish-stats .sff-max{color:var(--cta);font-weight:700}
+/* D 大物実績ランキング */
+.trophy-rank{background:linear-gradient(135deg,#fffaeb,#fff);border:1px solid var(--border);border-top:4px solid #f4d03f;box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:14px 16px 12px;margin-bottom:16px;position:relative}
+.tr-label{position:absolute;top:-10px;left:14px;background:#f4d03f;color:#5a4500;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.tr-subtitle{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.tr-list{list-style:none;padding:0;margin:0}
+.tr-row{display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px dotted var(--border)}
+.tr-row:last-child{border-bottom:none}
+.tr-row.r1{background:linear-gradient(90deg,#fffaeb,transparent);border-left:3px solid #f4d03f;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-row.r2{background:linear-gradient(90deg,#f7f7f9,transparent);border-left:3px solid #a0a8b4;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-row.r3{background:linear-gradient(90deg,#fbf6ef,transparent);border-left:3px solid #c8a878;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-medal{flex:0 0 28px;font-size:18px;text-align:center;line-height:1}
+.tr-rank{flex:0 0 28px;font-size:11px;text-align:center;color:var(--muted);font-weight:700;line-height:1}
+.tr-img{width:36px;height:36px;flex:0 0 36px}
+.tr-body{flex:1;min-width:0}
+.tr-fish{font-size:14px;font-weight:800;color:var(--accent)}
+.tr-rank-badge{font-size:11px;color:var(--accent);font-weight:700;background:#fff2dc;padding:1px 6px;border-radius:8px;margin-left:4px}
+.tr-rank-badge.low{font-size:10px;color:var(--sub);background:#eef1f5}
+.tr-date{font-size:11px;color:var(--muted);margin-left:6px}
+.tr-val{font-size:15px;font-weight:800;color:var(--cta);flex:0 0 auto}
 .weekly-report{background:#fff;border-top:4px solid var(--cta);border-left:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:16px 18px 14px;margin:14px 0;position:relative}
 .weekly-report .wr-label{position:absolute;top:-10px;left:14px;background:var(--cta);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
 .weekly-report .wr-period{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
@@ -136,6 +227,7 @@
 <h2>荒川屋</h2>
 <div class="sh-area">金沢八景</div>
 <div class="sh-badges"><span class="sh-badge">LTアジ特化</span><span class="sh-badge">初心者・女性向け</span><span class="sh-badge">SandFishカフェ併設</span></div>
+<div class="sub-label">🤖 データ分析バッジ</div><div class="sh-auto-badges"><span class="sh-ab spec"><img class="sh-ab-fish-img" width="14" height="14" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'">アジ専門<span class="sh-ab-sub">54%</span></span><span class="sh-ab rate"><span class="sh-ab-icon">✓</span>出船率<span class="sh-ab-sub">100%</span></span><span class="sh-ab rank"><span class="sh-ab-icon">🥈</span><img class="sh-ab-fish-img" width="14" height="14" src="../assets/fish/karei/karei_emoji.webp" alt="カレイ" onerror="this.style.display='none'">カレイ 49cm<span class="sh-ab-sub">全船宿中 2/6位</span></span><span class="sh-ab vol"><span class="sh-ab-icon">📅</span>年間出船<span class="sh-ab-sub">716便</span></span><span class="sh-ab season"><span class="sh-ab-icon">🍁</span><img class="sh-ab-fish-img" width="14" height="14" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'">秋アジ<span class="sh-ab-sub">118便</span></span></div>
 <div class="sh-overall">直近30日: 出船3日 / 欠航0日 <span style="font-size:9px;opacity:.7">(クロール記録ベース)</span></div>
 </div>
 
@@ -145,9 +237,15 @@
 
 <div class="weekly-report"><span class="wr-label">今週の傾向</span><div class="wr-period">2026年5月17日〜5月23日（7日間）</div><div class="wr-kpi-row"><span class="wkr-label">出船率</span><span class="wkr-main">100%</span><span class="wkr-diff">前週比 +0pt</span><span class="wkr-sub">出船 7便 / 欠航 0便</span></div><div class="wr-section"><h4>🎣 今週の主要釣果</h4><ul class="wr-fish-list"><li><span class="wfl-fish">アジ</span><span class="wfl-count">4便</span><span class="wfl-diff neg">前週比 -4便</span><span class="wfl-detail">平均 12.8匹・最大 38cm</span></li><li><span class="wfl-fish">シロギス</span><span class="wfl-count">3便</span><span class="wfl-detail">平均 31.0匹・最大 23cm</span></li></ul><div style="margin-top:8px"><span class="wr-trophy">🏆 今週の大物: アジ 38cm<span class="wrt-date">(5/17)</span></span></div></div><div class="wr-section"><h4>📅 来週の見どころ (5/24-5/30)</h4><div class="wr-next-week"><div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>アジ</strong>：数釣り絶好調・束釣りも現実的</span></div><div class="wnw-row"><span class="wnw-tag">シーズン</span><span class="wnw-text"><strong>シロギス</strong>：本格シーズン突入・束釣り狙い</span></div><div class="wnw-row"><span class="wnw-tag">潮回り</span><span class="wnw-text"><strong>5/29〜5/30 大潮</strong> — 朝マズメ活性 UP 期待</span></div></div></div><div class="wr-section"><h4>📊 過去比較（同月）</h4><div class="wr-yoy"><div class="wy-card"><div class="wy-year">2025年5月（全期間）</div><div class="wy-val">アジ 29<span class="wyv-unit">便</span></div></div><div class="wy-card now"><div class="wy-year">2026年5月（5/23時点）</div><div class="wy-val">アジ 18<span class="wyv-unit">便（途中）</span></div></div></div></div><div class="wr-stats"><div class="wr-stat"><div class="wrs-n">7便</div><div class="wrs-l">出船 (7日中)</div></div><div class="wr-stat"><div class="wrs-n">7</div><div class="wrs-l">釣果便数</div></div><div class="wr-stat"><div class="wrs-n">12.8匹</div><div class="wrs-l">アジ平均</div></div></div></div>
 
+<div class="yearly-summary"><span class="ys-label">📅 年間サマリー</span><div class="ys-period">2025年6月 〜 2026年5月（過去12ヶ月）</div><div class="ys-portrait"><span class="ysp-label">📝 この船宿の特徴</span><p>金沢八景にある<strong>荒川屋</strong>は、年間を通して安定した出船を続ける<strong>大型船宿</strong>。</p><p>主力釣りものは<strong>アジ</strong>で、シロギス・タチウオなど<strong>タチウオ専門</strong>に強み。</p><p>特に夏に出船が多く、年間を通してバランスよく釣果を上げる。</p><p>大物実績は<strong>関東トップクラス</strong>で、アジ・カレイ・シロギスなど複数魚種で全船宿上位に名を連ねる。<strong>型狙いにも応える</strong>船宿。</p></div><div class="ys-kpi-grid"><div class="ys-kpi"><div class="ysk-n cta">716<span style="font-size:13px">便</span></div><div class="ysk-l">年間出船数</div></div><div class="ys-kpi"><div class="ysk-n">100<span style="font-size:13px">%</span></div><div class="ysk-l">年間出船率</div><div class="ysk-sub">欠航 0便</div></div><div class="ys-kpi"><div class="ysk-n">12<span style="font-size:13px">ヶ月</span></div><div class="ysk-l">記録期間</div><div class="ysk-sub">2025-06〜2026-05</div></div></div><div class="ys-section"><h4>🎣 年間 主要魚種 TOP3</h4><div class="ys-top-fish"><div class="ys-tf-card rank1"><span class="ys-tf-medal">🥇</span><img class="ys-tf-img" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'"><div class="ys-tf-head"><span class="ys-tf-name">アジ</span><span class="ys-tf-trips">370便</span></div><div class="ys-tf-stats"><span class="ystf-row">平均釣果 <strong>10.0〜41.8匹</strong></span><span class="ystf-row">最大匹数 <strong>165匹</strong></span><span class="ystf-row">最大型 <span class="ystf-max">56 cm</span></span></div></div><div class="ys-tf-card rank2"><span class="ys-tf-medal">🥈</span><img class="ys-tf-img" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'"><div class="ys-tf-head"><span class="ys-tf-name">シロギス</span><span class="ys-tf-trips">240便</span></div><div class="ys-tf-stats"><span class="ystf-row">平均釣果 <strong>13.5〜58.6匹</strong></span><span class="ystf-row">最大匹数 <strong>145匹</strong></span><span class="ystf-row">最大型 <span class="ystf-max">26 cm</span></span></div></div><div class="ys-tf-card rank3"><span class="ys-tf-medal">🥉</span><img class="ys-tf-img" src="../assets/fish/tachiuo/tachiuo_emoji.webp" alt="タチウオ" onerror="this.style.display='none'"><div class="ys-tf-head"><span class="ys-tf-name">タチウオ</span><span class="ys-tf-trips">73便</span></div><div class="ys-tf-stats"><span class="ystf-row">平均釣果 <strong>4.3〜16.3匹</strong></span><span class="ystf-row">最大匹数 <strong>41匹</strong></span><span class="ystf-row">最大型 <span class="ystf-max">3.0 kg</span></span></div></div></div></div></div>
+
+<div class="seasonal-fish"><span class="sf-label">🌐 季節別 主力魚種</span><div class="sf-subtitle">過去12ヶ月の季節ごと主力魚種 TOP2（毎月1日更新）</div><div class="sf-grid"><div class="sf-card spring"><div class="sf-head"><span class="sf-emoji-season">🌸</span><span class="sf-season-name">春</span><span class="sf-months">3-5月</span></div><ul class="sf-fish-list"><li class="sf-fish-row"><span class="sf-fish-rank">1</span><img class="sf-fish-img" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">アジ</span><span class="sf-fish-trips">73便</span></div><div class="sf-fish-stats">平均 <strong>14.1〜50.6匹</strong> / 最大匹数 <strong>140匹</strong> / 最大 <span class="sff-max">56 cm</span></div></div></li><li class="sf-fish-row"><span class="sf-fish-rank">2</span><img class="sf-fish-img" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">シロギス</span><span class="sf-fish-trips">48便</span></div><div class="sf-fish-stats">平均 <strong>11.6〜46.5匹</strong> / 最大匹数 <strong>95匹</strong> / 最大 <span class="sff-max">25 cm</span></div></div></li></ul></div><div class="sf-card summer"><div class="sf-head"><span class="sf-emoji-season">☀️</span><span class="sf-season-name">夏</span><span class="sf-months">6-8月</span></div><ul class="sf-fish-list"><li class="sf-fish-row"><span class="sf-fish-rank">1</span><img class="sf-fish-img" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">アジ</span><span class="sf-fish-trips">100便</span></div><div class="sf-fish-stats">平均 <strong>7.3〜38.0匹</strong> / 最大匹数 <strong>165匹</strong> / 最大 <span class="sff-max">47 cm</span></div></div></li><li class="sf-fish-row"><span class="sf-fish-rank">2</span><img class="sf-fish-img" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">シロギス</span><span class="sf-fish-trips">80便</span></div><div class="sf-fish-stats">平均 <strong>10.6〜57.6匹</strong> / 最大匹数 <strong>138匹</strong> / 最大 <span class="sff-max">26 cm</span></div></div></li></ul></div><div class="sf-card autumn"><div class="sf-head"><span class="sf-emoji-season">🍁</span><span class="sf-season-name">秋</span><span class="sf-months">9-11月</span></div><ul class="sf-fish-list"><li class="sf-fish-row"><span class="sf-fish-rank">1</span><img class="sf-fish-img" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">アジ</span><span class="sf-fish-trips">118便</span></div><div class="sf-fish-stats">平均 <strong>7.6〜37.5匹</strong> / 最大匹数 <strong>102匹</strong> / 最大 <span class="sff-max">46 cm</span></div></div></li><li class="sf-fish-row"><span class="sf-fish-rank">2</span><img class="sf-fish-img" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">シロギス</span><span class="sf-fish-trips">62便</span></div><div class="sf-fish-stats">平均 <strong>14.9〜64.5匹</strong> / 最大匹数 <strong>115匹</strong> / 最大 <span class="sff-max">24 cm</span></div></div></li></ul></div><div class="sf-card winter"><div class="sf-head"><span class="sf-emoji-season">❄️</span><span class="sf-season-name">冬</span><span class="sf-months">12-2月</span></div><ul class="sf-fish-list"><li class="sf-fish-row"><span class="sf-fish-rank">1</span><img class="sf-fish-img" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">アジ</span><span class="sf-fish-trips">79便</span></div><div class="sf-fish-stats">平均 <strong>12.8〜45.1匹</strong> / 最大匹数 <strong>112匹</strong> / 最大 <span class="sff-max">45 cm</span></div></div></li><li class="sf-fish-row"><span class="sf-fish-rank">2</span><img class="sf-fish-img" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'"><div class="sf-fish-body"><div class="sf-fish-head"><span class="sf-fish-name">シロギス</span><span class="sf-fish-trips">50便</span></div><div class="sf-fish-stats">平均 <strong>18.0〜64.5匹</strong> / 最大匹数 <strong>145匹</strong> / 最大 <span class="sff-max">23 cm</span></div></div></li></ul></div></div></div>
+
+<div class="trophy-rank"><span class="tr-label">🏆 関東トップクラス大物実績</span><div class="tr-subtitle">魚種別「船宿別最大値」ランキングで上位入賞した自慢の1本（毎月1日更新）</div><ul class="tr-list"><li class="tr-row r2"><span class="tr-medal">🥈</span><img class="tr-img" src="../assets/fish/karei/karei_emoji.webp" alt="カレイ" onerror="this.style.display='none'"><div class="tr-body"><span class="tr-fish">カレイ <span class="tr-rank-badge">全船宿中 2/6位</span></span><span class="tr-date">2025/04/09</span></div><span class="tr-val">49 cm</span></li><li class="tr-row"><span class="tr-rank">4位</span><img class="tr-img" src="../assets/fish/shirogisu/shirogisu_emoji.webp" alt="シロギス" onerror="this.style.display='none'"><div class="tr-body"><span class="tr-fish">シロギス <span class="tr-rank-badge low">全船宿中 4/47位</span></span><span class="tr-date">2024/03/04</span></div><span class="tr-val">42 cm</span></li><li class="tr-row"><span class="tr-rank">5位</span><img class="tr-img" src="../assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'"><div class="tr-body"><span class="tr-fish">アジ <span class="tr-rank-badge low">全船宿中 5/119位</span></span><span class="tr-date">2023/07/24</span></div><span class="tr-val">70 cm</span></li><li class="tr-row"><span class="tr-rank">8位</span><img class="tr-img" src="../assets/fish/tachiuo/tachiuo_emoji.webp" alt="タチウオ" onerror="this.style.display='none'"><div class="tr-body"><span class="tr-fish">タチウオ <span class="tr-rank-badge low">全船宿中 8/68位</span></span><span class="tr-date">2023/09/29</span></div><span class="tr-val">140 cm</span></li><li class="tr-row"><span class="tr-rank">8位</span><img class="tr-img" src="../assets/fish/tachiuo/tachiuo_emoji.webp" alt="タチウオ" onerror="this.style.display='none'"><div class="tr-body"><span class="tr-fish">タチウオ <span class="tr-rank-badge low">全船宿中 8/15位</span></span><span class="tr-date">2026/01/16</span></div><span class="tr-val">3.0 kg</span></li></ul></div>
+
 <h2 class="st">基本情報</h2>
 <div class="info-box">
-<div class="info-row"><span class="info-label">エリア</span><span class="info-val"><a href="../area/kanazawa-hakkei.html">金沢八景</a></span></div><div class="info-row"><span class="info-label">所在地</span><span class="info-val">神奈川県横浜市金沢区洲崎町6-1</span></div><div class="info-row"><span class="info-label">電話</span><span class="info-val">045-701-6672</span></div><div class="info-row"><span class="info-label">公式サイト</span><span class="info-val"><a href="https://arakawaya.jp/" rel="nofollow noopener" target="_blank">外部サイトを開く →</a></span></div><div class="info-row"><span class="info-label">主要対象魚</span><span class="info-val">アジ ・ シロギス</span></div><div class="info-row"><span class="info-label">主要ポイント</span><span class="info-val">走水沖 / 中ノ瀬 / 富岡沖（直近実績より）</span></div><div class="info-row"><span class="info-label">アクセス</span><span class="info-val">金沢八景駅 / 駐車場: 平日無料、休日300～（要確認）</span></div><div class="info-row"><span class="info-label">営業時間</span><span class="info-val">5:00～20:00</span></div><div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船3日 / 欠航0日 <span style="color:var(--muted);font-size:11px">(当サイトのクロール記録ベース・実出船日数とは異なります)</span></span></div>
+<div class="info-row"><span class="info-label">エリア</span><span class="info-val"><a href="../area/kanazawa-hakkei.html">金沢八景</a></span></div><div class="info-row"><span class="info-label">所在地</span><span class="info-val">神奈川県横浜市金沢区洲崎町6-1</span></div><div class="info-row"><span class="info-label">電話</span><span class="info-val">045-701-6672</span></div><div class="info-row"><span class="info-label">公式サイト</span><span class="info-val"><a href="https://arakawaya.jp/" rel="nofollow noopener" target="_blank">外部サイトを開く →</a></span></div><div class="info-row"><span class="info-label">主要対象魚</span><span class="info-val">アジ ・ シロギス ・ タチウオ ・ カレイ ・ マダコ</span></div><div class="info-row"><span class="info-label">主要ポイント</span><span class="info-val">走水沖 / 中ノ瀬 / 富岡沖（直近実績より）</span></div><div class="info-row"><span class="info-label">アクセス</span><span class="info-val">金沢八景駅 / 駐車場: 平日無料、休日300～（要確認）</span></div><div class="info-row"><span class="info-label">営業時間</span><span class="info-val">5:00～20:00</span></div><div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船3日 / 欠航0日 <span style="color:var(--muted);font-size:11px">(当サイトのクロール記録ベース・実出船日数とは異なります)</span></span></div>
 </div>
 
 <h2 class="st">船舶・設備</h2><div class="spec-card"><div class="spec-grid"><div class="sg-item"><strong>全長</strong>14 m</div><div class="sg-item"><strong>総トン数</strong>13 t</div><div class="sg-item"><strong>定員</strong>35 名</div></div><div class="facility-tags" style="margin-top:12px"><span class="ft">トイレ</span><span class="ft">キャビン</span><span class="ft">冷蔵庫</span><span class="ft">イケス</span><span class="ft">電子レンジ</span><span class="ft">冷凍庫</span><span class="ft">ポット</span></div></div>
@@ -195,7 +293,7 @@
 <footer>
 <a href="../pages/privacy.html">プライバシーポリシー</a> · <a href="../pages/terms.html">利用規約</a> · <a href="../pages/about.html">サイトについて</a><br>
 <div style="margin-top:6px"><a href="../">トップ</a> · <a href="../area/kanazawa-hakkei.html">金沢八景</a></div>
-<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/23 18:53</span>
+<span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: 2026/05/23 22:17</span>
 </footer>
 
 <div class="bn"><a href="/"><span class="i">🎣</span>釣果</a><a href="/fish/"><span class="i">🐟</span>魚種</a><a href="/area/"><span class="i">📍</span>エリア</a><a href="/calendar.html"><span class="i">📅</span>カレンダー</a><a href="/forecast/" class="prem"><span class="i">⭐</span>有料</a></div>
