@@ -114,6 +114,38 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--text-sub);
 }
 
+/* ── X (Twitter) シェアボタン ── */
+.x-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  letter-spacing: .04em;
+  margin-left: 12px;
+  margin-top: 8px;
+  transition: background .15s, transform .12s;
+  border: 1px solid rgba(255,255,255,.15);
+}
+.x-share-btn:hover {
+  background: #222;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.x-share-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+@media (max-width: 600px) {
+  .x-share-btn { margin-left: 0; margin-top: 10px; padding: 10px 18px; font-size: 13px; }
+}
+
 /* ── HERO セクション ── */
 .hero {
   background: var(--navy);
@@ -508,6 +540,13 @@ section h2 {
       <h1>マダイコマセシミュレーター<br>ベータ版</h1>
       <p class="lead">コマセ粒子の落下・拡散・潮流による流動を<strong>物理演算でリアルタイム計算</strong>。ハリス長・ガン玉・ビシ窓・しゃくり方を変えると、コマセ帯と付けエサの「同調」がどう変わるかを可視化します。<strong>東京湾(剣崎/松輪)・相模湾(湘南/LT/深場)・外房カモシ</strong>など関東主要エリアのコマセマダイ釣りプリセット完備。スマホ対応／登録不要／無料</p>
       <a class="cta-button" href="/komase-sim/play/">🎣 シミュレーターを開く →</a>
+      <a class="x-share-btn"
+         href="https://twitter.com/intent/tweet?text=%E3%83%9E%E3%83%80%E3%82%A4%E3%82%B3%E3%83%9E%E3%82%BB%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC%EF%BD%9C%E3%82%B3%E3%83%9E%E3%82%BB%E5%B8%AF%E3%81%A8%E4%BB%98%E3%81%91%E3%82%A8%E3%82%B5%E3%81%AE%E3%80%8C%E5%90%8C%E8%AA%BF%E3%80%8D%E3%82%92%E7%89%A9%E7%90%86%E6%BC%94%E7%AE%97%E3%81%A7%E5%8F%AF%E8%A6%96%E5%8C%96%E3%81%99%E3%82%8B%E7%84%A1%E6%96%99%E3%83%84%E3%83%BC%E3%83%AB%E3%80%82&url=https%3A%2F%2Ffunatsuri-yoso.com%2Fkomase-sim%2F&hashtags=%E3%82%B3%E3%83%9E%E3%82%BB%E3%83%9E%E3%83%80%E3%82%A4%2C%E8%88%B9%E9%87%A3%E3%82%8A%2C%E3%83%9E%E3%83%80%E3%82%A4%E9%87%A3%E3%82%8A&via=funatsuri_yoso"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="X (Twitter) でこのツールをシェア">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X でシェア
+      </a>
       <p class="sub-note">ベータ版・登録不要・無料</p>
     </div>
   </section>
@@ -649,6 +688,13 @@ section h2 {
     <div class="c">
       <h2>仕掛けの「なぜ」を物理で確かめる</h2>
       <a class="cta-button" href="/komase-sim/play/">🎣 シミュレーターを開く →</a>
+      <a class="x-share-btn"
+         href="https://twitter.com/intent/tweet?text=%E3%83%9E%E3%83%80%E3%82%A4%E3%82%B3%E3%83%9E%E3%82%BB%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC%EF%BD%9C%E3%82%B3%E3%83%9E%E3%82%BB%E5%B8%AF%E3%81%A8%E4%BB%98%E3%81%91%E3%82%A8%E3%82%B5%E3%81%AE%E3%80%8C%E5%90%8C%E8%AA%BF%E3%80%8D%E3%82%92%E7%89%A9%E7%90%86%E6%BC%94%E7%AE%97%E3%81%A7%E5%8F%AF%E8%A6%96%E5%8C%96%E3%81%99%E3%82%8B%E7%84%A1%E6%96%99%E3%83%84%E3%83%BC%E3%83%AB%E3%80%82&url=https%3A%2F%2Ffunatsuri-yoso.com%2Fkomase-sim%2F&hashtags=%E3%82%B3%E3%83%9E%E3%82%BB%E3%83%9E%E3%83%80%E3%82%A4%2C%E8%88%B9%E9%87%A3%E3%82%8A%2C%E3%83%9E%E3%83%80%E3%82%A4%E9%87%A3%E3%82%8A&via=funatsuri_yoso"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="X (Twitter) でこのツールをシェア">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X でシェア
+      </a>
       <p class="sub-note" style="color:rgba(255,255,255,.6)">ベータ版・登録不要・無料</p>
     </div>
   </section>
