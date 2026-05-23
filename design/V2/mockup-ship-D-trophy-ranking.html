@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[MOCKUP D] 幸丸 大物実績ランキング | 船釣り予想</title>
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+body{position:relative;padding-bottom:40px}
+body::before{content:"🔧 MOCKUP D - 大物実績ランキング";position:fixed;top:0;right:0;z-index:9999;background:#d4a017;color:#fff;padding:4px 12px;font-size:11px;font-weight:700;border-bottom-left-radius:6px}
+
+.ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2,#1a3d5c));color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+
+/* === 🆕 D: 大物実績ランキング === */
+.trophy-rank{
+  background:linear-gradient(135deg,#fffaeb,#fff);
+  border-top:4px solid #f4d03f;
+  border-left:1px solid var(--border,#d0d8e0);
+  border-right:1px solid var(--border,#d0d8e0);
+  border-bottom:1px solid var(--border,#d0d8e0);
+  border-radius:var(--r,10px);
+  padding:14px 16px 12px;
+  margin:14px 0;
+  position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.tr-label{
+  position:absolute;top:-10px;left:14px;
+  background:#f4d03f;color:#5a4500;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px;
+}
+.tr-subtitle{
+  font-size:11px;color:var(--muted,#8a96a4);margin-bottom:12px;margin-top:4px;
+}
+.tr-list{list-style:none;padding:0;margin:0}
+.tr-row{
+  display:flex;align-items:center;gap:8px;padding:8px 6px;
+  border-bottom:1px dotted var(--border,#d0d8e0);
+}
+.tr-row:last-child{border-bottom:none}
+.tr-row.r1{background:linear-gradient(90deg,#fffaeb,transparent);border-left:3px solid #f4d03f;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-row.r2{background:linear-gradient(90deg,#f7f7f9,transparent);border-left:3px solid #a0a8b4;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-row.r3{background:linear-gradient(90deg,#fbf6ef,transparent);border-left:3px solid #c8a878;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-medal{
+  flex:0 0 28px;font-size:18px;text-align:center;line-height:1;
+}
+.tr-rank{
+  flex:0 0 28px;font-size:11px;text-align:center;color:var(--muted,#8a96a4);
+  font-weight:700;line-height:1;
+}
+.tr-img{
+  width:36px;height:36px;flex:0 0 36px;
+}
+.tr-body{
+  flex:1;min-width:0;
+}
+.tr-fish{
+  font-size:14px;font-weight:800;color:var(--accent,#0d2b4a);
+}
+.tr-date{
+  font-size:11px;color:var(--muted,#8a96a4);margin-left:6px;
+}
+.tr-val{
+  font-size:15px;font-weight:800;color:var(--cta,#e85d04);flex:0 0 auto;
+}
+
+.spec{background:#f0f4f8;border-left:4px solid #0d2b4a;padding:12px 16px;font-size:12px;line-height:1.7;margin:20px 14px;border-radius:6px}
+.spec h4{font-size:13px;color:#0d2b4a;margin-bottom:6px}
+.spec code{background:#fff;padding:1px 6px;border-radius:3px;font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="spec">
+<h4>📋 D. 関東トップクラス大物実績 (mockup・rev2)</h4>
+配置: 月別釣果実績の下・FAQ の上<br>
+データ源: data/V2/*.csv 全期間 → 各魚種で kg/cm 別 全船宿ランキング作成<br>
+表示: 魚種別「<strong>各船宿の最大値</strong>」ランキングで TOP10 入りしているレコード<br>
+- 「全船宿中 N/M位」形式 (N=順位・M=該当魚種を釣ったことがある船宿数)<br>
+- 母集団 M ≥ 5 のみ表示 (沖メバル 3船宿中 3位 みたいな無意味な順位は除外)<br>
+- TOP10 入り無し船宿はセクション全省略<br>
+<strong>更新タイミング: 毎月1日のみ再計算</strong> (data/V2/ship_monthly_cache.json で月別キャッシュ)
+</div>
+
+<div class="ship-hero">
+  <h2>幸丸</h2>
+  <div class="sh-area">飯岡港</div>
+</div>
+
+<div class="c">
+
+<!-- ============================================================
+     🆕 D: 大物実績ランキング TOP5
+     ============================================================ -->
+<div class="trophy-rank">
+  <span class="tr-label">🏆 関東トップクラス大物実績</span>
+  <div class="tr-subtitle">魚種別「船宿別最大値」ランキングで上位入賞した自慢の1本 (母集団5船宿以上のみ)</div>
+
+  <ul class="tr-list">
+    <li class="tr-row r2">
+      <span class="tr-medal">🥈</span>
+      <img class="tr-img" src="../../docs/assets/fish/hirame/hirame_emoji.webp" alt="ヒラメ" onerror="this.style.display='none'">
+      <div class="tr-body">
+        <span class="tr-fish">ヒラメ <span style="font-size:11px;color:var(--accent);font-weight:700;background:#fff2dc;padding:1px 6px;border-radius:8px;margin-left:4px">全船宿中 2/28位</span></span>
+        <span class="tr-date">2025/08/16</span>
+      </div>
+      <span class="tr-val">94 cm</span>
+    </li>
+    <li class="tr-row">
+      <span class="tr-rank">4位</span>
+      <img class="tr-img" src="../../docs/assets/fish/akamutsu/akamutsu_emoji.webp" alt="アカムツ" onerror="this.style.display='none'">
+      <div class="tr-body">
+        <span class="tr-fish">アカムツ <span style="font-size:10px;color:var(--sub);font-weight:700;background:#eef1f5;padding:1px 5px;border-radius:8px;margin-left:4px">全船宿中 4/15位</span></span>
+        <span class="tr-date">2024/02/12</span>
+      </div>
+      <span class="tr-val">46 cm</span>
+    </li>
+    <li class="tr-row">
+      <span class="tr-rank">6位</span>
+      <img class="tr-img" src="../../docs/assets/fish/shousaifugu/shousaifugu_emoji.webp" alt="ショウサイフグ" onerror="this.style.display='none'">
+      <div class="tr-body">
+        <span class="tr-fish">ショウサイフグ <span style="font-size:10px;color:var(--sub);font-weight:700;background:#eef1f5;padding:1px 5px;border-radius:8px;margin-left:4px">全船宿中 6/21位</span></span>
+        <span class="tr-date">2024/12/08</span>
+      </div>
+      <span class="tr-val">42 cm</span>
+    </li>
+    <li class="tr-row">
+      <span class="tr-rank">9位</span>
+      <img class="tr-img" src="../../docs/assets/fish/ara/ara_emoji.webp" alt="アラ" onerror="this.style.display='none'">
+      <div class="tr-body">
+        <span class="tr-fish">アラ <span style="font-size:10px;color:var(--sub);font-weight:700;background:#eef1f5;padding:1px 5px;border-radius:8px;margin-left:4px">全船宿中 9/16位</span></span>
+        <span class="tr-date">2024/11/03</span>
+      </div>
+      <span class="tr-val">3.9 kg</span>
+    </li>
+    <li class="tr-row">
+      <span class="tr-rank">10位</span>
+      <img class="tr-img" src="../../docs/assets/fish/mahata/mahata_emoji.webp" alt="マハタ" onerror="this.style.display='none'">
+      <div class="tr-body">
+        <span class="tr-fish">マハタ <span style="font-size:10px;color:var(--sub);font-weight:700;background:#eef1f5;padding:1px 5px;border-radius:8px;margin-left:4px">全船宿中 10/34位</span></span>
+        <span class="tr-date">2025/06/22</span>
+      </div>
+      <span class="tr-val">6.3 kg</span>
+    </li>
+  </ul>
+</div>
+
+<!-- 参考: 関東TOP10 入りが無い船宿 → セクション全省略 (例: 安田丸) -->
+<div class="trophy-rank" style="opacity:.5">
+  <span class="tr-label">📋 参考: TOP10入り無しの船宿</span>
+  <div class="tr-subtitle">関東魚種別 TOP10 入りが1つもない船宿はこのセクション全省略</div>
+  <div style="text-align:center;color:var(--muted);padding:20px;font-size:12px">— このセクション非表示 —</div>
+</div>
+
+<div style="background:#eee;padding:14px;border-radius:8px;text-align:center;color:#888;font-size:13px;margin:14px 0">
+  〜 既存セクション 〜
+</div>
+
+</div>
+
+</body>
+</html>

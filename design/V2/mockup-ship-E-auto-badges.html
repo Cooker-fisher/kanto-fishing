@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[MOCKUP E] HEROバッジ自動生成 | 船釣り予想</title>
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+body{position:relative;padding-bottom:40px;background:#f5f7fa}
+body::before{content:"🔧 MOCKUP E - HEROバッジ自動生成";position:fixed;top:0;right:0;z-index:9999;background:#d4a017;color:#fff;padding:4px 12px;font-size:11px;font-weight:700;border-bottom-left-radius:6px}
+
+.ship-hero{
+  background:linear-gradient(135deg,var(--accent,#0d2b4a),var(--accent2,#1a3d5c));
+  color:#fff;padding:20px 14px;text-align:center;
+}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+
+/* === 既存: 手書き features バッジ === */
+.sh-badges{
+  display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap;
+}
+.sh-badge{
+  font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);
+  border-radius:10px;color:#fff;
+}
+
+/* === 🆕 E: 自動分析バッジ (統一形状) === */
+.sh-auto-badges{
+  display:flex;justify-content:center;gap:6px;margin-top:8px;flex-wrap:wrap;
+  padding-top:8px;border-top:1px dashed rgba(255,255,255,.15);
+}
+.sh-ab{
+  font-size:10px;
+  height:22px;line-height:22px;          /* 高さ統一 */
+  padding:0 10px;                         /* 左右 padding 統一 */
+  border-radius:11px;                     /* 高さの半分 = 完全な pill */
+  color:#fff;font-weight:700;letter-spacing:.3px;
+  display:inline-flex;align-items:center;gap:4px;
+  white-space:nowrap;                     /* 1行・改行禁止 */
+}
+.sh-ab.spec  {background:linear-gradient(135deg,#e85d04,#d04e00); order:1}  /* 専門船 = オレンジ */
+.sh-ab.rate  {background:linear-gradient(135deg,#1a9d56,#127a42); order:2}  /* 出船率 = 緑 */
+.sh-ab.rank  {background:linear-gradient(135deg,#f4d03f,#dab500);color:#5a4500; order:3}  /* TOP順位 = 金 */
+.sh-ab.vol   {background:linear-gradient(135deg,#5a8db8,#3d6e94); order:4}  /* 便数 = 青 */
+.sh-ab.season{background:linear-gradient(135deg,#a070d0,#7c52a8); order:5}  /* 季節得意 = 紫 */
+.sh-ab .sh-ab-icon{font-size:11px;line-height:1}
+.sh-ab .sh-ab-fish-img{
+  width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.2);
+  object-fit:contain;flex-shrink:0;
+}
+.sh-ab.rank .sh-ab-fish-img{background:rgba(90,69,0,.15)}
+.sh-ab .sh-ab-sub{
+  font-size:9px;opacity:.85;font-weight:600;
+  padding-left:4px;margin-left:2px;border-left:1px solid rgba(255,255,255,.4);
+}
+.sh-ab.rank .sh-ab-sub{border-left-color:rgba(90,69,0,.3)}
+
+/* === セクションラベル === */
+.sub-label{
+  font-size:10px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.5px;
+}
+
+.spec-note{background:#fff;border-left:4px solid #0d2b4a;padding:12px 16px;font-size:12px;line-height:1.7;margin:20px 14px;border-radius:6px}
+.spec-note h4{font-size:13px;color:#0d2b4a;margin-bottom:6px}
+.spec-note code{background:#f5f7fa;padding:1px 6px;border-radius:3px;font-size:11px}
+.spec-note ul{margin-left:18px;font-size:11px;color:#5a6a7a}
+</style>
+</head>
+<body>
+
+<div class="spec-note">
+<h4>📋 E. HERO自動分析バッジ (mockup)</h4>
+配置: HERO 内・既存「手書き features」の下 (新規セクション・破線で区分)<br>
+データ源: B (年間サマリ) + C (季節別) + D (TOP10入り) から自動抽出<br>
+<strong>更新タイミング: 毎月1日のみ再計算</strong> (B/C/D と同期)<br>
+<br>
+<strong>5種類のバッジ自動生成ルール:</strong>
+<ul>
+  <li><span style="background:#e85d04;color:#fff;padding:1px 6px;border-radius:6px">🐟 専門船</span> 主要魚種 = 全体の 50%以上</li>
+  <li><span style="background:#1a9d56;color:#fff;padding:1px 6px;border-radius:6px">✓ 出船率</span> 年間出船率 ≥ 95%</li>
+  <li><span style="background:#f4d03f;color:#5a4500;padding:1px 6px;border-radius:6px">🏆 順位</span> 全船宿中 1〜3位 (魚種別最大値ランキング)</li>
+  <li><span style="background:#5a8db8;color:#fff;padding:1px 6px;border-radius:6px">📅 便数</span> 年間総便 ≥ 500便</li>
+  <li><span style="background:#a070d0;color:#fff;padding:1px 6px;border-radius:6px">🌸 季節得意</span> 季節別TOP1魚種で全船宿中TOP5入り</li>
+</ul>
+最大 5個まで表示。手書き features は維持・自動バッジは別行で追加。
+</div>
+
+<!-- パターン1: 多魚種・年間ボリューム多い船宿 (幸丸) -->
+<h3 style="font-size:12px;color:#5a6a7a;padding:0 14px;margin:14px 0 6px">パターン1: 幸丸 (マダイ専門・年間650便・ヒラメ全船宿2位)</h3>
+<div class="ship-hero">
+  <h2>幸丸</h2>
+  <div class="sh-area">飯岡港</div>
+  <div class="sh-badges">
+    <span class="sh-badge">マダイ専門</span>
+    <span class="sh-badge">アマダイ船</span>
+    <span class="sh-badge">中深場対応</span>
+  </div>
+  <div class="sub-label">🤖 データ分析バッジ</div>
+  <div class="sh-auto-badges">
+    <span class="sh-ab spec"><img class="sh-ab-fish-img" width="14" height="14" src="../../docs/assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">マダイ専門<span class="sh-ab-sub">50%</span></span>
+    <span class="sh-ab rate"><span class="sh-ab-icon">✓</span>出船率<span class="sh-ab-sub">94%</span></span>
+    <span class="sh-ab rank"><span class="sh-ab-icon">🥈</span><img class="sh-ab-fish-img" width="14" height="14" src="../../docs/assets/fish/hirame/hirame_emoji.webp" alt="ヒラメ" onerror="this.style.display='none'">ヒラメ 94cm<span class="sh-ab-sub">全船宿中 2/28位</span></span>
+    <span class="sh-ab vol"><span class="sh-ab-icon">📅</span>年間出船<span class="sh-ab-sub">650便</span></span>
+    <span class="sh-ab season"><span class="sh-ab-icon">🍁</span><img class="sh-ab-fish-img" width="14" height="14" src="../../docs/assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">秋マダイ<span class="sh-ab-sub">125便</span></span>
+  </div>
+  <div class="sh-overall">直近30日の出船率: 100%（出船6日 / 欠航0日）</div>
+</div>
+
+<!-- パターン2: 単一魚種専門 (勘次郎丸) -->
+<h3 style="font-size:12px;color:#5a6a7a;padding:0 14px;margin:14px 0 6px">パターン2: 勘次郎丸 (アジ100%・出船率100%・小規模)</h3>
+<div class="ship-hero">
+  <h2>勘次郎丸</h2>
+  <div class="sh-area">金谷港</div>
+  <div class="sh-badges">
+    <span class="sh-badge">金アジ（居付きの高級アジ）専門</span>
+    <span class="sh-badge">毎日大型狙い</span>
+  </div>
+  <div class="sub-label">🤖 データ分析バッジ</div>
+  <div class="sh-auto-badges">
+    <span class="sh-ab spec"><img class="sh-ab-fish-img" width="14" height="14" src="../../docs/assets/fish/aji/aji_emoji.webp" alt="アジ" onerror="this.style.display='none'">アジ専門<span class="sh-ab-sub">100%</span></span>
+    <span class="sh-ab rate"><span class="sh-ab-icon">✓</span>出船率<span class="sh-ab-sub">100%</span></span>
+  </div>
+  <div class="sh-overall">直近30日の出船率: 100%（出船11日 / 欠航0日）</div>
+</div>
+
+<!-- パターン3: 季節得意・多魚種混合 (安田丸) -->
+<h3 style="font-size:12px;color:#5a6a7a;padding:0 14px;margin:14px 0 6px">パターン3: 安田丸 (多魚種・季節別主力)</h3>
+<div class="ship-hero">
+  <h2>安田丸</h2>
+  <div class="sh-area">相浜</div>
+  <div class="sh-badges">
+    <span class="sh-badge">五目釣り</span>
+    <span class="sh-badge">深場対応</span>
+  </div>
+  <div class="sub-label">🤖 データ分析バッジ</div>
+  <div class="sh-auto-badges">
+    <span class="sh-ab rate"><span class="sh-ab-icon">✓</span>出船率<span class="sh-ab-sub">100%</span></span>
+    <span class="sh-ab season"><span class="sh-ab-icon">❄️</span><img class="sh-ab-fish-img" width="14" height="14" src="../../docs/assets/fish/kinmedai/kinmedai_emoji.webp" alt="キンメダイ" onerror="this.style.display='none'">冬キンメダイ<span class="sh-ab-sub">7便</span></span>
+  </div>
+  <div class="sh-overall">直近30日の出船率: 100%（出船5日 / 欠航0日）</div>
+</div>
+
+<!-- パターン4: 自動バッジ無し (新規・データ不足船宿) -->
+<h3 style="font-size:12px;color:#5a6a7a;padding:0 14px;margin:14px 0 6px">パターン4: 新規船宿 (自動バッジ条件未到達)</h3>
+<div class="ship-hero">
+  <h2>○○丸</h2>
+  <div class="sh-area">○○港</div>
+  <div class="sh-badges">
+    <span class="sh-badge">アジ・タチウオ</span>
+  </div>
+  <div class="sub-label" style="opacity:.4">🤖 データ分析バッジ (条件未到達のため省略)</div>
+  <div class="sh-overall">直近30日の出船率: -</div>
+</div>
+
+</body>
+</html>

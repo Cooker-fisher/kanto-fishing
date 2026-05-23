@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[MOCKUP B] 幸丸 年間サマリー | 船釣り予想</title>
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+body{position:relative;padding-bottom:40px}
+body::before{content:"🔧 MOCKUP B - 年間サマリー";position:fixed;top:0;right:0;z-index:9999;background:#d4a017;color:#fff;padding:4px 12px;font-size:11px;font-weight:700;border-bottom-left-radius:6px}
+
+/* === HERO (既存・参考表示) === */
+.ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2,#1a3d5c));color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+
+/* === 🆕 B: 年間サマリーセクション === */
+.yearly-summary{
+  background:#fff;
+  border-top:4px solid var(--accent, #0d2b4a);
+  border-left:1px solid var(--border,#d0d8e0);
+  border-right:1px solid var(--border,#d0d8e0);
+  border-bottom:1px solid var(--border,#d0d8e0);
+  border-radius:var(--r, 10px);
+  padding:14px 16px 12px;
+  margin:14px 0;
+  position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.yearly-summary .ys-label{
+  position:absolute;top:-10px;left:14px;
+  background:var(--accent,#0d2b4a);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;
+  letter-spacing:.5px;
+}
+.yearly-summary .ys-period{
+  font-size:11px;color:var(--muted,#8a96a4);margin-bottom:12px;margin-top:4px;
+}
+
+/* === 🆕 船宿特徴文 (B+ 拡張) === */
+.ys-portrait{
+  background:linear-gradient(135deg,#fff8e1,#fff);
+  border-left:3px solid var(--cta,#e85d04);
+  padding:12px 14px;border-radius:6px;
+  margin-bottom:14px;
+  font-size:13px;line-height:1.8;color:var(--text,#1a2332);
+}
+.ys-portrait .ysp-label{
+  display:inline-block;font-size:10px;color:#fff;background:var(--cta,#e85d04);
+  padding:2px 8px;border-radius:10px;font-weight:700;margin-bottom:8px;letter-spacing:.3px;
+}
+.ys-portrait p{margin:0 0 6px 0}
+.ys-portrait p:last-child{margin-bottom:0}
+.ys-portrait strong{color:var(--accent,#0d2b4a);background:rgba(232,93,4,.08);padding:0 3px;border-radius:3px;font-weight:700}
+
+/* 上段: 3つのビッグ数値 (出船・出船率・年間総便) */
+.ys-kpi-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  margin-bottom:14px;padding-bottom:12px;
+  border-bottom:1px dashed var(--border,#d0d8e0);
+}
+.ys-kpi{
+  text-align:center;padding:8px 4px;background:var(--bg,#f5f7fa);border-radius:8px;
+}
+.ys-kpi .ysk-n{
+  font-size:22px;font-weight:800;color:var(--accent,#0d2b4a);line-height:1;
+}
+.ys-kpi .ysk-n.cta{color:var(--cta,#e85d04)}
+.ys-kpi .ysk-l{
+  font-size:10px;color:var(--muted,#8a96a4);margin-top:4px;
+}
+.ys-kpi .ysk-sub{
+  font-size:10px;color:var(--sub,#5a6a7a);margin-top:2px;
+}
+
+/* 中段: 年間 TOP3 魚種 */
+.ys-section{margin-bottom:12px}
+.ys-section:last-child{margin-bottom:0}
+.ys-section h4{
+  font-size:12px;font-weight:700;color:var(--accent,#0d2b4a);
+  margin-bottom:8px;display:flex;align-items:center;gap:5px;
+}
+.ys-top-fish{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+}
+.ys-tf-card{
+  background:var(--bg,#f5f7fa);border-radius:8px;padding:10px 8px;
+  text-align:center;border-top:3px solid var(--cta,#e85d04);position:relative;
+}
+.ys-tf-card.rank1{border-top-color:#f4d03f;background:linear-gradient(180deg,#fffaeb,#fff8e1)}
+.ys-tf-card.rank2{border-top-color:#a0a8b4;background:#f7f7f9}
+.ys-tf-card.rank3{border-top-color:#c8a878;background:#fbf6ef}
+.ys-tf-medal{
+  position:absolute;top:4px;left:6px;font-size:16px;line-height:1;
+}
+.ys-tf-img{
+  width:44px;height:44px;display:block;margin:4px auto 6px;
+}
+.ys-tf-head{
+  display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:4px;
+}
+.ys-tf-name{
+  font-size:13px;font-weight:800;color:var(--accent,#0d2b4a);
+}
+.ys-tf-trips{
+  font-size:12px;color:var(--cta,#e85d04);font-weight:700;
+}
+.ys-tf-stats{
+  margin-top:6px;padding-top:6px;border-top:1px dashed var(--border,#d0d8e0);
+  font-size:10px;color:var(--sub,#5a6a7a);line-height:1.6;
+}
+.ys-tf-stats .ystf-row{display:block}
+.ys-tf-stats strong{color:var(--accent,#0d2b4a);font-weight:700}
+.ys-tf-stats .ystf-max{color:var(--cta,#e85d04);font-weight:700}
+
+.spec{background:#f0f4f8;border-left:4px solid #0d2b4a;padding:12px 16px;font-size:12px;line-height:1.7;margin:20px 14px;border-radius:6px}
+.spec h4{font-size:13px;color:#0d2b4a;margin-bottom:6px}
+.spec code{background:#fff;padding:1px 6px;border-radius:3px;font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="spec">
+<h4>📋 B. 年間サマリーセクション + 船宿特徴文 (mockup・rev5)</h4>
+配置: HERO 直下・週次レポートの上<br>
+データ源: <code>_ship_load_monthly_archive(ship, max_months=12)</code> + B/C/D 統合<br>
+<strong>更新タイミング: 毎月1日のみ再計算</strong> (data/V2/ship_monthly_cache.json で月別キャッシュ)<br>
+平均釣果計算: Min平均 = avg(cnt_min) / Max平均 = avg(cnt_max)<br>
+<br>
+<strong>🆕 B+. 船宿特徴文 (自動生成・サマリー型・数字最小化)</strong><br>
+構成: ①規模カテゴリ (大型/中規模/小規模・「年間を通して安定」等) ②主力釣りものとジャンル ③季節得意 ④大物実績の総評<br>
+テンプレ穴埋め・LLM 不要・200-250字・数字よりも「どんな船宿か」が伝わる文章
+</div>
+
+<div class="ship-hero">
+  <h2>幸丸</h2>
+  <div class="sh-area">飯岡港</div>
+  <div class="sh-overall">直近30日の出船率: 100%（出船6日 / 欠航0日）</div>
+</div>
+
+<div class="c">
+
+<!-- ============================================================
+     🆕 B: 年間サマリー (HERO 直下)
+     ============================================================ -->
+<div class="yearly-summary">
+  <span class="ys-label">📅 年間サマリー</span>
+  <div class="ys-period">2025年6月 〜 2026年5月（過去12ヶ月）</div>
+
+  <!-- 🆕 船宿特徴文 (B+・サマリー文章) -->
+  <div class="ys-portrait">
+    <span class="ysp-label">📝 この船宿の特徴</span>
+    <p>飯岡港にある<strong>幸丸</strong>は、年間を通して安定した出船を続ける<strong>大型船宿</strong>。</p>
+    <p>主力釣りものは<strong>マダイ</strong>で、アマダイ・マハタなど<strong>深場の高級魚を狙う五目釣り</strong>に強み。</p>
+    <p>季節別では<strong>春・秋のノッコミ期</strong>にマダイが本領発揮し、夏冬はアマダイがコンスタントに釣れる。</p>
+    <p>大物実績は<strong>関東トップクラス</strong>で、ヒラメ・アカムツ・ショウサイフグなど複数魚種で全船宿上位に名を連ねる。大型のマダイ・アマダイ実績も豊富で、<strong>型狙いにも応える</strong>船宿。</p>
+  </div>
+
+  <!-- 上段: 3 KPI -->
+  <div class="ys-kpi-grid">
+    <div class="ys-kpi">
+      <div class="ysk-n cta">651<span style="font-size:13px">便</span></div>
+      <div class="ysk-l">年間出船数</div>
+    </div>
+    <div class="ys-kpi">
+      <div class="ysk-n">94<span style="font-size:13px">%</span></div>
+      <div class="ysk-l">年間出船率</div>
+      <div class="ysk-sub">欠航 43便</div>
+    </div>
+    <div class="ys-kpi">
+      <div class="ysk-n">12<span style="font-size:13px">ヶ月</span></div>
+      <div class="ysk-l">記録期間</div>
+      <div class="ysk-sub">2025/06〜2026/05</div>
+    </div>
+  </div>
+
+  <!-- 中段: 年間 TOP3 魚種 (メダル左 + 横並び・平均Min〜Max・型はkg/cm魚種別) -->
+  <div class="ys-section">
+    <h4>🎣 年間 主要魚種 TOP3</h4>
+    <div class="ys-top-fish">
+      <div class="ys-tf-card rank1">
+        <span class="ys-tf-medal">🥇</span>
+        <img class="ys-tf-img" src="../../docs/assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
+        <div class="ys-tf-head">
+          <span class="ys-tf-name">マダイ</span>
+          <span class="ys-tf-trips">328便</span>
+        </div>
+        <div class="ys-tf-stats">
+          <span class="ystf-row">平均釣果 <strong>3.5〜6.2匹</strong></span>
+          <span class="ystf-row">最大匹数 <strong>12匹</strong></span>
+          <span class="ystf-row">最大型 <span class="ystf-max">8.3 kg</span></span>
+        </div>
+      </div>
+      <div class="ys-tf-card rank2">
+        <span class="ys-tf-medal">🥈</span>
+        <img class="ys-tf-img" src="../../docs/assets/fish/amadai/amadai_emoji.webp" alt="アマダイ" onerror="this.style.display='none'">
+        <div class="ys-tf-head">
+          <span class="ys-tf-name">アマダイ</span>
+          <span class="ys-tf-trips">242便</span>
+        </div>
+        <div class="ys-tf-stats">
+          <span class="ystf-row">平均釣果 <strong>2.1〜4.5匹</strong></span>
+          <span class="ystf-row">最大匹数 <strong>9匹</strong></span>
+          <span class="ystf-row">最大型 <span class="ystf-max">9.1 kg</span></span>
+        </div>
+      </div>
+      <div class="ys-tf-card rank3">
+        <span class="ys-tf-medal">🥉</span>
+        <img class="ys-tf-img" src="../../docs/assets/fish/mahata/mahata_emoji.webp" alt="マハタ" onerror="this.style.display='none'">
+        <div class="ys-tf-head">
+          <span class="ys-tf-name">マハタ</span>
+          <span class="ys-tf-trips">32便</span>
+        </div>
+        <div class="ys-tf-stats">
+          <span class="ystf-row">平均釣果 <strong>0.8〜1.9匹</strong></span>
+          <span class="ystf-row">最大匹数 <strong>4匹</strong></span>
+          <span class="ystf-row">最大型 <span class="ystf-max">6.3 kg</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 参考: cm 表示の魚種 (タチウオ / シロギス / アジ / イカ系) -->
+  <div class="ys-section" style="opacity:.7;margin-top:14px;padding-top:10px;border-top:1px dashed var(--border,#d0d8e0)">
+    <h4 style="font-size:11px">※ 参考: cm 表示の魚種パターン (タチウオ船宿などはこう表示される)</h4>
+    <div class="ys-top-fish">
+      <div class="ys-tf-card rank1">
+        <span class="ys-tf-medal">🥇</span>
+        <img class="ys-tf-img" src="../../docs/assets/fish/tachiuo/tachiuo_emoji.webp" alt="タチウオ" onerror="this.style.display='none'">
+        <div class="ys-tf-head">
+          <span class="ys-tf-name">タチウオ</span>
+          <span class="ys-tf-trips">156便</span>
+        </div>
+        <div class="ys-tf-stats">
+          <span class="ystf-row">平均釣果 <strong>8.3〜18.5匹</strong></span>
+          <span class="ystf-row">最大匹数 <strong>42匹</strong></span>
+          <span class="ystf-row">最大型 <span class="ystf-max">165 cm</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     既存セクション (HERO + 週次レポート + 基本情報 …)
+     ============================================================ -->
+<div style="background:#eee;padding:14px;border-radius:8px;text-align:center;color:#888;font-size:13px;margin:14px 0">
+  〜 既存セクション（週次レポート・基本情報・船舶設備・予約CTA・月別実績・FAQ）〜<br>
+  <small>mockup B では省略 — 変更なし</small>
+</div>
+
+</div>
+
+</body>
+</html>

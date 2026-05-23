@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[MOCKUP C] 幸丸 季節別主力魚種 | 船釣り予想</title>
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+body{position:relative;padding-bottom:40px}
+body::before{content:"🔧 MOCKUP C - 季節別主力魚種";position:fixed;top:0;right:0;z-index:9999;background:#d4a017;color:#fff;padding:4px 12px;font-size:11px;font-weight:700;border-bottom-left-radius:6px}
+
+.ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2,#1a3d5c));color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+
+/* === 🆕 C: 季節別主力魚種 === */
+.seasonal-fish{
+  background:#fff;
+  border-top:4px solid var(--accent,#0d2b4a);
+  border-left:1px solid var(--border,#d0d8e0);
+  border-right:1px solid var(--border,#d0d8e0);
+  border-bottom:1px solid var(--border,#d0d8e0);
+  border-radius:var(--r,10px);
+  padding:14px 16px 12px;
+  margin:14px 0;
+  position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.sf-label{
+  position:absolute;top:-10px;left:14px;
+  background:var(--accent,#0d2b4a);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px;
+}
+.sf-subtitle{
+  font-size:11px;color:var(--muted,#8a96a4);margin-bottom:12px;margin-top:4px;
+}
+.sf-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+}
+.sf-card{
+  background:var(--bg,#f5f7fa);border-radius:8px;padding:10px;
+  border-left:3px solid var(--accent,#0d2b4a);
+}
+.sf-card.spring{border-left-color:#e8a3c7;background:linear-gradient(180deg,#fef0f6,#fff)}
+.sf-card.summer{border-left-color:#4dc3e6;background:linear-gradient(180deg,#e8f6fc,#fff)}
+.sf-card.autumn{border-left-color:#e08c3f;background:linear-gradient(180deg,#fef0e3,#fff)}
+.sf-card.winter{border-left-color:#5a8db8;background:linear-gradient(180deg,#eaf2f8,#fff)}
+.sf-head{
+  display:flex;align-items:center;gap:6px;margin-bottom:8px;
+  padding-bottom:6px;border-bottom:1px dashed var(--border,#d0d8e0);
+}
+.sf-emoji-season{font-size:18px;line-height:1}
+.sf-season-name{
+  font-size:13px;font-weight:800;color:var(--accent,#0d2b4a);
+}
+.sf-months{
+  font-size:10px;color:var(--muted,#8a96a4);margin-left:auto;
+}
+.sf-fish-list{list-style:none;padding:0;margin:0}
+.sf-fish-row{
+  display:flex;align-items:flex-start;gap:6px;padding:6px 0;
+  border-bottom:1px dotted var(--border,#d0d8e0);
+}
+.sf-fish-row:last-child{border-bottom:none}
+.sf-fish-rank{
+  flex:0 0 16px;font-size:10px;color:var(--muted,#8a96a4);font-weight:700;
+  text-align:center;line-height:24px;
+}
+.sf-fish-img{width:24px;height:24px;flex:0 0 24px;margin-top:2px}
+.sf-fish-body{
+  flex:1;min-width:0;
+}
+.sf-fish-head{
+  display:flex;align-items:baseline;gap:6px;
+}
+.sf-fish-name{
+  font-size:12px;font-weight:700;color:var(--accent,#0d2b4a);
+}
+.sf-fish-trips{
+  font-size:11px;color:var(--cta,#e85d04);font-weight:700;
+}
+.sf-fish-stats{
+  font-size:10px;color:var(--sub,#5a6a7a);line-height:1.5;margin-top:2px;
+}
+.sf-fish-stats strong{color:var(--accent,#0d2b4a);font-weight:700}
+.sf-fish-stats .sff-max{color:var(--cta,#e85d04);font-weight:700}
+
+.spec{background:#f0f4f8;border-left:4px solid #0d2b4a;padding:12px 16px;font-size:12px;line-height:1.7;margin:20px 14px;border-radius:6px}
+.spec h4{font-size:13px;color:#0d2b4a;margin-bottom:6px}
+.spec code{background:#fff;padding:1px 6px;border-radius:3px;font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="spec">
+<h4>📋 C. 季節別主力魚種セクション (mockup)</h4>
+配置: 月別釣果実績の上 (予約CTA下・FAQ上の間)<br>
+データ源: <code>_ship_load_monthly_archive(ship, 12)</code> → 月 → 季節振り分け → TOP2 集計<br>
+季節定義: 春(3-5月) / 夏(6-8月) / 秋(9-11月) / 冬(12-2月)<br>
+<strong>更新タイミング: 毎月1日のみ再計算</strong> (data/V2/ship_monthly_cache.json で月別キャッシュ)<br>
+表示文言: 「過去12ヶ月の実績・毎月1日更新」
+</div>
+
+<div class="ship-hero">
+  <h2>幸丸</h2>
+  <div class="sh-area">飯岡港</div>
+  <div class="sh-overall">直近30日の出船率: 100%</div>
+</div>
+
+<div class="c">
+
+<!-- ============================================================
+     🆕 C: 季節別主力魚種 (4季節カード 2x2 グリッド)
+     ============================================================ -->
+<div class="seasonal-fish">
+  <span class="sf-label">🌐 季節別 主力魚種</span>
+  <div class="sf-subtitle">過去12ヶ月の季節ごと主力魚種 TOP2 (便数ベース)</div>
+
+  <div class="sf-grid">
+    <!-- 春 -->
+    <div class="sf-card spring">
+      <div class="sf-head">
+        <span class="sf-emoji-season">🌸</span>
+        <span class="sf-season-name">春</span>
+        <span class="sf-months">3-5月</span>
+      </div>
+      <ul class="sf-fish-list">
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">1</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">マダイ</span><span class="sf-fish-trips">93便</span></div>
+            <div class="sf-fish-stats">平均 <strong>2.5〜4.8匹</strong> / 最大匹数 <strong>10匹</strong> / 最大 <span class="sff-max">8.3 kg</span></div>
+          </div>
+        </li>
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">2</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/amadai/amadai_emoji.webp" alt="アマダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">アマダイ</span><span class="sf-fish-trips">30便</span></div>
+            <div class="sf-fish-stats">平均 <strong>1.2〜3.1匹</strong> / 最大匹数 <strong>6匹</strong> / 最大 <span class="sff-max">5.5 kg</span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 夏 -->
+    <div class="sf-card summer">
+      <div class="sf-head">
+        <span class="sf-emoji-season">☀️</span>
+        <span class="sf-season-name">夏</span>
+        <span class="sf-months">6-8月</span>
+      </div>
+      <ul class="sf-fish-list">
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">1</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/amadai/amadai_emoji.webp" alt="アマダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">アマダイ</span><span class="sf-fish-trips">51便</span></div>
+            <div class="sf-fish-stats">平均 <strong>2.3〜5.4匹</strong> / 最大匹数 <strong>9匹</strong> / 最大 <span class="sff-max">9.1 kg</span></div>
+          </div>
+        </li>
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">2</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">マダイ</span><span class="sf-fish-trips">39便</span></div>
+            <div class="sf-fish-stats">平均 <strong>1.8〜3.5匹</strong> / 最大匹数 <strong>7匹</strong> / 最大 <span class="sff-max">6.2 kg</span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 秋 -->
+    <div class="sf-card autumn">
+      <div class="sf-head">
+        <span class="sf-emoji-season">🍁</span>
+        <span class="sf-season-name">秋</span>
+        <span class="sf-months">9-11月</span>
+      </div>
+      <ul class="sf-fish-list">
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">1</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">マダイ</span><span class="sf-fish-trips">125便</span></div>
+            <div class="sf-fish-stats">平均 <strong>4.2〜7.8匹</strong> / 最大匹数 <strong>12匹</strong> / 最大 <span class="sff-max">7.5 kg</span></div>
+          </div>
+        </li>
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">2</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/amadai/amadai_emoji.webp" alt="アマダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">アマダイ</span><span class="sf-fish-trips">80便</span></div>
+            <div class="sf-fish-stats">平均 <strong>2.8〜5.2匹</strong> / 最大匹数 <strong>8匹</strong> / 最大 <span class="sff-max">6.8 kg</span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 冬 -->
+    <div class="sf-card winter">
+      <div class="sf-head">
+        <span class="sf-emoji-season">❄️</span>
+        <span class="sf-season-name">冬</span>
+        <span class="sf-months">12-2月</span>
+      </div>
+      <ul class="sf-fish-list">
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">1</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/amadai/amadai_emoji.webp" alt="アマダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">アマダイ</span><span class="sf-fish-trips">81便</span></div>
+            <div class="sf-fish-stats">平均 <strong>3.1〜6.0匹</strong> / 最大匹数 <strong>10匹</strong> / 最大 <span class="sff-max">7.2 kg</span></div>
+          </div>
+        </li>
+        <li class="sf-fish-row">
+          <span class="sf-fish-rank">2</span>
+          <img class="sf-fish-img" src="../../docs/assets/fish/madai/madai_emoji.webp" alt="マダイ" onerror="this.style.display='none'">
+          <div class="sf-fish-body">
+            <div class="sf-fish-head"><span class="sf-fish-name">マダイ</span><span class="sf-fish-trips">71便</span></div>
+            <div class="sf-fish-stats">平均 <strong>2.4〜4.5匹</strong> / 最大匹数 <strong>8匹</strong> / 最大 <span class="sff-max">8.3 kg</span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div style="background:#eee;padding:14px;border-radius:8px;text-align:center;color:#888;font-size:13px;margin:14px 0">
+  〜 既存セクション 〜
+</div>
+
+</div>
+
+</body>
+</html>

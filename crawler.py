@@ -12153,6 +12153,97 @@ _SHIP_EXTRA_CSS = """\
 .ma-archive-links{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
 .ma-archive-links a{display:inline-block;padding:3px 8px;background:var(--bg);color:var(--accent);border-radius:10px;text-decoration:none;margin:2px;font-size:11px}
 .ma-archive-links a:hover{background:var(--accent);color:#fff}
+/* J-B/C/D/E 統合実装 (2026/05/23) */
+.sh-auto-badges{display:flex;justify-content:center;gap:6px;margin-top:8px;flex-wrap:wrap;padding-top:8px;border-top:1px dashed rgba(255,255,255,.15)}
+.sub-label{font-size:10px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.5px}
+.sh-ab{font-size:10px;height:22px;line-height:22px;padding:0 10px;border-radius:11px;color:#fff;font-weight:700;letter-spacing:.3px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.sh-ab.spec  {background:linear-gradient(135deg,#e85d04,#d04e00);order:1}
+.sh-ab.rate  {background:linear-gradient(135deg,#1a9d56,#127a42);order:2}
+.sh-ab.rank  {background:linear-gradient(135deg,#f4d03f,#dab500);color:#5a4500;order:3}
+.sh-ab.vol   {background:linear-gradient(135deg,#5a8db8,#3d6e94);order:4}
+.sh-ab.season{background:linear-gradient(135deg,#a070d0,#7c52a8);order:5}
+.sh-ab .sh-ab-icon{font-size:11px;line-height:1}
+.sh-ab .sh-ab-fish-img{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.2);object-fit:contain;flex-shrink:0}
+.sh-ab.rank .sh-ab-fish-img{background:rgba(90,69,0,.15)}
+.sh-ab .sh-ab-sub{font-size:9px;opacity:.85;font-weight:600;padding-left:4px;margin-left:2px;border-left:1px solid rgba(255,255,255,.4)}
+.sh-ab.rank .sh-ab-sub{border-left-color:rgba(90,69,0,.3)}
+/* B 年間サマリー + B+ 船宿特徴文 */
+.yearly-summary{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:14px 16px 12px;margin-bottom:16px;position:relative}
+.yearly-summary .ys-label{position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.yearly-summary .ys-period{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.ys-portrait{background:linear-gradient(135deg,#fff8e1,#fff);border-left:3px solid var(--cta);padding:12px 14px;border-radius:6px;margin-bottom:14px;font-size:13px;line-height:1.8;color:var(--text)}
+.ys-portrait .ysp-label{display:inline-block;font-size:10px;color:#fff;background:var(--cta);padding:2px 8px;border-radius:10px;font-weight:700;margin-bottom:8px;letter-spacing:.3px}
+.ys-portrait p{margin:0 0 6px 0}
+.ys-portrait p:last-child{margin-bottom:0}
+.ys-portrait strong{color:var(--accent);background:rgba(232,93,4,.08);padding:0 3px;border-radius:3px;font-weight:700}
+.ys-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed var(--border)}
+.ys-kpi{text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px}
+.ys-kpi .ysk-n{font-size:22px;font-weight:800;color:var(--accent);line-height:1}
+.ys-kpi .ysk-n.cta{color:var(--cta)}
+.ys-kpi .ysk-l{font-size:10px;color:var(--muted);margin-top:4px}
+.ys-kpi .ysk-sub{font-size:10px;color:var(--sub);margin-top:2px}
+.ys-section{margin-bottom:12px}
+.ys-section:last-child{margin-bottom:0}
+.ys-section h4{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.ys-top-fish{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ys-tf-card{background:var(--bg);border-radius:8px;padding:10px 8px;text-align:center;border-top:3px solid var(--cta);position:relative}
+.ys-tf-card.rank1{border-top-color:#f4d03f;background:linear-gradient(180deg,#fffaeb,#fff8e1)}
+.ys-tf-card.rank2{border-top-color:#a0a8b4;background:#f7f7f9}
+.ys-tf-card.rank3{border-top-color:#c8a878;background:#fbf6ef}
+.ys-tf-medal{position:absolute;top:4px;left:6px;font-size:16px;line-height:1}
+.ys-tf-img{width:44px;height:44px;display:block;margin:4px auto 6px}
+.ys-tf-head{display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:4px}
+.ys-tf-name{font-size:13px;font-weight:800;color:var(--accent)}
+.ys-tf-trips{font-size:12px;color:var(--cta);font-weight:700}
+.ys-tf-stats{margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);font-size:10px;color:var(--sub);line-height:1.6}
+.ys-tf-stats .ystf-row{display:block}
+.ys-tf-stats strong{color:var(--accent);font-weight:700}
+.ys-tf-stats .ystf-max{color:var(--cta);font-weight:700}
+/* C 季節別主力魚種 */
+.seasonal-fish{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:14px 16px 12px;margin-bottom:16px;position:relative}
+.sf-label{position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.sf-subtitle{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.sf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sf-card{background:var(--bg);border-radius:8px;padding:10px;border-left:3px solid var(--accent)}
+.sf-card.spring{border-left-color:#e8a3c7;background:linear-gradient(180deg,#fef0f6,#fff)}
+.sf-card.summer{border-left-color:#4dc3e6;background:linear-gradient(180deg,#e8f6fc,#fff)}
+.sf-card.autumn{border-left-color:#e08c3f;background:linear-gradient(180deg,#fef0e3,#fff)}
+.sf-card.winter{border-left-color:#5a8db8;background:linear-gradient(180deg,#eaf2f8,#fff)}
+.sf-head{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--border)}
+.sf-emoji-season{font-size:18px;line-height:1}
+.sf-season-name{font-size:13px;font-weight:800;color:var(--accent)}
+.sf-months{font-size:10px;color:var(--muted);margin-left:auto}
+.sf-fish-list{list-style:none;padding:0;margin:0}
+.sf-fish-row{display:flex;align-items:flex-start;gap:6px;padding:6px 0;border-bottom:1px dotted var(--border)}
+.sf-fish-row:last-child{border-bottom:none}
+.sf-fish-rank{flex:0 0 16px;font-size:10px;color:var(--muted);font-weight:700;text-align:center;line-height:24px}
+.sf-fish-img{width:24px;height:24px;flex:0 0 24px;margin-top:2px}
+.sf-fish-body{flex:1;min-width:0}
+.sf-fish-head{display:flex;align-items:baseline;gap:6px}
+.sf-fish-name{font-size:12px;font-weight:700;color:var(--accent)}
+.sf-fish-trips{font-size:11px;color:var(--cta);font-weight:700}
+.sf-fish-stats{font-size:10px;color:var(--sub);line-height:1.5;margin-top:2px}
+.sf-fish-stats strong{color:var(--accent);font-weight:700}
+.sf-fish-stats .sff-max{color:var(--cta);font-weight:700}
+/* D 大物実績ランキング */
+.trophy-rank{background:linear-gradient(135deg,#fffaeb,#fff);border:1px solid var(--border);border-top:4px solid #f4d03f;box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:14px 16px 12px;margin-bottom:16px;position:relative}
+.tr-label{position:absolute;top:-10px;left:14px;background:#f4d03f;color:#5a4500;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
+.tr-subtitle{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
+.tr-list{list-style:none;padding:0;margin:0}
+.tr-row{display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px dotted var(--border)}
+.tr-row:last-child{border-bottom:none}
+.tr-row.r1{background:linear-gradient(90deg,#fffaeb,transparent);border-left:3px solid #f4d03f;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-row.r2{background:linear-gradient(90deg,#f7f7f9,transparent);border-left:3px solid #a0a8b4;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-row.r3{background:linear-gradient(90deg,#fbf6ef,transparent);border-left:3px solid #c8a878;padding-left:8px;border-radius:4px 0 0 4px}
+.tr-medal{flex:0 0 28px;font-size:18px;text-align:center;line-height:1}
+.tr-rank{flex:0 0 28px;font-size:11px;text-align:center;color:var(--muted);font-weight:700;line-height:1}
+.tr-img{width:36px;height:36px;flex:0 0 36px}
+.tr-body{flex:1;min-width:0}
+.tr-fish{font-size:14px;font-weight:800;color:var(--accent)}
+.tr-rank-badge{font-size:11px;color:var(--accent);font-weight:700;background:#fff2dc;padding:1px 6px;border-radius:8px;margin-left:4px}
+.tr-rank-badge.low{font-size:10px;color:var(--sub);background:#eef1f5}
+.tr-date{font-size:11px;color:var(--muted);margin-left:6px}
+.tr-val{font-size:15px;font-weight:800;color:var(--cta);flex:0 0 auto}
 .weekly-report{background:#fff;border-top:4px solid var(--cta);border-left:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:var(--r);padding:16px 18px 14px;margin:14px 0;position:relative}
 .weekly-report .wr-label{position:absolute;top:-10px;left:14px;background:var(--cta);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:.5px}
 .weekly-report .wr-period{font-size:11px;color:var(--muted);margin-bottom:12px;margin-top:4px}
@@ -12696,6 +12787,119 @@ def _ship_get_next_week_spring_tides(today_dt):
         return result
     except Exception:
         return []
+
+
+# ============================================================
+# J-BCDE (2026/05/23): 月別キャッシュ機構 + 統合データ取得
+# data/V2/ship_monthly_cache.json で全船宿の B/C/D/E データを月別キャッシュ
+# 月変わりで全 ship 一括再計算・同月内は使い回し
+# ============================================================
+
+_SHIP_MONTHLY_CACHE_PATH = os.path.join(_BASE_DIR, "data", _ACTIVE_VER, "ship_monthly_cache.json")
+_SHIP_MONTHLY_CACHE = None  # メモリキャッシュ (1走行内で何度も load しない)
+
+
+def _ship_load_monthly_cache(today_dt):
+    """月別キャッシュをロード・月変わりなら全 ship 再計算用に空 dict 返す。
+    返り値: {ship_name: {yearly, portrait, seasonal, trophies, badges}, "__month__": "YYYY-MM"}
+    """
+    global _SHIP_MONTHLY_CACHE
+    cur_month = today_dt.strftime("%Y-%m")
+    if _SHIP_MONTHLY_CACHE is not None:
+        if _SHIP_MONTHLY_CACHE.get("__month__") == cur_month:
+            return _SHIP_MONTHLY_CACHE
+    cache = {}
+    if os.path.exists(_SHIP_MONTHLY_CACHE_PATH):
+        try:
+            with open(_SHIP_MONTHLY_CACHE_PATH, encoding="utf-8") as f:
+                cache = json.load(f)
+        except Exception:
+            cache = {}
+    if cache.get("__month__") != cur_month:
+        # 月変わり → 空 cache (要再計算)
+        cache = {"__month__": cur_month}
+    _SHIP_MONTHLY_CACHE = cache
+    return cache
+
+
+def _ship_save_monthly_cache():
+    """メモリキャッシュをディスクに保存"""
+    global _SHIP_MONTHLY_CACHE
+    if _SHIP_MONTHLY_CACHE is None:
+        return
+    try:
+        os.makedirs(os.path.dirname(_SHIP_MONTHLY_CACHE_PATH), exist_ok=True)
+        with open(_SHIP_MONTHLY_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(_SHIP_MONTHLY_CACHE, f, ensure_ascii=False)
+    except Exception as e:
+        print(f"[ship-cache-save] err: {e}")
+
+
+# 大物実績 cross-ship ranking キャッシュ (全 ship で1回計算・全 ship 共有)
+_SHIP_CROSS_RANK = None
+
+
+def _ship_compute_cross_ship_rankings():
+    """全 ship × 全魚種の最大 kg / 最大 cm ランキングを構築。
+    返り値: {
+      'kg': {fish: [(ship, value), ...] (降順)},
+      'cm': {fish: [(ship, value), ...] (降順)},
+    }
+    全 ship で 1 回計算・以降は使い回し。
+    """
+    global _SHIP_CROSS_RANK
+    if _SHIP_CROSS_RANK is not None:
+        return _SHIP_CROSS_RANK
+    from collections import defaultdict
+    fish_ship_max_kg = defaultdict(dict)  # fish -> {ship: kg}
+    fish_ship_max_cm = defaultdict(dict)
+    try:
+        all_files = [f for f in os.listdir(_DATA_DIR) if f.endswith(".csv") and f != "cancellations.csv"]
+    except FileNotFoundError:
+        _SHIP_CROSS_RANK = {"kg": {}, "cm": {}}
+        return _SHIP_CROSS_RANK
+    for fname in all_files:
+        path = os.path.join(_DATA_DIR, fname)
+        try:
+            with open(path, encoding="utf-8") as fp:
+                for r in csv.DictReader(fp):
+                    fish = (r.get("tsuri_mono") or "").strip()
+                    ship = (r.get("ship") or "").strip()
+                    if not fish or fish in ("不明", "欠航", "NULL") or not ship:
+                        continue
+                    try:
+                        km = float(r.get("kg_max") or 0)
+                        if km > 0 and km > fish_ship_max_kg[fish].get(ship, 0):
+                            fish_ship_max_kg[fish][ship] = km
+                    except (ValueError, TypeError):
+                        pass
+                    try:
+                        sm = float(r.get("size_max") or 0)
+                        if sm > 0 and sm > fish_ship_max_cm[fish].get(ship, 0):
+                            fish_ship_max_cm[fish][ship] = sm
+                    except (ValueError, TypeError):
+                        pass
+        except Exception:
+            continue
+    # ランキング (降順) に変換
+    rank_kg = {fish: sorted(d.items(), key=lambda x: -x[1]) for fish, d in fish_ship_max_kg.items()}
+    rank_cm = {fish: sorted(d.items(), key=lambda x: -x[1]) for fish, d in fish_ship_max_cm.items()}
+    _SHIP_CROSS_RANK = {"kg": rank_kg, "cm": rank_cm}
+    return _SHIP_CROSS_RANK
+
+
+# 魚種別 kg/cm 単位の判定 (B/C/D 共通)
+_FISH_KG_SET = {
+    "マダイ", "アマダイ", "シロアマダイ", "マハタ", "アカハタ", "ハタ", "アラ",
+    "キハダマグロ", "キメジ", "カツオ", "ワラサ", "イナダ", "ブリ", "カンパチ",
+    "シマアジ", "ヒラマサ", "シーバス", "ヒラメ", "マダコ", "キンメダイ",
+    "クロムツ", "メダイ", "メヌケ", "アカムツ", "アブラボウズ", "ハナダイ",
+    "クロダイ", "カイワリ", "サワラ", "シイラ",
+}
+
+def _fish_unit(fish):
+    """魚種別の kg/cm 単位を返す。kg 系魚種は 'kg'・それ以外は 'cm'。"""
+    return "kg" if fish in _FISH_KG_SET else "cm"
 
 
 def _ship_load_monthly_archive(ship_name, max_months=13):
@@ -13356,9 +13560,25 @@ def _ship_area_ranking_html(catches, area, self_name, today_dt):
 
 
 def _ship_primary_fish_list(catches, ship_name, limit=5):
-    """その船宿の主要対象魚（直近90日・釣果件数 TOP N）"""
-    from datetime import timedelta
+    """その船宿の主要対象魚 TOP N。
+    優先: data/V2/*.csv 過去13ヶ月の月次集計 (chowari 25ヶ月遡及データ反映)
+    fallback: 直近90日 catches (新規船宿で月次データなしの場合)
+    """
     from collections import Counter as _C
+    # まず過去13ヶ月の月次集計から計算
+    try:
+        monthly = _ship_load_monthly_archive(ship_name, max_months=13)
+    except Exception:
+        monthly = []
+    if monthly:
+        counter = _C()
+        for m in monthly:
+            for fi in m.get("fish", []):
+                counter[fi["fish"]] += fi["count"]
+        if counter:
+            return [n for n, _ in counter.most_common(limit)]
+    # fallback: 直近90日 catches
+    from datetime import timedelta
     cutoff = datetime.now(JST).replace(tzinfo=None) - timedelta(days=90)
     counter = _C()
     for c in catches:
