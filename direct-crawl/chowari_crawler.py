@@ -55,7 +55,18 @@ def fetch_page_chowari(chowari_id: str, page: int) -> str:
     """chowari.jp /ship/{id}/catch/?page=N を取得"""
     base = f"https://www.chowari.jp/ship/{chowari_id}/catch/"
     url  = f"{base}?page={page}" if page > 1 else base
-    req  = Request(url, headers={"User-Agent": UA, "Accept-Language": "ja-JP,ja"})
+    # 検知対策: Referer (前ページから来たフリ)・Accept ヘッダ拡張
+    # 注: Accept-Encoding は付けない (urllib は自動解凍しないため gzip 文字化けする)
+    headers = {
+        "User-Agent": UA,
+        "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Referer": base if page > 1 else "https://www.chowari.jp/",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+    }
+    req = Request(url, headers=headers)
     with urlopen(req, timeout=30) as r:
         return r.read().decode("utf-8", errors="replace")
 
@@ -170,14 +181,23 @@ def main():
     if args.from_ships_json:
         targets = load_chowari_ships()
         print(f"=== ships.json から chowari_id 持つ船宿: {len(targets)}件 ===")
-        for s in targets:
-            print(f"\n--- {s['name']} (chowari_id={s['chowari_id']}, area={s.get('area','')}) ---")
-            records = crawl_ship(s["name"], s["chowari_id"], s.get("area",""),
-                                  page_max, cutoff_date)
-            if not args.full:
-                records = filter_by_days(records, args.days)
-            print(f"  取得: {len(records)}件")
-            save_records(records, s["name"], args.dry_run)
+        # 検知対策: 隻間 3秒 wait (一括処理時)
+        SHIP_INTERVAL_SEC = 3.0
+        for i, s in enumerate(targets):
+            if i > 0:
+                time.sleep(SHIP_INTERVAL_SEC)
+            print(f"\n--- [{i+1}/{len(targets)}] {s['name']} (chowari_id={s['chowari_id']}, area={s.get('area','')}) ---")
+            try:
+                records = crawl_ship(s["name"], s["chowari_id"], s.get("area",""),
+                                      page_max, cutoff_date)
+                if not args.full:
+                    records = filter_by_days(records, args.days)
+                print(f"  取得: {len(records)}件")
+                save_records(records, s["name"], args.dry_run)
+            except Exception as e:
+                # 1隻失敗で全体停止しない
+                print(f"  [ERROR] {s['name']}: {e}")
+                continue
         return
 
     if not (args.ship and args.chowari_id and args.area):

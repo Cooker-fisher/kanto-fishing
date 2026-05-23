@@ -46,8 +46,8 @@ BASE_URL    = "https://www.chowari.jp/ship/00941/catch/"
 SHIP_NAME   = "ひろの丸"
 AREA_NAME   = "波崎港"
 SOURCE      = "chowari/ひろの丸"
-SLEEP_SEC   = 1.0
-UA          = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 kanto-fishing-bot/1.0"
+SLEEP_SEC   = 2.0
+UA          = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 # 全ページ遡及時の上限（26ヶ月 ≈ chowari は1ページ約30件・実質 10〜15ページで底に届く）
 FULL_PAGE_MAX = 50
 
