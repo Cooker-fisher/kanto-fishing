@@ -75,19 +75,20 @@ const LOCKABLE_PARAMS = [
 
 const PRESETS = [
   // ── サイクル系 ──
-  { key: "default",  label: "標準 3分サイクル", group: "cycle", patch: {} },
-  { key: "kuripote", label: "食い渋り (4-5分)", group: "cycle",
+  { key: "default",  label: "標準 3分", group: "cycle", patch: {} },
+  { key: "kuripote", label: "渋い 4-5分", group: "cycle",
     patch: { harrisLength: 12, harrisNo: 2, hookType: "madai", hookSize: 8, ganDamaSize: 0,
              shakuriStrokeCm: 60, shakuriCountPerTrigger: 2,
              cageUpperOpening: 0.20, cageLowerOpening: 0,
              komaseSize: "L", smokeLevel: "weak",
              makiAmount: 2.5, shakuriInterval: 60 } },
-  { key: "highact",  label: "活性高 (2-3分)", group: "cycle",
+  { key: "highact",  label: "高活性 2-3分", group: "cycle",
     patch: { shakuriStrokeCm: 75, shakuriCountPerTrigger: 3,
              cageUpperOpening: 0.30, cageLowerOpening: 0,
              makiAmount: 1.7, shakuriInterval: 20 } },
 
   // ── 海況系 ──
+  { key: "calm",     label: "凪",     group: "cond", patch: {} },
   { key: "trendrun", label: "二枚潮", group: "cond",
     patch: { tideSpeed: 0.55, tideDepthFactor: -0.4, harrisNo: 3,
              ganDamaPos: "near-hook", ganDamaSize: 0.5, makiAmount: 1.7 } },
@@ -152,12 +153,22 @@ function App() {
   const _isFirstVisit = (() => {
     try { return !localStorage.getItem("komase.visited"); } catch(e) { return true; }
   })();
-  const [params, setParams] = useState(_isFirstVisit
-    ? { ...DEFAULT_PARAMS, autoShakuri: true }
-    : DEFAULT_PARAMS
-  );
-  // 各グループ独立: cycle/cond/area から 1 つずつ or null。複数同時アクティブ可
-  const [selectedPresets, setSelectedPresets] = useState({ cycle: "default", cond: null, area: null });
+  // T40: 初期プリセット選択（preset:on + 標準 3分 + 凪 + 東京湾・剣崎）
+  const _initialSel = { preset: "on", cycle: "default", cond: "calm", area: "tokyo_bay" };
+  const _initialParams = (() => {
+    let p = { ...DEFAULT_PARAMS };
+    for (const g of ["area", "cond", "cycle"]) {
+      const key = _initialSel[g];
+      if (key) {
+        const preset = PRESETS.find(x => x.key === key);
+        if (preset) p = { ...p, ...preset.patch };
+      }
+    }
+    return _isFirstVisit ? { ...p, autoShakuri: true } : p;
+  })();
+  const [params, setParams] = useState(_initialParams);
+  // T40: preset 行を追加した selectedPresets（preset: "on"/"off"）
+  const [selectedPresets, setSelectedPresets] = useState(_initialSel);
   const [running, setRunning] = useState(true);
   const [speedMul, setSpeedMul] = useState(1);  // 1x / 2x / 3x シミュレーション速度
   const [tick, setTick] = useState(0);
@@ -166,6 +177,9 @@ function App() {
   const [locks, setLocks] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState(0);
+
+  // T40: 「有り」復帰用に直前選択を記憶
+  const lastAppliedComboRef = useRef({ cycle: "default", cond: "calm", area: "tokyo_bay" });
 
   const canvasRef = useRef(null);
   const particlesRef = useRef([]);
@@ -255,19 +269,45 @@ function App() {
 
   const set = (patch) => {
     setParams(prev => ({ ...prev, ...patch }));
-    // 手動編集: 全プリセット解除 (params が乖離するので)
-    setSelectedPresets({ cycle: null, cond: null, area: null });
+    // T40: 手動編集時は preset 行も含め全プリセット解除
+    setSelectedPresets({ preset: "off", cycle: null, cond: null, area: null });
   };
 
-  // プリセット トグル: 同グループ内で 1 つ選択 (再クリックで解除)
+  // T40: プリセット トグル拡張
+  //   "preset:on"  → lastAppliedComboRef から area/cond/cycle を復元
+  //   "preset:off" → preset="off" にして params は維持
+  //   通常 key     → 既存ロジック維持 + preset:"on" を同時設定 + lastAppliedComboRef 更新
   const togglePreset = (key) => {
+    if (key === "preset:off") {
+      setSelectedPresets({ preset: "off", cycle: null, cond: null, area: null });
+      showToast("プリセット解除", "var(--vermilion)");
+      return;
+    }
+    if (key === "preset:on") {
+      const _fallback = { cycle: "default", cond: "calm", area: "tokyo_bay" };
+      const restored = { ...(_fallback), ...lastAppliedComboRef.current };
+      const newSel = { preset: "on", ...restored };
+      setSelectedPresets(newSel);
+      setParams(rebuildFromPresets(newSel));
+      resetSim();
+      const active = ["area","cond","cycle"].map(gg => {
+        const k = newSel[gg];
+        const pp = k ? PRESETS.find(x => x.key === k) : null;
+        return pp ? pp.label : null;
+      }).filter(Boolean);
+      showToast("プリセット復元: " + (active.length ? active.join(" + ") : "初期設定"), "var(--vermilion)");
+      return;
+    }
+    // 通常 preset (area/cond/cycle)
     const p = PRESETS.find(x => x.key === key);
     if (!p) return;
     const g = p.group;
-    const newSel = { ...selectedPresets, [g]: selectedPresets[g] === key ? null : key };
+    const newSel = { ...selectedPresets, preset: "on", [g]: selectedPresets[g] === key ? null : key };
     setSelectedPresets(newSel);
     setParams(rebuildFromPresets(newSel));
     resetSim();
+    // lastAppliedComboRef を更新（"off" 状態でのクリックで即 "on" 化した場合も含む）
+    lastAppliedComboRef.current = { cycle: newSel.cycle, cond: newSel.cond, area: newSel.area };
     const active = ["area","cond","cycle"].map(gg => {
       const k = newSel[gg];
       const pp = k ? PRESETS.find(x => x.key === k) : null;

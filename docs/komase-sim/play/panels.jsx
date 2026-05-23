@@ -468,7 +468,9 @@ window.RightPanel = function RightPanel(props) {
     <aside className="panel panel--right app__right">
       <CollapsibleSection title="プリセット" defaultOpen={true}>
         {(() => {
+          // T40: preset 行を先頭に追加
           const groupOrder = [
+            { key: "preset", label: "プリセット" },
             { key: "cycle", label: "サイクル" },
             { key: "cond", label: "海況" },
             { key: "area", label: "エリア" },
@@ -480,6 +482,21 @@ window.RightPanel = function RightPanel(props) {
             grouped[g].push(p);
           });
           return groupOrder.map(g => {
+            // T40: preset 行は PRESETS に存在しないので専用ロジックで描画
+            if (g.key === "preset") {
+              const isOn = sel.preset === "on";
+              return (
+                <div key="preset" className="preset-group">
+                  <span className="preset-group__label">{g.label}</span>
+                  <div className="chips chips--compact">
+                    <button className={"chip chip--compact " + (!isOn ? "is-on" : "")}
+                            onClick={() => onPreset("preset:off")}>無し</button>
+                    <button className={"chip chip--compact " + (isOn ? "is-on" : "")}
+                            onClick={() => onPreset("preset:on")}>有り</button>
+                  </div>
+                </div>
+              );
+            }
             const list = grouped[g.key];
             if (!list || list.length === 0) return null;
             return (
