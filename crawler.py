@@ -12259,6 +12259,8 @@ _SHIP_EXTRA_CSS = """\
 .wr-fish-list{list-style:none;padding:0;font-size:12px}
 .wr-fish-list li{padding:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
 .wr-fish-list .wfl-fish{font-weight:700;color:var(--accent)}
+.wr-fish-list .wfl-fish-img{vertical-align:middle;margin-right:3px;border-radius:50%}
+.wr-trophy .wrt-fish-img{vertical-align:middle;margin-right:3px;border-radius:50%;background:rgba(133,100,4,.15)}
 .wr-fish-list .wfl-count{color:var(--cta);font-weight:700}
 .wr-fish-list .wfl-diff{font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(26,157,86,.12);color:var(--pos);font-weight:700}
 .wr-fish-list .wfl-diff.neg{background:rgba(212,51,51,.12);color:var(--neg)}
@@ -13642,8 +13644,12 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
             detail_parts.append(f"最大 {int(sm)}cm")
         detail = "・".join(detail_parts)
         detail_html = f'<span class="wfl-detail">{detail}</span>' if detail else ''
+        # 魚 emoji webp
+        _fslug = _FISH_ROMAJI.get(fish, "")
+        fish_img = f'<img class="wfl-fish-img" width="16" height="16" src="../assets/fish/{_fslug}/{_fslug}_emoji.webp" alt="" onerror="this.style.display=\'none\'">' if _fslug else ''
         fish_list_rows.append(
             f'<li>'
+            f'{fish_img}'
             f'<span class="wfl-fish">{_html.escape(fish)}</span>'
             f'<span class="wfl-count">{cnt}便</span>'
             f'{diff_chip}'
@@ -13675,9 +13681,11 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
                 val_str = f"{round(val, 1)}kg"
             else:
                 val_str = f"{int(val)}cm"
+            _tslug = _FISH_ROMAJI.get(fish, "")
+            trophy_img = f'<img class="wrt-fish-img" width="16" height="16" src="../assets/fish/{_tslug}/{_tslug}_emoji.webp" alt="" onerror="this.style.display=\'none\'">' if _tslug else ''
             fish_list_html += (
                 '<div style="margin-top:8px">'
-                f'<span class="wr-trophy">🏆 今週の大物: {_html.escape(fish)} {val_str}'
+                f'<span class="wr-trophy">🏆 今週の大物: {trophy_img}{_html.escape(fish)} {val_str}'
                 f'<span class="wrt-date">({date_disp})</span></span>'
                 '</div>'
             )
@@ -13690,6 +13698,9 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
     # シーズン位置: 主要魚種 Top1 のシーズン文 (来月にかかる場合は来月)
     next_week_start = today_dt + timedelta(days=1)
     season_month = next_week_start.month
+    def _fish_inline_img(fish):
+        s = _FISH_ROMAJI.get(fish, "")
+        return f'<img class="wnw-fish-img" width="14" height="14" src="../assets/fish/{s}/{s}_emoji.webp" alt="" onerror="this.style.display=\'none\'" style="vertical-align:middle;margin-right:3px">' if s else ''
     if top_fish_items:
         top_fish = top_fish_items[0][0]
         phrase = _fish_season_phrase(top_fish, season_month)
@@ -13697,7 +13708,7 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
             next_rows.append(
                 '<div class="wnw-row">'
                 '<span class="wnw-tag">シーズン</span>'
-                f'<span class="wnw-text"><strong>{_html.escape(top_fish)}</strong>：{_html.escape(phrase)}</span>'
+                f'<span class="wnw-text">{_fish_inline_img(top_fish)}<strong>{_html.escape(top_fish)}</strong>:{_html.escape(phrase)}</span>'
                 '</div>'
             )
         # 2 番目魚種も
@@ -13708,7 +13719,7 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
                 next_rows.append(
                     '<div class="wnw-row">'
                     '<span class="wnw-tag">シーズン</span>'
-                    f'<span class="wnw-text"><strong>{_html.escape(f2)}</strong>：{_html.escape(p2)}</span>'
+                    f'<span class="wnw-text">{_fish_inline_img(f2)}<strong>{_html.escape(f2)}</strong>:{_html.escape(p2)}</span>'
                     '</div>'
                 )
     # 大潮日
