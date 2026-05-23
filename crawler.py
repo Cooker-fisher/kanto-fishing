@@ -13031,6 +13031,8 @@ def _ship_load_yearly_summary(ship_name, today_dt):
         # 代替: ユニーク釣行日数 + 釣果魚種数
         unique_dates = set()
         fish_set = set()
+        from collections import Counter as _CR
+        raw_counter = _CR()
         month_keys = [m["month"] for m in months]
         for month_key in month_keys:
             for fname in (f"{month_key}.csv", f"chowari_{month_key}.csv"):
@@ -13050,10 +13052,15 @@ def _ship_load_yearly_summary(ship_name, today_dt):
                             fish = (r.get("tsuri_mono") or "").strip()
                             if fish and fish not in ("不明", "欠航", "NULL"):
                                 fish_set.add(fish)
+                            # tsuri_mono_raw 集計 (船宿の現場表記・釣りものの具体性)
+                            raw = (r.get("tsuri_mono_raw") or "").strip()
+                            if raw and raw not in ("不明", "欠航", "NULL"):
+                                raw_counter[raw] += 1
                 except Exception:
                     continue
         unique_days = len(unique_dates)
         unique_fishes = len(fish_set)
+        raw_top = [r for r, _ in raw_counter.most_common(5)]
         # 年間 TOP3 + 詳細 (cnt_min/max 平均・max値)
         fish_count = Counter()
         for m in months:
@@ -13111,6 +13118,7 @@ def _ship_load_yearly_summary(ship_name, today_dt):
             "total_trips": total_trips,
             "unique_days": unique_days,
             "unique_fishes": unique_fishes,
+            "raw_top": raw_top,
             "top_fish": top_fish_detail,
         }
     cache.setdefault(ship_name, {})["yearly"] = result
@@ -13182,8 +13190,19 @@ def _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies):
         elif n >= 1 and top_fishes:
             trophy_str = f"{top_fishes[0]}が全船宿上位"
     # 段落生成 (規模カテゴリ・出船率は使わない)
+    # 1行目: tsuri_mono_raw (船宿現場表記) の上位を列挙 → 釣り物の具体性を出す
+    raw_top = yearly.get("raw_top") or []
     paras = []
-    if top2_3:
+    if raw_top:
+        # raw_top 上位を「・」区切りで列挙 (最大5個)
+        raw_disp = "・".join(f"<strong>{r}</strong>" for r in raw_top[:5])
+        if len(raw_top) == 1:
+            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}の専門船。")
+        elif len(raw_top) >= 4:
+            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}など多魚種の<strong>{genre}</strong>を案内している船宿。")
+        else:
+            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}などを案内している船宿。")
+    elif top2_3:
         paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に、{('・'.join(top2_3))}など<strong>{genre}</strong>を案内している船宿。")
     else:
         paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に<strong>{genre}</strong>を案内している船宿。")
