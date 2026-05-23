@@ -13027,8 +13027,33 @@ def _ship_load_yearly_summary(ship_name, today_dt):
         from collections import Counter
         total_trips = sum(m["trips"] for m in months)
         total_cancels = sum(m["cancels"] for m in months)
-        total = total_trips + total_cancels
-        rate = round(total_trips / total * 100) if total else 0
+        # 出船率は欠航データ欠落で信用不可・廃止
+        # 代替: ユニーク釣行日数 + 釣果魚種数
+        unique_dates = set()
+        fish_set = set()
+        month_keys = [m["month"] for m in months]
+        for month_key in month_keys:
+            for fname in (f"{month_key}.csv", f"chowari_{month_key}.csv"):
+                p = os.path.join(_DATA_DIR, fname)
+                if not os.path.exists(p):
+                    continue
+                try:
+                    with open(p, encoding="utf-8") as fp:
+                        for r in csv.DictReader(fp):
+                            if r.get("ship") != ship_name:
+                                continue
+                            if r.get("is_cancellation") == "1":
+                                continue
+                            d = (r.get("date") or "").strip()
+                            if d:
+                                unique_dates.add(d)
+                            fish = (r.get("tsuri_mono") or "").strip()
+                            if fish and fish not in ("不明", "欠航", "NULL"):
+                                fish_set.add(fish)
+                except Exception:
+                    continue
+        unique_days = len(unique_dates)
+        unique_fishes = len(fish_set)
         # 年間 TOP3 + 詳細 (cnt_min/max 平均・max値)
         fish_count = Counter()
         for m in months:
@@ -13083,7 +13108,9 @@ def _ship_load_yearly_summary(ship_name, today_dt):
             })
         result = {
             "period_start": months[-1]["month"], "period_end": months[0]["month"],
-            "total_trips": total_trips, "total_cancels": total_cancels, "rate": rate,
+            "total_trips": total_trips,
+            "unique_days": unique_days,
+            "unique_fishes": unique_fishes,
             "top_fish": top_fish_detail,
         }
     cache.setdefault(ship_name, {})["yearly"] = result
@@ -13109,10 +13136,10 @@ _SEASON_MAP = {
 def _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies):
     """B+ 船宿特徴文をデータから自動生成 (200-250字)。
     yearly: _ship_load_yearly_summary 出力 / seasonal: _ship_load_seasonal_fish / trophies: TOP10入りデータ
+    規模カテゴリ (大型/小規模) は失礼に当たるため使わない。出船率も信頼できない (欠航データ欠落) ため使わない。
     """
     if not yearly or not yearly.get("top_fish"):
         return ""
-    size_cat = _ship_size_category(yearly["total_trips"])
     top = yearly["top_fish"]
     top1 = top[0]["fish"] if top else ""
     top2_3 = [t["fish"] for t in top[1:3]] if len(top) > 1 else []
@@ -13154,13 +13181,12 @@ def _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies):
             trophy_str = "・".join(top_fishes) + "など複数魚種で全船宿上位に名を連ねる"
         elif n >= 1 and top_fishes:
             trophy_str = f"{top_fishes[0]}が全船宿上位"
-    # 段落生成
+    # 段落生成 (規模カテゴリ・出船率は使わない)
     paras = []
-    paras.append(f"{area}にある<strong>{ship_name}</strong>は、年間を通して安定した出船を続ける<strong>{size_cat}</strong>。")
     if top2_3:
-        paras.append(f"主力釣りものは<strong>{top1}</strong>で、{('・'.join(top2_3))}など<strong>{genre}</strong>に強み。")
+        paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に、{('・'.join(top2_3))}など<strong>{genre}</strong>を案内している船宿。")
     else:
-        paras.append(f"主力釣りものは<strong>{top1}</strong>で、<strong>{genre}</strong>を中心に出船。")
+        paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に<strong>{genre}</strong>を案内している船宿。")
     if season_str:
         paras.append(f"{season_str}、年間を通してバランスよく釣果を上げる。")
     if trophy_str:
@@ -13191,12 +13217,12 @@ def _ship_yearly_summary_section_html(yearly, ship_name, area, seasonal=None, tr
             f'{portrait_text}'
             '</div>'
         )
-    # KPI 3
+    # KPI 3 (出船率は信用不可で削除・代替: 釣行日数 + 釣果魚種数)
     kpi_html = (
         '<div class="ys-kpi-grid">'
         f'<div class="ys-kpi"><div class="ysk-n cta">{yearly["total_trips"]}<span style="font-size:13px">便</span></div><div class="ysk-l">年間出船数</div></div>'
-        f'<div class="ys-kpi"><div class="ysk-n">{yearly["rate"]}<span style="font-size:13px">%</span></div><div class="ysk-l">年間出船率</div><div class="ysk-sub">欠航 {yearly["total_cancels"]}便</div></div>'
-        f'<div class="ys-kpi"><div class="ysk-n">12<span style="font-size:13px">ヶ月</span></div><div class="ysk-l">記録期間</div><div class="ysk-sub">{period_start}〜{period_end}</div></div>'
+        f'<div class="ys-kpi"><div class="ysk-n">{yearly.get("unique_days", 0)}<span style="font-size:13px">日</span></div><div class="ysk-l">年間釣行日数</div></div>'
+        f'<div class="ys-kpi"><div class="ysk-n">{yearly.get("unique_fishes", 0)}<span style="font-size:13px">種</span></div><div class="ysk-l">年間釣果魚種数</div></div>'
         '</div>'
     )
     # TOP3 魚種カード
@@ -13493,9 +13519,10 @@ def _ship_load_auto_badges(ship_name, today_dt, yearly, seasonal, trophies):
         pct = round(top1["count"] / total_fish_count * 100)
         if pct >= 50:
             badges.append({"kind": "spec", "label": f"{top1['fish']}専門", "sub": f"{pct}%", "fish": top1["fish"]})
-    # 2. 出船率 (≥ 95%)
-    if yearly["rate"] >= 95:
-        badges.append({"kind": "rate", "label": "出船率", "sub": f"{yearly['rate']}%", "fish": None})
+    # 2. 釣行日数 (年間 ≥ 100日 = 出船活発)
+    udays = yearly.get("unique_days", 0)
+    if udays >= 100:
+        badges.append({"kind": "rate", "label": "年間釣行", "sub": f"{udays}日", "fish": None})
     # 3. 順位 (全船宿中 1〜3 位)
     for t in trophies or []:
         if t["rank"] <= 3:
