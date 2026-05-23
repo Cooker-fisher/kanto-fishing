@@ -470,7 +470,7 @@ window.RightPanel = function RightPanel(props) {
         {(() => {
           // T40: preset 行を先頭に追加
           const groupOrder = [
-            { key: "preset", label: "プリセット" },
+            { key: "preset", label: "プリセット適用" },
             { key: "cycle", label: "サイクル" },
             { key: "cond", label: "海況" },
             { key: "area", label: "エリア" },
