@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>釣果価値チェッカー | 船釣り予想</title>
+<meta name="description" content="関東の船釣りで釣れた魚の卸売・小売金額をレンジ表示する独立ツール。魚種・匹数・サイズから推定総重量と概算金額を算出します。">
+<link rel="canonical" href="https://funatsuri-yoso.com/fish-value/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="hd-inner">
+    <a href="../" class="hd-logo">船釣り予想</a>
+    <div class="hd-title">釣果価値チェッカー</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card input-card" aria-labelledby="input-heading">
+    <h2 class="st" id="input-heading">釣果を入力</h2>
+
+    <div class="form-row">
+      <label for="fish">魚種</label>
+      <select id="fish" aria-describedby="err-msg">
+        <option value="">▼ 魚種を選択</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="count">匹数</label>
+      <input type="number" id="count" inputmode="numeric" min="1" max="999" placeholder="例: 35" aria-describedby="err-msg">
+    </div>
+
+    <div class="form-row" id="size-row" hidden>
+      <label for="size">平均サイズ <span class="unit">(cm)</span></label>
+      <input type="number" id="size" inputmode="numeric" min="1" max="200" placeholder="例: 25" aria-describedby="err-msg">
+    </div>
+
+    <div class="form-row" id="weight-row" hidden>
+      <label for="weight">平均重量 <span class="unit">(kg)</span></label>
+      <input type="number" id="weight" inputmode="decimal" min="0.05" max="100" step="0.1" placeholder="例: 1.2" aria-describedby="err-msg">
+    </div>
+
+    <button id="calc-btn" class="btn-primary" type="button" disabled>読み込み中...</button>
+    <p class="err" id="err-msg" hidden></p>
+  </section>
+
+  <section class="card result-card" id="result" role="region" aria-live="polite" aria-labelledby="result-heading" hidden>
+    <h2 class="st" id="result-heading">計算結果</h2>
+
+    <div class="result-meta">
+      <span class="size-badge" id="size-badge" data-class="standard"></span>
+      <span class="weight" id="total-weight"></span>
+    </div>
+
+    <div class="result-price retail">
+      <div class="price-label">小売換算（丸ごと）</div>
+      <div class="price-range" id="retail-range"></div>
+      <div class="price-per" id="retail-per"></div>
+    </div>
+
+    <div class="result-price wholesale">
+      <div class="price-label">卸売換算（丸ごと）</div>
+      <div class="price-range" id="wholesale-range"></div>
+      <div class="price-per" id="wholesale-per"></div>
+    </div>
+
+    <details class="basis-details">
+      <summary>計算根拠を表示</summary>
+      <ul class="basis-list" id="basis-list"></ul>
+    </details>
+  </section>
+
+  <p class="caution">
+    ※ 表示価格は概算です。市場価格・鮮度・産地・季節で大きく変動するため、実際の取引価格を保証するものではありません。
+  </p>
+</main>
+
+<footer class="ft">
+  <a href="../" class="ft-back">← 船釣り予想に戻る</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
