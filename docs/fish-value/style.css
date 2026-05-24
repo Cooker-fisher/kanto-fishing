@@ -1,0 +1,330 @@
+/* ============================================
+   釣果価値チェッカー / style.css
+   既存サイト funatsuri-yoso.com の CSS 変数を踏襲
+   ============================================ */
+
+:root {
+  --bg:       #f5f7fa;
+  --card:     #fff;
+  --border:   #d0d8e0;
+  --nav:      #f0f3f7;
+
+  --text:     #1a2332;
+  --sub:      #5a6a7a;
+  --muted:    #8a96a4;
+
+  --accent:   #0d2b4a;
+  --cta:      #e85d04;
+  --cta2:     #d04e00;
+
+  --pos:      #1a9d56;
+  --neg:      #d43333;
+  --warn:     #d4a017;
+  --prem:     #7c3aed;
+
+  --hdr:      #0d2b4a;
+
+  --r:        10px;
+  --mx:       900px;
+
+  --shadow-bn:      rgba(0,0,0,.06);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding-bottom: 40px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+
+header {
+  background: var(--hdr);
+  color: #fff;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--cta);
+}
+.hd-inner {
+  max-width: var(--mx);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hd-logo {
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  opacity: .85;
+  flex: 0 0 auto;
+}
+.hd-logo:hover { opacity: 1; text-decoration: underline; }
+.hd-title {
+  font-weight: 700;
+  font-size: 16px;
+  border-left: 1px solid rgba(255,255,255,.3);
+  padding-left: 12px;
+}
+
+/* ============================================
+   Main wrap
+   ============================================ */
+
+.wrap {
+  max-width: var(--mx);
+  margin: 12px auto 0;
+  padding: 0 12px;
+}
+
+/* ============================================
+   Card
+   ============================================ */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px var(--shadow-bn);
+}
+.card h2.st {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sub);
+  margin: 0 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ============================================
+   Input form
+   ============================================ */
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.form-row label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sub);
+}
+.form-row label .unit {
+  color: var(--muted);
+  font-weight: 400;
+  margin-left: 4px;
+}
+.form-row select,
+.form-row input {
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 16px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--text);
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-row select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%235a6a7a' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 32px;
+}
+.form-row select:focus,
+.form-row input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: var(--accent);
+}
+
+.btn-primary {
+  background: var(--cta);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color .15s;
+}
+.btn-primary:hover { background: var(--cta2); }
+.btn-primary:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn-primary:disabled { background: var(--muted); cursor: not-allowed; }
+
+.err {
+  color: var(--neg);
+  font-size: 13px;
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  background: #fef2f2;
+  border-radius: var(--r);
+  border-left: 3px solid var(--neg);
+}
+
+/* ============================================
+   Result card
+   ============================================ */
+
+.result-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.size-badge {
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  letter-spacing: .02em;
+}
+.size-badge[data-class="small"]    { background: var(--sub); }
+.size-badge[data-class="standard"] { background: var(--accent); }
+.size-badge[data-class="large"]    { background: var(--cta); }
+.size-badge[data-class="premium"]  { background: var(--prem); }
+
+.weight {
+  font-size: 14px;
+  color: var(--sub);
+}
+
+.result-price {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.result-price:last-of-type { border-bottom: none; }
+
+.price-label {
+  font-size: 13px;
+  color: var(--sub);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.result-price.retail .price-range {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--cta);
+  letter-spacing: -.01em;
+}
+.result-price.wholesale .price-range {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+.price-per {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ============================================
+   Calculation basis (details)
+   ============================================ */
+
+.basis-details {
+  margin-top: 14px;
+  background: var(--nav);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--sub);
+}
+.basis-details[open] { padding-bottom: 12px; }
+.basis-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+  list-style: none;
+  padding-right: 18px;
+  position: relative;
+}
+.basis-details summary::-webkit-details-marker { display: none; }
+.basis-details summary::after {
+  content: "▼";
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 10px;
+  transition: transform .15s;
+}
+.basis-details[open] summary::after { transform: rotate(180deg); }
+
+.basis-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  line-height: 1.8;
+}
+.basis-list li { margin-bottom: 2px; }
+
+/* ============================================
+   Caution
+   ============================================ */
+
+.caution {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 4px 12px 16px;
+  padding: 0;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+
+.ft {
+  max-width: var(--mx);
+  margin: 24px auto 0;
+  padding: 20px 12px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.ft-back {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+.ft-back:hover { text-decoration: underline; }
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 480px) {
+  .hd-inner { gap: 8px; }
+  .hd-title { font-size: 14px; padding-left: 8px; }
+  .wrap { padding: 0 10px; }
+  .card { padding: 14px; }
+
+  .result-price.retail .price-range { font-size: 22px; }
+  .result-price.wholesale .price-range { font-size: 17px; }
+}
+
+@media (min-width: 768px) {
+  .wrap { margin-top: 16px; padding: 0 16px; }
+  .card { padding: 20px; }
+}
