@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>komase-sim 船上俯瞰ビュー改善モックアップ V3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a1a2e;
+      color: #e2e8f0;
+      font-family: "JetBrains Mono", monospace;
+      margin: 0;
+      padding: 32px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-family: "Shippori Mincho", serif;
+      font-size: 20px;
+      margin: 0 0 8px;
+      color: #fdba74;
+    }
+    p.intro {
+      font-size: 13px;
+      color: #94a3b8;
+      margin: 0 0 8px;
+      line-height: 1.6;
+    }
+    p.spec {
+      font-size: 12px;
+      color: #fdba74;
+      margin: 0 0 24px;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      max-width: 1700px;
+    }
+    .panel {
+      background: #0f1f3a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .panel.recommended {
+      border-color: rgba(232, 93, 4, 0.6);
+      box-shadow: 0 0 0 1px rgba(232, 93, 4, 0.3);
+    }
+    .panel h2 {
+      font-family: "Shippori Mincho", serif;
+      font-size: 13px;
+      margin: 0 0 4px;
+      color: #fdba74;
+    }
+    .panel .tag {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      display: block;
+      min-height: 28px;
+    }
+    .panel .badge {
+      display: inline-block;
+      background: rgba(232, 93, 4, 0.85);
+      color: #fff;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-bottom: 6px;
+    }
+    .svg-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 10px;
+      min-height: 380px;
+    }
+    .svg-wrap svg {
+      transform: scale(2.2);
+      transform-origin: center;
+    }
+    .caption {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+    .footer {
+      margin-top: 32px;
+      padding: 20px;
+      background: #0f1f3a;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.7;
+      max-width: 1700px;
+    }
+    .footer strong {
+      color: #fdba74;
+    }
+    .footer code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <h1>komase-sim 船上俯瞰ビュー改善モックアップ V3</h1>
+  <p class="intro">仕様確定後の段階比較。「ロッド色変更 + 船首から直角 + ライン直線維持」をベースに、流れ表現 C/D/E の追加効果を 5 パネルで検証。</p>
+  <p class="spec">確定仕様: ロッド = 茶系グラデーション太線（#6b4423→#d4a373）／ ロッド位置 = 船首から船軸に直角（左舷外側へ垂直）／ 糸 = 直線</p>
+
+  <div class="grid">
+
+    <!-- ============================================================ -->
+    <!-- パネル① 現状                                                  -->
+    <!-- ============================================================ -->
+    <div class="panel">
+      <h2>① 現状</h2>
+      <span class="tag">現本番実装（変更前ベース）</span>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 178 150" width="178" height="150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="178" height="150" fill="#0d2b4a" fill-opacity="0.96"/>
+          <rect x="0" y="0" width="178" height="150" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="0.8"/>
+          <text x="8" y="16" font-size="11" font-family="'Shippori Mincho', serif" fill="rgba(255,255,255,0.92)">船上から見た図</text>
+          <text x="8" y="28" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">（真俯瞰・PE 入水方向）</text>
+          <line x1="160" y1="10" x2="170" y2="10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="14" x2="170" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="18" x2="170" y2="18" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <rect x="114" y="32" width="56" height="16" fill="rgba(232,93,4,0.15)" stroke="rgba(232,93,4,0.55)" stroke-width="0.8"/>
+          <text x="142" y="43" font-size="9" font-family="'Shippori Mincho', serif" fill="rgba(232,93,4,0.9)" text-anchor="middle">◀ 左舷</text>
+          <circle cx="71" cy="78" r="18" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="36" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="54" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <polygon points="95,78 87,69 57,69 57,87 87,87" fill="#0d2b4a" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+          <rect x="71" y="73" width="10" height="10" fill="#1e3a5f" stroke="rgba(255,255,255,0.55)" stroke-width="0.5"/>
+          <polygon points="95,78 90,75 90,81" fill="rgba(253,186,116,0.9)"/>
+          <text x="89" y="64" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.8)">船首</text>
+          <text x="39" y="82" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.45)">船尾</text>
+          <line x1="162" y1="120" x2="112" y2="120" stroke="rgba(251,191,36,0.9)" stroke-width="1"/>
+          <polygon points="117,117 117,123 112,120" fill="rgba(251,191,36,0.9)"/>
+          <text x="156" y="116" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.75)">潮</text>
+          <text x="8" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.95)">入水角 32°</text>
+          <text x="60" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.95)">流れ強 ・警戒</text>
+          <text x="118" y="144" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">潮 1.20m/s</text>
+
+          <!-- 現状: 細線ロッド + 直線糸 -->
+          <line x1="63" y1="69" x2="60" y2="55" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/>
+          <line x1="60" y1="55" x2="12" y2="27" stroke="rgba(255,255,255,0.95)" stroke-width="1.4"/>
+          <circle cx="12" cy="27" r="3.2" fill="rgba(232,93,4,0.95)" stroke="rgba(253,186,116,0.6)" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="caption">細線ロッド・キャビン付近から斜めに出る糸。ロッドが船と同化、流れ感ゼロ。</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- パネル② 確定基本                                              -->
+    <!-- ============================================================ -->
+    <div class="panel">
+      <h2>② 確定基本</h2>
+      <span class="tag">ロッド茶系 + 船首から直角 + 糸直線</span>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 178 150" width="178" height="150" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rod2" x1="95" y1="78" x2="95" y2="62" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6b4423"/>
+              <stop offset="100%" stop-color="#d4a373"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="178" height="150" fill="#0d2b4a" fill-opacity="0.96"/>
+          <rect x="0" y="0" width="178" height="150" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="0.8"/>
+          <text x="8" y="16" font-size="11" font-family="'Shippori Mincho', serif" fill="rgba(255,255,255,0.92)">船上から見た図</text>
+          <text x="8" y="28" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">（真俯瞰・PE 入水方向）</text>
+          <line x1="160" y1="10" x2="170" y2="10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="14" x2="170" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="18" x2="170" y2="18" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <rect x="114" y="32" width="56" height="16" fill="rgba(232,93,4,0.15)" stroke="rgba(232,93,4,0.55)" stroke-width="0.8"/>
+          <text x="142" y="43" font-size="9" font-family="'Shippori Mincho', serif" fill="rgba(232,93,4,0.9)" text-anchor="middle">◀ 左舷</text>
+          <circle cx="71" cy="78" r="18" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="36" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="54" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <polygon points="95,78 87,69 57,69 57,87 87,87" fill="#0d2b4a" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+          <rect x="71" y="73" width="10" height="10" fill="#1e3a5f" stroke="rgba(255,255,255,0.55)" stroke-width="0.5"/>
+          <polygon points="95,78 90,75 90,81" fill="rgba(253,186,116,0.9)"/>
+          <text x="89" y="64" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.8)">船首</text>
+          <text x="39" y="82" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.45)">船尾</text>
+          <line x1="162" y1="120" x2="112" y2="120" stroke="rgba(251,191,36,0.9)" stroke-width="1"/>
+          <polygon points="117,117 117,123 112,120" fill="rgba(251,191,36,0.9)"/>
+          <text x="156" y="116" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.75)">潮</text>
+          <text x="8" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.95)">入水角 32°</text>
+          <text x="60" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.95)">流れ強 ・警戒</text>
+          <text x="118" y="144" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">潮 1.20m/s</text>
+
+          <!-- 確定基本: 船首(95,78)から船軸に直角＝上方向に伸びる茶系太ロッド -->
+          <line x1="95" y1="78" x2="95" y2="62" stroke="url(#rod2)" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="95" cy="62" r="1.8" fill="#ffffff" opacity="0.9"/>
+          <!-- 糸: 竿先(95,62) → 入水点(12,27) 直線 -->
+          <line x1="95" y1="62" x2="12" y2="27" stroke="rgba(255,255,255,0.95)" stroke-width="1.6"/>
+          <circle cx="12" cy="27" r="3.2" fill="rgba(232,93,4,0.95)" stroke="rgba(253,186,116,0.6)" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="caption">船首から茶系太ロッドが垂直に立ち上がり、白い糸が左舷側に直線で伸びる。ロッドと糸の区別が明確。</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- パネル③ ②+C                                                 -->
+    <!-- ============================================================ -->
+    <div class="panel recommended">
+      <h2>③ ②+C（推奨）</h2>
+      <span class="badge">RECOMMENDED</span>
+      <span class="tag">確定基本 + 水中流下破線（潮下方向）</span>
+      <div class="svg-wrap">
+        <svg viewBox="-12 0 190 150" width="190" height="150" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rod3" x1="95" y1="78" x2="95" y2="62" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6b4423"/>
+              <stop offset="100%" stop-color="#d4a373"/>
+            </linearGradient>
+          </defs>
+          <rect x="-12" y="0" width="190" height="150" fill="#0d2b4a" fill-opacity="0.96"/>
+          <rect x="-12" y="0" width="190" height="150" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="0.8"/>
+          <text x="8" y="16" font-size="11" font-family="'Shippori Mincho', serif" fill="rgba(255,255,255,0.92)">船上から見た図</text>
+          <text x="8" y="28" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">（真俯瞰・PE 入水方向）</text>
+          <line x1="160" y1="10" x2="170" y2="10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="14" x2="170" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="18" x2="170" y2="18" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <rect x="114" y="32" width="56" height="16" fill="rgba(232,93,4,0.15)" stroke="rgba(232,93,4,0.55)" stroke-width="0.8"/>
+          <text x="142" y="43" font-size="9" font-family="'Shippori Mincho', serif" fill="rgba(232,93,4,0.9)" text-anchor="middle">◀ 左舷</text>
+          <circle cx="71" cy="78" r="18" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="36" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="54" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <polygon points="95,78 87,69 57,69 57,87 87,87" fill="#0d2b4a" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+          <rect x="71" y="73" width="10" height="10" fill="#1e3a5f" stroke="rgba(255,255,255,0.55)" stroke-width="0.5"/>
+          <polygon points="95,78 90,75 90,81" fill="rgba(253,186,116,0.9)"/>
+          <text x="89" y="64" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.8)">船首</text>
+          <text x="39" y="82" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.45)">船尾</text>
+          <line x1="162" y1="120" x2="112" y2="120" stroke="rgba(251,191,36,0.9)" stroke-width="1"/>
+          <polygon points="117,117 117,123 112,120" fill="rgba(251,191,36,0.9)"/>
+          <text x="156" y="116" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.75)">潮</text>
+          <text x="8" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.95)">入水角 32°</text>
+          <text x="60" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.95)">流れ強 ・警戒</text>
+          <text x="118" y="144" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">潮 1.20m/s</text>
+
+          <line x1="95" y1="78" x2="95" y2="62" stroke="url(#rod3)" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="95" cy="62" r="1.8" fill="#ffffff" opacity="0.9"/>
+          <line x1="95" y1="62" x2="12" y2="27" stroke="rgba(255,255,255,0.95)" stroke-width="1.6"/>
+
+          <!-- 【C】水中流下破線: 入水点から潮下方向（左）へ -->
+          <line x1="12" y1="27" x2="-8" y2="33" stroke="rgba(186,230,253,0.55)" stroke-width="1.2" stroke-dasharray="3,3"/>
+          <polygon points="-3,30 -3,36 -8,33" fill="rgba(186,230,253,0.55)"/>
+
+          <circle cx="12" cy="27" r="3.2" fill="rgba(232,93,4,0.95)" stroke="rgba(253,186,116,0.6)" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="caption">入水点から潮下方向に薄青破線。「水中で糸が流されている」が静止画でも分かる。実装コスト最小（+10行）。</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- パネル④ ②+C+D                                              -->
+    <!-- ============================================================ -->
+    <div class="panel">
+      <h2>④ ②+C+D</h2>
+      <span class="tag">+ 流れドット（糸沿いに白点が手元→入水点へ移動）</span>
+      <div class="svg-wrap">
+        <svg viewBox="-12 0 190 150" width="190" height="150" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rod4" x1="95" y1="78" x2="95" y2="62" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6b4423"/>
+              <stop offset="100%" stop-color="#d4a373"/>
+            </linearGradient>
+          </defs>
+          <rect x="-12" y="0" width="190" height="150" fill="#0d2b4a" fill-opacity="0.96"/>
+          <rect x="-12" y="0" width="190" height="150" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="0.8"/>
+          <text x="8" y="16" font-size="11" font-family="'Shippori Mincho', serif" fill="rgba(255,255,255,0.92)">船上から見た図</text>
+          <text x="8" y="28" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">（真俯瞰・PE 入水方向）</text>
+          <line x1="160" y1="10" x2="170" y2="10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="14" x2="170" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="18" x2="170" y2="18" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <rect x="114" y="32" width="56" height="16" fill="rgba(232,93,4,0.15)" stroke="rgba(232,93,4,0.55)" stroke-width="0.8"/>
+          <text x="142" y="43" font-size="9" font-family="'Shippori Mincho', serif" fill="rgba(232,93,4,0.9)" text-anchor="middle">◀ 左舷</text>
+          <circle cx="71" cy="78" r="18" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="36" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="54" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <polygon points="95,78 87,69 57,69 57,87 87,87" fill="#0d2b4a" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+          <rect x="71" y="73" width="10" height="10" fill="#1e3a5f" stroke="rgba(255,255,255,0.55)" stroke-width="0.5"/>
+          <polygon points="95,78 90,75 90,81" fill="rgba(253,186,116,0.9)"/>
+          <text x="89" y="64" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.8)">船首</text>
+          <text x="39" y="82" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.45)">船尾</text>
+          <line x1="162" y1="120" x2="112" y2="120" stroke="rgba(251,191,36,0.9)" stroke-width="1"/>
+          <polygon points="117,117 117,123 112,120" fill="rgba(251,191,36,0.9)"/>
+          <text x="156" y="116" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.75)">潮</text>
+          <text x="8" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.95)">入水角 32°</text>
+          <text x="60" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.95)">流れ強 ・警戒</text>
+          <text x="118" y="144" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">潮 1.20m/s</text>
+
+          <line x1="95" y1="78" x2="95" y2="62" stroke="url(#rod4)" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="95" cy="62" r="1.8" fill="#ffffff" opacity="0.9"/>
+          <line x1="95" y1="62" x2="12" y2="27" stroke="rgba(255,255,255,0.95)" stroke-width="1.6"/>
+
+          <!-- 【C】水中流下破線 -->
+          <line x1="12" y1="27" x2="-8" y2="33" stroke="rgba(186,230,253,0.55)" stroke-width="1.2" stroke-dasharray="3,3"/>
+          <polygon points="-3,30 -3,36 -8,33" fill="rgba(186,230,253,0.55)"/>
+
+          <!-- 【D】糸沿い流れドット 3個（手元薄→入水点濃） -->
+          <!-- 補間: t=0.25 (74,53) / t=0.50 (54,44) / t=0.75 (33,36) -->
+          <circle cx="74" cy="53" r="1.2" fill="#ffffff" opacity="0.5"/>
+          <circle cx="54" cy="44" r="1.2" fill="#ffffff" opacity="0.7"/>
+          <circle cx="33" cy="36" r="1.2" fill="#ffffff" opacity="0.9"/>
+          <!-- 水中破線沿い 2個 -->
+          <circle cx="6" cy="29" r="1.0" fill="rgba(186,230,253,0.7)"/>
+          <circle cx="-1" cy="31" r="1.0" fill="rgba(186,230,253,0.5)"/>
+
+          <circle cx="12" cy="27" r="3.2" fill="rgba(232,93,4,0.95)" stroke="rgba(253,186,116,0.6)" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="caption">糸沿いに白い流れドット 3 個。実装ではアニメで手元→入水点へ移動。動的に「流れている」が伝わるが、静止画では情報過多にも見える。+30 行・state 追加要。</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- パネル⑤ ②+C+D+E                                            -->
+    <!-- ============================================================ -->
+    <div class="panel">
+      <h2>⑤ ②+C+D+E</h2>
+      <span class="tag">+ 入水点波紋（オレンジリング2重）</span>
+      <div class="svg-wrap">
+        <svg viewBox="-12 0 190 150" width="190" height="150" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rod5" x1="95" y1="78" x2="95" y2="62" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6b4423"/>
+              <stop offset="100%" stop-color="#d4a373"/>
+            </linearGradient>
+          </defs>
+          <rect x="-12" y="0" width="190" height="150" fill="#0d2b4a" fill-opacity="0.96"/>
+          <rect x="-12" y="0" width="190" height="150" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="0.8"/>
+          <text x="8" y="16" font-size="11" font-family="'Shippori Mincho', serif" fill="rgba(255,255,255,0.92)">船上から見た図</text>
+          <text x="8" y="28" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">（真俯瞰・PE 入水方向）</text>
+          <line x1="160" y1="10" x2="170" y2="10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="14" x2="170" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <line x1="160" y1="18" x2="170" y2="18" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+          <rect x="114" y="32" width="56" height="16" fill="rgba(232,93,4,0.15)" stroke="rgba(232,93,4,0.55)" stroke-width="0.8"/>
+          <text x="142" y="43" font-size="9" font-family="'Shippori Mincho', serif" fill="rgba(232,93,4,0.9)" text-anchor="middle">◀ 左舷</text>
+          <circle cx="71" cy="78" r="18" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="36" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <circle cx="71" cy="78" r="54" stroke="rgba(186,230,253,0.55)" stroke-width="0.5" fill="none"/>
+          <polygon points="95,78 87,69 57,69 57,87 87,87" fill="#0d2b4a" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+          <rect x="71" y="73" width="10" height="10" fill="#1e3a5f" stroke="rgba(255,255,255,0.55)" stroke-width="0.5"/>
+          <polygon points="95,78 90,75 90,81" fill="rgba(253,186,116,0.9)"/>
+          <text x="89" y="64" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.8)">船首</text>
+          <text x="39" y="82" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.45)">船尾</text>
+          <line x1="162" y1="120" x2="112" y2="120" stroke="rgba(251,191,36,0.9)" stroke-width="1"/>
+          <polygon points="117,117 117,123 112,120" fill="rgba(251,191,36,0.9)"/>
+          <text x="156" y="116" font-size="8" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.75)">潮</text>
+          <text x="8" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(253,186,116,0.95)">入水角 32°</text>
+          <text x="60" y="134" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(251,191,36,0.95)">流れ強 ・警戒</text>
+          <text x="118" y="144" font-size="9" font-family="'JetBrains Mono', monospace" fill="rgba(255,255,255,0.5)">潮 1.20m/s</text>
+
+          <line x1="95" y1="78" x2="95" y2="62" stroke="url(#rod5)" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="95" cy="62" r="1.8" fill="#ffffff" opacity="0.9"/>
+          <line x1="95" y1="62" x2="12" y2="27" stroke="rgba(255,255,255,0.95)" stroke-width="1.6"/>
+
+          <!-- 【C】水中流下破線 -->
+          <line x1="12" y1="27" x2="-8" y2="33" stroke="rgba(186,230,253,0.55)" stroke-width="1.2" stroke-dasharray="3,3"/>
+          <polygon points="-3,30 -3,36 -8,33" fill="rgba(186,230,253,0.55)"/>
+
+          <!-- 【D】糸沿い流れドット -->
+          <circle cx="74" cy="53" r="1.2" fill="#ffffff" opacity="0.5"/>
+          <circle cx="54" cy="44" r="1.2" fill="#ffffff" opacity="0.7"/>
+          <circle cx="33" cy="36" r="1.2" fill="#ffffff" opacity="0.9"/>
+          <circle cx="6" cy="29" r="1.0" fill="rgba(186,230,253,0.7)"/>
+          <circle cx="-1" cy="31" r="1.0" fill="rgba(186,230,253,0.5)"/>
+
+          <!-- 【E】入水点波紋 -->
+          <circle cx="12" cy="27" r="5.5" stroke="rgba(232,93,4,0.35)" stroke-width="0.6" fill="none"/>
+          <circle cx="12" cy="27" r="8" stroke="rgba(232,93,4,0.2)" stroke-width="0.6" fill="none"/>
+
+          <circle cx="12" cy="27" r="3.2" fill="rgba(232,93,4,0.95)" stroke="rgba(253,186,116,0.6)" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="caption">入水点周りに 2 重リング（波紋）。糸が水を切ってる感が出るが、流れドット・水中破線と合わさると 178×150 の小領域では密度過剰。</div>
+    </div>
+
+  </div><!-- /.grid -->
+
+  <div class="footer">
+    <strong>推奨判断:</strong> 確定基本 (②) は必須。流れ表現は <code>③ ②+C（水中流下破線のみ）</code> を推奨。理由 = ① 静止画でも流れが分かる ② 実装コスト最小（+10行・state 追加不要・既存 drawBowView 内で完結）③ 178×150 の小領域で装飾過多にならない。<br>
+    <strong>D（流れドット）</strong>はアニメーションループ追加が必要で、コスト対効果が薄い（潮流矢印が既にある）。<br>
+    <strong>E（波紋）</strong>は入水点丸そのものが既に視認性十分のため不要。
+  </div>
+
+</body>
+</html>
