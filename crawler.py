@@ -14821,6 +14821,52 @@ def build_ship_pages(catches, crawled_at=""):
     return generated
 
 
+def build_ship_redirects():
+    """旧 chowari-NNNNN.html → 新slug への meta refresh redirect HTML を生成。
+
+    背景: 2026/05/24 chowari-NNNNN 形式の暫定 slug 114件を意味ある英語 slug に
+    刷新した。Google SC で chowari-00454.html 等が index 済の可能性があり、
+    canonical を新 URL に向けつつ meta refresh で誘導する。
+
+    入力: crawl/chowari_slug_redirect_map.json （rename_chowari_slugs.py 出力）
+    出力: docs/ship/chowari-NNNNN.html （redirect HTML で上書き）
+    """
+    redirect_path = os.path.join(_BASE_DIR, "crawl", "chowari_slug_redirect_map.json")
+    if not os.path.exists(redirect_path):
+        return 0
+    try:
+        with open(redirect_path, encoding="utf-8") as f:
+            redirect_map = json.load(f)
+    except Exception as e:
+        print(f"  redirect map 読込失敗: {e}")
+        return 0
+
+    out_dir = os.path.join(WEB_DIR, "ship")
+    os.makedirs(out_dir, exist_ok=True)
+    generated = 0
+    for old_slug, new_slug in redirect_map.items():
+        new_url = f"https://funatsuri-yoso.com/ship/{new_slug}.html"
+        html = f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0;url={new_url}">
+<link rel="canonical" href="{new_url}">
+<meta name="robots" content="noindex,follow">
+<title>移動しました | 船釣り予想</title>
+</head>
+<body>
+<p>このページは <a href="{new_url}">{new_url}</a> に移動しました。自動的に遷移しない場合はリンクをクリックしてください。</p>
+<script>location.replace("{new_url}");</script>
+</body>
+</html>"""
+        with open(os.path.join(out_dir, f"{old_slug}.html"), "w", encoding="utf-8") as f:
+            f.write(html)
+        generated += 1
+    print(f"船宿redirect生成: {generated} 件 → docs/ship/chowari-*.html (→ 新slug)")
+    return generated
+
+
 # ============================================================
 # Kanso由来ポイント area_pages（2026/05/17 追加）
 # build_area_pages は ships.json area のみ対象だが、hist_rows の
@@ -15941,6 +15987,8 @@ def main():
         valid_catches = [_csv_to_catch(r) for r in raw_rows]
         print(f"釣果レコード変換: {len(valid_catches)}件")
         build_ship_pages(valid_catches, crawled_at)
+        build_ship_redirects()
+        build_sitemap(valid_catches)
         print("=== 船宿ページ再生成完了 ===")
         return
 
@@ -16294,6 +16342,7 @@ def main():
         crawled_at=crawled_at,
     )
     build_ship_pages(valid_catches, crawled_at)
+    build_ship_redirects()
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     build_sitemap(valid_catches)
