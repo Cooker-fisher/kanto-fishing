@@ -184,11 +184,11 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
               潮の速さ。普通の潮は0.3〜0.5。速いとコマセと仕掛けが離れやすい。
             </div>
 
-            <Slider label="ハリス長" value={params.harrisLength} min={2} max={12} step={0.5} unit="m"
+            <Slider label="ハリス長" value={params.harrisLength} min={7} max={15} step={0.5} unit="m"
               onChange={v => sp({ harrisLength: v })}
               format={v => v.toFixed(1)} />
             <div style={{fontSize:10.5, color:"var(--paper-dim)", marginTop:-6, marginBottom:14, lineHeight:1.55}}>
-              針とビシを繋ぐ細い糸。長いほど食いがいい。標準は6〜8m。
+              針とビシを繋ぐ細い糸。関東標準 8〜10m / 深場 (駿河湾・伊豆) 13〜15m。短すぎ (3〜6m) はマダイが警戒。
             </div>
 
             <Slider label="上窓の開き（しゃくり放出）" value={params.cageUpperOpening} min={0} max={1.0} step={0.05} unit=""
@@ -345,7 +345,7 @@ window.LeftPanel = function LeftPanel({ params, set, locks, toggleLock }) {
         )}
 
         {/* ハリス (下・細め): サル管→針。ガン玉はハリスに付く */}
-        <Slider label="ハリス長" value={params.harrisLength} min={2} max={12} step={0.5} unit="m"
+        <Slider label="ハリス長" value={params.harrisLength} min={7} max={15} step={0.5} unit="m"
           onChange={v => sp({ harrisLength: v })}
           lockKey="harrisLength" locks={locks} toggleLock={toggleLock}
           format={v => v.toFixed(1)} />

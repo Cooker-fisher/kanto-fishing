@@ -31,7 +31,8 @@ const DEFAULT_PARAMS = {
   saruKanEnabled: false,
   saruKanSize: 14,
   // ハリス (下の細ハリス・サル管の下〜針): 通常 2-5号 フロロカーボン
-  harrisLength: 6.5,
+  // 関東標準下限 8m (3-7m は警戒・参照: 釣楽/ORETSURI/SHIMANO)
+  harrisLength: 8,
   harrisNo: 3,
   hookType: "madai",
   hookSize: 10,
@@ -93,7 +94,7 @@ const PRESETS = [
     patch: { tideSpeed: 0.55, tideDepthFactor: -0.4, harrisNo: 3,
              ganDamaPos: "near-hook", ganDamaSize: 0.5, makiAmount: 1.7 } },
   { key: "fastide",  label: "速潮", group: "cond",
-    patch: { tideSpeed: 0.8, tideDepthFactor: 0.6, bishiNo: 100, harrisLength: 6,
+    patch: { tideSpeed: 0.8, tideDepthFactor: 0.6, bishiNo: 100, harrisLength: 8,
              ganDamaSize: 0.6, shakuriStrokeCm: 70, shakuriCountPerTrigger: 3,
              makiAmount: 1.7 } },
 
@@ -120,7 +121,7 @@ const PRESETS = [
   { key: "sagami_lt", label: "相模湾LT", group: "area",
     patch: { depth: 50, tanaDepth: 30,
              bishiNo: 40, peNo: 1.5,
-             cushionLength: 1.0, harrisLength: 6, harrisNo: 2,
+             cushionLength: 1.0, harrisLength: 7, harrisNo: 2,
              hookType: "madai", hookSize: 9, ganDamaSize: 0.1, ganDamaPos: "mid",
              cageUpperOpening: 0.20, cageLowerOpening: 0,
              komaseSize: "L", smokeLevel: "weak",

@@ -137,6 +137,32 @@ window.SimPhysics = (function() {
     return SMOKE_LEVEL_PROPS[params.smokeLevel] || SMOKE_LEVEL_PROPS["weak"];
   }
 
+  // --- 粒子種別 (kind) 確率分岐 ---
+  // smokeLevel 別の base 比率に対し、isBurst (シャクリ時) では large +20%
+  // 描画は触らない (drawParticles は単一色のまま) が、内部データに kind を残す
+  function _pickKind(sm, rnd, isBurst) {
+    let large, small, fragment;
+    if (sm === SMOKE_LEVEL_PROPS.weak) {
+      large = 0.70; small = 0.25; fragment = 0.05;
+    } else if (sm === SMOKE_LEVEL_PROPS.medium) {
+      large = 0.50; small = 0.35; fragment = 0.15;
+    } else {
+      large = 0.30; small = 0.40; fragment = 0.30;
+    }
+    if (isBurst) {
+      const boost = 0.20;
+      const remaining = 1 - large;
+      const reduceFactor = remaining > 0 ? (1 - boost / remaining) : 0;
+      small *= reduceFactor;
+      fragment *= reduceFactor;
+      large = 1 - small - fragment;
+    }
+    const r = rnd();
+    if (r < large) return "large";
+    if (r < large + small) return "small";
+    return "fragment";
+  }
+
   // --- 粒子放出 ---
   // 戻り値: 実際に放出した粒子数 (残量が少ないと減る)
   // rng: 決定論的乱数。未指定なら Math.random（ライブ表示用）
@@ -151,6 +177,8 @@ window.SimPhysics = (function() {
     const baseN = Math.round((8 + opening * 26) * smokeCountMul);
     let n = Math.round(baseN * (0.4 + shakuriIntensity * 1.0));
     n = Math.round(n * Math.max(0, Math.min(1, chumLevel)));
+    // isBurst: shakuriIntensity > 0 ならしゃくりによるバースト放出
+    const isBurst = shakuriIntensity > 0;
     let spawned = 0;
     for (let i = 0; i < n; i++) {
       if (out.length >= maxCap) break;
@@ -159,6 +187,7 @@ window.SimPhysics = (function() {
       // 沈降速度: サイズベース × 煙幕度減速 × ランダム±20%
       const terminal = sz.terminalBase * sm.terminalMul * (0.85 + rnd() * 0.3);
       const size = sz.sizeBase * (0.8 + rnd() * 0.5);
+      const kind = _pickKind(sm, rnd, isBurst);
       out.push({
         x: cage.x + (rnd() - 0.5) * 0.3,
         y: cage.y + (rnd() - 0.5) * 0.4,
@@ -168,6 +197,7 @@ window.SimPhysics = (function() {
         size: size,
         terminal: terminal,
         alpha: sm.alphaMul,
+        kind: kind,
       });
       spawned++;
     }
@@ -743,7 +773,12 @@ window.SimPhysics = (function() {
       ? locked.hookSize
       : sLo + Math.floor(rng() * (sHi - sLo + 1));
 
-    const harrisRange = envParams.depth > 60 ? [6, 13] : [4, 11];
+    // ハリス長範囲: 関東標準 8-12m / 超深場 (駿河湾・伊豆) 10-15m / 浅場LT 7-10m
+    // 短ハリス (3-5m) はマダイが警戒するため除外
+    // 境界は depth>80 (相模湾深場・駿河湾) / 30-80 (関東標準) / 30以下 (LT)
+    const harrisRange = envParams.depth > 80 ? [10, 15]
+                      : envParams.depth > 30 ? [8, 12]
+                      :                        [7, 10];
     const harrisLength = locked.harrisLength != null
       ? locked.harrisLength
       : Math.round((harrisRange[0] + rng() * (harrisRange[1] - harrisRange[0])) * 2) / 2;
@@ -857,14 +892,20 @@ window.SimPhysics = (function() {
       cageLowerOpening:       [0, 0.05, 0.10, 0.15],
       makiAmount:             [1.5, 2.0, 2.5, 3.0, 3.5],  // 1ストローク 1.5-3.5m (実釣: 大きく1-2回しゃくりでハリス長分=6-10m 巻き上げる)
       shakuriInterval:        [60, 90, 120, 180, 240, 300],  // 活性高 120 / 標準 180 / 食い渋り 240-300
-      harrisLength:           env.depth > 60 ? [5, 7, 9] : [3, 5, 7, 9],
+      // ハリス長: 関東標準 8-12m / 超深場 (駿河湾・伊豆) 13-15m / 浅場LT 7-10m
+      // 参照: 釣楽・ORETSURI・SHIMANO・TSURINEWS の各船宿仕掛けまとめ
+      // 短すぎ (3-5m) は警戒されるので排除。最低 7m を下限とする。
+      // 境界は depth>80 (相模湾深場 90m や駿河湾) / 30-80 (関東標準・相模湾標準 65m 含む) / 30以下 (LT)
+      harrisLength:           env.depth > 80 ? [10, 12, 13, 15]
+                            : env.depth > 30 ? [8, 9, 10, 11, 12]
+                            :                  [7, 8, 9, 10],
       harrisNo:               [2, 3, 4],
       motosLength:            [0, 1.0, 1.5, 2.0],  // 0 = モトス無効相当 (実質サル管なし)
       motosNo:                [4, 5, 6, 7],
       dropOffsetM:            [5, 7, 9],  // 落とし込み目安 タナ下5-9m (実釣セオリー: ハリス長分=6-10m)
       ganDamaPct:             [5, 25, 50, 75, 95],  // ビシ側→針側%
       ganDamaSize:            [0, 0.3, 0.5, 0.8],
-      cushionLength:          [1.0, 1.5],
+      cushionLength:          [1.0],  // 1m 共通 (太さ 1.5-2mm)・コマセマダイ標準
       hookType:               ["madai", "iseama"],
       hookSize:               [9, 10, 11],
       komaseSize:             ["L", "2L"],
@@ -898,39 +939,40 @@ window.SimPhysics = (function() {
     };
     const SEEDS = [
       userSeed,
-      // A: 短ハリス + ガン玉mid 0.3g + 長interval (標準シナリオ)
-      { harrisLength: 5,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.0,
+      // A: 短ハリス + ガン玉mid 0.3g + 長interval (関東標準・短め)
+      //    ※「短め」は関東で 7-8m。マダイの警戒回避のため 5m 以下は不採用
+      { harrisLength: 8,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.0,
         shakuriStrokeCm: 80, cageUpperOpening: 0.25, cageLowerOpening: 0,
         shakuriInterval: 240, harrisNo: 3, ganDamaPct: 50, ganDamaSize: 0.3,
         hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
         motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
-      // B: 中ハリス + ガン玉mid 0.5g + 標準サイクル
-      { harrisLength: 7,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.5,
+      // B: 中ハリス + ガン玉mid 0.5g + 標準サイクル (関東標準・主流)
+      { harrisLength: 10, cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.5,
         shakuriStrokeCm: 80, cageUpperOpening: 0.30, cageLowerOpening: 0,
         shakuriInterval: 180, harrisNo: 3, ganDamaPct: 50, ganDamaSize: 0.5,
         hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
         motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
-      // C: 長ハリス (深場/速潮)
-      { harrisLength: env.depth > 60 ? 11 : 9, cushionLength: 1.5,
+      // C: 長ハリス (深場/速潮・駿河湾級)
+      { harrisLength: env.depth > 60 ? 13 : 11, cushionLength: 1.0,
         shakuriCountPerTrigger: 3, makiAmount: 1.5,
         shakuriStrokeCm: 90, cageUpperOpening: 0.30, cageLowerOpening: 0,
         shakuriInterval: 180, harrisNo: 4, ganDamaPct: 50, ganDamaSize: 0.5,
         hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
         motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
-      // D: 短ハリス + チモト + ガン玉なし + 長interval (流し釣り系)
-      { harrisLength: 5,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.0,
+      // D: 関東標準 + チモト + ガン玉なし + 長interval (流し釣り系)
+      { harrisLength: 8,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.0,
         shakuriStrokeCm: 90, cageUpperOpening: 0.35, cageLowerOpening: 0.10,
         shakuriInterval: 240, harrisNo: 4, ganDamaPct: 5, ganDamaSize: 0,
         hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
         motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
-      // E: 中ハリス + ハリス下 + ガン玉中 (重ガン玉戦法)
-      { harrisLength: 7,  cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.5,
+      // E: 関東標準 + ハリス下 + ガン玉中 (重ガン玉戦法)
+      { harrisLength: 10, cushionLength: 1.0, shakuriCountPerTrigger: 2, makiAmount: 2.5,
         shakuriStrokeCm: 90, cageUpperOpening: 0.30, cageLowerOpening: 0,
         shakuriInterval: 180, harrisNo: 3, ganDamaPct: 95, ganDamaSize: 0.5,
         hookType: "madai", hookSize: 10, komaseSize: "L", smokeLevel: "weak",
         motosLength: 1.5, motosNo: 5, dropOffsetM: 5 },
-      // F: 長ハリス + チモト軽 + 速サイクル (活性高)
-      { harrisLength: env.depth > 60 ? 11 : 9, cushionLength: 1.0,
+      // F: 超ロングハリス + チモト軽 + 速サイクル (活性高・大型狙い)
+      { harrisLength: env.depth > 60 ? 15 : 12, cushionLength: 1.0,
         shakuriCountPerTrigger: 3, makiAmount: 1.5,
         shakuriStrokeCm: 100, cageUpperOpening: 0.30, cageLowerOpening: 0,
         shakuriInterval: 120, harrisNo: 4, ganDamaPct: 5, ganDamaSize: 0.3,
