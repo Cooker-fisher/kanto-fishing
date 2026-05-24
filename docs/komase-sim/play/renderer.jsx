@@ -1000,12 +1000,15 @@ window.SimRenderer = (function() {
     const lineAngleRad = Math.atan2(horizDisp, tana);
     const lineAngleDeg = lineAngleRad * 180 / Math.PI;
 
-    // 竿先
+    // 竿先（茶系グラデーション・手元→竿先）
     const rodX = cx + (isStarboard ? 8 : -8);
     const rodY = cy - 9;
     const tipX = rodX + (isStarboard ? 3 : -3);
     const tipY = rodY - 14;
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+    const rodGrad = ctx.createLinearGradient(rodX, rodY, tipX, tipY);
+    rodGrad.addColorStop(0, "#6b4423");
+    rodGrad.addColorStop(1, "#d4a373");
+    ctx.strokeStyle = rodGrad;
     ctx.lineWidth = 1.2;
     ctx.beginPath();
     ctx.moveTo(rodX, rodY);
