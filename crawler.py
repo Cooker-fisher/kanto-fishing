@@ -13142,8 +13142,14 @@ _SEASON_MAP = {
 }
 
 def _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies):
-    """B+ 船宿特徴文をデータから自動生成 (200-250字)。
-    yearly: _ship_load_yearly_summary 出力 / seasonal: _ship_load_seasonal_fish / trophies: TOP10入りデータ
+    """B+ 船宿特徴文をデータから自動生成 (約500字・5段落・月一更新)。
+    入力: yearly (年間サマリー)・seasonal (季節別 TOP2)・trophies (関東TOPクラス大物)
+    段落構成:
+      1. 船宿概要+主軸魚種+年間規模
+      2. 季節別の主力魚種
+      3. 大物実績 (具体的な魚種・サイズ)
+      4. 月別ピーク傾向 (最多便数の月)
+      5. おすすめの釣り人像
     規模カテゴリ (大型/小規模) は失礼に当たるため使わない。出船率も信頼できない (欠航データ欠落) ため使わない。
     """
     if not yearly or not yearly.get("top_fish"):
@@ -13151,9 +13157,11 @@ def _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies):
     top = yearly["top_fish"]
     top1 = top[0]["fish"] if top else ""
     top2_3 = [t["fish"] for t in top[1:3]] if len(top) > 1 else []
+    total_trips = yearly.get("total_trips", 0)
+    unique_fishes = yearly.get("unique_fishes", 0)
+
     # 釣りジャンル推定 (主要魚種から)
     def _genre(fishes):
-        kg_count = sum(1 for f in fishes if _fish_unit(f) == "kg")
         if any(f in ("マハタ", "アカムツ", "クロムツ", "キンメダイ", "メダイ", "アラ") for f in fishes):
             return "深場の高級魚を狙う五目釣り"
         if any(f in ("マルイカ", "スルメイカ", "ヤリイカ", "アオリイカ", "ムギイカ") for f in fishes):
@@ -13168,48 +13176,138 @@ def _ship_generate_portrait_text(ship_name, area, yearly, seasonal, trophies):
             return "アジ五目"
         return f"{top1}メイン"
     genre = _genre([top1] + top2_3)
-    # 季節分析: 最も便数の多い季節
-    season_str = ""
+
+    # 推奨ターゲット層 (ジャンル別定型)
+    def _recommend(g):
+        if "深場" in g:
+            return "電動リールでの深場釣り経験者や、高級魚を本気で狙いたい中級〜上級者"
+        if "イカ" in g:
+            return "イカ釣りが好きな方や、繊細な誘いと数釣りの両方を楽しみたい釣り人"
+        if "タチウオ" in g:
+            return "テンヤやジギングでタチウオを狙いたい釣り人"
+        if "青物" in g:
+            return "回遊魚との力強い引きを味わいたい釣り人"
+        if "マダイ" in g:
+            return "マダイ一本狙いから五目まで幅広く楽しみたい釣り人"
+        if "アジ" in g:
+            return "アジ釣りが好きな方や、家族・初心者連れでも安心して乗れる船を探している方"
+        return f"{top1}を中心に多魚種を狙いたい釣り人"
+
+    # 段落2: 季節別主力魚種
+    season_order = ["春", "夏", "秋", "冬"]
+    season_lines = []
+    max_season = None
+    max_season_cnt = 0
     if seasonal:
-        max_season = None
-        max_cnt = 0
+        for s in season_order:
+            fishes = seasonal.get(s)
+            if not fishes:
+                continue
+            top2 = [f["fish"] for f in fishes[:2]]
+            if top2:
+                season_lines.append(f"<strong>{s}は{'・'.join(top2)}</strong>")
         for s, fishes in seasonal.items():
             cnt = sum(f["count"] for f in fishes) if fishes else 0
-            if cnt > max_cnt:
-                max_cnt = cnt
+            if cnt > max_season_cnt:
+                max_season_cnt = cnt
                 max_season = s
+    season_str = ""
+    if season_lines:
+        season_str = "季節ごとの主力魚種は、" + "、".join(season_lines) + "が中心で、四季を通じて狙える魚種が豊富。"
         if max_season:
-            season_str = f"特に{max_season}に出船が多く"
-    # 大物実績文
+            season_str += f"特に{max_season}に出船が集中する。"
+
+    # 段落3: 大物実績 (具体的な魚種・サイズ・ランキング)
     trophy_str = ""
     if trophies:
         n = len(trophies)
-        top_fishes = list({t["fish"] for t in trophies[:3]})[:3]
-        if n >= 3 and top_fishes:
-            trophy_str = "・".join(top_fishes) + "など複数魚種で全船宿上位に名を連ねる"
-        elif n >= 1 and top_fishes:
-            trophy_str = f"{top_fishes[0]}が全船宿上位"
-    # 段落生成 (規模カテゴリ・出船率は使わない)
-    # 1行目: tsuri_mono_raw (船宿現場表記) の上位を列挙 → 釣り物の具体性を出す
-    raw_top = yearly.get("raw_top") or []
+        trophy_parts = []
+        seen = set()
+        top_rank_info = None  # (fish, rank, n_ships) 最上位 1 件をピックアップ
+        for t in trophies[:8]:
+            fish = t.get("fish")
+            val = t.get("value")
+            unit = t.get("unit")
+            if not fish or fish in seen or not val or not unit:
+                continue
+            seen.add(fish)
+            trophy_parts.append(f"<strong>{fish}最大{val}{unit}</strong>")
+            if top_rank_info is None:
+                top_rank_info = (fish, t.get("rank"), t.get("n_ships"))
+            if len(trophy_parts) >= 3:
+                break
+        if trophy_parts:
+            trophy_str = "大物実績は<strong>関東トップクラス</strong>で、" + "・".join(trophy_parts) + f"など全船宿ランキング上位に{n}件入賞。"
+            if top_rank_info and top_rank_info[1] and top_rank_info[2]:
+                trophy_str += f"特に{top_rank_info[0]}は競合{top_rank_info[2]}船宿中{top_rank_info[1]}位の実績で、{area}エリアでも屈指の型狙いポイントを押さえている証拠。"
+            else:
+                trophy_str += "型狙いの中級者以上にも応えられる、ベテラン御用達の船宿。"
+
+    # 段落4: 月別ピーク + 上位月の分布
+    monthly_str = ""
+    months = _ship_load_monthly_archive(ship_name, max_months=12)
+    if months:
+        sorted_months = sorted(months, key=lambda m: m.get("trips", 0), reverse=True)
+        peak = sorted_months[0] if sorted_months else None
+        if peak and peak.get("trips", 0) > 0:
+            def _mo_label(mk):
+                try:
+                    _y, _mo = mk.split("-")
+                    return f"{int(_mo)}月"
+                except Exception:
+                    return mk
+            month_label = _mo_label(peak["month"])
+            peak_fishes = [fi["fish"] for fi in (peak.get("fish") or [])[:2]]
+            # 上位3か月をピックアップ (年間出船分布の感覚)
+            top3_months = [m for m in sorted_months[:3] if m.get("trips", 0) > 0]
+            top3_str = "・".join(f"{_mo_label(m['month'])}（{m['trips']}便）" for m in top3_months)
+            if peak_fishes:
+                monthly_str = (
+                    f"月別実績では<strong>{month_label}が年間最多の{peak['trips']}便</strong>と最盛期で、"
+                    f"{'・'.join(peak_fishes)}を中心に活気ある釣行が続く。"
+                )
+            else:
+                monthly_str = f"月別実績では<strong>{month_label}が年間最多の{peak['trips']}便</strong>で出船が集中する。"
+            if len(top3_months) >= 2:
+                monthly_str += f"出船数上位は{top3_str}と、季節を問わず安定した運航スケジュールを維持している。"
+
+    # 段落生成
     paras = []
+    # 段落1: 船宿概要+主軸魚種+年間規模
+    raw_top = yearly.get("raw_top") or []
     if raw_top:
-        # raw_top 上位を「・」区切りで列挙 (最大5個)
         raw_disp = "・".join(f"<strong>{r}</strong>" for r in raw_top[:5])
         if len(raw_top) == 1:
-            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}の専門船。")
+            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}の専門船。年間出船{total_trips}便・{unique_fishes}魚種の釣果記録があり、地元釣り師から長く支持されている船宿。")
         elif len(raw_top) >= 4:
-            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}など多魚種の<strong>{genre}</strong>を案内している船宿。")
+            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}など多魚種の<strong>{genre}</strong>を案内している船宿。年間出船{total_trips}便・{unique_fishes}魚種の釣果記録があり、幅広いターゲットに対応する懐の深さが魅力。")
         else:
-            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}などを案内している船宿。")
+            paras.append(f"{area}の<strong>{ship_name}</strong>は、{raw_disp}などを軸に<strong>{genre}</strong>を案内する船宿。年間出船{total_trips}便・{unique_fishes}魚種の釣果記録があり、安定した出船実績を誇る。")
     elif top2_3:
-        paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に、{('・'.join(top2_3))}など<strong>{genre}</strong>を案内している船宿。")
+        paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に、{('・'.join(top2_3))}など<strong>{genre}</strong>を案内している船宿。年間出船{total_trips}便・{unique_fishes}魚種の釣果記録がある。")
     else:
-        paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に<strong>{genre}</strong>を案内している船宿。")
+        paras.append(f"{area}の<strong>{ship_name}</strong>は、<strong>{top1}</strong>を主軸に<strong>{genre}</strong>を案内している船宿。年間出船{total_trips}便の実績がある。")
+
+    # 段落2: 季節別
     if season_str:
-        paras.append(f"{season_str}、年間を通してバランスよく釣果を上げる。")
+        paras.append(season_str)
+
+    # 段落3: 大物実績
     if trophy_str:
-        paras.append(f"大物実績は<strong>関東トップクラス</strong>で、{trophy_str}。<strong>型狙いにも応える</strong>船宿。")
+        paras.append(trophy_str)
+
+    # 段落4: 月別ピーク
+    if monthly_str:
+        paras.append(monthly_str)
+
+    # 段落5: おすすめ + 利用シーン
+    closing = (
+        f"{_recommend(genre)}におすすめ。"
+        f"{area}エリアの船宿選びに迷ったら、年間出船{total_trips}便・{unique_fishes}魚種という実績が示す通り、"
+        "幅広いシーズン・狙い物に対応できる選択肢として候補に入る一隻。"
+    )
+    paras.append(closing)
+
     return "".join(f"<p>{p}</p>" for p in paras)
 
 
@@ -13639,26 +13737,21 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
     except Exception:
         period_str = f"{weekly['period_start']} 〜 {weekly['period_end']}"
 
-    # KPI 行: 出船率 + 前週比
-    this_total = this_trips + tw.get("cancels", 0)
-    this_rate = round(this_trips / this_total * 100) if this_total else 0
+    # KPI 行: 今週の出船便数 + 前週比（出船率は撤去・欠航データ不完全のため）
     prev_trips = pw.get("trips", 0)
-    prev_total = prev_trips + pw.get("cancels", 0)
-    prev_rate = round(prev_trips / prev_total * 100) if prev_total else None
-    if prev_rate is not None:
-        diff = this_rate - prev_rate
+    if prev_trips > 0:
+        diff = this_trips - prev_trips
         if diff >= 0:
-            diff_html = f'<span class="wkr-diff">前週比 +{diff}pt</span>'
+            diff_html = f'<span class="wkr-diff">前週比 +{diff}便</span>'
         else:
-            diff_html = f'<span class="wkr-diff neg">前週比 {diff}pt</span>'
+            diff_html = f'<span class="wkr-diff neg">前週比 {diff}便</span>'
     else:
         diff_html = '<span class="wkr-diff" style="background:rgba(138,150,164,.12);color:var(--muted)">前週データなし</span>'
     kpi_row = (
         '<div class="wr-kpi-row">'
-        '<span class="wkr-label">出船率</span>'
-        f'<span class="wkr-main">{this_rate}%</span>'
+        '<span class="wkr-label">今週の出船</span>'
+        f'<span class="wkr-main">{this_trips}便</span>'
         f'{diff_html}'
-        f'<span class="wkr-sub">出船 {this_trips}便 / 欠航 {tw.get("cancels", 0)}便</span>'
         '</div>'
     )
 
@@ -13818,15 +13911,11 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
             )
 
     # 統計ハイライト 3 つ
-    # 出船日数 = 出船 row の unique date 数 (1日複数便でも 1 とカウント)
-    # data再取得しないと date 不明なので weekly から渡ってきた構造を使う
-    # ※ weekly に rows 自体は持ってないが period_start/end の日数 = 7
-    # 出船日数は出船便のうち 1日複数便を 1 日として数える必要があるが
-    # 簡略化のため「出船{trips}便 / 7日中」と表記
+    # ラベルから「(7日中)」を撤去（出船率の連想を避ける・wr-period に7日間表記あり）
     stats_html = ''
     fish_total_count = sum(tw["fish_count"].values())
     stats_items = [
-        (f"{this_trips}便", "出船 (7日中)"),
+        (f"{this_trips}便", "今週の出船"),
         (str(fish_total_count), "釣果便数"),
     ]
     if top_fish_items:
@@ -13873,8 +13962,7 @@ def _ship_monthly_archive_section_html(months, ship_name, area, area_slug):
             return month_key
 
     def _card_html(m, is_recent=False):
-        rate = m["rate"]
-        rate_str = f'<strong>出船率{rate}%</strong>' if rate >= 90 else f'出船率{rate}%'
+        # 出船率バッジ・欠航便表記は撤去（2026-05-24・欠航データ取得不完全のため）
         rows = []
         for fi in m["fish"]:
             stat_parts = [f'<span class="mfl-cnt">{fi["count"]}便</span>']
@@ -13896,9 +13984,8 @@ def _ship_monthly_archive_section_html(months, ship_name, area, area_slug):
             f'<div class="{cls}">'
             f'<div class="ma-head">'
             f'<span class="ma-month">{_month_jp(m["month"])}</span>'
-            f'<span class="ma-rate">{rate_str}</span>'
             f'</div>'
-            f'<div class="ma-trips">出船 {m["trips"]}便 / 欠航 {m["cancels"]}便</div>'
+            f'<div class="ma-trips">出船 {m["trips"]}便</div>'
             f'<ul class="ma-fish-list">{fish_html}</ul>'
             f'</div>'
         )
@@ -14326,13 +14413,11 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         badges_html += f'<span class="sh-badge">{f}</span>'
         if badges_html.count("sh-badge") >= 3:
             break
-    # 出船率は最低5日のサンプルがある場合のみ表示（データ不足の誤解防止）
+    # 出船日数のみ表示（出船率・欠航日数は撤去・欠航データ取得不完全のため）
     overall_str = ""
     total_known = sail + cancel
-    if rate is not None and total_known >= 5:
-        overall_str = f"直近30日の出船率: {rate}% （出船{sail}日 / 欠航{cancel}日）"
-    elif total_known > 0:
-        overall_str = f"直近30日: 出船{sail}日 / 欠航{cancel}日 <span style=\"font-size:9px;opacity:.7\">(クロール記録ベース)</span>"
+    if sail > 0:
+        overall_str = f"直近30日: 出船{sail}日 <span style=\"font-size:9px;opacity:.7\">(クロール記録ベース)</span>"
 
     # ships.json から contact 情報を取得（official_url, phone, address, business_hours, closed_days）
     ships_contact = {}
@@ -14381,10 +14466,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     closed_days = basic_merged.get("closed_days")
     if closed_days and closed_days not in ("記載なし", "未記載"):
         info_rows.append(f'<div class="info-row"><span class="info-label">定休日</span><span class="info-val">{closed_days}</span></div>')
-    if total_known >= 5 and rate is not None:
-        info_rows.append(f'<div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船{sail}日 / 欠航{cancel}日（出船率{rate}%）</span></div>')
-    elif total_known > 0:
-        info_rows.append(f'<div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船{sail}日 / 欠航{cancel}日 <span style="color:var(--muted);font-size:11px">(当サイトのクロール記録ベース・実出船日数とは異なります)</span></span></div>')
+    if sail > 0:
+        info_rows.append(f'<div class="info-row"><span class="info-label">直近30日</span><span class="info-val">出船{sail}日 <span style="color:var(--muted);font-size:11px">(当サイトのクロール記録ベース)</span></span></div>')
 
     # 船舶・設備BOX（vessel が空なら省略）
     vessel_html = ""
@@ -14549,9 +14632,9 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
             _desc_bits.append(f"・最大{_t_max_kg}kg")
         elif _t_max_size:
             _desc_bits.append(f"・最大{_t_max_size}cm")
-        _cm_rate = _current_month_data.get("rate")
-        if _cm_rate is not None:
-            _desc_bits.append(f"・出船率{_cm_rate}%")
+        _cm_trips = _current_month_data.get("trips") or 0
+        if _cm_trips > 0:
+            _desc_bits.append(f"・今月{_cm_trips}便出船")
         _desc_bits.append("。")
         # 前年比
         if _wr_yoy and _wr_yoy.get("last_year_fish_count"):
@@ -14570,8 +14653,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
             desc_parts.append(f"全長{vessel['length_m']}m・定員{vessel['capacity']}名。")
         if primary_fish:
             desc_parts.append(f"主要対象魚: {' ・ '.join(primary_fish[:4])}。")
-        if rate is not None and total_known >= 5:
-            desc_parts.append(f"直近30日の出船率{rate}%。")
+        if sail > 0:
+            desc_parts.append(f"直近30日の出船{sail}日。")
         desc = "".join(desc_parts)[:160]
 
     page_url = f"{SITE_URL}/ship/{slug}.html"

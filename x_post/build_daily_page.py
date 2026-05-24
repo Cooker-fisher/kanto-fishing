@@ -75,6 +75,13 @@ def _port_links_html(top_port: str, depth: str = "../") -> str:
     raw_map = _load_area_romaji()
     # area_romaji_map のキーを正規化（半角中黒→全角中黒）した検索辞書を用意
     area_map = {k.replace("･", "・"): v for k, v in raw_map.items()}
+    # まず top_port 全体（正規化済み）で複合キーマッチを試す。
+    # 例: "江戸川放水路・原木中山" は area_map に複合キーとして登録されているのでワンリンクで返す。
+    # （split してから単独キー検索だと "江戸川放水路" / "原木中山" は単独登録なしでリンク欠落する）
+    top_port_norm = top_port.replace("･", "・")
+    full_romaji = area_map.get(top_port_norm)
+    if full_romaji:
+        return f'<a href="{depth}area/{full_romaji}.html" class="pl">{top_port}</a>'
     out = []
     # 区切り文字: 全角中黒「・」/ 半角中黒「･」両対応
     for sep in ("・", "･"):
@@ -652,18 +659,12 @@ def _sea_grid_html(ctx, hide_ship_rate=False):
     if summary_parts:
         summary_html = f'<p class="sea-summary">{"。".join(summary_parts)}。</p>\n'
 
-    # 出船率バー（0件日は非表示。出船率 0% の誤解を招くため）
-    if hide_ship_rate or n_ships <= 0:
-        rate_html = ""
-    else:
-        _rate_val = (n_ships - n_cancellations) / max(n_ships, 1)
-        ship_rate_str = f"{int(_rate_val * 100)}%"
-        warn_cls = " warn" if _rate_val < 0.7 else ""
-        rate_html = (
-            f'<div class="ship-rate-bar{warn_cls}">'
-            f'出船率 <b>{ship_rate_str}</b>（{n_ships}船宿中・{n_cancellations}欠航）'
-            f'</div>\n'
-        )
+    # 出船率バー 撤去（2026-05-24）
+    # 分母 n_ships は「釣果報告が拾えた船宿数」のみで、active 321 船宿の大半は
+    # 出船/欠航/休業のいずれか不明（A1 クロールが catches_raw に欠航レコードを
+    # 取り切れていない）。結果として土曜日でも 100% に張り付き虚偽表示になる。
+    # 欠航ソース整備が完了するまで非表示。コール側 hide_ship_rate も無効化。
+    rate_html = ""
 
     inner_cards = _fmt_sea_cards(inner)
     outer_cards = _fmt_sea_cards(outer)
