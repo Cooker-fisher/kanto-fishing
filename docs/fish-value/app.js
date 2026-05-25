@@ -344,7 +344,10 @@ function addEntry(preset) {
     '<div class="entry-del-confirm" hidden></div>';
   $('entries').appendChild(el);
 
-  el.querySelector('.entry-fish-btn').addEventListener('click', () => openFishPicker(entry));
+  el.querySelector('.entry-fish-btn').addEventListener('click', () => {
+    if (entry.locked) { showFishChangeConfirm(entry); return; }
+    openFishPicker(entry);
+  });
   el.querySelector('.entry-remove').addEventListener('click', () => removeEntry(entry));
   el.querySelector('.ims-simple').addEventListener('click', () => { if (!entry.detailMode) return; toggleDetailMode(entry); });
   el.querySelector('.ims-detail').addEventListener('click', () => { if (entry.detailMode || !entry._priceEntry) return; toggleDetailMode(entry); });
@@ -487,6 +490,45 @@ function showDeleteConfirm(entry) {
 
   btnsEl.appendChild(cancelBtn);
   btnsEl.appendChild(deleteBtn);
+  confirmEl.appendChild(msg);
+  confirmEl.appendChild(btnsEl);
+  confirmEl.hidden = false;
+}
+
+function showFishChangeConfirm(entry) {
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (!el) return;
+  const confirmEl = el.querySelector('.entry-del-confirm');
+  if (!confirmEl.hidden) {
+    confirmEl.hidden = true;
+    return;
+  }
+  confirmEl.innerHTML = '';
+
+  const msg = document.createElement('span');
+  msg.className = 'edc-msg';
+  msg.textContent = '魚種を変更すると入力内容がリセットされます。';
+
+  const btnsEl = document.createElement('div');
+  btnsEl.className = 'edc-btns';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button';
+  cancelBtn.className = 'edc-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.addEventListener('click', () => { confirmEl.hidden = true; });
+
+  const changeBtn = document.createElement('button');
+  changeBtn.type = 'button';
+  changeBtn.className = 'edc-delete';
+  changeBtn.textContent = '変更する';
+  changeBtn.addEventListener('click', () => {
+    confirmEl.hidden = true;
+    openFishPicker(entry);
+  });
+
+  btnsEl.appendChild(cancelBtn);
+  btnsEl.appendChild(changeBtn);
   confirmEl.appendChild(msg);
   confirmEl.appendChild(btnsEl);
   confirmEl.hidden = false;
