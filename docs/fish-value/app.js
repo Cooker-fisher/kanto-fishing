@@ -1,7 +1,5 @@
 /**
- * 釣果価値チェッカー
- * fish-species-map.json + fish-price-master.json を元に
- * 卸売・小売換算レンジを表示する。
+ * 釣果価値チェッカー（複数魚種対応・サイズ別匹数入力 v5）
  */
 'use strict';
 
@@ -9,14 +7,16 @@ const $ = (id) => document.getElementById(id);
 
 let SPECIES_MAP = null;
 let PRICE_MASTER = null;
-let currentInputMode = null;
+let entries = [];     // [{id, fishId, bandCounts:{idx:count}}]
+let entryCounter = 0;
 
-// ===== ユーティリティ =====
+// ============================================
+// ユーティリティ
+// ============================================
 
 function fmtYen(n) {
   if (!isFinite(n) || n <= 0) return '0';
-  const rounded = Math.round(n / 100) * 100;
-  return rounded.toLocaleString('ja-JP');
+  return (Math.round(n / 100) * 100).toLocaleString('ja-JP');
 }
 
 function fmtWeight(kg) {
@@ -25,25 +25,23 @@ function fmtWeight(kg) {
   return Math.round(kg * 1000) + ' g';
 }
 
-function cmToKg(curve, cm) {
-  if (!curve || curve.length === 0) return null;
-  if (cm <= curve[0].cm) return curve[0].kg;
-  if (cm >= curve[curve.length - 1].cm) return curve[curve.length - 1].kg;
-  for (let i = 0; i < curve.length - 1; i++) {
-    if (cm >= curve[i].cm && cm <= curve[i + 1].cm) {
-      const ratio = (cm - curve[i].cm) / (curve[i + 1].cm - curve[i].cm);
-      return curve[i].kg + (curve[i + 1].kg - curve[i].kg) * ratio;
-    }
-  }
-  return curve[curve.length - 1].kg;
+function fmtKgShort(kg) {
+  if (!isFinite(kg) || kg <= 0) return '0';
+  if (kg < 10) return (Math.round(kg * 100) / 100).toString().replace(/(\.\d)0$/, '$1');
+  return kg.toFixed(1);
 }
 
-function findBand(bands, kg) {
-  for (const band of bands) {
-    if (band.kg_max === null || band.kg_max === undefined) return band;
-    if (kg <= band.kg_max) return band;
+function kgToCm(curve, kg) {
+  if (!curve || curve.length === 0) return null;
+  if (kg <= curve[0].kg) return curve[0].cm;
+  if (kg >= curve[curve.length - 1].kg) return curve[curve.length - 1].cm;
+  for (let i = 0; i < curve.length - 1; i++) {
+    if (kg >= curve[i].kg && kg <= curve[i + 1].kg) {
+      const ratio = (kg - curve[i].kg) / (curve[i + 1].kg - curve[i].kg);
+      return curve[i].cm + (curve[i + 1].cm - curve[i].cm) * ratio;
+    }
   }
-  return bands[bands.length - 1];
+  return curve[curve.length - 1].cm;
 }
 
 function showError(msg) {
@@ -58,7 +56,9 @@ function clearError() {
   $('err-msg').hidden = true;
 }
 
-// ===== 初期化 =====
+// ============================================
+// 初期化
+// ============================================
 
 async function init() {
   try {
@@ -75,12 +75,15 @@ async function init() {
     return;
   }
 
-  populateFishSelect();
-  bindEvents();
+  bindGlobalEvents();
+  addEntry(); // 起動時に1件
   applyUrlParams();
 }
 
-// カタカナの頭文字 → 50音グループ
+// ============================================
+// 50音グループ（PR #50）
+// ============================================
+
 const KANA_GROUPS = [
   { label: 'ア行', chars: 'アイウエオ' },
   { label: 'カ行', chars: 'カキクケコガギグゲゴ' },
@@ -93,21 +96,14 @@ const KANA_GROUPS = [
   { label: 'ラ行', chars: 'ラリルレロ' },
   { label: 'ワ行', chars: 'ワヲン' },
 ];
-
-// 漢字始まりの site_display_name の読み（カタカナ複数文字に変換するためのマップ）
-const KANJI_FIRST_MAP = {
-  '沖': 'オキ',  // 沖カサゴ・沖メバル
-};
+const KANJI_FIRST_MAP = { '沖': 'オキ' };
 
 function readingOf(displayName) {
   if (!displayName) return '';
   const first = displayName.charAt(0);
-  if (KANJI_FIRST_MAP[first]) {
-    return KANJI_FIRST_MAP[first] + displayName.slice(1);
-  }
+  if (KANJI_FIRST_MAP[first]) return KANJI_FIRST_MAP[first] + displayName.slice(1);
   return displayName;
 }
-
 function kanaGroupOf(displayName) {
   const reading = readingOf(displayName);
   if (!reading) return null;
@@ -117,18 +113,17 @@ function kanaGroupOf(displayName) {
   }
   return 'その他';
 }
-
 function kanaSortKey(displayName) {
-  // 並び順は KANA_GROUPS の順 → 同行内は読みのカタカナ標準順
   if (!displayName) return 'zzzz';
   const grp = kanaGroupOf(displayName);
   const grpIdx = KANA_GROUPS.findIndex(g => g.label === grp);
   return (grpIdx < 0 ? 99 : grpIdx).toString().padStart(2, '0') + readingOf(displayName);
 }
 
-function populateFishSelect() {
-  const select = $('fish');
-  // target → 50音順ソート、bycatch は最後にまとめる
+function populateFishSelect(select) {
+  // 既存option（プレースホルダー以外）を削除
+  while (select.options.length > 1) select.remove(1);
+
   const targets = SPECIES_MAP.species
     .filter(s => s.category === 'target')
     .slice()
@@ -138,7 +133,6 @@ function populateFishSelect() {
     .slice()
     .sort((a, b) => kanaSortKey(a.site_display_name).localeCompare(kanaSortKey(b.site_display_name)));
 
-  // target を 50音グループ別に展開
   let currentGroup = null;
   for (const s of targets) {
     const grp = kanaGroupOf(s.site_display_name);
@@ -154,8 +148,6 @@ function populateFishSelect() {
     opt.textContent = s.site_display_name;
     select.appendChild(opt);
   }
-
-  // bycatch
   if (bycatches.length > 0) {
     const sep = document.createElement('option');
     sep.disabled = true;
@@ -171,87 +163,10 @@ function populateFishSelect() {
   }
 }
 
-function bindEvents() {
-  $('fish').addEventListener('change', onFishChange);
-  $('calc-btn').addEventListener('click', onCalculate);
-
-  // mode 切替ラジオ
-  document.querySelectorAll('input[name="input-mode"]').forEach(r => {
-    r.addEventListener('change', onModeChange);
-  });
-
-  // Enter キーで計算
-  ['count', 'size', 'weight'].forEach(id => {
-    $(id).addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        onCalculate();
-      }
-    });
-  });
-}
-
-const MODE_LABEL_BASE = { cm: 'サイズ (cm)', kg: '重量 (kg)' };
-
-function updateModeLabels(recMode) {
-  for (const m of ['cm', 'kg']) {
-    const span = document.querySelector(`label[for="mode-${m}"] span, #mode-${m} ~ span`)
-              || document.getElementById(`mode-${m}`).closest('label').querySelector('span');
-    if (!span) continue;
-    span.textContent = MODE_LABEL_BASE[m] + (recMode === m ? '(推奨)' : '');
-  }
-}
-
-function onFishChange() {
-  clearError();
-  const fishId = $('fish').value;
-  if (!fishId) {
-    $('size-row').hidden = true;
-    $('weight-row').hidden = true;
-    $('mode-switch').hidden = true;
-    currentInputMode = null;
-    return;
-  }
-  const species = findSpecies(fishId);
-  if (!species) return;
-  const modes = species.input_modes || ['cm'];
-  // 両方サポート時のみラジオ表示。主入力(modes[0])をデフォルトに
-  if (modes.length >= 2) {
-    $('mode-switch').hidden = false;
-    const defaultMode = species.recommended_mode || modes[0];
-    document.querySelector(`input[name="input-mode"][value="${defaultMode}"]`).checked = true;
-    updateModeLabels(species.recommended_mode);
-    applyInputMode(defaultMode);
-  } else {
-    $('mode-switch').hidden = true;
-    applyInputMode(modes[0]);
-  }
-}
-
-function onModeChange() {
-  clearError();
-  const mode = document.querySelector('input[name="input-mode"]:checked').value;
-  applyInputMode(mode);
-}
-
-function applyInputMode(mode) {
-  currentInputMode = mode;
-  if (mode === 'cm') {
-    $('size-row').hidden = false;
-    $('weight-row').hidden = true;
-    $('weight').value = '';
-  } else {
-    $('size-row').hidden = true;
-    $('weight-row').hidden = false;
-    $('size').value = '';
-  }
-}
-
 function findSpecies(fishId) {
-  // site_fish_id 一致
+  if (!fishId) return null;
   let s = SPECIES_MAP.species.find(x => x.site_fish_id === fishId);
   if (s) return s;
-  // bycatch（site_fish_id=null）の場合は bycatch-{pfid} 形式
   if (fishId.startsWith('bycatch-')) {
     const pfid = fishId.replace('bycatch-', '');
     return SPECIES_MAP.species.find(x => x.price_fish_id === pfid && x.category === 'bycatch');
@@ -259,168 +174,503 @@ function findSpecies(fishId) {
   return null;
 }
 
-// ===== 計算 =====
+// ============================================
+// グローバルイベント
+// ============================================
 
-function onCalculate() {
+function bindGlobalEvents() {
+  $('calc-btn').addEventListener('click', () => onCalculate({ scroll: true }));
+  $('reset-btn').addEventListener('click', onReset);
+  $('add-entry-btn').addEventListener('click', () => {
+    addEntry();
+    // 新規エントリの魚種セレクトにフォーカス
+    const last = $('entries').lastElementChild;
+    if (last) {
+      const sel = last.querySelector('.entry-fish');
+      sel && sel.focus();
+      last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+}
+
+// ============================================
+// エントリ管理
+// ============================================
+
+function addEntry(preset) {
+  entryCounter += 1;
+  const id = entryCounter;
+  const entry = { id, fishId: preset?.fishId || '', bandCounts: preset?.bandCounts ? { ...preset.bandCounts } : {} };
+  entries.push(entry);
+
+  const el = document.createElement('div');
+  el.className = 'entry';
+  el.dataset.eid = String(id);
+  el.innerHTML =
+    '<div class="entry-head">' +
+      '<span class="entry-num"></span>' +
+      '<div class="entry-fish-wrap">' +
+        '<select class="entry-fish" aria-label="魚種"><option value="">▼ 魚種を選択</option></select>' +
+      '</div>' +
+      '<button type="button" class="entry-remove" aria-label="削除">' +
+        '<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>' +
+      '</button>' +
+    '</div>' +
+    '<div class="band-list-row" hidden>' +
+      '<div class="band-list-head">' +
+        '<label>サイズ別 匹数</label>' +
+        '<div class="band-total">' +
+          '<span class="band-total-val">0</span>' +
+          '<span class="band-total-unit">尾</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="band-list"></div>' +
+    '</div>';
+  $('entries').appendChild(el);
+
+  // セレクト構築
+  populateFishSelect(el.querySelector('.entry-fish'));
+
+  // イベント
+  el.querySelector('.entry-fish').addEventListener('change', (e) => onEntryFishChange(entry, e.target.value));
+  el.querySelector('.entry-remove').addEventListener('click', () => removeEntry(entry));
+
+  // プリセット適用
+  if (preset?.fishId) {
+    el.querySelector('.entry-fish').value = preset.fishId;
+    onEntryFishChange(entry, preset.fishId);
+    if (preset.bandCounts) {
+      // 既に bandCounts はオブジェクトとして入っている -> band-list 側に反映
+      Object.entries(preset.bandCounts).forEach(([idx, cnt]) => {
+        const row = el.querySelector('.band-row[data-idx="' + idx + '"]');
+        if (row) {
+          const inp = row.querySelector('.bs-input');
+          inp.value = cnt;
+          inp.dispatchEvent(new Event('input'));
+        }
+      });
+    }
+  }
+
+  updateEntryNumbers();
+  updateRemoveButtons();
+  return entry;
+}
+
+function removeEntry(entry) {
+  if (entries.length <= 1) return; // 最低1件残す
+  entries = entries.filter(e => e !== entry);
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (el) el.remove();
+  updateEntryNumbers();
+  updateRemoveButtons();
+  scheduleLiveCalc();
+}
+
+function updateEntryNumbers() {
+  const els = $('entries').querySelectorAll('.entry');
+  els.forEach((el, i) => {
+    el.querySelector('.entry-num').textContent = String(i + 1);
+  });
+}
+
+function updateRemoveButtons() {
+  const removable = entries.length > 1;
+  $('entries').querySelectorAll('.entry-remove').forEach(btn => {
+    btn.disabled = !removable;
+  });
+}
+
+function onEntryFishChange(entry, fishId) {
   clearError();
+  entry.fishId = fishId;
+  entry.bandCounts = {};
 
-  const fishId = $('fish').value;
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  const listRow = el.querySelector('.band-list-row');
+
   if (!fishId) {
-    showError('魚種を選択してください');
+    listRow.hidden = true;
+    el.classList.remove('has-fish');
+    scheduleLiveCalc();
     return;
   }
-
   const species = findSpecies(fishId);
-  if (!species) {
-    showError('魚種データが見つかりません');
-    return;
-  }
-
-  const count = parseInt($('count').value, 10);
-  if (!Number.isFinite(count) || count < 1 || count > 999) {
-    showError('匹数は 1〜999 の数値で入力してください');
-    return;
-  }
-
-  const pfid = species.price_fish_id;
-  const priceEntry = PRICE_MASTER.prices[pfid];
+  if (!species) return;
+  const priceEntry = PRICE_MASTER.prices[species.price_fish_id];
   if (!priceEntry) {
     showError(species.site_display_name + ' の価格データが未登録です');
     return;
   }
+  entry._species = species;
+  entry._priceEntry = priceEntry;
 
-  let perFishKg;
-  let inputDetail;
-  if (currentInputMode === 'cm') {
-    const cm = parseFloat($('size').value);
-    if (!Number.isFinite(cm) || cm <= 0 || cm > 200) {
-      showError('平均サイズ（cm）を 1〜200 の数値で入力してください');
-      return;
-    }
-    perFishKg = cmToKg(priceEntry.size_weight_curve, cm);
-    if (!perFishKg) {
-      showError(species.site_display_name + ' はサイズ→重量換算データが未登録です');
-      return;
-    }
-    inputDetail = '平均サイズ ' + cm + ' cm → 推定重量 ' + fmtWeight(perFishKg) + ' / 尾';
-  } else {
-    const kg = parseFloat($('weight').value);
-    if (!Number.isFinite(kg) || kg <= 0 || kg > 100) {
-      showError('平均重量（kg）を 0.01〜100 の数値で入力してください');
-      return;
-    }
-    perFishKg = kg;
-    inputDetail = '平均重量 ' + fmtWeight(perFishKg) + ' / 尾';
-  }
+  buildBandList(el, entry, species, priceEntry);
+  listRow.hidden = false;
+  el.classList.add('has-fish');
+  updateEntryTotal(entry);
+  scheduleLiveCalc();
+}
 
-  const totalKg = perFishKg * count;
-  const band = findBand(priceEntry.size_bands, perFishKg);
+// ============================================
+// バンドリスト
+// ============================================
 
-  const wholesaleLow  = totalKg * band.wholesale_low;
-  const wholesaleHigh = totalKg * band.wholesale_high;
-  const retailLow     = totalKg * band.retail_low;
-  const retailHigh    = totalKg * band.retail_high;
+function buildBandList(el, entry, species, priceEntry) {
+  const list = el.querySelector('.band-list');
+  list.innerHTML = '';
+  const bands = priceEntry.size_bands;
+  const isCm = species.input_modes && species.input_modes[0] === 'cm' && priceEntry.size_weight_curve;
+  const curve = priceEntry.size_weight_curve;
 
-  renderResult({
-    species, priceEntry, band, count, perFishKg, totalKg,
-    wholesaleLow, wholesaleHigh, retailLow, retailHigh, inputDetail,
+  bands.forEach((band, idx) => {
+    const row = document.createElement('div');
+    row.className = 'band-row';
+    row.dataset.idx = String(idx);
+
+    const info = document.createElement('div');
+    info.className = 'band-info';
+    const label = document.createElement('span');
+    label.className = 'band-label';
+    label.dataset.class = band.size_class || 'standard';
+    label.textContent = band.label;
+    info.appendChild(label);
+
+    const range = document.createElement('span');
+    range.className = 'band-range';
+    range.textContent = bandRangeStr(bands, idx, isCm, curve);
+    info.appendChild(range);
+
+    const stepper = buildBandStepper(entry, idx);
+    row.appendChild(info);
+    row.appendChild(stepper);
+    list.appendChild(row);
   });
 }
 
-function renderResult(r) {
-  // size-badge
-  const badge = $('size-badge');
-  badge.textContent = r.band.label;
-  badge.dataset.class = r.band.size_class;
+function bandRangeStr(bands, idx, isCm, curve) {
+  const band = bands[idx];
+  const prevKg = idx === 0 ? 0 : (bands[idx - 1].kg_max || 0);
+  const hiKg = band.kg_max;
+  if (isCm && curve) {
+    const lo = prevKg > 0 ? Math.round(kgToCm(curve, prevKg)) : Math.round(curve[0].cm);
+    if (hiKg == null) return lo + 'cm+';
+    return lo + '〜' + Math.round(kgToCm(curve, hiKg)) + 'cm';
+  }
+  const lo = prevKg > 0 ? fmtKgShort(prevKg) : '0';
+  if (hiKg == null) return lo + 'kg+';
+  return lo + '〜' + fmtKgShort(hiKg) + 'kg';
+}
 
-  // 総重量
-  $('total-weight').textContent = '推定総重量 ' + fmtWeight(r.totalKg);
+function buildBandStepper(entry, idx) {
+  const wrap = document.createElement('div');
+  wrap.className = 'band-stepper';
+  wrap.innerHTML =
+    '<button type="button" class="bs-btn" data-act="dec" aria-label="−1">' +
+      '<svg viewBox="0 0 20 20" width="18" height="18"><path d="M4 10h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>' +
+    '</button>' +
+    '<input type="number" class="bs-input" inputmode="numeric" min="0" max="999" value="0" aria-label="匹数">' +
+    '<button type="button" class="bs-btn" data-act="inc" aria-label="+1">' +
+      '<svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>' +
+    '</button>';
+  const input = wrap.querySelector('.bs-input');
 
-  // 小売
-  $('retail-range').textContent = '約 ' + fmtYen(r.retailLow) + ' 〜 ' + fmtYen(r.retailHigh) + ' 円';
-  $('retail-per').textContent = '1匹あたり 約 ' + fmtYen(r.retailLow / r.count) + ' 〜 ' + fmtYen(r.retailHigh / r.count) + ' 円';
+  function setVal(v) {
+    if (!Number.isFinite(v)) v = 0;
+    v = Math.max(0, Math.min(999, Math.round(v)));
+    input.value = v;
+    input.setAttribute('value', String(v));
+    wrap.closest('.band-row').classList.toggle('has-value', v > 0);
+    if (v > 0) entry.bandCounts[idx] = v;
+    else delete entry.bandCounts[idx];
+    updateEntryTotal(entry);
+    scheduleLiveCalc();
+  }
 
-  // 卸売
-  $('wholesale-range').textContent = '約 ' + fmtYen(r.wholesaleLow) + ' 〜 ' + fmtYen(r.wholesaleHigh) + ' 円';
-  $('wholesale-per').textContent = '1匹あたり 約 ' + fmtYen(r.wholesaleLow / r.count) + ' 〜 ' + fmtYen(r.wholesaleHigh / r.count) + ' 円';
+  attachHoldRepeat(wrap.querySelector('[data-act="dec"]'), () => setVal((+input.value || 0) - 1));
+  attachHoldRepeat(wrap.querySelector('[data-act="inc"]'), () => setVal((+input.value || 0) + 1));
+
+  input.addEventListener('input', () => {
+    let v = parseInt(input.value, 10);
+    if (!Number.isFinite(v) || v < 0) v = 0;
+    if (v > 999) v = 999;
+    setVal(v);
+  });
+  input.addEventListener('focus', () => input.select());
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); onCalculate({ scroll: true }); }
+  });
+  return wrap;
+}
+
+function attachHoldRepeat(btn, fn) {
+  let timer = null;
+  let interval = 180;
+  let acc = 0;
+  const stop = () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    btn.classList.remove('pressing');
+    acc = 0;
+  };
+  const tick = () => {
+    fn();
+    acc++;
+    if (acc > 6 && interval > 55) interval -= 18;
+    timer = setTimeout(tick, interval);
+  };
+  btn.addEventListener('pointerdown', (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
+    try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+    btn.classList.add('pressing');
+    interval = 180;
+    acc = 0;
+    fn();
+    timer = setTimeout(tick, 420);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel', 'blur'].forEach(ev => btn.addEventListener(ev, stop));
+}
+
+function updateEntryTotal(entry) {
+  const total = Object.values(entry.bandCounts).reduce((a, b) => a + b, 0);
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (!el) return;
+  const valEl = el.querySelector('.band-total-val');
+  if (valEl) valEl.textContent = String(total);
+  el.querySelector('.band-list-row').classList.toggle('has-value', total > 0);
+}
+
+// ============================================
+// ライブ再計算
+// ============================================
+
+let liveCalcTimer = null;
+function scheduleLiveCalc() {
+  if (liveCalcTimer) clearTimeout(liveCalcTimer);
+  liveCalcTimer = setTimeout(() => onCalculate({ silent: true }), 120);
+}
+
+// ============================================
+// 計算
+// ============================================
+
+function bandRepKg(bands, idx) {
+  const band = bands[idx];
+  const prevKg = idx === 0 ? 0 : (bands[idx - 1].kg_max || 0);
+  if (band.kg_max == null) return prevKg > 0 ? prevKg * 1.5 : 1.0;
+  return (prevKg + band.kg_max) / 2;
+}
+
+function onCalculate(opts) {
+  const silent = opts && opts.silent;
+  if (!silent) clearError();
+
+  // 有効エントリ
+  const validEntries = entries.filter(e => e.fishId && e._priceEntry && Object.values(e.bandCounts).some(v => v > 0));
+  if (validEntries.length === 0) {
+    if (!silent) showError('魚種と匹数を入力してください');
+    else hideResult();
+    return;
+  }
+
+  let totalCount = 0;
+  let totalKg = 0;
+  let wholesaleLowSum = 0;
+  let wholesaleHighSum = 0;
+  let wholesaleMidSum = 0;
+  let retailLowSum = 0;
+  let retailHighSum = 0;
+  let retailMidSum = 0;
+  const perEntry = [];
+
+  for (const e of validEntries) {
+    const species = e._species;
+    const priceEntry = e._priceEntry;
+    const bands = priceEntry.size_bands;
+
+    let eCount = 0;
+    let eKg = 0;
+    let eRetailMid = 0;
+    let eWholesaleMid = 0;
+    const eBreakdown = [];
+
+    for (const [idxStr, count] of Object.entries(e.bandCounts)) {
+      if (count <= 0) continue;
+      const idx = parseInt(idxStr, 10);
+      const band = bands[idx];
+      const repKg = bandRepKg(bands, idx);
+      const bandKg = repKg * count;
+      eCount += count;
+      eKg += bandKg;
+
+      wholesaleLowSum  += bandKg * band.wholesale_low;
+      wholesaleHighSum += bandKg * band.wholesale_high;
+      const wMid = bandKg * (band.wholesale_low + band.wholesale_high) / 2;
+      wholesaleMidSum  += wMid;
+      eWholesaleMid    += wMid;
+      retailLowSum     += bandKg * band.retail_low;
+      retailHighSum    += bandKg * band.retail_high;
+      const rMid = bandKg * (band.retail_low + band.retail_high) / 2;
+      retailMidSum     += rMid;
+      eRetailMid       += rMid;
+
+      eBreakdown.push({ label: band.label, count, perKg: repKg, bandKg });
+    }
+
+    totalCount += eCount;
+    totalKg += eKg;
+
+    perEntry.push({
+      name: species.site_display_name,
+      count: eCount,
+      kg: eKg,
+      retailMid: eRetailMid,
+      wholesaleMid: eWholesaleMid,
+      breakdown: eBreakdown,
+    });
+  }
+
+  renderResult({
+    totalCount,
+    totalKg,
+    speciesCount: validEntries.length,
+    wholesaleLow:  wholesaleLowSum,
+    wholesaleHigh: wholesaleHighSum,
+    wholesaleMid:  wholesaleMidSum,
+    retailLow:     retailLowSum,
+    retailHigh:    retailHighSum,
+    retailMid:     retailMidSum,
+    perEntry,
+  }, opts);
+}
+
+function hideResult() {
+  $('result').hidden = true;
+  $('caution').hidden = true;
+}
+
+function renderResult(r, opts) {
+  $('result-species').textContent = r.speciesCount;
+  $('result-count').textContent   = r.totalCount;
+  $('result-weight').textContent  = fmtKgShort(r.totalKg);
+
+  // ピル: 魚種ごとに表示
+  const pills = $('result-pills');
+  pills.innerHTML = '';
+  for (const e of r.perEntry) {
+    const pill = document.createElement('span');
+    pill.className = 'result-pill';
+    pill.innerHTML =
+      '<span class="rp-name">' + escapeHtml(e.name) + '</span>' +
+      '<span class="rp-count">' + e.count + '尾</span>';
+    pills.appendChild(pill);
+  }
+
+  $('retail-main').textContent  = fmtYen(r.retailMid);
+  $('retail-range').textContent = 'レンジ ' + fmtYen(r.retailLow) + '〜' + fmtYen(r.retailHigh) + ' 円';
+
+  $('wholesale-main').textContent  = fmtYen(r.wholesaleMid);
+  $('wholesale-range').textContent = 'レンジ ' + fmtYen(r.wholesaleLow) + '〜' + fmtYen(r.wholesaleHigh) + ' 円';
 
   // 計算根拠
   const basis = $('basis-list');
   basis.innerHTML = '';
-  const items = [
-    r.inputDetail,
-    'サイズ帯: ' + r.band.label + '（' + bandRangeLabel(r.priceEntry.size_bands, r.band) + '・' + r.band.size_class + '）',
-    '卸売単価: ' + r.band.wholesale_low.toLocaleString() + ' 〜 ' + r.band.wholesale_high.toLocaleString() + ' 円/kg',
-    '小売単価: ' + r.band.retail_low.toLocaleString() + ' 〜 ' + r.band.retail_high.toLocaleString() + ' 円/kg',
-    '倍率カテゴリ: ' + r.priceEntry.category_tag,
-    '出典: ' + r.priceEntry.wholesale_source,
-  ];
-  for (const it of items) {
-    const li = document.createElement('li');
-    li.textContent = it;
-    basis.appendChild(li);
+  for (const e of r.perEntry) {
+    const heading = document.createElement('li');
+    heading.className = 'basis-head';
+    heading.textContent = '【' + e.name + '】合計 ' + e.count + '尾・' + fmtWeight(e.kg) +
+      ' / 推定 小売 ' + fmtYen(e.retailMid) + '円 (卸売 ' + fmtYen(e.wholesaleMid) + '円)';
+    basis.appendChild(heading);
+    for (const b of e.breakdown) {
+      const li = document.createElement('li');
+      li.textContent = '　' + b.label + ': ' + b.count + '尾 × 推定 ' + fmtWeight(b.perKg) + ' = ' + fmtWeight(b.bandKg);
+      basis.appendChild(li);
+    }
   }
 
   $('result').hidden = false;
   $('caution').hidden = false;
+
+  if (opts && opts.scroll) {
+    requestAnimationFrame(() => {
+      const top = $('result').getBoundingClientRect().top + window.scrollY - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  }
 }
 
-function bandRangeLabel(bands, target) {
-  const idx = bands.indexOf(target);
-  const lo = idx === 0 ? 0 : (bands[idx - 1].kg_max ?? 0);
-  const hi = target.kg_max;
-  const loStr = lo > 0 ? fmtWeight(lo) : '0';
-  const hiStr = hi == null ? '上限なし' : fmtWeight(hi);
-  return loStr + ' 〜 ' + hiStr;
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 
-// ===== URL パラメータ =====
+// ============================================
+// リセット
+// ============================================
+
+function onReset() {
+  clearError();
+  // 全エントリ削除して1つ追加
+  $('entries').innerHTML = '';
+  entries = [];
+  addEntry();
+  hideResult();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================
+// URL パラメータ（簡易）
+// fish=aji&bands=0:2,2:5  もしくは
+// entries=aji|0:2,2:5;mebaru|1:3
+// ============================================
 
 function applyUrlParams() {
   const p = new URLSearchParams(location.search);
+  const entriesStr = p.get('entries');
+  if (entriesStr) {
+    // 既存の1件を消す
+    $('entries').innerHTML = '';
+    entries = [];
+    entriesStr.split(';').forEach(part => {
+      const [fishId, bandsStr] = part.split('|');
+      if (!fishId) return;
+      const bandCounts = {};
+      (bandsStr || '').split(',').forEach(bp => {
+        const [i, c] = bp.split(':').map(s => parseInt(s, 10));
+        if (Number.isFinite(i) && Number.isFinite(c) && c > 0) bandCounts[i] = c;
+      });
+      addEntry({ fishId, bandCounts });
+    });
+    onCalculate({ scroll: true });
+    return;
+  }
   const fish = p.get('fish');
-  const count = p.get('count');
-  const size = p.get('size');
-  const weight = p.get('weight');
-
+  const bandsParam = p.get('bands');
   if (fish) {
-    $('fish').value = fish;
-    onFishChange();
-  }
-  if (count) $('count').value = count;
-
-  // size or weight が URL に含まれていれば、対応するモードに切替
-  if (size && weight) {
-    // 両方指定時は size を優先（cm入力）
-    const cmRadio = document.querySelector('input[name="input-mode"][value="cm"]');
-    if (cmRadio && !$('mode-switch').hidden) {
-      cmRadio.checked = true;
-      applyInputMode('cm');
+    const entry = entries[0];
+    const el = $('entries').querySelector('.entry');
+    const sel = el.querySelector('.entry-fish');
+    sel.value = fish;
+    sel.dispatchEvent(new Event('change'));
+    if (bandsParam) {
+      bandsParam.split(',').forEach(part => {
+        const [i, c] = part.split(':').map(s => parseInt(s, 10));
+        if (Number.isFinite(i) && Number.isFinite(c) && c > 0) {
+          const row = el.querySelector('.band-row[data-idx="' + i + '"]');
+          if (row) {
+            const inp = row.querySelector('.bs-input');
+            inp.value = c;
+            inp.dispatchEvent(new Event('input'));
+          }
+        }
+      });
+      onCalculate({ scroll: true });
     }
-    $('size').value = size;
-  } else if (size) {
-    const cmRadio = document.querySelector('input[name="input-mode"][value="cm"]');
-    if (cmRadio && !$('mode-switch').hidden) {
-      cmRadio.checked = true;
-      applyInputMode('cm');
-    }
-    $('size').value = size;
-  } else if (weight) {
-    const kgRadio = document.querySelector('input[name="input-mode"][value="kg"]');
-    if (kgRadio && !$('mode-switch').hidden) {
-      kgRadio.checked = true;
-      applyInputMode('kg');
-    }
-    $('weight').value = weight;
-  }
-
-  // 必要パラメータが揃ってたら自動計算
-  if (fish && count && (size || weight)) {
-    onCalculate();
   }
 }
 
-// ===== 起動 =====
+// ============================================
+// 起動
+// ============================================
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
