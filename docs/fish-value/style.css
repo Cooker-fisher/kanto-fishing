@@ -500,11 +500,32 @@ header {
   padding: 0 10px;
   white-space: nowrap;
   min-width: 68px;
+  position: relative;
+  cursor: text;
 }
 .di-stepper.has-value .ds-val {
   background: rgba(232, 93, 4, .07);
   color: var(--cta);
 }
+.ds-edit-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, .97);
+  text-align: center;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--cta);
+  padding: 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.ds-edit-input::-webkit-inner-spin-button,
+.ds-edit-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 .di-remove {
   display: flex;
   align-items: center;

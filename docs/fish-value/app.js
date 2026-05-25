@@ -683,9 +683,14 @@ function buildDetailList(el, entry) {
 }
 
 function formatStepperVal(v, unit) {
-  if (!v || v <= 0) return '—';
-  if (unit === 'cm') return String(Math.round(v)) + ' cm';
-  return (Math.round(v * 10) / 10).toFixed(1) + ' kg';
+  if (unit === 'cm') return (v > 0 ? String(Math.round(v)) : '0') + ' cm';
+  return (v > 0 ? (Math.round(v * 10) / 10).toFixed(1) : '0.0') + ' kg';
+}
+
+function toHalfWidth(str) {
+  return (str || '')
+    .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/[．。]/g, '.');
 }
 
 function buildDetailItemRow(entry, item, idx, unit, curve) {
@@ -734,6 +739,32 @@ function buildDetailItemRow(entry, item, idx, unit, curve) {
 
   attachHoldRepeat(minusBtn, () => setDetailVal(item.val - step));
   attachHoldRepeat(plusBtn, () => setDetailVal(item.val + step));
+
+  // 数値タップで直接入力
+  valEl.addEventListener('click', () => {
+    if (valEl.querySelector('.ds-edit-input')) return; // 既に編集中
+    const cur = item.val > 0 ? (isCm ? String(Math.round(item.val)) : (Math.round(item.val * 10) / 10).toFixed(1)) : '';
+    valEl.textContent = '';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'ds-edit-input';
+    inp.value = cur;
+    inp.setAttribute('inputmode', 'decimal');
+    valEl.appendChild(inp);
+    inp.select();
+    inp.focus();
+    function commit() {
+      const num = parseFloat(toHalfWidth(inp.value.trim()));
+      valEl.textContent = '';
+      if (Number.isFinite(num) && num >= 0) setDetailVal(num);
+      else valEl.textContent = formatStepperVal(item.val, unit);
+    }
+    inp.addEventListener('blur', commit);
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
+      if (e.key === 'Escape') { valEl.textContent = formatStepperVal(item.val, unit); }
+    });
+  });
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
