@@ -1115,6 +1115,88 @@ body.picker-open { overflow: hidden; }
 .fish-chip.selected .fish-chip-name { color: var(--cta); }
 
 /* ============================================
+   Xシェアセクション
+   ============================================ */
+
+.share-section {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-2);
+}
+.share-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 12px;
+  letter-spacing: .02em;
+}
+.share-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--border-2);
+  border-radius: 999px;
+  padding: 3px;
+  margin-bottom: 10px;
+}
+.share-tab {
+  flex: 1 1 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  padding: 7px 0;
+  cursor: pointer;
+  background: transparent;
+  color: var(--sub);
+  transition: background .15s, color .15s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+  letter-spacing: .02em;
+}
+.share-tab.active {
+  background: var(--cta);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(232,93,4,.28);
+}
+.share-preview {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  white-space: pre-wrap;
+  line-height: 1.65;
+  margin-bottom: 12px;
+  max-height: 260px;
+  overflow-y: auto;
+  word-break: break-word;
+}
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 0;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: opacity .15s, transform .08s;
+  -webkit-tap-highlight-color: transparent;
+}
+.share-btn:hover { opacity: .88; }
+.share-btn:active { transform: scale(.98); }
+.share-btn svg { flex-shrink: 0; }
+
+/* ============================================
    入力完了ボタン & ロック状態
    ============================================ */
 

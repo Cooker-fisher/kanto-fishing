@@ -296,6 +296,31 @@ function bindGlobalEvents() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !$('fish-picker-modal').hidden) closeFishPicker();
   });
+
+  // Xシェア: スタイル切替
+  document.querySelectorAll('.share-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.share-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const style = tab.dataset.style;
+      $('share-preview').dataset.style = style;
+      try { localStorage.setItem('fv_share_style', style); } catch (_) {}
+      refreshSharePreview();
+    });
+  });
+  // Xシェア: 投稿ボタン
+  $('share-btn').addEventListener('click', onShareClick);
+
+  // 保存済みスタイル復元
+  try {
+    const saved = localStorage.getItem('fv_share_style');
+    if (saved === 'A' || saved === 'B' || saved === 'C') {
+      $('share-preview').dataset.style = saved;
+      document.querySelectorAll('.share-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.style === saved);
+      });
+    }
+  } catch (_) {}
 }
 
 // ============================================
@@ -1089,6 +1114,71 @@ function hideResult() {
   $('caution').hidden = true;
 }
 
+// ============================================
+// Xシェア投稿テンプレ
+// ============================================
+
+let _lastResult = null;
+
+function fmtKgForShare(kg) {
+  if (kg >= 1) return (Math.round(kg * 10) / 10).toFixed(1) + 'kg';
+  return Math.round(kg * 1000) + 'g';
+}
+
+function buildSharePost(r, style) {
+  const totalYen = fmtYen(r.retailMid);
+
+  if (style === 'B') {
+    // 案B: ゲームスコア型
+    const sorted = [...r.perEntry].sort((a, b) => b.retailMid - a.retailMid);
+    const medals = ['🥇', '🥈', '🥉'];
+    const medalLines = sorted.slice(0, 3).map((e, i) => {
+      const tail = e.count > 1 ? ' × ' + e.count + '匹' : '';
+      return medals[i] + ' ' + e.name + ' ' + fmtKgForShare(e.kg / Math.max(e.count, 1)) + tail;
+    }).join('\n');
+    return '🏆 今日の釣果スコア\n\n' +
+           '💰 市場価格 ¥' + totalYen + '相当\n' +
+           '🐟 釣果 ' + r.totalCount + '匹（' + r.speciesCount + '魚種）\n\n' +
+           medalLines;
+  }
+
+  if (style === 'C') {
+    // 案C: シンプル換算型
+    const names = r.perEntry.map(e => e.name).join('・');
+    return '今日の釣果、市場価格にしたら ¥' + totalYen + '相当だった 🎣\n' +
+           '（' + names + ' 計' + r.totalCount + '匹）\n\n' +
+           'ガソリン代の元、取れたかな…';
+  }
+
+  // 案A: 数字ドカン型（デフォルト）
+  const itemLines = r.perEntry.map(e => {
+    const perKg = fmtKgForShare(e.kg / Math.max(e.count, 1));
+    return '🐟 ' + e.name + ' ' + perKg + ' × ' + e.count + '匹';
+  }).join('\n');
+  return '本日の釣果 ¥' + totalYen + '相当 🎣\n\n' +
+         itemLines + '\n\n' +
+         '計 ' + r.totalCount + '匹 / ' + r.speciesCount + '魚種';
+}
+
+function refreshSharePreview() {
+  if (!_lastResult) return;
+  const style = $('share-preview').dataset.style || 'A';
+  $('share-preview').textContent = buildSharePost(_lastResult, style);
+}
+
+function onShareClick() {
+  if (!_lastResult) return;
+  const style = $('share-preview').dataset.style || 'A';
+  const text = buildSharePost(_lastResult, style);
+  const url = 'https://funatsuri-yoso.com/fish-value/';
+  const hashtags = '船釣り予想,釣果';
+  const intentUrl = 'https://twitter.com/intent/tweet'
+    + '?text=' + encodeURIComponent(text + '\n\n')
+    + '&url=' + encodeURIComponent(url)
+    + '&hashtags=' + encodeURIComponent(hashtags);
+  window.open(intentUrl, '_blank', 'noopener');
+}
+
 function renderResult(r, opts) {
   $('result-species').textContent = r.speciesCount;
   $('result-count').textContent   = r.totalCount;
@@ -1129,6 +1219,10 @@ function renderResult(r, opts) {
       basis.appendChild(li);
     }
   }
+
+  // Xシェアプレビュー更新
+  _lastResult = r;
+  refreshSharePreview();
 
   $('result').hidden = false;
   $('caution').hidden = false;
