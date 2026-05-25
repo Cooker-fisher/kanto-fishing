@@ -338,13 +338,17 @@ function addEntry(preset) {
       '</div>' +
       '<div class="band-list"></div>' +
       '<div class="detail-list" hidden></div>' +
-    '</div>';
+      '<button type="button" class="lock-btn" hidden></button>' +
+    '</div>' +
+    '<div class="entry-locked-summary" hidden></div>' +
+    '<div class="entry-del-confirm" hidden></div>';
   $('entries').appendChild(el);
 
   el.querySelector('.entry-fish-btn').addEventListener('click', () => openFishPicker(entry));
   el.querySelector('.entry-remove').addEventListener('click', () => removeEntry(entry));
   el.querySelector('.ims-simple').addEventListener('click', () => { if (!entry.detailMode) return; toggleDetailMode(entry); });
   el.querySelector('.ims-detail').addEventListener('click', () => { if (entry.detailMode || !entry._priceEntry) return; toggleDetailMode(entry); });
+  el.querySelector('.lock-btn').addEventListener('click', () => lockEntry(entry));
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
@@ -369,12 +373,123 @@ function addEntry(preset) {
 
 function removeEntry(entry) {
   if (entries.length <= 1) return;
+  if (entry.locked) {
+    showDeleteConfirm(entry);
+    return;
+  }
   entries = entries.filter(e => e !== entry);
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (el) el.remove();
   updateEntryNumbers();
   updateRemoveButtons();
   scheduleLiveCalc();
+}
+
+function lockEntry(entry) {
+  entry.locked = true;
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (!el) return;
+  el.classList.add('is-locked');
+  el.querySelector('.band-list-row').hidden = true;
+  buildLockedSummary(el, entry);
+  el.querySelector('.entry-locked-summary').hidden = false;
+}
+
+function unlockEntry(entry) {
+  entry.locked = false;
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (!el) return;
+  el.classList.remove('is-locked');
+  el.querySelector('.band-list-row').hidden = false;
+  el.querySelector('.entry-locked-summary').hidden = true;
+  el.querySelector('.entry-del-confirm').hidden = true;
+}
+
+function buildLockedSummary(el, entry) {
+  const summaryEl = el.querySelector('.entry-locked-summary');
+  summaryEl.innerHTML = '';
+  const species = entry._species;
+  const total = entry.detailMode
+    ? entry.items.filter(it => it.val > 0).length
+    : Object.values(entry.bandCounts).reduce((a, b) => a + b, 0);
+
+  const iconEl = document.createElement('div');
+  iconEl.className = 'els-icon';
+  const url = iconUrlOf(species);
+  if (url) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = '';
+    img.onerror = function() { this.replaceWith(makeFallbackIcon()); };
+    iconEl.appendChild(img);
+  } else {
+    iconEl.appendChild(makeFallbackIcon());
+  }
+
+  const bodyEl = document.createElement('div');
+  bodyEl.className = 'els-body';
+  const nameEl = document.createElement('div');
+  nameEl.className = 'els-name';
+  nameEl.textContent = species.site_display_name;
+  const countEl = document.createElement('div');
+  countEl.className = 'els-count';
+  countEl.textContent = '合計 ' + total + '尾';
+  bodyEl.appendChild(nameEl);
+  bodyEl.appendChild(countEl);
+
+  const editBtn = document.createElement('button');
+  editBtn.type = 'button';
+  editBtn.className = 'els-edit-btn';
+  editBtn.textContent = '編集';
+  editBtn.addEventListener('click', () => unlockEntry(entry));
+
+  summaryEl.appendChild(iconEl);
+  summaryEl.appendChild(bodyEl);
+  summaryEl.appendChild(editBtn);
+}
+
+function showDeleteConfirm(entry) {
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (!el) return;
+  const confirmEl = el.querySelector('.entry-del-confirm');
+  // toggle: if already visible, hide it
+  if (!confirmEl.hidden) {
+    confirmEl.hidden = true;
+    return;
+  }
+  confirmEl.innerHTML = '';
+
+  const msg = document.createElement('span');
+  msg.className = 'edc-msg';
+  msg.textContent = '削除しますか？';
+
+  const btnsEl = document.createElement('div');
+  btnsEl.className = 'edc-btns';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button';
+  cancelBtn.className = 'edc-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.addEventListener('click', () => { confirmEl.hidden = true; });
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.type = 'button';
+  deleteBtn.className = 'edc-delete';
+  deleteBtn.textContent = '削除する';
+  deleteBtn.addEventListener('click', () => {
+    entry.locked = false;
+    entries = entries.filter(e => e !== entry);
+    el.remove();
+    updateEntryNumbers();
+    updateRemoveButtons();
+    scheduleLiveCalc();
+  });
+
+  btnsEl.appendChild(cancelBtn);
+  btnsEl.appendChild(deleteBtn);
+  confirmEl.appendChild(msg);
+  confirmEl.appendChild(btnsEl);
+  confirmEl.hidden = false;
 }
 
 function updateEntryNumbers() {
@@ -392,6 +507,7 @@ function updateRemoveButtons() {
 }
 
 function onEntryFishChange(entry, fishId) {
+  if (entry.locked) unlockEntry(entry);
   clearError();
   entry.fishId = fishId;
   entry.bandCounts = {};
@@ -452,6 +568,10 @@ function onEntryFishChange(entry, fishId) {
   el.querySelector('.ims-detail').classList.remove('active');
   listRow.hidden = false;
   el.classList.add('has-fish');
+  // 入力完了ボタンを表示・更新
+  const lockBtn = el.querySelector('.lock-btn');
+  lockBtn.textContent = species.site_display_name + ' 入力完了';
+  lockBtn.hidden = false;
   updateEntryTotal(entry);
   scheduleLiveCalc();
 }
