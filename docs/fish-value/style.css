@@ -4,61 +4,48 @@
    ============================================ */
 
 :root {
-  /* 背景 */
   --bg:       #f5f7fa;
   --card:     #fff;
   --border:   #d0d8e0;
   --nav:      #f0f3f7;
 
-  /* テキスト */
   --text:     #1a2332;
   --sub:      #5a6a7a;
   --muted:    #8a96a4;
 
-  /* アクセント */
   --accent:   #0d2b4a;
   --cta:      #e85d04;
   --cta2:     #d04e00;
 
-  /* セマンティック */
   --pos:      #1a9d56;
   --neg:      #d43333;
   --warn:     #d4a017;
   --prem:     #7c3aed;
 
-  /* ヘッダー / LINE */
   --hdr:      #0d2b4a;
 
-  /* サイズ */
   --r:        10px;
   --mx:       900px;
 
-  /* Hero グラデーション */
-  --hero-grad-end: #163d5c;
-
-  /* ドロップシャドウ */
   --shadow-bn:      rgba(0,0,0,.06);
 }
 
 * { box-sizing: border-box; }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
+html, body { margin: 0; padding: 0; }
 
 body {
-  font-family: system-ui, -apple-system, "Hiragino Sans", sans-serif;
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
-  padding-bottom: 60px;
+  padding-bottom: 40px;
   -webkit-font-smoothing: antialiased;
 }
+
+/* ============================================
+   Header
+   ============================================ */
 
 header {
   background: var(--hdr);
@@ -66,7 +53,6 @@ header {
   padding: 12px 20px;
   border-bottom: 3px solid var(--cta);
 }
-
 .hd-inner {
   max-width: var(--mx);
   margin: 0 auto;
@@ -74,7 +60,6 @@ header {
   align-items: center;
   gap: 12px;
 }
-
 .hd-logo {
   color: #fff;
   text-decoration: none;
@@ -82,17 +67,7 @@ header {
   opacity: .85;
   flex: 0 0 auto;
 }
-
-.hd-logo::before {
-  content: "←";
-  margin-right: 4px;
-}
-
-.hd-logo:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-
+.hd-logo:hover { opacity: 1; text-decoration: underline; }
 .hd-title {
   font-weight: 700;
   font-size: 16px;
@@ -100,11 +75,19 @@ header {
   padding-left: 12px;
 }
 
+/* ============================================
+   Main wrap
+   ============================================ */
+
 .wrap {
   max-width: var(--mx);
   margin: 12px auto 0;
   padding: 0 12px;
 }
+
+/* ============================================
+   Card
+   ============================================ */
 
 .card {
   background: var(--card);
@@ -114,7 +97,6 @@ header {
   margin-bottom: 12px;
   box-shadow: 0 1px 3px var(--shadow-bn);
 }
-
 .card h2.st {
   font-size: 14px;
   font-weight: 700;
@@ -124,29 +106,28 @@ header {
   border-bottom: 1px solid var(--border);
 }
 
+/* ============================================
+   Input form
+   ============================================ */
+
 .form-row {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-bottom: 14px;
 }
-
 .form-row label {
   font-size: 13px;
   font-weight: 600;
   color: var(--sub);
 }
-
 .form-row label .unit {
   color: var(--muted);
   font-weight: 400;
   margin-left: 4px;
 }
-
 .form-row select,
 .form-row input {
-  width: 100%;
-  max-width: 100%;
   padding: 11px 12px;
   border: 1px solid var(--border);
   border-radius: var(--r);
@@ -154,18 +135,16 @@ header {
   font-family: inherit;
   background: #fff;
   color: var(--text);
-}
-
-.form-row select {
   appearance: none;
   -webkit-appearance: none;
+}
+.form-row select {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%235a6a7a' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 12px;
   padding-right: 32px;
 }
-
 .form-row select:focus,
 .form-row input:focus {
   outline: 2px solid var(--accent);
@@ -173,10 +152,37 @@ header {
   border-color: var(--accent);
 }
 
-.form-row select[aria-invalid="true"],
-.form-row input[aria-invalid="true"] {
-  border-color: var(--neg);
+/* mode 切替ラジオ */
+.mode-switch {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  background: var(--nav);
 }
+.mode-switch legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  padding: 0 6px;
+}
+.mode-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  margin-right: 16px;
+  padding: 4px 0;
+}
+.mode-opt input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.mode-opt:hover { color: var(--accent); }
 
 .btn-primary {
   background: var(--cta);
@@ -191,7 +197,6 @@ header {
   width: 100%;
   transition: background-color .15s;
 }
-
 .btn-primary:hover { background: var(--cta2); }
 .btn-primary:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn-primary:disabled { background: var(--muted); cursor: not-allowed; }
@@ -206,6 +211,10 @@ header {
   border-left: 3px solid var(--neg);
 }
 
+/* ============================================
+   Result card
+   ============================================ */
+
 .result-meta {
   display: flex;
   align-items: center;
@@ -213,7 +222,6 @@ header {
   margin-bottom: 14px;
   flex-wrap: wrap;
 }
-
 .size-badge {
   padding: 4px 12px;
   border-radius: 14px;
@@ -223,7 +231,6 @@ header {
   color: #fff;
   letter-spacing: .02em;
 }
-
 .size-badge[data-class="small"]    { background: var(--sub); }
 .size-badge[data-class="standard"] { background: var(--accent); }
 .size-badge[data-class="large"]    { background: var(--cta); }
@@ -238,7 +245,6 @@ header {
   padding: 14px 0;
   border-bottom: 1px dashed var(--border);
 }
-
 .result-price:last-of-type { border-bottom: none; }
 
 .price-label {
@@ -248,29 +254,26 @@ header {
   font-weight: 600;
 }
 
-.price-range {
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-}
-
 .result-price.retail .price-range {
   font-size: 26px;
   font-weight: 800;
   color: var(--cta);
   letter-spacing: -.01em;
 }
-
 .result-price.wholesale .price-range {
   font-size: 20px;
   font-weight: 700;
   color: var(--text);
 }
-
 .price-per {
   font-size: 12px;
   color: var(--muted);
   margin-top: 4px;
 }
+
+/* ============================================
+   Calculation basis (details)
+   ============================================ */
 
 .basis-details {
   margin-top: 14px;
@@ -281,9 +284,7 @@ header {
   font-size: 12px;
   color: var(--sub);
 }
-
 .basis-details[open] { padding-bottom: 12px; }
-
 .basis-details summary {
   cursor: pointer;
   font-weight: 600;
@@ -292,9 +293,7 @@ header {
   padding-right: 18px;
   position: relative;
 }
-
 .basis-details summary::-webkit-details-marker { display: none; }
-
 .basis-details summary::after {
   content: "▼";
   position: absolute;
@@ -303,7 +302,6 @@ header {
   font-size: 10px;
   transition: transform .15s;
 }
-
 .basis-details[open] summary::after { transform: rotate(180deg); }
 
 .basis-list {
@@ -311,8 +309,11 @@ header {
   padding-left: 18px;
   line-height: 1.8;
 }
-
 .basis-list li { margin-bottom: 2px; }
+
+/* ============================================
+   Caution
+   ============================================ */
 
 .caution {
   font-size: 12px;
@@ -322,6 +323,10 @@ header {
   padding: 0;
 }
 
+/* ============================================
+   Footer
+   ============================================ */
+
 .ft {
   max-width: var(--mx);
   margin: 24px auto 0;
@@ -329,25 +334,24 @@ header {
   border-top: 1px solid var(--border);
   text-align: center;
 }
-
 .ft-back {
   color: var(--accent);
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
 }
-
 .ft-back:hover { text-decoration: underline; }
 
-[hidden] { display: none !important; }
+/* ============================================
+   Responsive
+   ============================================ */
 
 @media (max-width: 480px) {
-  body { font-size: 14px; }
-  header { padding: 10px 12px; }
   .hd-inner { gap: 8px; }
   .hd-title { font-size: 14px; padding-left: 8px; }
   .wrap { padding: 0 10px; }
   .card { padding: 14px; }
+
   .result-price.retail .price-range { font-size: 22px; }
   .result-price.wholesale .price-range { font-size: 17px; }
 }

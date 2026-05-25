@@ -1,21 +1,38 @@
 {
   "version": "v1",
-  "updated_at": "2026-05-20",
+  "updated_at": "2026-05-25",
   "source": {
     "wholesale": "東京都中央卸売市場 市場統計情報 明細データ（月報）",
     "url": "https://www.shijou.metro.tokyo.lg.jp/torihiki/geppo",
     "file_pattern": "s{YYYYMM}meisai_{YYYYMMDD} (URLは拡張子なし・配信時に xlsx 付与)",
     "available_since": "202501",
     "columns_16": [
-      "年月(yyyy/m)", "年月(yyyymm)", "年", "月",
-      "市場コード", "市場",
-      "大分類コード", "大分類", "中分類コード", "中分類",
-      "品目コード", "品目名称",
-      "出荷地コード", "出荷地",
-      "数量(kg)", "金額(円)"
+      "年月(yyyy/m)",
+      "年月(yyyymm)",
+      "年",
+      "月",
+      "市場コード",
+      "市場",
+      "大分類コード",
+      "大分類",
+      "中分類コード",
+      "中分類",
+      "品目コード",
+      "品目名称",
+      "出荷地コード",
+      "出荷地",
+      "数量(kg)",
+      "金額(円)"
     ],
-    "markets_3": ["豊洲市場", "大田市場", "足立市場"],
-    "category_filter": ["鮮　魚", "活魚類"],
+    "markets_3": [
+      "豊洲市場",
+      "大田市場",
+      "足立市場"
+    ],
+    "category_filter": [
+      "鮮　魚",
+      "活魚類"
+    ],
     "natural_first_rule": "釣果は基本天然。geppo_item が複数候補ある場合は天然＞活魚＞養殖の優先順で採用。"
   },
   "notes": [
@@ -24,81 +41,1396 @@
     "category=target はサイト docs/fish/ に個別ページあり（site_fish_id 必須）。category=bycatch はサイト個別ページなし（外道）。",
     "aliases は釣果報告に出る別名・地方名・サイズ違い名・正規化マップ由来。価格計算では使わないが UI・検索で参照。",
     "input_modes は釣果価値チェッカーの入力UI: 'cm'=平均サイズcm入力・'kg'=平均重量kg入力。",
-    "site_fish_id が docs/fish/*.html のファイル名と完全一致する規約（ハゼ.html のみ日本語）。"
+    "site_fish_id が docs/fish/*.html のファイル名と完全一致する規約（ハゼ.html のみ日本語）。",
+    "2026/05/25: recommended_mode フィールド追加。null=どちらも一般的"
   ],
   "species": [
-    {"site_fish_id":"abura-bouzu","site_display_name":"アブラボウズ","price_fish_id":"abura-bouzu","geppo_item":null,"geppo_category":null,"aliases":["アブラボウズ","アブラボーズ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"月報非掲載（その他鮮魚集約）・推測値運用"},
-    {"site_fish_id":"aji","site_display_name":"アジ","price_fish_id":"maaji","geppo_item":"まあじ","geppo_category":"鮮魚/あじ類","aliases":["アジ","LTアジ","ライトアジ","マアジ","小アジ","ショートアジ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"akamefugu","site_display_name":"アカメフグ","price_fish_id":"akamefugu","geppo_item":"その他ふぐ","geppo_category":"鮮魚/ふぐ類","aliases":["アカメフグ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"処理後重量で計算する点に注意"},
-    {"site_fish_id":"akamutsu","site_display_name":"アカムツ","price_fish_id":"akamutsu","geppo_item":null,"geppo_category":null,"aliases":["アカムツ","ノドグロ","のどぐろ","バケアカムツ","ハチジョウアカムツ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"標準和名アカムツ・通称ノドグロ。月報非掲載（その他鮮魚集約）・高級魚として推測値運用"},
-    {"site_fish_id":"amadai","site_display_name":"アマダイ","price_fish_id":"amadai","geppo_item":"あまたい","geppo_category":"鮮魚/たい類","aliases":["アマダイ","LTアマダイ","アカアマダイ","赤甘鯛","アマダイ・シロアマダイ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"月報「あまたい」はアカアマダイが主体"},
-    {"site_fish_id":"anago","site_display_name":"アナゴ","price_fish_id":"anago","geppo_item":"まあなご","geppo_category":"鮮魚/あなご類","aliases":["アナゴ","穴子","夜アナゴ","マアナゴ","大アナゴ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"活アナゴ（活魚類）も同じ price_fish_id で扱う"},
-    {"site_fish_id":"aoriika","site_display_name":"アオリイカ","price_fish_id":"aoriika","geppo_item":"あおりいか","geppo_category":"鮮魚/いか類","aliases":["アオリイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"ara","site_display_name":"アラ","price_fish_id":"ara","geppo_item":null,"geppo_category":null,"aliases":["アラ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"月報非掲載・高級魚として推測値運用"},
-    {"site_fish_id":"bishi-aji","site_display_name":"ビシアジ","price_fish_id":"maaji","geppo_item":"まあじ","geppo_category":"鮮魚/あじ類","aliases":["ビシアジ","コマセアジ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"価格計算はアジ（maaji）と同一"},
-    {"site_fish_id":"buri","site_display_name":"ブリ","price_fish_id":"buri","geppo_item":"ぶり","geppo_category":"鮮魚/ぶり類","aliases":["ブリ","大ブリ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"ブリ系はサイズで品目分岐: わかし→いなだ→わらさ→ぶり"},
-    {"site_fish_id":"fugu","site_display_name":"フグ","price_fish_id":"fugu","geppo_item":"その他ふぐ","geppo_category":"鮮魚/ふぐ類","aliases":["フグ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"種別不明扱い・トラフグ/ショウサイは個別 site_fish_id 参照"},
-    {"site_fish_id":"hanadai","site_display_name":"ハナダイ","price_fish_id":"hanadai","geppo_item":"ちたい","geppo_category":"鮮魚/たい類","aliases":["ハナダイ","チダイ","ハナダイ五目"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"市場ではチダイとして取引"},
-    {"site_fish_id":"hata","site_display_name":"ハタ","price_fish_id":"hata","geppo_item":"はた","geppo_category":"鮮魚/その他鮮魚類","aliases":["ハタ","小ハタ","大ハタ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"hiramasa","site_display_name":"ヒラマサ","price_fish_id":"hiramasa","geppo_item":"ひらまさ","geppo_category":"鮮魚/ぶり類","aliases":["ヒラマサ","小ヒラマサ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"hirame","site_display_name":"ヒラメ","price_fish_id":"hirame","geppo_item":"ひらめ（国内）","geppo_category":"鮮魚/その他鮮魚類","aliases":["ヒラメ","LTヒラメ","大ビラメ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"活ひらめ（活魚類）も同一 price_fish_id"},
-    {"site_fish_id":"houbou","site_display_name":"ホウボウ","price_fish_id":"houbou","geppo_item":"ほうぼう","geppo_category":"鮮魚/その他鮮魚類","aliases":["ホウボウ","大ホウボウ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"inada","site_display_name":"イナダ","price_fish_id":"inada","geppo_item":"いなだ","geppo_category":"鮮魚/ぶり類","aliases":["イナダ","イナダ(ワカシ)"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"ブリ系小型サイズ帯"},
-    {"site_fish_id":"isaki","site_display_name":"イサキ","price_fish_id":"isaki","geppo_item":"いさき","geppo_category":"鮮魚/その他鮮魚類","aliases":["イサキ","大イサキ","ジャンボイサキ","小イサキ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"ishidai","site_display_name":"イシダイ","price_fish_id":"ishidai","geppo_item":"いしたい","geppo_category":"鮮魚/たい類","aliases":["イシダイ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"ishimochi","site_display_name":"イシモチ","price_fish_id":"ishimochi","geppo_item":"ぐち","geppo_category":"鮮魚/その他鮮魚類","aliases":["イシモチ","石持","シログチ","グチ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"市場ではぐち（シログチ）として取引"},
-    {"site_fish_id":"kaiwari","site_display_name":"カイワリ","price_fish_id":"kaiwari","geppo_item":null,"geppo_category":null,"aliases":["カイワリ","カイワリ五目"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"月報非掲載（その他鮮魚集約）・推測値運用"},
-    {"site_fish_id":"kamasu","site_display_name":"カマス","price_fish_id":"kamasu","geppo_item":"かます","geppo_category":"鮮魚/その他鮮魚類","aliases":["カマス"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"kanko","site_display_name":"カンコ","price_fish_id":"kanko","geppo_item":null,"geppo_category":null,"aliases":["カンコ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"月報非掲載（オキメバル類）・推測値運用"},
-    {"site_fish_id":"kanpachi","site_display_name":"カンパチ","price_fish_id":"kanpachi","geppo_item":"かんぱち（天然）","geppo_category":"鮮魚/ぶり類","aliases":["カンパチ","カンパチ(ショゴ)"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"釣果は天然採用。養殖は2,621円/kgで参考レンジ上限に使える"},
-    {"site_fish_id":"karei","site_display_name":"カレイ","price_fish_id":"karei","geppo_item":"まかれい","geppo_category":"鮮魚/かれい類","aliases":["カレイ","ムシガレイ","イシガレイ","マコガレイ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"マコ・イシ等の種別はaliasesで吸収"},
-    {"site_fish_id":"kasago","site_display_name":"カサゴ","price_fish_id":"kasago","geppo_item":"かさご","geppo_category":"鮮魚/めぬけ類","aliases":["カサゴ","大カサゴ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"katsuo","site_display_name":"カツオ","price_fish_id":"katsuo","geppo_item":"かつお","geppo_category":"鮮魚/かつお類","aliases":["カツオ","本ガツオ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"kawahagi","site_display_name":"カワハギ","price_fish_id":"kawahagi","geppo_item":"かわはぎ","geppo_category":"鮮魚/その他鮮魚類","aliases":["カワハギ","日中カワハギ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"kihada-maguro","site_display_name":"キハダマグロ","price_fish_id":"kihada","geppo_item":"きわだ（国内）","geppo_category":"鮮魚/まぐろ類","aliases":["キハダマグロ","キハダ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"kimeji","site_display_name":"キメジ","price_fish_id":"kimeji","geppo_item":"きめじ","geppo_category":"鮮魚/まぐろ類","aliases":["キメジ","小キメジ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"キハダの幼魚扱い・別単価帯"},
-    {"site_fish_id":"kinmedai","site_display_name":"キンメダイ","price_fish_id":"kinmedai","geppo_item":"きんめたい","geppo_category":"鮮魚/たい類","aliases":["キンメ","キンメダイ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"kintoki","site_display_name":"キントキ","price_fish_id":"kintoki","geppo_item":null,"geppo_category":null,"aliases":["キントキ","キントキダイ","金時鯛","チカメキントキ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"月報非掲載（その他鮮魚集約）・推測値運用"},
-    {"site_fish_id":"kurodai","site_display_name":"クロダイ","price_fish_id":"kurodai","geppo_item":"くろたい","geppo_category":"鮮魚/たい類","aliases":["クロダイ","カイズ","チヌ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"kuromutsu","site_display_name":"クロムツ","price_fish_id":"kuromutsu","geppo_item":"むつ","geppo_category":"鮮魚/その他鮮魚類","aliases":["クロムツ","ムツ","大ムツ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"madai","site_display_name":"マダイ","price_fish_id":"madai","geppo_item":"またい（天然）","geppo_category":"鮮魚/たい類","aliases":["マダイ","タイ","大ダイ","中ダイ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"釣果は天然採用。養殖（1,303円）はレンジ上限参考"},
-    {"site_fish_id":"madako","site_display_name":"マダコ","price_fish_id":"madako","geppo_item":"たこ","geppo_category":"鮮魚/その他鮮魚類","aliases":["タコ","マダコ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"magochi","site_display_name":"マゴチ","price_fish_id":"magochi","geppo_item":"こち","geppo_category":"鮮魚/その他鮮魚類","aliases":["マゴチ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"mahata","site_display_name":"マハタ","price_fish_id":"mahata","geppo_item":"はた","geppo_category":"鮮魚/その他鮮魚類","aliases":["マハタ","大マハタ","小マハタ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"月報「はた」に集約・他ハタ種と単価近似"},
-    {"site_fish_id":"maruika","site_display_name":"マルイカ","price_fish_id":"maruika","geppo_item":"こういか","geppo_category":"鮮魚/いか類","aliases":["マルイカ","ケンサキイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"市場ではコウイカ系として扱う近似マッチ"},
-    {"site_fish_id":"mebaru","site_display_name":"メバル","price_fish_id":"mebaru","geppo_item":"めばる","geppo_category":"鮮魚/めぬけ類","aliases":["メバル","クロメバル"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"medai","site_display_name":"メダイ","price_fish_id":"medai","geppo_item":"めたい（国内）","geppo_category":"鮮魚/その他鮮魚類","aliases":["メダイ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"menuke","site_display_name":"メヌケ","price_fish_id":"menuke","geppo_item":"めぬけ","geppo_category":"鮮魚/めぬけ類","aliases":["メヌケ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"mongoika","site_display_name":"モンゴウイカ","price_fish_id":"mongoika","geppo_item":"もんこういか","geppo_category":"鮮魚/いか類","aliases":["モンゴウイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"moroko","site_display_name":"モロコ","price_fish_id":"moroko","geppo_item":null,"geppo_category":null,"aliases":["モロコ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"月報非掲載・推測値運用"},
-    {"site_fish_id":"mugiika","site_display_name":"ムギイカ","price_fish_id":"mugiika","geppo_item":"するめいか","geppo_category":"鮮魚/いか類","aliases":["ムギイカ","ニセイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"スルメイカの若魚・市場でも区別なし"},
-    {"site_fish_id":"oki-kasago","site_display_name":"沖カサゴ","price_fish_id":"oki-kasago","geppo_item":"かさご","geppo_category":"鮮魚/めぬけ類","aliases":["沖カサゴ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"深場物。月報「かさご」と同単価帯"},
-    {"site_fish_id":"oki-mebaru","site_display_name":"沖メバル","price_fish_id":"oki-mebaru","geppo_item":"めばる","geppo_category":"鮮魚/めぬけ類","aliases":["沖メバル"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"深場物。月報「めばる」と同単価帯"},
-    {"site_fish_id":"onikasago","site_display_name":"オニカサゴ","price_fish_id":"onikasago","geppo_item":"おこぜ","geppo_category":"鮮魚/めぬけ類","aliases":["オニカサゴ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"市場ではオコゼ類として取引"},
-    {"site_fish_id":"sawara","site_display_name":"サワラ","price_fish_id":"sawara","geppo_item":"さわら （国内）","geppo_category":"鮮魚/さわら類","aliases":["サワラ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"seabass","site_display_name":"シーバス","price_fish_id":"seabass","geppo_item":"すずき","geppo_category":"鮮魚/その他鮮魚類","aliases":["シーバス","スズキ","セイゴ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"shiira","site_display_name":"シイラ","price_fish_id":"shiira","geppo_item":"しいら","geppo_category":"鮮魚/その他鮮魚類","aliases":["シイラ","小シイラ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"月報数量少（52kg）・単価低め"},
-    {"site_fish_id":"shima-aji","site_display_name":"シマアジ","price_fish_id":"shimaaji","geppo_item":"しまあじ（国内）","geppo_category":"鮮魚/あじ類","aliases":["シマアジ","小シマアジ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"釣果は天然・養殖区別なく国内採用"},
-    {"site_fish_id":"shiro-amadai","site_display_name":"シロアマダイ","price_fish_id":"shiro-amadai","geppo_item":null,"geppo_category":null,"aliases":["シロアマダイ","シロアマダイ・アカアマダイ"],"category":"target","input_modes":["kg"],"price_derived_from":{"base_price_fish_id":"amadai","ratio_low":2.0,"ratio_high":3.0,"source_note":"シロアマダイは市場でアカアマダイの2〜3倍の超高級魚。月報「あまたい」価格に倍率を掛けて推定"},"note":""},
-    {"site_fish_id":"shirogisu","site_display_name":"シロギス","price_fish_id":"shirogisu","geppo_item":"きす","geppo_category":"鮮魚/その他鮮魚類","aliases":["シロギス","キス"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"shousaifugu","site_display_name":"ショウサイフグ","price_fish_id":"shousaifugu","geppo_item":"まふぐ","geppo_category":"鮮魚/ふぐ類","aliases":["ショウサイフグ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"近似マッチ（市場のまふぐと近い単価帯）"},
-    {"site_fish_id":"sujiika","site_display_name":"スジイカ","price_fish_id":"sujiika","geppo_item":"するめいか","geppo_category":"鮮魚/いか類","aliases":["スジイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"スルメイカ系の地方名"},
-    {"site_fish_id":"sumiika","site_display_name":"スミイカ","price_fish_id":"sumiika","geppo_item":"こういか","geppo_category":"鮮魚/いか類","aliases":["スミイカ","コウイカ","シリヤケイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"surumeika","site_display_name":"スルメイカ","price_fish_id":"surumeika","geppo_item":"するめいか","geppo_category":"鮮魚/いか類","aliases":["スルメイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"tachiuo","site_display_name":"タチウオ","price_fish_id":"tachiuo","geppo_item":"たちうお（国内）","geppo_category":"鮮魚/その他鮮魚類","aliases":["タチウオ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"tai-gomoku","site_display_name":"タイ五目","price_fish_id":"madai","geppo_item":"またい（天然）","geppo_category":"鮮魚/たい類","aliases":["タイ五目","マダイ五目"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"マダイ寄せ"},
-    {"site_fish_id":"torafugu","site_display_name":"トラフグ","price_fish_id":"torafugu","geppo_item":"とらふぐ","geppo_category":"鮮魚/ふぐ類","aliases":["トラフグ","小トラフグ","大トラフグ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"warasa","site_display_name":"ワラサ","price_fish_id":"warasa","geppo_item":"わらさ","geppo_category":"鮮魚/ぶり類","aliases":["ワラサ","大ワラサ","サンパク"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":"ブリ系中サイズ帯"},
-    {"site_fish_id":"yariika","site_display_name":"ヤリイカ","price_fish_id":"yariika","geppo_item":"やりいか","geppo_category":"鮮魚/いか類","aliases":["ヤリイカ","大ヤリイカ"],"category":"target","input_modes":["kg"],"price_derived_from":null,"note":""},
-    {"site_fish_id":"ハゼ","site_display_name":"ハゼ","price_fish_id":"haze","geppo_item":null,"geppo_category":null,"aliases":["ハゼ","鯊","マハゼ"],"category":"target","input_modes":["cm"],"price_derived_from":null,"note":"月報非掲載・推測値運用。site_fish_id が日本語の唯一例"},
-
-    {"site_fish_id":null,"site_display_name":"サバ","price_fish_id":"saba","geppo_item":"さば","geppo_category":"鮮魚/その他鮮魚類","aliases":["サバ","マサバ","ゴマサバ","大サバ","小サバ"],"category":"bycatch","input_modes":["cm"],"price_derived_from":null,"note":"外道。釣果報告で頻出"},
-    {"site_fish_id":null,"site_display_name":"マイワシ","price_fish_id":"maiwashi","geppo_item":"まいわし","geppo_category":"鮮魚/いわし類","aliases":["マイワシ","イワシ"],"category":"bycatch","input_modes":["cm"],"price_derived_from":null,"note":"外道"},
-    {"site_fish_id":null,"site_display_name":"ウルメイワシ","price_fish_id":"urumeiwashi","geppo_item":"うるめいわし","geppo_category":"鮮魚/いわし類","aliases":["ウルメイワシ"],"category":"bycatch","input_modes":["cm"],"price_derived_from":null,"note":"外道"},
-    {"site_fish_id":null,"site_display_name":"カタクチイワシ","price_fish_id":"katakuchiiwashi","geppo_item":"かたくちいわし","geppo_category":"鮮魚/いわし類","aliases":["カタクチイワシ"],"category":"bycatch","input_modes":["cm"],"price_derived_from":null,"note":"外道"},
-    {"site_fish_id":null,"site_display_name":"ソウダガツオ","price_fish_id":"soudagatsuo","geppo_item":"そうだかつお","geppo_category":"鮮魚/かつお類","aliases":["ソウダガツオ","ヒラソウダ","マルソウダ"],"category":"bycatch","input_modes":["kg"],"price_derived_from":null,"note":"外道。カツオ便での副産物"},
-    {"site_fish_id":null,"site_display_name":"アンコウ","price_fish_id":"ankou","geppo_item":"あんこう","geppo_category":"鮮魚/その他鮮魚類","aliases":["アンコウ"],"category":"bycatch","input_modes":["kg"],"price_derived_from":null,"note":"外道。冬の高級鍋材"},
-    {"site_fish_id":null,"site_display_name":"ボラ","price_fish_id":"bora","geppo_item":"ぼら","geppo_category":"鮮魚/その他鮮魚類","aliases":["ボラ"],"category":"bycatch","input_modes":["cm"],"price_derived_from":null,"note":"外道"},
-    {"site_fish_id":null,"site_display_name":"コノシロ","price_fish_id":"konoshiro","geppo_item":"このしろ","geppo_category":"鮮魚/その他鮮魚類","aliases":["コノシロ","コハダ"],"category":"bycatch","input_modes":["cm"],"price_derived_from":null,"note":"外道。コハダはコノシロの小型。サイトには cohada ページは無い"}
+    {
+      "site_fish_id": "abura-bouzu",
+      "site_display_name": "アブラボウズ",
+      "price_fish_id": "abura-bouzu",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "アブラボウズ",
+        "アブラボーズ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "月報非掲載（その他鮮魚集約）・推測値運用",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "aji",
+      "site_display_name": "アジ",
+      "price_fish_id": "maaji",
+      "geppo_item": "まあじ",
+      "geppo_category": "鮮魚/あじ類",
+      "aliases": [
+        "アジ",
+        "LTアジ",
+        "ライトアジ",
+        "マアジ",
+        "小アジ",
+        "ショートアジ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "akamefugu",
+      "site_display_name": "アカメフグ",
+      "price_fish_id": "akamefugu",
+      "geppo_item": "その他ふぐ",
+      "geppo_category": "鮮魚/ふぐ類",
+      "aliases": [
+        "アカメフグ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "処理後重量で計算する点に注意",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "akamutsu",
+      "site_display_name": "アカムツ",
+      "price_fish_id": "akamutsu",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "アカムツ",
+        "ノドグロ",
+        "のどぐろ",
+        "バケアカムツ",
+        "ハチジョウアカムツ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "標準和名アカムツ・通称ノドグロ。月報非掲載（その他鮮魚集約）・高級魚として推測値運用",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "amadai",
+      "site_display_name": "アマダイ",
+      "price_fish_id": "amadai",
+      "geppo_item": "あまたい",
+      "geppo_category": "鮮魚/たい類",
+      "aliases": [
+        "アマダイ",
+        "LTアマダイ",
+        "アカアマダイ",
+        "赤甘鯛",
+        "アマダイ・シロアマダイ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "月報「あまたい」はアカアマダイが主体",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "anago",
+      "site_display_name": "アナゴ",
+      "price_fish_id": "anago",
+      "geppo_item": "まあなご",
+      "geppo_category": "鮮魚/あなご類",
+      "aliases": [
+        "アナゴ",
+        "穴子",
+        "夜アナゴ",
+        "マアナゴ",
+        "大アナゴ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "活アナゴ（活魚類）も同じ price_fish_id で扱う",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "aoriika",
+      "site_display_name": "アオリイカ",
+      "price_fish_id": "aoriika",
+      "geppo_item": "あおりいか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "アオリイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "ara",
+      "site_display_name": "アラ",
+      "price_fish_id": "ara",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "アラ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "月報非掲載・高級魚として推測値運用",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "bishi-aji",
+      "site_display_name": "ビシアジ",
+      "price_fish_id": "maaji",
+      "geppo_item": "まあじ",
+      "geppo_category": "鮮魚/あじ類",
+      "aliases": [
+        "ビシアジ",
+        "コマセアジ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "価格計算はアジ（maaji）と同一",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "buri",
+      "site_display_name": "ブリ",
+      "price_fish_id": "buri",
+      "geppo_item": "ぶり",
+      "geppo_category": "鮮魚/ぶり類",
+      "aliases": [
+        "ブリ",
+        "大ブリ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "ブリ系はサイズで品目分岐: わかし→いなだ→わらさ→ぶり",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "fugu",
+      "site_display_name": "フグ",
+      "price_fish_id": "fugu",
+      "geppo_item": "その他ふぐ",
+      "geppo_category": "鮮魚/ふぐ類",
+      "aliases": [
+        "フグ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "種別不明扱い・トラフグ/ショウサイは個別 site_fish_id 参照",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "hanadai",
+      "site_display_name": "ハナダイ",
+      "price_fish_id": "hanadai",
+      "geppo_item": "ちたい",
+      "geppo_category": "鮮魚/たい類",
+      "aliases": [
+        "ハナダイ",
+        "チダイ",
+        "ハナダイ五目"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "市場ではチダイとして取引",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "hata",
+      "site_display_name": "ハタ",
+      "price_fish_id": "hata",
+      "geppo_item": "はた",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "ハタ",
+        "小ハタ",
+        "大ハタ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "hiramasa",
+      "site_display_name": "ヒラマサ",
+      "price_fish_id": "hiramasa",
+      "geppo_item": "ひらまさ",
+      "geppo_category": "鮮魚/ぶり類",
+      "aliases": [
+        "ヒラマサ",
+        "小ヒラマサ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "hirame",
+      "site_display_name": "ヒラメ",
+      "price_fish_id": "hirame",
+      "geppo_item": "ひらめ（国内）",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "ヒラメ",
+        "LTヒラメ",
+        "大ビラメ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "活ひらめ（活魚類）も同一 price_fish_id",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "houbou",
+      "site_display_name": "ホウボウ",
+      "price_fish_id": "houbou",
+      "geppo_item": "ほうぼう",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "ホウボウ",
+        "大ホウボウ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "inada",
+      "site_display_name": "イナダ",
+      "price_fish_id": "inada",
+      "geppo_item": "いなだ",
+      "geppo_category": "鮮魚/ぶり類",
+      "aliases": [
+        "イナダ",
+        "イナダ(ワカシ)"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "ブリ系小型サイズ帯",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "isaki",
+      "site_display_name": "イサキ",
+      "price_fish_id": "isaki",
+      "geppo_item": "いさき",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "イサキ",
+        "大イサキ",
+        "ジャンボイサキ",
+        "小イサキ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "ishidai",
+      "site_display_name": "イシダイ",
+      "price_fish_id": "ishidai",
+      "geppo_item": "いしたい",
+      "geppo_category": "鮮魚/たい類",
+      "aliases": [
+        "イシダイ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "ishimochi",
+      "site_display_name": "イシモチ",
+      "price_fish_id": "ishimochi",
+      "geppo_item": "ぐち",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "イシモチ",
+        "石持",
+        "シログチ",
+        "グチ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "市場ではぐち（シログチ）として取引",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kaiwari",
+      "site_display_name": "カイワリ",
+      "price_fish_id": "kaiwari",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "カイワリ",
+        "カイワリ五目"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "月報非掲載（その他鮮魚集約）・推測値運用",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kamasu",
+      "site_display_name": "カマス",
+      "price_fish_id": "kamasu",
+      "geppo_item": "かます",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "カマス"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kanko",
+      "site_display_name": "カンコ",
+      "price_fish_id": "kanko",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "カンコ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "月報非掲載（オキメバル類）・推測値運用",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kanpachi",
+      "site_display_name": "カンパチ",
+      "price_fish_id": "kanpachi",
+      "geppo_item": "かんぱち（天然）",
+      "geppo_category": "鮮魚/ぶり類",
+      "aliases": [
+        "カンパチ",
+        "カンパチ(ショゴ)"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "釣果は天然採用。養殖は2,621円/kgで参考レンジ上限に使える",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "karei",
+      "site_display_name": "カレイ",
+      "price_fish_id": "karei",
+      "geppo_item": "まかれい",
+      "geppo_category": "鮮魚/かれい類",
+      "aliases": [
+        "カレイ",
+        "ムシガレイ",
+        "イシガレイ",
+        "マコガレイ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "マコ・イシ等の種別はaliasesで吸収",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kasago",
+      "site_display_name": "カサゴ",
+      "price_fish_id": "kasago",
+      "geppo_item": "かさご",
+      "geppo_category": "鮮魚/めぬけ類",
+      "aliases": [
+        "カサゴ",
+        "大カサゴ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "katsuo",
+      "site_display_name": "カツオ",
+      "price_fish_id": "katsuo",
+      "geppo_item": "かつお",
+      "geppo_category": "鮮魚/かつお類",
+      "aliases": [
+        "カツオ",
+        "本ガツオ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "kawahagi",
+      "site_display_name": "カワハギ",
+      "price_fish_id": "kawahagi",
+      "geppo_item": "かわはぎ",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "カワハギ",
+        "日中カワハギ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kihada-maguro",
+      "site_display_name": "キハダマグロ",
+      "price_fish_id": "kihada",
+      "geppo_item": "きわだ（国内）",
+      "geppo_category": "鮮魚/まぐろ類",
+      "aliases": [
+        "キハダマグロ",
+        "キハダ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "kimeji",
+      "site_display_name": "キメジ",
+      "price_fish_id": "kimeji",
+      "geppo_item": "きめじ",
+      "geppo_category": "鮮魚/まぐろ類",
+      "aliases": [
+        "キメジ",
+        "小キメジ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "キハダの幼魚扱い・別単価帯",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "kinmedai",
+      "site_display_name": "キンメダイ",
+      "price_fish_id": "kinmedai",
+      "geppo_item": "きんめたい",
+      "geppo_category": "鮮魚/たい類",
+      "aliases": [
+        "キンメ",
+        "キンメダイ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "kintoki",
+      "site_display_name": "キントキ",
+      "price_fish_id": "kintoki",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "キントキ",
+        "キントキダイ",
+        "金時鯛",
+        "チカメキントキ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "月報非掲載（その他鮮魚集約）・推測値運用",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kurodai",
+      "site_display_name": "クロダイ",
+      "price_fish_id": "kurodai",
+      "geppo_item": "くろたい",
+      "geppo_category": "鮮魚/たい類",
+      "aliases": [
+        "クロダイ",
+        "カイズ",
+        "チヌ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kuromutsu",
+      "site_display_name": "クロムツ",
+      "price_fish_id": "kuromutsu",
+      "geppo_item": "むつ",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "クロムツ",
+        "ムツ",
+        "大ムツ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "madai",
+      "site_display_name": "マダイ",
+      "price_fish_id": "madai",
+      "geppo_item": "またい（天然）",
+      "geppo_category": "鮮魚/たい類",
+      "aliases": [
+        "マダイ",
+        "タイ",
+        "大ダイ",
+        "中ダイ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "釣果は天然採用。養殖（1,303円）はレンジ上限参考",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "madako",
+      "site_display_name": "マダコ",
+      "price_fish_id": "madako",
+      "geppo_item": "たこ",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "タコ",
+        "マダコ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "magochi",
+      "site_display_name": "マゴチ",
+      "price_fish_id": "magochi",
+      "geppo_item": "こち",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "マゴチ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "mahata",
+      "site_display_name": "マハタ",
+      "price_fish_id": "mahata",
+      "geppo_item": "はた",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "マハタ",
+        "大マハタ",
+        "小マハタ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "月報「はた」に集約・他ハタ種と単価近似",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "maruika",
+      "site_display_name": "マルイカ",
+      "price_fish_id": "maruika",
+      "geppo_item": "こういか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "マルイカ",
+        "ケンサキイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "市場ではコウイカ系として扱う近似マッチ",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "mebaru",
+      "site_display_name": "メバル",
+      "price_fish_id": "mebaru",
+      "geppo_item": "めばる",
+      "geppo_category": "鮮魚/めぬけ類",
+      "aliases": [
+        "メバル",
+        "クロメバル"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "medai",
+      "site_display_name": "メダイ",
+      "price_fish_id": "medai",
+      "geppo_item": "めたい（国内）",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "メダイ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "menuke",
+      "site_display_name": "メヌケ",
+      "price_fish_id": "menuke",
+      "geppo_item": "めぬけ",
+      "geppo_category": "鮮魚/めぬけ類",
+      "aliases": [
+        "メヌケ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "mongoika",
+      "site_display_name": "モンゴウイカ",
+      "price_fish_id": "mongoika",
+      "geppo_item": "もんこういか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "モンゴウイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "moroko",
+      "site_display_name": "モロコ",
+      "price_fish_id": "moroko",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "モロコ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "月報非掲載・推測値運用",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "mugiika",
+      "site_display_name": "ムギイカ",
+      "price_fish_id": "mugiika",
+      "geppo_item": "するめいか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "ムギイカ",
+        "ニセイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "スルメイカの若魚・市場でも区別なし",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "oki-kasago",
+      "site_display_name": "沖カサゴ",
+      "price_fish_id": "oki-kasago",
+      "geppo_item": "かさご",
+      "geppo_category": "鮮魚/めぬけ類",
+      "aliases": [
+        "沖カサゴ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "深場物。月報「かさご」と同単価帯",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "oki-mebaru",
+      "site_display_name": "沖メバル",
+      "price_fish_id": "oki-mebaru",
+      "geppo_item": "めばる",
+      "geppo_category": "鮮魚/めぬけ類",
+      "aliases": [
+        "沖メバル"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "深場物。月報「めばる」と同単価帯",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "onikasago",
+      "site_display_name": "オニカサゴ",
+      "price_fish_id": "onikasago",
+      "geppo_item": "おこぜ",
+      "geppo_category": "鮮魚/めぬけ類",
+      "aliases": [
+        "オニカサゴ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "市場ではオコゼ類として取引",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "sawara",
+      "site_display_name": "サワラ",
+      "price_fish_id": "sawara",
+      "geppo_item": "さわら （国内）",
+      "geppo_category": "鮮魚/さわら類",
+      "aliases": [
+        "サワラ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "seabass",
+      "site_display_name": "シーバス",
+      "price_fish_id": "seabass",
+      "geppo_item": "すずき",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "シーバス",
+        "スズキ",
+        "セイゴ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "shiira",
+      "site_display_name": "シイラ",
+      "price_fish_id": "shiira",
+      "geppo_item": "しいら",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "シイラ",
+        "小シイラ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "月報数量少（52kg）・単価低め",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "shima-aji",
+      "site_display_name": "シマアジ",
+      "price_fish_id": "shimaaji",
+      "geppo_item": "しまあじ（国内）",
+      "geppo_category": "鮮魚/あじ類",
+      "aliases": [
+        "シマアジ",
+        "小シマアジ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "釣果は天然・養殖区別なく国内採用",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "shiro-amadai",
+      "site_display_name": "シロアマダイ",
+      "price_fish_id": "shiro-amadai",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "シロアマダイ",
+        "シロアマダイ・アカアマダイ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": {
+        "base_price_fish_id": "amadai",
+        "ratio_low": 2.0,
+        "ratio_high": 3.0,
+        "source_note": "シロアマダイは市場でアカアマダイの2〜3倍の超高級魚。月報「あまたい」価格に倍率を掛けて推定"
+      },
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "shirogisu",
+      "site_display_name": "シロギス",
+      "price_fish_id": "shirogisu",
+      "geppo_item": "きす",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "シロギス",
+        "キス"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "shousaifugu",
+      "site_display_name": "ショウサイフグ",
+      "price_fish_id": "shousaifugu",
+      "geppo_item": "まふぐ",
+      "geppo_category": "鮮魚/ふぐ類",
+      "aliases": [
+        "ショウサイフグ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "近似マッチ（市場のまふぐと近い単価帯）",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "sujiika",
+      "site_display_name": "スジイカ",
+      "price_fish_id": "sujiika",
+      "geppo_item": "するめいか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "スジイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "スルメイカ系の地方名",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "sumiika",
+      "site_display_name": "スミイカ",
+      "price_fish_id": "sumiika",
+      "geppo_item": "こういか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "スミイカ",
+        "コウイカ",
+        "シリヤケイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "surumeika",
+      "site_display_name": "スルメイカ",
+      "price_fish_id": "surumeika",
+      "geppo_item": "するめいか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "スルメイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "tachiuo",
+      "site_display_name": "タチウオ",
+      "price_fish_id": "tachiuo",
+      "geppo_item": "たちうお（国内）",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "タチウオ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "tai-gomoku",
+      "site_display_name": "タイ五目",
+      "price_fish_id": "madai",
+      "geppo_item": "またい（天然）",
+      "geppo_category": "鮮魚/たい類",
+      "aliases": [
+        "タイ五目",
+        "マダイ五目"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "マダイ寄せ",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "torafugu",
+      "site_display_name": "トラフグ",
+      "price_fish_id": "torafugu",
+      "geppo_item": "とらふぐ",
+      "geppo_category": "鮮魚/ふぐ類",
+      "aliases": [
+        "トラフグ",
+        "小トラフグ",
+        "大トラフグ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": null
+    },
+    {
+      "site_fish_id": "warasa",
+      "site_display_name": "ワラサ",
+      "price_fish_id": "warasa",
+      "geppo_item": "わらさ",
+      "geppo_category": "鮮魚/ぶり類",
+      "aliases": [
+        "ワラサ",
+        "大ワラサ",
+        "サンパク"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "ブリ系中サイズ帯",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": "yariika",
+      "site_display_name": "ヤリイカ",
+      "price_fish_id": "yariika",
+      "geppo_item": "やりいか",
+      "geppo_category": "鮮魚/いか類",
+      "aliases": [
+        "ヤリイカ",
+        "大ヤリイカ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "ハゼ",
+      "site_display_name": "ハゼ",
+      "price_fish_id": "haze",
+      "geppo_item": null,
+      "geppo_category": null,
+      "aliases": [
+        "ハゼ",
+        "鯊",
+        "マハゼ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "月報非掲載・推測値運用。site_fish_id が日本語の唯一例",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "サバ",
+      "price_fish_id": "saba",
+      "geppo_item": "さば",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "サバ",
+        "マサバ",
+        "ゴマサバ",
+        "大サバ",
+        "小サバ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "外道。釣果報告で頻出",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "マイワシ",
+      "price_fish_id": "maiwashi",
+      "geppo_item": "まいわし",
+      "geppo_category": "鮮魚/いわし類",
+      "aliases": [
+        "マイワシ",
+        "イワシ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "外道",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "ウルメイワシ",
+      "price_fish_id": "urumeiwashi",
+      "geppo_item": "うるめいわし",
+      "geppo_category": "鮮魚/いわし類",
+      "aliases": [
+        "ウルメイワシ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "外道",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "カタクチイワシ",
+      "price_fish_id": "katakuchiiwashi",
+      "geppo_item": "かたくちいわし",
+      "geppo_category": "鮮魚/いわし類",
+      "aliases": [
+        "カタクチイワシ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "外道",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "ソウダガツオ",
+      "price_fish_id": "soudagatsuo",
+      "geppo_item": "そうだかつお",
+      "geppo_category": "鮮魚/かつお類",
+      "aliases": [
+        "ソウダガツオ",
+        "ヒラソウダ",
+        "マルソウダ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "外道。カツオ便での副産物",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "アンコウ",
+      "price_fish_id": "ankou",
+      "geppo_item": "あんこう",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "アンコウ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "kg",
+        "cm"
+      ],
+      "price_derived_from": null,
+      "note": "外道。冬の高級鍋材",
+      "recommended_mode": "kg"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "ボラ",
+      "price_fish_id": "bora",
+      "geppo_item": "ぼら",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "ボラ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "外道",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": null,
+      "site_display_name": "コノシロ",
+      "price_fish_id": "konoshiro",
+      "geppo_item": "このしろ",
+      "geppo_category": "鮮魚/その他鮮魚類",
+      "aliases": [
+        "コノシロ",
+        "コハダ"
+      ],
+      "category": "bycatch",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "外道。コハダはコノシロの小型。サイトには cohada ページは無い",
+      "recommended_mode": "cm"
+    }
   ]
 }

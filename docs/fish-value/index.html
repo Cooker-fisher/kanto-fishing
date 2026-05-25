@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 <title>釣果価値チェッカー | 船釣り予想</title>
 <meta name="description" content="関東の船釣りで釣れた魚の卸売・小売金額をレンジ表示する独立ツール。魚種・匹数・サイズから推定総重量と概算金額を算出します。">
 <link rel="canonical" href="https://funatsuri-yoso.com/fish-value/">
@@ -18,6 +19,7 @@
 </header>
 
 <main class="wrap">
+
   <section class="card input-card" aria-labelledby="input-heading">
     <h2 class="st" id="input-heading">釣果を入力</h2>
 
@@ -33,6 +35,18 @@
       <input type="number" id="count" inputmode="numeric" min="1" max="999" placeholder="例: 35" aria-describedby="err-msg">
     </div>
 
+    <fieldset class="form-row mode-switch" id="mode-switch" hidden>
+      <legend>入力方法</legend>
+      <label class="mode-opt">
+        <input type="radio" name="input-mode" value="cm" id="mode-cm" checked>
+        <span>サイズ (cm)</span>
+      </label>
+      <label class="mode-opt">
+        <input type="radio" name="input-mode" value="kg" id="mode-kg">
+        <span>重量 (kg)</span>
+      </label>
+    </fieldset>
+
     <div class="form-row" id="size-row" hidden>
       <label for="size">平均サイズ <span class="unit">(cm)</span></label>
       <input type="number" id="size" inputmode="numeric" min="1" max="200" placeholder="例: 25" aria-describedby="err-msg">
@@ -40,10 +54,11 @@
 
     <div class="form-row" id="weight-row" hidden>
       <label for="weight">平均重量 <span class="unit">(kg)</span></label>
-      <input type="number" id="weight" inputmode="decimal" min="0.05" max="100" step="0.1" placeholder="例: 1.2" aria-describedby="err-msg">
+      <input type="number" id="weight" inputmode="decimal" min="0.01" max="100" step="0.1" placeholder="例: 1.2" aria-describedby="err-msg">
     </div>
 
-    <button id="calc-btn" class="btn-primary" type="button" disabled>読み込み中...</button>
+    <button id="calc-btn" class="btn-primary" type="button">計算する</button>
+
     <p class="err" id="err-msg" hidden></p>
   </section>
 
@@ -73,9 +88,10 @@
     </details>
   </section>
 
-  <p class="caution">
-    ※ 表示価格は概算です。市場価格・鮮度・産地・季節で大きく変動するため、実際の取引価格を保証するものではありません。
+  <p class="caution" id="caution" hidden>
+    ※ 表示価格は概算です。市場価格・鮮度・産地・季節で大きく変動するため、実際の取引価格を保証するものではありません。スーパーで「柵」「切り身」として売られる加工品は別途歩留まり分の上乗せがかかります。
   </p>
+
 </main>
 
 <footer class="ft">

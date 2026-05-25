@@ -63,6 +63,107 @@ SIZE_CURVES = {
         {"cm": 120, "kg": 1.500},
         {"cm": 140, "kg": 2.200},
     ],
+    "中型魚型": [  # マダイ・スズキ系・イシダイ・メダイ・シマアジ
+        {"cm": 20, "kg": 0.15},
+        {"cm": 30, "kg": 0.50},
+        {"cm": 40, "kg": 1.20},
+        {"cm": 50, "kg": 2.30},
+        {"cm": 60, "kg": 3.80},
+        {"cm": 70, "kg": 5.50},
+        {"cm": 80, "kg": 7.50},
+    ],
+    "青物大型型": [  # ブリ系・カンパチ・ヒラマサ・サワラ・シーバス・シイラ・カツオ
+        {"cm": 30, "kg": 0.40},
+        {"cm": 40, "kg": 0.80},
+        {"cm": 50, "kg": 1.50},
+        {"cm": 60, "kg": 2.80},
+        {"cm": 70, "kg": 4.50},
+        {"cm": 80, "kg": 6.50},
+        {"cm": 90, "kg": 9.00},
+        {"cm": 100, "kg": 12.0},
+        {"cm": 120, "kg": 18.0},
+    ],
+    "マグロ型": [  # キハダ・キメジ
+        {"cm": 40, "kg": 0.80},
+        {"cm": 60, "kg": 3.00},
+        {"cm": 80, "kg": 8.00},
+        {"cm": 100, "kg": 18.0},
+        {"cm": 120, "kg": 35.0},
+        {"cm": 150, "kg": 70.0},
+    ],
+    "深海魚型": [  # キンメ・クロムツ・アカムツ・メヌケ
+        {"cm": 20, "kg": 0.15},
+        {"cm": 30, "kg": 0.50},
+        {"cm": 40, "kg": 1.20},
+        {"cm": 50, "kg": 2.20},
+        {"cm": 60, "kg": 3.50},
+    ],
+    "アマダイ型": [
+        {"cm": 20, "kg": 0.12},
+        {"cm": 30, "kg": 0.40},
+        {"cm": 40, "kg": 0.90},
+        {"cm": 50, "kg": 1.60},
+        {"cm": 60, "kg": 2.80},
+    ],
+    "ハタ型": [  # ハタ・マハタ・アラ
+        {"cm": 30, "kg": 0.50},
+        {"cm": 40, "kg": 1.20},
+        {"cm": 50, "kg": 2.50},
+        {"cm": 60, "kg": 4.50},
+        {"cm": 70, "kg": 7.00},
+        {"cm": 80, "kg": 10.0},
+    ],
+    "アンコウ型": [
+        {"cm": 30, "kg": 0.80},
+        {"cm": 40, "kg": 1.50},
+        {"cm": 60, "kg": 4.00},
+        {"cm": 80, "kg": 8.00},
+        {"cm": 100, "kg": 14.0},
+    ],
+    "フグ型": [  # トラフグ・他フグ
+        {"cm": 20, "kg": 0.20},
+        {"cm": 30, "kg": 0.50},
+        {"cm": 40, "kg": 1.20},
+        {"cm": 50, "kg": 2.50},
+        {"cm": 60, "kg": 4.00},
+    ],
+    "タコ型": [  # マダコ・全長(腕長)基準
+        {"cm": 30, "kg": 0.80},
+        {"cm": 50, "kg": 2.00},
+        {"cm": 70, "kg": 4.50},
+        {"cm": 90, "kg": 8.00},
+        {"cm": 120, "kg": 15.0},
+    ],
+    "イカ型_大": [  # アオリイカ・胴長基準
+        {"cm": 10, "kg": 0.15},
+        {"cm": 15, "kg": 0.30},
+        {"cm": 20, "kg": 0.60},
+        {"cm": 25, "kg": 1.00},
+        {"cm": 30, "kg": 1.50},
+        {"cm": 35, "kg": 2.50},
+    ],
+    "イカ型_中": [  # スルメイカ・ヤリイカ・モンゴウイカ・コウイカ系胴長
+        {"cm": 10, "kg": 0.08},
+        {"cm": 15, "kg": 0.20},
+        {"cm": 20, "kg": 0.40},
+        {"cm": 25, "kg": 0.65},
+        {"cm": 30, "kg": 1.00},
+        {"cm": 35, "kg": 1.50},
+    ],
+    "イカ型_小": [  # ムギイカ・マルイカ・スジイカ
+        {"cm": 8,  "kg": 0.05},
+        {"cm": 12, "kg": 0.12},
+        {"cm": 15, "kg": 0.20},
+        {"cm": 20, "kg": 0.40},
+        {"cm": 25, "kg": 0.65},
+    ],
+    "大物型": [  # アブラボウズ・超大型魚
+        {"cm": 40, "kg": 1.5},
+        {"cm": 60, "kg": 5.0},
+        {"cm": 80, "kg": 12.0},
+        {"cm": 100, "kg": 22.0},
+        {"cm": 120, "kg": 35.0},
+    ],
 }
 
 
@@ -148,7 +249,7 @@ PRICE_DESIGN = {
         ],
     },
     "soudagatsuo": {
-        "category": "大衆魚", "curve": None,
+        "category": "大衆魚", "curve": "青物大型型",
         "bands": [
             {"kg_max": 999, "label": "標準",   "size_class": "standard"},
         ],
@@ -184,7 +285,7 @@ PRICE_DESIGN = {
 
     # ───── 中級魚 ─────
     "madai": {
-        "category": "中級魚", "curve": None,
+        "category": "中級魚", "curve": "中型魚型",
         "bands": [
             {"kg_max": 0.5, "label": "小ダイ",   "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",     "size_class": "standard"},
@@ -193,7 +294,7 @@ PRICE_DESIGN = {
         ],
     },
     "kurodai": {
-        "category": "中級魚", "curve": None,
+        "category": "中級魚", "curve": "中型魚型",
         "bands": [
             {"kg_max": 0.5, "label": "小型",     "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",     "size_class": "standard"},
@@ -217,7 +318,7 @@ PRICE_DESIGN = {
         ],
     },
     "hirame": {
-        "category": "中級魚", "curve": None,
+        "category": "中級魚", "curve": "平体型",
         "bands": [
             {"kg_max": 0.5, "label": "ソゲ",     "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",     "size_class": "standard"},
@@ -283,7 +384,7 @@ PRICE_DESIGN = {
         ],
     },
     "magochi": {
-        "category": "中級魚", "curve": None,
+        "category": "中級魚", "curve": "平体型",
         "bands": [
             {"kg_max": 0.5, "label": "小",       "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",     "size_class": "standard"},
@@ -315,7 +416,7 @@ PRICE_DESIGN = {
         ],
     },
     "ishidai": {
-        "category": "中級魚", "curve": None,
+        "category": "中級魚", "curve": "中型魚型",
         "bands": [
             {"kg_max": 0.5, "label": "サンバソウ","size_class": "small"},
             {"kg_max": 1.5, "label": "標準",     "size_class": "standard"},
@@ -323,7 +424,7 @@ PRICE_DESIGN = {
         ],
     },
     "medai": {
-        "category": "中級魚", "curve": None,
+        "category": "中級魚", "curve": "中型魚型",
         "bands": [
             {"kg_max": 1.0, "label": "小",       "size_class": "small"},
             {"kg_max": 3.0, "label": "標準",     "size_class": "standard"},
@@ -333,7 +434,7 @@ PRICE_DESIGN = {
 
     # ───── 青物 ─────
     "katsuo": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 2.0, "label": "ヒラソウダ級","size_class": "small"},
             {"kg_max": 4.0, "label": "標準",       "size_class": "standard"},
@@ -341,28 +442,28 @@ PRICE_DESIGN = {
         ],
     },
     "buri": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 5.0, "label": "標準",     "size_class": "standard"},
             {"kg_max": 999, "label": "寒ブリ大物","size_class": "premium"},
         ],
     },
     "warasa": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 3.0, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "大ワラサ","size_class": "large"},
         ],
     },
     "inada": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 1.5, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "良型",   "size_class": "large"},
         ],
     },
     "kanpachi": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 2.0, "label": "小カンパチ","size_class": "small"},
             {"kg_max": 5.0, "label": "標準",     "size_class": "standard"},
@@ -370,14 +471,14 @@ PRICE_DESIGN = {
         ],
     },
     "hiramasa": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 3.0, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "大型",   "size_class": "large"},
         ],
     },
     "sawara": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 1.5, "label": "サゴシ", "size_class": "small"},
             {"kg_max": 4.0, "label": "標準",   "size_class": "standard"},
@@ -385,7 +486,7 @@ PRICE_DESIGN = {
         ],
     },
     "kihada": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "マグロ型",
         "bands": [
             {"kg_max": 10,  "label": "小",     "size_class": "small"},
             {"kg_max": 30,  "label": "標準",   "size_class": "standard"},
@@ -393,14 +494,14 @@ PRICE_DESIGN = {
         ],
     },
     "kimeji": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "マグロ型",
         "bands": [
             {"kg_max": 5,   "label": "小",     "size_class": "small"},
             {"kg_max": 999, "label": "標準",   "size_class": "standard"},
         ],
     },
     "shimaaji": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "中型魚型",
         "bands": [
             {"kg_max": 1.0, "label": "小型",   "size_class": "small"},
             {"kg_max": 3.0, "label": "標準",   "size_class": "standard"},
@@ -408,7 +509,7 @@ PRICE_DESIGN = {
         ],
     },
     "mahata": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "ハタ型",
         "bands": [
             {"kg_max": 2.0, "label": "小",     "size_class": "small"},
             {"kg_max": 5.0, "label": "標準",   "size_class": "standard"},
@@ -416,7 +517,7 @@ PRICE_DESIGN = {
         ],
     },
     "hata": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "ハタ型",
         "bands": [
             {"kg_max": 2.0, "label": "小",     "size_class": "small"},
             {"kg_max": 5.0, "label": "標準",   "size_class": "standard"},
@@ -424,7 +525,7 @@ PRICE_DESIGN = {
         ],
     },
     "seabass": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 1.0, "label": "セイゴ", "size_class": "small"},
             {"kg_max": 3.0, "label": "フッコ", "size_class": "standard"},
@@ -432,7 +533,7 @@ PRICE_DESIGN = {
         ],
     },
     "shiira": {
-        "category": "青物", "curve": None,
+        "category": "青物", "curve": "青物大型型",
         "bands": [
             {"kg_max": 3.0, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "大シイラ","size_class": "large"},
@@ -450,7 +551,7 @@ PRICE_DESIGN = {
 
     # ───── 高級魚 ─────
     "amadai": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "アマダイ型",
         "bands": [
             {"kg_max": 0.4, "label": "小型",   "size_class": "small"},
             {"kg_max": 1.0, "label": "標準",   "size_class": "standard"},
@@ -458,7 +559,7 @@ PRICE_DESIGN = {
         ],
     },
     "shiro-amadai": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "アマダイ型",
         "bands": [
             {"kg_max": 0.4, "label": "小型",   "size_class": "small"},
             {"kg_max": 1.0, "label": "標準",   "size_class": "standard"},
@@ -469,7 +570,7 @@ PRICE_DESIGN = {
         "derived_ratio_high": 3.0,
     },
     "kinmedai": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "深海魚型",
         "bands": [
             {"kg_max": 0.5, "label": "小",     "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",   "size_class": "standard"},
@@ -477,7 +578,7 @@ PRICE_DESIGN = {
         ],
     },
     "kuromutsu": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "深海魚型",
         "bands": [
             {"kg_max": 0.5, "label": "小",     "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",   "size_class": "standard"},
@@ -485,7 +586,7 @@ PRICE_DESIGN = {
         ],
     },
     "akamutsu": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "深海魚型",
         "bands": [
             {"kg_max": 0.3, "label": "小",     "size_class": "small"},
             {"kg_max": 0.8, "label": "標準",   "size_class": "standard"},
@@ -497,7 +598,7 @@ PRICE_DESIGN = {
         "fallback_note": "月報単独項目なし。市場相場（むつ 2,381円/kg より明確に高く・5,000-10,000円/kg帯）の経験値",
     },
     "abura-bouzu": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "大物型",
         "bands": [
             {"kg_max": 5,   "label": "小",     "size_class": "small"},
             {"kg_max": 15,  "label": "標準",   "size_class": "standard"},
@@ -509,7 +610,7 @@ PRICE_DESIGN = {
         "fallback_note": "月報単独項目なし。深海魚で流通少・経験値",
     },
     "ara": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "ハタ型",
         "bands": [
             {"kg_max": 2,   "label": "小",     "size_class": "small"},
             {"kg_max": 6,   "label": "標準",   "size_class": "standard"},
@@ -565,14 +666,14 @@ PRICE_DESIGN = {
         "fallback_note": "月報単独項目なし。経験値",
     },
     "menuke": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "深海魚型",
         "bands": [
             {"kg_max": 1.0, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "良型",   "size_class": "large"},
         ],
     },
     "torafugu": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "フグ型",
         "bands": [
             {"kg_max": 1.0, "label": "小",     "size_class": "small"},
             {"kg_max": 2.5, "label": "標準",   "size_class": "standard"},
@@ -580,21 +681,21 @@ PRICE_DESIGN = {
         ],
     },
     "akamefugu": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "フグ型",
         "bands": [
             {"kg_max": 0.5, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "良型",   "size_class": "large"},
         ],
     },
     "fugu": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "フグ型",
         "bands": [
             {"kg_max": 0.5, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "良型",   "size_class": "large"},
         ],
     },
     "shousaifugu": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "フグ型",
         "bands": [
             {"kg_max": 0.5, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999, "label": "良型",   "size_class": "large"},
@@ -603,7 +704,7 @@ PRICE_DESIGN = {
 
     # ───── イカタコ ─────
     "surumeika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_中",
         "bands": [
             {"kg_max": 0.2, "label": "小",     "size_class": "small"},
             {"kg_max": 0.5, "label": "標準",   "size_class": "standard"},
@@ -611,21 +712,21 @@ PRICE_DESIGN = {
         ],
     },
     "mugiika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_小",
         "bands": [
             {"kg_max": 0.10, "label": "小",   "size_class": "small"},
             {"kg_max": 999,  "label": "標準", "size_class": "standard"},
         ],
     },
     "sujiika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_小",
         "bands": [
             {"kg_max": 0.20, "label": "小",   "size_class": "small"},
             {"kg_max": 999,  "label": "標準", "size_class": "standard"},
         ],
     },
     "yariika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_中",
         "bands": [
             {"kg_max": 0.20, "label": "小",   "size_class": "small"},
             {"kg_max": 0.50, "label": "標準", "size_class": "standard"},
@@ -633,7 +734,7 @@ PRICE_DESIGN = {
         ],
     },
     "aoriika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_大",
         "bands": [
             {"kg_max": 0.5, "label": "小",     "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",   "size_class": "standard"},
@@ -641,14 +742,14 @@ PRICE_DESIGN = {
         ],
     },
     "maruika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_小",
         "bands": [
             {"kg_max": 0.20, "label": "小",   "size_class": "small"},
             {"kg_max": 999,  "label": "標準", "size_class": "standard"},
         ],
     },
     "sumiika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_中",
         "bands": [
             {"kg_max": 0.5, "label": "小",     "size_class": "small"},
             {"kg_max": 1.5, "label": "標準",   "size_class": "standard"},
@@ -656,7 +757,7 @@ PRICE_DESIGN = {
         ],
     },
     "mongoika": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "イカ型_中",
         "bands": [
             {"kg_max": 1.0, "label": "小",     "size_class": "small"},
             {"kg_max": 3.0, "label": "標準",   "size_class": "standard"},
@@ -664,7 +765,7 @@ PRICE_DESIGN = {
         ],
     },
     "madako": {
-        "category": "イカタコ", "curve": None,
+        "category": "イカタコ", "curve": "タコ型",
         "bands": [
             {"kg_max": 1.0, "label": "小",     "size_class": "small"},
             {"kg_max": 3.0, "label": "標準",   "size_class": "standard"},
@@ -674,7 +775,7 @@ PRICE_DESIGN = {
 
     # ───── 専用処理（アンコウ・その他） ─────
     "ankou": {
-        "category": "高級魚", "curve": None,
+        "category": "高級魚", "curve": "アンコウ型",
         "bands": [
             {"kg_max": 3,   "label": "小",     "size_class": "small"},
             {"kg_max": 8,   "label": "標準",   "size_class": "standard"},

@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated_at": "2026-05-24",
+  "updated_at": "2026-05-25",
   "source": {
     "wholesale": "d3188825-s202604meisai_20260515.xlsx (202604)",
     "retail_multiplier": "業界一般値（甲案・大衆魚2.0-3.0/中級1.8-2.5/高級1.6-2.2/青物1.7-2.4/イカタコ1.8-2.6）",
@@ -41,8 +41,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 40,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 5.0
+        },
+        {
+          "cm": 80,
+          "kg": 12.0
+        },
+        {
+          "cm": 100,
+          "kg": 22.0
+        },
+        {
+          "cm": 120,
+          "kg": 35.0
+        }
+      ],
+      "size_curve_type": "大物型",
       "wholesale_avg": 1500,
       "wholesale_high_overall": 3500,
       "wholesale_low_overall": 700,
@@ -174,8 +195,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.2
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.0
+        }
+      ],
+      "size_curve_type": "フグ型",
       "wholesale_avg": 2187,
       "wholesale_high_overall": 18360,
       "wholesale_low_overall": 378,
@@ -212,8 +254,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.2
+        },
+        {
+          "cm": 60,
+          "kg": 3.5
+        }
+      ],
+      "size_curve_type": "深海魚型",
       "wholesale_avg": 6000,
       "wholesale_high_overall": 12000,
       "wholesale_low_overall": 3500,
@@ -259,8 +322,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.12
+        },
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.9
+        },
+        {
+          "cm": 50,
+          "kg": 1.6
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        }
+      ],
+      "size_curve_type": "アマダイ型",
       "wholesale_avg": 4788,
       "wholesale_high_overall": 12249,
       "wholesale_low_overall": 1312,
@@ -374,8 +458,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.15
+        },
+        {
+          "cm": 15,
+          "kg": 0.3
+        },
+        {
+          "cm": 20,
+          "kg": 0.6
+        },
+        {
+          "cm": 25,
+          "kg": 1.0
+        },
+        {
+          "cm": 30,
+          "kg": 1.5
+        },
+        {
+          "cm": 35,
+          "kg": 2.5
+        }
+      ],
+      "size_curve_type": "イカ型_大",
       "wholesale_avg": 3897,
       "wholesale_high_overall": 6130,
       "wholesale_low_overall": 1323,
@@ -421,8 +530,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.5
+        },
+        {
+          "cm": 70,
+          "kg": 7.0
+        },
+        {
+          "cm": 80,
+          "kg": 10.0
+        }
+      ],
+      "size_curve_type": "ハタ型",
       "wholesale_avg": 4500,
       "wholesale_high_overall": 10000,
       "wholesale_low_overall": 2200,
@@ -468,8 +602,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 649,
       "wholesale_high_overall": 2926,
       "wholesale_low_overall": 273,
@@ -506,8 +677,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.2
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.0
+        }
+      ],
+      "size_curve_type": "フグ型",
       "wholesale_avg": 2187,
       "wholesale_high_overall": 18360,
       "wholesale_low_overall": 378,
@@ -607,8 +799,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.5
+        },
+        {
+          "cm": 70,
+          "kg": 7.0
+        },
+        {
+          "cm": 80,
+          "kg": 10.0
+        }
+      ],
+      "size_curve_type": "ハタ型",
       "wholesale_avg": 3034,
       "wholesale_high_overall": 10012,
       "wholesale_low_overall": 1583,
@@ -654,8 +871,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 1060,
       "wholesale_high_overall": 2506,
       "wholesale_low_overall": 695,
@@ -692,8 +946,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.18
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.1
+        },
+        {
+          "cm": 50,
+          "kg": 2.0
+        },
+        {
+          "cm": 60,
+          "kg": 3.2
+        },
+        {
+          "cm": 70,
+          "kg": 4.8
+        }
+      ],
+      "size_curve_type": "平体型",
       "wholesale_avg": 1722,
       "wholesale_high_overall": 3641,
       "wholesale_low_overall": 745,
@@ -820,8 +1099,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 595,
       "wholesale_high_overall": 1095,
       "wholesale_low_overall": 319,
@@ -930,8 +1246,37 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.3
+        },
+        {
+          "cm": 60,
+          "kg": 3.8
+        },
+        {
+          "cm": 70,
+          "kg": 5.5
+        },
+        {
+          "cm": 80,
+          "kg": 7.5
+        }
+      ],
+      "size_curve_type": "中型魚型",
       "wholesale_avg": 2041,
       "wholesale_high_overall": 2970,
       "wholesale_low_overall": 1024,
@@ -1250,8 +1595,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 1552,
       "wholesale_high_overall": 2993,
       "wholesale_low_overall": 702,
@@ -1450,8 +1832,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 908,
       "wholesale_high_overall": 2046,
       "wholesale_low_overall": 344,
@@ -1578,8 +1997,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 60,
+          "kg": 3.0
+        },
+        {
+          "cm": 80,
+          "kg": 8.0
+        },
+        {
+          "cm": 100,
+          "kg": 18.0
+        },
+        {
+          "cm": 120,
+          "kg": 35.0
+        },
+        {
+          "cm": 150,
+          "kg": 70.0
+        }
+      ],
+      "size_curve_type": "マグロ型",
       "wholesale_avg": 1212,
       "wholesale_high_overall": 2606,
       "wholesale_low_overall": 541,
@@ -1625,8 +2069,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 60,
+          "kg": 3.0
+        },
+        {
+          "cm": 80,
+          "kg": 8.0
+        },
+        {
+          "cm": 100,
+          "kg": 18.0
+        },
+        {
+          "cm": 120,
+          "kg": 35.0
+        },
+        {
+          "cm": 150,
+          "kg": 70.0
+        }
+      ],
+      "size_curve_type": "マグロ型",
       "wholesale_avg": 657,
       "wholesale_high_overall": 1449,
       "wholesale_low_overall": 457,
@@ -1663,8 +2132,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.2
+        },
+        {
+          "cm": 60,
+          "kg": 3.5
+        }
+      ],
+      "size_curve_type": "深海魚型",
       "wholesale_avg": 2665,
       "wholesale_high_overall": 4276,
       "wholesale_low_overall": 955,
@@ -1782,8 +2272,37 @@
       "input_modes": [
         "cm"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.3
+        },
+        {
+          "cm": 60,
+          "kg": 3.8
+        },
+        {
+          "cm": 70,
+          "kg": 5.5
+        },
+        {
+          "cm": 80,
+          "kg": 7.5
+        }
+      ],
+      "size_curve_type": "中型魚型",
       "wholesale_avg": 504,
       "wholesale_high_overall": 1094,
       "wholesale_low_overall": 384,
@@ -1829,8 +2348,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.2
+        },
+        {
+          "cm": 60,
+          "kg": 3.5
+        }
+      ],
+      "size_curve_type": "深海魚型",
       "wholesale_avg": 2381,
       "wholesale_high_overall": 8082,
       "wholesale_low_overall": 473,
@@ -1876,8 +2416,37 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.3
+        },
+        {
+          "cm": 60,
+          "kg": 3.8
+        },
+        {
+          "cm": 70,
+          "kg": 5.5
+        },
+        {
+          "cm": 80,
+          "kg": 7.5
+        }
+      ],
+      "size_curve_type": "中型魚型",
       "wholesale_avg": 854,
       "wholesale_high_overall": 2183,
       "wholesale_low_overall": 540,
@@ -1933,8 +2502,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 2.0
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 90,
+          "kg": 8.0
+        },
+        {
+          "cm": 120,
+          "kg": 15.0
+        }
+      ],
+      "size_curve_type": "タコ型",
       "wholesale_avg": 3128,
       "wholesale_high_overall": 9612,
       "wholesale_low_overall": 792,
@@ -1980,8 +2570,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.18
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.1
+        },
+        {
+          "cm": 50,
+          "kg": 2.0
+        },
+        {
+          "cm": 60,
+          "kg": 3.2
+        },
+        {
+          "cm": 70,
+          "kg": 4.8
+        }
+      ],
+      "size_curve_type": "平体型",
       "wholesale_avg": 1177,
       "wholesale_high_overall": 3240,
       "wholesale_low_overall": 324,
@@ -2027,8 +2642,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.5
+        },
+        {
+          "cm": 70,
+          "kg": 7.0
+        },
+        {
+          "cm": 80,
+          "kg": 10.0
+        }
+      ],
+      "size_curve_type": "ハタ型",
       "wholesale_avg": 3034,
       "wholesale_high_overall": 10012,
       "wholesale_low_overall": 1583,
@@ -2074,8 +2714,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 8,
+          "kg": 0.05
+        },
+        {
+          "cm": 12,
+          "kg": 0.12
+        },
+        {
+          "cm": 15,
+          "kg": 0.2
+        },
+        {
+          "cm": 20,
+          "kg": 0.4
+        },
+        {
+          "cm": 25,
+          "kg": 0.65
+        }
+      ],
+      "size_curve_type": "イカ型_小",
       "wholesale_avg": 1730,
       "wholesale_high_overall": 3304,
       "wholesale_low_overall": 491,
@@ -2184,8 +2845,37 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.3
+        },
+        {
+          "cm": 60,
+          "kg": 3.8
+        },
+        {
+          "cm": 70,
+          "kg": 5.5
+        },
+        {
+          "cm": 80,
+          "kg": 7.5
+        }
+      ],
+      "size_curve_type": "中型魚型",
       "wholesale_avg": 1141,
       "wholesale_high_overall": 2199,
       "wholesale_low_overall": 626,
@@ -2231,8 +2921,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.2
+        },
+        {
+          "cm": 60,
+          "kg": 3.5
+        }
+      ],
+      "size_curve_type": "深海魚型",
       "wholesale_avg": 4317,
       "wholesale_high_overall": 7034,
       "wholesale_low_overall": 432,
@@ -2269,8 +2980,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.08
+        },
+        {
+          "cm": 15,
+          "kg": 0.2
+        },
+        {
+          "cm": 20,
+          "kg": 0.4
+        },
+        {
+          "cm": 25,
+          "kg": 0.65
+        },
+        {
+          "cm": 30,
+          "kg": 1.0
+        },
+        {
+          "cm": 35,
+          "kg": 1.5
+        }
+      ],
+      "size_curve_type": "イカ型_中",
       "wholesale_avg": 1325,
       "wholesale_high_overall": 2102,
       "wholesale_low_overall": 818,
@@ -2374,8 +3110,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 8,
+          "kg": 0.05
+        },
+        {
+          "cm": 12,
+          "kg": 0.12
+        },
+        {
+          "cm": 15,
+          "kg": 0.2
+        },
+        {
+          "cm": 20,
+          "kg": 0.4
+        },
+        {
+          "cm": 25,
+          "kg": 0.65
+        }
+      ],
+      "size_curve_type": "イカ型_小",
       "wholesale_avg": 1515,
       "wholesale_high_overall": 3986,
       "wholesale_low_overall": 540,
@@ -2628,8 +3385,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 1808,
       "wholesale_high_overall": 3359,
       "wholesale_low_overall": 1074,
@@ -2675,8 +3469,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 951,
       "wholesale_high_overall": 1706,
       "wholesale_low_overall": 500,
@@ -2722,8 +3553,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 406,
       "wholesale_high_overall": 467,
       "wholesale_low_overall": 240,
@@ -2760,8 +3628,37 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.3
+        },
+        {
+          "cm": 60,
+          "kg": 3.8
+        },
+        {
+          "cm": 70,
+          "kg": 5.5
+        },
+        {
+          "cm": 80,
+          "kg": 7.5
+        }
+      ],
+      "size_curve_type": "中型魚型",
       "wholesale_avg": 3072,
       "wholesale_high_overall": 6671,
       "wholesale_low_overall": 2439,
@@ -2807,8 +3704,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.12
+        },
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.9
+        },
+        {
+          "cm": 50,
+          "kg": 1.6
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        }
+      ],
+      "size_curve_type": "アマダイ型",
       "wholesale_avg": 11970,
       "wholesale_high_overall": 36747,
       "wholesale_low_overall": 2624,
@@ -2939,8 +3857,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.2
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.0
+        }
+      ],
+      "size_curve_type": "フグ型",
       "wholesale_avg": 760,
       "wholesale_high_overall": 1309,
       "wholesale_low_overall": 294,
@@ -2977,8 +3916,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 8,
+          "kg": 0.05
+        },
+        {
+          "cm": 12,
+          "kg": 0.12
+        },
+        {
+          "cm": 15,
+          "kg": 0.2
+        },
+        {
+          "cm": 20,
+          "kg": 0.4
+        },
+        {
+          "cm": 25,
+          "kg": 0.65
+        }
+      ],
+      "size_curve_type": "イカ型_小",
       "wholesale_avg": 1515,
       "wholesale_high_overall": 3986,
       "wholesale_low_overall": 540,
@@ -3015,8 +3975,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.08
+        },
+        {
+          "cm": 15,
+          "kg": 0.2
+        },
+        {
+          "cm": 20,
+          "kg": 0.4
+        },
+        {
+          "cm": 25,
+          "kg": 0.65
+        },
+        {
+          "cm": 30,
+          "kg": 1.0
+        },
+        {
+          "cm": 35,
+          "kg": 1.5
+        }
+      ],
+      "size_curve_type": "イカ型_中",
       "wholesale_avg": 1730,
       "wholesale_high_overall": 3304,
       "wholesale_low_overall": 491,
@@ -3062,8 +4047,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.08
+        },
+        {
+          "cm": 15,
+          "kg": 0.2
+        },
+        {
+          "cm": 20,
+          "kg": 0.4
+        },
+        {
+          "cm": 25,
+          "kg": 0.65
+        },
+        {
+          "cm": 30,
+          "kg": 1.0
+        },
+        {
+          "cm": 35,
+          "kg": 1.5
+        }
+      ],
+      "size_curve_type": "イカ型_中",
       "wholesale_avg": 1515,
       "wholesale_high_overall": 3986,
       "wholesale_low_overall": 540,
@@ -3186,8 +4196,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 20,
+          "kg": 0.2
+        },
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.0
+        }
+      ],
+      "size_curve_type": "フグ型",
       "wholesale_avg": 1629,
       "wholesale_high_overall": 6912,
       "wholesale_low_overall": 547,
@@ -3233,8 +4264,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 579,
       "wholesale_high_overall": 1055,
       "wholesale_low_overall": 284,
@@ -3271,8 +4339,33 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.08
+        },
+        {
+          "cm": 15,
+          "kg": 0.2
+        },
+        {
+          "cm": 20,
+          "kg": 0.4
+        },
+        {
+          "cm": 25,
+          "kg": 0.65
+        },
+        {
+          "cm": 30,
+          "kg": 1.0
+        },
+        {
+          "cm": 35,
+          "kg": 1.5
+        }
+      ],
+      "size_curve_type": "イカ型_中",
       "wholesale_avg": 1747,
       "wholesale_high_overall": 3983,
       "wholesale_low_overall": 786,
@@ -3659,8 +4752,45 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.4
+        },
+        {
+          "cm": 40,
+          "kg": 0.8
+        },
+        {
+          "cm": 50,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 2.8
+        },
+        {
+          "cm": 70,
+          "kg": 4.5
+        },
+        {
+          "cm": 80,
+          "kg": 6.5
+        },
+        {
+          "cm": 90,
+          "kg": 9.0
+        },
+        {
+          "cm": 100,
+          "kg": 12.0
+        },
+        {
+          "cm": 120,
+          "kg": 18.0
+        }
+      ],
+      "size_curve_type": "青物大型型",
       "wholesale_avg": 688,
       "wholesale_high_overall": 779,
       "wholesale_low_overall": 187,
@@ -3688,8 +4818,29 @@
       "input_modes": [
         "kg"
       ],
-      "size_weight_curve": null,
-      "size_curve_type": null,
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.8
+        },
+        {
+          "cm": 40,
+          "kg": 1.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.0
+        },
+        {
+          "cm": 80,
+          "kg": 8.0
+        },
+        {
+          "cm": 100,
+          "kg": 14.0
+        }
+      ],
+      "size_curve_type": "アンコウ型",
       "wholesale_avg": 929,
       "wholesale_high_overall": 1468,
       "wholesale_low_overall": 288,
