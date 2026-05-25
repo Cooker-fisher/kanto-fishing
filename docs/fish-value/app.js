@@ -489,8 +489,15 @@ function bandRangeStr(bands, idx, isCm, curve) {
     return lo + '〜' + Math.round(kgToCm(curve, hiKg)) + 'cm';
   }
   const lo = prevKg > 0 ? fmtKgShort(prevKg) : '0';
-  if (hiKg == null) return lo + 'kg+';
-  return lo + '〜' + fmtKgShort(hiKg) + 'kg';
+  const kgStr = hiKg == null ? lo + 'kg+' : lo + '〜' + fmtKgShort(hiKg) + 'kg';
+  // kgモードでもsize_weight_curveがあればcm目安を括弧追記
+  if (curve) {
+    const loCm = prevKg > 0 ? Math.round(kgToCm(curve, prevKg)) : Math.round(curve[0].cm);
+    const hiCm = hiKg != null ? Math.round(kgToCm(curve, hiKg)) : null;
+    const cmHint = hiCm != null ? loCm + '〜' + hiCm + 'cm' : loCm + 'cm+';
+    return kgStr + '  ' + cmHint;
+  }
+  return kgStr;
 }
 
 function buildBandStepper(entry, idx) {
