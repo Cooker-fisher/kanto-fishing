@@ -41,7 +41,8 @@
     "category=target はサイト docs/fish/ に個別ページあり（site_fish_id 必須）。category=bycatch はサイト個別ページなし（外道）。",
     "aliases は釣果報告に出る別名・地方名・サイズ違い名・正規化マップ由来。価格計算では使わないが UI・検索で参照。",
     "input_modes は釣果価値チェッカーの入力UI: 'cm'=平均サイズcm入力・'kg'=平均重量kg入力。",
-    "site_fish_id が docs/fish/*.html のファイル名と完全一致する規約（ハゼ.html のみ日本語）。"
+    "site_fish_id が docs/fish/*.html のファイル名と完全一致する規約（ハゼ.html のみ日本語）。",
+    "2026/05/25: recommended_mode フィールド追加。null=どちらも一般的"
   ],
   "species": [
     {
@@ -60,7 +61,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "月報非掲載（その他鮮魚集約）・推測値運用"
+      "note": "月報非掲載（その他鮮魚集約）・推測値運用",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "aji",
@@ -82,7 +84,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "akamefugu",
@@ -99,7 +102,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "処理後重量で計算する点に注意"
+      "note": "処理後重量で計算する点に注意",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "akamutsu",
@@ -120,7 +124,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "標準和名アカムツ・通称ノドグロ。月報非掲載（その他鮮魚集約）・高級魚として推測値運用"
+      "note": "標準和名アカムツ・通称ノドグロ。月報非掲載（その他鮮魚集約）・高級魚として推測値運用",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "amadai",
@@ -141,7 +146,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "月報「あまたい」はアカアマダイが主体"
+      "note": "月報「あまたい」はアカアマダイが主体",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "anago",
@@ -162,7 +168,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "活アナゴ（活魚類）も同じ price_fish_id で扱う"
+      "note": "活アナゴ（活魚類）も同じ price_fish_id で扱う",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "aoriika",
@@ -179,7 +186,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "ara",
@@ -196,7 +204,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "月報非掲載・高級魚として推測値運用"
+      "note": "月報非掲載・高級魚として推測値運用",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "bishi-aji",
@@ -214,7 +223,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "価格計算はアジ（maaji）と同一"
+      "note": "価格計算はアジ（maaji）と同一",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "buri",
@@ -232,7 +242,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "ブリ系はサイズで品目分岐: わかし→いなだ→わらさ→ぶり"
+      "note": "ブリ系はサイズで品目分岐: わかし→いなだ→わらさ→ぶり",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "fugu",
@@ -249,7 +260,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "種別不明扱い・トラフグ/ショウサイは個別 site_fish_id 参照"
+      "note": "種別不明扱い・トラフグ/ショウサイは個別 site_fish_id 参照",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "hanadai",
@@ -268,7 +280,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "市場ではチダイとして取引"
+      "note": "市場ではチダイとして取引",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "hata",
@@ -287,7 +300,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "hiramasa",
@@ -305,7 +319,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "hirame",
@@ -324,7 +339,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "活ひらめ（活魚類）も同一 price_fish_id"
+      "note": "活ひらめ（活魚類）も同一 price_fish_id",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "houbou",
@@ -342,7 +358,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "inada",
@@ -360,7 +377,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "ブリ系小型サイズ帯"
+      "note": "ブリ系小型サイズ帯",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "isaki",
@@ -380,7 +398,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "ishidai",
@@ -397,7 +416,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "ishimochi",
@@ -417,7 +437,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "市場ではぐち（シログチ）として取引"
+      "note": "市場ではぐち（シログチ）として取引",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kaiwari",
@@ -435,7 +456,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "月報非掲載（その他鮮魚集約）・推測値運用"
+      "note": "月報非掲載（その他鮮魚集約）・推測値運用",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kamasu",
@@ -452,7 +474,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kanko",
@@ -469,7 +492,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "月報非掲載（オキメバル類）・推測値運用"
+      "note": "月報非掲載（オキメバル類）・推測値運用",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kanpachi",
@@ -487,7 +511,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "釣果は天然採用。養殖は2,621円/kgで参考レンジ上限に使える"
+      "note": "釣果は天然採用。養殖は2,621円/kgで参考レンジ上限に使える",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "karei",
@@ -507,7 +532,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "マコ・イシ等の種別はaliasesで吸収"
+      "note": "マコ・イシ等の種別はaliasesで吸収",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kasago",
@@ -525,7 +551,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "katsuo",
@@ -543,7 +570,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "kawahagi",
@@ -561,7 +589,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kihada-maguro",
@@ -579,7 +608,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "kimeji",
@@ -597,7 +627,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "キハダの幼魚扱い・別単価帯"
+      "note": "キハダの幼魚扱い・別単価帯",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "kinmedai",
@@ -615,7 +646,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "kintoki",
@@ -635,7 +667,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "月報非掲載（その他鮮魚集約）・推測値運用"
+      "note": "月報非掲載（その他鮮魚集約）・推測値運用",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kurodai",
@@ -654,7 +687,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "kuromutsu",
@@ -673,7 +707,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "madai",
@@ -693,7 +728,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "釣果は天然採用。養殖（1,303円）はレンジ上限参考"
+      "note": "釣果は天然採用。養殖（1,303円）はレンジ上限参考",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "madako",
@@ -711,7 +747,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "magochi",
@@ -728,7 +765,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "mahata",
@@ -747,7 +785,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "月報「はた」に集約・他ハタ種と単価近似"
+      "note": "月報「はた」に集約・他ハタ種と単価近似",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "maruika",
@@ -765,7 +804,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "市場ではコウイカ系として扱う近似マッチ"
+      "note": "市場ではコウイカ系として扱う近似マッチ",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "mebaru",
@@ -783,7 +823,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "medai",
@@ -800,7 +841,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "menuke",
@@ -817,7 +859,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "mongoika",
@@ -834,7 +877,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "moroko",
@@ -851,7 +895,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "月報非掲載・推測値運用"
+      "note": "月報非掲載・推測値運用",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "mugiika",
@@ -869,7 +914,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "スルメイカの若魚・市場でも区別なし"
+      "note": "スルメイカの若魚・市場でも区別なし",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "oki-kasago",
@@ -886,7 +932,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "深場物。月報「かさご」と同単価帯"
+      "note": "深場物。月報「かさご」と同単価帯",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "oki-mebaru",
@@ -903,7 +950,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "深場物。月報「めばる」と同単価帯"
+      "note": "深場物。月報「めばる」と同単価帯",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "onikasago",
@@ -920,7 +968,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "市場ではオコゼ類として取引"
+      "note": "市場ではオコゼ類として取引",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "sawara",
@@ -937,7 +986,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "seabass",
@@ -956,7 +1006,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "shiira",
@@ -974,7 +1025,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "月報数量少（52kg）・単価低め"
+      "note": "月報数量少（52kg）・単価低め",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "shima-aji",
@@ -992,7 +1044,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "釣果は天然・養殖区別なく国内採用"
+      "note": "釣果は天然・養殖区別なく国内採用",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "shiro-amadai",
@@ -1015,7 +1068,8 @@
         "ratio_high": 3.0,
         "source_note": "シロアマダイは市場でアカアマダイの2〜3倍の超高級魚。月報「あまたい」価格に倍率を掛けて推定"
       },
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "shirogisu",
@@ -1033,7 +1087,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "shousaifugu",
@@ -1050,7 +1105,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "近似マッチ（市場のまふぐと近い単価帯）"
+      "note": "近似マッチ（市場のまふぐと近い単価帯）",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "sujiika",
@@ -1067,7 +1123,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "スルメイカ系の地方名"
+      "note": "スルメイカ系の地方名",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "sumiika",
@@ -1086,7 +1143,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "surumeika",
@@ -1103,7 +1161,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "tachiuo",
@@ -1120,7 +1179,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "tai-gomoku",
@@ -1138,7 +1198,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "マダイ寄せ"
+      "note": "マダイ寄せ",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "torafugu",
@@ -1157,7 +1218,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": null
     },
     {
       "site_fish_id": "warasa",
@@ -1176,7 +1238,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "ブリ系中サイズ帯"
+      "note": "ブリ系中サイズ帯",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": "yariika",
@@ -1194,7 +1257,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": ""
+      "note": "",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": "ハゼ",
@@ -1213,7 +1277,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "月報非掲載・推測値運用。site_fish_id が日本語の唯一例"
+      "note": "月報非掲載・推測値運用。site_fish_id が日本語の唯一例",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": null,
@@ -1234,7 +1299,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "外道。釣果報告で頻出"
+      "note": "外道。釣果報告で頻出",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": null,
@@ -1252,7 +1318,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "外道"
+      "note": "外道",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": null,
@@ -1269,7 +1336,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "外道"
+      "note": "外道",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": null,
@@ -1286,7 +1354,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "外道"
+      "note": "外道",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": null,
@@ -1305,7 +1374,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "外道。カツオ便での副産物"
+      "note": "外道。カツオ便での副産物",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": null,
@@ -1322,7 +1392,8 @@
         "cm"
       ],
       "price_derived_from": null,
-      "note": "外道。冬の高級鍋材"
+      "note": "外道。冬の高級鍋材",
+      "recommended_mode": "kg"
     },
     {
       "site_fish_id": null,
@@ -1339,7 +1410,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "外道"
+      "note": "外道",
+      "recommended_mode": "cm"
     },
     {
       "site_fish_id": null,
@@ -1357,7 +1429,8 @@
         "kg"
       ],
       "price_derived_from": null,
-      "note": "外道。コハダはコノシロの小型。サイトには cohada ページは無い"
+      "note": "外道。コハダはコノシロの小型。サイトには cohada ページは無い",
+      "recommended_mode": "cm"
     }
   ]
 }

@@ -128,6 +128,17 @@ function bindEvents() {
   });
 }
 
+const MODE_LABEL_BASE = { cm: 'サイズ (cm)', kg: '重量 (kg)' };
+
+function updateModeLabels(recMode) {
+  for (const m of ['cm', 'kg']) {
+    const span = document.querySelector(`label[for="mode-${m}"] span, #mode-${m} ~ span`)
+              || document.getElementById(`mode-${m}`).closest('label').querySelector('span');
+    if (!span) continue;
+    span.textContent = MODE_LABEL_BASE[m] + (recMode === m ? '(推奨)' : '');
+  }
+}
+
 function onFishChange() {
   clearError();
   const fishId = $('fish').value;
@@ -144,8 +155,9 @@ function onFishChange() {
   // 両方サポート時のみラジオ表示。主入力(modes[0])をデフォルトに
   if (modes.length >= 2) {
     $('mode-switch').hidden = false;
-    const defaultMode = modes[0];
+    const defaultMode = species.recommended_mode || modes[0];
     document.querySelector(`input[name="input-mode"][value="${defaultMode}"]`).checked = true;
+    updateModeLabels(species.recommended_mode);
     applyInputMode(defaultMode);
   } else {
     $('mode-switch').hidden = true;
