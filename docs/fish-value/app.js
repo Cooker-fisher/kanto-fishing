@@ -780,7 +780,8 @@ function buildDetailItemRow(entry, item, idx, unit, curve) {
 }
 
 function addDetailItem(entry) {
-  entry.items.push({ val: 0 });
+  const prevVal = entry.items.length > 0 ? entry.items[entry.items.length - 1].val : 0;
+  entry.items.push({ val: prevVal });
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   buildDetailList(el, entry);
   const plusBtns = el.querySelectorAll('.ds-plus');
