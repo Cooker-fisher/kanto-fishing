@@ -342,8 +342,10 @@ function addEntry(preset) {
     '</div>' +
     '<div class="band-list-row" hidden>' +
       '<div class="band-list-head">' +
-        '<label>サイズ別 匹数</label>' +
-        '<button type="button" class="detail-toggle-btn">1匹ずつ入力</button>' +
+        '<div class="input-mode-seg">' +
+          '<button type="button" class="ims-btn ims-simple active">簡単入力</button>' +
+          '<button type="button" class="ims-btn ims-detail">詳細入力</button>' +
+        '</div>' +
         '<div class="band-total">' +
           '<span class="band-total-val">0</span>' +
           '<span class="band-total-unit">尾</span>' +
@@ -356,7 +358,8 @@ function addEntry(preset) {
 
   el.querySelector('.entry-fish-btn').addEventListener('click', () => openFishPicker(entry));
   el.querySelector('.entry-remove').addEventListener('click', () => removeEntry(entry));
-  el.querySelector('.detail-toggle-btn').addEventListener('click', () => toggleDetailMode(entry));
+  el.querySelector('.ims-simple').addEventListener('click', () => { if (!entry.detailMode) return; toggleDetailMode(entry); });
+  el.querySelector('.ims-detail').addEventListener('click', () => { if (entry.detailMode || !entry._priceEntry) return; toggleDetailMode(entry); });
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
@@ -408,6 +411,7 @@ function onEntryFishChange(entry, fishId) {
   entry.fishId = fishId;
   entry.bandCounts = {};
   entry.detailMode = false;
+  entry.detailUnit = null;
   entry.items = [];
 
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
@@ -459,9 +463,8 @@ function onEntryFishChange(entry, fishId) {
   el.querySelector('.band-list').hidden = false;
   el.querySelector('.detail-list').hidden = true;
   el.querySelector('.detail-list').innerHTML = '';
-  const dtBtn = el.querySelector('.detail-toggle-btn');
-  dtBtn.textContent = '1匹ずつ入力';
-  dtBtn.classList.remove('active');
+  el.querySelector('.ims-simple').classList.add('active');
+  el.querySelector('.ims-detail').classList.remove('active');
   listRow.hidden = false;
   el.classList.add('has-fish');
   updateEntryTotal(entry);
@@ -605,18 +608,21 @@ function toggleDetailMode(entry) {
   entry.bandCounts = {};
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (!el) return;
-  const btn = el.querySelector('.detail-toggle-btn');
+  const simpleBtn = el.querySelector('.ims-simple');
+  const detailBtn = el.querySelector('.ims-detail');
   const bandList = el.querySelector('.band-list');
   const detailList = el.querySelector('.detail-list');
   if (entry.detailMode) {
-    btn.textContent = 'まとめ入力に戻す';
-    btn.classList.add('active');
+    const speciesCm = entry._species && entry._species.input_modes && entry._species.input_modes[0] === 'cm';
+    entry.detailUnit = speciesCm ? 'cm' : 'kg';
+    detailBtn.classList.add('active');
+    simpleBtn.classList.remove('active');
     bandList.hidden = true;
     detailList.hidden = false;
     addDetailItem(entry); // 最初の1匹を自動追加
   } else {
-    btn.textContent = '1匹ずつ入力';
-    btn.classList.remove('active');
+    simpleBtn.classList.add('active');
+    detailBtn.classList.remove('active');
     bandList.hidden = false;
     detailList.hidden = true;
     detailList.innerHTML = '';
@@ -628,51 +634,46 @@ function toggleDetailMode(entry) {
 function buildDetailList(el, entry) {
   const detailList = el.querySelector('.detail-list');
   detailList.innerHTML = '';
-  const species = entry._species;
-  const isCm = species && species.input_modes && species.input_modes[0] === 'cm';
-  const unit = isCm ? 'cm' : 'kg';
-  const step = isCm ? '1' : '0.1';
-  const placeholder = isCm ? 'cm' : 'kg';
+  const priceEntry = entry._priceEntry;
+  const curve = priceEntry && priceEntry.size_weight_curve;
+  const unit = entry.detailUnit || 'kg';
+  const isCm = unit === 'cm';
 
-  entry.items.forEach((item, idx) => {
-    const row = document.createElement('div');
-    row.className = 'detail-item';
-
-    const numEl = document.createElement('span');
-    numEl.className = 'di-num';
-    numEl.textContent = (idx + 1) + '匹目';
-
-    const inp = document.createElement('input');
-    inp.type = 'number';
-    inp.className = 'di-input';
-    inp.min = '0';
-    inp.step = step;
-    inp.placeholder = placeholder;
-    if (item.val > 0) inp.value = String(item.val);
-    inp.addEventListener('input', () => {
-      item.val = parseFloat(inp.value) || 0;
-      updateEntryTotal(entry);
-      scheduleLiveCalc();
+  // 単位トグル（size_weight_curveがある魚のみ）
+  if (curve) {
+    const unitSeg = document.createElement('div');
+    unitSeg.className = 'unit-seg';
+    ['kg', 'cm'].forEach(u => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'us-btn us-' + u + (unit === u ? ' active' : '');
+      btn.dataset.unit = u;
+      btn.textContent = u;
+      btn.addEventListener('click', () => {
+        if (u === entry.detailUnit) return;
+        entry.items.forEach(item => {
+          if (item.val > 0) {
+            if (u === 'cm') {
+              item.val = Math.round(kgToCm(curve, item.val));
+            } else {
+              item.val = Math.round(cmToKg(curve, item.val) * 100) / 100;
+            }
+          }
+        });
+        entry.detailUnit = u;
+        buildDetailList(el, entry);
+      });
+      unitSeg.appendChild(btn);
     });
+    detailList.appendChild(unitSeg);
+  }
 
-    const unitEl = document.createElement('span');
-    unitEl.className = 'di-unit';
-    unitEl.textContent = unit;
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'di-remove';
-    removeBtn.setAttribute('aria-label', '削除');
-    removeBtn.innerHTML = '<svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-    removeBtn.addEventListener('click', () => removeDetailItem(entry, idx));
-
-    row.appendChild(numEl);
-    row.appendChild(inp);
-    row.appendChild(unitEl);
-    row.appendChild(removeBtn);
-    detailList.appendChild(row);
+  // 1匹ずつ行
+  entry.items.forEach((item, idx) => {
+    detailList.appendChild(buildDetailItemRow(entry, item, idx, unit, curve));
   });
 
+  // 追加ボタン
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.className = 'detail-add-btn';
@@ -681,12 +682,78 @@ function buildDetailList(el, entry) {
   detailList.appendChild(addBtn);
 }
 
+function formatStepperVal(v, unit) {
+  if (!v || v <= 0) return '—';
+  if (unit === 'cm') return String(Math.round(v));
+  return (Math.round(v * 10) / 10).toFixed(1);
+}
+
+function buildDetailItemRow(entry, item, idx, unit, curve) {
+  const isCm = unit === 'cm';
+  const step = isCm ? 1 : 0.1;
+
+  const row = document.createElement('div');
+  row.className = 'detail-item';
+
+  const numEl = document.createElement('span');
+  numEl.className = 'di-num';
+  numEl.textContent = (idx + 1) + '匹目';
+
+  const stepper = document.createElement('div');
+  stepper.className = 'di-stepper' + (item.val > 0 ? ' has-value' : '');
+
+  const minusBtn = document.createElement('button');
+  minusBtn.type = 'button';
+  minusBtn.className = 'ds-btn ds-minus';
+  minusBtn.setAttribute('aria-label', '−');
+  minusBtn.innerHTML = '<svg viewBox="0 0 20 20" width="16" height="16"><path d="M4 10h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+
+  const valEl = document.createElement('span');
+  valEl.className = 'ds-val';
+  valEl.textContent = formatStepperVal(item.val, unit);
+
+  const plusBtn = document.createElement('button');
+  plusBtn.type = 'button';
+  plusBtn.className = 'ds-btn ds-plus';
+  plusBtn.setAttribute('aria-label', '＋');
+  plusBtn.innerHTML = '<svg viewBox="0 0 20 20" width="16" height="16"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+
+  stepper.appendChild(minusBtn);
+  stepper.appendChild(valEl);
+  stepper.appendChild(plusBtn);
+
+  function setDetailVal(v) {
+    if (!Number.isFinite(v)) v = 0;
+    v = Math.max(0, isCm ? Math.round(v) : Math.round(v * 100) / 100);
+    item.val = v;
+    valEl.textContent = formatStepperVal(v, unit);
+    stepper.classList.toggle('has-value', v > 0);
+    updateEntryTotal(entry);
+    scheduleLiveCalc();
+  }
+
+  attachHoldRepeat(minusBtn, () => setDetailVal(item.val - step));
+  attachHoldRepeat(plusBtn, () => setDetailVal(item.val + step));
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'di-remove';
+  removeBtn.setAttribute('aria-label', '削除');
+  removeBtn.innerHTML = '<svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+  removeBtn.addEventListener('click', () => removeDetailItem(entry, idx));
+
+  row.appendChild(numEl);
+  row.appendChild(stepper);
+  row.appendChild(removeBtn);
+  return row;
+}
+
 function addDetailItem(entry) {
   entry.items.push({ val: 0 });
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   buildDetailList(el, entry);
-  const inputs = el.querySelectorAll('.di-input');
-  if (inputs.length) inputs[inputs.length - 1].focus();
+  const plusBtns = el.querySelectorAll('.ds-plus');
+  if (plusBtns.length) plusBtns[plusBtns.length - 1].focus();
 }
 
 function removeDetailItem(entry, idx) {
@@ -769,9 +836,10 @@ function onCalculate(opts) {
     const curve = priceEntry.size_weight_curve;
 
     if (e.detailMode) {
+      const detailCm = e.detailUnit === 'cm';
       for (const item of e.items) {
         if (!item.val || item.val <= 0) continue;
-        const kgVal = (isCm && curve) ? cmToKg(curve, item.val) : item.val;
+        const kgVal = (detailCm && curve) ? cmToKg(curve, item.val) : item.val;
         const bandIdx = bands.findIndex(b => b.kg_max == null || kgVal <= b.kg_max);
         const band = bands[bandIdx >= 0 ? bandIdx : bands.length - 1];
         eCount += 1;
@@ -786,7 +854,7 @@ function onCalculate(opts) {
         const rMid = kgVal * (band.retail_low + band.retail_high) / 2;
         retailMidSum     += rMid;
         eRetailMid       += rMid;
-        const displayVal = isCm ? item.val + 'cm' : Math.round(item.val * 10) / 10 + 'kg';
+        const displayVal = detailCm ? item.val + 'cm' : (Math.round(item.val * 10) / 10).toFixed(1) + 'kg';
         eBreakdown.push({ label: band.label + ' ' + displayVal, count: 1, perKg: kgVal, bandKg: kgVal });
       }
     } else {

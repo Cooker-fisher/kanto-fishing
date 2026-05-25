@@ -373,23 +373,61 @@ header {
   gap: 8px;
 }
 
-/* 詳細入力モードトグル */
-.detail-toggle-btn {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--cta);
-  background: none;
-  border: 1px solid var(--cta);
+/* 入力モード切替セグメント（簡単入力 / 詳細入力） */
+.input-mode-seg {
+  display: inline-flex;
+  background: var(--border-2);
   border-radius: 999px;
-  padding: 3px 10px;
-  cursor: pointer;
-  transition: background .12s, color .12s;
-  white-space: nowrap;
-  margin-left: auto;
-  margin-right: 8px;
+  padding: 3px;
+  gap: 2px;
 }
-.detail-toggle-btn.active {
+.ims-btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  padding: 5px 14px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--sub);
+  transition: background .15s, color .15s, box-shadow .15s;
+  white-space: nowrap;
+  letter-spacing: .02em;
+  -webkit-tap-highlight-color: transparent;
+}
+.ims-btn.active {
   background: var(--cta);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(232,93,4,.28);
+}
+
+/* 単位切替セグメント（詳細モード内: kg / cm） */
+.unit-seg {
+  display: inline-flex;
+  align-self: flex-start;
+  background: var(--border-2);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+.us-btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 18px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--sub);
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.us-btn.active {
+  background: var(--accent);
   color: #fff;
 }
 
@@ -411,29 +449,61 @@ header {
   white-space: nowrap;
   min-width: 3.5em;
 }
-.di-input {
+/* 詳細入力ステッパー（di-stepper / ds-btn / ds-val） */
+.di-stepper {
   flex: 1 1 auto;
   min-width: 0;
-  height: 40px;
-  padding: 0 10px;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: stretch;
+  height: 44px;
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  font-size: 16px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--text);
+  border-radius: 999px;
   background: #fff;
-  text-align: right;
-  -moz-appearance: textfield;
+  overflow: hidden;
+  user-select: none;
+  transition: border-color .12s;
 }
-.di-input::-webkit-inner-spin-button,
-.di-input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.di-input:focus { outline: none; border-color: var(--cta); box-shadow: 0 0 0 2px rgba(230,119,27,.18); }
-.di-unit {
-  font-size: 13px;
-  color: var(--sub);
-  font-weight: 600;
-  white-space: nowrap;
+.di-stepper.has-value {
+  border-color: var(--cta);
+}
+.ds-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color .08s, transform .05s;
+  touch-action: manipulation;
+}
+.ds-btn:hover { background: rgba(13, 43, 74, .06); }
+.ds-btn:active,
+.ds-btn.pressing {
+  background: rgba(13, 43, 74, .14);
+  transform: scale(.94);
+}
+.ds-val {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--border-2);
+  border-right: 1px solid var(--border-2);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  background: #fcfcfd;
+  padding: 0;
+  overflow: hidden;
+}
+.di-stepper.has-value .ds-val {
+  background: rgba(232, 93, 4, .07);
+  color: var(--cta);
 }
 .di-remove {
   display: flex;
