@@ -15076,14 +15076,27 @@ def build_sitemap(data):
     # 旧: data (valid_catches=直近7日 sparse) ベース → 過去実績のみのコンボが漏れる
     # 新: docs/fish_area/*.html を直接スキャン → build_fish_area_pages が生成した全件カバー
     # T39 (2026/05/25): _FA_NOINDEX_SLUGS に含まれる薄ページは sitemap から除外
+    # T39-fix (2026/05/25): _FA_NOINDEX_SLUGS は当回 build_fish_area_pages が再生成した
+    # ページのみを含む（再生成対象は7日窓に該当する fish_area のみ）。
+    # 7日窓外のディスク上既存 HTML（手動 tmp_apply_fa_noindex.py 等で noindex 付与済み）は
+    # in-memory セットに含まれないため、HTML を直接読んで noindex タグの有無で判定する。
     fa_dir = os.path.join(WEB_DIR, "fish_area")
     if os.path.isdir(fa_dir):
         for fname in sorted(os.listdir(fa_dir)):
-            if fname.endswith(".html"):
-                _stem = fname[:-5]
-                if _stem in _FA_NOINDEX_SLUGS:
+            if not fname.endswith(".html"):
+                continue
+            _stem = fname[:-5]
+            if _stem in _FA_NOINDEX_SLUGS:
+                continue
+            # ディスク上 HTML を読んで noindex meta タグがあれば sitemap から除外
+            try:
+                with open(os.path.join(fa_dir, fname), encoding="utf-8") as _fp:
+                    _head = _fp.read(4096)  # head 部分だけで十分
+                if 'name="robots"' in _head and "noindex" in _head:
                     continue
-                urls.append((f"{SITE_URL}/fish_area/{fname}", "0.7", "weekly"))
+            except Exception:
+                pass
+            urls.append((f"{SITE_URL}/fish_area/{fname}", "0.7", "weekly"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
     # 2026/05/17: fishing_v_zero でも代替ソース（chowari等）あれば対象
