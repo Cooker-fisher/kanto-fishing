@@ -54,6 +54,7 @@
 | 23 | `fish_area/*.html` サンプル（aji-yokohama-honmoku/madai-iioka/aji-kanazawa-hakkei）（T29） | FAQ 直前に `class="fa-related"` セクション + 内部に `class="chip-link"` 1件以上（fish_area 同士の相互リンク） |
 | ※ | — | #24〜#33 は T38 系で `validate_output.py` 側に存在（実装先行・本表未掲載・別タスクで追記予定） |
 | 34 | 全 `docs/**/*.html`（2026-05-21） | `href` の値が `index.html` で終わる内部リンクが 0件（正規表現 `href=["'][^"']*index\.html["']`）。GitHub Pages Fastly CDN の root + 全 subdir レベルキャッシュキー別問題対策・内部リンクから `index.html` 末尾を完全排除 |
+| 35 | `fish_area/*.html`（T39 / 2026-05-25） | noindex 付与ページが 10 件以上（薄判定が動作している証拠）+ noindex 付与済ページの URL が `sitemap.xml` に含まれない（AdSense「有用性の低いコンテンツ」対策・hist_count < 30 のコンボを noindex） |
 
 ### T22 関連の設計契約（H1 noindex 解除手順）
 

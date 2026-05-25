@@ -3576,6 +3576,12 @@ def _fa_exists(fish, area):
 # _ship_build_page_html() が書き込み、build_sitemap() が参照して URL 除外に使う
 _SHIP_NOINDEX_SLUGS: set = set()
 
+# T39 (2026/05/25): hist_count < 30 の薄い fish_area ページの slug stem ({fish}-{area}) を
+# 蓄積するセット。build_fish_area_pages() が書き込み、build_sitemap() が参照して URL 除外。
+# AdSense「有用性の低いコンテンツ」対策。
+_FA_NOINDEX_SLUGS: set = set()
+_FA_NOINDEX_HIST_THRESHOLD = 30
+
 def fish_slug(fish: str) -> str:
     """魚種名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _FISH_ROMAJI.get(fish, fish)
@@ -10373,11 +10379,22 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
         max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
         desc = f"{area}での{fish}釣果情報。今週{len(catches)}便{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
+        # T39 (2026/05/25): hist_count < 30 のコンボは FAQ 等の固定文章が薄く
+        # AdSense「有用性の低いコンテンツ」判定リスクが高いため noindex を付与し
+        # sitemap から除外する。ページ自体は内部リンク経由でユーザーに到達可能。
+        _fa_hist_n = fa_hist_count.get((fish, area), 0)
+        _fa_slug_stem = f"{fish_slug(fish)}-{area_slug(area)}"
+        if _fa_hist_n < _FA_NOINDEX_HIST_THRESHOLD:
+            fa_noindex_tag = '<meta name="robots" content="noindex, follow">'
+            _FA_NOINDEX_SLUGS.add(_fa_slug_stem)
+        else:
+            fa_noindex_tag = ""
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}便】| 船釣り予想</title>
   <meta name="description" content="{desc}">
+  {fa_noindex_tag}
   <link rel="canonical" href="{page_url}">
   {_build_share_meta(
       title=f"{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}便】",
@@ -10425,6 +10442,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             fp.write(html)
         count += 1
     print(f"魚種×港ページ: {count} 件生成 → fish_area/*.html")
+    if _FA_NOINDEX_SLUGS:
+        print(f"  └ うち noindex 付与: {len(_FA_NOINDEX_SLUGS)} 件（hist_count < {_FA_NOINDEX_HIST_THRESHOLD}・AdSense 薄判定対策）")
 
 # ============================================================
 # calendar.html
@@ -15056,10 +15075,14 @@ def build_sitemap(data):
     # fish_area/*.html（実ファイルベース・2026/05/14 修正）
     # 旧: data (valid_catches=直近7日 sparse) ベース → 過去実績のみのコンボが漏れる
     # 新: docs/fish_area/*.html を直接スキャン → build_fish_area_pages が生成した全件カバー
+    # T39 (2026/05/25): _FA_NOINDEX_SLUGS に含まれる薄ページは sitemap から除外
     fa_dir = os.path.join(WEB_DIR, "fish_area")
     if os.path.isdir(fa_dir):
         for fname in sorted(os.listdir(fa_dir)):
             if fname.endswith(".html"):
+                _stem = fname[:-5]
+                if _stem in _FA_NOINDEX_SLUGS:
+                    continue
                 urls.append((f"{SITE_URL}/fish_area/{fname}", "0.7", "weekly"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外

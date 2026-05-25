@@ -549,6 +549,37 @@ def validate_ship_noindex():
         ok(f"ship/*.html noindex 付与: {noindex_count} 件 / 全 {len(files)} 件")
 
 
+def validate_fish_area_noindex():
+    """T39 (2026/05/25): hist_count < 30 の薄 fish_area ページが noindex 付与され
+    かつ sitemap.xml から除外されていることを検証する。
+    AdSense「有用性の低いコンテンツ」対策の動作確認。"""
+    print("\n[35] docs/fish_area/*.html noindex 付与 + sitemap 除外（T39）")
+    fa_dir = os.path.join(DOCS, "fish_area")
+    if not os.path.isdir(fa_dir):
+        fail("docs/fish_area/ ディレクトリが存在しない")
+        return
+    files = [f for f in os.listdir(fa_dir) if f.endswith(".html") and f != "index.html"]
+    noindex_slugs = set()
+    for fn in files:
+        content = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
+        if 'name="robots"' in content and "noindex" in content:
+            noindex_slugs.add(fn[:-5])
+    if len(noindex_slugs) < 10:
+        fail(f"fish_area/*.html で noindex 付与ページが {len(noindex_slugs)} 件（最低 10 件・薄ページ判定が動作している証拠）")
+        return
+    # sitemap.xml で noindex 付与ページが含まれていないこと
+    sitemap_path = os.path.join(DOCS, "sitemap.xml")
+    if not os.path.isfile(sitemap_path):
+        fail("sitemap.xml が存在しない")
+        return
+    sitemap_content = open(sitemap_path, encoding="utf-8").read()
+    leaked = [s for s in noindex_slugs if f"/fish_area/{s}.html" in sitemap_content]
+    if leaked:
+        fail(f"sitemap.xml に noindex 付与 fish_area が {len(leaked)} 件混入: {leaked[:3]}...")
+    else:
+        ok(f"fish_area/*.html noindex 付与: {len(noindex_slugs)} 件 / 全 {len(files)} 件・sitemap 除外 OK")
+
+
 def validate_pages_faq():
     print("\n[15] docs/pages/faq.html 存在＋本文 800字以上（T22-M1）")
     path = os.path.join(DOCS, "pages", "faq.html")
@@ -1168,6 +1199,7 @@ def main():
     validate_area_sea_section()
     validate_forecast_noindex()
     validate_ship_noindex()
+    validate_fish_area_noindex()
     validate_pages_faq()
     validate_fish_no_common_faq()
     validate_area_no_common_faq()

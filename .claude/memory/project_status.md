@@ -1,6 +1,43 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/05/22
-最新コミット: T33 DO魚種別+水色再predict+MIN_MONTHS=4 → 撤回（時間対効果不足）
+最終更新: 2026/05/25
+最新コミット: T39 fish_area 薄ページ noindex 拡大（AdSense「有用性の低いコンテンツ」対策）
+
+---
+
+## ✅ 直近完了（2026/05/25・main agent）
+
+### T39 fish_area noindex 拡大（AdSense 薄判定対策）
+
+**動機**: AdSense 審査ステータス「要確認 / 有用性の低いコンテンツ」（2026/05/24 受信）。
+ads.txt は承認済みだがコンテンツ判定で止まっている。666 本の fish_area ページのうち
+hist_count（3年累計）が低いコンボは FAQ 固定文章も薄く、AdSense 薄判定の温床となるため
+noindex で sitemap から除外する。
+
+**threshold**: hist_count < 30
+- 666 active ページ中 353 件（53%）が対象
+- sitemap.xml: 1051 → 698 URL（353 件除外）
+
+**実装内容:**
+1. `crawler.py`:
+   - `_FA_NOINDEX_SLUGS` モジュール変数 + `_FA_NOINDEX_HIST_THRESHOLD=30` 定数追加
+   - `build_fish_area_pages()` 内で `fa_hist_count[(fish,area)]` を読み、閾値未満なら
+     `fa_noindex_tag` を head に注入し slug を `_FA_NOINDEX_SLUGS` に蓄積
+   - `build_sitemap()` で `_FA_NOINDEX_SLUGS` に含まれる fish_area URL を skip
+2. `crawl/validate_output.py`:
+   - 不変条件 #35 `validate_fish_area_noindex()` 追加（noindex 付与 10件以上 +
+     sitemap 除外確認）
+3. `design/V2/REGRESSION_PREVENTION.md`: 不変条件テーブルに #35 追加
+4. 一回限りスクリプト `tmp_apply_fa_noindex.py` で既存 docs/ に遡及適用（dustbox 退避）
+
+**検証**: `python crawl/validate_output.py` で errors=0 / warnings=0 全 PASS。
+fish_area HTML 353 件に noindex meta タグ + sitemap.xml に 698 URL（除外 353 件）。
+
+**未確認:**
+- AdSense 再審査の結果（数日〜数週間後）
+- 内部リンク経由でユーザー到達経路は維持（noindex は検索エンジンに対してのみ）
+- 閾値 30 が適切か（再審査結果次第で 50 や 80 に上げる選択肢あり）
+
+---
 
 ---
 
