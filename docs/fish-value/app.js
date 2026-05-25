@@ -80,19 +80,82 @@ async function init() {
   applyUrlParams();
 }
 
+// カタカナの頭文字 → 50音グループ
+const KANA_GROUPS = [
+  { label: 'ア行', chars: 'アイウエオ' },
+  { label: 'カ行', chars: 'カキクケコガギグゲゴ' },
+  { label: 'サ行', chars: 'サシスセソザジズゼゾ' },
+  { label: 'タ行', chars: 'タチツテトダヂヅデド' },
+  { label: 'ナ行', chars: 'ナニヌネノ' },
+  { label: 'ハ行', chars: 'ハヒフヘホバビブベボパピプペポ' },
+  { label: 'マ行', chars: 'マミムメモ' },
+  { label: 'ヤ行', chars: 'ヤユヨ' },
+  { label: 'ラ行', chars: 'ラリルレロ' },
+  { label: 'ワ行', chars: 'ワヲン' },
+];
+
+// 漢字始まりの site_display_name の読み（カタカナ複数文字に変換するためのマップ）
+const KANJI_FIRST_MAP = {
+  '沖': 'オキ',  // 沖カサゴ・沖メバル
+};
+
+function readingOf(displayName) {
+  if (!displayName) return '';
+  const first = displayName.charAt(0);
+  if (KANJI_FIRST_MAP[first]) {
+    return KANJI_FIRST_MAP[first] + displayName.slice(1);
+  }
+  return displayName;
+}
+
+function kanaGroupOf(displayName) {
+  const reading = readingOf(displayName);
+  if (!reading) return null;
+  const first = reading.charAt(0);
+  for (const g of KANA_GROUPS) {
+    if (g.chars.indexOf(first) >= 0) return g.label;
+  }
+  return 'その他';
+}
+
+function kanaSortKey(displayName) {
+  // 並び順は KANA_GROUPS の順 → 同行内は読みのカタカナ標準順
+  if (!displayName) return 'zzzz';
+  const grp = kanaGroupOf(displayName);
+  const grpIdx = KANA_GROUPS.findIndex(g => g.label === grp);
+  return (grpIdx < 0 ? 99 : grpIdx).toString().padStart(2, '0') + readingOf(displayName);
+}
+
 function populateFishSelect() {
   const select = $('fish');
-  // target を先に・bycatch を後ろに
-  const targets = SPECIES_MAP.species.filter(s => s.category === 'target');
-  const bycatches = SPECIES_MAP.species.filter(s => s.category === 'bycatch');
+  // target → 50音順ソート、bycatch は最後にまとめる
+  const targets = SPECIES_MAP.species
+    .filter(s => s.category === 'target')
+    .slice()
+    .sort((a, b) => kanaSortKey(a.site_display_name).localeCompare(kanaSortKey(b.site_display_name)));
+  const bycatches = SPECIES_MAP.species
+    .filter(s => s.category === 'bycatch')
+    .slice()
+    .sort((a, b) => kanaSortKey(a.site_display_name).localeCompare(kanaSortKey(b.site_display_name)));
 
+  // target を 50音グループ別に展開
+  let currentGroup = null;
   for (const s of targets) {
+    const grp = kanaGroupOf(s.site_display_name);
+    if (grp !== currentGroup) {
+      const sep = document.createElement('option');
+      sep.disabled = true;
+      sep.textContent = '── ' + grp + ' ──';
+      select.appendChild(sep);
+      currentGroup = grp;
+    }
     const opt = document.createElement('option');
     opt.value = s.site_fish_id;
     opt.textContent = s.site_display_name;
     select.appendChild(opt);
   }
 
+  // bycatch
   if (bycatches.length > 0) {
     const sep = document.createElement('option');
     sep.disabled = true;
