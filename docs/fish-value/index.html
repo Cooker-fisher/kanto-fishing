@@ -80,6 +80,19 @@
 
 </main>
 
+<!-- 魚ピッカーモーダル -->
+<div id="fish-picker-modal" class="fish-picker-modal" hidden role="dialog" aria-modal="true" aria-label="魚種を選択">
+  <div class="picker-sheet">
+    <div class="picker-header">
+      <span class="picker-title">魚種を選択</span>
+      <button type="button" id="picker-close-btn" class="picker-close" aria-label="閉じる">
+        <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="picker-content"></div>
+  </div>
+</div>
+
 <!-- スマホ用ボトム固定アクション -->
 <div class="bottom-bar">
   <button id="reset-btn" class="btn-ghost" type="button" aria-label="リセット">リセット</button>

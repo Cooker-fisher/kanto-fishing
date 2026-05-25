@@ -206,33 +206,57 @@ header {
   font-variant-numeric: tabular-nums;
 }
 
-.entry-fish-wrap { min-width: 0; }
-.entry-fish {
+/* 魚種選択ボタン（select 置き換え） */
+.entry-fish-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 9px 30px 9px 10px;
+  min-height: 44px;
+  padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  font-size: 15px;
-  font-family: inherit;
   background: #fff;
-  color: var(--text);
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%235a6a7a' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 10px;
-  min-height: 42px;
+  color: var(--sub);
+  font-family: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color .12s, box-shadow .12s;
 }
-.entry-fish:focus {
+.entry-fish-btn:hover { border-color: var(--accent-2); }
+.entry-fish-btn:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(13, 43, 74, .12);
 }
-.entry-fish option:disabled {
-  color: var(--accent);
-  font-weight: 700;
-  background: var(--nav);
+.entry.has-fish .entry-fish-btn { color: var(--text); }
+
+.efb-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  font-size: 20px;
+  line-height: 1;
+}
+.efb-icon img { display: block; border-radius: 4px; }
+
+.efb-name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.efb-caret {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform .15s;
 }
 
 .entry-remove {
@@ -740,4 +764,176 @@ header {
 @media (min-width: 768px) {
   .wrap { margin-top: 16px; padding: 0 16px; }
   .card { padding: 22px; }
+}
+
+/* ============================================
+   魚ピッカーモーダル
+   ============================================ */
+
+body.picker-open { overflow: hidden; }
+
+.fish-picker-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, .45);
+  display: flex;
+  align-items: flex-end;
+}
+
+.picker-sheet {
+  width: 100%;
+  max-height: 80vh;
+  background: var(--card);
+  border-radius: var(--r) var(--r) 0 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 24px rgba(0,0,0,.15);
+  animation: sheet-up .22s cubic-bezier(.22,.61,.36,1);
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border-2);
+  flex: 0 0 auto;
+}
+
+.picker-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .03em;
+}
+
+.picker-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--nav);
+  color: var(--sub);
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color .12s;
+}
+.picker-close:hover { background: var(--border); color: var(--text); }
+
+.picker-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 12px 24px;
+}
+
+/* 50音グループラベル */
+.picker-group-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: .08em;
+  background: var(--nav);
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  margin: 12px 0 8px;
+  display: inline-block;
+}
+.picker-group-label:first-child { margin-top: 4px; }
+
+/* 魚チップグリッド */
+.picker-content {
+  /* flex column から grid に変更するために wrap を使う */
+}
+
+/* チップ群をフレックスラップで並べる */
+.picker-content > .fish-chip,
+.picker-content > .picker-group-label {
+  display: inline-flex; /* グループラベルはブロック扱い */
+}
+
+/* グリッドレイアウトのためのコンテナをラベル後に作りたいが、
+   DOM 上はフラット。CSS で対処: ラベルは width:100% でラップ強制 */
+.picker-group-label {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* チップ群はフレックス */
+.picker-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+}
+
+.fish-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px 6px;
+  background: #fff;
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color .12s, background-color .12s, transform .08s;
+  min-width: 64px;
+  max-width: 80px;
+  text-align: center;
+}
+.fish-chip:hover {
+  border-color: var(--accent);
+  background: rgba(13, 43, 74, .04);
+}
+.fish-chip:active { transform: scale(.94); }
+.fish-chip.selected {
+  border-color: var(--cta);
+  background: rgba(232, 93, 4, .07);
+}
+
+.fish-chip-icon {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.fish-chip-icon.fish-chip-icon-placeholder {
+  width: 36px;
+  height: 36px;
+  font-size: 28px;
+  line-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fish-chip-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.fish-chip.selected .fish-chip-name { color: var(--cta); }
+
+@media (min-width: 480px) {
+  .picker-sheet {
+    max-width: var(--mx);
+    margin: 0 auto;
+    border-radius: var(--r) var(--r) 0 0;
+  }
+  .fish-chip { min-width: 72px; max-width: 90px; }
 }

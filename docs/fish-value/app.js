@@ -1,5 +1,5 @@
 /**
- * 釣果価値チェッカー（複数魚種対応・サイズ別匹数入力 v5）
+ * 釣果価値チェッカー（複数魚種対応・サイズ別匹数入力・魚アイコンピッカー v6）
  */
 'use strict';
 
@@ -7,8 +7,9 @@ const $ = (id) => document.getElementById(id);
 
 let SPECIES_MAP = null;
 let PRICE_MASTER = null;
-let entries = [];     // [{id, fishId, bandCounts:{idx:count}}]
+let entries = [];
 let entryCounter = 0;
+let pickerTargetEntry = null; // モーダルが対象とするエントリ
 
 // ============================================
 // ユーティリティ
@@ -56,32 +57,33 @@ function clearError() {
   $('err-msg').hidden = true;
 }
 
-// ============================================
-// 初期化
-// ============================================
-
-async function init() {
-  try {
-    const [smRes, pmRes] = await Promise.all([
-      fetch('fish-species-map.json'),
-      fetch('fish-price-master.json'),
-    ]);
-    if (!smRes.ok || !pmRes.ok) throw new Error('JSON ロード失敗');
-    SPECIES_MAP = await smRes.json();
-    PRICE_MASTER = await pmRes.json();
-  } catch (e) {
-    showError('データの読み込みに失敗しました。再読み込みしてください。');
-    console.error(e);
-    return;
-  }
-
-  bindGlobalEvents();
-  addEntry(); // 起動時に1件
-  applyUrlParams();
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 
 // ============================================
-// 50音グループ（PR #50）
+// 魚アイコン
+// ============================================
+
+// site_fish_id → asset folder（ハイフン除去だけでは解決しない特殊ケース）
+const ICON_FOLDER_MAP = {
+  'abura-bouzu': 'aburabozu',
+  'mongoika':    'mongouika',
+};
+
+function iconFolderOf(sid) {
+  if (!sid) return null;
+  return ICON_FOLDER_MAP[sid] || sid.replace(/-/g, '');
+}
+
+function iconUrlOf(species) {
+  const folder = iconFolderOf(species.site_fish_id);
+  if (!folder) return null;
+  return `../assets/fish/${folder}/${folder}_icon.png`;
+}
+
+// ============================================
+// 50音グループ
 // ============================================
 
 const KANA_GROUPS = [
@@ -104,6 +106,7 @@ function readingOf(displayName) {
   if (KANJI_FIRST_MAP[first]) return KANJI_FIRST_MAP[first] + displayName.slice(1);
   return displayName;
 }
+
 function kanaGroupOf(displayName) {
   const reading = readingOf(displayName);
   if (!reading) return null;
@@ -113,6 +116,7 @@ function kanaGroupOf(displayName) {
   }
   return 'その他';
 }
+
 function kanaSortKey(displayName) {
   if (!displayName) return 'zzzz';
   const grp = kanaGroupOf(displayName);
@@ -120,9 +124,24 @@ function kanaSortKey(displayName) {
   return (grpIdx < 0 ? 99 : grpIdx).toString().padStart(2, '0') + readingOf(displayName);
 }
 
-function populateFishSelect(select) {
-  // 既存option（プレースホルダー以外）を削除
-  while (select.options.length > 1) select.remove(1);
+function findSpecies(fishId) {
+  if (!fishId) return null;
+  let s = SPECIES_MAP.species.find(x => x.site_fish_id === fishId);
+  if (s) return s;
+  if (typeof fishId === 'string' && fishId.startsWith('bycatch-')) {
+    const pfid = fishId.replace('bycatch-', '');
+    return SPECIES_MAP.species.find(x => x.price_fish_id === pfid && x.category === 'bycatch');
+  }
+  return null;
+}
+
+// ============================================
+// 魚ピッカーモーダル
+// ============================================
+
+function buildFishPickerModal() {
+  const content = document.querySelector('#fish-picker-modal .picker-content');
+  content.innerHTML = '';
 
   const targets = SPECIES_MAP.species
     .filter(s => s.category === 'target')
@@ -137,41 +156,122 @@ function populateFishSelect(select) {
   for (const s of targets) {
     const grp = kanaGroupOf(s.site_display_name);
     if (grp !== currentGroup) {
-      const sep = document.createElement('option');
-      sep.disabled = true;
-      sep.textContent = '── ' + grp + ' ──';
-      select.appendChild(sep);
+      const label = document.createElement('div');
+      label.className = 'picker-group-label';
+      label.textContent = grp;
+      content.appendChild(label);
       currentGroup = grp;
     }
-    const opt = document.createElement('option');
-    opt.value = s.site_fish_id;
-    opt.textContent = s.site_display_name;
-    select.appendChild(opt);
+    content.appendChild(buildFishChipEl(s));
   }
+
   if (bycatches.length > 0) {
-    const sep = document.createElement('option');
-    sep.disabled = true;
-    sep.textContent = '── 外道 ──';
-    select.appendChild(sep);
+    const label = document.createElement('div');
+    label.className = 'picker-group-label';
+    label.textContent = '外道';
+    content.appendChild(label);
     for (const s of bycatches) {
-      const opt = document.createElement('option');
-      opt.value = s.site_fish_id || ('bycatch-' + s.price_fish_id);
-      opt.dataset.pfid = s.price_fish_id;
-      opt.textContent = s.site_display_name;
-      select.appendChild(opt);
+      content.appendChild(buildFishChipEl(s));
     }
   }
 }
 
-function findSpecies(fishId) {
-  if (!fishId) return null;
-  let s = SPECIES_MAP.species.find(x => x.site_fish_id === fishId);
-  if (s) return s;
-  if (fishId.startsWith('bycatch-')) {
-    const pfid = fishId.replace('bycatch-', '');
-    return SPECIES_MAP.species.find(x => x.price_fish_id === pfid && x.category === 'bycatch');
+function buildFishChipEl(species) {
+  const fishId = species.site_fish_id || ('bycatch-' + species.price_fish_id);
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'fish-chip';
+  chip.dataset.fishId = fishId;
+
+  const url = iconUrlOf(species);
+  if (url) {
+    const img = document.createElement('img');
+    img.className = 'fish-chip-icon';
+    img.src = url;
+    img.alt = '';
+    img.width = 36;
+    img.height = 36;
+    img.loading = 'lazy';
+    img.onerror = function() { this.replaceWith(makeFallbackIcon()); };
+    chip.appendChild(img);
+  } else {
+    chip.appendChild(makeFallbackIcon());
   }
-  return null;
+
+  const nameEl = document.createElement('span');
+  nameEl.className = 'fish-chip-name';
+  nameEl.textContent = species.site_display_name;
+  chip.appendChild(nameEl);
+
+  chip.addEventListener('click', () => onPickerSelect(fishId));
+  return chip;
+}
+
+function makeFallbackIcon() {
+  const span = document.createElement('span');
+  span.className = 'fish-chip-icon fish-chip-icon-placeholder';
+  span.textContent = '🐟';
+  return span;
+}
+
+function openFishPicker(entry) {
+  pickerTargetEntry = entry;
+  const modal = $('fish-picker-modal');
+
+  modal.querySelectorAll('.fish-chip').forEach(chip => {
+    chip.classList.toggle('selected', chip.dataset.fishId === entry.fishId);
+  });
+
+  modal.hidden = false;
+  document.body.classList.add('picker-open');
+
+  const selectedChip = modal.querySelector('.fish-chip.selected');
+  if (selectedChip) {
+    setTimeout(() => selectedChip.scrollIntoView({ block: 'center', behavior: 'instant' }), 50);
+  }
+}
+
+function closeFishPicker() {
+  $('fish-picker-modal').hidden = true;
+  document.body.classList.remove('picker-open');
+  pickerTargetEntry = null;
+}
+
+function onPickerSelect(fishId) {
+  if (!pickerTargetEntry) return;
+  const entry = pickerTargetEntry;
+
+  $('fish-picker-modal').querySelectorAll('.fish-chip').forEach(chip => {
+    chip.classList.toggle('selected', chip.dataset.fishId === fishId);
+  });
+
+  closeFishPicker();
+  onEntryFishChange(entry, fishId);
+}
+
+// ============================================
+// 初期化
+// ============================================
+
+async function init() {
+  try {
+    const [smRes, pmRes] = await Promise.all([
+      fetch('fish-species-map.json'),
+      fetch('fish-price-master.json'),
+    ]);
+    if (!smRes.ok || !pmRes.ok) throw new Error('JSON ロード失敗');
+    SPECIES_MAP = await smRes.json();
+    PRICE_MASTER = await pmRes.json();
+  } catch (e) {
+    showError('データの読み込みに失敗しました。再読み込みしてください。');
+    console.error(e);
+    return;
+  }
+
+  buildFishPickerModal();
+  bindGlobalEvents();
+  addEntry();
+  applyUrlParams();
 }
 
 // ============================================
@@ -183,13 +283,20 @@ function bindGlobalEvents() {
   $('reset-btn').addEventListener('click', onReset);
   $('add-entry-btn').addEventListener('click', () => {
     addEntry();
-    // 新規エントリの魚種セレクトにフォーカス
     const last = $('entries').lastElementChild;
     if (last) {
-      const sel = last.querySelector('.entry-fish');
-      sel && sel.focus();
       last.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+  });
+
+  $('picker-close-btn').addEventListener('click', closeFishPicker);
+
+  $('fish-picker-modal').addEventListener('click', (e) => {
+    if (e.target === $('fish-picker-modal')) closeFishPicker();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !$('fish-picker-modal').hidden) closeFishPicker();
   });
 }
 
@@ -209,9 +316,13 @@ function addEntry(preset) {
   el.innerHTML =
     '<div class="entry-head">' +
       '<span class="entry-num"></span>' +
-      '<div class="entry-fish-wrap">' +
-        '<select class="entry-fish" aria-label="魚種"><option value="">▼ 魚種を選択</option></select>' +
-      '</div>' +
+      '<button type="button" class="entry-fish-btn" aria-label="魚種を選択">' +
+        '<span class="efb-icon"></span>' +
+        '<span class="efb-name">▼ 魚種を選択</span>' +
+        '<svg class="efb-caret" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">' +
+          '<path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+      '</button>' +
       '<button type="button" class="entry-remove" aria-label="削除">' +
         '<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>' +
       '</button>' +
@@ -228,27 +339,22 @@ function addEntry(preset) {
     '</div>';
   $('entries').appendChild(el);
 
-  // セレクト構築
-  populateFishSelect(el.querySelector('.entry-fish'));
-
-  // イベント
-  el.querySelector('.entry-fish').addEventListener('change', (e) => onEntryFishChange(entry, e.target.value));
+  el.querySelector('.entry-fish-btn').addEventListener('click', () => openFishPicker(entry));
   el.querySelector('.entry-remove').addEventListener('click', () => removeEntry(entry));
 
-  // プリセット適用
   if (preset?.fishId) {
-    el.querySelector('.entry-fish').value = preset.fishId;
     onEntryFishChange(entry, preset.fishId);
     if (preset.bandCounts) {
-      // 既に bandCounts はオブジェクトとして入っている -> band-list 側に反映
-      Object.entries(preset.bandCounts).forEach(([idx, cnt]) => {
-        const row = el.querySelector('.band-row[data-idx="' + idx + '"]');
-        if (row) {
-          const inp = row.querySelector('.bs-input');
-          inp.value = cnt;
-          inp.dispatchEvent(new Event('input'));
-        }
-      });
+      setTimeout(() => {
+        Object.entries(preset.bandCounts).forEach(([idx, cnt]) => {
+          const row = el.querySelector('.band-row[data-idx="' + idx + '"]');
+          if (row) {
+            const inp = row.querySelector('.bs-input');
+            inp.value = cnt;
+            inp.dispatchEvent(new Event('input'));
+          }
+        });
+      }, 0);
     }
   }
 
@@ -258,7 +364,7 @@ function addEntry(preset) {
 }
 
 function removeEntry(entry) {
-  if (entries.length <= 1) return; // 最低1件残す
+  if (entries.length <= 1) return;
   entries = entries.filter(e => e !== entry);
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (el) el.remove();
@@ -287,16 +393,41 @@ function onEntryFishChange(entry, fishId) {
   entry.bandCounts = {};
 
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (!el) return;
   const listRow = el.querySelector('.band-list-row');
+  const btn = el.querySelector('.entry-fish-btn');
+  const iconEl = btn.querySelector('.efb-icon');
+  const nameEl = btn.querySelector('.efb-name');
+
+  // ボタン表示リセット
+  iconEl.innerHTML = '';
 
   if (!fishId) {
-    listRow.hidden = true;
+    nameEl.textContent = '▼ 魚種を選択';
     el.classList.remove('has-fish');
+    listRow.hidden = true;
     scheduleLiveCalc();
     return;
   }
+
   const species = findSpecies(fishId);
   if (!species) return;
+
+  // アイコン表示
+  const url = iconUrlOf(species);
+  if (url) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = '';
+    img.width = 28;
+    img.height = 28;
+    img.onerror = function() { this.replaceWith(makeFallbackIcon()); };
+    iconEl.appendChild(img);
+  } else {
+    iconEl.appendChild(makeFallbackIcon());
+  }
+  nameEl.textContent = species.site_display_name;
+
   const priceEntry = PRICE_MASTER.prices[species.price_fish_id];
   if (!priceEntry) {
     showError(species.site_display_name + ' の価格データが未登録です');
@@ -465,7 +596,6 @@ function onCalculate(opts) {
   const silent = opts && opts.silent;
   if (!silent) clearError();
 
-  // 有効エントリ
   const validEntries = entries.filter(e => e.fishId && e._priceEntry && Object.values(e.bandCounts).some(v => v > 0));
   if (validEntries.length === 0) {
     if (!silent) showError('魚種と匹数を入力してください');
@@ -531,15 +661,10 @@ function onCalculate(opts) {
   }
 
   renderResult({
-    totalCount,
-    totalKg,
+    totalCount, totalKg,
     speciesCount: validEntries.length,
-    wholesaleLow:  wholesaleLowSum,
-    wholesaleHigh: wholesaleHighSum,
-    wholesaleMid:  wholesaleMidSum,
-    retailLow:     retailLowSum,
-    retailHigh:    retailHighSum,
-    retailMid:     retailMidSum,
+    wholesaleLow: wholesaleLowSum, wholesaleHigh: wholesaleHighSum, wholesaleMid: wholesaleMidSum,
+    retailLow: retailLowSum, retailHigh: retailHighSum, retailMid: retailMidSum,
     perEntry,
   }, opts);
 }
@@ -554,7 +679,6 @@ function renderResult(r, opts) {
   $('result-count').textContent   = r.totalCount;
   $('result-weight').textContent  = fmtKgShort(r.totalKg);
 
-  // ピル: 魚種ごとに表示
   const pills = $('result-pills');
   pills.innerHTML = '';
   for (const e of r.perEntry) {
@@ -568,11 +692,9 @@ function renderResult(r, opts) {
 
   $('retail-main').textContent  = fmtYen(r.retailMid);
   $('retail-range').textContent = 'レンジ ' + fmtYen(r.retailLow) + '〜' + fmtYen(r.retailHigh) + ' 円';
-
   $('wholesale-main').textContent  = fmtYen(r.wholesaleMid);
   $('wholesale-range').textContent = 'レンジ ' + fmtYen(r.wholesaleLow) + '〜' + fmtYen(r.wholesaleHigh) + ' 円';
 
-  // 計算根拠
   const basis = $('basis-list');
   basis.innerHTML = '';
   for (const e of r.perEntry) {
@@ -599,17 +721,12 @@ function renderResult(r, opts) {
   }
 }
 
-function escapeHtml(s) {
-  return (s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-}
-
 // ============================================
 // リセット
 // ============================================
 
 function onReset() {
   clearError();
-  // 全エントリ削除して1つ追加
   $('entries').innerHTML = '';
   entries = [];
   addEntry();
@@ -618,16 +735,13 @@ function onReset() {
 }
 
 // ============================================
-// URL パラメータ（簡易）
-// fish=aji&bands=0:2,2:5  もしくは
-// entries=aji|0:2,2:5;mebaru|1:3
+// URL パラメータ
 // ============================================
 
 function applyUrlParams() {
   const p = new URLSearchParams(location.search);
   const entriesStr = p.get('entries');
   if (entriesStr) {
-    // 既存の1件を消す
     $('entries').innerHTML = '';
     entries = [];
     entriesStr.split(';').forEach(part => {
@@ -648,9 +762,7 @@ function applyUrlParams() {
   if (fish) {
     const entry = entries[0];
     const el = $('entries').querySelector('.entry');
-    const sel = el.querySelector('.entry-fish');
-    sel.value = fish;
-    sel.dispatchEvent(new Event('change'));
+    onEntryFishChange(entry, fish);
     if (bandsParam) {
       bandsParam.split(',').forEach(part => {
         const [i, c] = part.split(':').map(s => parseInt(s, 10));
