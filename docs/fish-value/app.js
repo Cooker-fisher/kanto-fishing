@@ -45,6 +45,19 @@ function kgToCm(curve, kg) {
   return curve[curve.length - 1].cm;
 }
 
+function cmToKg(curve, cm) {
+  if (!curve || curve.length === 0) return 0;
+  if (cm <= curve[0].cm) return curve[0].kg;
+  if (cm >= curve[curve.length - 1].cm) return curve[curve.length - 1].kg;
+  for (let i = 0; i < curve.length - 1; i++) {
+    if (cm >= curve[i].cm && cm <= curve[i + 1].cm) {
+      const ratio = (cm - curve[i].cm) / (curve[i + 1].cm - curve[i].cm);
+      return curve[i].kg + (curve[i + 1].kg - curve[i].kg) * ratio;
+    }
+  }
+  return curve[curve.length - 1].kg;
+}
+
 function showError(msg) {
   const el = $('err-msg');
   el.textContent = msg;
@@ -307,7 +320,7 @@ function bindGlobalEvents() {
 function addEntry(preset) {
   entryCounter += 1;
   const id = entryCounter;
-  const entry = { id, fishId: preset?.fishId || '', bandCounts: preset?.bandCounts ? { ...preset.bandCounts } : {} };
+  const entry = { id, fishId: preset?.fishId || '', bandCounts: preset?.bandCounts ? { ...preset.bandCounts } : {}, detailMode: false, items: [] };
   entries.push(entry);
 
   const el = document.createElement('div');
@@ -330,17 +343,20 @@ function addEntry(preset) {
     '<div class="band-list-row" hidden>' +
       '<div class="band-list-head">' +
         '<label>サイズ別 匹数</label>' +
+        '<button type="button" class="detail-toggle-btn">1匹ずつ入力</button>' +
         '<div class="band-total">' +
           '<span class="band-total-val">0</span>' +
           '<span class="band-total-unit">尾</span>' +
         '</div>' +
       '</div>' +
       '<div class="band-list"></div>' +
+      '<div class="detail-list" hidden></div>' +
     '</div>';
   $('entries').appendChild(el);
 
   el.querySelector('.entry-fish-btn').addEventListener('click', () => openFishPicker(entry));
   el.querySelector('.entry-remove').addEventListener('click', () => removeEntry(entry));
+  el.querySelector('.detail-toggle-btn').addEventListener('click', () => toggleDetailMode(entry));
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
@@ -391,6 +407,8 @@ function onEntryFishChange(entry, fishId) {
   clearError();
   entry.fishId = fishId;
   entry.bandCounts = {};
+  entry.detailMode = false;
+  entry.items = [];
 
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (!el) return;
@@ -437,6 +455,13 @@ function onEntryFishChange(entry, fishId) {
   entry._priceEntry = priceEntry;
 
   buildBandList(el, entry, species, priceEntry);
+  // 詳細モードリセット
+  el.querySelector('.band-list').hidden = false;
+  el.querySelector('.detail-list').hidden = true;
+  el.querySelector('.detail-list').innerHTML = '';
+  const dtBtn = el.querySelector('.detail-toggle-btn');
+  dtBtn.textContent = '1匹ずつ入力';
+  dtBtn.classList.remove('active');
   listRow.hidden = false;
   el.classList.add('has-fish');
   updateEntryTotal(entry);
@@ -569,8 +594,113 @@ function attachHoldRepeat(btn, fn) {
   ['pointerup', 'pointerleave', 'pointercancel', 'blur'].forEach(ev => btn.addEventListener(ev, stop));
 }
 
+// ============================================
+// 詳細入力モード
+// ============================================
+
+function toggleDetailMode(entry) {
+  if (!entry._priceEntry) return;
+  entry.detailMode = !entry.detailMode;
+  entry.items = [];
+  entry.bandCounts = {};
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  if (!el) return;
+  const btn = el.querySelector('.detail-toggle-btn');
+  const bandList = el.querySelector('.band-list');
+  const detailList = el.querySelector('.detail-list');
+  if (entry.detailMode) {
+    btn.textContent = 'まとめ入力に戻す';
+    btn.classList.add('active');
+    bandList.hidden = true;
+    detailList.hidden = false;
+    addDetailItem(entry); // 最初の1匹を自動追加
+  } else {
+    btn.textContent = '1匹ずつ入力';
+    btn.classList.remove('active');
+    bandList.hidden = false;
+    detailList.hidden = true;
+    detailList.innerHTML = '';
+  }
+  updateEntryTotal(entry);
+  scheduleLiveCalc();
+}
+
+function buildDetailList(el, entry) {
+  const detailList = el.querySelector('.detail-list');
+  detailList.innerHTML = '';
+  const species = entry._species;
+  const isCm = species && species.input_modes && species.input_modes[0] === 'cm';
+  const unit = isCm ? 'cm' : 'kg';
+  const step = isCm ? '1' : '0.1';
+  const placeholder = isCm ? 'cm' : 'kg';
+
+  entry.items.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'detail-item';
+
+    const numEl = document.createElement('span');
+    numEl.className = 'di-num';
+    numEl.textContent = (idx + 1) + '匹目';
+
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.className = 'di-input';
+    inp.min = '0';
+    inp.step = step;
+    inp.placeholder = placeholder;
+    if (item.val > 0) inp.value = String(item.val);
+    inp.addEventListener('input', () => {
+      item.val = parseFloat(inp.value) || 0;
+      updateEntryTotal(entry);
+      scheduleLiveCalc();
+    });
+
+    const unitEl = document.createElement('span');
+    unitEl.className = 'di-unit';
+    unitEl.textContent = unit;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'di-remove';
+    removeBtn.setAttribute('aria-label', '削除');
+    removeBtn.innerHTML = '<svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    removeBtn.addEventListener('click', () => removeDetailItem(entry, idx));
+
+    row.appendChild(numEl);
+    row.appendChild(inp);
+    row.appendChild(unitEl);
+    row.appendChild(removeBtn);
+    detailList.appendChild(row);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'detail-add-btn';
+  addBtn.textContent = '＋ 1匹追加';
+  addBtn.addEventListener('click', () => addDetailItem(entry));
+  detailList.appendChild(addBtn);
+}
+
+function addDetailItem(entry) {
+  entry.items.push({ val: 0 });
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  buildDetailList(el, entry);
+  const inputs = el.querySelectorAll('.di-input');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function removeDetailItem(entry, idx) {
+  entry.items.splice(idx, 1);
+  const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
+  buildDetailList(el, entry);
+  updateEntryTotal(entry);
+  scheduleLiveCalc();
+}
+
 function updateEntryTotal(entry) {
-  const total = Object.values(entry.bandCounts).reduce((a, b) => a + b, 0);
+  const total = entry.detailMode
+    ? entry.items.filter(it => it.val > 0).length
+    : Object.values(entry.bandCounts).reduce((a, b) => a + b, 0);
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (!el) return;
   const valEl = el.querySelector('.band-total-val');
@@ -603,7 +733,11 @@ function onCalculate(opts) {
   const silent = opts && opts.silent;
   if (!silent) clearError();
 
-  const validEntries = entries.filter(e => e.fishId && e._priceEntry && Object.values(e.bandCounts).some(v => v > 0));
+  const validEntries = entries.filter(e => {
+    if (!e.fishId || !e._priceEntry) return false;
+    if (e.detailMode) return e.items.some(it => it.val > 0);
+    return Object.values(e.bandCounts).some(v => v > 0);
+  });
   if (validEntries.length === 0) {
     if (!silent) showError('魚種と匹数を入力してください');
     else hideResult();
@@ -631,27 +765,53 @@ function onCalculate(opts) {
     let eWholesaleMid = 0;
     const eBreakdown = [];
 
-    for (const [idxStr, count] of Object.entries(e.bandCounts)) {
-      if (count <= 0) continue;
-      const idx = parseInt(idxStr, 10);
-      const band = bands[idx];
-      const repKg = bandRepKg(bands, idx);
-      const bandKg = repKg * count;
-      eCount += count;
-      eKg += bandKg;
+    const isCm = species.input_modes && species.input_modes[0] === 'cm';
+    const curve = priceEntry.size_weight_curve;
 
-      wholesaleLowSum  += bandKg * band.wholesale_low;
-      wholesaleHighSum += bandKg * band.wholesale_high;
-      const wMid = bandKg * (band.wholesale_low + band.wholesale_high) / 2;
-      wholesaleMidSum  += wMid;
-      eWholesaleMid    += wMid;
-      retailLowSum     += bandKg * band.retail_low;
-      retailHighSum    += bandKg * band.retail_high;
-      const rMid = bandKg * (band.retail_low + band.retail_high) / 2;
-      retailMidSum     += rMid;
-      eRetailMid       += rMid;
+    if (e.detailMode) {
+      for (const item of e.items) {
+        if (!item.val || item.val <= 0) continue;
+        const kgVal = (isCm && curve) ? cmToKg(curve, item.val) : item.val;
+        const bandIdx = bands.findIndex(b => b.kg_max == null || kgVal <= b.kg_max);
+        const band = bands[bandIdx >= 0 ? bandIdx : bands.length - 1];
+        eCount += 1;
+        eKg += kgVal;
+        wholesaleLowSum  += kgVal * band.wholesale_low;
+        wholesaleHighSum += kgVal * band.wholesale_high;
+        const wMid = kgVal * (band.wholesale_low + band.wholesale_high) / 2;
+        wholesaleMidSum  += wMid;
+        eWholesaleMid    += wMid;
+        retailLowSum     += kgVal * band.retail_low;
+        retailHighSum    += kgVal * band.retail_high;
+        const rMid = kgVal * (band.retail_low + band.retail_high) / 2;
+        retailMidSum     += rMid;
+        eRetailMid       += rMid;
+        const displayVal = isCm ? item.val + 'cm' : Math.round(item.val * 10) / 10 + 'kg';
+        eBreakdown.push({ label: band.label + ' ' + displayVal, count: 1, perKg: kgVal, bandKg: kgVal });
+      }
+    } else {
+      for (const [idxStr, count] of Object.entries(e.bandCounts)) {
+        if (count <= 0) continue;
+        const idx = parseInt(idxStr, 10);
+        const band = bands[idx];
+        const repKg = bandRepKg(bands, idx);
+        const bandKg = repKg * count;
+        eCount += count;
+        eKg += bandKg;
 
-      eBreakdown.push({ label: band.label, count, perKg: repKg, bandKg });
+        wholesaleLowSum  += bandKg * band.wholesale_low;
+        wholesaleHighSum += bandKg * band.wholesale_high;
+        const wMid = bandKg * (band.wholesale_low + band.wholesale_high) / 2;
+        wholesaleMidSum  += wMid;
+        eWholesaleMid    += wMid;
+        retailLowSum     += bandKg * band.retail_low;
+        retailHighSum    += bandKg * band.retail_high;
+        const rMid = bandKg * (band.retail_low + band.retail_high) / 2;
+        retailMidSum     += rMid;
+        eRetailMid       += rMid;
+
+        eBreakdown.push({ label: band.label, count, perKg: repKg, bandKg });
+      }
     }
 
     totalCount += eCount;

@@ -373,6 +373,99 @@ header {
   gap: 8px;
 }
 
+/* 詳細入力モードトグル */
+.detail-toggle-btn {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cta);
+  background: none;
+  border: 1px solid var(--cta);
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  white-space: nowrap;
+  margin-left: auto;
+  margin-right: 8px;
+}
+.detail-toggle-btn.active {
+  background: var(--cta);
+  color: #fff;
+}
+
+/* 詳細リスト */
+.detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.di-num {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 3.5em;
+}
+.di-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  background: #fff;
+  text-align: right;
+  -moz-appearance: textfield;
+}
+.di-input::-webkit-inner-spin-button,
+.di-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.di-input:focus { outline: none; border-color: var(--cta); box-shadow: 0 0 0 2px rgba(230,119,27,.18); }
+.di-unit {
+  font-size: 13px;
+  color: var(--sub);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.di-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+  flex-shrink: 0;
+}
+.di-remove:hover { background: #f0f0f0; color: var(--text); }
+.detail-add-btn {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cta);
+  background: none;
+  border: 1.5px dashed var(--cta);
+  border-radius: var(--r-sm);
+  padding: 7px 16px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: background .12s;
+}
+.detail-add-btn:hover { background: rgba(230,119,27,.06); }
+
 .band-row {
   display: grid;
   grid-template-columns: 1fr auto;
