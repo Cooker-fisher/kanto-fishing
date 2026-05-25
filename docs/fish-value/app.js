@@ -652,6 +652,7 @@ function onCalculate(opts) {
 
     perEntry.push({
       name: species.site_display_name,
+      site_fish_id: species.site_fish_id,
       count: eCount,
       kg: eKg,
       retailMid: eRetailMid,
@@ -684,7 +685,12 @@ function renderResult(r, opts) {
   for (const e of r.perEntry) {
     const pill = document.createElement('span');
     pill.className = 'result-pill';
+    const folder = iconFolderOf(e.site_fish_id);
+    const iconHtml = folder
+      ? `<img class="rp-icon" src="../assets/fish/${folder}/${folder}_icon.png" alt="" aria-hidden="true" onerror="this.style.display='none'">`
+      : '';
     pill.innerHTML =
+      iconHtml +
       '<span class="rp-name">' + escapeHtml(e.name) + '</span>' +
       '<span class="rp-count">' + e.count + '尾</span>';
     pills.appendChild(pill);
