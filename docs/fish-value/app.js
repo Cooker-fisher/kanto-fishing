@@ -488,8 +488,8 @@ function showDeleteConfirm(entry) {
     scheduleLiveCalc();
   });
 
-  btnsEl.appendChild(cancelBtn);
   btnsEl.appendChild(deleteBtn);
+  btnsEl.appendChild(cancelBtn);
   confirmEl.appendChild(msg);
   confirmEl.appendChild(btnsEl);
   confirmEl.hidden = false;
@@ -527,8 +527,8 @@ function showFishChangeConfirm(entry) {
     openFishPicker(entry);
   });
 
-  btnsEl.appendChild(cancelBtn);
   btnsEl.appendChild(changeBtn);
+  btnsEl.appendChild(cancelBtn);
   confirmEl.appendChild(msg);
   confirmEl.appendChild(btnsEl);
   confirmEl.hidden = false;
