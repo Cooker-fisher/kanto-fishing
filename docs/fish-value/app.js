@@ -156,17 +156,12 @@ function buildFishPickerModal() {
   const content = document.querySelector('#fish-picker-modal .picker-content');
   content.innerHTML = '';
 
-  const targets = SPECIES_MAP.species
-    .filter(s => s.category === 'target')
-    .slice()
-    .sort((a, b) => kanaSortKey(a.site_display_name).localeCompare(kanaSortKey(b.site_display_name)));
-  const bycatches = SPECIES_MAP.species
-    .filter(s => s.category === 'bycatch')
+  const all = SPECIES_MAP.species
     .slice()
     .sort((a, b) => kanaSortKey(a.site_display_name).localeCompare(kanaSortKey(b.site_display_name)));
 
   let currentGroup = null;
-  for (const s of targets) {
+  for (const s of all) {
     const grp = kanaGroupOf(s.site_display_name);
     if (grp !== currentGroup) {
       const label = document.createElement('div');
@@ -176,16 +171,6 @@ function buildFishPickerModal() {
       currentGroup = grp;
     }
     content.appendChild(buildFishChipEl(s));
-  }
-
-  if (bycatches.length > 0) {
-    const label = document.createElement('div');
-    label.className = 'picker-group-label';
-    label.textContent = '外道';
-    content.appendChild(label);
-    for (const s of bycatches) {
-      content.appendChild(buildFishChipEl(s));
-    }
   }
 }
 
