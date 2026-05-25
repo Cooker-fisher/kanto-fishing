@@ -112,6 +112,11 @@ function bindEvents() {
   $('fish').addEventListener('change', onFishChange);
   $('calc-btn').addEventListener('click', onCalculate);
 
+  // mode 切替ラジオ
+  document.querySelectorAll('input[name="input-mode"]').forEach(r => {
+    r.addEventListener('change', onModeChange);
+  });
+
   // Enter キーで計算
   ['count', 'size', 'weight'].forEach(id => {
     $(id).addEventListener('keydown', (e) => {
@@ -129,14 +134,34 @@ function onFishChange() {
   if (!fishId) {
     $('size-row').hidden = true;
     $('weight-row').hidden = true;
+    $('mode-switch').hidden = true;
     currentInputMode = null;
     return;
   }
   const species = findSpecies(fishId);
   if (!species) return;
   const modes = species.input_modes || ['cm'];
-  currentInputMode = modes[0];
-  if (currentInputMode === 'cm') {
+  // 両方サポート時のみラジオ表示。主入力(modes[0])をデフォルトに
+  if (modes.length >= 2) {
+    $('mode-switch').hidden = false;
+    const defaultMode = modes[0];
+    document.querySelector(`input[name="input-mode"][value="${defaultMode}"]`).checked = true;
+    applyInputMode(defaultMode);
+  } else {
+    $('mode-switch').hidden = true;
+    applyInputMode(modes[0]);
+  }
+}
+
+function onModeChange() {
+  clearError();
+  const mode = document.querySelector('input[name="input-mode"]:checked').value;
+  applyInputMode(mode);
+}
+
+function applyInputMode(mode) {
+  currentInputMode = mode;
+  if (mode === 'cm') {
     $('size-row').hidden = false;
     $('weight-row').hidden = true;
     $('weight').value = '';
@@ -283,15 +308,36 @@ function applyUrlParams() {
   const size = p.get('size');
   const weight = p.get('weight');
 
-  let triggered = false;
   if (fish) {
     $('fish').value = fish;
     onFishChange();
-    triggered = true;
   }
   if (count) $('count').value = count;
-  if (size && !$('size-row').hidden) $('size').value = size;
-  if (weight && !$('weight-row').hidden) $('weight').value = weight;
+
+  // size or weight が URL に含まれていれば、対応するモードに切替
+  if (size && weight) {
+    // 両方指定時は size を優先（cm入力）
+    const cmRadio = document.querySelector('input[name="input-mode"][value="cm"]');
+    if (cmRadio && !$('mode-switch').hidden) {
+      cmRadio.checked = true;
+      applyInputMode('cm');
+    }
+    $('size').value = size;
+  } else if (size) {
+    const cmRadio = document.querySelector('input[name="input-mode"][value="cm"]');
+    if (cmRadio && !$('mode-switch').hidden) {
+      cmRadio.checked = true;
+      applyInputMode('cm');
+    }
+    $('size').value = size;
+  } else if (weight) {
+    const kgRadio = document.querySelector('input[name="input-mode"][value="kg"]');
+    if (kgRadio && !$('mode-switch').hidden) {
+      kgRadio.checked = true;
+      applyInputMode('kg');
+    }
+    $('weight').value = weight;
+  }
 
   // 必要パラメータが揃ってたら自動計算
   if (fish && count && (size || weight)) {

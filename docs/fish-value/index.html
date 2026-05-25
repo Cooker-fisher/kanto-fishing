@@ -35,6 +35,18 @@
       <input type="number" id="count" inputmode="numeric" min="1" max="999" placeholder="例: 35" aria-describedby="err-msg">
     </div>
 
+    <fieldset class="form-row mode-switch" id="mode-switch" hidden>
+      <legend>入力方法</legend>
+      <label class="mode-opt">
+        <input type="radio" name="input-mode" value="cm" id="mode-cm" checked>
+        <span>サイズ (cm)</span>
+      </label>
+      <label class="mode-opt">
+        <input type="radio" name="input-mode" value="kg" id="mode-kg">
+        <span>重量 (kg)</span>
+      </label>
+    </fieldset>
+
     <div class="form-row" id="size-row" hidden>
       <label for="size">平均サイズ <span class="unit">(cm)</span></label>
       <input type="number" id="size" inputmode="numeric" min="1" max="200" placeholder="例: 25" aria-describedby="err-msg">

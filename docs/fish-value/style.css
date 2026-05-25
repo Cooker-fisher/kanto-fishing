@@ -152,6 +152,38 @@ header {
   border-color: var(--accent);
 }
 
+/* mode 切替ラジオ */
+.mode-switch {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  background: var(--nav);
+}
+.mode-switch legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  padding: 0 6px;
+}
+.mode-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  margin-right: 16px;
+  padding: 4px 0;
+}
+.mode-opt input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.mode-opt:hover { color: var(--accent); }
+
 .btn-primary {
   background: var(--cta);
   color: #fff;
