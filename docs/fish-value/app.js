@@ -684,8 +684,8 @@ function buildDetailList(el, entry) {
 
 function formatStepperVal(v, unit) {
   if (!v || v <= 0) return '—';
-  if (unit === 'cm') return String(Math.round(v));
-  return (Math.round(v * 10) / 10).toFixed(1);
+  if (unit === 'cm') return String(Math.round(v)) + ' cm';
+  return (Math.round(v * 10) / 10).toFixed(1) + ' kg';
 }
 
 function buildDetailItemRow(entry, item, idx, unit, curve) {

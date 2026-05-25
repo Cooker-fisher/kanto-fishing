@@ -451,10 +451,9 @@ header {
 }
 /* 詳細入力ステッパー（di-stepper / ds-btn / ds-val） */
 .di-stepper {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
+  flex: 0 0 auto;
+  display: inline-grid;
+  grid-template-columns: 38px auto 38px;
   align-items: stretch;
   height: 44px;
   border: 1px solid var(--border);
@@ -498,8 +497,9 @@ header {
   color: var(--text);
   font-variant-numeric: tabular-nums;
   background: #fcfcfd;
-  padding: 0;
-  overflow: hidden;
+  padding: 0 10px;
+  white-space: nowrap;
+  min-width: 68px;
 }
 .di-stepper.has-value .ds-val {
   background: rgba(232, 93, 4, .07);
