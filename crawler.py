@@ -3582,6 +3582,11 @@ _SHIP_NOINDEX_SLUGS: set = set()
 _FA_NOINDEX_SLUGS: set = set()
 _FA_NOINDEX_HIST_THRESHOLD = 30
 
+# T40 (2026/05/26): build_point_pages() が生成するポイント系 area ページ（赤灯沖・鹿島南沖等）は
+# 自動生成ボイラープレートのみで fia-grid/season-map/海況 セクションを持たない構造的薄ページ。
+# AdSense「有用性の低いコンテンツ」対策として全件 noindex 付与 + sitemap から除外。
+_AREA_POINT_NOINDEX_SLUGS: set = set()
+
 def fish_slug(fish: str) -> str:
     """魚種名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _FISH_ROMAJI.get(fish, fish)
@@ -15001,12 +15006,16 @@ def build_point_pages(hist_rows, crawled_at=""):
             f'件数の多い順に{top_ship_str}が実績豊富です。</p></details>'
         )
 
+        # T40: 全ポイントページは構造的薄ページ → noindex 付与 + sitemap 除外
+        _AREA_POINT_NOINDEX_SLUGS.add(slug)
+
         # 簡易テンプレート
         html = f"""<!doctype html><html lang="ja"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{point}の釣果情報・船宿一覧 | 船釣り予想</title>
 <meta name="description" content="関東の釣り場「{point}」の過去1年の釣果データ。{n_records}件・{n_ships}船宿・主要魚種{top_fish_str}。">
+<meta name="robots" content="noindex, follow">
 <meta property="og:title" content="{point}の釣果情報">
 <meta property="og:description" content="{point}を利用する{n_ships}船宿・{n_records}件の過去釣果サマリー">
 <meta property="og:url" content="{SITE_URL}/area/{slug}.html">
@@ -15067,8 +15076,22 @@ def build_sitemap(data):
     area_dir = os.path.join(WEB_DIR, "area")
     if os.path.isdir(area_dir):
         for fname in sorted(os.listdir(area_dir)):
-            if fname.endswith(".html") and fname != "index.html":
-                urls.append((f"{SITE_URL}/area/{fname}", "0.7", "daily"))
+            if not fname.endswith(".html") or fname == "index.html":
+                continue
+            _area_stem = fname[:-5]
+            # T40 (2026/05/26): build_point_pages 生成の薄ポイントページは sitemap から除外
+            if _area_stem in _AREA_POINT_NOINDEX_SLUGS:
+                continue
+            # ディスク上 HTML を読んで noindex meta タグがあれば sitemap から除外
+            # （一時スクリプト適用済み既存ファイルも含む）
+            try:
+                with open(os.path.join(area_dir, fname), encoding="utf-8") as _fp:
+                    _ahead = _fp.read(2048)
+                if 'name="robots"' in _ahead and "noindex" in _ahead:
+                    continue
+            except Exception:
+                pass
+            urls.append((f"{SITE_URL}/area/{fname}", "0.7", "daily"))
     # area/index.html (エリア一覧ハブ)
     if os.path.isfile(os.path.join(area_dir, "index.html")):
         urls.append((f"{SITE_URL}/area/", "0.7", "daily"))

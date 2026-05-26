@@ -580,6 +580,37 @@ def validate_fish_area_noindex():
         ok(f"fish_area/*.html noindex 付与: {len(noindex_slugs)} 件 / 全 {len(files)} 件・sitemap 除外 OK")
 
 
+def validate_area_point_noindex():
+    """T40 (2026/05/26): build_point_pages() 生成のポイント系 area ページが
+    noindex 付与され、かつ sitemap.xml から除外されていることを検証する。
+    AdSense「有用性の低いコンテンツ」対策（fia-grid/season-map を持たない構造的薄ページ）。"""
+    print("\n[36] docs/area/*.html point ページ noindex 付与 + sitemap 除外（T40）")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        fail("docs/area/ ディレクトリが存在しない")
+        return
+    files = [f for f in os.listdir(area_dir) if f.endswith(".html") and f != "index.html"]
+    noindex_slugs = set()
+    for fn in files:
+        content = open(os.path.join(area_dir, fn), encoding="utf-8").read(2048)
+        if 'name="robots"' in content and "noindex" in content:
+            noindex_slugs.add(fn[:-5])
+    if len(noindex_slugs) < 5:
+        fail(f"area/*.html で noindex 付与ページが {len(noindex_slugs)} 件（最低 5 件・ポイントページ判定が動作している証拠）")
+        return
+    # sitemap.xml で noindex 付与ページが含まれていないこと
+    sitemap_path = os.path.join(DOCS, "sitemap.xml")
+    if not os.path.isfile(sitemap_path):
+        fail("sitemap.xml が存在しない")
+        return
+    sitemap_content = open(sitemap_path, encoding="utf-8").read()
+    leaked = [s for s in noindex_slugs if f"/area/{s}.html" in sitemap_content]
+    if leaked:
+        fail(f"sitemap.xml に noindex 付与 area point ページが {len(leaked)} 件混入: {leaked[:3]}...")
+    else:
+        ok(f"area/*.html point noindex 付与: {len(noindex_slugs)} 件 / 全 {len(files)} 件・sitemap 除外 OK")
+
+
 def validate_pages_faq():
     print("\n[15] docs/pages/faq.html 存在＋本文 800字以上（T22-M1）")
     path = os.path.join(DOCS, "pages", "faq.html")
@@ -1200,6 +1231,7 @@ def main():
     validate_forecast_noindex()
     validate_ship_noindex()
     validate_fish_area_noindex()
+    validate_area_point_noindex()
     validate_pages_faq()
     validate_fish_no_common_faq()
     validate_area_no_common_faq()
