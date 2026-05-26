@@ -1130,6 +1130,14 @@ function _maxKgOfEntry(e) {
   return Math.max(...e.breakdown.map(b => b.perKg || 0));
 }
 
+function _bragQuip(yen) {
+  if (yen < 3000)  return 'ボウズじゃないだけマシ…';
+  if (yen < 10000) return 'ガソリン代の元、取れたかな…';
+  if (yen < 25000) return '船代の元はなんとか回収';
+  if (yen < 60000) return '今日は胸張って帰れる';
+  return '完全に元取りすぎ・冷凍庫満タン案件';
+}
+
 function _kgSuffix(e) {
   const maxKg = _maxKgOfEntry(e);
   if (maxKg <= 0) return '';
@@ -1162,7 +1170,7 @@ function buildSharePost(r, style) {
     const maxLine = overallMaxKg > 0 ? '・最大 ' + fmtKgForShare(overallMaxKg) : '';
     return '今日の釣果、市場価格にしたら ¥' + totalYen + '相当だった 🎣\n' +
            '（' + names + ' 計' + r.totalCount + '匹' + maxLine + '）\n\n' +
-           'ガソリン代の元、取れたかな…';
+           _bragQuip(r.retailMid);
   }
 
   // 案A: 数字ドカン型（デフォルト）
