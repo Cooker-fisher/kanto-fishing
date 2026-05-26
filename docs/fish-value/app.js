@@ -1148,8 +1148,7 @@ function buildSharePost(r, style) {
     const medalLines = sorted.slice(0, 3).map((e, i) => {
       const maxKg = _maxKgOfEntry(e);
       const sizeStr = e.count > 1 ? '最大 ' + fmtKgForShare(maxKg) : fmtKgForShare(maxKg);
-      const countStr = e.count > 1 ? ' × ' + e.count + '匹' : '';
-      return medals[i] + ' ' + e.name + countStr + '（' + sizeStr + '）';
+      return medals[i] + ' ' + e.name + ' ' + e.count + '匹（' + sizeStr + '）';
     }).join('\n');
     return '🏆 今日の釣果スコア\n\n' +
            '💰 市場価格 ¥' + totalYen + '相当\n' +
