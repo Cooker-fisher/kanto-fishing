@@ -1125,16 +1125,30 @@ function fmtKgForShare(kg) {
   return Math.round(kg * 1000) + 'g';
 }
 
+function _maxKgOfEntry(e) {
+  if (!e.breakdown || e.breakdown.length === 0) return 0;
+  return Math.max(...e.breakdown.map(b => b.perKg || 0));
+}
+
+function _kgSuffix(e) {
+  const maxKg = _maxKgOfEntry(e);
+  if (maxKg <= 0) return '';
+  if (e.count > 1) return '（最大 ' + fmtKgForShare(maxKg) + '）';
+  return '（' + fmtKgForShare(maxKg) + '）';
+}
+
 function buildSharePost(r, style) {
   const totalYen = fmtYen(r.retailMid);
+  const overallMaxKg = Math.max(...r.perEntry.map(_maxKgOfEntry));
 
   if (style === 'B') {
-    // 案B: ゲームスコア型
-    const sorted = [...r.perEntry].sort((a, b) => b.retailMid - a.retailMid);
+    // 案B: ゲームスコア型 — 最大kg順にランキング
+    const sorted = [...r.perEntry].sort((a, b) => _maxKgOfEntry(b) - _maxKgOfEntry(a));
     const medals = ['🥇', '🥈', '🥉'];
     const medalLines = sorted.slice(0, 3).map((e, i) => {
+      const maxKg = _maxKgOfEntry(e);
       const tail = e.count > 1 ? ' × ' + e.count + '匹' : '';
-      return medals[i] + ' ' + e.name + ' ' + fmtKgForShare(e.kg / Math.max(e.count, 1)) + tail;
+      return medals[i] + ' ' + e.name + ' ' + fmtKgForShare(maxKg) + tail;
     }).join('\n');
     return '🏆 今日の釣果スコア\n\n' +
            '💰 市場価格 ¥' + totalYen + '相当\n' +
@@ -1145,15 +1159,15 @@ function buildSharePost(r, style) {
   if (style === 'C') {
     // 案C: シンプル換算型
     const names = r.perEntry.map(e => e.name).join('・');
+    const maxLine = overallMaxKg > 0 ? '・最大 ' + fmtKgForShare(overallMaxKg) : '';
     return '今日の釣果、市場価格にしたら ¥' + totalYen + '相当だった 🎣\n' +
-           '（' + names + ' 計' + r.totalCount + '匹）\n\n' +
+           '（' + names + ' 計' + r.totalCount + '匹' + maxLine + '）\n\n' +
            'ガソリン代の元、取れたかな…';
   }
 
   // 案A: 数字ドカン型（デフォルト）
   const itemLines = r.perEntry.map(e => {
-    const perKg = fmtKgForShare(e.kg / Math.max(e.count, 1));
-    return '🐟 ' + e.name + ' ' + perKg + ' × ' + e.count + '匹';
+    return '🐟 ' + e.name + ' ' + e.count + '匹' + _kgSuffix(e);
   }).join('\n');
   return '本日の釣果 ¥' + totalYen + '相当 🎣\n\n' +
          itemLines + '\n\n' +
