@@ -228,6 +228,10 @@ PRICE_DESIGN = {
             {"kg_max": 0.15, "label": "良型",   "size_class": "large"},
             {"kg_max": 999,  "label": "尺キス", "size_class": "premium"},
         ],
+        # 日報検証 2026/05/28: 月報avg=2,678の全銘柄平均では釣果対象の天然キスを過小評価。日報下限864/上限8,424
+        "override_wholesale_low":  850,
+        "override_wholesale_high": 6500,
+        "override_note": "verify_daily:2026-05-28 / 江戸前天然キスの実勢に合わせて low 583→850, high 4,655→6,500 へ調整",
     },
     "bora": {
         "category": "大衆魚", "curve": "細長型",
@@ -292,6 +296,9 @@ PRICE_DESIGN = {
             {"kg_max": 3.0, "label": "大ダイ",   "size_class": "large"},
             {"kg_max": 999, "label": "特大",     "size_class": "premium"},
         ],
+        # 日報検証 2026/05/28: 月報high=2,183に対し日報で5,400/kg観測。特大プレミアム帯を実勢に上方修正
+        "override_wholesale_high": 4500,
+        "override_note": "verify_daily:2026-05-28 / 日報で5,400/kg観測のため high を 2,183→4,500 へ調整",
     },
     "kurodai": {
         "category": "中級魚", "curve": "中型魚型",
@@ -366,6 +373,9 @@ PRICE_DESIGN = {
             {"kg_max": 0.25, "label": "標準",   "size_class": "standard"},
             {"kg_max": 999,  "label": "尺メバル","size_class": "large"},
         ],
+        # 日報検証 2026/05/28: 月報low=323は地方産含む全国平均。関東釣果は日報下限540で取引
+        "override_wholesale_low": 500,
+        "override_note": "verify_daily:2026-05-28 / 関東釣果メバルの実勢に合わせて low 323→500 へ調整",
     },
     "oki-mebaru": {
         "category": "中級魚", "curve": "標準型",
@@ -867,6 +877,20 @@ def main():
             lo = g['low_yen_per_kg']
             data_basis = ['geppo:' + geppo_item]
             wholesale_source = '月報最新月: ' + latest['yyyymm']
+            # 日報検証ベースの override（PRICE_DESIGN に override_wholesale_* がある場合）
+            if 'override_wholesale_low' in design:
+                lo = design['override_wholesale_low']
+                data_basis.append('verify_daily:2026-05-28')
+            if 'override_wholesale_high' in design:
+                hi = design['override_wholesale_high']
+                if 'verify_daily:2026-05-28' not in data_basis:
+                    data_basis.append('verify_daily:2026-05-28')
+            if 'override_wholesale_avg' in design:
+                avg = design['override_wholesale_avg']
+                if 'verify_daily:2026-05-28' not in data_basis:
+                    data_basis.append('verify_daily:2026-05-28')
+            if 'override_note' in design:
+                wholesale_source += ' / ' + design['override_note']
         elif 'fallback_wholesale_avg' in design:
             avg = design['fallback_wholesale_avg']
             hi  = design['fallback_wholesale_high']
