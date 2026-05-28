@@ -92,7 +92,7 @@ function iconFolderOf(sid) {
 function iconUrlOf(species) {
   const folder = iconFolderOf(species.site_fish_id);
   if (!folder) return null;
-  return `../assets/fish/${folder}/${folder}_icon.png`;
+  return `../assets/fish/${folder}/${folder}_emoji.webp`;
 }
 
 // ============================================
@@ -1213,7 +1213,7 @@ function renderResult(r, opts) {
     pill.className = 'result-pill';
     const folder = iconFolderOf(e.site_fish_id);
     const iconHtml = folder
-      ? `<img class="rp-icon" src="../assets/fish/${folder}/${folder}_icon.png" alt="" aria-hidden="true" onerror="this.style.display='none'">`
+      ? `<img class="rp-icon" src="../assets/fish/${folder}/${folder}_emoji.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.style.display='none'">`
       : '';
     pill.innerHTML =
       iconHtml +
