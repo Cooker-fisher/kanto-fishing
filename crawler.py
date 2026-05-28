@@ -7519,7 +7519,11 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .komase-sim-card p{margin:6px 0;font-size:13px;line-height:1.6;color:#e7dcc3}
 .kc-cta{display:inline-block;margin-top:8px;padding:6px 14px;background:#c84427;color:#fff;border-radius:3px;font-weight:700;font-size:13px}
 @media(max-width:600px){.komase-sim-card h3{font-size:16px}.komase-sim-card p{font-size:12px}}"""
-    jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/","potentialAction":{{"@type":"SearchAction","target":{{"@type":"EntryPoint","urlTemplate":"{SITE_URL}/fish/{{search_term_string}}.html"}},"query-input":"required name=search_term_string"}}}}'
+    # GSC 404 修正 (2026/05/28): SearchAction を削除（サイト内検索エンドポイントが
+    # 無いため {search_term_string} placeholder を Google が literal URL としてクロール
+    # → /fish/{search_term_string}.html が 404 として GSC に記録されていた）。
+    # 本サイトに検索フォームが追加されたら適切な urlTemplate で復活させる。
+    jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/"}}'
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -8111,6 +8115,12 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         _fa_fold_chips = []
         for _a, _n in _all_areas_f:
             if _a not in _AREA_ROMAJI:
+                continue
+            # GSC 404 修正 (2026/05/28): fish_area HTML が実際に生成されているコンボのみ
+            # chip link を出力。build_fish_area_pages は 7日窓 (≥1便) かつ existing_fa_files
+            # しか生成しないため、hist のみのコンボはここでスキップ。
+            # ※ build_fish_area_pages → build_fish_pages 順なので _fa_exists() は正確
+            if not _fa_exists(fish, _a):
                 continue
             _fa_url = f"../fish_area/{fish_slug(fish)}-{area_slug(_a)}.html"
             _chip = (
@@ -14969,9 +14979,17 @@ def build_point_pages(hist_rows, crawled_at=""):
         n_ports = len(port_cnt)
 
         # HTML 生成（既存 area_pages 簡易版）
+        # GSC 404 修正 (2026/05/28): docs/fish/{slug}.html が実在しない魚種は
+        # リンクではなく span でテキスト表示（アカイカ等 build_fish_pages 対象外の魚種）
+        def _fish_name_or_link(_f):
+            _slug = _FISH_ROMAJI.get(_f, _f)
+            _fp = os.path.join(WEB_DIR, f"fish/{_slug}.html")
+            if os.path.exists(_fp):
+                return f'<a href="../fish/{_slug}.html">{_f}</a>'
+            return _f
         fish_items = "".join(
             f'<div class="sl-item"><div class="sl-top">'
-            f'<span class="sl-name"><a href="../fish/{_FISH_ROMAJI.get(f, f)}.html">{f}</a></span>'
+            f'<span class="sl-name">{_fish_name_or_link(f)}</span>'
             f'<span class="sl-detail">過去1年 {n}件</span></div></div>'
             for f, n in top_fish
         )

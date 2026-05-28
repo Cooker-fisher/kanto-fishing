@@ -59,9 +59,16 @@ def _load_area_romaji() -> dict:
 
 
 def _fish_link_html(fish_name: str, depth: str = "../") -> str:
-    """魚種名を fish ページへのリンクに変換。未登録ならテキストのまま。"""
+    """魚種名を fish ページへのリンクに変換。未登録ならテキストのまま。
+    GSC 404 修正 (2026/05/28): docs/fish/{slug}.html が実在しない場合も
+    テキスト返却（アカイカ等 build_fish_pages 対象外の魚種を保護）。"""
     romaji = _load_fish_romaji().get(fish_name)
     if not romaji:
+        return fish_name
+    # depth は "../" or "" 形式。docs/ ルート相対でファイル存在チェック
+    import os
+    _docs = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs")
+    if not os.path.exists(os.path.join(_docs, "fish", f"{romaji}.html")):
         return fish_name
     return f'<a href="{depth}fish/{romaji}.html" class="fl">{fish_name}</a>'
 
