@@ -11608,6 +11608,17 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 if has_individual:
                     continue
 
+            # サブ行の tsuri_mono 修正（T40 2026/05/30）:
+            # tsuri_norm は便ターゲット（trip-level）だが、サブ釣果行は
+            # fish_raw が実際の魚種であるため normalize_tsuri_mono(fish_raw) で上書きする。
+            # main_sub=='メイン' 行（五目便含む）は一切変更しない。
+            # norm が空（地名ノイズ等で正規化不能）の場合は便ターゲットを維持する。
+            _csv_tsuri_norm = tsuri_norm
+            if main_sub == "サブ":
+                _norm_from_fish = normalize_tsuri_mono(r.get("fish_raw") or "", r["ship"])
+                if _norm_from_fish:
+                    _csv_tsuri_norm = _norm_from_fish
+
             rows.append({
                 "ship":           r["ship"],
                 "area":           r["area"],
@@ -11615,7 +11626,7 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
                 "trip_no":        r.get("trip_no", ""),
                 "is_cancellation": 0,
                 "tsuri_mono_raw": tsuri_raw or "",
-                "tsuri_mono":     tsuri_norm,
+                "tsuri_mono":     _csv_tsuri_norm,
                 "main_sub":       main_sub,
                 "fish_raw":       r.get("fish_raw", ""),
                 "time_slot":      _extract_time_slot(r.get("fish_raw", ""), r.get("kanso_raw", ""), int(r.get("trip_no") or 1), r.get("ship", "")),
@@ -11819,6 +11830,7 @@ def save_daily_csv(catches):
             existing_keys.add(key)
 
             # V2 正規化
+            # 日次経路は tsuri_norm が行ごとの実魚種なのでサブ汚染なし。便ターゲット汚染は export_csv_from_raw 経路のみで対処。
             tsuri_norm = normalize_tsuri_mono(fish_raw, c["ship"])
             _trip_fish_set = frozenset(_trip_idx.get((c["ship"], c["date"], c.get("trip_no")), set()))
             main_sub   = _classify_main_sub(
@@ -12035,8 +12047,10 @@ nav.gnav a:hover .nav-new,nav.gnav a.on .nav-new{background:#fff;color:var(--cta
 .bn a.prem{color:var(--prem)}
 .st{font-size:15px;font-weight:700;color:var(--accent);padding:18px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:12px}
 .ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:20px 14px;text-align:center}
-.ship-hero h2{font-size:24px;font-weight:800}
-.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero h1{font-size:24px;font-weight:800;line-height:1.3;margin:0}
+.ship-hero .sh-name{display:block}
+.ship-hero .sh-loc{display:block;font-size:15px;font-weight:400;color:rgba(255,255,255,.75);margin-top:2px}
+.ship-hero .sh-main-fish{font-size:12px;color:rgba(255,255,255,.6);margin-top:6px}
 .ship-hero .sh-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
 .ship-hero .sh-badge{font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);border-radius:10px;color:#fff}
 .ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
@@ -12108,8 +12122,10 @@ footer a{color:rgba(255,255,255,.7)}
 # ship ページ固有CSS（style.css 外部化後に残すインライン部分 - 外部CSSに未収録のセレクタのみ）
 _SHIP_EXTRA_CSS = """\
 .ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:20px 14px;text-align:center}
-.ship-hero h2{font-size:24px;font-weight:800}
-.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero h1{font-size:24px;font-weight:800;line-height:1.3;margin:0}
+.ship-hero .sh-name{display:block}
+.ship-hero .sh-loc{display:block;font-size:15px;font-weight:400;color:rgba(255,255,255,.75);margin-top:2px}
+.ship-hero .sh-main-fish{font-size:12px;color:rgba(255,255,255,.6);margin-top:6px}
 .ship-hero .sh-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
 .ship-hero .sh-badge{font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);border-radius:10px;color:#fff}
 .ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
@@ -14716,8 +14732,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 {header_html}
 
 <div class="ship-hero">
-<h2>{name}</h2>
-<div class="sh-area">{area}</div>
+<h1><span class="sh-name">{name}</span><span class="sh-loc">（{area}）の釣果</span></h1>
+{f'<div class="sh-main-fish">{" ・ ".join(primary_fish[:3])}</div>' if primary_fish else ''}
 <div class="sh-badges">{badges_html}</div>
 {auto_badges_html}
 {f'<div class="sh-overall">{overall_str}</div>' if overall_str else ''}
