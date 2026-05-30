@@ -805,6 +805,17 @@ header {
   letter-spacing: .02em;
 }
 
+/* 価格基準（鮮度・出典） */
+.price-basis {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+.price-basis:empty { display: none; }
+
 /* basis */
 .basis-details {
   margin-top: 14px;

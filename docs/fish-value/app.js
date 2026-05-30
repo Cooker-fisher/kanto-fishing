@@ -75,6 +75,43 @@ function escapeHtml(s) {
 }
 
 // ============================================
+// localStorage（簡易釣果記録）+ 価格基準
+// ============================================
+
+const LS_KEY = 'fv_entries';
+
+function saveState() {
+  try {
+    const data = entries.filter(e => e.fishId).map(e => ({
+      fishId: e.fishId,
+      detailMode: !!e.detailMode,
+      detailUnit: e.detailUnit || null,
+      bandCounts: e.bandCounts || {},
+      items: e.detailMode ? e.items.map(it => it.val) : [],
+    }));
+    if (data.length) localStorage.setItem(LS_KEY, JSON.stringify(data));
+    else localStorage.removeItem(LS_KEY);
+  } catch (_) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return Array.isArray(data) && data.length ? data : null;
+  } catch (_) { return null; }
+}
+
+function priceBaseLabel() {
+  const src = (PRICE_MASTER && PRICE_MASTER.source && PRICE_MASTER.source.wholesale) || '';
+  const m = src.match(/\((\d{4})(\d{2})\)/) || src.match(/s(\d{4})(\d{2})meisai/);
+  if (m) return `価格基準: ${m[1]}年${parseInt(m[2], 10)}月 東京都中央卸売市場（豊洲）の卸売実績`;
+  if (PRICE_MASTER && PRICE_MASTER.updated_at) return `価格基準: ${PRICE_MASTER.updated_at} 時点`;
+  return '';
+}
+
+// ============================================
 // 魚アイコン
 // ============================================
 
@@ -268,8 +305,18 @@ async function init() {
 
   buildFishPickerModal();
   bindGlobalEvents();
-  addEntry();
-  applyUrlParams();
+  try { const lbl = priceBaseLabel(); if (lbl) $('price-basis').textContent = lbl; } catch (_) {}
+
+  const usedUrl = applyUrlParams();
+  if (!usedUrl) {
+    const saved = loadState();
+    if (saved && saved.length) {
+      saved.forEach(p => addEntry(p));
+      onCalculate({ scroll: false });
+    } else {
+      addEntry();
+    }
+  }
 }
 
 // ============================================
@@ -380,7 +427,16 @@ function addEntry(preset) {
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
-    if (preset.bandCounts) {
+    if (preset.detailMode && Array.isArray(preset.items) && preset.items.length) {
+      setTimeout(() => {
+        toggleDetailMode(entry);
+        entry.items = preset.items.map(v => ({ val: +v || 0 }));
+        if (preset.detailUnit) entry.detailUnit = preset.detailUnit;
+        buildDetailList(el, entry);
+        updateEntryTotal(entry);
+        scheduleLiveCalc();
+      }, 0);
+    } else if (preset.bandCounts) {
       setTimeout(() => {
         Object.entries(preset.bandCounts).forEach(([idx, cnt]) => {
           const row = el.querySelector('.band-row[data-idx="' + idx + '"]');
@@ -986,7 +1042,7 @@ function updateEntryTotal(entry) {
 let liveCalcTimer = null;
 function scheduleLiveCalc() {
   if (liveCalcTimer) clearTimeout(liveCalcTimer);
-  liveCalcTimer = setTimeout(() => onCalculate({ silent: true }), 120);
+  liveCalcTimer = setTimeout(() => { onCalculate({ silent: true }); saveState(); }, 120);
 }
 
 // ============================================
@@ -1112,6 +1168,7 @@ function onCalculate(opts) {
 function hideResult() {
   $('result').hidden = true;
   $('caution').hidden = true;
+  const cb = $('calc-btn'); if (cb) cb.textContent = '計算する';
 }
 
 // ============================================
@@ -1248,6 +1305,7 @@ function renderResult(r, opts) {
 
   $('result').hidden = false;
   $('caution').hidden = false;
+  { const cb = $('calc-btn'); if (cb) cb.textContent = '結果を見る ↓'; }
 
   if (opts && opts.scroll) {
     requestAnimationFrame(() => {
@@ -1263,6 +1321,7 @@ function renderResult(r, opts) {
 
 function onReset() {
   clearError();
+  try { localStorage.removeItem(LS_KEY); } catch (_) {}
   $('entries').innerHTML = '';
   entries = [];
   addEntry();
@@ -1291,13 +1350,14 @@ function applyUrlParams() {
       addEntry({ fishId, bandCounts });
     });
     onCalculate({ scroll: true });
-    return;
+    return true;
   }
   const fish = p.get('fish');
   const bandsParam = p.get('bands');
   if (fish) {
-    const entry = entries[0];
-    const el = $('entries').querySelector('.entry');
+    let entry = entries[0];
+    if (!entry) entry = addEntry();
+    const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
     onEntryFishChange(entry, fish);
     if (bandsParam) {
       bandsParam.split(',').forEach(part => {
@@ -1313,7 +1373,9 @@ function applyUrlParams() {
       });
       onCalculate({ scroll: true });
     }
+    return true;
   }
+  return false;
 }
 
 // ============================================
