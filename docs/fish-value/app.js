@@ -409,6 +409,7 @@ function addEntry(preset) {
         '</div>' +
       '</div>' +
       '<div class="band-list"></div>' +
+      '<p class="simple-hint">サイズがバラついた時は<button type="button" class="simple-hint-link">詳細入力</button>で1匹ずつ実寸を入れると金額が正確になります</p>' +
       '<div class="detail-list" hidden></div>' +
       '<button type="button" class="lock-btn" hidden></button>' +
     '</div>' +
@@ -424,6 +425,7 @@ function addEntry(preset) {
   el.querySelector('.ims-simple').addEventListener('click', () => { if (!entry.detailMode) return; toggleDetailMode(entry); });
   el.querySelector('.ims-detail').addEventListener('click', () => { if (entry.detailMode || !entry._priceEntry) return; toggleDetailMode(entry); });
   el.querySelector('.lock-btn').addEventListener('click', () => lockEntry(entry));
+  el.querySelector('.simple-hint-link').addEventListener('click', () => { if (!entry.detailMode && entry._priceEntry) toggleDetailMode(entry); });
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
@@ -840,6 +842,7 @@ function toggleDetailMode(entry) {
   const detailBtn = el.querySelector('.ims-detail');
   const bandList = el.querySelector('.band-list');
   const detailList = el.querySelector('.detail-list');
+  const hintEl = el.querySelector('.simple-hint');
   if (entry.detailMode) {
     const speciesCm = entry._species && entry._species.input_modes && entry._species.input_modes[0] === 'cm';
     entry.detailUnit = speciesCm ? 'cm' : 'kg';
@@ -847,12 +850,14 @@ function toggleDetailMode(entry) {
     simpleBtn.classList.remove('active');
     bandList.hidden = true;
     detailList.hidden = false;
+    if (hintEl) hintEl.hidden = true;
     addDetailItem(entry); // 最初の1匹を自動追加
   } else {
     simpleBtn.classList.add('active');
     detailBtn.classList.remove('active');
     bandList.hidden = false;
     detailList.hidden = true;
+    if (hintEl) hintEl.hidden = false;
     detailList.innerHTML = '';
   }
   updateEntryTotal(entry);

@@ -816,6 +816,24 @@ header {
 }
 .price-basis:empty { display: none; }
 
+/* 詳細入力への導線ヒント（簡単入力時のみ） */
+.simple-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 8px 2px 0;
+}
+.simple-hint-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cta);
+  font-size: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* basis */
 .basis-details {
   margin-top: 14px;
