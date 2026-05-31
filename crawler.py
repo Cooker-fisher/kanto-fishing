@@ -8069,8 +8069,27 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
             f'</div></div></div></div>'
         )
         fish_url = f"{SITE_URL}/fish/{fish_slug(fish)}.html"
-        max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
-        fish_desc = f"関東エリアの{fish}釣果情報。今週{len(catches)}便{max_cnt_str}。船宿別ランキング・昨年同週比をリアルタイム更新。"
+        # P3 (2026/05/31): title/description を「関東」クエリ適合に強化（GSC SEO改善 3/4）
+        # GSC 実クエリ「{魚種} 釣果 関東」「{魚種} 船釣り 関東」が pos7-10位で埋もれていた。
+        # 語順を魚種先頭にし「関東」を独立キーワード化（旧「関東の{魚種}釣果」は前置で弱い）。
+        # 出船状況で4分岐（P2 fish_area と同型・N=0 で薄ページ露呈を防ぐ）。
+        # description に5県横断を明示し競合（個別船宿サイト）との独自価値を言語化。
+        # 数値は全て実測/3年累計=事実（無料=事実の方針）。
+        _hist_cnt_fish = len([r for r in _hist_rows_for_fish if r.get("tsuri_mono") == fish])
+        _kanto_note = "神奈川・東京・千葉・茨城・静岡の5県を横断集計。"
+        if len(catches) >= 1 and max_cnt > 0:
+            fish_title_body = f"{fish}釣果 関東【今週{len(catches)}便・最高{int(max_cnt)}匹】"
+            fish_desc = f"関東の{fish}釣果を横断集計。今週{len(catches)}便・最高{int(max_cnt)}匹。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
+        elif len(catches) >= 1:
+            fish_title_body = f"{fish}釣果 関東【今週{len(catches)}便出船】"
+            fish_desc = f"関東の{fish}釣果情報。今週{len(catches)}便出船中。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
+        elif _hist_cnt_fish > 0:
+            fish_title_body = f"{fish}釣果 関東【過去{_hist_cnt_fish}件の実績】"
+            fish_desc = f"関東の{fish}釣果情報。過去{_hist_cnt_fish}件の実績から旬カレンダーを掲載。{_kanto_note}例年の最盛期と船宿別傾向を確認できます。"
+        else:
+            fish_title_body = f"{fish}釣果 関東の船宿情報"
+            fish_desc = f"関東の{fish}船釣り情報。{_kanto_note}旬カレンダーと船宿別ランキングを公開。"
+        fish_title_str = f"{fish_title_body} | 船釣り予想"
         # T38-A6: fish-related-species（共起便数ベース・Layer 1 固定・折り畳み付き）
         _cooc_fish = compute_fish_related_via_cooccurrence(_hist_rows_for_fish, fish, _fish_top_areas)
         # 上段判定: {fish} の主要エリア（TOP-3）で直近7日に出ている魚種
@@ -8242,11 +8261,11 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>関東の{fish}釣果・船宿ランキング【今週{len(catches)}便】| 船釣り予想</title>
+  <title>{fish_title_str}</title>
   <meta name="description" content="{fish_desc}">
   <link rel="canonical" href="{fish_url}">
   {_build_share_meta(
-      title=f"関東の{fish}釣果・船宿ランキング【今週{len(catches)}便】",
+      title=fish_title_body,
       desc=fish_desc,
       url=fish_url,
       og_image=_resolve_fish_ogp_image(fish),
@@ -8267,8 +8286,9 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
   <div class="fh-m">{'本日の釣果報告は集計待ち' if not catches else f'今週 {len(catches)}便・{len(set(c["ship"] for c in catches))}船宿'}</div>
 </div>
 <div class="c">
-  <h1 class="page-h1">関東の{fish}船釣り釣果情報</h1>
+  <h1 class="page-h1">{fish}の船釣り釣果情報（関東）</h1>
   <p class="bread"><a href="../">トップ</a> &rsaquo; {fish}</p>
+  <p class="area-note" style="font-size:12px;color:var(--sub);margin:4px 0 8px">神奈川・東京・千葉・茨城・静岡の5県の船宿を横断集計しています。</p>
   {_build_share_buttons(
       share_text=f"{fish}の最新釣果と旬カレンダー | 船釣り予想",
       share_url=fish_url,
@@ -10412,8 +10432,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         _fa_hist_n = fa_hist_count.get((fish, area), 0)
         _fa_ship_num = len({c.get("ship") for c in catches if c.get("ship")})
         if len(catches) >= 1 and max_cnt > 0:
-            fa_title_body = f"{fish}釣果 {area}【{_fa_ship_num}船宿・最高{max_cnt}匹】"
-            desc = f"{area}の{fish}釣果を船宿別ランキングで掲載。今週{len(catches)}便・最高{max_cnt}匹。過去{_fa_hist_n}件の実績から旬カレンダーと船宿情報を毎日更新。"
+            fa_title_body = f"{fish}釣果 {area}【{_fa_ship_num}船宿・最高{int(max_cnt)}匹】"
+            desc = f"{area}の{fish}釣果を船宿別ランキングで掲載。今週{len(catches)}便・最高{int(max_cnt)}匹。過去{_fa_hist_n}件の実績から旬カレンダーと船宿情報を毎日更新。"
         elif len(catches) >= 1:
             fa_title_body = f"{fish}釣果 {area}【今週{len(catches)}便出船】"
             desc = f"{area}の{fish}釣果情報。今週{len(catches)}便出船。過去{_fa_hist_n}件の実績から旬カレンダーと船宿別ランキングを毎日更新。"
