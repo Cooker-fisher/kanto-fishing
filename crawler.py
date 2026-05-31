@@ -10193,7 +10193,9 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         for c in catches:
             cr = c.get("count_range")
             if cr and not cr.get("is_boat"):
-                max_cnt = max(max_cnt, cr["max"])
+                # P2 (2026/05/31): cr["max"] が None だと TypeError。0 にフォールバック
+                _cmx = cr.get("max")
+                max_cnt = max(max_cnt, _cmx if isinstance(_cmx, (int, float)) else 0)
                 personal_catches.append(c)
         # コンボ統計
         combo_avg = 0
@@ -10399,12 +10401,34 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         # 直近7日間の釣果推移チャート（fish/* と同じ関数を流用）
         chart7_html_fa = build_fish_7day_chart_html(fish, catches)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
-        max_cnt_str = f"・最高{max_cnt}匹" if max_cnt > 0 else ""
-        desc = f"{area}での{fish}釣果情報。今週{len(catches)}便{max_cnt_str}。船宿別ランキングをリアルタイム更新。"
+        # P2 (2026/05/31): title/description を CTR 訴求型に強化（GSC SEO改善 2/4）
+        # 「今週N便」は N=0 のとき薄ページを露呈するため、出船状況で4分岐:
+        #   ① 出船あり+乗合釣果あり → 船宿数・最高釣果の具体数値（最強の CTR 訴求）
+        #   ② 出船あり・釣果数値なし（仕立て便等） → 今週便数
+        #   ③ 今週0便+過去実績あり → 過去実績（hist_count・3年累計の釣果件数）に切替
+        #   ④ 今週0便+過去実績0 → 数値を出さず汎用文（hist_n=0 露出を防ぐ）
+        # 数値は当該ページの実測値/3年累計でいずれも事実（無料=事実の方針）
+        # title 本体と「| 船釣り予想」を分離（OGP title と共用・replace 依存を排除）
+        _fa_hist_n = fa_hist_count.get((fish, area), 0)
+        _fa_ship_num = len({c.get("ship") for c in catches if c.get("ship")})
+        if len(catches) >= 1 and max_cnt > 0:
+            fa_title_body = f"{fish}釣果 {area}【{_fa_ship_num}船宿・最高{max_cnt}匹】"
+            desc = f"{area}の{fish}釣果を船宿別ランキングで掲載。今週{len(catches)}便・最高{max_cnt}匹。過去{_fa_hist_n}件の実績から旬カレンダーと船宿情報を毎日更新。"
+        elif len(catches) >= 1:
+            fa_title_body = f"{fish}釣果 {area}【今週{len(catches)}便出船】"
+            desc = f"{area}の{fish}釣果情報。今週{len(catches)}便出船。過去{_fa_hist_n}件の実績から旬カレンダーと船宿別ランキングを毎日更新。"
+        elif _fa_hist_n > 0:
+            fa_title_body = f"{fish}釣果 {area}【過去{_fa_hist_n}件の実績】"
+            desc = f"{area}の{fish}釣果情報。過去{_fa_hist_n}件の実績から旬カレンダーと船宿別ランキングを公開。例年の最盛期と釣果傾向を確認できます。"
+        else:
+            fa_title_body = f"{fish}釣果 {area}の船宿情報"
+            desc = f"{area}の{fish}釣果情報。旬カレンダーと船宿別ランキングを公開。例年の最盛期と釣果傾向を確認できます。"
+        fa_title_str = f"{fa_title_body} | 船釣り予想"
+        fa_share_title = fa_title_body
         # T39 (2026/05/25): hist_count < 30 のコンボは FAQ 等の固定文章が薄く
         # AdSense「有用性の低いコンテンツ」判定リスクが高いため noindex を付与し
         # sitemap から除外する。ページ自体は内部リンク経由でユーザーに到達可能。
-        _fa_hist_n = fa_hist_count.get((fish, area), 0)
+        # （_fa_hist_n は上で算出済み）
         _fa_slug_stem = f"{fish_slug(fish)}-{area_slug(area)}"
         if _fa_hist_n < _FA_NOINDEX_HIST_THRESHOLD:
             fa_noindex_tag = '<meta name="robots" content="noindex, follow">'
@@ -10414,12 +10438,12 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}便】| 船釣り予想</title>
+  <title>{fa_title_str}</title>
   <meta name="description" content="{desc}">
   {fa_noindex_tag}
   <link rel="canonical" href="{page_url}">
   {_build_share_meta(
-      title=f"{area}の{fish}釣果・おすすめ船宿【今週{len(catches)}便】",
+      title=fa_share_title,
       desc=desc,
       url=page_url,
       og_image=_resolve_fish_ogp_image(fish),
@@ -15160,7 +15184,7 @@ def build_sitemap(data):
                     continue
             except Exception:
                 pass
-            urls.append((f"{SITE_URL}/fish_area/{fname}", "0.7", "weekly"))
+            urls.append((f"{SITE_URL}/fish_area/{fname}", "0.8", "daily"))
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
     # 2026/05/17: fishing_v_zero でも代替ソース（chowari等）あれば対象
