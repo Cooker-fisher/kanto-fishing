@@ -7117,8 +7117,15 @@ def build_html(catches, crawled_at, history, weather_data=None):
             # fallback: 当日スコープ件数を優先。0件なら「今週N件」と明示して7日集計と分かるようにする。
             cnt_range_str = f"今週{len(cs)}件" if not _cs_scope else f"{len(_cs_scope)}件"
         # 当日スコープが空のとき「釣果0件・0船宿」を出さない（件数との矛盾を防ぐ）
+        # T41 (2026/05/31): 「便数」= ユニーク(ship,date,trip_no) で count に統一。
+        # 旧: len(_cs_scope) は merged 重複や同便複数 fish_raw でインフレして
+        #     x_post「N便」と食い違っていた（マダイ 5/30: x_post 18便 vs index 27件）。
+        _unique_trips = {
+            (c.get("ship"), c.get("date"), c.get("trip_no"))
+            for c in _cs_scope
+        }
         _scope_small = (
-            f' <small>釣果{len(_cs_scope)}件・{len({c["ship"] for c in _cs_scope})}船宿</small>'
+            f' <small>{len(_unique_trips)}便・{len({c["ship"] for c in _cs_scope})}船宿</small>'
             if _cs_scope else ""
         )
         sz_val = (this_w.get("size_avg") or 0) if this_w else 0
