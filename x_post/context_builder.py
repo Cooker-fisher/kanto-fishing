@@ -28,6 +28,23 @@ _PELAGIC_FISH = {"カンパチ", "ハマチ", "ブリ", "ワラサ", "イナダ"
 # レア魚種（初接岸シグナル用）
 _RARE_FISH = {"カンパチ", "シイラ", "カツオ", "キハダマグロ"}
 
+
+def _cnt_personal(cr):
+    """count_range を個人釣果として匹数集計に使えるか判定する。
+
+    crawler.py の同名ヘルパーと同義（x_post は独立パッケージのため DRY 回避で再定義）。
+    is_boat=False は常に個人。is_boat=True でも範囲表記（min!=max）なら
+    「個人レンジ＋船中合計」併記型（例「0〜14匹 船中302匹」）として含める。
+    純船中（例「船中5匹」で min==max=船全体数）のみ匹数集計から除外する。
+    """
+    if not isinstance(cr, dict) or not cr:
+        return False
+    if not cr.get("is_boat"):
+        return True
+    lo, hi = cr.get("min"), cr.get("max")
+    return lo is not None and hi is not None and lo != hi
+
+
 # 魚種別の妥当 kg/cm 上限（CSV 誤入力フィルタ用）
 # crawler.py と共通の normalize/fish_size_range.json から読み込み（DRY 違反解消）
 def _load_fish_size_range_from_json():
@@ -419,7 +436,7 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     best_cnt_max = 0
     for c in day_catches:
         cr = c.get("count_range") or {}
-        if isinstance(cr, dict):
+        if _cnt_personal(cr):
             cmax = cr.get("max") or 0
             if cmax > best_cnt_max:
                 best_cnt_max = cmax
@@ -609,9 +626,9 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         if not catches:
             return None
         cnt_maxes = [c["count_range"]["max"] for c in catches
-                     if isinstance(c.get("count_range"), dict) and c["count_range"].get("max") is not None]
+                     if _cnt_personal(c.get("count_range")) and c["count_range"].get("max") is not None]
         cnt_mins = [c["count_range"]["min"] for c in catches
-                    if isinstance(c.get("count_range"), dict) and c["count_range"].get("min") is not None]
+                    if _cnt_personal(c.get("count_range")) and c["count_range"].get("min") is not None]
         kg_maxes = [c["weight_kg"]["max"] for c in catches
                     if isinstance(c.get("weight_kg"), dict) and c["weight_kg"].get("max") is not None]
         kg_mins = [c["weight_kg"]["min"] for c in catches
@@ -621,7 +638,7 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
         cm_mins = [c["size_cm"]["min"] for c in catches
                    if isinstance(c.get("size_cm"), dict) and c["size_cm"].get("min") is not None]
         ports = list({c.get("area", "") for c in catches if c.get("area")})[:2]
-        top_ship = max(catches, key=lambda c: (c.get("count_range") or {}).get("max") or 0,
+        top_ship = max(catches, key=lambda c: ((c.get("count_range") or {}).get("max") or 0) if _cnt_personal(c.get("count_range")) else 0,
                        default=catches[0]).get("ship", "")
         return {
             "cnt_max": max(cnt_maxes) if cnt_maxes else 0,

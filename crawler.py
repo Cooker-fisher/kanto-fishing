@@ -2799,6 +2799,23 @@ def extract_count(t):
         return {"min": 0, "max": 2, "is_boat": is_boat}
     return None
 
+def _cnt_personal(cr):
+    """count_range を個人釣果として匹数集計に使えるか判定する。
+
+    is_boat=False（catch_raw に「船中/合計/全体」なし）は常に個人。
+    is_boat=True でも範囲表記 N〜M（min!=max）が取れていれば「個人レンジ＋船中合計」
+    併記型（例「0〜14匹 船中302匹」）なので個人レンジとして含める。
+    純船中（例「船中5匹」で min==max=船全体数）のみ匹数集計から除外する。
+    実データ根拠（2026/06/01・crawl/catches_raw.json 126,392件）:
+      個人レンジ併記 min!=max … 5,133件（含む）/ 純船中 min==max … 11,480件（除外）
+    """
+    if not cr:
+        return False
+    if not cr.get("is_boat"):
+        return True
+    lo, hi = cr.get("min"), cr.get("max")
+    return lo is not None and hi is not None and lo != hi
+
 def extract_weight_kg(t):
     t = parse_num(t)
     m = re.search(r"(\d+\.?\d*)[～〜~](\d+\.?\d*)\s*kg", t, re.I)
@@ -4930,7 +4947,7 @@ def build_fish_7day_chart_html(fish, catches, display_date=None, display_label=N
         if d not in daily_max:
             daily_max[d] = 0
         cr = c.get("count_range")
-        cnt = (cr["max"] if cr and not cr.get("is_boat") else 0) or 0
+        cnt = (cr["max"] if _cnt_personal(cr) else 0) or 0
         if cnt and cnt > daily_max[d]:
             daily_max[d] = cnt
     values = [daily_max.get(d, 0) for d in days]
@@ -6654,8 +6671,8 @@ def calc_combo_scores(data, history):
         if latest < cutoff:
             continue
 
-        # 個人釣果のみ（船中数除外）で統計
-        personal = [c for c in catches if c.get("count_range") and not c["count_range"].get("is_boat")]
+        # 個人釣果のみ（純船中は除外・個人レンジ併記便は含む）で統計
+        personal = [c for c in catches if _cnt_personal(c.get("count_range"))]
         if personal:
             avgs = [(c["count_range"]["min"] + c["count_range"]["max"]) // 2 for c in personal]
             combo_avg = round(sum(avgs) / len(avgs), 1)
@@ -6913,16 +6930,16 @@ def build_catch_table(catches):
     _top = sorted(catches, key=lambda x: x["date"] or "", reverse=True)[:20]
     for c in _top:
         cr = c.get("count_range")
-        if cr and not cr.get("is_boat"): max_count = max(max_count, cr["max"])
+        if _cnt_personal(cr): max_count = max(max_count, cr["max"])
     for c in _top:
         cr = c.get("count_range")
         cnt = fmt_count(c)
-        is_top = cr and not cr.get("is_boat") and cr["max"] == max_count and max_count > 0
+        is_top = _cnt_personal(cr) and cr["max"] == max_count and max_count > 0
         is_dim = not cr or "不明" in c["fish"]
         sz_cm = fmt_size_cm(c)
         sz_kg = fmt_size_kg(c)
         hl = ' class="highlight"' if is_top else (' class="dim"' if is_dim else "")
-        max_val = cr["max"] if cr and not cr.get("is_boat") else 0
+        max_val = cr["max"] if _cnt_personal(cr) else 0
         fish_str = "・".join(c["fish"])
         rows += f'<tr{hl} data-area="{c["area"]}" data-count="{max_val}" data-date="{c["date"] or ""}"><td>{c["date"] or "-"}</td><td>{c["area"]}</td><td>{c["ship"]}</td><td>{fish_str}</td><td>{cnt}</td><td>{sz_cm}</td><td>{sz_kg}</td></tr>'
     return f"""
@@ -7033,7 +7050,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         # 前週比 ratio=3.0 ブーストで上位に来てグラフ空カードになる regression 発生。
         display_cnt = sum(
             1 for c in cs
-            if c.get("count_range") and not c["count_range"].get("is_boat")
+            if _cnt_personal(c.get("count_range"))
         )
         if display_cnt < 5:
             return score * 0.01
@@ -7098,7 +7115,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         # 7日集計値しかない魚が当日セクションに混入すると「釣れている魚」の意味が破綻するため。
         if not _cs_scope and not is_sparse_today:
             continue
-        _cs_p = [c for c in _cs_scope if c.get("count_range") and not c["count_range"].get("is_boat")]
+        _cs_p = [c for c in _cs_scope if _cnt_personal(c.get("count_range"))]
         _mn = None
         _mx = None
         if _cs_p:
@@ -7160,7 +7177,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             try: _d = datetime.strptime(c["date"], "%Y/%m/%d").date()
             except: continue
             _cr = c.get("count_range")
-            _v = (_cr["max"] if _cr and not _cr.get("is_boat") else 0) or 0
+            _v = (_cr["max"] if _cnt_personal(_cr) else 0) or 0
             if _v > _daily_max.get(_d, 0): _daily_max[_d] = _v
         _vals = [_daily_max.get(_today - timedelta(days=i), 0) for i in range(6, -1, -1)]
         _wmax = max(_vals) if any(v > 0 for v in _vals) else 1
@@ -7664,7 +7681,7 @@ def _aggregate_area_cmp_from_catches(catches_list):
         d = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [],
                                         "kg_hi": [], "kg_lo": [], "ships": [], "trips": 0})
         cr = c.get("count_range")
-        if cr and not cr.get("is_boat"):
+        if _cnt_personal(cr):
             if cr.get("max") is not None: d["hi"].append(cr["max"])
             if cr.get("min") is not None: d["lo"].append(cr["min"])
         sz = c.get("size_cm")
@@ -7935,13 +7952,13 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         max_cnt = 0
         for c in catches:
             cr = c.get("count_range")
-            if cr and not cr.get("is_boat"): max_cnt = max(max_cnt, cr["max"])
+            if _cnt_personal(cr): max_cnt = max(max_cnt, cr["max"])
         # fish-hero 数値: **トップページ ZONE B カードと完全一致させる**ため、
         # 同じ catches （魚種フィルタ済み）を使って min/max を直接集計する。
         # 補遺3 (2026/05/08): avg/平均 は出さず min〜max のみ表示。
         # this_w に min が無いため、min は catches から計算。max は this_w 優先。
         cnt_range_str = ""
-        w_p = [c for c in catches if c.get("count_range") and not c["count_range"].get("is_boat")]
+        w_p = [c for c in catches if _cnt_personal(c.get("count_range"))]
         w_mins = [c["count_range"].get("min") for c in w_p if c["count_range"].get("min") is not None]
         w_maxs = [c["count_range"].get("max") for c in w_p if c["count_range"].get("max") is not None]
         _mn = int(min(w_mins)) if w_mins else None
@@ -7996,7 +8013,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
             d["cnt"] += 1
             if not d["area"] and c.get("area"): d["area"] = c["area"]
             cr = c.get("count_range")
-            if cr and not cr.get("is_boat"):
+            if _cnt_personal(cr):
                 d["cnt_his"].append(cr["max"])
                 d["cnt_los"].append(cr.get("min", cr["max"]))
             sz = c.get("size_cm")
@@ -8938,9 +8955,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                 # count_range が dict なら優先（in-memory形式）、無ければ cnt_min/max（CSV形式）
                 cr = c.get("count_range")
                 if isinstance(cr, dict):
-                    if cr.get("min") is not None and not cr.get("is_boat"):
+                    if cr.get("min") is not None and _cnt_personal(cr):
                         d["cnt_mins"].append(cr["min"])
-                    if cr.get("max") is not None and not cr.get("is_boat"):
+                    if cr.get("max") is not None and _cnt_personal(cr):
                         d["cnt_maxs"].append(cr["max"])
                 else:
                     if c.get("cnt_min") is not None: d["cnt_mins"].append(c["cnt_min"])
@@ -9219,7 +9236,18 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         _week_ships = len({c["ship"] for c in catches})
         # 最新釣果日ラベル（area_date = _resolve_display_dataset が返す最新日付）
         _latest_label = fish_label  # 既に "M/D(曜)" or "—" 形式
-        area_desc = f"{area}（{group}）の船釣り釣果。直近7日{_week_cnt}件・{_week_ships}船宿。{_area_desc_fish}釣れている魚種と船宿情報を毎日更新。"
+        # P4 (2026/05/31): title/description を CTR 訴求型に強化（GSC SEO改善 4/4）
+        # GSC 港名クエリ（天津港 imp45 pos9.6 CTR0%）。旧 title「{area}の釣果情報・
+        # おすすめ船宿【直近7日N件】」は N=0 で薄ページ露呈。港の検索意図=何が釣れるか
+        # → 主要魚種を title に出し CTR 訴求。_top_fish_str（直近7日 top3・既存変数）使用。
+        # title本体と「| 船釣り予想」分離（OGP共用・P2/P3 同型）。数値は実測=事実。
+        if _top_fish_str:
+            area_title_body = f"{area}の釣果【{_top_fish_str}／{_week_ships}船宿】"
+            area_desc = f"{area}（{group}）の船釣り釣果。直近7日{_week_cnt}件・{_week_ships}船宿が出船。{_area_desc_fish}釣れています。主要ポイント・旬の魚種・船宿情報を毎日更新。"
+        else:
+            area_title_body = f"{area}の船釣り釣果情報"
+            area_desc = f"{area}（{group}）の船釣り釣果情報。旬カレンダー・船宿情報・海況データを掲載しています。"
+        area_title_str = f"{area_title_body} | 船釣り予想"
 
         # 有料ティザー
         area_teaser_html = (
@@ -9244,11 +9272,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{area}の釣果情報・おすすめ船宿【直近7日{_week_cnt}件】| 船釣り予想</title>
+  <title>{area_title_str}</title>
   <meta name="description" content="{area_desc}">
   <link rel="canonical" href="{area_url}">
   {_build_share_meta(
-      title=f"{area}の釣果情報・おすすめ船宿【直近7日{_week_cnt}件】",
+      title=area_title_body,
       desc=area_desc,
       url=area_url,
   )}
@@ -9635,12 +9663,13 @@ def _fa_catches_stats(fa_catches):
     """fish_area 用の釣果統計 (n_personal, avg_med, max_val, p25, p75, max_boat)"""
     personal = [
         c for c in fa_catches
-        if c.get("count_range") and not c["count_range"].get("is_boat")
+        if _cnt_personal(c.get("count_range"))
         and c["count_range"].get("max") is not None
     ]
     max_boat = max(
         (c["count_range"]["max"] for c in fa_catches
          if c.get("count_range") and c["count_range"].get("is_boat")
+         and not _cnt_personal(c.get("count_range"))
          and c["count_range"].get("max") is not None),
         default=0
     )
@@ -10266,7 +10295,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             d = ship_data_fa.setdefault(c["ship"], {"cnt": 0, "his": [], "los": [], "boat_his": [], "boat_los": [], "sz_his": [], "sz_los": [], "today": False})
             d["cnt"] += 1
             cr = c.get("count_range")
-            if cr and not cr.get("is_boat"):
+            if _cnt_personal(cr):
                 if cr.get("max") is not None:
                     d["his"].append(cr["max"])
                 if cr.get("min") is not None:
@@ -14700,7 +14729,9 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
     # メタ (F3: F1/F2 データを反映して指名検索 CTR を底上げ)
     # 今月実績 = _ma_months の先頭 (= 今月のはず・データなしなら fallback)
-    title = f"{name}（{area}）の釣果情報・船舶・予約方法 — 船釣り予想"
+    # P4 (2026/05/31): 今月データなし時のデフォルト title を h1「{name}（{area}）の釣果」と
+    # 統一（旧「釣果情報・船舶・予約方法 —」は冗長）。今月データありの場合は下で上書きされる。
+    title = f"{name}（{area}）の釣果・船宿情報 | 船釣り予想"
     desc_parts = [f"{name}（{area}）の船釣り情報。"]
     _current_month_data = None
     if _ma_months:
