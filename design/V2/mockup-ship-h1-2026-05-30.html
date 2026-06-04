@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P1 shipページ H1 パターン比較 | mockup 2026-05-30</title>
+<!-- 実サイトと同一の配色・タイポを再現するため docs/style.css を読み込む -->
+<link rel="stylesheet" href="../../docs/style.css">
+<style>
+/* ── crawler.py _SHIP_EXTRA_CSS から転記（style.css 外のship固有CSS） ── */
+.ship-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:20px 14px;text-align:center}
+.ship-hero h2{font-size:24px;font-weight:800}          /* 現行 */
+.ship-hero h1{font-size:24px;font-weight:800;margin:0} /* 案A: h2→h1格上げ */
+.ship-hero .sh-area{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ship-hero .sh-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.ship-hero .sh-badge{font-size:10px;padding:3px 8px;background:rgba(255,255,255,.15);border-radius:10px;color:#fff}
+.ship-hero .sh-overall{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px}
+.bread{font-size:11px;color:var(--muted);padding:10px 0;line-height:1.6}.bread a{color:var(--sub)}
+.page-h1{font-size:14px;font-weight:700;color:var(--sub);padding:8px 0 0;margin:0;line-height:1.4} /* fish/areaと共通 */
+
+/* ── モックアップ閲覧用の枠（本番には出ない） ── */
+body{background:#e9edf2;margin:0;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif}
+.mk-wrap{max-width:1200px;margin:0 auto}
+.mk-note{background:#fff7e6;border:1px solid #f0c674;border-radius:6px;padding:12px 16px;font-size:13px;line-height:1.7;color:#5a4a1a;margin-bottom:20px}
+.mk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:760px){.mk-grid{grid-template-columns:1fr}}
+.mk-card{background:#fff;border:1px solid #d0d8e0;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.mk-label{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;letter-spacing:.02em}
+.mk-label .mk-sub{font-weight:400;opacity:.8;font-size:11px}
+.mk-phone{width:375px;max-width:100%;margin:14px auto;border:1px solid #ccd;border-radius:10px;overflow:hidden;background:#fff}
+.mk-phone-bar{background:#222;color:#fff;font-size:10px;text-align:center;padding:3px;letter-spacing:.1em}
+.mk-cap{font-size:11px;color:#667;padding:6px 14px 12px;line-height:1.6}
+.mk-cap b{color:#c0392b}
+.mk-c{padding:0 14px}
+.mk-seo{font-size:11px;color:#888;padding:4px 14px 12px;border-top:1px dashed #ddd;margin-top:8px}
+.mk-seo code{background:#f0f0f0;padding:1px 4px;border-radius:3px;font-size:10px}
+h2.mk-h{font-size:18px;color:#0d2b4a;margin:30px 0 6px}
+</style>
+</head>
+<body>
+<div class="mk-wrap">
+
+<div class="mk-note">
+<b>P1: shipページ H1 追加 — パターン比較モックアップ</b><br>
+船宿ページ(ship/*.html)は検索流入の42%(imp 1657)を占める最大の入口だが、現状 <code>&lt;h1&gt;</code> が無く
+hero見出しが <code>&lt;h2&gt;{船宿名}&lt;/h2&gt;</code> のみ。SEO見出し構造を補う。<br>
+GSC上位クエリ:「飯岡幸丸」「勘次郎丸」「光三丸 釣果」など <b>船宿名そのもの</b>が中心。<br>
+船宿名の長さ分布: 全324件中 <b>中央値12字・最長27字・14字超が60件</b>（長い名前はスマホで折返す）。<br>
+↓ 短い名前(幸丸)と長い名前(フィッシングショップつり道場)の両方で各案を確認してください。
+</div>
+
+<!-- ================= 案A1: 現状（船宿名のみ・h2→h1格上げ・文言は変えない） ================= -->
+<h2 class="mk-h">案A1 — 船宿名のみ（h2→h1格上げ・<span style="color:#c0392b">見た目は現状と完全に同じ</span>）</h2>
+<div class="mk-grid">
+  <div class="mk-card">
+    <div class="mk-label">短い船宿名 <span class="mk-sub">幸丸（飯岡港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h1>幸丸</h1>
+        <div class="sh-area">飯岡港</div>
+        <div class="sh-overall">直近30日: 出船16日</div>
+      </div>
+      <div class="mk-c"><div class="bread"><a href="#">トップ</a> &gt; <a href="#">飯岡港</a> &gt; 幸丸</div></div>
+    </div>
+    <div class="mk-seo">SEO: <code>&lt;h1&gt;幸丸&lt;/h1&gt;</code> ／ 検索クエリ「飯岡幸丸」には title(港名含む)で対応</div>
+  </div>
+  <div class="mk-card">
+    <div class="mk-label">長い船宿名 <span class="mk-sub">フィッシングショップつり道場（御前崎港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h1>フィッシングショップつり道場</h1>
+        <div class="sh-area">御前崎港</div>
+        <div class="sh-overall">直近30日: 出船8日</div>
+      </div>
+      <div class="mk-c"><div class="bread"><a href="#">トップ</a> &gt; <a href="#">御前崎港</a> &gt; フィッシングショップつり道場</div></div>
+    </div>
+    <div class="mk-seo">SEO: <code>&lt;h1&gt;フィッシングショップつり道場&lt;/h1&gt;</code></div>
+  </div>
+</div>
+
+<!-- ================= 案A2: 船宿名＋釣果（h1） ================= -->
+<h2 class="mk-h">案A2 — 船宿名＋「の釣果」（h1・<span style="color:#c0392b">「釣果」クエリに適合</span>）</h2>
+<div class="mk-grid">
+  <div class="mk-card">
+    <div class="mk-label">短い船宿名 <span class="mk-sub">幸丸（飯岡港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h1>幸丸の釣果</h1>
+        <div class="sh-area">飯岡港</div>
+        <div class="sh-overall">直近30日: 出船16日</div>
+      </div>
+      <div class="mk-c"><div class="bread"><a href="#">トップ</a> &gt; <a href="#">飯岡港</a> &gt; 幸丸</div></div>
+    </div>
+    <div class="mk-seo">SEO: <code>&lt;h1&gt;幸丸の釣果&lt;/h1&gt;</code> ／「光三丸 釣果」型クエリに合致</div>
+  </div>
+  <div class="mk-card">
+    <div class="mk-label">長い船宿名 <span class="mk-sub">フィッシングショップつり道場（御前崎港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h1>フィッシングショップつり道場の釣果</h1>
+        <div class="sh-area">御前崎港</div>
+        <div class="sh-overall">直近30日: 出船8日</div>
+      </div>
+      <div class="mk-c"><div class="bread"><a href="#">トップ</a> &gt; <a href="#">御前崎港</a> &gt; フィッシングショップつり道場</div></div>
+    </div>
+    <div class="mk-seo">SEO: 長い名前だと <b>2〜3行に折返す</b>（hero高さ増）</div>
+  </div>
+</div>
+
+<!-- ================= 案A3: 船宿名＋港＋釣果（h1） ================= -->
+<h2 class="mk-h">案A3 — 船宿名＋（港）＋「の釣果」（h1・<span style="color:#c0392b">最もSEO包括的だが最長</span>）</h2>
+<div class="mk-grid">
+  <div class="mk-card">
+    <div class="mk-label">短い船宿名 <span class="mk-sub">幸丸（飯岡港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h1>幸丸（飯岡港）の釣果</h1>
+        <div class="sh-area">飯岡港</div>
+        <div class="sh-overall">直近30日: 出船16日</div>
+      </div>
+      <div class="mk-c"><div class="bread"><a href="#">トップ</a> &gt; <a href="#">飯岡港</a> &gt; 幸丸</div></div>
+    </div>
+    <div class="mk-seo">SEO: 「幸丸 飯岡」「飯岡 幸丸 釣果」全クエリ網羅。sh-area と港名が重複</div>
+  </div>
+  <div class="mk-card">
+    <div class="mk-label">長い船宿名 <span class="mk-sub">フィッシングショップつり道場（御前崎港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h1>フィッシングショップつり道場（御前崎港）の釣果</h1>
+        <div class="sh-area">御前崎港</div>
+        <div class="sh-overall">直近30日: 出船8日</div>
+      </div>
+      <div class="mk-c"><div class="bread"><a href="#">トップ</a> &gt; <a href="#">御前崎港</a> &gt; フィッシングショップつり道場</div></div>
+    </div>
+    <div class="mk-seo">SEO: <b>3行折返し</b>でhero間延び。港名も二重表示で冗長</div>
+  </div>
+</div>
+
+<!-- ================= 案B: hero据え置き＋小さいpage-h1（designer推奨） ================= -->
+<h2 class="mk-h">案B — hero据え置き＋パンくず直前に小さい h1（<span style="color:#1a9d56">designer推奨・fish/areaと統一</span>）</h2>
+<div class="mk-grid">
+  <div class="mk-card">
+    <div class="mk-label">短い船宿名 <span class="mk-sub">幸丸（飯岡港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h2>幸丸</h2>
+        <div class="sh-area">飯岡港</div>
+        <div class="sh-overall">直近30日: 出船16日</div>
+      </div>
+      <div class="mk-c">
+        <h1 class="page-h1">幸丸（飯岡港）の釣果情報</h1>
+        <div class="bread"><a href="#">トップ</a> &gt; <a href="#">飯岡港</a> &gt; 幸丸</div>
+      </div>
+    </div>
+    <div class="mk-seo">SEO: hero<code>&lt;h2&gt;</code>は見た目維持。<code>&lt;h1 class="page-h1"&gt;幸丸（飯岡港）の釣果情報&lt;/h1&gt;</code>を小さく追加。CSS変更ゼロ</div>
+  </div>
+  <div class="mk-card">
+    <div class="mk-label">長い船宿名 <span class="mk-sub">フィッシングショップつり道場（御前崎港）</span></div>
+    <div class="mk-phone"><div class="mk-phone-bar">スマホ 375px</div>
+      <div class="ship-hero">
+        <h2>フィッシングショップつり道場</h2>
+        <div class="sh-area">御前崎港</div>
+        <div class="sh-overall">直近30日: 出船8日</div>
+      </div>
+      <div class="mk-c">
+        <h1 class="page-h1">フィッシングショップつり道場（御前崎港）の釣果情報</h1>
+        <div class="bread"><a href="#">トップ</a> &gt; <a href="#">御前崎港</a> &gt; フィッシングショップつり道場</div>
+      </div>
+    </div>
+    <div class="mk-seo">SEO: 長い名前でも小さい文字なので折返しても違和感が少ない（14pxサブ色）</div>
+  </div>
+</div>
+
+<div class="mk-note" style="margin-top:30px;background:#eef6ff;border-color:#a8c8e8;color:#1a3a5a">
+<b>比較まとめ</b><br>
+・<b>案A1</b>: 見た目は完全に現状維持。SEO効果は「h1が存在する」ことのみ（文言は船宿名だけ）<br>
+・<b>案A2</b>: 「釣果」クエリに最適。短い名前は◎、長い名前は折返しでhero間延び<br>
+・<b>案A3</b>: SEO網羅性は最大だが、heroで港名が重複＋最長3行折返しで冗長<br>
+・<b>案B（designer推奨）</b>: heroの見た目は一切変えず、SEO用h1を小さく追加。fish/area/fish_areaと完全統一。CSS変更ゼロでリスク最小<br>
+</div>
+
+</div>
+</body></html>
