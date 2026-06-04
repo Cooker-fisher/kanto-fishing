@@ -2816,6 +2816,31 @@ def _cnt_personal(cr):
     lo, hi = cr.get("min"), cr.get("max")
     return lo is not None and hi is not None and lo != hi
 
+def _cnt_personal_csv(r):
+    """CSV行（data/V2/*.csv 由来 dict）を個人釣果として匹数集計に使えるか判定する。
+
+    _cnt_personal（count_range dict 版）の CSV 版。当日 valid_catches を経ず hist_rows を
+    直接ループする集計（FAQ 固定文章・area_cmp の長期フォールバック等）で使う。
+    CSV には範囲表記が取れたか(ranged)を示す列が無いため、cnt_min != cnt_max を
+    「個人レンジ＋船中合計」併記型（例「0〜14匹 船中302匹」）の代理判定に使う。
+
+    is_boat≠1 は常に個人。is_boat=1 でも cnt_min != cnt_max なら個人レンジ併記として含める。
+    純船中（is_boat=1 かつ cnt_min == cnt_max = 船全体数）のみ匹数集計から除外する。
+    ⚠ 下限欠落型「〜14匹 船中58匹」（extract_count が min==max=14・約129件/0.1%）は
+      この代理判定では取りこぼすが、低品質・他便でカバーされるため許容する。
+    """
+    ib = str(r.get("is_boat", "") or "").strip().lower()
+    if ib not in ("1", "true"):
+        return True
+    cmin = r.get("cnt_min", "")
+    cmax = r.get("cnt_max", "")
+    if cmin in ("", None) or cmax in ("", None):
+        return False
+    try:
+        return float(cmin) != float(cmax)
+    except (ValueError, TypeError):
+        return False
+
 def extract_weight_kg(t):
     t = parse_num(t)
     m = re.search(r"(\d+\.?\d*)[～〜~](\d+\.?\d*)\s*kg", t, re.I)
@@ -5425,8 +5450,7 @@ def _build_fish_count_q3_text(fish, hist_rows):
     for r in hist_rows:
         if r.get("tsuri_mono") != fish:
             continue
-        ib = str(r.get("is_boat", "")).strip().lower()
-        if ib in ("1", "true"):
+        if not _cnt_personal_csv(r):
             continue
         cmax = r.get("cnt_max", "")
         if cmax == "" or cmax is None:
@@ -7724,8 +7748,7 @@ def _aggregate_area_cmp_from_hist(fish, hist_rows, days=365):
             continue
         ad = area_dict.setdefault(area, {"hi": [], "lo": [], "sz_hi": [], "sz_lo": [],
                                           "kg_hi": [], "kg_lo": [], "ships": [], "trips": 0})
-        ib = str(r.get("is_boat", "") or "").strip().lower()
-        if ib not in ("1", "true"):
+        if _cnt_personal_csv(r):
             try:
                 cmax = r.get("cnt_max", "")
                 if cmax not in ("", None):
@@ -9844,8 +9867,7 @@ def _build_fish_area_count_q2_text(fish, area, hist_rows):
     for r in hist_rows:
         if r.get("tsuri_mono") != fish or r.get("area") != area:
             continue
-        ib = str(r.get("is_boat", "")).strip().lower()
-        if ib not in ("1", "true"):
+        if _cnt_personal_csv(r):
             try:
                 v = int(float(r.get("cnt_max", "") or 0))
                 if v > 0:
@@ -9884,7 +9906,7 @@ def _build_fish_area_count_q2_text(fish, area, hist_rows):
             cnt_text = f"釣果レンジは{cnt_p25}〜{cnt_p75}匹、最高実績は{cnt_max}匹です（サンプル{cn}件）"
     else:
         cnt_text = f"最高実績は{cnt_max}匹です（サンプル{cn}件と少なく標準的なレンジの推定は困難）"
-    head = f"過去3年間の{area}での{fish}実釣記録{cn:,}件（個人釣果のみ・乗合便除く）を集計すると、{cnt_text}。"
+    head = f"過去3年間の{area}での{fish}実釣記録{cn:,}件（個人釣果のみ・船全体の合計数は除く）を集計すると、{cnt_text}。"
     cms.sort()
     kgs.sort()
     # kg 表示は整数なら "1.0" → "1" に詰める（自然な読み）

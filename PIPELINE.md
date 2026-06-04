@@ -171,7 +171,7 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | fish_raw | 釣果生テキスト全文 | そのまま |
 | time_slot | 午前/午後/夜/朝/夕/ショート | fish_rawから抽出 |
 | cnt_min/max/avg | 釣果数 | 数値抽出 |
-| is_boat | 乗合/仕立フラグ | 0/1 |
+| is_boat | 船中合計フラグ（catch_raw に「船中/合計/全体」を含む。乗合/仕立の別ではない） | 0/1 |
 | size_min/max | サイズ(cm) | 数値抽出 |
 | kg_min/max | 重量(kg) | 数値抽出 |
 | tackle | 仕掛け種別 | テキスト抽出 |
