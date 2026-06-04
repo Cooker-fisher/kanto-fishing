@@ -4287,6 +4287,7 @@ def _v2_footer(crawled_at=""):
     <a href="/pages/privacy.html">プライバシーポリシー</a>
     <a href="/pages/terms.html">利用規約</a>
     <a href="/pages/contact.html">お問い合わせ</a>
+    <a href="/pages/faq.html">よくある質問</a>
   </div>
 </footer>"""
 
@@ -14905,7 +14906,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 </div>
 
 <footer>
-<a href="../pages/privacy.html">プライバシーポリシー</a> · <a href="../pages/terms.html">利用規約</a> · <a href="../pages/about.html">サイトについて</a><br>
+<a href="../pages/privacy.html">プライバシーポリシー</a> · <a href="../pages/terms.html">利用規約</a> · <a href="../pages/about.html">サイトについて</a> · <a href="../pages/contact.html">お問い合わせ</a> · <a href="../pages/faq.html">よくある質問</a><br>
 <div style="margin-top:6px"><a href="../">トップ</a> · <a href="../area/{area_slug_str}.html">{area}</a></div>
 <span style="margin-top:6px;display:inline-block">© 2026 船釣り予想 — 最終更新: {crawled_at}</span>
 </footer>
@@ -15273,6 +15274,33 @@ def build_sitemap(data):
         slug_s = s.get("romaji_slug")
         if slug_s and slug_s not in _SHIP_NOINDEX_SLUGS:
             urls.append((f"{SITE_URL}/ship/{slug_s}.html", "0.6", "weekly"))
+    # x_post/*.html（日次釣果まとめ＝独自編集コンテンツ・2026/06/05 追加）
+    # 当サイト唯一の純オリジナルコンテンツ。indexable（noindex なし）だが従来
+    # sitemap 未収録でクローラーから見えにくかった。AdSense「有用性の低いコンテンツ」
+    # 対策として最も価値の高い原本性コンテンツを審査クローラーに露出する。
+    # 将来の安全弁として noindex タグがあれば除外。
+    xpost_dir = os.path.join(WEB_DIR, "x_post")
+    if os.path.isdir(xpost_dir):
+        if os.path.isfile(os.path.join(xpost_dir, "index.html")):
+            urls.append((f"{SITE_URL}/x_post/", "0.8", "daily"))
+        for fname in sorted(os.listdir(xpost_dir)):
+            if not fname.endswith(".html") or fname == "index.html":
+                continue
+            try:
+                with open(os.path.join(xpost_dir, fname), encoding="utf-8") as _fp:
+                    _xhead = _fp.read(2048)
+                if 'name="robots"' in _xhead and "noindex" in _xhead:
+                    continue
+            except Exception:
+                pass
+            # 日付付きアーカイブは公開後に変化しないため changefreq=monthly
+            urls.append((f"{SITE_URL}/x_post/{fname}", "0.7", "monthly"))
+    # pages/*.html（静的ページ・2026/06/05 追加）
+    # フッターリンク済みだが sitemap 未収録だった。AdSense はプライバシーポリシーを
+    # 確実に発見したいため明示収録する。
+    for _pg in ("about", "faq", "contact", "privacy", "terms"):
+        if os.path.isfile(os.path.join(WEB_DIR, "pages", f"{_pg}.html")):
+            urls.append((f"{SITE_URL}/pages/{_pg}.html", "0.5", "monthly"))
     # premium/plan.html（静的・月次更新）
     urls.append((f"{SITE_URL}/premium/plan.html", "0.7", "monthly"))
     entries = "\n".join(

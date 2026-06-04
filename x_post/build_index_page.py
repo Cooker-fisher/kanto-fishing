@@ -216,6 +216,13 @@ def build_index(output_path: str, docs_x_post_dir: str | None = None) -> None:
 
 <footer>
   &copy; 2026 船釣り予想 | funatsuri-yoso.com — データ集計・出典: 本サイト独自集計
+  <div style="margin-top:8px;line-height:1.9">
+    <a href="/pages/about.html" style="color:#cfe8f5;text-decoration:underline">サイトについて</a> ·
+    <a href="/pages/privacy.html" style="color:#cfe8f5;text-decoration:underline">プライバシーポリシー</a> ·
+    <a href="/pages/terms.html" style="color:#cfe8f5;text-decoration:underline">利用規約</a> ·
+    <a href="/pages/contact.html" style="color:#cfe8f5;text-decoration:underline">お問い合わせ</a> ·
+    <a href="/pages/faq.html" style="color:#cfe8f5;text-decoration:underline">よくある質問</a>
+  </div>
 </footer>
 
 </body>
