@@ -735,6 +735,23 @@ def _hl_cards_html(ctx):
     return f'    <div class="hl-grid">\n' + "\n".join(cards) + "\n    </div>"
 
 
+# GA + AdSense ローダー（head 用）と広告ユニット（body 用）。
+# f-string 内の brace 衝突を避けるためモジュール定数として保持する。
+_ANALYTICS_HEAD = (
+    '<script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script>'
+    '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'
+    'gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>'
+    '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+    '?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
+)
+_AD_UNIT = (
+    '<ins class="adsbygoogle" style="display:block;min-height:0;height:auto" '
+    'data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" '
+    'data-full-width-responsive="true"></ins>'
+    '<script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>'
+)
+
+
 def build(ctx, commentary, output_path, png_url=None):
     """
     docs/x_post/YYYY-MM-DD.html を生成して output_path に保存。
@@ -885,6 +902,7 @@ def build(ctx, commentary, output_path, png_url=None):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{_ANALYTICS_HEAD}
 <title>{date_label} 関東船釣り 釣果まとめ | 船釣り予想</title>
 <meta name="description" content="{og_desc}">
 <meta property="og:title" content="{date_label} 関東船釣り 釣果まとめ | 船釣り予想">
@@ -965,6 +983,7 @@ def build(ctx, commentary, output_path, png_url=None):
 
 </div>
 
+<div style="margin:24px 0;text-align:center">{_AD_UNIT}</div>
 <footer>
   &copy; 2026 船釣り予想 | funatsuri-yoso.com — データ集計・出典: 本サイト独自集計
   <div style="margin-top:8px;line-height:1.9">

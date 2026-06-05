@@ -2498,24 +2498,55 @@ def _build_area_forecast_page(area_group, forecast_data):
 
 
 def _build_forecast_hub(forecast_data, catches=None):
-    """有料トップページHTML（予測結果レポート＋チラ見せ＋料金）"""
-    html = _forecast_page_head("釣果予測 プレミアム")
+    """海況予報ハブ（無料の海況サマリー＋日次/週次ナビ＋釣果予測の案内）。
+    海況は無料公開・釣果予測は各日ページで一部を無料プレビュー（フル版は拡充中）。"""
+    html = _forecast_page_head("海況予報・釣果予測")
+    all_dates = sorted(forecast_data.get("days", {}).keys())
+    all_weeks = forecast_data.get("weeks", {})
 
+    # 日次/週次ナビ（海況の実コンテンツページへ）
+    html += _forecast_date_nav(all_dates, all_weeks, "")
+
+    # 無料: 今週の海況サマリー（波高・風速・海水温・出船判定）
+    html += '<h2>今週の海況（無料公開）</h2>'
+    html += '<p class="section-note">関東の波高・風速・海水温・出船判定を無料で公開しています。日付をタップすると主要エリア別の詳細が見られます。</p>'
+    if all_dates:
+        html += '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px">'
+        html += ('<tr style="background:#0d2b4a;color:#fff">'
+                 '<th style="padding:7px 6px;text-align:left">日付</th>'
+                 '<th style="padding:7px 6px">出船判定</th>'
+                 '<th style="padding:7px 6px">🌊波高</th>'
+                 '<th style="padding:7px 6px">💨風速</th>'
+                 '<th style="padding:7px 6px">🌡️海水温</th></tr>')
+        for i, d in enumerate(all_dates):
+            day = forecast_data["days"][d]
+            m, dd = int(d[5:7]), int(d[8:10])
+            wd = ["月", "火", "水", "木", "金", "土", "日"][datetime.strptime(d, "%Y-%m-%d").weekday()]
+            wave = day.get("wave"); wind = day.get("wind"); sst = day.get("sst"); ok = day.get("ok", "")
+            bg = "#ffffff" if i % 2 == 0 else "#f5f7fa"
+            html += (f'<tr style="background:{bg};border-bottom:1px solid #e0e6ec">'
+                     f'<td style="padding:7px 6px"><a href="{d}.html" style="font-weight:700">{m}/{dd}({wd})</a></td>'
+                     f'<td style="padding:7px 6px;text-align:center">{ok}</td>'
+                     f'<td style="padding:7px 6px;text-align:center">{wave if wave is not None else "-"}m</td>'
+                     f'<td style="padding:7px 6px;text-align:center">{wind if wind is not None else "-"}m/s</td>'
+                     f'<td style="padding:7px 6px;text-align:center">{sst if sst is not None else "-"}℃</td></tr>')
+        html += '</table>'
+        html += '<p class="section-note">各日付ページでは主要エリア別の海況と出船リスク（7日間）も確認できます。</p>'
+
+    # 釣果予測の案内（各日ページで一部を無料プレビュー・フル版は拡充中）
     html += '''
-<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:14px;padding:36px 24px;margin:24px 0;text-align:center">
-<h2 style="font-size:20px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">釣果予測 プレミアム</h2>
-<p style="font-size:13px;color:#5a6a7a;line-height:1.9;margin-bottom:20px">
-気象条件・潮通し・過去3年の実績データから算出する<strong>魚種別・エリア別の釣果予測</strong>です。<br>
-日次予測（7日先）・週次予測（4週先）・エリア別ハブを提供します。
+<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:14px;padding:28px 20px;margin:24px 0">
+<h2 style="font-size:18px;color:#7c3aed;margin-bottom:10px;border:none;padding:0">魚種別 釣果予測</h2>
+<p style="font-size:13px;color:#5a6a7a;line-height:1.9;margin-bottom:14px">
+海況・潮通し・過去3年の実績データから算出する<strong>魚種別の釣果予測（匹数レンジ・サイズ・確信度）</strong>です。
+各日付ページで<strong>上位予測を無料でプレビュー</strong>でき、全魚種・エリア別のフル版を順次拡充しています。
 </p>
-<ul style="display:inline-block;text-align:left;font-size:13px;color:#5a6a7a;line-height:1.9;margin-bottom:20px">
+<ul style="font-size:13px;color:#5a6a7a;line-height:1.9;margin:0 0 14px 18px">
 <li>日次予測: 匹数レンジ・サイズ・確信度・分析コメント</li>
 <li>週次予測: 潮回り×季節傾向×直近実績</li>
-<li>エリア別出船リスク予報（7日間）</li>
-<li>船宿別 釣果ランキング＋予測</li>
+<li>エリア別の出船リスク予報（7日間）</li>
 </ul>
-<p style="font-size:13px;color:#7c3aed;font-weight:700;margin-bottom:16px">月額500円 / スポット閲覧 100円〜</p>
-<p style="font-size:11px;color:#8a96a4">決済システム整備中。下の日付から予測の一部を無料でプレビューできます。</p>
+<p style="font-size:12px;color:#7c3aed;font-weight:700">フル版: 月額500円 / スポット100円〜（公開準備中）</p>
 </div>
 '''
     html += _forecast_page_foot()
@@ -10751,6 +10782,7 @@ a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
 <title>料金プラン — 船釣り予想</title>
 <meta name="description" content="船釣り予想の料金プラン。月額500円・スポット100円。機能比較表あり。">
 <link rel="stylesheet" href="../style.css">
@@ -15301,8 +15333,7 @@ def build_sitemap(data):
     for _pg in ("about", "faq", "contact", "privacy", "terms"):
         if os.path.isfile(os.path.join(WEB_DIR, "pages", f"{_pg}.html")):
             urls.append((f"{SITE_URL}/pages/{_pg}.html", "0.5", "monthly"))
-    # premium/plan.html（静的・月次更新）
-    urls.append((f"{SITE_URL}/premium/plan.html", "0.7", "monthly"))
+    # premium/plan.html は noindex（薄い販売ページ・2026/06/05）のため sitemap 非収録
     entries = "\n".join(
         f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
         for loc, pri, freq in urls
