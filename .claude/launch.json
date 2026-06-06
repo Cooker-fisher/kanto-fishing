@@ -4,7 +4,7 @@
     {
       "name": "Static File Server",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server"],
+      "runtimeArgs": ["-m", "http.server", "--directory", "docs"],
       "port": 8000,
       "autoPort": true
     },

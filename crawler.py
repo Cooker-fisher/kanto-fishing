@@ -15241,7 +15241,7 @@ MONTHLY_FISH_CONFIG = {
             "鹿島・茨城": [("鹿島", "kashima"), ("日立久慈", "hitachi-kuji"), ("大洗", "ooarai")],
         },
         "narratives": {
-            "東京湾": {"trend": "湾口の松輪・久里浜が出船の中心。Max平均3.5匹と全エリア最低水準で、中盤以降の南西風で波が立ち食い渋りが目立った。", "tackle": "コマセビシ釣りが主流。神奈川県条例により湾内ではコマセ一本。ハリス3〜4号・3m前後。"},
+            "東京湾": {"trend": "湾口の松輪・久里浜が出船の中心。Max平均は全エリア最低水準で、中盤以降の南西風で波が立ち食い渋りが目立った。", "tackle": "コマセビシ釣りが主流。神奈川県条例により湾内ではコマセ一本。ハリス3〜4号・3m前後。"},
             "内房": {"trend": "出船船宿は少なくデータ蓄積が薄い月。共栄丸が継続的に出船。", "tackle": "コマセビシ・一つテンヤ併用。"},
             "相模湾・伊豆": {"trend": "全体は控えめだが、恒丸（大磯港）が型物混じりの好釣果。中盤の中潮タイミングで一発当たった様子。", "tackle": "コマセビシ中心・一部一つテンヤ。葉山〜茅ヶ崎は浅場・小田原から伊豆は深場と釣り方が変わる。"},
             "駿河湾・遠州灘": {"trend": "月間最大の90cm級が伊達丸（御前崎）で上がった。深場狙いの遠州灘テンヤで型物が連発。", "tackle": "一つテンヤが主流。遠州灘の深場で重めのテンヤ・タングステン系。"},
@@ -15252,7 +15252,7 @@ MONTHLY_FISH_CONFIG = {
         "consideration_html": (
             "2026年5月のマダイ釣果は全{total}便と前年比{yoy:+.1f}%で推移した。月中盤の大潮タイミング（5/11〜14前後）では外房・大原〜飯岡で記録的な束釣りが連発した。"
             "とくに5/30の幸丸（飯岡港）の19匹は、乗っ込み終盤のピーク食いを捉えた一日で、産卵接岸群が浅場に差した瞬間と推察される。"
-            "一方で東京湾はMax平均3.5匹と低調だった。これは5月後半に南西風が連日吹き付け、湾口の松輪・剣崎ポイントで波が立ち食い渋りが目立った影響と考えられる。"
+            "一方で東京湾は全エリア最低水準のMax平均と低調だった。これは5月後半に南西風が連日吹き付け、湾口の松輪・剣崎ポイントで波が立ち食い渋りが目立った影響と考えられる。"
             "対照的に駿河湾の伊達丸（御前崎）は月間最大の90cm級を上げており、深場の一つテンヤで型物に的を絞れた数日があった。水温の動きを見ると、2026年5月の駿河湾西部は18〜20℃の理想帯にとどまり、産卵で浅場に差した個体を狙う釣りと、深場の落ち個体を狙う釣りの両方が成立した月だった。"
             "潮回りでは大潮〜中潮の食いが顕著で、長潮・若潮では各エリアでツ抜けすら難しい便も散見された。乗っ込み終盤の食い渋り時期と重なり、後半は型を狙う釣りに切り替えた船が好結果を残している。"
         ),
@@ -15265,7 +15265,7 @@ MONTHLY_FISH_CONFIG = {
             "<strong>鹿島・茨城:</strong> 北沖の安定釣果が継続。タイラバ・テンヤ問わず2桁実績の便数が増える時期。",
         ],
         "related_fish": ["マルイカ"],
-        "related_fish_area": [("外房", "マダイ × 外房 詳細"), ("東京湾", "マダイ × 東京湾 詳細")],
+        "related_fish_area": [("飯岡", "iioka"), ("大原", "ohara")],
     },
     "マルイカ": {
         "unit": "杯", "type_metric": "cm",
@@ -15283,7 +15283,7 @@ MONTHLY_FISH_CONFIG = {
             "東京湾": {"trend": "松輪間口の喜平治丸が際立った。胴長40cm級の良型を5/9・5/12・5/26と繰り返し上げ、数（最大121杯）と型を両立。直結直ブラの感度釣りがハマった。", "tackle": "直結（直ブラ）仕掛けが主流。スッテ5〜7本・中オモリ。乗りの渋い日は浮きスッテで誘い上げ。"},
             "内房": {"trend": "本月の出船報告なし。マルイカは三浦〜相模湾が主漁場で内房は対象外。", "tackle": "—"},
             "相模湾・伊豆": {"trend": "本月の主役エリア。小網代の翔太丸が5/14に132杯の大爆釣。葉山あぶずり・平塚でも安定。たいぞう丸・大和丸・翔太丸の3船が各19便と高稼働で相模湾を牽引した。", "tackle": "ブランコ仕掛け・直結併用。スッテへの抱きを目感度・手感度で取る繊細な釣り。乗っ込み群は浅場のタナを丁寧に。"},
-            "駿河湾・遠州灘": {"trend": "沼津・秀丸が6便のみ。数・型とも控えめで、本格シーズンは別時期。", "tackle": "ブランコ仕掛け中心。"},
+            "駿河湾・遠州灘": {"trend": "沼津・秀丸の6便のみと出船が限られ、日別の数値（Max60杯超の日もあり）は1船宿・6便の参考値で振れ幅が大きい。マルイカの本格シーズンは別時期。", "tackle": "ブランコ仕掛け中心。"},
             "外房": {"trend": "本月の出船報告なし。マルイカ（ケンサキ系）の主漁場外。", "tackle": "—"},
             "鹿島・茨城": {"trend": "本月の出船報告なし。", "tackle": "—"},
         },
@@ -15303,7 +15303,7 @@ MONTHLY_FISH_CONFIG = {
             "<strong>外房・鹿島・内房:</strong> マルイカの主漁場外。6月も出船は見込み薄。",
         ],
         "related_fish": ["マダイ"],
-        "related_fish_area": [("相模湾・伊豆", "マルイカ × 相模湾 詳細"), ("東京湾", "マルイカ × 東京湾 詳細")],
+        "related_fish_area": [("小網代", "koajiro"), ("葉山あぶずり", "hayama-abuzuri")],
     },
 }
 
@@ -15505,6 +15505,9 @@ def _monthly_by_catch_top(rows, top_k=8):
             continue
         for token in bc.replace("、", ",").replace("/", ",").replace(" ", ",").split(","):
             t = token.strip()
+            # DB欠損値・無意味トークンを除外（"NULL 57回" 等の生データ露出防止）
+            if t.upper() in ("NULL", "NONE", "NAN") or t in ("なし", "無し", "ナシ", "不明", "-", "—", "ー", "他"):
+                continue
             if 2 <= len(t) <= 8:
                 counter[t] += 1
     return sorted(counter.items(), key=lambda x: -x[1])[:top_k]
@@ -15642,14 +15645,15 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     for i, t in enumerate(cur_data.get("best_trips", []), 1):
         size_s = f" / 最大{t['size_max']:.0f}cm" if t.get("size_max") else ""
         ship_lnk = _ship_link(t["ship"], depth=2)
-        cnt_min_s = f"{t['cnt_min']}" if t.get("cnt_min") is not None else "—"
-        cnt_max_s = f"{t['cnt_max']}"
+        # min==max（または min欠落）は単一値に統一（決定ログ2026/05/23・「N〜N匹」禁止）
+        _cmin, _cmax = t.get("cnt_min"), t.get("cnt_max")
+        cnt_disp = f"{_cmin}〜{_cmax}{unit}" if (_cmin is not None and _cmin != _cmax) else f"{_cmax}{unit}"
         best_html.append(
             f'<li class="bt-item"><span class="bt-rank">#{i}</span>'
             f'<span class="bt-date">{t["date"]}</span>'
             f'<span class="bt-ship">{ship_lnk}</span>'
             f'<span class="bt-port">（{t["port"]}）</span>'
-            f'<span class="bt-cnt">{cnt_min_s}〜{cnt_max_s}{unit}</span>'
+            f'<span class="bt-cnt">{cnt_disp}</span>'
             f'<span class="bt-size">{size_s}</span></li>'
         )
 
@@ -15658,7 +15662,8 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     if cfg["type_metric"] == "kg":
         type_tag = "型（重量）"
         for i, t in enumerate(cur_data.get("best_kg_trips", []), 1):
-            kg_min_s = f"{t['kg_min']:.1f}〜" if t.get("kg_min") else ""
+            # kg min==max は単一値（「8.2〜8.2kg」禁止）
+            kg_min_s = f"{t['kg_min']:.1f}〜" if (t.get("kg_min") and t["kg_min"] != t["kg_max"]) else ""
             size_s = f" / {t['size_max']:.0f}cm" if t.get("size_max") else ""
             cnt_s = f" / {t['cnt_max']}{unit}" if t.get("cnt_max") else ""
             ship_lnk = _ship_link(t["ship"], depth=2)
@@ -15675,7 +15680,8 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     else:
         type_tag = "型（胴長）"
         for i, t in enumerate(cur_data.get("best_size_trips", []), 1):
-            sz_min_s = f"{t['size_min']:.0f}〜" if t.get("size_min") else ""
+            # 胴長 min==max は単一値（「40〜40cm」禁止）
+            sz_min_s = f"{t['size_min']:.0f}〜" if (t.get("size_min") and t["size_min"] != t["size_max"]) else ""
             cnt_s = f" / {t['cnt_max']}{unit}" if t.get("cnt_max") else ""
             ship_lnk = _ship_link(t["ship"], depth=2)
             best_type_html.append(
@@ -15764,12 +15770,14 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     for k in sorted(next_month_hist.keys(), reverse=True):
         v_nh = next_month_hist[k]
         if v_nh and v_nh.get("total_trips"):
-            cnt_min_s = f"{v_nh['cnt_min_avg']}" if v_nh.get('cnt_min_avg') is not None else "—"
-            cnt_max_s = f"{v_nh['cnt_max_avg']}" if v_nh.get('cnt_max_avg') is not None else "—"
-            nh_rows.append(f'<tr><th>{k}</th><td>{v_nh["total_trips"]}便</td><td>{v_nh["n_ships"]}船宿</td><td>{cnt_min_s}〜{cnt_max_s}{unit}</td></tr>')
-    cnt_min_cur = f"{s['cnt_min_avg']}" if s.get('cnt_min_avg') is not None else "—"
-    cnt_max_cur = f"{s['cnt_max_avg']}" if s.get('cnt_max_avg') is not None else "—"
-    nh_rows.append(f'<tr><td><strong>{year_num}年{month_num}月（本月）</strong></td><td>{s["total_trips"]}便</td><td>{s["n_ships"]}船宿</td><td>{cnt_min_cur}〜{cnt_max_cur}{unit}</td></tr>')
+            _lo, _hi = v_nh.get('cnt_min_avg'), v_nh.get('cnt_max_avg')
+            rng_s = (f"{_lo}〜{_hi}{unit}" if (_lo is not None and _hi is not None and _lo != _hi)
+                     else (f"{_hi}{unit}" if _hi is not None else "—"))
+            nh_rows.append(f'<tr><th>{k}</th><td>{v_nh["total_trips"]}便</td><td>{v_nh["n_ships"]}船宿</td><td>{rng_s}</td></tr>')
+    _lo_c, _hi_c = s.get('cnt_min_avg'), s.get('cnt_max_avg')
+    rng_cur = (f"{_lo_c}〜{_hi_c}{unit}" if (_lo_c is not None and _hi_c is not None and _lo_c != _hi_c)
+               else (f"{_hi_c}{unit}" if _hi_c is not None else "—"))
+    nh_rows.append(f'<tr><td><strong>{year_num}年{month_num}月（本月）</strong></td><td>{s["total_trips"]}便</td><td>{s["n_ships"]}船宿</td><td>{rng_cur}</td></tr>')
 
     chart_svg = _monthly_daily_svg(cur_data.get("daily", []), prev_data.get("daily", []), unit)
 
@@ -15798,14 +15806,12 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
         related_links.append(f'<a href="./{other_romaji}.html">{year_num}年{month_num}月 {other_fish}月報</a>')
     # 月報一覧
     related_links.append(f'<a href="../">月報一覧（全月号）</a>')
-    # fish_area 関連
-    for area_name, label in cfg.get("related_fish_area", []):
-        area_slug_val = _AREA_ROMAJI.get(area_name, area_name)
-        fa_path_r = os.path.join(WEB_DIR, "fish_area", f"{fish_romaji_val}-{area_slug_val}.html")
+    # fish_area 関連（実在する 魚種×港 ページのみリンク。無い場合は出さない＝
+    # 「×エリア 詳細」と書いて fish ページに飛ばす欺きリンクを排除）
+    for port_label, fa_slug in cfg.get("related_fish_area", []):
+        fa_path_r = os.path.join(WEB_DIR, "fish_area", f"{fish_romaji_val}-{fa_slug}.html")
         if os.path.exists(fa_path_r):
-            related_links.append(f'<a href="../../fish_area/{fish_romaji_val}-{area_slug_val}.html">{label}</a>')
-        else:
-            related_links.append(f'<a href="../../fish/{fish_romaji_val}.html">{label}</a>')
+            related_links.append(f'<a href="../../fish_area/{fish_romaji_val}-{fa_slug}.html">{fish} × {port_label} 詳細</a>')
     related_html = "".join(related_links)
 
     # JSON-LD
@@ -15815,8 +15821,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "トップ", "item": f"{SITE_URL}/"},
             {"@type": "ListItem", "position": 2, "name": "月報", "item": f"{SITE_URL}/monthly/"},
-            {"@type": "ListItem", "position": 3, "name": f"{year_num}年{month_num}月", "item": f"{SITE_URL}/monthly/{month_str}/"},
-            {"@type": "ListItem", "position": 4, "name": f"{fish}月報", "item": canonical},
+            {"@type": "ListItem", "position": 3, "name": f"{fish}月報（{year_num}年{month_num}月）", "item": canonical},
         ]
     }
     date_published = f"{year_num}-{month_num + 1:02d}-01" if month_num < 12 else f"{year_num + 1}-01-01"
@@ -15838,6 +15843,8 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     yoy_label = f"前年比 {yoy_pct:+.1f}% （前年 {ps.get('total_trips', '—')}便）" if ps.get("total_trips") else "初月集計"
     size_overall = s.get("size_max_overall")
     size_overall_s = f"{size_overall:.0f}" if size_overall else "—"
+    share_text = f"{year_num}年{month_num}月 関東{fish}釣果月報｜船釣り予想"
+    share_bar_html = _build_share_buttons(share_text, canonical)
 
     html = f'''<!DOCTYPE html>
 <html lang="ja">
@@ -15948,11 +15955,12 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
 .ml-related-list{{display:flex;flex-wrap:wrap;gap:8px}}
 .ml-related-list a{{display:inline-block;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}}
 .ml-related-list a:hover{{background:var(--accent);color:#fff}}
-.ml-nav-month{{display:flex;justify-content:space-between;align-items:center;margin:14px 0;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px}}
+.ml-nav-month{{display:flex;justify-content:space-between;align-items:stretch;gap:8px;margin:14px 0;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px}}
+.ml-nav-month>*{{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}}
 .ml-nav-month a{{color:var(--cta);text-decoration:none;font-size:13px;font-weight:600}}
-.ml-nav-month .ml-nav-current{{color:var(--accent);font-weight:800}}
+.ml-nav-month .ml-nav-current{{color:var(--accent);font-weight:800;font-size:13px}}
 .ml-nav-month .ml-nav-disabled{{color:var(--muted,#8a96a4);font-size:13px;font-weight:500;opacity:.7;cursor:default}}
-@media(max-width:520px){{.ml-hero h1{{font-size:20px}}.ml-hero h1 .ml-hero-fish{{font-size:24px}}.bt-cnt{{margin-left:0;width:100%;text-align:right}}}}
+@media(max-width:520px){{.ml-hero h1{{font-size:20px}}.ml-hero h1 .ml-hero-fish{{font-size:24px}}.bt-cnt{{margin-left:0;width:100%;text-align:right}}.ml-nav-month{{gap:6px;padding:8px}}.ml-nav-month a,.ml-nav-month .ml-nav-current,.ml-nav-month .ml-nav-disabled{{font-size:11px}}}}
 </style>
 </head>
 <body>
@@ -15969,7 +15977,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
   <span class="ml-hero-yoy {yoy_cls}">{yoy_label}</span>
 </section>
 <div class="c">
-  <p class="bread"><a href="/">トップ</a> &rsaquo; <a href="/monthly/">月報</a> &rsaquo; <a href="/monthly/{month_str}/">{year_num}年{month_num}月</a> &rsaquo; {fish}</p>
+  <p class="bread"><a href="/">トップ</a> &rsaquo; <a href="/monthly/">月報</a> &rsaquo; {fish}月報（{year_num}年{month_num}月）</p>
   {nav_html}
   <p style="font-size:14px;line-height:1.75;color:var(--text);margin:14px 0">{year_num}年{month_num}月の関東{fish}釣果を全エリア・全船宿で集計しました。日別釣果グラフ、エリア別傾向、海況考察、{month_num + 1}月の傾向予測まで。<a href="../../fish/{fish_romaji_val}.html" style="color:var(--cta)">{fish}詳細ページ</a> もあわせてどうぞ。</p>
   <nav class="ml-toc" aria-label="目次"><h2>もくじ</h2><ol>
@@ -15988,7 +15996,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
       <div class="ml-stat"><span class="ml-stat-label">日別Max平均</span><span class="ml-stat-val">{s.get('cnt_max_avg') or '—'}{unit}</span></div>
       <div class="ml-stat"><span class="ml-stat-label">月間最大型</span><span class="ml-stat-val">{size_overall_s}cm</span></div>
     </div>
-    <details class="ml-ships-wrap" open><summary style="font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;padding:6px 0">対象船宿一覧（{s['n_ships']}船宿）</summary>{ships_html}</details>
+    <details class="ml-ships-wrap" open><summary style="font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;padding:6px 0">対象船宿一覧（{s['n_ships']}船宿{'・便数上位15を表示' if s['n_ships'] > 15 else ''}）</summary>{ships_html}</details>
     <div class="ml-best-twin">
       <div class="ml-best-col"><h3 class="ml-best-title">月間ベスト3 <span class="ml-best-tag">釣果（数）</span></h3><ol class="ml-best">{"".join(best_html) or "<li>データなし</li>"}</ol></div>
       <div class="ml-best-col ml-best-col-kg"><h3 class="ml-best-title">月間ベスト3 <span class="ml-best-tag ml-best-tag-kg">{type_tag}</span></h3><ol class="ml-best">{"".join(best_type_html) or "<li>データなし</li>"}</ol><p class="ml-best-note">{type_note}</p></div>
@@ -16003,18 +16011,20 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
   </section>
   <section class="ml-sec" id="sec-3">
     <h2><span class="ml-sec-num">3</span>海況との関係考察</h2>
-    <div class="ml-consider"><h3>{cfg['consideration_title']}</h3><div class="ml-consider-body">{consideration}</div><p class="ml-consider-note">※ 本セクションは月次の水温・潮位・潮回り集計を反映した最終版に置き換え予定。現状は手書き草案。</p></div>
+    <div class="ml-consider"><h3>{cfg['consideration_title']}</h3><div class="ml-consider-body">{consideration}</div><p class="ml-consider-note">※ 本セクションは月次の水温・潮位・潮回りの傾向と当月の釣果実績にもとづく定性的な分析です。</p></div>
   </section>
   <section class="ml-sec" id="sec-4">
     <h2><span class="ml-sec-num">4</span>{month_num + 1}月の傾向予測</h2>
     <p>{cfg.get('forecast_intro', '')}</p>
     <table class="ml-forecast-table"><thead><tr><th>月</th><th>釣行件数</th><th>船宿数</th><th>Min〜Max平均</th></tr></thead><tbody>{"".join(nh_rows)}</tbody></table>
-    <h3 style="font-size:14px;font-weight:700;color:var(--accent);margin:14px 0 8px">{month_num + 1}月の傾向見立て（草案）</h3>
+    <p class="ml-chart-note" style="margin:4px 0 12px">※ 2026年は収録船宿数が前年から大きく増えており、便数の単純比較はできません。Min〜Max平均（1便あたりの傾向）を比較の目安としてください。</p>
+    <h3 style="font-size:14px;font-weight:700;color:var(--accent);margin:14px 0 8px">{month_num + 1}月の傾向見立て</h3>
     <ul style="font-size:13px;line-height:1.85;color:var(--text);padding-left:20px">{forecast_items_html}</ul>
     <p class="ml-consider-note" style="background:var(--bg);font-size:11px;color:var(--muted,#8a96a4);margin-top:10px;padding:6px 10px;border-radius:4px">※ 上記は過去年実績と季節傾向からの見立て。具体的な日別予測は <a href="/forecast/" style="color:var(--cta)">有料の日別予測ページ</a> で提供予定。</p>
   </section>
   <div class="ml-related"><h3>関連ページ・他の月報</h3><div class="ml-related-list">{related_html}</div></div>
   {nav_html}
+  {share_bar_html}
 </div>
 <footer style="margin-top:30px;padding:20px;background:var(--accent);color:#fff;text-align:center;font-size:12px">
   <p>© 2026 船釣り予想 funatsuri-yoso.com</p>
