@@ -4305,6 +4305,7 @@ def _v2_header_nav(active_page=""):
   <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
+  <a href="/monthly/"{' class="on"' if active_page == 'monthly' else ''}>月報</a>
   <a href="/komase-sim/"{' class="on"' if active_page == 'komasim' else ''}>🎣 コマセsim<span class="nav-new">NEW</span></a>
 
   <a href="/forecast/" class="prem{' on' if active_page == 'forecast' else ''}">有料プラン</a>
@@ -15222,6 +15223,1003 @@ def build_point_pages(hist_rows, crawled_at=""):
 
 
 # ============================================================
+# 月報生成（build_monthly_pages / build_monthly_index）
+# ============================================================
+
+# ── 月報対象魚種設定 ──
+MONTHLY_FISH_CONFIG = {
+    "マダイ": {
+        "unit": "匹", "type_metric": "kg",
+        "romaji": "madai",
+        "og_image": "https://funatsuri-yoso.com/assets/fish/madai/madai_photo.png",
+        "area_ports": {
+            "東京湾": [("松輪江奈", "matsuwa-ena"), ("松輪間口", "matsuwa-maguchi"), ("久里浜", "kurihama"), ("金沢八景", "kanazawa-hakkei"), ("小柴", "koshiba")],
+            "内房": [("富浦", "tomiura"), ("保田", "hota"), ("金谷", "kanaya"), ("館山", "tateyama")],
+            "相模湾・伊豆": [("佐島", "sajima"), ("茅ヶ崎", "chigasaki"), ("小田原早川", "hayakawa"), ("網代", "ajiro"), ("下田", "shimoda"), ("大磯", "ooiso"), ("平塚", "hiratsuka")],
+            "駿河湾・遠州灘": [("御前崎", "omaezaki"), ("由比", "yui"), ("沼津", "numazu"), ("田子の浦", "tagonoura")],
+            "外房": [("飯岡", "iioka"), ("大原", "ohara"), ("天津", "amatsu"), ("片貝", "katakai"), ("御宿岩和田", "onjuku-iwawada")],
+            "鹿島・茨城": [("鹿島", "kashima"), ("日立久慈", "hitachi-kuji"), ("大洗", "ooarai")],
+        },
+        "narratives": {
+            "東京湾": {"trend": "湾口の松輪・久里浜が出船の中心。Max平均3.5匹と全エリア最低水準で、中盤以降の南西風で波が立ち食い渋りが目立った。", "tackle": "コマセビシ釣りが主流。神奈川県条例により湾内ではコマセ一本。ハリス3〜4号・3m前後。"},
+            "内房": {"trend": "出船船宿は少なくデータ蓄積が薄い月。共栄丸が継続的に出船。", "tackle": "コマセビシ・一つテンヤ併用。"},
+            "相模湾・伊豆": {"trend": "全体は控えめだが、恒丸（大磯港）が型物混じりの好釣果。中盤の中潮タイミングで一発当たった様子。", "tackle": "コマセビシ中心・一部一つテンヤ。葉山〜茅ヶ崎は浅場・小田原から伊豆は深場と釣り方が変わる。"},
+            "駿河湾・遠州灘": {"trend": "月間最大の90cm級が伊達丸（御前崎）で上がった。深場狙いの遠州灘テンヤで型物が連発。", "tackle": "一つテンヤが主流。遠州灘の深場で重めのテンヤ・タングステン系。"},
+            "外房": {"trend": "本月の主役エリア。幸丸（飯岡）が爆釣連発・梅花丸（大原）も安定。乗っ込みのピーク末期で大原沖の浅場が好調。", "tackle": "一つテンヤが主流。3〜10号のテンヤにエビ餌。底取り後の小突き＋誘いで乗っ込み個体を狙う。"},
+            "鹿島・茨城": {"trend": "東京湾と並ぶ水準。鹿島港・日立久慈港の北部沖が中心。幸栄丸がハイ便数で月間全体の底上げに貢献。", "tackle": "一つテンヤ・タイラバ混在。鹿島は北沖の深場ポイントが多くタイラバ80〜120g。"},
+        },
+        "consideration_title": "2026年5月の海況とマダイ釣果の関係",
+        "consideration_html": (
+            "2026年5月のマダイ釣果は全{total}便と前年比{yoy:+.1f}%で推移した。月中盤の大潮タイミング（5/11〜14前後）では外房・大原〜飯岡で記録的な束釣りが連発した。"
+            "とくに5/30の幸丸（飯岡港）の19匹は、乗っ込み終盤のピーク食いを捉えた一日で、産卵接岸群が浅場に差した瞬間と推察される。"
+            "一方で東京湾はMax平均3.5匹と低調だった。これは5月後半に南西風が連日吹き付け、湾口の松輪・剣崎ポイントで波が立ち食い渋りが目立った影響と考えられる。"
+            "対照的に駿河湾の伊達丸（御前崎）は月間最大の90cm級を上げており、深場の一つテンヤで型物に的を絞れた数日があった。水温の動きを見ると、2026年5月の駿河湾西部は18〜20℃の理想帯にとどまり、産卵で浅場に差した個体を狙う釣りと、深場の落ち個体を狙う釣りの両方が成立した月だった。"
+            "潮回りでは大潮〜中潮の食いが顕著で、長潮・若潮では各エリアでツ抜けすら難しい便も散見された。乗っ込み終盤の食い渋り時期と重なり、後半は型を狙う釣りに切り替えた船が好結果を残している。"
+        ),
+        "forecast_intro": "過去2年の6月マダイ実績は以下の通り。5月と同水準〜やや増の傾向。",
+        "forecast_items": [
+            "<strong>全体:</strong> 梅雨入りで欠航日が増えるが、産卵後の落ちダイ狙いで型物実績が上がる時期。",
+            "<strong>外房:</strong> 5月の主役からシフトし、深場の落ちダイ狙いに切替期。便数はやや減るが型物の比率が上がる見込み。",
+            "<strong>東京湾:</strong> 5月の南西風影響から脱し、湾口の松輪エリアで安定釣果が見込める。",
+            "<strong>駿河湾・遠州灘:</strong> 御前崎・遠州灘の深場テンヤが本格期。90cm級の型物実績は6月も継続見込み。",
+            "<strong>鹿島・茨城:</strong> 北沖の安定釣果が継続。タイラバ・テンヤ問わず2桁実績の便数が増える時期。",
+        ],
+        "related_fish": ["マルイカ"],
+        "related_fish_area": [("外房", "マダイ × 外房 詳細"), ("東京湾", "マダイ × 東京湾 詳細")],
+    },
+    "マルイカ": {
+        "unit": "杯", "type_metric": "cm",
+        "romaji": "maruika",
+        "og_image": "https://funatsuri-yoso.com/assets/fish/maruika/maruika_photo.png",
+        "area_ports": {
+            "東京湾": [("松輪間口", "matsuwa-maguchi"), ("久比里", "kubiri"), ("鴨居大室", "kamoi-oomuro")],
+            "内房": [],
+            "相模湾・伊豆": [("小網代", "koajiro"), ("葉山あぶずり", "hayama-abuzuri"), ("平塚", "hiratsuka"), ("長井", "nagai"), ("佐島", "sajima")],
+            "駿河湾・遠州灘": [("沼津", "numazu")],
+            "外房": [],
+            "鹿島・茨城": [],
+        },
+        "narratives": {
+            "東京湾": {"trend": "松輪間口の喜平治丸が際立った。胴長40cm級の良型を5/9・5/12・5/26と繰り返し上げ、数（最大121杯）と型を両立。直結直ブラの感度釣りがハマった。", "tackle": "直結（直ブラ）仕掛けが主流。スッテ5〜7本・中オモリ。乗りの渋い日は浮きスッテで誘い上げ。"},
+            "内房": {"trend": "本月の出船報告なし。マルイカは三浦〜相模湾が主漁場で内房は対象外。", "tackle": "—"},
+            "相模湾・伊豆": {"trend": "本月の主役エリア。小網代の翔太丸が5/14に132杯の大爆釣。葉山あぶずり・平塚でも安定。たいぞう丸・大和丸・翔太丸の3船が各19便と高稼働で相模湾を牽引した。", "tackle": "ブランコ仕掛け・直結併用。スッテへの抱きを目感度・手感度で取る繊細な釣り。乗っ込み群は浅場のタナを丁寧に。"},
+            "駿河湾・遠州灘": {"trend": "沼津・秀丸が6便のみ。数・型とも控えめで、本格シーズンは別時期。", "tackle": "ブランコ仕掛け中心。"},
+            "外房": {"trend": "本月の出船報告なし。マルイカ（ケンサキ系）の主漁場外。", "tackle": "—"},
+            "鹿島・茨城": {"trend": "本月の出船報告なし。", "tackle": "—"},
+        },
+        "consideration_title": "2026年5月の海況とマルイカ釣果の関係",
+        "consideration_html": (
+            "2026年5月のマルイカ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%と倍増した。出船数の増加に加え、春の乗っ込み群が早めに接岸した好シーズンを反映している。日別Max平均は{cmax}杯で、束に迫る日も複数あった。"
+            "主役は相模湾。小網代の翔太丸が5/14に132杯の大爆釣を記録し、葉山あぶずり・平塚でも安定した数が出た。たいぞう丸・大和丸・翔太丸の3船が各19便と高稼働で、相模湾全体を牽引した。"
+            "東京湾では松輪間口の喜平治丸が際立った。胴長40cm級の良型を5/9・5/12・5/26と繰り返し上げ、数（最大121杯）と型を両立させた。直結直ブラの感度釣りがハマった形である。"
+            "水温は内海20.9℃・外海20.7℃と、マルイカの適水温帯に乗った。大潮回りで群れが固まった日に束釣りが集中する一方、潮の緩い日は拾い釣りとなり、日較差が大きかった。これはマルイカが群れ依存の強いターゲットであることの裏返しで、「群れに当たれば束、外せば一桁」という本種らしい分布を示した月だった。"
+        ),
+        "forecast_intro": "過去2年の6月マルイカ実績は以下の通り。6月は最盛期後半で、年により数の振れ幅が大きい。",
+        "forecast_items": [
+            "<strong>全体:</strong> 6月はマルイカ最盛期の後半。胴長が育って型は上向く。梅雨の欠航を挟みつつ数は5月並み〜やや増の見込み。",
+            "<strong>相模湾・伊豆:</strong> 引き続き主戦場。小網代・葉山で群れが続く限り束狙いが可能。凪の日を狙い撃ちたい。",
+            "<strong>東京湾:</strong> 松輪間口で40cm級の良型シーズンが継続。型を狙うなら6月前半が本命。",
+            "<strong>駿河湾・遠州灘:</strong> 沼津で細々。本格化は別シーズンで、6月は数が読みにくい。",
+            "<strong>外房・鹿島・内房:</strong> マルイカの主漁場外。6月も出船は見込み薄。",
+        ],
+        "related_fish": ["マダイ"],
+        "related_fish_area": [("相模湾・伊豆", "マルイカ × 相模湾 詳細"), ("東京湾", "マルイカ × 東京湾 詳細")],
+    },
+}
+
+# エリア定義（月報用 6エリア）
+_MONTHLY_AREA_MAP = {
+    "東京湾": ["松輪江奈", "松輪間口", "久里浜", "久比里", "金沢八景", "小柴", "金田", "野比",
+              "剣崎", "三崎", "鴨居大室", "鴨居", "大室", "羽田", "八丁堀", "浦安", "本牧", "船橋", "深川"],
+    "内房": ["富浦", "保田", "金谷", "館山", "勝山", "岩井", "洲崎", "布良", "那古船形"],
+    "相模湾・伊豆": ["佐島", "小網代", "茅ヶ崎", "小田原", "網代", "下田", "大磯", "平塚", "小坪",
+                  "葉山", "伊東", "宇佐美", "熱海", "真鶴", "東伊豆", "南伊豆", "西伊豆", "長井"],
+    "駿河湾・遠州灘": ["御前崎", "由比", "沼津", "田子の浦"],
+    "外房": ["飯岡", "大原", "天津", "片貝", "御宿", "勝浦", "鴨川", "銚子", "白浜", "千倉", "九十九里"],
+    "鹿島・茨城": ["鹿島", "日立", "久慈", "大洗", "那珂湊", "磯崎"],
+}
+_MONTHLY_AREA_ORDER = ["東京湾", "内房", "外房", "鹿島・茨城", "相模湾・伊豆", "駿河湾・遠州灘"]
+
+# 月報を生成する対象月（前月自動が本来だが、データが確実に揃う月を固定指定も可）
+# "auto" を指定すると実行時の前月を対象にする
+_MONTHLY_TARGET = "2026-05"  # "auto" で前月自動
+
+
+def _monthly_get_area(port: str) -> str:
+    if not port:
+        return "未分類"
+    for area, ports in _MONTHLY_AREA_MAP.items():
+        if any(p in port for p in ports):
+            return area
+    return f"未分類:{port}"
+
+
+def _monthly_to_float(s):
+    if not s or s in ("", "-"):
+        return None
+    try:
+        return float(s)
+    except (ValueError, TypeError):
+        return None
+
+
+def _monthly_to_int(s):
+    v = _monthly_to_float(s)
+    return int(v) if v is not None else None
+
+
+def _monthly_load_csv(year: int, month: int, fish: str):
+    """data/V2/{year}-{month:02d}.csv から指定魚種の行を返す（欠航除く）"""
+    import csv as _csv
+    rows = []
+    for csv_dir_name in (f"{year}-{month:02d}.csv", f"chowari_{year}-{month:02d}.csv"):
+        path = os.path.join(_DATA_DIR, csv_dir_name)
+        if not os.path.exists(path):
+            continue
+        with open(path, encoding="utf-8") as f:
+            for r in _csv.DictReader(f):
+                if r.get("tsuri_mono") != fish:
+                    continue
+                if r.get("is_cancellation") == "1":
+                    continue
+                rows.append(r)
+    return rows
+
+
+def _monthly_summarize(rows):
+    from collections import defaultdict as _dd
+    ships = _dd(int)
+    dates = set()
+    cnt_min_vals, cnt_max_vals, size_max_vals = [], [], []
+    for r in rows:
+        ships[r["ship"]] += 1
+        dates.add(r["date"])
+        cmin = _monthly_to_int(r.get("cnt_min"))
+        cmax = _monthly_to_int(r.get("cnt_max"))
+        smax = _monthly_to_float(r.get("size_max"))
+        if cmin is not None:
+            cnt_min_vals.append(cmin)
+        if cmax is not None:
+            cnt_max_vals.append(cmax)
+        if smax is not None:
+            size_max_vals.append(smax)
+    return {
+        "total_trips": len(rows),
+        "n_ships": len(ships),
+        "n_dates": len(dates),
+        "cnt_min_avg": round(sum(cnt_min_vals) / len(cnt_min_vals), 1) if cnt_min_vals else None,
+        "cnt_max_avg": round(sum(cnt_max_vals) / len(cnt_max_vals), 1) if cnt_max_vals else None,
+        "size_max_overall": max(size_max_vals) if size_max_vals else None,
+        "ships_top": sorted(ships.items(), key=lambda x: -x[1])[:15],
+    }
+
+
+def _monthly_daily_minmax(rows):
+    from collections import defaultdict as _dd
+    by_date = _dd(lambda: {"min": [], "max": [], "n_ships": set()})
+    for r in rows:
+        d = r["date"]
+        cmin = _monthly_to_int(r.get("cnt_min"))
+        cmax = _monthly_to_int(r.get("cnt_max"))
+        if cmin is not None:
+            by_date[d]["min"].append(cmin)
+        if cmax is not None:
+            by_date[d]["max"].append(cmax)
+        by_date[d]["n_ships"].add(r["ship"])
+    result = []
+    for d in sorted(by_date.keys()):
+        v = by_date[d]
+        result.append({
+            "date": d,
+            "min_avg": round(sum(v["min"]) / len(v["min"]), 1) if v["min"] else 0,
+            "max_avg": round(sum(v["max"]) / len(v["max"]), 1) if v["max"] else 0,
+            "n_ships": len(v["n_ships"]),
+        })
+    return result
+
+
+def _monthly_best_trips(rows, top_k=3):
+    scored = []
+    for r in rows:
+        cmax = _monthly_to_int(r.get("cnt_max"))
+        if cmax is None:
+            continue
+        scored.append({
+            "date": r["date"], "ship": r["ship"], "port": r["area"],
+            "cnt_min": _monthly_to_int(r.get("cnt_min")), "cnt_max": cmax,
+            "size_max": _monthly_to_float(r.get("size_max")),
+        })
+    scored.sort(key=lambda x: (-x["cnt_max"], -(x["size_max"] or 0)))
+    return scored[:top_k]
+
+
+def _monthly_best_size_trips(rows, top_k=3):
+    scored = []
+    for r in rows:
+        sz = _monthly_to_float(r.get("size_max"))
+        if sz is None or sz <= 0:
+            continue
+        scored.append({
+            "date": r["date"], "ship": r["ship"], "port": r["area"],
+            "size_min": _monthly_to_float(r.get("size_min")), "size_max": sz,
+            "cnt_max": _monthly_to_int(r.get("cnt_max")),
+        })
+    scored.sort(key=lambda x: (-x["size_max"], -(x["cnt_max"] or 0)))
+    return scored[:top_k]
+
+
+def _monthly_best_kg_trips(rows, top_k=3):
+    scored = []
+    for r in rows:
+        kg = _monthly_to_float(r.get("kg_max"))
+        if kg is None or kg <= 0:
+            continue
+        scored.append({
+            "date": r["date"], "ship": r["ship"], "port": r["area"],
+            "kg_min": _monthly_to_float(r.get("kg_min")), "kg_max": kg,
+            "size_max": _monthly_to_float(r.get("size_max")),
+            "cnt_max": _monthly_to_int(r.get("cnt_max")),
+        })
+    scored.sort(key=lambda x: (-x["kg_max"], -(x["size_max"] or 0)))
+    return scored[:top_k]
+
+
+def _monthly_by_area(rows):
+    from collections import defaultdict as _dd
+    area_rows = _dd(list)
+    for r in rows:
+        area_rows[_monthly_get_area(r["area"])].append(r)
+    result = {}
+    for area, lst in area_rows.items():
+        ships = _dd(int)
+        cnt_min_vals, cnt_max_vals, size_max_vals = [], [], []
+        dates = set()
+        for r in lst:
+            ships[r["ship"]] += 1
+            dates.add(r["date"])
+            cmin = _monthly_to_int(r.get("cnt_min"))
+            cmax = _monthly_to_int(r.get("cnt_max"))
+            smax = _monthly_to_float(r.get("size_max"))
+            if cmin is not None:
+                cnt_min_vals.append(cmin)
+            if cmax is not None:
+                cnt_max_vals.append(cmax)
+            if smax is not None:
+                size_max_vals.append(smax)
+        result[area] = {
+            "n_trips": len(lst), "n_ships": len(ships), "n_dates": len(dates),
+            "cnt_min_avg": round(sum(cnt_min_vals) / len(cnt_min_vals), 1) if cnt_min_vals else None,
+            "cnt_max_avg": round(sum(cnt_max_vals) / len(cnt_max_vals), 1) if cnt_max_vals else None,
+            "size_max_overall": max(size_max_vals) if size_max_vals else None,
+            "top_ships": sorted(ships.items(), key=lambda x: -x[1])[:5],
+        }
+    return result
+
+
+def _monthly_by_catch_top(rows, top_k=8):
+    from collections import defaultdict as _dd
+    counter = _dd(int)
+    for r in rows:
+        bc = (r.get("by_catch") or "").strip()
+        if not bc:
+            continue
+        for token in bc.replace("、", ",").replace("/", ",").replace(" ", ",").split(","):
+            t = token.strip()
+            if 2 <= len(t) <= 8:
+                counter[t] += 1
+    return sorted(counter.items(), key=lambda x: -x[1])[:top_k]
+
+
+def _monthly_kg_coverage(rows):
+    total = len(rows)
+    with_kg = sum(1 for r in rows if _monthly_to_float(r.get("kg_max")))
+    return {"total": total, "with_kg": with_kg, "pct": round(with_kg / total * 100, 1) if total else 0}
+
+
+def _monthly_size_coverage(rows):
+    total = len(rows)
+    with_sz = sum(1 for r in rows if _monthly_to_float(r.get("size_max")))
+    return {"total": total, "with_sz": with_sz, "pct": round(with_sz / total * 100, 1) if total else 0}
+
+
+def _monthly_daily_svg(daily_cur, daily_prev, unit, width=820, height=240):
+    """日別 Min/Max 平均の SVG グラフ生成"""
+    pad_l, pad_r, pad_t, pad_b = 40, 20, 16, 36
+    w = width - pad_l - pad_r
+    h = height - pad_t - pad_b
+
+    def to_map(daily):
+        m = {}
+        for r in daily:
+            try:
+                day = int(r["date"].split("/")[-1])
+                m[day] = (r["min_avg"], r["max_avg"], r["n_ships"])
+            except Exception:
+                pass
+        return m
+
+    m26 = to_map(daily_cur)
+    m25 = to_map(daily_prev)
+    all_max = max([v[1] for v in m26.values()] + [v[1] for v in m25.values()] + [10])
+    y_max = max(10, int(all_max) + 2)
+
+    def x(d):
+        return pad_l + (d - 1) * (w / 30)
+
+    def y(v):
+        return pad_t + h - (v / y_max) * h
+
+    p = [f'<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" class="daily-chart" role="img" aria-label="日別Min/Max平均{unit}数グラフ">']
+    p.append(f'<rect x="0" y="0" width="{width}" height="{height}" fill="var(--card, #fff)"/>')
+    for v in [0, y_max // 4, y_max // 2, y_max * 3 // 4, y_max]:
+        gy = y(v)
+        p.append(f'<line x1="{pad_l}" y1="{gy}" x2="{width - pad_r}" y2="{gy}" stroke="var(--border, #e3e7ed)" stroke-width="0.5"/>')
+        p.append(f'<text x="{pad_l - 6}" y="{gy + 3}" text-anchor="end" font-size="9" fill="var(--sub, #8a96a4)">{v}</text>')
+    for d in [1, 5, 10, 15, 20, 25, 31]:
+        p.append(f'<text x="{x(d)}" y="{height - pad_b + 14}" text-anchor="middle" font-size="9" fill="var(--text, #5a6a7a)">{d}日</text>')
+    max_ships = max([v[2] for v in m26.values()] + [1])
+    for d in range(1, 32):
+        if d in m26:
+            bh = (m26[d][2] / max_ships) * h * 0.4
+            p.append(f'<rect x="{x(d) - 3}" y="{pad_t + h - bh}" width="6" height="{bh}" fill="var(--accent, #0d2b4a)" opacity="0.08"/>')
+    if m25:
+        s25 = sorted(m25.items())
+        p.append(f'<polyline points="{" ".join(f"{x(d)},{y(v[1])}" for d, v in s25)}" fill="none" stroke="var(--sub, #8a96a4)" stroke-width="1.4" stroke-dasharray="4,3" opacity="0.7"/>')
+        p.append(f'<polyline points="{" ".join(f"{x(d)},{y(v[0])}" for d, v in s25)}" fill="none" stroke="var(--muted, #bfc7d1)" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.6"/>')
+    if m26:
+        s26 = sorted(m26.items())
+        band = [f"{x(d)},{y(m26[d][1])}" for d, _ in s26] + [f"{x(d)},{y(m26[d][0])}" for d, _ in reversed(s26)]
+        p.append(f'<polygon points="{" ".join(band)}" fill="var(--cta, #e85d04)" opacity="0.10"/>')
+        p.append(f'<polyline points="{" ".join(f"{x(d)},{y(v[1])}" for d, v in s26)}" fill="none" stroke="var(--cta, #e85d04)" stroke-width="2.2"/>')
+        p.append(f'<polyline points="{" ".join(f"{x(d)},{y(v[0])}" for d, v in s26)}" fill="none" stroke="var(--accent, #0d2b4a)" stroke-width="1.6"/>')
+        for d, v in s26:
+            p.append(f'<circle cx="{x(d)}" cy="{y(v[1])}" r="2.5" fill="var(--cta, #e85d04)"/>')
+    lg = pad_t + 2
+    p.append('<g font-size="10" fill="var(--text, #1a2332)">')
+    p.append(f'<line x1="{width - pad_r - 180}" y1="{lg + 5}" x2="{width - pad_r - 160}" y2="{lg + 5}" stroke="var(--cta, #e85d04)" stroke-width="2.2"/><text x="{width - pad_r - 155}" y="{lg + 8}">本月 Max平均</text>')
+    p.append(f'<line x1="{width - pad_r - 180}" y1="{lg + 20}" x2="{width - pad_r - 160}" y2="{lg + 20}" stroke="var(--accent, #0d2b4a)" stroke-width="1.6"/><text x="{width - pad_r - 155}" y="{lg + 23}">本月 Min平均</text>')
+    p.append(f'<line x1="{width - pad_r - 180}" y1="{lg + 35}" x2="{width - pad_r - 160}" y2="{lg + 35}" stroke="var(--sub, #8a96a4)" stroke-width="1.4" stroke-dasharray="4,3"/><text x="{width - pad_r - 155}" y="{lg + 38}">前年 Max平均</text>')
+    p.append('</g></svg>')
+    return "\n".join(p)
+
+
+def _monthly_detect_existing(monthly_dir: str) -> set:
+    """docs/monthly/ 配下の月ディレクトリ（YYYY-MM 形式）の set を返す"""
+    existing = set()
+    if not os.path.isdir(monthly_dir):
+        return existing
+    import re as _re
+    for name in os.listdir(monthly_dir):
+        if _re.match(r"^\d{4}-\d{2}$", name) and os.path.isdir(os.path.join(monthly_dir, name)):
+            existing.add(name)
+    return existing
+
+
+def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hist, crawled_at=""):
+    """
+    月報 HTML を生成して返す。
+    month_str: "2026-05" 形式
+    cur_data / prev_data / next_month_hist: _monthly_summarize / _monthly_daily_minmax 等の出力
+    """
+    year_num, month_num = int(month_str[:4]), int(month_str[5:])
+    next_m = month_num + 1 if month_num < 12 else 1
+    next_y = year_num if month_num < 12 else year_num + 1
+    next_month_str = f"{next_y}-{next_m:02d}"
+
+    romaji = cfg["romaji"]
+    unit = cfg["unit"]
+    s = cur_data["summary"]
+    ps = prev_data["summary"]
+    yoy_pct = (s["total_trips"] / ps["total_trips"] * 100 - 100) if ps.get("total_trips") else 0
+    n_area_active = sum(1 for a in _MONTHLY_AREA_ORDER if cur_data["by_area"].get(a))
+
+    canonical = f"{SITE_URL}/monthly/{month_str}/{romaji}.html"
+    title = f"{year_num}年{month_num}月 {fish}釣果月報｜関東船釣り｜船釣り予想"
+    desc_yoy = f"前年比{yoy_pct:+.1f}%" if ps.get("total_trips") else "初月集計"
+    desc = f"{year_num}年{month_num}月の関東{fish}釣果{s['total_trips']}便を集計（{desc_yoy}）。エリア別傾向・海況考察・{month_num + 1}月予測まで、{s['n_ships']}船宿のデータを網羅。"
+
+    # 月号ナビ：docs/monthly/ 既存月リストから動的生成
+    monthly_dir = os.path.join(WEB_DIR, "monthly")
+    existing_months = _monthly_detect_existing(monthly_dir)
+
+    prev_m = month_num - 1 if month_num > 1 else 12
+    prev_y = year_num if month_num > 1 else year_num - 1
+    prev_month_str = f"{prev_y}-{prev_m:02d}"
+    prev_label = f"{prev_y}年{prev_m}月号"
+    next_label = f"{next_y}年{next_m}月号"
+    if prev_month_str in existing_months:
+        nav_prev = f'<a href="../{prev_month_str}/{romaji}.html">‹ {prev_label}</a>'
+    else:
+        nav_prev = f'<span class="ml-nav-disabled">‹ {prev_label}（未公開）</span>'
+    if next_month_str in existing_months:
+        nav_next = f'<a href="../{next_month_str}/{romaji}.html">{next_label} ›</a>'
+    else:
+        nav_next = f'<span class="ml-nav-disabled">{next_label}（近日公開）</span>'
+    nav_html = f'<nav class="ml-nav-month" aria-label="月報ナビゲーション">{nav_prev}<span class="ml-nav-current">{year_num}年{month_num}月号</span>{nav_next}</nav>'
+
+    # ベスト3（数）HTML
+    best_html = []
+    for i, t in enumerate(cur_data.get("best_trips", []), 1):
+        size_s = f" / 最大{t['size_max']:.0f}cm" if t.get("size_max") else ""
+        ship_lnk = _ship_link(t["ship"], depth=2)
+        cnt_min_s = f"{t['cnt_min']}" if t.get("cnt_min") is not None else "—"
+        cnt_max_s = f"{t['cnt_max']}"
+        best_html.append(
+            f'<li class="bt-item"><span class="bt-rank">#{i}</span>'
+            f'<span class="bt-date">{t["date"]}</span>'
+            f'<span class="bt-ship">{ship_lnk}</span>'
+            f'<span class="bt-port">（{t["port"]}）</span>'
+            f'<span class="bt-cnt">{cnt_min_s}〜{cnt_max_s}{unit}</span>'
+            f'<span class="bt-size">{size_s}</span></li>'
+        )
+
+    # ベスト3（型）HTML
+    best_type_html = []
+    if cfg["type_metric"] == "kg":
+        type_tag = "型（重量）"
+        for i, t in enumerate(cur_data.get("best_kg_trips", []), 1):
+            kg_min_s = f"{t['kg_min']:.1f}〜" if t.get("kg_min") else ""
+            size_s = f" / {t['size_max']:.0f}cm" if t.get("size_max") else ""
+            cnt_s = f" / {t['cnt_max']}{unit}" if t.get("cnt_max") else ""
+            ship_lnk = _ship_link(t["ship"], depth=2)
+            best_type_html.append(
+                f'<li class="bt-item"><span class="bt-rank bt-rank-kg">#{i}</span>'
+                f'<span class="bt-date">{t["date"]}</span>'
+                f'<span class="bt-ship">{ship_lnk}</span>'
+                f'<span class="bt-port">（{t["port"]}）</span>'
+                f'<span class="bt-cnt bt-kg">{kg_min_s}{t["kg_max"]:.1f}kg</span>'
+                f'<span class="bt-size">{size_s}{cnt_s}</span></li>'
+            )
+        cov = cur_data.get("kg_coverage", {})
+        type_note = f"※ 重量記録は{cov.get('with_kg', 0)}/{cov.get('total', 0)}便（{cov.get('pct', 0)}%）で記録あり。"
+    else:
+        type_tag = "型（胴長）"
+        for i, t in enumerate(cur_data.get("best_size_trips", []), 1):
+            sz_min_s = f"{t['size_min']:.0f}〜" if t.get("size_min") else ""
+            cnt_s = f" / {t['cnt_max']}{unit}" if t.get("cnt_max") else ""
+            ship_lnk = _ship_link(t["ship"], depth=2)
+            best_type_html.append(
+                f'<li class="bt-item"><span class="bt-rank bt-rank-kg">#{i}</span>'
+                f'<span class="bt-date">{t["date"]}</span>'
+                f'<span class="bt-ship">{ship_lnk}</span>'
+                f'<span class="bt-port">（{t["port"]}）</span>'
+                f'<span class="bt-cnt bt-kg">{sz_min_s}{t["size_max"]:.0f}cm</span>'
+                f'<span class="bt-size">{cnt_s}</span></li>'
+            )
+        cov = cur_data.get("size_coverage", {})
+        type_note = f"※ 胴長記録は{cov.get('with_sz', 0)}/{cov.get('total', 0)}便（{cov.get('pct', 0)}%）で記録あり。"
+
+    # 船宿チップ（depth=2 でリンク化）
+    ships_chips = "".join(
+        f'{_ship_link(n, depth=2)} <span class="ml-chip-n">{c}便</span>'
+        if _SHIP_ROMAJI.get(n) else f'<span class="ml-chip">{n} <span class="ml-chip-n">{c}便</span></span>'
+        for n, c in s["ships_top"]
+    )
+    ships_html = f'<div class="ml-ships-list">{ships_chips}</div>'
+
+    # エリアセクション
+    area_sections = []
+    for area in _MONTHLY_AREA_ORDER:
+        v = cur_data["by_area"].get(area)
+        nar = cfg.get("narratives", {}).get(area, {})
+        if not v:
+            area_sections.append(
+                f'<section class="ml-area" id="area-{area}">'
+                f'<h3>{area}</h3>'
+                f'<p class="ml-empty">本月の{area}での{fish}出船報告はありません。</p>'
+                f'</section>'
+            )
+            continue
+        size_label = f"最大{v['size_max_overall']:.0f}cm" if v.get("size_max_overall") else "型データ未取得"
+        # 船宿チップ（depth=2）
+        ships_chips_a = "".join(
+            f'<a href="../../ship/{_SHIP_ROMAJI[sh]}.html" class="ml-chip">{sh} <span class="ml-chip-n">{c}便</span></a>'
+            if _SHIP_ROMAJI.get(sh) else f'<span class="ml-chip">{sh} <span class="ml-chip-n">{c}便</span></span>'
+            for sh, c in v["top_ships"]
+        )
+        # 港チップ（area_slug が _AREA_ROMAJI に存在すればリンク化）
+        ports_chips = ""
+        for label, slug in cfg.get("area_ports", {}).get(area, []):
+            area_key = next((k for k in _AREA_ROMAJI if _AREA_ROMAJI[k] == slug), None)
+            if area_key and _AREA_ROMAJI.get(area_key):
+                ports_chips += f'<a href="../../area/{slug}.html" class="ml-chip ml-chip-port">⚓ {label}</a>'
+            else:
+                ports_chips += f'<span class="ml-chip ml-chip-port">⚓ {label}</span>'
+
+        # fish_area リンク or fish ページにフォールバック
+        fish_romaji_val = _FISH_ROMAJI.get(fish, fish)
+        area_slug_val = _AREA_ROMAJI.get(area, area)
+        fa_path = os.path.join(WEB_DIR, "fish_area", f"{fish_romaji_val}-{area_slug_val}.html")
+        if os.path.exists(fa_path):
+            detail_href = f"../../fish_area/{fish_romaji_val}-{area_slug_val}.html"
+        else:
+            detail_href = f"../../fish/{fish_romaji_val}.html"
+
+        cnt_min_lbl = f"{v['cnt_min_avg']}{unit}" if v.get("cnt_min_avg") is not None else "—"
+        cnt_max_lbl = f"{v['cnt_max_avg']}{unit}" if v.get("cnt_max_avg") is not None else "—"
+
+        area_sections.append(f'''<section class="ml-area" id="area-{area}">
+  <h3>{area} <span class="ml-area-num">{v['n_trips']}便 / {v['n_ships']}船宿</span></h3>
+  <div class="ml-area-stats">
+    <div class="ml-stat"><span class="ml-stat-label">日別Min平均</span><span class="ml-stat-val">{cnt_min_lbl}</span></div>
+    <div class="ml-stat"><span class="ml-stat-label">日別Max平均</span><span class="ml-stat-val">{cnt_max_lbl}</span></div>
+    <div class="ml-stat"><span class="ml-stat-label">型</span><span class="ml-stat-val">{size_label}</span></div>
+    <div class="ml-stat"><span class="ml-stat-label">釣行日数</span><span class="ml-stat-val">{v['n_dates']}日</span></div>
+  </div>
+  <p class="ml-trend">{nar.get('trend', '—')}</p>
+  <p class="ml-tackle"><strong>仕掛け:</strong> {nar.get('tackle', '—')}</p>
+  <div class="ml-row"><span class="ml-row-label">主要船宿:</span><div class="ml-chips">{ships_chips_a}</div></div>
+  <div class="ml-row"><span class="ml-row-label">主要港:</span><div class="ml-chips">{ports_chips}</div></div>
+  <p class="ml-detail-link"><a href="{detail_href}">› このエリアの{fish}詳細データ</a></p>
+</section>''')
+
+    # 外道
+    bycatch_html = "".join(
+        f'<li><span class="bc-name">{n}</span><span class="bc-count">{c}回</span></li>'
+        for n, c in cur_data.get("by_catch", [])
+    ) or '<li><span class="bc-name">特筆すべき外道なし</span></li>'
+
+    # 次月予測テーブル
+    nh_rows = []
+    for k in sorted(next_month_hist.keys(), reverse=True):
+        v_nh = next_month_hist[k]
+        if v_nh and v_nh.get("total_trips"):
+            cnt_min_s = f"{v_nh['cnt_min_avg']}" if v_nh.get('cnt_min_avg') is not None else "—"
+            cnt_max_s = f"{v_nh['cnt_max_avg']}" if v_nh.get('cnt_max_avg') is not None else "—"
+            nh_rows.append(f'<tr><th>{k}</th><td>{v_nh["total_trips"]}便</td><td>{v_nh["n_ships"]}船宿</td><td>{cnt_min_s}〜{cnt_max_s}{unit}</td></tr>')
+    cnt_min_cur = f"{s['cnt_min_avg']}" if s.get('cnt_min_avg') is not None else "—"
+    cnt_max_cur = f"{s['cnt_max_avg']}" if s.get('cnt_max_avg') is not None else "—"
+    nh_rows.append(f'<tr><td><strong>{year_num}年{month_num}月（本月）</strong></td><td>{s["total_trips"]}便</td><td>{s["n_ships"]}船宿</td><td>{cnt_min_cur}〜{cnt_max_cur}{unit}</td></tr>')
+
+    chart_svg = _monthly_daily_svg(cur_data.get("daily", []), prev_data.get("daily", []), unit)
+
+    # 考察テキスト（format 変数を try で安全注入）
+    try:
+        consideration = cfg["consideration_html"].format(
+            total=s["total_trips"],
+            yoy=yoy_pct,
+            prev_total=ps.get("total_trips", 0),
+            cmax=s.get("cnt_max_avg") or "—",
+            cmin=s.get("cnt_min_avg") or "—",
+        )
+    except (KeyError, ValueError):
+        consideration = cfg.get("consideration_html", "（考察テキスト未設定）")
+
+    forecast_items_html = "".join(f"<li>{it}</li>" for it in cfg.get("forecast_items", []))
+
+    # 関連リンク
+    fish_romaji_val = _FISH_ROMAJI.get(fish, fish)
+    related_links = []
+    # 自魚種詳細
+    related_links.append(f'<a href="../../fish/{fish_romaji_val}.html">{fish}詳細ページ（最新7日チャート・船宿ランキング）</a>')
+    # 他魚種月報（同ディレクトリ）
+    for other_fish in cfg.get("related_fish", []):
+        other_romaji = MONTHLY_FISH_CONFIG.get(other_fish, {}).get("romaji", _FISH_ROMAJI.get(other_fish, other_fish))
+        related_links.append(f'<a href="./{other_romaji}.html">{year_num}年{month_num}月 {other_fish}月報</a>')
+    # 月報一覧
+    related_links.append(f'<a href="../">月報一覧（全月号）</a>')
+    # fish_area 関連
+    for area_name, label in cfg.get("related_fish_area", []):
+        area_slug_val = _AREA_ROMAJI.get(area_name, area_name)
+        fa_path_r = os.path.join(WEB_DIR, "fish_area", f"{fish_romaji_val}-{area_slug_val}.html")
+        if os.path.exists(fa_path_r):
+            related_links.append(f'<a href="../../fish_area/{fish_romaji_val}-{area_slug_val}.html">{label}</a>')
+        else:
+            related_links.append(f'<a href="../../fish/{fish_romaji_val}.html">{label}</a>')
+    related_html = "".join(related_links)
+
+    # JSON-LD
+    import json as _json
+    breadcrumb = {
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "トップ", "item": f"{SITE_URL}/"},
+            {"@type": "ListItem", "position": 2, "name": "月報", "item": f"{SITE_URL}/monthly/"},
+            {"@type": "ListItem", "position": 3, "name": f"{year_num}年{month_num}月", "item": f"{SITE_URL}/monthly/{month_str}/"},
+            {"@type": "ListItem", "position": 4, "name": f"{fish}月報", "item": canonical},
+        ]
+    }
+    date_published = f"{year_num}-{month_num + 1:02d}-01" if month_num < 12 else f"{year_num + 1}-01-01"
+    article = {
+        "@context": "https://schema.org", "@type": "Article",
+        "headline": f"{year_num}年{month_num}月 関東{fish}釣果月報",
+        "description": desc,
+        "image": cfg.get("og_image", OGP_DEFAULT_IMG),
+        "datePublished": date_published,
+        "dateModified": crawled_at or datetime.now(JST).replace(tzinfo=None).strftime("%Y-%m-%d"),
+        "author": {"@type": "Organization", "name": "船釣り予想"},
+        "publisher": {"@type": "Organization", "name": "船釣り予想",
+                      "logo": {"@type": "ImageObject", "url": f"{SITE_URL}/assets/logo.png"}},
+        "mainEntityOfPage": canonical,
+    }
+
+    og_image = cfg.get("og_image", OGP_DEFAULT_IMG)
+    yoy_cls = "neg" if yoy_pct < 0 else "pos"
+    yoy_label = f"前年比 {yoy_pct:+.1f}% （前年 {ps.get('total_trips', '—')}便）" if ps.get("total_trips") else "初月集計"
+    size_overall = s.get("size_max_overall")
+    size_overall_s = f"{size_overall:.0f}" if size_overall else "—"
+
+    html = f'''<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title}</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{canonical}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{canonical}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="船釣り予想">
+<meta property="og:image" content="{og_image}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{og_image}">
+<script type="application/ld+json">{_json.dumps(breadcrumb, ensure_ascii=False)}</script>
+<script type="application/ld+json">{_json.dumps(article, ensure_ascii=False)}</script>
+<link rel="stylesheet" href="../../style.css">
+<style>
+.ml-hero{{background:linear-gradient(135deg,var(--accent),var(--hero-grad-end,#1a4a7a));color:#fff;padding:28px 18px 24px;text-align:center}}
+.ml-hero h1{{font-size:24px;font-weight:800;margin:0 0 6px;line-height:1.3}}
+.ml-hero h1 .ml-hero-fish{{color:var(--cta);font-size:30px;display:block;margin-bottom:2px}}
+.ml-hero-sub{{font-size:13px;color:rgba(255,255,255,0.85);margin-top:6px}}
+.ml-hero-stats{{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin-top:14px}}
+.ml-hero-stat{{display:flex;flex-direction:column;align-items:center;min-width:80px}}
+.ml-hero-stat .v{{font-size:22px;font-weight:800;color:#fff;line-height:1.1}}
+.ml-hero-stat .l{{font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px}}
+.ml-hero-yoy{{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:14px;font-size:12px;font-weight:700;background:rgba(255,255,255,0.15)}}
+.ml-hero-yoy.neg{{background:rgba(212,51,51,0.30)}}
+.ml-hero-yoy.pos{{background:rgba(26,157,86,0.30)}}
+.ml-toc{{background:var(--card);border:1px solid var(--border);border-radius:var(--r,8px);padding:14px 18px;margin:16px 0}}
+.ml-toc h2{{font-size:13px;font-weight:700;color:var(--accent);margin:0 0 8px}}
+.ml-toc ol{{margin:0;padding-left:20px;font-size:13px}}
+.ml-toc li{{padding:4px 0}}
+.ml-toc li a{{color:var(--cta);text-decoration:none}}
+.ml-sec{{background:var(--card);border:1px solid var(--border);border-radius:var(--r,8px);padding:18px;margin-bottom:18px}}
+.ml-sec h2{{font-size:17px;font-weight:800;color:var(--accent);margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--cta)}}
+.ml-sec h2 .ml-sec-num{{display:inline-block;background:var(--cta);color:#fff;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;font-size:14px;margin-right:8px;vertical-align:middle}}
+.ml-sec p{{font-size:14px;line-height:1.75;color:var(--text);margin:0 0 12px}}
+.ml-summary-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}}
+.ml-summary-grid .ml-stat{{background:var(--bg);border-radius:8px;padding:10px 12px;text-align:center}}
+.ml-summary-grid .ml-stat-label{{font-size:10px;color:var(--sub);display:block}}
+.ml-summary-grid .ml-stat-val{{font-size:18px;font-weight:800;color:var(--accent);display:block;margin-top:2px}}
+.ml-best-twin{{display:flex;flex-direction:column;gap:14px;margin:18px 0 10px}}
+.ml-best-col{{background:var(--bg);border-radius:8px;padding:14px 16px;border-left:4px solid var(--cta)}}
+.ml-best-col.ml-best-col-kg{{border-left-color:var(--prem,#7c3aed)}}
+.ml-best-title{{font-size:14px;font-weight:800;color:var(--accent);margin:0 0 10px;display:flex;align-items:center;gap:8px}}
+.ml-best-tag{{display:inline-block;background:var(--cta);color:#fff;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700}}
+.ml-best-tag-kg{{background:var(--prem,#7c3aed)}}
+.ml-best-note{{font-size:11px;color:var(--muted,#8a96a4);margin-top:8px}}
+.ml-best{{list-style:none;margin:0;padding:0}}
+.bt-item{{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}}
+.bt-item:last-child{{border-bottom:none}}
+.bt-rank{{display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;background:var(--cta);color:#fff;border-radius:50%;font-weight:800;font-size:12px}}
+.bt-rank-kg{{background:var(--prem,#7c3aed)}}
+.bt-date{{font-weight:700;color:var(--sub);min-width:88px;font-size:12px}}
+.bt-ship{{font-weight:700;font-size:13px}}
+.bt-ship a{{color:var(--accent);text-decoration:none}}
+.bt-port{{color:var(--muted,#8a96a4);font-size:12px}}
+.bt-cnt{{margin-left:auto;font-weight:800;color:var(--cta);font-size:16px}}
+.bt-kg{{color:var(--prem,#7c3aed)}}
+.bt-size{{color:var(--sub);font-size:12px}}
+.ml-ships-list{{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}}
+.ml-chip{{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:5px 10px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}}
+.ml-chip a{{color:var(--accent);text-decoration:none}}
+.ml-chip:hover{{background:var(--accent);color:#fff}}
+.ml-chip-port{{background:#f0f7ff;border-color:#b6d4ed}}
+.ml-chip-n{{font-size:11px;color:var(--muted,#8a96a4);font-weight:500}}
+.ml-chart-wrap{{margin:16px 0;background:var(--bg);border-radius:8px;padding:14px}}
+.ml-chart-wrap h3{{font-size:13px;font-weight:700;color:var(--accent);margin:0 0 8px}}
+.ml-chart-wrap .daily-chart{{width:100%;height:auto;display:block}}
+.ml-chart-note{{font-size:11px;color:var(--muted,#8a96a4);margin-top:8px}}
+.ml-area{{background:var(--bg);border-left:4px solid var(--cta);border-radius:6px;padding:14px;margin-bottom:14px}}
+.ml-area h3{{font-size:15px;font-weight:800;color:var(--accent);margin:0 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}}
+.ml-area-num{{font-size:12px;color:var(--muted,#8a96a4);font-weight:500}}
+.ml-area-stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:10px}}
+.ml-area-stats .ml-stat{{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;text-align:center}}
+.ml-area-stats .ml-stat-label{{font-size:10px;color:var(--sub);display:block}}
+.ml-area-stats .ml-stat-val{{font-size:14px;font-weight:700;color:var(--accent);display:block;margin-top:2px}}
+.ml-trend{{font-size:13px;line-height:1.7;color:var(--text);margin:8px 0}}
+.ml-tackle{{font-size:12px;color:var(--sub);margin:6px 0;background:var(--card);padding:6px 10px;border-radius:4px}}
+.ml-row{{display:flex;align-items:flex-start;gap:8px;margin:6px 0;flex-wrap:wrap}}
+.ml-row-label{{font-size:11px;color:var(--muted,#8a96a4);font-weight:700;min-width:60px;line-height:1.8}}
+.ml-chips{{display:flex;flex-wrap:wrap;gap:5px;flex:1}}
+.ml-detail-link{{font-size:12px;margin-top:8px}}
+.ml-detail-link a{{color:var(--cta);text-decoration:none}}
+.ml-empty{{font-size:13px;color:var(--muted,#8a96a4);font-style:italic}}
+.ml-consider{{background:linear-gradient(180deg,#fff8f0,#fff);border:1px solid #f4d8b8;border-radius:8px;padding:16px}}
+.ml-consider h3{{font-size:13px;font-weight:700;color:#b85020;margin:0 0 8px}}
+.ml-consider-body{{font-size:14px;line-height:1.85;color:var(--text)}}
+.ml-consider-note{{font-size:11px;color:var(--muted,#8a96a4);margin-top:10px;padding:6px 10px;background:var(--bg);border-radius:4px}}
+.ml-forecast-table{{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}}
+.ml-forecast-table th,.ml-forecast-table td{{padding:8px 10px;border:1px solid var(--border);text-align:center}}
+.ml-forecast-table th{{background:var(--accent);color:#fff;font-weight:700}}
+.ml-bycatch{{background:var(--bg);border-radius:6px;padding:10px}}
+.ml-bycatch h4{{font-size:11px;color:var(--muted,#8a96a4);font-weight:700;margin:0 0 6px}}
+.ml-bycatch ul{{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}}
+.ml-bycatch li{{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:3px 8px;font-size:12px}}
+.bc-name{{font-weight:700;color:var(--accent)}}
+.bc-count{{color:var(--muted,#8a96a4);font-size:11px}}
+.ml-related{{background:var(--bg);border-radius:8px;padding:14px;margin-top:18px}}
+.ml-related h3{{font-size:13px;font-weight:700;color:var(--accent);margin:0 0 10px}}
+.ml-related-list{{display:flex;flex-wrap:wrap;gap:8px}}
+.ml-related-list a{{display:inline-block;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}}
+.ml-related-list a:hover{{background:var(--accent);color:#fff}}
+.ml-nav-month{{display:flex;justify-content:space-between;align-items:center;margin:14px 0;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px}}
+.ml-nav-month a{{color:var(--cta);text-decoration:none;font-size:13px;font-weight:600}}
+.ml-nav-month .ml-nav-current{{color:var(--accent);font-weight:800}}
+.ml-nav-month .ml-nav-disabled{{color:var(--muted,#8a96a4);font-size:13px;font-weight:500;opacity:.7;cursor:default}}
+@media(max-width:520px){{.ml-hero h1{{font-size:20px}}.ml-hero h1 .ml-hero-fish{{font-size:24px}}.bt-cnt{{margin-left:0;width:100%;text-align:right}}}}
+</style>
+</head>
+<body>
+{_v2_header_nav("monthly")}
+<section class="ml-hero">
+  <h1><span class="ml-hero-fish">{fish}</span>{year_num}年{month_num}月 釣果月報</h1>
+  <p class="ml-hero-sub">関東{n_area_active}海域・{s['n_ships']}船宿のデータで読み解く{month_num}月の{fish}釣況</p>
+  <div class="ml-hero-stats">
+    <div class="ml-hero-stat"><span class="v">{s['total_trips']}</span><span class="l">便</span></div>
+    <div class="ml-hero-stat"><span class="v">{s['n_ships']}</span><span class="l">船宿</span></div>
+    <div class="ml-hero-stat"><span class="v">{s['n_dates']}</span><span class="l">日</span></div>
+    <div class="ml-hero-stat"><span class="v">{size_overall_s}<small style="font-size:14px">cm</small></span><span class="l">月間最大</span></div>
+  </div>
+  <span class="ml-hero-yoy {yoy_cls}">{yoy_label}</span>
+</section>
+<div class="c">
+  <p class="bread"><a href="/">トップ</a> &rsaquo; <a href="/monthly/">月報</a> &rsaquo; <a href="/monthly/{month_str}/">{year_num}年{month_num}月</a> &rsaquo; {fish}</p>
+  {nav_html}
+  <p style="font-size:14px;line-height:1.75;color:var(--text);margin:14px 0">{year_num}年{month_num}月の関東{fish}釣果を全エリア・全船宿で集計しました。日別釣果グラフ、エリア別傾向、海況考察、{month_num + 1}月の傾向予測まで。<a href="../../fish/{fish_romaji_val}.html" style="color:var(--cta)">{fish}詳細ページ</a> もあわせてどうぞ。</p>
+  <nav class="ml-toc" aria-label="目次"><h2>もくじ</h2><ol>
+    <li><a href="#sec-1">{fish}の釣果実績（{month_num}月全体サマリー・対象船宿・ベスト3・日別グラフ）</a></li>
+    <li><a href="#sec-2">エリア別釣果傾向（主要船宿・仕掛け）</a></li>
+    <li><a href="#sec-3">海況との関係考察</a></li>
+    <li><a href="#sec-4">{month_num + 1}月の傾向予測</a></li>
+  </ol></nav>
+  <section class="ml-sec" id="sec-1">
+    <h2><span class="ml-sec-num">1</span>{fish}の釣果実績</h2>
+    <div class="ml-summary-grid">
+      <div class="ml-stat"><span class="ml-stat-label">釣行件数</span><span class="ml-stat-val">{s['total_trips']}便</span></div>
+      <div class="ml-stat"><span class="ml-stat-label">対象船宿</span><span class="ml-stat-val">{s['n_ships']}</span></div>
+      <div class="ml-stat"><span class="ml-stat-label">釣行日数</span><span class="ml-stat-val">{s['n_dates']}日</span></div>
+      <div class="ml-stat"><span class="ml-stat-label">日別Min平均</span><span class="ml-stat-val">{s.get('cnt_min_avg') or '—'}{unit}</span></div>
+      <div class="ml-stat"><span class="ml-stat-label">日別Max平均</span><span class="ml-stat-val">{s.get('cnt_max_avg') or '—'}{unit}</span></div>
+      <div class="ml-stat"><span class="ml-stat-label">月間最大型</span><span class="ml-stat-val">{size_overall_s}cm</span></div>
+    </div>
+    <details class="ml-ships-wrap" open><summary style="font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;padding:6px 0">対象船宿一覧（{s['n_ships']}船宿）</summary>{ships_html}</details>
+    <div class="ml-best-twin">
+      <div class="ml-best-col"><h3 class="ml-best-title">月間ベスト3 <span class="ml-best-tag">釣果（数）</span></h3><ol class="ml-best">{"".join(best_html) or "<li>データなし</li>"}</ol></div>
+      <div class="ml-best-col ml-best-col-kg"><h3 class="ml-best-title">月間ベスト3 <span class="ml-best-tag ml-best-tag-kg">{type_tag}</span></h3><ol class="ml-best">{"".join(best_type_html) or "<li>データなし</li>"}</ol><p class="ml-best-note">{type_note}</p></div>
+    </div>
+    <div class="ml-chart-wrap"><h3>日別 Min/Max 平均{unit}数（{year_num}年{month_num}月・前年重ね描き）</h3>{chart_svg}<p class="ml-chart-note">※ オレンジ実線=本月Max平均、紺実線=本月Min平均、灰破線=前年Max平均。背景の縦バーは出船船数（信頼度）。データは出船あり船宿のみ平均。</p></div>
+  </section>
+  <section class="ml-sec" id="sec-2">
+    <h2><span class="ml-sec-num">2</span>エリア別釣果傾向</h2>
+    <p style="font-size:13px;color:var(--sub)">関東の{fish}釣り場を地理特性で6エリアに分類。各エリアの主要船宿・主要港・釣果傾向・仕掛けをまとめます（本月出船のあったエリアを中心に）。</p>
+    {"".join(area_sections)}
+    <div class="ml-bycatch"><h4>本月の主な外道（{month_num}月全体）</h4><ul>{bycatch_html}</ul></div>
+  </section>
+  <section class="ml-sec" id="sec-3">
+    <h2><span class="ml-sec-num">3</span>海況との関係考察</h2>
+    <div class="ml-consider"><h3>{cfg['consideration_title']}</h3><div class="ml-consider-body">{consideration}</div><p class="ml-consider-note">※ 本セクションは月次の水温・潮位・潮回り集計を反映した最終版に置き換え予定。現状は手書き草案。</p></div>
+  </section>
+  <section class="ml-sec" id="sec-4">
+    <h2><span class="ml-sec-num">4</span>{month_num + 1}月の傾向予測</h2>
+    <p>{cfg.get('forecast_intro', '')}</p>
+    <table class="ml-forecast-table"><thead><tr><th>月</th><th>釣行件数</th><th>船宿数</th><th>Min〜Max平均</th></tr></thead><tbody>{"".join(nh_rows)}</tbody></table>
+    <h3 style="font-size:14px;font-weight:700;color:var(--accent);margin:14px 0 8px">{month_num + 1}月の傾向見立て（草案）</h3>
+    <ul style="font-size:13px;line-height:1.85;color:var(--text);padding-left:20px">{forecast_items_html}</ul>
+    <p class="ml-consider-note" style="background:var(--bg);font-size:11px;color:var(--muted,#8a96a4);margin-top:10px;padding:6px 10px;border-radius:4px">※ 上記は過去年実績と季節傾向からの見立て。具体的な日別予測は <a href="/forecast/" style="color:var(--cta)">有料の日別予測ページ</a> で提供予定。</p>
+  </section>
+  <div class="ml-related"><h3>関連ページ・他の月報</h3><div class="ml-related-list">{related_html}</div></div>
+  {nav_html}
+</div>
+<footer style="margin-top:30px;padding:20px;background:var(--accent);color:#fff;text-align:center;font-size:12px">
+  <p>© 2026 船釣り予想 funatsuri-yoso.com</p>
+  <p style="margin-top:6px;font-size:11px;opacity:0.7">月報は毎月1日に前月分を公開予定。</p>
+  <p style="margin-top:6px;font-size:11px"><a href="/pages/privacy.html" style="color:rgba(255,255,255,0.7)">プライバシーポリシー</a></p>
+</footer>
+</body>
+</html>'''
+    return html
+
+
+def build_monthly_pages(crawled_at=""):
+    """
+    MONTHLY_FISH_CONFIG の各魚種について前月（または _MONTHLY_TARGET 固定月）の月報 HTML を生成する。
+    出力: docs/monthly/{month_str}/{romaji}.html
+    """
+    now = datetime.now(JST).replace(tzinfo=None)
+    if _MONTHLY_TARGET == "auto":
+        if now.month == 1:
+            target_year, target_month = now.year - 1, 12
+        else:
+            target_year, target_month = now.year, now.month - 1
+    else:
+        try:
+            target_year = int(_MONTHLY_TARGET[:4])
+            target_month = int(_MONTHLY_TARGET[5:7])
+        except (ValueError, IndexError):
+            print(f"[build_monthly_pages] _MONTHLY_TARGET パース失敗: {_MONTHLY_TARGET}")
+            return
+
+    month_str = f"{target_year}-{target_month:02d}"
+    # 前年同月
+    prev_year = target_year - 1
+
+    monthly_dir = os.path.join(WEB_DIR, "monthly")
+    month_dir = os.path.join(monthly_dir, month_str)
+    os.makedirs(month_dir, exist_ok=True)
+
+    for fish, cfg in MONTHLY_FISH_CONFIG.items():
+        romaji = cfg["romaji"]
+        print(f"[monthly] {month_str} {fish} 集計中...")
+
+        # 今月データ
+        cur_rows = _monthly_load_csv(target_year, target_month, fish)
+        if not cur_rows:
+            print(f"  [WARN] {month_str} {fish}: CSVデータなし → スキップ")
+            continue
+
+        # 前年同月データ
+        prev_rows = _monthly_load_csv(prev_year, target_month, fish)
+
+        # 翌月2年分（来月予測用）
+        next_m = target_month + 1 if target_month < 12 else 1
+        next_y = target_year if target_month < 12 else target_year + 1
+        next_month_hist = {}
+        for ny in (next_y - 1, next_y - 2):
+            k = f"{ny}-{next_m:02d}"
+            rows_nh = _monthly_load_csv(ny, next_m, fish)
+            next_month_hist[k] = _monthly_summarize(rows_nh) if rows_nh else None
+
+        cur_data = {
+            "summary": _monthly_summarize(cur_rows),
+            "daily": _monthly_daily_minmax(cur_rows),
+            "best_trips": _monthly_best_trips(cur_rows),
+            "best_kg_trips": _monthly_best_kg_trips(cur_rows),
+            "best_size_trips": _monthly_best_size_trips(cur_rows),
+            "by_area": _monthly_by_area(cur_rows),
+            "by_catch": _monthly_by_catch_top(cur_rows),
+            "kg_coverage": _monthly_kg_coverage(cur_rows),
+            "size_coverage": _monthly_size_coverage(cur_rows),
+        }
+        prev_data = {
+            "summary": _monthly_summarize(prev_rows) if prev_rows else {"total_trips": 0},
+            "daily": _monthly_daily_minmax(prev_rows) if prev_rows else [],
+        }
+
+        html = _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hist, crawled_at)
+
+        out_path = os.path.join(month_dir, f"{romaji}.html")
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"  生成: {out_path} ({len(html):,} chars)")
+
+    print(f"[build_monthly_pages] 完了 → docs/monthly/{month_str}/")
+
+
+def build_monthly_index(crawled_at=""):
+    """
+    docs/monthly/index.html（月報ハブ）を生成する。
+    docs/monthly/**/*.html をスキャンし、月×魚種カードを一覧表示。
+    """
+    import re as _re
+    monthly_dir = os.path.join(WEB_DIR, "monthly")
+    os.makedirs(monthly_dir, exist_ok=True)
+
+    # 生成済み月報を収集
+    report_cards = {}  # {month_str: {romaji: {fish, href, title}}}
+    if os.path.isdir(monthly_dir):
+        for month_name in sorted(os.listdir(monthly_dir), reverse=True):
+            if not _re.match(r"^\d{4}-\d{2}$", month_name):
+                continue
+            month_path = os.path.join(monthly_dir, month_name)
+            if not os.path.isdir(month_path):
+                continue
+            for fname in sorted(os.listdir(month_path)):
+                if not fname.endswith(".html"):
+                    continue
+                romaji = fname[:-5]
+                # MONTHLY_FISH_CONFIG から fish 名を逆引き
+                fish = next((f for f, c in MONTHLY_FISH_CONFIG.items() if c.get("romaji") == romaji), None)
+                if not fish:
+                    continue
+                report_cards.setdefault(month_name, {})[romaji] = {
+                    "fish": fish,
+                    "href": f"{month_name}/{fname}",
+                }
+
+    # ハブ HTML 生成
+    now = datetime.now(JST).replace(tzinfo=None)
+    canonical = f"{SITE_URL}/monthly/"
+    title = "月報一覧｜関東船釣り釣果月報｜船釣り予想"
+    desc = "関東の船釣り釣果を魚種別・月別に集計した月報の一覧です。マダイ・マルイカなど主要魚種の釣果傾向・エリア別データを毎月公開。"
+
+    cards_html = ""
+    for month_str in sorted(report_cards.keys(), reverse=True):
+        year_n = int(month_str[:4])
+        month_n = int(month_str[5:])
+        month_label = f"{year_n}年{month_n}月"
+        fish_links = "".join(
+            f'<a href="{info["href"]}" class="mh-card-fish">{info["fish"]}月報</a>'
+            for romaji_key, info in sorted(report_cards[month_str].items())
+        )
+        cards_html += f'''<div class="mh-month-block">
+  <h2 class="mh-month-label">{month_label}</h2>
+  <div class="mh-fish-row">{fish_links}</div>
+</div>'''
+
+    if not cards_html:
+        cards_html = '<p style="color:var(--muted,#8a96a4);font-size:14px">まだ月報が公開されていません。毎月1日に前月分を公開予定です。</p>'
+
+    import json as _json
+    breadcrumb = {
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "トップ", "item": f"{SITE_URL}/"},
+            {"@type": "ListItem", "position": 2, "name": "月報一覧", "item": canonical},
+        ]
+    }
+
+    html = f'''<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title}</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{canonical}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{canonical}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="船釣り予想">
+<meta property="og:image" content="{OGP_DEFAULT_IMG}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{OGP_DEFAULT_IMG}">
+<script type="application/ld+json">{_json.dumps(breadcrumb, ensure_ascii=False)}</script>
+<link rel="stylesheet" href="../style.css">
+<style>
+.mh-hero{{background:var(--accent);color:#fff;padding:24px 18px 20px;text-align:center}}
+.mh-hero h1{{font-size:22px;font-weight:800;margin:0 0 6px}}
+.mh-hero-sub{{font-size:13px;color:rgba(255,255,255,0.8);margin:4px 0 0}}
+.mh-month-block{{background:var(--card);border:1px solid var(--border);border-radius:var(--r,8px);padding:16px;margin-bottom:14px}}
+.mh-month-label{{font-size:16px;font-weight:800;color:var(--accent);margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid var(--cta)}}
+.mh-fish-row{{display:flex;flex-wrap:wrap;gap:10px}}
+.mh-card-fish{{display:inline-block;padding:10px 18px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:14px;font-weight:700;color:var(--accent);text-decoration:none}}
+.mh-card-fish:hover{{background:var(--accent);color:#fff}}
+</style>
+</head>
+<body>
+{_v2_header_nav("monthly")}
+<section class="mh-hero">
+  <h1>関東船釣り 月報一覧</h1>
+  <p class="mh-hero-sub">主要魚種の釣果を月別に集計・公開しています</p>
+</section>
+<div class="c">
+  <p class="bread"><a href="/">トップ</a> &rsaquo; 月報一覧</p>
+  <p style="font-size:14px;line-height:1.75;color:var(--text);margin:14px 0">関東船釣りの釣果データを魚種別・月別に集計した月報ページです。エリア別傾向・ベスト釣果・海況考察・翌月予測をまとめています。</p>
+  {cards_html}
+</div>
+<footer style="margin-top:30px;padding:20px;background:var(--accent);color:#fff;text-align:center;font-size:12px">
+  <p>© 2026 船釣り予想 funatsuri-yoso.com</p>
+  <p style="margin-top:6px;font-size:11px"><a href="/pages/privacy.html" style="color:rgba(255,255,255,0.7)">プライバシーポリシー</a></p>
+</footer>
+</body>
+</html>'''
+    out_path = os.path.join(monthly_dir, "index.html")
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"[build_monthly_index] 完了 → {out_path}")
+
+
+# ============================================================
 # sitemap.xml 自動生成
 # ============================================================
 def build_sitemap(data):
@@ -15334,6 +16332,32 @@ def build_sitemap(data):
         if os.path.isfile(os.path.join(WEB_DIR, "pages", f"{_pg}.html")):
             urls.append((f"{SITE_URL}/pages/{_pg}.html", "0.5", "monthly"))
     # premium/plan.html は noindex（薄い販売ページ・2026/06/05）のため sitemap 非収録
+    # monthly/**/*.html（月報ページ・YYYY-MM/{romaji}.html）
+    # noindex タグがあれば除外。index.html（ハブ）は優先度 0.7/weekly で収録。
+    _monthly_dir = os.path.join(WEB_DIR, "monthly")
+    import re as _re_sitemap
+    if os.path.isdir(_monthly_dir):
+        # ハブ index.html
+        if os.path.isfile(os.path.join(_monthly_dir, "index.html")):
+            urls.append((f"{SITE_URL}/monthly/", "0.7", "weekly"))
+        # 月別サブディレクトリをスキャン
+        for _ym in sorted(os.listdir(_monthly_dir), reverse=True):
+            if not _re_sitemap.match(r"^\d{4}-\d{2}$", _ym):
+                continue
+            _ym_dir = os.path.join(_monthly_dir, _ym)
+            if not os.path.isdir(_ym_dir):
+                continue
+            for _mfname in sorted(os.listdir(_ym_dir)):
+                if not _mfname.endswith(".html"):
+                    continue
+                try:
+                    with open(os.path.join(_ym_dir, _mfname), encoding="utf-8") as _mfp:
+                        _mhead = _mfp.read(2048)
+                    if 'name="robots"' in _mhead and "noindex" in _mhead:
+                        continue
+                except Exception:
+                    pass
+                urls.append((f"{SITE_URL}/monthly/{_ym}/{_mfname}", "0.8", "monthly"))
     entries = "\n".join(
         f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
         for loc, pri, freq in urls
@@ -16601,6 +17625,12 @@ def main():
     build_ship_redirects()
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
+    # 月報生成（フルクロール経路のみ・--html-only はこのコードパスに到達しない）
+    try:
+        build_monthly_pages(crawled_at)
+        build_monthly_index(crawled_at)
+    except Exception as _e_monthly:
+        print(f"[WARN] build_monthly_pages/index 失敗（スキップ）: {_e_monthly}")
     build_sitemap(valid_catches)
     build_premium_plan_page()
 
