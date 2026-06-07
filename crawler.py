@@ -2548,7 +2548,7 @@ def _build_forecast_hub(forecast_data, catches=None):
 
     # 無料: 今週の海況サマリー（波高・風速・海水温・出船判定）
     html += '<h2>今週の海況（無料公開）</h2>'
-    html += '<p class="section-note">関東の波高・風速・海水温・出船判定を無料で公開しています。日付をタップすると主要エリア別の詳細が見られます。</p>'
+    html += '<p class="section-note">関東の波高・風速・海水温・出船判定を無料で公開しています。<strong>出船判定は関東で最も注意が必要なエリアを基準</strong>に表示しています。日付をタップすると主要エリア別の詳細（エリアごとの出船可否）が見られます。</p>'
     if all_dates:
         html += '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px">'
         html += ('<tr style="background:#0d2b4a;color:#fff">'
@@ -4331,8 +4331,26 @@ def _resolve_display_dataset(catches, today_str):
     return latest_catches, _format_date_label(latest_date), latest_date
 
 def _v2_header_nav(active_page=""):
-    """V2共通ヘッダー + グローバルナビ"""
-    return f"""<header>
+    """V2共通ヘッダー + グローバルナビ
+
+    全ページにビルド日付ベースの鮮度バナーを注入する。CDN/ブラウザキャッシュで
+    古い版を見た場合でも、JS が「このページの生成日」と閲覧者の今日を比較し、
+    2日以上古ければ「更新遅延」を表示する（ページ種別ごとのキャッシュ齟齬対策・
+    2026-06-07）。生成時刻 = ビルド時刻なので now() でよい。
+    """
+    _bd_iso = datetime.now(JST).strftime("%Y-%m-%d")
+    stale_banner = f"""<div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
+  ⚠️ このページは更新が遅延している可能性があります（生成日: {_bd_iso}）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
+</div>
+<script>
+(function(){{
+  var b="{_bd_iso}";var p=b.split("-");if(p.length<3)return;
+  var d=new Date(+p[0],+p[1]-1,+p[2]);var t=new Date();t.setHours(0,0,0,0);
+  if(Math.round((t-d)/86400000)>=2){{var e=document.getElementById("stale-banner");if(e)e.hidden=false;}}
+}})();
+</script>
+"""
+    return f"""{stale_banner}<header>
   <div class="inner">
     <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
     <span class="domain">funatsuri-yoso.com</span>
@@ -5592,8 +5610,8 @@ def _build_fish_count_q3_text(fish, hist_rows):
         p25 = sorted_maxes[0]
         p75 = sorted_maxes[-1]
     if p25 == p75:
-        return f"関東{fish}船釣りの一日の釣果は{p25}匹前後が標準的です。最高実績は{max_max}匹です。"
-    return f"関東{fish}船釣りの一日の釣果は{p25}〜{p75}匹が標準的なレンジです。最高実績は{max_max}匹です。"
+        return f"関東{fish}船釣りの一日の釣果は{p25}匹前後が標準的です。最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
+    return f"関東{fish}船釣りの一日の釣果は{p25}〜{p75}匹が標準的なレンジです。最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
 
 
 def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=None):
@@ -7494,18 +7512,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
     hero_count = len(hero_base)
     hero_ships = len(set(c["ship"] for c in hero_base))
     hero_areas = len(set(c["area"] for c in hero_base))
-    # 鮮度バナー（#2 対策）: 最新データ日を JS で当日と比較し、2日以上古ければ遅延表示。
-    # GitHub Actions の cron は数時間遅延が常態化しており（16:30 JST 予定が実際は 18:30〜20:00）、
-    # クロール/HTML生成が完全停止した場合も含め、ブラウザ側で「最新装い」を防ぐ。
-    # 1日遅れは正常（当日夕方のクロール前は前日が最新）なので閾値は 2 日。
-    hero_date_iso = (hero_date or "").replace("/", "-")
-    _stale_last_label = ""
-    if hero_date:
-        try:
-            _hd = datetime.strptime(hero_date, "%Y/%m/%d")
-            _stale_last_label = f"{_hd.month}月{_hd.day}日"
-        except (ValueError, TypeError):
-            _stale_last_label = hero_date
     # LIVE ティッカーアイテム生成（当日データから上位5件）
     _ticker_candidates = []
     for c in hero_base:
@@ -7724,26 +7730,6 @@ def build_html(catches, crawled_at, history, weather_data=None):
 </head>
 <body>
 {_v2_header_nav('index')}
-<!-- 鮮度バナー（最新データが2日以上古い場合のみ JS で表示） -->
-<div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:10px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
-  ⚠️ データ更新に遅延が発生しています。最終取得：<span id="stale-last">{_stale_last_label}</span>（{crawled_at} JST）<br>
-  <span style="font-weight:400;font-size:12px;opacity:.9">表示中の釣果は最新ではない可能性があります</span>
-</div>
-<script>
-(function(){{
-  var iso="{hero_date_iso}";
-  if(!iso) return;
-  var p=iso.split("-");
-  if(p.length<3) return;
-  var dd=new Date(+p[0],+p[1]-1,+p[2]);
-  var t=new Date(); t.setHours(0,0,0,0);
-  var diff=Math.round((t-dd)/86400000);
-  if(diff>=2){{
-    var b=document.getElementById("stale-banner");
-    if(b) b.hidden=false;
-  }}
-}})();
-</script>
 <!-- HERO -->
 <div class="hero">
   <div class="hero-sub">関東船釣り釣果情報</div>
@@ -7769,7 +7755,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <!-- ZONE B2: エリア別今日の釣果 -->
 <h2 class="st">{"エリア別 直近1週間の釣果" if is_sparse_today else f"エリア別 {hero_label}の釣果"} <span class="tag free">無料</span></h2>
 <div class="area-today">{area_today_html}</div>
-{f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>{risk_grid_html}' if risk_grid_html else ''}
+{f'<h2 class="st">広域 出船リスク速報 <span class="tag free">無料</span></h2><p class="section-note">各海域で<strong>最も荒れるエリアを基準</strong>に表示しています（安全側）。エリア別の出船可否は<a href="/forecast/">予報ページ</a>でご確認ください。</p>{risk_grid_html}' if risk_grid_html else ''}
 <!-- TEASER ROTATOR -->
 {teaser_html}
 <!-- 広告① -->

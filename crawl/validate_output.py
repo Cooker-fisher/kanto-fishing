@@ -1303,6 +1303,73 @@ def validate_implausible_catch_count():
         ok(f"[38] {len(targets)} ページすべて釣果数は現実的な範囲")
 
 
+_UPDATED_DATE_RE = re.compile(r"最終更新:\s*(\d{4})/(\d{2})/(\d{2})")
+_BANNER_BUILD_RE = re.compile(r'id="stale-banner".*?var b="(\d{4})-(\d{2})-(\d{2})"', re.DOTALL)
+
+
+def validate_page_freshness():
+    """39: 生成ページの鮮度（更新遅延・ページ種別ごとの更新分裂を検知）（2026-06-07）
+
+    背景: トップ/魚種/魚種×エリア/船宿 ページで「表示対象日」がバラつく事故への対策
+    （PR レビュー指摘）。
+    - index.html の「最終更新: YYYY/MM/DD」が today-2 以内であること（生成停止の検知）。
+    - 全ページ共通ヘッダのビルド日付バナー（var b="YYYY-MM-DD"）が today-2 以内である
+      こと（ページ種別ごとの再生成漏れ＝更新分裂の検知）。バナー未導入の旧 docs では
+      該当行が無いため skip（次回再生成後に有効化）。
+    TZ ずれ・cron 遅延を考慮し許容は today-2 日。
+    """
+    print("\n[39] 生成ページの鮮度（更新遅延・ページ種別の更新分裂）")
+    today = datetime.now()
+    cutoff = today - timedelta(days=2)
+
+    # (1) index.html の最終更新
+    idx = os.path.join(DOCS, "index.html")
+    if os.path.isfile(idx):
+        content = open(idx, encoding="utf-8").read()
+        m = _UPDATED_DATE_RE.search(content)
+        if not m:
+            warn("[39] index.html に『最終更新: YYYY/MM/DD』が見つからない")
+        else:
+            d = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            if d < cutoff:
+                fail(f"[39] index.html 最終更新 {d.date()} が古い（cutoff {cutoff.date()}）= トップの更新遅延")
+            else:
+                ok(f"[39] index.html 最終更新: {d.date()}")
+    else:
+        fail("[39] index.html が存在しない")
+
+    # (2) ページ種別ごとのビルド日付バナー（更新分裂の検知）
+    samples = [
+        ("index", "index.html"),
+        ("fish", "madai.html"), ("fish", "aji.html"), ("fish", "hirame.html"),
+        ("fish_area", "aji-yokohama-honmoku.html"),
+        ("area", "kanazawa-hakkei.html"),
+        ("ship", "riki-maru.html"),
+    ]
+    stale = []
+    checked = 0
+    for sub, fn in samples:
+        p = idx if sub == "index" else os.path.join(DOCS, sub, fn)
+        if not os.path.isfile(p):
+            continue
+        content = open(p, encoding="utf-8").read()
+        bm = _BANNER_BUILD_RE.search(content)
+        if not bm:
+            continue  # バナー未導入の旧 docs は skip（次回再生成後に有効化）
+        checked += 1
+        d = datetime(int(bm.group(1)), int(bm.group(2)), int(bm.group(3)))
+        if d < cutoff:
+            rel = "index.html" if sub == "index" else f"{sub}/{fn}"
+            stale.append(f"{rel}: 生成日 {d.date()}")
+    if stale:
+        for s in stale:
+            fail(f"[39] ページ更新分裂（生成日が古い）: {s}")
+    elif checked:
+        ok(f"[39] ビルド日付バナー {checked} ページすべて today-2 以内")
+    else:
+        warn("[39] ビルド日付バナー未検出（旧 docs・次回再生成で有効化）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1351,6 +1418,7 @@ def main():
     validate_no_index_html_internal_link()
     validate_fish_guide_no_cross_contamination()
     validate_implausible_catch_count()
+    validate_page_freshness()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
