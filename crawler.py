@@ -13264,7 +13264,7 @@ def _ship_load_monthly_archive(ship_name, max_months=13):
                         fish_count[fish] = fish_count.get(fish, 0) + 1
                         try:
                             cnt = float(row.get("cnt_avg") or 0)
-                            if cnt > 0:
+                            if cnt > 0 and _is_plausible_cnt(fish, cnt):
                                 fish_cnt_sum.setdefault(fish, []).append(cnt)
                         except (ValueError, TypeError):
                             pass
@@ -13394,7 +13394,7 @@ def _ship_load_yearly_summary(ship_name, today_dt):
                                 except: pass
                                 try:
                                     cx = float(r.get("cnt_max") or 0)
-                                    if cx > 0: cnt_maxes.append(cx)
+                                    if cx > 0 and _is_plausible_cnt(fish, cx): cnt_maxes.append(cx)
                                 except: pass
                                 try:
                                     km = float(r.get("kg_max") or 0)
@@ -13741,7 +13741,7 @@ def _ship_load_seasonal_fish(ship_name, today_dt):
                                     except: pass
                                     try:
                                         cx = float(r.get("cnt_max") or 0)
-                                        if cx > 0: cnt_maxes.append(cx)
+                                        if cx > 0 and _is_plausible_cnt(fish, cx): cnt_maxes.append(cx)
                                     except: pass
                                     try:
                                         km = float(r.get("kg_max") or 0)

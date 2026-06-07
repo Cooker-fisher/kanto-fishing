@@ -1244,44 +1244,63 @@ def validate_fish_guide_no_cross_contamination():
         ok(f"[37] fish ガイド {checked} 件すべて他魚種道具の混入なし")
 
 
-_IMPLAUSIBLE_CNT_RE = re.compile(r"最高(?:実績は)?\s*(\d+)\s*匹")
+# 「最高N匹」「最大匹数 N匹」「平均N匹」「平均X〜N匹」等、釣果数を表す表現を網羅。
+# 数字とのあいだに <strong> 等のタグが挟まるケース（ship ページ）も拾う。
+# 値は float もありうる（平均507.2匹）ので小数を許容して捕捉する。
+_IMPLAUSIBLE_CNT_RES = [
+    re.compile(r"最高(?:実績は)?\s*([\d.]+)\s*匹"),
+    re.compile(r"最大匹数\s*(?:<[^>]+>)*\s*([\d.]+)\s*匹"),
+    re.compile(r"平均(?:釣果)?\s*(?:<[^>]+>)*\s*(?:[\d.]+\s*〜\s*)?([\d.]+)\s*匹"),
+]
 
 
 def validate_implausible_catch_count():
-    """38: 魚種・魚種×エリアページの『最高(実績は)N匹』が非現実値でないこと（2026-06-07）
+    """38: fish/fish_area/ship ページの釣果数表示が非現実値でないこと（2026-06-07）
 
     背景: 釣果数の数値抽出で西暦（例: ヒラメ「2025匹」）や桁化けが混入する事故があった。
+    fish/fish_area の「最高N匹」だけでなく、ship ページの「最大匹数 N匹」も公開生成物
+    なので対象に含める（PR#51 レビュー指摘・docs/ship/riki-maru.html で 2025匹 が残存）。
     実在の最大は数物（アジ713・スジイカ702）でも 1000 未満。よって
     - N が西暦域 [1990, 2035] の整数
     - または N > 1500
     を非現実値として弾く（crawler.py の _FISH_CNT_CAP による除外が効いている証拠）。
     """
-    print("\n[38] fish/fish_area ページの『最高N匹』が非現実値でないこと")
+    print("\n[38] fish/fish_area/ship ページの釣果数が非現実値でないこと")
     targets = []
-    for sub in ("fish", "fish_area"):
+    for sub in ("fish", "fish_area", "ship"):
         d = os.path.join(DOCS, sub)
         if os.path.isdir(d):
             for fn in os.listdir(d):
                 if fn.endswith(".html") and fn != "index.html":
                     targets.append(os.path.join(d, fn))
     if not targets:
-        fail("[38] fish/fish_area ページが存在しない")
+        fail("[38] fish/fish_area/ship ページが存在しない")
         return
     violating = []
     for p in targets:
         content = open(p, encoding="utf-8").read()
-        for m in _IMPLAUSIBLE_CNT_RE.finditer(content):
-            n = int(m.group(1))
-            if (1990 <= n <= 2035) or n > 1500:
-                violating.append(f"{os.path.relpath(p, DOCS)}: 最高{n}匹")
+        found = None
+        for rgx in _IMPLAUSIBLE_CNT_RES:
+            for m in rgx.finditer(content):
+                try:
+                    fv = float(m.group(1))
+                except ValueError:
+                    continue
+                n = int(fv)
+                if (1990 <= n <= 2035) or fv > 1500:
+                    found = m.group(1)
+                    break
+            if found is not None:
                 break
+        if found is not None:
+            violating.append(f"{os.path.relpath(p, DOCS)}: {found}匹")
     if violating:
         for v in violating[:10]:
             fail(f"[38] 非現実的な釣果数: {v}")
         if len(violating) > 10:
             fail(f"[38] 他 {len(violating)-10} 件")
     else:
-        ok(f"[38] {len(targets)} ページすべて『最高N匹』は現実的な範囲")
+        ok(f"[38] {len(targets)} ページすべて釣果数は現実的な範囲")
 
 
 def main():
