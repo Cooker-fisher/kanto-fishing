@@ -13264,7 +13264,7 @@ def _ship_load_monthly_archive(ship_name, max_months=13):
                         fish_count[fish] = fish_count.get(fish, 0) + 1
                         try:
                             cnt = float(row.get("cnt_avg") or 0)
-                            if cnt > 0:
+                            if cnt > 0 and _is_plausible_cnt(fish, cnt):
                                 fish_cnt_sum.setdefault(fish, []).append(cnt)
                         except (ValueError, TypeError):
                             pass

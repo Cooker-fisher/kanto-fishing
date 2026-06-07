@@ -1244,11 +1244,13 @@ def validate_fish_guide_no_cross_contamination():
         ok(f"[37] fish ガイド {checked} 件すべて他魚種道具の混入なし")
 
 
-# 「最高N匹」「最大匹数 <strong>N匹</strong>」「最高{int}匹」等、釣果数を表す表現を網羅。
+# 「最高N匹」「最大匹数 N匹」「平均N匹」「平均X〜N匹」等、釣果数を表す表現を網羅。
 # 数字とのあいだに <strong> 等のタグが挟まるケース（ship ページ）も拾う。
+# 値は float もありうる（平均507.2匹）ので小数を許容して捕捉する。
 _IMPLAUSIBLE_CNT_RES = [
-    re.compile(r"最高(?:実績は)?\s*(\d+)\s*匹"),
-    re.compile(r"最大匹数\s*(?:<[^>]+>)*\s*(\d+)\s*匹"),
+    re.compile(r"最高(?:実績は)?\s*([\d.]+)\s*匹"),
+    re.compile(r"最大匹数\s*(?:<[^>]+>)*\s*([\d.]+)\s*匹"),
+    re.compile(r"平均(?:釣果)?\s*(?:<[^>]+>)*\s*(?:[\d.]+\s*〜\s*)?([\d.]+)\s*匹"),
 ]
 
 
@@ -1280,9 +1282,13 @@ def validate_implausible_catch_count():
         found = None
         for rgx in _IMPLAUSIBLE_CNT_RES:
             for m in rgx.finditer(content):
-                n = int(m.group(1))
-                if (1990 <= n <= 2035) or n > 1500:
-                    found = n
+                try:
+                    fv = float(m.group(1))
+                except ValueError:
+                    continue
+                n = int(fv)
+                if (1990 <= n <= 2035) or fv > 1500:
+                    found = m.group(1)
                     break
             if found is not None:
                 break
