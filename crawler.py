@@ -4330,16 +4330,15 @@ def _resolve_display_dataset(catches, today_str):
     latest_catches = [c for c in catches if c.get("date") == latest_date]
     return latest_catches, _format_date_label(latest_date), latest_date
 
-def _v2_header_nav(active_page=""):
-    """V2共通ヘッダー + グローバルナビ
+def _stale_banner_html():
+    """全ページ共通の鮮度バナー（ビルド日付 + JS）を返す。
 
-    全ページにビルド日付ベースの鮮度バナーを注入する。CDN/ブラウザキャッシュで
-    古い版を見た場合でも、JS が「このページの生成日」と閲覧者の今日を比較し、
-    2日以上古ければ「更新遅延」を表示する（ページ種別ごとのキャッシュ齟齬対策・
-    2026-06-07）。生成時刻 = ビルド時刻なので now() でよい。
+    CDN/ブラウザキャッシュで古い版を見た場合でも、JS が「このページの生成日」と
+    閲覧者の今日を比較し、2日以上古ければ「更新遅延」を表示する（ページ種別ごとの
+    キャッシュ齟齬対策・2026-06-07）。生成時刻 = ビルド時刻なので now() でよい。
     """
     _bd_iso = datetime.now(JST).strftime("%Y-%m-%d")
-    stale_banner = f"""<div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
+    return f"""<div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
   ⚠️ このページは更新が遅延している可能性があります（生成日: {_bd_iso}）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
 </div>
 <script>
@@ -4350,6 +4349,13 @@ def _v2_header_nav(active_page=""):
 }})();
 </script>
 """
+
+def _v2_header_nav(active_page=""):
+    """V2共通ヘッダー + グローバルナビ
+
+    全ページにビルド日付ベースの鮮度バナーを注入する（_stale_banner_html）。
+    """
+    stale_banner = _stale_banner_html()
     return f"""{stale_banner}<header>
   <div class="inner">
     <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
@@ -14864,6 +14870,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
     # ヘッダ・ナビ・ボトムナビ（fish/area ページと同じ構成・5項目）
     header_html = (
+        _stale_banner_html() +
         '<header><div class="inner">'
         '<h1><a href="/">船釣り<span>予想</span></a></h1>'
         '<span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span>'
