@@ -1206,6 +1206,84 @@ def validate_no_index_html_internal_link():
         ok(f"全 {walked} 個 docs/*.html で href の index.html 内部リンク消滅")
 
 
+def validate_fish_guide_no_cross_contamination():
+    """37: 魚種ガイド（docs/fish/*.html）の仕掛け説明に他魚種の道具混入が無いこと（2026-06-07）
+
+    背景: fish_tackle.json の泳がせ系魚種で「キハダマグロ針」が一律テンプレ流用され、
+    ヒラメページに『キハダマグロ針・ウキ・ウレタン』が表示される誤情報が発生した。
+    マグロ専用の道具名がマグロ系以外の魚種ガイドに出たら誤情報として弾く。
+    """
+    print("\n[37] docs/fish/*.html: 仕掛け説明に他魚種の道具混入が無いこと")
+    fish_dir = os.path.join(DOCS, "fish")
+    if not os.path.isdir(fish_dir):
+        fail("docs/fish/ ディレクトリが存在しない")
+        return
+    # マグロ専用語が出てよいのはマグロ系ページのみ
+    tuna_slugs = {"kihadamaguro", "kimeji", "katsuo", "meji", "binnaga", "maguro"}
+    forbidden = ["キハダマグロ針", "マグロ針"]
+    violating = []
+    checked = 0
+    for fn in os.listdir(fish_dir):
+        if not fn.endswith(".html") or fn == "index.html":
+            continue
+        slug = fn[:-5]
+        if slug in tuna_slugs:
+            continue
+        checked += 1
+        content = open(os.path.join(fish_dir, fn), encoding="utf-8").read()
+        hit = [w for w in forbidden if w in content]
+        # ヒラメ系（フラットフィッシュ）ページにウキ釣り混入も誤り
+        if slug == "hirame" and "ウキ（状況で可変）" in content:
+            hit.append("ウキ（状況で可変）")
+        if hit:
+            violating.append(f"{fn}: {', '.join(hit)}")
+    if violating:
+        for v in violating[:10]:
+            fail(f"[37] 魚種ガイドに他魚種の道具混入: {v}")
+    else:
+        ok(f"[37] fish ガイド {checked} 件すべて他魚種道具の混入なし")
+
+
+_IMPLAUSIBLE_CNT_RE = re.compile(r"最高(?:実績は)?\s*(\d+)\s*匹")
+
+
+def validate_implausible_catch_count():
+    """38: 魚種・魚種×エリアページの『最高(実績は)N匹』が非現実値でないこと（2026-06-07）
+
+    背景: 釣果数の数値抽出で西暦（例: ヒラメ「2025匹」）や桁化けが混入する事故があった。
+    実在の最大は数物（アジ713・スジイカ702）でも 1000 未満。よって
+    - N が西暦域 [1990, 2035] の整数
+    - または N > 1500
+    を非現実値として弾く（crawler.py の _FISH_CNT_CAP による除外が効いている証拠）。
+    """
+    print("\n[38] fish/fish_area ページの『最高N匹』が非現実値でないこと")
+    targets = []
+    for sub in ("fish", "fish_area"):
+        d = os.path.join(DOCS, sub)
+        if os.path.isdir(d):
+            for fn in os.listdir(d):
+                if fn.endswith(".html") and fn != "index.html":
+                    targets.append(os.path.join(d, fn))
+    if not targets:
+        fail("[38] fish/fish_area ページが存在しない")
+        return
+    violating = []
+    for p in targets:
+        content = open(p, encoding="utf-8").read()
+        for m in _IMPLAUSIBLE_CNT_RE.finditer(content):
+            n = int(m.group(1))
+            if (1990 <= n <= 2035) or n > 1500:
+                violating.append(f"{os.path.relpath(p, DOCS)}: 最高{n}匹")
+                break
+    if violating:
+        for v in violating[:10]:
+            fail(f"[38] 非現実的な釣果数: {v}")
+        if len(violating) > 10:
+            fail(f"[38] 他 {len(violating)-10} 件")
+    else:
+        ok(f"[38] {len(targets)} ページすべて『最高N匹』は現実的な範囲")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1252,6 +1330,8 @@ def main():
     validate_area_index_pref_emoji()
     validate_area_index_fish_links()
     validate_no_index_html_internal_link()
+    validate_fish_guide_no_cross_contamination()
+    validate_implausible_catch_count()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

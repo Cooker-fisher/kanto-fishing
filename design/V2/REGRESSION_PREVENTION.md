@@ -56,6 +56,8 @@
 | 34 | 全 `docs/**/*.html`（2026-05-21） | `href` の値が `index.html` で終わる内部リンクが 0件（正規表現 `href=["'][^"']*index\.html["']`）。GitHub Pages Fastly CDN の root + 全 subdir レベルキャッシュキー別問題対策・内部リンクから `index.html` 末尾を完全排除 |
 | 35 | `fish_area/*.html`（T39 / 2026-05-25） | noindex 付与ページが 10 件以上（薄判定が動作している証拠）+ noindex 付与済ページの URL が `sitemap.xml` に含まれない（AdSense「有用性の低いコンテンツ」対策・hist_count < 30 のコンボを noindex） |
 | 36 | `area/*.html`（T40 / 2026-05-26） | build_point_pages() 生成ポイントページ（釣り場ポイント情報マーカー）の noindex 付与が 5 件以上 + noindex 付与済ページの URL が `sitemap.xml` に含まれない（fia-grid/season-map を持たない構造的薄ページ・40件全件 noindex） |
+| 37 | `docs/fish/*.html`（T41 / 2026-06-07） | 魚種ガイドの仕掛け説明に他魚種の道具混入が無いこと。マグロ系以外のページに「キハダマグロ針」「マグロ針」が出たら誤情報として fail。ヒラメページに「ウキ（状況で可変）」混入も fail（`fish_tackle.json` 泳がせ系テンプレ汚染対策・ヒラメ等の活き餌仕掛けがマグロ用道具で生成されていた） |
+| 38 | `docs/fish/*.html`・`docs/fish_area/*.html`（T41 / 2026-06-07） | 「最高(実績は)N匹」の N が西暦域 [1990,2035] または 1500 超でないこと。実在最大は数物でも 1000 未満（アジ713・スジイカ702）。西暦誤抽出（ヒラメ「2025匹」）・桁化けを弾く。crawler.py `_FISH_CNT_CAP`（魚種別の現実的上限）で除外されている証拠 |
 
 ### T22 関連の設計契約（H1 noindex 解除手順）
 
