@@ -281,10 +281,9 @@ AREA_FORECAST_COORDS = {
 _UCHIUMI_AREAS = {"千葉・内房", "千葉・東京湾奥", "東京", "神奈川・東京湾"}
 _SOTOUMI_AREAS = {"茨城", "千葉・外房", "神奈川・相模湾", "静岡"}
 
+# [DEPRECATED 2026-06-07] 旧出船判定の閾値。判定は _WIND_BELTS/_WAVE_BELTS ベースの
+# _sail_judge に統一済み（_risk_label も _sail_judge 経由に変更）。参照なし・履歴目的で残置。
 # (warn_wave, warn_wind, bad_wave, bad_wind)
-# 外海 = 大型船・高波想定内 → 高い閾値（条件が甘い＝ひどい荒天でのみ警戒）
-# 内海 = 小型船・低波でも欠航 → 低い閾値（条件が厳しい＝少しの荒れで警戒）
-# 集計方法: MAX（海域内の最も荒れたエリアで判定）
 _RISK_THR = {
     "外海": (2.0, 10.0, 3.5, 15.0),
     "内海": (0.8,  6.0, 1.5,  9.0),
@@ -333,14 +332,43 @@ def _sea_label(wave, wind, sea_type):
         tail = "の暴風で欠航警戒"
     return sev, f"波{w_val:.1f}m・風{wnd_val:.0f}m/s{tail}"
 
+# ============================================================
+# 出船判定の単一ソース（全ページ共通）
+# 海域別ベルト（_WIND_BELTS/_WAVE_BELTS）で severity 0-3 を算出し、
+# トップのリスクグリッド・予測ページ・週末カードの全表示をこれに統一する。
+# 旧 _risk_label（_RISK_THR 別閾値・海域別3段階）と _fishing_ok_score（海域非依存スコア）の
+# 二重基準により、同一エリア・同一日でも判定が食い違う不整合（2026-06-07 指摘）を解消する。
+# ============================================================
+_SAIL_LEVELS = {
+    #     cls,    icon, label,       score, color
+    0: ("good", "◎", "出船日和", 90, "#4dcc88"),
+    1: ("good", "○", "出船可",   68, "#7ac77a"),
+    2: ("warn", "△", "注意",     42, "#e8a34d"),
+    3: ("bad",  "✕", "欠航警戒", 15, "#cc4d4d"),
+}
+
+def _sail_severity(wave, wind, sea_type):
+    """波高(m)・風速(m/s)・内海/外海 → severity 0(穏)〜3(暴)。海域別ベルトで判定。"""
+    if sea_type not in _WIND_BELTS:
+        sea_type = "内海"
+    w = wave if wave is not None else 0.0
+    n = wind if wind is not None else 0.0
+    return max(_sev_from_belts(n, _WIND_BELTS[sea_type]),
+               _sev_from_belts(w, _WAVE_BELTS[sea_type]))
+
+def _sail_judge(wave, wind, sea_type):
+    """出船判定の正準関数。(severity, cls, icon, label, score, color) を返す。
+
+    全ての出船判定（トップ・予測ページ・週末カード・日次/エリア別）はこれを使う。
+    """
+    sev = _sail_severity(wave, wind, sea_type)
+    cls, icon, label, score, color = _SAIL_LEVELS[sev]
+    return sev, cls, icon, label, score, color
+
 def _risk_label(wave, wind, sea_type):
-    """波高(m)・風速(m/s)・内海/外海 → (cls, icon, lbl)"""
-    warn_w, warn_wnd, bad_w, bad_wnd = _RISK_THR[sea_type]
-    if wave >= bad_w or wind >= bad_wnd:
-        return "bad", "×", "欠航警戒"
-    if wave >= warn_w or wind >= warn_wnd:
-        return "warn", "△", "注意"
-    return "good", "○", "好条件"
+    """[後方互換] 波高・風速・海域 → (cls, icon, lbl)。判定は _sail_judge に統一。"""
+    _sev, cls, icon, label, _score, _color = _sail_judge(wave, wind, sea_type)
+    return cls, icon, label
 
 def _risk_grid_row(label, area_names, days_data):
     """1行分のリスクグリッドHTML（ラベル付き）"""
@@ -372,7 +400,8 @@ def _risk_grid_row(label, area_names, days_data):
     subtitle = "茨城・外房・相模湾・静岡" if sea_type == "外海" else "東京湾各エリア"
     return (
         f'<div class="risk-row">'
-        f'<div class="risk-row-head"><span class="risk-sea-type">{label}</span><span class="risk-sea-areas">（{subtitle}）</span></div>'
+        f'<div class="risk-row-head"><span class="risk-sea-type">{label}</span>'
+        f'<span class="risk-sea-areas">（{subtitle}・最も荒れるエリア基準）</span></div>'
         f'<div class="risk-days">{cells}</div>'
         f'</div>'
     )
@@ -702,8 +731,10 @@ def load_weather_data():
 
     return result
 
+# [DEPRECATED 2026-06-07] 海域非依存スコアで出船判定の二重基準の原因だった。
+# 出船判定は _sail_judge（海域別ベルト・単一ソース）に統一済み。呼び出し元なし。
 def _fishing_ok_score(wave, wind):
-    """出船可否スコア: 100=最適 0=欠航リスク"""
+    """[非推奨] 出船可否スコア。出船判定は _sail_judge に統一済み。"""
     score = 100
     if wave is not None:
         if wave >= 2.5: score -= 60
@@ -716,6 +747,7 @@ def _fishing_ok_score(wave, wind):
     return max(0, score)
 
 def _ok_label(score):
+    """[非推奨] 出船判定は _sail_judge に統一済み。"""
     if score >= 80: return "◎ 出船日和", "#4dcc88"
     if score >= 60: return "○ 概ね良好", "#f4a261"
     if score >= 40: return "△ やや不安", "#e85d04"
@@ -752,9 +784,9 @@ def build_weather_section(weather_data):
             icon   = _wave_icon(wave)
             wlabel = _wave_label(wave)
             wdir   = _wind_dir_text(wd)
-            score  = _fishing_ok_score(wave, wind)
-            ok_txt, ok_color = _ok_label(score)
-            ok_cls = "good" if score >= 80 else ("warn" if score >= 50 else "bad")
+            # 出船判定は海域別の正準関数に統一（週末カードもエリアの海域型で判定）
+            _sev, ok_cls, _jic, _jlb, score, ok_color = _sail_judge(wave, wind, _area_sea_type(group))
+            ok_txt = f"{_jic} {_jlb}"
 
             wave_txt = f"{icon} {wave}m {wlabel}" if wave is not None else "-"
             wind_txt = f"{wdir}{wind}m/s" if wind is not None else "-"
@@ -1984,8 +2016,13 @@ def build_forecast_json(weather_data, catches=None, history=None):
         wc_mode = max(set(weather_codes), key=weather_codes.count) if weather_codes else None
         month = int(date_str[5:7]) if len(date_str) >= 7 else None
 
-        score = _fishing_ok_score(avg_wave, avg_wind)
-        ok_txt, _ = _ok_label(score)
+        # 日次の出船判定は「関東で最も荒れるエリア基準」(worst-case) に統一。
+        # 各エリアを海域型ごとに判定し最も厳しい severity を採用 → トップのリスクグリッド(MAX)と整合。
+        _day_sev = 0
+        for _g, _fc in area_forecasts.items():
+            _day_sev = max(_day_sev, _sail_severity(_fc.get("wave_height"), _fc.get("wind_speed"), _area_sea_type(_g)))
+        _dcls, _dic, _dlb, score, _dcolor = _SAIL_LEVELS[_day_sev]
+        ok_txt = f"{_dic} {_dlb}"
         fc_tide = _calc_tide_range(date_str)
         fc_moon = _calc_moon_age(date_str)
 
@@ -2051,16 +2088,17 @@ def build_forecast_json(weather_data, catches=None, history=None):
         if pick:
             prev_pick_fish = pick["fish"]
 
-        # エリア別海況
+        # エリア別海況（出船判定はエリアの海域型で正準関数に統一）
         area_detail = {}
         for g, fc in area_forecasts.items():
-            s = _fishing_ok_score(fc.get("wave_height"), fc.get("wind_speed"))
+            _asev, _acls, _aic, _alb, s, _acolor = _sail_judge(
+                fc.get("wave_height"), fc.get("wind_speed"), _area_sea_type(g))
             area_detail[g] = {
                 "wave": fc.get("wave_height"), "wind": fc.get("wind_speed"),
                 "sst": fc.get("sst"), "wind_dir": fc.get("wind_dir"),
                 "weather_text": fc.get("weather_text", ""),
                 "pressure": fc.get("pressure"),
-                "score": s, "ok": _ok_label(s)[0],
+                "score": s, "ok": f"{_aic} {_alb}",
             }
 
         result["days"][date_str] = {
@@ -2447,11 +2485,12 @@ def _area_risk_grid(area_group, forecast_data):
             f'<div class="rd-label">{lbl}</div>'
             f'</div>'
         )
-    thr = _RISK_THR[sea_type]
-    note = f'注意: 波{thr[0]}m・風{thr[1]}m/s / 欠航警戒: 波{thr[2]}m・風{thr[3]}m/s'
+    wb = _WAVE_BELTS[sea_type]
+    nb = _WIND_BELTS[sea_type]
+    note = f'△注意: 波{wb[1]}〜{wb[2]}m・風{nb[1]}〜{nb[2]}m/s / ✕欠航警戒: 波{wb[2]}m超・風{nb[2]}m/s超'
     return (
         f'<h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2>'
-        f'<p class="risk-note">閾値（{sea_type}基準）: {note}</p>'
+        f'<p class="risk-note">判定（{sea_type}基準）: {note}</p>'
         f'<div class="risk-grid">{cells}</div>'
     )
 
@@ -7455,6 +7494,18 @@ def build_html(catches, crawled_at, history, weather_data=None):
     hero_count = len(hero_base)
     hero_ships = len(set(c["ship"] for c in hero_base))
     hero_areas = len(set(c["area"] for c in hero_base))
+    # 鮮度バナー（#2 対策）: 最新データ日を JS で当日と比較し、2日以上古ければ遅延表示。
+    # GitHub Actions の cron は数時間遅延が常態化しており（16:30 JST 予定が実際は 18:30〜20:00）、
+    # クロール/HTML生成が完全停止した場合も含め、ブラウザ側で「最新装い」を防ぐ。
+    # 1日遅れは正常（当日夕方のクロール前は前日が最新）なので閾値は 2 日。
+    hero_date_iso = (hero_date or "").replace("/", "-")
+    _stale_last_label = ""
+    if hero_date:
+        try:
+            _hd = datetime.strptime(hero_date, "%Y/%m/%d")
+            _stale_last_label = f"{_hd.month}月{_hd.day}日"
+        except (ValueError, TypeError):
+            _stale_last_label = hero_date
     # LIVE ティッカーアイテム生成（当日データから上位5件）
     _ticker_candidates = []
     for c in hero_base:
@@ -7673,6 +7724,26 @@ def build_html(catches, crawled_at, history, weather_data=None):
 </head>
 <body>
 {_v2_header_nav('index')}
+<!-- 鮮度バナー（最新データが2日以上古い場合のみ JS で表示） -->
+<div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:10px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
+  ⚠️ データ更新に遅延が発生しています。最終取得：<span id="stale-last">{_stale_last_label}</span>（{crawled_at} JST）<br>
+  <span style="font-weight:400;font-size:12px;opacity:.9">表示中の釣果は最新ではない可能性があります</span>
+</div>
+<script>
+(function(){{
+  var iso="{hero_date_iso}";
+  if(!iso) return;
+  var p=iso.split("-");
+  if(p.length<3) return;
+  var dd=new Date(+p[0],+p[1]-1,+p[2]);
+  var t=new Date(); t.setHours(0,0,0,0);
+  var diff=Math.round((t-dd)/86400000);
+  if(diff>=2){{
+    var b=document.getElementById("stale-banner");
+    if(b) b.hidden=false;
+  }}
+}})();
+</script>
 <!-- HERO -->
 <div class="hero">
   <div class="hero-sub">関東船釣り釣果情報</div>
