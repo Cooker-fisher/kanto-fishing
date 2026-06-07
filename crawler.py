@@ -2397,7 +2397,8 @@ def _build_daily_page(date_str, day_data, forecast_data, weather_data):
 <div class="wx-panel"><span class="wx-panel-icon">🌡️</span><span class="wx-panel-value">{sst or '-'}℃</span><span class="wx-panel-label">海水温</span></div>
 <div class="wx-panel"><span class="wx-panel-icon">🌙</span><span class="wx-panel-value">{moon_title}</span><span class="wx-panel-label">月齢{moon_age or ''}</span></div>
 </div>
-<p style="font-size:14px;color:#fff;margin-bottom:8px">出船判定: {ok}</p>"""
+<p style="font-size:14px;color:#fff;margin-bottom:4px">関東 総合判定（最も注意が必要なエリア基準）: {ok}</p>
+<p style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:8px">※ エリアによって状況は異なります。下記エリア別の出船判定をご確認ください。</p>"""
 
     # エリア別チップ（リンク付き）— forecast/area/<slug>.html へ
     areas = day_data.get("areas", {})
@@ -4337,15 +4338,18 @@ def _stale_banner_html():
     閲覧者の今日を比較し、2日以上古ければ「更新遅延」を表示する（ページ種別ごとの
     キャッシュ齟齬対策・2026-06-07）。生成時刻 = ビルド時刻なので now() でよい。
     """
-    _bd_iso = datetime.now(JST).strftime("%Y-%m-%d")
+    _now = datetime.now(JST)
+    _bd_iso = _now.strftime("%Y-%m-%d")
+    _bt_ms = int(_now.timestamp() * 1000)  # ビルド時刻（UTC epoch ms・TZ非依存）
+    # 判定はビルド時刻からの経過時間で行う（日付だけの比較は UTC/JST 境界で誤警告が出る）。
+    # crawl は日次（遅延込みで最長 ~28h 間隔）なので、36h 超 = 1日分まるごと欠落＝真の遅延。
     return f"""<div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
   ⚠️ このページは更新が遅延している可能性があります（生成日: {_bd_iso}）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
 </div>
 <script>
 (function(){{
-  var b="{_bd_iso}";var p=b.split("-");if(p.length<3)return;
-  var d=new Date(+p[0],+p[1]-1,+p[2]);var t=new Date();t.setHours(0,0,0,0);
-  if(Math.round((t-d)/86400000)>=2){{var e=document.getElementById("stale-banner");if(e)e.hidden=false;}}
+  var b="{_bd_iso}";var bt={_bt_ms};
+  if((Date.now()-bt)>129600000){{var e=document.getElementById("stale-banner");if(e)e.hidden=false;}}
 }})();
 </script>
 """
@@ -5538,7 +5542,10 @@ def _build_fish_beginner_q4_text(fish, hist_rows):
 _DEFAULT_CNT_CAP = 300
 _FISH_CNT_CAP = {
     # サビキ・数物（極めて多く釣れる）
-    "アジ": 1000, "マアジ": 1000, "豆アジ": 1500,
+    # アジは LTアジ/ビシアジで「ビリ〜竿頭」の便内スプレッドが count_raw に入りやすく、
+    # 竿頭としても非現実な上限（吉野屋「120〜713匹」等＝実質 船中値）が混入する。
+    # 竿頭の現実的上限 ~350 を見て 400 で頭打ち（371 等の境界は保持）。豆アジ/サビキは別枠。
+    "アジ": 400, "マアジ": 400, "豆アジ": 1500,
     "イワシ": 1500, "マイワシ": 1500, "カタクチイワシ": 2000, "ウルメイワシ": 1500,
     "サバ": 800, "マサバ": 800, "ゴマサバ": 800,
     "シロギス": 500, "キス": 500, "ハゼ": 600, "カマス": 500,
