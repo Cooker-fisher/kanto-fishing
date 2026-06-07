@@ -78,9 +78,8 @@
 </div>
 <script>
 (function(){
-  var b="2026-06-07";var p=b.split("-");if(p.length<3)return;
-  var d=new Date(+p[0],+p[1]-1,+p[2]);var t=new Date();t.setHours(0,0,0,0);
-  if(Math.round((t-d)/86400000)>=2){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
+  var b="2026-06-07";var bt=1780834320000;
+  if((Date.now()-bt)>129600000){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
 })();
 </script>
 <header>
