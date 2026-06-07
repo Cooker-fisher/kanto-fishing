@@ -13394,7 +13394,7 @@ def _ship_load_yearly_summary(ship_name, today_dt):
                                 except: pass
                                 try:
                                     cx = float(r.get("cnt_max") or 0)
-                                    if cx > 0: cnt_maxes.append(cx)
+                                    if cx > 0 and _is_plausible_cnt(fish, cx): cnt_maxes.append(cx)
                                 except: pass
                                 try:
                                     km = float(r.get("kg_max") or 0)
@@ -13741,7 +13741,7 @@ def _ship_load_seasonal_fish(ship_name, today_dt):
                                     except: pass
                                     try:
                                         cx = float(r.get("cnt_max") or 0)
-                                        if cx > 0: cnt_maxes.append(cx)
+                                        if cx > 0 and _is_plausible_cnt(fish, cx): cnt_maxes.append(cx)
                                     except: pass
                                     try:
                                         km = float(r.get("kg_max") or 0)
