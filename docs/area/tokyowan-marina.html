@@ -74,13 +74,12 @@
 </head>
 <body>
 <div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
-  ⚠️ このページは更新が遅延している可能性があります（生成日: 2026-06-07）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
+  ⚠️ このページは更新が遅延している可能性があります（生成日: 2026-06-08）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
 </div>
 <script>
 (function(){
-  var b="2026-06-07";var p=b.split("-");if(p.length<3)return;
-  var d=new Date(+p[0],+p[1]-1,+p[2]);var t=new Date();t.setHours(0,0,0,0);
-  if(Math.round((t-d)/86400000)>=2){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
+  var b="2026-06-08";var bt=1780921291113;
+  if((Date.now()-bt)>129600000){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
 })();
 </script>
 <header>
