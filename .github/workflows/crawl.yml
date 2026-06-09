@@ -6,6 +6,14 @@ on:
     - cron: '0 8 * * 1'    # 毎週月曜 17:00 JST（週次分析再生成）
     - cron: '0 9 * * 1'    # 毎週月曜 18:00 JST（CMEMS差分更新）
   workflow_dispatch:
+
+# 同一ワークフローの run を直列化（月初 07:00 + 日次 07:30 の crawl 重複や
+# 連続 workflow_dispatch で run 同士が main を取り合い rebase 競合する事故を防ぐ）。
+# cancel-in-progress: false = 実行中は止めず後続を待たせる。
+concurrency:
+  group: crawl-push-main
+  cancel-in-progress: false
+
 jobs:
   crawl:
     runs-on: ubuntu-latest
@@ -56,9 +64,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -- ':!.github/'
-          git commit -m "update $(date +'%Y/%m/%d')" || echo "nothing to commit"
-          git pull --rebase origin main
-          git push origin main
+          git commit -m "update $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
+          # docs/ は crawler.py が毎回 deterministic に再生成する成果物のため、
+          # run 中に origin/main が進んで競合した場合は「今回生成した最新版」を採用する。
+          # 並列/連続 run・手動コミットで origin が進んでも rebase 競合で job を落とさない。
+          # -X theirs = rebase でリプレイ中の自コミット側（＝今回の生成物）を優先。
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main || { sleep $((attempt*5)); continue; }
+            if git rebase -X theirs origin/main; then
+              if git push origin main; then
+                echo "push 成功 (attempt $attempt)"; exit 0
+              fi
+            else
+              git rebase --abort || true
+            fi
+            echo "push 競合/失敗 → リトライ $attempt"; sleep $((attempt*5))
+          done
+          echo "::error::push が 5 回失敗"; exit 1
 
   weekly_insights:
     runs-on: ubuntu-latest
@@ -112,9 +134,21 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -- ':!.github/'
-          git commit -m "weekly insights $(date +'%Y/%m/%d')" || echo "nothing to commit"
-          git pull --rebase origin main
-          git push origin main
+          git commit -m "weekly insights $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
+          # crawl job と同じ堅牢化（月曜は crawl と weekly_insights が並列 push するため必須）。
+          # -X theirs = rebase でリプレイ中の自コミット側を優先。
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main || { sleep $((attempt*5)); continue; }
+            if git rebase -X theirs origin/main; then
+              if git push origin main; then
+                echo "push 成功 (attempt $attempt)"; exit 0
+              fi
+            else
+              git rebase --abort || true
+            fi
+            echo "push 競合/失敗 → リトライ $attempt"; sleep $((attempt*5))
+          done
+          echo "::error::push が 5 回失敗"; exit 1
 
   update_cmems:
     runs-on: ubuntu-latest
