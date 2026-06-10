@@ -191,6 +191,14 @@ nav.gnav a.prem::before {
 .wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
 .crumbs { font-size: 12px; color: var(--sub); margin-bottom: 14px; }
 .crumbs a { color: var(--port); text-decoration: none; }
+.x-drafts { background: var(--card); border: 1px dashed var(--port); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.x-drafts summary { cursor: pointer; font-weight: 700; color: var(--port); }
+.xd-item { margin: 10px 0; padding-top: 8px; border-top: 1px solid var(--line, #ddd); }
+.xd-label { font-size: 11px; font-weight: 700; color: var(--sub); margin-bottom: 4px; }
+.xd-text { white-space: pre-wrap; background: rgba(0,0,0,.04); border-radius: 6px; padding: 8px 10px; font-size: 13px; margin: 0 0 6px; font-family: inherit; }
+.xd-hidden { display: none; }
+.xd-copy { font-size: 12px; padding: 4px 10px; margin-right: 6px; border: 1px solid var(--port); background: #fff; color: var(--port); border-radius: 14px; cursor: pointer; }
+.xd-note { font-size: 11px; color: var(--sub); margin: 8px 0 0; }
 .hero {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   color: #fff;
@@ -774,6 +782,41 @@ def build(ctx, commentary, output_path, png_url=None):
         fish_commentary = ""
     date_label = ctx.get("date_label", "")
     date_iso = ctx.get("date_iso", "")
+
+    # X 投稿文ドラフト（発見型・コピー用・2026-06-10）
+    # 定型まとめ投稿はエンゲージメントが取れないため、「驚きのある1つの数字を冒頭に」
+    # 置いた投稿文を毎日自動生成して運用者がコピーするだけにする。
+    try:
+        from x_post.text_generator import build_x_post_drafts
+        _drafts = build_x_post_drafts(ctx)
+    except Exception:
+        _drafts = []
+    _draft_items = []
+    for _i, _d in enumerate(_drafts):
+        _no = _d["text_no_link"]
+        _wi = _d["text_with_link"]
+        _draft_items.append(
+            f'<div class="xd-item"><div class="xd-label">{_d["label"]}</div>'
+            f'<pre class="xd-text" id="xd-{_i}-n">{_no}</pre>'
+            f'<button class="xd-copy" data-target="xd-{_i}-n">リンクなしをコピー</button>'
+            f'<button class="xd-copy" data-target="xd-{_i}-w">リンクありをコピー</button>'
+            f'<pre class="xd-text xd-hidden" id="xd-{_i}-w">{_wi}</pre></div>'
+        )
+    if _draft_items:
+        post_drafts_html = (
+            '<details class="x-drafts"><summary>📋 X投稿文（コピー用・発見型）</summary>'
+            + "".join(_draft_items)
+            + '<p class="xd-note">通常はリンクなし版を使用（Xはリンク付き投稿のリーチを抑制）。'
+            '週1〜2回リンクあり版で誘導。</p></details>'
+            '<script>document.querySelectorAll(".xd-copy").forEach(function(b){'
+            'b.addEventListener("click",function(){'
+            'var t=document.getElementById(b.dataset.target);'
+            'navigator.clipboard.writeText(t.textContent).then(function(){'
+            'b.textContent="✓ コピーしました";setTimeout(function(){'
+            'b.textContent=b.dataset.target.endsWith("n")?"リンクなしをコピー":"リンクありをコピー"},1500)})})});</script>'
+        )
+    else:
+        post_drafts_html = ""
     n_ships = ctx.get("n_ships", 0)
     n_fish_species = ctx.get("n_fish_species", 0)
     n_records = ctx.get("n_records", 0)
@@ -944,6 +987,8 @@ def build(ctx, commentary, output_path, png_url=None):
   </div>
 
   {share_bar_html}
+
+  {post_drafts_html}
 
   <div class="hero">
     <h1>{date_label} 関東船釣り 釣果まとめ</h1>
