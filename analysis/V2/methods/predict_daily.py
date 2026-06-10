@@ -83,6 +83,8 @@ def _line_date(obj: dict) -> str:
 
 def _prune_predict_log(cutoff_date: str) -> tuple[int, int]:
     """predict_log.jsonl から cutoff_date（YYYY-MM-DD）より古い行を削除。
+    一時ファイル + os.replace でアトミックに差し替える（書き込み途中クラッシュでの
+    全ログ消失防止・code-reviewer MAJOR 指摘対応 2026-06-10）。
     戻り値: (保持行数, 削除行数)"""
     if not os.path.exists(LOG_PATH):
         return (0, 0)
@@ -101,9 +103,13 @@ def _prune_predict_log(cutoff_date: str) -> tuple[int, int]:
                 kept.append(line)
             else:
                 dropped += 1
-    with open(LOG_PATH, "w", encoding="utf-8") as f:
+    if dropped == 0:
+        return (len(kept), 0)  # 変更なし → 書き換えない
+    tmp_path = LOG_PATH + ".tmp"  # *.tmp は gitignore 済み・os.replace で消える
+    with open(tmp_path, "w", encoding="utf-8") as f:
         if kept:
             f.write("\n".join(kept) + "\n")
+    os.replace(tmp_path, LOG_PATH)
     return (len(kept), dropped)
 
 
