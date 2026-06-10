@@ -195,3 +195,108 @@ def build_commentary_blocks(hl_text, ocean_text, fish_texts, ctx):
         assert word not in plain, f"データソース言及禁止: '{word}' が含まれています"
 
     return blocks
+
+
+# ── X 投稿文ドラフト（発見型・2026-06-10） ─────────────────────────────────────
+# 背景: 定型「◯/◯ 釣果まとめ」投稿はインプレッションが取れても反応されない
+# （海況詳細 533imp/♥1・まとめ 115imp/♥1 vs シミュレーター告知 454imp/♥6/RT2）。
+# 「報告」ではなく「発見（驚きのある1つの数字を冒頭に）」で投稿するためのドラフトを
+# 毎日自動生成し、日次ページにコピー用として掲載する。
+#
+# 制約:
+# - 補遺3: avg/平均を出さない（レンジ min〜max または「最大◯匹」の事実表現のみ）
+# - データソース（釣りビジョン等）への言及なし
+# - X の重み付き字数制限: 全角140字相当。本文は全角110字以内を目安に収める
+
+def _x_len(text: str) -> int:
+    """X の重み付き字数（全角=2, 半角=1 の近似）を返す。上限は 280。"""
+    return sum(2 if ord(c) > 0x7F else 1 for c in text)
+
+
+def build_x_post_drafts(ctx) -> list:
+    """発見型の X 投稿文ドラフトを優先度順に最大3本返す。
+
+    戻り値: [{"label": str, "text": str}, ...]
+    フックの優先順位（強い発見から）:
+      1. 例年比フック: season_ratio_top_cnt >= 1.5（この旬の過去実績比・analysis.sqlite 必要）
+      2. 大物フック:   top_kg_max >= 3.0
+      3. 急増フック:   wow_pct_top_cnt >= 1.5 かつ top_cnt_max >= 30（先週比）
+      4. 数釣りフック: top_cnt_max >= 30
+      5. 型フック:     top_cm_max >= 40
+      6. フォールバック: 当日の基本サマリー
+    """
+    date_iso = ctx.get("date_iso", "")
+    date_label = ctx.get("date_label", "")
+    link = f"https://funatsuri-yoso.com/x_post/{date_iso}.html" if date_iso else "https://funatsuri-yoso.com/"
+
+    f_cnt = ctx.get("top_cnt_fish", "")
+    ship_cnt = ctx.get("top_cnt_ship", "")
+    port_cnt = ctx.get("top_cnt_port", "")
+    cnt_max = ctx.get("top_cnt_max", 0) or 0
+    cnt_range = ctx.get("top_cnt_range", "")
+    sr = ctx.get("season_ratio_top_cnt") or 0
+    wow = ctx.get("wow_pct_top_cnt") or 0
+    wow_str = ctx.get("wow_pct_top_cnt_str", "")
+
+    f_kg = ctx.get("top_kg_fish", "")
+    ship_kg = ctx.get("top_kg_ship", "")
+    port_kg = ctx.get("top_kg_port", "")
+    kg_max = ctx.get("top_kg_max", 0) or 0
+
+    f_cm = ctx.get("top_cm_fish", "")
+    port_cm = ctx.get("top_cm_port", "")
+    cm_max = ctx.get("top_cm_max", 0) or 0
+
+    n_ships = ctx.get("n_ships", 0)
+    n_fish = ctx.get("n_fish_species", 0)
+
+    hooks = []  # (label, 本文1〜2行, ハッシュタグ魚種)
+    if sr >= 1.5 and f_cnt and cnt_max >= 10:
+        hooks.append((
+            "例年比",
+            f"{port_cnt}・{ship_cnt}の{f_cnt}、きょう{cnt_range}。\nこの時期の過去実績の{sr}倍ペースです。",
+            f_cnt,
+        ))
+    if kg_max >= 3.0 and f_kg:
+        hooks.append((
+            "大物",
+            f"{f_kg} {kg_max:.1f}kg、{port_kg}・{ship_kg}で上がりました。\nきょうの関東で一番の大物です。",
+            f_kg,
+        ))
+    if wow >= 1.5 and cnt_max >= 30 and f_cnt and wow_str:
+        hooks.append((
+            "急増",
+            f"{f_cnt}が動き出しました。{port_cnt}・{ship_cnt}で{cnt_range}、先週比{wow_str}。",
+            f_cnt,
+        ))
+    if cnt_max >= 30 and f_cnt:
+        hooks.append((
+            "数釣り",
+            f"きょうの関東で一番釣れたのは{port_cnt}・{ship_cnt}の{f_cnt}、{cnt_range}。",
+            f_cnt,
+        ))
+    if cm_max >= 40 and f_cm:
+        hooks.append((
+            "型",
+            f"{f_cm} 最大{cm_max}cm（{port_cm}）。型狙いに良い流れです。",
+            f_cm,
+        ))
+    # フォールバック（必ず1本は出す）
+    hooks.append((
+        "基本",
+        f"{date_label}の関東船釣り: {n_ships}船宿・{n_fish}魚種の釣果が出ました。",
+        f_cnt or "",
+    ))
+
+    drafts = []
+    for label, body, fish_tag in hooks[:3]:
+        tags = "#船釣り" + (f" #{fish_tag}" if fish_tag else "")
+        no_link = f"{body}\n\n{tags}"
+        with_link = f"{body}\n\n詳細→ {link}\n{tags}"
+        drafts.append({
+            "label": f"{label}フック",
+            "text_no_link": no_link,   # リーチ重視（X はリンク付きを抑制するため既定）
+            # 字数超過時はリンクなし版にフォールバック
+            "text_with_link": with_link if _x_len(with_link) <= 270 else no_link,
+        })
+    return drafts
