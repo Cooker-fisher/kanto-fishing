@@ -216,6 +216,9 @@ def _x_len(text: str) -> int:
 def build_x_post_drafts(ctx) -> list:
     """発見型の X 投稿文ドラフトを優先度順に最大3本返す。
 
+    投稿タイミング前提: 16:30 JST 生成 → 翌朝 8:00 JST 投稿（ユーザー運用 2026-06-10）。
+    そのため相対表現は「昨日」基準。基本フックは date_label（日付明示）なので影響なし。
+
     戻り値: [{"label": str, "text": str}, ...]
     フックの優先順位（強い発見から）:
       1. 例年比フック: season_ratio_top_cnt >= 1.5（この旬の過去実績比・analysis.sqlite 必要）
@@ -254,13 +257,13 @@ def build_x_post_drafts(ctx) -> list:
     if sr >= 1.5 and f_cnt and cnt_max >= 10:
         hooks.append((
             "例年比",
-            f"{port_cnt}・{ship_cnt}の{f_cnt}、きょう{cnt_range}。\nこの時期の過去実績の{sr}倍ペースです。",
+            f"{port_cnt}・{ship_cnt}の{f_cnt}、昨日{cnt_range}。\nこの時期の過去実績の{sr}倍ペースです。",
             f_cnt,
         ))
     if kg_max >= 3.0 and f_kg:
         hooks.append((
             "大物",
-            f"{f_kg} {kg_max:.1f}kg、{port_kg}・{ship_kg}で上がりました。\nきょうの関東で一番の大物です。",
+            f"{f_kg} {kg_max:.1f}kg、{port_kg}・{ship_kg}で上がりました。\n昨日の関東で一番の大物です。",
             f_kg,
         ))
     if wow >= 1.5 and cnt_max >= 30 and f_cnt and wow_str:
@@ -272,7 +275,7 @@ def build_x_post_drafts(ctx) -> list:
     if cnt_max >= 30 and f_cnt:
         hooks.append((
             "数釣り",
-            f"きょうの関東で一番釣れたのは{port_cnt}・{ship_cnt}の{f_cnt}、{cnt_range}。",
+            f"昨日の関東で一番釣れたのは{port_cnt}・{ship_cnt}の{f_cnt}、{cnt_range}。",
             f_cnt,
         ))
     if cm_max >= 40 and f_cm:
