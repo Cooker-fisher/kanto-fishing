@@ -857,6 +857,15 @@ def _load_historical_catches():
         try:
             with open(os.path.join(data_dir, fname), encoding="utf-8", newline="") as f:
                 for row in csv.DictReader(f):
+                    # chowari 系 CSV は欠損セルに文字列 "NULL" を書くため、表示に使う
+                    # 名称フィールドは読み込み時に正規化する（魚種「NULL」がエリアページの
+                    # fia-grid / 旬カレンダーに露出した 2026-06-10 のバグ対策）。
+                    # tsuri_mono="NULL" は正規化失敗を意味するので既存の「不明」に揃える。
+                    if row.get("tsuri_mono") == "NULL":
+                        row["tsuri_mono"] = "不明"
+                    for _pcol in ("point_place1", "point_place2", "point_place3"):
+                        if row.get(_pcol) == "NULL":
+                            row[_pcol] = ""
                     rows.append(row)
         except Exception:
             continue
@@ -864,7 +873,7 @@ def _load_historical_catches():
 
 def _hist_is_cancelled(r):
     """hist_rows CSV 行が欠航または不明かどうか判定（compute_* 系関数用）"""
-    return str(r.get("is_cancellation", "")).strip() == "1" or r.get("tsuri_mono") in ("欠航", "不明", "")
+    return str(r.get("is_cancellation", "")).strip() == "1" or r.get("tsuri_mono") in ("欠航", "不明", "NULL", "")
 
 
 def compute_fish_area_summary(hist_rows):
@@ -1085,7 +1094,7 @@ def _summarize_area_history(area: str, hist_rows: list, today_dt) -> dict:
     month_days_set: dict = {}
     for r in recent_365:
         f = r.get("tsuri_mono", "")
-        if f and f not in ("不明", "欠航") and not f.isdigit():
+        if f and f not in ("不明", "欠航", "NULL") and not f.isdigit():
             fish_c[f] += 1
         p = (r.get("point_place1") or "").strip()
         if p:
@@ -3722,6 +3731,33 @@ def fish_img_slug(fish: str) -> str:
     """画像アセットフォルダ用スラグ（URLスラグとは別管理・フォルダ名と一致）"""
     return _FISH_IMG_OVERRIDES.get(fish, fish_slug(fish))
 
+def _first_phone_for_tel(phone: str) -> str:
+    """ships.json の phone は '0463-21-1312 / 070-4486-7173' のように複数番号入りの
+    ことがある。区切り文字ごと数字だけ残すと番号が連結され無効な tel: になるため
+    （2026-06-10 バグ: 23船宿で発生）、先頭の有効な1番号のみを tel: 用に返す。"""
+    # 区切りは空白も含む（"0463-21-1312 070-4486-7173" のようなスペースのみ区切り対策・
+    # code-reviewer 指摘 2026-06-10）。単一番号内の空白（"03 1234 5678"）は各 chunk が
+    # 9 桁未満になりフォールバックで全体から数字抽出されるため正しく1番号に復元される。
+    for chunk in re.split(r"[\s/／,、・]+", phone or ""):
+        digits = re.sub(r"[^\d+\-]", "", chunk)
+        if len(re.sub(r"\D", "", digits)) >= 9:  # 日本の電話番号は9〜11桁
+            return digits
+    return re.sub(r"[^\d+\-]", "", phone or "")
+
+_FISH_ASSET_DIRS: set | None = None
+
+def _fish_asset_img_slug(fish: str) -> str:
+    """画像パス用スラグ。docs/assets/fish/ にフォルダが実在する場合のみ返し、
+    無ければ "" を返す（img タグ自体を出さず 404 リクエストを防ぐ）。
+    ship ページ系が URL スラグ（kihada-maguro）を画像フォルダ名（kihadamaguro）と
+    取り違えて大量の画像 404 を出していた 2026-06-10 のバグ対策。"""
+    global _FISH_ASSET_DIRS
+    if _FISH_ASSET_DIRS is None:
+        _d = os.path.join(WEB_DIR, "assets", "fish")
+        _FISH_ASSET_DIRS = set(os.listdir(_d)) if os.path.isdir(_d) else set()
+    slug = fish_img_slug(fish)
+    return slug if slug in _FISH_ASSET_DIRS else ""
+
 def area_slug(area: str) -> str:
     """エリア名 → URL用ローマ字スラグ（マップ未登録時はそのまま返す）"""
     return _AREA_ROMAJI.get(area, area)
@@ -3825,7 +3861,12 @@ def _fish_area_link_or_fish(fish: str, area: str, depth: int = 1) -> str:
     fa_rel = f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
     if os.path.exists(os.path.join(WEB_DIR, fa_rel)):
         return f"{prefix}{fa_rel}"
-    return f"{prefix}fish/{fish_slug(fish)}.html"
+    fish_rel = f"fish/{fish_slug(fish)}.html"
+    if os.path.exists(os.path.join(WEB_DIR, fish_rel)):
+        return f"{prefix}{fish_rel}"
+    # 魚種ページも無い場合（アカイカ・コハダ等のページ未生成魚種）は魚種一覧へ
+    # フォールバック（リンク切れ防止・2026-06-10）
+    return f"{prefix}fish/"
 
 def current_iso_week():
     now = datetime.now(JST).replace(tzinfo=None)
@@ -5696,7 +5737,7 @@ def build_area_description_html(area, desc_data):
     return '<div class="area-desc">' + "".join(f"<p>{p}</p>" for p in paras) + "</div>"
 
 
-_AREA_SKIP_FISH = {"不明", "欠航", ""}
+_AREA_SKIP_FISH = {"不明", "欠航", "NULL", ""}
 
 
 def _is_cancelled_row(r):
@@ -7425,7 +7466,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     area_fish_map = {}  # area -> {fish: count}
     for c in today_catches:
         for f in c["fish"]:
-            if f not in ("不明", "欠航"):
+            if f not in ("不明", "欠航", "NULL"):
                 area_fish_map.setdefault(c["area"], {}).setdefault(f, 0)
                 area_fish_map[c["area"]][f] += 1
     # エリアを件数降順でソート
@@ -7533,7 +7574,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         cr = c.get("count_range") or {}
         n = c.get("count_avg") or (cr.get("min", 0) + cr.get("max", 0)) // 2
         for f in c.get("fish", []):
-            if f in ("不明", "欠航") or not ship or not n:
+            if f in ("不明", "欠航", "NULL") or not ship or not n:
                 continue
             _ticker_candidates.append((f, ship, int(n)))
     # 魚種×船宿でユニーク化し件数上位5件
@@ -7556,7 +7597,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
         if not ship or kgmax is None or kgmax < 1.0:
             continue
         for f in c.get("fish", []):
-            if f in ("不明", "欠航"):
+            if f in ("不明", "欠航", "NULL"):
                 continue
             key = (f, ship)
             if key in _seen_trophy:
@@ -8049,7 +8090,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
     # 主要エリアの全 catches を見るように修正。
     _recent7_for_related = _load_recent_catches_for_index(now, days=7)
     fish_summary = {}
-    _SKIP_FISH = {"不明", "欠航"}
+    _SKIP_FISH = {"不明", "欠航", "NULL"}
 
     # 個別 fish ページは「直近7日間の釣果推移」チャート + マイナー魚種（マダコ・
     # マゴチ等の当日0件魚）への配慮で、常時 7日マージを行う。
@@ -8537,7 +8578,7 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
         crawled_at  : 更新日時文字列
     """
     os.makedirs(os.path.join(WEB_DIR, "fish"), exist_ok=True)
-    _SKIP_FISH = {"不明", "欠航"}
+    _SKIP_FISH = {"不明", "欠航", "NULL"}
 
     # ── 今週実績判定（fish_summary を使用・fish 詳細ページと同じ数値にする） ──
     # 旧実装は recent7 を再集計していたため fish/aji.html の len(catches) と
@@ -9124,7 +9165,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         fish_data = {}
         for c in fish_source:
             for f in c["fish"]:
-                if not f or f in ("不明", "欠航"):
+                if not f or f in ("不明", "欠航", "NULL"):
                     continue
                 d = fish_data.setdefault(f, {"cnt_mins": [], "cnt_maxs": [], "sz_mins": [], "sz_maxs": [], "ships": set(), "records": 0, "ship_recs": {}})
                 d["records"] += 1
@@ -9312,7 +9353,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         ship_today_set = set(c["ship"] for c in today_catches)
         for c in catches:
             for f in c["fish"]:
-                if f not in ("不明", "欠航"):
+                if f not in ("不明", "欠航", "NULL"):
                     ship_week_fish.setdefault(c["ship"], {}).setdefault(f, 0)
                     ship_week_fish[c["ship"]][f] += 1
         # T31 (2026/05/12): ships.json で area マッチする active 船宿も補完
@@ -9531,7 +9572,7 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
         crawled_at       : 更新日時文字列
     """
     os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
-    _SKIP_FISH = {"不明", "欠航"}
+    _SKIP_FISH = {"不明", "欠航", "NULL"}
     _group_order = ["茨城", "千葉・外房", "千葉・内房", "千葉・東京湾奥", "東京", "神奈川・東京湾", "神奈川・相模湾", "静岡"]
 
     # ── 今週エリア別集計（recent7 から） ──
@@ -10765,7 +10806,14 @@ def build_calendar_page(crawled_at=""):
             cls    = ("peak-count" if tp == "数" else "peak-size") if sc >= 4 else ("mid" if sc == 3 else "low")
             label  = "◎" if sc >= 4 else ("○" if sc == 3 else "-")
             cells += f'<td class="{cls} {is_now}">{label}</td>'
-        rows += f"<tr><td class='fish-name'><a href='fish/{fish_slug(fish)}.html'><img src='assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp' alt='{fish}' class='cal-emoji' width='20' height='20' loading='lazy' decoding='async' onerror='this.style.display=\"none\"'>{fish}</a></td>{cells}</tr>"
+        # SEASON_DATA にはページ未生成の魚種（コハダ・アカイカ等）も含まれるため、
+        # fish/{slug}.html が実在する場合のみリンク化（リンク切れ防止・2026-06-10）
+        _cal_inner = f"<img src='assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp' alt='{fish}' class='cal-emoji' width='20' height='20' loading='lazy' decoding='async' onerror='this.style.display=\"none\"'>{fish}"
+        if os.path.exists(os.path.join(WEB_DIR, "fish", f"{fish_slug(fish)}.html")):
+            _cal_cell = f"<a href='fish/{fish_slug(fish)}.html'>{_cal_inner}</a>"
+        else:
+            _cal_cell = _cal_inner
+        rows += f"<tr><td class='fish-name'>{_cal_cell}</td>{cells}</tr>"
     cal_extra_css = """.cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px}
 .cal-wrap table{font-size:12px;min-width:600px}
 .cal-wrap th{text-align:center;min-width:34px;font-size:11px;padding:6px 4px}
@@ -13660,7 +13708,7 @@ def _ship_yearly_summary_section_html(yearly, ship_name, area, seasonal=None, tr
     for i, fi in enumerate(yearly["top_fish"]):
         medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
         rank_cls = f"rank{i+1}"
-        fish_slug = _FISH_ROMAJI.get(fi["fish"], "")
+        fish_slug = _fish_asset_img_slug(fi["fish"])
         img_src = f"../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" if fish_slug else ""
         max_str = ""
         if fi["max_kg"]:
@@ -13798,7 +13846,7 @@ def _ship_seasonal_fish_section_html(seasonal):
         else:
             rows = []
             for i, fi in enumerate(fishes, 1):
-                fish_slug = _FISH_ROMAJI.get(fi["fish"], "")
+                fish_slug = _fish_asset_img_slug(fi["fish"])
                 img_src = f"../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" if fish_slug else ""
                 img_html = f'<img class="sf-fish-img" src="{img_src}" alt="{_html.escape(fi["fish"])}" onerror="this.style.display=\'none\'">' if img_src else '<span class="sf-fish-img"></span>'
                 max_str = ""
@@ -13899,7 +13947,7 @@ def _ship_trophy_section_html(trophies):
         else:
             medal_html = f'<span class="tr-rank">{rank}位</span>'
             row_cls = "tr-row"
-        fish_slug = _FISH_ROMAJI.get(t["fish"], "")
+        fish_slug = _fish_asset_img_slug(t["fish"])
         img_src = f"../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" if fish_slug else ""
         img_html = f'<img class="tr-img" src="{img_src}" alt="{_html.escape(t["fish"])}" onerror="this.style.display=\'none\'">' if img_src else ''
         badge_cls = "tr-rank-badge" if rank <= 3 else "tr-rank-badge low"
@@ -13996,7 +14044,7 @@ def _ship_auto_badges_html(badges):
         kind = b["kind"]
         fish_img_html = ""
         if b.get("fish"):
-            fish_slug = _FISH_ROMAJI.get(b["fish"], "")
+            fish_slug = _fish_asset_img_slug(b["fish"])
             if fish_slug:
                 fish_img_html = f'<img class="sh-ab-fish-img" width="14" height="14" src="../assets/fish/{fish_slug}/{fish_slug}_emoji.webp" alt="{_html.escape(b["fish"])}" onerror="this.style.display=\'none\'">'
         icon_html = ""
@@ -14097,7 +14145,7 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
         detail = "・".join(detail_parts)
         detail_html = f'<span class="wfl-detail">{detail}</span>' if detail else ''
         # 魚 emoji webp
-        _fslug = _FISH_ROMAJI.get(fish, "")
+        _fslug = _fish_asset_img_slug(fish)
         fish_img = f'<img class="wfl-fish-img" width="16" height="16" src="../assets/fish/{_fslug}/{_fslug}_emoji.webp" alt="" onerror="this.style.display=\'none\'">' if _fslug else ''
         fish_list_rows.append(
             f'<li>'
@@ -14133,7 +14181,7 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
                 val_str = f"{round(val, 1)}kg"
             else:
                 val_str = f"{int(val)}cm"
-            _tslug = _FISH_ROMAJI.get(fish, "")
+            _tslug = _fish_asset_img_slug(fish)
             trophy_img = f'<img class="wrt-fish-img" width="16" height="16" src="../assets/fish/{_tslug}/{_tslug}_emoji.webp" alt="" onerror="this.style.display=\'none\'">' if _tslug else ''
             fish_list_html += (
                 '<div style="margin-top:8px">'
@@ -14151,7 +14199,7 @@ def _ship_weekly_report_section_html(weekly, yoy, tide_days, today_dt):
     next_week_start = today_dt + timedelta(days=1)
     season_month = next_week_start.month
     def _fish_inline_img(fish):
-        s = _FISH_ROMAJI.get(fish, "")
+        s = _fish_asset_img_slug(fish)
         return f'<img class="wnw-fish-img" width="14" height="14" src="../assets/fish/{s}/{s}_emoji.webp" alt="" onerror="this.style.display=\'none\'" style="vertical-align:middle;margin-right:3px">' if s else ''
     if top_fish_items:
         top_fish = top_fish_items[0][0]
@@ -14444,7 +14492,7 @@ def _ship_recent_fish_html(catches, ship_name, today_dt, display_label=None):
         if d < cutoff or d > today_dt:
             continue
         for f in c.get("fish") or []:
-            if not f or f in ("不明", "欠航"):
+            if not f or f in ("不明", "欠航", "NULL"):
                 continue
             cr = c.get("count_range") or {}
             cnt_max = cr.get("max")
@@ -14804,7 +14852,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     # 予約手段は常に「電話で直接お問い合わせください」（船宿の方針）
     if phone:
         # tel: リンクは数字以外を除去
-        phone_digits = re.sub(r"[^\d+\-]", "", phone)
+        phone_digits = _first_phone_for_tel(phone)
         rsv_items.append(f'<div class="sg-item"><strong>予約方法</strong>船宿へ直接お電話 → <a href="tel:{phone_digits}">{phone}</a></div>')
     else:
         rsv_items.append('<div class="sg-item"><strong>予約方法</strong>船宿へ直接お電話ください</div>')
@@ -14870,7 +14918,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
     # 電話CTA HTML（電話番号があれば tel: リンク・なければ案内）
     if phone:
-        phone_digits = re.sub(r"[^\d+\-]", "", phone)
+        phone_digits = _first_phone_for_tel(phone)
         phone_cta_html = f'<a href="tel:{phone_digits}" style="background:var(--pos)">📞 電話: {phone}</a>'
         phone_cta_block = (
             f'<a href="tel:{phone_digits}" '
@@ -16444,6 +16492,109 @@ def build_monthly_index(crawled_at=""):
 
 
 # ============================================================
+# デッドリンク掃引（fish_area 孤児パージ後の参照元残留対策）
+# ============================================================
+def _sweep_dead_internal_links():
+    """docs/ 配下の全 HTML から、実在しない fish/*.html・fish_area/*.html への
+    <a> リンクを <span>（href 無し）に変換する。
+
+    背景（2026-06-10）: build_fish_area_pages の孤児パージが fish_area HTML を
+    削除しても、それをリンクしていた他ページは「直近7日に釣果がある時だけ再生成」
+    のため残留し、デッドリンク化する（例: 6/8 に kintoki-hitachi.html がパージ
+    されたが 6/7 生成の mahata-hitachi.html のチップが残った）。
+    旧コード時代の日本語スラグリンク（fish_area/aji-佐島港.html 等）も同様に
+    stale ページに残留していたため、生成完了後の最終パスとして毎回掃引する。
+
+    変換は <a ...> → <span ...>（class 等の属性は保持・href のみ除去）で、
+    チップ/カードの見た目を維持しつつ無効リンクだけを除去する。
+    docs/ 全 HTML にネストアンカーは無い前提（不変条件 #11 で担保）。
+    """
+    from urllib.parse import unquote as _unquote
+    _dir_files: dict = {}
+    for _sub in ("fish", "fish_area", "ship"):
+        _d = os.path.join(WEB_DIR, _sub)
+        _dir_files[_sub] = (
+            {f for f in os.listdir(_d) if f.endswith(".html")} if os.path.isdir(_d) else set()
+        )
+
+    # href はダブル/シングルクォート両対応（calendar.html はシングルクォート属性）
+    # 前提: <a> の属性値に ">" を含まない（生成 HTML は属性に ">" を書かない）。
+    # 万一含む場合はマッチせず素通りするが、不変条件 #44 が残存デッドリンクを検出する。
+    _href_re = re.compile(
+        r'<a\b([^>]*?)\shref=(["\'])(?:(?:\.\./)+|/)?(fish|fish_area|ship)/([^"\'/#?]+\.html)\2([^>]*)>(.*?)</a>',
+        re.DOTALL,
+    )
+
+    swept_pages = 0
+    swept_links = 0
+    for root, _dirs, files in os.walk(WEB_DIR):
+        for fn in files:
+            if not fn.endswith(".html"):
+                continue
+            p = os.path.join(root, fn)
+            try:
+                with open(p, encoding="utf-8") as f:
+                    html = f.read()
+            except Exception:
+                continue
+            changed = 0
+
+            def _fix(m):
+                nonlocal changed
+                attrs_pre, _q, kind, fname, attrs_post, inner = m.groups()
+                exists = _unquote(fname) in _dir_files[kind]
+                if exists:
+                    return m.group(0)
+                changed += 1
+                return f"<span{attrs_pre}{attrs_post}>{inner}</span>"
+
+            new_html = _href_re.sub(_fix, html)
+            if changed:
+                with open(p, "w", encoding="utf-8") as f:
+                    f.write(new_html)
+                swept_pages += 1
+                swept_links += changed
+    if swept_links:
+        print(f"[dead-link-sweep] {swept_pages} ページから {swept_links} 件のデッドリンクを unlink")
+    else:
+        print("[dead-link-sweep] デッドリンクなし")
+
+
+# ============================================================
+# 404 ページ生成
+# ============================================================
+def build_404_page():
+    """GitHub Pages 用カスタム 404（docs/404.html）。
+    fish_area の孤児パージや過去リンクからの流入をトップ/一覧へ誘導する。"""
+    html = f"""<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="robots" content="noindex">
+<title>ページが見つかりません | 船釣り予想</title>
+{GA_TAG}
+<link rel="stylesheet" href="/style.css">
+</head><body>
+{_v2_header_nav('')}
+<div class="c" style="text-align:center;padding:48px 16px">
+<h1 style="font-size:48px;margin-bottom:8px">404</h1>
+<h2 style="margin-bottom:16px">ページが見つかりません</h2>
+<p style="color:var(--sub);margin-bottom:24px">お探しのページは移動または削除された可能性があります。<br>
+釣果データの更新に伴い、一部の魚種×エリアページは統廃合されることがあります。</p>
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+<a href="/" style="display:inline-block;padding:12px 24px;background:var(--accent);color:#fff;border-radius:24px;font-weight:700;text-decoration:none">トップページへ</a>
+<a href="/fish/" style="display:inline-block;padding:12px 24px;background:var(--card);border:1px solid var(--border);color:var(--accent);border-radius:24px;font-weight:700;text-decoration:none">魚種一覧</a>
+<a href="/area/" style="display:inline-block;padding:12px 24px;background:var(--card);border:1px solid var(--border);color:var(--accent);border-radius:24px;font-weight:700;text-decoration:none">エリア一覧</a>
+</div>
+</div>
+{_v2_footer()}
+</body></html>"""
+    with open(os.path.join(WEB_DIR, "404.html"), "w", encoding="utf-8") as f:
+        f.write(html)
+    print("404.html: 生成 → docs/")
+
+
+# ============================================================
 # sitemap.xml 自動生成
 # ============================================================
 def build_sitemap(data):
@@ -17813,7 +17964,7 @@ def main():
             _fi_merged.append(_c)
             _fi_seen.add(_k)
     _shared_fish_summary_keys: dict = {}
-    _SKIP_FISH_MAIN = {"不明", "欠航"}
+    _SKIP_FISH_MAIN = {"不明", "欠航", "NULL"}
     for _c in _fi_merged:
         for _f in _c.get("fish", []):
             if _f not in _SKIP_FISH_MAIN and not _f.isdigit():
@@ -17858,6 +18009,13 @@ def main():
         print(f"[WARN] build_monthly_pages/index 失敗（スキップ）: {_e_monthly}")
     build_sitemap(valid_catches)
     build_premium_plan_page()
+    build_404_page()
+    # 全ページ生成完了後の最終パス: 孤児パージ等で消えた fish/fish_area への
+    # デッドリンクを stale ページから unlink（2026-06-10）
+    try:
+        _sweep_dead_internal_links()
+    except Exception as _e_sweep:
+        print(f"[WARN] dead-link-sweep 失敗（スキップ）: {_e_sweep}")
 
     # ── X 投稿用コンテンツ生成（--html-only のときはスキップ）──
     # --html-only パスはこのブロックに到達しないが、念のため argv チェックも付ける

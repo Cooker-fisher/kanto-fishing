@@ -1413,6 +1413,154 @@ def validate_favicon():
         ok(f"[40] favicon ファイル 2 件 + サンプル {checked} ページすべてにタグあり")
 
 
+def validate_no_null_fish_display():
+    """41: 魚種名「NULL」が公開ページに露出していないこと（2026-06-10）
+
+    背景: chowari 系 CSV の tsuri_mono に文字列 "NULL"（正規化失敗の sentinel）が
+    4,477 行あり、area ページの fia-grid / 旬カレンダー / meta description / FAQ に
+    魚種「NULL」として露出した。crawler.py は読み込み時に "NULL"→"不明" 正規化 +
+    各表示系 skip set に "NULL" を追加して対策済み。本チェックは再発を検知する。
+    """
+    print("\n[41] 魚種名 NULL の露出（正規化失敗 sentinel の表示漏れ）")
+    bad = []
+    for sub in ("", "area", "fish", "fish_area", "ship"):
+        d = os.path.join(DOCS, sub) if sub else DOCS
+        if not os.path.isdir(d):
+            continue
+        for fn in sorted(os.listdir(d)):
+            if not fn.endswith(".html"):
+                continue
+            p = os.path.join(d, fn)
+            if not os.path.isfile(p):
+                continue
+            content = open(p, encoding="utf-8", errors="replace").read()
+            # 「>NULL<」（要素テキスト）・「NULL（」（FAQ/description 文中）・
+            # alt="NULL"・assets/fish/NULL/ のいずれかで検知
+            if (">NULL<" in content or "NULL（" in content
+                    or 'alt="NULL"' in content or "assets/fish/NULL/" in content):
+                rel = f"{sub}/{fn}" if sub else fn
+                bad.append(rel)
+    if bad:
+        for b in bad[:10]:
+            fail(f"[41] 魚種名 NULL が露出: {b}")
+        if len(bad) > 10:
+            fail(f"[41] 他 {len(bad)-10} 件")
+    else:
+        ok("[41] 公開ページに NULL 露出なし")
+
+
+def validate_ship_slug_uniqueness():
+    """42: 船宿 romaji_slug の一意性 + sitemap URL 重複なし（2026-06-10）
+
+    背景: 弘漁丸と孝漁丸が両方 romaji_slug="koryo-maru" で docs/ship/koryo-maru.html
+    を相互上書きし、片方の船宿ページが消失 + sitemap に同一 URL が重複していた。
+    """
+    print("\n[42] 船宿 slug 一意性・sitemap URL 重複")
+    import json as _json
+    from collections import Counter as _Counter
+    ships_path = os.path.join(ROOT, "crawl", "ships.json")
+    try:
+        ships = _json.load(open(ships_path, encoding="utf-8"))
+    except Exception as e:
+        fail(f"[42] ships.json 読み込み失敗: {e}")
+        return
+    slugs = _Counter(s.get("romaji_slug") for s in ships if s.get("romaji_slug"))
+    dups = {k: v for k, v in slugs.items() if v > 1}
+    if dups:
+        for k, v in dups.items():
+            names = [s.get("name") for s in ships if s.get("romaji_slug") == k]
+            fail(f"[42] romaji_slug 重複: {k} x{v} {names}（ship ページ相互上書き）")
+    else:
+        ok(f"[42] ships.json romaji_slug {len(slugs)} 件すべて一意")
+    sm_path = os.path.join(DOCS, "sitemap.xml")
+    if os.path.exists(sm_path):
+        locs = re.findall(r"<loc>([^<]+)</loc>", open(sm_path, encoding="utf-8").read())
+        loc_dups = {k: v for k, v in _Counter(locs).items() if v > 1}
+        if loc_dups:
+            for k, v in list(loc_dups.items())[:5]:
+                fail(f"[42] sitemap URL 重複: {k} x{v}")
+        else:
+            ok(f"[42] sitemap.xml {len(locs)} URL 重複なし")
+
+
+def validate_tel_links():
+    """43: tel: リンクの電話番号が単一の有効長であること（2026-06-10）
+
+    背景: ships.json の phone「0463-21-1312 / 070-4486-7173」等の複数番号文字列を
+    区切り文字ごと数字化して連結し、23 船宿ページで無効な tel: リンクになっていた。
+    crawler.py は _first_phone_for_tel() で先頭 1 番号のみを使うよう修正済み。
+    日本の電話番号は最大 11 桁（国際形式 +81 でも 12 桁以内）。
+    """
+    print("\n[43] tel: リンクの電話番号長")
+    bad = []
+    ship_dir = os.path.join(DOCS, "ship")
+    if os.path.isdir(ship_dir):
+        for fn in sorted(os.listdir(ship_dir)):
+            if not fn.endswith(".html"):
+                continue
+            content = open(os.path.join(ship_dir, fn), encoding="utf-8", errors="replace").read()
+            for m in re.finditer(r'href="tel:([^"]+)"', content):
+                digits = re.sub(r"\D", "", m.group(1))
+                # 13 桁以上 = 確実に複数番号の連結（日本の番号は最大 11 桁・+81 国際形式
+                # でも 12 桁）。12 桁以下に収まる短番号同士の連結は理論上見逃すが、
+                # 実データの番号は 10〜11 桁のため 2 番号連結は必ず 13 桁を超える。
+                if len(digits) > 12:
+                    bad.append(f"ship/{fn}: tel:{m.group(1)}")
+                    break
+    if bad:
+        for b in bad[:10]:
+            fail(f"[43] 連結電話番号の tel: リンク: {b}")
+        if len(bad) > 10:
+            fail(f"[43] 他 {len(bad)-10} 件")
+    else:
+        ok("[43] ship ページの tel: リンクすべて有効長")
+
+
+def validate_no_dead_internal_links():
+    """44: fish/ fish_area/ ship/ への内部リンクが実在ファイルを指すこと（2026-06-10）
+
+    背景: build_fish_area_pages の孤児パージが fish_area HTML を削除しても、
+    リンク元の stale ページ（直近 7 日に釣果が無いと再生成されない）が残り
+    デッドリンク化していた（244 ターゲット・550 参照）。crawler.py は生成完了後に
+    _sweep_dead_internal_links() で毎回 unlink する。本チェックは掃引漏れを検知する。
+    """
+    print("\n[44] fish/fish_area/ship への内部デッドリンク")
+    from urllib.parse import unquote as _unquote
+    dir_files = {}
+    for sub in ("fish", "fish_area", "ship"):
+        d = os.path.join(DOCS, sub)
+        dir_files[sub] = (
+            {f for f in os.listdir(d) if f.endswith(".html")} if os.path.isdir(d) else set()
+        )
+    # プレフィックス（../ 連続 or /）は省略可能なので bare 相対リンク（"fish/..."）も
+    # 本パターン1本でカバーする（code-reviewer 指摘で重複パターンを削除 2026-06-10）
+    href_re = re.compile(
+        r'href=(["\'])(?:(?:\.\./)+|/)?(fish|fish_area|ship)/([^"\'/#?]+\.html)\1'
+    )
+    dead = []
+    checked = 0
+    for root, _dirs, files in os.walk(DOCS):
+        for fn in files:
+            if not fn.endswith(".html"):
+                continue
+            p = os.path.join(root, fn)
+            content = open(p, encoding="utf-8", errors="replace").read()
+            checked += 1
+            rel = os.path.relpath(p, DOCS)
+            for m in href_re.finditer(content):
+                _q, kind, fname = m.groups()
+                if _unquote(fname) not in dir_files[kind]:
+                    dead.append(f"{rel} -> {kind}/{fname}")
+    dead = sorted(set(dead))
+    if dead:
+        for d_ in dead[:10]:
+            fail(f"[44] デッドリンク: {d_}")
+        if len(dead) > 10:
+            fail(f"[44] 他 {len(dead)-10} 件")
+    else:
+        ok(f"[44] {checked} ページの fish/fish_area/ship リンクすべて実在")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1463,6 +1611,10 @@ def main():
     validate_implausible_catch_count()
     validate_page_freshness()
     validate_favicon()
+    validate_no_null_fish_display()
+    validate_ship_slug_uniqueness()
+    validate_tel_links()
+    validate_no_dead_internal_links()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
