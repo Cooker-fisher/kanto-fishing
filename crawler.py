@@ -3735,7 +3735,10 @@ def _first_phone_for_tel(phone: str) -> str:
     """ships.json の phone は '0463-21-1312 / 070-4486-7173' のように複数番号入りの
     ことがある。区切り文字ごと数字だけ残すと番号が連結され無効な tel: になるため
     （2026-06-10 バグ: 23船宿で発生）、先頭の有効な1番号のみを tel: 用に返す。"""
-    for chunk in re.split(r"[/／,、・]+", phone or ""):
+    # 区切りは空白も含む（"0463-21-1312 070-4486-7173" のようなスペースのみ区切り対策・
+    # code-reviewer 指摘 2026-06-10）。単一番号内の空白（"03 1234 5678"）は各 chunk が
+    # 9 桁未満になりフォールバックで全体から数字抽出されるため正しく1番号に復元される。
+    for chunk in re.split(r"[\s/／,、・]+", phone or ""):
         digits = re.sub(r"[^\d+\-]", "", chunk)
         if len(re.sub(r"\D", "", digits)) >= 9:  # 日本の電話番号は9〜11桁
             return digits
@@ -16515,6 +16518,8 @@ def _sweep_dead_internal_links():
         )
 
     # href はダブル/シングルクォート両対応（calendar.html はシングルクォート属性）
+    # 前提: <a> の属性値に ">" を含まない（生成 HTML は属性に ">" を書かない）。
+    # 万一含む場合はマッチせず素通りするが、不変条件 #44 が残存デッドリンクを検出する。
     _href_re = re.compile(
         r'<a\b([^>]*?)\shref=(["\'])(?:(?:\.\./)+|/)?(fish|fish_area|ship)/([^"\'/#?]+\.html)\2([^>]*)>(.*?)</a>',
         re.DOTALL,

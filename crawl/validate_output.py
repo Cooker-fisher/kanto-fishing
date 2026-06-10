@@ -1501,6 +1501,9 @@ def validate_tel_links():
             content = open(os.path.join(ship_dir, fn), encoding="utf-8", errors="replace").read()
             for m in re.finditer(r'href="tel:([^"]+)"', content):
                 digits = re.sub(r"\D", "", m.group(1))
+                # 13 桁以上 = 確実に複数番号の連結（日本の番号は最大 11 桁・+81 国際形式
+                # でも 12 桁）。12 桁以下に収まる短番号同士の連結は理論上見逃すが、
+                # 実データの番号は 10〜11 桁のため 2 番号連結は必ず 13 桁を超える。
                 if len(digits) > 12:
                     bad.append(f"ship/{fn}: tel:{m.group(1)}")
                     break
@@ -1529,11 +1532,10 @@ def validate_no_dead_internal_links():
         dir_files[sub] = (
             {f for f in os.listdir(d) if f.endswith(".html")} if os.path.isdir(d) else set()
         )
+    # プレフィックス（../ 連続 or /）は省略可能なので bare 相対リンク（"fish/..."）も
+    # 本パターン1本でカバーする（code-reviewer 指摘で重複パターンを削除 2026-06-10）
     href_re = re.compile(
         r'href=(["\'])(?:(?:\.\./)+|/)?(fish|fish_area|ship)/([^"\'/#?]+\.html)\1'
-    )
-    bare_re = re.compile(
-        r'href=(["\'])(fish|fish_area|ship)/([^"\'/#?]+\.html)\1'
     )
     dead = []
     checked = 0
@@ -1545,7 +1547,7 @@ def validate_no_dead_internal_links():
             content = open(p, encoding="utf-8", errors="replace").read()
             checked += 1
             rel = os.path.relpath(p, DOCS)
-            for m in list(href_re.finditer(content)) + list(bare_re.finditer(content)):
+            for m in href_re.finditer(content):
                 _q, kind, fname = m.groups()
                 if _unquote(fname) not in dir_files[kind]:
                     dead.append(f"{rel} -> {kind}/{fname}")
