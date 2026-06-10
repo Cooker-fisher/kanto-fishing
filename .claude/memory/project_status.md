@@ -1,6 +1,34 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/06/07
-最新コミット: T42 鮮度パイプライン強化（全ページ鮮度バナー・鮮度ゲート#39・出船判定見出し・ヒラメ細部）
+最終更新: 2026/06/10
+最新コミット: PR#59 サイトバグ一斉修正（favicon・NULL魚種・slug衝突・tel連結・デッドリンク掃引・404・不変条件#40〜44）マージ済み
+
+---
+
+## ⚠️ 現在の制約・環境（2026/06/10 確定・次セッション必読）
+
+1. **ローカルマシン使用不可（〜2026-06-24 頃まで約2週間）**
+   - weather_cache.sqlite（400MB・gitignore・ローカルのみ）を要する作業は不可:
+     C層フル再実行（run_full_deepdive）・rebuild_weather_cache・koueimaru ③気象推定
+   - この期間はクラウド/Actions でできる作業を優先: コード改善・E層・SEO・X運用・設計・Plan作成
+2. **X は投稿可能になった**（アカウントロック解除済み）。ただし認知はまだ低い。
+   x_post/ の日次生成物を実際に配信する運用が次の一手。
+3. **マネタイズ戦略修正（ユーザー確定 2026/06/10）**: D層予測は有料ティザーではなく
+   **当面無料公開**で集客に使う。的中実績が蓄積し月間数千〜1万UU 到達後に一部有料化を再検討。
+   詳細: 90_決定ログ.md「2026-06-10 マネタイズ戦略の修正」
+
+---
+
+## ✅ 直近完了（2026/06/10・main agent）— PR#59 サイトバグ一斉修正
+
+docs/ 全1,541ページの全数監査 → 修正 → 第三者レビュー2巡 → マージ済み。
+- favicon 導入（既存画像流用: フグemoji=favicon.ico / アオリイカ水彩=apple-touch-icon）
+- 魚種名「NULL」露出修正（CSV読込時 NULL→不明 正規化 + 表示系skip set 10箇所）
+- 船宿slug衝突（弘漁丸→koryo-maru-hitachi）・tel連結（_first_phone_for_tel）
+- デッドリンク 244ターゲット掃引 + `_sweep_dead_internal_links()` で毎回自己修復
+- docs/404.html・不変条件 #40〜44 追加（validate_output.py 44条件 errors=0）
+- 残課題: chowari CSV tsuri_mono="NULL" 4,054行の再正規化（tsuri_mono_map拡充・★★★）、
+  画像アセット未作成 約24魚種（onerror非表示のため実害小）
+- 要確認: 次回 Actions 実行（16:30 JST）後の validate_output 結果（新コード初回本番実行）
 
 ---
 
