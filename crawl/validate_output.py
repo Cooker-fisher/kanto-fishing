@@ -1370,6 +1370,49 @@ def validate_page_freshness():
         warn("[39] ビルド日付バナー未検出（旧 docs・次回再生成で有効化）")
 
 
+def validate_favicon():
+    """40: favicon 配信の検証（2026-06-10）
+
+    - docs/favicon.ico と docs/apple-touch-icon.png が存在すること
+      （既存画像流用: フグ emoji → favicon.ico / アオリイカ illustration → apple-touch-icon）。
+    - 主要ページ（index / calendar / fish / area / fish_area / ship / forecast / pages）に
+      rel="icon" リンクタグが存在すること（crawler.py の全 head テンプレート 15 箇所に
+      挿入済み。テンプレート追加・改修時の favicon 落ちを検知）。
+    """
+    print("\n[40] favicon（ブラウザタブ・ブックマーク・Google SERP アイコン）")
+    for fn in ("favicon.ico", "apple-touch-icon.png"):
+        p = os.path.join(DOCS, fn)
+        if not os.path.exists(p) or os.path.getsize(p) == 0:
+            fail(f"[40] docs/{fn} が存在しない（または 0 byte）")
+            return
+    samples = [
+        "index.html", "calendar.html",
+        os.path.join("fish", "index.html"), os.path.join("area", "index.html"),
+        os.path.join("forecast", "index.html"), os.path.join("pages", "faq.html"),
+    ]
+    for sub in ("fish", "area", "fish_area", "ship"):
+        d = os.path.join(DOCS, sub)
+        if os.path.isdir(d):
+            htmls = sorted(f for f in os.listdir(d) if f.endswith(".html") and f != "index.html")
+            if htmls:
+                samples.append(os.path.join(sub, htmls[0]))
+    missing = []
+    checked = 0
+    for rel in samples:
+        p = os.path.join(DOCS, rel)
+        if not os.path.exists(p):
+            continue
+        checked += 1
+        content = open(p, encoding="utf-8", errors="replace").read()
+        if 'rel="icon"' not in content.split("</head>", 1)[0]:
+            missing.append(rel)
+    if missing:
+        for m in missing:
+            fail(f"[40] rel=\"icon\" タグ欠落: {m}")
+    else:
+        ok(f"[40] favicon ファイル 2 件 + サンプル {checked} ページすべてにタグあり")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1419,6 +1462,7 @@ def main():
     validate_fish_guide_no_cross_contamination()
     validate_implausible_catch_count()
     validate_page_freshness()
+    validate_favicon()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

@@ -2246,6 +2246,7 @@ def _forecast_page_head(title, depth_prefix="../"):
     return f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex, follow">
 <title>{title} | 船釣り予想</title>
 {GA_TAG}
@@ -7726,6 +7727,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <html lang="ja">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>関東船釣り釣果情報 | 今日何が釣れてる？ | 船釣り予想</title>
   <meta name="description" content="関東エリア（神奈川・東京・千葉・茨城）の船宿釣果を毎日更新。今日釣れている魚・エリア別速報・船宿ランキング。">
   <link rel="canonical" href="{SITE_URL}/">
@@ -8451,6 +8453,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>{fish_title_str}</title>
   <meta name="description" content="{fish_desc}">
   <link rel="canonical" href="{fish_url}">
@@ -8713,6 +8716,7 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
     fish_index_html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>魚種別釣果一覧 | 船釣り予想</title>
   <meta name="description" content="関東の船釣り魚種別釣果一覧。アジ・マダイ・ヒラメ・タチウオなど今週釣れている魚種をまとめて確認できます。">
   <link rel="canonical" href="{SITE_URL}/fish/">
@@ -9021,6 +9025,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             html_min = f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>{title_min}</title>
 <meta name="description" content="{desc_meta_min}">
 <link rel="canonical" href="{SITE_URL}/area/{area_slug(area)}.html">
@@ -9445,6 +9450,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>{area_title_str}</title>
   <meta name="description" content="{area_desc}">
   <link rel="canonical" href="{area_url}">
@@ -9791,6 +9797,7 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
     area_index_html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>エリア別釣果一覧 | 船釣り予想</title>
   <meta name="description" content="関東の船釣りエリア別釣果一覧。茨城・千葉・東京・神奈川エリアの今週の釣果件数と釣れている魚種を確認できます。">
   <link rel="canonical" href="{SITE_URL}/area/">
@@ -10659,6 +10666,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>{fa_title_str}</title>
   <meta name="description" content="{desc}">
   {fa_noindex_tag}
@@ -10793,6 +10801,7 @@ def build_calendar_page(crawled_at=""):
     return f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>関東船釣り 旬カレンダー | 月別釣りものガイド | 船釣り予想</title>
   <meta name="description" content="関東エリアの船釣り旬カレンダー。アジ・マダイ・タチウオ・ヒラメなど50魚種以上の月別シーズン表。数釣り・型釣りのピーク月が一目でわかる。">
   <link rel="canonical" href="{SITE_URL}/calendar.html">
@@ -10900,6 +10909,7 @@ a{color:var(--prem);text-decoration:none}a:hover{text-decoration:underline}
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex, follow">
 <title>料金プラン — 船釣り予想</title>
 <meta name="description" content="船釣り予想の料金プラン。月額500円・スポット100円。機能比較表あり。">
@@ -14970,6 +14980,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 {ship_noindex_tag}
 <title>{title}</title>
 <meta name="description" content="{desc}">
@@ -15303,6 +15314,7 @@ def build_point_pages(hist_rows, crawled_at=""):
         html = f"""<!doctype html><html lang="ja"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>{point}の釣果情報・船宿一覧 | 船釣り予想</title>
 <meta name="description" content="関東の釣り場「{point}」の過去1年の釣果データ。{n_records}件・{n_ships}船宿・主要魚種{top_fish_str}。">
 <meta name="robots" content="noindex, follow">
@@ -16051,6 +16063,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{canonical}">
@@ -16379,6 +16392,7 @@ def build_monthly_index(crawled_at=""):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{canonical}">
@@ -17364,6 +17378,7 @@ def _page_head(title, desc="", canonical=""):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="stylesheet" href="/style.css">
