@@ -806,8 +806,8 @@ def build(ctx, commentary, output_path, png_url=None):
         post_drafts_html = (
             '<details class="x-drafts"><summary>📋 X投稿文（コピー用・発見型）</summary>'
             + "".join(_draft_items)
-            + '<p class="xd-note">通常はリンクなし版を使用（Xはリンク付き投稿のリーチを抑制）。'
-            '週1〜2回リンクあり版で誘導。</p></details>'
+            + '<p class="xd-note">翌朝8時投稿想定の文面（「昨日」基準）。通常はリンクなし版を使用'
+            '（Xはリンク付き投稿のリーチを抑制）。週1〜2回リンクあり版で誘導。</p></details>'
             '<script>document.querySelectorAll(".xd-copy").forEach(function(b){'
             'b.addEventListener("click",function(){'
             'var t=document.getElementById(b.dataset.target);'
