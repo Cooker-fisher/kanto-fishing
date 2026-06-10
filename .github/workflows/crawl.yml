@@ -50,6 +50,14 @@ jobs:
       - name: direct-crawl shojiro (庄治郎丸 point_raw 補完)
         continue-on-error: true
         run: python3 direct-crawl/shojiro_crawler.py
+      - name: D層 日次予測 (predict_daily)
+        # 蒸留パラメータ DB（predict_params.sqlite・build_predict_params.py のローカル
+        # エクスポート）から明日〜7日先 + 2/3/4週後の全コンボ予測を生成し、
+        # forecast_daily.json + predict_log.jsonl（H=1/7・60日ローリング）を更新する。
+        # 蒸留 DB 未コミットの間は mode=unavailable を書いて正常終了（CI を壊さない）。
+        # 失敗してもクロール成果の push は止めない。
+        continue-on-error: true
+        run: python3 analysis/run.py predict_daily.py
       # ⚠️ --export-csv は意図的に削除（2026-05-01）。
       # 削除理由: --export-csv は catches_raw.json から CSV を全再生成するが、
       # crawler.py main() は catches_raw.json を更新しないため、save_daily_csv()

@@ -22,6 +22,20 @@ sys.stdout.reconfigure(encoding="utf-8")
 import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _paths import ROOT_DIR, RESULTS_DIR, DATA_DIR, NORMALIZE_DIR, OCEAN_DIR
 DB_PATH  = os.path.join(RESULTS_DIR, "analysis.sqlite")
+# D層クラウド実行（2026-06-10）: analysis.sqlite（ローカルのみ・gitignore）が無い環境では
+# build_predict_params.py が書き出した蒸留 DB（コミット対象）に自動フォールバックする。
+# 蒸留 DB はコンボレベルモデルのみ収録。ポイント/水色/水深/便別チェーンのテーブルは
+# 欠落するが、各補正関数は try/except で安全にスキップする（確認済み）。
+PARAMS_DB_PATH = os.path.join(RESULTS_DIR, "predict_params.sqlite")
+if not os.path.exists(DB_PATH) and os.path.exists(PARAMS_DB_PATH):
+    DB_PATH = PARAMS_DB_PATH
+    try:
+        _c = sqlite3.connect(PARAMS_DB_PATH)
+        _meta = dict(_c.execute("SELECT key, value FROM export_meta").fetchall())
+        _c.close()
+        print(f"[predict_count] 蒸留パラメータ DB を使用: exported_at={_meta.get('exported_at')} mode={_meta.get('mode')}")
+    except Exception:
+        print("[predict_count] 蒸留パラメータ DB を使用（export_meta 読込不可）")
 DB_WX    = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
 DB_TIDE  = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
 
