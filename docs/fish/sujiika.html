@@ -9,7 +9,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":2,"name":"魚種一覧","item":"https://funatsuri-yoso.com/fish/"},{"@type":"ListItem","position":3,"name":"スジイカの釣果情報","item":"https://funatsuri-yoso.com/fish/sujiika.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"スジイカの旬はいつですか？","acceptedAnswer":{"@type":"Answer","text":"関東スジイカ船釣りの釣果は7〜8月に実績が集中しています。9〜10月も狙える時期で、11〜5月は釣果が少なくなります。"}},
 {"@type":"Question","name":"関東でスジイカの船釣りができる主なエリアはどこですか？","acceptedAnswer":{"@type":"Answer","text":"関東スジイカ船釣りの主なエリアは鹿島港（92便）、日立（6便）、那珂湊港（4便）です。"}},
-{"@type":"Question","name":"スジイカの一日の釣果はどのくらいですか？","acceptedAnswer":{"@type":"Answer","text":"関東スジイカ船釣りの一日の釣果は85〜210匹が標準的なレンジです。最高実績は702匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"}},
+{"@type":"Question","name":"スジイカの一日の釣果はどのくらいですか？","acceptedAnswer":{"@type":"Answer","text":"関東スジイカ船釣りの一日の釣果は85〜210匹が標準的なレンジです。中央値は140匹・上位10%の好日は295匹以上です。最高実績は702匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"}},
 {"@type":"Question","name":"初心者でもスジイカ釣りは楽しめますか？","acceptedAnswer":{"@type":"Answer","text":"はい。関東では5船宿が出船実績があります。多くの船宿でレンタルタックルや仕掛けの購入が可能で、初心者でも安心して楽しめます。"}}]}</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>
@@ -79,7 +79,17 @@
 .related-sim{margin:20px 0;padding:14px;background:#f5f5f5;border-left:4px solid #c84427;border-radius:4px;font-size:14px}
 .related-sim a{color:#0b1d33;font-weight:700;text-decoration:none}
 .related-sim a:hover{text-decoration:underline}
-.faq-common-link a{color:var(--cta);text-decoration:underline}</style>
+.faq-common-link a{color:var(--cta);text-decoration:underline}
+.fish-content-note{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fish-content-note h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fcn-emoji{width:16px;height:16px;object-fit:contain}
+.fg-emoji{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}
+.fish-content-text{font-size:13px;line-height:1.9;color:var(--text)}
+.fish-content-text a{color:var(--cta)}
+.fish-content-lead{margin:8px 0 4px}
+.tk-variant-label{font-size:12px;font-weight:700;color:var(--accent);margin:10px 0 4px}
+.tk-variant:first-child .tk-variant-label{margin-top:0}
+.faq-more{font-size:12px;color:var(--cta);white-space:nowrap}</style>
 </head>
 <body>
 <div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
@@ -87,7 +97,7 @@
 </div>
 <script>
 (function(){
-  var b="2026-06-11";var bt=1781179442607;
+  var b="2026-06-11";var bt=1781187658568;
   if((Date.now()-bt)>129600000){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
 })();
 </script>
@@ -162,15 +172,16 @@
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
 </div>
-  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide">
-  <h3>スジイカの船釣り（関東）基本情報</h3>
-  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">東京湾・相模湾が漁場。秋～冬（9〜2月）が旬。小型イカで通年狙えるが冬が旬。ブランコ仕掛けで中層を誘う。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tackle-grid">
+  
+  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide" id="fish-guide">
+  <h3><img src="../assets/fish/sujiika/sujiika_emoji.webp" alt="" class="fg-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">スジイカの船釣り（関東）基本情報</h3>
+  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">東京湾・相模湾が漁場。秋～冬（9〜2月）が旬。小型イカで通年狙えるが冬が旬。ブランコ仕掛けで中層を誘う。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tk-variant"><div class="tackle-grid">
           <div class="tk"><div class="tk-lbl">竿</div><div class="tk-val">イカ竿 2.0〜2.3m、L</div></div>
           <div class="tk"><div class="tk-lbl">リール</div><div class="tk-val">スピニング 1500〜2000番</div></div>
           <div class="tk"><div class="tk-lbl">ライン</div><div class="tk-val">PE 0.5〜0.6号</div></div>
           <div class="tk"><div class="tk-lbl">仕掛け</div><div class="tk-val">ブランコ仕掛け（市販品）＋集魚板</div></div>
           <div class="tk" style="grid-column:span 2"><div class="tk-lbl">エサ</div><div class="tk-val">オキアミ（サシ）</div></div>
-        </div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>200〜350g が中心</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">ヤリイカ・マルイカ</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">小型イカで初心者向け。冬の旬は脂が乗り食べると美味しい。</span></div>
+        </div></div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>200〜350g が中心</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">ヤリイカ・マルイカ</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">小型イカで初心者向け。冬の旬は脂が乗り食べると美味しい。</span></div>
 </div>
   
   <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>
@@ -182,7 +193,7 @@
 <h3 class="faq-block-ttl">スジイカ釣果データから分かること</h3>
   <details><summary>スジイカの旬はいつですか？</summary><p class="faq-ans">関東スジイカ船釣りの釣果は7〜8月に実績が集中しています。9〜10月も狙える時期で、11〜5月は釣果が少なくなります。</p></details>
   <details><summary>関東でスジイカの船釣りができる主なエリアはどこですか？</summary><p class="faq-ans">関東スジイカ船釣りの主なエリアは鹿島港（92便）、日立（6便）、那珂湊港（4便）です。</p></details>
-  <details><summary>スジイカの一日の釣果はどのくらいですか？</summary><p class="faq-ans">関東スジイカ船釣りの一日の釣果は85〜210匹が標準的なレンジです。最高実績は702匹です（いずれも個人釣果ベース・船全体の合計数は除く）。</p></details>
+  <details><summary>スジイカの一日の釣果はどのくらいですか？</summary><p class="faq-ans">関東スジイカ船釣りの一日の釣果は85〜210匹が標準的なレンジです。中央値は140匹・上位10%の好日は295匹以上です。最高実績は702匹です（いずれも個人釣果ベース・船全体の合計数は除く）。</p></details>
   <details><summary>初心者でもスジイカ釣りは楽しめますか？</summary><p class="faq-ans">はい。関東では5船宿が出船実績があります。多くの船宿でレンタルタックルや仕掛けの購入が可能で、初心者でも安心して楽しめます。</p></details>
 </div>
   <h2 class="st teaser-title">スジイカが釣れる条件 <span class="tag coming">まもなく公開</span></h2><div class="teaser"><div class="teaser-head"><span class="teaser-badge">開発中</span><span class="teaser-title-in">気象相関分析 × 日別予測</span></div><div class="teaser-desc"><strong>約10万件</strong>の釣果データより分析した「<strong>スジイカが釣れる条件</strong>」と<strong>明日〜1週間後の予測</strong>を公開予定です。</div><div style="position:relative"><div class="teaser-dummy"><div class="td-fish">釣れる条件の傾向</div><div class="td-range">水温○ / 大潮○ / 波穏○</div><div class="td-reason">気象スコアより推定</div></div><div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>気象条件スコア</li><li>来週の釣れる日予測</li><li>船宿別おすすめ日</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div></div></div>

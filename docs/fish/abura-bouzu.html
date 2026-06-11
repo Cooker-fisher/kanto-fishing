@@ -79,7 +79,17 @@
 .related-sim{margin:20px 0;padding:14px;background:#f5f5f5;border-left:4px solid #c84427;border-radius:4px;font-size:14px}
 .related-sim a{color:#0b1d33;font-weight:700;text-decoration:none}
 .related-sim a:hover{text-decoration:underline}
-.faq-common-link a{color:var(--cta);text-decoration:underline}</style>
+.faq-common-link a{color:var(--cta);text-decoration:underline}
+.fish-content-note{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fish-content-note h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fcn-emoji{width:16px;height:16px;object-fit:contain}
+.fg-emoji{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}
+.fish-content-text{font-size:13px;line-height:1.9;color:var(--text)}
+.fish-content-text a{color:var(--cta)}
+.fish-content-lead{margin:8px 0 4px}
+.tk-variant-label{font-size:12px;font-weight:700;color:var(--accent);margin:10px 0 4px}
+.tk-variant:first-child .tk-variant-label{margin-top:0}
+.faq-more{font-size:12px;color:var(--cta);white-space:nowrap}</style>
 </head>
 <body>
 <div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
@@ -87,7 +97,7 @@
 </div>
 <script>
 (function(){
-  var b="2026-06-11";var bt=1781179443881;
+  var b="2026-06-11";var bt=1781187661080;
   if((Date.now()-bt)>129600000){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
 })();
 </script>
@@ -162,15 +172,16 @@
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
 </div>
-  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide">
-  <h3>アブラボウズの船釣り（関東）基本情報</h3>
-  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">外房が主漁場。秋～冬（9〜2月）が旬。超深場（400〜600m）の底に棲む珍魚。胴突き仕掛けで底を探る。大型電動が必須で、釣獲機会は極めて少ない。エサはイカ・ホラアナゴ・サバ切り身等の切り身が定番（コマセなし）。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tackle-grid">
+  
+  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide" id="fish-guide">
+  <h3><img src="../assets/fish/aburabozu/aburabozu_emoji.webp" alt="" class="fg-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">アブラボウズの船釣り（関東）基本情報</h3>
+  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">外房が主漁場。秋～冬（9〜2月）が旬。超深場（400〜600m）の底に棲む珍魚。胴突き仕掛けで底を探る。大型電動が必須で、釣獲機会は極めて少ない。エサはイカ・ホラアナゴ・サバ切り身等の切り身が定番（コマセなし）。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tk-variant"><div class="tackle-grid">
           <div class="tk"><div class="tk-lbl">竿</div><div class="tk-val">超深場専用 2.8〜3.0m、7:3</div></div>
           <div class="tk"><div class="tk-lbl">リール</div><div class="tk-val">超大型電動（2000W以上）</div></div>
           <div class="tk"><div class="tk-lbl">ライン</div><div class="tk-val">PE 5〜6号</div></div>
           <div class="tk"><div class="tk-lbl">仕掛け</div><div class="tk-val">大型オモリ 300〜500号＋フロロハリス 8〜10号 20m 2〜4本針（コマセビシは使わない）</div></div>
           <div class="tk" style="grid-column:span 2"><div class="tk-lbl">エサ</div><div class="tk-val">イカ短冊・サバ切り身・ホラアナゴ</div></div>
-        </div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>5〜20kg が中心、30kg超も記録あり</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">キンメダイ・メヌケ</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">超深場の珍魚で釣獲機会は極めて少ない。脂たっぷりで食べると最高に美味しい。上級者専門。</span></div>
+        </div></div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>5〜20kg が中心、30kg超も記録あり</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">キンメダイ・メヌケ</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">超深場の珍魚で釣獲機会は極めて少ない。脂たっぷりで食べると最高に美味しい。上級者専門。</span></div>
 </div>
   
   <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>

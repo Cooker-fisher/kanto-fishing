@@ -9,7 +9,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"トップ","item":"https://funatsuri-yoso.com/"},{"@type":"ListItem","position":2,"name":"魚種一覧","item":"https://funatsuri-yoso.com/fish/"},{"@type":"ListItem","position":3,"name":"カレイの釣果情報","item":"https://funatsuri-yoso.com/fish/karei.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"カレイの旬はいつですか？","acceptedAnswer":{"@type":"Answer","text":"関東カレイ船釣りの釣果は1〜2月・4月に実績が集中しています。3月・5月も狙える時期です。"}},
 {"@type":"Question","name":"関東でカレイの船釣りができる主なエリアはどこですか？","acceptedAnswer":{"@type":"Answer","text":"関東カレイ船釣りの主なエリアは江戸川放水路･原木中山（78便）、金沢八景（58便）、鹿島（37便）です。"}},
-{"@type":"Question","name":"カレイの一日の釣果はどのくらいですか？","acceptedAnswer":{"@type":"Answer","text":"関東カレイ船釣りの一日の釣果は2〜5匹が標準的なレンジです。最高実績は15匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"}},
+{"@type":"Question","name":"カレイの一日の釣果はどのくらいですか？","acceptedAnswer":{"@type":"Answer","text":"関東カレイ船釣りの一日の釣果は2〜5匹が標準的なレンジです。中央値は3匹・上位10%の好日は8匹以上です。最高実績は15匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"}},
 {"@type":"Question","name":"初心者でもカレイ釣りは楽しめますか？","acceptedAnswer":{"@type":"Answer","text":"難易度は入門〜中級の釣りです。投げ釣り・船釣り両方で楽しめる底物。丁寧な底取りと当たりを待つ釣りが特徴です。関東では36船宿が出船実績あり。多くの船宿でレンタルタックルや仕掛けの購入が可能です。"}}]}</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>
@@ -79,7 +79,17 @@
 .related-sim{margin:20px 0;padding:14px;background:#f5f5f5;border-left:4px solid #c84427;border-radius:4px;font-size:14px}
 .related-sim a{color:#0b1d33;font-weight:700;text-decoration:none}
 .related-sim a:hover{text-decoration:underline}
-.faq-common-link a{color:var(--cta);text-decoration:underline}</style>
+.faq-common-link a{color:var(--cta);text-decoration:underline}
+.fish-content-note{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fish-content-note h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fcn-emoji{width:16px;height:16px;object-fit:contain}
+.fg-emoji{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}
+.fish-content-text{font-size:13px;line-height:1.9;color:var(--text)}
+.fish-content-text a{color:var(--cta)}
+.fish-content-lead{margin:8px 0 4px}
+.tk-variant-label{font-size:12px;font-weight:700;color:var(--accent);margin:10px 0 4px}
+.tk-variant:first-child .tk-variant-label{margin-top:0}
+.faq-more{font-size:12px;color:var(--cta);white-space:nowrap}</style>
 </head>
 <body>
 <div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
@@ -87,7 +97,7 @@
 </div>
 <script>
 (function(){
-  var b="2026-06-11";var bt=1781179439752;
+  var b="2026-06-11";var bt=1781187654171;
   if((Date.now()-bt)>129600000){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
 })();
 </script>
@@ -110,7 +120,7 @@
 </nav>
 <div class="fish-hero">
   <h2><img src="../assets/fish/karei/karei_emoji.webp" alt="カレイ" class="fh-emoji" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display='none'">カレイ</h2>
-  <div class="fh-r">釣果1便</div>
+  <div class="fh-r">0匹</div>
   
   <div class="fh-m">今週 1便・1船宿</div>
 </div>
@@ -123,9 +133,9 @@
   <h2 class="st">今週の概況 <span class="tag free">無料</span></h2>
   <div class="comment-wrap">
     <img src="../assets/fish/karei/karei_illustration.png" alt="カレイ" class="comment-img" width="160" height="160" loading="lazy" onerror="this.style.display='none'">
-    <div class="comment"><span class="comment-fish-name">カレイ（鰈）</span>オフ入り前のラスト好機。
+    <div class="comment"><span class="comment-fish-name">カレイ（鰈）</span>端境期。今のうちに釣っておきたい。
 カレイの釣果報告は今週1便と少なめです。本格的なシーズンに向けてデータを注視中です。
-そろそろ終わりに近い。今週が最後のチャンスかもしれない。</div>
+端境期。今のうちに釣っておくのが賢明。</div>
   </div>
   <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
 <div class="chart7">
@@ -134,7 +144,7 @@
   <div class="chart-labels"><span>6/1</span><span>6/2</span><span>6/3</span><span>6/4</span><span>6/5</span><span class="weekend">6/6</span><span class="today weekend">6/7</span></div>
   
 </div>
-  <h2 class="st">6/7(日)の釣果 <span class="tag free">無料</span></h2><div class="area-cmp"><h3>エリア別の6/7(日)の釣果</h3><div class="ar"><a class="ar-name" href="../area/hayakawa.html">早川漁港</a><span class="ar-range">—</span><span class="ar-size"></span><span class="ar-trips">1便</span><span class="ar-ships"><a href="../ship/mitsuyoshi-maru.html">光義丸</a></span><span class="ar-fa"><a href="../fish_area/karei-hayakawa.html">早川漁港のカレイ釣果</a></span></div></div><div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name"><a href="../ship/mitsuyoshi-maru.html">光義丸</a></span><span class="sr-range">1件</span><span class="sr-pt">早川漁港</span></div></div>
+  <h2 class="st">6/7(日)の釣果 <span class="tag free">無料</span></h2><div class="area-cmp"><h3>エリア別の6/7(日)の釣果</h3><div class="ar"><a class="ar-name" href="../area/hayakawa.html">早川漁港</a><span class="ar-range">0匹</span><span class="ar-size"></span><span class="ar-trips">1便</span><span class="ar-ships"><a href="../ship/mitsuyoshi-maru.html">光義丸</a></span><span class="ar-fa"><a href="../fish_area/karei-hayakawa.html">早川漁港のカレイ釣果</a></span></div></div><div class="ship-rank"><h3>船宿ランキング（今週）</h3><div class="sr"><span class="sr-rank">1</span><span class="sr-name"><a href="../ship/mitsuyoshi-maru.html">光義丸</a></span><span class="sr-range">0匹</span><span class="sr-pt">早川漁港</span></div></div>
   <!-- 広告① -->
   <ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
@@ -162,15 +172,16 @@
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
 </div>
-  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide">
-  <h3>カレイの船釣り（関東）基本情報</h3>
-  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">東京湾・相模湾・内房が主漁場。通年釣れるが秋～冬が旬。砂泥地の底を狙う。初心者向けの数釣りで、食べても美味しく食用価値が高い。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tackle-grid">
+  
+  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide" id="fish-guide">
+  <h3><img src="../assets/fish/karei/karei_emoji.webp" alt="" class="fg-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">カレイの船釣り（関東）基本情報</h3>
+  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">東京湾・相模湾・内房が主漁場。通年釣れるが秋～冬が旬。砂泥地の底を狙う。初心者向けの数釣りで、食べても美味しく食用価値が高い。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tk-variant"><div class="tackle-grid">
           <div class="tk"><div class="tk-lbl">竿</div><div class="tk-val">根魚竿 2.1〜2.4m、ML</div></div>
           <div class="tk"><div class="tk-lbl">リール</div><div class="tk-val">スピニング 2000〜2500番</div></div>
           <div class="tk"><div class="tk-lbl">ライン</div><div class="tk-val">PE 1〜1.5号</div></div>
           <div class="tk"><div class="tk-lbl">仕掛け</div><div class="tk-val">胴突き仕掛け（市販 2〜3本針）＋オモリ 20〜40号</div></div>
           <div class="tk" style="grid-column:span 2"><div class="tk-lbl">エサ</div><div class="tk-val">ゴカイ・アオイソメ（活き餌優先）</div></div>
-        </div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>20〜35cm が標準、40cm超は上物</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">シロギス・ハゼ・イシモチ</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">初心者向けの数釣り。唐揚げで最高に美味しく、食用価値が高い。</span></div>
+        </div></div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>20〜35cm が標準、40cm超は上物</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">シロギス・ハゼ・イシモチ</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">初心者向けの数釣り。唐揚げで最高に美味しく、食用価値が高い。</span></div>
 </div>
   
   <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>
@@ -182,7 +193,7 @@
 <h3 class="faq-block-ttl">カレイ釣果データから分かること</h3>
   <details><summary>カレイの旬はいつですか？</summary><p class="faq-ans">関東カレイ船釣りの釣果は1〜2月・4月に実績が集中しています。3月・5月も狙える時期です。</p></details>
   <details><summary>関東でカレイの船釣りができる主なエリアはどこですか？</summary><p class="faq-ans">関東カレイ船釣りの主なエリアは江戸川放水路･原木中山（78便）、金沢八景（58便）、鹿島（37便）です。</p></details>
-  <details><summary>カレイの一日の釣果はどのくらいですか？</summary><p class="faq-ans">関東カレイ船釣りの一日の釣果は2〜5匹が標準的なレンジです。最高実績は15匹です（いずれも個人釣果ベース・船全体の合計数は除く）。</p></details>
+  <details><summary>カレイの一日の釣果はどのくらいですか？</summary><p class="faq-ans">関東カレイ船釣りの一日の釣果は2〜5匹が標準的なレンジです。中央値は3匹・上位10%の好日は8匹以上です。最高実績は15匹です（いずれも個人釣果ベース・船全体の合計数は除く）。</p></details>
   <details><summary>初心者でもカレイ釣りは楽しめますか？</summary><p class="faq-ans">難易度は入門〜中級の釣りです。投げ釣り・船釣り両方で楽しめる底物。丁寧な底取りと当たりを待つ釣りが特徴です。関東では36船宿が出船実績あり。多くの船宿でレンタルタックルや仕掛けの購入が可能です。</p></details>
 </div>
   <h2 class="st teaser-title">カレイが釣れる条件 <span class="tag coming">まもなく公開</span></h2><div class="teaser"><div class="teaser-head"><span class="teaser-badge">開発中</span><span class="teaser-title-in">気象相関分析 × 日別予測</span></div><div class="teaser-desc"><strong>約10万件</strong>の釣果データより分析した「<strong>カレイが釣れる条件</strong>」と<strong>明日〜1週間後の予測</strong>を公開予定です。</div><div style="position:relative"><div class="teaser-dummy"><div class="td-fish">釣れる条件の傾向</div><div class="td-range">水温○ / 大潮○ / 波穏○</div><div class="td-reason">気象スコアより推定</div></div><div class="teaser-overlay"><div class="coming-soon-panel"><div class="cs-title">準備中</div><ul class="cs-features"><li>気象条件スコア</li><li>来週の釣れる日予測</li><li>船宿別おすすめ日</li></ul><div class="cs-price">月額<em>500円</em> / 1回<em>100円</em></div></div></div></div></div>

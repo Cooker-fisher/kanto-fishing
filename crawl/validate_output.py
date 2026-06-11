@@ -1561,6 +1561,68 @@ def validate_no_dead_internal_links():
         ok(f"[44] {checked} ページの fish/fish_area/ship リンクすべて実在")
 
 
+def validate_fish_content_sections():
+    """45: fish_content.json 収載魚種の固定文セクションが描画されていること（2026-06-11）
+
+    背景: 魚種ページ固定文プロジェクト。normalize/fish_content.json（固定文・月1見直し）+
+    fish_content_stats.json（数値スナップショット・月1更新）から crawler.py が
+    釣り方/タックル補足/シーズン/エリア/食味/初心者向けのプローズを差し込む。
+    検証:
+      - 収載魚種のページに class="fish-content-text" ブロックが 4 つ以上
+      - 固定文の合計テキストが 800 字以上（AdSense 薄判定対策の本旨）
+      - 未解決プレースホルダ（{xxx}）が本文に残っていない
+    """
+    print("\n[45] fish_content.json 収載魚種の固定文セクション")
+    content_path = os.path.join(ROOT, "normalize", "fish_content.json")
+    if not os.path.exists(content_path):
+        ok("[45] fish_content.json なし（固定文未導入）→ skip")
+        return
+    try:
+        with open(content_path, encoding="utf-8") as f:
+            content = json.load(f)
+    except Exception as e:
+        fail(f"[45] fish_content.json 読み込み失敗: {e}")
+        return
+    fishes = [k for k in content.keys() if not k.startswith("_")]
+    if not fishes:
+        ok("[45] fish_content.json 収載魚種 0 件 → skip")
+        return
+    fish_dir = os.path.join(DOCS, "fish")
+    pages = {}
+    for fn in os.listdir(fish_dir):
+        if fn.endswith(".html") and fn != "index.html":
+            pages[fn] = open(os.path.join(fish_dir, fn), encoding="utf-8").read()
+    ph_re = re.compile(r"\{[a-z][a-z0-9_]*\}")
+    text_re = re.compile(
+        r'class="[^"]*fish-content-text[^"]*"[^>]*>(.*?)</(?:span|p)>', re.S
+    )
+    for fish in fishes:
+        # ページ特定: h1 に魚種名を含むファイル
+        page = None
+        marker = f'<h1 class="page-h1">{fish}の船釣り釣果情報'
+        for fn, c in pages.items():
+            if marker in c:
+                page = fn
+                break
+        if page is None:
+            fail(f"[45] {fish}: 対応する fish ページが見つからない")
+            continue
+        c = pages[page]
+        blocks = text_re.findall(c)
+        if len(blocks) < 4:
+            fail(f"[45] {fish} ({page}): fish-content-text ブロックが {len(blocks)} 個（4 個以上必要）")
+            continue
+        plain = re.sub(r"<[^>]+>", "", "".join(blocks))
+        if len(plain) < 800:
+            fail(f"[45] {fish} ({page}): 固定文合計 {len(plain)} 字（800 字以上必要）")
+            continue
+        leftover = ph_re.findall(plain)
+        if leftover:
+            fail(f"[45] {fish} ({page}): 未解決プレースホルダ {leftover[:3]}")
+            continue
+        ok(f"[45] {fish} ({page}): 固定文 {len(blocks)} ブロック・{len(plain)} 字・プレースホルダ解決済み")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1615,6 +1677,7 @@ def main():
     validate_ship_slug_uniqueness()
     validate_tel_links()
     validate_no_dead_internal_links()
+    validate_fish_content_sections()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
