@@ -3458,6 +3458,50 @@ def load_fish_tackle():
             return json.load(f)
     except: return {}
 
+def load_fish_content():
+    """normalize/fish_content.json（固定文・月1見直し）+ fish_content_stats.json（月1数値
+    スナップショット）を読み、プレースホルダ解決済みの {fish: {section: html_text}} を返す。
+
+    設計（2026-06-11）: 数値を毎日再計算すると固定プローズと数値が乖離して文意がズレる
+    リスクがあるため、月1スナップショット方式（crawl/build_fish_content_stats.py で更新）。
+    未解決プレースホルダが残るセクションは出力せず WARN（不変条件 #45 が最終ゲート）。
+    """
+    base = os.path.dirname(__file__) or "."
+    try:
+        with open(os.path.join(base, "normalize", "fish_content.json"), encoding="utf-8") as f:
+            content = json.load(f)
+    except Exception:
+        return {}
+    try:
+        with open(os.path.join(base, "normalize", "fish_content_stats.json"), encoding="utf-8") as f:
+            stats_all = (json.load(f) or {}).get("fish", {})
+    except Exception:
+        stats_all = {}
+    _ph_re = re.compile(r"\{[a-z][a-z0-9_]*\}")
+
+    class _KeepMissing(dict):
+        def __missing__(self, key):
+            return "{" + key + "}"
+
+    out = {}
+    for fish, entry in content.items():
+        if fish.startswith("_") or not isinstance(entry, dict):
+            continue
+        st = _KeepMissing(stats_all.get(fish, {}))
+        secs = {}
+        for sec in ("howto", "tackle_detail", "season", "areas", "food", "beginner"):
+            text = entry.get(sec) or ""
+            if not text:
+                continue
+            rendered = text.format_map(st)
+            if _ph_re.search(rendered):
+                print(f"WARN: fish_content {fish}.{sec} に未解決プレースホルダ → セクション省略")
+                continue
+            secs[sec] = rendered
+        if secs:
+            out[fish] = secs
+    return out
+
 def load_area_description():
     """normalize/area_description.json を {area: {...}} で返す"""
     path = os.path.join("normalize", "area_description.json")
@@ -5040,11 +5084,20 @@ def build_area_season_map_html(area, area_decadal, top_fish_list, hist_rows=None
   <span style="margin-left:auto;font-size:10px">※ 過去3年の釣果データより集計（2023〜2025年）</span>
 </div>"""
 
-def build_fish_guide_html(fish, tackle_data):
-    """魚種ガイドセクション（釣り方・タックル・サイズ・外道・出船率）"""
+def build_fish_guide_html(fish, tackle_data, content=None):
+    """魚種ガイドセクション（釣り方・タックル・サイズ・外道・出船率）
+
+    2026-06-11 拡張:
+    - タックルが複数釣法/エリアに分かれている場合は **全バリアントをラベル付きで表示**
+      （旧仕様は最初の一つだけ表示 → ブランコ/直結の2キー魚種で片方が見えなかった）。
+      エリアでタックルが別物になる魚種（マルイカ等）はキー名に「釣法（対応エリア）」を書く。
+    - content（load_fish_content() の魚種別固定文）があれば、釣り方/タックル補足/食味/
+      初心者向けのプローズを差し込む（不変条件 #45 対象・class="fish-content-text"）。
+    """
     td = tackle_data.get(fish) if tackle_data else None
     if not td:
         return ""
+    content = content or {}
     method = td.get("method_detail") or td.get("method_name") or ""
     size_info = td.get("size_typical", {})
     if isinstance(size_info, dict):
@@ -5054,44 +5107,77 @@ def build_fish_guide_html(fish, tackle_data):
     bycatch = td.get("bycatch") or []
     bycatch_text = "・".join(bycatch) if bycatch else ""
     notes = td.get("notes") or ""
-    # タックル表示
+    # タックル表示（全バリアント）
     tackle = td.get("tackle") or {}
     tackle_html = ""
     if isinstance(tackle, dict):
-        # タックルが複数釣法に分かれている場合は最初の一つだけ表示
-        first_key = next(iter(tackle), None)
-        if first_key:
-            t = tackle[first_key]
-            if isinstance(t, dict):
-                rod   = t.get("rod", "")
-                reel  = t.get("reel", "")
-                line  = t.get("line", "")
-                rig   = t.get("rig", "")
-                bait  = t.get("bait", "")
-                tackle_html = f"""<div class="tackle-grid">
+        variants = []
+        show_label = len(tackle) >= 2
+        for vkey, t in tackle.items():
+            if not isinstance(t, dict):
+                continue
+            rod   = t.get("rod", "")
+            reel  = t.get("reel", "")
+            line  = t.get("line", "")
+            rig   = t.get("rig", "")
+            bait  = t.get("bait", "")
+            label = f'<div class="tk-variant-label">{vkey}</div>' if show_label else ""
+            variants.append(f"""<div class="tk-variant">{label}<div class="tackle-grid">
           <div class="tk"><div class="tk-lbl">竿</div><div class="tk-val">{rod}</div></div>
           <div class="tk"><div class="tk-lbl">リール</div><div class="tk-val">{reel}</div></div>
           <div class="tk"><div class="tk-lbl">ライン</div><div class="tk-val">{line}</div></div>
           <div class="tk"><div class="tk-lbl">仕掛け</div><div class="tk-val">{rig}</div></div>
           <div class="tk" style="grid-column:span 2"><div class="tk-lbl">エサ</div><div class="tk-val">{bait}</div></div>
-        </div>"""
+        </div></div>""")
+        tackle_html = "".join(variants)
     rows = ""
-    if method:
+    if content.get("howto"):
+        rows += f'<div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val fish-content-text">{content["howto"]}</span></div>'
+    elif method:
         rows += f'<div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">{method}</span></div>'
     if tackle_html:
         rows += f'<div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val">{tackle_html}</span></div>'
+    if content.get("tackle_detail"):
+        rows += f'<div class="fg-row"><span class="fg-lbl">タックル補足</span><span class="fg-val fish-content-text">{content["tackle_detail"]}</span></div>'
     if size_text:
         rows += f'<div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>{size_text}</strong></span></div>'
     if bycatch_text:
         rows += f'<div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">{bycatch_text}</span></div>'
-    if notes:
+    if content.get("food"):
+        rows += f'<div class="fg-row"><span class="fg-lbl">食味・持ち帰り</span><span class="fg-val fish-content-text">{content["food"]}</span></div>'
+    elif notes:
         rows += f'<div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">{notes}</span></div>'
+    if content.get("beginner"):
+        rows += f'<div class="fg-row"><span class="fg-lbl">初心者向け</span><span class="fg-val fish-content-text">{content["beginner"]}</span></div>'
     if not rows:
         return ""
-    return f"""<div class="fish-guide">
-  <h3>{fish}の船釣り（関東）基本情報</h3>
+    _g_emoji = (f'<img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="" '
+                f'class="fg-emoji" width="16" height="16" loading="lazy" decoding="async" '
+                f'onerror="this.style.display=\'none\'">')
+    return f"""<div class="fish-guide" id="fish-guide">
+  <h3>{_g_emoji}{fish}の船釣り（関東）基本情報</h3>
   {rows}
 </div>"""
+
+def _latest_monthly_report_link(fish):
+    """docs/monthly/YYYY-MM/{slug}.html が存在する最新月の (url, label) を返す。無ければ None。
+
+    月報は MONTHLY_FISH_CONFIG の対象魚種のみ生成されるため、実在ファイル確認で判定する
+    （存在しない月報への空リンク・「準備中」リンクは出さない 2026-06-11 方針）。
+    """
+    slug = fish_slug(fish)
+    mdir = os.path.join(WEB_DIR, "monthly")
+    if not os.path.isdir(mdir):
+        return None
+    for d in sorted(os.listdir(mdir), reverse=True):
+        if len(d) == 7 and d[4] == "-" and os.path.isfile(os.path.join(mdir, d, f"{slug}.html")):
+            try:
+                y, m = d.split("-")
+                return (f"/monthly/{d}/{slug}.html", f"{int(y)}年{int(m)}月 {fish}釣果月報")
+            except ValueError:
+                continue
+    return None
+
 
 def build_fish_7day_chart_html(fish, catches, display_date=None, display_label=None):
     """直近7日間の釣果推移バーチャート（匹数上限）
@@ -5664,13 +5750,25 @@ def _build_fish_count_q3_text(fish, hist_rows):
     else:
         p25 = sorted_maxes[0]
         p75 = sorted_maxes[-1]
+    # n>=30 で中央値・上位10%を追記（2026-06-11・固定文プロジェクト）
+    # 補遺3 遵守: 「平均」は使わない（中央値・分位は P25/P75 と同じ流儀で可）
+    extra = ""
+    if n >= 30:
+        med = sorted_maxes[n // 2]
+        p90 = sorted_maxes[min(int(n * 0.9), n - 1)]
+        extra = f"中央値は{med}匹・上位10%の好日は{p90}匹以上です。"
     if p25 == p75:
-        return f"関東{fish}船釣りの一日の釣果は{p25}匹前後が標準的です。最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
-    return f"関東{fish}船釣りの一日の釣果は{p25}〜{p75}匹が標準的なレンジです。最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
+        return f"関東{fish}船釣りの一日の釣果は{p25}匹前後が標準的です。{extra}最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
+    return f"関東{fish}船釣りの一日の釣果は{p25}〜{p75}匹が標準的なレンジです。{extra}最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
 
 
-def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=None):
-    """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル"""
+def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=None, content_sections=None):
+    """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル
+
+    content_sections（load_fish_content() の魚種別固定文 dict）がある場合、
+    HTML 側の回答末尾に該当セクションへのアンカーリンクを付ける（内部回遊用）。
+    JSON-LD（faq_pairs）にはリンクを入れない。
+    """
     # Q1: 旬はいつ？ → 旬カレンダーと同じデータソース・レベル判定で固定文章化
     q1_ans = _build_fish_season_q1_text(fish, hist_rows, decadal_calendar)
 
@@ -5689,11 +5787,18 @@ def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=
         (f"{fish}の一日の釣果はどのくらいですか？", q3_ans),
         (f"初心者でも{fish}釣りは楽しめますか？", q4_ans),
     ]
+    # 固定文セクションへのアンカーリンク（HTML のみ・JSON-LD には入れない）
+    _faq_anchor = {}
+    if content_sections:
+        if content_sections.get("season"):
+            _faq_anchor[0] = ' <a class="faq-more" href="#fish-season-note">→ エリア別のシーズン傾向を見る</a>'
+        if content_sections.get("beginner"):
+            _faq_anchor[3] = ' <a class="faq-more" href="#fish-guide">→ 初心者向けガイドを見る</a>'
     import html as _html_mod
     block_ttl = f"{_html_mod.escape(fish)}釣果データから分かること"
     html = f'<div class="faq-list faq-data">\n<h3 class="faq-block-ttl">{block_ttl}</h3>\n'
-    for q, a in faqs:
-        html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}</p></details>\n'
+    for _qi, (q, a) in enumerate(faqs):
+        html += f'  <details><summary>{q}</summary><p class="faq-ans">{a}{_faq_anchor.get(_qi, "")}</p></details>\n'
     html += '</div>'
     return html, faqs
 
@@ -8078,6 +8183,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
     year, week_num = current_iso_week()
     decadal_calendar = load_decadal_calendar()
     tackle_data = load_fish_tackle()
+    fish_content_all = load_fish_content()  # 魚種別固定文（月1見直し・2026-06-11）
     fixed_faq_data = _load_fixed_faq()
     # 過去CSV（引数で渡された共有キャッシュを使用、なければ個別ロード）
     _hist_rows_for_fish = hist_rows if hist_rows is not None else _load_historical_catches()
@@ -8133,6 +8239,8 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         if f in _FISH_ROMAJI and f not in fish_summary:
             fish_summary[f] = []
     for fish, catches in fish_summary.items():
+        # 魚種別固定文（プレースホルダ解決済み・無い魚種は空 dict）
+        fc = fish_content_all.get(fish) or {}
         # catches=0 でもメバル形式（rich path）で統一。
         # 過去1年サマリーを HERO / comment 文言に使うために先取りする。
         _fish_hist_0 = None
@@ -8400,9 +8508,13 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                     f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(_fa_fold_chips)}エリア）を表示</summary>'
                     f'<div class="chip-wrap">{"".join(_fa_fold_chips)}</div></details>'
                 )
+            # 固定文: 主要エリア解説（lead 文・不変条件 #45 対象）
+            _fa_lead = (f'<p class="fish-content-lead fish-content-text">{fc["areas"]}</p>'
+                        if fc.get("areas") else "")
             fish_area_section_html = (
                 '<section class="fish-areas-all">'
                 f'<h2 class="st">エリア別の{fish}釣果情報</h2>'
+                + _fa_lead
                 + "".join(_faa_parts)
                 + '</section>'
             )
@@ -8410,8 +8522,23 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
             fish_area_section_html = ""
         # V2 season map / guide / FAQ / chart
         season_map_html = build_fish_season_map_html(fish, decadal_calendar, current_month, hist_rows=_hist_rows_for_fish)
-        guide_html = build_fish_guide_html(fish, tackle_data)
-        auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL, hist_rows=_hist_rows_for_fish)
+        # 固定文: エリア別シーズン解説（旬カレンダー直下・不変条件 #45 対象）
+        # 月報が実在する魚種のみ末尾に最新月報リンクを付ける
+        season_note_html = ""
+        if fc.get("season"):
+            _ml = _latest_monthly_report_link(fish)
+            _ml_html = (f' 月ごとの詳しい振り返りは「<a href="{_ml[0]}">{_ml[1]}</a>」で読める。'
+                        if _ml else "")
+            _sn_emoji = (f'<img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="" '
+                         f'class="fcn-emoji" width="16" height="16" loading="lazy" decoding="async" '
+                         f'onerror="this.style.display=\'none\'">')
+            season_note_html = (
+                f'<div class="fish-content-note" id="fish-season-note">'
+                f'<h3>{_sn_emoji}{fish}のシーズン傾向（エリア別）</h3>'
+                f'<p class="fish-content-text">{fc["season"]}{_ml_html}</p></div>'
+            )
+        guide_html = build_fish_guide_html(fish, tackle_data, content=fc)
+        auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL, hist_rows=_hist_rows_for_fish, content_sections=fc)
         # M1 (T22): 共通 FAQ 9 問を faq.html に切り出し。固有 FAQ + リンクのみ出力
         fixed_faq_html, fixed_faq_pairs = build_fish_fixed_faq_html(fish, fixed_faq_data)
         faq_html = auto_faq_html + fixed_faq_html
@@ -8490,7 +8617,17 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
 .related-sim{margin:20px 0;padding:14px;background:#f5f5f5;border-left:4px solid #c84427;border-radius:4px;font-size:14px}
 .related-sim a{color:#0b1d33;font-weight:700;text-decoration:none}
 .related-sim a:hover{text-decoration:underline}
-.faq-common-link a{color:var(--cta);text-decoration:underline}"""
+.faq-common-link a{color:var(--cta);text-decoration:underline}
+.fish-content-note{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fish-content-note h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fcn-emoji{width:16px;height:16px;object-fit:contain}
+.fg-emoji{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}
+.fish-content-text{font-size:13px;line-height:1.9;color:var(--text)}
+.fish-content-text a{color:var(--cta)}
+.fish-content-lead{margin:8px 0 4px}
+.tk-variant-label{font-size:12px;font-weight:700;color:var(--accent);margin:10px 0 4px}
+.tk-variant:first-child .tk-variant-label{margin-top:0}
+.faq-more{font-size:12px;color:var(--cta);white-space:nowrap}"""
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8542,6 +8679,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
   {fish_area_section_html}
   <h2 class="st">旬カレンダー <span class="tag free">無料</span></h2>
   {season_map_html}
+  {season_note_html}
   {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ''}
   {'<div class="related-sim">🎣 <a href="/komase-sim/">マダイコマセシミュレーターで仕掛けを試す →</a></div>' if fish == 'マダイ' else ''}
   <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>

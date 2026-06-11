@@ -79,15 +79,25 @@
 .related-sim{margin:20px 0;padding:14px;background:#f5f5f5;border-left:4px solid #c84427;border-radius:4px;font-size:14px}
 .related-sim a{color:#0b1d33;font-weight:700;text-decoration:none}
 .related-sim a:hover{text-decoration:underline}
-.faq-common-link a{color:var(--cta);text-decoration:underline}</style>
+.faq-common-link a{color:var(--cta);text-decoration:underline}
+.fish-content-note{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.fish-content-note h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fcn-emoji{width:16px;height:16px;object-fit:contain}
+.fg-emoji{width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}
+.fish-content-text{font-size:13px;line-height:1.9;color:var(--text)}
+.fish-content-text a{color:var(--cta)}
+.fish-content-lead{margin:8px 0 4px}
+.tk-variant-label{font-size:12px;font-weight:700;color:var(--accent);margin:10px 0 4px}
+.tk-variant:first-child .tk-variant-label{margin-top:0}
+.faq-more{font-size:12px;color:var(--cta);white-space:nowrap}</style>
 </head>
 <body>
 <div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
-  ⚠️ このページは更新が遅延している可能性があります（生成日: 2026-06-10）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
+  ⚠️ このページは更新が遅延している可能性があります（生成日: 2026-06-11）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
 </div>
 <script>
 (function(){
-  var b="2026-06-10";var bt=1781090252753;
+  var b="2026-06-11";var bt=1781155430592;
   if((Date.now()-bt)>129600000){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
 })();
 </script>
@@ -130,8 +140,8 @@
   <h2 class="st">直近7日間の釣果推移 <span class="tag free">無料</span></h2>
 <div class="chart7">
   <h3>匹数上限（上ヒゲ）の7日推移</h3>
-  <div class="chart-bars"><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb today" style="height:4%"></div></div>
-  <div class="chart-labels"><span>6/4</span><span>6/5</span><span class="weekend">6/6</span><span class="weekend">6/7</span><span>6/8</span><span>6/9</span><span class="today">6/10</span></div>
+  <div class="chart-bars"><div class="cb" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb weekend" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb" style="height:4%"></div><div class="cb today" style="height:4%"></div></div>
+  <div class="chart-labels"><span>6/5</span><span class="weekend">6/6</span><span class="weekend">6/7</span><span>6/8</span><span>6/9</span><span>6/10</span><span class="today">6/11</span></div>
   
 </div>
   
@@ -162,15 +172,16 @@
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:6px">※ 過去3年の関東船釣り釣果データより集計（2023〜2025年）</p>
 </div>
-  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide">
-  <h3>沖カサゴの船釣り（関東）基本情報</h3>
-  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">外房が主漁場。秋～冬（9〜2月）が旬。通常のカサゴより深場（60〜150m）に棲む。胴突き仕掛けで底を探る。エサは魚肉切り身・ホタルイカが主流（深場では虫エサより切り身が有効）。根掛かり対策が必須。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tackle-grid">
+  
+  <h2 class="st">魚種ガイド <span class="tag free">無料</span></h2><div class="fish-guide" id="fish-guide">
+  <h3><img src="../assets/fish/okikasago/okikasago_emoji.webp" alt="" class="fg-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display='none'">沖カサゴの船釣り（関東）基本情報</h3>
+  <div class="fg-row"><span class="fg-lbl">釣り方</span><span class="fg-val">外房が主漁場。秋～冬（9〜2月）が旬。通常のカサゴより深場（60〜150m）に棲む。胴突き仕掛けで底を探る。エサは魚肉切り身・ホタルイカが主流（深場では虫エサより切り身が有効）。根掛かり対策が必須。</span></div><div class="fg-row"><span class="fg-lbl">タックル</span><span class="fg-val"><div class="tk-variant"><div class="tackle-grid">
           <div class="tk"><div class="tk-lbl">竿</div><div class="tk-val">根魚竿 2.3〜2.6m、MH</div></div>
           <div class="tk"><div class="tk-lbl">リール</div><div class="tk-val">中型電動（1000W以上）</div></div>
           <div class="tk"><div class="tk-lbl">ライン</div><div class="tk-val">PE 1.5〜2号</div></div>
           <div class="tk"><div class="tk-lbl">仕掛け</div><div class="tk-val">胴突き仕掛け（市販 2〜3本針）＋オモリ 60〜100号</div></div>
           <div class="tk" style="grid-column:span 2"><div class="tk-lbl">エサ</div><div class="tk-val">サバ切り身・アジ切り身・ホタルイカ</div></div>
-        </div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>25〜40cm が中心、50cm超は上物</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">オニカサゴ・メバル</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">深場のカサゴで通常種より大型。食べると美味しく、根掛かり覚悟の釣り。</span></div>
+        </div></div></span></div><div class="fg-row"><span class="fg-lbl">サイズ目安</span><span class="fg-val"><strong>25〜40cm が中心、50cm超は上物</strong></span></div><div class="fg-row"><span class="fg-lbl">外道</span><span class="fg-val">オニカサゴ・メバル</span></div><div class="fg-row"><span class="fg-lbl">メモ</span><span class="fg-val">深場のカサゴで通常種より大型。食べると美味しく、根掛かり覚悟の釣り。</span></div>
 </div>
   
   <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>

@@ -1,0 +1,37 @@
+{
+  "_README": {
+    "purpose": "魚種ページの固定文（月1見直し）。数値は {placeholder} で fish_content_stats.json（月1スナップショット）から差し込む。",
+    "rules": [
+      "定性記述は必ず外部サイト2ソース以上で裏取りしてから採用（.claude/memory/feedback_fish_content.md）",
+      "文章はコピペ禁止・完全に独自文。出典はページに表示しない（sources_internal に内部記録）",
+      "数値はすべて自サイトB層データ由来。avg/平均 は出さない（90_決定ログ 補遺3）",
+      "エリアで釣り方・シーズン・サイズが異なる場合は省略せず書き分ける（エリア別分解チェック必須）",
+      "内部リンクは実在ページのみ。最終保険は _sweep_dead_internal_links()",
+      "更新頻度: howto/tackle_detail=年1見直し / season/areas=文章固定・数値は月1 / food/beginner=書き切り"
+    ],
+    "placeholders": "n_total n_ships cnt_median cnt_p90 cnt_max size_p50 month_top1 month_top1_n month_top2 month_top2_n month_low month_low_n point1-3 point1_n-3_n area1-3 depth_p20 depth_p80"
+  },
+  "マルイカ": {
+    "updated": "2026-06-11",
+    "verified": true,
+    "sources_internal": [
+      "tsurikatsu.com/offshore/maruika/ (オモリ号数・リール・PE)",
+      "getaya.org/kfc/turikata1.html (スッテ5〜7本・間隔100〜120cm)",
+      "tsurihack.com/2589 (3系統仕掛け)",
+      "kawamaru.info/?p=1062 (直ブラ=外れにくい)",
+      "fish.shimano.com saho/240202_v1 (ゼロテン・タタキ)",
+      "funemaga.com/fishing/17188 (沼津秀丸=夜イカメタル)",
+      "ishiguro-gr.com blog 44642 / enjoy 10961 (沼津夜マルイカ・メタルスッテ8〜12号・ヌマリグ)",
+      "tsurihyakka.yamaria.com ケンサキイカ (イカの女王・沖漬け)",
+      "zukan-bouz.com ケンサキイカ (甘み・高級)",
+      "tsurinews.jp/291461/ (入門=ブランコ)",
+      "自前data/V2集計 (エリア別ピーク月・サイズ・水深・time_slot)"
+    ],
+    "howto": "マルイカは小型のケンサキイカの関東での呼び名で、腕の差が釣果に最も出る船釣りのひとつ。アタリは穂先にわずかに出る「ムズッ」「フワッ」という変化だけで、これを見逃すと乗らない。日中便（三浦・葉山など）の基本は、スッテを底まで沈めて竿を小刻みに振る「タタキ」で誘い、オモリを底に着けたまま糸を張らず緩めずに保つ「ゼロテン（ゼロテンション）」で止めた数秒の穂先変化を掛けにいく釣りだ。仕掛けは感度と手返しの「直結」、掛けたイカが外れにくい「直ブラ」、乗せ重視で入門向きの「ブランコ」の3系統。一方、沼津などの夜便はメタルスッテ1つ＋浮きスッテ1本のイカメタルが主流で、シャクリと止めで誘って繊細なアタリを取る。出船時間帯はエリアで分かれ、当サイトの集計では三浦半島・葉山は朝出船の日中便、沼津・鹿島は夜便・半夜便が中心となっている。",
+    "tackle_detail": "どの港から乗るかで仕掛けが別物になるのがマルイカの注意点。三浦・葉山系の日中便は多点スッテ（直結・直ブラ）で、オモリ30〜60号を水深に合わせて使い分ける。スッテは5〜7本・間隔100〜120cmが標準で、カラーローテーション用の予備を多めに持ち込みたい。直結はイカが暴れると外れやすいため、取り込みは一定速度で巻き続けるのがコツ。沼津の夜便はイカメタル（メタルスッテ8〜12号）でタックルごと別物になるので、予約時に船宿へ仕掛けの指定を確認するのが確実だ。",
+    "season": "マルイカの最盛期はエリアで大きく異なる。<a href=\"/fish_area/maruika-hayama-abuzuri.html\">葉山</a>・<a href=\"/fish_area/maruika-koajiro.html\">小網代</a>など三浦半島エリアは春〜初夏（4〜7月）の日中便がピークで、当サイトの過去3年・{n_total}便の集計でも{month_top1}（{month_top1_n}便）・{month_top2}（{month_top2_n}便）に報告が集中する。一方<a href=\"/fish_area/maruika-numazu-naiko.html\">沼津</a>は冬（12〜2月）と真夏（8月）に夜便が好調で、ほぼ通年遊べる。<a href=\"/area/kashima.html\">鹿島</a>は夏（7〜9月）限定の半夜便ながら、当サイト集計でサイズ中央値40cmと全エリア最大の型が出る。端境期の{month_low}（月間{month_low_n}便）を除けば、関東では一年のどこかで必ずマルイカを狙える——時期で行き先を変えるのがこの釣りの正解だ。",
+    "areas": "実績トップは{point1}（{point1_n}便）で、夜のイカメタル便が中心。三浦半島では<a href=\"/fish_area/maruika-matsuwa-maguchi.html\">剣崎沖</a>・城ヶ島沖が日中便の定番で、湘南の<a href=\"/fish_area/maruika-hayama-abuzuri.html\">葉山沖</a>・<a href=\"/fish_area/maruika-koajiro.html\">小網代沖</a>も春の浅場シーズンに強い。日中便で攻める水深は{depth_p20}〜{depth_p80}mが中心。夏に大型を狙うなら<a href=\"/area/kashima.html\">鹿島</a>の半夜便という選択肢もある。",
+    "food": "ケンサキイカは「イカの女王」と呼ばれる高級イカで、ねっとりした強い甘みはイカ類でも屈指。鮮度落ちが早いので、釣れたらすぐ海水氷で締めて持ち帰るのが鉄則だ。定番は刺身・沖漬け・一夜干しで、船上で漬けダレに沈める沖漬けは釣り人だけの特権。<a href=\"/fish/yariika.html\">ヤリイカ</a>や<a href=\"/fish/surumeika.html\">スルメイカ</a>と釣り比べて、食味の違いを楽しむのも一興だ。",
+    "beginner": "最初の1杯までのハードルは高めだが、ブランコ仕掛けなら置き竿でも乗ることがあり入門できる。レンタルタックルのある船宿を選び、まず「オモリを底から離さない」ことだけ意識すれば形になる。隣の常連の手返しを間近で観察できるのも乗合船ならではの上達近道。当サイト集計では一人あたり中央値{cnt_median}匹・上位10%の好日は{cnt_p90}匹以上、過去最高は{cnt_max}匹（個人釣果ベース）と、数釣りの夢もある。"
+  }
+}

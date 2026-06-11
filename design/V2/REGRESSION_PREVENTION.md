@@ -64,6 +64,7 @@
 | 42 | `crawl/ships.json` + `docs/sitemap.xml`（2026-06-10） | ships.json の `romaji_slug` が全船宿で一意 + sitemap.xml に重複 URL なし。弘漁丸/孝漁丸が同一 slug "koryo-maru" で ship ページを相互上書きし片方が消失していたバグ対策（弘漁丸 → koryo-maru-hitachi に変更） |
 | 43 | `docs/ship/*.html`（2026-06-10） | `tel:` リンクの数字が 12 桁以下であること。ships.json の複数番号入り phone（"0463-... / 070-..."）を区切り文字ごと数字化して連結し、23 船宿ページで無効な発信先になっていたバグ対策。crawler.py `_first_phone_for_tel()` で先頭 1 番号のみ使用 |
 | 44 | 全 `docs/**/*.html`（2026-06-10） | `fish/` `fish_area/` `ship/` への内部リンクが実在ファイルを指すこと。fish_area 孤児パージ後にリンク元 stale ページが残留しデッドリンク化（244 ターゲット・550 参照）していたバグ対策。crawler.py は生成完了後に `_sweep_dead_internal_links()` で毎回 `<a>`→`<span>` 変換（属性保持・href 除去） |
+| 45 | `docs/fish/*.html`（2026-06-11） | `normalize/fish_content.json` 収載魚種のページに固定文セクション（`class="fish-content-text"`）が 4 ブロック以上 + 合計 800 字以上 + 未解決プレースホルダ（`{xxx}`）なし。魚種ページ固定文プロジェクト（固定文=月1見直し・数値=`fish_content_stats.json` 月1スナップショット差し込み）。数値の毎日再計算は固定プローズとの乖離リスクがあるため月1方式（`crawl/build_fish_content_stats.py`） |
 
 ### T22 関連の設計契約（H1 noindex 解除手順）
 
