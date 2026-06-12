@@ -5899,15 +5899,20 @@ def _build_area_top_fish_q1_text(area, hist_rows):
 
 
 def _build_area_access_q2_text(area, area_description):
-    """area FAQ Q2（T31 2026/05/12）: area_description.json の nearest_ic / nearest_station から
-    最寄りIC + 最寄り駅を固定文章化。両方未登録のときは「各船宿のウェブサイトでご確認ください」。"""
+    """area FAQ Q2（T31 2026/05/12）: area_description.json の nearest_ic / nearest_station /
+    parking から 最寄りIC + 最寄り駅 + 駐車場 を固定文章化。
+    未登録のときは「各船宿のウェブサイトでご確認ください」。"""
     nearest_ic = ""
     nearest_station = ""
+    parking = ""
     if area_description and isinstance(area_description, dict):
         entry = area_description.get(area) or {}
         if isinstance(entry, dict):
             nearest_ic = (entry.get("nearest_ic") or "").strip()
             nearest_station = (entry.get("nearest_station") or "").strip()
+            parking = (entry.get("parking") or "").strip()
+    if parking and not parking.endswith("。"):
+        parking += "。"
     parts = []
     if nearest_ic:
         parts.append(f"最寄りICは{nearest_ic}")
@@ -5916,7 +5921,13 @@ def _build_area_access_q2_text(area, area_description):
     if parts:
         return (
             f"{area}への{'、'.join(parts)}です。"
-            f"集合場所や駐車場の有無は船宿ごとに異なるため、予約時または本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
+            f"{parking}"
+            f"集合場所や料金の詳細は船宿ごとに異なるため、予約時または本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
+        )
+    if parking:
+        return (
+            f"{area}の{parking}"
+            f"最寄りIC・最寄り駅は本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
         )
     return (
         f"{area}への詳細なアクセス情報は準備中です。"
