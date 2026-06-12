@@ -25,3 +25,18 @@
   `python crawl/build_fish_content_stats.py` → `python crawler.py --fish-index-only`（fish/ のみ commit）→
   `python crawl/validate_output.py`
 - 残り: 薄ページ約20種（25KB以下）→ 全60種。fish_tackle.json の他魚種も裏取り見直し対象
+
+## 進捗（2026-06-11 完了）
+
+- **全63魚種の固定文収載完了**（Phase 1〜14・PR #66〜#78）。データのある fish ページは全カバー。
+- 残課題:
+  - `docs/fish/アカアマダイ.html`（日本語ファイル名・tsuri_mono="アカアマダイ" 102件）は
+    アマダイと実質重複。正規化で アカアマダイ→アマダイ に寄せるのが本筋（B層変更★★★・未着手）
+  - fish_tackle.json 裏取りで発見した誤りはすべて修正済み（マルイカ・タチウオ・カワハギ・
+    シロギス・イサキ・ヤリイカ・キハダ・カサゴ・モロコ=ビシ+オキアミ→活きサバ泳がせ等）。
+    フグ・カイワリ・カンコは未収載だったため新設
+  - 月1運用: `python crawl/build_fish_content_stats.py` → 文章と数値の整合確認 → 再生成
+- 執筆時の教訓:
+  - validate は **パイプ無しで exit code を直接確認**（tail にパイプすると失敗が握り潰される）
+  - 800字ゲートは初稿で 850字以上を目安に書く（リンクタグ除去後の字数で判定される）
+  - プレースホルダは順序非依存の文型で（month_top1 が想定外の月でも文意が壊れない形）
