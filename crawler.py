@@ -1051,6 +1051,9 @@ def _load_recent_catches_for_index(now, days=7):
                             "date":        d,
                             "fish":        guess_fish(fish_raw),
                             "fish_raw":    fish_raw,
+                            # メイン/サブ判定（save_daily_csv で _classify_main_sub 済み）。
+                            # area ページの「今週釣れている魚」をメイン狙いに限定する用途。
+                            "main_sub":    row.get("main_sub", ""),
                             "count_range": count_range,
                             "count_avg":   cavg,
                             "size_cm":     size_cm,
@@ -8962,6 +8965,20 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
     # area_summary に登場せず、thin path（古いフォーマット）に分岐したり、
     # 船宿一覧の魚バッジが空のままになる（例: 大田区呑川・房丸）。
     _recent7_csv = _load_recent_catches_for_index(now, days=7)
+    # メイン/サブ判定（main_sub）を CSV から引いて fresh クロール record にも付与する。
+    # fresh record（fishing-v.jp 当日分）自体は main_sub を持たないが、save_daily_csv が
+    # build_area_pages より前に実行され同レコードを CSV に書き込むため、(date,ship,area,fish_raw)
+    # で CSV 側の main_sub を引ける。これで「今週釣れている魚」をメイン狙いに限定できる
+    # （カサゴ・ホウボウ等の外道=サブを除外）。引けない record は従来どおりメイン扱いで残す。
+    _main_sub_lookup = {
+        (r.get("date"), r.get("ship"), r.get("area"), r.get("fish_raw")): r.get("main_sub")
+        for r in _recent7_csv if r.get("fish_raw") and r.get("main_sub")
+    }
+    for c in data:
+        if not c.get("main_sub"):
+            ms = _main_sub_lookup.get((c.get("date"), c.get("ship"), c.get("area"), c.get("fish_raw")))
+            if ms:
+                c["main_sub"] = ms
     _existing_keys = {(c.get("date"), c.get("ship"), c.get("area"), c.get("fish_raw") or tuple(c.get("fish") or [])) for c in data}
     for r in _recent7_csv:
         key = (r.get("date"), r.get("ship"), r.get("area"), r.get("fish_raw") or tuple(r.get("fish") or []))
@@ -9302,6 +9319,11 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         # 過去は CSV 列名のみ参照していたため 匹数range・サイズ が常に空だった。
         fish_data = {}
         for c in fish_source:
+            # 「今週釣れている魚」はメインで狙って釣れた魚のみ集計する。
+            # main_sub=="サブ" は外道（カサゴ・ホウボウ等、その便のターゲット外で
+            # 混じった魚）なので除外。main_sub 未判定（空）はメイン扱いで残す。
+            if c.get("main_sub") == "サブ":
+                continue
             for f in c["fish"]:
                 if not f or f in ("不明", "欠航", "NULL"):
                     continue
