@@ -5899,15 +5899,23 @@ def _build_area_top_fish_q1_text(area, hist_rows):
 
 
 def _build_area_access_q2_text(area, area_description):
-    """area FAQ Q2（T31 2026/05/12）: area_description.json の nearest_ic / nearest_station から
-    最寄りIC + 最寄り駅を固定文章化。両方未登録のときは「各船宿のウェブサイトでご確認ください」。"""
+    """area FAQ Q2（T31 2026/05/12）: area_description.json の nearest_ic / nearest_station /
+    parking から 最寄りIC + 最寄り駅 + 駐車場 を固定文章化。
+    未登録のときは「各船宿のウェブサイトでご確認ください」。"""
     nearest_ic = ""
     nearest_station = ""
+    parking = ""
     if area_description and isinstance(area_description, dict):
         entry = area_description.get(area) or {}
         if isinstance(entry, dict):
             nearest_ic = (entry.get("nearest_ic") or "").strip()
             nearest_station = (entry.get("nearest_station") or "").strip()
+            parking = (entry.get("parking") or "").strip()
+    # IC/駅は名詞句前提。末尾の句読点を除去して「、…です。」テンプレの二重句読点を防ぐ
+    nearest_ic = nearest_ic.rstrip("。、 ")
+    nearest_station = nearest_station.rstrip("。、 ")
+    if parking and not parking.endswith("。"):
+        parking += "。"
     parts = []
     if nearest_ic:
         parts.append(f"最寄りICは{nearest_ic}")
@@ -5916,7 +5924,13 @@ def _build_area_access_q2_text(area, area_description):
     if parts:
         return (
             f"{area}への{'、'.join(parts)}です。"
-            f"集合場所や駐車場の有無は船宿ごとに異なるため、予約時または本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
+            f"{parking}"
+            f"集合場所や料金の詳細は船宿ごとに異なるため、予約時または本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
+        )
+    if parking:
+        return (
+            f"{area}の{parking}"
+            f"最寄りIC・最寄り駅は本ページの船宿一覧から各船宿のウェブサイトをご確認ください。"
         )
     return (
         f"{area}への詳細なアクセス情報は準備中です。"
@@ -9201,6 +9215,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             desc_meta_min = (f"{area}（{group}）の船釣り情報。本日の釣果報告は集計待ちです。"
                              f"過去1年{past_total}件の実績データから、{past_summary_short}など主要魚種の旬・代表ポイント・船宿実績をご確認いただけます。")
 
+            # thin パスでも area_description.json の解説文を表示（full パスと同じ build 関数）
+            area_desc_html_thin = build_area_description_html(area, area_desc_data)
+
             html_min = f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9259,6 +9276,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
     出船情報は各船宿のWebサイト・電話で直接ご確認ください。
     本ページでは過去1年の実績データから主要魚種・代表ポイント・出船船宿の傾向をご確認いただけます。
   </div>
+  {('<h2 class="st">このエリアについて</h2>' + area_desc_html_thin) if area_desc_html_thin else ''}
   <h2 class="st">月別出船トレンド <span class="tag free">無料</span></h2>
   <div class="month-chart">
     <div class="mb-grid">{mb_html}</div>
