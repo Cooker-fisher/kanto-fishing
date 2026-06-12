@@ -5911,6 +5911,9 @@ def _build_area_access_q2_text(area, area_description):
             nearest_ic = (entry.get("nearest_ic") or "").strip()
             nearest_station = (entry.get("nearest_station") or "").strip()
             parking = (entry.get("parking") or "").strip()
+    # IC/駅は名詞句前提。末尾の句読点を除去して「、…です。」テンプレの二重句読点を防ぐ
+    nearest_ic = nearest_ic.rstrip("。、 ")
+    nearest_station = nearest_station.rstrip("。、 ")
     if parking and not parking.endswith("。"):
         parking += "。"
     parts = []
@@ -9212,6 +9215,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             desc_meta_min = (f"{area}（{group}）の船釣り情報。本日の釣果報告は集計待ちです。"
                              f"過去1年{past_total}件の実績データから、{past_summary_short}など主要魚種の旬・代表ポイント・船宿実績をご確認いただけます。")
 
+            # thin パスでも area_description.json の解説文を表示（full パスと同じ build 関数）
+            area_desc_html_thin = build_area_description_html(area, area_desc_data)
+
             html_min = f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9270,6 +9276,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
     出船情報は各船宿のWebサイト・電話で直接ご確認ください。
     本ページでは過去1年の実績データから主要魚種・代表ポイント・出船船宿の傾向をご確認いただけます。
   </div>
+  {('<h2 class="st">このエリアについて</h2>' + area_desc_html_thin) if area_desc_html_thin else ''}
   <h2 class="st">月別出船トレンド <span class="tag free">無料</span></h2>
   <div class="month-chart">
     <div class="mb-grid">{mb_html}</div>
