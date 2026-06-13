@@ -191,14 +191,6 @@ nav.gnav a.prem::before {
 .wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
 .crumbs { font-size: 12px; color: var(--sub); margin-bottom: 14px; }
 .crumbs a { color: var(--port); text-decoration: none; }
-.x-drafts { background: var(--card); border: 1px dashed var(--port); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
-.x-drafts summary { cursor: pointer; font-weight: 700; color: var(--port); }
-.xd-item { margin: 10px 0; padding-top: 8px; border-top: 1px solid var(--line, #ddd); }
-.xd-label { font-size: 11px; font-weight: 700; color: var(--sub); margin-bottom: 4px; }
-.xd-text { white-space: pre-wrap; background: rgba(0,0,0,.04); border-radius: 6px; padding: 8px 10px; font-size: 13px; margin: 0 0 6px; font-family: inherit; }
-.xd-hidden { display: none; }
-.xd-copy { font-size: 12px; padding: 4px 10px; margin-right: 6px; border: 1px solid var(--port); background: #fff; color: var(--port); border-radius: 14px; cursor: pointer; }
-.xd-note { font-size: 11px; color: var(--sub); margin: 8px 0 0; }
 .hero {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   color: #fff;
