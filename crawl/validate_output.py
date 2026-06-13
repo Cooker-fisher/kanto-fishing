@@ -1623,6 +1623,42 @@ def validate_fish_content_sections():
         ok(f"[45] {fish} ({page}): 固定文 {len(blocks)} ブロック・{len(plain)} 字・プレースホルダ解決済み")
 
 
+def validate_xpost_no_operator_drafts():
+    """46: docs/x_post/*.html に運営者専用の X 投稿文ドラフトが公開されていないこと（2026-06-13）
+
+    背景: build_daily_page.py が「X投稿文（コピー用・発見型）」ブロック（下書きツイート＋
+    投稿時刻・リーチ戦略の運用メモ）を公開 HTML に埋め込み、funatsuri-yoso.com 上で
+    一般公開されていた不具合。運営者専用ドラフトは x_post/drafts/（GitHub Pages 非配信・
+    .gitignore）にのみ出力し、公開ページには絶対に含めない。
+    検証: 公開 x_post HTML に下記マーカーが 1 つでも出たら fail。
+    """
+    print("\n[46] x_post 公開ページに運営者ドラフトが混入していないこと")
+    xpost_dir = os.path.join(DOCS, "x_post")
+    if not os.path.isdir(xpost_dir):
+        ok("[46] docs/x_post なし → skip")
+        return
+    forbidden = [
+        "X投稿文", "x-drafts", "コピー用・発見型", "翌朝8時投稿想定",
+        "リーチを抑制", "リンクあり版で誘導", "リンクなしをコピー", "xd-copy",
+    ]
+    hit = []
+    for fn in os.listdir(xpost_dir):
+        if not fn.endswith(".html"):
+            continue
+        p = os.path.join(xpost_dir, fn)
+        content = open(p, encoding="utf-8", errors="replace").read()
+        found = [m for m in forbidden if m in content]
+        if found:
+            hit.append((fn, found))
+    if hit:
+        for fn, found in hit[:5]:
+            fail(f"[46] {fn} に運営者ドラフトのマーカーが公開されている: {found}")
+        if len(hit) > 5:
+            fail(f"[46] ほか {len(hit) - 5} ファイルにも混入")
+    else:
+        ok(f"[46] x_post 公開ページに運営者ドラフトの混入なし（{xpost_dir}）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1678,6 +1714,7 @@ def main():
     validate_tel_links()
     validate_no_dead_internal_links()
     validate_fish_content_sections()
+    validate_xpost_no_operator_drafts()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
