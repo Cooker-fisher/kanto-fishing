@@ -783,40 +783,29 @@ def build(ctx, commentary, output_path, png_url=None):
     date_label = ctx.get("date_label", "")
     date_iso = ctx.get("date_iso", "")
 
-    # X 投稿文ドラフト（発見型・コピー用・2026-06-10）
-    # 定型まとめ投稿はエンゲージメントが取れないため、「驚きのある1つの数字を冒頭に」
-    # 置いた投稿文を毎日自動生成して運用者がコピーするだけにする。
+    # X 投稿文ドラフト（発見型）。2026-06-13: 公開ページには一切埋め込まない。
+    # 以前は docs/x_post/*.html に <details class="x-drafts"> として埋め込まれ、
+    # funatsuri-yoso.com 上で運用メモ（投稿時刻・リーチ戦略）ごと一般公開されていた不具合を是正。
+    # ドラフトは GitHub Pages 非配信かつ .gitignore 済みの x_post/drafts/{date}.txt にのみ出力する。
     try:
         from x_post.text_generator import build_x_post_drafts
         _drafts = build_x_post_drafts(ctx)
     except Exception:
         _drafts = []
-    _draft_items = []
-    for _i, _d in enumerate(_drafts):
-        _no = _d["text_no_link"]
-        _wi = _d["text_with_link"]
-        _draft_items.append(
-            f'<div class="xd-item"><div class="xd-label">{_d["label"]}</div>'
-            f'<pre class="xd-text" id="xd-{_i}-n">{_no}</pre>'
-            f'<button class="xd-copy" data-target="xd-{_i}-n">リンクなしをコピー</button>'
-            f'<button class="xd-copy" data-target="xd-{_i}-w">リンクありをコピー</button>'
-            f'<pre class="xd-text xd-hidden" id="xd-{_i}-w">{_wi}</pre></div>'
-        )
-    if _draft_items:
-        post_drafts_html = (
-            '<details class="x-drafts"><summary>📋 X投稿文（コピー用・発見型）</summary>'
-            + "".join(_draft_items)
-            + '<p class="xd-note">翌朝8時投稿想定の文面（「昨日」基準）。通常はリンクなし版を使用'
-            '（Xはリンク付き投稿のリーチを抑制）。週1〜2回リンクあり版で誘導。</p></details>'
-            '<script>document.querySelectorAll(".xd-copy").forEach(function(b){'
-            'b.addEventListener("click",function(){'
-            'var t=document.getElementById(b.dataset.target);'
-            'navigator.clipboard.writeText(t.textContent).then(function(){'
-            'b.textContent="✓ コピーしました";setTimeout(function(){'
-            'b.textContent=b.dataset.target.endsWith("n")?"リンクなしをコピー":"リンクありをコピー"},1500)})})});</script>'
-        )
-    else:
-        post_drafts_html = ""
+    if _drafts:
+        try:
+            _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            _drafts_dir = os.path.join(_root, "x_post", "drafts")
+            os.makedirs(_drafts_dir, exist_ok=True)
+            _lines = []
+            for _d in _drafts:
+                _lines += [f"# {_d['label']}", "[リンクなし]", _d["text_no_link"],
+                           "[リンクあり]", _d["text_with_link"], ""]
+            with open(os.path.join(_drafts_dir, f"{date_iso or 'unknown'}.txt"), "w", encoding="utf-8") as _f:
+                _f.write("\n".join(_lines))
+        except Exception:
+            pass
+    post_drafts_html = ""  # 公開HTMLには絶対に埋め込まない（運営者専用ドラフトは x_post/drafts/ へ）
     n_ships = ctx.get("n_ships", 0)
     n_fish_species = ctx.get("n_fish_species", 0)
     n_records = ctx.get("n_records", 0)
