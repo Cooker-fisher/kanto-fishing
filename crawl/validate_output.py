@@ -550,9 +550,10 @@ def validate_ship_noindex():
 
 
 def validate_fish_area_noindex():
-    """T39 (2026/05/25): hist_count < 30 の薄 fish_area ページが noindex 付与され
+    """T39 (2026/05/25): 薄 fish_area ページが noindex 付与され
     かつ sitemap.xml から除外されていることを検証する。
-    AdSense「有用性の低いコンテンツ」対策の動作確認。"""
+    AdSense「有用性の低いコンテンツ」対策の動作確認。
+    2026/06/16: hist_count しきい値を 30→80 に引上げ（薄判定対象を拡大）。"""
     print("\n[35] docs/fish_area/*.html noindex 付与 + sitemap 除外（T39）")
     fa_dir = os.path.join(DOCS, "fish_area")
     if not os.path.isdir(fa_dir):
@@ -578,6 +579,38 @@ def validate_fish_area_noindex():
         fail(f"sitemap.xml に noindex 付与 fish_area が {len(leaked)} 件混入: {leaked[:3]}...")
     else:
         ok(f"fish_area/*.html noindex 付与: {len(noindex_slugs)} 件 / 全 {len(files)} 件・sitemap 除外 OK")
+
+
+def validate_no_ads_on_noindex():
+    """2026/06/16 AdSense「有用性の低いコンテンツ」再対策: noindex を付与した薄ページ
+    （fish_area hist<80 / forecast 全件 / 空 ship 等）に AdSense 広告コードが残っていない
+    ことを検証する。「インデックスされないページは収益化しない」= AdSense が薄判定する
+    広告掲載ページの母集団を縮小する施策の動作確認。
+    crawler.py の広告ゲート（noindex 時に ADSENSE_TAG を出さない）と
+    遡及 sweep の両方が効いている証拠。"""
+    print("\n[47] noindex ページに AdSense 広告コードが無いこと（2026/06/16）")
+    bad = []
+    noindex_total = 0
+    for root, _dirs, fnames in os.walk(DOCS):
+        for fn in fnames:
+            if not fn.endswith(".html"):
+                continue
+            path = os.path.join(root, fn)
+            try:
+                content = open(path, encoding="utf-8").read()
+            except Exception:
+                continue
+            if 'name="robots"' in content and "noindex" in content:
+                noindex_total += 1
+                # CSS 定義（.ad-slot{} / ins.adsbygoogle{}）は無害なので除外し、
+                # 実際にアドを読み込む loader script と ad ユニット要素のみを検出する。
+                if ("pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" in content
+                        or '<ins class="adsbygoogle"' in content):
+                    bad.append(os.path.relpath(path, DOCS))
+    if bad:
+        fail(f"noindex ページに広告コード残存 {len(bad)} 件: {bad[:5]}...")
+    else:
+        ok(f"noindex {noindex_total} ページすべて広告コードなし")
 
 
 def validate_area_point_noindex():
@@ -1715,6 +1748,7 @@ def main():
     validate_no_dead_internal_links()
     validate_fish_content_sections()
     validate_xpost_no_operator_drafts()
+    validate_no_ads_on_noindex()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
