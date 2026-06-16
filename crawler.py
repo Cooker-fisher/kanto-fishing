@@ -4476,7 +4476,7 @@ def _v2_header_nav(active_page=""):
   <a href="/monthly/"{' class="on"' if active_page == 'monthly' else ''}>月報</a>
   <a href="/komase-sim/"{' class="on"' if active_page == 'komasim' else ''}>🎣 コマセsim<span class="nav-new">NEW</span></a>
 
-  <a href="/forecast/" class="prem{' on' if active_page == 'forecast' else ''}">有料プラン</a>
+  {('<a href="/forecast/" class="prem' + (' on' if active_page == 'forecast' else '') + '">有料プラン</a>') if SHOW_PAID_TEASER else ''}
 </nav>"""
 
 def _v2_footer(crawled_at=""):
@@ -15203,8 +15203,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         '<a href="/area/">エリア</a>'
         '<a href="/calendar.html">カレンダー</a>'
         '<a href="/komase-sim/">🎣 コマセsim<span class="nav-new">NEW</span></a>'
-        '<a href="/forecast/" class="prem">有料プラン</a>'
-        '</nav>'
+        + ('<a href="/forecast/" class="prem">有料プラン</a>' if SHOW_PAID_TEASER else '')
+        + '</nav>'
     )
     bottom_nav = (
         '<div class="bn">'
