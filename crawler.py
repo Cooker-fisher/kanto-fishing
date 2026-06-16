@@ -252,6 +252,11 @@ _SHIP_AD_INS = ('<ins class="adsbygoogle" style="display:block;min-height:0;heig
                 'data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" '
                 'data-full-width-responsive="true"></ins>'
                 '<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>')
+# 有料予測テザー表示フラグ（2026/06/16）。
+# マネタイズ方針が「D層予測は当面無料公開で集客／有料化は数千〜1万UU到達後」に変更（90_決定ログ
+# 2026-06-10）されたため、fish/area/ship の「準備中・月額500円」テザーは現状ミスマッチ＋
+# AdSense 薄判定リスク。False で非表示にする。有料サイトオープン時に True に戻せば全テザーが復活。
+SHOW_PAID_TEASER = False
 # Google Analytics
 GA_TAG = '<script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>'
 
@@ -7642,8 +7647,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
     # T19: hero_label / hero_date は冒頭（line 5963 付近）で既に確定済み
     # V2 概況テキスト（T19: hero_label 渡しでデータ日付を反映）
     overview_html = build_index_overview_text(catches, history, crawled_at, hero_label=hero_label)
-    # V2 ティザー
-    teaser_html = build_teaser_rotator_html()
+    # V2 ティザー（SHOW_PAID_TEASER で表示制御・有料オープン時に復活）
+    teaser_html = build_teaser_rotator_html() if SHOW_PAID_TEASER else ""
     # R3 (2026/05/06): 今週末の見どころ TOP3
     top_combos_html = build_top_combos_html(catches_for_summary, history, now)
     # R9 (2026/05/06): 人気の船宿（直近1週間 件数 TOP5）。
@@ -8415,7 +8420,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
             )
         ship_rank_html = f'<div class="ship-rank"><h3>船宿ランキング（今週）</h3>{sr_items}</div>' if sr_items else ""
         # 有料ティザー
-        fish_teaser_html = (
+        fish_teaser_html = "" if not SHOW_PAID_TEASER else (
             f'<h2 class="st teaser-title">{fish}が釣れる条件 <span class="tag coming">まもなく公開</span></h2>'
             f'<div class="teaser">'
             f'<div class="teaser-head"><span class="teaser-badge">開発中</span>'
@@ -9180,7 +9185,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             fixed_faq_html_thin, fixed_faq_pairs_thin = build_area_fixed_faq_html(area, fixed_faq_data_area)
             faq_html = auto_faq_html_thin + fixed_faq_html_thin
 
-            teaser_html = (
+            teaser_html = "" if not SHOW_PAID_TEASER else (
                 '<h2 class="st teaser-title">このエリアの予測・分析 <span class="tag coming">まもなく公開</span></h2>'
                 '<div class="teaser"><div class="teaser-head"><span class="teaser-badge">開発中</span>'
                 f'<span class="teaser-title-in">{area} 日別予測・全ポイント情報</span></div>'
@@ -9635,7 +9640,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         area_title_str = f"{area_title_body} | 船釣り予想"
 
         # 有料ティザー
-        area_teaser_html = (
+        area_teaser_html = "" if not SHOW_PAID_TEASER else (
             f'<h2 class="st teaser-title">このエリアの予測・分析 <span class="tag coming">まもなく公開</span></h2>'
             f'<div class="teaser">'
             f'<div class="teaser-head"><span class="teaser-badge">開発中</span>'
@@ -15275,6 +15280,22 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
     page_url = f"{SITE_URL}/ship/{slug}.html"
 
+    # 明日の予測（有料・準備中チラ見せ）。SHOW_PAID_TEASER で表示制御（有料オープン時に復活）。
+    ship_pred_teaser = "" if not SHOW_PAID_TEASER else (
+        '<!-- 明日の予測（有料・準備中チラ見せ） -->\n'
+        '<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px">\n'
+        f'<h3 style="font-size:14px;color:var(--prem);margin-bottom:8px;text-align:center">{name}の明日の予測（準備中）</h3>\n'
+        '<div style="background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px;position:relative;overflow:hidden">\n'
+        '<div style="filter:blur(5px);user-select:none;pointer-events:none">\n'
+        '<div style="font-weight:700;color:var(--accent);font-size:13px">明日の主要魚種 — 信頼度 ★★★★★</div>\n'
+        '<div style="font-size:15px;font-weight:800;color:var(--cta);margin-top:4px">XX〜XX匹</div>\n'
+        '<div style="font-size:10px;color:var(--sub);margin-top:4px">気象条件・潮通し分析より推定</div>\n'
+        '</div>\n'
+        '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,.06);font-size:13px;font-weight:700;color:var(--prem)">月額500円で見る予定</div>\n'
+        '</div>\n'
+        '</div>'
+    )
+
     html = f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -15337,18 +15358,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 
 {'' if ship_noindex_tag else _SHIP_AD_RECT}
 
-<!-- 明日の予測（有料・準備中チラ見せ） -->
-<div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px">
-<h3 style="font-size:14px;color:var(--prem);margin-bottom:8px;text-align:center">{name}の明日の予測（準備中）</h3>
-<div style="background:var(--card);border:1px solid #e0d6f5;border-radius:8px;padding:12px;margin-bottom:8px;position:relative;overflow:hidden">
-<div style="filter:blur(5px);user-select:none;pointer-events:none">
-<div style="font-weight:700;color:var(--accent);font-size:13px">明日の主要魚種 — 信頼度 ★★★★★</div>
-<div style="font-size:15px;font-weight:800;color:var(--cta);margin-top:4px">XX〜XX匹</div>
-<div style="font-size:10px;color:var(--sub);margin-top:4px">気象条件・潮通し分析より推定</div>
-</div>
-<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,.06);font-size:13px;font-weight:700;color:var(--prem)">月額500円で見る予定</div>
-</div>
-</div>
+{ship_pred_teaser}
 
 {area_rank_html}
 
