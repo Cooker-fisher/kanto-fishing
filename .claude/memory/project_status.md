@@ -1,6 +1,23 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/06/10
+最終更新: 2026/06/16
 最新コミット: PR#59 サイトバグ一斉修正（favicon・NULL魚種・slug衝突・tel連結・デッドリンク掃引・404・不変条件#40〜44）マージ済み
+
+---
+
+## ⚠️ 直近作業（2026/06/16・branch claude/dameda-yda6k4・未マージ）— AdSense 再対策 Tier1
+
+AdSense が再び「有用性の低いコンテンツ」で却下（再審査は **6/23 以降**・AdSense管理画面は本人のみ確認可）。
+ユーザー方針=ハイブリッド（充実＋整理）。本セッションは **Tier1（整理＋品質）** を実装・検証済み。
+
+- **広告ゲート**: noindex ページ（forecast 全件・空 ship・薄 fish_area）に広告コードを出さない（crawler.py + 遡及 sweep）。noindex 998 ページすべて広告ゼロ。
+- **fish_area index 閾値 30→80**（`_FA_NOINDEX_HIST_THRESHOLD`）: index 維持 199 / noindex 676・sitemap fish_area 382→199。
+- **自己矛盾の解消**: fish_area の hero/intro/title を今週→過去3年hist（FAQ と一致）に統一（`_fa_hist_stats` 新設）。
+- **不変条件 #47 追加**（noindex に広告なし）。validate_output errors=0/warnings=0（49条件）。
+- 詳細: `design/V2/90_決定ログ.md`「2026-06-16 AdSense…Tier1」。sweep は `dustbox/`。
+
+**次（Tier2・要ユーザー判断）**: index 維持 fish_area/エリアの「予測・相関入り」本物化。
+C層 analysis.sqlite はローカル限定（〜6/24不可）。fish_content 型 curated 蒸留で横展開。
+**未マージ**: 本ブランチを main へ反映すると日次 regen で活性ページにも順次適用される。
 
 ---
 

@@ -245,6 +245,13 @@ OGP_DEFAULT_IMG = f"{SITE_URL}/ogp-default.png"
 
 # Google AdSense
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7406401300491553" crossorigin="anonymous"></script>'
+# ship ページ body のレクタングル広告枠（2026/06/16: noindex の空 ship では出さない＝
+# 「インデックスされないページは収益化しない」AdSense 薄判定対策）
+_SHIP_AD_RECT = '<div class="ad-slot">広告スペース（レクタングル）</div>'
+_SHIP_AD_INS = ('<ins class="adsbygoogle" style="display:block;min-height:0;height:auto" '
+                'data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" '
+                'data-full-width-responsive="true"></ins>'
+                '<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>')
 # Google Analytics
 GA_TAG = '<script async src="https://www.googletagmanager.com/gtag/js?id=G-LS469BTBBX"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-LS469BTBBX");</script>'
 
@@ -2259,7 +2266,6 @@ def _forecast_page_head(title, depth_prefix="../"):
 <meta name="robots" content="noindex, follow">
 <title>{title} | 船釣り予想</title>
 {GA_TAG}
-{ADSENSE_TAG}
 <link rel="stylesheet" href="{depth_prefix}style.css">
 <style>{_FORECAST_EXTRA_CSS}</style>
 </head><body>
@@ -3747,7 +3753,11 @@ _SHIP_NOINDEX_SLUGS: set = set()
 # 蓄積するセット。build_fish_area_pages() が書き込み、build_sitemap() が参照して URL 除外。
 # AdSense「有用性の低いコンテンツ」対策。
 _FA_NOINDEX_SLUGS: set = set()
-_FA_NOINDEX_HIST_THRESHOLD = 30
+# 2026/06/16 AdSense「有用性の低いコンテンツ」再対策: 30→80 に引上げ。
+# 過去3年で 80便（≒年27便）以上の実データを持つコンボのみ index+収益化し、
+# それ未満はテンプレ穴埋めで実質薄ページのため noindex + 広告除去 + sitemap 除外。
+# noindex ページには ADSENSE_TAG を出さない（build_fish_area_pages の広告ゲート）。
+_FA_NOINDEX_HIST_THRESHOLD = 80
 
 # T40 (2026/05/26): build_point_pages() が生成するポイント系 area ページ（赤灯沖・鹿島南沖等）は
 # 自動生成ボイラープレートのみで fia-grid/season-map/海況 セクションを持たない構造的薄ページ。
@@ -10062,31 +10072,20 @@ def _fa_catches_stats(fa_catches):
     return n, round(med, 1), int(maxes[-1]), int(p25), int(p75), max_boat
 
 
-def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_description=None):
+def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_description=None, hist_stats=None):
     """fish_area 説明文（200字以上・自サイトデータのみ）
     H3 (T22): area_description を渡すとエリア固有の1文を冒頭に差し込む。
+    2026/06/16: hist_stats（_fa_hist_stats の過去3年コンボ統計）を渡すと便数・
+    最高釣果・船宿を3年ベースで記述し、FAQ・stat card と数値を一致させる。
+    旧実装は今週の fa_catches ベースで「1便・最高45匹」と書き、3年ベースの FAQ
+    「383便・最高273匹」と同一ページ内で矛盾していた（AdSense 薄判定リスク）。
+    hist_stats=None のときは従来どおり fa_catches ベース（後方互換）。
     """
-    N = len(fa_catches)
-    n_personal, avg_med, max_val, p25, p75, max_boat = _fa_catches_stats(fa_catches)
-
     fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
     peak_label = ""
     if fish_decades:
         top_dn = max(fish_decades.items(), key=lambda x: x[1].get("cnt_index", 0))
         peak_label = _decade_label(top_dn[0])
-
-    ship_counts: dict = {}
-    for c in fa_catches:
-        sn = c.get("ship", "")
-        if sn:
-            ship_counts[sn] = ship_counts.get(sn, 0) + 1
-    top_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
-
-    dates = sorted([c.get("date", "") for c in fa_catches if c.get("date")])
-    years_str = ""
-    if len(dates) >= 2:
-        y0, y1 = dates[0][:4], dates[-1][:4]
-        years_str = f"（{y0}年〜{y1}年）" if y0 != y1 else f"（{y0}年）"
 
     # H3 (T22): area_description.json からエリア固有の1文を抽出して冒頭に差し込む
     area_intro = ""
@@ -10099,29 +10098,55 @@ def _build_fa_intro_html(fish, area, fa_catches, decadal_calendar, area_descript
             if len(first_sentence) >= 10:
                 area_intro = first_sentence
 
-    total_ships = len(ship_counts)
+    if hist_stats and hist_stats.get("n_trips"):
+        # 3年ベース（FAQ と同一ソース）
+        N = hist_stats["n_trips"]
+        years_str = hist_stats.get("years_str", "")
+        max_val = hist_stats.get("cnt_max")
+        med = hist_stats.get("cnt_med")
+        p25 = hist_stats.get("cnt_p25")
+        p75 = hist_stats.get("cnt_p75")
+        top_ships = hist_stats.get("top_ships") or []
+        total_ships = hist_stats.get("n_ships", 0)
+        intro_lead = f"{area}での{fish}は過去3年で{N:,}便の出船記録があります{years_str}。"
+    else:
+        # 後方互換: 当日 fa_catches ベース
+        N = len(fa_catches)
+        n_personal, avg_med, max_val, p25, p75, max_boat = _fa_catches_stats(fa_catches)
+        med = avg_med if n_personal >= 5 else None
+        ship_counts: dict = {}
+        for c in fa_catches:
+            sn = c.get("ship", "")
+            if sn:
+                ship_counts[sn] = ship_counts.get(sn, 0) + 1
+        top_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
+        total_ships = len(ship_counts)
+        dates = sorted([c.get("date", "") for c in fa_catches if c.get("date")])
+        years_str = ""
+        if len(dates) >= 2:
+            y0, y1 = dates[0][:4], dates[-1][:4]
+            years_str = f"（{y0}年〜{y1}年）" if y0 != y1 else f"（{y0}年）"
+        intro_lead = f"{area}での{fish}の釣果データは{N}便記録されています{years_str}。"
+
     lines = []
     if area_intro:
         lines.append(area_intro)
-    lines.append(f"{area}での{fish}の釣果データは{N}便記録されています{years_str}。")
+    lines.append(intro_lead)
     if peak_label:
         lines.append(f"月別の集計では{peak_label}前後に釣果が集中する傾向があります。")
-    if n_personal >= 5:
-        lines.append(f"1回の釣行あたりの中央値は{avg_med:.0f}匹で、最高釣果は{max_val}匹の記録があります。")
-        if p25 < p75:
+    if max_val and med:
+        lines.append(f"1回の釣行あたりの中央値は{med:.0f}匹で、最高釣果は{max_val}匹の記録があります。")
+        if p25 is not None and p75 is not None and p25 < p75:
             lines.append(f"標準的な釣果レンジは{p25}〜{p75}匹です。")
-        lines.append(f"釣果は潮回りや水温の影響を受けやすく、旬の時期を選ぶと安定した釣果が期待できます。")
-    elif max_val > 0:
-        lines.append(f"最高釣果は{max_val}匹の記録があります（データ蓄積中：{N}便）。")
-        lines.append(f"釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。")
-    elif max_boat > 0:
-        lines.append(f"乗合船全体の最大釣果は{max_boat}匹の記録があります。")
-        lines.append(f"個人釣果の統計は引き続きデータ収集中です。釣果は潮回りや季節によって変動します。")
+        lines.append("釣果は潮回りや水温の影響を受けやすく、旬の時期を選ぶと安定した釣果が期待できます。")
+    elif max_val:
+        lines.append(f"最高釣果は{max_val}匹の記録があります。")
+        lines.append("釣果は潮回りや季節によって変動するため、シーズンバーと直近の釣果カードを参考にしてください。")
     else:
-        lines.append(f"引き続きデータを収集中です。")
-        lines.append(f"釣果は潮回りや季節によって変動するため、旬の時期を選ぶと安定した釣果が期待できます。")
+        lines.append("個人釣果の統計は引き続きデータ収集中です。")
+        lines.append("釣果は潮回りや季節によって変動するため、旬の時期を選ぶと安定した釣果が期待できます。")
     if top_ships:
-        ship_strs = "、".join(f"{sn}（{cnt}件）" for sn, cnt in top_ships)
+        ship_strs = "、".join(f"{sn}（{cnt}便）" for sn, cnt in top_ships)
         lines.append(f"出船実績の多い船宿は{ship_strs}です。")
     if total_ships > 0:
         lines.append(f"このエリアでは計{total_ships}船宿が{fish}の出船実績を持ちます。各船宿の出船スケジュールは直接ご確認ください。")
@@ -10377,6 +10402,68 @@ def build_fish_area_faq_html(fish, area, hist_rows, decadal_calendar=None, area_
     return html, jsonld
 
 
+def _fa_hist_stats(fish, area, hist_rows):
+    """fish_area の過去3年（CSV hist）コンボ統計。FAQ Q2 と同一フィルタで算出し、
+    intro / stat card / title の数値を FAQ 固定文章と一致させて自己矛盾を防ぐ
+    （2026/06/16: hero/intro=今週・FAQ=3年 で「1便/最高45匹 vs 383便/最高273匹」と
+    同一ページ内で矛盾していた問題の修正。AdSense 薄判定対策）。
+    返却 dict: n_trips, n_ships, top_ships[(name,cnt)], cnt_med, cnt_p25, cnt_p75,
+              cnt_max, cm_med, cm_max, years_str。データ無しは 0/None/""。
+    cnt 系は個人釣果(is_boat≠1)・_is_plausible_cnt フィルタ後（FAQ Q2 と一致）。"""
+    sz_range = _FISH_SIZE_RANGE_MAP.get(fish, _FISH_SIZE_DEFAULT)
+    cm_limit = sz_range["cm_max"]
+    cnts, cms = [], []
+    ship_counts: dict = {}
+    years: set = set()
+    n_trips = 0
+    for r in hist_rows:
+        if r.get("tsuri_mono") != fish or r.get("area") != area:
+            continue
+        if _is_cancelled_row(r):
+            continue
+        n_trips += 1
+        sn = r.get("ship")
+        if sn:
+            ship_counts[sn] = ship_counts.get(sn, 0) + 1
+        d = r.get("date", "")
+        if len(d) >= 4:
+            years.add(d[:4])
+        if _cnt_personal_csv(r):
+            try:
+                v = int(float(r.get("cnt_max", "") or 0))
+                if v > 0 and _is_plausible_cnt(fish, v):
+                    cnts.append(v)
+            except (ValueError, TypeError):
+                pass
+        try:
+            v = int(float(r.get("size_max", "") or 0))
+            if 0 < v <= cm_limit:
+                cms.append(v)
+        except (ValueError, TypeError):
+            pass
+    cnts.sort()
+    cms.sort()
+    cn = len(cnts)
+    top_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
+    years_sorted = sorted(years)
+    years_str = ""
+    if years_sorted:
+        y0, y1 = years_sorted[0], years_sorted[-1]
+        years_str = f"（{y0}年〜{y1}年）" if y0 != y1 else f"（{y0}年）"
+    return {
+        "n_trips": n_trips,
+        "n_ships": len(ship_counts),
+        "top_ships": top_ships,
+        "cnt_med": cnts[cn // 2] if cn else None,
+        "cnt_p25": cnts[int(cn * 0.25)] if cn >= 4 else (cnts[0] if cn else None),
+        "cnt_p75": cnts[int(cn * 0.75)] if cn >= 4 else (cnts[-1] if cn else None),
+        "cnt_max": cnts[-1] if cn else None,
+        "cm_med": cms[len(cms) // 2] if cms else None,
+        "cm_max": cms[-1] if cms else None,
+        "years_str": years_str,
+    }
+
+
 def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=None, hist_rows=None, fish_area_summary=None, fish_top_areas=None):
     fa_out_dir = os.path.join(WEB_DIR, "fish_area")
     os.makedirs(fa_out_dir, exist_ok=True)
@@ -10628,6 +10715,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             avgs = [(c["count_range"]["min"] + c["count_range"]["max"]) // 2 for c in personal_catches]
             combo_avg = round(sum(avgs) / len(avgs), 1)
         ship_num = len(set(c["ship"] for c in catches))
+        # 過去3年コンボ統計（FAQ Q2 と同一ソース）。hero/intro/title の数値整合に使用。
+        _hs = _fa_hist_stats(fish, area, _hist_rows_for_fa)
         # トレンド判定
         this_w_fa, last_w_fa = get_yoy_data(history, fish, year_fa_g, week_num_fa_g) if history else (None, None)
         prev_w_fa = get_prev_week_data(history, fish, year_fa_g, week_num_fa_g) if history else None
@@ -10642,10 +10731,16 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 else: trend_fa = "flat"
         trend_cls = {"up": " trend-up", "down": " trend-down"}.get(trend_fa, "")
         trend_label = {"up": "↑ 上昇中", "down": "↓ 減少", "flat": "→ 横ばい"}.get(trend_fa, "-")
+        # hero スタッツは過去3年（hist）ベースに統一。intro・FAQ と数値を一致させ
+        # 「今週1便/最高45匹 vs FAQ 383便/最高273匹」の自己矛盾を解消する。
+        # hist が空（新規コンボ等）の場合のみ当週値にフォールバック。
+        _hs_ships = _hs["n_ships"] or ship_num
+        _hs_med = _hs["cnt_med"]
+        _hs_max = _hs["cnt_max"] if _hs["cnt_max"] is not None else (int(max_cnt) if max_cnt else None)
         stat_cards_fa = f"""<div class="stat-cards">
-  <div class="stat-card"><div class="sv">{ship_num}船宿</div><div class="sl">出船船宿数</div></div>
-  <div class="stat-card"><div class="sv">{'%.0f' % combo_avg if combo_avg else '-'}匹</div><div class="sl">釣果目安</div></div>
-  <div class="stat-card{trend_cls}"><div class="sv">{max_cnt if max_cnt else '-'}匹</div><div class="sl">最高釣果</div></div>
+  <div class="stat-card"><div class="sv">{_hs_ships}船宿</div><div class="sl">出船船宿数(3年)</div></div>
+  <div class="stat-card"><div class="sv">{(str(_hs_med) + '匹') if _hs_med else '-'}</div><div class="sl">釣果目安(中央値)</div></div>
+  <div class="stat-card"><div class="sv">{(str(_hs_max) + '匹') if _hs_max else '-'}</div><div class="sl">最高釣果(3年)</div></div>
 </div>"""
         # 旬カレンダー（数釣/型釣 × 12ヶ月 ヒートマップ・実データ駆動）
         # 2026/05/06: フォーマット統一のため年間シーズンバー→旬カレンダーに変更。
@@ -10747,7 +10842,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             )
         # 説明文 + FAQ（AdSense コンテンツ充実）
         # H3 (T22): area_description を渡してエリア固有1文を冒頭に差し込む
-        fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar, area_description=_area_desc_fa)
+        fa_intro_html = _build_fa_intro_html(fish, area, catches, decadal_calendar, area_description=_area_desc_fa, hist_stats=_hs)
         # T30 (2026/05/12): catches → _hist_rows_for_fa（3年分CSV）に変更で固定文章化。
         fa_faq_html, fa_faq_ld = build_fish_area_faq_html(fish, area, _hist_rows_for_fa, decadal_calendar, _area_desc_fa)
         # T38-A2: fa-related 3軸構造（閾値廃止・全件常駐・折り畳み付き）
@@ -10837,8 +10932,9 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         _fa_hist_n = fa_hist_count.get((fish, area), 0)
         _fa_ship_num = len({c.get("ship") for c in catches if c.get("ship")})
         if len(catches) >= 1 and max_cnt > 0:
-            fa_title_body = f"{fish}釣果 {area}【{_fa_ship_num}船宿・最高{int(max_cnt)}匹】"
-            desc = f"{area}の{fish}釣果を船宿別ランキングで掲載。今週{len(catches)}便・最高{int(max_cnt)}匹。過去{_fa_hist_n}件の実績から旬カレンダーと船宿情報を毎日更新。"
+            # title/hero は3年hist値で統一（_hs_ships/_hs_max は stat card と同値・自己矛盾防止）。
+            fa_title_body = f"{fish}釣果 {area}【{_hs_ships}船宿・最高{_hs_max}匹】"
+            desc = f"{area}の{fish}釣果を船宿別ランキングで掲載。今週{len(catches)}便・過去3年で最高{_hs_max}匹。旬カレンダーと船宿情報を毎日更新。"
         elif len(catches) >= 1:
             fa_title_body = f"{fish}釣果 {area}【今週{len(catches)}便出船】"
             desc = f"{area}の{fish}釣果情報。今週{len(catches)}便出船。過去{_fa_hist_n}件の実績から旬カレンダーと船宿別ランキングを毎日更新。"
@@ -10877,7 +10973,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"魚種一覧","item":"{SITE_URL}/fish/"}},{{"@type":"ListItem","position":3,"name":"{fish}の釣果","item":"{SITE_URL}/fish/{fish_slug(fish)}.html"}},{{"@type":"ListItem","position":4,"name":"{area}の{fish}釣果","item":"{page_url}"}}]}}</script>
   {fa_faq_ld}
   {GA_TAG}
-  {ADSENSE_TAG}
+  {'' if fa_noindex_tag else ADSENSE_TAG}
   <link rel="stylesheet" href="../style.css">
   <style>
 {fa_extra_css}
@@ -15195,7 +15291,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     url=page_url,
 )}
 {ld_json}
-{ADSENSE_TAG}
+{'' if ship_noindex_tag else ADSENSE_TAG}
 <link rel="stylesheet" href="../style.css">
 <style>{_SHIP_EXTRA_CSS}</style>
 </head>
@@ -15239,7 +15335,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 <h2 class="st">最近の釣果実績（直近7日・船宿実績）</h2>
 {recent_html}
 
-<div class="ad-slot">広告スペース（レクタングル）</div>
+{'' if ship_noindex_tag else _SHIP_AD_RECT}
 
 <!-- 明日の予測（有料・準備中チラ見せ） -->
 <div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid var(--prem);border-radius:var(--r);padding:16px;margin-bottom:16px">
@@ -15262,8 +15358,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 {phone_cta_block}
 </div>
 
-<ins class="adsbygoogle" style="display:block;min-height:0;height:auto" data-ad-client="ca-pub-7406401300491553" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({{}});</script>
+{'' if ship_noindex_tag else _SHIP_AD_INS}
 
 {monthly_archive_html}
 
