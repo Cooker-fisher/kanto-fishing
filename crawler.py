@@ -7647,8 +7647,8 @@ def build_html(catches, crawled_at, history, weather_data=None):
     # T19: hero_label / hero_date は冒頭（line 5963 付近）で既に確定済み
     # V2 概況テキスト（T19: hero_label 渡しでデータ日付を反映）
     overview_html = build_index_overview_text(catches, history, crawled_at, hero_label=hero_label)
-    # V2 ティザー
-    teaser_html = build_teaser_rotator_html()
+    # V2 ティザー（SHOW_PAID_TEASER で表示制御・有料オープン時に復活）
+    teaser_html = build_teaser_rotator_html() if SHOW_PAID_TEASER else ""
     # R3 (2026/05/06): 今週末の見どころ TOP3
     top_combos_html = build_top_combos_html(catches_for_summary, history, now)
     # R9 (2026/05/06): 人気の船宿（直近1週間 件数 TOP5）。
