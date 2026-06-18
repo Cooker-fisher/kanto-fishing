@@ -4651,6 +4651,78 @@ def build_top_combos_html(catches_for_summary, history, now):
     )
 
 
+def build_surge_combos_html(catches_for_summary, history, now):
+    """今週の急上昇 魚×エリア TOP3 — 先週比（便数）でランキング（2026/06/16）。
+    build_top_combos_html（件数主体）と相補。こちらは「先週より急に報告が増えたコンボ」を
+    可視化し、サイトの"予想・分析"価値を一目で伝える。
+    信頼性最優先: 先週・今週とも一定便数（distinct ship×date）を満たすコンボのみ対象とし、
+    少数ベースの偽の急騰（例 1→6便で+500%）を除外。% に実数を併記して透明性を担保する。
+    無料=事実 境界遵守: 便数・先週比のみ（理由解釈・★評価は載せない）。
+    """
+    # 信頼性フィルタ閾値: 先週ベース・今週ベース・最低上昇率
+    PREV_MIN, CUR_MIN, SURGE_MIN_PCT = 3, 5, 50
+    today_str = _display_today_str(now)
+    cutoff_str = (datetime.strptime(today_str, "%Y/%m/%d") - timedelta(days=6)).strftime("%Y/%m/%d")
+    combo = {}
+    for c in catches_for_summary:
+        d = c.get("date")
+        if not d or d < cutoff_str or d > today_str:
+            continue
+        for f in c.get("fish", []):
+            if f == "不明":
+                continue
+            combo.setdefault((f, c.get("area")), set()).add((c.get("ship"), d))
+    if not combo:
+        return ""
+    # 先週同期間（8〜14日前）
+    prev_now = now - timedelta(days=7)
+    try:
+        prev_recs = _load_recent_catches_for_index(prev_now, days=7)
+    except Exception:
+        prev_recs = []
+    prev_today = _display_today_str(prev_now)
+    prev_cutoff = (datetime.strptime(prev_today, "%Y/%m/%d") - timedelta(days=6)).strftime("%Y/%m/%d")
+    prev_combo = {}
+    for c in prev_recs:
+        d = c.get("date")
+        if not d or d < prev_cutoff or d > prev_today:
+            continue
+        for f in c.get("fish", []):
+            if f == "不明":
+                continue
+            prev_combo.setdefault((f, c.get("area")), set()).add((c.get("ship"), d))
+    surges = []
+    for key, recs in combo.items():
+        cnt = len(recs)
+        prev_cnt = len(prev_combo.get(key, set()))
+        if prev_cnt < PREV_MIN or cnt < CUR_MIN:
+            continue
+        pct = (cnt - prev_cnt) / prev_cnt * 100
+        if pct < SURGE_MIN_PCT:
+            continue
+        surges.append((key, cnt, prev_cnt, round(pct)))
+    if not surges:
+        return ""
+    surges.sort(key=lambda x: -x[3])
+    cards = []
+    for (fish, area), cnt, prev_cnt, pct_int in surges[:3]:
+        target = _fish_area_link_or_fish(fish, area, depth=0)
+        cards.append(
+            f'<a class="topc-card" href="{target}">'
+            f'<div class="topc-fish"><img src="assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" '
+            f'alt="" class="topc-emoji" width="20" height="20" loading="lazy" decoding="async" '
+            f'onerror="this.style.display=\'none\'">{fish} × {area}</div>'
+            f'<div class="topc-stats"><span class="topc-wow up">先週比 +{pct_int}%</span> '
+            f'先週{prev_cnt}→今週{cnt}件</div>'
+            f'</a>'
+        )
+    return (
+        '<h2 class="st">🔥 今週の急上昇 魚×エリア <span class="tag free">無料</span>'
+        '<span class="topc-period">先週比・直近1週間</span></h2>'
+        '<div class="topc-grid">' + "".join(cards) + '</div>'
+    )
+
+
 def build_teaser_rotator_html():
     """有料機能プレビュー ローテーターパネル（index.html用）
 
@@ -7651,6 +7723,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
     teaser_html = build_teaser_rotator_html() if SHOW_PAID_TEASER else ""
     # R3 (2026/05/06): 今週末の見どころ TOP3
     top_combos_html = build_top_combos_html(catches_for_summary, history, now)
+    surge_combos_html = build_surge_combos_html(catches_for_summary, history, now)
     # R9 (2026/05/06): 人気の船宿（直近1週間 件数 TOP5）。
     # build_ship_pages が ships.json で romaji_slug を持つ全船宿のページを生成するため、
     # _SHIP_ROMAJI 登録船宿のみリンク化すれば 404 にならない。
@@ -7938,6 +8011,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 )}
 <!-- TOP COMBOS: R3 今週末の見どころ -->
 {top_combos_html}
+{surge_combos_html}
 <!-- ZONE B: 釣れている魚 -->
 <h2 class="st">{"直近1週間 釣れている魚" if is_sparse_today else f"{hero_label} 釣れている魚"} <span class="tag free">無料</span></h2>
 <div class="fish-grid">{cards}</div>
