@@ -613,6 +613,32 @@ def validate_no_ads_on_noindex():
         ok(f"noindex {noindex_total} ページすべて広告コードなし")
 
 
+def validate_brand_not_h1():
+    """2026/06/16 SEO: ヘッダのサイト名「船釣り予想」を <h1> にしない（ロゴは非見出し要素）。
+    各ページの <h1> はそのページの主題であるべきで、ブランド名が全ページの H1 を占有すると
+    トピックの伝達が弱まる。crawler.py（_v2_header_nav / ship ヘッダ / x_post / 静的 pages）で
+    ブランドを <span class="brand"> に変更済み。本条件は全公開 HTML にブランド H1 が
+    再混入していないことを担保する。"""
+    print("\n[48] ヘッダのブランド名が <h1> でないこと（SEO・2026/06/16）")
+    bad = []
+    for root, _dirs, fnames in os.walk(DOCS):
+        for fn in fnames:
+            if not fn.endswith(".html"):
+                continue
+            path = os.path.join(root, fn)
+            try:
+                content = open(path, encoding="utf-8").read()
+            except Exception:
+                continue
+            # <h1> 直下（任意で <a> 包含）にブランド「船釣り<span>予想」が来る形を検出
+            if re.search(r'<h1[^>]*>\s*(<a[^>]*>)?\s*船釣り<span>予想', content):
+                bad.append(os.path.relpath(path, DOCS))
+    if bad:
+        fail(f"ブランド名が <h1> のページ {len(bad)} 件（ロゴは span.brand にする）: {bad[:5]}...")
+    else:
+        ok("全公開 HTML でブランド名は <h1> ではない（各ページ H1 は主題）")
+
+
 def validate_area_point_noindex():
     """T40 (2026/05/26): build_point_pages() 生成のポイント系 area ページが
     noindex 付与され、かつ sitemap.xml から除外されていることを検証する。
@@ -1749,6 +1775,7 @@ def main():
     validate_fish_content_sections()
     validate_xpost_no_operator_drafts()
     validate_no_ads_on_noindex()
+    validate_brand_not_h1()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
