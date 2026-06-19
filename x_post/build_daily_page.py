@@ -155,8 +155,8 @@ header .inner {
   align-items: center;
 }
 header .site-logo { text-decoration: none; }
-header h1 { font-size: 19px; font-weight: 700; color: var(--white); }
-header h1 span { color: var(--cta); }
+header .brand { font-size: 19px; font-weight: 700; color: var(--white); }
+header .brand span { color: var(--cta); }
 header .domain { font-size: 11px; opacity: .5; color: var(--white); }
 nav.gnav {
   background: var(--nav);
@@ -948,7 +948,7 @@ def build(ctx, commentary, output_path, png_url=None):
 
 <header>
   <div class="inner">
-    <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <a href="/" class="site-logo"><span class="brand">船釣り<span>予想</span></span></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>

@@ -2276,7 +2276,8 @@ def _forecast_page_head(title, depth_prefix="../"):
 </head><body>
 {_v2_header_nav('forecast')}
 <div class="c">
-<p class="bread"><a href="/">トップ</a> &rsaquo; <a href="/forecast/">釣果予測</a> &rsaquo; {title}</p>"""
+<p class="bread"><a href="/">トップ</a> &rsaquo; <a href="/forecast/">釣果予測</a> &rsaquo; {title}</p>
+<h1 class="page-h1">{title}</h1>"""
 
 
 def _forecast_page_foot():
@@ -4229,7 +4230,7 @@ a{color:var(--cta);text-decoration:none}a:hover{text-decoration:underline}
 .c{max-width:var(--mx);margin:0 auto;padding:0 14px}
 header{background:var(--hdr);color:#fff;padding:12px 20px;border-bottom:3px solid var(--cta)}
 header .inner{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-header h1{font-size:19px;font-weight:700}header h1 span{color:var(--cta)}a.site-logo{text-decoration:none;color:inherit}a.site-logo:hover{opacity:.8;text-decoration:none}
+header .brand{font-size:19px;font-weight:700}header .brand span{color:var(--cta)}a.site-logo{text-decoration:none;color:inherit}a.site-logo:hover{opacity:.8;text-decoration:none}
 header .domain{font-size:11px;opacity:.5}
 nav.gnav{background:var(--nav);padding:7px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;border-bottom:1px solid var(--border)}
 nav.gnav a{color:var(--sub);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px}
@@ -4463,7 +4464,7 @@ def _v2_header_nav(active_page=""):
     stale_banner = _stale_banner_html()
     return f"""{stale_banner}<header>
   <div class="inner">
-    <a href="/" class="site-logo"><h1>船釣り<span>予想</span></h1></a>
+    <a href="/" class="site-logo"><span class="brand">船釣り<span>予想</span></span></a>
     <span class="domain">funatsuri-yoso.com</span>
   </div>
 </header>
@@ -7832,7 +7833,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
             f'</div>'
         )
     index_extra_css = """.hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;text-align:center;padding:24px 14px 0}
-.hero-sub{font-size:12px;color:rgba(255,255,255,.6)}
+.hero-sub{font-size:12px;color:rgba(255,255,255,.6);margin:0;font-weight:400}
 .hero .n{font-size:48px;font-weight:800;color:var(--cta);line-height:1.1;font-family:'Outfit',system-ui}
 .hero .n u{font-size:16px;color:rgba(255,255,255,.7);font-weight:400;text-decoration:none;margin-left:3px;font-family:system-ui}
 .hero .info{font-size:12px;color:rgba(255,255,255,.6);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
@@ -7995,7 +7996,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 {_v2_header_nav('index')}
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-sub">関東船釣り釣果情報</div>
+  <h1 class="hero-sub">関東船釣り釣果情報・予想</h1>
   <div class="n">{hero_count}<u>件</u></div>
   <div class="info">
     <span class="dot"></span>
@@ -9014,7 +9015,7 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
 <body>
 {_v2_header_nav('fish')}
 <div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
-  <div class="c"><div style="font-size:26px;font-weight:800">魚種別 釣果一覧</div>
+  <div class="c"><h1 style="font-size:26px;font-weight:800;margin:0">魚種別 釣果一覧</h1>
   <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {_week_active}種</div></div>
 </div>
 <div class="c">
@@ -9100,7 +9101,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 
     area_extra_css = """\
 .area-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:22px 14px 18px;text-align:center}
-.area-hero h2{font-size:26px;font-weight:800;margin:0}
+.area-hero h1{font-size:26px;font-weight:800;margin:0}
 .area-hero .ah-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
 .area-hero .ah-m{font-size:20px;font-weight:800;color:var(--cta);margin-top:8px}
 .area-hero .ah-m small{font-size:12px;color:rgba(255,255,255,.6);font-weight:400}
@@ -9344,7 +9345,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 {_v2_header_nav('area')}
 <div class="area-hero">
   <div class="c">
-    <h2>{area}</h2>
+    <h1>{area}</h1>
     <div class="ah-sub">{group}</div>
     <div class="ah-m">本日の釣果報告は集計待ち</div>
     <div class="ah-stats">
@@ -9756,7 +9757,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 {_v2_header_nav('area')}
 <div class="area-hero">
   <div class="c">
-    <h2>{area}</h2>
+    <h1>{area}</h1>
     <div class="ah-sub">{group}</div>
     <div class="ah-m">直近7日: {_week_cnt}件・{_week_ships}船宿 <small>(最新: {_latest_label})</small></div>
     {ah_sea_html}
@@ -10099,7 +10100,7 @@ def build_area_index_html(now, hist_rows, fish_area_summary, area_top_fishes, re
 <body>
 {_v2_header_nav('area')}
 <div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
-  <div class="c"><div style="font-size:26px;font-weight:800">エリア別 釣果一覧</div>
+  <div class="c"><h1 style="font-size:26px;font-weight:800;margin:0">エリア別 釣果一覧</h1>
   <div style="font-size:12px;opacity:.7;margin-top:4px">今週釣果あり {_week_active_area}エリア</div></div>
 </div>
 <div class="c">
@@ -11066,7 +11067,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
       share_text=f"{area}の{fish}釣果情報 | 船釣り予想",
       share_url=page_url,
   )}
-  <h2 class="st"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fa-h2-emoji" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none'">{area}の{fish}釣果情報</h2>
+  <h1 class="st"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fa-h2-emoji" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none'">{area}の{fish}釣果情報</h1>
   {fa_intro_html}
   {stat_cards_fa}
   {chart7_html_fa}
@@ -11202,7 +11203,7 @@ def build_calendar_page(crawled_at=""):
 {_v2_header_nav('calendar')}
 <div class="c">
   <p class="bread"><a href="/">トップ</a> &rsaquo; 旬カレンダー</p>
-  <h2 class="st">月別 釣りものカレンダー <span class="tag free">無料</span></h2>
+  <h1 class="st">月別 釣りものカレンダー <span class="tag free">無料</span></h1>
   <div class="legend">
     <div class="leg"><div class="leg-dot" style="background:#fde8d4;border:1px solid #b84500"></div>数釣りピーク◎</div>
     <div class="leg"><div class="leg-dot" style="background:#ece5fd;border:1px solid #6d28d9"></div>型釣りピーク◎</div>
@@ -15268,7 +15269,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     header_html = (
         _stale_banner_html() +
         '<header><div class="inner">'
-        '<h1><a href="/">船釣り<span>予想</span></a></h1>'
+        '<a href="/" class="site-logo"><span class="brand">船釣り<span>予想</span></span></a>'
         '<span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span>'
         '</div></header>'
         '<nav class="gnav">'
