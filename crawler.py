@@ -5026,7 +5026,7 @@ def build_fish_season_map_html(fish, decadal_calendar, current_month=None, hist_
     fish_decades = decadal_calendar.get(fish, {}) if decadal_calendar else {}
     month_labels = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
     ths = "".join(f"<th>{m}</th>" for m in month_labels)
-    source_note = "過去3年の関東船釣り釣果データより集計（2023〜2025年）"
+    source_note = "過去3年の関東船釣り釣果データより集計（2023年〜）"
     # ヘルパー: counts/max から levels (1..4) 配列を構築
     def _counts_to_levels(counts, max_v):
         out = []
@@ -5169,7 +5169,7 @@ def build_area_season_map_html(area, area_decadal, top_fish_list, hist_rows=None
   <span class="sm-lc sm-lc-2"></span>普通
   <span class="sm-lc sm-lc-3"></span>良
   <span class="sm-lc sm-lc-4"></span>◎
-  <span style="margin-left:auto;font-size:10px">※ 過去3年の釣果データより集計（2023〜2025年）</span>
+  <span style="margin-left:auto;font-size:10px">※ 過去3年の釣果データより集計（2023年〜）</span>
 </div>"""
 
 def build_fish_guide_html(fish, tackle_data, content=None):
@@ -5980,7 +5980,7 @@ def _build_area_top_fish_q1_text(area, hist_rows):
                 parts.append(f"{fname}（{fcnt:,}便）")
         else:
             parts.append(f"{fname}（{fcnt:,}便）")
-    head = f"過去3年間（2023〜2026）の{area}の釣果データは{total:,}便・{n_kinds}魚種が記録されています。"
+    head = f"2023年以降の{area}の釣果データは{total:,}便・{n_kinds}魚種が記録されています。"
     body = f"件数の多い順に{'、'.join(parts)}が主力です。"
     tail = "潮回り・水温・季節で構成は変動するため、本ページの旬カレンダーや最新の釣果カードも併せてご確認ください。"
     return head + body + tail
@@ -10295,12 +10295,13 @@ def _build_fish_area_season_q1_text(fish, area, hist_rows):
     months_indexed = [(i + 1, c) for i, c in enumerate(months) if c > 0]
     if not months_indexed:
         return (
-            f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}便で、{rank_str}です。"
+            f"2023年以降の{area}での{fish}釣果データは{N:,}便で、{rank_str}です。"
             f"月別データは取得中で、最新の釣果報告をご確認ください。"
         )
     sorted_months = sorted(months_indexed, key=lambda x: -x[1])
     top3 = sorted_months[: min(3, len(sorted_months))]
-    top3_str = "、".join(f"{m}月（{c}件）" for m, c in top3)
+    # 表示は月を時系列順に（件数順のまま並べると「5月・10月・4月」のように不自然になる）
+    top3_str = "、".join(f"{m}月（{c}件）" for m, c in sorted(top3, key=lambda x: x[0]))
     n_months_with_data = len(months_indexed)
     extra = ""
     if len(sorted_months) >= 4:
@@ -10317,7 +10318,7 @@ def _build_fish_area_season_q1_text(fish, area, hist_rows):
         months_text = f"年間{n_months_with_data}ヶ月のみに実績が記録されています"
     peak_label = "三大ピーク" if len(top3) >= 3 else ("二大ピーク" if len(top3) == 2 else "ピーク月")
     return (
-        f"過去3年間（2023〜2026）の{area}での{fish}釣果データは{N:,}便で、{rank_str}です。"
+        f"2023年以降の{area}での{fish}釣果データは{N:,}便で、{rank_str}です。"
         f"月別では{top3_str}が{peak_label}。{extra}{months_text}。"
         f"釣果は潮回り・水温・群れの回遊で日々変動するため、最新の釣果報告も併せてご確認ください。"
     )
