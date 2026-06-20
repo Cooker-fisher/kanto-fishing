@@ -841,6 +841,31 @@ def build_weather_section(weather_data):
 # ============================================================
 # 釣果予測エンジン（海況予報 × 過去実績）
 # ============================================================
+# エリア正規化（2026/06/20）: 船宿が自由表記する area 名のうち、同一物理港を指す
+# 別名を正規港名へ統合する（表示層のみ。ソースCSVは原表記を保持する＝B案）。
+# 重複の根拠: 船宿重複 or 同一市の「X市Y港」フル表記 or 旧港/新港の分裂。
+# 誤統合回避のため曖昧なもの（横浜/勝浦/日立/金沢漁港/小網代/茨城平潟）は対象外。
+_AREA_CANONICAL = {
+    "鹿島": "鹿島港", "鹿島市新浜": "鹿島港", "鹿嶋旧港": "鹿島港", "鹿嶋新港": "鹿島港",
+    "久慈": "日立久慈港",
+    "洲崎": "洲崎港",
+    "網代": "網代港",
+    "佐島港": "佐島",
+    "横浜市金沢八景乙舳": "金沢八景", "横浜市金沢八景平潟": "金沢八景",
+    "横浜港": "横浜港･新山下",
+    "葉山町葉山鐙摺港": "葉山あぶずり港",
+    "平塚漁港": "平塚港",
+    "富士市田子の浦漁港": "田子の浦港",
+    "江見漁港": "江見",
+    "大洗町大洗港": "大洗港",
+    "松崎町松崎港": "松崎港",
+    "大田区羽田": "羽田",
+}
+
+def _canonicalize_area(a):
+    """area 名を正規港名へ統合（未登録はそのまま）。"""
+    return _AREA_CANONICAL.get(a, a) if a else a
+
 def _load_historical_catches():
     """data/V2/*.csv から全釣果を読み込み（V2正規化済み、約100,000行）
     修正 2026/04/16: data/*.csv (V1スタブ・数行のみ) ではなく
@@ -878,6 +903,8 @@ def _load_historical_catches():
                     for _pcol in ("point_place1", "point_place2", "point_place3"):
                         if row.get(_pcol) == "NULL":
                             row[_pcol] = ""
+                    # エリア正規化（表示層・同一物理港の別名を統合）
+                    row["area"] = _canonicalize_area(row.get("area", ""))
                     rows.append(row)
         except Exception:
             continue
@@ -1059,7 +1086,7 @@ def _load_recent_catches_for_index(now, days=7):
                             weight_kg = {"min": kgmin, "max": kgmax}
                         rows_out.append({
                             "ship":        row.get("ship", ""),
-                            "area":        row.get("area", ""),
+                            "area":        _canonicalize_area(row.get("area", "")),
                             "date":        d,
                             "fish":        guess_fish(fish_raw),
                             "fish_raw":    fish_raw,
@@ -9035,6 +9062,37 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
 # ============================================================
 # #10: エリア別ページ
 # ============================================================
+def build_area_redirects():
+    """エリア正規化（_AREA_CANONICAL）で統合された旧 area ページ（旧slug）を
+    canonical slug へ meta refresh redirect する（2026/06/20）。
+    SEO の重複・データ分散を解消。旧slugが存在し canonical と異なる場合のみ生成。"""
+    out_dir = os.path.join(WEB_DIR, "area")
+    os.makedirs(out_dir, exist_ok=True)
+    rom = _AREA_ROMAJI
+    n = 0
+    for old_area, canon_area in _AREA_CANONICAL.items():
+        old_slug = rom.get(old_area)
+        canon_slug = rom.get(canon_area)
+        if not old_slug or not canon_slug or old_slug == canon_slug:
+            continue
+        new_url = f"{SITE_URL}/area/{canon_slug}.html"
+        html = f"""<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0;url={new_url}">
+<link rel="canonical" href="{new_url}">
+<meta name="robots" content="noindex,follow">
+<title>移動しました | 船釣り予想</title>
+</head>
+<body>このページは <a href="{new_url}">{canon_area}の釣果情報</a> に統合されました。</body></html>"""
+        with open(os.path.join(out_dir, f"{old_slug}.html"), "w", encoding="utf-8") as f:
+            f.write(html)
+        n += 1
+    if n:
+        print(f"エリア統合リダイレクト: {n} 件 → area/*.html")
+    return n
+
+
 def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=None, fish_area_summary=None, area_top_fishes=None):
     os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
     now = datetime.now(JST).replace(tzinfo=None)
@@ -18222,6 +18280,9 @@ def main():
 
     # 表示・集計用は正常値のみ
     valid_catches = [c for c in all_catches if not c.get("anomaly")]
+    # エリア正規化（表示層）: 当日クロール分も正規港名に統合（ソース all_catches/CSV は原表記保持）
+    for _c in valid_catches:
+        _c["area"] = _canonicalize_area(_c.get("area", ""))
 
     history = load_history()
     history = update_history(valid_catches, history)
@@ -18352,6 +18413,8 @@ def main():
         recent7=_shared_recent7,
         crawled_at=crawled_at,
     )
+    # エリア正規化で統合された旧 area ページを canonical へリダイレクト
+    build_area_redirects()
     build_ship_pages(valid_catches, crawled_at)
     build_ship_redirects()
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
