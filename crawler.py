@@ -9711,7 +9711,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         # 「便」= ユニーク (ship, date) の出船。エリアは1便で複数魚種=複数行になるため、
         # 行数ではなくユニーク便を数える（2026/06/20 修正: 行数を便と誤表示し約2倍水増ししていた）。
         _area_trip_set = {
-            (_r.get("ship"), _r.get("date")) for _r in (_hist_rows_for_placeholder or [])
+            (_r.get("ship"), _r.get("date"), _r.get("trip_no")) for _r in (_hist_rows_for_placeholder or [])
             if _r.get("area") == area and not _is_cancelled_row(_r)
             and (_r.get("tsuri_mono") or "").strip() not in _AREA_SKIP_FISH
             and _r.get("ship") and _r.get("date")
@@ -10267,7 +10267,8 @@ def _build_fish_area_season_q1_text(fish, area, hist_rows):
         fish_area_counts[a] = fish_area_counts.get(a, 0) + 1
         if a == area:
             fa_rows.append(r)
-    N = len(fa_rows)
+    # 便 = ユニーク (ship, date, trip_no)（行数だと重複行/main・sub で水増し）
+    N = len({(r.get("ship"), r.get("date"), r.get("trip_no")) for r in fa_rows})
     if N == 0:
         return f"{area}での{fish}の釣果データは現在集計中です。本ページの最新釣果カードをご確認ください。"
     months = [0] * 12
@@ -10505,18 +10506,19 @@ def _fa_hist_stats(fish, area, hist_rows):
     sz_range = _FISH_SIZE_RANGE_MAP.get(fish, _FISH_SIZE_DEFAULT)
     cm_limit = sz_range["cm_max"]
     cnts, cms = [], []
-    ship_counts: dict = {}
+    ship_trips: dict = {}
+    trip_set: set = set()
     years: set = set()
-    n_trips = 0
     for r in hist_rows:
         if r.get("tsuri_mono") != fish or r.get("area") != area:
             continue
         if _is_cancelled_row(r):
             continue
-        n_trips += 1
+        # 便 = ユニーク (ship, date, trip_no)。同便の重複行や main/sub 重複で水増ししない。
+        trip_set.add((r.get("ship"), r.get("date"), r.get("trip_no")))
         sn = r.get("ship")
         if sn:
-            ship_counts[sn] = ship_counts.get(sn, 0) + 1
+            ship_trips.setdefault(sn, set()).add((r.get("date"), r.get("trip_no")))
         d = r.get("date", "")
         if len(d) >= 4:
             years.add(d[:4])
@@ -10536,7 +10538,8 @@ def _fa_hist_stats(fish, area, hist_rows):
     cnts.sort()
     cms.sort()
     cn = len(cnts)
-    top_ships = sorted(ship_counts.items(), key=lambda x: -x[1])[:3]
+    n_trips = len(trip_set)
+    top_ships = sorted(((s, len(v)) for s, v in ship_trips.items()), key=lambda x: -x[1])[:3]
     years_sorted = sorted(years)
     years_str = ""
     if years_sorted:
@@ -10544,7 +10547,7 @@ def _fa_hist_stats(fish, area, hist_rows):
         years_str = f"（{y0}年〜{y1}年）" if y0 != y1 else f"（{y0}年）"
     return {
         "n_trips": n_trips,
-        "n_ships": len(ship_counts),
+        "n_ships": len(ship_trips),
         "top_ships": top_ships,
         "cnt_med": cnts[cn // 2] if cn else None,
         "cnt_p25": cnts[int(cn * 0.25)] if cn >= 4 else (cnts[0] if cn else None),
@@ -10746,14 +10749,17 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
 
     # T29: fish_area 同士の相互リンク用に、3年分 hist の (fish, area) 件数を集計。
     # _is_cancelled_row フィルタで欠航除外（MAJOR-1 修正）。
-    fa_hist_count: dict = {}
+    # 便 = ユニーク (ship, date, trip_no)。行数（魚種×便レコード）を便と数えると
+    # 重複行/main・sub で水増しするため set で出船便を数える（2026/06/20 修正）。
+    _fa_hist_trips: dict = {}
     for r in _hist_rows_for_fa:
         if _is_cancelled_row(r):
             continue
         _f = r.get("tsuri_mono")
         _a = r.get("area")
         if _f and _a and _f != "不明":
-            fa_hist_count[(_f, _a)] = fa_hist_count.get((_f, _a), 0) + 1
+            _fa_hist_trips.setdefault((_f, _a), set()).add((r.get("ship"), r.get("date"), r.get("trip_no")))
+    fa_hist_count: dict = {k: len(v) for k, v in _fa_hist_trips.items()}
     will_generate_fa = {(f, a) for (f, a), cs in fa_summary.items() if len(cs) >= 1}
     # ディスク上に既に存在する fish_area HTML も link 対象に含める（T29: 通年リンク網）
     fa_out_dir = os.path.join(WEB_DIR, "fish_area")
@@ -11029,10 +11035,10 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             desc = f"{area}の{fish}釣果を船宿別ランキングで掲載。今週{len(catches)}便・過去3年で最高{_hs_max}匹。旬カレンダーと船宿情報を毎日更新。"
         elif len(catches) >= 1:
             fa_title_body = f"{fish}釣果 {area}【今週{len(catches)}便出船】"
-            desc = f"{area}の{fish}釣果情報。今週{len(catches)}便出船。過去{_fa_hist_n}件の実績から旬カレンダーと船宿別ランキングを毎日更新。"
+            desc = f"{area}の{fish}釣果情報。今週{len(catches)}便出船。過去{_fa_hist_n}便の実績から旬カレンダーと船宿別ランキングを毎日更新。"
         elif _fa_hist_n > 0:
-            fa_title_body = f"{fish}釣果 {area}【過去{_fa_hist_n}件の実績】"
-            desc = f"{area}の{fish}釣果情報。過去{_fa_hist_n}件の実績から旬カレンダーと船宿別ランキングを公開。例年の最盛期と釣果傾向を確認できます。"
+            fa_title_body = f"{fish}釣果 {area}【過去{_fa_hist_n}便の実績】"
+            desc = f"{area}の{fish}釣果情報。過去{_fa_hist_n}便の実績から旬カレンダーと船宿別ランキングを公開。例年の最盛期と釣果傾向を確認できます。"
         else:
             fa_title_body = f"{fish}釣果 {area}の船宿情報"
             desc = f"{area}の{fish}釣果情報。旬カレンダーと船宿別ランキングを公開。例年の最盛期と釣果傾向を確認できます。"
