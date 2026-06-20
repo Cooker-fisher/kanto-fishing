@@ -9707,13 +9707,17 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         # → 主要魚種を title に出し CTR 訴求。_top_fish_str（直近7日 top3・既存変数）使用。
         # title本体と「| 船釣り予想」分離（OGP共用・P2/P3 同型）。数値は実測=事実。
         # 2026/06/20 SEO(CTR): スニペット先頭を「過去3年累計実績」にし、薄い「直近7日2件」表示で
-        # クリックを取り逃すのを防ぐ（GSC: 港名クエリ pos8-10 CTR≈0% 対策）。3年便数は hist から集計。
-        _area_hist_n = sum(
-            1 for _r in (_hist_rows_for_placeholder or [])
+        # クリックを取り逃すのを防ぐ（GSC: 港名クエリ pos8-10 CTR≈0% 対策）。
+        # 「便」= ユニーク (ship, date) の出船。エリアは1便で複数魚種=複数行になるため、
+        # 行数ではなくユニーク便を数える（2026/06/20 修正: 行数を便と誤表示し約2倍水増ししていた）。
+        _area_trip_set = {
+            (_r.get("ship"), _r.get("date")) for _r in (_hist_rows_for_placeholder or [])
             if _r.get("area") == area and not _is_cancelled_row(_r)
             and (_r.get("tsuri_mono") or "").strip() not in _AREA_SKIP_FISH
-        )
-        _area_hist_lead = f"過去3年{_area_hist_n:,}便の釣果実績。" if _area_hist_n >= 30 else ""
+            and _r.get("ship") and _r.get("date")
+        }
+        _area_hist_n = len(_area_trip_set)
+        _area_hist_lead = f"過去3年{_area_hist_n:,}便の出船実績。" if _area_hist_n >= 30 else ""
         if _top_fish_str:
             area_title_body = f"{area}の釣果【{_top_fish_str}／{_week_ships}船宿】"
             area_desc = f"{area}（{group}）の船釣り釣果。{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
