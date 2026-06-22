@@ -24,9 +24,18 @@ from collections import defaultdict
 from urllib.parse import unquote
 
 ANALYTICS_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(ANALYTICS_DIR)
 GSC_GLOB = os.path.join(ANALYTICS_DIR, "gsc", "*.csv")
 GA4_GLOB = os.path.join(ANALYTICS_DIR, "ga4", "*.csv")
 REPORT_DIR = os.path.join(ANALYTICS_DIR, "report")
+DATA_GLOB = os.path.join(REPO_ROOT, "data", "V2", "*.csv")
+FISH_ROMAJI = os.path.join(REPO_ROOT, "normalize", "fish_romaji_map.json")
+
+# 検索順位→平均CTR の経験則カーブ（organic・日本語SERP想定の保守値）
+CTR_CURVE = {1: 0.27, 2: 0.15, 3: 0.10, 4: 0.07, 5: 0.05,
+             6: 0.04, 7: 0.032, 8: 0.026, 9: 0.022, 10: 0.019}
+CTR_TAIL = 0.012   # 11位以下
+TARGET_POS = 3     # 「あと一歩」クエリの目標順位（ここまで上げたら何クリック増えるか）
 
 # 惜しいクエリの抽出基準
 SD_POS_MIN = 5.0     # これより上位（=数字が小さい）は既に1ページ目上位なので対象外
@@ -173,6 +182,164 @@ def _delta(cur, prev):
     return f"{cur}（{sign}{abs(d)} / {pct}）"
 
 
+def ctr_for_pos(pos):
+    """順位→期待CTR。小数順位は四捨五入してカーブ参照。"""
+    p = int(round(pos))
+    if p < 1:
+        p = 1
+    return CTR_CURVE.get(p, CTR_TAIL)
+
+
+def _agg_query(gsc, start, end):
+    """クエリ別に impr/clicks/加重順位/代表ページ を集約。"""
+    a = defaultdict(lambda: {"impr": 0, "clicks": 0, "pos_w": 0.0, "pages": defaultdict(int)})
+    for r in gsc:
+        if not within(r.get("date", ""), start, end):
+            continue
+        q = r.get("query", "")
+        if not q:
+            continue
+        m = _i(r.get("impressions"))
+        a[q]["impr"] += m
+        a[q]["clicks"] += _i(r.get("clicks"))
+        a[q]["pos_w"] += _f(r.get("position")) * m
+        a[q]["pages"][r.get("page", "")] += m
+    return a
+
+
+# ---------- ① クリック増分試算 ----------
+def click_uplift(gsc, start, end):
+    out = []
+    for q, v in _agg_query(gsc, start, end).items():
+        if v["impr"] < SD_MIN_IMPR:
+            continue
+        pos = v["pos_w"] / v["impr"]
+        if pos <= TARGET_POS:   # 既に目標以上は対象外
+            continue
+        gain = v["impr"] * (ctr_for_pos(TARGET_POS) - ctr_for_pos(pos))
+        if gain < 1:
+            continue
+        top_page = max(v["pages"].items(), key=lambda kv: kv[1])[0] if v["pages"] else ""
+        out.append({"query": q, "impr": v["impr"], "pos": round(pos, 1),
+                    "clicks": v["clicks"], "gain": round(gain, 1), "page": top_page})
+    out.sort(key=lambda d: -d["gain"])
+    return out
+
+
+# ---------- ② CTR異常ページ ----------
+def ctr_anomaly_pages(gsc, start, end):
+    a = defaultdict(lambda: {"impr": 0, "clicks": 0, "pos_w": 0.0})
+    for r in gsc:
+        if not within(r.get("date", ""), start, end):
+            continue
+        pg = r.get("page", "")
+        m = _i(r.get("impressions"))
+        a[pg]["impr"] += m
+        a[pg]["clicks"] += _i(r.get("clicks"))
+        a[pg]["pos_w"] += _f(r.get("position")) * m
+    out = []
+    for pg, v in a.items():
+        if v["impr"] < 20:   # 母数の少ないページは除外
+            continue
+        pos = v["pos_w"] / v["impr"]
+        actual = v["clicks"] / v["impr"]
+        expect = ctr_for_pos(pos)
+        # 期待CTRの半分未満＝snippet/title が弱い疑い
+        if actual < expect * 0.5:
+            out.append({"page": pg, "impr": v["impr"], "pos": round(pos, 1),
+                        "actual": actual, "expect": expect,
+                        "lost": round(v["impr"] * (expect - actual), 1)})
+    out.sort(key=lambda d: -d["lost"])
+    return out
+
+
+# ---------- ③ 釣果 × 集客 突合 ----------
+def catch_vs_traffic(ga4, start, end):
+    try:
+        romaji = __import__("json").load(open(FISH_ROMAJI, encoding="utf-8"))
+    except Exception:
+        return None
+    # 直近の釣果件数（data/V2/*.csv・対象期間と前後を含む当月+前月）
+    months = set()
+    d = dt.date.fromisoformat(end)
+    for k in range(2):
+        months.add((d - dt.timedelta(days=30 * k)).isoformat()[:7])
+    catch = defaultdict(int)
+    for p in glob.glob(DATA_GLOB):
+        if not any(m in os.path.basename(p) for m in months):
+            continue
+        try:
+            for r in _read_csv(p):
+                t = r.get("tsuri_mono", "")
+                if t and t not in ("NULL", "不明", ""):
+                    catch[t] += 1
+        except Exception:
+            continue
+    if not catch:
+        return None
+    # GA4 魚種ページ UU（slug 単位）
+    uu = defaultdict(int)
+    for r in ga4:
+        if not within(r.get("date", ""), start, end):
+            continue
+        path = r.get("pagePath", "")
+        if path.startswith("/fish/") and path.rstrip("/").count("/") >= 2:
+            slug = unquote(path.split("/")[-1]).replace(".html", "")
+            uu[slug] += _i(r.get("activeUsers"))
+    rows = []
+    for jp, cnt in catch.items():
+        slug = romaji.get(jp)
+        if not slug:
+            continue
+        rows.append({"fish": jp, "catch": cnt, "uu": uu.get(slug, 0)})
+    if not rows:
+        return None
+    # 釣果ランクと集客ランクの乖離で「鉱脈（釣れてるのに未集客）」を判定
+    by_catch = sorted(rows, key=lambda x: -x["catch"])
+    catch_rank = {r["fish"]: i for i, r in enumerate(by_catch)}
+    by_uu = sorted(rows, key=lambda x: -x["uu"])
+    uu_rank = {r["fish"]: i for i, r in enumerate(by_uu)}
+    n = len(rows)
+    for r in rows:
+        cr, ur = catch_rank[r["fish"]], uu_rank[r["fish"]]
+        # 釣果は上位30%なのに集客は下位50%＝強化候補
+        if cr < n * 0.3 and ur > n * 0.5:
+            r["flag"] = "🔥強化候補"
+        elif ur < n * 0.3 and cr > n * 0.5:
+            r["flag"] = "集客先行"
+        else:
+            r["flag"] = ""
+    return by_catch
+
+
+# ---------- ④ 順位トレンド（今週 vs 前週） ----------
+def rank_trend(gsc, end_date):
+    end = end_date
+    cur = (end - dt.timedelta(days=6)).isoformat(), end.isoformat()
+    prev = (end - dt.timedelta(days=13)).isoformat(), (end - dt.timedelta(days=7)).isoformat()
+
+    def wpos(s, e):
+        a = defaultdict(lambda: [0.0, 0])  # pos_w, impr
+        for r in gsc:
+            if within(r.get("date", ""), s, e):
+                q = r.get("query", "")
+                m = _i(r.get("impressions"))
+                a[q][0] += _f(r.get("position")) * m
+                a[q][1] += m
+        return {q: (pw / im) for q, (pw, im) in a.items() if im >= SD_MIN_IMPR}
+
+    cp, pp = wpos(*cur), wpos(*prev)
+    rows = []
+    for q in set(cp) & set(pp):
+        delta = cp[q] - pp[q]   # 負=順位上昇（数字が小さくなった）
+        if abs(delta) < 0.5:
+            continue
+        rows.append({"query": q, "now": round(cp[q], 1), "prev": round(pp[q], 1),
+                     "delta": round(delta, 1)})
+    rows.sort(key=lambda d: d["delta"])  # 上昇（負）が先頭
+    return rows
+
+
 def build_markdown(gsc, ga4, window):
     dates = [r.get("date", "") for r in gsc] + [r.get("date", "") for r in ga4]
     dates = [d for d in dates if d]
@@ -237,6 +404,63 @@ def build_markdown(gsc, ga4, window):
             L.append(f"| {name} | {u} |")
     else:
         L.append("_該当なし_")
+
+    # ① クリック増分試算
+    up = click_uplift(gsc, start, end)
+    L.append(f"\n## 📈 上げたら効くクエリ（{TARGET_POS}位まで上げた時のクリック増分試算）")
+    L.append("「表示は多いが順位が低くて取りこぼし中」を増分クリックの大きい順に。h1/title強化の横展開先。\n")
+    if up:
+        L.append("| 検索クエリ | 表示 | 現順位 | 現クリック | 推定+クリック/月 | 対象ページ |")
+        L.append("|---|---:|---:|---:|---:|---|")
+        for d in up[:15]:
+            pg = unquote(d["page"]).replace("https://funatsuri-yoso.com", "") or "/"
+            L.append(f"| {d['query']} | {d['impr']} | {d['pos']} | {d['clicks']} | +{d['gain']} | {pg} |")
+    else:
+        L.append("_該当なし_")
+
+    # ② CTR異常ページ
+    an = ctr_anomaly_pages(gsc, start, end)
+    L.append("\n## 🔧 CTR不足ページ（表示は多いのにクリックされない＝title/説明文が弱い疑い）")
+    if an:
+        L.append("| ページ | 表示 | 順位 | 実CTR | 期待CTR | 取りこぼし |")
+        L.append("|---|---:|---:|---:|---:|---:|")
+        for d in an[:12]:
+            pg = unquote(d["page"]).replace("https://funatsuri-yoso.com", "") or "/"
+            L.append(f"| {pg} | {d['impr']} | {d['pos']} | {d['actual']*100:.1f}% | {d['expect']*100:.1f}% | {d['lost']} |")
+    else:
+        L.append("_該当なし（CTRは概ね順位相応）_")
+
+    # ③ 釣果 × 集客 突合
+    cvt = catch_vs_traffic(ga4, start, end)
+    L.append("\n## 🐟×🔍 釣果 × 集客 突合（釣れてるのに検索集客できてない鉱脈）")
+    if cvt:
+        L.append("「🔥強化候補」= 釣果は上位なのに検索UUが下位。コンテンツ/SEO強化の優先魚種。\n")
+        L.append("| 魚種 | 釣果件数 | 検索UU | 判定 |")
+        L.append("|---|---:|---:|---|")
+        for d in cvt[:20]:
+            L.append(f"| {d['fish']} | {d['catch']} | {d['uu']} | {d.get('flag','')} |")
+    else:
+        L.append("_釣果データ未取得（data/V2 か fish_romaji_map.json が見つからない）_")
+
+    # ④ 順位トレンド
+    rt = rank_trend(gsc, dt.date.fromisoformat(end))
+    L.append("\n## 🔼 順位トレンド（今週 vs 前週・上昇順）")
+    L.append("施策の効果測定用。▲=上昇 / ▼=下降。\n")
+    if rt:
+        L.append("| 検索クエリ | 前週順位 | 今週順位 | 変化 |")
+        L.append("|---|---:|---:|---|")
+        for d in rt[:8]:
+            mark = f"▲{abs(d['delta'])}" if d["delta"] < 0 else f"▼{d['delta']}"
+            L.append(f"| {d['query']} | {d['prev']} | {d['now']} | {mark} |")
+        if len(rt) > 8:
+            L.append("\n下降が大きいもの:")
+            L.append("| 検索クエリ | 前週順位 | 今週順位 | 変化 |")
+            L.append("|---|---:|---:|---|")
+            for d in sorted(rt, key=lambda x: -x["delta"])[:5]:
+                if d["delta"] > 0:
+                    L.append(f"| {d['query']} | {d['prev']} | {d['now']} | ▼{d['delta']} |")
+    else:
+        L.append("_2週分のデータが揃うと表示_")
 
     L.append("\n---\n_自動生成: analytics/seo_report.py_")
     return "\n".join(L) + "\n", end
