@@ -3550,6 +3550,16 @@ def load_area_description():
             return json.load(f)
     except: return {}
 
+def load_area_seo_alias():
+    """normalize/area_seo_alias.json を {area: [別称, ...]} で返す。
+    検索需要のある呼称ゆれ（例: 飯岡港⇔飯岡漁港）を本文/metaに自然注入し取りこぼしを防ぐ。"""
+    path = os.path.join("normalize", "area_seo_alias.json")
+    if not os.path.exists(path): return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except: return {}
+
 def load_decadal_calendar():
     """analysis.sqlite の decadal_calendar を {fish: {decade_no: {cnt_index, size_index}}} で返す"""
     if not os.path.exists(ANALYSIS_DB): return {}
@@ -9105,6 +9115,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
     # today_iso は海況予報（weather_data.forecast）の検索キーなので実日付のまま
     today_iso = now.strftime("%Y-%m-%d")
     area_desc_data = load_area_description()
+    area_seo_alias = load_area_seo_alias()
     area_decadal = load_area_decadal()
     fixed_faq_data_area = _load_fixed_faq()
     # 過去CSV（引数で渡された共有キャッシュを使用、なければ個別ロード）
@@ -9780,12 +9791,19 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         }
         _area_hist_n = len(_area_trip_set)
         _area_hist_lead = f"過去3年{_area_hist_n:,}便の出船実績。" if _area_hist_n >= 30 else ""
+        # 呼称ゆれ（飯岡港⇔飯岡漁港 等）。検索需要があるのに表記不一致で取りこぼす分を補う
+        _area_aliases = [a for a in area_seo_alias.get(area, []) if a and a != area]
+        _alias_meta = f"「{'」「'.join(_area_aliases)}」とも呼ばれます。" if _area_aliases else ""
+        _alias_intro_html = (
+            f'<p class="area-alias-lead">{area}（{"・".join(_area_aliases)}）周辺で出船する船宿の最新釣果と出船状況をまとめています。</p>'
+            if _area_aliases else ""
+        )
         if _top_fish_str:
             area_title_body = f"{area}の釣果【{_top_fish_str}／{_week_ships}船宿】"
-            area_desc = f"{area}（{group}）の船釣り釣果。{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
+            area_desc = f"{area}（{group}）の船釣り釣果。{_alias_meta}{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
         else:
             area_title_body = f"{area}の船釣り釣果情報"
-            area_desc = f"{area}（{group}）の船釣り釣果情報。{_area_hist_lead}旬カレンダー・船宿情報・最寄りアクセス・海況データを掲載。"
+            area_desc = f"{area}（{group}）の船釣り釣果情報。{_alias_meta}{_area_hist_lead}旬カレンダー・船宿情報・最寄りアクセス・海況データを掲載。"
         area_title_str = f"{area_title_body} | 船釣り予想"
 
         # 有料ティザー
@@ -9843,6 +9861,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
       share_text=f"{area}の船釣り釣果情報 | 船釣り予想",
       share_url=area_url,
   )}
+  {_alias_intro_html}
   <h2 class="st">このエリアで今週釣れている魚 <span class="tag free">無料</span></h2>
   {fia_desc_html}<div class="fia-grid">{fia_cards if fia_cards else '<p style="color:var(--muted);font-size:13px">今週の釣果はまだ集計中です</p>'}</div>
   {past_fish_section_html}
