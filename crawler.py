@@ -8629,19 +8629,23 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                 _fa_active_chips.append(_chip)
             else:
                 _fa_fold_chips.append(_chip)
-        if _fa_active_chips or _fa_fold_chips:
-            _faa_parts = []
-            if _fa_active_chips:
-                _faa_parts.append(f'<p class="tier-label">★ 今週実績あり（{len(_fa_active_chips)}エリア）</p>')
-                _faa_parts.append(f'<div class="chip-wrap">{"".join(_fa_active_chips)}</div>')
-            if _fa_fold_chips:
-                _faa_parts.append(
-                    f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(_fa_fold_chips)}エリア）を表示</summary>'
-                    f'<div class="chip-wrap">{"".join(_fa_fold_chips)}</div></details>'
-                )
-            # 固定文: 主要エリア解説（lead 文・不変条件 #45 対象）
-            _fa_lead = (f'<p class="fish-content-lead fish-content-text">{fc["areas"]}</p>'
-                        if fc.get("areas") else "")
+        _faa_parts = []
+        if _fa_active_chips:
+            _faa_parts.append(f'<p class="tier-label">★ 今週実績あり（{len(_fa_active_chips)}エリア）</p>')
+            _faa_parts.append(f'<div class="chip-wrap">{"".join(_fa_active_chips)}</div>')
+        if _fa_fold_chips:
+            _faa_parts.append(
+                f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(_fa_fold_chips)}エリア）を表示</summary>'
+                f'<div class="chip-wrap">{"".join(_fa_fold_chips)}</div></details>'
+            )
+        # 固定文: 主要エリア解説（lead 文・不変条件 #45 対象）。
+        # ⚠ chip の有無（週次の釣果変動）に依存させない。fc["areas"] は月1見直しの
+        #   キュレーション固定文で、#45 が常時カウントする前提。chip 不在の週に
+        #   この lead が消えると固定文合計が ~50-120 字目減りし 800 字割れで CI fail する
+        #   （2026-06-21 ホウボウ/メバル/ヒラマサ/カレイ で発生）。固定文は常に出力する。
+        _fa_lead = (f'<p class="fish-content-lead fish-content-text">{fc["areas"]}</p>'
+                    if fc.get("areas") else "")
+        if _fa_lead or _faa_parts:
             fish_area_section_html = (
                 '<section class="fish-areas-all">'
                 f'<h2 class="st">エリア別の{fish}釣果情報</h2>'
