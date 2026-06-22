@@ -1,6 +1,17 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/06/16
+最終更新: 2026/06/21
 最新コミット: PR#59 サイトバグ一斉修正（favicon・NULL魚種・slug衝突・tel連結・デッドリンク掃引・404・不変条件#40〜44）マージ済み
+
+---
+
+## ⚠️ 直近作業（2026/06/21・branch claude/github-actions-ci-logs-dnavf5・未マージ）— CI fail 恒久対策（#45）
+
+crawl.yml が validate_output #45 で fail（ホウボウ/メバル/ヒラマサ/カレイ 800字未満）。
+**根本原因**: build_fish_pages のエリア解説固定文 lead が週次 chip 有無に依存して消えていた
+（chip ゼロ週に 50-120字目減り）。固定文 full 800-820字台の42/63魚種が時限爆弾だった。
+**修正**: ① crawler.py で `fc["areas"]` を chip から切り離し常時出力（恒久・本丸）。
+② fish_content.json の薄い18魚種にプローズ追記し最小 full=816字。
+詳細: 90_決定ログ「2026-06-21 CI fail 恒久対策」。残リスク=areas placeholder drop は月次チェックで #45 が捕捉。
 
 ---
 
