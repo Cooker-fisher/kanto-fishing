@@ -9407,7 +9407,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 {_v2_header_nav('area')}
 <div class="area-hero">
   <div class="c">
-    <h1>{area}</h1>
+    <h1>{area}の船釣り釣果</h1>
     <div class="ah-sub">{group}</div>
     <div class="ah-m">本日の釣果報告は集計待ち</div>
     <div class="ah-stats">
@@ -9831,7 +9831,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 {_v2_header_nav('area')}
 <div class="area-hero">
   <div class="c">
-    <h1>{area}</h1>
+    <h1>{area}の船釣り釣果</h1>
     <div class="ah-sub">{group}</div>
     <div class="ah-m">直近7日: {_week_cnt}件・{_week_ships}船宿 <small>(最新: {_latest_label})</small></div>
     {ah_sea_html}

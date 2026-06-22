@@ -35,11 +35,15 @@ jobs:
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
         run: python3 analytics/fetch_ga4.py
 
+      - name: generate SEO report
+        continue-on-error: true
+        run: python3 analytics/seo_report.py
+
       - name: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -- analytics/gsc analytics/ga4 2>/dev/null || true
+          git add -- analytics/gsc analytics/ga4 analytics/report 2>/dev/null || true
           git commit -m "analytics update $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
           for attempt in 1 2 3 4 5; do
             git fetch origin main || { sleep $((attempt*5)); continue; }

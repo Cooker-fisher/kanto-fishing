@@ -11,11 +11,30 @@ Google Search Console（検索クエリ・順位）と GA4（UU・PV・流入）
 analytics/
 ├── fetch_gsc.py          # Search Console 取得 → analytics/gsc/YYYY-MM.csv
 ├── fetch_ga4.py          # GA4 取得 → analytics/ga4/YYYY-MM.csv
+├── seo_report.py         # GSC+GA4 → SEO・集客レポート（標準ライブラリのみ）
 ├── analytics_common.py   # 認証・CSV upsert 共通処理
 ├── requirements.txt      # google-api-python-client / google-auth
 ├── gsc/YYYY-MM.csv       # date,query,page,clicks,impressions,ctr,position
-└── ga4/YYYY-MM.csv       # date,channel,pagePath,activeUsers,screenPageViews,sessions,engagementRate
+├── ga4/YYYY-MM.csv       # date,channel,pagePath,activeUsers,screenPageViews,sessions,engagementRate
+└── report/
+    ├── latest.md         # 最新レポート（上書き）
+    └── YYYY-MM-DD.md     # 日付スナップショット
 ```
+
+## レポート（seo_report.py）
+
+`fetch_*` の蓄積 CSV から SEO・集客レポートを生成する（追加依存なし）。
+ワークフローで毎日 fetch 後に自動再生成され `analytics/report/latest.md` に出力。
+
+```bash
+python analytics/seo_report.py --window 28
+```
+
+含む分析:
+- **週次サマリー**: 直近7日 vs 前7日のクリック/表示/UU/PV 増減
+- **惜しいクエリ**: 6〜20位で表示はあるがクリックが伸びてない検索語（title/見出し強化で1ページ目を狙う SEO 即効ネタ）+ 対象ページ
+- **集客ページ TOP20**: GA4 ページ別 UU/PV（魚種/エリア/予報 種別ラベル付き）
+- **魚種別・エリア別 集客**: pagePath を集約した UU ランキング
 
 自動実行: `.github/workflows/analytics.yml`（毎日 06:00 JST + 手動 workflow_dispatch）。
 Secret 未登録のうちは graceful skip するので、コードを先に入れても CI は壊れない。
