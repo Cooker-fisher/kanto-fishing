@@ -9798,11 +9798,13 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             f'<p class="area-alias-lead">{area}（{"・".join(_area_aliases)}）周辺で出船する船宿の最新釣果と出船状況をまとめています。</p>'
             if _area_aliases else ""
         )
+        # SERP で「{別称} 釣果」検索時にタイトル内別称が太字一致しCTRが上がる（最重要別称1件のみ）
+        _area_title_name = f"{area}（{_area_aliases[0]}）" if _area_aliases else area
         if _top_fish_str:
-            area_title_body = f"{area}の釣果【{_top_fish_str}／{_week_ships}船宿】"
+            area_title_body = f"{_area_title_name}の釣果【{_top_fish_str}／{_week_ships}船宿】"
             area_desc = f"{area}（{group}）の船釣り釣果。{_alias_meta}{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
         else:
-            area_title_body = f"{area}の船釣り釣果情報"
+            area_title_body = f"{_area_title_name}の船釣り釣果情報"
             area_desc = f"{area}（{group}）の船釣り釣果情報。{_alias_meta}{_area_hist_lead}旬カレンダー・船宿情報・最寄りアクセス・海況データを掲載。"
         area_title_str = f"{area_title_body} | 船釣り予想"
 
