@@ -1,0 +1,55 @@
+name: analytics
+on:
+  schedule:
+    - cron: '0 21 * * *'   # 毎日 06:00 JST（GSC/GA4 取得）。crawl(07:30 UTC) と時間帯を分離
+  workflow_dispatch:
+
+# main への push を直列化（crawl 等と main を取り合う rebase 競合を防ぐ）
+concurrency:
+  group: crawl-push-main
+  cancel-in-progress: false
+
+jobs:
+  analytics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: install analytics dependencies
+        run: pip install -r analytics/requirements.txt
+
+      - name: fetch Search Console
+        continue-on-error: true   # Secret 未登録のうちは graceful skip。落ちても他を止めない
+        env:
+          GOOGLE_SA_KEY: ${{ secrets.GOOGLE_SA_KEY }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+        run: python3 analytics/fetch_gsc.py
+
+      - name: fetch GA4
+        continue-on-error: true
+        env:
+          GOOGLE_SA_KEY: ${{ secrets.GOOGLE_SA_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+        run: python3 analytics/fetch_ga4.py
+
+      - name: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- analytics/gsc analytics/ga4 2>/dev/null || true
+          git commit -m "analytics update $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main || { sleep $((attempt*5)); continue; }
+            if git rebase -X theirs origin/main; then
+              if git push origin main; then
+                echo "push 成功 (attempt $attempt)"; exit 0
+              fi
+            else
+              git rebase --abort || true
+            fi
+            echo "push 競合/失敗 → リトライ $attempt"; sleep $((attempt*5))
+          done
+          echo "::error::push が 5 回失敗"; exit 1

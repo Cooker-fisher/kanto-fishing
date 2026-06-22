@@ -1,0 +1,4 @@
+# analytics/ 取得スクリプト（fetch_gsc.py / fetch_ga4.py）専用依存。
+# crawler.py 本体は標準ライブラリのみ（この依存とは無関係）。
+google-api-python-client>=2.100.0
+google-auth>=2.23.0
