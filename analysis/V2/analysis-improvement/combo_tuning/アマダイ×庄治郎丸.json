@@ -1,13 +1,13 @@
 {
   "fish": "アマダイ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-27",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 35.96,
-    "bl2_wmape": 37.86,
-    "oos_r": 0.449,
-    "n_records": 433,
+    "wmape_h0": 35.93,
+    "bl2_wmape": 37.94,
+    "oos_r": 0.458,
+    "n_records": 434,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -79,6 +79,11 @@
       "date": "2026-04-27",
       "action": "point_backtest_updated",
       "note": "best=平塚沖 wmape=35.7% imp=0.04pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=35.8% imp=0.08pt"
     }
   ],
   "rejected_factors": [
@@ -146,19 +151,19 @@
   "point_models": [
     {
       "name": "平塚沖",
-      "n": 433,
+      "n": 434,
       "wmape_h0": 35.8,
-      "bl2_wmape": 37.9,
-      "oos_r": 0.458,
-      "improvement_pt": 0.15
+      "bl2_wmape": 38.0,
+      "oos_r": 0.461,
+      "improvement_pt": 0.08
     }
   ],
   "best_point": {
     "name": "平塚沖",
     "wmape_h0": 35.8,
-    "improvement_pt": 0.15
+    "improvement_pt": 0.08
   },
-  "improvement_pt": 0.15,
+  "improvement_pt": 0.08,
   "trip_models": [
     {
       "trip_no": 2,

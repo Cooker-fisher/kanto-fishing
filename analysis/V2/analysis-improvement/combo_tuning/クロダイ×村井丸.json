@@ -1,12 +1,12 @@
 {
   "fish": "クロダイ",
   "ship": "村井丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 30.86,
+    "wmape_h0": 30.97,
     "bl2_wmape": 39.29,
-    "oos_r": 0.403,
+    "oos_r": 0.396,
     "n_records": 60,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,15 +15,15 @@
     {
       "name": "保田沖",
       "n": 60,
-      "wmape_h0": 30.8,
+      "wmape_h0": 30.9,
       "bl2_wmape": 39.3,
-      "oos_r": 0.404,
+      "oos_r": 0.396,
       "improvement_pt": 0.06
     }
   ],
   "best_point": {
     "name": "保田沖",
-    "wmape_h0": 30.8,
+    "wmape_h0": 30.9,
     "improvement_pt": 0.06
   },
   "improvement_pt": 0.06,
@@ -72,6 +72,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=保田沖 wmape=30.8% imp=0.06pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=保田沖 wmape=30.9% imp=0.06pt"
     }
   ]
 }

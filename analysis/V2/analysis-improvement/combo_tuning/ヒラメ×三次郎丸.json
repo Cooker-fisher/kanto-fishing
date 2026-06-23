@@ -1,32 +1,32 @@
 {
   "fish": "ヒラメ",
   "ship": "三次郎丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.66,
+    "wmape_h0": 37.87,
     "bl2_wmape": 45.78,
-    "oos_r": 0.482,
-    "n_records": 304,
+    "oos_r": 0.504,
+    "n_records": 311,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "飯岡沖",
-      "n": 283,
-      "wmape_h0": 37.2,
-      "bl2_wmape": 45.4,
-      "oos_r": 0.473,
-      "improvement_pt": 0.43
+      "n": 289,
+      "wmape_h0": 37.7,
+      "bl2_wmape": 45.3,
+      "oos_r": 0.487,
+      "improvement_pt": 0.21
     }
   ],
   "best_point": {
     "name": "飯岡沖",
-    "wmape_h0": 37.2,
-    "improvement_pt": 0.43
+    "wmape_h0": 37.7,
+    "improvement_pt": 0.21
   },
-  "improvement_pt": 0.43,
+  "improvement_pt": 0.21,
   "history": [
     {
       "date": "2026-04-22",
@@ -87,6 +87,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=飯岡沖 wmape=37.2% imp=0.43pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=飯岡沖 wmape=37.7% imp=0.21pt"
     }
   ]
 }

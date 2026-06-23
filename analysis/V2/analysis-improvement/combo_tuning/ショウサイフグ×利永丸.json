@@ -1,0 +1,37 @@
+{
+  "fish": "ショウサイフグ",
+  "ship": "利永丸",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 102.04,
+    "bl2_wmape": 80.29,
+    "oos_r": -0.228,
+    "n_records": 49,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "太東沖",
+      "n": 39,
+      "wmape_h0": 79.7,
+      "bl2_wmape": 84.1,
+      "oos_r": 0.237,
+      "improvement_pt": 22.33
+    }
+  ],
+  "best_point": {
+    "name": "太東沖",
+    "wmape_h0": 79.7,
+    "improvement_pt": 22.33
+  },
+  "improvement_pt": 22.33,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=太東沖 wmape=79.7% imp=22.33pt"
+    }
+  ]
+}

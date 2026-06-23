@@ -1,13 +1,13 @@
 {
   "fish": "イサキ",
   "ship": "敷嶋丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.26,
-    "bl2_wmape": 39.11,
-    "oos_r": 0.575,
-    "n_records": 46,
+    "wmape_h0": 31.45,
+    "bl2_wmape": 36.45,
+    "oos_r": 0.515,
+    "n_records": 56,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -116,6 +116,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=大原沖 wmape=30.9% imp=0.37pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=30.0% imp=1.46pt"
     }
   ],
   "rejected_factors": [
@@ -183,19 +188,19 @@
   "point_models": [
     {
       "name": "大原沖",
-      "n": 38,
-      "wmape_h0": 30.9,
-      "bl2_wmape": 39.9,
-      "oos_r": 0.628,
-      "improvement_pt": 0.37
+      "n": 47,
+      "wmape_h0": 30.0,
+      "bl2_wmape": 36.2,
+      "oos_r": 0.569,
+      "improvement_pt": 1.46
     }
   ],
   "best_point": {
     "name": "大原沖",
-    "wmape_h0": 30.9,
-    "improvement_pt": 0.37
+    "wmape_h0": 30.0,
+    "improvement_pt": 1.46
   },
-  "improvement_pt": 0.37,
+  "improvement_pt": 1.46,
   "trip_models": [
     {
       "trip_no": 1,

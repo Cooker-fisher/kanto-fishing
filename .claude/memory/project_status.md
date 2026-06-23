@@ -1,6 +1,6 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/06/21
-最新コミット: PR#59 サイトバグ一斉修正（favicon・NULL魚種・slug衝突・tel連結・デッドリンク掃引・404・不変条件#40〜44）マージ済み
+最終更新: 2026/06/23
+最新コミット: PR#59 サイトバグ一斉修正マージ済み（その後 2026/06/23 ローカル復帰→C層フル再分析を実施・下記「✅ 直近完了 2026/06/23」。**分析のみ・サイト未反映**）
 
 ---
 
@@ -34,15 +34,54 @@ C層 analysis.sqlite はローカル限定（〜6/24不可）。fish_content 型
 
 ## ⚠️ 現在の制約・環境（2026/06/10 確定・次セッション必読）
 
-1. **ローカルマシン使用不可（〜2026-06-24 頃まで約2週間）**
-   - weather_cache.sqlite（400MB・gitignore・ローカルのみ）を要する作業は不可:
-     C層フル再実行（run_full_deepdive）・rebuild_weather_cache・koueimaru ③気象推定
-   - この期間はクラウド/Actions でできる作業を優先: コード改善・E層・SEO・X運用・設計・Plan作成
+1. ~~**ローカルマシン使用不可（〜2026-06-24 頃まで約2週間）**~~ → **2026/06/23 解除済み**
+   - weather_cache を 06-22 まで rebuild 済 + C層フル再分析 完了（下記「✅ 直近完了 2026/06/23」）
+   - 未実施のローカル専用作業: koueimaru ③気象推定 / cmems 更新（04-28 で停止中・headline 改善余地）
 2. **X は投稿可能になった**（アカウントロック解除済み）。ただし認知はまだ低い。
    x_post/ の日次生成物を実際に配信する運用が次の一手。
 3. **マネタイズ戦略修正（ユーザー確定 2026/06/10）**: D層予測は有料ティザーではなく
    **当面無料公開**で集客に使う。的中実績が蓄積し月間数千〜1万UU 到達後に一部有料化を再検討。
    詳細: 90_決定ログ.md「2026-06-10 マネタイズ戦略の修正」
+
+---
+
+## ✅ 直近完了（2026/06/23・main agent）— ローカル復帰→C層フル再分析
+
+ローカル使用不可（〜6/24）解除に伴い、止まっていたC層パイプラインを実行。釣果は自動クロールで
+6/22まで最新（128,104件・CSV 129,162行）だが、分析は 5/22 の T32 状態で約1ヶ月停止していた。
+
+**手順**: ① ローカル同期（リモートより **164コミット遅れ**→最新化）② weather_cache rebuild
+（193座標・2023〜06-22）③ `run_full_deepdive --workers 6 --reset-best`（**59/59 OK・36分11秒**）
+
+**⚠️ `rebuild_weather_cache.py` のバグ2件を発見・修正**（詳細: [[feedback_weather_rebuild_pitfalls]]）:
+- `END_DATE=today` → Archive API 範囲外 **400**（archive は前日まで）→ `END_DATE=前日` に修正
+- 片側フェッチ失敗時に `INSERT OR REPLACE` が反対側の列を **NULL破壊** → COALESCE保存型 upsert に修正
+- marine API **429**（192座標連続で枯渇）で14座標 marine 欠落 → `ocean/_repair_marine.py` で全復旧
+
+**結果（H=0, n>=30・T32比）**:
+
+| 指標 | T32 | 再分析 | 差分 |
+|---|---|---|---|
+| combo_meta | 384 | **439** | **+55** ✅ |
+| H=0 cnt_avg wMAPE P50 | 37.27% | 38.56% | +1.29pt ⚠️ |
+| BL2 勝率 | 95.8% | 90.9% | -4.9pt ⚠️ |
+| OOS r 平均 | 0.500 | 0.459 | -0.041 ⚠️ |
+| promise_break cnt/size/kg/composite | 6/32/24/14% | 6/31/24/14% | ほぼ横ばい ✅ |
+
+**判定: headline 悪化は構成効果（benign）・既存品質は維持**。apples-to-apples（共通358コンボ）では
+wMAPE 37.27→37.92（**+0.65pt**）・BL2勝率 95.8→**95.5%**でほぼ不変・**324/358 安定**。全体悪化は
+新規36コンボ（wMAPE P50=**47.85%**・n>=30 を新たに超えた marginal）が中央値と BL2 を引き下げたもので、
+新規カバレッジであって既存劣化ではない。主要KPI(promise_break)は維持。共通コンボの +0.65pt 小幅劣化は
+**stale cmems（04-28・recent 月の SLA/CHL 欠落）が一因の可能性**。
+
+**成果物**: `analysis.sqlite`（439コンボ）/ バックアップ `analysis.sqlite.bak_pre_reanalysis_2026-06-23`（T32）/
+`analysis/V2/analysis-improvement/_kpi_{baseline_T32,reanalysis_2026-06-23}.json`
+
+**次（要ユーザー判断・サイト未反映で停止中）**:
+1. **このままサイト反映**（crawler.py 再生成→validate_output→push）。カバレッジ+55 を本番化・AdSense Tier2 アンブロック
+2. **cmems 更新**（build_cmems）→再分析で headline 回復を狙ってから反映
+3. 保留
+- 監視: マダコ×秀漁丸 wMAPE +23pt の個別劣化（要因未調査）
 
 ---
 

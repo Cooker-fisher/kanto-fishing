@@ -1,0 +1,37 @@
+{
+  "fish": "シロギス",
+  "ship": "広島屋",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 30.86,
+    "bl2_wmape": 29.59,
+    "oos_r": 0.306,
+    "n_records": 43,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横浜市 横浜港新山下",
+      "n": 31,
+      "wmape_h0": 21.7,
+      "bl2_wmape": 33.0,
+      "oos_r": 0.538,
+      "improvement_pt": 9.19
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横浜市 横浜港新山下",
+    "wmape_h0": 21.7,
+    "improvement_pt": 9.19
+  },
+  "improvement_pt": 9.19,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 横浜港新山下 wmape=21.7% imp=9.19pt"
+    }
+  ]
+}

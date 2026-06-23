@@ -1,10 +1,10 @@
 {
   "fish": "タチウオ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.26,
+    "wmape_h0": 47.19,
     "bl2_wmape": 60.3,
     "oos_r": 0.567,
     "n_records": 241,
@@ -151,6 +151,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=平塚沖 wmape=44.7% imp=2.61pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=44.7% imp=2.52pt"
     }
   ],
   "rejected_factors": [
@@ -222,15 +227,15 @@
       "wmape_h0": 44.7,
       "bl2_wmape": 60.3,
       "oos_r": 0.58,
-      "improvement_pt": 2.61
+      "improvement_pt": 2.52
     }
   ],
   "best_point": {
     "name": "平塚沖",
     "wmape_h0": 44.7,
-    "improvement_pt": 2.61
+    "improvement_pt": 2.52
   },
-  "improvement_pt": 2.61,
+  "improvement_pt": 2.52,
   "trip_models": [
     {
       "trip_no": 2,

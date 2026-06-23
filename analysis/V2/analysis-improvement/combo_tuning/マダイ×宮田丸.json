@@ -1,13 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "宮田丸",
-  "last_reviewed": "2026-05-12",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.07,
-    "bl2_wmape": 52.35,
-    "oos_r": 0.691,
-    "n_records": 110,
+    "wmape_h0": 38.45,
+    "bl2_wmape": 52.36,
+    "oos_r": 0.698,
+    "n_records": 118,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -116,6 +116,11 @@
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=日立沖 wmape=37.4% imp=0.67pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=日立沖 wmape=38.3% imp=0.18pt"
     }
   ],
   "rejected_factors": [
@@ -201,17 +206,17 @@
   "point_models": [
     {
       "name": "日立沖",
-      "n": 110,
-      "wmape_h0": 37.4,
-      "bl2_wmape": 52.3,
-      "oos_r": 0.704,
-      "improvement_pt": 0.67
+      "n": 118,
+      "wmape_h0": 38.3,
+      "bl2_wmape": 52.4,
+      "oos_r": 0.7,
+      "improvement_pt": 0.18
     }
   ],
   "best_point": {
     "name": "日立沖",
-    "wmape_h0": 37.4,
-    "improvement_pt": 0.67
+    "wmape_h0": 38.3,
+    "improvement_pt": 0.18
   },
-  "improvement_pt": 0.67
+  "improvement_pt": 0.18
 }

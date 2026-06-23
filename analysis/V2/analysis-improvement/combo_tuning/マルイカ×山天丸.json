@@ -1,40 +1,40 @@
 {
   "fish": "マルイカ",
   "ship": "山天丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 35.32,
-    "bl2_wmape": 45.33,
-    "oos_r": 0.544,
-    "n_records": 227,
+    "wmape_h0": 35.57,
+    "bl2_wmape": 43.95,
+    "oos_r": 0.513,
+    "n_records": 256,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "剣崎沖",
-      "n": 106,
-      "wmape_h0": 31.6,
-      "bl2_wmape": 44.2,
-      "oos_r": 0.588,
-      "improvement_pt": 3.69
+      "n": 135,
+      "wmape_h0": 32.6,
+      "bl2_wmape": 41.8,
+      "oos_r": 0.54,
+      "improvement_pt": 2.96
     },
     {
       "name": "久里浜沖",
       "n": 110,
-      "wmape_h0": 37.1,
+      "wmape_h0": 37.2,
       "bl2_wmape": 51.4,
       "oos_r": 0.47,
-      "improvement_pt": -1.82
+      "improvement_pt": -1.59
     }
   ],
   "best_point": {
     "name": "剣崎沖",
-    "wmape_h0": 31.6,
-    "improvement_pt": 3.69
+    "wmape_h0": 32.6,
+    "improvement_pt": 2.96
   },
-  "improvement_pt": 3.69,
+  "improvement_pt": 2.96,
   "points": [
     {
       "name": "久里浜沖",
@@ -222,6 +222,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=31.6% imp=3.69pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=32.6% imp=2.96pt"
     }
   ],
   "trip_models": [

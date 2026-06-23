@@ -1,7 +1,7 @@
 {
   "fish": "タチウオ",
   "ship": "恵漁丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 22.62,
@@ -141,6 +141,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=吉田沖 wmape=21.5% imp=1.12pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=吉田沖 wmape=21.5% imp=1.11pt"
     }
   ],
   "rejected_factors": [
@@ -230,13 +235,13 @@
       "wmape_h0": 21.5,
       "bl2_wmape": 29.2,
       "oos_r": 0.603,
-      "improvement_pt": 1.12
+      "improvement_pt": 1.11
     }
   ],
   "best_point": {
     "name": "吉田沖",
     "wmape_h0": 21.5,
-    "improvement_pt": 1.12
+    "improvement_pt": 1.11
   },
-  "improvement_pt": 1.12
+  "improvement_pt": 1.11
 }

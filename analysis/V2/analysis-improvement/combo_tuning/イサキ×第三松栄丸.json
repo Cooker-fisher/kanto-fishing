@@ -1,0 +1,37 @@
+{
+  "fish": "イサキ",
+  "ship": "第三松栄丸",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 28.62,
+    "bl2_wmape": 29.72,
+    "oos_r": -0.01,
+    "n_records": 50,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "大原沖",
+      "n": 50,
+      "wmape_h0": 27.2,
+      "bl2_wmape": 29.7,
+      "oos_r": 0.142,
+      "improvement_pt": 1.44
+    }
+  ],
+  "best_point": {
+    "name": "大原沖",
+    "wmape_h0": 27.2,
+    "improvement_pt": 1.44
+  },
+  "improvement_pt": 1.44,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=27.2% imp=1.44pt"
+    }
+  ]
+}

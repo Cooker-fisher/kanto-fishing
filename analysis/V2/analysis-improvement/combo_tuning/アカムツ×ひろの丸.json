@@ -1,0 +1,37 @@
+{
+  "fish": "アカムツ",
+  "ship": "ひろの丸",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 56.94,
+    "bl2_wmape": 56.83,
+    "oos_r": -0.219,
+    "n_records": 52,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "茨城県 神栖市 波崎港",
+      "n": 51,
+      "wmape_h0": 32.6,
+      "bl2_wmape": 57.8,
+      "oos_r": 0.676,
+      "improvement_pt": 24.32
+    }
+  ],
+  "best_point": {
+    "name": "茨城県 神栖市 波崎港",
+    "wmape_h0": 32.6,
+    "improvement_pt": 24.32
+  },
+  "improvement_pt": 24.32,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=茨城県 神栖市 波崎港 wmape=32.6% imp=24.32pt"
+    }
+  ]
+}

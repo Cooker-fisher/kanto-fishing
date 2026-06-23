@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "巳之助丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 30.75,
-    "bl2_wmape": 33.51,
-    "oos_r": 0.297,
-    "n_records": 626,
+    "wmape_h0": 31.0,
+    "bl2_wmape": 34.34,
+    "oos_r": 0.261,
+    "n_records": 660,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -161,6 +161,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=25.4% imp=5.35pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=25.2% imp=5.78pt"
     }
   ],
   "rejected_factors": [
@@ -228,27 +233,27 @@
   "point_models": [
     {
       "name": "観音崎沖",
-      "n": 240,
-      "wmape_h0": 25.4,
-      "bl2_wmape": 28.2,
-      "oos_r": 0.451,
-      "improvement_pt": 5.35
+      "n": 242,
+      "wmape_h0": 25.2,
+      "bl2_wmape": 28.1,
+      "oos_r": 0.452,
+      "improvement_pt": 5.78
     },
     {
       "name": "久里浜沖",
-      "n": 376,
-      "wmape_h0": 31.5,
-      "bl2_wmape": 35.0,
-      "oos_r": 0.313,
-      "improvement_pt": -0.79
+      "n": 408,
+      "wmape_h0": 31.6,
+      "bl2_wmape": 35.7,
+      "oos_r": 0.283,
+      "improvement_pt": -0.57
     }
   ],
   "best_point": {
     "name": "観音崎沖",
-    "wmape_h0": 25.4,
-    "improvement_pt": 5.35
+    "wmape_h0": 25.2,
+    "improvement_pt": 5.78
   },
-  "improvement_pt": 5.35,
+  "improvement_pt": 5.78,
   "trip_models": [
     {
       "trip_no": 2,

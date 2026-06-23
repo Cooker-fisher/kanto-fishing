@@ -1,7 +1,7 @@
 {
   "fish": "アラ",
   "ship": "三次郎丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 12.19,
@@ -14,19 +14,19 @@
   "point_models": [
     {
       "name": "飯岡沖",
-      "n": 49,
-      "wmape_h0": 9.8,
-      "bl2_wmape": 23.9,
-      "oos_r": 0.736,
-      "improvement_pt": 2.36
+      "n": 57,
+      "wmape_h0": 11.9,
+      "bl2_wmape": 23.5,
+      "oos_r": 0.686,
+      "improvement_pt": 0.3
     }
   ],
   "best_point": {
     "name": "飯岡沖",
-    "wmape_h0": 9.8,
-    "improvement_pt": 2.36
+    "wmape_h0": 11.9,
+    "improvement_pt": 0.3
   },
-  "improvement_pt": 2.36,
+  "improvement_pt": 0.3,
   "history": [
     {
       "date": "2026-04-22",
@@ -82,6 +82,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=飯岡沖 wmape=9.8% imp=2.36pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=飯岡沖 wmape=11.9% imp=0.3pt"
     }
   ]
 }

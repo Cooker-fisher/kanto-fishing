@@ -1,13 +1,13 @@
 {
   "fish": "クロムツ",
   "ship": "第八鶴丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.7,
-    "bl2_wmape": 70.25,
-    "oos_r": 0.648,
-    "n_records": 64,
+    "wmape_h0": 48.85,
+    "bl2_wmape": 71.92,
+    "oos_r": 0.654,
+    "n_records": 66,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -102,6 +102,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=川津沖 wmape=47.6% imp=0.06pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=川津沖 wmape=48.5% imp=0.33pt"
     }
   ],
   "rejected_factors": [
@@ -187,17 +192,17 @@
   "point_models": [
     {
       "name": "川津沖",
-      "n": 64,
-      "wmape_h0": 47.6,
-      "bl2_wmape": 70.3,
-      "oos_r": 0.648,
-      "improvement_pt": 0.06
+      "n": 66,
+      "wmape_h0": 48.5,
+      "bl2_wmape": 71.9,
+      "oos_r": 0.656,
+      "improvement_pt": 0.33
     }
   ],
   "best_point": {
     "name": "川津沖",
-    "wmape_h0": 47.6,
-    "improvement_pt": 0.06
+    "wmape_h0": 48.5,
+    "improvement_pt": 0.33
   },
-  "improvement_pt": 0.06
+  "improvement_pt": 0.33
 }

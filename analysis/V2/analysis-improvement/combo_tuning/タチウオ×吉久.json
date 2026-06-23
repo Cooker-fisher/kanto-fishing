@@ -1,64 +1,72 @@
 {
   "fish": "タチウオ",
   "ship": "吉久",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.22,
-    "bl2_wmape": 38.77,
-    "oos_r": 0.542,
-    "n_records": 716,
+    "wmape_h0": 33.38,
+    "bl2_wmape": 38.69,
+    "oos_r": 0.525,
+    "n_records": 750,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "観音崎沖",
-      "n": 80,
-      "wmape_h0": 18.4,
-      "bl2_wmape": 51.3,
-      "oos_r": 0.874,
-      "improvement_pt": 14.82
+      "n": 85,
+      "wmape_h0": 18.5,
+      "bl2_wmape": 50.1,
+      "oos_r": 0.864,
+      "improvement_pt": 14.9
+    },
+    {
+      "name": "海堡沖",
+      "n": 35,
+      "wmape_h0": 18.7,
+      "bl2_wmape": 33.1,
+      "oos_r": 0.784,
+      "improvement_pt": 14.71
     },
     {
       "name": "猿島沖",
-      "n": 136,
-      "wmape_h0": 23.9,
-      "bl2_wmape": 44.6,
-      "oos_r": 0.75,
-      "improvement_pt": 9.3
+      "n": 141,
+      "wmape_h0": 24.1,
+      "bl2_wmape": 44.3,
+      "oos_r": 0.742,
+      "improvement_pt": 9.29
     },
     {
       "name": "走水沖",
-      "n": 233,
-      "wmape_h0": 26.0,
-      "bl2_wmape": 30.2,
-      "oos_r": 0.554,
-      "improvement_pt": 7.18
+      "n": 235,
+      "wmape_h0": 26.1,
+      "bl2_wmape": 30.1,
+      "oos_r": 0.55,
+      "improvement_pt": 7.32
     },
     {
       "name": "大貫沖",
-      "n": 74,
-      "wmape_h0": 27.1,
-      "bl2_wmape": 41.7,
-      "oos_r": 0.683,
-      "improvement_pt": 6.16
+      "n": 84,
+      "wmape_h0": 26.9,
+      "bl2_wmape": 48.2,
+      "oos_r": 0.707,
+      "improvement_pt": 6.51
     },
     {
       "name": "湾奥",
       "n": 102,
-      "wmape_h0": 40.7,
+      "wmape_h0": 41.3,
       "bl2_wmape": 44.8,
-      "oos_r": 0.486,
-      "improvement_pt": -7.52
+      "oos_r": 0.471,
+      "improvement_pt": -7.9
     }
   ],
   "best_point": {
     "name": "観音崎沖",
-    "wmape_h0": 18.4,
-    "improvement_pt": 14.82
+    "wmape_h0": 18.5,
+    "improvement_pt": 14.9
   },
-  "improvement_pt": 14.82,
+  "improvement_pt": 14.9,
   "points": [
     {
       "name": "走水沖",
@@ -296,6 +304,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=18.4% imp=14.82pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=18.5% imp=14.9pt"
     }
   ],
   "trip_models": [

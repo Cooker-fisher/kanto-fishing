@@ -1,13 +1,13 @@
 {
   "fish": "アナゴ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.87,
-    "bl2_wmape": 46.72,
-    "oos_r": 0.482,
-    "n_records": 47,
+    "wmape_h0": 40.38,
+    "bl2_wmape": 46.94,
+    "oos_r": 0.134,
+    "n_records": 75,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -31,24 +31,29 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=27.9% imp=6.01pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=木更津沖 wmape=31.5% imp=8.85pt"
     }
   ],
   "point_models": [
     {
       "name": "木更津沖",
-      "n": 33,
-      "wmape_h0": 27.9,
-      "bl2_wmape": 40.0,
-      "oos_r": 0.488,
-      "improvement_pt": 6.01
+      "n": 47,
+      "wmape_h0": 31.5,
+      "bl2_wmape": 40.5,
+      "oos_r": 0.266,
+      "improvement_pt": 8.85
     }
   ],
   "best_point": {
     "name": "木更津沖",
-    "wmape_h0": 27.9,
-    "improvement_pt": 6.01
+    "wmape_h0": 31.5,
+    "improvement_pt": 8.85
   },
-  "improvement_pt": 6.01,
+  "improvement_pt": 8.85,
   "adopted_factors": [
     {
       "factor": "sla_approach_idx",

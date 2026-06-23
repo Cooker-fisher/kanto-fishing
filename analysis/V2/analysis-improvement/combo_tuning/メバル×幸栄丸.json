@@ -1,16 +1,15 @@
 {
   "fish": "メバル",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 40.2,
-    "bl0_wmape": 42.9,
-    "bl2_wmape": 42.2,
-    "oos_r": 0.334,
-    "n_records": 50,
-    "alpha_scale": 1.165,
-    "use_fallback": false
+    "wmape_h0": 37.35,
+    "bl2_wmape": 43.05,
+    "oos_r": 0.553,
+    "n_records": 52,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "最大風速が弱い日に釣果が上がる傾向",
     "前6日の降水量が多い時に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島北沖 wmape=37.2% imp=0.19pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "wind_dir_mode",
@@ -155,5 +160,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "鹿島北沖",
+      "n": 51,
+      "wmape_h0": 37.2,
+      "bl2_wmape": 42.4,
+      "oos_r": 0.528,
+      "improvement_pt": 0.19
+    }
+  ],
+  "best_point": {
+    "name": "鹿島北沖",
+    "wmape_h0": 37.2,
+    "improvement_pt": 0.19
+  },
+  "improvement_pt": 0.19
 }

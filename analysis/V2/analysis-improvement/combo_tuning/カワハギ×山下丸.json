@@ -1,40 +1,40 @@
 {
   "fish": "カワハギ",
   "ship": "山下丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 31.7,
-    "bl2_wmape": 41.21,
-    "oos_r": 0.654,
-    "n_records": 753,
+    "wmape_h0": 31.49,
+    "bl2_wmape": 40.78,
+    "oos_r": 0.651,
+    "n_records": 787,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "下浦沖",
-      "n": 34,
-      "wmape_h0": 16.9,
-      "bl2_wmape": 33.0,
+      "n": 37,
+      "wmape_h0": 20.0,
+      "bl2_wmape": 35.4,
       "oos_r": 0.686,
-      "improvement_pt": 14.77
+      "improvement_pt": 11.49
     },
     {
       "name": "久里浜沖",
-      "n": 183,
-      "wmape_h0": 25.7,
-      "bl2_wmape": 38.7,
-      "oos_r": 0.736,
-      "improvement_pt": 5.98
+      "n": 202,
+      "wmape_h0": 25.8,
+      "bl2_wmape": 37.7,
+      "oos_r": 0.718,
+      "improvement_pt": 5.72
     },
     {
       "name": "鴨居沖",
-      "n": 192,
-      "wmape_h0": 28.3,
-      "bl2_wmape": 43.0,
-      "oos_r": 0.707,
-      "improvement_pt": 3.39
+      "n": 204,
+      "wmape_h0": 27.9,
+      "bl2_wmape": 42.5,
+      "oos_r": 0.706,
+      "improvement_pt": 3.57
     },
     {
       "name": "竹岡沖",
@@ -42,23 +42,23 @@
       "wmape_h0": 29.6,
       "bl2_wmape": 45.3,
       "oos_r": 0.648,
-      "improvement_pt": 2.13
+      "improvement_pt": 1.93
     },
     {
       "name": "剣崎沖",
       "n": 65,
-      "wmape_h0": 31.2,
+      "wmape_h0": 31.3,
       "bl2_wmape": 34.2,
-      "oos_r": 0.42,
-      "improvement_pt": 0.54
+      "oos_r": 0.413,
+      "improvement_pt": 0.2
     }
   ],
   "best_point": {
     "name": "下浦沖",
-    "wmape_h0": 16.9,
-    "improvement_pt": 14.77
+    "wmape_h0": 20.0,
+    "improvement_pt": 11.49
   },
-  "improvement_pt": 14.77,
+  "improvement_pt": 11.49,
   "points": [
     {
       "name": "竹岡沖",
@@ -281,6 +281,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=16.9% imp=14.77pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=20.0% imp=11.49pt"
     }
   ],
   "trip_models": [

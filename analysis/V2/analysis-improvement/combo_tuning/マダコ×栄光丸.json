@@ -1,0 +1,37 @@
+{
+  "fish": "マダコ",
+  "ship": "栄光丸",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 38.84,
+    "bl2_wmape": 44.91,
+    "oos_r": 0.234,
+    "n_records": 30,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "茨城県 東茨城郡大洗町 大洗港",
+      "n": 30,
+      "wmape_h0": 18.2,
+      "bl2_wmape": 44.9,
+      "oos_r": 0.819,
+      "improvement_pt": 20.64
+    }
+  ],
+  "best_point": {
+    "name": "茨城県 東茨城郡大洗町 大洗港",
+    "wmape_h0": 18.2,
+    "improvement_pt": 20.64
+  },
+  "improvement_pt": 20.64,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=茨城県 東茨城郡大洗町 大洗港 wmape=18.2% imp=20.64pt"
+    }
+  ]
+}

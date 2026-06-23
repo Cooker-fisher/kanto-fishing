@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "恒丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 20.72,
-    "bl2_wmape": 30.31,
-    "oos_r": 0.596,
-    "n_records": 140,
+    "wmape_h0": 23.08,
+    "bl2_wmape": 29.9,
+    "oos_r": 0.441,
+    "n_records": 154,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -126,6 +126,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=瀬の海 wmape=20.7% imp=0.05pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=瀬の海 wmape=22.0% imp=1.11pt"
     }
   ],
   "rejected_factors": [
@@ -193,19 +198,19 @@
   "point_models": [
     {
       "name": "瀬の海",
-      "n": 139,
-      "wmape_h0": 20.7,
-      "bl2_wmape": 30.2,
-      "oos_r": 0.599,
-      "improvement_pt": 0.05
+      "n": 153,
+      "wmape_h0": 22.0,
+      "bl2_wmape": 29.8,
+      "oos_r": 0.528,
+      "improvement_pt": 1.11
     }
   ],
   "best_point": {
     "name": "瀬の海",
-    "wmape_h0": 20.7,
-    "improvement_pt": 0.05
+    "wmape_h0": 22.0,
+    "improvement_pt": 1.11
   },
-  "improvement_pt": 0.05,
+  "improvement_pt": 1.11,
   "trip_models": [
     {
       "trip_no": 1,

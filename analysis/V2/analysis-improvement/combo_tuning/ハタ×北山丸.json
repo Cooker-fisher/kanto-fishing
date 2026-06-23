@@ -1,7 +1,7 @@
 {
   "fish": "ハタ",
   "ship": "北山丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 14.53,
@@ -157,6 +157,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=洲崎沖 wmape=14.5% imp=0.07pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=洲崎沖 wmape=14.4% imp=0.09pt"
     }
   ],
   "rejected_factors": [
@@ -231,16 +236,16 @@
     {
       "name": "洲崎沖",
       "n": 32,
-      "wmape_h0": 14.5,
+      "wmape_h0": 14.4,
       "bl2_wmape": 66.4,
       "oos_r": 0.933,
-      "improvement_pt": 0.07
+      "improvement_pt": 0.09
     }
   ],
   "best_point": {
     "name": "洲崎沖",
-    "wmape_h0": 14.5,
-    "improvement_pt": 0.07
+    "wmape_h0": 14.4,
+    "improvement_pt": 0.09
   },
-  "improvement_pt": 0.07
+  "improvement_pt": 0.09
 }

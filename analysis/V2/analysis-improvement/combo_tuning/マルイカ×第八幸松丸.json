@@ -1,16 +1,15 @@
 {
   "fish": "マルイカ",
   "ship": "第八幸松丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 54.0,
-    "bl0_wmape": 67.0,
-    "bl2_wmape": 74.1,
-    "oos_r": 0.621,
-    "n_records": 67,
-    "alpha_scale": 0.751,
-    "use_fallback": false
+    "wmape_h0": 43.51,
+    "bl2_wmape": 73.08,
+    "oos_r": 0.709,
+    "n_records": 71,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -92,7 +91,13 @@
     "気温が低い日ほど釣果が上がる傾向",
     "最低気温が低い日ほど釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=41.2% imp=2.26pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "do_surface",
@@ -172,5 +177,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "沼津沖",
+      "n": 71,
+      "wmape_h0": 41.2,
+      "bl2_wmape": 73.1,
+      "oos_r": 0.726,
+      "improvement_pt": 2.26
+    }
+  ],
+  "best_point": {
+    "name": "沼津沖",
+    "wmape_h0": 41.2,
+    "improvement_pt": 2.26
+  },
+  "improvement_pt": 2.26
 }

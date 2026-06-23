@@ -1,40 +1,40 @@
 {
   "fish": "アジ",
   "ship": "船宿 まる八",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 22.48,
-    "bl2_wmape": 24.87,
-    "oos_r": 0.583,
-    "n_records": 599,
+    "wmape_h0": 22.93,
+    "bl2_wmape": 25.41,
+    "oos_r": 0.597,
+    "n_records": 621,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "木更津沖",
-      "n": 359,
-      "wmape_h0": 19.7,
-      "bl2_wmape": 23.8,
-      "oos_r": 0.656,
-      "improvement_pt": 2.81
+      "n": 377,
+      "wmape_h0": 20.2,
+      "bl2_wmape": 24.5,
+      "oos_r": 0.678,
+      "improvement_pt": 2.71
     },
     {
       "name": "川崎沖",
       "n": 120,
       "wmape_h0": 21.6,
       "bl2_wmape": 26.4,
-      "oos_r": 0.522,
-      "improvement_pt": 0.92
+      "oos_r": 0.521,
+      "improvement_pt": 1.33
     },
     {
       "name": "本牧沖",
-      "n": 36,
-      "wmape_h0": 23.3,
-      "bl2_wmape": 29.7,
+      "n": 37,
+      "wmape_h0": 23.0,
+      "bl2_wmape": 29.4,
       "oos_r": 0.595,
-      "improvement_pt": -0.85
+      "improvement_pt": -0.04
     },
     {
       "name": "横浜沖",
@@ -42,15 +42,15 @@
       "wmape_h0": 24.5,
       "bl2_wmape": 26.4,
       "oos_r": 0.267,
-      "improvement_pt": -1.97
+      "improvement_pt": -1.53
     }
   ],
   "best_point": {
     "name": "木更津沖",
-    "wmape_h0": 19.7,
-    "improvement_pt": 2.81
+    "wmape_h0": 20.2,
+    "improvement_pt": 2.71
   },
-  "improvement_pt": 2.81,
+  "improvement_pt": 2.71,
   "points": [
     {
       "name": "木更津沖",
@@ -268,6 +268,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=19.7% imp=2.81pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=木更津沖 wmape=20.2% imp=2.71pt"
     }
   ],
   "trip_models": [

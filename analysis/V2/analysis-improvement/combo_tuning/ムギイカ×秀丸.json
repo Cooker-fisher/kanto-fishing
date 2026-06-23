@@ -1,32 +1,32 @@
 {
   "fish": "ムギイカ",
   "ship": "秀丸",
-  "last_reviewed": "2026-05-03",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 57.4,
-    "bl2_wmape": 86.0,
-    "oos_r": 0.602,
-    "n_records": 203,
+    "wmape_h0": 63.2,
+    "bl2_wmape": 81.74,
+    "oos_r": 0.481,
+    "n_records": 243,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "沼津沖",
-      "n": 203,
-      "wmape_h0": 56.9,
-      "bl2_wmape": 86.1,
-      "oos_r": 0.601,
-      "improvement_pt": 0.47
+      "n": 243,
+      "wmape_h0": 62.2,
+      "bl2_wmape": 81.8,
+      "oos_r": 0.494,
+      "improvement_pt": 1.0
     }
   ],
   "best_point": {
     "name": "沼津沖",
-    "wmape_h0": 56.9,
-    "improvement_pt": 0.47
+    "wmape_h0": 62.2,
+    "improvement_pt": 1.0
   },
-  "improvement_pt": 0.47,
+  "improvement_pt": 1.0,
   "points": [
     {
       "name": "沼津沖",
@@ -179,6 +179,11 @@
       "date": "2026-05-03",
       "action": "point_backtest_updated",
       "note": "best=沼津沖 wmape=56.9% imp=0.47pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=62.2% imp=1.0pt"
     }
   ],
   "trip_models": [

@@ -36,7 +36,10 @@ AREA_FILE   = os.path.join(os.path.dirname(BASE_DIR), "normalize", "area_coords.
 POINT_FILE  = os.path.join(os.path.dirname(BASE_DIR), "normalize", "point_coords.json")
 
 START_DATE = "2023-01-01"
-END_DATE   = datetime.today().strftime("%Y-%m-%d")
+# Archive API（ERA5）は当日分が未提供で end_date=today だと 400
+# （allowed range は前日まで）。weather と marine を揃えて取得するため
+# 両 API とも前日までを終端にする。
+END_DATE   = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
 
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 MARINE_URL  = "https://marine-api.open-meteo.com/v1/marine"
@@ -176,7 +179,10 @@ def already_fetched(conn, lat, lon):
 
 
 def upsert_rows(conn, lat, lon, wx_dict, ma_dict):
-    """気象+海況を結合してDBにUPSERT"""
+    """気象+海況を結合してDBにUPSERT。
+    片側の取得失敗（空 dict）が反対側の既存列を NULL 上書きして破壊しないよう、
+    INSERT OR REPLACE ではなく ON CONFLICT DO UPDATE + COALESCE を使う。
+    新値が NULL の列は既存値を保持する（気象だけ取れた／海況だけ取れた、を安全に併合）。"""
     all_dts = sorted(set(wx_dict) | set(ma_dict))
     rows = []
     for dt in all_dts:
@@ -197,11 +203,23 @@ def upsert_rows(conn, lat, lon, wx_dict, ma_dict):
             ma.get("current_dir"),
         ))
     conn.executemany("""
-        INSERT OR REPLACE INTO weather
+        INSERT INTO weather
         (lat, lon, dt, wind_speed, wind_dir, temp, pressure,
          wave_height, wave_period, swell_height, sst, precipitation,
          current_speed, current_dir)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ON CONFLICT(lat, lon, dt) DO UPDATE SET
+            wind_speed    = COALESCE(excluded.wind_speed,    weather.wind_speed),
+            wind_dir      = COALESCE(excluded.wind_dir,      weather.wind_dir),
+            temp          = COALESCE(excluded.temp,          weather.temp),
+            pressure      = COALESCE(excluded.pressure,      weather.pressure),
+            wave_height   = COALESCE(excluded.wave_height,   weather.wave_height),
+            wave_period   = COALESCE(excluded.wave_period,   weather.wave_period),
+            swell_height  = COALESCE(excluded.swell_height,  weather.swell_height),
+            sst           = COALESCE(excluded.sst,           weather.sst),
+            precipitation = COALESCE(excluded.precipitation, weather.precipitation),
+            current_speed = COALESCE(excluded.current_speed, weather.current_speed),
+            current_dir   = COALESCE(excluded.current_dir,   weather.current_dir)
     """, rows)
     conn.commit()
     return len(rows)
@@ -303,9 +321,17 @@ def main():
             failed.append((lat, lon, area_name))
             continue
 
+        # upsert_rows は COALESCE 併合なので、片側が空でも反対側の既存列は破壊しない。
+        # ただし片側が欠落した座標は不完全なので failed に積んで再試行対象にする
+        # （429 レート制限で marine だけ落ちる等。weather/marine の NULL 上書き破壊は無し）。
         n = upsert_rows(conn, lat, lon, wx, ma)
         total_rows += n
-        print(f"{n}行")
+        miss = [lbl for lbl, ok in (("気象", wx), ("海況", ma)) if not ok]
+        if miss:
+            print(f"{n}行（{'・'.join(miss)}欠落→要再試行）")
+            failed.append((lat, lon, area_name))
+        else:
+            print(f"{n}行")
 
     conn.close()
 

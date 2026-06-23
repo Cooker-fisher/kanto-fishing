@@ -1,0 +1,37 @@
+{
+  "fish": "ヒラメ",
+  "ship": "清勝丸",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 36.12,
+    "bl2_wmape": 51.82,
+    "oos_r": 0.483,
+    "n_records": 42,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 旭市 飯岡漁港",
+      "n": 41,
+      "wmape_h0": 28.3,
+      "bl2_wmape": 50.5,
+      "oos_r": 0.689,
+      "improvement_pt": 7.87
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 旭市 飯岡漁港",
+    "wmape_h0": 28.3,
+    "improvement_pt": 7.87
+  },
+  "improvement_pt": 7.87,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 旭市 飯岡漁港 wmape=28.3% imp=7.87pt"
+    }
+  ]
+}

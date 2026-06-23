@@ -1,12 +1,12 @@
 {
   "fish": "タチウオ",
   "ship": "秀丸",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 63.88,
-    "bl2_wmape": 66.61,
-    "oos_r": 0.024,
+    "wmape_h0": 58.9,
+    "bl2_wmape": 64.78,
+    "oos_r": 0.073,
     "n_records": 95,
     "use_fallback": true,
     "kaiyu_promoted": false
@@ -101,6 +101,11 @@
       "date": "2026-04-22",
       "action": "point_backtest_updated",
       "note": "best=沼津沖 wmape=62.6% imp=1.26pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=沼津沖 wmape=58.1% imp=0.76pt"
     }
   ],
   "rejected_factors": [
@@ -168,19 +173,19 @@
   "point_models": [
     {
       "name": "沼津沖",
-      "n": 94,
-      "wmape_h0": 62.6,
-      "bl2_wmape": 66.8,
-      "oos_r": 0.081,
-      "improvement_pt": 1.26
+      "n": 95,
+      "wmape_h0": 58.1,
+      "bl2_wmape": 66.6,
+      "oos_r": 0.072,
+      "improvement_pt": 0.76
     }
   ],
   "best_point": {
     "name": "沼津沖",
-    "wmape_h0": 62.6,
-    "improvement_pt": 1.26
+    "wmape_h0": 58.1,
+    "improvement_pt": 0.76
   },
-  "improvement_pt": 1.26,
+  "improvement_pt": 0.76,
   "trip_models": [
     {
       "trip_no": 1,

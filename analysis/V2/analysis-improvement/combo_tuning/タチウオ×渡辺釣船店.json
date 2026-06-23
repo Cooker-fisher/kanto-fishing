@@ -1,13 +1,13 @@
 {
   "fish": "タチウオ",
   "ship": "渡辺釣船店",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.25,
-    "bl2_wmape": 43.74,
-    "oos_r": 0.675,
-    "n_records": 210,
+    "wmape_h0": 34.04,
+    "bl2_wmape": 45.25,
+    "oos_r": 0.634,
+    "n_records": 245,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -17,32 +17,32 @@
       "n": 31,
       "wmape_h0": 14.6,
       "bl2_wmape": 38.9,
-      "oos_r": 0.866,
-      "improvement_pt": 18.65
+      "oos_r": 0.867,
+      "improvement_pt": 19.48
     },
     {
       "name": "猿島沖",
-      "n": 61,
-      "wmape_h0": 20.4,
-      "bl2_wmape": 49.4,
-      "oos_r": 0.813,
-      "improvement_pt": 12.84
+      "n": 62,
+      "wmape_h0": 19.7,
+      "bl2_wmape": 49.8,
+      "oos_r": 0.833,
+      "improvement_pt": 14.32
     },
     {
       "name": "走水沖",
-      "n": 30,
-      "wmape_h0": 23.1,
-      "bl2_wmape": 49.7,
-      "oos_r": 0.803,
-      "improvement_pt": 10.11
+      "n": 31,
+      "wmape_h0": 22.8,
+      "bl2_wmape": 48.5,
+      "oos_r": 0.799,
+      "improvement_pt": 11.24
     }
   ],
   "best_point": {
     "name": "大貫沖",
     "wmape_h0": 14.6,
-    "improvement_pt": 18.65
+    "improvement_pt": 19.48
   },
-  "improvement_pt": 18.65,
+  "improvement_pt": 19.48,
   "points": [
     {
       "name": "猿島沖",
@@ -270,6 +270,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=大貫沖 wmape=14.6% imp=18.65pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=大貫沖 wmape=14.6% imp=19.48pt"
     }
   ],
   "trip_models": [

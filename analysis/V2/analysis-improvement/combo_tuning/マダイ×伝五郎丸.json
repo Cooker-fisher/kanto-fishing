@@ -1,0 +1,37 @@
+{
+  "fish": "マダイ",
+  "ship": "伝五郎丸",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 50.18,
+    "bl2_wmape": 44.56,
+    "oos_r": -0.027,
+    "n_records": 81,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 三浦市 松輪江奈漁港",
+      "n": 80,
+      "wmape_h0": 45.1,
+      "bl2_wmape": 53.7,
+      "oos_r": 0.472,
+      "improvement_pt": 5.04
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 三浦市 松輪江奈漁港",
+    "wmape_h0": 45.1,
+    "improvement_pt": 5.04
+  },
+  "improvement_pt": 5.04,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 三浦市 松輪江奈漁港 wmape=45.1% imp=5.04pt"
+    }
+  ]
+}

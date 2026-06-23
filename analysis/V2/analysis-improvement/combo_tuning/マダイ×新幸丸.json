@@ -1,56 +1,56 @@
 {
   "fish": "マダイ",
   "ship": "新幸丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.56,
-    "bl2_wmape": 47.69,
-    "oos_r": 0.633,
-    "n_records": 693,
+    "wmape_h0": 41.6,
+    "bl2_wmape": 47.59,
+    "oos_r": 0.644,
+    "n_records": 724,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "太東沖",
-      "n": 191,
-      "wmape_h0": 37.5,
-      "bl2_wmape": 51.8,
-      "oos_r": 0.642,
-      "improvement_pt": 4.07
+      "n": 193,
+      "wmape_h0": 37.6,
+      "bl2_wmape": 52.0,
+      "oos_r": 0.643,
+      "improvement_pt": 3.99
     },
     {
       "name": "御宿沖",
       "n": 49,
-      "wmape_h0": 39.0,
+      "wmape_h0": 39.1,
       "bl2_wmape": 65.8,
       "oos_r": 0.762,
-      "improvement_pt": 2.55
+      "improvement_pt": 2.48
     },
     {
       "name": "大原沖",
-      "n": 294,
-      "wmape_h0": 39.2,
-      "bl2_wmape": 48.1,
-      "oos_r": 0.666,
-      "improvement_pt": 2.33
+      "n": 307,
+      "wmape_h0": 39.3,
+      "bl2_wmape": 47.8,
+      "oos_r": 0.672,
+      "improvement_pt": 2.26
     },
     {
       "name": "岩船沖",
-      "n": 155,
-      "wmape_h0": 39.8,
-      "bl2_wmape": 54.9,
-      "oos_r": 0.729,
-      "improvement_pt": 1.74
+      "n": 171,
+      "wmape_h0": 39.4,
+      "bl2_wmape": 54.0,
+      "oos_r": 0.738,
+      "improvement_pt": 2.21
     }
   ],
   "best_point": {
     "name": "太東沖",
-    "wmape_h0": 37.5,
-    "improvement_pt": 4.07
+    "wmape_h0": 37.6,
+    "improvement_pt": 3.99
   },
-  "improvement_pt": 4.07,
+  "improvement_pt": 3.99,
   "points": [
     {
       "name": "大原沖",
@@ -268,6 +268,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=太東沖 wmape=37.5% imp=4.07pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=太東沖 wmape=37.6% imp=3.99pt"
     }
   ],
   "trip_models": [

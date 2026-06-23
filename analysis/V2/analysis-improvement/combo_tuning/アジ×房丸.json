@@ -1,0 +1,37 @@
+{
+  "fish": "アジ",
+  "ship": "房丸",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 52.64,
+    "bl2_wmape": 48.34,
+    "oos_r": 0.0,
+    "n_records": 55,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横須賀市 鴨居大室漁港",
+      "n": 55,
+      "wmape_h0": 35.6,
+      "bl2_wmape": 48.3,
+      "oos_r": 0.565,
+      "improvement_pt": 17.08
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横須賀市 鴨居大室漁港",
+    "wmape_h0": 35.6,
+    "improvement_pt": 17.08
+  },
+  "improvement_pt": 17.08,
+  "history": [
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横須賀市 鴨居大室漁港 wmape=35.6% imp=17.08pt"
+    }
+  ]
+}

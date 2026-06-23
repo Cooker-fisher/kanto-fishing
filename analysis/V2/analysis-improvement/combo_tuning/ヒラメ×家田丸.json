@@ -1,12 +1,12 @@
 {
   "fish": "ヒラメ",
   "ship": "家田丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.94,
+    "wmape_h0": 37.05,
     "bl2_wmape": 45.29,
-    "oos_r": 0.438,
+    "oos_r": 0.439,
     "n_records": 200,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "外川沖",
       "n": 186,
-      "wmape_h0": 36.7,
+      "wmape_h0": 36.9,
       "bl2_wmape": 47.0,
-      "oos_r": 0.44,
-      "improvement_pt": 0.22
+      "oos_r": 0.439,
+      "improvement_pt": 0.15
     }
   ],
   "best_point": {
     "name": "外川沖",
-    "wmape_h0": 36.7,
-    "improvement_pt": 0.22
+    "wmape_h0": 36.9,
+    "improvement_pt": 0.15
   },
-  "improvement_pt": 0.22,
+  "improvement_pt": 0.15,
   "points": [
     {
       "name": "外川沖",
@@ -224,6 +224,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=外川沖 wmape=36.7% imp=0.22pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=外川沖 wmape=36.9% imp=0.15pt"
     }
   ],
   "trip_models": [

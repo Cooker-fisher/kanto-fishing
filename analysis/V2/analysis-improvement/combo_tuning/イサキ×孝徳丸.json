@@ -1,13 +1,13 @@
 {
   "fish": "イサキ",
   "ship": "孝徳丸",
-  "last_reviewed": "2026-04-25",
-  "status": "backtest_na",
+  "last_reviewed": "2026-06-23",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": null,
-    "bl2_wmape": null,
-    "oos_r": null,
-    "n_records": 37,
+    "wmape_h0": 39.61,
+    "bl2_wmape": 53.23,
+    "oos_r": 0.581,
+    "n_records": 47,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -17,15 +17,33 @@
     "depth_min": null,
     "depth_max": null
   },
-  "point_models": [],
-  "best_point": null,
-  "improvement_pt": 0,
+  "point_models": [
+    {
+      "name": "片貝沖",
+      "n": 46,
+      "wmape_h0": 38.6,
+      "bl2_wmape": 51.3,
+      "oos_r": 0.557,
+      "improvement_pt": 1.0
+    }
+  ],
+  "best_point": {
+    "name": "片貝沖",
+    "wmape_h0": 38.6,
+    "improvement_pt": 1.0
+  },
+  "improvement_pt": 1.0,
   "notes": "N=37件・2025/04～2026/04（4ヶ月）。MIN_MONTHS=6ガードによりバックテスト不可。データ蓄積で将来バックテスト可能になる可能性あり。",
   "history": [
     {
       "date": "2026-04-25",
       "action": "backtest_na",
       "note": "MIN_MONTHS=6スキップ。2025/04～2026/04（4ヶ月）。combo_metaには存在（平均値・平年比表示は可能）。"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=片貝沖 wmape=38.6% imp=1.0pt"
     }
   ]
 }

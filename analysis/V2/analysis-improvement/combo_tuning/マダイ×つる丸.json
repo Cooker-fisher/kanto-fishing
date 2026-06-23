@@ -1,13 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "つる丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.71,
-    "bl2_wmape": 50.06,
+    "wmape_h0": 37.73,
+    "bl2_wmape": 49.96,
     "oos_r": 0.653,
-    "n_records": 205,
+    "n_records": 207,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -161,6 +161,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=大原沖 wmape=37.4% imp=0.32pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=大原沖 wmape=37.4% imp=0.29pt"
     }
   ],
   "rejected_factors": [
@@ -246,17 +251,17 @@
   "point_models": [
     {
       "name": "大原沖",
-      "n": 194,
+      "n": 196,
       "wmape_h0": 37.4,
-      "bl2_wmape": 50.1,
-      "oos_r": 0.659,
-      "improvement_pt": 0.32
+      "bl2_wmape": 50.0,
+      "oos_r": 0.66,
+      "improvement_pt": 0.29
     }
   ],
   "best_point": {
     "name": "大原沖",
     "wmape_h0": 37.4,
-    "improvement_pt": 0.32
+    "improvement_pt": 0.29
   },
-  "improvement_pt": 0.32
+  "improvement_pt": 0.29
 }

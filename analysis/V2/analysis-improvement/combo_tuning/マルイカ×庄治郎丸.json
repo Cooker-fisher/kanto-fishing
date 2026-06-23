@@ -1,13 +1,13 @@
 {
   "fish": "マルイカ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 54.66,
-    "bl2_wmape": 62.67,
-    "oos_r": 0.445,
-    "n_records": 230,
+    "wmape_h0": 54.84,
+    "bl2_wmape": 60.56,
+    "oos_r": 0.427,
+    "n_records": 254,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -151,6 +151,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=平塚東沖 wmape=38.0% imp=16.63pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=平塚東沖 wmape=35.7% imp=19.16pt"
     }
   ],
   "rejected_factors": [
@@ -218,27 +223,27 @@
   "point_models": [
     {
       "name": "平塚東沖",
-      "n": 41,
-      "wmape_h0": 38.0,
-      "bl2_wmape": 80.2,
-      "oos_r": 0.534,
-      "improvement_pt": 16.63
+      "n": 51,
+      "wmape_h0": 35.7,
+      "bl2_wmape": 71.8,
+      "oos_r": 0.587,
+      "improvement_pt": 19.16
     },
     {
       "name": "平塚沖",
-      "n": 188,
-      "wmape_h0": 55.9,
-      "bl2_wmape": 61.5,
-      "oos_r": 0.458,
-      "improvement_pt": -1.2
+      "n": 202,
+      "wmape_h0": 55.7,
+      "bl2_wmape": 60.1,
+      "oos_r": 0.445,
+      "improvement_pt": -0.81
     }
   ],
   "best_point": {
     "name": "平塚東沖",
-    "wmape_h0": 38.0,
-    "improvement_pt": 16.63
+    "wmape_h0": 35.7,
+    "improvement_pt": 19.16
   },
-  "improvement_pt": 16.63,
+  "improvement_pt": 19.16,
   "trip_models": [
     {
       "trip_no": 2,

@@ -1,13 +1,13 @@
 {
   "fish": "フグ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 43.77,
-    "bl2_wmape": 47.46,
-    "oos_r": 0.511,
-    "n_records": 379,
+    "wmape_h0": 44.94,
+    "bl2_wmape": 49.04,
+    "oos_r": 0.477,
+    "n_records": 407,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,7 +18,7 @@
       "wmape_h0": 21.3,
       "bl2_wmape": 43.0,
       "oos_r": 0.697,
-      "improvement_pt": 22.5
+      "improvement_pt": 23.67
     },
     {
       "name": "八景沖",
@@ -26,23 +26,23 @@
       "wmape_h0": 33.5,
       "bl2_wmape": 48.8,
       "oos_r": 0.584,
-      "improvement_pt": 10.25
+      "improvement_pt": 11.42
     },
     {
       "name": "大貫沖",
       "n": 241,
       "wmape_h0": 35.7,
       "bl2_wmape": 36.8,
-      "oos_r": 0.727,
-      "improvement_pt": 8.02
+      "oos_r": 0.728,
+      "improvement_pt": 9.29
     }
   ],
   "best_point": {
     "name": "中ノ瀬",
     "wmape_h0": 21.3,
-    "improvement_pt": 22.5
+    "improvement_pt": 23.67
   },
-  "improvement_pt": 22.5,
+  "improvement_pt": 23.67,
   "points": [
     {
       "name": "大貫沖",
@@ -255,6 +255,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=中ノ瀬 wmape=21.3% imp=22.5pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=中ノ瀬 wmape=21.3% imp=23.67pt"
     }
   ],
   "trip_models": [

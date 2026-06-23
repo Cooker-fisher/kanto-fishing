@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "洋征丸",
-  "last_reviewed": "2026-05-17",
+  "last_reviewed": "2026-06-23",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 21.29,
-    "bl2_wmape": 27.29,
-    "oos_r": 0.516,
-    "n_records": 418,
+    "wmape_h0": 21.85,
+    "bl2_wmape": 27.53,
+    "oos_r": 0.513,
+    "n_records": 448,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,15 +18,15 @@
       "wmape_h0": 15.5,
       "bl2_wmape": 23.3,
       "oos_r": 0.602,
-      "improvement_pt": 5.82
+      "improvement_pt": 6.39
     },
     {
       "name": "城ヶ島沖",
-      "n": 95,
-      "wmape_h0": 17.5,
-      "bl2_wmape": 20.6,
-      "oos_r": 0.365,
-      "improvement_pt": 3.75
+      "n": 125,
+      "wmape_h0": 18.8,
+      "bl2_wmape": 23.7,
+      "oos_r": 0.469,
+      "improvement_pt": 3.06
     },
     {
       "name": "鎌倉沖",
@@ -34,23 +34,23 @@
       "wmape_h0": 19.7,
       "bl2_wmape": 32.4,
       "oos_r": 0.665,
-      "improvement_pt": 1.6
+      "improvement_pt": 2.17
     },
     {
       "name": "三戸浜沖",
       "n": 95,
-      "wmape_h0": 25.3,
+      "wmape_h0": 25.6,
       "bl2_wmape": 38.6,
-      "oos_r": 0.601,
-      "improvement_pt": -4.01
+      "oos_r": 0.593,
+      "improvement_pt": -3.78
     }
   ],
   "best_point": {
     "name": "秋谷沖",
     "wmape_h0": 15.5,
-    "improvement_pt": 5.82
+    "improvement_pt": 6.39
   },
-  "improvement_pt": 5.82,
+  "improvement_pt": 6.39,
   "history": [
     {
       "date": "2026-04-24",
@@ -106,6 +106,11 @@
       "date": "2026-05-17",
       "action": "point_backtest_updated",
       "note": "best=秋谷沖 wmape=15.5% imp=5.82pt"
+    },
+    {
+      "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=秋谷沖 wmape=15.5% imp=6.39pt"
     }
   ]
 }
