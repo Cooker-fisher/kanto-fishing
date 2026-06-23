@@ -18546,6 +18546,19 @@ def main():
         except Exception as _e2:
             print(f"[x_post] index rebuild ERROR: {_e2}")
 
+        # 自己修復: CI 失敗で欠落した直近の x_post 日を catches CSV から補完。
+        # 日次 crawl が validate 失敗で止まり復旧が翌 JST 日にずれ込むと、run 日基準の
+        # x_post が「失敗した当日」分を永久に欠落させる問題への恒久対策（valid_catches は
+        # 当日スナップショットで過去日を持たないため None を渡し CSV から再ロードさせる）。
+        try:
+            from x_post.backfill import backfill_recent as _backfill_recent
+            _bf = _backfill_recent(now=now, lookback=10, valid_catches=None,
+                                   history=history, verbose=True)
+            if _bf:
+                print(f"[x_post] 欠落バックフィル {len(_bf)}件: {_bf}")
+        except Exception as _e3:
+            print(f"[x_post] backfill ERROR: {_e3}")
+
     print(f"\n=== 完了 ===")
     _today_label = f"当日: {len(today_all)} 件" if today_all else f"当日0件→全件フォールバック: {len(all_catches)} 件"
     print(f"釣果: {len(all_catches)} 件（有効: {len(valid_catches)} / 異常値: {anomaly_count} / 重複除外: {dup_removed}）")
