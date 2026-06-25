@@ -15446,7 +15446,27 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         _desc_bits.append("13か月分の月別実績と週次傾向レポートを毎週更新。")
         desc = "".join(_desc_bits)[:160]
     else:
-        # 今月データなし: 既存形式を維持 (fallback)
+        # 今月データなし: 直近で釣果のある月を探し価値訴求タイトルにする（指名検索CTR底上げ）。
+        # 船宿名検索は1ページ目に入っても汎用タイトルだとクリックされない問題への対策。
+        _recent_md = None
+        for _md in (_ma_months or []):  # _ma_months は新しい順
+            if _md.get("fish") and (_md["fish"][0].get("count") or 0) > 0:
+                _recent_md = _md
+                break
+        if _recent_md:
+            try:
+                _rm_month = int(_recent_md["month"].split("-")[1])
+            except (KeyError, ValueError, IndexError):
+                _rm_month = None
+            _rf = _recent_md["fish"][0]
+            _rmax = ""
+            if _rf.get("kg_max"):
+                _rmax = f"・最大{_rf['kg_max']}kg"
+            elif _rf.get("size_max"):
+                _rmax = f"・最大{_rf['size_max']}cm"
+            if _rm_month:
+                title = f"{name}（{area}）の釣果実績【{_rm_month}月{_rf['fish']}{_rf['count']}便{_rmax}】| 船釣り予想"
+        # desc (既存形式を維持)
         if vessel.get("length_m") and vessel.get("capacity"):
             desc_parts.append(f"全長{vessel['length_m']}m・定員{vessel['capacity']}名。")
         if primary_fish:
