@@ -65,41 +65,48 @@ def discover_pref(pref_id, pref_name):
         time.sleep(SLEEP)
     return list(found.values())
 
-PRESERVE_KEYS = ("exclude", "boat_only", "note")
-
 def load_existing():
+    """既存 ships.json を (全レコードのリスト, sid→レコード 索引) で返す。
+
+    ships.json は discover が出力する sid/name/area の他に、住所・電話・romaji_slug・
+    chowari_id・castingnet_id・source_priority・exclude 系・fishing_v_zero 等の
+    キュレーション済みフィールドを大量に持つ。さらに fishing-v.jp に存在しない
+    （sid が null / キー無し）chowari・castingnet 由来の船宿も含まれる。
+    これらを取りこぼさないよう全レコードをそのまま返し、sid が int のものだけを
+    索引化する（null / 欠落 sid は突合対象外だが保持する）。
+    """
     if not os.path.exists(OUTPUT):
-        return {}
+        return [], {}
     with open(OUTPUT, encoding="utf-8") as f:
-        return {s["sid"]: s for s in json.load(f)}
+        records = json.load(f)
+    index = {s["sid"]: s for s in records if isinstance(s.get("sid"), int)}
+    return records, index
 
 def main():
     dry = "--dry" in sys.argv
-    all_ships = {}
+    discovered = {}
     for pref_id, pref_name in PREFS.items():
         for s in discover_pref(pref_id, pref_name):
-            all_ships[s["sid"]] = s
+            discovered[s["sid"]] = s
 
-    existing = load_existing()
-    for sid, s in all_ships.items():
-        prev = existing.get(sid, {})
-        for k in PRESERVE_KEYS:
-            if k in prev:
-                s[k] = prev[k]
+    # 既存レコードは非破壊で全保持し、未登録 sid の船宿だけを追記する（additive）。
+    # rebuild-from-scratch は sid=null の 200+ 船宿・キュレーション済みフィールドを
+    # すべて消し飛ばすデータ消失 regression になるため行わない。
+    records, index = load_existing()
+    added = [s for sid, s in discovered.items() if sid not in index]
+    records.extend(added)
 
-    result = sorted(all_ships.values(), key=lambda x: (x["area"], x["name"]))
-    preserved = sum(1 for s in result if any(k in s for k in PRESERVE_KEYS))
-    print(f"\n合計: {len(result)}隻発見（exclude/boat_only保持: {preserved}件）", flush=True)
+    print(f"\n合計: {len(records)}隻（既存 {len(records) - len(added)} / 新規発見 {len(added)}）",
+          flush=True)
 
     if dry:
-        for s in result:
-            mark = " ".join(f"{k}={s[k]}" for k in PRESERVE_KEYS if k in s)
-            print(f'  {s["area"]:20} {s["name"]:20} sid={s["sid"]} {mark}')
+        for s in added:
+            print(f'  NEW {s["area"]:20} {s["name"]:20} sid={s["sid"]}')
         return
 
     with open(OUTPUT, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2)
-    print(f"→ {OUTPUT} に保存しました", flush=True)
+        json.dump(records, f, ensure_ascii=False, indent=2)
+    print(f"→ {OUTPUT} に新規 {len(added)} 隻を追記して保存しました", flush=True)
 
 if __name__ == "__main__":
     main()
