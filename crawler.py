@@ -2290,12 +2290,35 @@ _FORECAST_EXTRA_CSS = """.date-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bo
 """
 
 
-def _forecast_page_head(title, depth_prefix="../"):
+def _forecast_page_head(title, depth_prefix="../", noindex=True, canonical=None, description=None):
+    """予測ページ head。
+    noindex=True（既定）: 日付/週/エリアの個別ページ（変動が激しく薄い）は noindex 維持。
+    noindex=False: forecast ハブ（今週の海況＋魚種別予測=実コンテンツ）のみ index 解除（T23・2026-07-03）。
+      canonical/description を伴って SEO メタ + OGP を出力する。ADSENSE_TAG は付けない
+      （予測ページは収益化せず集客用途・マネタイズ方針 2026-06-10）。"""
+    if noindex:
+        _robots_meta = '<meta name="robots" content="noindex, follow">'
+        _seo_meta = ""
+    else:
+        _robots_meta = '<meta name="robots" content="index, follow">'
+        _desc = description or "関東の船釣り海況予報（波高・風速・海水温・出船判定）と魚種別の釣果予測を無料公開。"
+        _canon = canonical or f"{SITE_URL}/forecast/"
+        _seo_meta = (
+            f'\n<meta name="description" content="{_desc}">'
+            f'\n<link rel="canonical" href="{_canon}">'
+            f'\n<meta property="og:type" content="website">'
+            f'\n<meta property="og:title" content="{title} | 船釣り予想">'
+            f'\n<meta property="og:description" content="{_desc}">'
+            f'\n<meta property="og:url" content="{_canon}">'
+            f'\n<meta property="og:image" content="{SITE_URL}/ogp-default.png">'
+            f'\n<meta name="twitter:card" content="summary_large_image">'
+            f'\n<meta name="twitter:site" content="@funatsuri_yoso">'
+        )
     return f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="robots" content="noindex, follow">
+{_robots_meta}{_seo_meta}
 <title>{title} | 船釣り予想</title>
 {GA_TAG}
 <link rel="stylesheet" href="{depth_prefix}style.css">
@@ -2589,7 +2612,16 @@ def _build_area_forecast_page(area_group, forecast_data):
 def _build_forecast_hub(forecast_data, catches=None):
     """海況予報ハブ（無料の海況サマリー＋日次/週次ナビ＋釣果予測の案内）。
     海況は無料公開・釣果予測は各日ページで一部を無料プレビュー（フル版は拡充中）。"""
-    html = _forecast_page_head("海況予報・釣果予測")
+    # T23（2026-07-03）: ハブのみ index 解除。今週の海況（波高/風速/海水温/出船判定）+
+    # 魚種別 釣果予測（439コンボ・distilled_full）で実コンテンツ化済み。日付/週/エリア個別
+    # ページは変動が激しく薄いため noindex 維持（build_sitemap も noindex 検出で自動除外）。
+    html = _forecast_page_head(
+        "関東の海況予報・釣果予測",
+        depth_prefix="../",
+        noindex=False,
+        canonical=f"{SITE_URL}/forecast/",
+        description="関東（神奈川・東京・千葉・茨城・静岡）の船釣り海況予報を無料公開。今週の波高・風速・海水温・出船判定と、過去3年の実績×海況から算出する魚種別の釣果予測。",
+    )
     all_dates = sorted(forecast_data.get("days", {}).keys())
     all_weeks = forecast_data.get("weeks", {})
 
@@ -17122,6 +17154,19 @@ def build_sitemap(data):
             except Exception:
                 pass
             urls.append((f"{SITE_URL}/fish_area/{fname}", "0.8", "daily"))
+    # forecast/（T23・2026-07-03）: ハブ index.html のみ index 解除済み。
+    # 日付/週/エリアの個別ページは noindex 維持のため、HTML head の noindex 検出で自動除外。
+    # （area/fish_area/x_post と同じディスク走査＋noindex判定パターン）
+    fc_dir = os.path.join(WEB_DIR, "forecast")
+    if os.path.isdir(fc_dir):
+        if os.path.isfile(os.path.join(fc_dir, "index.html")):
+            try:
+                with open(os.path.join(fc_dir, "index.html"), encoding="utf-8") as _fp:
+                    _fchead = _fp.read(2048)
+                if not ('name="robots"' in _fchead and "noindex" in _fchead):
+                    urls.append((f"{SITE_URL}/forecast/", "0.8", "daily"))
+            except Exception:
+                pass
     # ship/*.html（romaji_slug + ship_info あり・chowari_id なくても手動データなら掲載）
     # H2 (T22): _SHIP_NOINDEX_SLUGS に含まれる空ページは sitemap から除外
     # 2026/05/17: fishing_v_zero でも代替ソース（chowari等）あれば対象

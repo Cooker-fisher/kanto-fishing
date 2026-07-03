@@ -41,12 +41,12 @@
 | 10 | `fish/*.html` HERO 統一 | fish-hero 直下が `<h2>`・古い `fh-sub` / `<div class="c">` 無し |
 | 11 | 全 `docs/*/*.html` | ネストアンカー (`<a>...<a>`) 無し |
 | 12 | `area/*.html` 海況セクション | 潮汐が名称（大潮/中潮等）・月相が名称（満月/新月等）・1行コメント有り |
-| 13 | `forecast/index.html` | `<meta name="robots" content="noindex">` 存在（T22-H1 暫定対応・T23 で実コンテンツ化後に解除） |
+| 13 | `forecast/index.html` + 日付ページ（T23 / 2026-07-03 反転） | ハブ `forecast/index.html` に noindex が **無い**（index 解除済み）+ 日付/週の個別ページ（サンプル最大5件）は noindex **維持**。D層予測が distilled_full（439コンボ）化しハブが「今週の海況＋魚種別予測」の実コンテンツになったため。個別ページは変動が激しく薄いので noindex 継続 |
 | 14 | `ship/*.html` | noindex 付与ページが 1 件以上（T22-H2 が動作している証拠） |
 | 15 | `pages/faq.html` | ファイル存在 + 本文 800 字以上（T22-M1 共通 FAQ 切り出し先） |
 | 16 | `fish/*.html` サンプル | 共通 FAQ 見出し『船釣り共通の基礎知識』が消滅 + `/pages/faq.html` リンク存在（T22-M1） |
 | 17 | `fish_area/*.html` サンプル | intro 冒頭にエリア固有文（位置/県/湾/外房/内房/面し/市/町 のいずれか含む 10 字以上）（T22-H3） |
-| 18 | `sitemap.xml` | `forecast/` URL が含まれない（T22-H1 sitemap 除外） |
+| 18 | `sitemap.xml`（T23 / 2026-07-03 反転） | forecast ハブ `/forecast/` を **収録** + 日付/エリアの個別ページ（`forecast/YYYY-MM-DD.html`・`forecast/area/`）は **非収録**。build_sitemap の forecast 走査は head の noindex 検出でハブだけを拾う（area/fish_area と同パターン） |
 | 19 | 全主要HTML（index・calendar・fish/\*・area/\*・fish_area/\*・ship/\*・fish/index・area/index） | `og:image` + `twitter:card` + `twitter:site` 全て存在（X 手動投稿時のリッチカード描画保証） |
 | 20 | index・fish/\*・area/\*・fish_area/\*・ship/\*・x_post/YYYY-MM-DD | `class="share-bar"` + `twitter.com/intent/tweet` リンクあり（ユーザー側拡散経路） |
 | 21 | `area/*.html` サンプル（T31） | 共通 FAQ 見出し『船釣り共通の基礎知識』が消滅 + `/pages/faq.html` リンク存在 + Q2 アクセス文章に「最寄りIC」「最寄り駅」キーワード含む（hist_rows ベース固定文章化） |
@@ -70,15 +70,21 @@
 | 48 | 全 `docs/**/*.html`（2026-06-16・SEO） | ヘッダのサイト名「船釣り予想」が `<h1>` でないこと（`<h1>…船釣り<span>予想` 形を検出したら fail）。各ページの `<h1>` はそのページの主題にする方針。ロゴは `<span class="brand">`（CSS `header .brand`）。crawler.py `_v2_header_nav`・ship ヘッダ・x_post `build_daily_page.py`・静的 `pages/*` でブランドを非見出し化し、index/area/fish_area/calendar/各index/forecast に主題 H1 を付与（fish/ship/monthly/404 は既存維持） |
 | 49 | `data/V2/chowari_*.csv`（2026-07-03） | 完了した直近2か月の chowari 月次 CSV が「窓化」していないこと（200行以上の月は 日付15種以上 + 月初5日以内のデータ必須）。chowari_crawler の per-ship raw JSON は直近7日窓で全上書きされるため、旧 chowari_to_csv（全上書き方式）が月初〜中旬の蓄積行を毎日破壊していた（2026-06 が月末に475行/6日分に縮小・2026-03〜06 で計16,482行を git 履歴から復元）。chowari_to_csv は既存 CSV との dedup union 方式（キー: ship/date/trip_no/fish_raw・縮小時 AssertionError）に修正済み。決定ログ「2026-07-03」参照 |
 
-### T22 関連の設計契約（H1 noindex 解除手順）
+### T22 関連の設計契約（H1 noindex 解除手順）→ ✅ T23 完了（2026-07-03）
 
-T23（forecast/index.html 実コンテンツ化）完了時に以下をセットで反転する。手順を T23 着手前に必ず確認すること:
+以下の5点セットを実施済み（詳細は `90_決定ログ.md`「2026-07-03 T23 forecast ハブ index 解除」）:
 
-1. `crawler.py` `_forecast_page_head()` の `<meta name="robots" content="noindex, follow">` 削除
-2. `build_sitemap()` に forecast/ URL 列挙を追加（現状未収録）
-3. `validate_output.py` 不変条件 13・18 を反転（noindex タグが **存在しない** こと、sitemap に forecast/ が **含まれる** ことを検証）
-4. `REGRESSION_PREVENTION.md` の本テーブル 13・18 を更新
-5. `90_決定ログ.md` に T23 完了記録を追記
+1. ✅ `crawler.py` `_forecast_page_head(noindex=True, canonical, description)` を追加。ハブのみ `noindex=False`
+   で呼び出し（`_build_forecast_hub`）。日付/週/エリア個別ページは既定 `noindex=True` を維持
+2. ✅ `build_sitemap()` に forecast 走査を追加（head の noindex 検出でハブ `/forecast/` のみ収録）
+3. ✅ `validate_output.py` 不変条件 13・18 を反転（ハブは noindex なし＋日付ページは noindex 維持 / sitemap は
+   ハブ収録＋個別ページ非収録）
+4. ✅ 本テーブル 13・18 を更新
+5. ✅ `90_決定ログ.md` に T23 完了記録を追記
+
+**設計判断**: ハブ限定 index（日付/週/エリアは noindex 維持）。理由=(a) 個別ページは日次で変動し薄い、
+(b) `_forecast_page_head` は ADSENSE_TAG を出さない → ハブは **indexed だが非収益化**（AdSense 薄収益化ページを
+増やさない・再審査リスク最小）、(c) マネタイズ方針（2026-06-10）で予測は当面無料公開＝集客用途。
 
 ---
 
