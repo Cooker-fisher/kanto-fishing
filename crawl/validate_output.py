@@ -1805,6 +1805,70 @@ def validate_chowari_monthly_coverage():
         ok(f"chowari 直近完了 {checked} か月分のカバレッジ正常（窓化なし）")
 
 
+def validate_fish_area_analysis_sections():
+    """50: fish_area/ship の C層蒸留『海況と釣期の傾向（データ分析）』の整合（T43・2026-07-03）
+
+    背景: normalize/fish_area_analysis.json / ship_analysis.json（build_fish_area_analysis.py が
+    analysis.sqlite から蒸留・コミット）を crawler.py が読み、fish_area/ship に海況相関・釣期・
+    予測精度の独自集約セクションを描画する。複数船宿分析を持つ薄hist ページは index 復帰。
+    検証（過大表現＝AdSense/信頼リスクの防止が主眼）:
+      - 蒸留 JSON が存在し 1件以上
+      - fish_area で分析セクション（見出し『海況と釣期の傾向（データ分析）』）が一定数レンダされている
+      - 分析セクションを持つページは必ず免責注記（『釣果を保証するものではありません』＋
+        『この海域のデータに基づく』）を含む（過大表現ガード）
+      - 禁止表現（『必ず釣れ』『確実に釣れ』）が分析セクション近傍に出ない
+    """
+    print("\n[50] fish_area/ship C層蒸留セクションの整合（T43）")
+    fa_json = os.path.join(ROOT, "normalize", "fish_area_analysis.json")
+    if not os.path.isfile(fa_json):
+        ok("[50] fish_area_analysis.json なし → skip（蒸留未導入）")
+        return
+    try:
+        with open(fa_json, encoding="utf-8") as f:
+            fa_data = json.load(f)
+    except Exception as e:
+        fail(f"[50] fish_area_analysis.json 読み込み失敗: {e}")
+        return
+    if not fa_data:
+        ok("[50] fish_area_analysis.json 収載 0 件 → skip")
+        return
+
+    MARK = "海況と釣期の傾向（データ分析）"
+    DISC1 = "釣果を保証するものではありません"
+    DISC2 = "この海域のデータに基づく"
+    FORBIDDEN = ["必ず釣れ", "確実に釣れ", "絶対に釣れ"]
+    fa_dir = os.path.join(DOCS, "fish_area")
+    rendered = 0
+    missing_disc = []
+    forbidden_hit = []
+    if os.path.isdir(fa_dir):
+        for fn in os.listdir(fa_dir):
+            if not fn.endswith(".html"):
+                continue
+            c = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
+            if MARK not in c:
+                continue
+            rendered += 1
+            if DISC1 not in c or DISC2 not in c:
+                missing_disc.append(fn)
+            if any(fb in c for fb in FORBIDDEN):
+                forbidden_hit.append(fn)
+    # レンダ件数はデータ次第だが、蒸留 JSON が十分ある場合は最低限描画されているはず
+    expect_min = min(30, max(1, len(fa_data) // 6))
+    if rendered < expect_min:
+        fail(f"[50] fish_area 分析セクションのレンダが {rendered} 件（>= {expect_min} 期待・蒸留JSON {len(fa_data)}件）")
+    else:
+        ok(f"[50] fish_area 分析セクション {rendered} 件レンダ（蒸留JSON {len(fa_data)}件）")
+    if missing_disc:
+        fail(f"[50] 分析セクションに免責注記が欠落（過大表現リスク）: {missing_disc[:5]}（計{len(missing_disc)}）")
+    else:
+        ok("[50] 分析セクション全件に免責注記あり")
+    if forbidden_hit:
+        fail(f"[50] 分析ページに禁止表現（断定的な釣果保証）: {forbidden_hit[:5]}")
+    else:
+        ok("[50] 禁止表現なし")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1864,6 +1928,7 @@ def main():
     validate_no_ads_on_noindex()
     validate_brand_not_h1()
     validate_chowari_monthly_coverage()
+    validate_fish_area_analysis_sections()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

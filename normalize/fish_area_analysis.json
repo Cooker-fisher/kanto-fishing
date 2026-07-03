@@ -1,0 +1,10154 @@
+{
+ "タイ五目|平塚港": {
+  "fish": "タイ五目",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 1432,
+  "peaks": [
+   "8月上旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.34
+   }
+  ],
+  "wmape_median": 72.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タイ五目|茅ヶ崎港": {
+  "fish": "タイ五目",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 657,
+  "peaks": [
+   "8月中旬",
+   "8月上旬"
+  ],
+  "factors": [
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.389
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.386
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.385
+   }
+  ],
+  "wmape_median": 75.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|飯岡港": {
+  "fish": "マダイ",
+  "area": "飯岡港",
+  "n_ships": 5,
+  "n_records": 2360,
+  "peaks": [
+   "12月上旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 4,
+    "avg_absr": 0.41
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 4,
+    "avg_absr": 0.383
+   },
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 3,
+    "avg_absr": 0.481
+   }
+  ],
+  "wmape_median": 40.9,
+  "model_beats_baseline": 5,
+  "n_backtested": 5
+ },
+ "ヤリイカ|松輪間口港": {
+  "fish": "ヤリイカ",
+  "area": "松輪間口港",
+  "n_ships": 1,
+  "n_records": 269,
+  "peaks": [
+   "9月上旬",
+   "4月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 44.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|飯岡港": {
+  "fish": "ヒラメ",
+  "area": "飯岡港",
+  "n_ships": 8,
+  "n_records": 1578,
+  "peaks": [
+   "1月上旬",
+   "10月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 4,
+    "avg_absr": 0.491
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 3,
+    "avg_absr": 0.593
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.489
+   }
+  ],
+  "wmape_median": 32.2,
+  "model_beats_baseline": 8,
+  "n_backtested": 8
+ },
+ "カワハギ|久比里港": {
+  "fish": "カワハギ",
+  "area": "久比里港",
+  "n_ships": 3,
+  "n_records": 1920,
+  "peaks": [
+   "11月中旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 3,
+    "avg_absr": 0.43
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 3,
+    "avg_absr": 0.389
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.387
+   }
+  ],
+  "wmape_median": 31.4,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "アジ|鴨居大室港": {
+  "fish": "アジ",
+  "area": "鴨居大室港",
+  "n_ships": 3,
+  "n_records": 875,
+  "peaks": [
+   "3月下旬",
+   "4月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.394
+   },
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.38
+   },
+   {
+    "base": "wave_height_max",
+    "label": "波の高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.36
+   }
+  ],
+  "wmape_median": 35.6,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "シロギス|横浜本牧港": {
+  "fish": "シロギス",
+  "area": "横浜本牧港",
+  "n_ships": 1,
+  "n_records": 779,
+  "peaks": [
+   "12月中旬",
+   "1月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.436
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.402
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.367
+   }
+  ],
+  "wmape_median": 25.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|浦安": {
+  "fish": "タチウオ",
+  "area": "浦安",
+  "n_ships": 2,
+  "n_records": 1385,
+  "peaks": [
+   "8月上旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.381
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.378
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.34
+   }
+  ],
+  "wmape_median": 42.2,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダイ|大原港": {
+  "fish": "マダイ",
+  "area": "大原港",
+  "n_ships": 2,
+  "n_records": 934,
+  "peaks": [
+   "10月中旬",
+   "11月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.518
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.428
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.402
+   }
+  ],
+  "wmape_median": 41.6,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "アジ|金谷港": {
+  "fish": "アジ",
+  "area": "金谷港",
+  "n_ships": 3,
+  "n_records": 1596,
+  "peaks": [
+   "9月中旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.331
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.305
+   },
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.304
+   }
+  ],
+  "wmape_median": 31.3,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "マダイ|松輪江奈港": {
+  "fish": "マダイ",
+  "area": "松輪江奈港",
+  "n_ships": 8,
+  "n_records": 961,
+  "peaks": [
+   "7月中旬",
+   "1月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.722
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.878
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.77
+   }
+  ],
+  "wmape_median": 37.8,
+  "model_beats_baseline": 7,
+  "n_backtested": 7
+ },
+ "フグ|浦安": {
+  "fish": "フグ",
+  "area": "浦安",
+  "n_ships": 2,
+  "n_records": 702,
+  "peaks": [
+   "9月上旬",
+   "8月下旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.459
+   },
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.409
+   },
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.379
+   }
+  ],
+  "wmape_median": 46.8,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "アジ|平和島": {
+  "fish": "アジ",
+  "area": "平和島",
+  "n_ships": 1,
+  "n_records": 623,
+  "peaks": [
+   "12月中旬",
+   "11月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.373
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.372
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.339
+   }
+  ],
+  "wmape_median": 22.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|鴨居大室港": {
+  "fish": "タチウオ",
+  "area": "鴨居大室港",
+  "n_ships": 2,
+  "n_records": 986,
+  "peaks": [
+   "12月下旬",
+   "1月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.336
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.312
+   }
+  ],
+  "wmape_median": 48.9,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダコ|横浜本牧港": {
+  "fish": "マダコ",
+  "area": "横浜本牧港",
+  "n_ships": 1,
+  "n_records": 597,
+  "peaks": [
+   "8月上旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.383
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.362
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.349
+   }
+  ],
+  "wmape_median": 40.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|平塚港": {
+  "fish": "マダイ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 40,
+  "peaks": [
+   "6月中旬",
+   "6月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 17.5,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "マダイ|日立久慈港": {
+  "fish": "マダイ",
+  "area": "日立久慈港",
+  "n_ships": 4,
+  "n_records": 1376,
+  "peaks": [
+   "10月下旬",
+   "11月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 3,
+    "avg_absr": 0.454
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 3,
+    "avg_absr": 0.371
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 3,
+    "avg_absr": 0.342
+   }
+  ],
+  "wmape_median": 43.7,
+  "model_beats_baseline": 4,
+  "n_backtested": 4
+ },
+ "マダイ|茅ヶ崎港": {
+  "fish": "マダイ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 52,
+  "peaks": [
+   "11月中旬",
+   "10月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 17.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|羽田": {
+  "fish": "アジ",
+  "area": "羽田",
+  "n_ships": 1,
+  "n_records": 521,
+  "peaks": [
+   "1月上旬",
+   "12月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 27.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "サワラ|江戸川放水路･原木中山": {
+  "fish": "サワラ",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 438,
+  "peaks": [
+   "5月上旬",
+   "3月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 49.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|御宿岩和田港": {
+  "fish": "ヒラメ",
+  "area": "御宿岩和田港",
+  "n_ships": 1,
+  "n_records": 348,
+  "peaks": [
+   "12月上旬",
+   "12月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 38.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "クロダイ|江戸川放水路･原木中山": {
+  "fish": "クロダイ",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 520,
+  "peaks": [
+   "11月上旬",
+   "2月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 55.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "フグ|横浜市金沢八景平潟": {
+  "fish": "フグ",
+  "area": "横浜市金沢八景平潟",
+  "n_ships": 1,
+  "n_records": 406,
+  "peaks": [
+   "8月上旬",
+   "9月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.361
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.333
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.33
+   }
+  ],
+  "wmape_median": 44.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|江戸川放水路･原木中山": {
+  "fish": "アジ",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 460,
+  "peaks": [
+   "12月中旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.329
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.325
+   }
+  ],
+  "wmape_median": 35.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|葉山あぶずり港": {
+  "fish": "マダイ",
+  "area": "葉山あぶずり港",
+  "n_ships": 1,
+  "n_records": 397,
+  "peaks": [
+   "5月下旬",
+   "4月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 38.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|横浜港･新山下": {
+  "fish": "アジ",
+  "area": "横浜港･新山下",
+  "n_ships": 1,
+  "n_records": 499,
+  "peaks": [
+   "12月下旬",
+   "1月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 28.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|小田原早川港": {
+  "fish": "ヤリイカ",
+  "area": "小田原早川港",
+  "n_ships": 2,
+  "n_records": 271,
+  "peaks": [
+   "9月上旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.362
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.355
+   },
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.325
+   }
+  ],
+  "wmape_median": 47.8,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "シロギス|羽田": {
+  "fish": "シロギス",
+  "area": "羽田",
+  "n_ships": 1,
+  "n_records": 445,
+  "peaks": [
+   "12月中旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.39
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.376
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.334
+   }
+  ],
+  "wmape_median": 29.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|長浦": {
+  "fish": "アジ",
+  "area": "長浦",
+  "n_ships": 1,
+  "n_records": 424,
+  "peaks": [
+   "12月中旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.416
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.341
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.32
+   }
+  ],
+  "wmape_median": 32.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|長浦": {
+  "fish": "タチウオ",
+  "area": "長浦",
+  "n_ships": 1,
+  "n_records": 391,
+  "peaks": [
+   "7月下旬",
+   "8月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.46
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.424
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.417
+   }
+  ],
+  "wmape_median": 39.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|横浜本牧港": {
+  "fish": "アジ",
+  "area": "横浜本牧港",
+  "n_ships": 1,
+  "n_records": 381,
+  "peaks": [
+   "1月中旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.406
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.333
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.324
+   }
+  ],
+  "wmape_median": 28.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "フグ|大原港": {
+  "fish": "フグ",
+  "area": "大原港",
+  "n_ships": 1,
+  "n_records": 355,
+  "peaks": [
+   "12月下旬",
+   "12月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 63.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アカムツ|波崎港": {
+  "fish": "アカムツ",
+  "area": "波崎港",
+  "n_ships": 2,
+  "n_records": 361,
+  "peaks": [
+   "9月上旬",
+   "11月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.387
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.34
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.339
+   }
+  ],
+  "wmape_median": 37.3,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "ヤリイカ|鹿嶋旧港": {
+  "fish": "ヤリイカ",
+  "area": "鹿嶋旧港",
+  "n_ships": 2,
+  "n_records": 181,
+  "peaks": [
+   "4月下旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.417
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.356
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.355
+   }
+  ],
+  "wmape_median": 59.2,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "ヒラメ|大原港": {
+  "fish": "ヒラメ",
+  "area": "大原港",
+  "n_ships": 4,
+  "n_records": 443,
+  "peaks": [
+   "10月中旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 3,
+    "avg_absr": 0.494
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 3,
+    "avg_absr": 0.467
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.558
+   }
+  ],
+  "wmape_median": 31.6,
+  "model_beats_baseline": 4,
+  "n_backtested": 4
+ },
+ "シーバス|江戸川放水路･原木中山": {
+  "fish": "シーバス",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 315,
+  "peaks": [
+   "12月下旬",
+   "1月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.312
+   }
+  ],
+  "wmape_median": 61.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|久比里港": {
+  "fish": "アジ",
+  "area": "久比里港",
+  "n_ships": 2,
+  "n_records": 979,
+  "peaks": [
+   "12月上旬",
+   "5月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 30.9,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "アジ|東葛西": {
+  "fish": "アジ",
+  "area": "東葛西",
+  "n_ships": 1,
+  "n_records": 619,
+  "peaks": [
+   "12月中旬",
+   "1月上旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.511
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.485
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.443
+   }
+  ],
+  "wmape_median": 20.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "サワラ|浦安": {
+  "fish": "サワラ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 74,
+  "peaks": [
+   "3月下旬",
+   "3月上旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.758
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.721
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.669
+   }
+  ],
+  "wmape_median": 31.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|横浜市金沢八景平潟": {
+  "fish": "アジ",
+  "area": "横浜市金沢八景平潟",
+  "n_ships": 2,
+  "n_records": 391,
+  "peaks": [
+   "12月中旬",
+   "1月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 37.4,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダコ|浦安": {
+  "fish": "マダコ",
+  "area": "浦安",
+  "n_ships": 2,
+  "n_records": 566,
+  "peaks": [
+   "7月中旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.496
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.376
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.37
+   }
+  ],
+  "wmape_median": 38.9,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "カワハギ|金谷港": {
+  "fish": "カワハギ",
+  "area": "金谷港",
+  "n_ships": 1,
+  "n_records": 321,
+  "peaks": [
+   "11月上旬",
+   "11月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 29.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|鴨居大室港": {
+  "fish": "カワハギ",
+  "area": "鴨居大室港",
+  "n_ships": 1,
+  "n_records": 261,
+  "peaks": [
+   "11月中旬",
+   "11月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 34.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|平塚港": {
+  "fish": "タチウオ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 241,
+  "peaks": [
+   "2月上旬",
+   "1月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.331
+   }
+  ],
+  "wmape_median": 47.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|沼津静浦": {
+  "fish": "タチウオ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 253,
+  "peaks": [
+   "7月上旬",
+   "12月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.649
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.367
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.327
+   }
+  ],
+  "wmape_median": 36.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "サワラ|長浦": {
+  "fish": "サワラ",
+  "area": "長浦",
+  "n_ships": 1,
+  "n_records": 205,
+  "peaks": [
+   "11月下旬",
+   "3月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 83.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "イサキ|洲崎港": {
+  "fish": "イサキ",
+  "area": "洲崎港",
+  "n_ships": 1,
+  "n_records": 272,
+  "peaks": [
+   "7月中旬",
+   "8月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.308
+   }
+  ],
+  "wmape_median": 16.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|平塚港": {
+  "fish": "アジ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 209,
+  "peaks": [
+   "3月上旬",
+   "10月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 36.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キハダマグロ|小田原早川港": {
+  "fish": "キハダマグロ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 45,
+  "peaks": [
+   "10月上旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 53.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|富士市田子の浦漁港": {
+  "fish": "マダイ",
+  "area": "富士市田子の浦漁港",
+  "n_ships": 1,
+  "n_records": 35,
+  "peaks": [
+   "10月下旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.341
+   }
+  ],
+  "wmape_median": 19.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カサゴ|久比里港": {
+  "fish": "カサゴ",
+  "area": "久比里港",
+  "n_ships": 2,
+  "n_records": 297,
+  "peaks": [
+   "7月上旬",
+   "6月中旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.357
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.351
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.342
+   }
+  ],
+  "wmape_median": 26.4,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダイ|富浦港": {
+  "fish": "マダイ",
+  "area": "富浦港",
+  "n_ships": 1,
+  "n_records": 219,
+  "peaks": [
+   "2月中旬",
+   "11月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 38.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|横浜港･新山下": {
+  "fish": "タチウオ",
+  "area": "横浜港･新山下",
+  "n_ships": 1,
+  "n_records": 249,
+  "peaks": [
+   "8月上旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.487
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.475
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.451
+   }
+  ],
+  "wmape_median": 33.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "イナダ|小田原早川港": {
+  "fish": "イナダ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 170,
+  "peaks": [
+   "9月中旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.45
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.412
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.412
+   }
+  ],
+  "wmape_median": 61.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キハダマグロ|茅ヶ崎港": {
+  "fish": "キハダマグロ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 48,
+  "peaks": [
+   "9月中旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 47.3,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "マルイカ|沼津内港": {
+  "fish": "マルイカ",
+  "area": "沼津内港",
+  "n_ships": 1,
+  "n_records": 967,
+  "peaks": [
+   "5月下旬",
+   "12月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 64.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ワラサ|松輪江奈港": {
+  "fish": "ワラサ",
+  "area": "松輪江奈港",
+  "n_ships": 1,
+  "n_records": 129,
+  "peaks": [
+   "12月下旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 40.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|小田原早川港": {
+  "fish": "マダイ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 126,
+  "peaks": [
+   "6月中旬",
+   "6月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 35.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|小田原早川港": {
+  "fish": "アジ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 97,
+  "peaks": [
+   "1月下旬",
+   "3月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.351
+   },
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.342
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.336
+   }
+  ],
+  "wmape_median": 28.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロギス|茅ヶ崎港": {
+  "fish": "シロギス",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 226,
+  "peaks": [
+   "6月上旬",
+   "7月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 31.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "フグ|茅ヶ崎港": {
+  "fish": "フグ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 68,
+  "peaks": [
+   "8月下旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.445
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.442
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.415
+   }
+  ],
+  "wmape_median": 39.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シーバス|横浜本牧港": {
+  "fish": "シーバス",
+  "area": "横浜本牧港",
+  "n_ships": 1,
+  "n_records": 161,
+  "peaks": [
+   "3月中旬",
+   "3月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 54.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|日立久慈港": {
+  "fish": "ヒラメ",
+  "area": "日立久慈港",
+  "n_ships": 5,
+  "n_records": 421,
+  "peaks": [
+   "2月下旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 4,
+    "avg_absr": 0.363
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.505
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.329
+   }
+  ],
+  "wmape_median": 38.4,
+  "model_beats_baseline": 5,
+  "n_backtested": 5
+ },
+ "イナダ|平塚港": {
+  "fish": "イナダ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 121,
+  "peaks": [
+   "8月中旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.632
+   },
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.632
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.596
+   }
+  ],
+  "wmape_median": 77.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キハダマグロ|葉山あぶずり港": {
+  "fish": "キハダマグロ",
+  "area": "葉山あぶずり港",
+  "n_ships": 1,
+  "n_records": 80,
+  "peaks": [
+   "9月下旬",
+   "10月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.31
+   },
+   {
+    "base": "wind_speed_avg",
+    "label": "風速",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.31
+   }
+  ],
+  "wmape_median": 53.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|茅ヶ崎港": {
+  "fish": "アジ",
+  "area": "茅ヶ崎港",
+  "n_ships": 2,
+  "n_records": 236,
+  "peaks": [
+   "10月中旬",
+   "1月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.481
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.344
+   }
+  ],
+  "wmape_median": 39.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|横浜市金沢八景平潟": {
+  "fish": "マダイ",
+  "area": "横浜市金沢八景平潟",
+  "n_ships": 1,
+  "n_records": 132,
+  "peaks": [
+   "3月下旬",
+   "12月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 31.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キハダマグロ|平塚港": {
+  "fish": "キハダマグロ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 39,
+  "peaks": [
+   "6月下旬",
+   "10月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 47.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "イサキ|大原港": {
+  "fish": "イサキ",
+  "area": "大原港",
+  "n_ships": 3,
+  "n_records": 275,
+  "peaks": [
+   "6月上旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.513
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.502
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.494
+   }
+  ],
+  "wmape_median": 30.4,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "アジ|大磯港": {
+  "fish": "アジ",
+  "area": "大磯港",
+  "n_ships": 2,
+  "n_records": 324,
+  "peaks": [
+   "8月上旬",
+   "4月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.386
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.523
+   }
+  ],
+  "wmape_median": 24.0,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダコ|江戸川放水路･原木中山": {
+  "fish": "マダコ",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 75,
+  "peaks": [
+   "6月下旬",
+   "6月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.558
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.401
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.394
+   }
+  ],
+  "wmape_median": 46.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|松輪江奈港": {
+  "fish": "カワハギ",
+  "area": "松輪江奈港",
+  "n_ships": 1,
+  "n_records": 133,
+  "peaks": [
+   "8月中旬",
+   "12月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 34.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|東葛西": {
+  "fish": "カワハギ",
+  "area": "東葛西",
+  "n_ships": 1,
+  "n_records": 213,
+  "peaks": [
+   "9月下旬",
+   "10月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.388
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.352
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.351
+   }
+  ],
+  "wmape_median": 36.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|羽田": {
+  "fish": "タチウオ",
+  "area": "羽田",
+  "n_ships": 1,
+  "n_records": 124,
+  "peaks": [
+   "1月中旬",
+   "9月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.402
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.385
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.343
+   }
+  ],
+  "wmape_median": 42.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マゴチ|江戸川放水路･原木中山": {
+  "fish": "マゴチ",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 141,
+  "peaks": [
+   "9月中旬",
+   "7月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 47.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロギス|東葛西": {
+  "fish": "シロギス",
+  "area": "東葛西",
+  "n_ships": 1,
+  "n_records": 311,
+  "peaks": [
+   "9月上旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.499
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.485
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.467
+   }
+  ],
+  "wmape_median": 31.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|浦安": {
+  "fish": "アジ",
+  "area": "浦安",
+  "n_ships": 2,
+  "n_records": 1060,
+  "peaks": [
+   "12月上旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.347
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.34
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.34
+   }
+  ],
+  "wmape_median": 36.0,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "イサキ|松輪江奈港": {
+  "fish": "イサキ",
+  "area": "松輪江奈港",
+  "n_ships": 2,
+  "n_records": 192,
+  "peaks": [
+   "9月中旬",
+   "6月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 34.7,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダコ|大洗港": {
+  "fish": "マダコ",
+  "area": "大洗港",
+  "n_ships": 2,
+  "n_records": 134,
+  "peaks": [
+   "6月上旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.531
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.353
+   },
+   {
+    "base": "tide_grp_chowaka",
+    "label": "長潮・若潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.479
+   }
+  ],
+  "wmape_median": 32.7,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダイ|松輪間口港": {
+  "fish": "マダイ",
+  "area": "松輪間口港",
+  "n_ships": 1,
+  "n_records": 98,
+  "peaks": [
+   "8月下旬",
+   "4月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.378
+   }
+  ],
+  "wmape_median": 45.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|大洗港": {
+  "fish": "マダイ",
+  "area": "大洗港",
+  "n_ships": 1,
+  "n_records": 107,
+  "peaks": [
+   "3月下旬",
+   "11月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.584
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.453
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.382
+   }
+  ],
+  "wmape_median": 37.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|沼津内港": {
+  "fish": "タチウオ",
+  "area": "沼津内港",
+  "n_ships": 1,
+  "n_records": 95,
+  "peaks": [
+   "12月中旬",
+   "10月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 58.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スミイカ|久比里港": {
+  "fish": "スミイカ",
+  "area": "久比里港",
+  "n_ships": 1,
+  "n_records": 90,
+  "peaks": [
+   "1月中旬",
+   "2月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 41.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|葉山あぶずり港": {
+  "fish": "カワハギ",
+  "area": "葉山あぶずり港",
+  "n_ships": 3,
+  "n_records": 223,
+  "peaks": [
+   "11月上旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.41
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.433
+   },
+   {
+    "base": "wave_height_max",
+    "label": "波の高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.426
+   }
+  ],
+  "wmape_median": 27.1,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "ワラサ|松輪間口港": {
+  "fish": "ワラサ",
+  "area": "松輪間口港",
+  "n_ships": 1,
+  "n_records": 56,
+  "peaks": [
+   "9月下旬",
+   "10月上旬"
+  ],
+  "factors": [
+   {
+    "base": "wind_speed_max",
+    "label": "風速（最大）",
+    "kind": "wind",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.405
+   },
+   {
+    "base": "wind_speed_avg",
+    "label": "風速",
+    "kind": "wind",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.357
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.324
+   }
+  ],
+  "wmape_median": 37.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|沼津静浦": {
+  "fish": "マルイカ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 75,
+  "peaks": [
+   "1月下旬",
+   "2月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.628
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.571
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.552
+   }
+  ],
+  "wmape_median": 39.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キハダマグロ|大磯港": {
+  "fish": "キハダマグロ",
+  "area": "大磯港",
+  "n_ships": 1,
+  "n_records": 36,
+  "peaks": [
+   "11月下旬",
+   "9月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.339
+   }
+  ],
+  "wmape_median": 31.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|波崎港": {
+  "fish": "ヒラメ",
+  "area": "波崎港",
+  "n_ships": 2,
+  "n_records": 100,
+  "peaks": [
+   "3月中旬",
+   "1月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.373
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.359
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.349
+   }
+  ],
+  "wmape_median": 33.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|飯岡港": {
+  "fish": "ヤリイカ",
+  "area": "飯岡港",
+  "n_ships": 1,
+  "n_records": 75,
+  "peaks": [
+   "4月上旬",
+   "4月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.378
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.341
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.34
+   }
+  ],
+  "wmape_median": 51.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|由比": {
+  "fish": "マダイ",
+  "area": "由比",
+  "n_ships": 1,
+  "n_records": 63,
+  "peaks": [
+   "9月下旬",
+   "1月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.366
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.335
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.324
+   }
+  ],
+  "wmape_median": 35.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|沼津静浦": {
+  "fish": "マダイ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 34,
+  "peaks": [
+   "4月下旬",
+   "11月中旬"
+  ],
+  "factors": [
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.386
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.385
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.351
+   }
+  ],
+  "wmape_median": 43.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カレイ|江戸川放水路･原木中山": {
+  "fish": "カレイ",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 67,
+  "peaks": [
+   "1月上旬",
+   "1月中旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.43
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.372
+   }
+  ],
+  "wmape_median": 49.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|大洗港": {
+  "fish": "ヒラメ",
+  "area": "大洗港",
+  "n_ships": 1,
+  "n_records": 72,
+  "peaks": [
+   "12月上旬",
+   "12月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.36
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.346
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.346
+   }
+  ],
+  "wmape_median": 24.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロギス|江戸川放水路･原木中山": {
+  "fish": "シロギス",
+  "area": "江戸川放水路･原木中山",
+  "n_ships": 1,
+  "n_records": 71,
+  "peaks": [
+   "7月下旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.431
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.428
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.415
+   }
+  ],
+  "wmape_median": 40.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|松輪江奈港": {
+  "fish": "アジ",
+  "area": "松輪江奈港",
+  "n_ships": 3,
+  "n_records": 143,
+  "peaks": [
+   "2月下旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chowaka",
+    "label": "長潮・若潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.441
+   }
+  ],
+  "wmape_median": 25.3,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダコ|長浦": {
+  "fish": "マダコ",
+  "area": "長浦",
+  "n_ships": 1,
+  "n_records": 78,
+  "peaks": [
+   "7月上旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.468
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.411
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.348
+   }
+  ],
+  "wmape_median": 34.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|沼津静浦": {
+  "fish": "ヒラメ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 47,
+  "peaks": [
+   "6月中旬",
+   "6月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 21.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|小田原早川港": {
+  "fish": "タチウオ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 63,
+  "peaks": [
+   "3月上旬",
+   "3月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.63
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.585
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.486
+   }
+  ],
+  "wmape_median": 33.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "メヌケ|波崎港": {
+  "fish": "メヌケ",
+  "area": "波崎港",
+  "n_ships": 1,
+  "n_records": 58,
+  "peaks": [
+   "7月下旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_delta_3d",
+    "label": "3日間の海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.368
+   },
+   {
+    "base": "wind_speed_avg",
+    "label": "風速",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.35
+   },
+   {
+    "base": "wind_speed_max",
+    "label": "風速（最大）",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.313
+   }
+  ],
+  "wmape_median": 41.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|富士市田子の浦漁港": {
+  "fish": "タチウオ",
+  "area": "富士市田子の浦漁港",
+  "n_ships": 1,
+  "n_records": 62,
+  "peaks": [
+   "8月下旬",
+   "10月下旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.459
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.396
+   }
+  ],
+  "wmape_median": 39.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|日立久慈港": {
+  "fish": "タチウオ",
+  "area": "日立久慈港",
+  "n_ships": 2,
+  "n_records": 99,
+  "peaks": [
+   "1月下旬",
+   "1月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.923
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.394
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.454
+   }
+  ],
+  "wmape_median": 44.7,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マダコ|横浜市金沢八景平潟": {
+  "fish": "マダコ",
+  "area": "横浜市金沢八景平潟",
+  "n_ships": 1,
+  "n_records": 61,
+  "peaks": [
+   "6月上旬",
+   "9月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.537
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.365
+   }
+  ],
+  "wmape_median": 38.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|沼津静浦": {
+  "fish": "アジ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 48,
+  "peaks": [
+   "9月中旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.522
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.5
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.485
+   }
+  ],
+  "wmape_median": 41.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タイ五目|大洗港": {
+  "fish": "タイ五目",
+  "area": "大洗港",
+  "n_ships": 1,
+  "n_records": 64,
+  "peaks": [
+   "4月下旬",
+   "4月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.433
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.389
+   },
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.33
+   }
+  ],
+  "wmape_median": 30.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|富士市田子の浦漁港": {
+  "fish": "アジ",
+  "area": "富士市田子の浦漁港",
+  "n_ships": 1,
+  "n_records": 35,
+  "peaks": [
+   "6月中旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.457
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.431
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.422
+   }
+  ],
+  "wmape_median": 22.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "イサキ|小田原早川港": {
+  "fish": "イサキ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 49,
+  "peaks": [
+   "8月中旬",
+   "8月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.616
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.573
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.524
+   }
+  ],
+  "wmape_median": 30.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|沼津内港": {
+  "fish": "アジ",
+  "area": "沼津内港",
+  "n_ships": 1,
+  "n_records": 43,
+  "peaks": [
+   "3月中旬",
+   "10月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.4
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.383
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.337
+   }
+  ],
+  "wmape_median": 26.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カマス|平塚港": {
+  "fish": "カマス",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 46,
+  "peaks": [
+   "9月上旬",
+   "9月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.669
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.66
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.658
+   }
+  ],
+  "wmape_median": 51.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロギス|久比里港": {
+  "fish": "シロギス",
+  "area": "久比里港",
+  "n_ships": 1,
+  "n_records": 45,
+  "peaks": [
+   "8月上旬",
+   "9月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.44
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.361
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.33
+   }
+  ],
+  "wmape_median": 32.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "フグ|金谷港": {
+  "fish": "フグ",
+  "area": "金谷港",
+  "n_ships": 1,
+  "n_records": 37,
+  "peaks": [
+   "4月中旬",
+   "4月下旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.386
+   }
+  ],
+  "wmape_median": 29.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|茅ヶ崎港": {
+  "fish": "カワハギ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 37,
+  "peaks": [
+   "12月中旬",
+   "1月上旬"
+  ],
+  "factors": [
+   {
+    "base": "swell_height_max",
+    "label": "うねりの高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.52
+   },
+   {
+    "base": "wave_height_max",
+    "label": "波の高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.373
+   }
+  ],
+  "wmape_median": 35.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "メダイ|御前崎港": {
+  "fish": "メダイ",
+  "area": "御前崎港",
+  "n_ships": 1,
+  "n_records": 47,
+  "peaks": [
+   "6月上旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.342
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.326
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.312
+   }
+  ],
+  "wmape_median": 29.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロギス|平塚港": {
+  "fish": "シロギス",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 37,
+  "peaks": [
+   "6月上旬",
+   "6月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 36.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロギス|由比": {
+  "fish": "シロギス",
+  "area": "由比",
+  "n_ships": 1,
+  "n_records": 34,
+  "peaks": [
+   "5月中旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.455
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.413
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.35
+   }
+  ],
+  "wmape_median": 25.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|茅ヶ崎港": {
+  "fish": "タチウオ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 31,
+  "peaks": [
+   "3月下旬",
+   "3月上旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.426
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.422
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.396
+   }
+  ],
+  "wmape_median": 43.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダコ|日立久慈港": {
+  "fish": "マダコ",
+  "area": "日立久慈港",
+  "n_ships": 1,
+  "n_records": 31,
+  "peaks": [
+   "7月中旬",
+   "7月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 27.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|平塚港": {
+  "fish": "マルイカ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 256,
+  "peaks": [
+   "6月上旬",
+   "6月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 53.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カンパチ|下田港": {
+  "fish": "カンパチ",
+  "area": "下田港",
+  "n_ships": 2,
+  "n_records": 298,
+  "peaks": [
+   "4月中旬",
+   "9月中旬"
+  ],
+  "factors": [
+   {
+    "base": "wind_speed_max",
+    "label": "風速（最大）",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.303
+   }
+  ],
+  "wmape_median": 36.0,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マルイカ|葉山あぶずり港": {
+  "fish": "マルイカ",
+  "area": "葉山あぶずり港",
+  "n_ships": 3,
+  "n_records": 504,
+  "peaks": [
+   "6月中旬",
+   "6月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.648
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.62
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.587
+   }
+  ],
+  "wmape_median": 44.6,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マルイカ|松輪間口港": {
+  "fish": "マルイカ",
+  "area": "松輪間口港",
+  "n_ships": 1,
+  "n_records": 434,
+  "peaks": [
+   "5月下旬",
+   "6月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 39.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|久比里港": {
+  "fish": "マルイカ",
+  "area": "久比里港",
+  "n_ships": 1,
+  "n_records": 259,
+  "peaks": [
+   "6月上旬",
+   "1月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 36.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|小田原早川港": {
+  "fish": "マルイカ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 38,
+  "peaks": [
+   "3月下旬",
+   "1月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 46.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|天津港": {
+  "fish": "マルイカ",
+  "area": "天津港",
+  "n_ships": 1,
+  "n_records": 121,
+  "peaks": [
+   "6月上旬",
+   "2月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.342
+   }
+  ],
+  "wmape_median": 53.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アマダイ|松輪江奈港": {
+  "fish": "アマダイ",
+  "area": "松輪江奈港",
+  "n_ships": 1,
+  "n_records": 39,
+  "peaks": [
+   "2月中旬",
+   "2月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.412
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.391
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.356
+   }
+  ],
+  "wmape_median": 29.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アマダイ|茅ヶ崎港": {
+  "fish": "アマダイ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 390,
+  "peaks": [
+   "8月下旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.659
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.536
+   }
+  ],
+  "wmape_median": 36.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アマダイ|波崎港": {
+  "fish": "アマダイ",
+  "area": "波崎港",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "7月中旬",
+   "9月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 18.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アマダイ|久比里港": {
+  "fish": "アマダイ",
+  "area": "久比里港",
+  "n_ships": 3,
+  "n_records": 1048,
+  "peaks": [
+   "8月中旬",
+   "8月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.302
+   }
+  ],
+  "wmape_median": 35.7,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "アマダイ|平塚港": {
+  "fish": "アマダイ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 434,
+  "peaks": [
+   "11月下旬",
+   "1月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 35.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アマダイ|日立久慈港": {
+  "fish": "アマダイ",
+  "area": "日立久慈港",
+  "n_ships": 2,
+  "n_records": 144,
+  "peaks": [
+   "10月上旬",
+   "11月上旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.493
+   },
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.468
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.445
+   }
+  ],
+  "wmape_median": 27.5,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "アオリイカ|金谷港": {
+  "fish": "アオリイカ",
+  "area": "金谷港",
+  "n_ships": 1,
+  "n_records": 51,
+  "peaks": [
+   "9月下旬",
+   "7月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 31.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アオリイカ|洲崎港": {
+  "fish": "アオリイカ",
+  "area": "洲崎港",
+  "n_ships": 1,
+  "n_records": 41,
+  "peaks": [
+   "12月中旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.385
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.37
+   },
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.362
+   }
+  ],
+  "wmape_median": 40.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アオリイカ|富浦港": {
+  "fish": "アオリイカ",
+  "area": "富浦港",
+  "n_ships": 1,
+  "n_records": 59,
+  "peaks": [
+   "12月下旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.444
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.393
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.34
+   }
+  ],
+  "wmape_median": 33.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アオリイカ|松輪間口港": {
+  "fish": "アオリイカ",
+  "area": "松輪間口港",
+  "n_ships": 1,
+  "n_records": 443,
+  "peaks": [
+   "9月下旬",
+   "10月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.458
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.421
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.419
+   }
+  ],
+  "wmape_median": 41.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アオリイカ|横浜市金沢八景平潟": {
+  "fish": "アオリイカ",
+  "area": "横浜市金沢八景平潟",
+  "n_ships": 1,
+  "n_records": 78,
+  "peaks": [
+   "12月中旬",
+   "2月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.368
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.317
+   }
+  ],
+  "wmape_median": 36.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|鹿嶋旧港": {
+  "fish": "スルメイカ",
+  "area": "鹿嶋旧港",
+  "n_ships": 1,
+  "n_records": 251,
+  "peaks": [
+   "10月下旬",
+   "12月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 38.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マハタ|大原港": {
+  "fish": "マハタ",
+  "area": "大原港",
+  "n_ships": 1,
+  "n_records": 72,
+  "peaks": [
+   "1月下旬",
+   "10月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 21.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マハタ|飯岡港": {
+  "fish": "マハタ",
+  "area": "飯岡港",
+  "n_ships": 1,
+  "n_records": 85,
+  "peaks": [
+   "1月下旬",
+   "2月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.399
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.35
+   }
+  ],
+  "wmape_median": 28.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|松輪間口港": {
+  "fish": "スルメイカ",
+  "area": "松輪間口港",
+  "n_ships": 1,
+  "n_records": 220,
+  "peaks": [
+   "4月中旬",
+   "6月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.348
+   }
+  ],
+  "wmape_median": 46.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マハタ|御宿岩和田港": {
+  "fish": "マハタ",
+  "area": "御宿岩和田港",
+  "n_ships": 1,
+  "n_records": 72,
+  "peaks": [
+   "9月下旬",
+   "4月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.434
+   }
+  ],
+  "wmape_median": 37.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|小田原早川港": {
+  "fish": "スルメイカ",
+  "area": "小田原早川港",
+  "n_ships": 2,
+  "n_records": 241,
+  "peaks": [
+   "6月中旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.444
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.345
+   },
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.344
+   }
+  ],
+  "wmape_median": 49.3,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "カツオ|茅ヶ崎港": {
+  "fish": "カツオ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 58,
+  "peaks": [
+   "12月中旬",
+   "8月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.585
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.522
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.347
+   }
+  ],
+  "wmape_median": 48.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|御宿岩和田港": {
+  "fish": "スルメイカ",
+  "area": "御宿岩和田港",
+  "n_ships": 1,
+  "n_records": 52,
+  "peaks": [
+   "6月下旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.929
+   }
+  ],
+  "wmape_median": 40.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カツオ|御前崎港": {
+  "fish": "カツオ",
+  "area": "御前崎港",
+  "n_ships": 2,
+  "n_records": 77,
+  "peaks": [
+   "10月下旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "wind_speed_avg",
+    "label": "風速",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.339
+   },
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.324
+   }
+  ],
+  "wmape_median": 34.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 2
+ },
+ "カツオ|小田原早川港": {
+  "fish": "カツオ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 35,
+  "peaks": [
+   "12月中旬",
+   "8月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.466
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.465
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.457
+   }
+  ],
+  "wmape_median": 27.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|天津港": {
+  "fish": "スルメイカ",
+  "area": "天津港",
+  "n_ships": 1,
+  "n_records": 89,
+  "peaks": [
+   "12月上旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.6
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.635
+   },
+   {
+    "base": "swell_height_max",
+    "label": "うねりの高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.381
+   }
+  ],
+  "wmape_median": 45.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|下田港": {
+  "fish": "スルメイカ",
+  "area": "下田港",
+  "n_ships": 1,
+  "n_records": 36,
+  "peaks": [
+   "7月上旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.498
+   },
+   {
+    "base": "kd490_surface",
+    "label": "海水の濁り具合（数値が高いほど濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.446
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.428
+   }
+  ],
+  "wmape_median": 28.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カツオ|平塚港": {
+  "fish": "カツオ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 41,
+  "peaks": [
+   "9月下旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.463
+   }
+  ],
+  "wmape_median": 47.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ムギイカ|小田原早川港": {
+  "fish": "ムギイカ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 64,
+  "peaks": [
+   "4月上旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.413
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.33
+   },
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.327
+   }
+  ],
+  "wmape_median": 55.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ムギイカ|平塚港": {
+  "fish": "ムギイカ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 43,
+  "peaks": [
+   "5月中旬",
+   "4月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.514
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.442
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.387
+   }
+  ],
+  "wmape_median": 50.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ムギイカ|沼津内港": {
+  "fish": "ムギイカ",
+  "area": "沼津内港",
+  "n_ships": 1,
+  "n_records": 243,
+  "peaks": [
+   "5月下旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.411
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.444
+   },
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.406
+   }
+  ],
+  "wmape_median": 59.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シマアジ|大原港": {
+  "fish": "シマアジ",
+  "area": "大原港",
+  "n_ships": 1,
+  "n_records": 94,
+  "peaks": [
+   "6月上旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.475
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.786
+   },
+   {
+    "base": "current_speed_max",
+    "label": "潮流の速さ（最大）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   }
+  ],
+  "wmape_median": 64.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キンメダイ|小田原早川港": {
+  "fish": "キンメダイ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 397,
+  "peaks": [
+   "11月中旬",
+   "10月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 55.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カンパチ|洲崎港": {
+  "fish": "カンパチ",
+  "area": "洲崎港",
+  "n_ships": 1,
+  "n_records": 31,
+  "peaks": [
+   "11月上旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.495
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.447
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.404
+   }
+  ],
+  "wmape_median": 57.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ムギイカ|沼津静浦": {
+  "fish": "ムギイカ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 126,
+  "peaks": [
+   "6月上旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "kd490_surface",
+    "label": "海水の濁り具合（数値が高いほど濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.65
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.323
+   }
+  ],
+  "wmape_median": 53.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シイラ|富浦港": {
+  "fish": "シイラ",
+  "area": "富浦港",
+  "n_ships": 1,
+  "n_records": 41,
+  "peaks": [
+   "9月上旬",
+   "8月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.492
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.452
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.376
+   }
+  ],
+  "wmape_median": 70.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キンメダイ|下田港": {
+  "fish": "キンメダイ",
+  "area": "下田港",
+  "n_ships": 1,
+  "n_records": 61,
+  "peaks": [
+   "6月中旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.633
+   },
+   {
+    "base": "tide_grp_chowaka",
+    "label": "長潮・若潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.596
+   },
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.495
+   }
+  ],
+  "wmape_median": 42.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "トラフグ|浦安": {
+  "fish": "トラフグ",
+  "area": "浦安",
+  "n_ships": 2,
+  "n_records": 273,
+  "peaks": [
+   "2月下旬",
+   "2月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.311
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.472
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.394
+   }
+  ],
+  "wmape_median": 41.6,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "ビシアジ|金谷港": {
+  "fish": "ビシアジ",
+  "area": "金谷港",
+  "n_ships": 1,
+  "n_records": 156,
+  "peaks": [
+   "9月中旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.513
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.502
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.392
+   }
+  ],
+  "wmape_median": 42.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シイラ|平塚港": {
+  "fish": "シイラ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 245,
+  "peaks": [
+   "8月下旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.5
+   },
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.431
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.424
+   }
+  ],
+  "wmape_median": 69.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ショウサイフグ|茅ヶ崎港": {
+  "fish": "ショウサイフグ",
+  "area": "茅ヶ崎港",
+  "n_ships": 1,
+  "n_records": 72,
+  "peaks": [
+   "5月上旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.382
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.331
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   }
+  ],
+  "wmape_median": 52.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "トラフグ|横浜市金沢八景平潟": {
+  "fish": "トラフグ",
+  "area": "横浜市金沢八景平潟",
+  "n_ships": 1,
+  "n_records": 89,
+  "peaks": [
+   "12月中旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.47
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.452
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.432
+   }
+  ],
+  "wmape_median": 39.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ビシアジ|小田原早川港": {
+  "fish": "ビシアジ",
+  "area": "小田原早川港",
+  "n_ships": 1,
+  "n_records": 119,
+  "peaks": [
+   "6月中旬",
+   "4月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 25.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ショウサイフグ|浦安": {
+  "fish": "ショウサイフグ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 129,
+  "peaks": [
+   "4月中旬",
+   "3月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 36.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アカメフグ|浦安": {
+  "fish": "アカメフグ",
+  "area": "浦安",
+  "n_ships": 2,
+  "n_records": 277,
+  "peaks": [
+   "11月下旬",
+   "1月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 31.4,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "ビシアジ|平塚港": {
+  "fish": "ビシアジ",
+  "area": "平塚港",
+  "n_ships": 1,
+  "n_records": 77,
+  "peaks": [
+   "12月下旬",
+   "4月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 25.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ショウサイフグ|日立久慈港": {
+  "fish": "ショウサイフグ",
+  "area": "日立久慈港",
+  "n_ships": 1,
+  "n_records": 39,
+  "peaks": [
+   "7月中旬",
+   "7月下旬"
+  ],
+  "factors": [
+   {
+    "base": "current_speed_avg",
+    "label": "潮流の速さ",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.582
+   },
+   {
+    "base": "current_speed_max",
+    "label": "潮流の速さ（最大）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.508
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.488
+   }
+  ],
+  "wmape_median": 21.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "クロムツ|天津港": {
+  "fish": "クロムツ",
+  "area": "天津港",
+  "n_ships": 1,
+  "n_records": 66,
+  "peaks": [
+   "9月下旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.357
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.313
+   }
+  ],
+  "wmape_median": 48.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "オニカサゴ|浦安": {
+  "fish": "オニカサゴ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 30,
+  "peaks": [
+   "3月上旬",
+   "2月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.404
+   },
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.371
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.352
+   }
+  ],
+  "wmape_median": 29.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ワラサ|鹿島港": {
+  "fish": "ワラサ",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 130,
+  "peaks": [
+   "3月上旬",
+   "5月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 60.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "フグ|鹿島港": {
+  "fish": "フグ",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 266,
+  "peaks": [
+   "10月下旬",
+   "10月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 62.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダコ|鹿島港": {
+  "fish": "マダコ",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 268,
+  "peaks": [
+   "5月下旬",
+   "6月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.448
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.429
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.394
+   }
+  ],
+  "wmape_median": 27.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|鹿島港": {
+  "fish": "ヤリイカ",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 99,
+  "peaks": [
+   "4月上旬",
+   "4月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.308
+   }
+  ],
+  "wmape_median": 56.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|鹿島港": {
+  "fish": "マルイカ",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 74,
+  "peaks": [
+   "7月下旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.505
+   },
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.484
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.382
+   }
+  ],
+  "wmape_median": 50.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マハタ|鹿島港": {
+  "fish": "マハタ",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 38,
+  "peaks": [
+   "3月下旬",
+   "1月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 42.0,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "スジイカ|鹿島港": {
+  "fish": "スジイカ",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 88,
+  "peaks": [
+   "6月下旬",
+   "9月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 48.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|鹿島港": {
+  "fish": "ヒラメ",
+  "area": "鹿島港",
+  "n_ships": 2,
+  "n_records": 479,
+  "peaks": [
+   "10月上旬",
+   "11月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 34.3,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "メバル|鹿島港": {
+  "fish": "メバル",
+  "area": "鹿島港",
+  "n_ships": 1,
+  "n_records": 52,
+  "peaks": [
+   "3月上旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "wind_speed_avg",
+    "label": "風速",
+    "kind": "wind",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.367
+   },
+   {
+    "base": "wind_speed_max",
+    "label": "風速（最大）",
+    "kind": "wind",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.302
+   }
+  ],
+  "wmape_median": 37.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|鹿島港": {
+  "fish": "マダイ",
+  "area": "鹿島港",
+  "n_ships": 2,
+  "n_records": 904,
+  "peaks": [
+   "10月上旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.559
+   }
+  ],
+  "wmape_median": 47.1,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "シロギス|浦安": {
+  "fish": "シロギス",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 586,
+  "peaks": [
+   "12月中旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.402
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.398
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.395
+   }
+  ],
+  "wmape_median": 33.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|浦安": {
+  "fish": "カワハギ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 337,
+  "peaks": [
+   "9月下旬",
+   "10月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.359
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.342
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.318
+   }
+  ],
+  "wmape_median": 46.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カサゴ|浦安": {
+  "fish": "カサゴ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 124,
+  "peaks": [
+   "4月下旬",
+   "3月下旬"
+  ],
+  "factors": [
+   {
+    "base": "swell_height_avg",
+    "label": "うねりの高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   },
+   {
+    "base": "current_speed_avg",
+    "label": "潮流の速さ",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.315
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.31
+   }
+  ],
+  "wmape_median": 29.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アオリイカ|浦安": {
+  "fish": "アオリイカ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 74,
+  "peaks": [
+   "3月下旬",
+   "2月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 34.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|浦安": {
+  "fish": "ヤリイカ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 31,
+  "peaks": [
+   "12月中旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.476
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.467
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.461
+   }
+  ],
+  "wmape_median": 28.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|長井港": {
+  "fish": "ヤリイカ",
+  "area": "長井港",
+  "n_ships": 2,
+  "n_records": 521,
+  "peaks": [
+   "9月上旬",
+   "1月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.372
+   }
+  ],
+  "wmape_median": 45.4,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マルイカ|長井港": {
+  "fish": "マルイカ",
+  "area": "長井港",
+  "n_ships": 1,
+  "n_records": 92,
+  "peaks": [
+   "7月上旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.548
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.547
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.533
+   }
+  ],
+  "wmape_median": 42.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|小網代港": {
+  "fish": "マルイカ",
+  "area": "小網代港",
+  "n_ships": 2,
+  "n_records": 523,
+  "peaks": [
+   "12月下旬",
+   "6月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 41.4,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "タチウオ|東葛西": {
+  "fish": "タチウオ",
+  "area": "東葛西",
+  "n_ships": 1,
+  "n_records": 37,
+  "peaks": [
+   "1月上旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "wave_height_max",
+    "label": "波の高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.442
+   },
+   {
+    "base": "kd490_surface",
+    "label": "海水の濁り具合（数値が高いほど濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.44
+   },
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.404
+   }
+  ],
+  "wmape_median": 28.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ワラサ|小網代港": {
+  "fish": "ワラサ",
+  "area": "小網代港",
+  "n_ships": 1,
+  "n_records": 41,
+  "peaks": [
+   "10月上旬",
+   "11月上旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "カワハギ|小網代港": {
+  "fish": "カワハギ",
+  "area": "小網代港",
+  "n_ships": 1,
+  "n_records": 104,
+  "peaks": [
+   "12月上旬",
+   "12月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.401
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.399
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.397
+   }
+  ],
+  "wmape_median": 30.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|長井港": {
+  "fish": "スルメイカ",
+  "area": "長井港",
+  "n_ships": 2,
+  "n_records": 489,
+  "peaks": [
+   "5月下旬",
+   "10月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.372
+   }
+  ],
+  "wmape_median": 49.7,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "キハダマグロ|長井港": {
+  "fish": "キハダマグロ",
+  "area": "長井港",
+  "n_ships": 1,
+  "n_records": 48,
+  "peaks": [
+   "10月中旬",
+   "11月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.369
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.358
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.343
+   }
+  ],
+  "wmape_median": 65.0,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "キハダマグロ|小網代港": {
+  "fish": "キハダマグロ",
+  "area": "小網代港",
+  "n_ships": 1,
+  "n_records": 57,
+  "peaks": [
+   "10月中旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.625
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.55
+   },
+   {
+    "base": "swell_height_avg",
+    "label": "うねりの高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.332
+   }
+  ],
+  "wmape_median": 65.7,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "カツオ|長井港": {
+  "fish": "カツオ",
+  "area": "長井港",
+  "n_ships": 1,
+  "n_records": 63,
+  "peaks": [
+   "11月下旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 59.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ムギイカ|長井港": {
+  "fish": "ムギイカ",
+  "area": "長井港",
+  "n_ships": 1,
+  "n_records": 55,
+  "peaks": [
+   "6月上旬",
+   "5月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 53.7,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "オニカサゴ|飯岡港": {
+  "fish": "オニカサゴ",
+  "area": "飯岡港",
+  "n_ships": 1,
+  "n_records": 91,
+  "peaks": [
+   "9月上旬",
+   "8月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 24.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アラ|飯岡港": {
+  "fish": "アラ",
+  "area": "飯岡港",
+  "n_ships": 1,
+  "n_records": 58,
+  "peaks": [
+   "9月中旬",
+   "9月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 12.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アマダイ|葉山あぶずり港": {
+  "fish": "アマダイ",
+  "area": "葉山あぶずり港",
+  "n_ships": 3,
+  "n_records": 619,
+  "peaks": [
+   "1月中旬",
+   "4月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 34.1,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "アマダイ|富士市田子の浦漁港": {
+  "fish": "アマダイ",
+  "area": "富士市田子の浦漁港",
+  "n_ships": 1,
+  "n_records": 38,
+  "peaks": [
+   "2月下旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.424
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.42
+   },
+   {
+    "base": "current_speed_max",
+    "label": "潮流の速さ（最大）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.376
+   }
+  ],
+  "wmape_median": 14.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キンメダイ|日立久慈港": {
+  "fish": "キンメダイ",
+  "area": "日立久慈港",
+  "n_ships": 1,
+  "n_records": 45,
+  "peaks": [
+   "8月上旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.415
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.315
+   },
+   {
+    "base": "current_speed_max",
+    "label": "潮流の速さ（最大）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.312
+   }
+  ],
+  "wmape_median": 44.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロアマダイ|富士市田子の浦漁港": {
+  "fish": "シロアマダイ",
+  "area": "富士市田子の浦漁港",
+  "n_ships": 1,
+  "n_records": 86,
+  "peaks": [
+   "1月中旬",
+   "11月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.522
+   },
+   {
+    "base": "tide_grp_chowaka",
+    "label": "長潮・若潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.339
+   },
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.337
+   }
+  ],
+  "wmape_median": 32.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "クロダイ|久里浜港": {
+  "fish": "クロダイ",
+  "area": "久里浜港",
+  "n_ships": 1,
+  "n_records": 58,
+  "peaks": [
+   "5月中旬",
+   "4月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 37.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|佐島": {
+  "fish": "マダイ",
+  "area": "佐島",
+  "n_ships": 1,
+  "n_records": 125,
+  "peaks": [
+   "9月中旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 23.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|片貝港": {
+  "fish": "ヒラメ",
+  "area": "片貝港",
+  "n_ships": 4,
+  "n_records": 167,
+  "peaks": [
+   "11月上旬",
+   "10月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.397
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.369
+   },
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.522
+   }
+  ],
+  "wmape_median": 27.6,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "アジ|小柴港": {
+  "fish": "アジ",
+  "area": "小柴港",
+  "n_ships": 1,
+  "n_records": 745,
+  "peaks": [
+   "1月上旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.344
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.329
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.327
+   }
+  ],
+  "wmape_median": 30.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|久里浜港": {
+  "fish": "マダイ",
+  "area": "久里浜港",
+  "n_ships": 2,
+  "n_records": 145,
+  "peaks": [
+   "8月下旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.315
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.439
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.373
+   }
+  ],
+  "wmape_median": 47.3,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "タチウオ|小柴港": {
+  "fish": "タチウオ",
+  "area": "小柴港",
+  "n_ships": 1,
+  "n_records": 462,
+  "peaks": [
+   "8月中旬",
+   "10月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.439
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.4
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.376
+   }
+  ],
+  "wmape_median": 35.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|金沢八景": {
+  "fish": "マダイ",
+  "area": "金沢八景",
+  "n_ships": 2,
+  "n_records": 365,
+  "peaks": [
+   "3月中旬",
+   "3月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.441
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.365
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.364
+   }
+  ],
+  "wmape_median": 49.6,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "マルイカ|長井漆山港": {
+  "fish": "マルイカ",
+  "area": "長井漆山港",
+  "n_ships": 1,
+  "n_records": 124,
+  "peaks": [
+   "6月上旬",
+   "5月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 38.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|長井新宿港": {
+  "fish": "マルイカ",
+  "area": "長井新宿港",
+  "n_ships": 1,
+  "n_records": 51,
+  "peaks": [
+   "6月上旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.471
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.469
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.459
+   }
+  ],
+  "wmape_median": 41.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|久里浜港": {
+  "fish": "タチウオ",
+  "area": "久里浜港",
+  "n_ships": 3,
+  "n_records": 601,
+  "peaks": [
+   "1月上旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.366
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.555
+   },
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.525
+   }
+  ],
+  "wmape_median": 35.7,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "カワハギ|小柴港": {
+  "fish": "カワハギ",
+  "area": "小柴港",
+  "n_ships": 1,
+  "n_records": 36,
+  "peaks": [
+   "10月下旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.331
+   }
+  ],
+  "wmape_median": 36.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|金沢八景": {
+  "fish": "タチウオ",
+  "area": "金沢八景",
+  "n_ships": 3,
+  "n_records": 1344,
+  "peaks": [
+   "12月下旬",
+   "1月上旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.338
+   },
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.392
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   }
+  ],
+  "wmape_median": 41.1,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "カワハギ|長井港": {
+  "fish": "カワハギ",
+  "area": "長井港",
+  "n_ships": 1,
+  "n_records": 775,
+  "peaks": [
+   "12月上旬",
+   "12月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 43.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|富津港": {
+  "fish": "タチウオ",
+  "area": "富津港",
+  "n_ships": 1,
+  "n_records": 262,
+  "peaks": [
+   "12月中旬",
+   "8月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.497
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.346
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.341
+   }
+  ],
+  "wmape_median": 36.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|金沢八景": {
+  "fish": "アジ",
+  "area": "金沢八景",
+  "n_ships": 3,
+  "n_records": 2785,
+  "peaks": [
+   "1月上旬",
+   "4月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.678
+   }
+  ],
+  "wmape_median": 46.0,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "アジ|小坪港": {
+  "fish": "アジ",
+  "area": "小坪港",
+  "n_ships": 1,
+  "n_records": 453,
+  "peaks": [
+   "2月中旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.429
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.35
+   }
+  ],
+  "wmape_median": 21.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダコ|小柴港": {
+  "fish": "マダコ",
+  "area": "小柴港",
+  "n_ships": 1,
+  "n_records": 92,
+  "peaks": [
+   "7月下旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.696
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.398
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.338
+   }
+  ],
+  "wmape_median": 47.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダコ|金沢八景": {
+  "fish": "マダコ",
+  "area": "金沢八景",
+  "n_ships": 3,
+  "n_records": 363,
+  "peaks": [
+   "8月上旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.499
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.403
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.373
+   }
+  ],
+  "wmape_median": 45.7,
+  "model_beats_baseline": 3,
+  "n_backtested": 3
+ },
+ "カワハギ|金沢八景": {
+  "fish": "カワハギ",
+  "area": "金沢八景",
+  "n_ships": 2,
+  "n_records": 500,
+  "peaks": [
+   "11月下旬",
+   "11月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 42.4,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "シロギス|金沢八景": {
+  "fish": "シロギス",
+  "area": "金沢八景",
+  "n_ships": 2,
+  "n_records": 1048,
+  "peaks": [
+   "12月中旬",
+   "1月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.499
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.43
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.418
+   }
+  ],
+  "wmape_median": 43.3,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "イサキ|片貝港": {
+  "fish": "イサキ",
+  "area": "片貝港",
+  "n_ships": 2,
+  "n_records": 155,
+  "peaks": [
+   "4月下旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.493
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.473
+   }
+  ],
+  "wmape_median": 41.9,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "イサキ|久里浜港": {
+  "fish": "イサキ",
+  "area": "久里浜港",
+  "n_ships": 2,
+  "n_records": 228,
+  "peaks": [
+   "5月下旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.305
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.301
+   }
+  ],
+  "wmape_median": 50.9,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "イサキ|金沢八景": {
+  "fish": "イサキ",
+  "area": "金沢八景",
+  "n_ships": 1,
+  "n_records": 109,
+  "peaks": [
+   "8月下旬",
+   "7月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 36.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|波崎港": {
+  "fish": "ヤリイカ",
+  "area": "波崎港",
+  "n_ships": 1,
+  "n_records": 34,
+  "peaks": [
+   "1月中旬",
+   "2月上旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "フグ|富津港": {
+  "fish": "フグ",
+  "area": "富津港",
+  "n_ships": 1,
+  "n_records": 74,
+  "peaks": [
+   "2月中旬",
+   "9月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 34.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|小網代港": {
+  "fish": "ヤリイカ",
+  "area": "小網代港",
+  "n_ships": 1,
+  "n_records": 39,
+  "peaks": [
+   "9月上旬",
+   "4月中旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "ヤリイカ|長井漆山港": {
+  "fish": "ヤリイカ",
+  "area": "長井漆山港",
+  "n_ships": 1,
+  "n_records": 221,
+  "peaks": [
+   "9月上旬",
+   "4月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 33.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヤリイカ|長井新宿港": {
+  "fish": "ヤリイカ",
+  "area": "長井新宿港",
+  "n_ships": 1,
+  "n_records": 274,
+  "peaks": [
+   "9月上旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 50.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キハダマグロ|小坪港": {
+  "fish": "キハダマグロ",
+  "area": "小坪港",
+  "n_ships": 1,
+  "n_records": 69,
+  "peaks": [
+   "10月上旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "wind_speed_max",
+    "label": "風速（最大）",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.534
+   },
+   {
+    "base": "wind_speed_avg",
+    "label": "風速",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.461
+   },
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.401
+   }
+  ],
+  "wmape_median": 62.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カツオ|波崎港": {
+  "fish": "カツオ",
+  "area": "波崎港",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "9月下旬",
+   "10月上旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "スルメイカ|長井漆山港": {
+  "fish": "スルメイカ",
+  "area": "長井漆山港",
+  "n_ships": 1,
+  "n_records": 252,
+  "peaks": [
+   "5月下旬",
+   "6月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 40.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カツオ|小坪港": {
+  "fish": "カツオ",
+  "area": "小坪港",
+  "n_ships": 2,
+  "n_records": 163,
+  "peaks": [
+   "10月上旬",
+   "6月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.579
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.554
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.513
+   }
+  ],
+  "wmape_median": 47.4,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "スルメイカ|長井新宿港": {
+  "fish": "スルメイカ",
+  "area": "長井新宿港",
+  "n_ships": 1,
+  "n_records": 434,
+  "peaks": [
+   "5月下旬",
+   "6月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 48.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シーバス|富津港": {
+  "fish": "シーバス",
+  "area": "富津港",
+  "n_ships": 1,
+  "n_records": 79,
+  "peaks": [
+   "3月上旬",
+   "4月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.414
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.39
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.364
+   }
+  ],
+  "wmape_median": 38.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キンメダイ|片貝港": {
+  "fish": "キンメダイ",
+  "area": "片貝港",
+  "n_ships": 2,
+  "n_records": 80,
+  "peaks": [
+   "9月上旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_approach_idx",
+    "label": "黒潮の接岸/大蛇行の傾向",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.493
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.485
+   },
+   {
+    "base": "wave_height_max",
+    "label": "波の高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.363
+   }
+  ],
+  "wmape_median": 31.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カサゴ|金沢八景": {
+  "fish": "カサゴ",
+  "area": "金沢八景",
+  "n_ships": 1,
+  "n_records": 517,
+  "peaks": [
+   "12月下旬",
+   "5月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 29.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キンメダイ|小坪港": {
+  "fish": "キンメダイ",
+  "area": "小坪港",
+  "n_ships": 1,
+  "n_records": 249,
+  "peaks": [
+   "4月上旬",
+   "3月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 55.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アカムツ|金沢八景": {
+  "fish": "アカムツ",
+  "area": "金沢八景",
+  "n_ships": 1,
+  "n_records": 34,
+  "peaks": [
+   "6月上旬",
+   "5月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 19.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "クロムツ|小坪港": {
+  "fish": "クロムツ",
+  "area": "小坪港",
+  "n_ships": 1,
+  "n_records": 48,
+  "peaks": [
+   "6月上旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.367
+   },
+   {
+    "base": "swell_height_avg",
+    "label": "うねりの高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.35
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.34
+   }
+  ],
+  "wmape_median": 36.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マゴチ|金沢八景": {
+  "fish": "マゴチ",
+  "area": "金沢八景",
+  "n_ships": 1,
+  "n_records": 112,
+  "peaks": [
+   "4月下旬",
+   "6月中旬"
+  ],
+  "factors": [
+   {
+    "base": "current_speed_max",
+    "label": "潮流の速さ（最大）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.39
+   },
+   {
+    "base": "current_speed_avg",
+    "label": "潮流の速さ",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.379
+   },
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.378
+   }
+  ],
+  "wmape_median": 35.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カレイ|金沢八景": {
+  "fish": "カレイ",
+  "area": "金沢八景",
+  "n_ships": 1,
+  "n_records": 32,
+  "peaks": [
+   "11月中旬",
+   "4月中旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.565
+   },
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.432
+   },
+   {
+    "base": "wave_height_max",
+    "label": "波の高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.391
+   }
+  ],
+  "wmape_median": 28.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "モンゴウイカ|小柴港": {
+  "fish": "モンゴウイカ",
+  "area": "小柴港",
+  "n_ships": 1,
+  "n_records": 133,
+  "peaks": [
+   "11月下旬",
+   "11月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.477
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.823
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.407
+   }
+  ],
+  "wmape_median": 35.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "イシダイ|久里浜港": {
+  "fish": "イシダイ",
+  "area": "久里浜港",
+  "n_ships": 1,
+  "n_records": 76,
+  "peaks": [
+   "12月下旬",
+   "1月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 49.7,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "ヤリイカ|天津港": {
+  "fish": "ヤリイカ",
+  "area": "天津港",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "4月中旬",
+   "4月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.366
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.358
+   }
+  ],
+  "wmape_median": 38.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アナゴ|浦安": {
+  "fish": "アナゴ",
+  "area": "浦安",
+  "n_ships": 1,
+  "n_records": 78,
+  "peaks": [
+   "6月下旬",
+   "6月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.413
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.36
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   }
+  ],
+  "wmape_median": 41.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ハナダイ|片貝港": {
+  "fish": "ハナダイ",
+  "area": "片貝港",
+  "n_ships": 1,
+  "n_records": 44,
+  "peaks": [
+   "10月上旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.384
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.381
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.413
+   }
+  ],
+  "wmape_median": 18.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キントキ|大原港": {
+  "fish": "キントキ",
+  "area": "大原港",
+  "n_ships": 1,
+  "n_records": 84,
+  "peaks": [
+   "7月下旬",
+   "5月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 46.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "イシモチ|金沢八景": {
+  "fish": "イシモチ",
+  "area": "金沢八景",
+  "n_ships": 1,
+  "n_records": 425,
+  "peaks": [
+   "1月上旬",
+   "1月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.394
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.356
+   },
+   {
+    "base": "sla_monthly",
+    "label": "沿岸の海面高度偏差（月平均）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.337
+   }
+  ],
+  "wmape_median": 39.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|葉山あぶずり港": {
+  "fish": "ヒラメ",
+  "area": "葉山あぶずり港",
+  "n_ships": 2,
+  "n_records": 95,
+  "peaks": [
+   "4月下旬",
+   "3月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.364
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.336
+   },
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.313
+   }
+  ],
+  "wmape_median": 39.9,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "アジ|久里浜港": {
+  "fish": "アジ",
+  "area": "久里浜港",
+  "n_ships": 2,
+  "n_records": 157,
+  "peaks": [
+   "3月下旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "current_speed_max",
+    "label": "潮流の速さ（最大）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.503
+   },
+   {
+    "base": "current_speed_avg",
+    "label": "潮流の速さ",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.389
+   },
+   {
+    "base": "sst_delta_3d",
+    "label": "3日間の海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.377
+   }
+  ],
+  "wmape_median": 22.0,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "ヒラメ|鹿嶋旧港": {
+  "fish": "ヒラメ",
+  "area": "鹿嶋旧港",
+  "n_ships": 1,
+  "n_records": 83,
+  "peaks": [
+   "11月上旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.345
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.323
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.314
+   }
+  ],
+  "wmape_median": 39.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|葉山町葉山鐙摺港": {
+  "fish": "マルイカ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 198,
+  "peaks": [
+   "5月中旬",
+   "6月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.324
+   }
+  ],
+  "wmape_median": 55.3,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "タチウオ|横浜港": {
+  "fish": "タチウオ",
+  "area": "横浜港",
+  "n_ships": 1,
+  "n_records": 39,
+  "peaks": [
+   "7月下旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.393
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.366
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.359
+   }
+  ],
+  "wmape_median": 80.1,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "マダイ|鹿嶋旧港": {
+  "fish": "マダイ",
+  "area": "鹿嶋旧港",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "4月中旬",
+   "5月中旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.559
+   }
+  ],
+  "wmape_median": 36.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|横浜港": {
+  "fish": "アジ",
+  "area": "横浜港",
+  "n_ships": 1,
+  "n_records": 957,
+  "peaks": [
+   "1月下旬",
+   "1月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kd490_surface",
+    "label": "海水の濁り具合（数値が高いほど濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.358
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.345
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.342
+   }
+  ],
+  "wmape_median": 25.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|福田港": {
+  "fish": "タチウオ",
+  "area": "福田港",
+  "n_ships": 1,
+  "n_records": 48,
+  "peaks": [
+   "10月上旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.53
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.483
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.327
+   }
+  ],
+  "wmape_median": 15.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|佐島港": {
+  "fish": "アジ",
+  "area": "佐島港",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "6月下旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_50m",
+    "label": "水深50m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.933
+   },
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.628
+   },
+   {
+    "base": "current_speed_avg",
+    "label": "潮流の速さ",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.465
+   }
+  ],
+  "wmape_median": 53.4,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "アマダイ|葉山町葉山鐙摺港": {
+  "fish": "アマダイ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 74,
+  "peaks": [
+   "3月中旬",
+   "3月上旬"
+  ],
+  "factors": [],
+  "wmape_median": 52.7,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "マダコ|鹿嶋旧港": {
+  "fish": "マダコ",
+  "area": "鹿嶋旧港",
+  "n_ships": 1,
+  "n_records": 66,
+  "peaks": [
+   "11月上旬",
+   "11月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.448
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.414
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.404
+   }
+  ],
+  "wmape_median": 44.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|佐島港": {
+  "fish": "カワハギ",
+  "area": "佐島港",
+  "n_ships": 1,
+  "n_records": 80,
+  "peaks": [
+   "9月下旬",
+   "11月中旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.363
+   },
+   {
+    "base": "current_speed_avg",
+    "label": "潮流の速さ",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.325
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.322
+   }
+  ],
+  "wmape_median": 48.4,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "カワハギ|葉山町葉山鐙摺港": {
+  "fish": "カワハギ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 89,
+  "peaks": [
+   "10月上旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.585
+   },
+   {
+    "base": "wave_height_max",
+    "label": "波の高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.528
+   },
+   {
+    "base": "swell_height_max",
+    "label": "うねりの高さ（最大）",
+    "kind": "wave",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.514
+   }
+  ],
+  "wmape_median": 46.3,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "シロギス|横浜港": {
+  "fish": "シロギス",
+  "area": "横浜港",
+  "n_ships": 1,
+  "n_records": 240,
+  "peaks": [
+   "2月上旬",
+   "1月中旬"
+  ],
+  "factors": [],
+  "wmape_median": 36.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|平塚漁港": {
+  "fish": "アジ",
+  "area": "平塚漁港",
+  "n_ships": 1,
+  "n_records": 45,
+  "peaks": [
+   "8月中旬",
+   "8月下旬"
+  ],
+  "factors": [
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.758
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.617
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.577
+   }
+  ],
+  "wmape_median": 49.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "フグ|鹿嶋旧港": {
+  "fish": "フグ",
+  "area": "鹿嶋旧港",
+  "n_ships": 1,
+  "n_records": 47,
+  "peaks": [
+   "7月上旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.311
+   }
+  ],
+  "wmape_median": 71.1,
+  "model_beats_baseline": 0,
+  "n_backtested": 1
+ },
+ "アオリイカ|葉山あぶずり港": {
+  "fish": "アオリイカ",
+  "area": "葉山あぶずり港",
+  "n_ships": 1,
+  "n_records": 56,
+  "peaks": [
+   "10月下旬",
+   "11月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "ヤリイカ|葉山町葉山鐙摺港": {
+  "fish": "ヤリイカ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 184,
+  "peaks": [
+   "10月上旬",
+   "10月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.435
+   },
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.417
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.393
+   }
+  ],
+  "wmape_median": 51.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "キハダマグロ|葉山町葉山鐙摺港": {
+  "fish": "キハダマグロ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 56,
+  "peaks": [
+   "6月下旬",
+   "7月中旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.518
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.306
+   }
+  ],
+  "wmape_median": 33.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カサゴ|御前崎港": {
+  "fish": "カサゴ",
+  "area": "御前崎港",
+  "n_ships": 1,
+  "n_records": 39,
+  "peaks": [
+   "4月下旬",
+   "7月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 50.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カツオ|葉山あぶずり港": {
+  "fish": "カツオ",
+  "area": "葉山あぶずり港",
+  "n_ships": 1,
+  "n_records": 38,
+  "peaks": [
+   "6月中旬",
+   "8月下旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.409
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.307
+   }
+  ],
+  "wmape_median": 38.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カツオ|葉山町葉山鐙摺港": {
+  "fish": "カツオ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 46,
+  "peaks": [
+   "10月上旬",
+   "6月中旬"
+  ],
+  "factors": [
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.482
+   },
+   {
+    "base": "kd490_surface",
+    "label": "海水の濁り具合（数値が高いほど濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.482
+   },
+   {
+    "base": "tide_grp_chowaka",
+    "label": "長潮・若潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.41
+   }
+  ],
+  "wmape_median": 63.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|葉山町葉山鐙摺港": {
+  "fish": "スルメイカ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 98,
+  "peaks": [
+   "5月下旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.43
+   }
+  ],
+  "wmape_median": 56.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ムギイカ|葉山町葉山鐙摺港": {
+  "fish": "ムギイカ",
+  "area": "葉山町葉山鐙摺港",
+  "n_ships": 1,
+  "n_records": 36,
+  "peaks": [
+   "5月中旬",
+   "5月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.467
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.466
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.401
+   }
+  ],
+  "wmape_median": 66.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "クロムツ|久里浜港": {
+  "fish": "クロムツ",
+  "area": "久里浜港",
+  "n_ships": 1,
+  "n_records": 69,
+  "peaks": [
+   "2月中旬",
+   "2月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.57
+   },
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.536
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.303
+   }
+  ],
+  "wmape_median": 31.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ハナダイ|久里浜港": {
+  "fish": "ハナダイ",
+  "area": "久里浜港",
+  "n_ships": 1,
+  "n_records": 37,
+  "peaks": [
+   "9月下旬",
+   "9月上旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.52
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.491
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.483
+   }
+  ],
+  "wmape_median": 28.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|御前崎港": {
+  "fish": "マダイ",
+  "area": "御前崎港",
+  "n_ships": 1,
+  "n_records": 38,
+  "peaks": [
+   "4月上旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.324
+   }
+  ],
+  "wmape_median": 28.8,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|鹿島": {
+  "fish": "マダイ",
+  "area": "鹿島",
+  "n_ships": 3,
+  "n_records": 182,
+  "peaks": [
+   "8月中旬",
+   "10月中旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マダイ|久料港": {
+  "fish": "マダイ",
+  "area": "久料港",
+  "n_ships": 1,
+  "n_records": 55,
+  "peaks": [
+   "5月中旬",
+   "4月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マダイ|横浜市八幡橋": {
+  "fish": "マダイ",
+  "area": "横浜市八幡橋",
+  "n_ships": 1,
+  "n_records": 56,
+  "peaks": [
+   "5月中旬",
+   "2月下旬"
+  ],
+  "factors": [],
+  "wmape_median": 50.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "イサキ|洲崎": {
+  "fish": "イサキ",
+  "area": "洲崎",
+  "n_ships": 1,
+  "n_records": 40,
+  "peaks": [
+   "7月上旬",
+   "8月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "イサキ|伊東": {
+  "fish": "イサキ",
+  "area": "伊東",
+  "n_ships": 1,
+  "n_records": 40,
+  "peaks": [
+   "5月下旬",
+   "6月中旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マゴチ|江東区木場": {
+  "fish": "マゴチ",
+  "area": "江東区木場",
+  "n_ships": 1,
+  "n_records": 30,
+  "peaks": [
+   "3月下旬",
+   "4月中旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マダイ|会瀬漁港": {
+  "fish": "マダイ",
+  "area": "会瀬漁港",
+  "n_ships": 2,
+  "n_records": 167,
+  "peaks": [
+   "8月中旬",
+   "9月中旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マダイ|伊戸": {
+  "fish": "マダイ",
+  "area": "伊戸",
+  "n_ships": 1,
+  "n_records": 75,
+  "peaks": [
+   "2月下旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.487
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.444
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.428
+   }
+  ],
+  "wmape_median": 37.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|柴漁港": {
+  "fish": "アジ",
+  "area": "柴漁港",
+  "n_ships": 1,
+  "n_records": 74,
+  "peaks": [
+   "7月上旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マダイ|宇佐美港": {
+  "fish": "マダイ",
+  "area": "宇佐美港",
+  "n_ships": 2,
+  "n_records": 111,
+  "peaks": [
+   "5月中旬",
+   "7月上旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "アジ|金沢漁港": {
+  "fish": "アジ",
+  "area": "金沢漁港",
+  "n_ships": 2,
+  "n_records": 141,
+  "peaks": [
+   "2月中旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 2,
+    "avg_absr": 0.447
+   },
+   {
+    "base": "current_speed_max",
+    "label": "潮流の速さ（最大）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.483
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.444
+   }
+  ],
+  "wmape_median": 38.2,
+  "model_beats_baseline": 2,
+  "n_backtested": 2
+ },
+ "タチウオ|金沢漁港": {
+  "fish": "タチウオ",
+  "area": "金沢漁港",
+  "n_ships": 1,
+  "n_records": 30,
+  "peaks": [
+   "12月下旬",
+   "7月下旬"
+  ],
+  "factors": [
+   {
+    "base": "kd490_surface",
+    "label": "海水の濁り具合（数値が高いほど濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.708
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.416
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.376
+   }
+  ],
+  "wmape_median": 33.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|清水港": {
+  "fish": "マダイ",
+  "area": "清水港",
+  "n_ships": 1,
+  "n_records": 31,
+  "peaks": [
+   "7月下旬",
+   "10月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.391
+   }
+  ],
+  "wmape_median": 36.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|江東区木場": {
+  "fish": "タチウオ",
+  "area": "江東区木場",
+  "n_ships": 1,
+  "n_records": 40,
+  "peaks": [
+   "8月下旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.676
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.673
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.65
+   }
+  ],
+  "wmape_median": 30.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダコ|那珂湊港": {
+  "fish": "マダコ",
+  "area": "那珂湊港",
+  "n_ships": 2,
+  "n_records": 142,
+  "peaks": [
+   "10月下旬",
+   "5月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "アマダイ|片瀬漁港": {
+  "fish": "アマダイ",
+  "area": "片瀬漁港",
+  "n_ships": 1,
+  "n_records": 45,
+  "peaks": [
+   "10月下旬",
+   "9月下旬"
+  ],
+  "factors": [
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.491
+   },
+   {
+    "base": "tide_grp_chowaka",
+    "label": "長潮・若潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.44
+   },
+   {
+    "base": "sst_delta",
+    "label": "海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.386
+   }
+  ],
+  "wmape_median": 34.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アマダイ|腰越港": {
+  "fish": "アマダイ",
+  "area": "腰越港",
+  "n_ships": 1,
+  "n_records": 47,
+  "peaks": [
+   "11月下旬",
+   "8月中旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.45
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.439
+   },
+   {
+    "base": "sst_gradient",
+    "label": "広域の水温差（黒潮接近の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.433
+   }
+  ],
+  "wmape_median": 29.2,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|江戸川区鹿本橋": {
+  "fish": "タチウオ",
+  "area": "江戸川区鹿本橋",
+  "n_ships": 1,
+  "n_records": 36,
+  "peaks": [
+   "12月下旬",
+   "7月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_chowaka",
+    "label": "長潮・若潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.479
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.379
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.366
+   }
+  ],
+  "wmape_median": 26.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダコ|横浜市八幡橋": {
+  "fish": "マダコ",
+  "area": "横浜市八幡橋",
+  "n_ships": 1,
+  "n_records": 34,
+  "peaks": [
+   "6月下旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_delta_3d",
+    "label": "3日間の海面水温の変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.341
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.316
+   }
+  ],
+  "wmape_median": 39.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|鴨居大室港": {
+  "fish": "マダイ",
+  "area": "鴨居大室港",
+  "n_ships": 1,
+  "n_records": 46,
+  "peaks": [
+   "10月下旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "sla_pelagic_monthly",
+    "label": "沖合（黒潮本流）の海面高度偏差",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.439
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.389
+   },
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.357
+   }
+  ],
+  "wmape_median": 31.7,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ワラサ|波崎港": {
+  "fish": "ワラサ",
+  "area": "波崎港",
+  "n_ships": 1,
+  "n_records": 32,
+  "peaks": [
+   "4月中旬",
+   "4月上旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "アジ|横浜": {
+  "fish": "アジ",
+  "area": "横浜",
+  "n_ships": 1,
+  "n_records": 53,
+  "peaks": [
+   "1月中旬",
+   "1月下旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.6
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.594
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.568
+   }
+  ],
+  "wmape_median": 26.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シロギス|横浜": {
+  "fish": "シロギス",
+  "area": "横浜",
+  "n_ships": 1,
+  "n_records": 42,
+  "peaks": [
+   "7月下旬",
+   "12月下旬"
+  ],
+  "factors": [
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.46
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.391
+   },
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.36
+   }
+  ],
+  "wmape_median": 22.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "カワハギ|洲崎": {
+  "fish": "カワハギ",
+  "area": "洲崎",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "12月下旬",
+   "11月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マダイ|横浜市金沢八景乙舳": {
+  "fish": "マダイ",
+  "area": "横浜市金沢八景乙舳",
+  "n_ships": 1,
+  "n_records": 68,
+  "peaks": [
+   "9月下旬",
+   "8月中旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "アオリイカ|宇佐美港": {
+  "fish": "アオリイカ",
+  "area": "宇佐美港",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "2月中旬",
+   "9月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "ヤリイカ|小田原新港": {
+  "fish": "ヤリイカ",
+  "area": "小田原新港",
+  "n_ships": 1,
+  "n_records": 49,
+  "peaks": [
+   "3月下旬",
+   "11月上旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "アジ|江東区木場": {
+  "fish": "アジ",
+  "area": "江東区木場",
+  "n_ships": 1,
+  "n_records": 36,
+  "peaks": [
+   "10月下旬",
+   "7月上旬"
+  ],
+  "factors": [
+   {
+    "base": "temp_200m",
+    "label": "水深200m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.935
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.386
+   }
+  ],
+  "wmape_median": 30.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|勝浦": {
+  "fish": "スルメイカ",
+  "area": "勝浦",
+  "n_ships": 1,
+  "n_records": 48,
+  "peaks": [
+   "6月下旬",
+   "9月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.301
+   }
+  ],
+  "wmape_median": 47.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "スルメイカ|御前崎港": {
+  "fish": "スルメイカ",
+  "area": "御前崎港",
+  "n_ships": 1,
+  "n_records": 32,
+  "peaks": [
+   "8月中旬",
+   "8月上旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "マハタ|洲崎": {
+  "fish": "マハタ",
+  "area": "洲崎",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "1月中旬",
+   "3月中旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "シマアジ|御前崎港": {
+  "fish": "シマアジ",
+  "area": "御前崎港",
+  "n_ships": 1,
+  "n_records": 35,
+  "peaks": [
+   "1月中旬",
+   "12月上旬"
+  ],
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.449
+   },
+   {
+    "base": "wind_speed_avg",
+    "label": "風速",
+    "kind": "wind",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.427
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.386
+   }
+  ],
+  "wmape_median": 33.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "シマアジ|相浜": {
+  "fish": "シマアジ",
+  "area": "相浜",
+  "n_ships": 1,
+  "n_records": 46,
+  "peaks": [
+   "5月下旬",
+   "7月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ },
+ "ショウサイフグ|大原港": {
+  "fish": "ショウサイフグ",
+  "area": "大原港",
+  "n_ships": 1,
+  "n_records": 49,
+  "peaks": [
+   "12月下旬",
+   "9月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.473
+   }
+  ],
+  "wmape_median": 77.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "オニカサゴ|片瀬漁港": {
+  "fish": "オニカサゴ",
+  "area": "片瀬漁港",
+  "n_ships": 1,
+  "n_records": 39,
+  "peaks": [
+   "2月下旬",
+   "11月下旬"
+  ],
+  "factors": [
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "多い",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.566
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.462
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.443
+   }
+  ],
+  "wmape_median": 23.9,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マゴチ|横浜市八幡橋": {
+  "fish": "マゴチ",
+  "area": "横浜市八幡橋",
+  "n_ships": 1,
+  "n_records": 41,
+  "peaks": [
+   "7月下旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 2,
+    "avg_absr": 0.406
+   },
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.497
+   },
+   {
+    "base": "spawn_season_n",
+    "label": "乗っ込み（産卵接岸）期",
+    "kind": "calendar",
+    "flag": true,
+    "direction": "少ない",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.486
+   }
+  ],
+  "wmape_median": 22.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "メダイ|須崎港": {
+  "fish": "メダイ",
+  "area": "須崎港",
+  "n_ships": 1,
+  "n_records": 58,
+  "peaks": [
+   "4月下旬",
+   "9月中旬"
+  ],
+  "factors": [
+   {
+    "base": "chl_monthly",
+    "label": "クロロフィル濃度（ベイト量の目安）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.473
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.344
+   },
+   {
+    "base": "kuroshio_sla_monthly",
+    "label": "黒潮の勢力（月平均の海面高度偏差）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.335
+   }
+  ],
+  "wmape_median": 32.0,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アラ|外川港": {
+  "fish": "アラ",
+  "area": "外川港",
+  "n_ships": 1,
+  "n_records": 33,
+  "peaks": [
+   "7月上旬",
+   "6月下旬"
+  ],
+  "factors": [
+   {
+    "base": "tide_grp_oshio",
+    "label": "大潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.482
+   },
+   {
+    "base": "wind_speed_max",
+    "label": "風速（最大）",
+    "kind": "wind",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.411
+   }
+  ],
+  "wmape_median": 44.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|品川区鮫洲勝島運河": {
+  "fish": "アジ",
+  "area": "品川区鮫洲勝島運河",
+  "n_ships": 1,
+  "n_records": 30,
+  "peaks": [
+   "12月下旬",
+   "11月下旬"
+  ],
+  "factors": [],
+  "wmape_median": null,
+  "model_beats_baseline": 0,
+  "n_backtested": 0
+ }
+}

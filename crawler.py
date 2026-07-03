@@ -3833,6 +3833,11 @@ _FA_NOINDEX_SLUGS: set = set()
 # それ未満はテンプレ穴埋めで実質薄ページのため noindex + 広告除去 + sitemap 除外。
 # noindex ページには ADSENSE_TAG を出さない（build_fish_area_pages の広告ゲート）。
 _FA_NOINDEX_HIST_THRESHOLD = 80
+# T43 (2026/07/03): C層蒸留の複数船宿分析（海況相関・釣期・予測精度）を持つページは、
+# hist が 80 未満でも hist>=40 なら index 復帰させる（独自集約コンテンツで薄判定を回避）。
+# 格上げした slug は _FA_RICH_INDEXED_SLUGS に記録し、不変条件 #50 で検証。
+_FA_RICH_HIST_MIN = 40
+_FA_RICH_INDEXED_SLUGS: set = set()
 
 # T40 (2026/05/26): build_point_pages() が生成するポイント系 area ページ（赤灯沖・鹿島南沖等）は
 # 自動生成ボイラープレートのみで fia-grid/season-map/海況 セクションを持たない構造的薄ページ。
@@ -10675,6 +10680,120 @@ def _fa_hist_stats(fish, area, hist_rows):
     }
 
 
+# ── C層蒸留（海況と釣期の傾向）─────────────────────────────────────────────
+# normalize/fish_area_analysis.json / ship_analysis.json は crawl/build_fish_area_analysis.py が
+# analysis.sqlite（gitignore・CI不在）から蒸留してコミットするスナップショット。
+# crawler.py は analysis.sqlite を直接読めないため、この蒸留 JSON 経由で C層信号を表示する。
+_FA_ANALYSIS = None
+_SHIP_ANALYSIS = None
+_STRENGTH_JA = {"強く": "明瞭", "やや強く": "中程度", "ゆるやかに": "弱め"}
+
+
+def _load_fa_analysis():
+    global _FA_ANALYSIS
+    if _FA_ANALYSIS is None:
+        base = os.path.dirname(__file__) or "."
+        try:
+            with open(os.path.join(base, "normalize", "fish_area_analysis.json"), encoding="utf-8") as f:
+                _FA_ANALYSIS = json.load(f)
+        except Exception:
+            _FA_ANALYSIS = {}
+    return _FA_ANALYSIS
+
+
+def _load_ship_analysis():
+    global _SHIP_ANALYSIS
+    if _SHIP_ANALYSIS is None:
+        base = os.path.dirname(__file__) or "."
+        try:
+            with open(os.path.join(base, "normalize", "ship_analysis.json"), encoding="utf-8") as f:
+                _SHIP_ANALYSIS = json.load(f)
+        except Exception:
+            _SHIP_ANALYSIS = {}
+    return _SHIP_ANALYSIS
+
+
+def _analysis_factor_li(fa):
+    """蒸留因子1件 → <li>。連続量は『高い日ほど』、フラグ型は『〜に』テンプレ。
+    方向（多い/少ない）は r 符号由来・因果は断定しない。"""
+    label = fa.get("label", "")
+    direction = fa.get("direction", "")
+    if not label or not direction:
+        return ""
+    if fa.get("flag"):
+        return f'<li><strong>{label}</strong>に釣果が{direction}傾向がみられます。</li>'
+    s = _STRENGTH_JA.get(fa.get("strength", ""), "弱め")
+    return f'<li><strong>{label}</strong>が高い日ほど釣果が{direction}傾向がみられます（相関の強さ: {s}）。</li>'
+
+
+def _build_fish_area_analysis_section(fish, area):
+    """fish_area『海況と釣期の傾向（データ分析）』セクション。C層蒸留から honest に相関記述。
+    因果は断定せず「この海域の過去データでは」とコンボ限定を明示、注記を必ず併記。"""
+    data = _load_fa_analysis().get(f"{fish}|{area}")
+    if not data:
+        return ""
+    peaks = data.get("peaks") or []
+    factors = data.get("factors") or []
+    if not peaks and not factors:
+        return ""
+    lis = []
+    if peaks:
+        lis.append(f'<li>釣果が伸びやすい時期の目安: <strong>{"・".join(peaks[:2])}</strong></li>')
+    for fa in factors[:3]:
+        lis.append(_analysis_factor_li(fa))
+    nb = data.get("n_backtested") or 0
+    beat = data.get("model_beats_baseline") or 0
+    wm = data.get("wmape_median")
+    if nb and beat and wm is not None:
+        lis.append(f'<li>当サイトの数の予測は、この海域の {beat}/{nb} 船宿で平年ベースラインを上回る精度でした'
+                   f'（数の予測誤差の中央値 wMAPE {wm}%）。</li>')
+    lis = [x for x in lis if x]
+    if not lis:
+        return ""
+    n_ships = data.get("n_ships", 0)
+    n_records = data.get("n_records", 0)
+    return (
+        '<h2 class="st">海況と釣期の傾向（データ分析）<span class="tag free">無料</span></h2>'
+        f'<p class="section-note">{area}周辺の{fish}について、当サイトで分析した{n_ships}船宿・のべ{n_records:,}便の'
+        '記録から、釣果と海況・潮回りの関係を集計した傾向です。過去データ上の相関であり釣果を保証するものではありません。'
+        'この傾向はこの海域のデータに基づくもので、魚種共通の法則ではありません。実際の釣行判断は'
+        '船宿の最新情報と当日の海況を優先してください。</p>'
+        f'<ul style="margin:8px 0 4px 18px;line-height:1.9;font-size:13px;color:var(--text-secondary)">{"".join(lis)}</ul>'
+    )
+
+
+def _build_ship_analysis_section(ship_name):
+    """ship『魚種別・海況と釣期の傾向（データ分析）』セクション。C層蒸留から魚種横断で。"""
+    data = _load_ship_analysis().get(ship_name)
+    if not data:
+        return ""
+    per_fish = data.get("fish") or []
+    blocks = []
+    for pf in per_fish[:5]:
+        fish = pf.get("fish", "")
+        peaks = pf.get("peaks") or []
+        factors = pf.get("factors") or []
+        lis = []
+        if peaks:
+            lis.append(f'<li>伸びやすい時期の目安: <strong>{"・".join(peaks[:2])}</strong></li>')
+        for fa in factors[:2]:
+            lis.append(_analysis_factor_li(fa))
+        lis = [x for x in lis if x]
+        if not lis:
+            continue
+        blocks.append(f'<div class="ship-an-fish"><h3 style="font-size:14px;margin:10px 0 4px">{fish}</h3>'
+                      f'<ul style="margin:0 0 4px 18px;line-height:1.85;font-size:13px;color:var(--text-secondary)">{"".join(lis)}</ul></div>')
+    if not blocks:
+        return ""
+    return (
+        '<h2 class="st">魚種別・海況と釣期の傾向（データ分析）<span class="tag free">無料</span></h2>'
+        '<p class="section-note">この船宿で当サイトが分析した魚種について、過去の釣果と海況・潮回りの関係を'
+        '集計した傾向です。過去データ上の相関であり釣果を保証するものではありません。実際の釣行判断は'
+        '船宿の最新情報と当日の海況を優先してください。</p>'
+        + "".join(blocks)
+    )
+
+
 def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=None, hist_rows=None, fish_area_summary=None, fish_top_areas=None):
     fa_out_dir = os.path.join(WEB_DIR, "fish_area")
     os.makedirs(fa_out_dir, exist_ok=True)
@@ -11132,6 +11251,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             _related_blocks.append(_axis3_html)
 
         fa_related_html = f'<div class="fa-related">{"".join(_related_blocks)}</div>' if _related_blocks else '<div class="fa-related"></div>'
+        # C層蒸留「海況と釣期の傾向（データ分析）」（fish_area_analysis.json 経由・無ければ空）
+        fa_analysis_html = _build_fish_area_analysis_section(fish, area)
         # 直近7日間の釣果推移チャート（fish/* と同じ関数を流用）
         chart7_html_fa = build_fish_7day_chart_html(fish, catches)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
@@ -11164,12 +11285,21 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         # AdSense「有用性の低いコンテンツ」判定リスクが高いため noindex を付与し
         # sitemap から除外する。ページ自体は内部リンク経由でユーザーに到達可能。
         # （_fa_hist_n は上で算出済み）
+        # T43（2026-07-03）: C層蒸留の複数船宿分析がある薄hist ページを index 対象に格上げ。
+        #   hist>=80（従来） または（hist>=40 かつ 分析が2船宿以上の実集約=fa_analysis_html あり）。
+        #   複数船宿の海況相関・釣期・予測精度という独自集約コンテンツを持つページは、
+        #   AdSense「薄い」判定に当たらない実質を備えるため index 復帰させる。
         _fa_slug_stem = f"{fish_slug(fish)}-{area_slug(area)}"
-        if _fa_hist_n < _FA_NOINDEX_HIST_THRESHOLD:
+        _fa_an = _load_fa_analysis().get(f"{fish}|{area}")
+        _fa_rich = bool(fa_analysis_html) and bool(_fa_an) and (_fa_an.get("n_ships", 0) >= 2)
+        _fa_indexable = (_fa_hist_n >= _FA_NOINDEX_HIST_THRESHOLD) or (_fa_rich and _fa_hist_n >= _FA_RICH_HIST_MIN)
+        if not _fa_indexable:
             fa_noindex_tag = '<meta name="robots" content="noindex, follow">'
             _FA_NOINDEX_SLUGS.add(_fa_slug_stem)
         else:
             fa_noindex_tag = ""
+            if _fa_hist_n < _FA_NOINDEX_HIST_THRESHOLD:
+                _FA_RICH_INDEXED_SLUGS.add(_fa_slug_stem)
         html = f"""<!DOCTYPE html>
 <html lang="ja"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11212,6 +11342,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   {ship_rank_fa_html}
   <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
   {recent_cards_fa}
+  {fa_analysis_html}
   {fa_related_html}
   <h2 class="st">よくある質問</h2>
   {fa_faq_html}
@@ -15209,6 +15340,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     yearly_summary_html = _ship_yearly_summary_section_html(_jb_yearly, name, area, _jc_seasonal, _jd_trophies)
     seasonal_fish_html = _ship_seasonal_fish_section_html(_jc_seasonal)
     trophy_rank_html = _ship_trophy_section_html(_jd_trophies)
+    # C層蒸留「魚種別・海況と釣期の傾向（データ分析）」（ship_analysis.json 経由・無ければ空）
+    ship_analysis_html = _build_ship_analysis_section(name)
     auto_badges_html = _ship_auto_badges_html(_je_badges)
 
     # H2 (T22): 空ページ判定 — 直近7日データがない場合のみ noindex
@@ -15568,6 +15701,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
 {yearly_summary_html}
 
 {seasonal_fish_html}
+
+{ship_analysis_html}
 
 {trophy_rank_html}
 
