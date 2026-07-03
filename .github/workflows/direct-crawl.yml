@@ -43,6 +43,19 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # 書き込み先は crawl.yml が触らないファイル/ディレクトリに限定
           git add direct-crawl/catches_raw_chowari_*.json data/V2/chowari_*.csv
-          git commit -m "chore(direct-crawl): chowari 直近7日更新 $(date +'%Y/%m/%d')" || echo "nothing to commit"
-          git pull --rebase origin main
-          git push origin main
+          git commit -m "chore(direct-crawl): chowari 直近7日更新 $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
+          # crawl.yml と同時刻 16:30 に並列起動するため push 競合が常態。単発 push だと
+          # silent fail し得るので crawl.yml と同じ 5回リトライ + rebase -X theirs で堅牢化。
+          # 書き込み先が chowari_*.json / chowari_*.csv に限定されるため theirs 優先で安全。
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main || { sleep $((attempt*5)); continue; }
+            if git rebase -X theirs origin/main; then
+              if git push origin main; then
+                echo "push 成功 (attempt $attempt)"; exit 0
+              fi
+            else
+              git rebase --abort || true
+            fi
+            echo "push 競合/失敗 → リトライ $attempt"; sleep $((attempt*5))
+          done
+          echo "::error::push が 5 回失敗"; exit 1

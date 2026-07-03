@@ -623,8 +623,12 @@ footer .cp { margin-top: 10px; display: block; opacity: .5; }
   --sig-late: #ff6b6b;
 }
 
-/* ── Google Fonts (Outfit 800) ── */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@800&display=swap');
+/* ── フォント ──
+   旧: @import で Google Fonts「Outfit 800」を読み込んでいたが、@import は CSS 先頭
+   （全ルールより前）でないと無効という仕様のため、この位置（152ルール後）ではブラウザに
+   無視され実際には読み込まれていなかった（font-family:'Outfit',system-ui は system-ui に
+   フォールバック済み）。render-blocking な外部フォント依存を避けるため、装飾用途の Outfit は
+   system-ui フォールバックのまま採用し @import を撤去（2026-07-03）。 */
 
 /* ── サイトロゴリンク ── */
 a.site-logo { text-decoration: none; color: inherit; }
