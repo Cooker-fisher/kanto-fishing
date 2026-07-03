@@ -467,6 +467,17 @@ crawler.py 実行時
   - `sss_delta_7d` は NULL 回避のため専用 nearest クエリ `_get_sss_nearest()` を新設
   - アジ×こなや丸で単体動作確認済み（deep_params N=4・H=0 wMAPE 33.7%）
 
+### 2026/07/03
+- **chowari 月次CSV 窓化 regression 修正**: chowari_to_csv.py を既存CSVとの dedup union 方式に変更
+  （per-ship raw JSON が直近7日窓の全上書きのため、旧全上書き方式は月初〜中旬の蓄積行を毎日破壊していた）。
+  git 履歴から 2026-03〜06 の計16,482行を復元。不変条件 #49（窓化検知）追加
+- **tsuri_mono_map 拡張**: chowari NULL 再正規化で7魚種昇格（サバ/イトヨリ/メジナ/ウマヅラハギ/ソイ/タカベ/ウメイロ）
+  + 変種6件（ワカシ→イナダ等）。NULL/空 7,424→3,557。適用は NULL 行のみのインプレース再正規化
+  （--export-csv 全再生成は ships.json 除外の遡及で fishing-v 履歴 約3,200行が消えるため不採用・要注意）
+- fish_romaji_map.json に昇格7種スラッグ追加
+- rebuild_weather_cache.py に --update 増分モード + 429バックオフ + 自動リペア統合（通常運用は --update）
+- predict_params.sqlite（D層蒸留DB）初回コミット → crawl.yml predict_daily が有効化
+
 ### 2026/05/08 後半
 - 「商品的中率」KPI 主指標を `1 - promise_break_rate`（"期待を下回らなかった率"）に確定
 - 04/13 の min/max ratio 法を撤回（Phase B で独立予測復活予定）

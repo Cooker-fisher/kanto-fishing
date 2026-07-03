@@ -1718,6 +1718,51 @@ def validate_xpost_no_operator_drafts():
         ok(f"[46] x_post 公開ページに運営者ドラフトの混入なし（{xpost_dir}）")
 
 
+def validate_chowari_monthly_coverage():
+    """2026/07/03: chowari 月次 CSV の「直近7日窓化」regression 検知。
+    chowari_crawler は per-ship raw JSON を直近7日窓で全上書きするため、旧 chowari_to_csv
+    （全上書き方式）は月が経過すると月初〜中旬の蓄積行を毎日破壊していた
+    （実害: 2026-06 が月末に 475行/6日分に縮小・2026-03〜06 で計 16,482 行を git 履歴から復元）。
+    chowari_to_csv は 2026-07-03 に既存 CSV との dedup union 方式に修正済み。
+    本条件は「完了した直近月の chowari CSV が月の広い範囲をカバーしていること」を検証し、
+    全上書き方式への退行を検知する。"""
+    print("\n[49] chowari 月次 CSV の窓化（蓄積行の消失）検知（2026/07/03）")
+    import csv as _csv
+    from datetime import date as _date, timedelta as _td
+    data_dir = os.path.join(ROOT, "data", "V2")
+    today = _date.today()
+    # 直近の「完了した」2か月分を対象（当月は蓄積途中なので対象外）
+    targets = []
+    y, m = today.year, today.month
+    for _ in range(2):
+        m -= 1
+        if m == 0:
+            y, m = y - 1, 12
+        targets.append(f"{y:04d}-{m:02d}")
+    bad = []
+    checked = 0
+    for ym in targets:
+        p = os.path.join(data_dir, f"chowari_{ym}.csv")
+        if not os.path.isfile(p):
+            continue
+        with open(p, encoding="utf-8", newline="") as f:
+            dates = {r.get("date", "") for r in _csv.DictReader(f) if r.get("date")}
+        n_dates = len(dates)
+        min_day = min((int(d[8:10]) for d in dates if len(d) >= 10), default=99)
+        checked += 1
+        # 200行以上の月で「日付が15日未満 or 月初(5日以内)のデータが無い」= 窓化の兆候
+        with open(p, encoding="utf-8", newline="") as f:
+            n_rows = sum(1 for _ in f) - 1
+        if n_rows >= 200 and (n_dates < 15 or min_day > 5):
+            bad.append(f"{ym}: {n_rows}行 / 日付{n_dates}種 / 最小日={min_day}")
+    if bad:
+        fail(f"chowari 月次 CSV が窓化している疑い（全上書き方式への退行）: {bad}")
+    elif checked == 0:
+        warn("chowari 直近完了月の CSV が見つからない（対象なし）")
+    else:
+        ok(f"chowari 直近完了 {checked} か月分のカバレッジ正常（窓化なし）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1776,6 +1821,7 @@ def main():
     validate_xpost_no_operator_drafts()
     validate_no_ads_on_noindex()
     validate_brand_not_h1()
+    validate_chowari_monthly_coverage()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

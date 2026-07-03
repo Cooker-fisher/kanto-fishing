@@ -1,6 +1,32 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/06/23
-最新コミット: PR#59 サイトバグ一斉修正マージ済み（その後 2026/06/23 ローカル復帰→C層フル再分析を実施・下記「✅ 直近完了 2026/06/23」。**分析のみ・サイト未反映**）
+最終更新: 2026/07/03
+最新コミット: b750cfe4a（C層再分析 2026-07-03 サイト反映 + D層蒸留DB初回コミット）+ ①chowari 修正コミット
+
+---
+
+## ✅ 直近完了（2026/07/03・main agent）— ②再分析反映 → ①chowari 修正（ユーザー指定順 2→1→3）
+
+**② cmems/weather 更新 → C層フル再分析 → サイト反映（完了・push 済み b750cfe4a）**
+- cmems 04-28→07-01（表層+深度・7/1 まで）/ weather_cache 〜07-01 全192座標完全
+- 再分析 59/59 OK・39m37s。**headline 全回復**: wMAPE P50 **37.17**（T32 37.27 超え）/
+  BL2 **96.3%** / OOS r **0.503** / combo 439 維持 → 6/23 の悪化は stale cmems 原因と実証
+- **predict_params.sqlite（D層蒸留DB）初回コミット** → crawl.yml predict_daily が mode=available 化
+- `rebuild_weather_cache.py` 恒久対策: **--update 増分モード**（通常運用はこれ・リクエスト1/100）+
+  429 長バックオフ + 終端自動リペア統合。手動 _repair_marine 原則不要
+- 6/23 監視項目「マダコ×秀漁丸」: 当該コンボは今回 backtest に不存在（船名要再確認・非ブロッキング）
+
+**① chowari NULL 再正規化（完了・詳細は決定ログ 2026-07-03）**
+- **重大 regression 発見・修正**: chowari 月次CSVが「直近7日窓」で日次破壊されていた
+  （2026-06 が475行/6日分に縮小）。git 履歴から **+16,482行復元**・chowari_to_csv を
+  dedup union 方式に修正・**不変条件 #49（窓化検知）追加**
+- 7魚種昇格（サバ/イトヨリ/メジナ/ウマヅラハギ/ソイ/タカベ/ウメイロ・domainレビュー裁定）+
+  変種6件。NULL/空 7,424→3,557（-3,867行）。NULL行のみインプレース再正規化
+  （--export-csv 全再生成は fishing-v 履歴消失のため不採用）
+- **残課題**: ⑴昇格7種の fish_content prose（Tier2 で・外部2ソース裏取り必須）⑵ALL_FISH への
+  昇格種追加+C層フル再実行（+16k行復元の効果込み・出世魚統合の size promise_break 監視必須）
+  ⑶ソウダ系・無印「ソーダ」据置
+
+**次: ③ Tier2（fish_area/ship/forecast 本物化→index復帰）に着手**
 
 ---
 

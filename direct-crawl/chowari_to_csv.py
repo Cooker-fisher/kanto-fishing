@@ -61,6 +61,14 @@ def load_tsuri_map():
         return json.load(f).get("TSURI_MONO_MAP", {})
 
 
+# chowari 特有の短縮魚種表記。裸すぎて共有マップの部分一致パターンに置けないもの
+# （例:「ウマ」を共有マップに置くと「ビンチョウマグロ」が部分一致で誤爆する）。
+# normalize 前に完全一致でのみ展開する。
+_RAW_ALIASES = {
+    "ウマ": "ウマヅラハギ",
+}
+
+
 def convert(records, tmap):
     """JSON Raw → CSV行 (hirono_to_csv.convert と同等。ship 名は record 内のものを使う)"""
     trip_fish = defaultdict(list)
@@ -71,7 +79,8 @@ def convert(records, tmap):
     rows = []
     for r in records:
         wd = r.get("weather_detail", {})
-        tsuri_mono = normalize_tsuri_mono(r["fish_raw"], tmap) or NULL
+        _fish_raw_n = _RAW_ALIASES.get(r["fish_raw"], r["fish_raw"])
+        tsuri_mono = normalize_tsuri_mono(_fish_raw_n, tmap) or NULL
 
         # 2026/05/16: 複合主役船ルールを適用
         # 1次判定: HTML <h2> 由来の tokki_raw='メイン'
@@ -83,7 +92,7 @@ def convert(records, tmap):
             multi_mains = _crawler_get_multi_main(r["ship"], r.get("kanso_raw", "") or "", trip_fish_set)
         if multi_mains:
             # 複合主役船便: ルールセットに含まれる正規化魚種なら「メイン」
-            fish_norm = normalize_tsuri_mono(r["fish_raw"], tmap)
+            fish_norm = normalize_tsuri_mono(_fish_raw_n, tmap)
             main_sub = "メイン" if fish_norm in multi_mains else "サブ"
         else:
             # 通常便: HTML <h2> 由来の tokki_raw を採用
@@ -211,9 +220,24 @@ def convert(records, tmap):
     return rows
 
 
+def _trip_int(r):
+    """trip_no を int に正規化（CSV読み込み行は str・convert() 由来行は int のため）"""
+    try:
+        return int(r.get("trip_no"))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _row_key(r):
+    """月別 CSV マージ用の dedup キー"""
+    return (str(r.get("ship") or ""), str(r.get("date") or ""),
+            _trip_int(r), str(r.get("fish_raw") or ""))
+
+
 def main():
     """全 catches_raw_chowari_*.json を読み込み、月別1ファイルに統合出力。
     出力: data/V2/chowari_YYYY-MM.csv （釣りビジョン側の YYYY-MM.csv と同じ設計）
+    既存 CSV 行とは dedup union（append-only 契約・全上書き禁止）。
     """
     p = argparse.ArgumentParser()
     p.add_argument("--slug", help="（旧互換・無視される。全船宿統合出力のみ対応）")
@@ -248,10 +272,31 @@ def main():
     files_written = 0
     rows_written = 0
     for yyyymm, mrows in sorted(by_month.items()):
-        # ship, date, trip_no, fish_raw でソート（再現性確保）
-        mrows.sort(key=lambda r: (r.get("ship", ""), r.get("date", ""),
-                                   r.get("trip_no") or 0, r.get("fish_raw", "")))
         out_path = os.path.join(OUT_DIR, f"chowari_{yyyymm}.csv")
+
+        # ── 既存 CSV とマージ（重要・2026-07-03 regression 対策） ──
+        # per-ship raw JSON は直近7日窓で全上書きされるため、raw から月別 CSV を
+        # 全上書き再生成すると「窓の外に出た月初〜中旬の蓄積行」が毎日消えていた
+        # （例: chowari_2026-06.csv が月末に 6/25-30 の475行だけになった）。
+        # data/V2 は append-only 契約（REGRESSION_PREVENTION.md）。
+        # 既存行を読み込み、(ship, date, trip_no, fish_raw) キーで dedup union する。
+        # 同一キーは新規行優先（再クロールでの訂正・再正規化を反映）。
+        merged = {}
+        if os.path.exists(out_path):
+            with open(out_path, encoding="utf-8", newline="") as f:
+                for r in csv.DictReader(f):
+                    merged[_row_key(r)] = r
+        n_existing = len(merged)
+        for r in mrows:
+            merged[_row_key(r)] = r
+        mrows = list(merged.values())
+        if len(mrows) < n_existing:
+            raise AssertionError(
+                f"chowari_{yyyymm}.csv: マージ後 {len(mrows)}行 < 既存 {n_existing}行（縮小禁止）")
+
+        # ship, date, trip_no, fish_raw でソート（再現性確保）
+        mrows.sort(key=lambda r: (str(r.get("ship") or ""), str(r.get("date") or ""),
+                                   _trip_int(r), str(r.get("fish_raw") or "")))
         with open(out_path, "w", encoding="utf-8", newline="") as f:
             w = csv.DictWriter(f, fieldnames=COLUMNS)
             w.writeheader()
@@ -259,7 +304,7 @@ def main():
                 w.writerow(r)
         files_written += 1
         rows_written += len(mrows)
-        print(f"  data/V2/chowari_{yyyymm}.csv: {len(mrows)}行")
+        print(f"  data/V2/chowari_{yyyymm}.csv: {len(mrows)}行（既存 {n_existing} + 今回窓）")
     print(f"=== 完了: 月別統合CSV {files_written}ファイル / {rows_written}行 ===")
 
 
