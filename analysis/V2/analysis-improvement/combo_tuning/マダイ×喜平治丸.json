@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "喜平治丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 46.54,
+    "wmape_h0": 45.77,
     "bl2_wmape": 53.33,
-    "oos_r": 0.167,
+    "oos_r": 0.268,
     "n_records": 98,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -151,6 +151,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=剣崎沖 wmape=43.7% imp=2.87pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=42.3% imp=3.45pt"
     }
   ],
   "rejected_factors": [
@@ -219,18 +224,18 @@
     {
       "name": "剣崎沖",
       "n": 73,
-      "wmape_h0": 43.7,
+      "wmape_h0": 42.3,
       "bl2_wmape": 48.2,
-      "oos_r": 0.229,
-      "improvement_pt": 2.87
+      "oos_r": 0.343,
+      "improvement_pt": 3.45
     }
   ],
   "best_point": {
     "name": "剣崎沖",
-    "wmape_h0": 43.7,
-    "improvement_pt": 2.87
+    "wmape_h0": 42.3,
+    "improvement_pt": 3.45
   },
-  "improvement_pt": 2.87,
+  "improvement_pt": 3.45,
   "trip_models": [
     {
       "trip_no": 2,

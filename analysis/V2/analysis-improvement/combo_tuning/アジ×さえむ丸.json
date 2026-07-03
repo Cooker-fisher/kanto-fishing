@@ -1,12 +1,12 @@
 {
   "fish": "アジ",
   "ship": "さえむ丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 42.59,
+    "wmape_h0": 41.98,
     "bl2_wmape": 50.54,
-    "oos_r": 0.557,
+    "oos_r": 0.546,
     "n_records": 106,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -166,6 +166,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=金谷沖 wmape=35.7% imp=6.88pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=金谷沖 wmape=35.7% imp=6.27pt"
     }
   ],
   "rejected_factors": [
@@ -237,15 +242,15 @@
       "wmape_h0": 35.7,
       "bl2_wmape": 49.8,
       "oos_r": 0.728,
-      "improvement_pt": 6.88
+      "improvement_pt": 6.27
     }
   ],
   "best_point": {
     "name": "金谷沖",
     "wmape_h0": 35.7,
-    "improvement_pt": 6.88
+    "improvement_pt": 6.27
   },
-  "improvement_pt": 6.88,
+  "improvement_pt": 6.27,
   "trip_models": [
     {
       "trip_no": 1,

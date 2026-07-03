@@ -1,13 +1,13 @@
 {
   "fish": "シロギス",
   "ship": "かめだや",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 29.77,
+    "wmape_h0": 29.66,
     "bl2_wmape": 33.68,
-    "oos_r": 0.622,
-    "n_records": 441,
+    "oos_r": 0.623,
+    "n_records": 445,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -17,32 +17,32 @@
       "n": 122,
       "wmape_h0": 26.2,
       "bl2_wmape": 33.2,
-      "oos_r": 0.407,
-      "improvement_pt": 3.59
+      "oos_r": 0.408,
+      "improvement_pt": 3.51
     },
     {
       "name": "中の瀬",
       "n": 140,
-      "wmape_h0": 26.6,
+      "wmape_h0": 26.7,
       "bl2_wmape": 34.7,
-      "oos_r": 0.68,
-      "improvement_pt": 3.2
+      "oos_r": 0.677,
+      "improvement_pt": 3.0
     },
     {
       "name": "木更津沖",
-      "n": 140,
-      "wmape_h0": 30.5,
+      "n": 144,
+      "wmape_h0": 30.8,
       "bl2_wmape": 38.2,
-      "oos_r": 0.637,
-      "improvement_pt": -0.69
+      "oos_r": 0.624,
+      "improvement_pt": -1.1
     }
   ],
   "best_point": {
     "name": "富津沖",
     "wmape_h0": 26.2,
-    "improvement_pt": 3.59
+    "improvement_pt": 3.51
   },
-  "improvement_pt": 3.59,
+  "improvement_pt": 3.51,
   "points": [
     {
       "name": "中の瀬",
@@ -265,6 +265,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=富津沖 wmape=26.2% imp=3.59pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=富津沖 wmape=26.2% imp=3.51pt"
     }
   ],
   "trip_models": [

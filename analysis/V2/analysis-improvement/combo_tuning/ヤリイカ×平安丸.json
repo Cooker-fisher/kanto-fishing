@@ -1,12 +1,12 @@
 {
   "fish": "ヤリイカ",
   "ship": "平安丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 47.73,
+    "wmape_h0": 47.82,
     "bl2_wmape": 51.62,
-    "oos_r": 0.423,
+    "oos_r": 0.42,
     "n_records": 207,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 44.3,
       "bl2_wmape": 55.6,
       "oos_r": 0.532,
-      "improvement_pt": 3.41
+      "improvement_pt": 3.48
     },
     {
       "name": "小田原南沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 44.6,
       "bl2_wmape": 49.1,
       "oos_r": 0.484,
-      "improvement_pt": 3.14
+      "improvement_pt": 3.24
     },
     {
       "name": "南沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 44.6,
       "bl2_wmape": 49.1,
       "oos_r": 0.483,
-      "improvement_pt": 3.11
+      "improvement_pt": 3.2
     },
     {
       "name": "真鶴沖",
@@ -42,15 +42,15 @@
       "wmape_h0": 46.3,
       "bl2_wmape": 58.8,
       "oos_r": 0.517,
-      "improvement_pt": 1.41
+      "improvement_pt": 1.5
     }
   ],
   "best_point": {
     "name": "二宮沖",
     "wmape_h0": 44.3,
-    "improvement_pt": 3.41
+    "improvement_pt": 3.48
   },
-  "improvement_pt": 3.41,
+  "improvement_pt": 3.48,
   "points": [
     {
       "name": "二宮沖",
@@ -273,6 +273,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=二宮沖 wmape=44.3% imp=3.41pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=二宮沖 wmape=44.3% imp=3.48pt"
     }
   ],
   "trip_models": [

@@ -1,7 +1,7 @@
 {
   "fish": "ヒラメ",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 33.98,
@@ -151,6 +151,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=鹿島北沖 wmape=33.8% imp=0.18pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島北沖 wmape=33.7% imp=0.3pt"
     }
   ],
   "rejected_factors": [
@@ -219,18 +224,18 @@
     {
       "name": "鹿島北沖",
       "n": 301,
-      "wmape_h0": 33.8,
+      "wmape_h0": 33.7,
       "bl2_wmape": 40.3,
-      "oos_r": 0.399,
-      "improvement_pt": 0.18
+      "oos_r": 0.405,
+      "improvement_pt": 0.3
     }
   ],
   "best_point": {
     "name": "鹿島北沖",
-    "wmape_h0": 33.8,
-    "improvement_pt": 0.18
+    "wmape_h0": 33.7,
+    "improvement_pt": 0.3
   },
-  "improvement_pt": 0.18,
+  "improvement_pt": 0.3,
   "trip_models": [
     {
       "trip_no": 1,

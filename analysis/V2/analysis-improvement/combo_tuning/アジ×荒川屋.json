@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "荒川屋",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 45.96,
-    "bl2_wmape": 50.32,
+    "wmape_h0": 45.95,
+    "bl2_wmape": 50.21,
     "oos_r": 0.394,
-    "n_records": 1232,
+    "n_records": 1235,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -15,10 +15,10 @@
     {
       "name": "本牧沖",
       "n": 83,
-      "wmape_h0": 30.8,
+      "wmape_h0": 30.9,
       "bl2_wmape": 64.8,
       "oos_r": 0.687,
-      "improvement_pt": 15.11
+      "improvement_pt": 15.05
     },
     {
       "name": "富岡沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 36.6,
       "bl2_wmape": 46.2,
       "oos_r": 0.468,
-      "improvement_pt": 9.33
+      "improvement_pt": 9.31
     },
     {
       "name": "小柴沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 38.2,
       "bl2_wmape": 56.3,
       "oos_r": 0.616,
-      "improvement_pt": 7.77
+      "improvement_pt": 7.76
     },
     {
       "name": "赤灯沖",
@@ -42,39 +42,39 @@
       "wmape_h0": 44.1,
       "bl2_wmape": 55.5,
       "oos_r": 0.545,
-      "improvement_pt": 1.85
+      "improvement_pt": 1.84
     },
     {
       "name": "根岸沖",
       "n": 77,
-      "wmape_h0": 45.0,
+      "wmape_h0": 44.6,
       "bl2_wmape": 55.3,
-      "oos_r": 0.274,
-      "improvement_pt": 0.92
+      "oos_r": 0.296,
+      "improvement_pt": 1.36
     },
     {
       "name": "横須賀沖",
       "n": 134,
       "wmape_h0": 46.2,
       "bl2_wmape": 59.2,
-      "oos_r": 0.503,
-      "improvement_pt": -0.23
+      "oos_r": 0.502,
+      "improvement_pt": -0.24
     },
     {
       "name": "八景沖",
-      "n": 359,
+      "n": 360,
       "wmape_h0": 47.5,
-      "bl2_wmape": 56.7,
-      "oos_r": 0.418,
-      "improvement_pt": -1.5
+      "bl2_wmape": 56.8,
+      "oos_r": 0.419,
+      "improvement_pt": -1.58
     }
   ],
   "best_point": {
     "name": "本牧沖",
-    "wmape_h0": 30.8,
-    "improvement_pt": 15.11
+    "wmape_h0": 30.9,
+    "improvement_pt": 15.05
   },
-  "improvement_pt": 15.11,
+  "improvement_pt": 15.05,
   "history": [
     {
       "date": "2026-04-24",
@@ -135,6 +135,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=本牧沖 wmape=30.8% imp=15.11pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=本牧沖 wmape=30.9% imp=15.05pt"
     }
   ]
 }

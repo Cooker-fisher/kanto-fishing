@@ -1,13 +1,13 @@
 {
   "fish": "キンメダイ",
   "ship": "平安丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 55.14,
-    "bl2_wmape": 62.13,
+    "wmape_h0": 55.35,
+    "bl2_wmape": 62.04,
     "oos_r": 0.41,
-    "n_records": 396,
+    "n_records": 397,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,23 +18,23 @@
       "wmape_h0": 50.8,
       "bl2_wmape": 55.3,
       "oos_r": 0.48,
-      "improvement_pt": 4.38
+      "improvement_pt": 4.58
     },
     {
       "name": "真鶴沖",
-      "n": 77,
-      "wmape_h0": 58.9,
-      "bl2_wmape": 77.4,
-      "oos_r": 0.566,
-      "improvement_pt": -3.74
+      "n": 78,
+      "wmape_h0": 58.4,
+      "bl2_wmape": 76.8,
+      "oos_r": 0.565,
+      "improvement_pt": -3.02
     }
   ],
   "best_point": {
     "name": "小田原沖",
     "wmape_h0": 50.8,
-    "improvement_pt": 4.38
+    "improvement_pt": 4.58
   },
-  "improvement_pt": 4.38,
+  "improvement_pt": 4.58,
   "points": [
     {
       "name": "小田原沖",
@@ -252,6 +252,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=小田原沖 wmape=50.8% imp=4.38pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=小田原沖 wmape=50.8% imp=4.58pt"
     }
   ],
   "trip_models": [

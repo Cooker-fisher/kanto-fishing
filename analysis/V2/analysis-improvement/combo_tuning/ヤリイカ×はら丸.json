@@ -1,7 +1,7 @@
 {
   "fish": "ヤリイカ",
   "ship": "はら丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 45.3,
@@ -15,10 +15,10 @@
     {
       "name": "長井沖",
       "n": 31,
-      "wmape_h0": 23.8,
+      "wmape_h0": 23.9,
       "bl2_wmape": 67.7,
       "oos_r": 0.871,
-      "improvement_pt": 21.5
+      "improvement_pt": 21.39
     },
     {
       "name": "沖の瀬",
@@ -26,15 +26,15 @@
       "wmape_h0": 33.0,
       "bl2_wmape": 44.0,
       "oos_r": 0.707,
-      "improvement_pt": 12.3
+      "improvement_pt": 12.29
     },
     {
       "name": "城ヶ島西沖",
       "n": 58,
-      "wmape_h0": 34.6,
+      "wmape_h0": 34.4,
       "bl2_wmape": 47.8,
-      "oos_r": 0.479,
-      "improvement_pt": 10.68
+      "oos_r": 0.496,
+      "improvement_pt": 10.92
     },
     {
       "name": "城ヶ島沖",
@@ -47,10 +47,10 @@
   ],
   "best_point": {
     "name": "長井沖",
-    "wmape_h0": 23.8,
-    "improvement_pt": 21.5
+    "wmape_h0": 23.9,
+    "improvement_pt": 21.39
   },
-  "improvement_pt": 21.5,
+  "improvement_pt": 21.39,
   "history": [
     {
       "date": "2026-04-22",
@@ -116,6 +116,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=長井沖 wmape=23.8% imp=21.5pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=長井沖 wmape=23.9% imp=21.39pt"
     }
   ]
 }

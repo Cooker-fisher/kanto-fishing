@@ -1,12 +1,12 @@
 {
   "fish": "メヌケ",
   "ship": "仁徳丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.03,
+    "wmape_h0": 41.61,
     "bl2_wmape": 59.99,
-    "oos_r": 0.643,
+    "oos_r": 0.633,
     "n_records": 58,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -121,6 +121,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=犬吠沖 wmape=39.9% imp=1.11pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=犬吠沖 wmape=41.3% imp=0.31pt"
     }
   ],
   "rejected_factors": [
@@ -189,18 +194,18 @@
     {
       "name": "犬吠沖",
       "n": 55,
-      "wmape_h0": 39.9,
+      "wmape_h0": 41.3,
       "bl2_wmape": 60.3,
-      "oos_r": 0.64,
-      "improvement_pt": 1.11
+      "oos_r": 0.63,
+      "improvement_pt": 0.31
     }
   ],
   "best_point": {
     "name": "犬吠沖",
-    "wmape_h0": 39.9,
-    "improvement_pt": 1.11
+    "wmape_h0": 41.3,
+    "improvement_pt": 0.31
   },
-  "improvement_pt": 1.11,
+  "improvement_pt": 0.31,
   "trip_models": [
     {
       "trip_no": 1,

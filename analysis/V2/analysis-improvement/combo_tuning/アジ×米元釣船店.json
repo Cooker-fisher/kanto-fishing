@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "米元釣船店",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.67,
-    "bl2_wmape": 43.23,
-    "oos_r": 0.363,
-    "n_records": 569,
+    "wmape_h0": 37.09,
+    "bl2_wmape": 43.37,
+    "oos_r": 0.399,
+    "n_records": 575,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,23 +18,23 @@
       "wmape_h0": 35.5,
       "bl2_wmape": 41.0,
       "oos_r": 0.469,
-      "improvement_pt": 2.13
+      "improvement_pt": 1.55
     },
     {
       "name": "八景沖",
-      "n": 224,
-      "wmape_h0": 36.6,
-      "bl2_wmape": 42.9,
-      "oos_r": 0.248,
-      "improvement_pt": 1.1
+      "n": 230,
+      "wmape_h0": 36.7,
+      "bl2_wmape": 43.5,
+      "oos_r": 0.257,
+      "improvement_pt": 0.39
     }
   ],
   "best_point": {
     "name": "赤灯沖",
     "wmape_h0": 35.5,
-    "improvement_pt": 2.13
+    "improvement_pt": 1.55
   },
-  "improvement_pt": 2.13,
+  "improvement_pt": 1.55,
   "history": [
     {
       "date": "2026-04-24",
@@ -95,6 +95,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=赤灯沖 wmape=35.5% imp=2.13pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=赤灯沖 wmape=35.5% imp=1.55pt"
     }
   ]
 }

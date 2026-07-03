@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "かめだや",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 27.41,
-    "bl2_wmape": 31.54,
-    "oos_r": 0.418,
-    "n_records": 520,
+    "wmape_h0": 27.36,
+    "bl2_wmape": 31.52,
+    "oos_r": 0.42,
+    "n_records": 521,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,23 +18,23 @@
       "wmape_h0": 18.7,
       "bl2_wmape": 34.1,
       "oos_r": 0.691,
-      "improvement_pt": 8.71
+      "improvement_pt": 8.7
     },
     {
       "name": "横浜沖",
       "n": 281,
       "wmape_h0": 24.3,
       "bl2_wmape": 28.7,
-      "oos_r": 0.478,
-      "improvement_pt": 3.09
+      "oos_r": 0.479,
+      "improvement_pt": 3.05
     },
     {
       "name": "富岡沖",
-      "n": 77,
-      "wmape_h0": 25.4,
-      "bl2_wmape": 29.6,
-      "oos_r": 0.44,
-      "improvement_pt": 2.03
+      "n": 78,
+      "wmape_h0": 24.6,
+      "bl2_wmape": 29.4,
+      "oos_r": 0.444,
+      "improvement_pt": 2.76
     },
     {
       "name": "川崎沖",
@@ -42,15 +42,15 @@
       "wmape_h0": 25.8,
       "bl2_wmape": 35.2,
       "oos_r": 0.598,
-      "improvement_pt": 1.63
+      "improvement_pt": 1.58
     }
   ],
   "best_point": {
     "name": "本牧沖",
     "wmape_h0": 18.7,
-    "improvement_pt": 8.71
+    "improvement_pt": 8.7
   },
-  "improvement_pt": 8.71,
+  "improvement_pt": 8.7,
   "points": [
     {
       "name": "横浜沖",
@@ -278,6 +278,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=本牧沖 wmape=18.7% imp=8.71pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=本牧沖 wmape=18.7% imp=8.7pt"
     }
   ],
   "trip_models": [

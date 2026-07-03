@@ -1,12 +1,12 @@
 {
   "fish": "アマダイ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.65,
+    "wmape_h0": 36.47,
     "bl2_wmape": 40.92,
-    "oos_r": 0.414,
+    "oos_r": 0.422,
     "n_records": 390,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -17,16 +17,16 @@
       "n": 376,
       "wmape_h0": 36.3,
       "bl2_wmape": 40.3,
-      "oos_r": 0.427,
-      "improvement_pt": 0.38
+      "oos_r": 0.426,
+      "improvement_pt": 0.15
     }
   ],
   "best_point": {
     "name": "茅ヶ崎沖",
     "wmape_h0": 36.3,
-    "improvement_pt": 0.38
+    "improvement_pt": 0.15
   },
-  "improvement_pt": 0.38,
+  "improvement_pt": 0.15,
   "points": [
     {
       "name": "茅ヶ崎沖",
@@ -240,6 +240,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=茅ヶ崎沖 wmape=36.3% imp=0.38pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=茅ヶ崎沖 wmape=36.3% imp=0.15pt"
     }
   ],
   "trip_models": [

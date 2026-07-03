@@ -1,13 +1,13 @@
 {
   "fish": "タチウオ",
   "ship": "三喜丸釣船店",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 35.82,
-    "bl2_wmape": 44.79,
-    "oos_r": 0.57,
-    "n_records": 457,
+    "wmape_h0": 35.57,
+    "bl2_wmape": 44.58,
+    "oos_r": 0.573,
+    "n_records": 462,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -18,23 +18,23 @@
       "wmape_h0": 19.1,
       "bl2_wmape": 53.6,
       "oos_r": 0.83,
-      "improvement_pt": 16.7
+      "improvement_pt": 16.46
     },
     {
       "name": "猿島沖",
-      "n": 49,
-      "wmape_h0": 22.3,
-      "bl2_wmape": 57.4,
-      "oos_r": 0.864,
-      "improvement_pt": 13.57
+      "n": 50,
+      "wmape_h0": 22.5,
+      "bl2_wmape": 56.8,
+      "oos_r": 0.863,
+      "improvement_pt": 13.11
     },
     {
       "name": "海堡沖",
-      "n": 54,
-      "wmape_h0": 28.6,
-      "bl2_wmape": 40.0,
-      "oos_r": 0.687,
-      "improvement_pt": 7.24
+      "n": 58,
+      "wmape_h0": 27.2,
+      "bl2_wmape": 38.1,
+      "oos_r": 0.694,
+      "improvement_pt": 8.41
     },
     {
       "name": "走水沖",
@@ -42,7 +42,7 @@
       "wmape_h0": 29.4,
       "bl2_wmape": 38.7,
       "oos_r": 0.67,
-      "improvement_pt": 6.41
+      "improvement_pt": 6.17
     },
     {
       "name": "港前",
@@ -50,7 +50,7 @@
       "wmape_h0": 29.6,
       "bl2_wmape": 57.3,
       "oos_r": 0.729,
-      "improvement_pt": 6.21
+      "improvement_pt": 5.96
     },
     {
       "name": "横須賀沖",
@@ -58,15 +58,15 @@
       "wmape_h0": 30.8,
       "bl2_wmape": 46.5,
       "oos_r": 0.725,
-      "improvement_pt": 4.97
+      "improvement_pt": 4.73
     }
   ],
   "best_point": {
     "name": "観音崎沖",
     "wmape_h0": 19.1,
-    "improvement_pt": 16.7
+    "improvement_pt": 16.46
   },
-  "improvement_pt": 16.7,
+  "improvement_pt": 16.46,
   "history": [
     {
       "date": "2026-04-24",
@@ -127,6 +127,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=19.1% imp=16.7pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=19.1% imp=16.46pt"
     }
   ]
 }

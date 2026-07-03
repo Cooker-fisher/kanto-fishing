@@ -1,13 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "幸丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 40.89,
-    "bl2_wmape": 46.66,
-    "oos_r": 0.65,
-    "n_records": 1037,
+    "wmape_h0": 40.93,
+    "bl2_wmape": 46.74,
+    "oos_r": 0.652,
+    "n_records": 1043,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -177,6 +177,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=浅場(~40m) wmape=40.5% imp=0.36pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=40.6% imp=0.38pt"
     }
   ],
   "rejected_factors": [
@@ -244,19 +249,19 @@
   "point_models": [
     {
       "name": "浅場(~40m)",
-      "n": 1001,
-      "wmape_h0": 40.5,
+      "n": 1007,
+      "wmape_h0": 40.6,
       "bl2_wmape": 46.5,
-      "oos_r": 0.641,
-      "improvement_pt": 0.36
+      "oos_r": 0.643,
+      "improvement_pt": 0.38
     }
   ],
   "best_point": {
     "name": "浅場(~40m)",
-    "wmape_h0": 40.5,
-    "improvement_pt": 0.36
+    "wmape_h0": 40.6,
+    "improvement_pt": 0.38
   },
-  "improvement_pt": 0.36,
+  "improvement_pt": 0.38,
   "trip_models": [
     {
       "trip_no": 1,

@@ -1,0 +1,37 @@
+{
+  "fish": "ヒラメ",
+  "ship": "第三孝徳丸",
+  "last_reviewed": "2026-07-03",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 27.57,
+    "bl2_wmape": 39.01,
+    "oos_r": 0.589,
+    "n_records": 46,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 山武市 片貝旧港",
+      "n": 34,
+      "wmape_h0": 19.2,
+      "bl2_wmape": 40.7,
+      "oos_r": 0.822,
+      "improvement_pt": 8.41
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 山武市 片貝旧港",
+    "wmape_h0": 19.2,
+    "improvement_pt": 8.41
+  },
+  "improvement_pt": 8.41,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 山武市 片貝旧港 wmape=19.2% imp=8.41pt"
+    }
+  ]
+}

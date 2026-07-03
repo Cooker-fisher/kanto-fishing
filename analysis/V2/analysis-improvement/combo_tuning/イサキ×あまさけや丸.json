@@ -1,16 +1,15 @@
 {
   "fish": "イサキ",
   "ship": "あまさけや丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-07-03",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.0,
-    "bl0_wmape": 38.8,
-    "bl2_wmape": 48.3,
-    "oos_r": 0.309,
-    "n_records": 108,
-    "alpha_scale": 0.694,
-    "use_fallback": false
+    "wmape_h0": 34.74,
+    "bl2_wmape": 45.33,
+    "oos_r": 0.358,
+    "n_records": 125,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -67,7 +66,13 @@
     "波が高い日ほど釣果が上がる傾向",
     "前週好調が継続しやすい傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=剣崎沖 wmape=34.6% imp=0.12pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_200m",
@@ -150,5 +155,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "剣崎沖",
+      "n": 125,
+      "wmape_h0": 34.6,
+      "bl2_wmape": 45.3,
+      "oos_r": 0.362,
+      "improvement_pt": 0.12
+    }
+  ],
+  "best_point": {
+    "name": "剣崎沖",
+    "wmape_h0": 34.6,
+    "improvement_pt": 0.12
+  },
+  "improvement_pt": 0.12
 }

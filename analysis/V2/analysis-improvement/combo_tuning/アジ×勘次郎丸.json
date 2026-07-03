@@ -1,24 +1,24 @@
 {
   "fish": "アジ",
   "ship": "勘次郎丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 28.75,
-    "bl2_wmape": 32.16,
+    "wmape_h0": 28.72,
+    "bl2_wmape": 32.15,
     "oos_r": 0.603,
-    "n_records": 543,
+    "n_records": 544,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "金谷沖",
-      "n": 425,
-      "wmape_h0": 28.1,
+      "n": 426,
+      "wmape_h0": 28.0,
       "bl2_wmape": 31.1,
-      "oos_r": 0.516,
-      "improvement_pt": 0.62
+      "oos_r": 0.52,
+      "improvement_pt": 0.73
     },
     {
       "name": "竹岡沖",
@@ -26,15 +26,15 @@
       "wmape_h0": 34.4,
       "bl2_wmape": 39.1,
       "oos_r": 0.577,
-      "improvement_pt": -5.66
+      "improvement_pt": -5.7
     }
   ],
   "best_point": {
     "name": "金谷沖",
-    "wmape_h0": 28.1,
-    "improvement_pt": 0.62
+    "wmape_h0": 28.0,
+    "improvement_pt": 0.73
   },
-  "improvement_pt": 0.62,
+  "improvement_pt": 0.73,
   "points": [
     {
       "name": "金谷沖",
@@ -204,6 +204,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=金谷沖 wmape=28.1% imp=0.62pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=金谷沖 wmape=28.0% imp=0.73pt"
     }
   ],
   "trip_models": [

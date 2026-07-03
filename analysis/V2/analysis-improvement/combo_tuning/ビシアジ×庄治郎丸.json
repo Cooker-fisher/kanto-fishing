@@ -1,13 +1,13 @@
 {
   "fish": "ビシアジ",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-05-12",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 24.18,
-    "bl2_wmape": 37.86,
-    "oos_r": 0.719,
-    "n_records": 57,
+    "wmape_h0": 25.13,
+    "bl2_wmape": 35.6,
+    "oos_r": 0.575,
+    "n_records": 77,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -71,6 +71,11 @@
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=平塚沖 wmape=23.5% imp=0.73pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=24.8% imp=0.37pt"
     }
   ],
   "rejected_factors": [
@@ -144,17 +149,17 @@
   "point_models": [
     {
       "name": "平塚沖",
-      "n": 57,
-      "wmape_h0": 23.5,
-      "bl2_wmape": 37.9,
-      "oos_r": 0.738,
-      "improvement_pt": 0.73
+      "n": 77,
+      "wmape_h0": 24.8,
+      "bl2_wmape": 35.6,
+      "oos_r": 0.583,
+      "improvement_pt": 0.37
     }
   ],
   "best_point": {
     "name": "平塚沖",
-    "wmape_h0": 23.5,
-    "improvement_pt": 0.73
+    "wmape_h0": 24.8,
+    "improvement_pt": 0.37
   },
-  "improvement_pt": 0.73
+  "improvement_pt": 0.37
 }

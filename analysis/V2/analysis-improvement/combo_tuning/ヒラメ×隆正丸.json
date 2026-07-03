@@ -1,37 +1,42 @@
 {
   "fish": "ヒラメ",
   "ship": "隆正丸",
-  "last_reviewed": "2026-06-23",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-03",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 56.35,
-    "bl2_wmape": 51.47,
-    "oos_r": -0.054,
-    "n_records": 55,
-    "use_fallback": true,
+    "wmape_h0": 32.23,
+    "bl2_wmape": 46.34,
+    "oos_r": 0.511,
+    "n_records": 53,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "千葉県 旭市 飯岡漁港",
-      "n": 55,
-      "wmape_h0": 32.9,
-      "bl2_wmape": 51.5,
-      "oos_r": 0.586,
-      "improvement_pt": 23.44
+      "n": 53,
+      "wmape_h0": 31.6,
+      "bl2_wmape": 46.3,
+      "oos_r": 0.517,
+      "improvement_pt": 0.62
     }
   ],
   "best_point": {
     "name": "千葉県 旭市 飯岡漁港",
-    "wmape_h0": 32.9,
-    "improvement_pt": 23.44
+    "wmape_h0": 31.6,
+    "improvement_pt": 0.62
   },
-  "improvement_pt": 23.44,
+  "improvement_pt": 0.62,
   "history": [
     {
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=千葉県 旭市 飯岡漁港 wmape=32.9% imp=23.44pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 旭市 飯岡漁港 wmape=31.6% imp=0.62pt"
     }
   ]
 }

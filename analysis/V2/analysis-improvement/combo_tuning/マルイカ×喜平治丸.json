@@ -1,13 +1,13 @@
 {
   "fish": "マルイカ",
   "ship": "喜平治丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.34,
-    "bl2_wmape": 49.32,
-    "oos_r": 0.487,
-    "n_records": 430,
+    "wmape_h0": 39.79,
+    "bl2_wmape": 49.37,
+    "oos_r": 0.471,
+    "n_records": 434,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -15,26 +15,26 @@
     {
       "name": "城ヶ島沖",
       "n": 62,
-      "wmape_h0": 37.1,
+      "wmape_h0": 35.7,
       "bl2_wmape": 50.6,
-      "oos_r": 0.558,
-      "improvement_pt": 2.28
+      "oos_r": 0.572,
+      "improvement_pt": 4.09
     },
     {
       "name": "剣崎沖",
-      "n": 366,
-      "wmape_h0": 38.0,
-      "bl2_wmape": 51.4,
-      "oos_r": 0.529,
-      "improvement_pt": 1.34
+      "n": 370,
+      "wmape_h0": 38.1,
+      "bl2_wmape": 51.5,
+      "oos_r": 0.528,
+      "improvement_pt": 1.69
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
-    "wmape_h0": 37.1,
-    "improvement_pt": 2.28
+    "wmape_h0": 35.7,
+    "improvement_pt": 4.09
   },
-  "improvement_pt": 2.28,
+  "improvement_pt": 4.09,
   "points": [
     {
       "name": "剣崎沖",
@@ -227,6 +227,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=37.1% imp=2.28pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=35.7% imp=4.09pt"
     }
   ],
   "trip_models": [

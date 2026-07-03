@@ -1,32 +1,32 @@
 {
   "fish": "カワハギ",
   "ship": "山下丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 31.49,
-    "bl2_wmape": 40.78,
-    "oos_r": 0.651,
-    "n_records": 787,
+    "wmape_h0": 31.39,
+    "bl2_wmape": 40.71,
+    "oos_r": 0.653,
+    "n_records": 791,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "下浦沖",
-      "n": 37,
-      "wmape_h0": 20.0,
-      "bl2_wmape": 35.4,
-      "oos_r": 0.686,
-      "improvement_pt": 11.49
+      "n": 40,
+      "wmape_h0": 20.4,
+      "bl2_wmape": 35.0,
+      "oos_r": 0.675,
+      "improvement_pt": 10.96
     },
     {
       "name": "久里浜沖",
-      "n": 202,
-      "wmape_h0": 25.8,
-      "bl2_wmape": 37.7,
+      "n": 203,
+      "wmape_h0": 25.7,
+      "bl2_wmape": 37.6,
       "oos_r": 0.718,
-      "improvement_pt": 5.72
+      "improvement_pt": 5.71
     },
     {
       "name": "鴨居沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 27.9,
       "bl2_wmape": 42.5,
       "oos_r": 0.706,
-      "improvement_pt": 3.57
+      "improvement_pt": 3.47
     },
     {
       "name": "竹岡沖",
@@ -42,23 +42,23 @@
       "wmape_h0": 29.6,
       "bl2_wmape": 45.3,
       "oos_r": 0.648,
-      "improvement_pt": 1.93
+      "improvement_pt": 1.8
     },
     {
       "name": "剣崎沖",
       "n": 65,
       "wmape_h0": 31.3,
       "bl2_wmape": 34.2,
-      "oos_r": 0.413,
-      "improvement_pt": 0.2
+      "oos_r": 0.412,
+      "improvement_pt": 0.1
     }
   ],
   "best_point": {
     "name": "下浦沖",
-    "wmape_h0": 20.0,
-    "improvement_pt": 11.49
+    "wmape_h0": 20.4,
+    "improvement_pt": 10.96
   },
-  "improvement_pt": 11.49,
+  "improvement_pt": 10.96,
   "points": [
     {
       "name": "竹岡沖",
@@ -286,6 +286,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=20.0% imp=11.49pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=20.4% imp=10.96pt"
     }
   ],
   "trip_models": [

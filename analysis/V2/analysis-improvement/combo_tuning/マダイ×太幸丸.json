@@ -1,10 +1,10 @@
 {
   "fish": "マダイ",
   "ship": "太幸丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 32.82,
+    "wmape_h0": 32.81,
     "bl2_wmape": 50.46,
     "oos_r": 0.677,
     "n_records": 96,
@@ -17,8 +17,8 @@
       "n": 40,
       "wmape_h0": 26.3,
       "bl2_wmape": 39.1,
-      "oos_r": 0.706,
-      "improvement_pt": 6.5
+      "oos_r": 0.705,
+      "improvement_pt": 6.49
     },
     {
       "name": "飯岡沖",
@@ -32,9 +32,9 @@
   "best_point": {
     "name": "浅場(~40m)",
     "wmape_h0": 26.3,
-    "improvement_pt": 6.5
+    "improvement_pt": 6.49
   },
-  "improvement_pt": 6.5,
+  "improvement_pt": 6.49,
   "history": [
     {
       "date": "2026-04-22",
@@ -100,6 +100,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=浅場(~40m) wmape=26.3% imp=6.5pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=浅場(~40m) wmape=26.3% imp=6.49pt"
     }
   ]
 }

@@ -1,16 +1,15 @@
 {
   "fish": "シロギス",
   "ship": "庄治郎丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-07-03",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.6,
-    "bl0_wmape": 40.3,
-    "bl2_wmape": 47.6,
-    "oos_r": 0.52,
-    "n_records": 33,
-    "alpha_scale": 0.794,
-    "use_fallback": false
+    "wmape_h0": 36.87,
+    "bl2_wmape": 45.46,
+    "oos_r": 0.255,
+    "n_records": 37,
+    "use_fallback": false,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -87,7 +86,13 @@
     "夏休み期間以外に釣果が上がる傾向",
     "月齢サイクル前半に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=平塚沖 wmape=34.8% imp=2.08pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "temp_100m",
@@ -155,5 +160,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "平塚沖",
+      "n": 37,
+      "wmape_h0": 34.8,
+      "bl2_wmape": 45.5,
+      "oos_r": 0.338,
+      "improvement_pt": 2.08
+    }
+  ],
+  "best_point": {
+    "name": "平塚沖",
+    "wmape_h0": 34.8,
+    "improvement_pt": 2.08
+  },
+  "improvement_pt": 2.08
 }

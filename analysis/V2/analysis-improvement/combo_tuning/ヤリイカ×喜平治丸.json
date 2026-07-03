@@ -1,10 +1,10 @@
 {
   "fish": "ヤリイカ",
   "ship": "喜平治丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 44.55,
+    "wmape_h0": 44.56,
     "bl2_wmape": 51.13,
     "oos_r": 0.458,
     "n_records": 269,
@@ -18,23 +18,23 @@
       "wmape_h0": 42.3,
       "bl2_wmape": 58.2,
       "oos_r": 0.565,
-      "improvement_pt": 2.22
+      "improvement_pt": 2.23
     },
     {
       "name": "剣崎沖",
       "n": 100,
       "wmape_h0": 45.3,
       "bl2_wmape": 60.7,
-      "oos_r": 0.52,
-      "improvement_pt": -0.73
+      "oos_r": 0.519,
+      "improvement_pt": -0.79
     }
   ],
   "best_point": {
     "name": "洲の崎沖",
     "wmape_h0": 42.3,
-    "improvement_pt": 2.22
+    "improvement_pt": 2.23
   },
-  "improvement_pt": 2.22,
+  "improvement_pt": 2.23,
   "points": [
     {
       "name": "洲の崎沖",
@@ -262,6 +262,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=洲の崎沖 wmape=42.3% imp=2.22pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=洲の崎沖 wmape=42.3% imp=2.23pt"
     }
   ],
   "trip_models": [

@@ -17,10 +17,16 @@ rebuild_weather_cache.py — weather_cache.sqlite を Open-Meteo から全件再
   weather_cache.sqlite（3時間ごと × 153座標 × 3年 ≒ 145万行）
 
 [使い方]
-  python rebuild_weather_cache.py                # 全座標取得（約30分）
+  python rebuild_weather_cache.py --update       # 増分更新（推奨・数分）
+                                                 #   座標ごとに DB の最終取得日から差分のみ取得。
+                                                 #   リクエスト量が全取得の約1/100になり 429 を回避できる
+  python rebuild_weather_cache.py                # 全座標・全期間取得（約30分・スキーマ変更時のみ）
   python rebuild_weather_cache.py --test         # 最初の3座標のみテスト
   python rebuild_weather_cache.py --resume       # 未取得座標のみ取得（再開）
   python rebuild_weather_cache.py --update-current  # 潮流列のみ全座標再取得
+
+  ※ 失敗座標（429等）は実行末尾で自動リペア（最大2パス・低速ペース）される。
+    手動 _repair_marine.py は原則不要。
 """
 
 import json, os, sqlite3, sys, time
@@ -53,10 +59,32 @@ def fetch(url, retries=5):
             with urlopen(req, timeout=90) as r:
                 return json.loads(r.read())
         except (URLError, OSError, json.JSONDecodeError) as e:
+            code = getattr(e, "code", None)
             print(f"  fetch error ({i+1}/{retries}): {e}")
+            if code == 400:
+                # 範囲外（end_date=当日等）の恒久エラー。リトライしても変わらない
+                return None
             if i < retries - 1:
-                time.sleep(5 * (i + 1))
+                # 429（レート制限）は実測60-90秒で回復するため長めに待つ
+                time.sleep(min(120, 60 * (i + 1)) if code == 429 else 5 * (i + 1))
     return None
+
+
+def _delta_start(max_dt):
+    """既存最終 dt から2日重ねた再取得開始日（データ確定遅れ・補正の取りこぼし対策）"""
+    d = datetime.strptime(max_dt[:10], "%Y-%m-%d") - timedelta(days=2)
+    return d.strftime("%Y-%m-%d")
+
+
+def _coord_starts(conn, lat, lon):
+    """座標ごとの増分開始日を (気象, 海況) で返す。データが無い側は全期間。"""
+    r = conn.execute(
+        "SELECT MAX(CASE WHEN temp IS NOT NULL THEN dt END),"
+        "       MAX(CASE WHEN sst  IS NOT NULL THEN dt END)"
+        "  FROM weather WHERE lat=? AND lon=?", (lat, lon)).fetchone()
+    wx_s = _delta_start(r[0]) if r and r[0] else START_DATE
+    ma_s = _delta_start(r[1]) if r and r[1] else START_DATE
+    return wx_s, ma_s
 
 
 def fetch_weather(lat, lon, start, end):
@@ -246,6 +274,7 @@ def main():
     test_mode          = "--test"           in sys.argv
     resume_mode        = "--resume"         in sys.argv
     update_current     = "--update-current" in sys.argv
+    update_mode        = "--update"         in sys.argv
 
     # point_coords.json（152座標）+ area_coords.json（フォールバック）を結合
     unique_coords = {}
@@ -280,6 +309,10 @@ def main():
         print(f"=== --update-current: 潮流列のみ追記（{len(coords)}座標）===")
         print(f"  期間: {START_DATE} 〜 {END_DATE}")
         print(f"  出力: {DB_PATH}")
+    elif update_mode:
+        print(f"=== --update: 増分更新（{len(coords)}座標・座標ごとに最終取得日から）===")
+        print(f"  終端: {END_DATE}")
+        print(f"  出力: {DB_PATH}")
     else:
         print(f"=== weather_cache.sqlite 再構築（{len(coords)}座標）===")
         print(f"  期間: {START_DATE} 〜 {END_DATE}")
@@ -311,12 +344,22 @@ def main():
             print(f"{n}行更新")
             continue
 
-        wx = fetch_weather(lat, lon, START_DATE, END_DATE)
+        # 増分モード: 座標ごとに気象/海況それぞれの最終取得日から差分のみ取得
+        wx_start, ma_start = (START_DATE, START_DATE)
+        if update_mode:
+            wx_start, ma_start = _coord_starts(conn, lat, lon)
+            if wx_start > END_DATE and ma_start > END_DATE:
+                print("最新（スキップ）")
+                continue
+
+        need_wx = wx_start <= END_DATE
+        need_ma = ma_start <= END_DATE
+        wx = fetch_weather(lat, lon, wx_start, END_DATE) if need_wx else {}
         time.sleep(0.8)
-        ma = fetch_marine(lat, lon, START_DATE, END_DATE)
+        ma = fetch_marine(lat, lon, ma_start, END_DATE) if need_ma else {}
         time.sleep(0.8)
 
-        if not wx and not ma:
+        if (need_wx and not wx) and (need_ma and not ma):
             print("データ取得失敗")
             failed.append((lat, lon, area_name))
             continue
@@ -326,18 +369,50 @@ def main():
         # （429 レート制限で marine だけ落ちる等。weather/marine の NULL 上書き破壊は無し）。
         n = upsert_rows(conn, lat, lon, wx, ma)
         total_rows += n
-        miss = [lbl for lbl, ok in (("気象", wx), ("海況", ma)) if not ok]
+        miss = [lbl for lbl, ok, need in (("気象", wx, need_wx), ("海況", ma, need_ma))
+                if need and not ok]
         if miss:
-            print(f"{n}行（{'・'.join(miss)}欠落→要再試行）")
+            print(f"{n}行（{'・'.join(miss)}欠落→自動リペア対象）")
             failed.append((lat, lon, area_name))
         else:
             print(f"{n}行")
+
+    # ── 失敗座標の自動リペア（429対策・低速ペース・最大2パス） ──────────────
+    # 欠落側だけを増分で再取得するのでリクエスト量は最小。
+    if failed and not update_current:
+        for pass_no in (1, 2):
+            if not failed:
+                break
+            print(f"\n=== 自動リペア pass {pass_no}: {len(failed)}座標"
+                  f"（60sクールダウン + 座標間10s） ===", flush=True)
+            time.sleep(60)
+            still = []
+            for lat, lon, area_name in failed:
+                print(f"  ({lat},{lon}) {area_name}", end=" ... ", flush=True)
+                time.sleep(10)
+                wx_s, ma_s = _coord_starts(conn, lat, lon)
+                need_wx = wx_s <= END_DATE
+                need_ma = ma_s <= END_DATE
+                wx = fetch_weather(lat, lon, wx_s, END_DATE) if need_wx else {}
+                time.sleep(1.5)
+                ma = fetch_marine(lat, lon, ma_s, END_DATE) if need_ma else {}
+                time.sleep(1.5)
+                n = upsert_rows(conn, lat, lon, wx, ma) if (wx or ma) else 0
+                total_rows += n
+                miss = [lbl for lbl, ok, need in (("気象", wx, need_wx), ("海況", ma, need_ma))
+                        if need and not ok]
+                if miss:
+                    print(f"{n}行（{'・'.join(miss)}欠落）")
+                    still.append((lat, lon, area_name))
+                else:
+                    print(f"{n}行 完了")
+            failed = still
 
     conn.close()
 
     print(f"\n=== 完了: {total_rows:,}行 ===")
     if failed:
-        print(f"失敗 {len(failed)}座標:")
+        print(f"失敗 {len(failed)}座標（自動リペア2パス後も欠落・要手動再実行）:")
         for lat, lon, name in failed:
             print(f"  ({lat},{lon}) {name}")
 

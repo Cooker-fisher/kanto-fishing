@@ -1,10 +1,10 @@
 {
   "fish": "シーバス",
   "ship": "長崎屋",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 54.9,
+    "wmape_h0": 54.91,
     "bl2_wmape": 67.38,
     "oos_r": 0.344,
     "n_records": 161,
@@ -146,6 +146,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=本牧沖 wmape=46.7% imp=8.22pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=本牧沖 wmape=49.2% imp=5.76pt"
     }
   ],
   "rejected_factors": [
@@ -258,16 +263,16 @@
     {
       "name": "本牧沖",
       "n": 63,
-      "wmape_h0": 46.7,
+      "wmape_h0": 49.2,
       "bl2_wmape": 65.1,
-      "oos_r": 0.477,
-      "improvement_pt": 8.22
+      "oos_r": 0.487,
+      "improvement_pt": 5.76
     }
   ],
   "best_point": {
     "name": "本牧沖",
-    "wmape_h0": 46.7,
-    "improvement_pt": 8.22
+    "wmape_h0": 49.2,
+    "improvement_pt": 5.76
   },
-  "improvement_pt": 8.22
+  "improvement_pt": 5.76
 }

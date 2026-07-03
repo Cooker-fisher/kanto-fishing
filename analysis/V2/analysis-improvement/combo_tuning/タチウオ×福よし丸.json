@@ -1,13 +1,13 @@
 {
   "fish": "タチウオ",
   "ship": "福よし丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 48.89,
-    "bl2_wmape": 59.8,
-    "oos_r": 0.502,
-    "n_records": 376,
+    "wmape_h0": 48.88,
+    "bl2_wmape": 59.92,
+    "oos_r": 0.501,
+    "n_records": 378,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -242,6 +242,11 @@
     },
     {
       "date": "2026-06-23",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=46.0% imp=2.88pt"
+    },
+    {
+      "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=46.0% imp=2.88pt"
     }

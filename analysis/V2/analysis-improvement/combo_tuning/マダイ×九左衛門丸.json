@@ -1,0 +1,37 @@
+{
+  "fish": "マダイ",
+  "ship": "九左衛門丸",
+  "last_reviewed": "2026-07-03",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 37.7,
+    "bl2_wmape": 56.02,
+    "oos_r": 0.686,
+    "n_records": 75,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 館山市 伊戸漁港",
+      "n": 74,
+      "wmape_h0": 36.1,
+      "bl2_wmape": 56.5,
+      "oos_r": 0.695,
+      "improvement_pt": 1.62
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 館山市 伊戸漁港",
+    "wmape_h0": 36.1,
+    "improvement_pt": 1.62
+  },
+  "improvement_pt": 1.62,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 館山市 伊戸漁港 wmape=36.1% imp=1.62pt"
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 {
   "fish": "キハダマグロ",
   "ship": "たいぞう丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 53.63,
+    "wmape_h0": 53.64,
     "bl2_wmape": 61.51,
     "oos_r": 0.434,
     "n_records": 80,
@@ -166,6 +166,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=相模湾 wmape=46.8% imp=6.83pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=相模湾 wmape=46.8% imp=6.84pt"
     }
   ],
   "rejected_factors": [
@@ -237,7 +242,7 @@
       "wmape_h0": 46.8,
       "bl2_wmape": 67.2,
       "oos_r": 0.507,
-      "improvement_pt": 6.83
+      "improvement_pt": 6.84
     },
     {
       "name": "葉山沖",
@@ -245,15 +250,15 @@
       "wmape_h0": 57.6,
       "bl2_wmape": 71.7,
       "oos_r": 0.602,
-      "improvement_pt": -3.99
+      "improvement_pt": -3.98
     }
   ],
   "best_point": {
     "name": "相模湾",
     "wmape_h0": 46.8,
-    "improvement_pt": 6.83
+    "improvement_pt": 6.84
   },
-  "improvement_pt": 6.83,
+  "improvement_pt": 6.84,
   "trip_models": [
     {
       "trip_no": 1,

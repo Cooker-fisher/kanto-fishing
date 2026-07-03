@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "林遊船",
-  "last_reviewed": "2026-05-12",
+  "last_reviewed": "2026-07-03",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 35.48,
-    "bl2_wmape": 44.5,
-    "oos_r": 0.609,
-    "n_records": 431,
+    "wmape_h0": 35.82,
+    "bl2_wmape": 45.02,
+    "oos_r": 0.617,
+    "n_records": 460,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -96,6 +96,11 @@
       "date": "2026-05-12",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=35.3% imp=0.13pt"
+    },
+    {
+      "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=35.8% imp=0.05pt"
     }
   ],
   "rejected_factors": [
@@ -195,17 +200,17 @@
   "point_models": [
     {
       "name": "浦安沖",
-      "n": 431,
-      "wmape_h0": 35.3,
-      "bl2_wmape": 44.5,
-      "oos_r": 0.611,
-      "improvement_pt": 0.13
+      "n": 460,
+      "wmape_h0": 35.8,
+      "bl2_wmape": 45.0,
+      "oos_r": 0.617,
+      "improvement_pt": 0.05
     }
   ],
   "best_point": {
     "name": "浦安沖",
-    "wmape_h0": 35.3,
-    "improvement_pt": 0.13
+    "wmape_h0": 35.8,
+    "improvement_pt": 0.05
   },
-  "improvement_pt": 0.13
+  "improvement_pt": 0.05
 }
