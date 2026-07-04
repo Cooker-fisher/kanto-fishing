@@ -25,7 +25,13 @@ crawl_wholesale.py → **generate_price_master.py まで自動実行しマスタ
 
 **卸値クロールは釣果と完全独立**: wholesale.yml（毎月21日）は crawl.yml（毎日16:30）と別ワークフロー・別ソース・
 別出力（wholesale-prices.json/fish-price-master.json のみ触る）。相互に影響しない。
-週次化は無益（月報は月1公開・週次でも3/4は空振り・遅延源は手動manifestであってcron頻度ではない）。
+
+**日報ハイブリッド価格補正（2026/07/05・コミット 08301019c）**: 月報ベース＋豊洲**日報**（毎営業日）で
+当月実勢を週次補正。`crawl_daily.py`（直近20営業日の中値median）→`daily-prices.json`→generate が
+`daily_correction`（中値median/月報avg・clamp0.5-2.0・中値≥8観測の9魚種）→app.js `effectiveFactor` が
+日報優先・無ければ季節fallback。`fish-value-daily.yml` 週次土曜で自動。日報は決定的URLで自動クロール可
+＝手動manifest不要（月報側の手作業とは別）。品名マップの部分文字列誤爆（あまだい→madai）と冷凍混入
+（きわだ（冷凍））を実データ監査で修正済。詳細: 決定ログ「2026-07-05」+ [[project-fish-value-status]]
 
 ---
 
