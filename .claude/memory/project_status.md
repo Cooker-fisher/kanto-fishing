@@ -18,8 +18,14 @@
    トップカード（crawler.py 恒久＋docs 遡及・T39パターン）／sitemap 収録／**不変条件 #51 追加**
    （リリース3点整合＋マスタ鮮度ラグ3か月超 warn=マニフェスト追記漏れ検知）。validate errors=0/warnings=0
 
-**鮮度運用（月1・毎月20日頃）**: urls_manifest.json に新月報URL追記 → crawl_wholesale.py → generate_price_master.py
-**残（バックログ）**: wholesale.yml へマスタ再生成ステップ組込／X 告知は運用側で実施
+**鮮度運用（月1・毎月20日頃）**: urls_manifest.json に新月報URL追記 → cron（毎月21日 wholesale.yml）が
+crawl_wholesale.py → **generate_price_master.py まで自動実行しマスタもコミット**（2ab74e6ba で #2 修正済み）。
+新データ無しの週は git diff --quiet で検知しスキップ（空コミット防止）。手動追記だけが残る人手作業。
+**残（バックログ）**: urls_manifest 自動追記（Actionsで同意ページ回避が必要・難度中）／X 告知は運用側で実施
+
+**卸値クロールは釣果と完全独立**: wholesale.yml（毎月21日）は crawl.yml（毎日16:30）と別ワークフロー・別ソース・
+別出力（wholesale-prices.json/fish-price-master.json のみ触る）。相互に影響しない。
+週次化は無益（月報は月1公開・週次でも3/4は空振り・遅延源は手動manifestであってcron頻度ではない）。
 
 ---
 
