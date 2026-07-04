@@ -25,8 +25,10 @@ import sys
 import time
 import urllib.request
 from collections import defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+
+JST = timezone(timedelta(hours=9))  # 日報は東京市場（JST）基準。Actions は UTC なので明示する
 
 HERE = Path(__file__).resolve().parent
 OUTPUT = HERE / 'daily-prices.json'
@@ -168,7 +170,8 @@ def main() -> int:
     p.add_argument('--asof', help='基準日 YYYYMMDD（既定: 今日）')
     args = p.parse_args()
 
-    asof = datetime.strptime(args.asof, '%Y%m%d').date() if args.asof else date.today()
+    # 既定は JST の今日（UTC実行のActionsでも東京市場の日付でasofを決める）
+    asof = datetime.strptime(args.asof, '%Y%m%d').date() if args.asof else datetime.now(JST).date()
     doc = crawl(asof, args.days)
 
     n_fetched = doc['window_business_days']
