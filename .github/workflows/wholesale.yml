@@ -61,15 +61,21 @@ jobs:
           path: docs/fish-value/geppo_debug.html
           if-no-files-found: ignore
           retention-days: 7
-      - name: push if changed
+      - name: regenerate master & push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/fish-value/wholesale-prices.json
-          if git diff --staged --quiet; then
-            echo "no changes"
-          else
-            git commit -m "data(fish-value): wholesale-prices $(date -u +'%Y-%m-%d')"
-            git pull --rebase origin main
-            git push origin main
+          # 新しい月が取れたときだけ wholesale-prices.json が書き換わる
+          # （crawl_wholesale.py は「取得対象なし」なら save() せず終了）。
+          # 変化が無ければマスタ再生成しない（generate は updated_at を毎回更新するため
+          # 無条件実行すると差分が出て空コミットが積もる）。
+          if git diff --quiet docs/fish-value/wholesale-prices.json; then
+            echo "no new wholesale data → skip master regen & push"
+            exit 0
           fi
+          echo "new wholesale data detected → regenerating price master"
+          python3 docs/fish-value/generate_price_master.py
+          git add docs/fish-value/wholesale-prices.json docs/fish-value/fish-price-master.json
+          git commit -m "data(fish-value): wholesale + price master $(date -u +'%Y-%m-%d')"
+          git pull --rebase origin main
+          git push origin main
