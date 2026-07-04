@@ -1,0 +1,46 @@
+name: fish-value-daily
+# 日報ハイブリッド: 直近営業日の豊洲日報から「当月実勢レベル」を測り価格マスタを補正する。
+# 月報クロール（wholesale.yml・毎月21日）とは独立。釣果クロール（crawl.yml）にも触れない。
+on:
+  schedule:
+    - cron: '30 7 * * 6'   # 毎週土曜 16:30 JST（週の営業日分をまとめて取得）
+  workflow_dispatch:
+    inputs:
+      days:
+        description: '取得する営業日数（窓サイズ）'
+        required: false
+        default: '20'
+        type: string
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: crawl daily reports
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          if [ -z "$DAYS" ]; then DAYS="20"; fi
+          echo "Running: python3 docs/fish-value/crawl_daily.py --days $DAYS"
+          python3 docs/fish-value/crawl_daily.py --days "$DAYS"
+      - name: regenerate master & push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # daily-prices.json が更新されたときだけマスタ再生成（crawl_daily は
+          # 取得 < MIN_DAYS_TO_SAVE なら save しない＝既存を壊さない）。
+          if git diff --quiet docs/fish-value/daily-prices.json; then
+            echo "no daily update (取得ゼロ or 変化なし) → skip"
+            exit 0
+          fi
+          echo "daily-prices updated → regenerating price master"
+          python3 docs/fish-value/generate_price_master.py
+          git add docs/fish-value/daily-prices.json docs/fish-value/fish-price-master.json
+          git commit -m "data(fish-value): 日報実勢補正 $(date -u +'%Y-%m-%d')"
+          git pull --rebase origin main
+          git push origin main

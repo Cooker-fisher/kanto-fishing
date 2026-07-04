@@ -1,0 +1,87 @@
+{
+  "version": "v1",
+  "source": "東京都中央卸売市場 日報（豊洲水産・中値）",
+  "source_url": "https://www.shijou-nippo.metro.tokyo.lg.jp/SN/YYYYMM/YYYYMMDD/Sui/Sui_K1.csv",
+  "generated_at": "2026-07-05T08:26:11+09:00",
+  "asof": "20260705",
+  "window_business_days": 20,
+  "days_fetched": [
+    "20260608",
+    "20260609",
+    "20260611",
+    "20260612",
+    "20260613",
+    "20260615",
+    "20260616",
+    "20260618",
+    "20260619",
+    "20260620",
+    "20260622",
+    "20260623",
+    "20260625",
+    "20260626",
+    "20260627",
+    "20260629",
+    "20260630",
+    "20260702",
+    "20260703",
+    "20260704"
+  ],
+  "by_pfid": {
+    "buri": {
+      "n_days": 20,
+      "n_mid": 40,
+      "mid_median_yen_per_kg": 432
+    },
+    "inada": {
+      "n_days": 20,
+      "n_mid": 20,
+      "mid_median_yen_per_kg": 513
+    },
+    "karei": {
+      "n_days": 19,
+      "n_mid": 66,
+      "mid_median_yen_per_kg": 594
+    },
+    "katsuo": {
+      "n_days": 20,
+      "n_mid": 21,
+      "mid_median_yen_per_kg": 756
+    },
+    "kihada": {
+      "n_days": 19,
+      "n_mid": 28,
+      "mid_median_yen_per_kg": 1620
+    },
+    "kinmedai": {
+      "n_days": 19,
+      "n_mid": 19,
+      "mid_median_yen_per_kg": 1944
+    },
+    "maaji": {
+      "n_days": 20,
+      "n_mid": 53,
+      "mid_median_yen_per_kg": 540
+    },
+    "saba": {
+      "n_days": 20,
+      "n_mid": 20,
+      "mid_median_yen_per_kg": 540
+    },
+    "surumeika": {
+      "n_days": 19,
+      "n_mid": 19,
+      "mid_median_yen_per_kg": 1404
+    },
+    "tachiuo": {
+      "n_days": 1,
+      "n_mid": 1,
+      "mid_median_yen_per_kg": 4320
+    },
+    "yariika": {
+      "n_days": 5,
+      "n_mid": 5,
+      "mid_median_yen_per_kg": 1944
+    }
+  }
+}

@@ -6024,6 +6024,91 @@
       ]
     }
   },
+  "daily_correction": {
+    "asof": "20260705",
+    "window_business_days": 20,
+    "data_month": "202605",
+    "min_mid_obs": 8,
+    "clamp": [
+      0.5,
+      2.0
+    ],
+    "method": "df = clamp(日報中値 median / 月報avg, 0.5, 2.0)。中値≥8観測の魚のみ。当月実勢を直接測るため季節補正を置換（app.js effectiveFactor）。中値の取れない魚（相対取引）は季節補正へフォールバック",
+    "by_pfid": {
+      "buri": {
+        "factor": 0.593,
+        "raw_ratio": 0.593,
+        "n_mid": 40,
+        "n_days": 20,
+        "daily_mid": 432,
+        "monthly_avg": 728
+      },
+      "inada": {
+        "factor": 0.825,
+        "raw_ratio": 0.825,
+        "n_mid": 20,
+        "n_days": 20,
+        "daily_mid": 513,
+        "monthly_avg": 622
+      },
+      "karei": {
+        "factor": 1.156,
+        "raw_ratio": 1.156,
+        "n_mid": 66,
+        "n_days": 19,
+        "daily_mid": 594,
+        "monthly_avg": 514
+      },
+      "katsuo": {
+        "factor": 0.858,
+        "raw_ratio": 0.858,
+        "n_mid": 21,
+        "n_days": 20,
+        "daily_mid": 756,
+        "monthly_avg": 881
+      },
+      "kihada": {
+        "factor": 1.263,
+        "raw_ratio": 1.263,
+        "n_mid": 28,
+        "n_days": 19,
+        "daily_mid": 1620,
+        "monthly_avg": 1283
+      },
+      "kinmedai": {
+        "factor": 0.866,
+        "raw_ratio": 0.866,
+        "n_mid": 19,
+        "n_days": 19,
+        "daily_mid": 1944,
+        "monthly_avg": 2245
+      },
+      "maaji": {
+        "factor": 0.798,
+        "raw_ratio": 0.798,
+        "n_mid": 53,
+        "n_days": 20,
+        "daily_mid": 540,
+        "monthly_avg": 677
+      },
+      "saba": {
+        "factor": 0.865,
+        "raw_ratio": 0.865,
+        "n_mid": 20,
+        "n_days": 20,
+        "daily_mid": 540,
+        "monthly_avg": 624
+      },
+      "surumeika": {
+        "factor": 1.177,
+        "raw_ratio": 1.177,
+        "n_mid": 19,
+        "n_days": 19,
+        "daily_mid": 1404,
+        "monthly_avg": 1193
+      }
+    }
+  },
   "design_notes": {
     "wholesale_basis": "月報最新月単独（過去平均は採用しない）。公開ラグ約1.5〜2か月の季節ズレは seasonal ブロックの暦月指数でapp.js がデータ月→利用月に補正する（水準は最新月のまま）。",
     "retail_basis": "丸ごと小売換算のみ。柵・切り身の加工済み価格は Phase 1 では出さない（歩留まり40-50%の追加加算は別観点）。",

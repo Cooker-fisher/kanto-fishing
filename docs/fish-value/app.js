@@ -109,8 +109,11 @@ function priceBaseLabel() {
   let lbl = '';
   if (m) lbl = `価格基準: ${m[1]}年${parseInt(m[2], 10)}月 東京都中央卸売市場（豊洲）の卸売実績`;
   else if (PRICE_MASTER && PRICE_MASTER.updated_at) lbl = `価格基準: ${PRICE_MASTER.updated_at} 時点`;
-  if (lbl && PRICE_MASTER && PRICE_MASTER.seasonal) {
-    lbl += `（${new Date().getMonth() + 1}月の相場水準に季節補正済み）`;
+  const hasDaily = PRICE_MASTER && PRICE_MASTER.daily_correction &&
+                   Object.keys((PRICE_MASTER.daily_correction.by_pfid) || {}).length;
+  if (lbl && (hasDaily || (PRICE_MASTER && PRICE_MASTER.seasonal))) {
+    const cm = new Date().getMonth() + 1;
+    lbl += hasDaily ? `（${cm}月の直近実勢・季節相場で調整）` : `（${cm}月の相場水準に季節補正済み）`;
   }
   return lbl;
 }
@@ -135,6 +138,18 @@ function seasonalFactor(species, priceEntry) {
   if (!denom) return 1;
   const f = arr[curM - 1] / denom;
   return Math.min(2.0, Math.max(0.5, f));
+}
+
+// 実効補正係数（ハイブリッド）: 日報の当月実勢があればそれを優先、無ければ季節補正。
+// 日報係数は直近営業日の豊洲中値／月報avg で当月を直接測っているため季節補正を「置換」する。
+function effectiveFactor(species, priceEntry) {
+  const dc = PRICE_MASTER && PRICE_MASTER.daily_correction;
+  const pfid = species.price_fish_id;
+  if (dc && dc.by_pfid && dc.by_pfid[pfid]) {
+    return { factor: dc.by_pfid[pfid].factor, kind: 'daily',
+             windowDays: dc.window_business_days, dataMonth: dc.data_month };
+  }
+  return { factor: seasonalFactor(species, priceEntry), kind: 'seasonal' };
 }
 
 // ============================================
@@ -1116,7 +1131,8 @@ function onCalculate(opts) {
     const species = e._species;
     const priceEntry = e._priceEntry;
     const bands = priceEntry.size_bands;
-    const sf = seasonalFactor(species, priceEntry);
+    const ef = effectiveFactor(species, priceEntry);
+    const sf = ef.factor;
 
     let eCount = 0;
     let eKg = 0;
@@ -1184,7 +1200,10 @@ function onCalculate(opts) {
       kg: eKg,
       retailMid: eRetailMid,
       wholesaleMid: eWholesaleMid,
-      seasonalFactor: sf,
+      factor: sf,
+      factorKind: ef.kind,
+      factorWindowDays: ef.windowDays,
+      factorDataMonth: ef.dataMonth,
       breakdown: eBreakdown,
     });
   }
@@ -1330,12 +1349,20 @@ function renderResult(r, opts) {
       li.textContent = '　' + b.label + ': ' + b.count + '尾 × 推定 ' + fmtWeight(b.perKg) + ' = ' + fmtWeight(b.bandKg);
       basis.appendChild(li);
     }
-    if (e.seasonalFactor && Math.abs(e.seasonalFactor - 1) >= 0.005) {
+    if (e.factor && Math.abs(e.factor - 1) >= 0.005) {
       const li = document.createElement('li');
-      const s = PRICE_MASTER.seasonal || {};
-      const dataM = s.data_month ? parseInt(s.data_month.slice(4), 10) : null;
-      li.textContent = '　季節補正: ×' + e.seasonalFactor.toFixed(2) +
-        (dataM ? '（' + dataM + '月市場データ→' + (new Date().getMonth() + 1) + '月相場）' : '');
+      const curM = new Date().getMonth() + 1;
+      if (e.factorKind === 'daily') {
+        const dm = e.factorDataMonth ? parseInt(e.factorDataMonth.slice(4), 10) : null;
+        li.textContent = '　実勢補正: ×' + e.factor.toFixed(2) +
+          '（直近' + (e.factorWindowDays || '') + '営業日の豊洲実勢' +
+          (dm ? '／' + dm + '月月報比' : '') + '）';
+      } else {
+        const s = PRICE_MASTER.seasonal || {};
+        const dataM = s.data_month ? parseInt(s.data_month.slice(4), 10) : null;
+        li.textContent = '　季節補正: ×' + e.factor.toFixed(2) +
+          (dataM ? '（' + dataM + '月市場データ→' + curM + '月相場）' : '');
+      }
       basis.appendChild(li);
     }
   }

@@ -1935,6 +1935,25 @@ def validate_fish_value_release():
                 ok(f"価格マスタ鮮度 OK（データ月 {dy}-{dmn:02d}・ラグ {lag} か月）")
         else:
             warn("fish-price-master.json からデータ月を特定できない")
+
+        # 日報ハイブリッド鮮度（週次 fish-value-daily.yml が止まっていないか）
+        dc = pm.get("daily_correction")
+        if dc and dc.get("by_pfid"):
+            asof = str(dc.get("asof") or "")
+            am = re.search(r"(\d{4})(\d{2})(\d{2})", asof)
+            if am:
+                from datetime import date as _date2
+                a = _date2(int(am.group(1)), int(am.group(2)), int(am.group(3)))
+                age = (_date2.today() - a).days
+                n = len(dc["by_pfid"])
+                if age > 14:
+                    warn(f"日報補正が {age} 日前で古い（週次 fish-value-daily 停止の疑い・asof {asof}）")
+                else:
+                    ok(f"日報補正 鮮度OK（asof {asof}・{age}日前・{n}魚種）")
+            else:
+                warn("daily_correction.asof を解釈できない")
+        else:
+            ok("日報補正ブロックなし（未導入 or 全魚fallback・非ブロッキング）")
     except Exception as e:
         warn(f"fish-price-master.json 読込失敗: {e}")
 

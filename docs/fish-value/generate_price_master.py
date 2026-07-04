@@ -938,6 +938,65 @@ def compute_seasonal(wp: dict, spc: dict, prices: dict) -> dict:
     }
 
 
+# ---- 日報補正（当月の実勢レベル・ハイブリッド） --------------------
+# crawl_daily.py が出力する daily-prices.json（日報中値 median）を読み、
+# df = clamp(日報中値 median / 月報最新月 avg, 0.5, 2.0) を魚種別に算出。
+# 中値が十分に取れる魚のみ（相対取引で高安しか出ない魚は季節補正へフォールバック）。
+# 中値だけを使う理由: 月報 high/low は月内の外れ値で日報 median と粒度が合わず比が割れるため
+# （crawl_daily.py の docstring 参照・実測較正 2026-07-05）。
+# 日報の窓は当月を直接反映するので、この係数は季節補正を「置換」する（app.js 側 effectiveFactor）。
+DAILY_PRICES = 'daily-prices.json'
+DAILY_MIN_MID_OBS = 8   # 中値観測がこれ未満の魚は補正しない（median 安定性）
+DAILY_MIN_DAYS = 5      # 単日スパイク防止
+DAILY_CLAMP = (0.5, 2.0)
+
+
+def compute_daily_correction(wp: dict, spc: dict) -> dict | None:
+    """daily-prices.json → daily_correction ブロック（無ければ None）"""
+    path = os.path.join(BASE, DAILY_PRICES)
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding='utf-8') as f:
+        daily = json.load(f)
+
+    pfid_geppo = {}
+    for s in spc['species']:
+        if s.get('geppo_item') and s['price_fish_id'] not in pfid_geppo:
+            pfid_geppo[s['price_fish_id']] = s['geppo_item']
+    gidx = {p['geppo_item']: p for p in wp['months'][-1]['prices'] if p.get('geppo_item')}
+
+    lo, hi = DAILY_CLAMP
+    by_pfid = {}
+    for pfid, d in daily.get('by_pfid', {}).items():
+        if d['n_mid'] < DAILY_MIN_MID_OBS or d['n_days'] < DAILY_MIN_DAYS:
+            continue
+        g = gidx.get(pfid_geppo.get(pfid, ''))
+        if not g or not g.get('avg_yen_per_kg'):
+            continue
+        m_avg = g['avg_yen_per_kg']
+        raw = d['mid_median_yen_per_kg'] / m_avg
+        by_pfid[pfid] = {
+            'factor': round(max(lo, min(hi, raw)), 3),
+            'raw_ratio': round(raw, 3),
+            'n_mid': d['n_mid'],
+            'n_days': d['n_days'],
+            'daily_mid': d['mid_median_yen_per_kg'],
+            'monthly_avg': m_avg,
+        }
+
+    return {
+        'asof': daily.get('asof'),
+        'window_business_days': daily.get('window_business_days'),
+        'data_month': wp['months'][-1]['yyyymm'],
+        'min_mid_obs': DAILY_MIN_MID_OBS,
+        'clamp': list(DAILY_CLAMP),
+        'method': ('df = clamp(日報中値 median / 月報avg, 0.5, 2.0)。中値≥{}観測の魚のみ。'
+                   '当月実勢を直接測るため季節補正を置換（app.js effectiveFactor）。'
+                   '中値の取れない魚（相対取引）は季節補正へフォールバック').format(DAILY_MIN_MID_OBS),
+        'by_pfid': dict(sorted(by_pfid.items())),
+    }
+
+
 def main():
     # 入力
     with open(os.path.join(BASE, 'fish-species-map.json'), encoding='utf-8') as f:
@@ -1037,6 +1096,7 @@ def main():
         'size_class_multipliers': SIZE_CLASS_MULT,
         'prices': prices,
         'seasonal': compute_seasonal(wp, spc, prices),
+        'daily_correction': compute_daily_correction(wp, spc),
         'design_notes': {
             'wholesale_basis': ('月報最新月単独（過去平均は採用しない）。'
                                 '公開ラグ約1.5〜2か月の季節ズレは seasonal ブロックの暦月指数で'
