@@ -1,6 +1,25 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/07/03
-最新コミット: b750cfe4a（C層再分析 2026-07-03 サイト反映 + D層蒸留DB初回コミット）+ ①chowari 修正コミット
+最終更新: 2026/07/05
+最新コミット: a2bfcdfe2（fish-value リリース 3コミット・push済み）
+
+---
+
+## ✅ 直近完了（2026/07/05・main agent）— 釣果価値チェッカー リリース
+
+ユーザー確定方針: 既存サイト内の独立アプリとして公開（新サイト・アプリ化なし）／毎日クロールなし（月1マニフェスト追記で鮮度維持）。
+
+1. **月報202605取込＋マスタ再生成**（aeb5ab3a9）: 6/21 の wholesale cron はマニフェスト未追記で
+   空振りしていた→手動追記で解消。70pfid・override 3魚種（madai/shirogisu/mebaru）維持
+2. **季節補正**（c1ebeb23e）: 蓄積17か月の月報から魚種別 暦月相場指数を算出しマスタ `seasonal`
+   ブロックに埋込み。app.js が idx[利用月]/idx[データ月]（0.5〜2.0クランプ）で公開ラグ約1.5〜2か月分の
+   季節ズレのみ補正（水準は最新月のまま）。60魚種=魚種別＋10魚種=カテゴリfallback。
+   ドメイン照合済み（寒ブリ1月2.05/6月0.80・カツオ冬1.58・アジ平坦）。code-reviewer 検証済（CRITICAL/MAJOR 0）
+3. **リリース**（a2bfcdfe2）: noindex解除・OGP・「算出方法」セクション／gnav「💰 釣果価値(NEW)」＋
+   トップカード（crawler.py 恒久＋docs 遡及・T39パターン）／sitemap 収録／**不変条件 #51 追加**
+   （リリース3点整合＋マスタ鮮度ラグ3か月超 warn=マニフェスト追記漏れ検知）。validate errors=0/warnings=0
+
+**鮮度運用（月1・毎月20日頃）**: urls_manifest.json に新月報URL追記 → crawl_wholesale.py → generate_price_master.py
+**残（バックログ）**: wholesale.yml へマスタ再生成ステップ組込／X 告知は運用側で実施
 
 ---
 
