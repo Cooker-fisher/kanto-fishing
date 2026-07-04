@@ -4549,7 +4549,8 @@ def _v2_header_nav(active_page=""):
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
   <a href="/monthly/"{' class="on"' if active_page == 'monthly' else ''}>月報</a>
-  <a href="/komase-sim/"{' class="on"' if active_page == 'komasim' else ''}>🎣 コマセsim<span class="nav-new">NEW</span></a>
+  <a href="/komase-sim/"{' class="on"' if active_page == 'komasim' else ''}>🎣 コマセsim</a>
+  <a href="/fish-value/"{' class="on"' if active_page == 'fishvalue' else ''}>💰 釣果価値<span class="nav-new">NEW</span></a>
 
   {('<a href="/forecast/" class="prem' + (' on' if active_page == 'forecast' else '') + '">有料プラン</a>') if SHOW_PAID_TEASER else ''}
 </nav>"""
@@ -8036,6 +8037,7 @@ def build_html(catches, crawled_at, history, weather_data=None):
 .komase-sim-card-section{margin:16px 0;padding:0 12px}
 .komase-sim-card{display:block;padding:16px;background:linear-gradient(135deg,#0b1d33 0%,#14406a 100%);color:#f3ead7;border-radius:8px;text-decoration:none;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s}
 .komase-sim-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.3);transform:translateY(-1px)}
+.komase-sim-card.fv{background:linear-gradient(135deg,#1a2e0b 0%,#3e5c14 100%)}
 .kc-badge{display:inline-block;padding:2px 8px;background:#c84427;color:#fff;font-size:11px;font-weight:700;border-radius:3px;margin-bottom:6px}
 .komase-sim-card h3{margin:6px 0;font-size:18px;color:#f3ead7}
 .komase-sim-card p{margin:6px 0;font-size:13px;line-height:1.6;color:#e7dcc3}
@@ -8102,10 +8104,18 @@ def build_html(catches, crawled_at, history, weather_data=None):
 <script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script>
 <!-- 概況テキスト -->
 {overview_html}
-<!-- NEW: コマセシミュレーターカード -->
+<!-- NEW: 釣果価値チェッカーカード -->
+<section class="komase-sim-card-section">
+  <a href="/fish-value/" class="komase-sim-card fv" aria-label="釣果価値チェッカーを開く">
+    <span class="kc-badge">🆕 NEW</span>
+    <h3>💰 釣果価値チェッカー</h3>
+    <p>今日釣った魚、市場に出したらいくら？ 豊洲市場の実勢価格×季節相場補正で、釣果の卸売・小売換算額を概算する無料ツール。</p>
+    <span class="kc-cta">計算してみる →</span>
+  </a>
+</section>
+<!-- コマセシミュレーターカード -->
 <section class="komase-sim-card-section">
   <a href="/komase-sim/" class="komase-sim-card" aria-label="マダイコマセシミュレーターを開く">
-    <span class="kc-badge">🆕 NEW</span>
     <h3>🎣 マダイコマセシミュレーター</h3>
     <p>ハリス・ガン玉・しゃくり方を変えると、コマセ帯と付けエサの「同調」がどう変わるか。物理シミュで可視化する無料ツール。</p>
     <span class="kc-cta">試してみる →</span>
@@ -17228,6 +17238,8 @@ def build_sitemap(data):
     urls = [
         (f"{SITE_URL}/", "1.0", "daily"),
         (f"{SITE_URL}/calendar.html", "0.6", "weekly"),
+        # 独立アプリ（docs/ 直下静的配置・crawler 非生成）
+        (f"{SITE_URL}/fish-value/", "0.7", "monthly"),
     ]
     # fish/*.html・area/*.html（実ファイルベース・2026/05/14 修正）
     # 旧: data (valid_catches) + tackle/ship_info/area_description ベース → 過去実績のみのページが漏れる

@@ -3,10 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex">
-<title>釣果価値チェッカー | 船釣り予想</title>
-<meta name="description" content="関東の船釣りで釣れた魚の卸売・小売金額をレンジ表示する独立ツール。サイズ別に匹数を入力して概算金額を算出します。">
+<title>釣果価値チェッカー — 釣った魚はいくら？ | 船釣り予想</title>
+<meta name="description" content="今日釣った魚、市場に出したらいくら？ 東京都中央卸売市場（豊洲）の実勢価格と季節相場補正で、釣果の卸売・小売換算額を概算する無料ツール。サイズ別に匹数を入力するだけ。">
 <link rel="canonical" href="https://funatsuri-yoso.com/fish-value/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="釣果価値チェッカー — 釣った魚はいくら？">
+<meta property="og:description" content="豊洲市場の実勢価格×季節相場補正で釣果の金額を概算。サイズ別に匹数を入力するだけの無料ツール。">
+<meta property="og:url" content="https://funatsuri-yoso.com/fish-value/">
+<meta property="og:image" content="https://funatsuri-yoso.com/ogp-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@funatsuri_yoso">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
@@ -96,6 +102,20 @@
   <p class="caution" id="caution" hidden>
     ※ 表示価格は概算です。市場価格・鮮度・産地・季節で変動します。スーパーで「柵」「切り身」など加工品として売られる場合は別途歩留まりの上乗せがかかります。
   </p>
+
+  <section class="card method-card" aria-labelledby="method-heading">
+    <h2 class="st" id="method-heading">算出方法</h2>
+    <details class="basis-details">
+      <summary>価格データの根拠を表示</summary>
+      <div class="method-body">
+        <p><strong>卸売価格</strong>: 東京都中央卸売市場（豊洲）の月報明細を毎月取り込み、最新月の魚種別実勢単価（円/kg）を基準にしています。主要16魚種は日報（等級別の実取引価格）と突き合わせて検証し、乖離の大きい魚種は実勢に合わせて個別調整しています。</p>
+        <p><strong>季節補正</strong>: 蓄積した月報から魚種ごとの「暦月別の相場指数」を算出し、月報の公開ラグ（約1.5〜2か月）分の季節ズレをご利用月の相場水準に自動補正します（例: ブリは冬に高く初夏に安い）。</p>
+        <p><strong>サイズ換算</strong>: cm入力は魚種の体型別カーブで重量換算。同じ魚でもサイズ帯（小・標準・大・特大）で単価が変わる実態を、市場の等級差に基づく倍率で反映しています。</p>
+        <p><strong>小売換算</strong>: 卸売価格に魚種カテゴリ別の一般的な小売倍率（1.6〜3.0倍）を掛けた「丸ごと1尾」の概算です。柵・切り身など加工品の価格ではありません。</p>
+        <p class="method-note">※ 本ツールは釣果の「おおよその市場価値」を楽しむためのものです。実際の取引価格・買取価格を保証するものではありません。</p>
+      </div>
+    </details>
+  </section>
 
 </main>
 

@@ -141,6 +141,7 @@
 .komase-sim-card-section{margin:16px 0;padding:0 12px}
 .komase-sim-card{display:block;padding:16px;background:linear-gradient(135deg,#0b1d33 0%,#14406a 100%);color:#f3ead7;border-radius:8px;text-decoration:none;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s}
 .komase-sim-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.3);transform:translateY(-1px)}
+.komase-sim-card.fv{background:linear-gradient(135deg,#1a2e0b 0%,#3e5c14 100%)}
 .kc-badge{display:inline-block;padding:2px 8px;background:#c84427;color:#fff;font-size:11px;font-weight:700;border-radius:3px;margin-bottom:6px}
 .komase-sim-card h3{margin:6px 0;font-size:18px;color:#f3ead7}
 .komase-sim-card p{margin:6px 0;font-size:13px;line-height:1.6;color:#e7dcc3}
@@ -170,7 +171,8 @@
   <a href="/area/">エリア</a>
   <a href="/calendar.html">カレンダー</a>
   <a href="/monthly/">月報</a>
-  <a href="/komase-sim/">🎣 コマセsim<span class="nav-new">NEW</span></a>
+  <a href="/komase-sim/">🎣 コマセsim</a>
+  <a href="/fish-value/">💰 釣果価値<span class="nav-new">NEW</span></a>
 
   
 </nav>
@@ -207,8 +209,16 @@
 <h2 class="st">7/4(土)の関東船釣り概況 <span class="tag free">無料</span></h2><div class="overview"><div class="overview-title">2026/07/04 18:38 更新 — 35エリア・49船宿から集計</div><div class="overview-body">本日の関東全域で103便の釣果報告が寄せられました（35エリア・49船宿）。主力魚種はアジ・マダイ・タチウオ。最新の釣果情報・船宿ランキングは各魚種・エリアページをご確認ください。</div></div>
 <!-- NEW: コマセシミュレーターカード -->
 <section class="komase-sim-card-section">
-  <a href="/komase-sim/" class="komase-sim-card" aria-label="マダイコマセシミュレーターを開く">
+  <a href="/fish-value/" class="komase-sim-card fv" aria-label="釣果価値チェッカーを開く">
     <span class="kc-badge">🆕 NEW</span>
+    <h3>💰 釣果価値チェッカー</h3>
+    <p>今日釣った魚、市場に出したらいくら？ 豊洲市場の実勢価格×季節相場補正で、釣果の卸売・小売換算額を概算する無料ツール。</p>
+    <span class="kc-cta">計算してみる →</span>
+  </a>
+</section>
+<!-- コマセシミュレーターカード -->
+<section class="komase-sim-card-section">
+  <a href="/komase-sim/" class="komase-sim-card" aria-label="マダイコマセシミュレーターを開く">
     <h3>🎣 マダイコマセシミュレーター</h3>
     <p>ハリス・ガン玉・しゃくり方を変えると、コマセ帯と付けエサの「同調」がどう変わるか。物理シミュで可視化する無料ツール。</p>
     <span class="kc-cta">試してみる →</span>

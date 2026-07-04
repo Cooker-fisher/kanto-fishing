@@ -1869,6 +1869,76 @@ def validate_fish_area_analysis_sections():
         ok("[50] 禁止表現なし")
 
 
+def validate_fish_value_release():
+    """51: 釣果価値チェッカー（/fish-value/）のリリース整合（2026-07-05）
+
+    fish-value は crawler.py 非生成の独立アプリ（docs/fish-value/ 静的配置）。
+    リリースで3点セット（noindex 解除・トップ導線・sitemap 収録）を導入したため、
+    どれかが将来の再生成・改修で欠けると「導線のないリリース済みアプリ」に退行する。
+    検証:
+      - docs/fish-value/index.html が存在し noindex メタタグが無い
+      - docs/index.html に /fish-value/ への内部リンクがある（gnav + トップカード）
+      - docs/sitemap.xml に /fish-value/ が収録されている
+      - 価格マスタの鮮度: fish-price-master.json seasonal.data_month のラグが
+        3か月超で warn（urls_manifest.json への新月報追記漏れ = 更新運用停止の検知。
+        月報公開ラグにより正常時ラグは 1.5〜2.5 か月）
+    """
+    print("\n[51] 釣果価値チェッカー（/fish-value/）リリース整合（2026-07-05）")
+    fv_index = os.path.join(DOCS, "fish-value", "index.html")
+    if not os.path.isfile(fv_index):
+        fail("docs/fish-value/index.html が存在しない")
+        return
+    with open(fv_index, encoding="utf-8") as f:
+        fv_html = f.read()
+    head = fv_html[:4096]
+    if 'name="robots"' in head and "noindex" in head:
+        fail("fish-value/index.html に noindex が残っている（リリース済みのはず）")
+    else:
+        ok("fish-value/index.html は noindex なし（index 対象）")
+
+    idx_path = os.path.join(DOCS, "index.html")
+    if os.path.isfile(idx_path):
+        with open(idx_path, encoding="utf-8") as f:
+            idx_html = f.read()
+        n_links = idx_html.count('href="/fish-value/"')
+        if n_links == 0:
+            fail("docs/index.html に /fish-value/ への導線が無い")
+        else:
+            ok(f"docs/index.html に /fish-value/ 導線 {n_links} 件")
+
+    sm_path = os.path.join(DOCS, "sitemap.xml")
+    if os.path.isfile(sm_path):
+        with open(sm_path, encoding="utf-8") as f:
+            sm = f.read()
+        if "/fish-value/</loc>" not in sm:
+            fail("sitemap.xml に /fish-value/ が収録されていない")
+        else:
+            ok("sitemap.xml に /fish-value/ 収録")
+
+    # 価格マスタ鮮度（月報の手動マニフェスト更新が止まっていないか）
+    pm_path = os.path.join(DOCS, "fish-value", "fish-price-master.json")
+    try:
+        with open(pm_path, encoding="utf-8") as f:
+            pm = json.load(f)
+        dm = str(pm.get("seasonal", {}).get("data_month") or
+                 pm.get("source", {}).get("wholesale", ""))
+        m = re.search(r"(\d{4})(\d{2})", dm)
+        if m:
+            from datetime import date as _date
+            dy, dmn = int(m.group(1)), int(m.group(2))
+            today = _date.today()
+            lag = (today.year - dy) * 12 + (today.month - dmn)
+            if lag > 3:
+                warn(f"価格マスタのデータ月 {dy}-{dmn:02d} がラグ {lag} か月"
+                     f"（urls_manifest.json への新月報追記漏れの疑い・毎月20日頃公開）")
+            else:
+                ok(f"価格マスタ鮮度 OK（データ月 {dy}-{dmn:02d}・ラグ {lag} か月）")
+        else:
+            warn("fish-price-master.json からデータ月を特定できない")
+    except Exception as e:
+        warn(f"fish-price-master.json 読込失敗: {e}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -1929,6 +1999,7 @@ def main():
     validate_brand_not_h1()
     validate_chowari_monthly_coverage()
     validate_fish_area_analysis_sections()
+    validate_fish_value_release()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
