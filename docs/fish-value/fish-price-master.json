@@ -1,8 +1,8 @@
 {
   "version": "v1",
-  "updated_at": "2026-05-28",
+  "updated_at": "2026-07-05",
   "source": {
-    "wholesale": "d3188825-s202604meisai_20260515.xlsx (202604)",
+    "wholesale": "s202605meisai_20260615.xlsx (202605)",
     "retail_multiplier": "業界一般値（甲案・大衆魚2.0-3.0/中級1.8-2.5/高級1.6-2.2/青物1.7-2.4/イカタコ1.8-2.6）",
     "size_premium": "大物プレミアム(small 0.95 / standard 1.00 / large 1.20 / premium 1.45)",
     "verification": "docs/fish-value/tmp_retail_verify.md (小売物価統計 vs 月報 実倍率検証)"
@@ -142,46 +142,46 @@
         }
       ],
       "size_curve_type": "細長型",
-      "wholesale_avg": 705,
-      "wholesale_high_overall": 2912,
-      "wholesale_low_overall": 226,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 677,
+      "wholesale_high_overall": 2873,
+      "wholesale_low_overall": 195,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.05,
           "label": "豆アジ",
           "size_class": "small",
-          "wholesale_low": 226,
-          "wholesale_high": 678,
-          "retail_low": 429,
-          "retail_high": 1932
+          "wholesale_low": 195,
+          "wholesale_high": 585,
+          "retail_low": 370,
+          "retail_high": 1667
         },
         {
           "kg_max": 0.15,
           "label": "中小",
           "size_class": "small",
-          "wholesale_low": 226,
-          "wholesale_high": 678,
-          "retail_low": 429,
-          "retail_high": 1932
+          "wholesale_low": 195,
+          "wholesale_high": 585,
+          "retail_low": 370,
+          "retail_high": 1667
         },
         {
           "kg_max": 0.3,
           "label": "中",
           "size_class": "standard",
-          "wholesale_low": 493,
-          "wholesale_high": 1057,
-          "retail_low": 986,
-          "retail_high": 3171
+          "wholesale_low": 473,
+          "wholesale_high": 975,
+          "retail_low": 946,
+          "retail_high": 2925
         },
         {
           "kg_max": null,
           "label": "大・尺",
           "size_class": "large",
-          "wholesale_low": 705,
-          "wholesale_high": 1762,
-          "retail_low": 1692,
-          "retail_high": 6343
+          "wholesale_low": 677,
+          "wholesale_high": 1692,
+          "retail_low": 1624,
+          "retail_high": 6091
         }
       ],
       "related_species": [
@@ -220,28 +220,28 @@
         }
       ],
       "size_curve_type": "フグ型",
-      "wholesale_avg": 2187,
+      "wholesale_avg": 2126,
       "wholesale_high_overall": 18360,
-      "wholesale_low_overall": 378,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_low_overall": 239,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1530,
-          "wholesale_high": 1890,
-          "retail_low": 2448,
-          "retail_high": 4158
+          "wholesale_low": 1488,
+          "wholesale_high": 1488,
+          "retail_low": 2380,
+          "retail_high": 3273
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 2187,
-          "wholesale_high": 5467,
-          "retail_low": 4199,
-          "retail_high": 14432
+          "wholesale_low": 2126,
+          "wholesale_high": 5315,
+          "retail_low": 4081,
+          "retail_high": 14031
         }
       ],
       "related_species": [
@@ -349,37 +349,37 @@
         }
       ],
       "size_curve_type": "アマダイ型",
-      "wholesale_avg": 4788,
-      "wholesale_high_overall": 12249,
-      "wholesale_low_overall": 1312,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 4003,
+      "wholesale_high_overall": 9519,
+      "wholesale_low_overall": 1134,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.4,
           "label": "小型",
           "size_class": "small",
-          "wholesale_low": 1312,
-          "wholesale_high": 3936,
-          "retail_low": 1994,
-          "retail_high": 8226
+          "wholesale_low": 1134,
+          "wholesale_high": 3402,
+          "retail_low": 1723,
+          "retail_high": 7110
         },
         {
           "kg_max": 1.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 3351,
-          "wholesale_high": 6560,
-          "retail_low": 5361,
-          "retail_high": 14432
+          "wholesale_low": 2802,
+          "wholesale_high": 5670,
+          "retail_low": 4483,
+          "retail_high": 12474
         },
         {
           "kg_max": null,
           "label": "大アマダイ",
           "size_class": "premium",
-          "wholesale_low": 7182,
-          "wholesale_high": 12249,
-          "retail_low": 16662,
-          "retail_high": 39074
+          "wholesale_low": 6004,
+          "wholesale_high": 9519,
+          "retail_low": 13929,
+          "retail_high": 30365
         }
       ],
       "related_species": [
@@ -418,37 +418,37 @@
         }
       ],
       "size_curve_type": "超細長型",
-      "wholesale_avg": 1958,
-      "wholesale_high_overall": 5256,
-      "wholesale_low_overall": 216,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1934,
+      "wholesale_high_overall": 2843,
+      "wholesale_low_overall": 271,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.15,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 216,
-          "wholesale_high": 648,
-          "retail_low": 369,
-          "retail_high": 1539
+          "wholesale_low": 271,
+          "wholesale_high": 813,
+          "retail_low": 463,
+          "retail_high": 1930
         },
         {
           "kg_max": 0.35,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1370,
-          "wholesale_high": 1370,
-          "retail_low": 2466,
-          "retail_high": 3425
+          "wholesale_low": 1353,
+          "wholesale_high": 1355,
+          "retail_low": 2435,
+          "retail_high": 3387
         },
         {
           "kg_max": null,
           "label": "メガアナゴ",
           "size_class": "large",
-          "wholesale_low": 1958,
-          "wholesale_high": 4204,
-          "retail_low": 4229,
-          "retail_high": 12612
+          "wholesale_low": 1934,
+          "wholesale_high": 2274,
+          "retail_low": 4177,
+          "retail_high": 6822
         }
       ],
       "related_species": [
@@ -491,37 +491,37 @@
         }
       ],
       "size_curve_type": "イカ型_大",
-      "wholesale_avg": 3897,
-      "wholesale_high_overall": 6130,
-      "wholesale_low_overall": 1323,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 3232,
+      "wholesale_high_overall": 6430,
+      "wholesale_low_overall": 1588,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 1323,
-          "wholesale_high": 3897,
-          "retail_low": 2262,
-          "retail_high": 9625
+          "wholesale_low": 1588,
+          "wholesale_high": 3232,
+          "retail_low": 2715,
+          "retail_high": 7983
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 2727,
-          "wholesale_high": 5845,
-          "retail_low": 4908,
-          "retail_high": 15197
+          "wholesale_low": 2382,
+          "wholesale_high": 4848,
+          "retail_low": 4287,
+          "retail_high": 12604
         },
         {
           "kg_max": null,
           "label": "キロアップ",
           "size_class": "premium",
-          "wholesale_low": 5845,
-          "wholesale_high": 6130,
-          "retail_low": 15255,
-          "retail_high": 23110
+          "wholesale_low": 4848,
+          "wholesale_high": 6430,
+          "retail_low": 12653,
+          "retail_high": 24241
         }
       ],
       "related_species": [
@@ -649,28 +649,28 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 649,
-      "wholesale_high_overall": 2926,
-      "wholesale_low_overall": 273,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 728,
+      "wholesale_high_overall": 3062,
+      "wholesale_low_overall": 355,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 5.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 454,
-          "wholesale_high": 973,
-          "retail_low": 771,
-          "retail_high": 2335
+          "wholesale_low": 532,
+          "wholesale_high": 1092,
+          "retail_low": 904,
+          "retail_high": 2620
         },
         {
           "kg_max": null,
           "label": "寒ブリ大物",
           "size_class": "premium",
-          "wholesale_low": 973,
-          "wholesale_high": 2926,
-          "retail_low": 2398,
-          "retail_high": 10182
+          "wholesale_low": 1092,
+          "wholesale_high": 3062,
+          "retail_low": 2691,
+          "retail_high": 10655
         }
       ],
       "related_species": [
@@ -709,28 +709,28 @@
         }
       ],
       "size_curve_type": "フグ型",
-      "wholesale_avg": 2187,
+      "wholesale_avg": 2126,
       "wholesale_high_overall": 18360,
-      "wholesale_low_overall": 378,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_low_overall": 239,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1530,
-          "wholesale_high": 1890,
-          "retail_low": 2448,
-          "retail_high": 4158
+          "wholesale_low": 1488,
+          "wholesale_high": 1488,
+          "retail_low": 2380,
+          "retail_high": 3273
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 2187,
-          "wholesale_high": 5467,
-          "retail_low": 4199,
-          "retail_high": 14432
+          "wholesale_low": 2126,
+          "wholesale_high": 5315,
+          "retail_low": 4081,
+          "retail_high": 14031
         }
       ],
       "related_species": [
@@ -773,28 +773,28 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 760,
-      "wholesale_high_overall": 1539,
-      "wholesale_low_overall": 389,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 663,
+      "wholesale_high_overall": 1433,
+      "wholesale_low_overall": 337,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.3,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 389,
-          "wholesale_high": 760,
-          "retail_low": 665,
-          "retail_high": 1805
+          "wholesale_low": 337,
+          "wholesale_high": 663,
+          "retail_low": 576,
+          "retail_high": 1574
         },
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 583,
-          "wholesale_high": 1140,
-          "retail_low": 1049,
-          "retail_high": 2850
+          "wholesale_low": 505,
+          "wholesale_high": 994,
+          "retail_low": 909,
+          "retail_high": 2485
         }
       ],
       "related_species": [
@@ -837,37 +837,37 @@
         }
       ],
       "size_curve_type": "ハタ型",
-      "wholesale_avg": 3034,
-      "wholesale_high_overall": 10012,
-      "wholesale_low_overall": 1583,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 2470,
+      "wholesale_high_overall": 6983,
+      "wholesale_low_overall": 1190,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 2.0,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 1583,
-          "wholesale_high": 3034,
-          "retail_low": 2556,
-          "retail_high": 6917
+          "wholesale_low": 1190,
+          "wholesale_high": 2470,
+          "retail_low": 1921,
+          "retail_high": 5631
         },
         {
           "kg_max": 5.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 2374,
-          "wholesale_high": 4551,
-          "retail_low": 4035,
-          "retail_high": 10922
+          "wholesale_low": 1785,
+          "wholesale_high": 3705,
+          "retail_low": 3034,
+          "retail_high": 8892
         },
         {
           "kg_max": null,
           "label": "大ハタ",
           "size_class": "premium",
-          "wholesale_low": 4551,
-          "wholesale_high": 10012,
-          "retail_low": 11218,
-          "retail_high": 34841
+          "wholesale_low": 3705,
+          "wholesale_high": 6983,
+          "retail_low": 9132,
+          "retail_high": 24300
         }
       ],
       "related_species": [
@@ -922,28 +922,28 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 1060,
-      "wholesale_high_overall": 2506,
-      "wholesale_low_overall": 695,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1059,
+      "wholesale_high_overall": 1872,
+      "wholesale_low_overall": 721,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 3.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1042,
-          "wholesale_high": 1590,
-          "retail_low": 1771,
-          "retail_high": 3816
+          "wholesale_low": 1081,
+          "wholesale_high": 1588,
+          "retail_low": 1837,
+          "retail_high": 3811
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 1060,
-          "wholesale_high": 2004,
-          "retail_low": 2162,
-          "retail_high": 5771
+          "wholesale_low": 1059,
+          "wholesale_high": 1497,
+          "retail_low": 2160,
+          "retail_high": 4311
         }
       ],
       "related_species": [
@@ -986,46 +986,46 @@
         }
       ],
       "size_curve_type": "平体型",
-      "wholesale_avg": 1722,
-      "wholesale_high_overall": 3641,
-      "wholesale_low_overall": 745,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1165,
+      "wholesale_high_overall": 3485,
+      "wholesale_low_overall": 470,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "ソゲ",
           "size_class": "small",
-          "wholesale_low": 745,
-          "wholesale_high": 1722,
-          "retail_low": 1273,
-          "retail_high": 4089
+          "wholesale_low": 470,
+          "wholesale_high": 1165,
+          "retail_low": 803,
+          "retail_high": 2766
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1205,
-          "wholesale_high": 2583,
-          "retail_low": 2169,
-          "retail_high": 6457
+          "wholesale_low": 815,
+          "wholesale_high": 1747,
+          "retail_low": 1467,
+          "retail_high": 4367
         },
         {
           "kg_max": 3.0,
           "label": "大ビラメ",
           "size_class": "large",
-          "wholesale_low": 1722,
-          "wholesale_high": 2912,
-          "retail_low": 3719,
-          "retail_high": 8736
+          "wholesale_low": 1165,
+          "wholesale_high": 2788,
+          "retail_low": 2516,
+          "retail_high": 8364
         },
         {
           "kg_max": null,
           "label": "座布団",
           "size_class": "premium",
-          "wholesale_low": 2583,
-          "wholesale_high": 3641,
-          "retail_low": 6741,
-          "retail_high": 13198
+          "wholesale_low": 1747,
+          "wholesale_high": 3485,
+          "retail_low": 4559,
+          "retail_high": 12633
         }
       ],
       "related_species": [
@@ -1068,37 +1068,37 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 1182,
-      "wholesale_high_overall": 2046,
-      "wholesale_low_overall": 319,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1217,
+      "wholesale_high_overall": 1995,
+      "wholesale_low_overall": 406,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.3,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 319,
-          "wholesale_high": 957,
-          "retail_low": 545,
-          "retail_high": 2272
+          "wholesale_low": 406,
+          "wholesale_high": 1217,
+          "retail_low": 694,
+          "retail_high": 2890
         },
         {
           "kg_max": 0.8,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 827,
-          "wholesale_high": 1595,
-          "retail_low": 1488,
-          "retail_high": 3987
+          "wholesale_low": 851,
+          "wholesale_high": 1825,
+          "retail_low": 1531,
+          "retail_high": 4562
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 1182,
-          "wholesale_high": 1636,
-          "retail_low": 2553,
-          "retail_high": 4908
+          "wholesale_low": 1217,
+          "wholesale_high": 1596,
+          "retail_low": 2628,
+          "retail_high": 4788
         }
       ],
       "related_species": [
@@ -1153,28 +1153,28 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 595,
-      "wholesale_high_overall": 1095,
-      "wholesale_low_overall": 319,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 622,
+      "wholesale_high_overall": 1069,
+      "wholesale_low_overall": 327,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 478,
-          "wholesale_high": 892,
-          "retail_low": 812,
-          "retail_high": 2140
+          "wholesale_low": 490,
+          "wholesale_high": 933,
+          "retail_low": 833,
+          "retail_high": 2239
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 595,
-          "wholesale_high": 876,
-          "retail_low": 1213,
-          "retail_high": 2522
+          "wholesale_low": 622,
+          "wholesale_high": 855,
+          "retail_low": 1268,
+          "retail_high": 2462
         }
       ],
       "related_species": [
@@ -1217,37 +1217,37 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 1624,
-      "wholesale_high_overall": 2414,
-      "wholesale_low_overall": 569,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1225,
+      "wholesale_high_overall": 2371,
+      "wholesale_low_overall": 598,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.15,
           "label": "瓜坊",
           "size_class": "small",
-          "wholesale_low": 569,
-          "wholesale_high": 1624,
-          "retail_low": 972,
-          "retail_high": 3857
+          "wholesale_low": 598,
+          "wholesale_high": 1225,
+          "retail_low": 1022,
+          "retail_high": 2909
         },
         {
           "kg_max": 0.4,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1136,
-          "wholesale_high": 2436,
-          "retail_low": 2044,
-          "retail_high": 6090
+          "wholesale_low": 897,
+          "wholesale_high": 1837,
+          "retail_low": 1614,
+          "retail_high": 4592
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 1624,
-          "wholesale_high": 1931,
-          "retail_low": 3507,
-          "retail_high": 5793
+          "wholesale_low": 1225,
+          "wholesale_high": 1896,
+          "retail_low": 2646,
+          "retail_high": 5688
         }
       ],
       "related_species": [
@@ -1294,37 +1294,37 @@
         }
       ],
       "size_curve_type": "中型魚型",
-      "wholesale_avg": 2041,
-      "wholesale_high_overall": 2970,
-      "wholesale_low_overall": 1024,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1750,
+      "wholesale_high_overall": 4158,
+      "wholesale_low_overall": 972,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "サンバソウ",
           "size_class": "small",
-          "wholesale_low": 1024,
-          "wholesale_high": 2041,
-          "retail_low": 1751,
-          "retail_high": 4847
+          "wholesale_low": 972,
+          "wholesale_high": 1750,
+          "retail_low": 1662,
+          "retail_high": 4156
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1536,
-          "wholesale_high": 3061,
-          "retail_low": 2764,
-          "retail_high": 7652
+          "wholesale_low": 1458,
+          "wholesale_high": 2625,
+          "retail_low": 2624,
+          "retail_high": 6562
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 2041,
-          "wholesale_high": 2376,
-          "retail_low": 4408,
-          "retail_high": 7128
+          "wholesale_low": 1750,
+          "wholesale_high": 3326,
+          "retail_low": 3780,
+          "retail_high": 9978
         }
       ],
       "related_species": [
@@ -1371,28 +1371,28 @@
         }
       ],
       "size_curve_type": "細長型",
-      "wholesale_avg": 467,
-      "wholesale_high_overall": 846,
-      "wholesale_low_overall": 105,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 492,
+      "wholesale_high_overall": 1087,
+      "wholesale_low_overall": 198,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.3,
           "label": "中",
           "size_class": "standard",
-          "wholesale_low": 326,
-          "wholesale_high": 525,
-          "retail_low": 652,
-          "retail_high": 1575
+          "wholesale_low": 344,
+          "wholesale_high": 738,
+          "retail_low": 688,
+          "retail_high": 2214
         },
         {
           "kg_max": null,
           "label": "大",
           "size_class": "large",
-          "wholesale_low": 467,
-          "wholesale_high": 676,
-          "retail_low": 1120,
-          "retail_high": 2433
+          "wholesale_low": 492,
+          "wholesale_high": 869,
+          "retail_low": 1180,
+          "retail_high": 3128
         }
       ],
       "related_species": [
@@ -1507,37 +1507,37 @@
         }
       ],
       "size_curve_type": "細長型",
-      "wholesale_avg": 1524,
-      "wholesale_high_overall": 2758,
-      "wholesale_low_overall": 864,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1326,
+      "wholesale_high_overall": 2470,
+      "wholesale_low_overall": 733,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.15,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 864,
-          "wholesale_high": 1524,
-          "retail_low": 1477,
-          "retail_high": 3619
+          "wholesale_low": 733,
+          "wholesale_high": 1326,
+          "retail_low": 1253,
+          "retail_high": 3149
         },
         {
           "kg_max": 0.35,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1296,
-          "wholesale_high": 2286,
-          "retail_low": 2332,
-          "retail_high": 5715
+          "wholesale_low": 1099,
+          "wholesale_high": 1989,
+          "retail_low": 1978,
+          "retail_high": 4972
         },
         {
           "kg_max": null,
           "label": "尺カマス",
           "size_class": "large",
-          "wholesale_low": 1524,
-          "wholesale_high": 2206,
-          "retail_low": 3291,
-          "retail_high": 6618
+          "wholesale_low": 1326,
+          "wholesale_high": 1976,
+          "retail_low": 2864,
+          "retail_high": 5928
         }
       ],
       "related_species": [
@@ -1656,37 +1656,37 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 1552,
-      "wholesale_high_overall": 2993,
-      "wholesale_low_overall": 702,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1465,
+      "wholesale_high_overall": 2814,
+      "wholesale_low_overall": 1108,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 2.0,
           "label": "小カンパチ",
           "size_class": "small",
-          "wholesale_low": 702,
-          "wholesale_high": 1552,
-          "retail_low": 1133,
-          "retail_high": 3538
+          "wholesale_low": 1108,
+          "wholesale_high": 1465,
+          "retail_low": 1789,
+          "retail_high": 3340
         },
         {
           "kg_max": 5.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1086,
-          "wholesale_high": 2328,
-          "retail_low": 1846,
-          "retail_high": 5587
+          "wholesale_low": 1662,
+          "wholesale_high": 2197,
+          "retail_low": 2825,
+          "retail_high": 5272
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 1552,
-          "wholesale_high": 2394,
-          "retail_low": 3166,
-          "retail_high": 6894
+          "wholesale_low": 1465,
+          "wholesale_high": 2251,
+          "retail_low": 2988,
+          "retail_high": 6482
         }
       ],
       "related_species": [
@@ -1729,46 +1729,46 @@
         }
       ],
       "size_curve_type": "体高型",
-      "wholesale_avg": 418,
-      "wholesale_high_overall": 632,
-      "wholesale_low_overall": 243,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 514,
+      "wholesale_high_overall": 1620,
+      "wholesale_low_overall": 216,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.15,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 243,
-          "wholesale_high": 418,
-          "retail_low": 415,
-          "retail_high": 992
+          "wholesale_low": 216,
+          "wholesale_high": 514,
+          "retail_low": 369,
+          "retail_high": 1220
         },
         {
           "kg_max": 0.4,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 364,
-          "wholesale_high": 627,
-          "retail_low": 655,
-          "retail_high": 1567
+          "wholesale_low": 359,
+          "wholesale_high": 771,
+          "retail_low": 646,
+          "retail_high": 1927
         },
         {
           "kg_max": 0.8,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 418,
-          "wholesale_high": 505,
-          "retail_low": 902,
-          "retail_high": 1515
+          "wholesale_low": 514,
+          "wholesale_high": 1285,
+          "retail_low": 1110,
+          "retail_high": 3855
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "premium",
-          "wholesale_low": 627,
-          "wholesale_high": 632,
-          "retail_low": 1636,
-          "retail_high": 2291
+          "wholesale_low": 771,
+          "wholesale_high": 1620,
+          "retail_low": 2012,
+          "retail_high": 5872
         }
       ],
       "related_species": [
@@ -1811,37 +1811,37 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 1391,
-      "wholesale_high_overall": 5103,
-      "wholesale_low_overall": 364,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1226,
+      "wholesale_high_overall": 3240,
+      "wholesale_low_overall": 270,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.15,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 364,
-          "wholesale_high": 1092,
-          "retail_low": 622,
-          "retail_high": 2593
+          "wholesale_low": 270,
+          "wholesale_high": 810,
+          "retail_low": 461,
+          "retail_high": 1923
         },
         {
           "kg_max": 0.4,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 973,
-          "wholesale_high": 1820,
-          "retail_low": 1751,
-          "retail_high": 4550
+          "wholesale_low": 858,
+          "wholesale_high": 1350,
+          "retail_low": 1544,
+          "retail_high": 3375
         },
         {
           "kg_max": null,
           "label": "尺カサゴ",
           "size_class": "large",
-          "wholesale_low": 1391,
-          "wholesale_high": 3477,
-          "retail_low": 3004,
-          "retail_high": 10431
+          "wholesale_low": 1226,
+          "wholesale_high": 2592,
+          "retail_low": 2648,
+          "retail_high": 7776
         }
       ],
       "related_species": [
@@ -1896,37 +1896,37 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 908,
-      "wholesale_high_overall": 2046,
-      "wholesale_low_overall": 344,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 881,
+      "wholesale_high_overall": 1782,
+      "wholesale_low_overall": 677,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 2.0,
           "label": "ヒラソウダ級",
           "size_class": "small",
-          "wholesale_low": 344,
-          "wholesale_high": 908,
-          "retail_low": 555,
-          "retail_high": 2070
+          "wholesale_low": 677,
+          "wholesale_high": 881,
+          "retail_low": 1093,
+          "retail_high": 2008
         },
         {
           "kg_max": 4.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 635,
-          "wholesale_high": 1362,
-          "retail_low": 1079,
-          "retail_high": 3268
+          "wholesale_low": 1015,
+          "wholesale_high": 1321,
+          "retail_low": 1725,
+          "retail_high": 3170
         },
         {
           "kg_max": null,
           "label": "戻りガツオ",
           "size_class": "large",
-          "wholesale_low": 908,
-          "wholesale_high": 1636,
-          "retail_low": 1852,
-          "retail_high": 4711
+          "wholesale_low": 881,
+          "wholesale_high": 1425,
+          "retail_low": 1797,
+          "retail_high": 4104
         }
       ],
       "related_species": [
@@ -1969,46 +1969,46 @@
         }
       ],
       "size_curve_type": "体高型",
-      "wholesale_avg": 1483,
-      "wholesale_high_overall": 4320,
-      "wholesale_low_overall": 461,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1072,
+      "wholesale_high_overall": 6435,
+      "wholesale_low_overall": 501,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.1,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 461,
-          "wholesale_high": 1383,
-          "retail_low": 788,
-          "retail_high": 3284
+          "wholesale_low": 501,
+          "wholesale_high": 1072,
+          "retail_low": 856,
+          "retail_high": 2546
         },
         {
           "kg_max": 0.2,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1038,
-          "wholesale_high": 2224,
-          "retail_low": 1868,
-          "retail_high": 5560
+          "wholesale_low": 751,
+          "wholesale_high": 1608,
+          "retail_low": 1351,
+          "retail_high": 4020
         },
         {
           "kg_max": 0.35,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 1483,
-          "wholesale_high": 3456,
-          "retail_low": 3203,
-          "retail_high": 10368
+          "wholesale_low": 1072,
+          "wholesale_high": 2680,
+          "retail_low": 2315,
+          "retail_high": 8040
         },
         {
           "kg_max": null,
           "label": "尺ハギ",
           "size_class": "premium",
-          "wholesale_low": 2224,
-          "wholesale_high": 4320,
-          "retail_low": 5804,
-          "retail_high": 15660
+          "wholesale_low": 1608,
+          "wholesale_high": 6435,
+          "retail_low": 4196,
+          "retail_high": 23326
         }
       ],
       "related_species": [
@@ -2051,37 +2051,37 @@
         }
       ],
       "size_curve_type": "マグロ型",
-      "wholesale_avg": 1212,
-      "wholesale_high_overall": 2606,
-      "wholesale_low_overall": 541,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1283,
+      "wholesale_high_overall": 2692,
+      "wholesale_low_overall": 434,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 10,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 541,
-          "wholesale_high": 1212,
-          "retail_low": 873,
-          "retail_high": 2763
+          "wholesale_low": 434,
+          "wholesale_high": 1283,
+          "retail_low": 700,
+          "retail_high": 2925
         },
         {
           "kg_max": 30,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 848,
-          "wholesale_high": 1818,
-          "retail_low": 1441,
-          "retail_high": 4363
+          "wholesale_low": 898,
+          "wholesale_high": 1924,
+          "retail_low": 1526,
+          "retail_high": 4617
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 1212,
-          "wholesale_high": 2084,
-          "retail_low": 2472,
-          "retail_high": 6001
+          "wholesale_low": 1283,
+          "wholesale_high": 2153,
+          "retail_low": 2617,
+          "retail_high": 6200
         }
       ],
       "related_species": [
@@ -2124,28 +2124,28 @@
         }
       ],
       "size_curve_type": "マグロ型",
-      "wholesale_avg": 657,
-      "wholesale_high_overall": 1449,
-      "wholesale_low_overall": 457,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 730,
+      "wholesale_high_overall": 899,
+      "wholesale_low_overall": 610,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 5,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 457,
-          "wholesale_high": 657,
-          "retail_low": 738,
-          "retail_high": 1497
+          "wholesale_low": 610,
+          "wholesale_high": 730,
+          "retail_low": 985,
+          "retail_high": 1664
         },
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 685,
-          "wholesale_high": 985,
-          "retail_low": 1164,
-          "retail_high": 2364
+          "wholesale_low": 915,
+          "wholesale_high": 1095,
+          "retail_low": 1555,
+          "retail_high": 2628
         }
       ],
       "related_species": [
@@ -2184,37 +2184,37 @@
         }
       ],
       "size_curve_type": "深海魚型",
-      "wholesale_avg": 2665,
-      "wholesale_high_overall": 4276,
-      "wholesale_low_overall": 955,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 2245,
+      "wholesale_high_overall": 3528,
+      "wholesale_low_overall": 1025,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 955,
-          "wholesale_high": 2665,
-          "retail_low": 1451,
-          "retail_high": 5569
+          "wholesale_low": 1025,
+          "wholesale_high": 2245,
+          "retail_low": 1558,
+          "retail_high": 4692
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1865,
-          "wholesale_high": 3997,
-          "retail_low": 2984,
-          "retail_high": 8793
+          "wholesale_low": 1571,
+          "wholesale_high": 3367,
+          "retail_low": 2513,
+          "retail_high": 7407
         },
         {
           "kg_max": null,
           "label": "大金目",
           "size_class": "premium",
-          "wholesale_low": 3997,
-          "wholesale_high": 4276,
-          "retail_low": 9273,
-          "retail_high": 13640
+          "wholesale_low": 3367,
+          "wholesale_high": 3528,
+          "retail_low": 7811,
+          "retail_high": 11254
         }
       ],
       "related_species": [
@@ -2334,37 +2334,37 @@
         }
       ],
       "size_curve_type": "中型魚型",
-      "wholesale_avg": 504,
-      "wholesale_high_overall": 1094,
-      "wholesale_low_overall": 384,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 478,
+      "wholesale_high_overall": 1004,
+      "wholesale_low_overall": 304,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "小型",
           "size_class": "small",
-          "wholesale_low": 384,
-          "wholesale_high": 504,
-          "retail_low": 656,
-          "retail_high": 1197
+          "wholesale_low": 304,
+          "wholesale_high": 478,
+          "retail_low": 519,
+          "retail_high": 1135
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 576,
-          "wholesale_high": 756,
-          "retail_low": 1036,
-          "retail_high": 1890
+          "wholesale_low": 456,
+          "wholesale_high": 717,
+          "retail_low": 820,
+          "retail_high": 1792
         },
         {
           "kg_max": null,
           "label": "年無し",
           "size_class": "large",
-          "wholesale_low": 504,
-          "wholesale_high": 875,
-          "retail_low": 1088,
-          "retail_high": 2625
+          "wholesale_low": 478,
+          "wholesale_high": 803,
+          "retail_low": 1032,
+          "retail_high": 2409
         }
       ],
       "related_species": [
@@ -2403,37 +2403,37 @@
         }
       ],
       "size_curve_type": "深海魚型",
-      "wholesale_avg": 2381,
-      "wholesale_high_overall": 8082,
-      "wholesale_low_overall": 473,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 2206,
+      "wholesale_high_overall": 8387,
+      "wholesale_low_overall": 942,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 473,
-          "wholesale_high": 1419,
-          "retail_low": 718,
-          "retail_high": 2965
+          "wholesale_low": 942,
+          "wholesale_high": 2206,
+          "retail_low": 1431,
+          "retail_high": 4610
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1666,
-          "wholesale_high": 2365,
-          "retail_low": 2665,
-          "retail_high": 5203
+          "wholesale_low": 1544,
+          "wholesale_high": 3309,
+          "retail_low": 2470,
+          "retail_high": 7279
         },
         {
           "kg_max": null,
           "label": "大ムツ",
           "size_class": "premium",
-          "wholesale_low": 3571,
-          "wholesale_high": 8082,
-          "retail_low": 8284,
-          "retail_high": 25781
+          "wholesale_low": 3309,
+          "wholesale_high": 8387,
+          "retail_low": 7676,
+          "retail_high": 26754
         }
       ],
       "related_species": [
@@ -2480,45 +2480,45 @@
         }
       ],
       "size_curve_type": "中型魚型",
-      "wholesale_avg": 854,
+      "wholesale_avg": 789,
       "wholesale_high_overall": 4500,
-      "wholesale_low_overall": 540,
-      "wholesale_source": "月報最新月: 202604 / verify_daily:2026-05-28 / 日報で5,400/kg観測のため high を 2,183→4,500 へ調整",
+      "wholesale_low_overall": 270,
+      "wholesale_source": "月報最新月: 202605 / verify_daily:2026-05-28 / 日報で5,400/kg観測のため high を 2,183→4,500 へ調整",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "小ダイ",
           "size_class": "small",
-          "wholesale_low": 540,
-          "wholesale_high": 854,
-          "retail_low": 923,
-          "retail_high": 2028
+          "wholesale_low": 270,
+          "wholesale_high": 789,
+          "retail_low": 461,
+          "retail_high": 1873
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 810,
-          "wholesale_high": 1281,
-          "retail_low": 1458,
-          "retail_high": 3202
+          "wholesale_low": 552,
+          "wholesale_high": 1183,
+          "retail_low": 993,
+          "retail_high": 2957
         },
         {
           "kg_max": 3.0,
           "label": "大ダイ",
           "size_class": "large",
-          "wholesale_low": 854,
-          "wholesale_high": 2135,
-          "retail_low": 1844,
-          "retail_high": 6405
+          "wholesale_low": 789,
+          "wholesale_high": 1972,
+          "retail_low": 1704,
+          "retail_high": 5916
         },
         {
           "kg_max": null,
           "label": "特大",
           "size_class": "premium",
-          "wholesale_low": 1281,
+          "wholesale_low": 1183,
           "wholesale_high": 4500,
-          "retail_low": 3343,
+          "retail_low": 3087,
           "retail_high": 16312
         }
       ],
@@ -2559,37 +2559,37 @@
         }
       ],
       "size_curve_type": "タコ型",
-      "wholesale_avg": 3128,
-      "wholesale_high_overall": 9612,
-      "wholesale_low_overall": 792,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 2892,
+      "wholesale_high_overall": 5608,
+      "wholesale_low_overall": 666,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.0,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 792,
-          "wholesale_high": 2376,
-          "retail_low": 1354,
-          "retail_high": 5868
+          "wholesale_low": 666,
+          "wholesale_high": 1998,
+          "retail_low": 1138,
+          "retail_high": 4935
         },
         {
           "kg_max": 3.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 2189,
-          "wholesale_high": 3960,
-          "retail_low": 3940,
-          "retail_high": 10296
+          "wholesale_low": 2024,
+          "wholesale_high": 3330,
+          "retail_low": 3643,
+          "retail_high": 8658
         },
         {
           "kg_max": null,
           "label": "大ダコ",
           "size_class": "premium",
-          "wholesale_low": 4692,
-          "wholesale_high": 9612,
-          "retail_low": 12246,
-          "retail_high": 36237
+          "wholesale_low": 4338,
+          "wholesale_high": 5608,
+          "retail_low": 11322,
+          "retail_high": 21142
         }
       ],
       "related_species": [
@@ -2632,37 +2632,37 @@
         }
       ],
       "size_curve_type": "平体型",
-      "wholesale_avg": 1177,
-      "wholesale_high_overall": 3240,
-      "wholesale_low_overall": 324,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1250,
+      "wholesale_high_overall": 2333,
+      "wholesale_low_overall": 404,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 324,
-          "wholesale_high": 972,
-          "retail_low": 554,
-          "retail_high": 2308
+          "wholesale_low": 404,
+          "wholesale_high": 1212,
+          "retail_low": 690,
+          "retail_high": 2878
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 823,
-          "wholesale_high": 1620,
-          "retail_low": 1481,
-          "retail_high": 4050
+          "wholesale_low": 875,
+          "wholesale_high": 1875,
+          "retail_low": 1575,
+          "retail_high": 4687
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 1177,
-          "wholesale_high": 2592,
-          "retail_low": 2542,
-          "retail_high": 7776
+          "wholesale_low": 1250,
+          "wholesale_high": 1866,
+          "retail_low": 2700,
+          "retail_high": 5598
         }
       ],
       "related_species": [
@@ -2705,37 +2705,37 @@
         }
       ],
       "size_curve_type": "ハタ型",
-      "wholesale_avg": 3034,
-      "wholesale_high_overall": 10012,
-      "wholesale_low_overall": 1583,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 2470,
+      "wholesale_high_overall": 6983,
+      "wholesale_low_overall": 1190,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 2.0,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 1583,
-          "wholesale_high": 3034,
-          "retail_low": 2556,
-          "retail_high": 6917
+          "wholesale_low": 1190,
+          "wholesale_high": 2470,
+          "retail_low": 1921,
+          "retail_high": 5631
         },
         {
           "kg_max": 5.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 2374,
-          "wholesale_high": 4551,
-          "retail_low": 4035,
-          "retail_high": 10922
+          "wholesale_low": 1785,
+          "wholesale_high": 3705,
+          "retail_low": 3034,
+          "retail_high": 8892
         },
         {
           "kg_max": null,
           "label": "大ハタ",
           "size_class": "premium",
-          "wholesale_low": 4551,
-          "wholesale_high": 10012,
-          "retail_low": 11218,
-          "retail_high": 34841
+          "wholesale_low": 3705,
+          "wholesale_high": 6983,
+          "retail_low": 9132,
+          "retail_high": 24300
         }
       ],
       "related_species": [
@@ -2774,28 +2774,28 @@
         }
       ],
       "size_curve_type": "イカ型_小",
-      "wholesale_avg": 1730,
-      "wholesale_high_overall": 3304,
-      "wholesale_low_overall": 491,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1624,
+      "wholesale_high_overall": 8239,
+      "wholesale_low_overall": 814,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.2,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 491,
-          "wholesale_high": 1473,
-          "retail_low": 839,
-          "retail_high": 3638
+          "wholesale_low": 814,
+          "wholesale_high": 1624,
+          "retail_low": 1391,
+          "retail_high": 4011
         },
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1211,
-          "wholesale_high": 2455,
-          "retail_low": 2179,
-          "retail_high": 6383
+          "wholesale_low": 1221,
+          "wholesale_high": 2436,
+          "retail_low": 2197,
+          "retail_high": 6333
         }
       ],
       "related_species": [
@@ -2838,37 +2838,37 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 1465,
-      "wholesale_high_overall": 1906,
+      "wholesale_avg": 1284,
+      "wholesale_high_overall": 1995,
       "wholesale_low_overall": 500,
-      "wholesale_source": "月報最新月: 202604 / verify_daily:2026-05-28 / 関東釣果メバルの実勢に合わせて low 323→500 へ調整",
+      "wholesale_source": "月報最新月: 202605 / verify_daily:2026-05-28 / 関東釣果メバルの実勢に合わせて low 323→500 へ調整",
       "size_bands": [
         {
           "kg_max": 0.1,
           "label": "小",
           "size_class": "small",
           "wholesale_low": 500,
-          "wholesale_high": 1465,
+          "wholesale_high": 1284,
           "retail_low": 855,
-          "retail_high": 3479
+          "retail_high": 3049
         },
         {
           "kg_max": 0.25,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1025,
-          "wholesale_high": 2197,
-          "retail_low": 1845,
-          "retail_high": 5492
+          "wholesale_low": 898,
+          "wholesale_high": 1926,
+          "retail_low": 1616,
+          "retail_high": 4815
         },
         {
           "kg_max": null,
           "label": "尺メバル",
           "size_class": "large",
-          "wholesale_low": 1465,
-          "wholesale_high": 1524,
-          "retail_low": 3164,
-          "retail_high": 4572
+          "wholesale_low": 1284,
+          "wholesale_high": 1596,
+          "retail_low": 2773,
+          "retail_high": 4788
         }
       ],
       "related_species": [
@@ -2916,37 +2916,37 @@
         }
       ],
       "size_curve_type": "中型魚型",
-      "wholesale_avg": 1141,
-      "wholesale_high_overall": 2199,
-      "wholesale_low_overall": 626,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 993,
+      "wholesale_high_overall": 2197,
+      "wholesale_low_overall": 595,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.0,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 626,
-          "wholesale_high": 1141,
-          "retail_low": 1070,
-          "retail_high": 2709
+          "wholesale_low": 595,
+          "wholesale_high": 993,
+          "retail_low": 1017,
+          "retail_high": 2358
         },
         {
           "kg_max": 3.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 939,
-          "wholesale_high": 1711,
-          "retail_low": 1690,
-          "retail_high": 4277
+          "wholesale_low": 892,
+          "wholesale_high": 1489,
+          "retail_low": 1605,
+          "retail_high": 3722
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 1141,
-          "wholesale_high": 1759,
-          "retail_low": 2464,
-          "retail_high": 5277
+          "wholesale_low": 993,
+          "wholesale_high": 1757,
+          "retail_low": 2144,
+          "retail_high": 5271
         }
       ],
       "related_species": [
@@ -2985,28 +2985,28 @@
         }
       ],
       "size_curve_type": "深海魚型",
-      "wholesale_avg": 4317,
-      "wholesale_high_overall": 7034,
-      "wholesale_low_overall": 432,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 3432,
+      "wholesale_high_overall": 7316,
+      "wholesale_low_overall": 838,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 3021,
-          "wholesale_high": 3021,
-          "retail_low": 4833,
-          "retail_high": 6646
+          "wholesale_low": 2402,
+          "wholesale_high": 4190,
+          "retail_low": 3843,
+          "retail_high": 9218
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 4317,
-          "wholesale_high": 5627,
-          "retail_low": 8288,
-          "retail_high": 14855
+          "wholesale_low": 3432,
+          "wholesale_high": 5852,
+          "retail_low": 6589,
+          "retail_high": 15449
         }
       ],
       "related_species": [
@@ -3049,37 +3049,37 @@
         }
       ],
       "size_curve_type": "イカ型_中",
-      "wholesale_avg": 1325,
-      "wholesale_high_overall": 2102,
-      "wholesale_low_overall": 818,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1288,
+      "wholesale_high_overall": 2186,
+      "wholesale_low_overall": 707,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.0,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 818,
-          "wholesale_high": 1325,
-          "retail_low": 1398,
-          "retail_high": 3272
+          "wholesale_low": 707,
+          "wholesale_high": 1288,
+          "retail_low": 1208,
+          "retail_high": 3181
         },
         {
           "kg_max": 3.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1227,
-          "wholesale_high": 1987,
-          "retail_low": 2208,
-          "retail_high": 5166
+          "wholesale_low": 1060,
+          "wholesale_high": 1932,
+          "retail_low": 1908,
+          "retail_high": 5023
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 1325,
-          "wholesale_high": 1681,
-          "retail_low": 2862,
-          "retail_high": 5244
+          "wholesale_low": 1288,
+          "wholesale_high": 1748,
+          "retail_low": 2782,
+          "retail_high": 5453
         }
       ],
       "related_species": [
@@ -3177,28 +3177,28 @@
         }
       ],
       "size_curve_type": "イカ型_小",
-      "wholesale_avg": 1515,
-      "wholesale_high_overall": 3986,
-      "wholesale_low_overall": 540,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1193,
+      "wholesale_high_overall": 2138,
+      "wholesale_low_overall": 480,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.1,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 540,
-          "wholesale_high": 1515,
-          "retail_low": 923,
-          "retail_high": 3742
+          "wholesale_low": 480,
+          "wholesale_high": 1193,
+          "retail_low": 820,
+          "retail_high": 2946
         },
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1060,
-          "wholesale_high": 2272,
-          "retail_low": 1908,
-          "retail_high": 5907
+          "wholesale_low": 835,
+          "wholesale_high": 1789,
+          "retail_low": 1503,
+          "retail_high": 4651
         }
       ],
       "related_species": [
@@ -3241,37 +3241,37 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 1391,
-      "wholesale_high_overall": 5103,
-      "wholesale_low_overall": 364,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1226,
+      "wholesale_high_overall": 3240,
+      "wholesale_low_overall": 270,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.3,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 364,
-          "wholesale_high": 1092,
-          "retail_low": 622,
-          "retail_high": 2593
+          "wholesale_low": 270,
+          "wholesale_high": 810,
+          "retail_low": 461,
+          "retail_high": 1923
         },
         {
           "kg_max": 0.8,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 973,
-          "wholesale_high": 1820,
-          "retail_low": 1751,
-          "retail_high": 4550
+          "wholesale_low": 858,
+          "wholesale_high": 1350,
+          "retail_low": 1544,
+          "retail_high": 3375
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 1391,
-          "wholesale_high": 3477,
-          "retail_low": 3004,
-          "retail_high": 10431
+          "wholesale_low": 1226,
+          "wholesale_high": 2592,
+          "retail_low": 2648,
+          "retail_high": 7776
         }
       ],
       "related_species": [
@@ -3314,37 +3314,37 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 1465,
-      "wholesale_high_overall": 1906,
-      "wholesale_low_overall": 323,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1284,
+      "wholesale_high_overall": 1995,
+      "wholesale_low_overall": 287,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.2,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 323,
-          "wholesale_high": 969,
-          "retail_low": 552,
-          "retail_high": 2301
+          "wholesale_low": 287,
+          "wholesale_high": 861,
+          "retail_low": 490,
+          "retail_high": 2044
         },
         {
           "kg_max": 0.45,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1025,
-          "wholesale_high": 1615,
-          "retail_low": 1845,
-          "retail_high": 4037
+          "wholesale_low": 898,
+          "wholesale_high": 1435,
+          "retail_low": 1616,
+          "retail_high": 3587
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 1465,
-          "wholesale_high": 1524,
-          "retail_low": 3164,
-          "retail_high": 4572
+          "wholesale_low": 1284,
+          "wholesale_high": 1596,
+          "retail_low": 2773,
+          "retail_high": 4788
         }
       ],
       "related_species": [
@@ -3387,37 +3387,37 @@
         }
       ],
       "size_curve_type": "体高型",
-      "wholesale_avg": 1473,
-      "wholesale_high_overall": 5875,
-      "wholesale_low_overall": 358,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1504,
+      "wholesale_high_overall": 5333,
+      "wholesale_low_overall": 383,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.3,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 358,
-          "wholesale_high": 1074,
-          "retail_low": 612,
-          "retail_high": 2550
+          "wholesale_low": 383,
+          "wholesale_high": 1149,
+          "retail_low": 654,
+          "retail_high": 2728
         },
         {
           "kg_max": 0.8,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1031,
-          "wholesale_high": 1790,
-          "retail_low": 1855,
-          "retail_high": 4475
+          "wholesale_low": 1052,
+          "wholesale_high": 1915,
+          "retail_low": 1893,
+          "retail_high": 4787
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 1473,
-          "wholesale_high": 3682,
-          "retail_low": 3181,
-          "retail_high": 11046
+          "wholesale_low": 1504,
+          "wholesale_high": 3760,
+          "retail_low": 3248,
+          "retail_high": 11280
         }
       ],
       "related_species": [
@@ -3472,37 +3472,37 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 1808,
-      "wholesale_high_overall": 3359,
-      "wholesale_low_overall": 1074,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 2020,
+      "wholesale_high_overall": 3479,
+      "wholesale_low_overall": 911,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.5,
           "label": "サゴシ",
           "size_class": "small",
-          "wholesale_low": 1074,
-          "wholesale_high": 1808,
-          "retail_low": 1734,
-          "retail_high": 4122
+          "wholesale_low": 911,
+          "wholesale_high": 2020,
+          "retail_low": 1471,
+          "retail_high": 4605
         },
         {
           "kg_max": 4.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1611,
-          "wholesale_high": 2712,
-          "retail_low": 2738,
-          "retail_high": 6508
+          "wholesale_low": 1414,
+          "wholesale_high": 3030,
+          "retail_low": 2403,
+          "retail_high": 7272
         },
         {
           "kg_max": null,
           "label": "大サワラ",
           "size_class": "large",
-          "wholesale_low": 1808,
-          "wholesale_high": 2687,
-          "retail_low": 3688,
-          "retail_high": 7738
+          "wholesale_low": 2020,
+          "wholesale_high": 2783,
+          "retail_low": 4120,
+          "retail_high": 8015
         }
       ],
       "related_species": [
@@ -3557,37 +3557,37 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 951,
-      "wholesale_high_overall": 1706,
-      "wholesale_low_overall": 500,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 918,
+      "wholesale_high_overall": 2054,
+      "wholesale_low_overall": 476,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.0,
           "label": "セイゴ",
           "size_class": "small",
-          "wholesale_low": 500,
-          "wholesale_high": 951,
-          "retail_low": 807,
-          "retail_high": 2168
+          "wholesale_low": 476,
+          "wholesale_high": 918,
+          "retail_low": 768,
+          "retail_high": 2093
         },
         {
           "kg_max": 3.0,
           "label": "フッコ",
           "size_class": "standard",
-          "wholesale_low": 750,
-          "wholesale_high": 1426,
-          "retail_low": 1275,
-          "retail_high": 3422
+          "wholesale_low": 714,
+          "wholesale_high": 1377,
+          "retail_low": 1213,
+          "retail_high": 3304
         },
         {
           "kg_max": null,
           "label": "スズキ",
           "size_class": "large",
-          "wholesale_low": 951,
-          "wholesale_high": 1364,
-          "retail_low": 1940,
-          "retail_high": 3928
+          "wholesale_low": 918,
+          "wholesale_high": 1643,
+          "retail_low": 1872,
+          "retail_high": 4731
         }
       ],
       "related_species": [
@@ -3642,28 +3642,28 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 406,
-      "wholesale_high_overall": 467,
-      "wholesale_low_overall": 240,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 378,
+      "wholesale_high_overall": 383,
+      "wholesale_low_overall": 271,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 3.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 360,
-          "wholesale_high": 609,
-          "retail_low": 612,
-          "retail_high": 1461
+          "wholesale_low": 406,
+          "wholesale_high": 567,
+          "retail_low": 690,
+          "retail_high": 1360
         },
         {
           "kg_max": null,
           "label": "大シイラ",
           "size_class": "large",
-          "wholesale_low": 406,
-          "wholesale_high": 406,
-          "retail_low": 828,
-          "retail_high": 1169
+          "wholesale_low": 378,
+          "wholesale_high": 378,
+          "retail_low": 771,
+          "retail_high": 1088
         }
       ],
       "related_species": [
@@ -3710,37 +3710,37 @@
         }
       ],
       "size_curve_type": "中型魚型",
-      "wholesale_avg": 3072,
-      "wholesale_high_overall": 6671,
-      "wholesale_low_overall": 2439,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 2977,
+      "wholesale_high_overall": 7768,
+      "wholesale_low_overall": 1437,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.0,
           "label": "小型",
           "size_class": "small",
-          "wholesale_low": 2439,
-          "wholesale_high": 3072,
-          "retail_low": 3938,
-          "retail_high": 7004
+          "wholesale_low": 1437,
+          "wholesale_high": 2977,
+          "retail_low": 2320,
+          "retail_high": 6787
         },
         {
           "kg_max": 3.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 3658,
-          "wholesale_high": 4608,
-          "retail_low": 6218,
-          "retail_high": 11059
+          "wholesale_low": 2155,
+          "wholesale_high": 4465,
+          "retail_low": 3663,
+          "retail_high": 10716
         },
         {
           "kg_max": null,
           "label": "大シマアジ",
           "size_class": "premium",
-          "wholesale_low": 4608,
-          "wholesale_high": 6671,
-          "retail_low": 11358,
-          "retail_high": 23215
+          "wholesale_low": 4465,
+          "wholesale_high": 7768,
+          "retail_low": 11006,
+          "retail_high": 27032
         }
       ],
       "related_species": [
@@ -3779,37 +3779,37 @@
         }
       ],
       "size_curve_type": "アマダイ型",
-      "wholesale_avg": 11970,
-      "wholesale_high_overall": 36747,
-      "wholesale_low_overall": 2624,
+      "wholesale_avg": 10007,
+      "wholesale_high_overall": 28557,
+      "wholesale_low_overall": 2268,
       "wholesale_source": "派生: amadai × 2.0〜3.0倍",
       "size_bands": [
         {
           "kg_max": 0.4,
           "label": "小型",
           "size_class": "small",
-          "wholesale_low": 2624,
-          "wholesale_high": 7872,
-          "retail_low": 3988,
-          "retail_high": 16452
+          "wholesale_low": 2268,
+          "wholesale_high": 6804,
+          "retail_low": 3447,
+          "retail_high": 14220
         },
         {
           "kg_max": 1.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 8379,
-          "wholesale_high": 13120,
-          "retail_low": 13406,
-          "retail_high": 28864
+          "wholesale_low": 7004,
+          "wholesale_high": 11340,
+          "retail_low": 11206,
+          "retail_high": 24948
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "premium",
-          "wholesale_low": 17955,
-          "wholesale_high": 36747,
-          "retail_low": 41655,
-          "retail_high": 117222
+          "wholesale_low": 15010,
+          "wholesale_high": 28557,
+          "retail_low": 34823,
+          "retail_high": 91096
         }
       ],
       "related_species": [
@@ -3856,10 +3856,10 @@
         }
       ],
       "size_curve_type": "細長型",
-      "wholesale_avg": 2678,
+      "wholesale_avg": 2919,
       "wholesale_high_overall": 6500,
       "wholesale_low_overall": 850,
-      "wholesale_source": "月報最新月: 202604 / verify_daily:2026-05-28 / 江戸前天然キスの実勢に合わせて low 583→850, high 4,655→6,500 へ調整",
+      "wholesale_source": "月報最新月: 202605 / verify_daily:2026-05-28 / 江戸前天然キスの実勢に合わせて low 583→850, high 4,655→6,500 へ調整",
       "size_bands": [
         {
           "kg_max": 0.03,
@@ -3874,27 +3874,27 @@
           "kg_max": 0.08,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1874,
-          "wholesale_high": 4017,
-          "retail_low": 3748,
-          "retail_high": 12051
+          "wholesale_low": 2043,
+          "wholesale_high": 4250,
+          "retail_low": 4086,
+          "retail_high": 12750
         },
         {
           "kg_max": 0.15,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 2678,
+          "wholesale_low": 2919,
           "wholesale_high": 5200,
-          "retail_low": 6427,
+          "retail_low": 7005,
           "retail_high": 18720
         },
         {
           "kg_max": null,
           "label": "尺キス",
           "size_class": "premium",
-          "wholesale_low": 4017,
+          "wholesale_low": 4378,
           "wholesale_high": 6500,
-          "retail_low": 11649,
+          "retail_low": 12696,
           "retail_high": 28275
         }
       ],
@@ -3935,28 +3935,28 @@
         }
       ],
       "size_curve_type": "フグ型",
-      "wholesale_avg": 760,
-      "wholesale_high_overall": 1309,
-      "wholesale_low_overall": 294,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 703,
+      "wholesale_high_overall": 2160,
+      "wholesale_low_overall": 216,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 532,
-          "wholesale_high": 1140,
-          "retail_low": 851,
-          "retail_high": 2508
+          "wholesale_low": 492,
+          "wholesale_high": 1054,
+          "retail_low": 787,
+          "retail_high": 2318
         },
         {
           "kg_max": null,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 760,
-          "wholesale_high": 1047,
-          "retail_low": 1459,
-          "retail_high": 2764
+          "wholesale_low": 703,
+          "wholesale_high": 1728,
+          "retail_low": 1349,
+          "retail_high": 4561
         }
       ],
       "related_species": [
@@ -3995,28 +3995,28 @@
         }
       ],
       "size_curve_type": "イカ型_小",
-      "wholesale_avg": 1515,
-      "wholesale_high_overall": 3986,
-      "wholesale_low_overall": 540,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1193,
+      "wholesale_high_overall": 2138,
+      "wholesale_low_overall": 480,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.2,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 540,
-          "wholesale_high": 1515,
-          "retail_low": 923,
-          "retail_high": 3742
+          "wholesale_low": 480,
+          "wholesale_high": 1193,
+          "retail_low": 820,
+          "retail_high": 2946
         },
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1060,
-          "wholesale_high": 2272,
-          "retail_low": 1908,
-          "retail_high": 5907
+          "wholesale_low": 835,
+          "wholesale_high": 1789,
+          "retail_low": 1503,
+          "retail_high": 4651
         }
       ],
       "related_species": [
@@ -4059,37 +4059,37 @@
         }
       ],
       "size_curve_type": "イカ型_中",
-      "wholesale_avg": 1730,
-      "wholesale_high_overall": 3304,
-      "wholesale_low_overall": 491,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1624,
+      "wholesale_high_overall": 8239,
+      "wholesale_low_overall": 814,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 491,
-          "wholesale_high": 1473,
-          "retail_low": 839,
-          "retail_high": 3638
+          "wholesale_low": 814,
+          "wholesale_high": 1624,
+          "retail_low": 1391,
+          "retail_high": 4011
         },
         {
           "kg_max": 1.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1211,
-          "wholesale_high": 2455,
-          "retail_low": 2179,
-          "retail_high": 6383
+          "wholesale_low": 1221,
+          "wholesale_high": 2436,
+          "retail_low": 2197,
+          "retail_high": 6333
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 1730,
-          "wholesale_high": 2643,
-          "retail_low": 3736,
-          "retail_high": 8246
+          "wholesale_low": 1624,
+          "wholesale_high": 4060,
+          "retail_low": 3507,
+          "retail_high": 12667
         }
       ],
       "related_species": [
@@ -4132,37 +4132,37 @@
         }
       ],
       "size_curve_type": "イカ型_中",
-      "wholesale_avg": 1515,
-      "wholesale_high_overall": 3986,
-      "wholesale_low_overall": 540,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1193,
+      "wholesale_high_overall": 2138,
+      "wholesale_low_overall": 480,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.2,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 540,
-          "wholesale_high": 1515,
-          "retail_low": 923,
-          "retail_high": 3742
+          "wholesale_low": 480,
+          "wholesale_high": 1193,
+          "retail_low": 820,
+          "retail_high": 2946
         },
         {
           "kg_max": 0.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1060,
-          "wholesale_high": 2272,
-          "retail_low": 1908,
-          "retail_high": 5907
+          "wholesale_low": 835,
+          "wholesale_high": 1789,
+          "retail_low": 1503,
+          "retail_high": 4651
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "large",
-          "wholesale_low": 1515,
-          "wholesale_high": 3188,
-          "retail_low": 3272,
-          "retail_high": 9946
+          "wholesale_low": 1193,
+          "wholesale_high": 1710,
+          "retail_low": 2576,
+          "retail_high": 5335
         }
       ],
       "related_species": [
@@ -4201,46 +4201,46 @@
         }
       ],
       "size_curve_type": "超細長型",
-      "wholesale_avg": 3698,
-      "wholesale_high_overall": 7278,
-      "wholesale_low_overall": 974,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 3990,
+      "wholesale_high_overall": 7770,
+      "wholesale_low_overall": 835,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.3,
           "label": "ベルト",
           "size_class": "small",
-          "wholesale_low": 974,
-          "wholesale_high": 2922,
-          "retail_low": 1573,
-          "retail_high": 6662
+          "wholesale_low": 835,
+          "wholesale_high": 2505,
+          "retail_low": 1348,
+          "retail_high": 5711
         },
         {
           "kg_max": 0.7,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 2588,
-          "wholesale_high": 4870,
-          "retail_low": 4399,
-          "retail_high": 11688
+          "wholesale_low": 2793,
+          "wholesale_high": 4175,
+          "retail_low": 4748,
+          "retail_high": 10020
         },
         {
           "kg_max": 1.2,
           "label": "良型",
           "size_class": "large",
-          "wholesale_low": 3698,
-          "wholesale_high": 5822,
-          "retail_low": 7543,
-          "retail_high": 16767
+          "wholesale_low": 3990,
+          "wholesale_high": 6216,
+          "retail_low": 8139,
+          "retail_high": 17902
         },
         {
           "kg_max": null,
           "label": "ドラゴン",
           "size_class": "premium",
-          "wholesale_low": 5547,
-          "wholesale_high": 7278,
-          "retail_low": 13673,
-          "retail_high": 25327
+          "wholesale_low": 5985,
+          "wholesale_high": 7770,
+          "retail_low": 14753,
+          "retail_high": 27039
         }
       ],
       "related_species": [
@@ -4279,37 +4279,37 @@
         }
       ],
       "size_curve_type": "フグ型",
-      "wholesale_avg": 1629,
-      "wholesale_high_overall": 6912,
-      "wholesale_low_overall": 547,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1432,
+      "wholesale_high_overall": 15756,
+      "wholesale_low_overall": 570,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 1.0,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 547,
-          "wholesale_high": 1629,
-          "retail_low": 831,
-          "retail_high": 3404
+          "wholesale_low": 570,
+          "wholesale_high": 1432,
+          "retail_low": 866,
+          "retail_high": 2992
         },
         {
           "kg_max": 2.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1140,
-          "wholesale_high": 2443,
-          "retail_low": 1824,
-          "retail_high": 5374
+          "wholesale_low": 1002,
+          "wholesale_high": 2148,
+          "retail_low": 1603,
+          "retail_high": 4725
         },
         {
           "kg_max": null,
           "label": "大型",
           "size_class": "premium",
-          "wholesale_low": 2443,
-          "wholesale_high": 6912,
-          "retail_low": 5667,
-          "retail_high": 22049
+          "wholesale_low": 2148,
+          "wholesale_high": 15756,
+          "retail_low": 4983,
+          "retail_high": 50261
         }
       ],
       "related_species": [
@@ -4364,28 +4364,28 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 579,
-      "wholesale_high_overall": 1055,
-      "wholesale_low_overall": 284,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 517,
+      "wholesale_high_overall": 1264,
+      "wholesale_low_overall": 234,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 3.0,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 426,
-          "wholesale_high": 868,
-          "retail_low": 724,
-          "retail_high": 2083
+          "wholesale_low": 361,
+          "wholesale_high": 775,
+          "retail_low": 613,
+          "retail_high": 1860
         },
         {
           "kg_max": null,
           "label": "大ワラサ",
           "size_class": "large",
-          "wholesale_low": 579,
-          "wholesale_high": 844,
-          "retail_low": 1181,
-          "retail_high": 2430
+          "wholesale_low": 517,
+          "wholesale_high": 1011,
+          "retail_low": 1054,
+          "retail_high": 2911
         }
       ],
       "related_species": [
@@ -4428,37 +4428,37 @@
         }
       ],
       "size_curve_type": "イカ型_中",
-      "wholesale_avg": 1747,
-      "wholesale_high_overall": 3983,
-      "wholesale_low_overall": 786,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1897,
+      "wholesale_high_overall": 4495,
+      "wholesale_low_overall": 788,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.2,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 786,
-          "wholesale_high": 1747,
-          "retail_low": 1344,
-          "retail_high": 4315
+          "wholesale_low": 788,
+          "wholesale_high": 1897,
+          "retail_low": 1347,
+          "retail_high": 4685
         },
         {
           "kg_max": 0.5,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 1222,
-          "wholesale_high": 2620,
-          "retail_low": 2199,
-          "retail_high": 6812
+          "wholesale_low": 1327,
+          "wholesale_high": 2845,
+          "retail_low": 2388,
+          "retail_high": 7397
         },
         {
           "kg_max": null,
           "label": "大",
           "size_class": "large",
-          "wholesale_low": 1747,
-          "wholesale_high": 3186,
-          "retail_low": 3773,
-          "retail_high": 9940
+          "wholesale_low": 1897,
+          "wholesale_high": 3596,
+          "retail_low": 4097,
+          "retail_high": 11219
         }
       ],
       "related_species": [
@@ -4582,46 +4582,46 @@
         }
       ],
       "size_curve_type": "細長型",
-      "wholesale_avg": 655,
-      "wholesale_high_overall": 2626,
-      "wholesale_low_overall": 376,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 624,
+      "wholesale_high_overall": 2969,
+      "wholesale_low_overall": 329,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.3,
           "label": "小サバ",
           "size_class": "small",
-          "wholesale_low": 376,
-          "wholesale_high": 655,
-          "retail_low": 714,
-          "retail_high": 1866
+          "wholesale_low": 329,
+          "wholesale_high": 624,
+          "retail_low": 625,
+          "retail_high": 1778
         },
         {
           "kg_max": 0.8,
           "label": "中サバ",
           "size_class": "standard",
-          "wholesale_low": 564,
-          "wholesale_high": 982,
-          "retail_low": 1128,
-          "retail_high": 2946
+          "wholesale_low": 493,
+          "wholesale_high": 936,
+          "retail_low": 986,
+          "retail_high": 2808
         },
         {
           "kg_max": 1.5,
           "label": "大サバ",
           "size_class": "large",
-          "wholesale_low": 655,
-          "wholesale_high": 1637,
-          "retail_low": 1572,
-          "retail_high": 5893
+          "wholesale_low": 624,
+          "wholesale_high": 1560,
+          "retail_low": 1497,
+          "retail_high": 5616
         },
         {
           "kg_max": null,
           "label": "寒サバ",
           "size_class": "premium",
-          "wholesale_low": 982,
-          "wholesale_high": 2626,
-          "retail_low": 2847,
-          "retail_high": 11423
+          "wholesale_low": 936,
+          "wholesale_high": 2969,
+          "retail_low": 2714,
+          "retail_high": 12915
         }
       ],
       "related_species": [
@@ -4664,37 +4664,37 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 452,
-      "wholesale_high_overall": 3254,
-      "wholesale_low_overall": 124,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 507,
+      "wholesale_high_overall": 3164,
+      "wholesale_low_overall": 163,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.05,
           "label": "小羽",
           "size_class": "small",
-          "wholesale_low": 124,
-          "wholesale_high": 372,
-          "retail_low": 235,
-          "retail_high": 1060
+          "wholesale_low": 163,
+          "wholesale_high": 489,
+          "retail_low": 309,
+          "retail_high": 1393
         },
         {
           "kg_max": 0.12,
           "label": "中羽",
           "size_class": "standard",
-          "wholesale_low": 316,
-          "wholesale_high": 620,
-          "retail_low": 632,
-          "retail_high": 1860
+          "wholesale_low": 354,
+          "wholesale_high": 760,
+          "retail_low": 708,
+          "retail_high": 2280
         },
         {
           "kg_max": null,
           "label": "大羽",
           "size_class": "large",
-          "wholesale_low": 452,
-          "wholesale_high": 1130,
-          "retail_low": 1084,
-          "retail_high": 4068
+          "wholesale_low": 507,
+          "wholesale_high": 1267,
+          "retail_low": 1216,
+          "retail_high": 4561
         }
       ],
       "related_species": [
@@ -4737,19 +4737,19 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 288,
-      "wholesale_high_overall": 3569,
-      "wholesale_low_overall": 256,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 372,
+      "wholesale_high_overall": 422,
+      "wholesale_low_overall": 216,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 384,
-          "wholesale_high": 432,
-          "retail_low": 768,
-          "retail_high": 1296
+          "wholesale_low": 324,
+          "wholesale_high": 558,
+          "retail_low": 648,
+          "retail_high": 1674
         }
       ],
       "related_species": [
@@ -4792,19 +4792,19 @@
         }
       ],
       "size_curve_type": "標準型",
-      "wholesale_avg": 602,
-      "wholesale_high_overall": 1790,
-      "wholesale_low_overall": 250,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 647,
+      "wholesale_high_overall": 2017,
+      "wholesale_low_overall": 271,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 421,
-          "wholesale_high": 903,
-          "retail_low": 842,
-          "retail_high": 2709
+          "wholesale_low": 452,
+          "wholesale_high": 970,
+          "retail_low": 904,
+          "retail_high": 2910
         }
       ],
       "related_species": [
@@ -4859,19 +4859,19 @@
         }
       ],
       "size_curve_type": "青物大型型",
-      "wholesale_avg": 688,
-      "wholesale_high_overall": 779,
-      "wholesale_low_overall": 187,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 369,
+      "wholesale_high_overall": 433,
+      "wholesale_low_overall": 274,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": null,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 481,
-          "wholesale_high": 935,
-          "retail_low": 962,
-          "retail_high": 2805
+          "wholesale_low": 411,
+          "wholesale_high": 553,
+          "retail_low": 822,
+          "retail_high": 1659
         }
       ],
       "related_species": [
@@ -4910,37 +4910,37 @@
         }
       ],
       "size_curve_type": "アンコウ型",
-      "wholesale_avg": 929,
-      "wholesale_high_overall": 1468,
-      "wholesale_low_overall": 288,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 674,
+      "wholesale_high_overall": 1146,
+      "wholesale_low_overall": 204,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 3,
           "label": "小",
           "size_class": "small",
-          "wholesale_low": 288,
-          "wholesale_high": 864,
-          "retail_low": 437,
-          "retail_high": 1805
+          "wholesale_low": 204,
+          "wholesale_high": 612,
+          "retail_low": 310,
+          "retail_high": 1279
         },
         {
           "kg_max": 8,
           "label": "標準",
           "size_class": "standard",
-          "wholesale_low": 650,
-          "wholesale_high": 1393,
-          "retail_low": 1040,
-          "retail_high": 3064
+          "wholesale_low": 471,
+          "wholesale_high": 1011,
+          "retail_low": 753,
+          "retail_high": 2224
         },
         {
           "kg_max": null,
           "label": "大物",
           "size_class": "large",
-          "wholesale_low": 929,
-          "wholesale_high": 1174,
-          "retail_low": 1783,
-          "retail_high": 3099
+          "wholesale_low": 674,
+          "wholesale_high": 916,
+          "retail_low": 1294,
+          "retail_high": 2418
         }
       ],
       "related_species": [
@@ -4987,28 +4987,28 @@
         }
       ],
       "size_curve_type": "細長型",
-      "wholesale_avg": 319,
-      "wholesale_high_overall": 1084,
-      "wholesale_low_overall": 213,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 309,
+      "wholesale_high_overall": 31899,
+      "wholesale_low_overall": 181,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.5,
           "label": "中",
           "size_class": "standard",
-          "wholesale_low": 319,
-          "wholesale_high": 478,
-          "retail_low": 638,
-          "retail_high": 1434
+          "wholesale_low": 271,
+          "wholesale_high": 463,
+          "retail_low": 542,
+          "retail_high": 1389
         },
         {
           "kg_max": null,
           "label": "大",
           "size_class": "large",
-          "wholesale_low": 319,
-          "wholesale_high": 797,
-          "retail_low": 765,
-          "retail_high": 2869
+          "wholesale_low": 309,
+          "wholesale_high": 772,
+          "retail_low": 741,
+          "retail_high": 2779
         }
       ],
       "related_species": [
@@ -5055,46 +5055,46 @@
         }
       ],
       "size_curve_type": "細長型",
-      "wholesale_avg": 2528,
-      "wholesale_high_overall": 3726,
-      "wholesale_low_overall": 114,
-      "wholesale_source": "月報最新月: 202604",
+      "wholesale_avg": 1965,
+      "wholesale_high_overall": 3591,
+      "wholesale_low_overall": 92,
+      "wholesale_source": "月報最新月: 202605",
       "size_bands": [
         {
           "kg_max": 0.05,
           "label": "シンコ",
           "size_class": "premium",
-          "wholesale_low": 3792,
-          "wholesale_high": 3792,
-          "retail_low": 10996,
-          "retail_high": 16495
+          "wholesale_low": 2947,
+          "wholesale_high": 3591,
+          "retail_low": 8546,
+          "retail_high": 15620
         },
         {
           "kg_max": 0.1,
           "label": "コハダ",
           "size_class": "standard",
-          "wholesale_low": 1769,
-          "wholesale_high": 1769,
-          "retail_low": 3538,
-          "retail_high": 5307
+          "wholesale_low": 1375,
+          "wholesale_high": 1375,
+          "retail_low": 2750,
+          "retail_high": 4125
         },
         {
           "kg_max": 0.2,
           "label": "ナカズミ",
           "size_class": "small",
-          "wholesale_low": 114,
-          "wholesale_high": 342,
-          "retail_low": 216,
-          "retail_high": 974
+          "wholesale_low": 92,
+          "wholesale_high": 276,
+          "retail_low": 174,
+          "retail_high": 786
         },
         {
           "kg_max": null,
           "label": "コノシロ",
           "size_class": "small",
-          "wholesale_low": 114,
-          "wholesale_high": 342,
-          "retail_low": 216,
-          "retail_high": 974
+          "wholesale_low": 92,
+          "wholesale_high": 276,
+          "retail_low": 174,
+          "retail_high": 786
         }
       ],
       "related_species": [
