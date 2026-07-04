@@ -153,7 +153,8 @@ def crawl(asof: date, days: int) -> dict:
         'version': 'v1',
         'source': '東京都中央卸売市場 日報（豊洲水産・中値）',
         'source_url': f'{NIPPO_HOST}/SN/YYYYMM/YYYYMMDD/Sui/Sui_K1.csv',
-        'generated_at': datetime.now().astimezone().isoformat(timespec='seconds'),
+        # generated_at（実行時刻）は入れない: 同一データの再実行で差分が出て
+        # 週次cronが無駄コミットを積むため。鮮度は asof + days_fetched で表現する。
         'asof': asof.strftime('%Y%m%d'),
         'window_business_days': len(fetched),
         'days_fetched': sorted(fetched),
