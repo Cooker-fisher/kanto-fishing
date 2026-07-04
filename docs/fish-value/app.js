@@ -106,9 +106,35 @@ function loadState() {
 function priceBaseLabel() {
   const src = (PRICE_MASTER && PRICE_MASTER.source && PRICE_MASTER.source.wholesale) || '';
   const m = src.match(/\((\d{4})(\d{2})\)/) || src.match(/s(\d{4})(\d{2})meisai/);
-  if (m) return `価格基準: ${m[1]}年${parseInt(m[2], 10)}月 東京都中央卸売市場（豊洲）の卸売実績`;
-  if (PRICE_MASTER && PRICE_MASTER.updated_at) return `価格基準: ${PRICE_MASTER.updated_at} 時点`;
-  return '';
+  let lbl = '';
+  if (m) lbl = `価格基準: ${m[1]}年${parseInt(m[2], 10)}月 東京都中央卸売市場（豊洲）の卸売実績`;
+  else if (PRICE_MASTER && PRICE_MASTER.updated_at) lbl = `価格基準: ${PRICE_MASTER.updated_at} 時点`;
+  if (lbl && PRICE_MASTER && PRICE_MASTER.seasonal) {
+    lbl += `（${new Date().getMonth() + 1}月の相場水準に季節補正済み）`;
+  }
+  return lbl;
+}
+
+// ============================================
+// 季節補正（データ月 → 利用月のラグ補正）
+// ============================================
+// fish-price-master.json の seasonal ブロック（魚種別 暦月指数・カテゴリfallback）
+// を使い、月報公開ラグ（約1.5〜2か月）分の季節ズレだけを補正する。
+// factor = idx[利用月] / idx[データ月]（0.5〜2.0 でクランプ）
+
+function seasonalFactor(species, priceEntry) {
+  const s = PRICE_MASTER && PRICE_MASTER.seasonal;
+  if (!s || !s.data_month) return 1;
+  const arr = (s.by_pfid && s.by_pfid[species.price_fish_id]) ||
+              (s.by_category && s.by_category[priceEntry.category_tag]);
+  if (!arr || arr.length !== 12) return 1;
+  const dataM = parseInt(s.data_month.slice(4), 10);
+  const curM = new Date().getMonth() + 1;
+  if (!dataM || dataM < 1 || dataM > 12) return 1;
+  const denom = arr[dataM - 1];
+  if (!denom) return 1;
+  const f = arr[curM - 1] / denom;
+  return Math.min(2.0, Math.max(0.5, f));
 }
 
 // ============================================
@@ -1090,6 +1116,7 @@ function onCalculate(opts) {
     const species = e._species;
     const priceEntry = e._priceEntry;
     const bands = priceEntry.size_bands;
+    const sf = seasonalFactor(species, priceEntry);
 
     let eCount = 0;
     let eKg = 0;
@@ -1109,14 +1136,14 @@ function onCalculate(opts) {
         const band = bands[bandIdx >= 0 ? bandIdx : bands.length - 1];
         eCount += 1;
         eKg += kgVal;
-        wholesaleLowSum  += kgVal * band.wholesale_low;
-        wholesaleHighSum += kgVal * band.wholesale_high;
-        const wMid = kgVal * (band.wholesale_low + band.wholesale_high) / 2;
+        wholesaleLowSum  += kgVal * band.wholesale_low * sf;
+        wholesaleHighSum += kgVal * band.wholesale_high * sf;
+        const wMid = kgVal * (band.wholesale_low + band.wholesale_high) / 2 * sf;
         wholesaleMidSum  += wMid;
         eWholesaleMid    += wMid;
-        retailLowSum     += kgVal * band.retail_low;
-        retailHighSum    += kgVal * band.retail_high;
-        const rMid = kgVal * (band.retail_low + band.retail_high) / 2;
+        retailLowSum     += kgVal * band.retail_low * sf;
+        retailHighSum    += kgVal * band.retail_high * sf;
+        const rMid = kgVal * (band.retail_low + band.retail_high) / 2 * sf;
         retailMidSum     += rMid;
         eRetailMid       += rMid;
         const displayVal = detailCm ? item.val + 'cm' : (Math.round(item.val * 10) / 10).toFixed(1) + 'kg';
@@ -1132,14 +1159,14 @@ function onCalculate(opts) {
         eCount += count;
         eKg += bandKg;
 
-        wholesaleLowSum  += bandKg * band.wholesale_low;
-        wholesaleHighSum += bandKg * band.wholesale_high;
-        const wMid = bandKg * (band.wholesale_low + band.wholesale_high) / 2;
+        wholesaleLowSum  += bandKg * band.wholesale_low * sf;
+        wholesaleHighSum += bandKg * band.wholesale_high * sf;
+        const wMid = bandKg * (band.wholesale_low + band.wholesale_high) / 2 * sf;
         wholesaleMidSum  += wMid;
         eWholesaleMid    += wMid;
-        retailLowSum     += bandKg * band.retail_low;
-        retailHighSum    += bandKg * band.retail_high;
-        const rMid = bandKg * (band.retail_low + band.retail_high) / 2;
+        retailLowSum     += bandKg * band.retail_low * sf;
+        retailHighSum    += bandKg * band.retail_high * sf;
+        const rMid = bandKg * (band.retail_low + band.retail_high) / 2 * sf;
         retailMidSum     += rMid;
         eRetailMid       += rMid;
 
@@ -1157,6 +1184,7 @@ function onCalculate(opts) {
       kg: eKg,
       retailMid: eRetailMid,
       wholesaleMid: eWholesaleMid,
+      seasonalFactor: sf,
       breakdown: eBreakdown,
     });
   }
@@ -1300,6 +1328,14 @@ function renderResult(r, opts) {
     for (const b of e.breakdown) {
       const li = document.createElement('li');
       li.textContent = '　' + b.label + ': ' + b.count + '尾 × 推定 ' + fmtWeight(b.perKg) + ' = ' + fmtWeight(b.bandKg);
+      basis.appendChild(li);
+    }
+    if (e.seasonalFactor && Math.abs(e.seasonalFactor - 1) >= 0.005) {
+      const li = document.createElement('li');
+      const s = PRICE_MASTER.seasonal || {};
+      const dataM = s.data_month ? parseInt(s.data_month.slice(4), 10) : null;
+      li.textContent = '　季節補正: ×' + e.seasonalFactor.toFixed(2) +
+        (dataM ? '（' + dataM + '月市場データ→' + (new Date().getMonth() + 1) + '月相場）' : '');
       basis.appendChild(li);
     }
   }

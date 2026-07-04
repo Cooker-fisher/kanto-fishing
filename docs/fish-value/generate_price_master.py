@@ -4,6 +4,8 @@ fish-price-master.json 生成スクリプト
 - 月報最新月（wholesale-prices.json の months[-1]）のみを採用
 - 業界一般値カテゴリ × 大物プレミアム倍率 で size_bands を構築
 - size_weight_curve は cm 入力魚種のみ・体型別の経験値カーブを採用
+- seasonal ブロック: 蓄積全月報から暦月別の季節指数を算出（app.js が
+  「データ月→利用月」のラグ補正に使用。水準は最新月のまま・平均化はしない）
 
 実行: python docs/fish-value/generate_price_master.py
 出力: docs/fish-value/fish-price-master.json
@@ -11,6 +13,8 @@ fish-price-master.json 生成スクリプト
 
 import json
 import os
+import statistics
+from collections import defaultdict
 from datetime import date
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -847,6 +851,93 @@ def build_size_bands(design, avg, hi, lo):
     return bands_out
 
 
+# ---- 季節指数（暦月別・ラグ補正用） --------------------------------
+# 蓄積した全月報から「魚種ごとの暦月別 相場指数」を作る。
+# 用途: 価格水準は月報最新月のまま、app.js が idx[利用月]/idx[データ月] を
+#       掛けて公開ラグ（約1.5〜2か月）の季節ズレだけを補正する。
+# 統計設計:
+#  ① 年レベル補正: 両年に存在する暦月の価格比中央値で 2025年分を 2026年水準へ
+#     スケール（タチウオ等の年間インフレ/資源変動が指数を汚染するのを防ぐ）
+#  ② 暦月別平均 → 魚種の年間中央値で正規化 → 円環3か月中央値平滑
+#  ③ 12暦月すべて埋まらない魚種は除外（カテゴリ指数へフォールバック）
+# 検証: 2026-07-05 ドメイン照合済み（寒ブリ1月2.05/6月0.80・カツオ冬1.58・
+#       タチウオ夏1.34・アジ平坦0.91-1.14）
+SEASONAL_MIN_MONTHS = 12
+
+
+def _species_month_index(mp: dict) -> list | None:
+    """{yyyymm: avg円/kg} → 暦月12指数（1月始まり）。データ不足なら None"""
+    if len(mp) < SEASONAL_MIN_MONTHS:
+        return None
+    years = sorted({ym[:4] for ym in mp})
+    by_year = {y: {ym[4:]: v for ym, v in mp.items() if ym.startswith(y)} for y in years}
+    latest_year = years[-1]
+    # ① 年レベル補正（最新年水準へ）
+    adj = defaultdict(list)
+    for y in years:
+        if y == latest_year:
+            lvl = 1.0
+        else:
+            common = [cm for cm in by_year[y] if cm in by_year[latest_year]]
+            lvl = statistics.median(
+                [by_year[latest_year][cm] / by_year[y][cm] for cm in common]
+            ) if common else 1.0
+        for cm, v in by_year[y].items():
+            adj[cm].append(v * lvl)
+    if len(adj) < 12:
+        return None
+    # ② 暦月平均 → 正規化
+    monthly = {cm: statistics.mean(vs) for cm, vs in adj.items()}
+    base = statistics.median(monthly.values())
+    raw = [monthly[f'{i:02d}'] / base for i in range(1, 13)]
+    # 円環3か月中央値平滑
+    return [round(statistics.median([raw[(i - 1) % 12], raw[i], raw[(i + 1) % 12]]), 3)
+            for i in range(12)]
+
+
+def compute_seasonal(wp: dict, spc: dict, prices: dict) -> dict:
+    """wholesale-prices.json 全月 → seasonal ブロック"""
+    pfid_geppo = {}
+    for s in spc['species']:
+        if s.get('geppo_item') and s['price_fish_id'] not in pfid_geppo:
+            pfid_geppo[s['price_fish_id']] = s['geppo_item']
+
+    series = defaultdict(dict)  # pfid -> {yyyymm: avg}
+    for m in wp['months']:
+        idx = {p['geppo_item']: p for p in m['prices'] if p.get('geppo_item')}
+        for pfid, gi in pfid_geppo.items():
+            g = idx.get(gi)
+            if g and g.get('avg_yen_per_kg'):
+                series[pfid][m['yyyymm']] = g['avg_yen_per_kg']
+
+    by_pfid = {}
+    for pfid, mp in series.items():
+        r = _species_month_index(mp)
+        if r:
+            by_pfid[pfid] = r
+
+    # カテゴリ指数 = メンバー魚種指数の暦月別中央値（geppo 非連動魚種のフォールバック）
+    cat_members = defaultdict(list)
+    for pfid, arr in by_pfid.items():
+        cat = prices.get(pfid, {}).get('category_tag')
+        if cat:
+            cat_members[cat].append(arr)
+    by_category = {
+        cat: [round(statistics.median([a[i] for a in arrs]), 3) for i in range(12)]
+        for cat, arrs in cat_members.items()
+    }
+
+    return {
+        'data_month': wp['months'][-1]['yyyymm'],
+        'months_used': len(wp['months']),
+        'method': ('魚種別 暦月指数（年レベル補正＋円環3か月中央値平滑・12暦月完備魚種のみ）。'
+                   '非連動魚種は by_category へフォールバック。'
+                   'app.js が idx[利用月]/idx[データ月] を 0.5〜2.0 でクランプして適用'),
+        'by_pfid': by_pfid,
+        'by_category': by_category,
+    }
+
+
 def main():
     # 入力
     with open(os.path.join(BASE, 'fish-species-map.json'), encoding='utf-8') as f:
@@ -945,8 +1036,11 @@ def main():
         'category_definitions': CATEGORIES,
         'size_class_multipliers': SIZE_CLASS_MULT,
         'prices': prices,
+        'seasonal': compute_seasonal(wp, spc, prices),
         'design_notes': {
-            'wholesale_basis': '月報最新月単独。季節性・インフレ影響を排除するため過去16か月平均は採用しない。',
+            'wholesale_basis': ('月報最新月単独（過去平均は採用しない）。'
+                                '公開ラグ約1.5〜2か月の季節ズレは seasonal ブロックの暦月指数で'
+                                'app.js がデータ月→利用月に補正する（水準は最新月のまま）。'),
             'retail_basis': '丸ごと小売換算のみ。柵・切り身の加工済み価格は Phase 1 では出さない（歩留まり40-50%の追加加算は別観点）。',
             'fallback_strategy': '月報geppo_item=null の9魚種は経験値（fallback_wholesale_*）。月報に出現次第切替可能。',
             'shiro-amadai': 'アマダイ × 2.0-3.0 倍の派生型。月報に独立項目が出れば direct 切替。',
