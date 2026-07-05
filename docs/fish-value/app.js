@@ -1376,7 +1376,8 @@ function renderResult(r, opts) {
   $('retail-main').textContent  = fmtYen(r.retailMid);
   $('retail-range').textContent = 'レンジ ' + fmtYen(r.retailLow) + '〜' + fmtYen(r.retailHigh) + ' 円';
   $('wholesale-main').textContent  = fmtYen(r.wholesaleMid);
-  $('wholesale-range').textContent = 'レンジ ' + fmtYen(r.wholesaleLow) + '〜' + fmtYen(r.wholesaleHigh) + ' 円';
+  $('wholesale-range').textContent = '（' + fmtYen(r.wholesaleLow) + '〜' + fmtYen(r.wholesaleHigh) + '円）';
+  const vd = $('verdict'); if (vd) vd.textContent = _bragQuip(r.retailMid);
 
   const basis = $('basis-list');
   basis.innerHTML = '';
