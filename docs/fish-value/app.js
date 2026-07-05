@@ -1281,14 +1281,6 @@ function fmtSizeForShare(e) {
   return fmtKgForShare(maxKg);
 }
 
-function _bragQuip(yen) {
-  if (yen < 3000)  return 'ボウズじゃないだけマシ…';
-  if (yen < 10000) return 'ガソリン代の元、取れたかな…';
-  if (yen < 25000) return '船代の元はなんとか回収';
-  if (yen < 60000) return '今日は胸張って帰れる';
-  return '完全に元取りすぎ・冷凍庫満タン案件';
-}
-
 function _sizeSuffix(e) {
   const size = fmtSizeForShare(e);
   if (!size) return '';
@@ -1313,7 +1305,7 @@ function buildSharePost(r, style) {
       return medals[i] + ' ' + e.name + ' ' + e.count + '匹' + sizeStr;
     }).join('\n');
     body = '🏆 今日の釣果スコア\n\n' +
-           '💰 市場価格 ¥' + totalYen + '相当\n' +
+           '🛒 スーパーで買えば ¥' + totalYen + '相当\n' +
            '🐟 釣果 ' + r.totalCount + '匹（' + r.speciesCount + '魚種）\n\n' +
            medalLines;
   } else if (style === 'C') {
@@ -1322,15 +1314,14 @@ function buildSharePost(r, style) {
     const biggest = r.perEntry.reduce((a, b) => _maxKgOfEntry(b) > _maxKgOfEntry(a) ? b : a, r.perEntry[0]);
     const bigSize = biggest ? fmtSizeForShare(biggest) : '';
     const maxLine = bigSize ? '・最大 ' + bigSize : '';
-    body = '今日の釣果、市場価格にしたら ¥' + totalYen + '相当だった 🎣\n' +
-           '（' + names + ' 計' + r.totalCount + '匹' + maxLine + '）\n\n' +
-           _bragQuip(r.retailMid);
+    body = '今日の釣果、スーパーで買ったら ¥' + totalYen + '相当だった 🎣\n' +
+           '（' + names + ' 計' + r.totalCount + '匹' + maxLine + '）';
   } else {
     // 案A: 数字ドカン型（デフォルト）
     const itemLines = r.perEntry.map(e => {
       return '🐟 ' + e.name + ' ' + e.count + '匹' + _sizeSuffix(e);
     }).join('\n');
-    body = '本日の釣果 ¥' + totalYen + '相当 🎣\n\n' +
+    body = '本日の釣果、スーパーで買えば ¥' + totalYen + '相当 🎣\n\n' +
            itemLines + '\n\n' +
            '計 ' + r.totalCount + '匹 / ' + r.speciesCount + '魚種';
   }
@@ -1460,7 +1451,7 @@ function buildReceipt(r) {
     items[items.length - 1].sub += (target - sum);
   }
 
-  let html = '<div class="rc-title">' + RECEIPT_SHOP + '<span class="rc-sub">釣果お見積り伝票</span></div>';
+  let html = '<div class="rc-title">' + RECEIPT_SHOP + '<span class="rc-sub">この釣果をお店で買ったら明細</span></div>';
   html += '<div class="rc-lines">';
   let lastSp = null;
   for (const it of items) {
@@ -1472,9 +1463,9 @@ function buildReceipt(r) {
             '</div>';
   }
   html += '</div>';
-  html += '<div class="rc-total"><span>小売 合計</span><span class="rc-total-amt">¥' + fmtYen(target) + '</span></div>';
-  html += '<div class="rc-total ws"><span>卸売 合計</span><span>¥' + fmtYen(Math.round(r.wholesaleMid)) + '</span></div>';
-  html += '<div class="rc-note">※ 豊洲の実勢価格ベースの目安。丸ごと（下処理前）の換算です。</div>';
+  html += '<div class="rc-total"><span>お会計</span><span class="rc-total-amt">¥' + fmtYen(target) + '</span></div>';
+  html += '<div class="rc-total ws"><span>参考・市場の卸値</span><span>¥' + fmtYen(Math.round(r.wholesaleMid)) + '</span></div>';
+  html += '<div class="rc-note">※ このお店で「買ったら」の目安です（釣った魚を売れる金額ではありません）。豊洲の実勢価格ベース・丸ごと（下処理前）。</div>';
   el.innerHTML = html;
 }
 
