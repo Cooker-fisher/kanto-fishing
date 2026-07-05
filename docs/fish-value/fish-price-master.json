@@ -5103,6 +5103,419 @@
       "data_basis": [
         "geppo:このしろ"
       ]
+    },
+    "ainame": {
+      "category_tag": "中級魚",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.025
+        },
+        {
+          "cm": 15,
+          "kg": 0.07
+        },
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 25,
+          "kg": 0.3
+        },
+        {
+          "cm": 30,
+          "kg": 0.52
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        }
+      ],
+      "size_curve_type": "標準型",
+      "wholesale_avg": 1658,
+      "wholesale_high_overall": 4514,
+      "wholesale_low_overall": 678,
+      "wholesale_source": "月報最新月: 202605",
+      "size_bands": [
+        {
+          "kg_max": 0.3,
+          "label": "小",
+          "size_class": "small",
+          "wholesale_low": 678,
+          "wholesale_high": 1658,
+          "retail_low": 1159,
+          "retail_high": 3937
+        },
+        {
+          "kg_max": 0.7,
+          "label": "標準",
+          "size_class": "standard",
+          "wholesale_low": 1160,
+          "wholesale_high": 2487,
+          "retail_low": 2088,
+          "retail_high": 6217
+        },
+        {
+          "kg_max": null,
+          "label": "大型",
+          "size_class": "large",
+          "wholesale_low": 1658,
+          "wholesale_high": 3611,
+          "retail_low": 3581,
+          "retail_high": 10833
+        }
+      ],
+      "related_species": [
+        "アイナメ"
+      ],
+      "data_basis": [
+        "geppo:あいなめ"
+      ]
+    },
+    "sayori": {
+      "category_tag": "中級魚",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "size_weight_curve": [
+        {
+          "cm": 50,
+          "kg": 0.2
+        },
+        {
+          "cm": 80,
+          "kg": 0.5
+        },
+        {
+          "cm": 100,
+          "kg": 0.9
+        },
+        {
+          "cm": 120,
+          "kg": 1.5
+        },
+        {
+          "cm": 140,
+          "kg": 2.2
+        }
+      ],
+      "size_curve_type": "超細長型",
+      "wholesale_avg": 3972,
+      "wholesale_high_overall": 8636,
+      "wholesale_low_overall": 549,
+      "wholesale_source": "月報最新月: 202605",
+      "size_bands": [
+        {
+          "kg_max": 0.05,
+          "label": "エンピツ",
+          "size_class": "small",
+          "wholesale_low": 549,
+          "wholesale_high": 1647,
+          "retail_low": 938,
+          "retail_high": 3911
+        },
+        {
+          "kg_max": 0.09,
+          "label": "標準",
+          "size_class": "standard",
+          "wholesale_low": 2780,
+          "wholesale_high": 2780,
+          "retail_low": 5004,
+          "retail_high": 6950
+        },
+        {
+          "kg_max": null,
+          "label": "カンヌキ",
+          "size_class": "large",
+          "wholesale_low": 3972,
+          "wholesale_high": 6908,
+          "retail_low": 8579,
+          "retail_high": 20724
+        }
+      ],
+      "related_species": [
+        "サヨリ"
+      ],
+      "data_basis": [
+        "geppo:さより（国内）"
+      ]
+    },
+    "takabe": {
+      "category_tag": "中級魚",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.025
+        },
+        {
+          "cm": 15,
+          "kg": 0.07
+        },
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 25,
+          "kg": 0.3
+        },
+        {
+          "cm": 30,
+          "kg": 0.52
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        }
+      ],
+      "size_curve_type": "標準型",
+      "wholesale_avg": 3146,
+      "wholesale_high_overall": 4090,
+      "wholesale_low_overall": 1200,
+      "wholesale_source": "月報最新月: 202605 / 月報low外れ値(132)対策・タカベ実勢に床上げ",
+      "size_bands": [
+        {
+          "kg_max": 0.1,
+          "label": "小",
+          "size_class": "small",
+          "wholesale_low": 1200,
+          "wholesale_high": 3146,
+          "retail_low": 2052,
+          "retail_high": 7471
+        },
+        {
+          "kg_max": null,
+          "label": "良型",
+          "size_class": "standard",
+          "wholesale_low": 2202,
+          "wholesale_high": 4719,
+          "retail_low": 3963,
+          "retail_high": 11797
+        }
+      ],
+      "related_species": [
+        "タカベ"
+      ],
+      "data_basis": [
+        "geppo:たかべ",
+        "verify_daily:2026-05-28"
+      ]
+    },
+    "kijihata": {
+      "category_tag": "高級魚",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "size_weight_curve": [
+        {
+          "cm": 30,
+          "kg": 0.5
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        },
+        {
+          "cm": 50,
+          "kg": 2.5
+        },
+        {
+          "cm": 60,
+          "kg": 4.5
+        },
+        {
+          "cm": 70,
+          "kg": 7.0
+        },
+        {
+          "cm": 80,
+          "kg": 10.0
+        }
+      ],
+      "size_curve_type": "ハタ型",
+      "wholesale_avg": 2473,
+      "wholesale_high_overall": 6275,
+      "wholesale_low_overall": 756,
+      "wholesale_source": "月報最新月: 202605",
+      "size_bands": [
+        {
+          "kg_max": 0.4,
+          "label": "小",
+          "size_class": "small",
+          "wholesale_low": 756,
+          "wholesale_high": 2268,
+          "retail_low": 1149,
+          "retail_high": 4740
+        },
+        {
+          "kg_max": 1.0,
+          "label": "標準",
+          "size_class": "standard",
+          "wholesale_low": 1731,
+          "wholesale_high": 3709,
+          "retail_low": 2769,
+          "retail_high": 8159
+        },
+        {
+          "kg_max": null,
+          "label": "大型",
+          "size_class": "large",
+          "wholesale_low": 2473,
+          "wholesale_high": 5020,
+          "retail_low": 4748,
+          "retail_high": 13252
+        }
+      ],
+      "related_species": [
+        "キジハタ（アコウ）"
+      ],
+      "data_basis": [
+        "geppo:あこう"
+      ]
+    },
+    "megochi": {
+      "category_tag": "中級魚",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.01
+        },
+        {
+          "cm": 15,
+          "kg": 0.035
+        },
+        {
+          "cm": 20,
+          "kg": 0.08
+        },
+        {
+          "cm": 25,
+          "kg": 0.16
+        },
+        {
+          "cm": 30,
+          "kg": 0.28
+        },
+        {
+          "cm": 40,
+          "kg": 0.65
+        },
+        {
+          "cm": 50,
+          "kg": 1.2
+        }
+      ],
+      "size_curve_type": "細長型",
+      "wholesale_avg": 3162,
+      "wholesale_high_overall": 4508,
+      "wholesale_low_overall": 1200,
+      "wholesale_source": "月報最新月: 202605 / 月報low外れ値(142)対策・メゴチ実勢に床上げ",
+      "size_bands": [
+        {
+          "kg_max": 0.03,
+          "label": "小",
+          "size_class": "small",
+          "wholesale_low": 1200,
+          "wholesale_high": 3162,
+          "retail_low": 2052,
+          "retail_high": 7509
+        },
+        {
+          "kg_max": null,
+          "label": "標準",
+          "size_class": "standard",
+          "wholesale_low": 2213,
+          "wholesale_high": 4743,
+          "retail_low": 3983,
+          "retail_high": 11857
+        }
+      ],
+      "related_species": [
+        "メゴチ"
+      ],
+      "data_basis": [
+        "geppo:めごち",
+        "verify_daily:2026-05-28"
+      ]
+    },
+    "hokke": {
+      "category_tag": "大衆魚",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "size_weight_curve": [
+        {
+          "cm": 10,
+          "kg": 0.025
+        },
+        {
+          "cm": 15,
+          "kg": 0.07
+        },
+        {
+          "cm": 20,
+          "kg": 0.15
+        },
+        {
+          "cm": 25,
+          "kg": 0.3
+        },
+        {
+          "cm": 30,
+          "kg": 0.52
+        },
+        {
+          "cm": 40,
+          "kg": 1.2
+        }
+      ],
+      "size_curve_type": "標準型",
+      "wholesale_avg": 697,
+      "wholesale_high_overall": 2619,
+      "wholesale_low_overall": 367,
+      "wholesale_source": "月報最新月: 202605",
+      "size_bands": [
+        {
+          "kg_max": 0.4,
+          "label": "小",
+          "size_class": "small",
+          "wholesale_low": 367,
+          "wholesale_high": 697,
+          "retail_low": 697,
+          "retail_high": 1986
+        },
+        {
+          "kg_max": null,
+          "label": "真ホッケ",
+          "size_class": "standard",
+          "wholesale_low": 550,
+          "wholesale_high": 1045,
+          "retail_low": 1100,
+          "retail_high": 3135
+        }
+      ],
+      "related_species": [
+        "ホッケ"
+      ],
+      "data_basis": [
+        "geppo:ほっけ"
+      ]
     }
   },
   "seasonal": {
@@ -5949,50 +6362,134 @@
         1.01,
         1.088,
         1.088
+      ],
+      "ainame": [
+        0.898,
+        1.109,
+        1.496,
+        1.496,
+        1.029,
+        0.926,
+        0.926,
+        1.029,
+        1.029,
+        0.971,
+        0.898,
+        0.873
+      ],
+      "sayori": [
+        1.02,
+        1.02,
+        1.02,
+        1.013,
+        0.818,
+        0.598,
+        0.598,
+        0.773,
+        1.075,
+        0.987,
+        1.12,
+        0.987
+      ],
+      "takabe": [
+        0.946,
+        0.946,
+        0.979,
+        1.253,
+        1.346,
+        1.353,
+        1.371,
+        1.371,
+        1.021,
+        0.898,
+        0.634,
+        0.634
+      ],
+      "kijihata": [
+        1.162,
+        1.162,
+        1.131,
+        0.982,
+        0.86,
+        0.86,
+        0.87,
+        0.957,
+        1.018,
+        1.018,
+        1.018,
+        1.068
+      ],
+      "megochi": [
+        0.929,
+        0.922,
+        0.922,
+        1.325,
+        1.545,
+        1.571,
+        1.571,
+        1.456,
+        1.011,
+        0.989,
+        0.989,
+        0.973
+      ],
+      "hokke": [
+        0.83,
+        0.759,
+        0.776,
+        0.776,
+        0.816,
+        0.894,
+        1.106,
+        1.196,
+        1.241,
+        1.241,
+        1.134,
+        1.134
       ]
     },
     "by_category": {
       "大衆魚": [
-        1.002,
-        0.978,
-        0.964,
-        0.905,
-        0.918,
-        0.957,
-        1.028,
-        1.033,
-        1.015,
-        1.072,
-        1.082,
-        1.047
+        0.992,
+        0.975,
+        0.947,
+        0.903,
+        0.903,
+        0.951,
+        1.037,
+        1.062,
+        1.017,
+        1.075,
+        1.088,
+        1.069
       ],
       "高級魚": [
-        1.177,
-        1.177,
-        1.1,
-        0.93,
-        0.809,
-        0.772,
-        0.84,
+        1.174,
+        1.172,
+        1.115,
+        0.931,
+        0.835,
+        0.816,
+        0.849,
         0.924,
-        1.004,
-        1.07,
-        1.151,
+        1.011,
+        1.052,
+        1.148,
         1.076
       ],
       "中級魚": [
-        1.046,
-        1.071,
-        1.076,
-        0.979,
+        1.023,
+        1.062,
+        1.048,
+        1.001,
         0.893,
-        0.893,
+        0.904,
         0.968,
-        1.031,
+        1.033,
         1.026,
-        1.0,
-        0.996,
-        0.995
+        0.99,
+        0.99,
+        0.98
       ],
       "イカタコ": [
         1.015,

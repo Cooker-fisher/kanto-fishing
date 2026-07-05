@@ -61,6 +61,9 @@ HINMEI_TO_PFID = {
     'はなだい': 'hanadai', 'ちだい': 'hanadai', 'おにかさご': 'onikasago',
     'しょうさいふぐ': 'shousaifugu', 'とらふぐ': 'torafugu', 'しいら': 'shiira',
     'ひらまさ': 'hiramasa', 'しまあじ': 'shimaaji',
+    # おかっぱり追加（2026-07-05）。'あこう'(kijihata)は 'あこうだい' 誤爆回避のため日報側は非対応
+    'あいなめ': 'ainame', 'さより': 'sayori', 'たかべ': 'takabe',
+    'めごち': 'megochi', 'ほっけ': 'hokke',
 }
 
 

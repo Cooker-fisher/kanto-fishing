@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated_at": "2026-05-25",
+  "updated_at": "2026-07-05",
   "source": {
     "wholesale": "東京都中央卸売市場 市場統計情報 明細データ（月報）",
     "url": "https://www.shijou.metro.tokyo.lg.jp/torihiki/geppo",
@@ -1392,6 +1392,120 @@
       ],
       "price_derived_from": null,
       "note": "外道。コハダはコノシロの小型。サイトには cohada ページは無い",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "ainame",
+      "site_display_name": "アイナメ",
+      "price_fish_id": "ainame",
+      "geppo_item": "あいなめ",
+      "geppo_category": "鮮魚/根魚",
+      "aliases": [
+        "アイナメ",
+        "アブラコ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "堤防・磯の根魚（陸っぱり）",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "sayori",
+      "site_display_name": "サヨリ",
+      "price_fish_id": "sayori",
+      "geppo_item": "さより（国内）",
+      "geppo_category": "鮮魚",
+      "aliases": [
+        "サヨリ",
+        "カンヌキ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "堤防（陸っぱり）",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "takabe",
+      "site_display_name": "タカベ",
+      "price_fish_id": "takabe",
+      "geppo_item": "たかべ",
+      "geppo_category": "鮮魚",
+      "aliases": [
+        "タカベ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "磯（陸っぱり）",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "kijihata",
+      "site_display_name": "キジハタ（アコウ）",
+      "price_fish_id": "kijihata",
+      "geppo_item": "あこう",
+      "geppo_category": "鮮魚",
+      "aliases": [
+        "キジハタ",
+        "アコウ",
+        "アカミズ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "ロックショア根魚（陸っぱり）。豊洲品目=あこう",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "megochi",
+      "site_display_name": "メゴチ",
+      "price_fish_id": "megochi",
+      "geppo_item": "めごち",
+      "geppo_category": "鮮魚",
+      "aliases": [
+        "メゴチ",
+        "ネズミゴチ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "サーフ（天ぷらネタ）。マゴチ(magochi)とは別種",
+      "recommended_mode": "cm"
+    },
+    {
+      "site_fish_id": "hokke",
+      "site_display_name": "ホッケ",
+      "price_fish_id": "hokke",
+      "geppo_item": "ほっけ",
+      "geppo_category": "鮮魚",
+      "aliases": [
+        "ホッケ",
+        "真ホッケ"
+      ],
+      "category": "target",
+      "input_modes": [
+        "cm",
+        "kg"
+      ],
+      "price_derived_from": null,
+      "note": "北日本の堤防・投げ（陸っぱり）",
       "recommended_mode": "cm"
     }
   ]

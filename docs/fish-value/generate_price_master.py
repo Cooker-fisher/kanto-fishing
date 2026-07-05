@@ -796,6 +796,59 @@ PRICE_DESIGN = {
             {"kg_max": 999, "label": "大物",   "size_class": "large"},
         ],
     },
+
+    # ───── おかっぱり追加（2026-07-05・豊洲に卸値あり） ─────
+    "ainame": {
+        "category": "中級魚", "curve": "標準型",
+        "bands": [
+            {"kg_max": 0.3, "label": "小",     "size_class": "small"},
+            {"kg_max": 0.7, "label": "標準",   "size_class": "standard"},
+            {"kg_max": 999, "label": "大型",   "size_class": "large"},
+        ],
+    },
+    "sayori": {
+        "category": "中級魚", "curve": "超細長型",
+        "bands": [
+            {"kg_max": 0.05, "label": "エンピツ", "size_class": "small"},
+            {"kg_max": 0.09, "label": "標準",     "size_class": "standard"},
+            {"kg_max": 999,  "label": "カンヌキ", "size_class": "large"},
+        ],
+    },
+    "takabe": {
+        "category": "中級魚", "curve": "標準型",
+        "bands": [
+            {"kg_max": 0.1, "label": "小",     "size_class": "small"},
+            {"kg_max": 999, "label": "良型",   "size_class": "standard"},
+        ],
+        # 月報 low=132 は外れ値（小口の投げ売り）。磯の高級小魚の実勢に合わせ床上げ
+        "override_wholesale_low": 1200,
+        "override_note": "月報low外れ値(132)対策・タカベ実勢に床上げ",
+    },
+    "kijihata": {
+        "category": "高級魚", "curve": "ハタ型",
+        "bands": [
+            {"kg_max": 0.4, "label": "小",     "size_class": "small"},
+            {"kg_max": 1.0, "label": "標準",   "size_class": "standard"},
+            {"kg_max": 999, "label": "大型",   "size_class": "large"},
+        ],
+    },
+    "megochi": {
+        "category": "中級魚", "curve": "細長型",
+        "bands": [
+            {"kg_max": 0.03, "label": "小",     "size_class": "small"},
+            {"kg_max": 999,  "label": "標準",   "size_class": "standard"},
+        ],
+        # 月報 low=142 は外れ値。天ぷらネタで高単価な実勢に床上げ
+        "override_wholesale_low": 1200,
+        "override_note": "月報low外れ値(142)対策・メゴチ実勢に床上げ",
+    },
+    "hokke": {
+        "category": "大衆魚", "curve": "標準型",
+        "bands": [
+            {"kg_max": 0.4, "label": "小",       "size_class": "small"},
+            {"kg_max": 999, "label": "真ホッケ", "size_class": "standard"},
+        ],
+    },
 }
 
 
