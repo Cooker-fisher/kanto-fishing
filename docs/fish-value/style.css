@@ -906,7 +906,14 @@ header {
   font-size: 15px; font-weight: 800; color: var(--text); margin-top: 6px;
 }
 .rc-total-amt { font-size: 22px; color: var(--cta); }
-.rc-total.ws { font-size: 13px; font-weight: 700; color: var(--sub); margin-top: 2px; }
+.rc-total.ws {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sub);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
 .rc-note { font-size: 10.5px; color: var(--muted); text-align: center; margin-top: 10px; line-height: 1.5; }
 
 /* 卸売＝控えめな一行 */
