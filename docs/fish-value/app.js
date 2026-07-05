@@ -442,7 +442,8 @@ function addEntry(preset) {
       '<div class="band-list-head">' +
         '<div class="input-mode-seg">' +
           '<button type="button" class="ims-btn ims-simple active">簡単入力</button>' +
-          '<button type="button" class="ims-btn ims-detail">詳細入力</button>' +
+          '<button type="button" class="ims-btn ims-detail-cm">詳細 cm</button>' +
+          '<button type="button" class="ims-btn ims-detail-kg">詳細 重さ</button>' +
         '</div>' +
         '<div class="band-total">' +
           '<span class="band-total-val">0</span>' +
@@ -450,7 +451,7 @@ function addEntry(preset) {
         '</div>' +
       '</div>' +
       '<div class="band-list"></div>' +
-      '<p class="simple-hint">サイズがバラついた時は<button type="button" class="simple-hint-link">詳細入力</button>で1匹ずつ実寸を入れると金額が正確になります</p>' +
+      '<p class="simple-hint">サイズがバラつく時は<button type="button" class="simple-hint-link">詳細（cm/重さ）</button>で1匹ずつ実測を入れると金額が正確になります</p>' +
       '<div class="detail-list" hidden></div>' +
       '<button type="button" class="lock-btn" hidden></button>' +
     '</div>' +
@@ -463,18 +464,18 @@ function addEntry(preset) {
     openFishPicker(entry);
   });
   el.querySelector('.entry-remove').addEventListener('click', () => removeEntry(entry));
-  el.querySelector('.ims-simple').addEventListener('click', () => { if (!entry.detailMode) return; toggleDetailMode(entry); });
-  el.querySelector('.ims-detail').addEventListener('click', () => { if (entry.detailMode || !entry._priceEntry) return; toggleDetailMode(entry); });
+  el.querySelector('.ims-simple').addEventListener('click', () => setInputMode(entry, 'simple'));
+  el.querySelector('.ims-detail-cm').addEventListener('click', () => setInputMode(entry, 'cm'));
+  el.querySelector('.ims-detail-kg').addEventListener('click', () => setInputMode(entry, 'kg'));
   el.querySelector('.lock-btn').addEventListener('click', () => lockEntry(entry));
-  el.querySelector('.simple-hint-link').addEventListener('click', () => { if (!entry.detailMode && entry._priceEntry) toggleDetailMode(entry); });
+  el.querySelector('.simple-hint-link').addEventListener('click', () => setInputMode(entry, 'cm'));
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
     if (preset.detailMode && Array.isArray(preset.items) && preset.items.length) {
       setTimeout(() => {
-        toggleDetailMode(entry);
+        setInputMode(entry, preset.detailUnit || 'cm');
         entry.items = preset.items.map(v => ({ val: +v || 0 }));
-        if (preset.detailUnit) entry.detailUnit = preset.detailUnit;
         buildDetailList(el, entry);
         updateEntryTotal(entry);
         scheduleLiveCalc();
@@ -730,8 +731,8 @@ function onEntryFishChange(entry, fishId) {
   el.querySelector('.band-list').hidden = false;
   el.querySelector('.detail-list').hidden = true;
   el.querySelector('.detail-list').innerHTML = '';
+  el.querySelectorAll('.input-mode-seg .ims-btn').forEach(b => b.classList.remove('active'));
   el.querySelector('.ims-simple').classList.add('active');
-  el.querySelector('.ims-detail').classList.remove('active');
   listRow.hidden = false;
   el.classList.add('has-fish');
   // 入力完了ボタンを表示・更新
@@ -872,30 +873,49 @@ function attachHoldRepeat(btn, fn) {
 // 詳細入力モード
 // ============================================
 
-function toggleDetailMode(entry) {
+// 入力モード切替。mode: 'simple' | 'cm' | 'kg'（cm/重さは詳細入力の単位）
+function setInputMode(entry, mode) {
   if (!entry._priceEntry) return;
-  entry.detailMode = !entry.detailMode;
-  entry.items = [];
-  entry.bandCounts = {};
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (!el) return;
-  const simpleBtn = el.querySelector('.ims-simple');
-  const detailBtn = el.querySelector('.ims-detail');
+  const wasDetail = entry.detailMode;
+  const prevUnit = entry.detailUnit;
+
+  if (mode === 'simple') {
+    if (!wasDetail) { syncModeSeg(el, entry); return; }  // 既に簡単なら何もしない
+    entry.detailMode = false;
+    entry.detailUnit = null;
+    entry.items = [];
+    entry.bandCounts = {};
+  } else {
+    // 詳細内で cm⇄重さ を切り替えるときは既存の値を変換して保持
+    if (wasDetail && prevUnit && prevUnit !== mode && entry.items.length) {
+      const curve = entry._priceEntry.size_weight_curve;
+      entry.items.forEach(item => {
+        if (item.val > 0 && curve) {
+          item.val = (mode === 'cm')
+            ? Math.round(kgToCm(curve, item.val))
+            : Math.round(cmToKg(curve, item.val) * 100) / 100;
+        }
+      });
+    }
+    const firstEnter = !wasDetail;
+    entry.detailMode = true;
+    entry.detailUnit = mode;
+    if (firstEnter) { entry.items = []; entry.bandCounts = {}; }
+  }
+
+  syncModeSeg(el, entry);
   const bandList = el.querySelector('.band-list');
   const detailList = el.querySelector('.detail-list');
   const hintEl = el.querySelector('.simple-hint');
   if (entry.detailMode) {
-    const speciesCm = entry._species && entry._species.input_modes && entry._species.input_modes[0] === 'cm';
-    entry.detailUnit = speciesCm ? 'cm' : 'kg';
-    detailBtn.classList.add('active');
-    simpleBtn.classList.remove('active');
     bandList.hidden = true;
     detailList.hidden = false;
     if (hintEl) hintEl.hidden = true;
-    addDetailItem(entry); // 最初の1匹を自動追加
+    if (!entry.items.length) addDetailItem(entry);  // 最初の1匹（buildDetailList を呼ぶ）
+    else buildDetailList(el, entry);
   } else {
-    simpleBtn.classList.add('active');
-    detailBtn.classList.remove('active');
     bandList.hidden = false;
     detailList.hidden = true;
     if (hintEl) hintEl.hidden = false;
@@ -905,6 +925,15 @@ function toggleDetailMode(entry) {
   scheduleLiveCalc();
 }
 
+// セグメントの active 状態を state に同期
+function syncModeSeg(el, entry) {
+  const sel = !entry.detailMode ? '.ims-simple'
+            : (entry.detailUnit === 'kg' ? '.ims-detail-kg' : '.ims-detail-cm');
+  el.querySelectorAll('.input-mode-seg .ims-btn').forEach(b => b.classList.remove('active'));
+  const a = el.querySelector(sel);
+  if (a) a.classList.add('active');
+}
+
 function buildDetailList(el, entry) {
   const detailList = el.querySelector('.detail-list');
   detailList.innerHTML = '';
@@ -912,35 +941,7 @@ function buildDetailList(el, entry) {
   const curve = priceEntry && priceEntry.size_weight_curve;
   const unit = entry.detailUnit || 'kg';
   const isCm = unit === 'cm';
-
-  // 単位トグル（size_weight_curveがある魚のみ）
-  if (curve) {
-    const unitSeg = document.createElement('div');
-    unitSeg.className = 'unit-seg';
-    ['kg', 'cm'].forEach(u => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'us-btn us-' + u + (unit === u ? ' active' : '');
-      btn.dataset.unit = u;
-      btn.textContent = u;
-      btn.addEventListener('click', () => {
-        if (u === entry.detailUnit) return;
-        entry.items.forEach(item => {
-          if (item.val > 0) {
-            if (u === 'cm') {
-              item.val = Math.round(kgToCm(curve, item.val));
-            } else {
-              item.val = Math.round(cmToKg(curve, item.val) * 100) / 100;
-            }
-          }
-        });
-        entry.detailUnit = u;
-        buildDetailList(el, entry);
-      });
-      unitSeg.appendChild(btn);
-    });
-    detailList.appendChild(unitSeg);
-  }
+  // 単位（cm/重さ）の選択は上部セグメント（setInputMode）に集約。ここでは行のみ描画。
 
   // 1匹ずつ行
   entry.items.forEach((item, idx) => {

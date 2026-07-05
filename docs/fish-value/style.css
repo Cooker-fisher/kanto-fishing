@@ -327,6 +327,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 10px;
   margin-bottom: 12px;
 }
 .band-list-head label {
@@ -338,6 +340,7 @@ header {
 .band-total {
   display: inline-flex;
   align-items: baseline;
+  margin-left: auto;
   gap: 4px;
   padding: 4px 12px;
   background: #fff;
@@ -375,19 +378,22 @@ header {
 
 /* 入力モード切替セグメント（簡単入力 / 詳細入力） */
 .input-mode-seg {
-  display: inline-flex;
+  display: flex;
+  flex: 1 1 100%;
   background: var(--border-2);
   border-radius: 999px;
   padding: 3px;
   gap: 2px;
 }
 .ims-btn {
+  flex: 1;
+  text-align: center;
   font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   border: none;
   border-radius: 999px;
-  padding: 5px 14px;
+  padding: 6px 8px;
   cursor: pointer;
   background: transparent;
   color: var(--sub);
