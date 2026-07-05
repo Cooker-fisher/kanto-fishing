@@ -442,7 +442,7 @@ function addEntry(preset) {
       '<div class="band-list-head">' +
         '<div class="input-mode-seg">' +
           '<button type="button" class="ims-btn ims-simple active">簡単入力</button>' +
-          '<button type="button" class="ims-btn ims-detail-cm">詳細（cm）</button>' +
+          '<button type="button" class="ims-btn ims-detail-cm">詳細（長さ）</button>' +
           '<button type="button" class="ims-btn ims-detail-kg">詳細（重さ）</button>' +
         '</div>' +
         '<div class="band-total">' +
@@ -450,13 +450,8 @@ function addEntry(preset) {
           '<span class="band-total-unit">尾</span>' +
         '</div>' +
       '</div>' +
-      '<div class="size-hint" hidden>' +
-        '<button type="button" class="size-hint-x" aria-label="閉じる">×</button>' +
-        '<span class="size-hint-main">🎣 釣ったサイズの段に「数」を入れてね</span>' +
-        '<span class="size-hint-sub">1匹ずつ実寸を入れるなら「詳細」タブへ</span>' +
-      '</div>' +
+      '<p class="mode-desc" role="note"></p>' +
       '<div class="band-list"></div>' +
-      '<p class="simple-hint">サイズがバラつく時は<button type="button" class="simple-hint-link">詳細（cm/重さ）</button>で1匹ずつ実測を入れると金額が正確になります</p>' +
       '<div class="detail-list" hidden></div>' +
       '<button type="button" class="lock-btn" hidden></button>' +
     '</div>' +
@@ -473,8 +468,6 @@ function addEntry(preset) {
   el.querySelector('.ims-detail-cm').addEventListener('click', () => setInputMode(entry, 'cm'));
   el.querySelector('.ims-detail-kg').addEventListener('click', () => setInputMode(entry, 'kg'));
   el.querySelector('.lock-btn').addEventListener('click', () => lockEntry(entry));
-  el.querySelector('.simple-hint-link').addEventListener('click', () => setInputMode(entry, 'cm'));
-  el.querySelector('.size-hint-x').addEventListener('click', () => dismissSizeHint());
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
@@ -741,7 +734,7 @@ function onEntryFishChange(entry, fishId) {
   el.querySelector('.ims-simple').classList.add('active');
   listRow.hidden = false;
   el.classList.add('has-fish');
-  maybeShowSizeHint(entry, el);  // 魚種選択直後にサイズ入力へ誘導する吹き出し
+  updateModeDesc(el, entry);  // 魚種選択直後に現在モードの説明を表示
   // 入力完了ボタンを表示・更新
   const lockBtn = el.querySelector('.lock-btn');
   lockBtn.textContent = species.site_display_name + ' 入力完了';
@@ -885,14 +878,11 @@ function setInputMode(entry, mode) {
   if (!entry._priceEntry) return;
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (!el) return;
-  // タブ操作では吹き出しを隠すだけ（恒久フラグは立てない＝別の魚を選べばまた出る）。
-  // 「もう出さない」は × だけ。
-  { const _h = el.querySelector('.size-hint'); if (_h) _h.hidden = true; }
   const wasDetail = entry.detailMode;
   const prevUnit = entry.detailUnit;
 
   if (mode === 'simple') {
-    if (!wasDetail) { syncModeSeg(el, entry); return; }  // 既に簡単なら何もしない
+    if (!wasDetail) { syncModeSeg(el, entry); updateModeDesc(el, entry); return; }  // 既に簡単
     entry.detailMode = false;
     entry.detailUnit = null;
     entry.items = [];
@@ -916,19 +906,17 @@ function setInputMode(entry, mode) {
   }
 
   syncModeSeg(el, entry);
+  updateModeDesc(el, entry);
   const bandList = el.querySelector('.band-list');
   const detailList = el.querySelector('.detail-list');
-  const hintEl = el.querySelector('.simple-hint');
   if (entry.detailMode) {
     bandList.hidden = true;
     detailList.hidden = false;
-    if (hintEl) hintEl.hidden = true;
     if (!entry.items.length) addDetailItem(entry);  // 最初の1匹（buildDetailList を呼ぶ）
     else buildDetailList(el, entry);
   } else {
     bandList.hidden = false;
     detailList.hidden = true;
-    if (hintEl) hintEl.hidden = false;
     detailList.innerHTML = '';
   }
   updateEntryTotal(entry);
@@ -1090,29 +1078,23 @@ function updateEntryTotal(entry) {
   const valEl = el.querySelector('.band-total-val');
   if (valEl) valEl.textContent = String(total);
   el.querySelector('.band-list-row').classList.toggle('has-value', total > 0);
-  // 数量が入ったらこのエントリの吹き出しは隠す（セッションフラグは立てない＝
-  // 保存データ復元で恒久抑止されない。恒久抑止は × とタブ操作の明示ジェスチャのみ）
-  if (total > 0) { const h = el.querySelector('.size-hint'); if (h) h.hidden = true; }
 }
 
 // ============================================
-// サイズ入力への誘導吹き出し（セッション内1回）
+// 入力モードの説明文（タブ連動・タブを押すとその方法の紹介が出る）
 // ============================================
 
-function maybeShowSizeHint(entry, el) {
-  try { if (sessionStorage.getItem('fv_size_hint') === '1') return; } catch (_) {}
-  // 既に数量が入っているエントリ（保存データ復元など）には出さない
-  const total = entry && (entry.detailMode
-    ? entry.items.filter(it => it.val > 0).length
-    : Object.values(entry.bandCounts).reduce((a, b) => a + b, 0));
-  if (total > 0) return;
-  const hint = el && el.querySelector('.size-hint');
-  if (hint) hint.hidden = false;
-}
+const MODE_DESC = {
+  simple: 'サイズの段ごとに「釣った数」を入れるだけ。手早く概算できます。',
+  cm:     '1匹ずつ「実寸(cm)」を入力。サイズがバラついても金額が正確になります。',
+  kg:     '1匹ずつ「重さ(kg)」を入力。サイズがバラついても金額が正確になります。',
+};
 
-function dismissSizeHint() {
-  $('entries').querySelectorAll('.size-hint').forEach(h => { h.hidden = true; });
-  try { sessionStorage.setItem('fv_size_hint', '1'); } catch (_) {}
+function updateModeDesc(el, entry) {
+  const p = el && el.querySelector('.mode-desc');
+  if (!p) return;
+  const key = !entry.detailMode ? 'simple' : (entry.detailUnit === 'kg' ? 'kg' : 'cm');
+  p.textContent = MODE_DESC[key];
 }
 
 // ============================================
