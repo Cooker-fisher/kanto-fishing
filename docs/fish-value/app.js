@@ -450,6 +450,11 @@ function addEntry(preset) {
           '<span class="band-total-unit">尾</span>' +
         '</div>' +
       '</div>' +
+      '<div class="size-hint" hidden>' +
+        '<button type="button" class="size-hint-x" aria-label="閉じる">×</button>' +
+        '<span class="size-hint-main">🎣 釣ったサイズの段に「数」を入れてね</span>' +
+        '<span class="size-hint-sub">1匹ずつ実寸を入れるなら「詳細」タブへ</span>' +
+      '</div>' +
       '<div class="band-list"></div>' +
       '<p class="simple-hint">サイズがバラつく時は<button type="button" class="simple-hint-link">詳細（cm/重さ）</button>で1匹ずつ実測を入れると金額が正確になります</p>' +
       '<div class="detail-list" hidden></div>' +
@@ -469,6 +474,7 @@ function addEntry(preset) {
   el.querySelector('.ims-detail-kg').addEventListener('click', () => setInputMode(entry, 'kg'));
   el.querySelector('.lock-btn').addEventListener('click', () => lockEntry(entry));
   el.querySelector('.simple-hint-link').addEventListener('click', () => setInputMode(entry, 'cm'));
+  el.querySelector('.size-hint-x').addEventListener('click', () => dismissSizeHint());
 
   if (preset?.fishId) {
     onEntryFishChange(entry, preset.fishId);
@@ -735,6 +741,7 @@ function onEntryFishChange(entry, fishId) {
   el.querySelector('.ims-simple').classList.add('active');
   listRow.hidden = false;
   el.classList.add('has-fish');
+  maybeShowSizeHint(el);  // 魚種選択直後にサイズ入力へ誘導する吹き出し
   // 入力完了ボタンを表示・更新
   const lockBtn = el.querySelector('.lock-btn');
   lockBtn.textContent = species.site_display_name + ' 入力完了';
@@ -878,6 +885,7 @@ function setInputMode(entry, mode) {
   if (!entry._priceEntry) return;
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (!el) return;
+  dismissSizeHint();  // タブ操作＝入力方法を理解した合図
   const wasDetail = entry.detailMode;
   const prevUnit = entry.detailUnit;
 
@@ -1080,6 +1088,22 @@ function updateEntryTotal(entry) {
   const valEl = el.querySelector('.band-total-val');
   if (valEl) valEl.textContent = String(total);
   el.querySelector('.band-list-row').classList.toggle('has-value', total > 0);
+  if (total > 0) dismissSizeHint();  // 数量が入ったら誘導は役目終了
+}
+
+// ============================================
+// サイズ入力への誘導吹き出し（セッション内1回）
+// ============================================
+
+function maybeShowSizeHint(el) {
+  try { if (sessionStorage.getItem('fv_size_hint') === '1') return; } catch (_) {}
+  const hint = el && el.querySelector('.size-hint');
+  if (hint) hint.hidden = false;
+}
+
+function dismissSizeHint() {
+  $('entries').querySelectorAll('.size-hint').forEach(h => { h.hidden = true; });
+  try { sessionStorage.setItem('fv_size_hint', '1'); } catch (_) {}
 }
 
 // ============================================

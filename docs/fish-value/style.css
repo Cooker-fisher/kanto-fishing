@@ -822,6 +822,56 @@ header {
 }
 .price-basis:empty { display: none; }
 
+/* 魚種選択直後の誘導吹き出し（サイズ入力へ・セッション内1回） */
+.size-hint {
+  position: relative;
+  margin: 2px 4px 16px;
+  padding: 11px 34px 11px 14px;
+  background: linear-gradient(135deg, var(--cta) 0%, var(--cta-2) 100%);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(232,93,4,.32);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: sizeHintPop .38s cubic-bezier(.2,.9,.3,1.3) both, sizeHintBob 2.4s ease-in-out .5s infinite;
+}
+.size-hint::after {   /* 下向き矢印（サイズ入力欄を指す） */
+  content: '';
+  position: absolute;
+  left: 26px;
+  bottom: -8px;
+  width: 0; height: 0;
+  border: 8px solid transparent;
+  border-top-color: var(--cta-2);
+  border-bottom: 0;
+}
+.size-hint-main { font-size: 13.5px; font-weight: 800; letter-spacing: .01em; }
+.size-hint-sub  { font-size: 11.5px; opacity: .9; }
+.size-hint-x {
+  position: absolute;
+  top: 5px; right: 7px;
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.18);
+  border: none; border-radius: 50%;
+  color: #fff; font-size: 15px; line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.size-hint-x:hover { background: rgba(255,255,255,.3); }
+@keyframes sizeHintPop {
+  from { opacity: 0; transform: translateY(-7px) scale(.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes sizeHintBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .size-hint { animation: sizeHintPop .38s ease both; }
+}
+
 /* 詳細入力への導線ヒント（簡単入力時のみ） */
 .simple-hint {
   font-size: 11.5px;
