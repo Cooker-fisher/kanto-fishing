@@ -396,11 +396,6 @@ function bindGlobalEvents() {
       refreshSharePreview();
     });
   });
-  // 結果の表示スタイル切替（カード / レシート）
-  document.querySelectorAll('.rv-btn').forEach(b => {
-    b.addEventListener('click', () => setResultView(b.dataset.view));
-  });
-  try { setResultView(localStorage.getItem('fv_result_view') || 'card'); } catch (_) {}
 
   // Xシェア: 投稿ボタン
   $('share-btn').addEventListener('click', onShareClick);
@@ -1437,10 +1432,6 @@ function renderResult(r, opts) {
     pills.appendChild(pill);
   }
 
-  $('retail-main').textContent  = fmtYen(r.retailMid);
-  $('retail-range').textContent = 'レンジ ' + fmtYen(r.retailLow) + '〜' + fmtYen(r.retailHigh) + ' 円';
-  $('wholesale-main').textContent  = fmtYen(r.wholesaleMid);
-  $('wholesale-range').textContent = '（' + fmtYen(r.wholesaleLow) + '〜' + fmtYen(r.wholesaleHigh) + '円）';
   buildReceipt(r);
 
   const basis = $('basis-list');
@@ -1533,15 +1524,13 @@ function buildReceipt(r) {
   }
   html += '</div>';
   html += '<div class="rc-total"><span>お会計</span><span class="rc-total-amt">¥' + fmtYen(target) + '</span></div>';
-  html += '<div class="rc-total ws"><span>参考・市場の卸値</span><span>¥' + fmtYen(Math.round(r.wholesaleMid)) + '</span></div>';
-  html += '<div class="rc-note">※ このお店で「買ったら」の目安です（釣った魚を売れる金額ではありません）。豊洲の実勢価格ベース・丸ごと（下処理前）。</div>';
+  html += '<div class="rc-total ws"><span>参考・市場の卸値</span><span>' +
+          fmtYen(Math.round(r.wholesaleMid)) + '円（' +
+          fmtYen(Math.round(r.wholesaleLow)) + '〜' + fmtYen(Math.round(r.wholesaleHigh)) + '円）</span></div>';
+  html += '<div class="rc-note">※ お会計のレンジ ¥' + fmtYen(Math.round(r.retailLow)) +
+          '〜¥' + fmtYen(Math.round(r.retailHigh)) + '（相場変動ぶん）。<br>' +
+          'このお店で「買ったら」の目安です（釣った魚を売れる金額ではありません）。豊洲の実勢価格ベース・丸ごと（下処理前）。</div>';
   el.innerHTML = html;
-}
-
-function setResultView(view) {
-  document.querySelectorAll('.rv-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
-  document.querySelectorAll('.rv-pane').forEach(p => { p.hidden = (p.dataset.pane !== view); });
-  try { localStorage.setItem('fv_result_view', view); } catch (_) {}
 }
 
 // ============================================
