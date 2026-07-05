@@ -1289,8 +1289,12 @@ function _sizeSuffix(e) {
   return '（' + size + '）';
 }
 
+// 末尾の誘導文（読んだ人が自分でも試したくなる導線・直下にURLが付く）
+const SHARE_CTA = '\n\n🎣 あなたの釣果はいくら？ 下で計算👇';
+
 function buildSharePost(r, style) {
   const totalYen = fmtYen(r.retailMid);
+  let body;
 
   if (style === 'B') {
     // 案B: ゲームスコア型 — 大物順（重量でランキング・表示は魚種の自然単位）
@@ -1301,30 +1305,30 @@ function buildSharePost(r, style) {
       const sizeStr = size ? (e.count > 1 ? '（最大 ' + size + '）' : '（' + size + '）') : '';
       return medals[i] + ' ' + e.name + ' ' + e.count + '匹' + sizeStr;
     }).join('\n');
-    return '🏆 今日の釣果スコア\n\n' +
+    body = '🏆 今日の釣果スコア\n\n' +
            '💰 市場価格 ¥' + totalYen + '相当\n' +
            '🐟 釣果 ' + r.totalCount + '匹（' + r.speciesCount + '魚種）\n\n' +
            medalLines;
-  }
-
-  if (style === 'C') {
+  } else if (style === 'C') {
     // 案C: シンプル換算型（最大は一番大きい魚をその魚の自然単位で）
     const names = r.perEntry.map(e => e.name).join('・');
     const biggest = r.perEntry.reduce((a, b) => _maxKgOfEntry(b) > _maxKgOfEntry(a) ? b : a, r.perEntry[0]);
     const bigSize = biggest ? fmtSizeForShare(biggest) : '';
     const maxLine = bigSize ? '・最大 ' + bigSize : '';
-    return '今日の釣果、市場価格にしたら ¥' + totalYen + '相当だった 🎣\n' +
+    body = '今日の釣果、市場価格にしたら ¥' + totalYen + '相当だった 🎣\n' +
            '（' + names + ' 計' + r.totalCount + '匹' + maxLine + '）\n\n' +
            _bragQuip(r.retailMid);
+  } else {
+    // 案A: 数字ドカン型（デフォルト）
+    const itemLines = r.perEntry.map(e => {
+      return '🐟 ' + e.name + ' ' + e.count + '匹' + _sizeSuffix(e);
+    }).join('\n');
+    body = '本日の釣果 ¥' + totalYen + '相当 🎣\n\n' +
+           itemLines + '\n\n' +
+           '計 ' + r.totalCount + '匹 / ' + r.speciesCount + '魚種';
   }
 
-  // 案A: 数字ドカン型（デフォルト）
-  const itemLines = r.perEntry.map(e => {
-    return '🐟 ' + e.name + ' ' + e.count + '匹' + _sizeSuffix(e);
-  }).join('\n');
-  return '本日の釣果 ¥' + totalYen + '相当 🎣\n\n' +
-         itemLines + '\n\n' +
-         '計 ' + r.totalCount + '匹 / ' + r.speciesCount + '魚種';
+  return body + SHARE_CTA;
 }
 
 function refreshSharePreview() {
