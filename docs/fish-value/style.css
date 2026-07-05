@@ -879,21 +879,23 @@ header {
   box-shadow: 0 1px 4px rgba(232,93,4,.28);
 }
 
-/* レシート表示 */
+/* レシート表示（紙のレシート風） */
 .receipt {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 16px 14px;
+  background: #fffdf9;
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 18px 18px 16px;
   margin-bottom: 12px;
+  font-family: "SFMono-Regular", Menlo, Consolas, "Courier New", "Osaka-Mono", "MS Gothic", monospace;
   font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
-.rc-title { font-size: 14px; font-weight: 800; color: var(--text); text-align: center; }
-.rc-sub { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+.rc-title { font-size: 15px; font-weight: 700; color: var(--text); text-align: center; letter-spacing: .04em; }
+.rc-date { font-size: 11px; color: var(--muted); text-align: center; margin-top: 3px; letter-spacing: .05em; }
 .rc-lines {
-  border-top: 1px dashed var(--border);
-  border-bottom: 1px dashed var(--border);
-  padding: 6px 0;
+  border-top: 1px dashed var(--muted);
+  border-bottom: 1px dashed var(--muted);
+  padding: 8px 0;
   margin: 12px 0 10px;
 }
 .rc-sp { font-size: 12.5px; font-weight: 800; color: var(--cta-2); margin: 6px 0 1px; }

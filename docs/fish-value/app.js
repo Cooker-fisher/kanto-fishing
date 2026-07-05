@@ -1451,7 +1451,10 @@ function buildReceipt(r) {
     items[items.length - 1].sub += (target - sum);
   }
 
-  let html = '<div class="rc-title">' + RECEIPT_SHOP + '<span class="rc-sub">この釣果をお店で買ったら明細</span></div>';
+  const _d = new Date();
+  const _dstr = _d.getFullYear() + '/' + ('0' + (_d.getMonth() + 1)).slice(-2) + '/' + ('0' + _d.getDate()).slice(-2);
+  let html = '<div class="rc-title">' + RECEIPT_SHOP + '</div>';
+  html += '<div class="rc-date">' + _dstr + '　No.' + (_d.getHours() * 60 + _d.getMinutes()) + '</div>';
   html += '<div class="rc-lines">';
   let lastSp = null;
   for (const it of items) {
