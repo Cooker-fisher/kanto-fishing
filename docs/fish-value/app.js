@@ -741,7 +741,7 @@ function onEntryFishChange(entry, fishId) {
   el.querySelector('.ims-simple').classList.add('active');
   listRow.hidden = false;
   el.classList.add('has-fish');
-  maybeShowSizeHint(el);  // 魚種選択直後にサイズ入力へ誘導する吹き出し
+  maybeShowSizeHint(entry, el);  // 魚種選択直後にサイズ入力へ誘導する吹き出し
   // 入力完了ボタンを表示・更新
   const lockBtn = el.querySelector('.lock-btn');
   lockBtn.textContent = species.site_display_name + ' 入力完了';
@@ -1088,15 +1088,22 @@ function updateEntryTotal(entry) {
   const valEl = el.querySelector('.band-total-val');
   if (valEl) valEl.textContent = String(total);
   el.querySelector('.band-list-row').classList.toggle('has-value', total > 0);
-  if (total > 0) dismissSizeHint();  // 数量が入ったら誘導は役目終了
+  // 数量が入ったらこのエントリの吹き出しは隠す（セッションフラグは立てない＝
+  // 保存データ復元で恒久抑止されない。恒久抑止は × とタブ操作の明示ジェスチャのみ）
+  if (total > 0) { const h = el.querySelector('.size-hint'); if (h) h.hidden = true; }
 }
 
 // ============================================
 // サイズ入力への誘導吹き出し（セッション内1回）
 // ============================================
 
-function maybeShowSizeHint(el) {
+function maybeShowSizeHint(entry, el) {
   try { if (sessionStorage.getItem('fv_size_hint') === '1') return; } catch (_) {}
+  // 既に数量が入っているエントリ（保存データ復元など）には出さない
+  const total = entry && (entry.detailMode
+    ? entry.items.filter(it => it.val > 0).length
+    : Object.values(entry.bandCounts).reduce((a, b) => a + b, 0));
+  if (total > 0) return;
   const hint = el && el.querySelector('.size-hint');
   if (hint) hint.hidden = false;
 }
