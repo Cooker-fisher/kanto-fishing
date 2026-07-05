@@ -442,8 +442,8 @@ function addEntry(preset) {
       '<div class="band-list-head">' +
         '<div class="input-mode-seg">' +
           '<button type="button" class="ims-btn ims-simple active">簡単入力</button>' +
-          '<button type="button" class="ims-btn ims-detail-cm">詳細 cm</button>' +
-          '<button type="button" class="ims-btn ims-detail-kg">詳細 重さ</button>' +
+          '<button type="button" class="ims-btn ims-detail-cm">詳細（cm）</button>' +
+          '<button type="button" class="ims-btn ims-detail-kg">詳細（重さ）</button>' +
         '</div>' +
         '<div class="band-total">' +
           '<span class="band-total-val">0</span>' +
@@ -885,7 +885,9 @@ function setInputMode(entry, mode) {
   if (!entry._priceEntry) return;
   const el = $('entries').querySelector('.entry[data-eid="' + entry.id + '"]');
   if (!el) return;
-  dismissSizeHint();  // タブ操作＝入力方法を理解した合図
+  // タブ操作では吹き出しを隠すだけ（恒久フラグは立てない＝別の魚を選べばまた出る）。
+  // 「もう出さない」は × だけ。
+  { const _h = el.querySelector('.size-hint'); if (_h) _h.hidden = true; }
   const wasDetail = entry.detailMode;
   const prevUnit = entry.detailUnit;
 
