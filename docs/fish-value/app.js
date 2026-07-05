@@ -404,6 +404,7 @@ function bindGlobalEvents() {
 
   // Xシェア: 投稿ボタン
   $('share-btn').addEventListener('click', onShareClick);
+  $('imgshare-btn').addEventListener('click', onSaveImage);
 
   // 保存済みスタイル復元
   try {
@@ -1348,6 +1349,71 @@ function onShareClick() {
     + '&url=' + encodeURIComponent(url)
     + '&hashtags=' + encodeURIComponent(hashtags);
   window.open(intentUrl, '_blank', 'noopener');
+}
+
+// ============================================
+// 結果を画像化して保存/シェア（今選んでいる表示＝カード or レシートをそのまま撮る）
+// ============================================
+let _h2cPromise = null;
+function loadHtml2Canvas() {
+  if (window.html2canvas) return Promise.resolve(window.html2canvas);
+  if (_h2cPromise) return _h2cPromise;
+  _h2cPromise = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = () => res(window.html2canvas);
+    s.onerror = () => rej(new Error('html2canvas load failed'));
+    document.head.appendChild(s);
+  });
+  return _h2cPromise;
+}
+
+async function onSaveImage() {
+  if (!_lastResult) return;
+  const btn = $('imgshare-btn');
+  const label = $('imgshare-label');
+  const orig = label.textContent;
+  // キャプチャ対象=結果カード。操作系（表示切替/共有/根拠）は一時的に隠す。
+  // 非アクティブpaneは hidden(display:none) なので、選択中の表示だけが写る。
+  const hideEls = [
+    document.querySelector('.result-view-seg'),
+    document.querySelector('.share-section'),
+    document.querySelector('.basis-details'),
+  ].filter(Boolean);
+  const prevDisp = hideEls.map(el => el.style.display);
+  const restore = () => hideEls.forEach((el, i) => { el.style.display = prevDisp[i]; });
+  label.textContent = '画像を生成中…';
+  btn.disabled = true;
+  try {
+    const h2c = await loadHtml2Canvas();
+    hideEls.forEach(el => { el.style.display = 'none'; });
+    const canvas = await h2c(document.getElementById('result'),
+      { backgroundColor: '#ffffff', scale: 2, useCORS: true, logging: false });
+    restore();
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const file = new File([blob], 'tsurika-value.png', { type: 'image/png' });
+    const text = buildSharePost(_lastResult, $('share-preview').dataset.style || 'A');
+    const url = 'https://funatsuri-yoso.com/fish-value/';
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], text: text + '\n\n' + url });
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'tsurika-value.png';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 8000);
+      onShareClick();  // PC: 投稿画面（文＋URL）も開く。画像は保存分を手動添付
+    }
+  } catch (e) {
+    restore();
+    if (!(e && e.name === 'AbortError')) {  // 共有シートのキャンセルは無視
+      console.error(e);
+      alert('画像の生成・共有に失敗しました。時間をおいて再度お試しください。');
+    }
+  } finally {
+    label.textContent = orig;
+    btn.disabled = false;
+  }
 }
 
 function renderResult(r, opts) {

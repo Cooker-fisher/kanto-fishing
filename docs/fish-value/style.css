@@ -1369,6 +1369,33 @@ body.picker-open { overflow: hidden; }
 .share-btn:active { transform: scale(.98); }
 .share-btn svg { flex-shrink: 0; }
 
+/* 結果を画像化して保存/シェア */
+.imgshare-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 0;
+  background: #fff;
+  color: var(--cta-2);
+  border: 1.5px solid var(--cta);
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, transform .08s;
+  -webkit-tap-highlight-color: transparent;
+}
+.imgshare-btn:hover { background: #fff4ec; }
+.imgshare-btn:active { transform: scale(.98); }
+.imgshare-btn:disabled { opacity: .6; cursor: default; }
+.imgshare-hint {
+  margin: 6px 2px 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
 /* ============================================
    入力完了ボタン & ロック状態
    ============================================ */
