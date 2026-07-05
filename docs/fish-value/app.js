@@ -1437,6 +1437,8 @@ function renderResult(r, opts) {
 // レシート表示（項目×匹数＝小計を積み上げ）
 // ============================================
 
+const RECEIPT_SHOP = '船釣り予想 鮮魚店';  // レシートの店名（ここを変えるだけで変更可）
+
 function buildReceipt(r) {
   const el = $('receipt');
   if (!el) return;
@@ -1458,7 +1460,7 @@ function buildReceipt(r) {
     items[items.length - 1].sub += (target - sum);
   }
 
-  let html = '<div class="rc-title">📋 釣果レシート<span class="rc-sub">小売・丸ごと換算</span></div>';
+  let html = '<div class="rc-title">' + RECEIPT_SHOP + '<span class="rc-sub">釣果お見積り伝票</span></div>';
   html += '<div class="rc-lines">';
   let lastSp = null;
   for (const it of items) {
