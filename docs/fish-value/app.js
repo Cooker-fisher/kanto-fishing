@@ -1092,11 +1092,14 @@ const MODE_DESC = {
   kg:     '1匹ずつ「重さ(kg)」を入力。サイズがバラついても金額が正確になります。',
 };
 
+const MODE_ARROW_X = { simple: '16.66%', cm: '50%', kg: '83.33%' };
+
 function updateModeDesc(el, entry) {
   const p = el && el.querySelector('.mode-desc');
   if (!p) return;
   const key = !entry.detailMode ? 'simple' : (entry.detailUnit === 'kg' ? 'kg' : 'cm');
   p.textContent = MODE_DESC[key];
+  p.style.setProperty('--arrow-x', MODE_ARROW_X[key]);  // 三角を選択タブの真下へ
 }
 
 // ============================================

@@ -826,15 +826,29 @@ header {
 
 /* 入力モードの説明文（タブ連動・押した方法の紹介がここに出る） */
 .mode-desc {
-  margin: 0 2px 8px;
+  position: relative;
+  margin: 6px 2px 8px;   /* 上に三角ぶんの余白 */
   padding: 9px 12px;
   background: var(--nav);
-  border-left: 3px solid var(--cta);
-  border-radius: 0 8px 8px 0;
+  border-top: 2px solid var(--cta);   /* 選択タブの色とつながる縁 */
+  border-radius: 8px;
   font-size: 12.5px;
   line-height: 1.6;
   color: var(--sub);
   animation: modeDescFade .25s ease;
+}
+/* 選択中タブの真下を指す三角（吹き出しの尻尾）。タブ切替で横にスライド */
+.mode-desc::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: var(--arrow-x, 16.66%);
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border: 7px solid transparent;
+  border-top: 0;
+  border-bottom-color: var(--cta);
+  transition: left .2s ease;
 }
 .mode-desc:empty { display: none; }
 @keyframes modeDescFade {
