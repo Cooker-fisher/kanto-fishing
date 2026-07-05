@@ -396,6 +396,12 @@ function bindGlobalEvents() {
       refreshSharePreview();
     });
   });
+  // 結果の表示スタイル切替（カード / レシート）
+  document.querySelectorAll('.rv-btn').forEach(b => {
+    b.addEventListener('click', () => setResultView(b.dataset.view));
+  });
+  try { setResultView(localStorage.getItem('fv_result_view') || 'card'); } catch (_) {}
+
   // Xシェア: 投稿ボタン
   $('share-btn').addEventListener('click', onShareClick);
 
@@ -1184,7 +1190,7 @@ function onCalculate(opts) {
         retailMidSum     += rMid;
         eRetailMid       += rMid;
         const displayVal = detailCm ? item.val + 'cm' : (Math.round(item.val * 10) / 10).toFixed(1) + 'kg';
-        eBreakdown.push({ label: band.label + ' ' + displayVal, count: 1, perKg: kgVal, bandKg: kgVal });
+        eBreakdown.push({ label: band.label + ' ' + displayVal, count: 1, perKg: kgVal, bandKg: kgVal, retailMid: rMid, wholesaleMid: wMid });
       }
     } else {
       for (const [idxStr, count] of Object.entries(e.bandCounts)) {
@@ -1207,7 +1213,7 @@ function onCalculate(opts) {
         retailMidSum     += rMid;
         eRetailMid       += rMid;
 
-        eBreakdown.push({ label: band.label, count, perKg: repKg, bandKg });
+        eBreakdown.push({ label: band.label, count, perKg: repKg, bandKg, retailMid: rMid, wholesaleMid: wMid });
       }
     }
 
@@ -1227,6 +1233,7 @@ function onCalculate(opts) {
       factorDataMonth: ef.dataMonth,
       unit: (species.input_modes && species.input_modes[0] === 'cm') ? 'cm' : 'kg',
       curve: curve,
+      detail: !!e.detailMode,
       breakdown: eBreakdown,
     });
   }
@@ -1377,7 +1384,7 @@ function renderResult(r, opts) {
   $('retail-range').textContent = 'レンジ ' + fmtYen(r.retailLow) + '〜' + fmtYen(r.retailHigh) + ' 円';
   $('wholesale-main').textContent  = fmtYen(r.wholesaleMid);
   $('wholesale-range').textContent = '（' + fmtYen(r.wholesaleLow) + '〜' + fmtYen(r.wholesaleHigh) + '円）';
-  const vd = $('verdict'); if (vd) vd.textContent = _bragQuip(r.retailMid);
+  buildReceipt(r);
 
   const basis = $('basis-list');
   basis.innerHTML = '';
@@ -1424,6 +1431,55 @@ function renderResult(r, opts) {
       window.scrollTo({ top, behavior: 'smooth' });
     });
   }
+}
+
+// ============================================
+// レシート表示（項目×匹数＝小計を積み上げ）
+// ============================================
+
+function buildReceipt(r) {
+  const el = $('receipt');
+  if (!el) return;
+  // 明細行（小売の小計）。詳細入力や帯が多い種は種単位で1行にまとめる
+  const items = [];
+  for (const e of r.perEntry) {
+    if (e.detail || e.breakdown.length > 8) {
+      items.push({ sp: e.name, label: '実測サイズ', count: e.count, sub: Math.round(e.retailMid) });
+    } else {
+      for (const b of e.breakdown) {
+        items.push({ sp: e.name, label: b.label, count: b.count, sub: Math.round(b.retailMid) });
+      }
+    }
+  }
+  // 合計をカード表示と一致させる（端数は最終行で吸収し、明細の和＝合計にする）
+  const target = Math.round(r.retailMid);
+  if (items.length) {
+    const sum = items.reduce((a, b) => a + b.sub, 0);
+    items[items.length - 1].sub += (target - sum);
+  }
+
+  let html = '<div class="rc-title">📋 釣果レシート<span class="rc-sub">小売・丸ごと換算</span></div>';
+  html += '<div class="rc-lines">';
+  let lastSp = null;
+  for (const it of items) {
+    if (it.sp !== lastSp) { html += '<div class="rc-sp">' + escapeHtml(it.sp) + '</div>'; lastSp = it.sp; }
+    html += '<div class="rc-row">' +
+              '<span class="rc-item">' + escapeHtml(it.label) + '</span>' +
+              '<span class="rc-qty">' + it.count + '尾</span>' +
+              '<span class="rc-sub-amt">¥' + fmtYen(it.sub) + '</span>' +
+            '</div>';
+  }
+  html += '</div>';
+  html += '<div class="rc-total"><span>小売 合計</span><span class="rc-total-amt">¥' + fmtYen(target) + '</span></div>';
+  html += '<div class="rc-total ws"><span>卸売 合計</span><span>¥' + fmtYen(Math.round(r.wholesaleMid)) + '</span></div>';
+  html += '<div class="rc-note">※ 豊洲の実勢価格ベースの目安。丸ごと（下処理前）の換算です。</div>';
+  el.innerHTML = html;
+}
+
+function setResultView(view) {
+  document.querySelectorAll('.rv-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  document.querySelectorAll('.rv-pane').forEach(p => { p.hidden = (p.dataset.pane !== view); });
+  try { localStorage.setItem('fv_result_view', view); } catch (_) {}
 }
 
 // ============================================
