@@ -1338,7 +1338,8 @@ function onShareClick() {
   const style = $('share-preview').dataset.style || 'A';
   const text = buildSharePost(_lastResult, style);
   const url = 'https://funatsuri-yoso.com/fish-value/';
-  const hashtags = '船釣り予想,釣果';
+  // このツール（釣った魚の市場価値）に合う話題タグ。ブランド名（船釣り予想）は URL で伝わるので外す
+  const hashtags = '釣果,船釣り,釣った魚の値段';
   const intentUrl = 'https://twitter.com/intent/tweet'
     + '?text=' + encodeURIComponent(text + '\n\n')
     + '&url=' + encodeURIComponent(url)
