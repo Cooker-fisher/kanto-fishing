@@ -325,11 +325,13 @@ header {
 }
 .band-list-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px 10px;
-  margin-bottom: 12px;
+  margin-bottom: 6px;   /* タブと説明文を密着させる（説明はタブに紐づく） */
+}
+/* 尾数は説明文の下（タブ→説明→尾数→入力欄の順） */
+.band-total-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 2px 10px;
 }
 .band-list-head label {
   font-size: 13px;
@@ -824,7 +826,7 @@ header {
 
 /* 入力モードの説明文（タブ連動・押した方法の紹介がここに出る） */
 .mode-desc {
-  margin: 0 2px 14px;
+  margin: 0 2px 8px;
   padding: 9px 12px;
   background: var(--nav);
   border-left: 3px solid var(--cta);

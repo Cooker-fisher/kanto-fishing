@@ -445,12 +445,14 @@ function addEntry(preset) {
           '<button type="button" class="ims-btn ims-detail-cm">詳細（長さ）</button>' +
           '<button type="button" class="ims-btn ims-detail-kg">詳細（重さ）</button>' +
         '</div>' +
+      '</div>' +
+      '<p class="mode-desc" role="note"></p>' +
+      '<div class="band-total-row">' +
         '<div class="band-total">' +
           '<span class="band-total-val">0</span>' +
           '<span class="band-total-unit">尾</span>' +
         '</div>' +
       '</div>' +
-      '<p class="mode-desc" role="note"></p>' +
       '<div class="band-list"></div>' +
       '<div class="detail-list" hidden></div>' +
       '<button type="button" class="lock-btn" hidden></button>' +
