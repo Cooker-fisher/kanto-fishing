@@ -1204,6 +1204,8 @@ function onCalculate(opts) {
       factorKind: ef.kind,
       factorWindowDays: ef.windowDays,
       factorDataMonth: ef.dataMonth,
+      unit: (species.input_modes && species.input_modes[0] === 'cm') ? 'cm' : 'kg',
+      curve: curve,
       breakdown: eBreakdown,
     });
   }
@@ -1239,6 +1241,18 @@ function _maxKgOfEntry(e) {
   return Math.max(...e.breakdown.map(b => b.perKg || 0));
 }
 
+// 共有文のサイズ表記: cm入力魚（アジ・キス等）は cm、それ以外（ブリ・マグロ等）は kg/g。
+// 自然単位は魚種マスタの input_modes[0] で自動判定（ユーザーに選ばせない）。
+// cm は代表重量を kgToCm で曲線から逆算する。
+function fmtSizeForShare(e) {
+  const maxKg = _maxKgOfEntry(e);
+  if (maxKg <= 0) return '';
+  if (e.unit === 'cm' && e.curve) {
+    return Math.round(kgToCm(e.curve, maxKg)) + 'cm';
+  }
+  return fmtKgForShare(maxKg);
+}
+
 function _bragQuip(yen) {
   if (yen < 3000)  return 'ボウズじゃないだけマシ…';
   if (yen < 10000) return 'ガソリン代の元、取れたかな…';
@@ -1247,25 +1261,24 @@ function _bragQuip(yen) {
   return '完全に元取りすぎ・冷凍庫満タン案件';
 }
 
-function _kgSuffix(e) {
-  const maxKg = _maxKgOfEntry(e);
-  if (maxKg <= 0) return '';
-  if (e.count > 1) return '（最大 ' + fmtKgForShare(maxKg) + '）';
-  return '（' + fmtKgForShare(maxKg) + '）';
+function _sizeSuffix(e) {
+  const size = fmtSizeForShare(e);
+  if (!size) return '';
+  if (e.count > 1) return '（最大 ' + size + '）';
+  return '（' + size + '）';
 }
 
 function buildSharePost(r, style) {
   const totalYen = fmtYen(r.retailMid);
-  const overallMaxKg = Math.max(...r.perEntry.map(_maxKgOfEntry));
 
   if (style === 'B') {
-    // 案B: ゲームスコア型 — 最大kg順にランキング
+    // 案B: ゲームスコア型 — 大物順（重量でランキング・表示は魚種の自然単位）
     const sorted = [...r.perEntry].sort((a, b) => _maxKgOfEntry(b) - _maxKgOfEntry(a));
     const medals = ['🥇', '🥈', '🥉'];
     const medalLines = sorted.slice(0, 3).map((e, i) => {
-      const maxKg = _maxKgOfEntry(e);
-      const sizeStr = e.count > 1 ? '最大 ' + fmtKgForShare(maxKg) : fmtKgForShare(maxKg);
-      return medals[i] + ' ' + e.name + ' ' + e.count + '匹（' + sizeStr + '）';
+      const size = fmtSizeForShare(e);
+      const sizeStr = size ? (e.count > 1 ? '（最大 ' + size + '）' : '（' + size + '）') : '';
+      return medals[i] + ' ' + e.name + ' ' + e.count + '匹' + sizeStr;
     }).join('\n');
     return '🏆 今日の釣果スコア\n\n' +
            '💰 市場価格 ¥' + totalYen + '相当\n' +
@@ -1274,9 +1287,11 @@ function buildSharePost(r, style) {
   }
 
   if (style === 'C') {
-    // 案C: シンプル換算型
+    // 案C: シンプル換算型（最大は一番大きい魚をその魚の自然単位で）
     const names = r.perEntry.map(e => e.name).join('・');
-    const maxLine = overallMaxKg > 0 ? '・最大 ' + fmtKgForShare(overallMaxKg) : '';
+    const biggest = r.perEntry.reduce((a, b) => _maxKgOfEntry(b) > _maxKgOfEntry(a) ? b : a, r.perEntry[0]);
+    const bigSize = biggest ? fmtSizeForShare(biggest) : '';
+    const maxLine = bigSize ? '・最大 ' + bigSize : '';
     return '今日の釣果、市場価格にしたら ¥' + totalYen + '相当だった 🎣\n' +
            '（' + names + ' 計' + r.totalCount + '匹' + maxLine + '）\n\n' +
            _bragQuip(r.retailMid);
@@ -1284,7 +1299,7 @@ function buildSharePost(r, style) {
 
   // 案A: 数字ドカン型（デフォルト）
   const itemLines = r.perEntry.map(e => {
-    return '🐟 ' + e.name + ' ' + e.count + '匹' + _kgSuffix(e);
+    return '🐟 ' + e.name + ' ' + e.count + '匹' + _sizeSuffix(e);
   }).join('\n');
   return '本日の釣果 ¥' + totalYen + '相当 🎣\n\n' +
          itemLines + '\n\n' +
