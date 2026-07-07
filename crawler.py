@@ -4549,6 +4549,7 @@ def _v2_header_nav(active_page=""):
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
   <a href="/monthly/"{' class="on"' if active_page == 'monthly' else ''}>月報</a>
+  <a href="/column/"{' class="on"' if active_page == 'column' else ''}>📖 コラム</a>
   <a href="/komase-sim/"{' class="on"' if active_page == 'komasim' else ''}>🎣 コマセsim</a>
   <a href="/fish-value/"{' class="on"' if active_page == 'fishvalue' else ''}>💰 釣果価値<span class="nav-new">NEW</span></a>
 
@@ -17250,6 +17251,14 @@ def build_sitemap(data):
         # 独立アプリ（docs/ 直下静的配置・crawler 非生成）
         (f"{SITE_URL}/fish-value/", "0.7", "monthly"),
     ]
+    # コラム（独立ジェネレータ column/build_column.py 生成・実ファイルスキャン）
+    column_dir = os.path.join(WEB_DIR, "column")
+    if os.path.isdir(column_dir):
+        if os.path.isfile(os.path.join(column_dir, "index.html")):
+            urls.append((f"{SITE_URL}/column/", "0.7", "weekly"))
+        for fname in sorted(os.listdir(column_dir)):
+            if fname.endswith(".html") and fname != "index.html":
+                urls.append((f"{SITE_URL}/column/{fname}", "0.6", "monthly"))
     # fish/*.html・area/*.html（実ファイルベース・2026/05/14 修正）
     # 旧: data (valid_catches) + tackle/ship_info/area_description ベース → 過去実績のみのページが漏れる
     # 新: docs/fish/*.html / docs/area/*.html を直接スキャン → 生成済み全ファイルをカバー
