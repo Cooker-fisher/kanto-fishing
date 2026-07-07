@@ -218,7 +218,6 @@ def build_index(output_path: str, docs_x_post_dir: str | None = None) -> None:
   <a href="/fish/">魚種</a>
   <a href="/area/">エリア</a>
   <a href="/calendar.html">カレンダー</a>
-  <a href="/forecast/" class="prem">有料プラン</a>
 </nav>
 
 {latest_body}

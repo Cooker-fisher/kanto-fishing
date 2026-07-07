@@ -1958,6 +1958,82 @@ def validate_fish_value_release():
         warn(f"fish-price-master.json 読込失敗: {e}")
 
 
+def validate_no_paywall_signal_and_operator_info():
+    """52: 未完成ペイウォールシグナルの排除 + 運営者情報（AdSense フェーズ1・2026-07-07）
+
+    背景: AdSense「有用性の低いコンテンツ」4連敗。公式の審査範囲は「サイトのすべてのページ」で、
+    未完成の課金機能（有料プランナビ・月額500円・公開準備中）は「site under construction」シグナル。
+    マネタイズ方針（2026-06-10）も「予測は当面無料公開」なので、これらは方針とも矛盾していた。
+    SHOW_PAID_TEASER=False の間、以下を保証（有料オープン時に True へ戻せばナビは復活する）:
+      (a) 全 docs にナビの有料リンク（href="/forecast/" class="prem"）が無い
+      (b) index/fish/area/fish_area/ship の indexed 主要ページに「月額500円」「公開準備中」が無い
+      (c) x_post 公開ページに機械文バグ「以降以降」「kgkg」が無い
+      (d) about ページに運営者プロフィール（人手のレビュー/キュレーション明示 = E-E-A-T）がある
+    注: 「有料駐車場」「有料道路」等はアクセス解説の正当表現なので対象外（ナビ/課金 CTA のみ検知）。
+    注: forecast 日付ページ（noindex・広告なし）の blur teaser は Phase2 で別途対応（本条件の対象外）。
+    """
+    import glob as _glob
+    print("\n[52] 未完成ペイウォールsignal排除 + 運営者情報（AdSense フェーズ1・2026-07-07）")
+
+    # (a) ナビの有料リンクが全 docs で 0
+    nav_hits = []
+    for p in _glob.glob(os.path.join(DOCS, "**", "*.html"), recursive=True):
+        c = open(p, encoding="utf-8", errors="replace").read()
+        if 'href="/forecast/" class="prem"' in c:
+            nav_hits.append(os.path.relpath(p, DOCS))
+    if nav_hits:
+        fail(f"[52] ナビの有料リンク（class=prem）が {len(nav_hits)} ページに残存: {nav_hits[:5]}")
+    else:
+        ok("[52] ナビの有料リンク（class=prem）は全 docs で 0（SHOW_PAID_TEASER ゲート動作）")
+
+    # (b) 主要 indexed ページ種に「月額500円」「公開準備中」が無い
+    #     forecast ハブ index.html を含む（date ページ noindex は Phase2 対象外）
+    paywall_targets = ["index.html", "calendar.html",
+                       os.path.join("forecast", "index.html")]
+    for sub in ("fish", "area", "fish_area", "ship", "monthly", "pages"):
+        d = os.path.join(DOCS, sub)
+        if os.path.isdir(d):
+            paywall_targets += [os.path.relpath(p, DOCS)
+                                for p in _glob.glob(os.path.join(d, "*.html"))]
+    paywall_hits = []
+    for rel in paywall_targets:
+        p = os.path.join(DOCS, rel)
+        if not os.path.isfile(p):
+            continue
+        c = open(p, encoding="utf-8", errors="replace").read()
+        if "月額500円" in c or "公開準備中" in c:
+            paywall_hits.append(rel)
+    if paywall_hits:
+        fail(f"[52] 主要indexedページに未完成課金文言（月額500円/公開準備中）{len(paywall_hits)}件: {paywall_hits[:5]}")
+    else:
+        ok(f"[52] 主要indexedページ {len(paywall_targets)} 種に月額500円/公開準備中なし")
+
+    # (c) x_post 機械文バグ
+    xp_bug = []
+    xp_dir = os.path.join(DOCS, "x_post")
+    if os.path.isdir(xp_dir):
+        for p in _glob.glob(os.path.join(xp_dir, "*.html")):
+            c = open(p, encoding="utf-8", errors="replace").read()
+            if "以降以降" in c or "kgkg" in c:
+                xp_bug.append(os.path.basename(p))
+    if xp_bug:
+        fail(f"[52] x_post に機械文バグ（以降以降/kgkg）{len(xp_bug)}件: {xp_bug[:5]}")
+    else:
+        ok("[52] x_post に機械文バグ（以降以降/kgkg）なし")
+
+    # (d) about 運営者プロフィール（E-E-A-T）
+    about_p = os.path.join(DOCS, "pages", "about.html")
+    if os.path.isfile(about_p):
+        ac = open(about_p, encoding="utf-8", errors="replace").read()
+        has_profile = ("運営者について" in ac) and ("運営者本人が設計・確認" in ac)
+        if has_profile:
+            ok("[52] about に運営者プロフィール（人手キュレーション明示）あり")
+        else:
+            fail("[52] about に運営者プロフィール（『運営者について』＋人手キュレーション明示）が無い")
+    else:
+        warn("[52] docs/pages/about.html が無い")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2019,6 +2095,7 @@ def main():
     validate_chowari_monthly_coverage()
     validate_fish_area_analysis_sections()
     validate_fish_value_release()
+    validate_no_paywall_signal_and_operator_info()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

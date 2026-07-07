@@ -958,7 +958,6 @@ def build(ctx, commentary, output_path, png_url=None):
   <a href="/fish/">魚種</a>
   <a href="/area/">エリア</a>
   <a href="/calendar.html">カレンダー</a>
-  <a href="/forecast/" class="prem">有料プラン</a>
 </nav>
 
 <div class="wrap">

@@ -2667,7 +2667,7 @@ def _build_forecast_hub(forecast_data, catches=None):
 <li>週次予測: 潮回り×季節傾向×直近実績</li>
 <li>エリア別の出船リスク予報（7日間）</li>
 </ul>
-<p style="font-size:12px;color:#7c3aed;font-weight:700">フル版: 月額500円 / スポット100円〜（公開準備中）</p>
+<p style="font-size:12px;color:#7c3aed;font-weight:700">海況予報・釣果予測はすべて無料で公開しています。順次エリア・魚種を拡充中です。</p>
 </div>
 '''
     html += _forecast_page_foot()
@@ -4582,8 +4582,11 @@ def _v2_bottom_nav(active_page=""):
         ("fish",  "/fish/",              "魚種",     ""),
         ("area",  "/area/",              "エリア",   ""),
         ("cal",   "/calendar.html",      "カレンダー", ""),
-        ("prem",  "/forecast/", "有料",    "prem"),
     ]
+    # 有料タブは有料オープン時のみ表示（SHOW_PAID_TEASER）。
+    # False の間は /forecast/ は無料ハブなので「未完成の課金機能」導線を出さない。
+    if SHOW_PAID_TEASER:
+        items.append(("prem", "/forecast/", "有料", "prem"))
     nav = '<nav class="bn">'
     for key, href, label, cls in items:
         on = " on" if active_page == key else ""
@@ -9770,7 +9773,13 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         if top_pts:
             pt_links = "".join(f'<a href="#">{p}</a>' for p in top_pts)
             more = total_pts - len(top_pts)
-            hidden = f'<span class="point-hidden">＋{more}ポイント（有料プランで公開）</span>' if more > 0 else ""
+            # SHOW_PAID_TEASER=False の間は「有料プランで公開」の未完成ペイウォール文言を出さず、
+            # 中立に「ほかNポイント」とだけ示す。
+            if more > 0:
+                hidden = (f'<span class="point-hidden">＋{more}ポイント（有料プランで公開）</span>'
+                          if SHOW_PAID_TEASER else f'<span class="point-hidden">ほか{more}ポイント</span>')
+            else:
+                hidden = ""
             point_box_html = (
                 f'<div class="point-box"><h3>主要ポイント（TOP3）</h3>'
                 f'<div class="point-list">{pt_links}{hidden}</div></div>'
@@ -15564,8 +15573,8 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
         '<a href="/fish/"><span class="i">🐟</span>魚種</a>'
         '<a href="/area/"><span class="i">📍</span>エリア</a>'
         '<a href="/calendar.html"><span class="i">📅</span>カレンダー</a>'
-        '<a href="/forecast/" class="prem"><span class="i">⭐</span>有料</a>'
-        '</div>'
+        + ('<a href="/forecast/" class="prem"><span class="i">⭐</span>有料</a>' if SHOW_PAID_TEASER else '')
+        + '</div>'
     )
 
     # メタ (F3: F1/F2 データを反映して指名検索 CTR を底上げ)
@@ -16916,7 +16925,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     <p class="ml-chart-note" style="margin:4px 0 12px">※ 2026年は収録船宿数が前年から大きく増えており、便数の単純比較はできません。Min〜Max平均（1便あたりの傾向）を比較の目安としてください。</p>
     <h3 style="font-size:14px;font-weight:700;color:var(--accent);margin:14px 0 8px">{month_num + 1}月の傾向見立て</h3>
     <ul style="font-size:13px;line-height:1.85;color:var(--text);padding-left:20px">{forecast_items_html}</ul>
-    <p class="ml-consider-note" style="background:var(--bg);font-size:11px;color:var(--muted,#8a96a4);margin-top:10px;padding:6px 10px;border-radius:4px">※ 上記は過去年実績と季節傾向からの見立て。具体的な日別予測は <a href="/forecast/" style="color:var(--cta)">有料の日別予測ページ</a> で提供予定。</p>
+    <p class="ml-consider-note" style="background:var(--bg);font-size:11px;color:var(--muted,#8a96a4);margin-top:10px;padding:6px 10px;border-radius:4px">※ 上記は過去年実績と季節傾向からの見立て。今週の海況・魚種別の予測は <a href="/forecast/" style="color:var(--cta)">海況予報ページ</a>（無料）でご確認いただけます。</p>
   </section>
   <div class="ml-related"><h3>関連ページ・他の月報</h3><div class="ml-related-list">{related_html}</div></div>
   {nav_html}
@@ -18209,6 +18218,9 @@ def _page_nav(current_page=""):
     area = act('area')
     cal  = act('calendar')
     prem = act('premium')
+    # 有料タブは有料オープン時のみ（SHOW_PAID_TEASER）。False の間は /forecast/ が無料ハブのため非表示。
+    prem_link    = (f'<a href="/forecast/"{prem}>有料</a>' if SHOW_PAID_TEASER else '')
+    prem_link_bn = (f'<a href="/forecast/" {prem_cls}>{svg_prem}<span>有料</span></a>' if SHOW_PAID_TEASER else '')
 
     return (
         '<header class="site-header">'
@@ -18219,7 +18231,7 @@ def _page_nav(current_page=""):
         f'<a href="/fish/"{fish}>魚種</a>'
         f'<a href="/area/"{area}>エリア</a>'
         f'<a href="/calendar.html"{cal}>カレンダー</a>'
-        f'<a href="/forecast/"{prem}>有料</a>'
+        f'{prem_link}'
         '</nav>'
         '</div>'
         '</header>'
@@ -18228,7 +18240,7 @@ def _page_nav(current_page=""):
         f'<a href="/fish/"{fish}>{svg_fish}<span>魚種</span></a>'
         f'<a href="/area/"{area}>{svg_area}<span>エリア</span></a>'
         f'<a href="/calendar.html"{cal}>{svg_cal}<span>カレンダー</span></a>'
-        f'<a href="/forecast/" {prem_cls}>{svg_prem}<span>有料</span></a>'
+        f'{prem_link_bn}'
         '</nav>'
     )
 

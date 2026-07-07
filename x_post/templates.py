@@ -12,7 +12,7 @@ H_TEMPLATES = [
         ],
         "text": (
             "本日最大の話題は<b>{top_kg_fish}の{top_kg_max:.2f}kg</b>。{date_label}時点で"
-            "{period_label}以降、関東圏での{kg_threshold}kg超え大物記録です。"
+            "{period_label}、関東圏での{kg_threshold}超え大物記録です。"
             "{top_kg_port}は遠征エリアですが、<b>{top_kg_ship}</b>はこの時期の運航で"
             "近海では狙えないサイズの回遊魚を求める常連層に人気の船宿です。"
             "この時期ならではの好海況が背景にあると見られます。"
