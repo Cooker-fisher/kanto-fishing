@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>このサイトについて | 船釣り予想</title>
   <meta name="description" content="船釣り予想は関東・静岡エリアの船宿釣果を毎日自動収集・横断集計し、魚種・エリア・海況を組み合わせた釣行意思決定をサポートするサービスです。">
   <link rel="canonical" href="https://funatsuri-yoso.com/pages/about.html">
@@ -63,7 +63,6 @@ footer a{color:rgba(255,255,255,.8)}
   <a href="/fish/">魚種</a>
   <a href="/area/">エリア</a>
   <a href="/calendar.html">カレンダー</a>
-  <a href="/forecast/" class="prem">有料プラン</a>
 </nav>
 
 <div class="c">
@@ -79,7 +78,7 @@ footer a{color:rgba(255,255,255,.8)}
     <div class="feat-card"><div class="ft">毎日更新</div><div class="fd">毎日16:30 JSTにGitHub Actionsで自動更新。当日の釣果状況を反映します。</div></div>
     <div class="feat-card"><div class="ft">旬カレンダー</div><div class="fd">過去3年分の釣果データから算出した月別・魚種別の旬指数を12ヶ月ヒートマップで表示します。</div></div>
     <div class="feat-card"><div class="ft">海況連動</div><div class="fd">波高・風速・水温・潮汐と釣果の相関を分析。条件ごとの釣れやすさを数値化しています。</div></div>
-    <div class="feat-card"><div class="ft">釣果予測（開発中）</div><div class="fd">過去データ×気象×潮汐からAI分析で来週の釣果傾向を予測。有料プランで提供予定です。</div></div>
+    <div class="feat-card"><div class="ft">釣果予測</div><div class="fd">過去3年の実績×気象×潮汐から魚種別の釣果傾向を予測。<a href="/forecast/">海況予報ページ</a>で無料公開しています。</div></div>
     <div class="feat-card"><div class="ft">エリア別ガイド</div><div class="fd">各港のアクセス・特徴・主要ポイント・旬カレンダーを提供します。</div></div>
   </div>
 
@@ -189,17 +188,15 @@ footer a{color:rgba(255,255,255,.8)}
     </div>
   </div>
 
-  <h2>有料コンテンツ</h2>
-  <p>無料コンテンツとして当日の釣果事実データ（何が釣れたか・どこで釣れたか）を提供しています。有料コンテンツとして分析・予測（なぜ釣れたか・来週の見通し）を提供予定です。</p>
-  <ul>
-    <li><strong>月額500円</strong>: 全分析・予測コンテンツの閲覧（日別予測・週別予測・気象相関レポート）</li>
-    <li><strong>スポット100円</strong>: 特定の予測・レポートを単発で閲覧</li>
-  </ul>
-  <p>有料機能は現在開発中です。提供開始時にはサイト上でお知らせします。</p>
+  <h2>料金について</h2>
+  <p>現在、当サイトのすべてのコンテンツ（当日の釣果、魚種別・エリア別の集計、旬カレンダー、海況予報、魚種別の釣果予測）を<strong>無料で公開</strong>しています。将来的に、より詳細な分析・予測機能の一部を有料で提供することを検討していますが、現時点で提供時期・価格は未定です。決まり次第サイト上でお知らせします。</p>
 
-  <h2>運営者情報</h2>
-  <p>本サービスはGitHub Pages上で運営されている個人プロジェクトです。<br>
-  問い合わせ: <a href="/pages/contact.html">お問い合わせフォーム</a> または <a href="https://github.com/Cooker-fisher/kanto-fishing/issues" target="_blank" rel="noopener">GitHubリポジトリ（Issues）</a></p>
+  <h2>運営者について</h2>
+  <div class="policy-block">
+    <p>「船釣り予想」は、関東の船釣りが好きな個人開発者 <strong>Cooker-fisher</strong> が2026年に開設・運営しているサイトです。「今週どの港で何が釣れているのか」を知るために毎回いくつもの船宿サイトを見て回るのが大変だったことが、このサイトを作ったきっかけです。関東・静岡の船宿釣果を毎日集め、魚種・エリア・海況を横断して「次にどこで何を狙うか」の判断に役立つ形へ編集しています。</p>
+    <p>データの収集は自動で行っていますが、<strong>魚種の正規化ルール・異常値の扱い・海況との相関分析の設計・各ページの解説文は、運営者本人が設計・確認しています</strong>。単なるデータの寄せ集めではなく、関東の船釣りに実際に通う目線で「読んで意思決定に使える」ことを重視しています。改善のご要望や誤りのご指摘を歓迎します。</p>
+    <p>連絡先: <a href="/pages/contact.html">お問い合わせフォーム</a> ／ <a href="https://github.com/Cooker-fisher/kanto-fishing" target="_blank" rel="noopener">GitHub リポジトリ</a></p>
+  </div>
 </div>
 
 <footer>
@@ -217,7 +214,6 @@ footer a{color:rgba(255,255,255,.8)}
   <a href="/fish/"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="4" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1" fill="currentColor" stroke="none"/></svg>魚種</a>
   <a href="/area/"><svg viewBox="0 0 24 24"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>エリア</a>
   <a href="/calendar.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="3" x2="9" y2="7"/><line x1="15" y1="3" x2="15" y2="7"/></svg>カレンダー</a>
-  <a href="/forecast/" class="prem"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v11H3z"/><line x1="3" y1="19" x2="21" y2="19"/></svg>有料</a>
 </nav>
 </body>
 </html>
