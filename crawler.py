@@ -3839,6 +3839,20 @@ _FA_NOINDEX_HIST_THRESHOLD = 80
 _FA_RICH_HIST_MIN = 40
 _FA_RICH_INDEXED_SLUGS: set = set()
 
+# 2026/07/12 SEO: GSC（Search Console）で検索表示実績が観測された fish_area slug は
+# hist 閾値未満でも index 復帰させる（実需要が証明されたページを noindex で殺さない）。
+# リストは normalize/fa_gsc_proven_slugs.json（月1で analytics/build_fa_gsc_slugs.py が
+# analytics/gsc/*.csv から再生成してコミット）。ファイル欠損時は空 set = 従来動作。
+def _load_fa_gsc_proven() -> set:
+    try:
+        base = os.path.dirname(__file__) or "."
+        with open(os.path.join(base, "normalize", "fa_gsc_proven_slugs.json"), encoding="utf-8") as f:
+            return set(json.load(f).get("slugs", []))
+    except Exception:
+        return set()
+
+_FA_GSC_PROVEN_SLUGS: set = _load_fa_gsc_proven()
+
 # T40 (2026/05/26): build_point_pages() が生成するポイント系 area ページ（赤灯沖・鹿島南沖等）は
 # 自動生成ボイラープレートのみで fia-grid/season-map/海況 セクションを持たない構造的薄ページ。
 # AdSense「有用性の低いコンテンツ」対策として全件 noindex 付与 + sitemap から除外。
@@ -8052,16 +8066,22 @@ def build_html(catches, crawled_at, history, weather_data=None):
     # → /fish/{search_term_string}.html が 404 として GSC に記録されていた）。
     # 本サイトに検索フォームが追加されたら適切な urlTemplate で復活させる。
     jsonld_website = f'{{"@context":"https://schema.org","@type":"WebSite","name":"船釣り予想","url":"{SITE_URL}/"}}'
+    # 2026/07/12 SEO(CTR): GSC「釣果速報 関東」75imp/0click・「関東 船釣り 釣果」94imp pos8.2・
+    # 「関東 釣果 最新 2026」対策。title に「速報」+更新日、description に年+静岡（5県）を明示。
+    _idx_upd_md = f"{int(today_str_local[5:7])}/{int(today_str_local[8:10])}"
+    _idx_title = f"関東 船釣り釣果速報【{_idx_upd_md}更新】今日何が釣れてる？"
+    _idx_desc = (f"関東5県（神奈川・東京・千葉・茨城・静岡）の船宿釣果を毎日更新。"
+                 f"{now.year}年最新の釣果速報・今日釣れている魚・エリア別速報・船宿ランキング。")
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <title>関東船釣り釣果情報 | 今日何が釣れてる？ | 船釣り予想</title>
-  <meta name="description" content="関東エリア（神奈川・東京・千葉・茨城）の船宿釣果を毎日更新。今日釣れている魚・エリア別速報・船宿ランキング。">
+  <title>{_idx_title} | 船釣り予想</title>
+  <meta name="description" content="{_idx_desc}">
   <link rel="canonical" href="{SITE_URL}/">
   {_build_share_meta(
-      title="関東船釣り釣果情報 | 今日何が釣れてる？",
+      title=_idx_title,
       desc="関東エリアの船宿釣果を毎日自動集計。今日釣れている魚・エリア別速報。",
       url=f"{SITE_URL}/",
       og_image=(_latest_x_post_image_url() or OGP_DEFAULT_IMG),
@@ -8610,12 +8630,16 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         # 数値は全て実測/3年累計=事実（無料=事実の方針）。
         _hist_cnt_fish = len([r for r in _hist_rows_for_fish if r.get("tsuri_mono") == fish])
         _kanto_note = "神奈川・東京・千葉・茨城・静岡の5県を横断集計。"
+        # 2026/07/12 SEO(CTR): GSC で fish ページ pos8-10 CTR0%（hirame 47imp 等）。
+        # description 冒頭に更新日を出し「毎日更新の速報」であることを SERP で伝える。
+        _fp_upd = _display_today_str(datetime.now(JST).replace(tzinfo=None))
+        _fp_upd_md = f"{int(_fp_upd[5:7])}/{int(_fp_upd[8:10])}"
         if len(catches) >= 1 and max_cnt > 0:
             fish_title_body = f"{fish}釣果 関東【今週{len(catches)}便・最高{int(max_cnt)}匹】"
-            fish_desc = f"関東の{fish}釣果を横断集計。今週{len(catches)}便・最高{int(max_cnt)}匹。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
+            fish_desc = f"【{_fp_upd_md}更新】関東の{fish}釣果を横断集計。今週{len(catches)}便・最高{int(max_cnt)}匹。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
         elif len(catches) >= 1:
             fish_title_body = f"{fish}釣果 関東【今週{len(catches)}便出船】"
-            fish_desc = f"関東の{fish}釣果情報。今週{len(catches)}便出船中。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
+            fish_desc = f"【{_fp_upd_md}更新】関東の{fish}釣果情報。今週{len(catches)}便出船中。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
         elif _hist_cnt_fish > 0:
             fish_title_body = f"{fish}釣果 関東【過去{_hist_cnt_fish}件の実績】"
             fish_desc = f"関東の{fish}釣果情報。過去{_hist_cnt_fish}件の実績から旬カレンダーを掲載。{_kanto_note}例年の最盛期と船宿別傾向を確認できます。"
@@ -9857,11 +9881,47 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         )
         # SERP で「{別称} 釣果」検索時にタイトル内別称が太字一致しCTRが上がる（最重要別称1件のみ）
         _area_title_name = f"{area}（{_area_aliases[0]}）" if _area_aliases else area
+        # 2026/07/12 SEO(CTR): GSC で area ページは pos6-8 でも CTR≈0%（天津港 215imp/0click・
+        # 飯岡 716imp/11click）。毎日再生成の強みを SERP に見せる: title に更新日、description
+        # 冒頭に最新日の実釣果（魚種×匹数×船宿）を差し込み「釣果」クエリの意図に正面から答える。
+        _upd_md = f"{int(today_str[5:7])}/{int(today_str[8:10])}"
+        _latest_line = ""
+        if today_catches and _latest_label != "—":
+            _lt_bits = []
+            _lt_seen = set()
+            for _lc in sorted(today_catches,
+                              key=lambda c: (c.get("count_range") or {}).get("max") or 0,
+                              reverse=True):
+                # fish はクロール由来だと list・CSV由来だと str の両形式がある
+                _lf_raw = _lc.get("fish")
+                _lf_list = _lf_raw if isinstance(_lf_raw, list) else [_lf_raw]
+                _lf = next((x for x in _lf_list
+                            if x and isinstance(x, str) and x not in ("不明", "NULL", "欠航")), None)
+                if not _lf or _lf in _lt_seen:
+                    continue
+                _lt_seen.add(_lf)
+                _lcr = _lc.get("count_range") or {}
+                _lmin, _lmax = _lcr.get("min"), _lcr.get("max")
+                # float の整数値は int 表示（"4.0匹" 防止）
+                if isinstance(_lmin, float) and _lmin.is_integer():
+                    _lmin = int(_lmin)
+                if isinstance(_lmax, float) and _lmax.is_integer():
+                    _lmax = int(_lmax)
+                _lship = _lc.get("ship") or ""
+                if _lmax:
+                    _cnt_s = f"{_lmin}〜{_lmax}匹" if (_lmin is not None and _lmin != _lmax) else f"{_lmax}匹"
+                    _lt_bits.append(f"{_lf}{_cnt_s}" + (f"（{_lship}）" if _lship else ""))
+                else:
+                    _lt_bits.append(_lf + (f"（{_lship}）" if _lship else ""))
+                if len(_lt_bits) >= 2:
+                    break
+            if _lt_bits:
+                _latest_line = f"最新{_latest_label}は{'・'.join(_lt_bits)}など。"
         if _top_fish_str:
-            area_title_body = f"{_area_title_name}の釣果【{_top_fish_str}／{_week_ships}船宿】"
-            area_desc = f"{area}（{group}）の船釣り釣果。{_alias_meta}{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
+            area_title_body = f"{_area_title_name}の釣果【{_upd_md}更新】{_top_fish_str}／{_week_ships}船宿"
+            area_desc = f"{area}（{group}）の船釣り釣果。{_latest_line}{_alias_meta}{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
         else:
-            area_title_body = f"{_area_title_name}の船釣り釣果情報"
+            area_title_body = f"{_area_title_name}の船釣り釣果情報【{_upd_md}更新】"
             area_desc = f"{area}（{group}）の船釣り釣果情報。{_alias_meta}{_area_hist_lead}旬カレンダー・船宿情報・最寄りアクセス・海況データを掲載。"
         area_title_str = f"{area_title_body} | 船釣り予想"
 
@@ -11312,7 +11372,10 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         _fa_slug_stem = f"{fish_slug(fish)}-{area_slug(area)}"
         _fa_an = _load_fa_analysis().get(f"{fish}|{area}")
         _fa_rich = bool(fa_analysis_html) and bool(_fa_an) and (_fa_an.get("n_ships", 0) >= 2)
-        _fa_indexable = (_fa_hist_n >= _FA_NOINDEX_HIST_THRESHOLD) or (_fa_rich and _fa_hist_n >= _FA_RICH_HIST_MIN)
+        # 2026/07/12 SEO: GSC 表示実績のある slug は無条件で index（_FA_GSC_PROVEN_SLUGS）
+        _fa_indexable = ((_fa_hist_n >= _FA_NOINDEX_HIST_THRESHOLD)
+                         or (_fa_rich and _fa_hist_n >= _FA_RICH_HIST_MIN)
+                         or (_fa_slug_stem in _FA_GSC_PROVEN_SLUGS))
         if not _fa_indexable:
             fa_noindex_tag = '<meta name="robots" content="noindex, follow">'
             _FA_NOINDEX_SLUGS.add(_fa_slug_stem)
@@ -15483,9 +15546,16 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
     if discounts:
         disc_str = " ・ ".join(discounts)
         rsv_items.append(f'<div class="sg-item"><strong>割引制度</strong>あり（{disc_str}）</div>')
+    # 2026/07/12 SEO: GSC「{船宿名} 料金」系クエリ（小柴丸 料金 15imp 等）に応えるため
+    # セクションを「予約・料金案内」に拡張。実際の料金額は変動するため出さない方針は維持し、
+    # 確認方法（電話・公式サイト）への案内のみ掲載する。
+    _rsv_off = basic_merged.get("official_url")
+    rsv_items.append('<div class="sg-item"><strong>料金</strong>乗合・仕立とも時期や魚種で変動するため、予約時に船宿へ直接ご確認ください</div>')
+    if _rsv_off:
+        rsv_items.append(f'<div class="sg-item"><strong>公式サイト</strong><a href="{_rsv_off}" rel="nofollow noopener" target="_blank">料金・空席情報を公式サイトで確認 →</a></div>')
     rsv_grid = '<div class="spec-grid">' + "".join(rsv_items) + '</div>' if rsv_items else ""
     reservation_html = (
-        '<h2 class="st">予約方法</h2>'
+        '<h2 class="st">予約・料金案内</h2>'
         '<div class="spec-card">'
         + rsv_grid
         + '<p style="font-size:11px;color:var(--muted);margin-top:10px">※ 予約は船宿へ直接お電話ください。料金・空席状況・出船判断などは電話で確認するのが確実です。</p>'
@@ -15628,7 +15698,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
                     _desc_bits.append(f"前年同月比+{_diff}便。")
                 elif _diff < 0:
                     _desc_bits.append(f"前年同月比{_diff}便。")
-        _desc_bits.append("13か月分の月別実績と週次傾向レポートを毎週更新。")
+        _desc_bits.append("月別実績・予約/料金の確認方法・アクセスを掲載。")
         desc = "".join(_desc_bits)[:160]
     else:
         # 今月データなし: 直近で釣果のある月を探し価値訴求タイトルにする（指名検索CTR底上げ）。
@@ -15650,7 +15720,9 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
             elif _rf.get("size_max"):
                 _rmax = f"・最大{_rf['size_max']}cm"
             if _rm_month:
-                title = f"{name}（{area}）の釣果実績【{_rm_month}月{_rf['fish']}{_rf['count']}便{_rmax}】| 船釣り予想"
+                # 2026/07/12 SEO: 当月でない月をそのまま出すと stale に見える（7月生成で
+                # 「5月メヌケ」等）。「直近」を付け実績値であることを明示。
+                title = f"{name}（{area}）の釣果実績【直近{_rm_month}月{_rf['fish']}{_rf['count']}便{_rmax}】| 船釣り予想"
         # desc (既存形式を維持)
         if vessel.get("length_m") and vessel.get("capacity"):
             desc_parts.append(f"全長{vessel['length_m']}m・定員{vessel['capacity']}名。")
@@ -15658,6 +15730,7 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
             desc_parts.append(f"主要対象魚: {' ・ '.join(primary_fish[:4])}。")
         if sail > 0:
             desc_parts.append(f"直近30日の出船{sail}日。")
+        desc_parts.append("予約・料金の確認方法・アクセスも掲載。")
         desc = "".join(desc_parts)[:160]
 
     page_url = f"{SITE_URL}/ship/{slug}.html"

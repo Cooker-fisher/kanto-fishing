@@ -180,9 +180,10 @@ def build_index(output_path: str, docs_x_post_dir: str | None = None) -> None:
     archive_html = "\n".join(archive_items) if archive_items else "<p>まだ釣果速報はありません。</p>"
 
     # ── タイトル ──
-    page_title = "釣果速報"
+    # SEO (2026/07/12): 「関東」「船釣り」を title に含め検索キーワードと一致させる
+    page_title = "関東 船釣り釣果速報"
     if latest_label:
-        page_title = f"釣果速報｜最新: {latest_label}"
+        page_title = f"関東 船釣り釣果速報｜最新: {latest_label}"
 
     html = f"""<!DOCTYPE html>
 <html lang="ja">
@@ -191,7 +192,7 @@ def build_index(output_path: str, docs_x_post_dir: str | None = None) -> None:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {_ANALYTICS_HEAD}
 <title>{page_title}｜船釣り予想</title>
-<meta name="description" content="関東5県の船釣り釣果速報。毎日の釣果まとめと30日アーカイブ。神奈川・東京・千葉・茨城・静岡対応。">
+<meta name="description" content="関東5県（神奈川・東京・千葉・茨城・静岡）の船釣り釣果速報。今日釣れた魚と船宿を毎日まとめ・30日アーカイブ。">
 <link rel="canonical" href="{canonical_url}">
 <meta property="og:title" content="{page_title}｜船釣り予想">
 <meta property="og:description" content="関東5県の船釣り釣果速報。毎日の釣果まとめと30日アーカイブ。">

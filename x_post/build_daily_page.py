@@ -826,20 +826,35 @@ def build(ctx, commentary, output_path, png_url=None):
     if png_url is None:
         png_url = f"https://funatsuri-yoso.com/x_post/{png_filename}"
 
-    # OGP
+    # OGP / SEO (2026/07/12): 「日付 釣果」という検索は存在しないため、title/description に
+    # 当日の魚種名・船宿名を入れて「{魚種} 釣果」「{船宿} 釣果」系ロングテールの受け皿にする
+    # （GSC 実績: x_post 68URL で3か月の検索表示1回=検索流入ほぼゼロだった対策）。
     top_cnt_fish = ctx.get("top_cnt_fish", "")
+    _seo_fish = "・".join(r["fish"] for r in fish_rows[:3] if r.get("fish"))
+    _title_core = f"{date_label} 関東船釣り 釣果まとめ"
+    if not no_data and _seo_fish:
+        _title_core = f"{date_label} 関東船釣り釣果まとめ｜{_seo_fish}"
     if no_data:
         og_desc = (
             f"{date_label} 関東5県の船釣り釣果速報。"
             "釣果は現在集計中で、船宿からの公開後に順次反映します。"
         )
     else:
+        _fish_clause = f"{_seo_fish}など" if _seo_fish else ""
         og_desc = (
-            f"{date_label} 関東5県の船釣り釣果まとめ。"
-            f"{n_ships}船宿・{n_fish_species}魚種・{n_records}件の釣果報告と海況レポート。"
+            f"{date_label} 関東5県（神奈川・東京・千葉・茨城・静岡）の船釣り釣果まとめ。"
+            f"{_fish_clause}{n_fish_species}魚種・{n_ships}船宿・{n_records}件の釣果報告と海況レポート。"
         )
-        if top_cnt_fish and top_cnt_max:
-            og_desc += f"{top_cnt_fish}{ctx.get('top_cnt_min',0)}〜{top_cnt_max}匹など。"
+        if top_cnt_fish and top_cnt_fish != "不明" and top_cnt_max:
+            _top_ship = ctx.get("top_cnt_ship", "")
+            og_desc += f"{top_cnt_fish}{ctx.get('top_cnt_min',0)}〜{top_cnt_max}匹"
+            og_desc += f"（{_top_ship}）など。" if _top_ship else "など。"
+        _kg_fish = ctx.get("top_kg_fish", "")
+        _kg_ship = ctx.get("top_kg_ship", "")
+        # 「最大N.Nkgの不明」を公開 description に出さない（正規化失敗 sentinel）
+        if _kg_fish and _kg_fish != "不明" and top_kg_max:
+            og_desc += (f"最大{top_kg_max}kgの{_kg_fish}（{_kg_ship}）。"
+                        if _kg_ship else f"最大{top_kg_max}kgの{_kg_fish}。")
 
     # 5ボタン日付ナビ（案A: ±7日 + ±1日 + 全アーカイブ）
     prev_iso = ctx.get("prev_date_iso", "")
@@ -927,9 +942,9 @@ def build(ctx, commentary, output_path, png_url=None):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {_ANALYTICS_HEAD}
-<title>{date_label} 関東船釣り 釣果まとめ | 船釣り予想</title>
+<title>{_title_core} | 船釣り予想</title>
 <meta name="description" content="{og_desc}">
-<meta property="og:title" content="{date_label} 関東船釣り 釣果まとめ | 船釣り予想">
+<meta property="og:title" content="{_title_core} | 船釣り予想">
 <meta property="og:description" content="{og_desc}">
 <meta property="og:image" content="{png_url}?v=2">
 <meta property="og:image:width" content="1200">
@@ -938,7 +953,7 @@ def build(ctx, commentary, output_path, png_url=None):
 <meta property="og:site_name" content="船釣り予想">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@funatsuri_yoso">
-<meta name="twitter:title" content="{date_label} 関東船釣り 釣果まとめ | 船釣り予想">
+<meta name="twitter:title" content="{_title_core} | 船釣り予想">
 <meta name="twitter:description" content="{og_desc}">
 <meta name="twitter:image" content="{png_url}?v=2">
 <link rel="canonical" href="https://funatsuri-yoso.com/x_post/{date_str_for_file}.html">
@@ -971,7 +986,7 @@ def build(ctx, commentary, output_path, png_url=None):
   {post_drafts_html}
 
   <div class="hero">
-    <h1>{date_label} 関東船釣り 釣果まとめ</h1>
+    <h1>{_title_core}</h1>
     <div class="sub">{date_str_for_file}（{tide_type}・{moon_phase}）｜神奈川・東京・千葉・茨城・静岡</div>
     <div class="stats">
       <span class="stat"><b>{n_ships}</b>船宿出船</span>

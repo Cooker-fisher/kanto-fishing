@@ -1,6 +1,25 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/07/05
+最終更新: 2026/07/12
 最新コミット: a2bfcdfe2（fish-value リリース 3コミット・push済み）
+
+---
+
+## ✅ 直近完了（2026/07/12・main agent）— CI 4日fail 復旧 + GSC起点SEO施策
+
+1. **CI復旧（最重要）**: crawl.yml が 7/8〜11 の4日連続 fail・サイト7/7で凍結していた。
+   根本原因 = 7/7 の #52 対応が docs/pages/ と design/V2/ にだけ適用され、**実際の同期元
+   root `pages/` が未修正**（毎日 sync が古い版で上書き→#52 fail→push スキップ）。
+   docs/pages の修正済み5ファイルを pages/ に書き戻して解消。静的ページの SoT は root pages/
+   （CLAUDE.md の「design/Vn から同期」記述は実装と不一致・統合は別タスク chip 発行済み）
+2. **GSC起点SEO**（ユーザー指定 ②③⑤⑥+x_post・④fish_content prose は不要と裁定）:
+   - area/index/fish の title・description に更新日と最新日実釣果を動的注入（CTR 0% 対策）
+   - ship 予約セクション→「予約・料金案内」拡張（料金額は出さない方針維持）+ 実績月 title に「直近」
+   - fish_area: GSC表示実績 slug は hist 閾値未満でも index 維持（normalize/fa_gsc_proven_slugs.json
+     13 slug・analytics/build_fa_gsc_slugs.py で月1再生成）
+   - x_post: title/h1/description に当日の魚種・船宿名注入 + 過去68ページ backfill 済み
+3. **残**: コラムテーマ GSC 逆引き（ハナダイ旬・大原シマアジシーズン等）は決定ログ (B)-5。
+   GSC表示実績があるのにページ消失の fish_area 2件（onikasago-hiratsuka/magochi-kashima-port）要観察。
+   詳細: 決定ログ「2026-07-12」
 
 ---
 
