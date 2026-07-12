@@ -16124,173 +16124,176 @@ def build_point_pages(hist_rows, crawled_at=""):
 
 # ── 月報対象魚種設定 ──
 MONTHLY_FISH_CONFIG = {
-    "マダイ": {
-        "unit": "匹", "type_metric": "kg",
-        "romaji": "madai",
-        "og_image": "https://funatsuri-yoso.com/assets/fish/madai/madai_photo.png",
+    "アジ": {
+        "unit": "匹", "type_metric": "cm",
+        "romaji": "aji",
+        "og_image": "https://funatsuri-yoso.com/assets/fish/aji/aji_photo.png",
         "area_ports": {
-            "東京湾": [("松輪江奈", "matsuwa-ena"), ("松輪間口", "matsuwa-maguchi"), ("久里浜", "kurihama"), ("金沢八景", "kanazawa-hakkei"), ("小柴", "koshiba")],
-            "内房": [("富浦", "tomiura"), ("保田", "hota"), ("金谷", "kanaya"), ("館山", "tateyama")],
-            "相模湾・伊豆": [("佐島", "sajima"), ("茅ヶ崎", "chigasaki"), ("小田原早川", "hayakawa"), ("網代", "ajiro"), ("下田", "shimoda"), ("大磯", "ooiso"), ("平塚", "hiratsuka")],
-            "駿河湾・遠州灘": [("御前崎", "omaezaki"), ("由比", "yui"), ("沼津", "numazu"), ("田子の浦", "tagonoura")],
-            "外房": [("飯岡", "iioka"), ("大原", "ohara"), ("天津", "amatsu"), ("片貝", "katakai"), ("御宿岩和田", "onjuku-iwawada")],
-            "鹿島・茨城": [("鹿島", "kashima"), ("日立久慈", "hitachi-kuji"), ("大洗", "ooarai")],
+            "東京湾": [("金沢八景", "kanazawa-hakkei"), ("鴨居大室", "kamoi-omuro"), ("久比里", "kubiri"), ("久里浜", "kurihama"), ("小柴", "koshiba")],
+            "内房": [("金谷", "kanaya"), ("相浜", "aihama")],
+            "相模湾・伊豆": [("腰越", "koshigoe"), ("平塚", "hiratsuka"), ("片瀬", "katase"), ("佐島", "sajima"), ("小坪", "kotsubo")],
+            "駿河湾・遠州灘": [("福田", "fukude"), ("御前崎", "omaezaki")],
+            "外房": [("片貝", "katakai"), ("飯岡", "iioka")],
+            "鹿島・茨城": [("鹿島", "kashima-port"), ("那珂湊", "nakaminato"), ("日立久慈", "hitachi-kuji")],
         },
         "narratives": {
-            "東京湾": {"trend": "湾口の松輪・久里浜が出船の中心。Max平均は全エリア最低水準で、中盤以降の南西風で波が立ち食い渋りが目立った。", "tackle": "コマセビシ釣りが主流。神奈川県条例により湾内ではコマセ一本。ハリス3〜4号・3m前後。"},
-            "内房": {"trend": "出船船宿は少なくデータ蓄積が薄い月。共栄丸が継続的に出船。", "tackle": "コマセビシ・一つテンヤ併用。"},
-            "相模湾・伊豆": {"trend": "全体は控えめだが、恒丸（大磯港）が型物混じりの好釣果。中盤の中潮タイミングで一発当たった様子。", "tackle": "コマセビシ中心・一部一つテンヤ。葉山〜茅ヶ崎は浅場・小田原から伊豆は深場と釣り方が変わる。"},
-            "駿河湾・遠州灘": {"trend": "月間最大の90cm級が伊達丸（御前崎）で上がった。深場狙いの遠州灘テンヤで型物が連発。", "tackle": "一つテンヤが主流。遠州灘の深場で重めのテンヤ・タングステン系。"},
-            "外房": {"trend": "本月の主役エリア。幸丸（飯岡）が爆釣連発・梅花丸（大原）も安定。乗っ込みのピーク末期で大原沖の浅場が好調。", "tackle": "一つテンヤが主流。3〜10号のテンヤにエビ餌。底取り後の小突き＋誘いで乗っ込み個体を狙う。"},
-            "鹿島・茨城": {"trend": "東京湾と並ぶ水準。鹿島港・日立久慈港の北部沖が中心。幸栄丸がハイ便数で月間全体の底上げに貢献。", "tackle": "一つテンヤ・タイラバ混在。鹿島は北沖の深場ポイントが多くタイラバ80〜120g。"},
+            "東京湾": {"trend": "本月の主役エリア（434便）。金沢八景・鴨居大室・久比里の湾内ビシアジが絶好調で、三喜丸釣船店（小柴）が6/12にMax196匹、米元釣船店（金沢八景）が6/26に177匹と束超えを連発。渡辺釣船店・黒川本家・荒川屋が各25便超と高稼働だった。日別Max平均51.3匹は全エリア最高で、水温が急上昇せず湾内のアジが安定して群れた。", "tackle": "ビシアジ（LTアジ）が主流。天秤＋アンドンビシにコマセ、ハリス1.5〜2号2本。湾内の浅場を手返しよく。"},
+            "内房": {"trend": "金谷の光進丸（22便）・勘次郎丸（9便）と、館山・相浜の安田丸（8便）が中心。Max平均40.1匹と数釣りが成立し、金谷では50cm級の大アジも交じった。", "tackle": "ビシアジ・LTアジ。金谷沖・相浜沖の根周りを狙う。"},
+            "相模湾・伊豆": {"trend": "腰越・平塚・片瀬・佐島に27船宿が分散（188便）。庄治郎丸（平塚18便）・佐島海楽園（16便）・池田丸（腰越16便）が高稼働。Max平均21.2匹と数は控えめだが、6/6に喜久丸（腰越）が57cmと月間最大の大アジを上げるなど、型では最も期待できるエリアだった。", "tackle": "ビシアジ中心。相模湾はコマセで根周りを丁寧に。大アジ狙いはハリスを2〜3号に上げる。"},
+            "鹿島・茨城": {"trend": "鹿島・那珂湊・日立・平潟で12船宿（51便）。第二つれたか丸（那珂湊10便）・鬼澤丸（鹿島8便）・大貫丸（日立7便）が中心で、大貫丸が6/18・6/30にMax85匹。Max平均30.5匹と数も安定し、45cmの良型も上がった。", "tackle": "ビシアジ・LTアジ。北部は潮の速い日が多く重めのビシで対応。"},
+            "外房": {"trend": "片貝・飯岡で18便と少なめ。アジは外房では脇役で、イサキ・マダイの外道的な位置づけの月だった。幸丸（飯岡）が6/17にMax40匹。", "tackle": "コマセ五目の一環でアジを狙う。"},
+            "駿河湾・遠州灘": {"trend": "遠州灘・福田の啓秀丸（8便）・冲帆丸（5便）、寸座マリーナ・御前崎が中心（34便）。Max平均36.2匹と数が出て、興栄丸が6/19に45cmの良型・Max50匹。", "tackle": "ビシアジ・コマセ釣り。遠州灘は潮が速く重めのビシで。"},
         },
-        "consideration_title": "2026年5月の海況とマダイ釣果の関係",
+        "consideration_title": "2026年6月の海況とアジ釣果の関係",
         "consideration_html": (
-            "2026年5月のマダイ釣果は全{total}便と前年比{yoy:+.1f}%で推移した。月中盤の大潮タイミング（5/11〜14前後）では外房・大原〜飯岡で記録的な束釣りが連発した。"
-            "とくに5/30の幸丸（飯岡港）の19匹は、乗っ込み終盤のピーク食いを捉えた一日で、産卵接岸群が浅場に差した瞬間と推察される。"
-            "一方で東京湾は全エリア最低水準のMax平均と低調だった。これは5月後半に南西風が連日吹き付け、湾口の松輪・剣崎ポイントで波が立ち食い渋りが目立った影響と考えられる。"
-            "対照的に駿河湾の伊達丸（御前崎）は月間最大の90cm級を上げており、深場の一つテンヤで型物に的を絞れた数日があった。水温の動きを見ると、2026年5月の駿河湾西部は18〜20℃の理想帯にとどまり、産卵で浅場に差した個体を狙う釣りと、深場の落ち個体を狙う釣りの両方が成立した月だった。"
-            "潮回りでは大潮〜中潮の食いが顕著で、長潮・若潮では各エリアでツ抜けすら難しい便も散見された。乗っ込み終盤の食い渋り時期と重なり、後半は型を狙う釣りに切り替えた船が好結果を残している。"
+            "2026年6月のアジ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%と大きく伸び、6月の全魚種で最多の出船数を記録した。日別Max平均は{cmax}匹と、束（100匹）に迫る日が東京湾で相次いだ。"
+            "特筆すべきは今年6月の「涼しさ」である。関東沿岸の気温は月平均21.2℃で前年6月の23.4℃より2.1℃低く、30℃を超えた時間帯は全体の0.08%（前年は1.72%）とほぼ猛暑日なしの1か月だった。"
+            "一方で海水温（海面）は月平均22.3℃と前年（22.1℃）並みを保った。ただし25℃を超える高水温の割合は今年0.9%に対し前年は11.5%と、前年は海面が局所的に急上昇する日が多かった。今年は海面が急に温まらず適水温帯にとどまり続けたことで、浅場のアジが散らずに安定して群れた。"
+            "主役は東京湾。金沢八景・鴨居大室の湾内ビシアジで三喜丸釣船店が6/12にMax196匹、米元釣船店が6/26に177匹と束超えを連発し、月間の数を牽引した。水温が高止まりする猛暑年は日中の食い渋りが出やすいが、今年はその失速がなく、朝から日中まで手返しが効いた点が数の伸びにつながったと考えられる。型では相模湾・腰越で57cmの大アジが出るなど、数・型の両方が成立した月だった。"
         ),
-        "forecast_intro": "過去2年の6月マダイ実績は以下の通り。5月と同水準〜やや増の傾向。",
+        "forecast_intro": "過去2年の7月アジ実績は以下の通り。7月は梅雨明け前後で、東京湾のLTアジ数釣りが最盛期に入る傾向。",
         "forecast_items": [
-            "<strong>全体:</strong> 梅雨入りで欠航日が増えるが、産卵後の落ちダイ狙いで型物実績が上がる時期。",
-            "<strong>外房:</strong> 5月の主役からシフトし、深場の落ちダイ狙いに切替期。便数はやや減るが型物の比率が上がる見込み。",
-            "<strong>東京湾:</strong> 5月の南西風影響から脱し、湾口の松輪エリアで安定釣果が見込める。",
-            "<strong>駿河湾・遠州灘:</strong> 御前崎・遠州灘の深場テンヤが本格期。90cm級の型物実績は6月も継続見込み。",
-            "<strong>鹿島・茨城:</strong> 北沖の安定釣果が継続。タイラバ・テンヤ問わず2桁実績の便数が増える時期。",
+            "<strong>全体:</strong> 7月は梅雨明けにかけて水温が上がり、湾内ビシアジの数釣りが最盛期。凪の日は束超えも狙える。",
+            "<strong>東京湾:</strong> 引き続き主戦場。金沢八景・鴨居大室の湾内で数釣りが継続する見込み。日中の高水温期は朝夕の時合いが鍵。",
+            "<strong>相模湾・伊豆:</strong> 腰越〜平塚で40cm級の大アジ交じり。数は東京湾に譲るが型に分あり。",
+            "<strong>鹿島・茨城:</strong> 那珂湊・鹿島で数・型とも安定。梅雨明け後の凪を狙いたい。",
+            "<strong>内房:</strong> 金谷・相浜で数釣りと大アジ狙いが継続する見込み。",
         ],
-        "related_fish": ["マルイカ"],
-        "related_fish_area": [("飯岡", "iioka"), ("大原", "ohara")],
-    },
-    "マルイカ": {
-        "unit": "杯", "type_metric": "cm", "size_term": "胴長",
-        "romaji": "maruika",
-        "og_image": "https://funatsuri-yoso.com/assets/fish/maruika/maruika_photo.png",
-        "area_ports": {
-            "東京湾": [("松輪間口", "matsuwa-maguchi"), ("久比里", "kubiri"), ("鴨居大室", "kamoi-oomuro")],
-            "内房": [],
-            "相模湾・伊豆": [("小網代", "koajiro"), ("葉山あぶずり", "hayama-abuzuri"), ("平塚", "hiratsuka"), ("長井", "nagai"), ("佐島", "sajima")],
-            "駿河湾・遠州灘": [("沼津", "numazu")],
-            "外房": [],
-            "鹿島・茨城": [],
-        },
-        "narratives": {
-            "東京湾": {"trend": "松輪間口の喜平治丸が際立った。胴長40cm級の良型を5/9・5/12・5/26と繰り返し上げ、数（最大121杯）と型を両立。直結直ブラの感度釣りがハマった。", "tackle": "直結（直ブラ）仕掛けが主流。スッテ5〜7本・中オモリ。乗りの渋い日は浮きスッテで誘い上げ。"},
-            "内房": {"trend": "本月の出船報告なし。マルイカは三浦〜相模湾が主漁場で内房は対象外。", "tackle": "—"},
-            "相模湾・伊豆": {"trend": "本月の主役エリア。小網代の翔太丸が5/14に132杯の大爆釣。葉山あぶずり・平塚でも安定。たいぞう丸・大和丸・翔太丸の3船が各19便と高稼働で相模湾を牽引した。", "tackle": "ブランコ仕掛け・直結併用。スッテへの抱きを目感度・手感度で取る繊細な釣り。乗っ込み群は浅場のタナを丁寧に。"},
-            "駿河湾・遠州灘": {"trend": "沼津・秀丸の6便のみと出船が限られ、日別の数値（Max60杯超の日もあり）は1船宿・6便の参考値で振れ幅が大きい。マルイカの本格シーズンは別時期。", "tackle": "ブランコ仕掛け中心。"},
-            "外房": {"trend": "本月の出船報告なし。マルイカ（ケンサキ系）の主漁場外。", "tackle": "—"},
-            "鹿島・茨城": {"trend": "本月の出船報告なし。", "tackle": "—"},
-        },
-        "consideration_title": "2026年5月の海況とマルイカ釣果の関係",
-        "consideration_html": (
-            "2026年5月のマルイカ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%と倍増した。出船数の増加に加え、春の乗っ込み群が早めに接岸した好シーズンを反映している。日別Max平均は{cmax}杯で、束に迫る日も複数あった。"
-            "主役は相模湾。小網代の翔太丸が5/14に132杯の大爆釣を記録し、葉山あぶずり・平塚でも安定した数が出た。たいぞう丸・大和丸・翔太丸の3船が各19便と高稼働で、相模湾全体を牽引した。"
-            "東京湾では松輪間口の喜平治丸が際立った。胴長40cm級の良型を5/9・5/12・5/26と繰り返し上げ、数（最大121杯）と型を両立させた。直結直ブラの感度釣りがハマった形である。"
-            "水温は内海20.9℃・外海20.7℃と、マルイカの適水温帯に乗った。大潮回りで群れが固まった日に束釣りが集中する一方、潮の緩い日は拾い釣りとなり、日較差が大きかった。これはマルイカが群れ依存の強いターゲットであることの裏返しで、「群れに当たれば束、外せば一桁」という本種らしい分布を示した月だった。"
-        ),
-        "forecast_intro": "過去2年の6月マルイカ実績は以下の通り。6月は最盛期後半で、年により数の振れ幅が大きい。",
-        "forecast_items": [
-            "<strong>全体:</strong> 6月はマルイカ最盛期の後半。胴長が育って型は上向く。梅雨の欠航を挟みつつ数は5月並み〜やや増の見込み。",
-            "<strong>相模湾・伊豆:</strong> 引き続き主戦場。小網代・葉山で群れが続く限り束狙いが可能。凪の日を狙い撃ちたい。",
-            "<strong>東京湾:</strong> 松輪間口で40cm級の良型シーズンが継続。型を狙うなら6月前半が本命。",
-            "<strong>駿河湾・遠州灘:</strong> 沼津で細々。本格化は別シーズンで、6月は数が読みにくい。",
-            "<strong>外房・鹿島・内房:</strong> マルイカの主漁場外。6月も出船は見込み薄。",
-        ],
-        "related_fish": ["マダイ"],
-        "related_fish_area": [("小網代", "koajiro"), ("葉山あぶずり", "hayama-abuzuri")],
+        "related_fish": ["イサキ"],
+        "related_fish_area": [("金沢八景", "kanazawa-hakkei"), ("金谷", "kanaya")],
     },
     "イサキ": {
         "unit": "匹", "type_metric": "cm",
         "romaji": "isaki",
         "og_image": "https://funatsuri-yoso.com/assets/fish/isaki/isaki_photo.png",
         "area_ports": {
-            "東京湾": [("松輪江奈", "matsuwa-ena"), ("久里浜", "kurihama")],
-            "内房": [("洲崎", "susaki")],
-            "相模湾・伊豆": [("佐島", "sajima"), ("網代", "ajiro-port"), ("伊東", "ito-shi"), ("宇佐美", "usami")],
-            "駿河湾・遠州灘": [("御前崎", "omaezaki")],
-            "外房": [("大原", "ohara"), ("片貝", "katakai"), ("飯岡", "iioka")],
+            "東京湾": [("松輪江奈", "matsuwa-ena"), ("金沢八景", "kanazawa-hakkei"), ("久里浜", "kurihama")],
+            "内房": [("洲崎", "susaki"), ("相浜", "aihama")],
+            "相模湾・伊豆": [("久料", "kuryo"), ("宇佐美", "usami"), ("佐島", "sajima"), ("伊東", "ito-shi")],
+            "駿河湾・遠州灘": [("御前崎", "omaezaki"), ("福田", "fukude"), ("戸田", "heda")],
+            "外房": [("大原", "ohara"), ("片貝", "katakai"), ("江見", "emi")],
             "鹿島・茨城": [],
         },
         "narratives": {
-            "東京湾": {"trend": "久里浜・松輪江奈が中心。久里浜の平作丸が5/23〜25にMax100匹級を連発し、月間の数を牽引した。型も42cm級の良型が出ている。", "tackle": "コマセビシ＋ウィリー（または付けエサ）。剣崎・松輪沖の根回りをハリス1.5〜2号で手返しよく。"},
-            "内房": {"trend": "洲崎の佐衛美丸がほぼ専業で14便。Max50匹と高活性の日もあり、41cmの良型交じりで数・型とも好調だった。", "tackle": "コマセ＋ウィリー仕掛け。3〜4本針の数釣り。"},
-            "相模湾・伊豆": {"trend": "佐島・網代・伊東に16船宿が分散。1船あたりはMax20匹前後と外房より控えめだが、40cm級の良型が出るエリア。", "tackle": "コマセ＋ウィリー。相模湾は手前の根周りを丁寧に探る。"},
-            "駿河湾・遠州灘": {"trend": "御前崎・田子の浦で月間最大45cmの良型。博栄丸・増福丸が中心で、数より型のエリア。", "tackle": "コマセ釣り中心。深場の良型を狙う。"},
-            "外房": {"trend": "本月の主役エリア（89便）。大原・片貝に船が集中し、第三松栄丸23便・つる丸20便・勇幸丸14便が高稼働。乗っ込みの数釣りでMax35〜37匹と安定した。", "tackle": "コマセ＋ウィリー仕掛けが主流。ハリス1.5〜2号・3〜5本針で手返し重視。"},
+            "東京湾": {"trend": "本月の主役エリア（257便）。松輪江奈に206便が集中し、大松丸43便・成銀丸30便・伝五郎丸29便・瀬戸丸29便が高稼働。瀬戸丸が6/12にMax209匹の大爆釣を記録し、あまさけや丸も6/10に141匹。日別Max平均82.1匹と全エリアで断然の数釣りだった。", "tackle": "コマセビシ＋ウィリー（または付けエサ）。剣崎・松輪沖の根回りをハリス1.5〜2号・3〜5本針で手返しよく。"},
+            "内房": {"trend": "洲崎の早川丸（26便）・佐衛美丸（16便）、館山・相浜の安田丸（14便）が中心（57便）。Max平均49.4匹と数釣りが成立し、39cmの良型交じりで安定した。", "tackle": "コマセ＋ウィリー仕掛け。洲崎沖・相浜沖の根周りを数釣り。"},
+            "相模湾・伊豆": {"trend": "南伊豆・久料の魚磯丸（31便）が専業で高稼働。宇佐美・佐島・伊東にも船が分散（138便）。ちがさき丸（茅ヶ崎）が6/21にMax82匹。1船あたりのMax平均は23.2匹と控えめだが、村正丸（伊東）が41cmを上げるなど良型が出るエリア。", "tackle": "コマセ＋ウィリー。伊豆・相模湾は手前の根周りを丁寧に探る。"},
+            "駿河湾・遠州灘": {"trend": "御前崎の増福丸（10便）、遠州灘・福田の啓秀丸（8便）、戸田のふじ丸（8便）が中心（43便）。数より型のエリアで、焼津・清水では45cm級の大判イサキも上がった。", "tackle": "コマセ釣り中心。深場の良型を狙う。"},
+            "外房": {"trend": "大原に102便が集中し、片貝・江見にも分散（145便）。新栄丸（江見16便）・松栄丸（大原16便）・第三松栄丸（14便）が高稼働で、Max平均35.5匹と数釣りが続いた。5月の主役から便数は落ちたが依然として好調エリア。", "tackle": "コマセ＋ウィリー仕掛けが主流。ハリス1.5〜2号・3〜5本針で手返し重視。"},
             "鹿島・茨城": {"trend": "本月のイサキ出船報告なし。イサキは外房以南が主漁場で、鹿島以北は対象外。", "tackle": "—"},
         },
-        "consideration_title": "2026年5月の海況とイサキ釣果の関係",
+        "consideration_title": "2026年6月の海況とイサキ釣果の関係",
         "consideration_html": (
-            "2026年5月のイサキ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%と増加した。初夏の乗っ込み（産卵期）に入り、関東各地で数釣りシーズンが本格化した月である。日別Max平均は{cmax}匹で、束（100匹）に迫る日も出た。"
-            "主役は外房。大原・片貝に船が集中し、第三松栄丸・つる丸・勇幸丸が各14〜23便と高稼働で数を伸ばした。東京湾では久里浜の平作丸が5/23〜25にMax100匹級を連発し、月間の数を牽引している。"
-            "型は各地で40cm級が安定し、駿河湾・田子の浦と外房・片貝では45cm前後の良型も上がった。水温が上がって産卵群が浅場の根周りに固まったことで、コマセ＋ウィリーの手返し勝負がはまった月といえる。潮回りでは中潮〜大潮で群れが濃くなる傾向が見られた。"
+            "2026年6月のイサキ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%と大きく増加した。乗っ込み（産卵期）の数釣りシーズンがピークを迎え、関東各地で束（100匹）超えが相次いだ月である。日別Max平均は{cmax}匹に達した。"
+            "今年6月は気温が月平均21.2℃と前年より2.1℃低く、猛暑日クラス（30℃超）の時間帯は前年の約20分の1とほとんどなかった。海面水温は月平均22.3℃と前年並みだが、25℃超の高水温は前年11.5%に対し今年0.9%と激減しており、海が急に温まらず適水温帯で安定した。産卵で根周りに固まったイサキが高活性を保ちやすい海況だったといえる。"
+            "主役は東京湾・松輪江奈。瀬戸丸が6/12にMax209匹、あまさけや丸が6/10に141匹と、コマセ＋ウィリーの数釣りが大当たりした。型は各地で40cm級が安定し、駿河湾に隣接する焼津・清水では45cm前後の大判も上がった。潮回りでは中潮〜大潮で群れが濃くなる傾向が見られた。"
         ),
-        "forecast_intro": "過去2年の6月イサキ実績は以下の通り。6月は乗っ込み後半〜数のピークで、5月並み〜やや増の傾向。",
+        "forecast_intro": "過去2年の7月イサキ実績は以下の通り。7月は乗っ込み後半〜梅雨明けで、数は6月並み・型はやや上向く傾向。",
         "forecast_items": [
-            "<strong>全体:</strong> 6月は乗っ込み後半で数釣りのピーク。梅雨の合間を縫えれば束釣りも狙える時期。",
-            "<strong>外房:</strong> 引き続き主戦場。大原・片貝で群れが続く限り数が伸びる見込み。",
-            "<strong>東京湾:</strong> 久里浜・松輪沖でコマセ＋ウィリーの数釣りが安定。",
-            "<strong>相模湾・伊豆:</strong> 佐島〜伊東で40cm級の良型交じり。数は外房に譲るが型に分あり。",
-            "<strong>駿河湾・遠州灘:</strong> 御前崎で45cm級の良型シーズンが継続見込み。",
+            "<strong>全体:</strong> 7月は乗っ込み後半で数釣りが続く。梅雨明け後は型が育ち、35〜40cm級の比率が上がる時期。",
+            "<strong>東京湾:</strong> 引き続き主戦場。松輪江奈・久里浜沖でコマセ＋ウィリーの数釣りが安定する見込み。",
+            "<strong>外房:</strong> 大原・片貝で群れが続く限り数が伸びる。梅雨の合間の凪を狙いたい。",
+            "<strong>相模湾・伊豆:</strong> 久料〜伊東で40cm級の良型交じり。数より型のエリア。",
+            "<strong>駿河湾・遠州灘:</strong> 御前崎・焼津で45cm級の大判シーズンが継続見込み。",
         ],
-        "related_fish": ["マダイ"],
-        "related_fish_area": [("大原", "ohara"), ("片貝", "katakai")],
+        "related_fish": ["アジ"],
+        "related_fish_area": [("大原", "ohara"), ("松輪江奈", "matsuwa-ena")],
+    },
+    "マダコ": {
+        "unit": "匹", "type_metric": "kg", "no_length": True,
+        "romaji": "madako",
+        "og_image": "https://funatsuri-yoso.com/assets/fish/madako/madako_photo.png",
+        "area_ports": {
+            "東京湾": [("浦安", "urayasu"), ("金沢八景", "kanazawa-hakkei"), ("横浜本牧", "yokohama-honmoku"), ("小柴", "koshiba")],
+            "内房": [],
+            "相模湾・伊豆": [("片瀬", "katase"), ("腰越", "koshigoe")],
+            "駿河湾・遠州灘": [],
+            "外房": [("大原", "ohara")],
+            "鹿島・茨城": [("那珂湊", "nakaminato")],
+        },
+        "narratives": {
+            "東京湾": {"trend": "本月の主役エリア（334便）。浦安・金沢八景・横浜・大田区の運河筋までマダコ専門船が本格稼働し、ミナミ釣船（六郷水門32便）・鴨下丸kawana（八幡橋22便）・長崎屋（横浜本牧21便）・吉久（浦安20便）が高稼働。複数船が20匹前後を上げ、濱生丸（八幡橋）が6/1に5.0kg、小柴丸（金沢八景）が6/14に4.9kgの大ダコを取った。", "tackle": "テンヤ・エギタコ（タコエギ）が主流。オモリ＋タコエギ2本を底に這わせ、乗ったら即アワセ。湾奥の浅場の砂泥底を丁寧に。"},
+            "内房": {"trend": "本月の内房マダコ出船報告なし。", "tackle": "—"},
+            "相模湾・伊豆": {"trend": "片瀬のゆうせい丸（14便）・腰越の池田丸（4便）が出船（18便）。相模湾のマダコはエギタコで、6/10に池田丸が30cm・ゆうせい丸が2.6kgを上げた。東京湾に次ぐ小さな漁場。", "tackle": "エギタコ（タコエギ）。相模湾は根の荒い場所が多く根掛かり回避が鍵。"},
+            "駿河湾・遠州灘": {"trend": "本月の駿河湾・遠州灘マダコ出船報告なし。", "tackle": "—"},
+            "外房": {"trend": "大原の利永丸・義丸が各1便のみと僅少。マダコの主戦場は東京湾。", "tackle": "テンヤ・エギタコ。"},
+            "鹿島・茨城": {"trend": "那珂湊の第二つれたか丸（7便）が出船。6/18に2.5kgの良型。データは僅少で参考値。", "tackle": "テンヤ・エギタコ。"},
+        },
+        "consideration_title": "2026年6月の海況とマダコ釣果の関係",
+        "consideration_html": (
+            "2026年6月のマダコ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%と増加した。東京湾のマダコ（エギタコ・テンヤ）が本格シーズンに入り、浦安・金沢八景・横浜・大田区の運河筋までマダコ専門船がそろって稼働した月である。"
+            "今年6月は気温が前年より2.1℃低い涼しい1か月だったが、東京湾奥の海面水温は22℃前後で安定して推移した。マダコは水温が上がる初夏に浅場へ差してくるため、急激な高水温スパイクがなく水温が安定した今年の海況は、湾奥の砂泥底を舞台にした数釣りに向いていた。"
+            "ミナミ釣船・鴨下丸kawana・長崎屋・吉久が高稼働で、複数船が20匹前後を記録。型でも濱生丸（八幡橋）が6/1に5.0kg、小柴丸（金沢八景）が6/14に4.9kgと大ダコを上げており、数・型の両方が成立した。相模湾でも片瀬・腰越で出船があった。マダコは新子（当歳ダコ）の育ち具合で数が大きく振れるが、今年は序盤から安定した釣果が続いた。"
+        ),
+        "forecast_intro": "過去2年の7月マダコ実績は以下の通り。東京湾中心の傾向は7月も続き、盛夏に向けて数釣りが本格化する見込み。",
+        "forecast_items": [
+            "<strong>全体:</strong> 7月は東京湾マダコの最盛期。新子が育って数が伸び、エギタコの数釣りが本命の時期。",
+            "<strong>東京湾:</strong> 浦安・金沢八景・横浜の各船で数・型とも狙える。盛夏の浅場のタコを丁寧に拾いたい。",
+            "<strong>相模湾・伊豆:</strong> 片瀬・腰越で小規模ながら出船継続の見込み。",
+            "<strong>その他エリア:</strong> マダコの本格的な狙いものは東京湾が中心。他エリアは単発の出船にとどまる見込み。",
+        ],
+        "related_fish": ["タチウオ"],
+        "related_fish_area": [("浦安", "urayasu"), ("金沢八景", "kanazawa-hakkei")],
     },
     "タチウオ": {
         "unit": "匹", "type_metric": "cm",
         "romaji": "tachiuo",
+        "og_image": "https://funatsuri-yoso.com/assets/fish/tachiuo/tachiuo_photo.png",
         "area_ports": {
-            "東京湾": [("浦安", "urayasu"), ("鴨居大室", "kamoi-omuro"), ("小柴", "koshiba")],
+            "東京湾": [("鴨居大室", "kamoi-omuro"), ("浦安", "urayasu"), ("久里浜", "kurihama"), ("小柴", "koshiba"), ("金沢八景", "kanazawa-hakkei")],
             "内房": [],
-            "相模湾・伊豆": [("佐島", "sajima")],
-            "駿河湾・遠州灘": [],
+            "相模湾・伊豆": [],
+            "駿河湾・遠州灘": [("焼津", "yaizu"), ("寸座", "sunza")],
             "外房": [],
             "鹿島・茨城": [],
         },
         "narratives": {
-            "東京湾": {"trend": "本月はほぼ東京湾一択（59便）。浦安の吉久19便・福よし丸14便・吉野屋13便が高稼働。横浜港の渡辺釣船店が5/26にMax58匹と数を伸ばし、浦安の吉久では135cm、江東区木場の吉野屋でも127cmのドラゴン級が上がった。", "tackle": "テンヤ・テンビン（一部ジギング）。誘い上げ〜フォールで食わせる。指5本級は120cm超。"},
-            "内房": {"trend": "本月のタチウオ出船報告なし。", "tackle": "—"},
-            "相模湾・伊豆": {"trend": "深田家が1便のみ。データが僅少で参考値。", "tackle": "—"},
-            "駿河湾・遠州灘": {"trend": "本月のタチウオ出船報告なし。", "tackle": "—"},
-            "外房": {"trend": "本月のタチウオ出船報告なし。", "tackle": "—"},
-            "鹿島・茨城": {"trend": "本月のタチウオ出船報告なし。", "tackle": "—"},
+            "東京湾": {"trend": "本月の主役エリア（183便）。深川吉野屋（江東区木場31便）・黒川本家（久里浜22便）・吉久（浦安19便）が高稼働で、横浜港の渡辺釣船店が6/9にMax79匹・6/16に73匹と1人あたりの数を牽引した。型も指5本級が続き、五郎丸（鴨居大室）で131cm、こなや丸（長浦）・浜新丸（富津）でも128cmのドラゴン級が上がった。", "tackle": "テンヤ・テンビン（一部ジギング）。誘い上げ〜フォールで食わせる。指5本級（130cm前後）を狙うなら追い食いを丁寧に。"},
+            "内房": {"trend": "本月の内房タチウオは富津の湾口で単発の128cm級が出た程度で、狙いものの中心は東京湾側。", "tackle": "テンヤ・テンビン。"},
+            "相模湾・伊豆": {"trend": "本月の相模湾・伊豆タチウオ出船報告なし。", "tackle": "—"},
+            "駿河湾・遠州灘": {"trend": "焼津・浜名湖（寸座）のタチウオが出船（33便）。橋安丸（焼津小川16便）・釣華丸（寸座9便）が中心で、Max平均27.0匹と東京湾に迫る数。6/6に釣華丸が123cmの良型。テンヤ・ジギングで安定した。", "tackle": "テンヤ・ジギング。遠州灘・浜名湖は潮に乗せて広く探る。"},
+            "外房": {"trend": "本月の外房タチウオ出船報告なし。", "tackle": "—"},
+            "鹿島・茨城": {"trend": "本月の鹿島・茨城タチウオ出船報告なし。", "tackle": "—"},
         },
-        "consideration_title": "2026年5月の海況とタチウオ釣果の関係",
+        "consideration_title": "2026年6月の海況とタチウオ釣果の関係",
         "consideration_html": (
-            "2026年5月のタチウオ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%で推移した。出船はほぼ東京湾に集中し、内房・外房・鹿島では本格的な狙いものにはならなかった。"
-            "浦安の吉久（19便）・福よし丸（14便）・吉野屋（13便）が高稼働で東京湾の数を支えた。横浜港の渡辺釣船店は5/26にMax58匹と数を伸ばし、浦安の吉久では135cm、江東区木場の吉野屋でも127cmの大型が上がっている。"
-            "日別Max平均は{cmax}匹と数自体は控えめだが、5月の東京湾は指5本（130cm前後）クラスの型狙いに向いた月だった。テンヤ・テンビンの誘い上げで良型を引き出した船が好結果を残している。"
+            "2026年6月のタチウオ釣果は全{total}便、前年同月{prev_total}便から{yoy:+.1f}%で推移した。出船は東京湾を中心に、駿河湾・遠州灘（焼津・浜名湖）でもまとまった数が上がり、内房・外房・鹿島では本格的な狙いものにはならなかった。"
+            "今年6月は気温が前年より2.1℃低い涼しい月だったが、東京湾の海面水温は22℃前後で安定し、周年タチウオの好漁が続いた。前年のように海面が25℃超まで一気に上がる日が少なかったぶん、日中の食い渋りが出にくく、数・型とも安定して読めた月といえる。"
+            "東京湾では横浜港の渡辺釣船店が6/9にMax79匹・6/16に73匹と1人あたりの数を牽引した（船全体の合計ではなく竿頭ベース）。型では五郎丸（鴨居大室）で131cm、こなや丸（長浦）・浜新丸（富津）で128cmと、指5本級のドラゴンが各所で上がっている。駿河湾・浜名湖側でも釣華丸が123cmを上げた。テンヤ・テンビンの誘い上げで良型を引き出した船が好結果を残した。"
         ),
-        "forecast_intro": "過去2年の6月タチウオ実績は以下の通り。東京湾中心の傾向は6月も続く見込み。",
+        "forecast_intro": "過去2年の7月タチウオ実績は以下の通り。東京湾中心の傾向は7月も続き、盛夏はドラゴン級の型狙いが本命。",
         "forecast_items": [
-            "<strong>全体:</strong> 東京湾の周年タチウオが主体。梅雨で出船日は減るが、ドラゴン級の型実績は継続見込み。",
-            "<strong>東京湾:</strong> 浦安・横浜・鴨居大室の各船で数・型とも狙える。指5本級の良型は6月も期待。",
-            "<strong>相模湾・伊豆:</strong> 単発の出船にとどまる見込みで、数は読みにくい。",
-            "<strong>外房・内房・鹿島:</strong> 本格的な狙いものにはなりにくい時期。",
+            "<strong>全体:</strong> 東京湾の周年タチウオが主体。梅雨明け後は数・型とも上向き、指5本級の実績が続く見込み。",
+            "<strong>東京湾:</strong> 浦安・横浜・鴨居大室の各船で数・型とも狙える。ドラゴン級の良型は7月も期待。",
+            "<strong>駿河湾・遠州灘:</strong> 焼津・浜名湖でテンヤ・ジギングの数釣りが継続する見込み。",
+            "<strong>外房・相模湾・鹿島:</strong> 本格的な狙いものにはなりにくい時期。",
         ],
-        "related_fish": ["マダイ"],
-        "related_fish_area": [("鴨居大室", "kamoi-omuro"), ("小柴", "koshiba")],
+        "related_fish": ["マダコ"],
+        "related_fish_area": [("鴨居大室", "kamoi-omuro"), ("浦安", "urayasu")],
     },
 }
 
 # エリア定義（月報用 6エリア）
 _MONTHLY_AREA_MAP = {
-    "東京湾": ["松輪江奈", "松輪間口", "久里浜", "久比里", "金沢八景", "小柴", "金田", "野比",
-              "剣崎", "三崎", "鴨居大室", "鴨居", "大室", "羽田", "八丁堀", "浦安", "本牧", "船橋", "深川"],
-    "内房": ["富浦", "保田", "金谷", "館山", "勝山", "岩井", "洲崎", "布良", "那古船形"],
-    "相模湾・伊豆": ["佐島", "小網代", "茅ヶ崎", "小田原", "網代", "下田", "大磯", "平塚", "小坪",
-                  "葉山", "伊東", "宇佐美", "熱海", "真鶴", "東伊豆", "南伊豆", "西伊豆", "長井"],
-    "駿河湾・遠州灘": ["御前崎", "由比", "沼津", "田子の浦"],
-    "外房": ["飯岡", "大原", "天津", "片貝", "御宿", "勝浦", "鴨川", "銚子", "白浜", "千倉", "九十九里"],
-    "鹿島・茨城": ["鹿島", "日立", "久慈", "大洗", "那珂湊", "磯崎"],
+    # 注: 判定は先頭から部分一致・先着優先（_monthly_get_area）。内房を相模湾より前に置き
+    #     「相浜」（館山）が相模湾へ誤マッチしないようにしている。都市部の運河・河口の船着場は
+    #     ほぼ東京湾（横浜/大田区/品川区/江東区/江戸川区 等）なので東京湾へ寄せる。
+    "東京湾": ["松輪江奈", "松輪間口", "久里浜", "久比里", "金沢八景", "金沢漁港", "小柴", "柴漁港",
+              "金田", "野比", "剣崎", "三崎", "鴨居大室", "鴨居", "大室", "走水", "羽田", "八丁堀",
+              "浦安", "本牧", "横浜", "八幡橋", "船橋", "深川", "江東区", "江戸川区", "江戸川放水路",
+              "原木中山", "東葛西", "品川区", "大田区", "平和島", "京浜運河", "長浦"],
+    "内房": ["富浦", "保田", "金谷", "館山", "勝山", "岩井", "洲崎", "布良", "那古船形", "相浜"],
+    "相模湾・伊豆": ["佐島", "小網代", "茅ヶ崎", "小田原", "早川漁港", "網代", "下田", "大磯", "平塚", "小坪",
+                  "葉山", "伊東", "宇佐美", "熱海", "真鶴", "東伊豆", "南伊豆", "西伊豆", "長井", "腰越", "片瀬", "久料"],
+    "駿河湾・遠州灘": ["御前崎", "由比", "沼津", "戸田", "田子の浦", "焼津", "福田", "寸座"],
+    "外房": ["飯岡", "大原", "天津", "片貝", "御宿", "勝浦", "鴨川", "江見", "銚子", "白浜", "千倉", "九十九里"],
+    "鹿島・茨城": ["鹿島", "日立", "久慈", "大洗", "那珂湊", "磯崎", "会瀬", "平潟", "波崎"],
 }
 _MONTHLY_AREA_ORDER = ["東京湾", "内房", "外房", "鹿島・茨城", "相模湾・伊豆", "駿河湾・遠州灘"]
 
 # 月報を生成する対象月（前月自動が本来だが、データが確実に揃う月を固定指定も可）
 # "auto" を指定すると実行時の前月を対象にする
-_MONTHLY_TARGET = "2026-05"  # "auto" で前月自動
+_MONTHLY_TARGET = "2026-06"  # "auto" で前月自動
 
 
 def _monthly_get_area(port: str) -> str:
@@ -16314,6 +16317,12 @@ def _monthly_to_float(s):
 def _monthly_to_int(s):
     v = _monthly_to_float(s)
     return int(v) if v is not None else None
+
+
+def _monthly_is_boat(r):
+    """船中（合計）記録か。is_boat=1 は船全体の合計匹数で、1人あたりの釣果とは粒度が違うため
+    数系の集計（Max平均・ベスト釣果・日別グラフ）から除外する（型・重量の集計には影響させない）。"""
+    return str(r.get("is_boat", "")).strip() == "1"
 
 
 def _monthly_load_csv(year: int, month: int, fish: str):
@@ -16342,12 +16351,13 @@ def _monthly_summarize(rows):
     for r in rows:
         ships[r["ship"]] += 1
         dates.add(r["date"])
+        is_boat = _monthly_is_boat(r)
         cmin = _monthly_to_int(r.get("cnt_min"))
         cmax = _monthly_to_int(r.get("cnt_max"))
         smax = _monthly_to_float(r.get("size_max"))
-        if cmin is not None:
+        if cmin is not None and not is_boat:
             cnt_min_vals.append(cmin)
-        if cmax is not None:
+        if cmax is not None and not is_boat:
             cnt_max_vals.append(cmax)
         if smax is not None:
             size_max_vals.append(smax)
@@ -16367,11 +16377,12 @@ def _monthly_daily_minmax(rows):
     by_date = _dd(lambda: {"min": [], "max": [], "n_ships": set()})
     for r in rows:
         d = r["date"]
+        is_boat = _monthly_is_boat(r)
         cmin = _monthly_to_int(r.get("cnt_min"))
         cmax = _monthly_to_int(r.get("cnt_max"))
-        if cmin is not None:
+        if cmin is not None and not is_boat:
             by_date[d]["min"].append(cmin)
-        if cmax is not None:
+        if cmax is not None and not is_boat:
             by_date[d]["max"].append(cmax)
         by_date[d]["n_ships"].add(r["ship"])
     result = []
@@ -16389,6 +16400,8 @@ def _monthly_daily_minmax(rows):
 def _monthly_best_trips(rows, top_k=3):
     scored = []
     for r in rows:
+        if _monthly_is_boat(r):
+            continue  # 船中合計は1人あたりのベスト釣果ランキングから除外
         cmax = _monthly_to_int(r.get("cnt_max"))
         if cmax is None:
             continue
@@ -16440,25 +16453,30 @@ def _monthly_by_area(rows):
     result = {}
     for area, lst in area_rows.items():
         ships = _dd(int)
-        cnt_min_vals, cnt_max_vals, size_max_vals = [], [], []
+        cnt_min_vals, cnt_max_vals, size_max_vals, kg_max_vals = [], [], [], []
         dates = set()
         for r in lst:
             ships[r["ship"]] += 1
             dates.add(r["date"])
+            is_boat = _monthly_is_boat(r)
             cmin = _monthly_to_int(r.get("cnt_min"))
             cmax = _monthly_to_int(r.get("cnt_max"))
             smax = _monthly_to_float(r.get("size_max"))
-            if cmin is not None:
+            kmax = _monthly_to_float(r.get("kg_max"))
+            if cmin is not None and not is_boat:
                 cnt_min_vals.append(cmin)
-            if cmax is not None:
+            if cmax is not None and not is_boat:
                 cnt_max_vals.append(cmax)
             if smax is not None:
                 size_max_vals.append(smax)
+            if kmax is not None and kmax > 0:
+                kg_max_vals.append(kmax)
         result[area] = {
             "n_trips": len(lst), "n_ships": len(ships), "n_dates": len(dates),
             "cnt_min_avg": round(sum(cnt_min_vals) / len(cnt_min_vals), 1) if cnt_min_vals else None,
             "cnt_max_avg": round(sum(cnt_max_vals) / len(cnt_max_vals), 1) if cnt_max_vals else None,
             "size_max_overall": max(size_max_vals) if size_max_vals else None,
+            "kg_max_overall": max(kg_max_vals) if kg_max_vals else None,
             "top_ships": sorted(ships.items(), key=lambda x: -x[1])[:5],
         }
     return result
@@ -16620,7 +16638,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     # ベスト3（数）HTML
     best_html = []
     for i, t in enumerate(cur_data.get("best_trips", []), 1):
-        size_s = f" / 最大{t['size_max']:.0f}cm" if t.get("size_max") else ""
+        size_s = "" if cfg.get("no_length") else (f" / 最大{t['size_max']:.0f}cm" if t.get("size_max") else "")
         ship_lnk = _ship_link(t["ship"], depth=2)
         # min==max（または min欠落）は単一値に統一（決定ログ2026/05/23・「N〜N匹」禁止）
         _cmin, _cmax = t.get("cnt_min"), t.get("cnt_max")
@@ -16694,7 +16712,11 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
                 f'</section>'
             )
             continue
-        size_label = f"最大{v['size_max_overall']:.0f}cm" if v.get("size_max_overall") else "型データ未取得"
+        if cfg.get("no_length"):
+            _akg = v.get("kg_max_overall")
+            size_label = f"最大{_akg:.1f}kg" if _akg else "重量データ未取得"
+        else:
+            size_label = f"最大{v['size_max_overall']:.0f}cm" if v.get("size_max_overall") else "型データ未取得"
         # 船宿チップ（depth=2）
         ships_chips_a = "".join(
             f'<a href="../../ship/{_SHIP_ROMAJI[sh]}.html" class="ml-chip">{sh} <span class="ml-chip-n">{c}便</span></a>'
@@ -16820,6 +16842,16 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     yoy_cls = "neg" if yoy_pct < 0 else "pos"
     yoy_label = f"前年比 {yoy_pct:+.1f}% （前年 {ps.get('total_trips', '—')}便）" if ps.get("total_trips") else "初月集計"
     size_overall = s.get("size_max_overall")
+    # no_length=True の魚種（マダコ等・全長cmが意味を持たない）は「月間最大」を重量kgで表示する
+    no_length = cfg.get("no_length", False)
+    if no_length:
+        _kg_trips = cur_data.get("best_kg_trips", [])
+        _maxkg = _kg_trips[0]["kg_max"] if _kg_trips else None
+        type_overall_num = f"{_maxkg:.1f}" if _maxkg else "—"
+        type_overall_unit = "kg"
+    else:
+        type_overall_num = f"{size_overall:.0f}" if size_overall else "—"
+        type_overall_unit = "cm"
     size_overall_s = f"{size_overall:.0f}" if size_overall else "—"
     share_text = f"{year_num}年{month_num}月 関東{fish}釣果月報｜船釣り予想"
     share_bar_html = _build_share_buttons(share_text, canonical)
@@ -16951,7 +16983,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
     <div class="ml-hero-stat"><span class="v">{s['total_trips']}</span><span class="l">便</span></div>
     <div class="ml-hero-stat"><span class="v">{s['n_ships']}</span><span class="l">船宿</span></div>
     <div class="ml-hero-stat"><span class="v">{s['n_dates']}</span><span class="l">日</span></div>
-    <div class="ml-hero-stat"><span class="v">{size_overall_s}<small style="font-size:14px">cm</small></span><span class="l">月間最大</span></div>
+    <div class="ml-hero-stat"><span class="v">{type_overall_num}<small style="font-size:14px">{type_overall_unit}</small></span><span class="l">月間最大</span></div>
   </div>
   <span class="ml-hero-yoy {yoy_cls}">{yoy_label}</span>
 </section>
@@ -16973,7 +17005,7 @@ def _monthly_build_html(fish, cfg, month_str, cur_data, prev_data, next_month_hi
       <div class="ml-stat"><span class="ml-stat-label">釣行日数</span><span class="ml-stat-val">{s['n_dates']}日</span></div>
       <div class="ml-stat"><span class="ml-stat-label">日別Min平均</span><span class="ml-stat-val">{s.get('cnt_min_avg') or '—'}{unit}</span></div>
       <div class="ml-stat"><span class="ml-stat-label">日別Max平均</span><span class="ml-stat-val">{s.get('cnt_max_avg') or '—'}{unit}</span></div>
-      <div class="ml-stat"><span class="ml-stat-label">月間最大型</span><span class="ml-stat-val">{size_overall_s}cm</span></div>
+      <div class="ml-stat"><span class="ml-stat-label">月間最大型</span><span class="ml-stat-val">{type_overall_num}{type_overall_unit}</span></div>
     </div>
     <details class="ml-ships-wrap" open><summary style="font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;padding:6px 0">対象船宿一覧（{s['n_ships']}船宿{'・便数上位15を表示' if s['n_ships'] > 15 else ''}）</summary>{ships_html}</details>
     <div class="ml-best-twin">
@@ -17112,8 +17144,11 @@ def build_monthly_index(crawled_at=""):
                 if not fname.endswith(".html"):
                     continue
                 romaji = fname[:-5]
-                # MONTHLY_FISH_CONFIG から fish 名を逆引き
+                # MONTHLY_FISH_CONFIG から fish 名を逆引き。過去月の魚種が現行 config から外れても
+                # インデックスのカードを消さないよう、_FISH_ROMAJI 逆引きにフォールバックする
                 fish = next((f for f, c in MONTHLY_FISH_CONFIG.items() if c.get("romaji") == romaji), None)
+                if not fish:
+                    fish = next((f for f, r in _FISH_ROMAJI.items() if r == romaji), None)
                 if not fish:
                     continue
                 report_cards.setdefault(month_name, {})[romaji] = {
