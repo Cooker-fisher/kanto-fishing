@@ -35,6 +35,13 @@ DST_DB = os.path.join(RESULTS_DIR, "predict_params.sqlite")
 
 # 蒸留対象テーブル（predict_count.py の EXPOSED クエリ先 + E層ゲーティング用）
 # 各エントリ: (テーブル名, 必須か, (fish, ship) インデックスを張るか)
+#
+# 行フィルタ（任意）: テーブル名 → WHERE 句。ローカル診断専用の行を配布DBから除く。
+# combo_range_backtest の T44 系列（cnt_direct/cnt_prod/cnt_bz/cnt_prod_bz）は
+# 経路比較のための評価専用行なので配布しない（code-reviewer 指摘）。
+ROW_FILTERS = {
+    "combo_range_backtest": "metric IN ('cnt','size','kg','composite')",
+}
 EXPORT_TABLES = [
     ("combo_decadal",            True,  True),   # 旬別ベースライン（予測の土台）
     ("combo_wx_params",          True,  True),   # 気象補正係数 + _meta（lat/lon/use_fallback/kaiyu_promoted/wave_clamp）
@@ -74,8 +81,12 @@ def main():
         if table not in src_tables:
             print(f"  skip（任意・ソースに無し）: {table}")
             continue
-        dst.execute(f"CREATE TABLE {table} AS SELECT * FROM src.{table}")
+        _where = ROW_FILTERS.get(table)
+        dst.execute(f"CREATE TABLE {table} AS SELECT * FROM src.{table}"
+                    + (f" WHERE {_where}" if _where else ""))
         n = dst.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+        if _where:
+            print(f"  行フィルタ適用: {table} … WHERE {_where}")
         counts[table] = n
         if want_index:
             cols = {r[1] for r in dst.execute(f"PRAGMA table_info({table})").fetchall()}
