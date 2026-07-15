@@ -4,9 +4,39 @@
 
 ---
 
-## 📋 次の主作業（2026/07/16 段取り完了・未着手）— 公開準備ロードマップ T44〜T48
+## 🔥 最重要（2026/07/16 T44 実測で確定）— 学習した補正の 1/3 しか本番に届いていない
+
+**詳細: 90_決定ログ.md「2026/07/16 T44 測り直し」。T44 コミット 431f380a9（branch claude/fishing-forecast-accuracy-7762a6・未マージ）**
+
+`predict_count._apply_correction_from_params` は **分母 w_total に全採用因子の |r| を残したまま、
+値が無い因子を分子から落とす**（predict_count.py:648-656）。値の供給元 `_build_all_wx`（571-635）は
+**気象と潮汐しか作らない** → 補正が系統的に縮小し予測が旬別ベースラインへ引き戻されている。
+
+**実効重み供給率（394コンボ実測）: P50=33.6% / 平均34.6% / 供給率100%は 0件 / 50%未満が313件(79%) / 0%が10件**
+
+欠落ワースト: prev_week_cnt(251コンボ・Σ|r|98.4) / spawn_season_n(218) / **is_holiday(244・日付だけで作れる)** /
+typhoon_dist(120) / CMEMS月次(122,118) / sst_季節交互作用（供給済みsst_avg×日付で作れる）。
+→ **公表 KPI（wMAPE 37.17%・BL2勝率96.3%）はバックテストにしか存在しないモデルの数字。**
+→ マルイカ×秀丸（T34 で船宿ブログクロールまでして撤退した最悪コンボ）は供給率 **5.4%** が真因。
+→ BL-2ブレンド（案C・-1.5pt で採用確定）も beta_bl2 未保存で **本番に未出荷**。
+
+**真のボウズ（cnt_avg==0）3,721行が読込時に除外されていた**（load_records:1171）。既存 bowzu_rate(P50 16.9%)は
+別概念＝個人ボウズ。マダイ×ちがさき丸は promise_break **0.0% と公表しつつ実際は釣行の47%が釣果ゼロ**。
+
+### 次アクション: **T44b（最優先・新設）** — 欠落因子を本番に供給する
+① 日付だけで作れる群（is_holiday/is_consec_holiday/is_summer_vacation/spawn_season_n/季節ダミー交互作用）
+② prev_week_cnt（CSV・`_get_bl2` と同経路）③ typhoon_dist/wind（typhoon.sqlite・コミット済み）
+④ CMEMS月次・water_color_pred_n を predict_params.sqlite へ蒸留 ⑤ w_total を供給できた因子で再正規化
+⑥ 供給率が閾値割れしたら CI で落とす不変条件
+→ その後 **1回の全魚種再実行**（T33 の教訓）。判定時は pred_lo≈0 フリーパス率・winkler・coverage・n を必ず併記
+（promise_break 単独判定は禁止＝stat-reviewer 指摘）。⚠ 公表 KPI は悪化方向に動くが regression ではない。
+
+---
+
+## 📋 公開準備ロードマップ T44〜T48（T44 実装済み・T45以降 未着手）
 
 **段取り書（自己完結・これだけで着手可能）**: `analysis/V2/analysis-improvement/plan_T44_T48_openready_2026-07-16.md`
+**T44 は完了**（経路別・ボウズ込み測定基盤）。ただし判定は T44b 後の再実行まで保留。
 
 背景の4大発見（Fable分析・コード/DB実確認済み）:
 ① **公表KPIが本番と違う経路を測っている**（バックテスト=ratio上書き / 本番 predict_count=直接モデル優先）
