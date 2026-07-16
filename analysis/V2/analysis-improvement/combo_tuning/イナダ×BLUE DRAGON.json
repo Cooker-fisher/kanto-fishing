@@ -1,0 +1,37 @@
+{
+  "fish": "イナダ",
+  "ship": "BLUE DRAGON",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 58.21,
+    "bl2_wmape": 51.3,
+    "oos_r": -0.188,
+    "n_records": 29,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "茨城県 東茨城郡大洗町 大洗港",
+      "n": 29,
+      "wmape_h0": 24.7,
+      "bl2_wmape": 57.4,
+      "oos_r": 0.814,
+      "improvement_pt": 33.5
+    }
+  ],
+  "best_point": {
+    "name": "茨城県 東茨城郡大洗町 大洗港",
+    "wmape_h0": 24.7,
+    "improvement_pt": 33.5
+  },
+  "improvement_pt": 33.5,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=茨城県 東茨城郡大洗町 大洗港 wmape=24.7% imp=33.5pt"
+    }
+  ]
+}

@@ -1,37 +1,42 @@
 {
   "fish": "メダイ",
   "ship": "久寿丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 31.96,
-    "bl2_wmape": 42.1,
-    "oos_r": 0.59,
-    "n_records": 58,
+    "wmape_h0": 30.97,
+    "bl2_wmape": 40.41,
+    "oos_r": 0.62,
+    "n_records": 89,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "利島沖",
-      "n": 34,
-      "wmape_h0": 25.4,
-      "bl2_wmape": 42.1,
-      "oos_r": 0.689,
-      "improvement_pt": 6.59
+      "n": 60,
+      "wmape_h0": 24.0,
+      "bl2_wmape": 36.7,
+      "oos_r": 0.629,
+      "improvement_pt": 6.98
     }
   ],
   "best_point": {
     "name": "利島沖",
-    "wmape_h0": 25.4,
-    "improvement_pt": 6.59
+    "wmape_h0": 24.0,
+    "improvement_pt": 6.98
   },
-  "improvement_pt": 6.59,
+  "improvement_pt": 6.98,
   "history": [
     {
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=利島沖 wmape=25.4% imp=6.59pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=利島沖 wmape=24.0% imp=6.98pt"
     }
   ]
 }

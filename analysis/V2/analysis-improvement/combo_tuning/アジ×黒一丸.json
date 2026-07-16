@@ -1,0 +1,37 @@
+{
+  "fish": "アジ",
+  "ship": "黒一丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 40.27,
+    "bl2_wmape": 43.98,
+    "oos_r": 0.131,
+    "n_records": 45,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横浜市 金沢漁港",
+      "n": 45,
+      "wmape_h0": 28.9,
+      "bl2_wmape": 44.0,
+      "oos_r": 0.637,
+      "improvement_pt": 11.36
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横浜市 金沢漁港",
+    "wmape_h0": 28.9,
+    "improvement_pt": 11.36
+  },
+  "improvement_pt": 11.36,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 金沢漁港 wmape=28.9% imp=11.36pt"
+    }
+  ]
+}

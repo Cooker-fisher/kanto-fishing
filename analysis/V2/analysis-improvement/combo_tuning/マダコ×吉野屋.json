@@ -1,10 +1,10 @@
 {
   "fish": "マダコ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 38.91,
+    "wmape_h0": 38.92,
     "bl2_wmape": 47.77,
     "oos_r": 0.508,
     "n_records": 290,
@@ -18,15 +18,23 @@
       "wmape_h0": 19.5,
       "bl2_wmape": 41.0,
       "oos_r": 0.839,
-      "improvement_pt": 19.43
+      "improvement_pt": 19.44
+    },
+    {
+      "name": "長浦沖",
+      "n": 28,
+      "wmape_h0": 34.1,
+      "bl2_wmape": 45.5,
+      "oos_r": 0.415,
+      "improvement_pt": 4.83
     },
     {
       "name": "川崎沖",
       "n": 102,
-      "wmape_h0": 36.0,
+      "wmape_h0": 36.2,
       "bl2_wmape": 49.9,
-      "oos_r": 0.607,
-      "improvement_pt": 2.96
+      "oos_r": 0.606,
+      "improvement_pt": 2.74
     },
     {
       "name": "横浜沖",
@@ -34,23 +42,23 @@
       "wmape_h0": 36.6,
       "bl2_wmape": 64.6,
       "oos_r": 0.724,
-      "improvement_pt": 2.35
+      "improvement_pt": 2.36
     },
     {
       "name": "木更津沖",
       "n": 59,
-      "wmape_h0": 42.8,
+      "wmape_h0": 41.7,
       "bl2_wmape": 64.1,
-      "oos_r": 0.467,
-      "improvement_pt": -3.93
+      "oos_r": 0.51,
+      "improvement_pt": -2.81
     }
   ],
   "best_point": {
     "name": "浦安沖",
     "wmape_h0": 19.5,
-    "improvement_pt": 19.43
+    "improvement_pt": 19.44
   },
-  "improvement_pt": 19.43,
+  "improvement_pt": 19.44,
   "points": [
     {
       "name": "川崎沖",
@@ -157,6 +165,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=19.5% imp=19.43pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=19.5% imp=19.44pt"
     }
   ],
   "trip_models": [

@@ -1,10 +1,10 @@
 {
   "fish": "シロギス",
   "ship": "荒川屋",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 43.3,
+    "wmape_h0": 43.38,
     "bl2_wmape": 47.61,
     "oos_r": 0.449,
     "n_records": 868,
@@ -18,7 +18,7 @@
       "wmape_h0": 14.4,
       "bl2_wmape": 41.0,
       "oos_r": 0.888,
-      "improvement_pt": 28.89
+      "improvement_pt": 28.97
     },
     {
       "name": "木更津沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 30.6,
       "bl2_wmape": 47.0,
       "oos_r": 0.57,
-      "improvement_pt": 12.72
+      "improvement_pt": 12.8
     },
     {
       "name": "横須賀沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 33.3,
       "bl2_wmape": 44.6,
       "oos_r": 0.626,
-      "improvement_pt": 10.04
+      "improvement_pt": 10.12
     },
     {
       "name": "富津沖",
@@ -42,23 +42,23 @@
       "wmape_h0": 39.8,
       "bl2_wmape": 45.2,
       "oos_r": 0.353,
-      "improvement_pt": 3.55
+      "improvement_pt": 3.63
     },
     {
       "name": "中ノ瀬",
       "n": 511,
-      "wmape_h0": 40.4,
+      "wmape_h0": 40.5,
       "bl2_wmape": 45.9,
-      "oos_r": 0.531,
-      "improvement_pt": 2.88
+      "oos_r": 0.528,
+      "improvement_pt": 2.87
     }
   ],
   "best_point": {
     "name": "観音崎沖",
     "wmape_h0": 14.4,
-    "improvement_pt": 28.89
+    "improvement_pt": 28.97
   },
-  "improvement_pt": 28.89,
+  "improvement_pt": 28.97,
   "history": [
     {
       "date": "2026-04-24",
@@ -124,6 +124,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=14.4% imp=28.89pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=14.4% imp=28.97pt"
     }
   ]
 }

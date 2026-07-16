@@ -1,7 +1,7 @@
 {
   "fish": "カワハギ",
   "ship": "山天丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
     "wmape_h0": 31.67,
@@ -15,10 +15,10 @@
     {
       "name": "下浦沖",
       "n": 37,
-      "wmape_h0": 15.4,
+      "wmape_h0": 15.1,
       "bl2_wmape": 48.3,
-      "oos_r": 0.883,
-      "improvement_pt": 16.23
+      "oos_r": 0.879,
+      "improvement_pt": 16.61
     },
     {
       "name": "久里浜沖",
@@ -55,10 +55,10 @@
   ],
   "best_point": {
     "name": "下浦沖",
-    "wmape_h0": 15.4,
-    "improvement_pt": 16.23
+    "wmape_h0": 15.1,
+    "improvement_pt": 16.61
   },
-  "improvement_pt": 16.23,
+  "improvement_pt": 16.61,
   "points": [
     {
       "name": "竹岡沖",
@@ -291,6 +291,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=下浦沖 wmape=15.4% imp=16.23pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=下浦沖 wmape=15.1% imp=16.61pt"
     }
   ],
   "trip_models": [

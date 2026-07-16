@@ -1,12 +1,12 @@
 {
   "fish": "スルメイカ",
   "ship": "喜平治丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 46.81,
+    "wmape_h0": 46.72,
     "bl2_wmape": 55.64,
-    "oos_r": 0.51,
+    "oos_r": 0.514,
     "n_records": 220,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -176,6 +176,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=37.4% imp=9.39pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=37.4% imp=9.3pt"
     }
   ],
   "rejected_factors": [
@@ -247,7 +252,7 @@
       "wmape_h0": 37.4,
       "bl2_wmape": 52.6,
       "oos_r": 0.612,
-      "improvement_pt": 9.39
+      "improvement_pt": 9.3
     },
     {
       "name": "洲の崎沖",
@@ -255,23 +260,23 @@
       "wmape_h0": 40.1,
       "bl2_wmape": 67.0,
       "oos_r": 0.488,
-      "improvement_pt": 6.7
+      "improvement_pt": 6.61
     },
     {
       "name": "剣崎沖",
       "n": 116,
-      "wmape_h0": 43.1,
+      "wmape_h0": 43.0,
       "bl2_wmape": 54.6,
-      "oos_r": 0.552,
-      "improvement_pt": 3.72
+      "oos_r": 0.553,
+      "improvement_pt": 3.67
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
     "wmape_h0": 37.4,
-    "improvement_pt": 9.39
+    "improvement_pt": 9.3
   },
-  "improvement_pt": 9.39,
+  "improvement_pt": 9.3,
   "trip_models": [
     {
       "trip_no": 1,

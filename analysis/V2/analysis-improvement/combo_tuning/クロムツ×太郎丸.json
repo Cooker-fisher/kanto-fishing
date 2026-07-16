@@ -1,12 +1,12 @@
 {
   "fish": "クロムツ",
   "ship": "太郎丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.47,
+    "wmape_h0": 36.64,
     "bl2_wmape": 66.18,
-    "oos_r": 0.647,
+    "oos_r": 0.645,
     "n_records": 47,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -24,15 +24,15 @@
       "wmape_h0": 25.1,
       "bl2_wmape": 76.7,
       "oos_r": 0.864,
-      "improvement_pt": 11.38
+      "improvement_pt": 11.56
     }
   ],
   "best_point": {
     "name": "城ヶ島沖",
     "wmape_h0": 25.1,
-    "improvement_pt": 11.38
+    "improvement_pt": 11.56
   },
-  "improvement_pt": 11.38,
+  "improvement_pt": 11.56,
   "notes": "城ヶ島沖20件・沖ノ瀬7件・空19件。深場300-400m。H=0 r=-0.039 ほぼ無相関。use_fallback=1(DB設定)。フォールバック後63.2%でBL2(65.8%)には僅差勝ち。水色記録41/49と豊富。",
   "history": [
     {
@@ -49,6 +49,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島沖 wmape=25.1% imp=11.38pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島沖 wmape=25.1% imp=11.56pt"
     }
   ]
 }

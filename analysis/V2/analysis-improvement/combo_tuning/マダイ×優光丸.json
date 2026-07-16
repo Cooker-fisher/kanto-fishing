@@ -1,37 +1,42 @@
 {
   "fish": "マダイ",
   "ship": "優光丸",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 58.63,
-    "bl2_wmape": 59.89,
-    "oos_r": 0.275,
-    "n_records": 55,
+    "wmape_h0": 44.3,
+    "bl2_wmape": 56.04,
+    "oos_r": 0.5,
+    "n_records": 101,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "千葉県 旭市 飯岡漁港",
-      "n": 55,
-      "wmape_h0": 33.3,
-      "bl2_wmape": 59.9,
-      "oos_r": 0.736,
-      "improvement_pt": 25.32
+      "n": 101,
+      "wmape_h0": 36.3,
+      "bl2_wmape": 56.2,
+      "oos_r": 0.675,
+      "improvement_pt": 8.04
     }
   ],
   "best_point": {
     "name": "千葉県 旭市 飯岡漁港",
-    "wmape_h0": 33.3,
-    "improvement_pt": 25.32
+    "wmape_h0": 36.3,
+    "improvement_pt": 8.04
   },
-  "improvement_pt": 25.32,
+  "improvement_pt": 8.04,
   "history": [
     {
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=千葉県 旭市 飯岡漁港 wmape=33.3% imp=25.32pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 旭市 飯岡漁港 wmape=36.3% imp=8.04pt"
     }
   ]
 }

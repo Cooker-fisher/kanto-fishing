@@ -1,32 +1,32 @@
 {
   "fish": "マダイ",
   "ship": "鴨下丸kawana",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 50.07,
-    "bl2_wmape": 56.27,
-    "oos_r": 0.365,
-    "n_records": 56,
+    "wmape_h0": 48.62,
+    "bl2_wmape": 57.69,
+    "oos_r": 0.329,
+    "n_records": 100,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "神奈川県 横浜市 八幡橋",
-      "n": 46,
+      "n": 90,
       "wmape_h0": 46.7,
-      "bl2_wmape": 50.2,
-      "oos_r": 0.48,
-      "improvement_pt": 3.35
+      "bl2_wmape": 54.9,
+      "oos_r": 0.42,
+      "improvement_pt": 1.92
     }
   ],
   "best_point": {
     "name": "神奈川県 横浜市 八幡橋",
     "wmape_h0": 46.7,
-    "improvement_pt": 3.35
+    "improvement_pt": 1.92
   },
-  "improvement_pt": 3.35,
+  "improvement_pt": 1.92,
   "history": [
     {
       "date": "2026-06-23",
@@ -37,6 +37,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=神奈川県 横浜市 八幡橋 wmape=46.7% imp=3.35pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 八幡橋 wmape=46.7% imp=1.92pt"
     }
   ]
 }

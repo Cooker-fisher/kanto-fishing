@@ -1,0 +1,37 @@
+{
+  "fish": "マダコ",
+  "ship": "ゆうせい丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 48.4,
+    "bl2_wmape": 48.49,
+    "oos_r": -0.054,
+    "n_records": 54,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 藤沢市 片瀬漁港",
+      "n": 54,
+      "wmape_h0": 33.2,
+      "bl2_wmape": 48.5,
+      "oos_r": 0.652,
+      "improvement_pt": 15.16
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 藤沢市 片瀬漁港",
+    "wmape_h0": 33.2,
+    "improvement_pt": 15.16
+  },
+  "improvement_pt": 15.16,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 藤沢市 片瀬漁港 wmape=33.2% imp=15.16pt"
+    }
+  ]
+}

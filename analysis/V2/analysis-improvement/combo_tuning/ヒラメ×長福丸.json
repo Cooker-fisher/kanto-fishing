@@ -1,0 +1,37 @@
+{
+  "fish": "ヒラメ",
+  "ship": "長福丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 43.5,
+    "bl2_wmape": 39.87,
+    "oos_r": 0.194,
+    "n_records": 49,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 いすみ市 大原港",
+      "n": 31,
+      "wmape_h0": 27.7,
+      "bl2_wmape": 40.8,
+      "oos_r": 0.585,
+      "improvement_pt": 15.81
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 いすみ市 大原港",
+    "wmape_h0": 27.7,
+    "improvement_pt": 15.81
+  },
+  "improvement_pt": 15.81,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 いすみ市 大原港 wmape=27.7% imp=15.81pt"
+    }
+  ]
+}

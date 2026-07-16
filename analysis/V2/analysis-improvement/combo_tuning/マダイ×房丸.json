@@ -1,32 +1,32 @@
 {
   "fish": "マダイ",
   "ship": "房丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.69,
-    "bl2_wmape": 49.58,
-    "oos_r": 0.758,
-    "n_records": 46,
+    "wmape_h0": 33.27,
+    "bl2_wmape": 50.72,
+    "oos_r": 0.743,
+    "n_records": 76,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "神奈川県 横須賀市 鴨居大室漁港",
-      "n": 46,
-      "wmape_h0": 27.8,
-      "bl2_wmape": 50.9,
-      "oos_r": 0.878,
-      "improvement_pt": 3.91
+      "n": 76,
+      "wmape_h0": 29.4,
+      "bl2_wmape": 53.3,
+      "oos_r": 0.844,
+      "improvement_pt": 3.89
     }
   ],
   "best_point": {
     "name": "神奈川県 横須賀市 鴨居大室漁港",
-    "wmape_h0": 27.8,
-    "improvement_pt": 3.91
+    "wmape_h0": 29.4,
+    "improvement_pt": 3.89
   },
-  "improvement_pt": 3.91,
+  "improvement_pt": 3.89,
   "history": [
     {
       "date": "2026-06-23",
@@ -37,6 +37,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=神奈川県 横須賀市 鴨居大室漁港 wmape=27.8% imp=3.91pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横須賀市 鴨居大室漁港 wmape=29.4% imp=3.89pt"
     }
   ]
 }

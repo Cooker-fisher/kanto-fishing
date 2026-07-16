@@ -1,13 +1,13 @@
 {
   "fish": "マダコ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_no_improvement",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 43.6,
-    "bl2_wmape": 50.69,
-    "oos_r": 0.391,
-    "n_records": 57,
+    "wmape_h0": 46.51,
+    "bl2_wmape": 51.04,
+    "oos_r": 0.389,
+    "n_records": 65,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -96,6 +96,11 @@
       "date": "2026-04-21",
       "action": "point_backtest_added",
       "note": "best=八景沖 imp=-6.5pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=八景沖 wmape=46.3% imp=0.21pt"
     }
   ],
   "rejected_factors": [
@@ -163,19 +168,19 @@
   "point_models": [
     {
       "name": "八景沖",
-      "n": 49,
-      "wmape_h0": 50.1,
-      "bl2_wmape": 54.5,
-      "oos_r": 0.186,
-      "improvement_pt": -6.5
+      "n": 50,
+      "wmape_h0": 46.3,
+      "bl2_wmape": 53.9,
+      "oos_r": 0.3,
+      "improvement_pt": 0.21
     }
   ],
   "best_point": {
     "name": "八景沖",
-    "wmape_h0": 50.1,
-    "improvement_pt": -6.5
+    "wmape_h0": 46.3,
+    "improvement_pt": 0.21
   },
-  "improvement_pt": -6.5,
+  "improvement_pt": 0.21,
   "trip_models": [
     {
       "trip_no": 3,

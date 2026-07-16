@@ -1,0 +1,37 @@
+{
+  "fish": "イサキ",
+  "ship": "新徳丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 24.35,
+    "bl2_wmape": 26.82,
+    "oos_r": 0.188,
+    "n_records": 31,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 三浦市 松輪江奈漁港",
+      "n": 31,
+      "wmape_h0": 20.6,
+      "bl2_wmape": 26.8,
+      "oos_r": 0.43,
+      "improvement_pt": 3.75
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 三浦市 松輪江奈漁港",
+    "wmape_h0": 20.6,
+    "improvement_pt": 3.75
+  },
+  "improvement_pt": 3.75,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 三浦市 松輪江奈漁港 wmape=20.6% imp=3.75pt"
+    }
+  ]
+}

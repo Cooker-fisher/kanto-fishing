@@ -1,12 +1,12 @@
 {
   "fish": "タチウオ",
   "ship": "吉久",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 33.19,
+    "wmape_h0": 33.13,
     "bl2_wmape": 38.68,
-    "oos_r": 0.532,
+    "oos_r": 0.535,
     "n_records": 755,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,30 +18,30 @@
       "wmape_h0": 18.5,
       "bl2_wmape": 50.1,
       "oos_r": 0.864,
-      "improvement_pt": 14.71
+      "improvement_pt": 14.64
     },
     {
       "name": "海堡沖",
       "n": 39,
-      "wmape_h0": 19.3,
+      "wmape_h0": 19.4,
       "bl2_wmape": 33.8,
-      "oos_r": 0.753,
-      "improvement_pt": 13.92
+      "oos_r": 0.752,
+      "improvement_pt": 13.7
     },
     {
       "name": "猿島沖",
       "n": 142,
       "wmape_h0": 23.9,
       "bl2_wmape": 44.6,
-      "oos_r": 0.749,
-      "improvement_pt": 9.29
+      "oos_r": 0.747,
+      "improvement_pt": 9.23
     },
     {
       "name": "走水沖",
       "n": 235,
-      "wmape_h0": 26.1,
+      "wmape_h0": 26.0,
       "bl2_wmape": 30.1,
-      "oos_r": 0.552,
+      "oos_r": 0.555,
       "improvement_pt": 7.11
     },
     {
@@ -50,7 +50,7 @@
       "wmape_h0": 26.8,
       "bl2_wmape": 48.2,
       "oos_r": 0.707,
-      "improvement_pt": 6.36
+      "improvement_pt": 6.3
     },
     {
       "name": "湾奥",
@@ -58,15 +58,15 @@
       "wmape_h0": 41.3,
       "bl2_wmape": 44.8,
       "oos_r": 0.471,
-      "improvement_pt": -8.08
+      "improvement_pt": -8.15
     }
   ],
   "best_point": {
     "name": "観音崎沖",
     "wmape_h0": 18.5,
-    "improvement_pt": 14.71
+    "improvement_pt": 14.64
   },
-  "improvement_pt": 14.71,
+  "improvement_pt": 14.64,
   "points": [
     {
       "name": "走水沖",
@@ -314,6 +314,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=観音崎沖 wmape=18.5% imp=14.71pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=18.5% imp=14.64pt"
     }
   ],
   "trip_models": [

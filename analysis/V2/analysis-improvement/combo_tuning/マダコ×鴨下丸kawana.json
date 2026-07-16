@@ -1,0 +1,37 @@
+{
+  "fish": "マダコ",
+  "ship": "鴨下丸kawana",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 57.13,
+    "bl2_wmape": 42.63,
+    "oos_r": -0.084,
+    "n_records": 53,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横浜市 八幡橋",
+      "n": 47,
+      "wmape_h0": 28.8,
+      "bl2_wmape": 40.2,
+      "oos_r": 0.654,
+      "improvement_pt": 28.37
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横浜市 八幡橋",
+    "wmape_h0": 28.8,
+    "improvement_pt": 28.37
+  },
+  "improvement_pt": 28.37,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 八幡橋 wmape=28.8% imp=28.37pt"
+    }
+  ]
+}

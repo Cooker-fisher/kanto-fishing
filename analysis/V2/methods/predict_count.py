@@ -1631,14 +1631,19 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
                     multi_point_risk = round(mp_risk, 3)
                     multi_point_corr = round(mp_correction, 3)
 
-    # ── min/max 予測（trip 優先 → combo直接モデル → ratio フォールバック） ──────
+    # ── min/max 予測（trip 優先 → ratio 法） ────────────────────────────────
     # 優先1 (trip): predicted_trip_no が確定している場合は便別 cnt_min/cnt_max モデルを使用
     #               （便別補正は cnt_avg と同様に最高優先チェーンの末尾）
-    # 優先2 (combo): cnt_min / cnt_max モデルが combo_wx_params にある場合は直接予測
-    #                （ratio法より Coverage が良い可能性が高い）
-    # フォールバック: モデルなし または use_fallback=True
-    #       → avg_cnt_min/max の旬別比率を cnt_predicted に適用（従来方式）
+    # 標準 (ratio): avg_cnt_min/max の旬別比率を cnt_predicted に適用
     #       → 旬別データもない場合は ±cnt_mae で信頼区間
+    #
+    # T44 判定（2026/07/16・90_決定ログ）: 旧「優先2 (combo直接モデル)」は全コンボ実測で
+    # ratio 法に敗北したため無効化（promise_break P50 11.1% vs 6.1% / coverage 66.9% vs 79.3%）。
+    # 旧コメントの「ratio法より Coverage が良い可能性が高い」は誤りと実証された。
+    # winkler は直接モデル勝ちだが「レンジが狭い＝約束を破りやすい」の裏返しで、
+    # PRIMARY KPI（約束割れ回避）に反するため採用しない。再評価する場合は下のフラグを戻し
+    # combo_range_backtest の metric='cnt_direct' 系列で同一定義比較すること。
+    _CNT_RANGE_USE_DIRECT = False
     cnt_lo = cnt_hi = None
 
     if lat and lon and not use_fb and predicted_trip_no:
@@ -1654,8 +1659,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         if trip_hi is not None:
             cnt_hi = round(trip_hi * slot_ratio, 1)
 
-    if (cnt_lo is None or cnt_hi is None) and lat and lon and not use_fb:
-        # combo直接モデル: cnt_min モデルが存在するか確認してから直接予測
+    if _CNT_RANGE_USE_DIRECT and (cnt_lo is None or cnt_hi is None) and lat and lon and not use_fb:
+        # combo直接モデル（T44 で無効化・再評価用に保持）
         bl_min = avg_cnt_min if avg_cnt_min is not None else avg_cnt * 0.5
         bl_max = avg_cnt_max if avg_cnt_max is not None else avg_cnt * 1.5
         pred_lo_direct = _apply_wx_correction(conn, fish, ship, target_date, bl_min, lat, lon,

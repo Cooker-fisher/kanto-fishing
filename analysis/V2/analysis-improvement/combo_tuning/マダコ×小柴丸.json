@@ -1,12 +1,12 @@
 {
   "fish": "マダコ",
   "ship": "小柴丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 45.74,
+    "wmape_h0": 45.12,
     "bl2_wmape": 51.85,
-    "oos_r": 0.349,
+    "oos_r": 0.355,
     "n_records": 250,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "小柴沖",
       "n": 217,
-      "wmape_h0": 44.9,
+      "wmape_h0": 44.7,
       "bl2_wmape": 53.5,
-      "oos_r": 0.306,
-      "improvement_pt": 0.8
+      "oos_r": 0.308,
+      "improvement_pt": 0.43
     }
   ],
   "best_point": {
     "name": "小柴沖",
-    "wmape_h0": 44.9,
-    "improvement_pt": 0.8
+    "wmape_h0": 44.7,
+    "improvement_pt": 0.43
   },
-  "improvement_pt": 0.8,
+  "improvement_pt": 0.43,
   "history": [
     {
       "date": "2026-04-24",
@@ -37,6 +37,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=小柴沖 wmape=44.9% imp=0.8pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=小柴沖 wmape=44.7% imp=0.43pt"
     }
   ]
 }

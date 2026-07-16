@@ -1,10 +1,10 @@
 {
   "fish": "タチウオ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 42.19,
+    "wmape_h0": 42.2,
     "bl2_wmape": 48.87,
     "oos_r": 0.505,
     "n_records": 629,
@@ -33,8 +33,8 @@
       "n": 262,
       "wmape_h0": 36.1,
       "bl2_wmape": 46.5,
-      "oos_r": 0.507,
-      "improvement_pt": 6.14
+      "oos_r": 0.508,
+      "improvement_pt": 6.07
     }
   ],
   "point_selection": {
@@ -176,6 +176,11 @@
     },
     {
       "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=猿島沖 wmape=26.0% imp=16.22pt"
+    },
+    {
+      "date": "2026-07-16",
       "action": "point_backtest_updated",
       "note": "best=猿島沖 wmape=26.0% imp=16.22pt"
     }

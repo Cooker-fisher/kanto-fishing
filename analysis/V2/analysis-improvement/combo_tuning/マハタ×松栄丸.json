@@ -1,0 +1,37 @@
+{
+  "fish": "マハタ",
+  "ship": "松栄丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 48.28,
+    "bl2_wmape": 48.7,
+    "oos_r": 0.23,
+    "n_records": 40,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 いすみ市 大原港",
+      "n": 34,
+      "wmape_h0": 26.9,
+      "bl2_wmape": 48.9,
+      "oos_r": 0.684,
+      "improvement_pt": 21.41
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 いすみ市 大原港",
+    "wmape_h0": 26.9,
+    "improvement_pt": 21.41
+  },
+  "improvement_pt": 21.41,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 いすみ市 大原港 wmape=26.9% imp=21.41pt"
+    }
+  ]
+}

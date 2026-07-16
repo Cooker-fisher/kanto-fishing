@@ -1,0 +1,37 @@
+{
+  "fish": "アオリイカ",
+  "ship": "哲夫丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 58.46,
+    "bl2_wmape": 58.36,
+    "oos_r": 0.124,
+    "n_records": 50,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横須賀市 長井港",
+      "n": 50,
+      "wmape_h0": 37.7,
+      "bl2_wmape": 58.4,
+      "oos_r": 0.633,
+      "improvement_pt": 20.78
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横須賀市 長井港",
+    "wmape_h0": 37.7,
+    "improvement_pt": 20.78
+  },
+  "improvement_pt": 20.78,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横須賀市 長井港 wmape=37.7% imp=20.78pt"
+    }
+  ]
+}

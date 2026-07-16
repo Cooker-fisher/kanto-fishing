@@ -1,12 +1,12 @@
 {
   "fish": "イシモチ",
   "ship": "小柴丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 39.03,
+    "wmape_h0": 38.99,
     "bl2_wmape": 46.46,
-    "oos_r": 0.475,
+    "oos_r": 0.474,
     "n_records": 425,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -18,7 +18,7 @@
       "wmape_h0": 30.3,
       "bl2_wmape": 58.2,
       "oos_r": 0.76,
-      "improvement_pt": 8.69
+      "improvement_pt": 8.64
     },
     {
       "name": "本牧沖",
@@ -26,7 +26,7 @@
       "wmape_h0": 30.7,
       "bl2_wmape": 42.1,
       "oos_r": 0.605,
-      "improvement_pt": 8.28
+      "improvement_pt": 8.24
     },
     {
       "name": "富岡沖",
@@ -34,7 +34,7 @@
       "wmape_h0": 33.1,
       "bl2_wmape": 40.0,
       "oos_r": 0.483,
-      "improvement_pt": 5.9
+      "improvement_pt": 5.86
     },
     {
       "name": "赤灯沖",
@@ -42,15 +42,15 @@
       "wmape_h0": 36.3,
       "bl2_wmape": 46.8,
       "oos_r": 0.527,
-      "improvement_pt": 2.7
+      "improvement_pt": 2.65
     }
   ],
   "best_point": {
     "name": "小柴沖",
     "wmape_h0": 30.3,
-    "improvement_pt": 8.69
+    "improvement_pt": 8.64
   },
-  "improvement_pt": 8.69,
+  "improvement_pt": 8.64,
   "history": [
     {
       "date": "2026-05-12",
@@ -71,6 +71,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=小柴沖 wmape=30.3% imp=8.69pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=小柴沖 wmape=30.3% imp=8.64pt"
     }
   ],
   "adopted_factors": [

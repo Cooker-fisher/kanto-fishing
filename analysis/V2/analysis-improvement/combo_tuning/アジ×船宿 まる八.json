@@ -1,7 +1,7 @@
 {
   "fish": "アジ",
   "ship": "船宿 まる八",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 22.91,
@@ -31,10 +31,10 @@
     {
       "name": "本牧沖",
       "n": 39,
-      "wmape_h0": 23.2,
+      "wmape_h0": 23.8,
       "bl2_wmape": 29.4,
-      "oos_r": 0.626,
-      "improvement_pt": -0.31
+      "oos_r": 0.612,
+      "improvement_pt": -0.87
     },
     {
       "name": "横浜沖",
@@ -42,7 +42,7 @@
       "wmape_h0": 24.5,
       "bl2_wmape": 26.4,
       "oos_r": 0.267,
-      "improvement_pt": -1.54
+      "improvement_pt": -1.55
     }
   ],
   "best_point": {
@@ -276,6 +276,11 @@
     },
     {
       "date": "2026-07-03",
+      "action": "point_backtest_updated",
+      "note": "best=木更津沖 wmape=20.2% imp=2.69pt"
+    },
+    {
+      "date": "2026-07-16",
       "action": "point_backtest_updated",
       "note": "best=木更津沖 wmape=20.2% imp=2.69pt"
     }
