@@ -1,40 +1,40 @@
 {
   "fish": "アジ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-07-16",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 38.09,
+    "wmape_h0": 43.5,
     "bl2_wmape": 45.45,
-    "oos_r": 0.474,
+    "oos_r": 0.276,
     "n_records": 310,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "神奈川県 横浜市 金沢八景平潟",
-      "n": 36,
-      "wmape_h0": 30.3,
-      "bl2_wmape": 45.1,
-      "oos_r": 0.492,
-      "improvement_pt": 7.8
-    },
-    {
       "name": "八景沖",
       "n": 273,
-      "wmape_h0": 37.7,
+      "wmape_h0": 43.0,
       "bl2_wmape": 45.1,
-      "oos_r": 0.51,
-      "improvement_pt": 0.38
+      "oos_r": 0.323,
+      "improvement_pt": 0.55
+    },
+    {
+      "name": "神奈川県 横浜市 金沢八景平潟",
+      "n": 36,
+      "wmape_h0": 49.2,
+      "bl2_wmape": 45.1,
+      "oos_r": -0.226,
+      "improvement_pt": -5.7
     }
   ],
   "best_point": {
-    "name": "神奈川県 横浜市 金沢八景平潟",
-    "wmape_h0": 30.3,
-    "improvement_pt": 7.8
+    "name": "八景沖",
+    "wmape_h0": 43.0,
+    "improvement_pt": 0.55
   },
-  "improvement_pt": 7.8,
+  "improvement_pt": 0.55,
   "points": [
     {
       "name": "八景沖",
@@ -244,9 +244,9 @@
       "note": "best=八景沖 wmape=37.7% imp=0.28pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=神奈川県 横浜市 金沢八景平潟 wmape=30.3% imp=7.8pt"
+      "note": "best=八景沖 wmape=43.3% imp=0.11pt"
     }
   ],
   "trip_models": [

@@ -1,14 +1,14 @@
 {
   "fish": "アナゴ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 41.6,
+    "wmape_h0": 53.49,
     "bl2_wmape": 46.39,
-    "oos_r": 0.06,
+    "oos_r": -0.351,
     "n_records": 78,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "history": [
@@ -43,35 +43,35 @@
       "note": "best=木更津沖 wmape=31.7% imp=9.84pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=木更津沖 wmape=31.7% imp=9.95pt"
+      "note": "best=木更津沖 wmape=39.4% imp=14.11pt"
     }
   ],
   "point_models": [
     {
       "name": "木更津沖",
       "n": 47,
-      "wmape_h0": 31.7,
+      "wmape_h0": 39.4,
       "bl2_wmape": 40.5,
-      "oos_r": 0.293,
-      "improvement_pt": 9.95
+      "oos_r": -0.384,
+      "improvement_pt": 14.11
     },
     {
       "name": "浦安沖",
       "n": 31,
-      "wmape_h0": 47.6,
+      "wmape_h0": 60.4,
       "bl2_wmape": 55.5,
-      "oos_r": 0.404,
-      "improvement_pt": -6.04
+      "oos_r": -0.275,
+      "improvement_pt": -6.9
     }
   ],
   "best_point": {
     "name": "木更津沖",
-    "wmape_h0": 31.7,
-    "improvement_pt": 9.95
+    "wmape_h0": 39.4,
+    "improvement_pt": 14.11
   },
-  "improvement_pt": 9.95,
+  "improvement_pt": 14.11,
   "adopted_factors": [
     {
       "factor": "sla_approach_idx",

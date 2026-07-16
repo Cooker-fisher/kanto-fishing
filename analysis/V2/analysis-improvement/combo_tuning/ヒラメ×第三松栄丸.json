@@ -1,12 +1,12 @@
 {
   "fish": "ヒラメ",
   "ship": "第三松栄丸",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 31.61,
+    "wmape_h0": 40.23,
     "bl2_wmape": 45.98,
-    "oos_r": 0.616,
+    "oos_r": 0.258,
     "n_records": 103,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -183,9 +183,9 @@
       "note": "best=大原沖 wmape=27.1% imp=4.55pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=大原沖 wmape=27.1% imp=4.55pt"
+      "note": "best=大原沖 wmape=40.0% imp=0.25pt"
     }
   ],
   "rejected_factors": [
@@ -254,26 +254,26 @@
     {
       "name": "大原沖",
       "n": 52,
-      "wmape_h0": 27.1,
+      "wmape_h0": 40.0,
       "bl2_wmape": 43.0,
-      "oos_r": 0.691,
-      "improvement_pt": 4.55
+      "oos_r": 0.222,
+      "improvement_pt": 0.25
     },
     {
       "name": "太東沖",
       "n": 43,
-      "wmape_h0": 32.7,
+      "wmape_h0": 47.0,
       "bl2_wmape": 48.4,
-      "oos_r": 0.681,
-      "improvement_pt": -1.05
+      "oos_r": 0.09,
+      "improvement_pt": -6.81
     }
   ],
   "best_point": {
     "name": "大原沖",
-    "wmape_h0": 27.1,
-    "improvement_pt": 4.55
+    "wmape_h0": 40.0,
+    "improvement_pt": 0.25
   },
-  "improvement_pt": 4.55,
+  "improvement_pt": 0.25,
   "trip_models": [
     {
       "trip_no": 1,

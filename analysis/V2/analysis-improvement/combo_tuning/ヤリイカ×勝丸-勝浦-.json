@@ -1,12 +1,12 @@
 {
   "fish": "ヤリイカ",
   "ship": "勝丸-勝浦-",
-  "last_reviewed": "2026-07-16",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 60.86,
+    "wmape_h0": 60.0,
     "bl2_wmape": 55.42,
-    "oos_r": -0.028,
+    "oos_r": -0.159,
     "n_records": 39,
     "use_fallback": true,
     "kaiyu_promoted": false
@@ -15,23 +15,23 @@
     {
       "name": "千葉県 勝浦市 勝浦港",
       "n": 38,
-      "wmape_h0": 50.2,
+      "wmape_h0": 59.4,
       "bl2_wmape": 56.1,
-      "oos_r": 0.415,
-      "improvement_pt": 10.68
+      "oos_r": -0.099,
+      "improvement_pt": 0.6
     }
   ],
   "best_point": {
     "name": "千葉県 勝浦市 勝浦港",
-    "wmape_h0": 50.2,
-    "improvement_pt": 10.68
+    "wmape_h0": 59.4,
+    "improvement_pt": 0.6
   },
-  "improvement_pt": 10.68,
+  "improvement_pt": 0.6,
   "history": [
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=千葉県 勝浦市 勝浦港 wmape=50.2% imp=10.68pt"
+      "note": "best=千葉県 勝浦市 勝浦港 wmape=59.4% imp=0.6pt"
     }
   ]
 }

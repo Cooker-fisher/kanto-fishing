@@ -1,37 +1,42 @@
 {
   "fish": "カツオ",
   "ship": "太郎丸",
-  "last_reviewed": "2026-04-24",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 58.87,
+    "wmape_h0": 69.2,
     "bl2_wmape": 61.16,
-    "oos_r": 0.419,
+    "oos_r": 0.009,
     "n_records": 70,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "相模湾",
       "n": 43,
-      "wmape_h0": 49.0,
+      "wmape_h0": 66.5,
       "bl2_wmape": 57.9,
-      "oos_r": 0.6,
-      "improvement_pt": 9.91
+      "oos_r": 0.008,
+      "improvement_pt": 2.71
     }
   ],
   "best_point": {
     "name": "相模湾",
-    "wmape_h0": 49.0,
-    "improvement_pt": 9.91
+    "wmape_h0": 66.5,
+    "improvement_pt": 2.71
   },
-  "improvement_pt": 9.91,
+  "improvement_pt": 2.71,
   "history": [
     {
       "date": "2026-04-24",
       "action": "point_backtest_updated",
       "note": "best=相模湾 wmape=49.0% imp=9.91pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=相模湾 wmape=66.5% imp=2.71pt"
     }
   ]
 }

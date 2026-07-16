@@ -1,56 +1,64 @@
 {
   "fish": "ヤリイカ",
   "ship": "はら丸",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 45.3,
+    "wmape_h0": 51.84,
     "bl2_wmape": 52.93,
-    "oos_r": 0.458,
+    "oos_r": 0.244,
     "n_records": 313,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
+      "name": "城ヶ島西沖",
+      "n": 58,
+      "wmape_h0": 42.8,
+      "bl2_wmape": 47.8,
+      "oos_r": 0.055,
+      "improvement_pt": 9.01
+    },
+    {
       "name": "長井沖",
       "n": 31,
-      "wmape_h0": 23.9,
+      "wmape_h0": 45.9,
       "bl2_wmape": 67.7,
-      "oos_r": 0.871,
-      "improvement_pt": 21.39
+      "oos_r": 0.499,
+      "improvement_pt": 5.93
     },
     {
       "name": "沖の瀬",
       "n": 38,
-      "wmape_h0": 33.0,
+      "wmape_h0": 48.7,
       "bl2_wmape": 44.0,
-      "oos_r": 0.707,
-      "improvement_pt": 12.29
-    },
-    {
-      "name": "城ヶ島西沖",
-      "n": 58,
-      "wmape_h0": 34.4,
-      "bl2_wmape": 47.8,
-      "oos_r": 0.496,
-      "improvement_pt": 10.92
+      "oos_r": 0.36,
+      "improvement_pt": 3.13
     },
     {
       "name": "城ヶ島沖",
       "n": 116,
-      "wmape_h0": 46.4,
+      "wmape_h0": 58.2,
       "bl2_wmape": 62.6,
-      "oos_r": 0.521,
-      "improvement_pt": -1.14
+      "oos_r": 0.16,
+      "improvement_pt": -6.39
+    },
+    {
+      "name": "洲崎沖",
+      "n": 35,
+      "wmape_h0": 62.0,
+      "bl2_wmape": 59.9,
+      "oos_r": 0.033,
+      "improvement_pt": -10.2
     }
   ],
   "best_point": {
-    "name": "長井沖",
-    "wmape_h0": 23.9,
-    "improvement_pt": 21.39
+    "name": "城ヶ島西沖",
+    "wmape_h0": 42.8,
+    "improvement_pt": 9.01
   },
-  "improvement_pt": 21.39,
+  "improvement_pt": 9.01,
   "history": [
     {
       "date": "2026-04-22",
@@ -123,9 +131,9 @@
       "note": "best=長井沖 wmape=23.9% imp=21.39pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=長井沖 wmape=23.9% imp=21.39pt"
+      "note": "best=城ヶ島西沖 wmape=42.8% imp=9.01pt"
     }
   ]
 }

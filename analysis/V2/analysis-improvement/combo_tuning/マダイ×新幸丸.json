@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "新幸丸",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.65,
+    "wmape_h0": 45.74,
     "bl2_wmape": 47.65,
-    "oos_r": 0.64,
+    "oos_r": 0.558,
     "n_records": 727,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,42 +15,42 @@
     {
       "name": "太東沖",
       "n": 193,
-      "wmape_h0": 38.2,
+      "wmape_h0": 44.8,
       "bl2_wmape": 52.0,
-      "oos_r": 0.634,
-      "improvement_pt": 3.4
-    },
-    {
-      "name": "御宿沖",
-      "n": 49,
-      "wmape_h0": 39.1,
-      "bl2_wmape": 65.8,
-      "oos_r": 0.762,
-      "improvement_pt": 2.53
+      "oos_r": 0.439,
+      "improvement_pt": 0.93
     },
     {
       "name": "大原沖",
       "n": 310,
-      "wmape_h0": 39.3,
+      "wmape_h0": 46.1,
       "bl2_wmape": 47.8,
-      "oos_r": 0.67,
-      "improvement_pt": 2.39
+      "oos_r": 0.461,
+      "improvement_pt": -0.41
     },
     {
       "name": "岩船沖",
       "n": 171,
-      "wmape_h0": 39.4,
+      "wmape_h0": 54.9,
       "bl2_wmape": 54.0,
-      "oos_r": 0.737,
-      "improvement_pt": 2.26
+      "oos_r": 0.34,
+      "improvement_pt": -9.18
+    },
+    {
+      "name": "御宿沖",
+      "n": 49,
+      "wmape_h0": 65.9,
+      "bl2_wmape": 65.8,
+      "oos_r": -0.164,
+      "improvement_pt": -20.16
     }
   ],
   "best_point": {
     "name": "太東沖",
-    "wmape_h0": 38.2,
-    "improvement_pt": 3.4
+    "wmape_h0": 44.8,
+    "improvement_pt": 0.93
   },
-  "improvement_pt": 3.4,
+  "improvement_pt": 0.93,
   "points": [
     {
       "name": "大原沖",
@@ -280,9 +280,9 @@
       "note": "best=太東沖 wmape=37.6% imp=4.02pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=太東沖 wmape=38.2% imp=3.4pt"
+      "note": "best=太東沖 wmape=44.8% imp=0.93pt"
     }
   ],
   "trip_models": [

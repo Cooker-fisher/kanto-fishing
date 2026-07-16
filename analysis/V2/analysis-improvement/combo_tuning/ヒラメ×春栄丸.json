@@ -1,12 +1,12 @@
 {
   "fish": "ヒラメ",
   "ship": "春栄丸",
-  "last_reviewed": "2026-07-16",
-  "status": "point_model_marginal",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 21.99,
+    "wmape_h0": 33.04,
     "bl2_wmape": 39.99,
-    "oos_r": 0.785,
+    "oos_r": 0.524,
     "n_records": 64,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "千葉県 いすみ市 大原港",
       "n": 41,
-      "wmape_h0": 18.7,
+      "wmape_h0": 26.8,
       "bl2_wmape": 44.6,
-      "oos_r": 0.817,
-      "improvement_pt": 3.24
+      "oos_r": 0.541,
+      "improvement_pt": 6.24
     }
   ],
   "best_point": {
     "name": "千葉県 いすみ市 大原港",
-    "wmape_h0": 18.7,
-    "improvement_pt": 3.24
+    "wmape_h0": 26.8,
+    "improvement_pt": 6.24
   },
-  "improvement_pt": 3.24,
+  "improvement_pt": 6.24,
   "history": [
     {
       "date": "2026-06-23",
@@ -39,9 +39,9 @@
       "note": "best=千葉県 いすみ市 大原港 wmape=19.6% imp=1.76pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=千葉県 いすみ市 大原港 wmape=18.7% imp=3.24pt"
+      "note": "best=千葉県 いすみ市 大原港 wmape=26.8% imp=6.24pt"
     }
   ]
 }

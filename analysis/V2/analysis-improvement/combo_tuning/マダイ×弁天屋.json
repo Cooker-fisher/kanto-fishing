@@ -1,12 +1,12 @@
 {
   "fish": "マダイ",
   "ship": "弁天屋",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.58,
+    "wmape_h0": 47.8,
     "bl2_wmape": 46.67,
-    "oos_r": 0.547,
+    "oos_r": 0.086,
     "n_records": 103,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "観音崎沖",
       "n": 99,
-      "wmape_h0": 37.1,
+      "wmape_h0": 46.3,
       "bl2_wmape": 47.6,
-      "oos_r": 0.532,
-      "improvement_pt": 0.46
+      "oos_r": 0.147,
+      "improvement_pt": 1.49
     }
   ],
   "best_point": {
     "name": "観音崎沖",
-    "wmape_h0": 37.1,
-    "improvement_pt": 0.46
+    "wmape_h0": 46.3,
+    "improvement_pt": 1.49
   },
-  "improvement_pt": 0.46,
+  "improvement_pt": 1.49,
   "history": [
     {
       "date": "2026-04-24",
@@ -94,9 +94,9 @@
       "note": "best=観音崎沖 wmape=37.1% imp=0.46pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=観音崎沖 wmape=37.1% imp=0.46pt"
+      "note": "best=観音崎沖 wmape=46.3% imp=1.49pt"
     }
   ]
 }

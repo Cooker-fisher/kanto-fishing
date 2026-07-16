@@ -1,45 +1,45 @@
 {
   "fish": "マダイ",
   "ship": "成銀丸",
-  "last_reviewed": "2026-07-16",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 42.28,
+    "wmape_h0": 49.37,
     "bl2_wmape": 47.29,
-    "oos_r": 0.42,
+    "oos_r": -0.067,
     "n_records": 85,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "剣崎沖",
       "n": 52,
-      "wmape_h0": 36.9,
+      "wmape_h0": 46.5,
       "bl2_wmape": 46.7,
-      "oos_r": 0.529,
-      "improvement_pt": 5.38
+      "oos_r": 0.023,
+      "improvement_pt": 2.88
     },
     {
       "name": "神奈川県 三浦市 松輪江奈漁港",
       "n": 31,
-      "wmape_h0": 40.1,
+      "wmape_h0": 46.9,
       "bl2_wmape": 51.7,
-      "oos_r": 0.642,
-      "improvement_pt": 2.22
+      "oos_r": 0.254,
+      "improvement_pt": 2.43
     }
   ],
   "best_point": {
     "name": "剣崎沖",
-    "wmape_h0": 36.9,
-    "improvement_pt": 5.38
+    "wmape_h0": 46.5,
+    "improvement_pt": 2.88
   },
-  "improvement_pt": 5.38,
+  "improvement_pt": 2.88,
   "history": [
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=剣崎沖 wmape=36.9% imp=5.38pt"
+      "note": "best=剣崎沖 wmape=46.5% imp=2.88pt"
     }
   ]
 }

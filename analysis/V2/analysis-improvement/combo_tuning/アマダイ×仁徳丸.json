@@ -1,16 +1,15 @@
 {
   "fish": "アマダイ",
   "ship": "仁徳丸",
-  "last_reviewed": "2026-04-22",
-  "status": "pending",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 28.8,
-    "bl0_wmape": 28.8,
-    "bl2_wmape": 42.0,
-    "oos_r": 0.218,
-    "n_records": 30,
-    "alpha_scale": 0.397,
-    "use_fallback": false
+    "wmape_h0": 35.02,
+    "bl2_wmape": 45.92,
+    "oos_r": 0.019,
+    "n_records": 33,
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -107,7 +106,13 @@
     "高気圧優勢な日に釣果が上がる傾向",
     "休日・祝日に釣果が上がる傾向"
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=波崎沖 wmape=26.7% imp=8.33pt"
+    }
+  ],
   "rejected_factors": [
     {
       "factor": "swell_height_avg",
@@ -175,5 +180,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "波崎沖",
+      "n": 32,
+      "wmape_h0": 26.7,
+      "bl2_wmape": 49.4,
+      "oos_r": 0.304,
+      "improvement_pt": 8.33
+    }
+  ],
+  "best_point": {
+    "name": "波崎沖",
+    "wmape_h0": 26.7,
+    "improvement_pt": 8.33
+  },
+  "improvement_pt": 8.33
 }

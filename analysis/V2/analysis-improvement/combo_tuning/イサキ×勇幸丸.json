@@ -1,32 +1,32 @@
 {
   "fish": "イサキ",
   "ship": "勇幸丸",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.94,
+    "wmape_h0": 51.87,
     "bl2_wmape": 58.95,
-    "oos_r": 0.444,
+    "oos_r": 0.102,
     "n_records": 108,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "太東沖",
       "n": 104,
-      "wmape_h0": 39.6,
+      "wmape_h0": 48.8,
       "bl2_wmape": 55.5,
-      "oos_r": 0.434,
-      "improvement_pt": 2.32
+      "oos_r": 0.088,
+      "improvement_pt": 3.09
     }
   ],
   "best_point": {
     "name": "太東沖",
-    "wmape_h0": 39.6,
-    "improvement_pt": 2.32
+    "wmape_h0": 48.8,
+    "improvement_pt": 3.09
   },
-  "improvement_pt": 2.32,
+  "improvement_pt": 3.09,
   "notes": "太東沖・片貝沖エリア。コンボ全体wmape=44.8%→太東沖絞り33.4%(-11.4pt)。H=7も43.7% vs BL2=59.5%で一貫してBL2大差勝ち。r=0.474良好。gyo.ne.jp(cid=yukou)に太東沖40m・片貝沖30m確認→ship_fish_point.jsonにイサキ/ハナダイ/アジ登録済み。",
   "history": [
     {
@@ -95,9 +95,9 @@
       "note": "best=太東沖 wmape=39.6% imp=2.32pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=太東沖 wmape=39.6% imp=2.32pt"
+      "note": "best=太東沖 wmape=48.8% imp=3.09pt"
     }
   ]
 }

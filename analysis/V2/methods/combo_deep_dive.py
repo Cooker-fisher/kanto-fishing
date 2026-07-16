@@ -554,6 +554,8 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
     """CMEMS上限のコンボ別最適化。0/2/4/6の4パターンを LOO-CV wMAPE で評価し最良を返す。
     cnt_avg H=0 のみ評価。alpha は OLS で推定（本番モデルとの乖離を抑制）。
     BASE_FACTORS は corr_thr スキップ（常時確保・本番モデルと同一条件）。
+    ※ decadal 引数は T45 の BL-1 リーク修正（fold train のみの dec_tr に置換）で未使用に
+      なったが、シグネチャ互換のため残置。全期間 decadal はこの関数に影響しない。
     """
     CMEMS_CANDIDATES = [0, 2, 4, 6]
     MIN_TRAIN_MONTHS_CMEMS = 6  # full backtest の MIN_MONTHS と揃える
@@ -592,13 +594,21 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
             w = sum(abs(v) for v in fr.values()) or 1.0
             # OLS alpha 推定: α = Σ(correction * (act - base)) / Σ(correction²)
             # 本番の alpha_scale OLS と同一ロジック（clip [0, 1.2]）
+            # T45 BL-1リーク修正: CMEMSキャップ選定 CV も fold train のみの旬別平均を base に
+            # （n>=3 の旬のみ採用・metric_decadal_m と同じスパース対策）
+            _dec_tr = defaultdict(list)
+            for r in train:
+                _d = r.get("decade"); _v = r.get("cnt_avg")
+                if _d is not None and _v is not None:
+                    _dec_tr[_d].append(_v)
+            dec_tr = {d: sum(v) / len(v) for d, v in _dec_tr.items() if len(v) >= 3}
             ols_num = 0.0; ols_den = 0.0
             for r in train:
                 act = r.get("cnt_avg")
                 if act is None:
                     continue
                 dn = r.get("decade")
-                base = decadal.get(dn, {}).get("avg_cnt", mm) if decadal else mm
+                base = dec_tr.get(dn, mm)
                 nx = 0.0
                 for fac, rv in fr.items():
                     v = r.get(fac)
@@ -615,7 +625,7 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
                 if act is None:
                     continue
                 dn = r.get("decade")
-                base = decadal.get(dn, {}).get("avg_cnt", mm) if decadal else mm
+                base = dec_tr.get(dn, mm)
                 nx = 0.0
                 for fac, rv in fr.items():
                     v = r.get(fac)
@@ -3126,6 +3136,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         train_sorted_m = sorted(train_en_h0, key=lambda r: r["date"])
 
         # メトリクス別 旬別ベースライン（学習データから）
+        # T45: 旬あたり n>=3 の旬のみ採用（n=1〜2 の旬は辞書から落とし .get() の
+        # met_mean_m フォールバックに委ねる）。train-only 化でスパースになった旬の
+        # ベースラインノイズを抑制（stat-reviewer MAJOR-1・size_point_dec の >=3 と同型）。
+        # アブレーション（アジ47コンボ）: min-n>=3 は素の train-only 比 -0.23pt、
+        # 本番同型の最近傍±3旬フォールバックは ±0.00pt で不採用（決定ログ T45 参照）。
         metric_decadal_m = {}
         for met in METRICS_LIST:
             _db = defaultdict(list)
@@ -3133,7 +3148,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 dn = r.get("decade"); val = r.get(met)
                 if dn is not None and val is not None:
                     _db[dn].append(val)
-            metric_decadal_m[met] = {dn: sum(v)/len(v) for dn, v in _db.items()}
+            metric_decadal_m[met] = {dn: sum(v)/len(v) for dn, v in _db.items() if len(v) >= 3}
 
         # ratio-based予測用: cnt_max/cnt_min の旬別中央値比率を学習データから計算
         # corr(actual_avg, actual_max)=0.976, ratio CV=0.18 の安定性を利用
@@ -3313,10 +3328,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 if _act is None:
                     continue
                 _dn = _r.get("decade")
-                if met == "cnt_avg" and decadal and _dn in decadal:
-                    _base = decadal[_dn].get("avg_cnt", met_mean_m)
-                else:
-                    _base = m_dec.get(_dn, met_mean_m)
+                # T45 BL-1リーク修正: α/β 推定側も train-only の m_dec に統一（評価側と同一）
+                _base = m_dec.get(_dn, met_mean_m)
                 _nx = 0.0
                 for fac, rv in factor_r_m.items():
                     if fac == "wave_clamp" and fold_wc_thr != WAVE_CLAMP_THRESHOLD:
@@ -3398,9 +3411,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         act = 0.0   # ボウズ行: cnt_min/cnt_max が欠損なら 0 とみなす
 
                     dn = r.get("decade")
-                    if met == "cnt_avg" and decadal and dn in decadal:
-                        base = decadal[dn].get("avg_cnt", met_mean_m)
-                    elif met == "size_avg":
+                    # T45 BL-1リーク修正: 旧コードは cnt_avg のみ全期間 decadal（テスト月を含む
+                    # DB の combo_decadal）を base にしていた＝将来情報の混入。他メトリックと同じ
+                    # train-only の m_dec（metric_decadal_m・テスト月除外）に統一。
+                    # 本番 predict_count は未来日予測なので全期間 decadal のままで正しい（触らない）。
+                    if met == "size_avg":
                         # ポイント×旬ベースライン優先、なければ旬ベースライン、なければ全体平均
                         _pt = r.get("point", "")
                         base = (size_point_dec.get((_pt, dn))
@@ -4626,6 +4641,16 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
         for fac, (mean, std, r) in params["factors"].items():
             rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None,
                          now, 0, 0, None, None))
+    # T45 配送バグ修正: use_fallback の読み出し（predict_count._get_use_fallback）は
+    # metric='cnt_avg' の _meta 行固定。cnt_avg のバックテストがスキップされ
+    # wx_params_data に cnt_avg が無いコンボでは fallback 判定が本番に届かなかった
+    # （例: キハダマグロ×ちがさき丸 = BL2負けワースト +23pt が配送漏れ）。
+    # use_fallback=True なら cnt_avg._meta 行を必ず作る。
+    if use_fallback and wx_params_data and "cnt_avg" not in wx_params_data:
+        rows.append((fish, ship, "cnt_avg", "_meta",
+                     None, None, None, 0.0, None, None,
+                     modal_lat, modal_lon, now, 1, int(kaiyu_promoted),
+                     best_h0_wmape, best_cmems))
     # 列名を明示して列順ずれを防ぐ（ALTER TABLE でカラム追加した場合の位置ズレ対策）
     conn.executemany(
         """INSERT OR REPLACE INTO combo_wx_params
@@ -5329,8 +5354,36 @@ def deep_dive_by_point(fish, ship):
     if len(_noboat) >= MIN_N_COMBO and len(_noboat) < len(all_records):
         all_records = _noboat
 
-    pt_counts = _col.Counter(r.get("point", "") for r in all_records)
+    # T45 キー不一致修正: グルーピングキーを save_point_events と同一の正規化名に統一。
+    # 旧実装は生の point でグルーピング→ combo_point_wx_params.point に生値が保存され、
+    # 推論側（predict_count._apply_point_wx_correction）が combo_point_events.point_normalized
+    # （正規化値）で検索するため、表記ゆれ・航程/深度サフィックス付きポイントのモデルが
+    # 永久に不使用だった（90_決定ログ 2026/07/16 T45）。正規化により表記ゆれが統合され
+    # ポイントあたり n も増える。
+    def _pt_key(r):
+        return _strip_depth_suffix(_normalize_point_name(r.get("point", "") or ""))
+
+    pt_counts = _col.Counter(_pt_key(r) for r in all_records)
     viable_points = [pt for pt, n in pt_counts.most_common() if pt and n >= MIN_N_COMBO]
+
+    # 旧生値キーの残骸を一掃（save 系の DELETE は (fish,ship,point) 単位のため、
+    # キー体系の変更で旧キー行が残留し _save_combo_tuning_json の best_point が
+    # stale 行を拾い得る。コンボ単位で毎回リセットして常に最新キーのみに。
+    # ⚠ 一回限り分析スクリプト（analyze_yaruka_gihei.py）が同テーブルに独自合成キー
+    #   （「長井沖_単独」「複数ポイント」等）で書いた行は消さない（data-reviewer 指摘。
+    #   本番推論はこれらを参照しないが人手の分析成果物のため保全）。
+    #   今後の ad-hoc 分析は別テーブル（*_adhoc）を使うこと。
+    _conn_purge = _open_ana()
+    for _tbl in ("combo_point_backtest", "combo_point_wx_params"):
+        try:
+            _conn_purge.execute(
+                f"DELETE FROM {_tbl} WHERE fish=? AND ship=? "
+                f"AND point NOT LIKE '%単独' AND point != '複数ポイント'",
+                (fish, ship))
+        except sqlite3.OperationalError:
+            pass   # テーブル未作成（初回実行）
+    _conn_purge.commit()
+    _conn_purge.close()
 
     if not viable_points:
         return
@@ -5349,7 +5402,7 @@ def deep_dive_by_point(fish, ship):
     decadal_global = load_decadal(fish, ship)
 
     for pt in viable_points:
-        pt_records = [r for r in all_records if r.get("point", "") == pt]
+        pt_records = [r for r in all_records if _pt_key(r) == pt]
         n = len(pt_records)
         print(f"    ポイント: {pt!r}  N={n}", flush=True)
 
@@ -6337,10 +6390,12 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
         if met == "cnt_avg" and H == 0:
             cnt_avg_h0_found = True
             bl0_is_better = (bl0w is not None and wmape is not None and bl0w <= wmape)
-            if wmape is not None and bl0_is_better and (
-                (bl0w is not None and wmape > bl0w + 10) or
-                (bl2w is not None and wmape > bl2w + 5)
-            ):
+            # T45: ②BL-2条件を bl0_is_better ゲートから独立させた。フォールバック時の
+            # 本番出力は BL-2（直近7件平均）なので、BL-0 に勝っていても BL-2 に 5pt 以上
+            # 負けるならフォールバックすべき（マルイカ×長三朗丸 +5.9pt 等が漏れていた）。
+            if wmape is not None and bl0_is_better and (bl0w is not None and wmape > bl0w + 10):
+                use_fallback = True
+            if wmape is not None and bl2w is not None and wmape > bl2w + 5:
                 use_fallback = True
             if rv is not None and rv < OOS_R_FALLBACK_THR and bl0_is_better:
                 use_fallback = True
@@ -6358,10 +6413,11 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
             if _row_fb:
                 rv_fb, wmape_fb, bl0w_fb, bl2w_fb = _row_fb
                 bl0_is_better_fb = (bl0w_fb is not None and wmape_fb is not None and bl0w_fb <= wmape_fb)
+                # T45: ②BL-2条件を独立化（メイン経路と同一）
                 if wmape_fb is not None and bl0_is_better_fb and (
-                    (bl0w_fb is not None and wmape_fb > bl0w_fb + 10) or
-                    (bl2w_fb is not None and wmape_fb > bl2w_fb + 5)
-                ):
+                        bl0w_fb is not None and wmape_fb > bl0w_fb + 10):
+                    use_fallback = True
+                if wmape_fb is not None and bl2w_fb is not None and wmape_fb > bl2w_fb + 5:
                     use_fallback = True
                 if rv_fb is not None and rv_fb < OOS_R_FALLBACK_THR and bl0_is_better_fb:
                     use_fallback = True

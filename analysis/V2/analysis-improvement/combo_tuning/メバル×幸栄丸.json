@@ -1,12 +1,12 @@
 {
   "fish": "メバル",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.59,
+    "wmape_h0": 40.48,
     "bl2_wmape": 43.05,
-    "oos_r": 0.554,
+    "oos_r": 0.296,
     "n_records": 52,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -98,9 +98,9 @@
       "note": "best=鹿島北沖 wmape=37.2% imp=0.41pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=鹿島北沖 wmape=37.2% imp=0.41pt"
+      "note": "best=鹿島北沖 wmape=40.2% imp=0.3pt"
     }
   ],
   "rejected_factors": [
@@ -175,16 +175,16 @@
     {
       "name": "鹿島北沖",
       "n": 51,
-      "wmape_h0": 37.2,
+      "wmape_h0": 40.2,
       "bl2_wmape": 42.4,
-      "oos_r": 0.532,
-      "improvement_pt": 0.41
+      "oos_r": 0.286,
+      "improvement_pt": 0.3
     }
   ],
   "best_point": {
     "name": "鹿島北沖",
-    "wmape_h0": 37.2,
-    "improvement_pt": 0.41
+    "wmape_h0": 40.2,
+    "improvement_pt": 0.3
   },
-  "improvement_pt": 0.41
+  "improvement_pt": 0.3
 }

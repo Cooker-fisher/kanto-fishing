@@ -1,14 +1,14 @@
 {
   "fish": "アジ",
   "ship": "ちがさき丸",
-  "last_reviewed": "2026-07-16",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 39.11,
+    "wmape_h0": 53.33,
     "bl2_wmape": 52.14,
-    "oos_r": 0.58,
+    "oos_r": 0.087,
     "n_records": 188,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "points": [
@@ -189,9 +189,9 @@
       "note": "best=茅ヶ崎沖 wmape=27.8% imp=11.28pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=茅ヶ崎沖 wmape=28.7% imp=10.44pt"
+      "note": "best=二宮沖 wmape=45.1% imp=5.68pt"
     }
   ],
   "rejected_factors": [
@@ -258,36 +258,28 @@
   ],
   "point_models": [
     {
+      "name": "二宮沖",
+      "n": 133,
+      "wmape_h0": 51.5,
+      "bl2_wmape": 45.5,
+      "oos_r": 0.219,
+      "improvement_pt": 1.78
+    },
+    {
       "name": "茅ヶ崎沖",
       "n": 51,
-      "wmape_h0": 28.7,
+      "wmape_h0": 62.2,
       "bl2_wmape": 52.0,
-      "oos_r": 0.813,
-      "improvement_pt": 10.44
-    },
-    {
-      "name": "二ノ宮沖",
-      "n": 64,
-      "wmape_h0": 29.4,
-      "bl2_wmape": 48.1,
-      "oos_r": 0.775,
-      "improvement_pt": 9.67
-    },
-    {
-      "name": "二宮沖",
-      "n": 69,
-      "wmape_h0": 29.9,
-      "bl2_wmape": 46.5,
-      "oos_r": 0.64,
-      "improvement_pt": 9.2
+      "oos_r": 0.037,
+      "improvement_pt": -8.84
     }
   ],
   "best_point": {
-    "name": "茅ヶ崎沖",
-    "wmape_h0": 28.7,
-    "improvement_pt": 10.44
+    "name": "二宮沖",
+    "wmape_h0": 51.5,
+    "improvement_pt": 1.78
   },
-  "improvement_pt": 10.44,
+  "improvement_pt": 1.78,
   "trip_models": [
     {
       "trip_no": 2,

@@ -1,12 +1,12 @@
 {
   "fish": "カワハギ",
   "ship": "釣船 五郎丸",
-  "last_reviewed": "2026-07-16",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 34.1,
+    "wmape_h0": 37.11,
     "bl2_wmape": 43.76,
-    "oos_r": 0.449,
+    "oos_r": 0.276,
     "n_records": 261,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "鴨居沖",
       "n": 246,
-      "wmape_h0": 33.5,
+      "wmape_h0": 36.8,
       "bl2_wmape": 42.4,
-      "oos_r": 0.441,
-      "improvement_pt": 0.63
+      "oos_r": 0.282,
+      "improvement_pt": 0.33
     }
   ],
   "best_point": {
     "name": "鴨居沖",
-    "wmape_h0": 33.5,
-    "improvement_pt": 0.63
+    "wmape_h0": 36.8,
+    "improvement_pt": 0.33
   },
-  "improvement_pt": 0.63,
+  "improvement_pt": 0.33,
   "points": [
     {
       "name": "鴨居沖",
@@ -241,9 +241,9 @@
       "note": "best=鴨居沖 wmape=33.5% imp=0.63pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=鴨居沖 wmape=33.5% imp=0.63pt"
+      "note": "best=鴨居沖 wmape=36.8% imp=0.33pt"
     }
   ],
   "trip_models": [

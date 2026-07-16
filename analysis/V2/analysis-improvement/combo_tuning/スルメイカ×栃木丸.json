@@ -1,56 +1,56 @@
 {
   "fish": "スルメイカ",
   "ship": "栃木丸",
-  "last_reviewed": "2026-07-16",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 48.53,
+    "wmape_h0": 54.37,
     "bl2_wmape": 58.73,
-    "oos_r": 0.43,
+    "oos_r": 0.255,
     "n_records": 434,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "洲崎沖",
-      "n": 52,
-      "wmape_h0": 37.0,
-      "bl2_wmape": 68.4,
-      "oos_r": 0.568,
-      "improvement_pt": 11.52
-    },
-    {
       "name": "剣崎沖",
       "n": 33,
-      "wmape_h0": 37.7,
+      "wmape_h0": 53.3,
       "bl2_wmape": 47.3,
-      "oos_r": 0.563,
-      "improvement_pt": 10.86
-    },
-    {
-      "name": "長井沖",
-      "n": 121,
-      "wmape_h0": 43.4,
-      "bl2_wmape": 53.8,
-      "oos_r": 0.57,
-      "improvement_pt": 5.17
+      "oos_r": -0.549,
+      "improvement_pt": 1.06
     },
     {
       "name": "城ヶ島沖",
       "n": 192,
-      "wmape_h0": 46.6,
+      "wmape_h0": 56.2,
       "bl2_wmape": 60.1,
-      "oos_r": 0.512,
-      "improvement_pt": 1.91
+      "oos_r": 0.303,
+      "improvement_pt": -1.81
+    },
+    {
+      "name": "長井沖",
+      "n": 121,
+      "wmape_h0": 59.0,
+      "bl2_wmape": 53.8,
+      "oos_r": 0.168,
+      "improvement_pt": -4.58
+    },
+    {
+      "name": "洲崎沖",
+      "n": 52,
+      "wmape_h0": 65.0,
+      "bl2_wmape": 68.4,
+      "oos_r": -0.295,
+      "improvement_pt": -10.62
     }
   ],
   "best_point": {
-    "name": "洲崎沖",
-    "wmape_h0": 37.0,
-    "improvement_pt": 11.52
+    "name": "剣崎沖",
+    "wmape_h0": 53.3,
+    "improvement_pt": 1.06
   },
-  "improvement_pt": 11.52,
+  "improvement_pt": 1.06,
   "history": [
     {
       "date": "2026-04-24",
@@ -118,9 +118,9 @@
       "note": "best=洲崎沖 wmape=37.0% imp=11.42pt"
     },
     {
-      "date": "2026-07-16",
+      "date": "2026-07-17",
       "action": "point_backtest_updated",
-      "note": "best=洲崎沖 wmape=37.0% imp=11.52pt"
+      "note": "best=剣崎沖 wmape=53.3% imp=1.06pt"
     }
   ]
 }
