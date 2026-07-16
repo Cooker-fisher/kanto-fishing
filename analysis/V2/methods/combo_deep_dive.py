@@ -554,6 +554,8 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
     """CMEMS上限のコンボ別最適化。0/2/4/6の4パターンを LOO-CV wMAPE で評価し最良を返す。
     cnt_avg H=0 のみ評価。alpha は OLS で推定（本番モデルとの乖離を抑制）。
     BASE_FACTORS は corr_thr スキップ（常時確保・本番モデルと同一条件）。
+    ※ decadal 引数は T45 の BL-1 リーク修正（fold train のみの dec_tr に置換）で未使用に
+      なったが、シグネチャ互換のため残置。全期間 decadal はこの関数に影響しない。
     """
     CMEMS_CANDIDATES = [0, 2, 4, 6]
     MIN_TRAIN_MONTHS_CMEMS = 6  # full backtest の MIN_MONTHS と揃える
@@ -592,13 +594,21 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
             w = sum(abs(v) for v in fr.values()) or 1.0
             # OLS alpha 推定: α = Σ(correction * (act - base)) / Σ(correction²)
             # 本番の alpha_scale OLS と同一ロジック（clip [0, 1.2]）
+            # T45 BL-1リーク修正: CMEMSキャップ選定 CV も fold train のみの旬別平均を base に
+            # （n>=3 の旬のみ採用・metric_decadal_m と同じスパース対策）
+            _dec_tr = defaultdict(list)
+            for r in train:
+                _d = r.get("decade"); _v = r.get("cnt_avg")
+                if _d is not None and _v is not None:
+                    _dec_tr[_d].append(_v)
+            dec_tr = {d: sum(v) / len(v) for d, v in _dec_tr.items() if len(v) >= 3}
             ols_num = 0.0; ols_den = 0.0
             for r in train:
                 act = r.get("cnt_avg")
                 if act is None:
                     continue
                 dn = r.get("decade")
-                base = decadal.get(dn, {}).get("avg_cnt", mm) if decadal else mm
+                base = dec_tr.get(dn, mm)
                 nx = 0.0
                 for fac, rv in fr.items():
                     v = r.get(fac)
@@ -615,7 +625,7 @@ def _find_best_cmems(all_en_h0: list, months: list, decadal: dict,
                 if act is None:
                     continue
                 dn = r.get("decade")
-                base = decadal.get(dn, {}).get("avg_cnt", mm) if decadal else mm
+                base = dec_tr.get(dn, mm)
                 nx = 0.0
                 for fac, rv in fr.items():
                     v = r.get(fac)
@@ -1136,9 +1146,14 @@ def _build_decadal_from_records(records):
 # データ読み込み（CSV + weather + tide）
 # ═══════════════════════════════════════════════════════════════════════════
 
-def load_records(fish, ship_filter=None):
+def load_records(fish, ship_filter=None, keep_bouzu=False):
     """data/YYYY-MM.csv から指定魚種のレコードをロード。
     point_place1 → point_coords.json → lat/lon を per-record で解決する。
+
+    keep_bouzu=True: 真のボウズ行（cnt_avg が明示的に 0 = 船全体0）**のみ**を返す（T44・評価専用）。
+      通常モード（False）はこれらを除外して学習・評価するため、実運用の一部が不可視になっている。
+      ⚠ cnt_avg 空欄（数値抽出失敗・全行の約8.9%）は「釣れなかった」と「記録されなかった」を
+        区別できないためボウズ扱いしない（両モードとも除外）。
     """
     exclude      = load_exclude_ships()
     ship_area    = load_ship_area()
@@ -1167,8 +1182,13 @@ def load_records(fish, ship_filter=None):
                 date_str = row.get("date", "").strip()
                 if not date_str:
                     continue
-                cnt_avg = _float(row.get("cnt_avg"))
-                if not cnt_avg or cnt_avg <= 0:
+                cnt_raw = (row.get("cnt_avg") or "").strip()
+                cnt_avg = _float(cnt_raw)
+                if keep_bouzu:
+                    # T44: 明示的な 0 のみ（空欄=抽出失敗 は真のボウズと区別不能なので対象外）
+                    if cnt_raw == "" or cnt_avg is None or cnt_avg != 0:
+                        continue
+                elif not cnt_avg or cnt_avg <= 0:
                     continue
 
                 sz_min = _float(row.get("size_min"))
@@ -1252,6 +1272,7 @@ def load_records(fish, ship_filter=None):
                     "date":    date_str,
                     "decade":  decade_of(date_str),
                     "cnt_avg": cnt_avg,
+                    "_is_bouzu": keep_bouzu,   # T44: 評価専用行のマーカー（enrich の dict(r) で保持される）
                     "cnt_min": _float(row.get("cnt_min")),
                     "cnt_max": _float(row.get("cnt_max")),
                     "size_avg": size_avg,
@@ -2866,7 +2887,7 @@ def _calc_multi_point_risk_inline(record, mp_factors):
     return max(0.55, correction), risk
 
 
-def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None, mp_factors=None, mp_context=None):  # mp_context は現在未使用（双方向相関がメインモデルと重複するため削除済み）
+def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=None, conn_typhoon=None, fish=None, conn_cmems=None, mp_factors=None, mp_context=None, bouzu_records=None):  # mp_context は現在未使用（双方向相関がメインモデルと重複するため削除済み）
     """leave-one-month-out クロスバリデーション
 
     各月をテスト期として、それ以外の全データ（前後含む）を学習に使う。
@@ -2888,6 +2909,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         "cnt_min", "cnt_max", "cnt_avg",
         "size_avg", "kg_avg",
     )
+    # T44: 経路別評価・ボウズ評価の対象 metric（cnt 系のみ。size/kg はボウズ概念なし）
+    _T44_CNT_METS = ("cnt_avg", "cnt_min", "cnt_max")
     # size/kg の range_backtest で actual_min/max が非 NULL の行だけを有効サンプルとする最低数
     MIN_N_RANGE = MIN_N_COMBO  # 現状 30 件（MIN_N_COMBO と共通）
 
@@ -2914,6 +2937,33 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
             horizon=H, all_records=records, conn_tide=conn_tide, conn_typhoon=conn_typhoon,
             conn_cmems=conn_cmems, fish=fish,
         )
+
+    # T44: 真のボウズ行（cnt_avg==0）を評価専用に enrich。
+    # all_records には非ボウズ records をそのまま渡す（prev_week_cnt を変えない）。
+    # → 学習配列・既存の予測値・既存 KPI は一切変わらず、評価行だけが増える。
+    bz_en_by_H = {H: [] for H in HORIZONS}
+    if bouzu_records:
+        # prev_week_cnt（直近釣果）の参照集合には ボウズ込みの全履歴 を渡す。
+        # 非ボウズのみを渡すと「直近で釣れなかった事実」が見えず、ボウズ評価行の
+        # 自己相関因子が系統的に楽観側へ歪む（data-reviewer 指摘）。
+        # 通常行側の enrich（all_en_by_H）は records のまま = 既存の学習・KPI は不変。
+        _bz_ref = records + bouzu_records
+        # months は非ボウズ records から算出されるため、「全便ボウズだった月」は CV ループに現れず
+        # その月のボウズ行は評価されない（= 最悪ケースほど cnt_bz が過小評価される方向のバイアス）。
+        # months 側を広げると MIN_MONTHS 判定が変わり既存 KPI が動くため、ここでは
+        # 漏れ量を必ず計測・記録して解釈時に参照できるようにする（stat-reviewer 指摘 MAJOR-1）。
+        _bz_out = [r for r in bouzu_records if r["date"][:7] not in set(months)]
+        if _bz_out:
+            _msg = (f"    [T44 bouzu] 評価対象外のボウズ {len(_bz_out)}/{len(bouzu_records)}件"
+                    f"（非ボウズ報告が皆無の月: {sorted(set(r['date'][:7] for r in _bz_out))}）"
+                    f" → cnt_bz は実態より楽観側に出る")
+            print(_msg, flush=True)
+        for H in HORIZONS:
+            bz_en_by_H[H] = enrich(
+                bouzu_records, ship_coords, wx_coords, conn_wx, ship_area,
+                horizon=H, all_records=_bz_ref, conn_tide=conn_tide, conn_typhoon=conn_typhoon,
+                conn_cmems=conn_cmems, fish=fish,
+            )
 
     # CMEMS上限のコンボ別最適化（_find_best_cmemsで軽量LOO-CVを実行）
     _n_all = len([r for r in all_en_by_H.get(0, []) if r.get("cnt_avg") is not None])
@@ -3061,6 +3111,9 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     _star_by_key  = {H: {} for H in HORIZONS}  # {H: {(test_month, date): (pred, act, base)}}
     # ratio-based予測: cnt_avg予測を cnt_max/cnt_min に転用するためのストレージ
     avg_pred_store = {H: {} for H in HORIZONS}  # {H: {date: pred_avg}}
+    # T44: ボウズ行の評価専用ストレージ（通常行の avg_pred_store を汚染しないよう完全分離）
+    _bz_by_key        = {H: {} for H in HORIZONS}  # {H: {(test_month, date): {met: (pred, act)}}}
+    bz_avg_pred_store = {H: {} for H in HORIZONS}  # {H: {date: pred_avg}}（ボウズ行の ratio 連鎖用）
 
     for test_month in months:
         # leave-one-month-out: テスト月以外の全データで学習（前後含む）
@@ -3083,6 +3136,11 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
         train_sorted_m = sorted(train_en_h0, key=lambda r: r["date"])
 
         # メトリクス別 旬別ベースライン（学習データから）
+        # T45: 旬あたり n>=3 の旬のみ採用（n=1〜2 の旬は辞書から落とし .get() の
+        # met_mean_m フォールバックに委ねる）。train-only 化でスパースになった旬の
+        # ベースラインノイズを抑制（stat-reviewer MAJOR-1・size_point_dec の >=3 と同型）。
+        # アブレーション（アジ47コンボ）: min-n>=3 は素の train-only 比 -0.23pt、
+        # 本番同型の最近傍±3旬フォールバックは ±0.00pt で不採用（決定ログ T45 参照）。
         metric_decadal_m = {}
         for met in METRICS_LIST:
             _db = defaultdict(list)
@@ -3090,7 +3148,7 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 dn = r.get("decade"); val = r.get(met)
                 if dn is not None and val is not None:
                     _db[dn].append(val)
-            metric_decadal_m[met] = {dn: sum(v)/len(v) for dn, v in _db.items()}
+            metric_decadal_m[met] = {dn: sum(v)/len(v) for dn, v in _db.items() if len(v) >= 3}
 
         # ratio-based予測用: cnt_max/cnt_min の旬別中央値比率を学習データから計算
         # corr(actual_avg, actual_max)=0.976, ratio CV=0.18 の安定性を利用
@@ -3270,10 +3328,8 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                 if _act is None:
                     continue
                 _dn = _r.get("decade")
-                if met == "cnt_avg" and decadal and _dn in decadal:
-                    _base = decadal[_dn].get("avg_cnt", met_mean_m)
-                else:
-                    _base = m_dec.get(_dn, met_mean_m)
+                # T45 BL-1リーク修正: α/β 推定側も train-only の m_dec に統一（評価側と同一）
+                _base = m_dec.get(_dn, met_mean_m)
                 _nx = 0.0
                 for fac, rv in factor_r_m.items():
                     if fac == "wave_clamp" and fold_wc_thr != WAVE_CLAMP_THRESHOLD:
@@ -3339,19 +3395,27 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
 
             for H in HORIZONS:
                 te_en_h = [r for r in all_en_by_H[H] if r["date"][:7] == test_month]
+                # T44: ボウズ行を cnt 系のみ評価専用に合流（学習側 train_en_h0 は不変）
+                if met in _T44_CNT_METS and bz_en_by_H[H]:
+                    te_en_h = te_en_h + [r for r in bz_en_by_H[H] if r["date"][:7] == test_month]
                 usable  = {fac: rv for fac, rv in factor_r_m.items()
                            if fac in SLOW_FACTORS or H <= fold_fast_max_h}
                 w_h = sum(abs(rv) for rv in usable.values()) or 1.0
 
                 for r in te_en_h:
+                    is_bz = r.get("_is_bouzu", False)
                     act = r.get(met)
                     if act is None:
-                        continue
+                        if not is_bz:
+                            continue
+                        act = 0.0   # ボウズ行: cnt_min/cnt_max が欠損なら 0 とみなす
 
                     dn = r.get("decade")
-                    if met == "cnt_avg" and decadal and dn in decadal:
-                        base = decadal[dn].get("avg_cnt", met_mean_m)
-                    elif met == "size_avg":
+                    # T45 BL-1リーク修正: 旧コードは cnt_avg のみ全期間 decadal（テスト月を含む
+                    # DB の combo_decadal）を base にしていた＝将来情報の混入。他メトリックと同じ
+                    # train-only の m_dec（metric_decadal_m・テスト月除外）に統一。
+                    # 本番 predict_count は未来日予測なので全期間 decadal のままで正しい（触らない）。
+                    if met == "size_avg":
                         # ポイント×旬ベースライン優先、なければ旬ベースライン、なければ全体平均
                         _pt = r.get("point", "")
                         base = (size_point_dec.get((_pt, dn))
@@ -3405,18 +3469,39 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         _cnt_p = avg_pred_store[H].get(r["date"])
                         if _cnt_p is not None:
                             pred += _cnt_size_slope * (_cnt_p - _cnt_size_xm)
+                    # ── T44: 経路別予測の並行保持（既存 pred の値・意味は不変）───────────
+                    # 本バックテストは「ratio上書き + BL2ブレンド」を測ってきたが、本番
+                    # predict_count.py は「直接モデル・BL2ブレンドなし」で予測する（beta_bl2 は
+                    # 保存すらされていない）。どちらが正しいかを判定するため 3 経路を同時記録する。
+                    # 詳細: plan_T44_T48_openready_2026-07-16.md §3
+                    # ※ 対象は cnt 系のみ（_T44_CNT_METS）。size_avg の cnt_size_slope 補正後の
+                    #    値を拾わないよう、size/kg へ流用する際は代入位置を再検討すること。
+                    _p_direct_nobl2 = pred     # = 直接モデル・BL2ブレンドなし
                     # ratio-based override: cnt_max/cnt_min は cnt_avg予測×旬別比率で上書き
                     # 気象→cnt_max の直接相関(r≈0.15)より cnt_avg→cnt_max チェーン(r≈0.40)が優秀
                     if met in ("cnt_max", "cnt_min"):
-                        _ap = avg_pred_store[H].get(r["date"])
+                        _store = bz_avg_pred_store if is_bz else avg_pred_store
+                        _ap = _store[H].get(r["date"])
                         _ratio = decadal_ratio_m[met].get(dn, global_ratio_m[met])
                         pred = (_ap if _ap is not None else base) * _ratio
+                    _p_direct_bl2 = _p_direct_nobl2 + beta_bl2 * (_bl2_p - _p_direct_nobl2)
                     # 案C: BL-2 ブレンド適用
                     pred = pred + beta_bl2 * (_bl2_p - pred)
                     # multi_point 補正は削除（WX因子の二重適用になるため）
                     # cnt_avg予測を保存（次のmet=cnt_max/cnt_min のratio計算に使用）
                     if met == "cnt_avg":
-                        avg_pred_store[H][r["date"]] = pred
+                        if is_bz:
+                            bz_avg_pred_store[H][r["date"]] = pred
+                        else:
+                            avg_pred_store[H][r["date"]] = pred
+
+                    # T44: ボウズ行は評価専用。all_preds/分類/BL0-2/_range_by_key/star には入れない
+                    # （= 既存 KPI・学習・パラメータ確定に一切影響しない）
+                    if is_bz:
+                        _bk = _bz_by_key[H].setdefault((test_month, r["date"]), {})
+                        _bk[met] = (pred, act)
+                        _bk[met + "@prod"] = (_p_direct_nobl2, act)
+                        continue
 
                     all_preds[met][H].append(pred)
                     all_acts[met][H].append(act)
@@ -3447,6 +3532,10 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
                         if _rk not in _range_by_key[H]:
                             _range_by_key[H][_rk] = {}
                         _range_by_key[H][_rk][met] = (pred, act)
+                        # T44: 経路別の並行系列（cnt 系のみ）
+                        if met in _T44_CNT_METS:
+                            _range_by_key[H][_rk][met + "@direct"] = (_p_direct_bl2, act)
+                            _range_by_key[H][_rk][met + "@prod"]   = (_p_direct_nobl2, act)
                         # size_avg ループ時に actual_size_min / actual_size_max も追記
                         # また旬別実測幅ルックアップ用に decade_no も保存（Phase B-α'）
                         if met == "size_avg":
@@ -3630,32 +3719,53 @@ def section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area
     lines.append("  " + "-"*86)
 
     # ── cnt メトリック（独立モデル: cnt_min / cnt_max / cnt_avg） ──────────────
-    for H in HORIZONS:
-        rows_r = []
-        for _rk, d in _range_by_key[H].items():
-            if "cnt_max" in d and "cnt_min" in d and "cnt_avg" in d:
-                pred_hi, _       = d["cnt_max"]
-                pred_lo, act_min = d["cnt_min"]   # act_min = actual_cnt_min（ボウズ判定用）
-                _,       act_avg = d["cnt_avg"]   # ref = actual_avg
-                rows_r.append((pred_hi, pred_lo, act_avg, act_min))
-        if len(rows_r) < MIN_N_COMBO:
-            continue
-        n_r = len(rows_r)
-        promise_break_rate = sum(1 for ph, pl, aa, alo in rows_r if aa < pl) / n_r
-        over_expect_rate   = sum(1 for ph, pl, aa, alo in rows_r
-                                 if aa > 0 and ph / aa > 2.5) / n_r
-        coverage           = sum(1 for ph, pl, aa, alo in rows_r if pl <= aa <= ph) / n_r
-        bowzu_rate         = sum(1 for ph, pl, aa, alo in rows_r
-                                 if alo == 0 and pl > bowzu_threshold) / n_r
-        winkler = sum(_winkler_range(pl, ph, aa) for ph, pl, aa, alo in rows_r) / n_r
-        lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
-        lines.append(
-            f"  {'cnt':>6}  {lh:>12}  {promise_break_rate:>8.1%}  "
-            f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {bowzu_rate:>6.1%}  "
-            f"{winkler:>7.2f}  {n_r:>4}"
-        )
-        range_bt_data.append(("cnt", H, promise_break_rate, over_expect_rate,
-                               coverage, bowzu_rate, winkler, n_r, None))
+    # T44: 経路 × ボウズ有無 で 5 系列を記録する（metric 列に別名で保存・既存定義は不変）
+    #   cnt          = ratio上書き + BL2ブレンド … 従来の公表KPI（数値は従来と完全一致＝回帰チェック）
+    #   cnt_direct   = 直接モデル + BL2ブレンド
+    #   cnt_prod     = 直接モデル + ブレンドなし … 本番 predict_count.py が実際に出す予測
+    #   cnt_bz       = cnt      + 真のボウズ日（cnt_avg==0）を評価に合流
+    #   cnt_prod_bz  = cnt_prod + 同上 … 「本番が現実（ボウズ込み）に対してどうか」の正直な値
+    # 判定: cnt vs cnt_direct → ratio/direct / cnt_direct vs cnt_prod → BL2ブレンドの是非
+    def _cnt_rows(_H, suffix, include_bz):
+        out_rows = []
+        srcs = [_range_by_key[_H]] + ([_bz_by_key[_H]] if include_bz else [])
+        k_hi = "cnt_max" + suffix; k_lo = "cnt_min" + suffix; k_av = "cnt_avg" + suffix
+        for src in srcs:
+            for _rk2, d in src.items():
+                if k_hi in d and k_lo in d and k_av in d:
+                    pred_hi, _       = d[k_hi]
+                    pred_lo, act_min = d[k_lo]   # act_min = actual_cnt_min（ボウズ判定用）
+                    _,       act_avg = d[k_av]   # ref = actual_avg
+                    out_rows.append((pred_hi, pred_lo, act_avg, act_min))
+        return out_rows
+
+    for _label, _suffix, _inc_bz in (
+        ("cnt",         "",       False),
+        ("cnt_direct",  "@direct", False),
+        ("cnt_prod",    "@prod",   False),
+        ("cnt_bz",      "",        True),
+        ("cnt_prod_bz", "@prod",   True),
+    ):
+        for H in HORIZONS:
+            rows_r = _cnt_rows(H, _suffix, _inc_bz)
+            if len(rows_r) < MIN_N_COMBO:
+                continue
+            n_r = len(rows_r)
+            promise_break_rate = sum(1 for ph, pl, aa, alo in rows_r if aa < pl) / n_r
+            over_expect_rate   = sum(1 for ph, pl, aa, alo in rows_r
+                                     if aa > 0 and ph / aa > 2.5) / n_r
+            coverage           = sum(1 for ph, pl, aa, alo in rows_r if pl <= aa <= ph) / n_r
+            bowzu_rate         = sum(1 for ph, pl, aa, alo in rows_r
+                                     if alo == 0 and pl > bowzu_threshold) / n_r
+            winkler = sum(_winkler_range(pl, ph, aa) for ph, pl, aa, alo in rows_r) / n_r
+            lh = "H=  0(実測)" if H == 0 else f"H={H:>3}d 前"
+            lines.append(
+                f"  {_label:>11}  {lh:>12}  {promise_break_rate:>8.1%}  "
+                f"{over_expect_rate:>8.1%}  {coverage:>7.1%}  {bowzu_rate:>6.1%}  "
+                f"{winkler:>7.2f}  {n_r:>4}"
+            )
+            range_bt_data.append((_label, H, promise_break_rate, over_expect_rate,
+                                   coverage, bowzu_rate, winkler, n_r, None))
 
     # ── size メトリック（Phase B-α': 実測比率ベースのレンジ評価） ───────────────────
     # pred_center = size_avg 予測（wMAPE 7.3% の良好なモデル、変更なし）
@@ -4531,6 +4641,16 @@ def save_wx_params(fish, ship, wx_params_data, modal_lat=None, modal_lon=None,
         for fac, (mean, std, r) in params["factors"].items():
             rows.append((fish, ship, met, fac, mean, std, r, None, None, None, None, None,
                          now, 0, 0, None, None))
+    # T45 配送バグ修正: use_fallback の読み出し（predict_count._get_use_fallback）は
+    # metric='cnt_avg' の _meta 行固定。cnt_avg のバックテストがスキップされ
+    # wx_params_data に cnt_avg が無いコンボでは fallback 判定が本番に届かなかった
+    # （例: キハダマグロ×ちがさき丸 = BL2負けワースト +23pt が配送漏れ）。
+    # use_fallback=True なら cnt_avg._meta 行を必ず作る。
+    if use_fallback and wx_params_data and "cnt_avg" not in wx_params_data:
+        rows.append((fish, ship, "cnt_avg", "_meta",
+                     None, None, None, 0.0, None, None,
+                     modal_lat, modal_lon, now, 1, int(kaiyu_promoted),
+                     best_h0_wmape, best_cmems))
     # 列名を明示して列順ずれを防ぐ（ALTER TABLE でカラム追加した場合の位置ズレ対策）
     conn.executemany(
         """INSERT OR REPLACE INTO combo_wx_params
@@ -5234,8 +5354,36 @@ def deep_dive_by_point(fish, ship):
     if len(_noboat) >= MIN_N_COMBO and len(_noboat) < len(all_records):
         all_records = _noboat
 
-    pt_counts = _col.Counter(r.get("point", "") for r in all_records)
+    # T45 キー不一致修正: グルーピングキーを save_point_events と同一の正規化名に統一。
+    # 旧実装は生の point でグルーピング→ combo_point_wx_params.point に生値が保存され、
+    # 推論側（predict_count._apply_point_wx_correction）が combo_point_events.point_normalized
+    # （正規化値）で検索するため、表記ゆれ・航程/深度サフィックス付きポイントのモデルが
+    # 永久に不使用だった（90_決定ログ 2026/07/16 T45）。正規化により表記ゆれが統合され
+    # ポイントあたり n も増える。
+    def _pt_key(r):
+        return _strip_depth_suffix(_normalize_point_name(r.get("point", "") or ""))
+
+    pt_counts = _col.Counter(_pt_key(r) for r in all_records)
     viable_points = [pt for pt, n in pt_counts.most_common() if pt and n >= MIN_N_COMBO]
+
+    # 旧生値キーの残骸を一掃（save 系の DELETE は (fish,ship,point) 単位のため、
+    # キー体系の変更で旧キー行が残留し _save_combo_tuning_json の best_point が
+    # stale 行を拾い得る。コンボ単位で毎回リセットして常に最新キーのみに。
+    # ⚠ 一回限り分析スクリプト（analyze_yaruka_gihei.py）が同テーブルに独自合成キー
+    #   （「長井沖_単独」「複数ポイント」等）で書いた行は消さない（data-reviewer 指摘。
+    #   本番推論はこれらを参照しないが人手の分析成果物のため保全）。
+    #   今後の ad-hoc 分析は別テーブル（*_adhoc）を使うこと。
+    _conn_purge = _open_ana()
+    for _tbl in ("combo_point_backtest", "combo_point_wx_params"):
+        try:
+            _conn_purge.execute(
+                f"DELETE FROM {_tbl} WHERE fish=? AND ship=? "
+                f"AND point NOT LIKE '%単独' AND point != '複数ポイント'",
+                (fish, ship))
+        except sqlite3.OperationalError:
+            pass   # テーブル未作成（初回実行）
+    _conn_purge.commit()
+    _conn_purge.close()
 
     if not viable_points:
         return
@@ -5254,7 +5402,7 @@ def deep_dive_by_point(fish, ship):
     decadal_global = load_decadal(fish, ship)
 
     for pt in viable_points:
-        pt_records = [r for r in all_records if r.get("point", "") == pt]
+        pt_records = [r for r in all_records if _pt_key(r) == pt]
         n = len(pt_records)
         print(f"    ポイント: {pt!r}  N={n}", flush=True)
 
@@ -6124,6 +6272,15 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
             for r, _ in _capped:
                 r["cnt_avg"] = _cap
 
+    # T44: 真のボウズ行（cnt_avg==0）を評価専用にロード。学習・パラメータ確定には使わない。
+    # 通常 records と同じ is_boat フィルタを適用して母集団定義を揃える。
+    bouzu_records = load_records(fish, ship_filter=ship, keep_bouzu=True)
+    if _boat_filtered:
+        bouzu_records = [r for r in bouzu_records if r.get("is_boat", 0) == 0]
+    if bouzu_records:
+        print(f"  [T44 bouzu] {fish}×{ship}: 学習{len(records)}件 + 評価専用ボウズ{len(bouzu_records)}件 "
+              f"(真のボウズ率 {len(bouzu_records)/(len(records)+len(bouzu_records))*100:.1f}%)")
+
     conn_wx      = sqlite3.connect(DB_WX)      if (os.path.exists(DB_WX)      and os.path.getsize(DB_WX)      > 0) else None
     conn_tide    = sqlite3.connect(DB_TIDE)    if (os.path.exists(DB_TIDE)    and os.path.getsize(DB_TIDE)    > 0) else None
     conn_typhoon = sqlite3.connect(DB_TYPHOON) if (os.path.exists(DB_TYPHOON) and os.path.getsize(DB_TYPHOON) > 0) else None
@@ -6168,7 +6325,7 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
     save_point_events(fish, ship, en0)
 
     out.append("\n【マルチホライズン バックテスト（ローリング月次CV）】")
-    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems)
+    bt_lines, bt_data, range_bt_data, star_bt_data, season_thr_final, wx_params_data, modal_lat, modal_lon, best_cmems = section_backtest_rolling(records, ship_coords, wx_coords, conn_wx, ship_area, decadal, conn_tide=conn_tide, conn_typhoon=conn_typhoon, fish=fish, conn_cmems=conn_cmems, bouzu_records=bouzu_records)
     out += bt_lines
 
     text = "\n".join(out)
@@ -6233,10 +6390,12 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
         if met == "cnt_avg" and H == 0:
             cnt_avg_h0_found = True
             bl0_is_better = (bl0w is not None and wmape is not None and bl0w <= wmape)
-            if wmape is not None and bl0_is_better and (
-                (bl0w is not None and wmape > bl0w + 10) or
-                (bl2w is not None and wmape > bl2w + 5)
-            ):
+            # T45: ②BL-2条件を bl0_is_better ゲートから独立させた。フォールバック時の
+            # 本番出力は BL-2（直近7件平均）なので、BL-0 に勝っていても BL-2 に 5pt 以上
+            # 負けるならフォールバックすべき（マルイカ×長三朗丸 +5.9pt 等が漏れていた）。
+            if wmape is not None and bl0_is_better and (bl0w is not None and wmape > bl0w + 10):
+                use_fallback = True
+            if wmape is not None and bl2w is not None and wmape > bl2w + 5:
                 use_fallback = True
             if rv is not None and rv < OOS_R_FALLBACK_THR and bl0_is_better:
                 use_fallback = True
@@ -6254,10 +6413,11 @@ def deep_dive(fish, ship, verbose=True, reset_best=False):
             if _row_fb:
                 rv_fb, wmape_fb, bl0w_fb, bl2w_fb = _row_fb
                 bl0_is_better_fb = (bl0w_fb is not None and wmape_fb is not None and bl0w_fb <= wmape_fb)
+                # T45: ②BL-2条件を独立化（メイン経路と同一）
                 if wmape_fb is not None and bl0_is_better_fb and (
-                    (bl0w_fb is not None and wmape_fb > bl0w_fb + 10) or
-                    (bl2w_fb is not None and wmape_fb > bl2w_fb + 5)
-                ):
+                        bl0w_fb is not None and wmape_fb > bl0w_fb + 10):
+                    use_fallback = True
+                if wmape_fb is not None and bl2w_fb is not None and wmape_fb > bl2w_fb + 5:
                     use_fallback = True
                 if rv_fb is not None and rv_fb < OOS_R_FALLBACK_THR and bl0_is_better_fb:
                     use_fallback = True

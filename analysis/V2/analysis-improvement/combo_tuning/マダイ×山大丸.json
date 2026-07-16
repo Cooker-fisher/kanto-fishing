@@ -1,0 +1,37 @@
+{
+  "fish": "マダイ",
+  "ship": "山大丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 41.64,
+    "bl2_wmape": 53.86,
+    "oos_r": 0.589,
+    "n_records": 64,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "静岡県 静岡市 清水港",
+      "n": 51,
+      "wmape_h0": 34.5,
+      "bl2_wmape": 55.3,
+      "oos_r": 0.703,
+      "improvement_pt": 7.18
+    }
+  ],
+  "best_point": {
+    "name": "静岡県 静岡市 清水港",
+    "wmape_h0": 34.5,
+    "improvement_pt": 7.18
+  },
+  "improvement_pt": 7.18,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=静岡県 静岡市 清水港 wmape=34.5% imp=7.18pt"
+    }
+  ]
+}

@@ -1,32 +1,32 @@
 {
   "fish": "アジ",
   "ship": "山下丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 29.74,
+    "wmape_h0": 32.65,
     "bl2_wmape": 33.62,
-    "oos_r": 0.292,
+    "oos_r": 0.037,
     "n_records": 314,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "久里浜沖",
       "n": 303,
-      "wmape_h0": 29.1,
+      "wmape_h0": 32.2,
       "bl2_wmape": 32.9,
-      "oos_r": 0.302,
-      "improvement_pt": 0.63
+      "oos_r": 0.043,
+      "improvement_pt": 0.43
     }
   ],
   "best_point": {
     "name": "久里浜沖",
-    "wmape_h0": 29.1,
-    "improvement_pt": 0.63
+    "wmape_h0": 32.2,
+    "improvement_pt": 0.43
   },
-  "improvement_pt": 0.63,
+  "improvement_pt": 0.43,
   "points": [
     {
       "name": "久里浜沖",
@@ -224,6 +224,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=久里浜沖 wmape=29.1% imp=0.63pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=久里浜沖 wmape=32.2% imp=0.44pt"
     }
   ],
   "trip_models": [

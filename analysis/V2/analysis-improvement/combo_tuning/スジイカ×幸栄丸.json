@@ -1,14 +1,14 @@
 {
   "fish": "スジイカ",
   "ship": "幸栄丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 48.12,
+    "wmape_h0": 69.48,
     "bl2_wmape": 76.81,
-    "oos_r": 0.508,
+    "oos_r": -0.234,
     "n_records": 88,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "points": [
@@ -156,6 +156,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=鹿島北沖 wmape=33.5% imp=14.66pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=鹿島北沖 wmape=57.2% imp=12.32pt"
     }
   ],
   "rejected_factors": [
@@ -224,26 +229,26 @@
     {
       "name": "鹿島北沖",
       "n": 38,
-      "wmape_h0": 33.5,
+      "wmape_h0": 57.2,
       "bl2_wmape": 57.5,
-      "oos_r": 0.593,
-      "improvement_pt": 14.66
+      "oos_r": -0.394,
+      "improvement_pt": 12.32
     },
     {
       "name": "大根",
       "n": 38,
-      "wmape_h0": 54.5,
+      "wmape_h0": 77.9,
       "bl2_wmape": 92.7,
-      "oos_r": 0.451,
-      "improvement_pt": -6.36
+      "oos_r": -0.3,
+      "improvement_pt": -8.46
     }
   ],
   "best_point": {
     "name": "鹿島北沖",
-    "wmape_h0": 33.5,
-    "improvement_pt": 14.66
+    "wmape_h0": 57.2,
+    "improvement_pt": 12.32
   },
-  "improvement_pt": 14.66,
+  "improvement_pt": 12.32,
   "trip_models": [
     {
       "trip_no": 3,

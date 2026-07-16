@@ -1,0 +1,37 @@
+{
+  "fish": "マゴチ",
+  "ship": "深川 吉野屋",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 40.8,
+    "bl2_wmape": 45.34,
+    "oos_r": 0.248,
+    "n_records": 74,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "東京都 江東区 木場",
+      "n": 68,
+      "wmape_h0": 31.5,
+      "bl2_wmape": 47.3,
+      "oos_r": 0.626,
+      "improvement_pt": 9.26
+    }
+  ],
+  "best_point": {
+    "name": "東京都 江東区 木場",
+    "wmape_h0": 31.5,
+    "improvement_pt": 9.26
+  },
+  "improvement_pt": 9.26,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=東京都 江東区 木場 wmape=31.5% imp=9.26pt"
+    }
+  ]
+}

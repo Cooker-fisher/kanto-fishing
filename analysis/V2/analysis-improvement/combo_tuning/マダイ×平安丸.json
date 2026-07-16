@@ -1,15 +1,14 @@
 {
   "fish": "マダイ",
   "ship": "平安丸",
-  "last_reviewed": "2026-04-24",
-  "status": "point_model_no_improvement",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 36.86,
-    "bl2_wmape": 42.51,
-    "oos_r": 0.34,
-    "n_records": 123,
-    "alpha_scale": 0.4608,
-    "use_fallback": false,
+    "wmape_h0": 43.84,
+    "bl2_wmape": 42.88,
+    "oos_r": -0.008,
+    "n_records": 126,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "points": [
@@ -117,6 +116,11 @@
       "date": "2026-04-24",
       "action": "default_point_set",
       "note": "SHIP_DEFAULT_POINT追加: 平安丸 → 小田原沖。point空352件を小田原沖に統合見込み。"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=小田原沖 wmape=43.8% imp=0.04pt"
     }
   ],
   "rejected_factors": [
@@ -184,19 +188,19 @@
   "point_models": [
     {
       "name": "小田原沖",
-      "n": 114,
-      "wmape_h0": 37.3,
-      "bl2_wmape": 44.8,
-      "oos_r": 0.352,
-      "improvement_pt": -0.44
+      "n": 117,
+      "wmape_h0": 43.8,
+      "bl2_wmape": 45.1,
+      "oos_r": 0.02,
+      "improvement_pt": 0.04
     }
   ],
   "best_point": {
     "name": "小田原沖",
-    "wmape_h0": 37.3,
-    "improvement_pt": -0.44
+    "wmape_h0": 43.8,
+    "improvement_pt": 0.04
   },
-  "improvement_pt": -0.44,
+  "improvement_pt": 0.04,
   "trip_models": [
     {
       "trip_no": 1,

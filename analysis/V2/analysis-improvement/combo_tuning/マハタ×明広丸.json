@@ -1,16 +1,15 @@
 {
   "fish": "マハタ",
   "ship": "明広丸",
-  "last_reviewed": "2026-04-22",
-  "status": "reviewed",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 49.6,
-    "bl0_wmape": 57.9,
-    "bl2_wmape": 60.6,
-    "oos_r": 0.01,
-    "n_records": 59,
-    "alpha_scale": 0.1,
-    "use_fallback": true
+    "wmape_h0": 50.13,
+    "bl2_wmape": 47.81,
+    "oos_r": -0.096,
+    "n_records": 72,
+    "use_fallback": true,
+    "kaiyu_promoted": false
   },
   "points": [
     {
@@ -88,6 +87,11 @@
       "change": "use_fallback=1",
       "effect": "BL2負け",
       "reason": "r=0.010 事実上無相関"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=岩和田沖 wmape=44.4% imp=5.69pt"
     }
   ],
   "rejected_factors": [
@@ -169,5 +173,21 @@
   "point_depth_models": [],
   "best_point_depth": null,
   "water_color_models": [],
-  "best_water_color": null
+  "best_water_color": null,
+  "point_models": [
+    {
+      "name": "岩和田沖",
+      "n": 54,
+      "wmape_h0": 44.4,
+      "bl2_wmape": 42.2,
+      "oos_r": -0.071,
+      "improvement_pt": 5.69
+    }
+  ],
+  "best_point": {
+    "name": "岩和田沖",
+    "wmape_h0": 44.4,
+    "improvement_pt": 5.69
+  },
+  "improvement_pt": 5.69
 }

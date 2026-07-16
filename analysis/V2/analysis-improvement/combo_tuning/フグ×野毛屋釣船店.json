@@ -1,48 +1,56 @@
 {
   "fish": "フグ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 44.22,
-    "bl2_wmape": 49.07,
-    "oos_r": 0.487,
-    "n_records": 406,
+    "wmape_h0": 47.43,
+    "bl2_wmape": 48.28,
+    "oos_r": 0.267,
+    "n_records": 435,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "中ノ瀬",
+      "name": "中の瀬",
       "n": 43,
-      "wmape_h0": 21.3,
+      "wmape_h0": 36.7,
       "bl2_wmape": 43.0,
-      "oos_r": 0.697,
-      "improvement_pt": 22.95
-    },
-    {
-      "name": "八景沖",
-      "n": 94,
-      "wmape_h0": 33.5,
-      "bl2_wmape": 48.8,
-      "oos_r": 0.584,
-      "improvement_pt": 10.7
+      "oos_r": -0.373,
+      "improvement_pt": 10.69
     },
     {
       "name": "大貫沖",
       "n": 241,
-      "wmape_h0": 35.7,
+      "wmape_h0": 42.8,
       "bl2_wmape": 36.8,
-      "oos_r": 0.728,
-      "improvement_pt": 8.57
+      "oos_r": 0.576,
+      "improvement_pt": 4.59
+    },
+    {
+      "name": "神奈川県 横浜市 金沢八景平潟",
+      "n": 56,
+      "wmape_h0": 44.4,
+      "bl2_wmape": 45.8,
+      "oos_r": 0.321,
+      "improvement_pt": 3.02
+    },
+    {
+      "name": "八景沖",
+      "n": 94,
+      "wmape_h0": 45.2,
+      "bl2_wmape": 48.8,
+      "oos_r": -0.032,
+      "improvement_pt": 2.18
     }
   ],
   "best_point": {
-    "name": "中ノ瀬",
-    "wmape_h0": 21.3,
-    "improvement_pt": 22.95
+    "name": "中の瀬",
+    "wmape_h0": 36.7,
+    "improvement_pt": 10.69
   },
-  "improvement_pt": 22.95,
+  "improvement_pt": 10.69,
   "points": [
     {
       "name": "大貫沖",
@@ -265,6 +273,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=中ノ瀬 wmape=21.3% imp=22.95pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=中の瀬 wmape=36.7% imp=10.69pt"
     }
   ],
   "trip_models": [

@@ -1,0 +1,37 @@
+{
+  "fish": "アジ",
+  "ship": "政美丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 44.06,
+    "bl2_wmape": 38.36,
+    "oos_r": 0.111,
+    "n_records": 34,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 鎌倉市 腰越漁港",
+      "n": 34,
+      "wmape_h0": 34.1,
+      "bl2_wmape": 38.4,
+      "oos_r": 0.498,
+      "improvement_pt": 10.01
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 鎌倉市 腰越漁港",
+    "wmape_h0": 34.1,
+    "improvement_pt": 10.01
+  },
+  "improvement_pt": 10.01,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 鎌倉市 腰越漁港 wmape=34.1% imp=10.01pt"
+    }
+  ]
+}

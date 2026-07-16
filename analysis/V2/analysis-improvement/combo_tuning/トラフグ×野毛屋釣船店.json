@@ -1,13 +1,13 @@
 {
   "fish": "トラフグ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-07-03",
-  "status": "point_model_marginal",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 39.15,
-    "bl2_wmape": 56.37,
-    "oos_r": 0.558,
-    "n_records": 89,
+    "wmape_h0": 42.64,
+    "bl2_wmape": 51.98,
+    "oos_r": 0.397,
+    "n_records": 115,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -171,6 +171,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=横須賀沖 wmape=36.4% imp=2.79pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 金沢八景平潟 wmape=34.9% imp=7.72pt"
     }
   ],
   "rejected_factors": [
@@ -237,20 +242,28 @@
   ],
   "point_models": [
     {
+      "name": "神奈川県 横浜市 金沢八景平潟",
+      "n": 34,
+      "wmape_h0": 34.9,
+      "bl2_wmape": 47.9,
+      "oos_r": 0.586,
+      "improvement_pt": 7.72
+    },
+    {
       "name": "横須賀沖",
       "n": 59,
-      "wmape_h0": 36.4,
+      "wmape_h0": 44.1,
       "bl2_wmape": 59.1,
-      "oos_r": 0.581,
-      "improvement_pt": 2.79
+      "oos_r": 0.346,
+      "improvement_pt": -1.45
     }
   ],
   "best_point": {
-    "name": "横須賀沖",
-    "wmape_h0": 36.4,
-    "improvement_pt": 2.79
+    "name": "神奈川県 横浜市 金沢八景平潟",
+    "wmape_h0": 34.9,
+    "improvement_pt": 7.72
   },
-  "improvement_pt": 2.79,
+  "improvement_pt": 7.72,
   "trip_models": [
     {
       "trip_no": 3,

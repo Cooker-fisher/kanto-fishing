@@ -1,6 +1,103 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/07/12
+最終更新: 2026/07/17
 最新コミット: a2bfcdfe2（fish-value リリース 3コミット・push済み）
+
+---
+
+## ✅ T45 完了（2026/07/17）— BL-1リーク解消で正直化: 公表wMAPEの約9ptはリークだった
+
+**詳細: 90_決定ログ「2026/07/17 T45」。branch claude/fishing-forecast-accuracy-7762a6（T44/T44b/T45 一式・未マージ）**
+
+- **リーク解消後の正直な姿**: cnt_avg wMAPE P50 38.1→**47.1%**（ベースラインは不変＝リークはモデルだけ飾っていた）
+  / BL2ペア勝率 65.1% / fallback 187件（179件は oos_r<0.15＝見せかけ相関の剥落・本番は BL2 配信で中央+1.0pt改善）
+- アブレーションで実装ミスでないことを確認（min-n寄与-0.23pt・近傍±3旬±0.00pt・残りは全てリーク除去）
+- **H=28 では model 47.6% vs BL2 51.0%・ペア勝率69.1% ＝ 商品の主戦場（1〜4週先）で優位は本物**
+- **公表KPIは今後 cnt_bz（ボウズ込み）を正とする: レンジ的中率 P50 90.0%**。
+  ティア試算（pb≤10% & n≥50）**160コンボ/33魚種/78船宿** → T47 選別公開は成立
+- ポイントモデル: キー統一で+11コンボ回収（ヒット率84.2%）。「永久不使用」の実際の範囲はサフィックス付き約17%だった
+- ⚠ size/kg の旬別比率は全期間計算のまま（既存合意・KPI報告時に非対称性を併記）
+- 副作用ゼロ確認: ad-hoc 分析キー（ヤリイカ×儀兵衛丸）保全 / 既存4系列の定義不変
+
+**次: T46**（Hurdle+log1p+recency・アブレーション→1回再実行）→ **T47 選別公開**（正直値ベースで open_tier 蒸留）
+
+---
+
+## ✅ T47a 完了（2026/07/17）— 選別基盤 + 発見「サイトの予測は検証対象外の別モデル製」
+
+**詳細: 90_決定ログ「2026/07/17 T47a」**
+
+- 🔥 **発見**: forecast ページの予測カードは crawler.py 内蔵の独立モデル（predict_catches:1589）製で、
+  T44〜T45 で検証してきた predict_count 系とは別物。**検証済みモデルの forecast_daily.json は消費者ゼロ**だった
+- **T47a 実装済み**: `crawl/build_open_tier.py`（analysis.sqlite→normalize/open_tier.json 蒸留）+
+  predict_daily 選別（tier A のみレンジ・KAIYU★一本化・タイ五目除外）。**tier A = 109コンボ/23魚種/62船宿**
+  （pb≤10%・n≥50・fallback配信除外の正直基準）。スモーク検証済み（レンジ79件全てA・kaiyu併記0）
+- **T47b（次セッション・crawler.py 大工事）**: forecast ページのカードを「前日コミットの forecast_daily.json
+  × tier A」に差し替え。mockup 必須・domain/persona レビュー・不変条件 #53 同梱。
+  **要ユーザー判断**: crawler.py 内蔵モデルの扱い（廃止 or エリア概況専用に降格）
+- 運用: 全再実行後は build_predict_params.py と **build_open_tier.py の両方**をローカル実行してコミット
+
+---
+
+## ✅ T44/T44b 完了（2026/07/16）— 供給率 33.6%→79.6%・本番を ratio 経路に切替
+
+**T44b（a1c02a89b）**: 欠落因子を本番に供給（カレンダー/季節交互作用/台風/CMEMS月次蒸留/sst_gradient/
+prev_week_cnt）。パリティ検証 33因子×75行 全一致（is_boat/キャップ/同日タイブレークまで学習を完全複製）。
+**T44 判定（全再実行 59/59・データ7/15）**: cnt_min/max は **ratio 経路の勝ち**（pb P50 6.1% vs 11.1% /
+cov 79.3% vs 66.9%）→ 本番 predict_combo を ratio 優先に切替（`_CNT_RANGE_USE_DIRECT=False`）。
+**正直な現在地 = cnt_bz（ボウズ込み）: 約束割れ P50 8.4% / レンジ的中率 91.6%**。
+predict_params.sqlite 再蒸留済み（serve_sla_monthly 同梱）。KPI: `_kpi_T44_truth_2026-07-16.json`。
+詳細: 90_決定ログ「2026/07/16 T44b」。**次: T45**（ポイントkey修正・BL-1リーク・fallback診断。
+beta_bl2 出荷は効果小と判明し優先度低）。
+
+---
+
+## 🔥 T44 の発見記録（2026/07/16・上記で対処済み）— 学習した補正の 1/3 しか本番に届いていない
+
+**詳細: 90_決定ログ.md「2026/07/16 T44 測り直し」。T44 コミット 431f380a9（branch claude/fishing-forecast-accuracy-7762a6・未マージ）**
+
+`predict_count._apply_correction_from_params` は **分母 w_total に全採用因子の |r| を残したまま、
+値が無い因子を分子から落とす**（predict_count.py:648-656）。値の供給元 `_build_all_wx`（571-635）は
+**気象と潮汐しか作らない** → 補正が系統的に縮小し予測が旬別ベースラインへ引き戻されている。
+
+**実効重み供給率（394コンボ実測）: P50=33.6% / 平均34.6% / 供給率100%は 0件 / 50%未満が313件(79%) / 0%が10件**
+
+欠落ワースト: prev_week_cnt(251コンボ・Σ|r|98.4) / spawn_season_n(218) / **is_holiday(244・日付だけで作れる)** /
+typhoon_dist(120) / CMEMS月次(122,118) / sst_季節交互作用（供給済みsst_avg×日付で作れる）。
+→ **公表 KPI（wMAPE 37.17%・BL2勝率96.3%）はバックテストにしか存在しないモデルの数字。**
+→ マルイカ×秀丸（T34 で船宿ブログクロールまでして撤退した最悪コンボ）は供給率 **5.4%** が真因。
+→ BL-2ブレンド（案C・-1.5pt で採用確定）も beta_bl2 未保存で **本番に未出荷**。
+
+**真のボウズ（cnt_avg==0）3,721行が読込時に除外されていた**（load_records:1171）。既存 bowzu_rate(P50 16.9%)は
+別概念＝個人ボウズ。マダイ×ちがさき丸は promise_break **0.0% と公表しつつ実際は釣行の47%が釣果ゼロ**。
+
+### 次アクション: **T44b（最優先・新設）** — 欠落因子を本番に供給する
+① 日付だけで作れる群（is_holiday/is_consec_holiday/is_summer_vacation/spawn_season_n/季節ダミー交互作用）
+② prev_week_cnt（CSV・`_get_bl2` と同経路）③ typhoon_dist/wind（typhoon.sqlite・コミット済み）
+④ CMEMS月次・water_color_pred_n を predict_params.sqlite へ蒸留 ⑤ w_total を供給できた因子で再正規化
+⑥ 供給率が閾値割れしたら CI で落とす不変条件
+→ その後 **1回の全魚種再実行**（T33 の教訓）。判定時は pred_lo≈0 フリーパス率・winkler・coverage・n を必ず併記
+（promise_break 単独判定は禁止＝stat-reviewer 指摘）。⚠ 公表 KPI は悪化方向に動くが regression ではない。
+
+---
+
+## 📋 公開準備ロードマップ T44〜T48（T44 実装済み・T45以降 未着手）
+
+**段取り書（自己完結・これだけで着手可能）**: `analysis/V2/analysis-improvement/plan_T44_T48_openready_2026-07-16.md`
+**T44 は完了**（経路別・ボウズ込み測定基盤）。ただし判定は T44b 後の再実行まで保留。
+
+背景の4大発見（Fable分析・コード/DB実確認済み）:
+① **公表KPIが本番と違う経路を測っている**（バックテスト=ratio上書き / 本番 predict_count=直接モデル優先）
+② バックテストは**ボウズ除外**（load_records で cnt_avg<=0 を落とす・ボウズ率P50=16.9%）で楽観的
+③ 誤差はタイ五目(4コンボ・n加重wMAPE73%)と回遊魚に集中。cnt pb P50=6.4%は既に商品水準
+④ 「pb≤10% & BL2勝ち & n≥50」で**180コンボ(42魚種74船宿)が pb P50=2.73%** → 選別すれば公開可能
+
+- T44: 測り直し（経路統一+ボウズ込み評価）← 最初にやる・全判定の土台
+- T45: 回収（ポイントモデルkey不一致修正・BL-1リーク解消・fallback診断）
+- T46: Hurdle+log1p+recency加重（フラグ化・全再実行1回に同梱）
+- T47: 選別公開（open_tier.json 蒸留・KAIYU★一本化・タイ五目除外・E層配線+不変条件）
+- T48: プール学習PoC（**要ユーザー判断**: C層外部ライブラリ解禁の可否）
+
+⚠️ 分析実行は必ずメインrepo（worktree不可）。行番号アンカーは実装前に現物確認。
 
 ---
 

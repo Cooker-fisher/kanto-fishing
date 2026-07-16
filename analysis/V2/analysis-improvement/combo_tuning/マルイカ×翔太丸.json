@@ -1,12 +1,12 @@
 {
   "fish": "マルイカ",
   "ship": "翔太丸",
-  "last_reviewed": "2026-07-03",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 41.39,
+    "wmape_h0": 46.22,
     "bl2_wmape": 47.76,
-    "oos_r": 0.524,
+    "oos_r": 0.373,
     "n_records": 335,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,34 +15,34 @@
     {
       "name": "城ヶ島西沖",
       "n": 32,
-      "wmape_h0": 21.4,
+      "wmape_h0": 46.1,
       "bl2_wmape": 43.9,
-      "oos_r": 0.821,
-      "improvement_pt": 19.95
-    },
-    {
-      "name": "城ヶ島沖",
-      "n": 89,
-      "wmape_h0": 34.2,
-      "bl2_wmape": 54.3,
-      "oos_r": 0.654,
-      "improvement_pt": 7.21
+      "oos_r": -0.13,
+      "improvement_pt": 0.08
     },
     {
       "name": "小網代沖",
       "n": 167,
-      "wmape_h0": 39.3,
+      "wmape_h0": 49.0,
       "bl2_wmape": 47.0,
-      "oos_r": 0.581,
-      "improvement_pt": 2.12
+      "oos_r": 0.224,
+      "improvement_pt": -2.74
+    },
+    {
+      "name": "城ヶ島沖",
+      "n": 89,
+      "wmape_h0": 51.0,
+      "bl2_wmape": 54.3,
+      "oos_r": 0.12,
+      "improvement_pt": -4.82
     }
   ],
   "best_point": {
     "name": "城ヶ島西沖",
-    "wmape_h0": 21.4,
-    "improvement_pt": 19.95
+    "wmape_h0": 46.1,
+    "improvement_pt": 0.08
   },
-  "improvement_pt": 19.95,
+  "improvement_pt": 0.08,
   "history": [
     {
       "date": "2026-04-22",
@@ -113,6 +113,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=城ヶ島西沖 wmape=21.4% imp=19.95pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=城ヶ島西沖 wmape=46.1% imp=0.08pt"
     }
   ]
 }

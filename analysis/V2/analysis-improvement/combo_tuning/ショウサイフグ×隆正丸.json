@@ -1,0 +1,37 @@
+{
+  "fish": "ショウサイフグ",
+  "ship": "隆正丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 50.76,
+    "bl2_wmape": 39.17,
+    "oos_r": -0.278,
+    "n_records": 40,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 旭市 飯岡漁港",
+      "n": 40,
+      "wmape_h0": 27.0,
+      "bl2_wmape": 39.2,
+      "oos_r": 0.672,
+      "improvement_pt": 23.75
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 旭市 飯岡漁港",
+    "wmape_h0": 27.0,
+    "improvement_pt": 23.75
+  },
+  "improvement_pt": 23.75,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 旭市 飯岡漁港 wmape=27.0% imp=23.75pt"
+    }
+  ]
+}

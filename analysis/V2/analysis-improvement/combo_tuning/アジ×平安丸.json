@@ -1,14 +1,14 @@
 {
   "fish": "アジ",
   "ship": "平安丸",
-  "last_reviewed": "2026-07-03",
-  "status": "point_model_marginal",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 28.34,
+    "wmape_h0": 47.88,
     "bl2_wmape": 36.3,
-    "oos_r": 0.621,
+    "oos_r": -0.053,
     "n_records": 97,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "points": [
@@ -181,6 +181,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=二宮沖 wmape=25.4% imp=2.92pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=二宮沖 wmape=35.8% imp=4.62pt"
     }
   ],
   "rejected_factors": [
@@ -249,18 +254,18 @@
     {
       "name": "二宮沖",
       "n": 79,
-      "wmape_h0": 25.4,
+      "wmape_h0": 42.8,
       "bl2_wmape": 35.9,
-      "oos_r": 0.63,
-      "improvement_pt": 2.92
+      "oos_r": -0.102,
+      "improvement_pt": 5.05
     }
   ],
   "best_point": {
     "name": "二宮沖",
-    "wmape_h0": 25.4,
-    "improvement_pt": 2.92
+    "wmape_h0": 42.8,
+    "improvement_pt": 5.05
   },
-  "improvement_pt": 2.92,
+  "improvement_pt": 5.05,
   "trip_models": [
     {
       "trip_no": 1,

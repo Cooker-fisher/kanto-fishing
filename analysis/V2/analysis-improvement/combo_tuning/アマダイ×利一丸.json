@@ -1,32 +1,32 @@
 {
   "fish": "アマダイ",
   "ship": "利一丸",
-  "last_reviewed": "2026-04-28",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 23.05,
+    "wmape_h0": 34.19,
     "bl2_wmape": 43.11,
-    "oos_r": 0.621,
+    "oos_r": -0.048,
     "n_records": 37,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "網代沖",
       "n": 35,
-      "wmape_h0": 23.0,
+      "wmape_h0": 31.9,
       "bl2_wmape": 41.7,
-      "oos_r": 0.613,
-      "improvement_pt": 0.02
+      "oos_r": 0.146,
+      "improvement_pt": 2.34
     }
   ],
   "best_point": {
     "name": "網代沖",
-    "wmape_h0": 23.0,
-    "improvement_pt": 0.02
+    "wmape_h0": 31.9,
+    "improvement_pt": 2.34
   },
-  "improvement_pt": 0.02,
+  "improvement_pt": 2.34,
   "history": [
     {
       "date": "2026-04-24",
@@ -37,6 +37,11 @@
       "date": "2026-04-28",
       "action": "point_backtest_updated",
       "note": "best=網代沖 wmape=23.0% imp=0.02pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=網代沖 wmape=31.9% imp=2.34pt"
     }
   ]
 }

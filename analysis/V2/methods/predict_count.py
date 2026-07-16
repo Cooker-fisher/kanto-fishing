@@ -38,6 +38,7 @@ if not os.path.exists(DB_PATH) and os.path.exists(PARAMS_DB_PATH):
         print("[predict_count] 蒸留パラメータ DB を使用（export_meta 読込不可）")
 DB_WX    = os.path.join(OCEAN_DIR, "weather_cache.sqlite")
 DB_TIDE  = os.path.join(OCEAN_DIR, "tide_moon.sqlite")
+DB_TYPHOON = os.path.join(OCEAN_DIR, "typhoon.sqlite")   # T44b: コミット済み・CI でも参照可
 
 TIDE_TYPE_MAP = {"大潮": 4, "中潮": 3, "小潮": 2, "長潮": 1, "若潮": 1}
 
@@ -402,6 +403,302 @@ def _get_use_fallback(conn, fish: str, ship: str) -> bool:
     return bool(row and row[0])
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# T44b: 学習(combo_deep_dive.enrich)と本番の因子供給ギャップ解消
+#
+# 背景（90_決定ログ 2026/07/16 T44）: _build_all_wx が気象・潮汐しか供給せず、
+# 採用因子の実効重み供給率が中央値 33.6%（供給100%のコンボ 0件）だった。
+# 以下は combo_deep_dive.py の学習側と【同一式】で計算する serve 側実装。
+# ⚠ 定義がズレると z-score が狂い黙って精度が壊れる。変更時は必ず両側同時に更新し、
+#    analysis/V2/analysis-improvement/t44b_parity_check.py でパリティ検証すること。
+# ══════════════════════════════════════════════════════════════════════════════
+
+# 祝日リスト（combo_deep_dive._JP_HOLIDAYS の複製。パリティチェックで同一性を検証）
+_JP_HOLIDAYS = frozenset([
+    # 2023
+    "2023/01/01","2023/01/02","2023/01/09","2023/02/23","2023/03/21",
+    "2023/04/29","2023/05/03","2023/05/04","2023/05/05",
+    "2023/07/17","2023/08/11","2023/09/18","2023/09/23","2023/10/09",
+    "2023/11/03","2023/11/23",
+    # 2024
+    "2024/01/01","2024/01/08","2024/02/12","2024/02/23","2024/03/20",
+    "2024/04/29","2024/05/03","2024/05/06","2024/07/15","2024/08/12",
+    "2024/09/16","2024/09/22","2024/09/23","2024/10/14",
+    "2024/11/04","2024/11/23",
+    # 2025
+    "2025/01/01","2025/01/13","2025/02/11","2025/02/24","2025/03/20",
+    "2025/04/29","2025/05/05","2025/05/06","2025/07/21","2025/08/11",
+    "2025/09/15","2025/09/23","2025/10/13",
+    "2025/11/03","2025/11/24",
+    # 2026
+    "2026/01/01","2026/01/12","2026/02/11","2026/02/23","2026/03/20",
+    "2026/04/29","2026/05/04","2026/05/05","2026/05/06",
+    "2026/07/20","2026/08/11","2026/09/21","2026/09/23",
+    "2026/10/12","2026/11/03","2026/11/23",
+])
+
+
+def _build_consec_holiday_set() -> frozenset:
+    """GW/盆/年末年始で3日以上連続する土日祝の日付セット（combo_deep_dive と同一実装）。"""
+    from datetime import date as _date, timedelta as _td
+    seasons = []
+    for y in range(2023, 2027):
+        seasons += [
+            (_date(y, 4, 29), _date(y, 5, 6)),
+            (_date(y, 8, 10), _date(y, 8, 16)),
+            (_date(y - 1, 12, 28), _date(y, 1, 4)),
+        ]
+    result = set()
+    for start, end in seasons:
+        block = []
+        dd = start
+        while dd <= end:
+            ds = dd.strftime("%Y/%m/%d")
+            if dd.weekday() >= 5 or ds in _JP_HOLIDAYS:
+                block.append(ds)
+            dd += _td(days=1)
+        if len(block) >= 3:
+            result.update(block)
+    return frozenset(result)
+
+
+_CONSEC_HOLIDAY_SET = _build_consec_holiday_set()
+
+# 季節マップ（combo_deep_dive._season_of と同一。suffix は enrich の因子名に対応）
+_SEASON_OF_MONTH = {3: "春", 4: "春", 5: "春", 6: "夏", 7: "夏", 8: "夏",
+                    9: "秋", 10: "秋", 11: "秋", 12: "冬", 1: "冬", 2: "冬"}
+_SEASON_SUFFIX = (("spring", "春"), ("summer", "夏"), ("autumn", "秋"), ("winter", "冬"))
+
+
+def _calendar_factors(d: datetime) -> dict:
+    """日付だけで確定するカレンダー因子（enrich の load_records 側 1274-1290 と同一式）。"""
+    ds = d.strftime("%Y/%m/%d")
+    day = d.day
+    if day <= 10:
+        dod = day
+    elif day <= 20:
+        dod = day - 10
+    else:
+        dod = day - 20
+    return {
+        "is_holiday":         1 if (d.weekday() >= 5 or ds in _JP_HOLIDAYS) else 0,
+        "is_consec_holiday":  1 if ds in _CONSEC_HOLIDAY_SET else 0,
+        "is_summer_vacation": 1 if (d.month == 7 and d.day >= 21) or d.month == 8 else 0,
+        "spawn_season_n":     1 if d.month in (2, 3, 4, 5) else 0,
+        "day_of_decade":      dod,
+    }
+
+
+_TYPHOON_CACHE: dict = {}   # date_iso -> {"typhoon_dist":…, "typhoon_wind":…}
+
+
+def _get_typhoon_serve(date_iso: str) -> dict:
+    """combo_deep_dive.get_typhoon と同一: 台風なし日・DB なしは None（因子スキップ）。
+    ⚠ typhoon.sqlite は年次更新（現在 2025-12 まで）。未収録年の台風日は None になるが、
+    学習データも同じ制約のため train/serve は整合する。"""
+    if date_iso in _TYPHOON_CACHE:
+        return _TYPHOON_CACHE[date_iso]
+    result = {"typhoon_dist": None, "typhoon_wind": None}
+    if os.path.exists(DB_TYPHOON):
+        try:
+            c = sqlite3.connect(DB_TYPHOON)
+            row = c.execute(
+                "SELECT min_dist, wind_kt FROM typhoon_track "
+                "WHERE date(dt) = ? ORDER BY min_dist ASC LIMIT 1", (date_iso,)).fetchone()
+            c.close()
+            if row:
+                result = {"typhoon_dist": row[0], "typhoon_wind": row[1]}
+        except Exception:
+            pass
+    _TYPHOON_CACHE[date_iso] = result
+    return result
+
+
+_SLA_MONTHLY_CACHE: dict = {}   # ym -> dict / "_no_table" マーカー
+
+
+def _get_sla_monthly_serve(conn, date_iso: str) -> dict:
+    """CMEMS 月次 SLA 指標（座標非依存・月単位）を serve_sla_monthly 蒸留テーブルから取得。
+    テーブルは build_predict_params.py が cmems_data.sqlite（ローカル）から
+    combo_deep_dive の _get_kuroshio_sla_monthly 等【本物の関数】で計算して書き出す。
+    テーブル未整備・月未収録は None（従来どおり因子スキップ）。"""
+    if _SLA_MONTHLY_CACHE.get("_no_table"):
+        return {}
+    ym = date_iso[:7]
+    if ym in _SLA_MONTHLY_CACHE:
+        return _SLA_MONTHLY_CACHE[ym]
+    try:
+        row = conn.execute(
+            "SELECT kuroshio_sla_monthly, sla_pelagic_monthly, sla_approach_idx "
+            "FROM serve_sla_monthly WHERE ym=?", (ym,)).fetchone()
+        # 前月差分（combo_deep_dive._get_kuroshio_sla_delta_1m と同一定義: 当月 - 前月）
+        y, m = int(ym[:4]), int(ym[5:7])
+        prev_ym = f"{y - (m == 1):04d}-{(m - 1) or 12:02d}"
+        prow = conn.execute(
+            "SELECT kuroshio_sla_monthly FROM serve_sla_monthly WHERE ym=?", (prev_ym,)).fetchone()
+    except Exception:
+        _SLA_MONTHLY_CACHE["_no_table"] = True
+        return {}
+    result = {}
+    if row:
+        result = {"kuroshio_sla_monthly": row[0], "sla_pelagic_monthly": row[1],
+                  "sla_approach_idx": row[2]}
+        if row[0] is not None and prow and prow[0] is not None:
+            result["kuroshio_sla_delta_1m"] = row[0] - prow[0]
+        else:
+            result["kuroshio_sla_delta_1m"] = None
+    _SLA_MONTHLY_CACHE[ym] = result
+    return result
+
+
+# SST勾配の固定参照座標（combo_deep_dive.SST_GRAD_* と同一値）
+_SST_GRAD_OFFSHORE = (35.65, 140.87)   # 外房沖（黒潮ライン上）
+_SST_GRAD_INSHORE  = (35.3,  139.68)   # 東京湾内（沿岸代表）
+_SST_GRAD_CACHE: dict = {}             # date_iso -> float|None
+
+
+def _get_sst_gradient_serve(date_iso: str, is_future: bool, wave_clamp_thr: float):
+    """sst_gradient = 外房沖SST - 東京湾内SST（enrich 2142-2150 と同一定義）。
+    過去日=weather_cache（ローカルのみ）/ 未来日=Forecast API（固定2座標・日付キャッシュ）。"""
+    if date_iso in _SST_GRAD_CACHE:
+        return _SST_GRAD_CACHE[date_iso]
+    off = ins = None
+    try:
+        if is_future:
+            off = _fetch_forecast_wx(*_SST_GRAD_OFFSHORE, date_iso, wave_clamp_thr).get("sst_avg")
+            ins = _fetch_forecast_wx(*_SST_GRAD_INSHORE,  date_iso, wave_clamp_thr).get("sst_avg")
+        elif os.path.exists(DB_WX) and os.path.getsize(DB_WX) > 0:
+            c = sqlite3.connect(DB_WX)
+            for (la, lo), tgt in ((_SST_GRAD_OFFSHORE, "off"), (_SST_GRAD_INSHORE, "ins")):
+                wla, wlo = _nearest_wx_coord(c, la, lo)
+                v = _get_daily_wx(c, wla, wlo, date_iso, wave_clamp_thr).get("sst_avg")
+                if tgt == "off":
+                    off = v
+                else:
+                    ins = v
+            c.close()
+    except Exception:
+        pass
+    result = (off - ins) if (off is not None and ins is not None) else None
+    _SST_GRAD_CACHE[date_iso] = result
+    return result
+
+
+_PREV_CNT_INDEX: dict | None = None   # (fish, ship) -> [(date, cnt_avg), ...] 日付昇順
+
+
+_PREV_CNT_MIN_N_COMBO = 30   # combo_deep_dive.MIN_N_COMBO と同値（is_boat フィルタ発火条件）
+
+
+def _load_prev_cnt_index() -> dict:
+    """全 CSV を1回だけスキャンして (fish, ship) → 日付昇順 [(date, cnt_avg)] の索引を作る。
+    per-combo で毎回全スキャンすると predict_daily（439コンボ）で分単位の性能事故になるため。
+
+    学習側の参照集合を完全再現する（data-reviewer CRITICAL 指摘対応）:
+    1. load_records と同じ行フィルタ（メイン・非欠航・cnt_avg>0）
+    2. deep_dive の is_boat 条件付き除外（非仕立て >= MIN_N_COMBO かつ縮小するときのみ除外）
+    3. deep_dive の Tukey 外れ値キャップ（Q3 + 3×IQR 超を上限に丸め・len>=4）
+    ※ prev_week_cnt は学習時この前処理【後】の値を参照している。生CSVのままだと
+      仕立て便の異常値を「直近釣果」として拾い z-score が狂う。
+    ※ exclude 船宿は除外しない: (fish, ship) キー構造上、除外船が照会されることは
+      ないため無害（意図的差分）。
+    ⚠ _get_bl2 はこのフィルタを掛けていない（別用途）ので流用しない。"""
+    global _PREV_CNT_INDEX
+    if _PREV_CNT_INDEX is not None:
+        return _PREV_CNT_INDEX
+    import csv as _csv, glob as _glob
+    raw: dict = {}   # (fish, ship) -> [(date, cnt, is_boat)] CSV読み込み順
+    for path in sorted(_glob.glob(os.path.join(DATA_DIR, "*.csv"))):
+        if os.path.basename(path) == "cancellations.csv":   # load_records と同一
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                for row in _csv.DictReader(f):
+                    if row.get("is_cancellation") == "1" or row.get("main_sub") != "メイン":
+                        continue
+                    dd = row.get("date", "")
+                    if not dd:
+                        continue
+                    try:
+                        v = float(row.get("cnt_avg", ""))
+                    except (ValueError, TypeError):
+                        continue
+                    if v <= 0:
+                        continue
+                    b = 1 if (row.get("is_boat") or "").strip() == "1" else 0
+                    key = ((row.get("tsuri_mono") or "").strip(), (row.get("ship") or "").strip())
+                    raw.setdefault(key, []).append((dd, v, b))
+        except (OSError, UnicodeDecodeError, _csv.Error):
+            continue
+    idx: dict = {}
+    for k, rows in raw.items():
+        # deep_dive 6107-6111 と同一: 非仕立てが MIN_N_COMBO 以上かつ縮小するときのみ除外
+        noboat = [(dd, v) for dd, v, b in rows if b == 0]
+        use = noboat if (len(noboat) >= _PREV_CNT_MIN_N_COMBO and len(noboat) < len(rows)) \
+            else [(dd, v) for dd, v, _ in rows]
+        # deep_dive 6114-6125 と同一: Tukey 法（Q3 + 3×IQR）で上限キャップ
+        cnts = sorted(v for _, v in use)
+        if len(cnts) >= 4:
+            q1 = cnts[len(cnts) // 4]
+            q3 = cnts[3 * len(cnts) // 4]
+            cap = q3 + 3 * (q3 - q1)
+            use = [(dd, min(v, cap)) for dd, v in use]
+        # enrich 2018 と同一の安定ソート（date キーのみ）。タプル比較でソートすると
+        # 同日複数便の並びが「値順」になり、学習側の「CSV読み込み順で最後の便」と食い違う
+        # （パリティ検証で 5/75 不一致・max差43 を実測 → 本方式で解消）
+        use.sort(key=lambda x: x[0])
+        idx[k] = ([dd for dd, _ in use], [v for _, v in use])
+    _PREV_CNT_INDEX = idx
+    return idx
+
+
+def _get_prev_week_cnt(fish: str, ship: str, before_date: str | None = None):
+    """prediction 時点で知っている同コンボ最新の cnt_avg（enrich 2180-2191 と同一定義）。
+    before_date: 省略時=今日（本番）。パリティ検証時に過去日を指定する。"""
+    if before_date is None:
+        before_date = datetime.today().strftime("%Y/%m/%d")
+    entry = _load_prev_cnt_index().get((fish, ship))
+    if not entry:
+        return None
+    dates, vals = entry
+    import bisect as _bisect
+    i = _bisect.bisect_left(dates, before_date) - 1
+    return vals[i] if i >= 0 else None
+
+
+def _augment_all_wx(all_wx: dict, d: datetime, date_iso: str, is_future: bool,
+                    wave_clamp_thr: float, conn=None, fish=None, ship=None) -> None:
+    """_build_all_wx の結果に enrich 相当の派生・外部因子を追記する（in-place）。
+    ベース値（wave_clamp/sst_avg/tide_type_n）が確定した後に呼ぶこと。"""
+    # ── カレンダー因子（SLOW・日付のみで確定）───────────────────────────────
+    all_wx.update(_calendar_factors(d))
+    _ssn = _SEASON_OF_MONTH[d.month]
+    # ── wave_clamp / sst × 季節交互作用（enrich 2301-2313: None は 0.0 扱い）──
+    _wc_val = all_wx.get("wave_clamp") or 0.0
+    _sst_val = all_wx.get("sst_avg") or 0.0
+    for _sfx, _jp in _SEASON_SUFFIX:
+        all_wx[f"wave_clamp_{_sfx}"] = _wc_val if _ssn == _jp else 0.0
+        all_wx[f"sst_{_sfx}"]        = _sst_val if _ssn == _jp else 0.0
+    # ── 潮汐×季節（enrich 2341-2358: tide_type_n 欠損時は None）──────────────
+    _ttn = all_wx.get("tide_type_n")
+    for _grp, _flag in (("oshio",   None if _ttn is None else (1 if _ttn == 4 else 0)),
+                        ("chusho",  None if _ttn is None else (1 if _ttn in (2, 3) else 0)),
+                        ("chowaka", None if _ttn is None else (1 if _ttn == 1 else 0))):
+        for _sfx, _jp in _SEASON_SUFFIX:
+            all_wx[f"tide_grp_{_grp}_{_sfx}"] = (
+                None if _flag is None else (_flag if _ssn == _jp else 0))
+    # ── 台風（FAST・H>7 は _apply_correction_from_params 側で除外される）──────
+    all_wx.update(_get_typhoon_serve(date_iso))
+    # ── CMEMS 月次 SLA（SLOW・蒸留テーブル経由）────────────────────────────
+    if conn is not None:
+        all_wx.update(_get_sla_monthly_serve(conn, date_iso))
+    # ── SST 勾配（SLOW・固定2座標）─────────────────────────────────────────
+    all_wx["sst_gradient"] = _get_sst_gradient_serve(date_iso, is_future, wave_clamp_thr)
+    # ── 前週釣果（FAST・fish/ship 固有。コンボ横断キャッシュ厳禁）────────────
+    if fish and ship:
+        all_wx["prev_week_cnt"] = _get_prev_week_cnt(fish, ship)
+
+
 def _get_multi_point_factors(fish: str, ship: str) -> list:
     """combo_multi_point_factors から有意因子を取得。なければ空リスト。"""
     if not os.path.exists(DB_PATH):
@@ -569,10 +866,13 @@ def _get_kaiyu_promoted(conn, fish: str, ship: str) -> bool:
 
 
 def _build_all_wx(wx_lat: float, wx_lon: float, target_date: str,
-                   wave_clamp_thr: float) -> tuple[dict, bool, str]:
+                   wave_clamp_thr: float,
+                   conn=None, fish: str | None = None, ship: str | None = None) -> tuple[dict, bool, str]:
     """当日・前日・7日前の気象データを構築して返す。
     戻り値: (all_wx dict, is_future bool, wx_source str)
     combo/ポイント両モデルで共用する。
+    T44b: conn/fish/ship を渡すとカレンダー・季節交互作用・台風・CMEMS月次・SST勾配・
+    前週釣果も enrich と同一式で追記する（因子供給ギャップ解消）。
     """
     d = datetime.strptime(target_date.replace("-", "/"), "%Y/%m/%d")
     date_iso = d.strftime("%Y-%m-%d")
@@ -631,6 +931,10 @@ def _build_all_wx(wx_lat: float, wx_lon: float, target_date: str,
     all_wx.update(tide)
     if tide.get("tide_range") is not None and tide_d1.get("tide_range") is not None:
         all_wx["tide_delta"] = tide["tide_range"] - tide_d1["tide_range"]
+
+    # T44b: enrich 相当の派生・外部因子を追記（ベース値確定後・最後に実行）
+    _augment_all_wx(all_wx, d, date_iso, is_future, wave_clamp_thr,
+                    conn=conn, fish=fish, ship=ship)
 
     return all_wx, is_future, wx_source
 
@@ -696,7 +1000,7 @@ def _apply_wx_correction(conn, fish: str, ship: str,
         return baseline_cnt
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    all_wx, is_future, wx_source = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    all_wx, is_future, wx_source = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr, conn=conn, fish=fish, ship=ship)
     h_days = _h_days(target_date)
 
     predicted = _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, h_days)
@@ -818,7 +1122,7 @@ def _apply_pdt_wx_correction(conn, fish: str, ship: str,
     if meta is None or not factor_params:
         return None
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr, conn=conn, fish=fish, ship=ship)
     return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
@@ -854,7 +1158,7 @@ def _apply_trip_wx_correction(conn, fish: str, ship: str, trip_no: int,
         return None
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr, conn=conn, fish=fish, ship=ship)
     return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
@@ -925,7 +1229,7 @@ def _apply_water_color_wx_correction(conn, fish: str, ship: str, wc_cat: str,
         return None
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr, conn=conn, fish=fish, ship=ship)
     return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
@@ -963,7 +1267,7 @@ def _apply_point_wx_correction(conn, fish: str, ship: str, point: str,
         return None
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr, conn=conn, fish=fish, ship=ship)
     return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
@@ -1017,7 +1321,7 @@ def _apply_point_depth_wx_correction(conn, fish: str, ship: str, point_depth_key
         return None
 
     wave_clamp_thr = _get_wave_clamp_thr(conn, fish, ship)
-    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr)
+    all_wx, _, _ = _build_all_wx(wx_lat, wx_lon, target_date, wave_clamp_thr, conn=conn, fish=fish, ship=ship)
     return _apply_correction_from_params(factor_params, meta, all_wx, baseline_cnt, _h_days(target_date))
 
 
@@ -1307,7 +1611,7 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         mp_context = _get_multi_point_context(fish, ship)
         if mp_context["bad"] or mp_context["good"]:
             wave_clamp_thr_mp = _get_wave_clamp_thr(conn, fish, ship)
-            all_wx_mp, _, _ = _build_all_wx(lat, lon, target_date, wave_clamp_thr_mp)
+            all_wx_mp, _, _ = _build_all_wx(lat, lon, target_date, wave_clamp_thr_mp, conn=conn, fish=fish, ship=ship)
             mp_correction, mp_bad_risk, mp_good_risk = _calc_multi_point_context_correction(
                 all_wx_mp, mp_context)
             if mp_correction != 1.0:
@@ -1320,21 +1624,26 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
             mp_factors = _get_multi_point_factors(fish, ship)
             if mp_factors:
                 wave_clamp_thr_mp = _get_wave_clamp_thr(conn, fish, ship)
-                all_wx_mp, _, _ = _build_all_wx(lat, lon, target_date, wave_clamp_thr_mp)
+                all_wx_mp, _, _ = _build_all_wx(lat, lon, target_date, wave_clamp_thr_mp, conn=conn, fish=fish, ship=ship)
                 mp_correction, mp_risk = _calc_multi_point_risk(all_wx_mp, mp_factors)
                 if mp_correction < 1.0:
                     cnt_predicted = round(cnt_predicted * mp_correction, 1)
                     multi_point_risk = round(mp_risk, 3)
                     multi_point_corr = round(mp_correction, 3)
 
-    # ── min/max 予測（trip 優先 → combo直接モデル → ratio フォールバック） ──────
+    # ── min/max 予測（trip 優先 → ratio 法） ────────────────────────────────
     # 優先1 (trip): predicted_trip_no が確定している場合は便別 cnt_min/cnt_max モデルを使用
     #               （便別補正は cnt_avg と同様に最高優先チェーンの末尾）
-    # 優先2 (combo): cnt_min / cnt_max モデルが combo_wx_params にある場合は直接予測
-    #                （ratio法より Coverage が良い可能性が高い）
-    # フォールバック: モデルなし または use_fallback=True
-    #       → avg_cnt_min/max の旬別比率を cnt_predicted に適用（従来方式）
+    # 標準 (ratio): avg_cnt_min/max の旬別比率を cnt_predicted に適用
     #       → 旬別データもない場合は ±cnt_mae で信頼区間
+    #
+    # T44 判定（2026/07/16・90_決定ログ）: 旧「優先2 (combo直接モデル)」は全コンボ実測で
+    # ratio 法に敗北したため無効化（promise_break P50 11.1% vs 6.1% / coverage 66.9% vs 79.3%）。
+    # 旧コメントの「ratio法より Coverage が良い可能性が高い」は誤りと実証された。
+    # winkler は直接モデル勝ちだが「レンジが狭い＝約束を破りやすい」の裏返しで、
+    # PRIMARY KPI（約束割れ回避）に反するため採用しない。再評価する場合は下のフラグを戻し
+    # combo_range_backtest の metric='cnt_direct' 系列で同一定義比較すること。
+    _CNT_RANGE_USE_DIRECT = False
     cnt_lo = cnt_hi = None
 
     if lat and lon and not use_fb and predicted_trip_no:
@@ -1350,8 +1659,8 @@ def predict_combo(conn, fish: str, ship: str, target_date: str,
         if trip_hi is not None:
             cnt_hi = round(trip_hi * slot_ratio, 1)
 
-    if (cnt_lo is None or cnt_hi is None) and lat and lon and not use_fb:
-        # combo直接モデル: cnt_min モデルが存在するか確認してから直接予測
+    if _CNT_RANGE_USE_DIRECT and (cnt_lo is None or cnt_hi is None) and lat and lon and not use_fb:
+        # combo直接モデル（T44 で無効化・再評価用に保持）
         bl_min = avg_cnt_min if avg_cnt_min is not None else avg_cnt * 0.5
         bl_max = avg_cnt_max if avg_cnt_max is not None else avg_cnt * 1.5
         pred_lo_direct = _apply_wx_correction(conn, fish, ship, target_date, bl_min, lat, lon,

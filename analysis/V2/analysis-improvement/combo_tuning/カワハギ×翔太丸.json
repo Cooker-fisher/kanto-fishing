@@ -1,12 +1,12 @@
 {
   "fish": "カワハギ",
   "ship": "翔太丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 30.18,
+    "wmape_h0": 32.68,
     "bl2_wmape": 36.6,
-    "oos_r": 0.451,
+    "oos_r": 0.331,
     "n_records": 104,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "諸磯沖",
       "n": 94,
-      "wmape_h0": 29.0,
+      "wmape_h0": 31.9,
       "bl2_wmape": 35.4,
-      "oos_r": 0.5,
-      "improvement_pt": 1.14
+      "oos_r": 0.393,
+      "improvement_pt": 0.78
     }
   ],
   "best_point": {
     "name": "諸磯沖",
-    "wmape_h0": 29.0,
-    "improvement_pt": 1.14
+    "wmape_h0": 31.9,
+    "improvement_pt": 0.78
   },
-  "improvement_pt": 1.14,
+  "improvement_pt": 0.78,
   "history": [
     {
       "date": "2026-04-22",
@@ -97,6 +97,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=諸磯沖 wmape=29.0% imp=1.14pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=諸磯沖 wmape=31.9% imp=0.78pt"
     }
   ]
 }

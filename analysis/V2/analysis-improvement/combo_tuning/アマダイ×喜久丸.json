@@ -1,32 +1,32 @@
 {
   "fish": "アマダイ",
   "ship": "喜久丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 29.17,
-    "bl2_wmape": 51.7,
-    "oos_r": 0.713,
-    "n_records": 47,
+    "wmape_h0": 45.74,
+    "bl2_wmape": 50.52,
+    "oos_r": 0.183,
+    "n_records": 73,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "神奈川県 鎌倉市 腰越漁港",
-      "n": 46,
-      "wmape_h0": 27.9,
-      "bl2_wmape": 50.1,
-      "oos_r": 0.721,
-      "improvement_pt": 1.31
+      "n": 72,
+      "wmape_h0": 44.9,
+      "bl2_wmape": 49.4,
+      "oos_r": 0.216,
+      "improvement_pt": 0.82
     }
   ],
   "best_point": {
     "name": "神奈川県 鎌倉市 腰越漁港",
-    "wmape_h0": 27.9,
-    "improvement_pt": 1.31
+    "wmape_h0": 44.9,
+    "improvement_pt": 0.82
   },
-  "improvement_pt": 1.31,
+  "improvement_pt": 0.82,
   "history": [
     {
       "date": "2026-06-23",
@@ -37,6 +37,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=神奈川県 鎌倉市 腰越漁港 wmape=27.9% imp=1.31pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 鎌倉市 腰越漁港 wmape=44.9% imp=0.82pt"
     }
   ]
 }

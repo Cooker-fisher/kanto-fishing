@@ -1,12 +1,12 @@
 {
   "fish": "マダコ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 38.91,
+    "wmape_h0": 41.74,
     "bl2_wmape": 47.77,
-    "oos_r": 0.508,
+    "oos_r": 0.42,
     "n_records": 290,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,42 +15,50 @@
     {
       "name": "浦安沖",
       "n": 34,
-      "wmape_h0": 19.5,
+      "wmape_h0": 34.2,
       "bl2_wmape": 41.0,
-      "oos_r": 0.839,
-      "improvement_pt": 19.43
+      "oos_r": -0.093,
+      "improvement_pt": 7.55
     },
     {
-      "name": "川崎沖",
-      "n": 102,
-      "wmape_h0": 36.0,
-      "bl2_wmape": 49.9,
-      "oos_r": 0.607,
-      "improvement_pt": 2.96
+      "name": "長浦沖",
+      "n": 28,
+      "wmape_h0": 47.7,
+      "bl2_wmape": 45.5,
+      "oos_r": -0.255,
+      "improvement_pt": -5.92
     },
     {
       "name": "横浜沖",
       "n": 47,
-      "wmape_h0": 36.6,
+      "wmape_h0": 48.8,
       "bl2_wmape": 64.6,
-      "oos_r": 0.724,
-      "improvement_pt": 2.35
+      "oos_r": 0.381,
+      "improvement_pt": -7.03
+    },
+    {
+      "name": "川崎沖",
+      "n": 102,
+      "wmape_h0": 49.5,
+      "bl2_wmape": 49.9,
+      "oos_r": 0.234,
+      "improvement_pt": -7.79
     },
     {
       "name": "木更津沖",
       "n": 59,
-      "wmape_h0": 42.8,
+      "wmape_h0": 59.7,
       "bl2_wmape": 64.1,
-      "oos_r": 0.467,
-      "improvement_pt": -3.93
+      "oos_r": -0.126,
+      "improvement_pt": -17.98
     }
   ],
   "best_point": {
     "name": "浦安沖",
-    "wmape_h0": 19.5,
-    "improvement_pt": 19.43
+    "wmape_h0": 34.2,
+    "improvement_pt": 7.55
   },
-  "improvement_pt": 19.43,
+  "improvement_pt": 7.55,
   "points": [
     {
       "name": "川崎沖",
@@ -157,6 +165,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=19.5% imp=19.43pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=34.2% imp=7.55pt"
     }
   ],
   "trip_models": [

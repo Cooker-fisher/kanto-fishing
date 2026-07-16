@@ -1,14 +1,13 @@
 {
   "fish": "アカメフグ",
   "ship": "吉野屋",
-  "last_reviewed": "2026-04-22",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 39.37,
-    "bl2_wmape": 33.71,
-    "oos_r": -0.222,
+    "wmape_h0": 36.69,
+    "bl2_wmape": 33.27,
+    "oos_r": -0.258,
     "n_records": 68,
-    "alpha_scale": 0.7057,
     "use_fallback": true,
     "kaiyu_promoted": false
   },
@@ -16,18 +15,18 @@
     {
       "name": "横浜沖",
       "n": 41,
-      "wmape_h0": 27.6,
+      "wmape_h0": 30.4,
       "bl2_wmape": 31.9,
-      "oos_r": 0.365,
-      "improvement_pt": 11.77
+      "oos_r": 0.089,
+      "improvement_pt": 6.3
     }
   ],
   "best_point": {
     "name": "横浜沖",
-    "wmape_h0": 27.6,
-    "improvement_pt": 11.77
+    "wmape_h0": 30.4,
+    "improvement_pt": 6.3
   },
-  "improvement_pt": 11.77,
+  "improvement_pt": 6.3,
   "points": [
     {
       "name": "横浜沖",
@@ -49,6 +48,11 @@
       "date": "2026-04-21",
       "action": "deep_dive_by_point実行",
       "result": "best=横浜沖 wmape=27.64% combo=39.37% diff=11.73pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=横浜沖 wmape=30.4% imp=6.3pt"
     }
   ],
   "trip_models": [],

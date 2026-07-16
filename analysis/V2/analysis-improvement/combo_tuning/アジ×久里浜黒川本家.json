@@ -1,40 +1,40 @@
 {
   "fish": "アジ",
   "ship": "久里浜黒川本家",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 21.25,
+    "wmape_h0": 33.99,
     "bl2_wmape": 26.68,
-    "oos_r": 0.57,
+    "oos_r": -0.061,
     "n_records": 119,
-    "use_fallback": false,
+    "use_fallback": true,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
-      "name": "久里浜沖",
-      "n": 41,
-      "wmape_h0": 17.5,
-      "bl2_wmape": 27.5,
-      "oos_r": 0.695,
-      "improvement_pt": 3.74
-    },
-    {
       "name": "観音崎沖",
       "n": 75,
-      "wmape_h0": 20.4,
+      "wmape_h0": 30.4,
       "bl2_wmape": 27.0,
-      "oos_r": 0.642,
-      "improvement_pt": 0.9
+      "oos_r": 0.183,
+      "improvement_pt": 3.59
+    },
+    {
+      "name": "久里浜沖",
+      "n": 41,
+      "wmape_h0": 37.8,
+      "bl2_wmape": 27.5,
+      "oos_r": -0.635,
+      "improvement_pt": -3.81
     }
   ],
   "best_point": {
-    "name": "久里浜沖",
-    "wmape_h0": 17.5,
-    "improvement_pt": 3.74
+    "name": "観音崎沖",
+    "wmape_h0": 30.4,
+    "improvement_pt": 3.59
   },
-  "improvement_pt": 3.74,
+  "improvement_pt": 3.59,
   "history": [
     {
       "date": "2026-05-12",
@@ -55,6 +55,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=久里浜沖 wmape=17.5% imp=3.74pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=観音崎沖 wmape=26.4% imp=1.92pt"
     }
   ]
 }

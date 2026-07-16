@@ -1,12 +1,12 @@
 {
   "fish": "マダコ",
   "ship": "林遊船",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 46.08,
+    "wmape_h0": 44.96,
     "bl2_wmape": 66.64,
-    "oos_r": 0.191,
+    "oos_r": 0.218,
     "n_records": 75,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -146,6 +146,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=浦安沖 wmape=45.0% imp=1.12pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=浦安沖 wmape=42.3% imp=2.68pt"
     }
   ],
   "rejected_factors": [
@@ -220,16 +225,16 @@
     {
       "name": "浦安沖",
       "n": 75,
-      "wmape_h0": 45.0,
+      "wmape_h0": 42.3,
       "bl2_wmape": 66.6,
-      "oos_r": 0.218,
-      "improvement_pt": 1.12
+      "oos_r": 0.301,
+      "improvement_pt": 2.68
     }
   ],
   "best_point": {
     "name": "浦安沖",
-    "wmape_h0": 45.0,
-    "improvement_pt": 1.12
+    "wmape_h0": 42.3,
+    "improvement_pt": 2.68
   },
-  "improvement_pt": 1.12
+  "improvement_pt": 2.68
 }

@@ -1,7 +1,7 @@
 {
   "fish": "ヒラメ",
   "ship": "孝徳丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-16",
   "status": "point_model_marginal",
   "metrics": {
     "wmape_h0": 18.04,
@@ -15,18 +15,18 @@
     {
       "name": "片貝沖",
       "n": 37,
-      "wmape_h0": 15.3,
+      "wmape_h0": 15.5,
       "bl2_wmape": 47.4,
-      "oos_r": 0.91,
-      "improvement_pt": 2.73
+      "oos_r": 0.908,
+      "improvement_pt": 2.59
     }
   ],
   "best_point": {
     "name": "片貝沖",
-    "wmape_h0": 15.3,
-    "improvement_pt": 2.73
+    "wmape_h0": 15.5,
+    "improvement_pt": 2.59
   },
-  "improvement_pt": 2.73,
+  "improvement_pt": 2.59,
   "history": [
     {
       "date": "2026-04-24",
@@ -92,6 +92,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=片貝沖 wmape=15.3% imp=2.73pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=片貝沖 wmape=15.5% imp=2.59pt"
     }
   ]
 }

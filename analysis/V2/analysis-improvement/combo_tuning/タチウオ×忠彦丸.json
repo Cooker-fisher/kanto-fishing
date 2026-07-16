@@ -1,0 +1,37 @@
+{
+  "fish": "タチウオ",
+  "ship": "忠彦丸",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 48.36,
+    "bl2_wmape": 45.57,
+    "oos_r": -0.084,
+    "n_records": 77,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横浜市 金沢漁港",
+      "n": 49,
+      "wmape_h0": 47.5,
+      "bl2_wmape": 45.5,
+      "oos_r": 0.192,
+      "improvement_pt": 0.86
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横浜市 金沢漁港",
+    "wmape_h0": 47.5,
+    "improvement_pt": 0.86
+  },
+  "improvement_pt": 0.86,
+  "history": [
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 金沢漁港 wmape=47.5% imp=0.86pt"
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 {
   "fish": "アジ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-06-23",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.99,
-    "bl2_wmape": 45.18,
-    "oos_r": 0.487,
-    "n_records": 295,
+    "wmape_h0": 43.5,
+    "bl2_wmape": 45.45,
+    "oos_r": 0.276,
+    "n_records": 310,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -15,18 +15,26 @@
     {
       "name": "八景沖",
       "n": 273,
-      "wmape_h0": 37.7,
+      "wmape_h0": 43.0,
       "bl2_wmape": 45.1,
-      "oos_r": 0.51,
-      "improvement_pt": 0.28
+      "oos_r": 0.323,
+      "improvement_pt": 0.55
+    },
+    {
+      "name": "神奈川県 横浜市 金沢八景平潟",
+      "n": 36,
+      "wmape_h0": 49.2,
+      "bl2_wmape": 45.1,
+      "oos_r": -0.226,
+      "improvement_pt": -5.7
     }
   ],
   "best_point": {
     "name": "八景沖",
-    "wmape_h0": 37.7,
-    "improvement_pt": 0.28
+    "wmape_h0": 43.0,
+    "improvement_pt": 0.55
   },
-  "improvement_pt": 0.28,
+  "improvement_pt": 0.55,
   "points": [
     {
       "name": "八景沖",
@@ -234,6 +242,11 @@
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=八景沖 wmape=37.7% imp=0.28pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=八景沖 wmape=43.3% imp=0.11pt"
     }
   ],
   "trip_models": [

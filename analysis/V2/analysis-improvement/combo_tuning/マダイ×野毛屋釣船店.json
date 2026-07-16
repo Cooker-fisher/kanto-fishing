@@ -1,14 +1,13 @@
 {
   "fish": "マダイ",
   "ship": "野毛屋釣船店",
-  "last_reviewed": "2026-04-22",
-  "status": "point_model_marginal",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 42.22,
-    "bl2_wmape": 42.62,
-    "oos_r": 0.291,
-    "n_records": 114,
-    "alpha_scale": 0.5227,
+    "wmape_h0": 31.64,
+    "bl2_wmape": 40.61,
+    "oos_r": 0.62,
+    "n_records": 156,
     "use_fallback": false,
     "kaiyu_promoted": false
   },
@@ -61,6 +60,11 @@
       "date": "2026-04-21",
       "action": "point_backtest_added",
       "note": "combo_point_backtest登録。best=横須賀沖 wmape=39.5% imp=2.72pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 金沢八景平潟 wmape=17.8% imp=13.87pt"
     }
   ],
   "rejected_factors": [
@@ -127,20 +131,28 @@
   ],
   "point_models": [
     {
+      "name": "神奈川県 横浜市 金沢八景平潟",
+      "n": 41,
+      "wmape_h0": 17.8,
+      "bl2_wmape": 42.0,
+      "oos_r": 0.895,
+      "improvement_pt": 13.87
+    },
+    {
       "name": "横須賀沖",
-      "n": 114,
-      "wmape_h0": 39.5,
-      "bl2_wmape": 42.6,
-      "oos_r": 0.323,
-      "improvement_pt": 2.72
+      "n": 115,
+      "wmape_h0": 36.7,
+      "bl2_wmape": 42.9,
+      "oos_r": 0.355,
+      "improvement_pt": -5.01
     }
   ],
   "best_point": {
-    "name": "横須賀沖",
-    "wmape_h0": 39.5,
-    "improvement_pt": 2.72
+    "name": "神奈川県 横浜市 金沢八景平潟",
+    "wmape_h0": 17.8,
+    "improvement_pt": 13.87
   },
-  "improvement_pt": 2.72,
+  "improvement_pt": 13.87,
   "trip_models": [
     {
       "trip_no": 3,

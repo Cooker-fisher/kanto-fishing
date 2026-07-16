@@ -1,12 +1,12 @@
 {
   "fish": "タチウオ",
   "ship": "浜新丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 36.29,
+    "wmape_h0": 47.69,
     "bl2_wmape": 43.73,
-    "oos_r": 0.575,
+    "oos_r": 0.186,
     "n_records": 262,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,42 +15,42 @@
     {
       "name": "第二海堡沖",
       "n": 55,
-      "wmape_h0": 23.9,
+      "wmape_h0": 39.5,
       "bl2_wmape": 40.5,
-      "oos_r": 0.701,
-      "improvement_pt": 12.41
-    },
-    {
-      "name": "横須賀沖",
-      "n": 41,
-      "wmape_h0": 26.2,
-      "bl2_wmape": 50.4,
-      "oos_r": 0.806,
-      "improvement_pt": 10.08
-    },
-    {
-      "name": "観音崎沖",
-      "n": 63,
-      "wmape_h0": 26.4,
-      "bl2_wmape": 57.7,
-      "oos_r": 0.783,
-      "improvement_pt": 9.85
+      "oos_r": 0.138,
+      "improvement_pt": 8.17
     },
     {
       "name": "富津沖",
       "n": 38,
-      "wmape_h0": 37.3,
+      "wmape_h0": 40.6,
       "bl2_wmape": 45.6,
-      "oos_r": 0.538,
-      "improvement_pt": -1.02
+      "oos_r": 0.388,
+      "improvement_pt": 7.1
+    },
+    {
+      "name": "観音崎沖",
+      "n": 63,
+      "wmape_h0": 48.1,
+      "bl2_wmape": 57.7,
+      "oos_r": 0.039,
+      "improvement_pt": -0.41
+    },
+    {
+      "name": "横須賀沖",
+      "n": 41,
+      "wmape_h0": 53.8,
+      "bl2_wmape": 50.4,
+      "oos_r": 0.141,
+      "improvement_pt": -6.08
     }
   ],
   "best_point": {
     "name": "第二海堡沖",
-    "wmape_h0": 23.9,
-    "improvement_pt": 12.41
+    "wmape_h0": 39.5,
+    "improvement_pt": 8.17
   },
-  "improvement_pt": 12.41,
+  "improvement_pt": 8.17,
   "history": [
     {
       "date": "2026-04-24",
@@ -116,6 +116,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=第二海堡沖 wmape=23.9% imp=12.41pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=第二海堡沖 wmape=39.5% imp=8.17pt"
     }
   ]
 }

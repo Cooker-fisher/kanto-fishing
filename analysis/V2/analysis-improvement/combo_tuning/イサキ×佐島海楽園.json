@@ -1,0 +1,37 @@
+{
+  "fish": "イサキ",
+  "ship": "佐島海楽園",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 48.64,
+    "bl2_wmape": 53.66,
+    "oos_r": -0.056,
+    "n_records": 77,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横須賀市 佐島港",
+      "n": 55,
+      "wmape_h0": 47.7,
+      "bl2_wmape": 48.7,
+      "oos_r": 0.086,
+      "improvement_pt": 0.89
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横須賀市 佐島港",
+    "wmape_h0": 47.7,
+    "improvement_pt": 0.89
+  },
+  "improvement_pt": 0.89,
+  "history": [
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横須賀市 佐島港 wmape=47.7% imp=0.89pt"
+    }
+  ]
+}

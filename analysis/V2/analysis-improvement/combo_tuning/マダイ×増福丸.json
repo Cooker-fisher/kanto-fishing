@@ -1,0 +1,37 @@
+{
+  "fish": "マダイ",
+  "ship": "増福丸",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 48.76,
+    "bl2_wmape": 45.2,
+    "oos_r": -0.175,
+    "n_records": 56,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "静岡県 御前崎市 御前崎港",
+      "n": 34,
+      "wmape_h0": 41.9,
+      "bl2_wmape": 45.4,
+      "oos_r": 0.131,
+      "improvement_pt": 6.89
+    }
+  ],
+  "best_point": {
+    "name": "静岡県 御前崎市 御前崎港",
+    "wmape_h0": 41.9,
+    "improvement_pt": 6.89
+  },
+  "improvement_pt": 6.89,
+  "history": [
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=静岡県 御前崎市 御前崎港 wmape=41.9% imp=6.89pt"
+    }
+  ]
+}

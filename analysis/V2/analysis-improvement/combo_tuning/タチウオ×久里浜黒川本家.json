@@ -1,12 +1,12 @@
 {
   "fish": "タチウオ",
   "ship": "久里浜黒川本家",
-  "last_reviewed": "2026-07-03",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 37.21,
+    "wmape_h0": 52.15,
     "bl2_wmape": 50.9,
-    "oos_r": 0.645,
+    "oos_r": 0.243,
     "n_records": 143,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -15,18 +15,18 @@
     {
       "name": "走水沖",
       "n": 98,
-      "wmape_h0": 31.6,
+      "wmape_h0": 49.9,
       "bl2_wmape": 49.8,
-      "oos_r": 0.73,
-      "improvement_pt": 5.62
+      "oos_r": 0.229,
+      "improvement_pt": 2.25
     }
   ],
   "best_point": {
     "name": "走水沖",
-    "wmape_h0": 31.6,
-    "improvement_pt": 5.62
+    "wmape_h0": 49.9,
+    "improvement_pt": 2.25
   },
-  "improvement_pt": 5.62,
+  "improvement_pt": 2.25,
   "history": [
     {
       "date": "2026-05-12",
@@ -47,6 +47,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=走水沖 wmape=31.6% imp=5.62pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=走水沖 wmape=49.9% imp=2.25pt"
     }
   ]
 }

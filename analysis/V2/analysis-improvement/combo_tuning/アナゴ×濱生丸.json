@@ -1,0 +1,37 @@
+{
+  "fish": "アナゴ",
+  "ship": "濱生丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 54.66,
+    "bl2_wmape": 37.56,
+    "oos_r": -0.258,
+    "n_records": 32,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 横浜市 八幡橋",
+      "n": 32,
+      "wmape_h0": 33.7,
+      "bl2_wmape": 37.6,
+      "oos_r": 0.585,
+      "improvement_pt": 21.01
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 横浜市 八幡橋",
+    "wmape_h0": 33.7,
+    "improvement_pt": 21.01
+  },
+  "improvement_pt": 21.01,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 八幡橋 wmape=33.7% imp=21.01pt"
+    }
+  ]
+}

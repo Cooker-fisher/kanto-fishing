@@ -1,12 +1,12 @@
 {
   "fish": "ビシアジ",
   "ship": "さえむ丸",
-  "last_reviewed": "2026-07-03",
+  "last_reviewed": "2026-07-17",
   "status": "point_model_applied",
   "metrics": {
-    "wmape_h0": 42.15,
+    "wmape_h0": 55.11,
     "bl2_wmape": 66.12,
-    "oos_r": 0.635,
+    "oos_r": 0.168,
     "n_records": 156,
     "use_fallback": false,
     "kaiyu_promoted": false
@@ -181,6 +181,11 @@
       "date": "2026-07-03",
       "action": "point_backtest_updated",
       "note": "best=竹岡沖 wmape=28.4% imp=13.72pt"
+    },
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=竹岡沖 wmape=45.5% imp=9.65pt"
     }
   ],
   "rejected_factors": [
@@ -249,26 +254,26 @@
     {
       "name": "竹岡沖",
       "n": 85,
-      "wmape_h0": 28.4,
+      "wmape_h0": 45.5,
       "bl2_wmape": 56.5,
-      "oos_r": 0.753,
-      "improvement_pt": 13.72
+      "oos_r": 0.164,
+      "improvement_pt": 9.65
     },
     {
       "name": "金谷沖",
       "n": 71,
-      "wmape_h0": 36.2,
+      "wmape_h0": 50.9,
       "bl2_wmape": 41.0,
-      "oos_r": 0.567,
-      "improvement_pt": 5.95
+      "oos_r": 0.079,
+      "improvement_pt": 4.25
     }
   ],
   "best_point": {
     "name": "竹岡沖",
-    "wmape_h0": 28.4,
-    "improvement_pt": 13.72
+    "wmape_h0": 45.5,
+    "improvement_pt": 9.65
   },
-  "improvement_pt": 13.72,
+  "improvement_pt": 9.65,
   "trip_models": [
     {
       "trip_no": 1,

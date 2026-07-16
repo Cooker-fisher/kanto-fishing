@@ -44,6 +44,9 @@ import predict_count  # DB_PATH は import 時に analysis.sqlite → predict_pa
 
 OUT_JSON = os.path.join(RESULTS_DIR, "forecast_daily.json")
 LOG_PATH = os.path.join(RESULTS_DIR, "predict_log.jsonl")
+# T47a: 公開ティア（crawl/build_open_tier.py がローカル蒸留・コミット対象）
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(RESULTS_DIR)))
+OPEN_TIER_JSON = os.path.join(_REPO_ROOT, "normalize", "open_tier.json")
 
 # 日別 H=1..7 + 週次アンカー H=14/21/28（コンセプト「1週間日別 + 2/3/4週後予想」）
 DAILY_HORIZONS = list(range(1, 8))
@@ -69,6 +72,16 @@ def _load_range_quality(conn) -> dict:
         return {}
     return {(f, s): {"promise_break": pb, "winkler": w, "n": n}
             for f, s, pb, w, n in rows}
+
+
+def _load_open_tier() -> dict | None:
+    """normalize/open_tier.json を読む。無ければ None（選別なし＝従来挙動）。
+    戻り値: {"fish|ship": {"tier": "A"|"star"|"none", ...}}"""
+    try:
+        with open(OPEN_TIER_JSON, encoding="utf-8") as f:
+            return json.load(f).get("tiers") or None
+    except Exception:
+        return None
 
 
 def _line_date(obj: dict) -> str:
@@ -150,6 +163,12 @@ def main():
     range_quality = _load_range_quality(conn_q)
     conn_q.close()
 
+    # T47a 公開ティア: tier A のみ匹数レンジを JSON に出す。star は★のみ。
+    # 的中検証ログ（predict_log.jsonl・非公開）は選別に関係なく生値を残す。
+    open_tier = _load_open_tier()
+    if open_tier is None:
+        print("[predict_daily] open_tier.json なし → レンジ選別なし（従来挙動）")
+
     horizons = [h for h in DAILY_HORIZONS + WEEKLY_HORIZONS if h <= args.max_h]
     today = datetime.today()
     days_out = []
@@ -163,13 +182,19 @@ def main():
             f, s = r["fish"], r["ship"]
             rq = range_quality.get((f, s), {})
             kaiyu = r.get("kaiyu_stars")  # {"stars","hit_rate","good_line"} or None
+            # T47a 選別: レンジ（cnt_lo/hi）を出せるのは tier A のみ。
+            # KAIYU★一本化: kaiyu_stars があるコンボ（非昇格回遊魚）はレンジを出さない。
+            _tier = (open_tier.get(f"{f}|{s}", {}).get("tier", "none")
+                     if open_tier is not None else None)
+            _show_range = (kaiyu is None) and (_tier in ("A", None))
             combos_out.append({
                 "fish": f,
                 "ship": s,
-                "cnt_lo": r.get("cnt_lo"),
-                "cnt_hi": r.get("cnt_hi"),
+                "cnt_lo": r.get("cnt_lo") if _show_range else None,
+                "cnt_hi": r.get("cnt_hi") if _show_range else None,
                 "stars": r.get("stars"),
                 "kaiyu_stars": kaiyu,               # 回遊魚チャンス評価（None=通常魚 or good_line≤3）
+                "tier": _tier,                      # T47a: "A"=レンジ公開可 / "star" / "none" / None=選別なし
                 "predicted_point": r.get("predicted_point"),
                 "model_reliable": bool(r.get("model_reliable")),
                 "transition_risk": r.get("transition_risk"),
@@ -201,6 +226,7 @@ def main():
         "generated_at": generated_at,
         "mode": mode,
         "params_exported_at": exported_at,
+        "open_tier": "active" if open_tier is not None else "missing",
         "days": days_out,
     }
     with open(OUT_JSON, "w", encoding="utf-8") as f:

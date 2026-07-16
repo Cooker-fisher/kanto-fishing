@@ -1,0 +1,37 @@
+{
+  "fish": "イサキ",
+  "ship": "利永丸",
+  "last_reviewed": "2026-07-17",
+  "status": "point_model_marginal",
+  "metrics": {
+    "wmape_h0": 33.92,
+    "bl2_wmape": 27.9,
+    "oos_r": -0.489,
+    "n_records": 37,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 いすみ市 大原港",
+      "n": 26,
+      "wmape_h0": 31.5,
+      "bl2_wmape": 30.0,
+      "oos_r": -0.235,
+      "improvement_pt": 2.38
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 いすみ市 大原港",
+    "wmape_h0": 31.5,
+    "improvement_pt": 2.38
+  },
+  "improvement_pt": 2.38,
+  "history": [
+    {
+      "date": "2026-07-17",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 いすみ市 大原港 wmape=31.5% imp=2.38pt"
+    }
+  ]
+}

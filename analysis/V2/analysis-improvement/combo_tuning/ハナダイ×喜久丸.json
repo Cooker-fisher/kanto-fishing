@@ -1,0 +1,37 @@
+{
+  "fish": "ハナダイ",
+  "ship": "喜久丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 42.08,
+    "bl2_wmape": 36.91,
+    "oos_r": -0.202,
+    "n_records": 30,
+    "use_fallback": false,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "神奈川県 鎌倉市 腰越漁港",
+      "n": 30,
+      "wmape_h0": 18.3,
+      "bl2_wmape": 36.9,
+      "oos_r": 0.698,
+      "improvement_pt": 23.74
+    }
+  ],
+  "best_point": {
+    "name": "神奈川県 鎌倉市 腰越漁港",
+    "wmape_h0": 18.3,
+    "improvement_pt": 23.74
+  },
+  "improvement_pt": 23.74,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 鎌倉市 腰越漁港 wmape=18.3% imp=23.74pt"
+    }
+  ]
+}

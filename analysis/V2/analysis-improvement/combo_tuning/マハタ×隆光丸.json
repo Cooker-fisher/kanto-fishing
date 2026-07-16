@@ -1,0 +1,37 @@
+{
+  "fish": "マハタ",
+  "ship": "隆光丸",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_applied",
+  "metrics": {
+    "wmape_h0": 51.32,
+    "bl2_wmape": 55.05,
+    "oos_r": 0.084,
+    "n_records": 36,
+    "use_fallback": true,
+    "kaiyu_promoted": false
+  },
+  "point_models": [
+    {
+      "name": "千葉県 いすみ市 大原港",
+      "n": 36,
+      "wmape_h0": 35.3,
+      "bl2_wmape": 55.1,
+      "oos_r": 0.572,
+      "improvement_pt": 16.07
+    }
+  ],
+  "best_point": {
+    "name": "千葉県 いすみ市 大原港",
+    "wmape_h0": 35.3,
+    "improvement_pt": 16.07
+  },
+  "improvement_pt": 16.07,
+  "history": [
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=千葉県 いすみ市 大原港 wmape=35.3% imp=16.07pt"
+    }
+  ]
+}

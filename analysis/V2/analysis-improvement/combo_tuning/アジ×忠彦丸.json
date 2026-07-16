@@ -1,37 +1,42 @@
 {
   "fish": "アジ",
   "ship": "忠彦丸",
-  "last_reviewed": "2026-06-23",
-  "status": "point_model_applied",
+  "last_reviewed": "2026-07-16",
+  "status": "point_model_marginal",
   "metrics": {
-    "wmape_h0": 57.94,
-    "bl2_wmape": 55.57,
-    "oos_r": 0.277,
-    "n_records": 41,
-    "use_fallback": true,
+    "wmape_h0": 35.41,
+    "bl2_wmape": 52.02,
+    "oos_r": 0.509,
+    "n_records": 90,
+    "use_fallback": false,
     "kaiyu_promoted": false
   },
   "point_models": [
     {
       "name": "神奈川県 横浜市 金沢漁港",
-      "n": 41,
-      "wmape_h0": 40.6,
-      "bl2_wmape": 57.8,
-      "oos_r": 0.578,
-      "improvement_pt": 17.31
+      "n": 90,
+      "wmape_h0": 31.5,
+      "bl2_wmape": 53.1,
+      "oos_r": 0.622,
+      "improvement_pt": 3.88
     }
   ],
   "best_point": {
     "name": "神奈川県 横浜市 金沢漁港",
-    "wmape_h0": 40.6,
-    "improvement_pt": 17.31
+    "wmape_h0": 31.5,
+    "improvement_pt": 3.88
   },
-  "improvement_pt": 17.31,
+  "improvement_pt": 3.88,
   "history": [
     {
       "date": "2026-06-23",
       "action": "point_backtest_updated",
       "note": "best=神奈川県 横浜市 金沢漁港 wmape=40.6% imp=17.31pt"
+    },
+    {
+      "date": "2026-07-16",
+      "action": "point_backtest_updated",
+      "note": "best=神奈川県 横浜市 金沢漁港 wmape=31.5% imp=3.88pt"
     }
   ]
 }
