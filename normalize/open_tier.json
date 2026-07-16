@@ -1,0 +1,3186 @@
+{
+ "_meta": {
+  "generated_at": "2026-07-17 03:11:40",
+  "criteria": {
+   "metric": "cnt_bz",
+   "horizon": 0,
+   "pb_max": 0.1,
+   "n_min": 50,
+   "require_no_fallback": true
+  },
+  "counts": {
+   "A": 109,
+   "star": 32,
+   "none": 367
+  },
+  "note": "tier A のみ匹数レンジ公開可 / star は★のみ / none はレンジ非公開"
+ },
+ "tiers": {
+  "タイ五目|庄治郎丸": {
+   "tier": "none",
+   "reason": "gomoku_excluded",
+   "pb": 0.4388,
+   "n": 996,
+   "wmape": 75.4
+  },
+  "タイ五目|ちがさき丸": {
+   "tier": "none",
+   "reason": "gomoku_excluded",
+   "pb": 0.4838,
+   "n": 678,
+   "wmape": 82.8
+  },
+  "マダイ|幸丸": {
+   "tier": "A",
+   "pb": 0.02,
+   "n": 451,
+   "wmape": 43.1
+  },
+  "ヤリイカ|喜平治丸": {
+   "tier": "A",
+   "pb": 0.0858,
+   "n": 268,
+   "wmape": 50.8
+  },
+  "ヒラメ|幸丸": {
+   "tier": "A",
+   "pb": 0.0383,
+   "n": 366,
+   "wmape": 36.6
+  },
+  "カワハギ|山下丸": {
+   "tier": "A",
+   "pb": 0.0013,
+   "n": 791,
+   "wmape": 34.3
+  },
+  "マダイ|梅花丸": {
+   "tier": "A",
+   "pb": 0.015,
+   "n": 468,
+   "wmape": 49.1
+  },
+  "アジ|釣船 五郎丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1052,
+   "n": 694,
+   "wmape": 39.7
+  },
+  "シロギス|長崎屋": {
+   "tier": "A",
+   "pb": 0.0055,
+   "n": 723,
+   "wmape": 26.5
+  },
+  "タチウオ|吉久": {
+   "tier": "A",
+   "pb": 0.0225,
+   "n": 755,
+   "wmape": 35.5
+  },
+  "マダイ|新幸丸": {
+   "tier": "A",
+   "pb": 0.0812,
+   "n": 628,
+   "wmape": 45.7
+  },
+  "アジ|光進丸": {
+   "tier": "A",
+   "pb": 0.0038,
+   "n": 781,
+   "wmape": 32.6
+  },
+  "マダイ|あまさけや丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2581,
+   "n": 492,
+   "wmape": 48.1
+  },
+  "フグ|吉久": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1208,
+   "n": 149,
+   "wmape": 55.8
+  },
+  "アジ|船宿 まる八": {
+   "tier": "A",
+   "pb": 0.0371,
+   "n": 620,
+   "wmape": 24.4
+  },
+  "タチウオ|釣船 五郎丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1443,
+   "n": 596,
+   "wmape": 51.2
+  },
+  "マダコ|長崎屋": {
+   "tier": "A",
+   "pb": 0.0065,
+   "n": 465,
+   "wmape": 43.4
+  },
+  "マダイ|庄治郎丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 17.5
+  },
+  "マダイ|日正丸": {
+   "tier": "A",
+   "pb": 0.0497,
+   "n": 523,
+   "wmape": 51.4
+  },
+  "マダイ|ちがさき丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2283,
+   "n": 92,
+   "wmape": 33.0
+  },
+  "アジ|勘次郎丸": {
+   "tier": "A",
+   "pb": 0.0552,
+   "n": 543,
+   "wmape": 31.4
+  },
+  "アジ|かめだや": {
+   "tier": "A",
+   "pb": 0.0419,
+   "n": 501,
+   "wmape": 30.0
+  },
+  "サワラ|林遊船": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.5116,
+   "n": 258,
+   "wmape": 55.3
+  },
+  "ヒラメ|明広丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1541,
+   "n": 370,
+   "wmape": 42.0
+  },
+  "クロダイ|林遊船": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2047,
+   "n": 381,
+   "wmape": 61.7
+  },
+  "マダイ|大貫丸": {
+   "tier": "A",
+   "pb": 0.0319,
+   "n": 376,
+   "wmape": 46.4
+  },
+  "フグ|野毛屋釣船店": {
+   "tier": "A",
+   "pb": 0.0161,
+   "n": 372,
+   "wmape": 47.4
+  },
+  "アジ|林遊船": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1635,
+   "n": 422,
+   "wmape": 39.6
+  },
+  "マダイ|たいぞう丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 38.1
+  },
+  "アジ|渡辺釣船店": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1343,
+   "n": 268,
+   "wmape": 33.0
+  },
+  "ヤリイカ|平安丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1324,
+   "n": 204,
+   "wmape": 54.1
+  },
+  "シロギス|かめだや": {
+   "tier": "A",
+   "pb": 0.0234,
+   "n": 428,
+   "wmape": 33.0
+  },
+  "アジ|こなや丸": {
+   "tier": "A",
+   "pb": 0.0566,
+   "n": 424,
+   "wmape": 36.8
+  },
+  "タチウオ|こなや丸": {
+   "tier": "A",
+   "pb": 0.0257,
+   "n": 389,
+   "wmape": 42.9
+  },
+  "タチウオ|福よし丸": {
+   "tier": "A",
+   "pb": 0.0803,
+   "n": 386,
+   "wmape": 57.0
+  },
+  "アジ|長崎屋": {
+   "tier": "A",
+   "pb": 0.088,
+   "n": 375,
+   "wmape": 31.9
+  },
+  "フグ|敷嶋丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2865,
+   "n": 342,
+   "wmape": 75.1
+  },
+  "アカムツ|仁徳丸": {
+   "tier": "A",
+   "pb": 0.0362,
+   "n": 304,
+   "wmape": 42.3
+  },
+  "ヤリイカ|不動丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 51.9
+  },
+  "ヒラメ|つる丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1211,
+   "n": 223,
+   "wmape": 49.0
+  },
+  "カワハギ|山天丸": {
+   "tier": "A",
+   "pb": 0.0515,
+   "n": 330,
+   "wmape": 36.6
+  },
+  "シーバス|林遊船": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3953,
+   "n": 253,
+   "wmape": 71.3
+  },
+  "マダイ|弘漁丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0308,
+   "n": 325,
+   "wmape": 53.7
+  },
+  "アジ|山下丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1146,
+   "n": 314,
+   "wmape": 32.7
+  },
+  "アジ|須原屋": {
+   "tier": "A",
+   "pb": 0.0129,
+   "n": 619,
+   "wmape": 21.8
+  },
+  "サワラ|吉久": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.0319,
+   "n": 94,
+   "wmape": 52.6
+  },
+  "アジ|野毛屋釣船店": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.103,
+   "n": 301,
+   "wmape": 43.4
+  },
+  "ヒラメ|大盛丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1899,
+   "n": 258,
+   "wmape": 45.5
+  },
+  "マダコ|吉久": {
+   "tier": "A",
+   "pb": 0.0144,
+   "n": 278,
+   "wmape": 39.4
+  },
+  "カワハギ|光進丸": {
+   "tier": "A",
+   "pb": 0.0031,
+   "n": 318,
+   "wmape": 34.1
+  },
+  "カワハギ|釣船 五郎丸": {
+   "tier": "A",
+   "pb": 0.0092,
+   "n": 217,
+   "wmape": 37.1
+  },
+  "タチウオ|庄治郎丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2351,
+   "n": 251,
+   "wmape": 57.8
+  },
+  "タチウオ|第八幸松丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.184,
+   "n": 250,
+   "wmape": 42.1
+  },
+  "サワラ|こなや丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.5967,
+   "n": 181,
+   "wmape": 99.8
+  },
+  "イサキ|佐衛美丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1098,
+   "n": 264,
+   "wmape": 19.0
+  },
+  "アジ|庄治郎丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.25,
+   "n": 208,
+   "wmape": 43.9
+  },
+  "キハダマグロ|平安丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2459,
+   "n": 61,
+   "wmape": 61.5
+  },
+  "マダイ|鶴丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 19.7
+  },
+  "アジ|さえむ丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1132,
+   "n": 106,
+   "wmape": 53.8
+  },
+  "イサキ|村井丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 35.0
+  },
+  "アジ|村井丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1624,
+   "n": 197,
+   "wmape": 39.7
+  },
+  "カサゴ|山下丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2266,
+   "n": 256,
+   "wmape": 30.3
+  },
+  "マダイ|共栄丸": {
+   "tier": "A",
+   "pb": 0.0821,
+   "n": 195,
+   "wmape": 46.6
+  },
+  "マダイ|つる丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2319,
+   "n": 207,
+   "wmape": 45.5
+  },
+  "タチウオ|渡辺釣船店": {
+   "tier": "A",
+   "pb": 0.064,
+   "n": 250,
+   "wmape": 41.7
+  },
+  "イナダ|平安丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.1481,
+   "n": 162,
+   "wmape": 69.3
+  },
+  "キハダマグロ|ちがさき丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 47.3
+  },
+  "マルイカ|秀丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3388,
+   "n": 552,
+   "wmape": 71.6
+  },
+  "ヒラメ|家田丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.3,
+   "n": 200,
+   "wmape": 44.9
+  },
+  "ワラサ|あまさけや丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.3355,
+   "n": 155,
+   "wmape": 47.4
+  },
+  "マダイ|平安丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1759,
+   "n": 199,
+   "wmape": 43.8
+  },
+  "アジ|平安丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2188,
+   "n": 96,
+   "wmape": 35.3
+  },
+  "シロギス|ちがさき丸": {
+   "tier": "A",
+   "pb": 0.095,
+   "n": 221,
+   "wmape": 34.3
+  },
+  "タイ五目|大盛丸": {
+   "tier": "none",
+   "reason": "gomoku_excluded",
+   "wmape": 87.5
+  },
+  "フグ|ちがさき丸": {
+   "tier": "A",
+   "pb": 0.0441,
+   "n": 68,
+   "wmape": 62.5
+  },
+  "シーバス|長崎屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1242,
+   "n": 161,
+   "wmape": 64.7
+  },
+  "ヒラメ|大貫丸": {
+   "tier": "A",
+   "pb": 0.0,
+   "n": 135,
+   "wmape": 41.7
+  },
+  "イナダ|庄治郎丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 77.6
+  },
+  "キハダマグロ|たいぞう丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2184,
+   "n": 87,
+   "wmape": 58.9
+  },
+  "アジ|ちがさき丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2766,
+   "n": 188,
+   "wmape": 50.8
+  },
+  "マダイ|野毛屋釣船店": {
+   "tier": "A",
+   "pb": 0.0702,
+   "n": 171,
+   "wmape": 40.1
+  },
+  "キハダマグロ|庄治郎丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2909,
+   "n": 55,
+   "wmape": 79.6
+  },
+  "イサキ|つる丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1447,
+   "n": 159,
+   "wmape": 36.9
+  },
+  "アジ|恒丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1623,
+   "n": 154,
+   "wmape": 30.1
+  },
+  "マダコ|林遊船": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1791,
+   "n": 67,
+   "wmape": 65.0
+  },
+  "カワハギ|あまさけや丸": {
+   "tier": "A",
+   "pb": 0.1,
+   "n": 110,
+   "wmape": 40.9
+  },
+  "カワハギ|須原屋": {
+   "tier": "A",
+   "pb": 0.0,
+   "n": 213,
+   "wmape": 40.5
+  },
+  "タチウオ|かめだや": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.129,
+   "n": 124,
+   "wmape": 57.1
+  },
+  "マダイ|利一丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.4932,
+   "n": 73,
+   "wmape": 38.2
+  },
+  "マゴチ|林遊船": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2556,
+   "n": 133,
+   "wmape": 53.2
+  },
+  "シロギス|須原屋": {
+   "tier": "A",
+   "pb": 0.0064,
+   "n": 311,
+   "wmape": 33.2
+  },
+  "ヒラメ|勇盛丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 36.4
+  },
+  "ヒラメ|弘漁丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0357,
+   "n": 112,
+   "wmape": 47.2
+  },
+  "アジ|吉久": {
+   "tier": "A",
+   "pb": 0.0465,
+   "n": 129,
+   "wmape": 31.7
+  },
+  "イサキ|あまさけや丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.172,
+   "n": 93,
+   "wmape": 37.3
+  },
+  "ヒラメ|第三松栄丸": {
+   "tier": "A",
+   "pb": 0.0748,
+   "n": 107,
+   "wmape": 40.2
+  },
+  "マダイ|宮田丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1017,
+   "n": 118,
+   "wmape": 47.2
+  },
+  "マダコ|大洗丸": {
+   "tier": "A",
+   "pb": 0.0673,
+   "n": 104,
+   "wmape": 48.1
+  },
+  "マダイ|喜平治丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0192,
+   "n": 104,
+   "wmape": 50.6
+  },
+  "カワハギ|巳之助丸": {
+   "tier": "A",
+   "pb": 0.005,
+   "n": 798,
+   "wmape": 30.9
+  },
+  "マダイ|大洗丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.215,
+   "n": 107,
+   "wmape": 53.8
+  },
+  "タチウオ|秀丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.6383,
+   "n": 47,
+   "wmape": 79.6
+  },
+  "スミイカ|山下丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0549,
+   "n": 91,
+   "wmape": 47.3
+  },
+  "カワハギ|たいぞう丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0787,
+   "n": 89,
+   "wmape": 39.1
+  },
+  "ヒラメ|勘栄丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1625,
+   "n": 80,
+   "wmape": 52.3
+  },
+  "ワラサ|喜平治丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1714,
+   "n": 70,
+   "wmape": 50.9
+  },
+  "イサキ|勘栄丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.6,
+   "n": 55,
+   "wmape": 78.1
+  },
+  "マダイ|恵漁丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 24.8
+  },
+  "マルイカ|第八幸松丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1067,
+   "n": 75,
+   "wmape": 58.6
+  },
+  "キハダマグロ|恒丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2222,
+   "n": 45,
+   "wmape": 44.8
+  },
+  "ヒラメ|仁徳丸": {
+   "tier": "A",
+   "pb": 0.0323,
+   "n": 62,
+   "wmape": 42.6
+  },
+  "ヤリイカ|幸丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1786,
+   "n": 56,
+   "wmape": 64.4
+  },
+  "マダイ|海桜丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2836,
+   "n": 67,
+   "wmape": 47.8
+  },
+  "マダイ|第八幸松丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2653,
+   "n": 49,
+   "wmape": 56.4
+  },
+  "カレイ|林遊船": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3333,
+   "n": 75,
+   "wmape": 60.2
+  },
+  "アジ|吉野屋": {
+   "tier": "A",
+   "pb": 0.0524,
+   "n": 763,
+   "wmape": 37.9
+  },
+  "カサゴ|北山丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1529,
+   "n": 85,
+   "wmape": 78.4
+  },
+  "ヒラメ|大洗丸": {
+   "tier": "A",
+   "pb": 0.0139,
+   "n": 72,
+   "wmape": 28.2
+  },
+  "シロギス|林遊船": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1818,
+   "n": 66,
+   "wmape": 47.2
+  },
+  "アジ|巳之助丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0979,
+   "n": 664,
+   "wmape": 33.7
+  },
+  "アジ|あまさけや丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2603,
+   "n": 73,
+   "wmape": 38.6
+  },
+  "マダコ|こなや丸": {
+   "tier": "A",
+   "pb": 0.0909,
+   "n": 77,
+   "wmape": 40.7
+  },
+  "ヒラメ|第八幸松丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 21.5
+  },
+  "タチウオ|平安丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1786,
+   "n": 56,
+   "wmape": 53.8
+  },
+  "ヒラメ|日正丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0938,
+   "n": 64,
+   "wmape": 59.4
+  },
+  "アジ|なごみ丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.4545,
+   "n": 33,
+   "wmape": 79.3
+  },
+  "メヌケ|仁徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1111,
+   "n": 63,
+   "wmape": 63.1
+  },
+  "タチウオ|鶴丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 39.7
+  },
+  "タチウオ|恵漁丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2667,
+   "n": 60,
+   "wmape": 30.6
+  },
+  "タチウオ|日正丸": {
+   "tier": "A",
+   "pb": 0.0182,
+   "n": 55,
+   "wmape": 49.6
+  },
+  "ヒラメ|宮田丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0357,
+   "n": 56,
+   "wmape": 52.2
+  },
+  "マダコ|野毛屋釣船店": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1094,
+   "n": 64,
+   "wmape": 64.0
+  },
+  "ヒラメ|梅花丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0896,
+   "n": 67,
+   "wmape": 42.1
+  },
+  "アジ|第八幸松丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1818,
+   "n": 44,
+   "wmape": 50.3
+  },
+  "タイ五目|大洗丸": {
+   "tier": "none",
+   "reason": "gomoku_excluded",
+   "pb": 0.1053,
+   "n": 57,
+   "wmape": 36.4
+  },
+  "アジ|利一丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.4545,
+   "n": 33,
+   "wmape": 29.6
+  },
+  "イサキ|敷嶋丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.3103,
+   "n": 58,
+   "wmape": 40.4
+  },
+  "アジ|鶴丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 22.1
+  },
+  "イサキ|平安丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1277,
+   "n": 47,
+   "wmape": 37.9
+  },
+  "アジ|秀丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.525,
+   "n": 40,
+   "wmape": 53.4
+  },
+  "カマス|庄治郎丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 51.0
+  },
+  "シロギス|山天丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2,
+   "n": 45,
+   "wmape": 39.6
+  },
+  "フグ|光進丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 29.2
+  },
+  "タチウオ|大貫丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 40,
+   "wmape": 37.8
+  },
+  "カワハギ|ちがさき丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3243,
+   "n": 37,
+   "wmape": 48.5
+  },
+  "メダイ|増福丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2895,
+   "n": 38,
+   "wmape": 51.1
+  },
+  "シロギス|庄治郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2162,
+   "n": 37,
+   "wmape": 48.5
+  },
+  "シロギス|海桜丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1471,
+   "n": 34,
+   "wmape": 34.6
+  },
+  "タチウオ|ちがさき丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.25,
+   "n": 32,
+   "wmape": 63.3
+  },
+  "マダコ|日正丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0323,
+   "n": 31,
+   "wmape": 43.2
+  },
+  "マルイカ|庄治郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0273,
+   "n": 256,
+   "wmape": 63.1
+  },
+  "カンパチ|龍正丸": {
+   "tier": "A",
+   "pb": 0.0674,
+   "n": 282,
+   "wmape": 41.8
+  },
+  "マルイカ|たいぞう丸": {
+   "tier": "A",
+   "pb": 0.0102,
+   "n": 394,
+   "wmape": 49.0
+  },
+  "マルイカ|喜平治丸": {
+   "tier": "A",
+   "pb": 0.0161,
+   "n": 435,
+   "wmape": 45.3
+  },
+  "マルイカ|山天丸": {
+   "tier": "A",
+   "pb": 0.0618,
+   "n": 259,
+   "wmape": 40.9
+  },
+  "マルイカ|平安丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1579,
+   "n": 38,
+   "wmape": 77.1
+  },
+  "マルイカ|第八鶴丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.4435,
+   "n": 115,
+   "wmape": 63.9
+  },
+  "アマダイ|あまさけや丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1944,
+   "n": 36,
+   "wmape": 49.5
+  },
+  "アマダイ|ちがさき丸": {
+   "tier": "A",
+   "pb": 0.026,
+   "n": 384,
+   "wmape": 39.8
+  },
+  "アマダイ|仁徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.125,
+   "n": 32,
+   "wmape": 35.0
+  },
+  "アマダイ|山下丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0887,
+   "n": 372,
+   "wmape": 44.4
+  },
+  "アマダイ|山天丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0538,
+   "n": 502,
+   "wmape": 39.3
+  },
+  "アマダイ|庄治郎丸": {
+   "tier": "A",
+   "pb": 0.0344,
+   "n": 436,
+   "wmape": 38.5
+  },
+  "アマダイ|明進丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0435,
+   "n": 46,
+   "wmape": 34.7
+  },
+  "アオリイカ|さえむ丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.4483,
+   "n": 87,
+   "wmape": 51.8
+  },
+  "アオリイカ|佐衛美丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1951,
+   "n": 41,
+   "wmape": 59.3
+  },
+  "アオリイカ|共栄丸": {
+   "tier": "A",
+   "pb": 0.0169,
+   "n": 59,
+   "wmape": 39.8
+  },
+  "アオリイカ|喜平治丸": {
+   "tier": "A",
+   "pb": 0.0392,
+   "n": 332,
+   "wmape": 47.3
+  },
+  "アオリイカ|野毛屋釣船店": {
+   "tier": "A",
+   "pb": 0.0127,
+   "n": 79,
+   "wmape": 41.3
+  },
+  "スルメイカ|不動丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 38.9
+  },
+  "マハタ|勇盛丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.4861,
+   "n": 72,
+   "wmape": 29.4
+  },
+  "マハタ|北山丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 14.8
+  },
+  "マハタ|幸丸": {
+   "tier": "A",
+   "pb": 0.012,
+   "n": 83,
+   "wmape": 34.0
+  },
+  "スルメイカ|喜平治丸": {
+   "tier": "A",
+   "pb": 0.05,
+   "n": 220,
+   "wmape": 52.5
+  },
+  "マハタ|明広丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.6495,
+   "n": 97,
+   "wmape": 50.1
+  },
+  "スルメイカ|平安丸": {
+   "tier": "A",
+   "pb": 0.075,
+   "n": 200,
+   "wmape": 55.1
+  },
+  "カツオ|ちがさき丸": {
+   "tier": "A",
+   "pb": 0.0366,
+   "n": 82,
+   "wmape": 60.8
+  },
+  "スルメイカ|明広丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1923,
+   "n": 52,
+   "wmape": 47.2
+  },
+  "カツオ|博栄丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 34.9
+  },
+  "カツオ|増福丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 40.7
+  },
+  "カツオ|平安丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3462,
+   "n": 52,
+   "wmape": 48.8
+  },
+  "スルメイカ|第八鶴丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3412,
+   "n": 85,
+   "wmape": 63.6
+  },
+  "スルメイカ|龍正丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1389,
+   "n": 36,
+   "wmape": 39.5
+  },
+  "カツオ|庄治郎丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.4795,
+   "n": 73,
+   "wmape": 62.9
+  },
+  "ムギイカ|平安丸": {
+   "tier": "A",
+   "pb": 0.0625,
+   "n": 64,
+   "wmape": 60.0
+  },
+  "ムギイカ|庄治郎丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.0238,
+   "n": 42,
+   "wmape": 57.5
+  },
+  "ムギイカ|秀丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.3505,
+   "n": 97,
+   "wmape": 77.8
+  },
+  "シマアジ|つる丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.5745,
+   "n": 94,
+   "wmape": 78.2
+  },
+  "キンメダイ|平安丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2164,
+   "n": 268,
+   "wmape": 62.3
+  },
+  "カンパチ|佐衛美丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3404,
+   "n": 47,
+   "wmape": 60.0
+  },
+  "ムギイカ|第八幸松丸": {
+   "tier": "A",
+   "pb": 0.0924,
+   "n": 119,
+   "wmape": 59.4
+  },
+  "シイラ|共栄丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 70.4
+  },
+  "キンメダイ|龍正丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2909,
+   "n": 55,
+   "wmape": 57.4
+  },
+  "トラフグ|吉久": {
+   "tier": "A",
+   "pb": 0.0298,
+   "n": 168,
+   "wmape": 46.1
+  },
+  "トラフグ|吉野屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0556,
+   "n": 162,
+   "wmape": 50.8
+  },
+  "ビシアジ|さえむ丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1474,
+   "n": 156,
+   "wmape": 55.1
+  },
+  "シイラ|庄治郎丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.6286,
+   "n": 245,
+   "wmape": 79.2
+  },
+  "ショウサイフグ|ちがさき丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1731,
+   "n": 52,
+   "wmape": 61.1
+  },
+  "トラフグ|野毛屋釣船店": {
+   "tier": "A",
+   "pb": 0.0268,
+   "n": 112,
+   "wmape": 42.6
+  },
+  "ビシアジ|平安丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1368,
+   "n": 117,
+   "wmape": 33.7
+  },
+  "ショウサイフグ|吉久": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 129,
+   "wmape": 45.8
+  },
+  "アカメフグ|吉久": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0096,
+   "n": 209,
+   "wmape": 34.3
+  },
+  "ビシアジ|庄治郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2338,
+   "n": 77,
+   "wmape": 36.3
+  },
+  "ショウサイフグ|宮田丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1282,
+   "n": 39,
+   "wmape": 25.3
+  },
+  "クロムツ|第八鶴丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.5342,
+   "n": 73,
+   "wmape": 69.9
+  },
+  "シロアマダイ|恵漁丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.3171,
+   "n": 41,
+   "wmape": 40.6
+  },
+  "オニカサゴ|吉久": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 30,
+   "wmape": 43.6
+  },
+  "ワラサ|幸栄丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2069,
+   "n": 145,
+   "wmape": 76.6
+  },
+  "フグ|幸栄丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2452,
+   "n": 261,
+   "wmape": 73.9
+  },
+  "マダコ|幸栄丸": {
+   "tier": "A",
+   "pb": 0.0074,
+   "n": 272,
+   "wmape": 39.3
+  },
+  "ヤリイカ|幸栄丸": {
+   "tier": "A",
+   "pb": 0.03,
+   "n": 100,
+   "wmape": 65.1
+  },
+  "マルイカ|幸栄丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0137,
+   "n": 73,
+   "wmape": 73.2
+  },
+  "マハタ|幸栄丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 42.0
+  },
+  "スジイカ|幸栄丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0682,
+   "n": 88,
+   "wmape": 69.5
+  },
+  "ヒラメ|幸栄丸": {
+   "tier": "A",
+   "pb": 0.0535,
+   "n": 318,
+   "wmape": 37.8
+  },
+  "メバル|幸栄丸": {
+   "tier": "A",
+   "pb": 0.0385,
+   "n": 52,
+   "wmape": 40.5
+  },
+  "マダイ|幸栄丸": {
+   "tier": "A",
+   "pb": 0.0429,
+   "n": 583,
+   "wmape": 52.9
+  },
+  "ハタ|北山丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 56.8
+  },
+  "ハナダイ|大盛丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1404,
+   "n": 57,
+   "wmape": 41.7
+  },
+  "泳がせ五目|大盛丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 38.4
+  },
+  "シロギス|吉野屋": {
+   "tier": "A",
+   "pb": 0.0209,
+   "n": 526,
+   "wmape": 35.2
+  },
+  "フグ|吉野屋": {
+   "tier": "A",
+   "pb": 0.0036,
+   "n": 552,
+   "wmape": 43.8
+  },
+  "カワハギ|吉野屋": {
+   "tier": "A",
+   "pb": 0.0148,
+   "n": 337,
+   "wmape": 50.3
+  },
+  "マダコ|吉野屋": {
+   "tier": "A",
+   "pb": 0.0203,
+   "n": 295,
+   "wmape": 41.7
+  },
+  "カサゴ|吉野屋": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.125,
+   "n": 120,
+   "wmape": 33.2
+  },
+  "アオリイカ|吉野屋": {
+   "tier": "A",
+   "pb": 0.0253,
+   "n": 79,
+   "wmape": 36.3
+  },
+  "アカメフグ|吉野屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0147,
+   "n": 68,
+   "wmape": 36.7
+  },
+  "ヤリイカ|吉野屋": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0645,
+   "n": 31,
+   "wmape": 35.7
+  },
+  "タチウオ|吉野屋": {
+   "tier": "A",
+   "pb": 0.0079,
+   "n": 633,
+   "wmape": 46.2
+  },
+  "ヤリイカ|はら丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2325,
+   "n": 271,
+   "wmape": 51.8
+  },
+  "ヒラメ|三次郎丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.15,
+   "n": 300,
+   "wmape": 44.0
+  },
+  "ヒラメ|大春丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0405,
+   "n": 173,
+   "wmape": 39.7
+  },
+  "マダイ|三次郎丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1229,
+   "n": 358,
+   "wmape": 51.2
+  },
+  "ヒラメ|太幸丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1247,
+   "n": 369,
+   "wmape": 41.9
+  },
+  "マダイ|大春丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0964,
+   "n": 332,
+   "wmape": 53.2
+  },
+  "マダイ|太幸丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1122,
+   "n": 98,
+   "wmape": 45.9
+  },
+  "マルイカ|はら丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2903,
+   "n": 93,
+   "wmape": 59.8
+  },
+  "マルイカ|翔太丸": {
+   "tier": "A",
+   "pb": 0.0358,
+   "n": 335,
+   "wmape": 46.2
+  },
+  "タチウオ|須原屋": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 37,
+   "wmape": 39.5
+  },
+  "アマダイ|巳之助丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1934,
+   "n": 181,
+   "wmape": 46.4
+  },
+  "ワラサ|翔太丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted"
+  },
+  "カワハギ|翔太丸": {
+   "tier": "A",
+   "pb": 0.0481,
+   "n": 104,
+   "wmape": 32.7
+  },
+  "スルメイカ|はら丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1859,
+   "n": 199,
+   "wmape": 53.5
+  },
+  "キハダマグロ|はら丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2969,
+   "n": 64,
+   "wmape": 77.4
+  },
+  "キハダマグロ|翔太丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.5692,
+   "n": 65,
+   "wmape": 108.9
+  },
+  "カツオ|はら丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2857,
+   "n": 70,
+   "wmape": 69.3
+  },
+  "ムギイカ|はら丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2857,
+   "n": 49,
+   "wmape": 60.4
+  },
+  "カサゴ|巳之助丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.325,
+   "n": 40,
+   "wmape": 30.2
+  },
+  "オニカサゴ|三次郎丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 24.1
+  },
+  "アラ|三次郎丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 12.2
+  },
+  "クロダイ|村井丸": {
+   "tier": "A",
+   "pb": 0.0179,
+   "n": 56,
+   "wmape": 33.6
+  },
+  "LT五目|村井丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 37.7
+  },
+  "ヒラメ|明進丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 33,
+   "wmape": 37.5
+  },
+  "アマダイ|たいぞう丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0659,
+   "n": 364,
+   "wmape": 41.8
+  },
+  "アマダイ|利一丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 34.2
+  },
+  "アマダイ|大貫丸": {
+   "tier": "A",
+   "pb": 0.03,
+   "n": 100,
+   "wmape": 41.5
+  },
+  "アマダイ|恵漁丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.3429,
+   "n": 35,
+   "wmape": 47.4
+  },
+  "アマダイ|鶴丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 14.3
+  },
+  "キンメダイ|大貫丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0638,
+   "n": 47,
+   "wmape": 53.6
+  },
+  "シロアマダイ|鶴丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 32.4
+  },
+  "クロダイ|平作丸": {
+   "tier": "A",
+   "pb": 0.0877,
+   "n": 57,
+   "wmape": 42.1
+  },
+  "マダイ|つね丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 23.4
+  },
+  "ヒラメ|信栄丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヒラメ|勇幸丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0263,
+   "n": 38,
+   "wmape": 40.6
+  },
+  "アジ|とうふや丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1824,
+   "n": 170,
+   "wmape": 31.6
+  },
+  "ヒラメ|孝徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0208,
+   "n": 48,
+   "wmape": 39.3
+  },
+  "アジ|三喜丸釣船店": {
+   "tier": "A",
+   "pb": 0.0706,
+   "n": 722,
+   "wmape": 33.2
+  },
+  "マダイ|平作丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1889,
+   "n": 90,
+   "wmape": 52.7
+  },
+  "タチウオ|三喜丸釣船店": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1233,
+   "n": 454,
+   "wmape": 41.5
+  },
+  "マルイカ|大和丸": {
+   "tier": "A",
+   "pb": 0.0372,
+   "n": 188,
+   "wmape": 47.5
+  },
+  "マダイ|弁天屋": {
+   "tier": "A",
+   "pb": 0.0579,
+   "n": 121,
+   "wmape": 47.8
+  },
+  "マルイカ|春盛丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0968,
+   "n": 124,
+   "wmape": 53.1
+  },
+  "マルイカ|栃木丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1633,
+   "n": 49,
+   "wmape": 56.6
+  },
+  "タチウオ|平作丸": {
+   "tier": "A",
+   "pb": 0.0723,
+   "n": 401,
+   "wmape": 41.5
+  },
+  "カワハギ|三喜丸釣船店": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1111,
+   "n": 36,
+   "wmape": 52.5
+  },
+  "マダイ|棒面丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.4113,
+   "n": 124,
+   "wmape": 46.6
+  },
+  "タチウオ|弁天屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1284,
+   "n": 335,
+   "wmape": 60.4
+  },
+  "カワハギ|儀兵衛丸": {
+   "tier": "A",
+   "pb": 0.0769,
+   "n": 533,
+   "wmape": 46.9
+  },
+  "マダイ|米元釣船店": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1474,
+   "n": 285,
+   "wmape": 57.7
+  },
+  "マダイ|美喜丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.5478,
+   "n": 115,
+   "wmape": 44.7
+  },
+  "タチウオ|浜新丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1609,
+   "n": 261,
+   "wmape": 47.7
+  },
+  "アジ|弁天屋": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1767,
+   "n": 430,
+   "wmape": 55.3
+  },
+  "タチウオ|米元釣船店": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1304,
+   "n": 437,
+   "wmape": 43.6
+  },
+  "アジ|洋征丸": {
+   "tier": "A",
+   "pb": 0.0574,
+   "n": 453,
+   "wmape": 24.5
+  },
+  "タチウオ|荒川屋": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1296,
+   "n": 301,
+   "wmape": 50.6
+  },
+  "マダコ|三喜丸釣船店": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0682,
+   "n": 88,
+   "wmape": 55.4
+  },
+  "アジ|米元釣船店": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1577,
+   "n": 539,
+   "wmape": 41.1
+  },
+  "マダコ|小柴丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1393,
+   "n": 244,
+   "wmape": 52.8
+  },
+  "カワハギ|弁天屋": {
+   "tier": "A",
+   "pb": 0.0139,
+   "n": 216,
+   "wmape": 44.9
+  },
+  "カワハギ|新修丸": {
+   "tier": "A",
+   "pb": 0.0077,
+   "n": 261,
+   "wmape": 47.9
+  },
+  "マダコ|新修丸": {
+   "tier": "A",
+   "pb": 0.029,
+   "n": 69,
+   "wmape": 54.5
+  },
+  "マダコ|荒川屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1707,
+   "n": 41,
+   "wmape": 60.9
+  },
+  "シロギス|弁天屋": {
+   "tier": "A",
+   "pb": 0.0884,
+   "n": 147,
+   "wmape": 40.8
+  },
+  "アジ|荒川屋": {
+   "tier": "A",
+   "pb": 0.0649,
+   "n": 740,
+   "wmape": 48.8
+  },
+  "シロギス|荒川屋": {
+   "tier": "A",
+   "pb": 0.0335,
+   "n": 656,
+   "wmape": 47.1
+  },
+  "イサキ|勇幸丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2021,
+   "n": 94,
+   "wmape": 51.9
+  },
+  "イサキ|孝徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2424,
+   "n": 33,
+   "wmape": 53.2
+  },
+  "イサキ|平作丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2061,
+   "n": 131,
+   "wmape": 60.8
+  },
+  "イサキ|棒面丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.4615,
+   "n": 65,
+   "wmape": 39.3
+  },
+  "イサキ|米元釣船店": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1204,
+   "n": 108,
+   "wmape": 40.0
+  },
+  "ヤリイカ|信栄丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヤリイカ|儀兵衛丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2,
+   "n": 210,
+   "wmape": 58.2
+  },
+  "フグ|浜新丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2027,
+   "n": 74,
+   "wmape": 51.5
+  },
+  "ヤリイカ|大和丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヤリイカ|春盛丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0633,
+   "n": 221,
+   "wmape": 41.5
+  },
+  "ヤリイカ|栃木丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1523,
+   "n": 256,
+   "wmape": 59.7
+  },
+  "スルメイカ|儀兵衛丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1479,
+   "n": 257,
+   "wmape": 59.0
+  },
+  "キハダマグロ|洋征丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.3776,
+   "n": 98,
+   "wmape": 71.5
+  },
+  "カツオ|信栄丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted"
+  },
+  "スルメイカ|春盛丸": {
+   "tier": "A",
+   "pb": 0.0635,
+   "n": 252,
+   "wmape": 47.3
+  },
+  "カツオ|太郎丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.0787,
+   "n": 89,
+   "wmape": 69.2
+  },
+  "スルメイカ|栃木丸": {
+   "tier": "A",
+   "pb": 0.0942,
+   "n": 382,
+   "wmape": 54.4
+  },
+  "シーバス|浜新丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1266,
+   "n": 79,
+   "wmape": 50.3
+  },
+  "カツオ|洋征丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1124,
+   "n": 89,
+   "wmape": 52.9
+  },
+  "キンメダイ|勇幸丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1522,
+   "n": 46,
+   "wmape": 45.7
+  },
+  "カサゴ|新修丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0528,
+   "n": 511,
+   "wmape": 32.5
+  },
+  "キンメダイ|太郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1722,
+   "n": 151,
+   "wmape": 63.4
+  },
+  "アカムツ|新修丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 19.8
+  },
+  "クロムツ|太郎丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2128,
+   "n": 47,
+   "wmape": 52.5
+  },
+  "マゴチ|弁天屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0431,
+   "n": 116,
+   "wmape": 43.6
+  },
+  "カレイ|荒川屋": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0588,
+   "n": 34,
+   "wmape": 37.4
+  },
+  "モンゴウイカ|三喜丸釣船店": {
+   "tier": "A",
+   "pb": 0.0441,
+   "n": 136,
+   "wmape": 40.8
+  },
+  "イシダイ|平作丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0737,
+   "n": 95,
+   "wmape": 60.0
+  },
+  "ヤリイカ|第八鶴丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.3824,
+   "n": 34,
+   "wmape": 59.2
+  },
+  "アナゴ|吉野屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 66,
+   "wmape": 53.5
+  },
+  "ハナダイ|勇幸丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0682,
+   "n": 44,
+   "wmape": 34.6
+  },
+  "キントキ|敷嶋丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1977,
+   "n": 86,
+   "wmape": 58.9
+  },
+  "イシモチ|小柴丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2043,
+   "n": 421,
+   "wmape": 43.6
+  },
+  "ヒラメ|五エム丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1167,
+   "n": 60,
+   "wmape": 48.1
+  },
+  "マダイ|久里浜 五郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2319,
+   "n": 69,
+   "wmape": 55.3
+  },
+  "アジ|久里浜黒川本家": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.084,
+   "n": 119,
+   "wmape": 28.3
+  },
+  "ヒラメ|秀吉丸": {
+   "tier": "A",
+   "pb": 0.0392,
+   "n": 51,
+   "wmape": 48.2
+  },
+  "ヒラメ|豊丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 39.7
+  },
+  "マルイカ|五エム丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "タチウオ|久里浜黒川本家": {
+   "tier": "A",
+   "pb": 0.0625,
+   "n": 144,
+   "wmape": 52.1
+  },
+  "マルイカ|秀吉丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0233,
+   "n": 43,
+   "wmape": 67.6
+  },
+  "マルイカ|長三朗丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 55.3
+  },
+  "カワハギ|五エム丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.033,
+   "n": 91,
+   "wmape": 39.8
+  },
+  "タチウオ|打木屋釣船店": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 80.1
+  },
+  "マダイ|豊丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 36.5
+  },
+  "アジ|打木屋釣船店": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 25.9
+  },
+  "アマダイ|五エム丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0109,
+   "n": 92,
+   "wmape": 36.7
+  },
+  "タチウオ|超栄丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0208,
+   "n": 48,
+   "wmape": 32.4
+  },
+  "アジ|沖右ヱ門丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|深田家": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 53.4
+  },
+  "アマダイ|秀吉丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1258,
+   "n": 151,
+   "wmape": 44.2
+  },
+  "アマダイ|長三朗丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 52.7
+  },
+  "マダコ|豊丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 44.9
+  },
+  "カワハギ|深田家": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 48.4
+  },
+  "カワハギ|秀吉丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2051,
+   "n": 39,
+   "wmape": 55.8
+  },
+  "カワハギ|長三朗丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 46.3
+  },
+  "シロギス|打木屋釣船店": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 36.2
+  },
+  "イサキ|久里浜 五郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2667,
+   "n": 90,
+   "wmape": 45.1
+  },
+  "アジ|豊漁丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 49.3
+  },
+  "フグ|豊丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 71.1
+  },
+  "アオリイカ|五エム丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヤリイカ|豊丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 59.2
+  },
+  "ヤリイカ|長三朗丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 51.5
+  },
+  "ヤリイカ|長谷川丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2188,
+   "n": 64,
+   "wmape": 41.7
+  },
+  "キハダマグロ|長三朗丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 33.8
+  },
+  "カサゴ|康仁丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 68.3
+  },
+  "カツオ|秀吉丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.2703,
+   "n": 37,
+   "wmape": 66.3
+  },
+  "カツオ|長三朗丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 63.8
+  },
+  "スルメイカ|長三朗丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 56.5
+  },
+  "スルメイカ|長谷川丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.3333,
+   "n": 36,
+   "wmape": 60.3
+  },
+  "ムギイカ|長三朗丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 66.6
+  },
+  "カンパチ|重郎平丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.5405,
+   "n": 74,
+   "wmape": 51.2
+  },
+  "クロムツ|久里浜 五郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1667,
+   "n": 84,
+   "wmape": 58.8
+  },
+  "ハナダイ|久里浜 五郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2273,
+   "n": 44,
+   "wmape": 75.7
+  },
+  "マダイ|伝五郎丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0657,
+   "n": 137,
+   "wmape": 57.6
+  },
+  "マダイ|増福丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.22,
+   "n": 50,
+   "wmape": 48.8
+  },
+  "マダイ|大松丸": {
+   "tier": "A",
+   "pb": 0.01,
+   "n": 100,
+   "wmape": 45.8
+  },
+  "マダイ|成銀丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 77,
+   "wmape": 49.4
+  },
+  "アジ|大松丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0595,
+   "n": 84,
+   "wmape": 25.2
+  },
+  "マダイ|正海丸": {
+   "tier": "A",
+   "pb": 0.0,
+   "n": 66,
+   "wmape": 50.1
+  },
+  "マダイ|義心丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|魚磯丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|鴨下丸kawana": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.07,
+   "n": 100,
+   "wmape": 57.3
+  },
+  "アジ|成銀丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.027,
+   "n": 74,
+   "wmape": 24.8
+  },
+  "イサキ|早川丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|村正丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|金沢八景 黒川丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0844,
+   "n": 154,
+   "wmape": 43.2
+  },
+  "アジ|黒川本家 -久里浜-": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0345,
+   "n": 87,
+   "wmape": 29.2
+  },
+  "マゴチ|深川 吉野屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 54,
+   "wmape": 55.6
+  },
+  "マダイ|ことぶき丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヒラメ|優光丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0417,
+   "n": 48,
+   "wmape": 59.9
+  },
+  "マダイ|九左衛門丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.5614,
+   "n": 114,
+   "wmape": 58.3
+  },
+  "マダイ|優光丸": {
+   "tier": "A",
+   "pb": 0.0404,
+   "n": 99,
+   "wmape": 49.4
+  },
+  "アジ|はやぶさ丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|嘉丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|仁丸": {
+   "tier": "A",
+   "pb": 0.0903,
+   "n": 155,
+   "wmape": 45.7
+  },
+  "ヒラメ|春栄丸": {
+   "tier": "A",
+   "pb": 0.0196,
+   "n": 51,
+   "wmape": 33.0
+  },
+  "ヒラメ|清勝丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1569,
+   "n": 51,
+   "wmape": 51.5
+  },
+  "タチウオ|忠彦丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0328,
+   "n": 61,
+   "wmape": 48.4
+  },
+  "マダイ|富八丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヒラメ|第1二三丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 33,
+   "wmape": 49.3
+  },
+  "マダイ|山大丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0968,
+   "n": 62,
+   "wmape": 55.1
+  },
+  "ヒラメ|第三孝徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 46,
+   "wmape": 41.1
+  },
+  "ヒラメ|隆正丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0286,
+   "n": 70,
+   "wmape": 55.6
+  },
+  "ヒラメ|龍鳳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1081,
+   "n": 37,
+   "wmape": 36.8
+  },
+  "タチウオ|深川 吉野屋": {
+   "tier": "A",
+   "pb": 0.0233,
+   "n": 86,
+   "wmape": 48.4
+  },
+  "マダコ|仙昇丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アマダイ|まなぶ丸": {
+   "tier": "A",
+   "pb": 0.0714,
+   "n": 56,
+   "wmape": 48.2
+  },
+  "アマダイ|喜久丸": {
+   "tier": "A",
+   "pb": 0.0137,
+   "n": 73,
+   "wmape": 45.7
+  },
+  "マダコ|栄光丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.4333,
+   "n": 30,
+   "wmape": 30.0
+  },
+  "マダコ|第二つれたか丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "タチウオ|船宿豆や": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0556,
+   "n": 36,
+   "wmape": 38.8
+  },
+  "マダイ|弁天丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダコ|鴨下丸kawana": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.3019,
+   "n": 53,
+   "wmape": 62.9
+  },
+  "マダイ|房丸": {
+   "tier": "A",
+   "pb": 0.0526,
+   "n": 76,
+   "wmape": 44.4
+  },
+  "タチウオ|黒川本家 -久里浜-": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 70,
+   "wmape": 57.6
+  },
+  "ワラサ|信栄丸": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted"
+  },
+  "マダイ|新徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.044,
+   "n": 91,
+   "wmape": 54.1
+  },
+  "アジ|広島屋": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.122,
+   "n": 82,
+   "wmape": 33.4
+  },
+  "シロギス|広島屋": {
+   "tier": "A",
+   "pb": 0.0395,
+   "n": 76,
+   "wmape": 25.0
+  },
+  "カワハギ|早川丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|村本海事": {
+   "tier": "A",
+   "pb": 0.0,
+   "n": 99,
+   "wmape": 46.9
+  },
+  "イサキ|第三松栄丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2,
+   "n": 50,
+   "wmape": 30.3
+  },
+  "アジ|忠彦丸": {
+   "tier": "A",
+   "pb": 0.0984,
+   "n": 61,
+   "wmape": 37.6
+  },
+  "アオリイカ|二階屋丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|房丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1839,
+   "n": 87,
+   "wmape": 44.9
+  },
+  "マダイ|植田丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヤリイカ|勝美丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|清栄丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|深川 吉野屋": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0253,
+   "n": 79,
+   "wmape": 34.7
+  },
+  "スルメイカ|勝丸-勝浦-": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1731,
+   "n": 52,
+   "wmape": 59.3
+  },
+  "スルメイカ|増福丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マハタ|第2美吉丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|福よし丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アカムツ|ひろの丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0179,
+   "n": 56,
+   "wmape": 50.9
+  },
+  "キンメダイ|第1二三丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0976,
+   "n": 41,
+   "wmape": 47.8
+  },
+  "シマアジ|増福丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.5455,
+   "n": 33,
+   "wmape": 62.0
+  },
+  "シマアジ|安田丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ショウサイフグ|利永丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2879,
+   "n": 66,
+   "wmape": 82.6
+  },
+  "オニカサゴ|まなぶ丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 74,
+   "wmape": 29.0
+  },
+  "マゴチ|濱生丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0833,
+   "n": 60,
+   "wmape": 43.9
+  },
+  "メダイ|久寿丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1124,
+   "n": 89,
+   "wmape": 37.3
+  },
+  "アラ|政勝丸": {
+   "tier": "A",
+   "pb": 0.0952,
+   "n": 63,
+   "wmape": 46.7
+  },
+  "アジ|船宿いわた": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0426,
+   "n": 47,
+   "wmape": 37.6
+  },
+  "クロダイ|さえむ丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヒラメ|ゆうせい丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 31,
+   "wmape": 61.8
+  },
+  "マダイ|ゆうせい丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.027,
+   "n": 37,
+   "wmape": 58.5
+  },
+  "アジ|ひらい丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1111,
+   "n": 36,
+   "wmape": 35.9
+  },
+  "アジ|ゆうせい丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2903,
+   "n": 31,
+   "wmape": 56.9
+  },
+  "アジ|ミナミ釣船": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1429,
+   "n": 35,
+   "wmape": 46.2
+  },
+  "アジ|丸裕": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "ヒラメ|長福丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 48,
+   "wmape": 38.0
+  },
+  "マルイカ|ふじ丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|和彦丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2,
+   "n": 35,
+   "wmape": 57.6
+  },
+  "マルイカ|志平丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|島きち丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|政美丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1176,
+   "n": 34,
+   "wmape": 42.7
+  },
+  "マダイ|第2美吉丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|第五悌栄丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|船宿ウォッチかいと丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|池田丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 37,
+   "wmape": 37.3
+  },
+  "マダイ|鈴喜丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マダイ|長福丸": {
+   "tier": "A",
+   "pb": 0.0492,
+   "n": 61,
+   "wmape": 48.9
+  },
+  "マダコ|ゆうせい丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 38,
+   "wmape": 45.1
+  },
+  "マダコ|ミナミ釣船": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 33,
+   "wmape": 66.4
+  },
+  "アマダイ|ゆうせい丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 52.3
+  },
+  "マダコ|村本海事": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アマダイ|山大丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0667,
+   "n": 30,
+   "wmape": 49.3
+  },
+  "マダコ|船宿豆や": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 33,
+   "wmape": 32.0
+  },
+  "アマダイ|島きち丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アジ|船宿豆や": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0789,
+   "n": 38,
+   "wmape": 33.2
+  },
+  "ワラサ|BLUE DRAGON": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "pb": 0.0909,
+   "n": 33,
+   "wmape": 16.2
+  },
+  "イサキ|伝五郎丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|佐島海楽園": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.169,
+   "n": 71,
+   "wmape": 48.6
+  },
+  "シロギス|小林丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "シロギス|山大丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.2903,
+   "n": 31,
+   "wmape": 52.3
+  },
+  "イサキ|利永丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2162,
+   "n": 37,
+   "wmape": 33.9
+  },
+  "シロギス|島きち丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|大松丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|安菜丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|成銀丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "シロギス|深川冨士見": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|新徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.2258,
+   "n": 31,
+   "wmape": 26.2
+  },
+  "イサキ|春栄丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 45,
+   "wmape": 22.2
+  },
+  "イサキ|松栄丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|正海丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|第1二三丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0789,
+   "n": 38,
+   "wmape": 31.7
+  },
+  "イサキ|第三孝徳丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1613,
+   "n": 31,
+   "wmape": 53.8
+  },
+  "イサキ|裕海丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "イサキ|長福丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0,
+   "n": 47,
+   "wmape": 18.4
+  },
+  "ヤリイカ|勝丸-勝浦-": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1282,
+   "n": 39,
+   "wmape": 60.0
+  },
+  "アジ|黒一丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0526,
+   "n": 38,
+   "wmape": 40.8
+  },
+  "アオリイカ|哲夫丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.04,
+   "n": 50,
+   "wmape": 57.1
+  },
+  "サワラ|船宿 さわ浦": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted"
+  },
+  "イナダ|BLUE DRAGON": {
+   "tier": "star",
+   "reason": "kaiyu_not_promoted",
+   "wmape": 56.7
+  },
+  "スルメイカ|勝美丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マハタ|松栄丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.5,
+   "n": 40,
+   "wmape": 36.4
+  },
+  "マハタ|隆光丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.0556,
+   "n": 36,
+   "wmape": 44.3
+  },
+  "スルメイカ|島きち丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "カサゴ|第2美吉丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "カンパチ|南伊豆忠兵衛丸": {
+   "tier": "none",
+   "reason": "n_under",
+   "pb": 0.1,
+   "n": 40,
+   "wmape": 58.7
+  },
+  "ショウサイフグ|利喜丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マゴチ|ミナミ釣船": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 46.7
+  },
+  "クロムツ|ゆうせい丸": {
+   "tier": "none",
+   "reason": "no_backtest",
+   "wmape": 60.0
+  },
+  "ショウサイフグ|隆正丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.1,
+   "n": 40,
+   "wmape": 53.0
+  },
+  "クロムツ|新栄丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "マゴチ|釣り船鶴": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 32,
+   "wmape": 57.7
+  },
+  "メダイ|嘉丸": {
+   "tier": "none",
+   "reason": "no_backtest"
+  },
+  "アナゴ|ミナミ釣船": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 32,
+   "wmape": 41.0
+  },
+  "ハナダイ|喜久丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.0,
+   "n": 30,
+   "wmape": 42.0
+  },
+  "アナゴ|濱生丸": {
+   "tier": "none",
+   "reason": "fallback_served",
+   "pb": 0.375,
+   "n": 32,
+   "wmape": 49.5
+  },
+  "ハナダイ|第三孝徳丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.25,
+   "n": 36,
+   "wmape": 42.9
+  },
+  "ハナダイ|隆正丸": {
+   "tier": "none",
+   "reason": "pb_over",
+   "pb": 0.1471,
+   "n": 34,
+   "wmape": 35.3
+  }
+ }
+}

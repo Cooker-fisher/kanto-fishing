@@ -22,6 +22,22 @@
 
 ---
 
+## ✅ T47a 完了（2026/07/17）— 選別基盤 + 発見「サイトの予測は検証対象外の別モデル製」
+
+**詳細: 90_決定ログ「2026/07/17 T47a」**
+
+- 🔥 **発見**: forecast ページの予測カードは crawler.py 内蔵の独立モデル（predict_catches:1589）製で、
+  T44〜T45 で検証してきた predict_count 系とは別物。**検証済みモデルの forecast_daily.json は消費者ゼロ**だった
+- **T47a 実装済み**: `crawl/build_open_tier.py`（analysis.sqlite→normalize/open_tier.json 蒸留）+
+  predict_daily 選別（tier A のみレンジ・KAIYU★一本化・タイ五目除外）。**tier A = 109コンボ/23魚種/62船宿**
+  （pb≤10%・n≥50・fallback配信除外の正直基準）。スモーク検証済み（レンジ79件全てA・kaiyu併記0）
+- **T47b（次セッション・crawler.py 大工事）**: forecast ページのカードを「前日コミットの forecast_daily.json
+  × tier A」に差し替え。mockup 必須・domain/persona レビュー・不変条件 #53 同梱。
+  **要ユーザー判断**: crawler.py 内蔵モデルの扱い（廃止 or エリア概況専用に降格）
+- 運用: 全再実行後は build_predict_params.py と **build_open_tier.py の両方**をローカル実行してコミット
+
+---
+
 ## ✅ T44/T44b 完了（2026/07/16）— 供給率 33.6%→79.6%・本番を ratio 経路に切替
 
 **T44b（a1c02a89b）**: 欠落因子を本番に供給（カレンダー/季節交互作用/台風/CMEMS月次蒸留/sst_gradient/
