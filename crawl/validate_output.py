@@ -2034,6 +2034,68 @@ def validate_no_paywall_signal_and_operator_info():
         warn("[52] docs/pages/about.html が無い")
 
 
+def validate_verified_predictions_tier():
+    """53: forecast 日付/週次ページの予測レンジは open_tier tier A のみ（T47b・2026-07-17）
+
+    背景: 予測カードを crawler.py 内蔵モデル（精度未検証・ペイウォール付き）から
+    検証済みモデル（forecast_daily.json × normalize/open_tier.json tier A）へ差し替えた。
+    保証すること:
+      (a) normalize/open_tier.json が存在し tier A が 30 組以上（蒸留漏れ検知）
+      (b) forecast/YYYY-MM-DD.html のレンジ行（vp-table 内の「N〜M匹/人」を持つ fish×ship）が
+          すべて open_tier の tier A に含まれる（選別のバイパス検知）
+      (c) forecast 日付ページに旧ペイウォール文言（月額500円/有料プラン）が無い（#52 Phase2 完了）
+      (d) 全日付ページが vp-section を持たない（=全ページ更新待ち）なら warn（JSON 鮮度切れ検知）
+    """
+    import glob as _glob
+    import re as _re
+    print("\n[53] 検証済み予測のティア整合（T47b・2026-07-17）")
+
+    ot_path = os.path.join(ROOT, "normalize", "open_tier.json")
+    if not os.path.isfile(ot_path):
+        fail("[53] normalize/open_tier.json が存在しない（crawl/build_open_tier.py 未実行）")
+        return
+    try:
+        tiers = json.load(open(ot_path, encoding="utf-8")).get("tiers") or {}
+    except Exception as e:
+        fail(f"[53] open_tier.json が読めない: {e}")
+        return
+    tier_a = {k for k, v in tiers.items() if v.get("tier") == "A"}
+    if len(tier_a) < 30:
+        fail(f"[53] tier A が {len(tier_a)} 組（<30）— 蒸留漏れ/基準異常の疑い")
+    else:
+        ok(f"[53] open_tier.json tier A = {len(tier_a)} 組")
+
+    date_pages = sorted(_glob.glob(os.path.join(DOCS, "forecast", "2*.html")))
+    if not date_pages:
+        warn("[53] forecast 日付ページが無い")
+        return
+    # レンジ行: <tr><td>魚種</td><td><a ...>船宿</a>… or 船宿プレーン …<td class="rg">N〜M匹/人</td>
+    row_re = _re.compile(
+        r'<tr><td>([^<]+)</td><td>(?:<a[^>]*>)?([^<]+)(?:</a>)?'
+        r'<small>[^<]*</small></td><td class="rg">\d+〜\d+匹/人</td>')
+    bad_rows, paywall_hits, n_vp = [], [], 0
+    for p in date_pages:
+        c = open(p, encoding="utf-8", errors="replace").read()
+        if "月額500円" in c or "有料プラン" in c:
+            paywall_hits.append(os.path.basename(p))
+        if 'class="vp-section"' in c and 'vp-table' in c:
+            n_vp += 1
+            for fish, ship in row_re.findall(c):
+                if f"{fish.strip()}|{ship.strip()}" not in tiers or \
+                        tiers.get(f"{fish.strip()}|{ship.strip()}", {}).get("tier") != "A":
+                    bad_rows.append(f"{os.path.basename(p)}:{fish}×{ship}")
+    if bad_rows:
+        fail(f"[53] tier A 外のコンボがレンジ表示されている {len(bad_rows)}件: {bad_rows[:5]}")
+    else:
+        ok(f"[53] レンジ表示コンボはすべて tier A（日付ページ {len(date_pages)}枚・レンジあり {n_vp}枚）")
+    if paywall_hits:
+        fail(f"[53] forecast 日付ページに旧ペイウォール文言が残存 {len(paywall_hits)}件: {paywall_hits[:5]}")
+    else:
+        ok("[53] forecast 日付ページに月額500円/有料プランなし（#52 Phase2 完了）")
+    if n_vp == 0:
+        warn("[53] 全日付ページが予測更新待ち表示（forecast_daily.json の鮮度切れ/未生成の疑い）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2096,6 +2158,7 @@ def main():
     validate_fish_area_analysis_sections()
     validate_fish_value_release()
     validate_no_paywall_signal_and_operator_info()
+    validate_verified_predictions_tier()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

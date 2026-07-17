@@ -184,9 +184,13 @@ def main():
             kaiyu = r.get("kaiyu_stars")  # {"stars","hit_rate","good_line"} or None
             # T47a 選別: レンジ（cnt_lo/hi）を出せるのは tier A のみ。
             # KAIYU★一本化: kaiyu_stars があるコンボ（非昇格回遊魚）はレンジを出さない。
-            _tier = (open_tier.get(f"{f}|{s}", {}).get("tier", "none")
-                     if open_tier is not None else None)
+            # T47b: 週次ホライズン（H>=14）は weekly_ok（H=14/21/28 でも pb 基準クリア）必須
+            #       — tier A の H=0 実績を無検証で週次に外挿しない（domain レビュー指摘）。
+            _entry = (open_tier.get(f"{f}|{s}", {}) if open_tier is not None else None)
+            _tier = _entry.get("tier", "none") if _entry is not None else None
             _show_range = (kaiyu is None) and (_tier in ("A", None))
+            if _show_range and h >= 14 and _entry is not None:
+                _show_range = bool(_entry.get("weekly_ok"))
             combos_out.append({
                 "fish": f,
                 "ship": s,

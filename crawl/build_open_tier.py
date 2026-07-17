@@ -62,6 +62,14 @@ def main():
                ON bt.fish=m.fish AND bt.ship=m.ship AND bt.metric='cnt_avg' AND bt.horizon=0
     """).fetchall()
 
+    # 週次ホライズン（H=14/21/28）の cnt_bz 成績（週次ページ表示ゲート用・domain指摘#1:
+    # tier A は H=0 で判定しており、週次への外挿は無検証だったため horizon 別に確認する）
+    weekly_pb = {}
+    for f, s, h, pb, n in conn.execute(
+            "SELECT fish, ship, horizon, promise_break_rate, n FROM combo_range_backtest "
+            "WHERE metric='cnt_bz' AND horizon IN (14, 21, 28)"):
+        weekly_pb.setdefault((f, s), {})[h] = (pb, n)
+
     print(f"対象: {len(rows)}コンボ 先頭3: {[(r[0], r[1]) for r in rows[:3]]}")
 
     tiers = {}
@@ -95,6 +103,14 @@ def main():
             entry["n"] = n_bt
         if wmape is not None:
             entry["wmape"] = round(wmape, 1)
+        if tier == "A":
+            # 週次ページ（H=14/21/28）にレンジを出してよいか: 全週次ホライズンで
+            # pb<=閾値 かつ n>=閾値 を満たす場合のみ True（未計測ホライズンがあれば False）
+            wpb = weekly_pb.get((fish, ship), {})
+            entry["weekly_ok"] = all(
+                h in wpb and wpb[h][0] is not None and wpb[h][0] <= PB_THR
+                and wpb[h][1] is not None and wpb[h][1] >= N_THR
+                for h in (14, 21, 28))
         tiers[f"{fish}|{ship}"] = entry
 
     payload = {
@@ -112,8 +128,10 @@ def main():
 
     fishes = {k.split("|")[0] for k, v in tiers.items() if v["tier"] == "A"}
     ships = {k.split("|")[1] for k, v in tiers.items() if v["tier"] == "A"}
+    n_weekly = sum(1 for v in tiers.values() if v.get("weekly_ok"))
     print(f"完了: {OUT_JSON}")
-    print(f"  tier A: {counts['A']}コンボ / {len(fishes)}魚種 / {len(ships)}船宿")
+    print(f"  tier A: {counts['A']}コンボ / {len(fishes)}魚種 / {len(ships)}船宿"
+          f"（うち週次ページ表示可 {n_weekly}）")
     print(f"  star: {counts['star']} / none: {counts['none']}")
 
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mockup: T47b 検証済み予測セクション（forecast 日付ページ）</title>
+<style>
+/* site style.css の関連変数を模擬 */
+:root{--bg:#f4f6f9;--card:#fff;--border:#dde4ec;--accent:#0d2137;--sub:#5a6a7a;--muted:#8a97a5;
+--cta:#e8590c;--cta2:#c94a08;--pos:#1d7a46;--neg:#c0392b;--warn:#b8860b;--r:10px}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:#2a3540;
+margin:0;padding:20px;max-width:760px;margin:auto}
+h2{color:var(--accent);font-size:18px}
+/* ── T47b 新設セクション ── */
+.vp-section{margin:20px 0}
+.vp-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.vp-title{font-size:16px;font-weight:bold;color:var(--accent)}
+.vp-badge{font-size:10px;background:var(--pos);color:#fff;padding:3px 8px;border-radius:10px;font-weight:bold}
+.vp-meta{font-size:11px;color:var(--muted);margin-bottom:12px}
+.vp-cards{display:grid;gap:10px;margin-bottom:14px}
+.vp-card{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--pos);
+border-radius:var(--r);padding:14px}
+.vp-card-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.vp-fish{font-size:15px;font-weight:bold;color:var(--accent)}
+.vp-ship{font-size:12px;color:var(--sub)}
+.vp-stars{color:var(--warn);font-size:13px;letter-spacing:1px}
+.vp-range{font-size:20px;font-weight:bold;color:var(--cta);margin:6px 0 2px}
+.vp-range small{font-size:12px;color:var(--muted);font-weight:normal}
+.vp-point{font-size:11px;color:var(--muted)}
+.vp-table{width:100%;border-collapse:collapse;margin-bottom:10px;background:var(--card);
+border-radius:var(--r);overflow:hidden}
+.vp-table th{background:var(--accent);color:#fff;padding:7px 8px;font-size:11px;text-align:left}
+.vp-table td{padding:8px;border-bottom:1px solid var(--border);font-size:13px}
+.vp-table td.rg{font-weight:bold;color:var(--cta);white-space:nowrap}
+.vp-table a{color:var(--accent)}
+.vp-more{text-align:center;font-size:12px;margin:6px 0 12px}
+.vp-more a{color:var(--sub)}
+.vp-kaiyu{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px}
+.vp-kaiyu-t{font-size:13px;font-weight:bold;color:var(--accent);margin-bottom:8px}
+.vp-chip{display:inline-block;font-size:12px;background:#fff8e6;border:1px solid #e8d898;
+color:#7a5c00;border-radius:14px;padding:5px 10px;margin:0 6px 6px 0}
+.vp-note{font-size:11px;color:var(--muted);line-height:1.7;background:#f0f3f7;border-radius:6px;padding:8px 12px}
+.vp-empty{font-size:13px;color:var(--sub);background:var(--card);border:1px dashed var(--border);
+border-radius:var(--r);padding:16px;text-align:center}
+</style></head><body>
+
+<h2>7月18日(土) の釣果予測 — mockup（日付ページの teaser 置換部）</h2>
+
+<!-- ── パターン1: 通常表示 ── -->
+<div class="vp-section">
+<div class="vp-head">
+  <span class="vp-title">魚種別 釣果予測</span>
+  <span class="vp-badge">的中実績で選別した109コンボ・無料公開</span>
+</div>
+<p class="vp-meta">7/17 16:30 時点の予測（毎日更新）。過去3年の実釣データで「予測レンジの的中率90%以上」を確認できたコンボのみ表示しています。</p>
+
+<!-- 注目3件（★降順） -->
+<div class="vp-cards">
+  <div class="vp-card">
+    <div class="vp-card-h"><span><span class="vp-fish">アジ</span>　<span class="vp-ship"><a href="#">須原屋</a>（横浜）</span></span><span class="vp-stars">★★★★☆</span></div>
+    <div class="vp-range">10〜51<small> 匹/人</small></div>
+    <div class="vp-point">予測ポイント: 中の瀬 ／ 的中率 93%（過去74回検証）</div>
+  </div>
+  <div class="vp-card">
+    <div class="vp-card-h"><span><span class="vp-fish">シロギス</span>　<span class="vp-ship"><a href="#">広島屋</a>（浦安）</span></span><span class="vp-stars">★★★★☆</span></div>
+    <div class="vp-range">35〜98<small> 匹/人</small></div>
+    <div class="vp-point">予測ポイント: 中の瀬 ／ 的中率 91%（過去68回検証）</div>
+  </div>
+  <div class="vp-card">
+    <div class="vp-card-h"><span><span class="vp-fish">マダイ</span>　<span class="vp-ship"><a href="#">幸丸</a>（飯岡）</span></span><span class="vp-stars">★★★☆☆</span></div>
+    <div class="vp-range">0.5〜3.2<small> 匹/人</small></div>
+    <div class="vp-point">予測ポイント: 飯岡沖 ／ 的中率 90%（過去112回検証）</div>
+  </div>
+</div>
+
+<!-- 全件テーブル（魚種50音順・折りたたみ） -->
+<table class="vp-table">
+<tr><th>魚種</th><th>船宿</th><th>予測レンジ</th><th>期待度</th><th>予測ポイント</th></tr>
+<tr><td>アジ</td><td><a href="#">須原屋</a></td><td class="rg">10〜51匹</td><td class="vp-stars">★★★★</td><td>中の瀬</td></tr>
+<tr><td>アジ</td><td><a href="#">洋征丸</a></td><td class="rg">16〜44匹</td><td class="vp-stars">★★★</td><td>走水沖</td></tr>
+<tr><td>アマダイ</td><td><a href="#">五エム丸</a></td><td class="rg">1〜4匹</td><td class="vp-stars">★★★</td><td>相模湾西</td></tr>
+<tr><td>シロギス</td><td><a href="#">広島屋</a></td><td class="rg">35〜98匹</td><td class="vp-stars">★★★★</td><td>中の瀬</td></tr>
+</table>
+<p class="vp-more">▼ 全79コンボを表示（details/summary で折りたたみ）</p>
+
+<!-- 回遊魚★チャンス -->
+<div class="vp-kaiyu">
+<div class="vp-kaiyu-t">🌊 回遊魚チャンス（数は水物のため★のみ・レンジは出しません）</div>
+<span class="vp-chip">カツオ×庄治郎丸 ★★★★</span>
+<span class="vp-chip">キハダマグロ×はら丸 ★★★</span>
+<span class="vp-chip">ワラサ×BLUE DRAGON ★★★</span>
+<span class="vp-chip">ムギイカ×庄治郎丸 ★★</span>
+</div>
+
+<div class="vp-note">
+※ 予測は過去実績×海況の統計モデルによる参考値で、釣果を保証するものではありません。
+レンジは「乗船者1人あたりの匹数」の見込み幅です。表示コンボはバックテスト（過去3年・ボウズ日込み）で
+レンジ的中率90%以上を確認できたものに限定しています。回遊魚・タイ五目などレンジ予測に適さない釣り物は
+★評価または実績のみの表示です。
+</div>
+</div>
+
+<hr style="margin:30px 0;border:none;border-top:1px solid #ccc">
+
+<!-- ── パターン2: データ未生成/鮮度切れ ── -->
+<h2>パターン2: forecast_daily.json が未生成・鮮度切れ（2日超）の場合</h2>
+<div class="vp-section">
+<div class="vp-head"><span class="vp-title">魚種別 釣果予測</span></div>
+<div class="vp-empty">この日付の予測データは更新待ちです（毎日夕方に自動更新）。<br>
+上の海況ダッシュボードとエリア別出船判定をご参考ください。</div>
+</div>
+
+<hr style="margin:30px 0;border:none;border-top:1px solid #ccc">
+<h2>設計メモ（レビュー用）</h2>
+<ul style="font-size:13px;line-height:1.9">
+<li>データ源: 前日CIコミットの <code>analysis/V2/results/forecast_daily.json</code>（検証済み predict_count 系）× <code>normalize/open_tier.json</code> tier A。crawler.py 内蔵モデル（predict_catches）はこのセクションから撤退（海況・エリアチップ・hub 概況は継続）</li>
+<li>絶対制約遵守: 表示は min〜max のみ（avg なし）。旧カードの「avg×0.6 捏造min」を排除</li>
+<li>ペイウォール teaser（月額500円・blur）は日付/週次ページから完全撤去（無料公開方針 2026-06-10・#52積み残し解消）</li>
+<li>★= predict_count の stars（1〜5）。テーブルは★降順→魚種50音。上位3件をカード化</li>
+<li>的中率% = combo_range_backtest cnt_bz の (1-pb)。過去N回 = 同 n</li>
+<li>鮮度: generated_at が生成時刻から48時間超 or 対象日のエントリ無し → パターン2 表示</li>
+<li>週次ページ: 週内アンカー日（H=14/21/28）のエントリを同形式で表示・「週の傾向」ラベル付与</li>
+<li>不変条件 #53: レンジ表示コンボ ⊆ tier A ∧ 日付ページに「月額500円」「有料プラン」が無い</li>
+</ul>
+
+<hr style="margin:30px 0;border:none;border-top:1px solid #ccc">
+<h2>レビュー反映記録（domain / persona 2並列・2026-07-17）</h2>
+<ul style="font-size:13px;line-height:1.9">
+<li>判定: 両者「修正後実装可」→ 以下を実装に反映済み</li>
+<li>[domain#1 重要] 週次ページへの H=0 実績外挿を禁止 → open_tier に weekly_ok（H=14/21/28 全てで pb≤10%・n≥50）を追加し、週次はこの106組のみ表示＋傾向予測の注記必須</li>
+<li>[domain#2] 匹数は整数表記に統一（「0.5〜3.2」→「0〜3」）</li>
+<li>[domain#3 中] 「的中率」→「予測を下回らなかった割合」に変更。上限超えの大漁を含む旨を免責に明記</li>
+<li>[domain#4] 全件テーブルに港名を追加（船宿名の後ろに small 表記）</li>
+<li>[domain#5] テーブル並び順: 魚種50音→同魚種内★降順（比較しやすさ優先。★上位はカードで担保）</li>
+<li>[domain#6] 「匹/人」表記をカード・テーブルで統一</li>
+<li>[persona#1] バッジの「109コンボ」→ meta 文で「検証済み N組のうち本日算出できた M組」と母数を明示</li>
+<li>[persona#2,8] 掲載基準の説明＋「船宿の優劣評価ではない」「掲載外は評価を意味しない」を免責に追加</li>
+<li>[persona#3] 全件テーブルに「下回らなかった割合(検証回数)」列を追加（予測ポイント列はカード側のみに）</li>
+<li>[persona#4] テーブルは overflow-x:auto ラッパー＋15行超は details/summary 折りたたみ</li>
+<li>[persona#5] 「コンボ」用語を全廃 →「魚種×船宿の組み合わせ」「組」</li>
+<li>[persona#9] 更新待ち文言に更新時刻（毎日夕方17時頃）を明記</li>
+<li>[追加] 過去の日付ページ掃引を build_forecast_pages に実装（旧ペイウォール文言・未検証予測の残留防止・#53）</li>
+</ul>
+</body></html>
