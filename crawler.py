@@ -2280,12 +2280,36 @@ _FORECAST_EXTRA_CSS = """.date-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bo
 .dc-analysis{font-size:13px;color:var(--sub);line-height:1.7;margin:10px 0;padding:10px;background:#f8f9fb;border-radius:6px}
 .dc-uncertainty{font-size:12px;color:var(--warn);margin:8px 0;padding:8px;background:#fff8e6;border-left:3px solid var(--warn);border-radius:0 6px 6px 0}
 .dc-ships{font-size:12px;color:var(--muted)}
-.paywall{text-align:center;padding:30px;background:linear-gradient(transparent,var(--bg) 40%);margin-top:10px}
-.paywall-btn{display:inline-block;background:var(--cta);color:#fff;padding:12px 32px;border-radius:24px;font-size:14px;font-weight:bold;text-decoration:none}
-.paywall-btn:hover{background:var(--cta2)}
-.paywall-sub{font-size:12px;color:var(--muted);margin-top:8px}
-.blur-text{filter:blur(6px);user-select:none}
 .section-note{font-size:12px;color:var(--muted);margin-bottom:12px}
+.vp-section{margin:20px 0}
+.vp-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.vp-title{font-size:16px;font-weight:bold;color:var(--accent)}
+.vp-badge{font-size:10px;background:var(--pos);color:#fff;padding:3px 8px;border-radius:10px;font-weight:bold}
+.vp-meta{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.7}
+.vp-cards{display:grid;gap:10px;margin-bottom:14px}
+.vp-card{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--pos);border-radius:var(--r);padding:14px}
+.vp-card-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.vp-fish{font-size:15px;font-weight:bold;color:var(--accent)}
+.vp-ship{font-size:12px;color:var(--sub)}
+.vp-ship a{color:var(--accent)}
+.vp-stars{color:var(--warn);font-size:13px;letter-spacing:1px;white-space:nowrap}
+.vp-range{font-size:20px;font-weight:bold;color:var(--cta);margin:6px 0 2px}
+.vp-range small{font-size:12px;color:var(--muted);font-weight:normal}
+.vp-point{font-size:11px;color:var(--muted)}
+.vp-scroll{overflow-x:auto;margin-bottom:10px}
+.vp-table{width:100%;border-collapse:collapse;background:var(--card);min-width:520px}
+.vp-table th{background:var(--accent);color:#fff;padding:7px 8px;font-size:11px;text-align:left;white-space:nowrap}
+.vp-table td{padding:8px;border-bottom:1px solid var(--border);font-size:13px}
+.vp-table td small{color:var(--muted);font-size:10px}
+.vp-table td.rg{font-weight:bold;color:var(--cta);white-space:nowrap}
+.vp-table a{color:var(--accent)}
+.vp-details{margin-bottom:12px}
+.vp-details summary{cursor:pointer;font-size:12px;color:var(--sub);padding:6px 0}
+.vp-kaiyu{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px}
+.vp-kaiyu-t{font-size:13px;font-weight:bold;color:var(--accent);margin-bottom:8px}
+.vp-chip{display:inline-block;font-size:12px;background:#fff8e6;border:1px solid #e8d898;color:#7a5c00;border-radius:14px;padding:5px 10px;margin:0 6px 6px 0}
+.vp-note{font-size:11px;color:var(--muted);line-height:1.7;background:#f0f3f7;border-radius:6px;padding:8px 12px}
+.vp-empty{font-size:13px;color:var(--sub);background:var(--card);border:1px dashed var(--border);border-radius:var(--r);padding:16px;text-align:center}
 @media(max-width:640px){.wx-dash{grid-template-columns:repeat(2,1fr)}.pred-table{font-size:12px}}
 """
 
@@ -2354,86 +2378,197 @@ def _forecast_date_nav(all_dates, all_weeks, current, prefix=""):
     return html
 
 
-def _forecast_combo_card(pred, fc=None, show_area=True):
-    """予測詳細カードHTML"""
-    fish = pred["fish"]
-    group = pred.get("group", "")
-    conf = pred.get("confidence", "D")
-    cls = "high-conf" if conf in ("A", "B") else "low-conf"
-    title = f"{fish} × {group}" if show_area else fish
+# ── T47b: 検証済みモデルの予測セクション ─────────────────────────────
+# 旧 _forecast_combo_card / _build_teaser_predictions（crawler.py 内蔵モデルのカード +
+# ペイウォール teaser）は撤去。内蔵モデル（predict_catches）は海況・エリア概況・hub 用に残る。
+# データ源: 前日 CI コミットの analysis/V2/results/forecast_daily.json（predict_count 系・
+# T44〜T45 で実測検証済み）× normalize/open_tier.json の tier A（レンジ的中率90%以上）。
+# 表示は min〜max のみ（avg 禁止・90_決定ログ補遺3）。無料公開（マネタイズ方針 2026-06-10）。
 
-    avg = pred.get("avg", 0)
-    pred_min = pred.get("min") if pred.get("min") is not None else max(1, round(avg * 0.6))
-    pred_max = pred.get("max", round(avg * 1.4))
-
-    size_str = ""
-    if pred.get("size_min") and pred.get("size_max"):
-        size_str = f' / {pred["size_min"]}〜{pred["size_max"]}cm'
-    weight_str = ""
-    if pred.get("weight_min") and pred.get("weight_max"):
-        weight_str = f' / {pred["weight_min"]}〜{pred["weight_max"]}kg'
-
-    season_type = pred.get("season_type", "")
-    type_str = f"{'数' if season_type == '数' else '型' if season_type == '型' else '数＆型'}狙い" if season_type else ""
-
-    # 海況ファクター
-    labels = pred.get("condition_labels", {})
-    factors_html = ""
-    for key, icon in [("wave", "🌊 波高"), ("wind", "💨 風"), ("sst", "🌡️ 水温"), ("pressure", "📊 気圧")]:
-        label = labels.get(key, "")
-        if label:
-            cls_f = "good" if label in ("好条件", "適温帯", "安定", "高気圧") else "warn" if "注意" in label else "neutral"
-            factors_html += f'<span class="dc-factor {cls_f}">{icon} → {label}</span>'
-    tide = pred.get("tide_impact", "")
-    if tide:
-        cls_t = "neutral" if "限定" in tide else "good"
-        factors_html += f'<span class="dc-factor {cls_t}">🌙 潮 → {tide}</span>'
-    sst_trend = pred.get("sst_trend", "stable")
-    if sst_trend == "rising":
-        factors_html += '<span class="dc-factor good">🌡️ 水温推移 → 上昇傾向</span>'
-    elif sst_trend == "declining":
-        factors_html += '<span class="dc-factor warn">🌡️ 水温推移 → 低下傾向</span>'
-
-    analysis = pred.get("analysis", "")
-    uncertainty = pred.get("uncertainty", "")
-    ships = pred.get("top_ships", [])
-
-    html = f"""<div class="detail-card {cls}">
-<div class="dc-header"><span class="dc-fish">{title}</span><span class="conf-badge conf-{conf}">{conf}</span></div>
-<div class="dc-range">予測 {pred_min}〜{pred_max}匹{size_str}{weight_str}　{type_str}</div>
-<div class="dc-factors">{factors_html}</div>"""
-    if analysis:
-        html += f'<div class="dc-analysis">{analysis}</div>'
-    if uncertainty:
-        html += f'<div class="dc-uncertainty">⚠️ 予測のブレ要因: {uncertainty}</div>'
-    if ships:
-        html += f'<div class="dc-ships">📍 {" / ".join(ships)}</div>'
-    html += '</div>'
-    return html
+_FD_PAYLOAD_CACHE = None
+_OPEN_TIER_CACHE = None
 
 
-def _build_teaser_predictions(preds, free_count=1, max_count=5):
-    """予測ティザーHTML: free_count件は完全表示、残りはblur+ペイウォール"""
-    if not preds:
-        return ''
-    shown = preds[:max_count]
-    total = len(preds)
-    html = '<div class="st teaser-title"><span>釣果予測</span><span class="tag coming">有料プラン</span></div>'
-    html += '<p class="section-note">海況・潮汐・過去実績から算出。上位1件は無料表示、残りは有料プランで閲覧できます。</p>'
-    for i, pred in enumerate(shown):
-        card = _forecast_combo_card(pred)
-        if i < free_count:
-            html += card
-        else:
-            html += f'<div style="filter:blur(5px);user-select:none;pointer-events:none;opacity:0.75">{card}</div>'
-    hidden_count = total - free_count
-    if hidden_count > 0:
-        html += f'''<div class="paywall">
-<p style="font-size:13px;color:#5a6a7a;margin-bottom:16px">残り<strong>{hidden_count}件</strong>の予測と詳細分析は有料プランで閲覧できます。</p>
-<a href="/forecast/" class="paywall-btn">月額500円で全て見る</a>
-<p class="paywall-sub">スポット閲覧 100円〜 ・ 決済システム準備中</p>
-</div>'''
-    return html
+def _load_forecast_daily_json():
+    global _FD_PAYLOAD_CACHE
+    if _FD_PAYLOAD_CACHE is None:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "analysis", "V2", "results", "forecast_daily.json")
+        try:
+            with open(path, encoding="utf-8") as f:
+                _FD_PAYLOAD_CACHE = json.load(f)
+        except Exception:
+            _FD_PAYLOAD_CACHE = {}
+    return _FD_PAYLOAD_CACHE
+
+
+def _load_open_tier():
+    global _OPEN_TIER_CACHE
+    if _OPEN_TIER_CACHE is None:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "normalize", "open_tier.json")
+        try:
+            with open(path, encoding="utf-8") as f:
+                _OPEN_TIER_CACHE = json.load(f).get("tiers") or {}
+        except Exception:
+            _OPEN_TIER_CACHE = {}
+    return _OPEN_TIER_CACHE
+
+
+def _ship_port(name: str) -> str:
+    for s in SHIPS:
+        if s.get("name") == name:
+            return s.get("area") or ""
+    return ""
+
+
+_VP_EMPTY_HTML = ('<div class="vp-section"><div class="vp-head">'
+                  '<span class="vp-title">魚種別 釣果予測</span></div>'
+                  '<div class="vp-empty">この日付の予測データは更新待ちです（毎日夕方 17時頃に自動更新）。<br>'
+                  '上の海況ダッシュボードとエリア別の出船判定をご参考ください。</div></div>')
+
+
+def _vp_stars(n) -> str:
+    try:
+        n = max(0, min(5, int(n or 0)))
+    except (TypeError, ValueError):
+        n = 0
+    return "★" * n + "☆" * (5 - n)
+
+
+def _build_verified_predictions(date_iso=None, week_range=None):
+    """検証済みモデルの予測セクション HTML（T47b）。
+    date_iso: 日次ページの対象日 YYYY-MM-DD / week_range: 週次ページの (start, end)。
+    データ無し・鮮度切れ（48時間超）は更新待ち表示にフォールバック（海況は上部で常時表示）。"""
+    payload = _load_forecast_daily_json()
+    tiers = _load_open_tier()
+    days = payload.get("days") or []
+    if not days or not tiers:
+        return _VP_EMPTY_HTML
+
+    gen = str(payload.get("generated_at") or "")
+    try:
+        gen_dt = datetime.strptime(gen[:19], "%Y-%m-%d %H:%M:%S")
+        if (datetime.now() - gen_dt).total_seconds() > 48 * 3600:
+            return _VP_EMPTY_HTML
+    except ValueError:
+        return _VP_EMPTY_HTML
+
+    weekly = week_range is not None
+    entry = None
+    if not weekly:
+        tgt = date_iso.replace("-", "/")
+        entry = next((d for d in days if d.get("target_date") == tgt), None)
+    else:
+        w_start, w_end = week_range
+        for d in days:
+            if d.get("kind") != "weekly":
+                continue
+            td = str(d.get("target_date") or "").replace("/", "-")
+            if w_start <= td <= w_end:
+                entry = d
+                break
+    if not entry:
+        return _VP_EMPTY_HTML
+
+    # tier ゲート（JSON 側でも選別済みだが、JSON の版差に依存しないよう二重に絞る＝不変条件 #53 担保）
+    rng, kaiyu_rows = [], []
+    for c in entry.get("combos", []):
+        t = tiers.get(f'{c.get("fish")}|{c.get("ship")}', {})
+        ks = c.get("kaiyu_stars")
+        if ks and t.get("tier") == "star":
+            kaiyu_rows.append((c["fish"], c["ship"], ks.get("stars")))
+            continue
+        if c.get("cnt_lo") is None or c.get("cnt_hi") is None:
+            continue
+        if t.get("tier") != "A":
+            continue
+        if weekly and not t.get("weekly_ok"):
+            continue
+        lo = max(0, int(round(c["cnt_lo"])))
+        hi = max(lo, int(round(c["cnt_hi"])))
+        pb, n_bt = t.get("pb"), t.get("n")
+        rng.append({
+            "fish": c["fish"], "ship": c["ship"], "lo": lo, "hi": hi,
+            "stars": c.get("stars") or 0, "point": c.get("predicted_point") or "",
+            "rate": (round((1 - pb) * 100) if pb is not None else None), "n": n_bt,
+        })
+
+    if not rng and not kaiyu_rows:
+        return _VP_EMPTY_HTML
+
+    tier_a_total = sum(1 for v in tiers.values() if v.get("tier") == "A")
+    gen_label = gen[:16].replace("-", "/")
+
+    html = ['<div class="vp-section">',
+            '<div class="vp-head"><span class="vp-title">魚種別 釣果予測</span>',
+            '<span class="vp-badge">実測検証済み・無料公開</span></div>',
+            f'<p class="vp-meta">{gen_label} 時点の予測（毎日夕方更新）。過去3年の実釣データで'
+            f'「予測レンジを下回らなかった割合 90%以上（ボウズ日込み）」を確認できた魚種×船宿 '
+            f'{tier_a_total}組のうち、この日の予測が算出できた {len(rng)}組を掲載しています。</p>']
+    if weekly:
+        html.append('<p class="vp-meta">⚠️ 2週間以上先は海況予報が確定しないため、季節・潮汐パターン中心の'
+                    '傾向予測です。掲載組は 2〜4週先の検証でも基準を満たしたものに限定しています。</p>')
+
+    # 注目カード（★降順 → 検証回数降順の上位3件）
+    top = sorted(rng, key=lambda r: (-r["stars"], -(r["n"] or 0)))[:3]
+    if top:
+        html.append('<div class="vp-cards">')
+        for r in top:
+            port = _ship_port(r["ship"])
+            port_str = f'（{port}）' if port else ""
+            rate_str = (f'予測を下回らなかった割合 {r["rate"]}%（過去{r["n"]}回検証）'
+                        if r["rate"] is not None else "")
+            point_str = f'予測ポイント: {r["point"]} ／ ' if r["point"] else ""
+            html.append(
+                f'<div class="vp-card"><div class="vp-card-h"><span>'
+                f'<span class="vp-fish">{r["fish"]}</span>　'
+                f'<span class="vp-ship">{_ship_link(r["ship"], depth=1)}{port_str}</span></span>'
+                f'<span class="vp-stars">{_vp_stars(r["stars"])}</span></div>'
+                f'<div class="vp-range">{r["lo"]}〜{r["hi"]}<small> 匹/人</small></div>'
+                f'<div class="vp-point">{point_str}{rate_str}</div></div>')
+        html.append('</div>')
+
+    # 全件テーブル（魚種50音 → 同魚種内★降順・domain レビュー #5）
+    rng.sort(key=lambda r: (r["fish"], -r["stars"]))
+
+    def _rows(items):
+        out = []
+        for r in items:
+            port = _ship_port(r["ship"])
+            rate = f'{r["rate"]}%<small>({r["n"]}回)</small>' if r["rate"] is not None else "-"
+            out.append(
+                f'<tr><td>{r["fish"]}</td><td>{_ship_link(r["ship"], depth=1)}'
+                f'<small> {port}</small></td>'
+                f'<td class="rg">{r["lo"]}〜{r["hi"]}匹/人</td>'
+                f'<td class="vp-stars">{_vp_stars(r["stars"])}</td><td>{rate}</td></tr>')
+        return "".join(out)
+
+    _TH = ('<tr><th>魚種</th><th>船宿（港）</th><th>予測レンジ</th><th>期待度</th>'
+           '<th>下回らなかった割合</th></tr>')
+    VISIBLE = 15
+    html.append(f'<div class="vp-scroll"><table class="vp-table">{_TH}{_rows(rng[:VISIBLE])}</table></div>')
+    if len(rng) > VISIBLE:
+        html.append(f'<details class="vp-details"><summary>残り {len(rng) - VISIBLE} 組を表示</summary>'
+                    f'<div class="vp-scroll"><table class="vp-table">{_TH}{_rows(rng[VISIBLE:])}</table></div>'
+                    f'</details>')
+
+    if kaiyu_rows:
+        html.append('<div class="vp-kaiyu"><div class="vp-kaiyu-t">🌊 回遊魚チャンス'
+                    '（数は水物のため★のみ・匹数レンジは出しません）</div>')
+        for fish, ship, st in sorted(kaiyu_rows, key=lambda x: -(x[2] or 0)):
+            html.append(f'<span class="vp-chip">{fish}×{ship} {_vp_stars(st)}</span>')
+        html.append('</div>')
+
+    html.append(
+        '<div class="vp-note">※ 予測レンジは「乗船者1人あたりの匹数」の見込み幅（最少〜最多）です。'
+        '「予測を下回らなかった割合」は過去の実釣がレンジ下限を割らなかった割合で、'
+        '上限を超える大漁も含みます（ボウズの日も含めて検証）。'
+        '★（期待度）は海況・時期などによるその日の釣れやすさの見込みで、船宿の優劣評価ではありません。'
+        '掲載は検証データが十分に蓄積した組み合わせに限られ、掲載がないことは船宿・魚種の評価を意味しません。'
+        '予測は統計モデルによる参考値で、釣果を保証するものではありません。</div>')
+    html.append('</div>')
+    return "".join(html)
 
 
 def _build_daily_page(date_str, day_data, forecast_data, weather_data):
@@ -2482,13 +2617,9 @@ def _build_daily_page(date_str, day_data, forecast_data, weather_data):
         html += f'<a href="area/{forecast_area_slug(g)}.html" class="area-chip {cls}">{g} {ok_mark}</a>'
     html += '</div>'
 
-    preds = day_data.get("predictions", [])
-    if not preds:
-        html += '<p style="color:#7a9bb5">予測データなし</p>'
-        html += _forecast_page_foot()
-        return html
-
-    html += _build_teaser_predictions(preds)
+    # T47b: 検証済みモデル（forecast_daily.json × open_tier tier A）の予測セクション。
+    # 内蔵モデル由来の day_data["predictions"] はこのページでは使わない（海況・チップは上部で継続使用）
+    html += _build_verified_predictions(date_iso=date_str)
     html += _forecast_page_foot()
     return html
 
@@ -2520,8 +2651,8 @@ def _build_weekly_page(week_id, week_data, forecast_data):
             html += f'<span style="background:#0d2137;border:1px solid #1a4060;border-radius:6px;padding:6px 10px;font-size:12px">{dd}({s["weekday"]}) {s["moon_title"]}</span>'
         html += '</div>'
 
-    week_preds = week_data.get("predictions", [])
-    html += _build_teaser_predictions(week_preds)
+    # T47b: 検証済みモデルの週次予測（weekly_ok = H=14/21/28 でも基準クリアの組のみ）
+    html += _build_verified_predictions(week_range=(start, end))
     html += _forecast_page_foot()
     return html
 
@@ -2696,6 +2827,20 @@ def build_forecast_pages(forecast_data, weather_data, catches=None, history=None
         with open(os.path.join(WEB_DIR, f"forecast/{week_id}.html"), "w", encoding="utf-8") as f:
             f.write(html)
         page_count += 1
+
+    # T47b: 今回生成しなかった過去の日付/週次ページを掃引（不変条件 #53）。
+    # 旧ページは再生成対象外のまま残留し、①旧ペイウォール文言（月額500円）②未検証の
+    # 内蔵モデル予測 を配信し続けるため削除する（noindex・date-nav からも参照されない）。
+    _keep = {f"{d}.html" for d in forecast_data.get("days", {})} | \
+            {f"{w}.html" for w in forecast_data.get("weeks", {})} | {"index.html"}
+    _fc_dir = os.path.join(WEB_DIR, "forecast")
+    _swept = 0
+    for _fn in os.listdir(_fc_dir):
+        if _fn.endswith(".html") and _fn not in _keep and re.match(r"^\d{4}-", _fn):
+            os.remove(os.path.join(_fc_dir, _fn))
+            _swept += 1
+    if _swept:
+        print(f"forecast/: 過去ページ {_swept}枚を掃引（#53）")
 
     # エリア別ページ（V2ローマ字スラッグ。古いURLエンコード版があれば削除）
     forecast_area_dir = os.path.join(WEB_DIR, "forecast", "area")
