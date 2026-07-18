@@ -10987,6 +10987,48 @@ def _build_fish_area_analysis_section(fish, area):
     )
 
 
+_FA_NOTES_CACHE = None
+def _load_fa_notes():
+    """normalize/fish_area_notes.json（編集部の非count定性ノート）を読む。"""
+    global _FA_NOTES_CACHE
+    if _FA_NOTES_CACHE is None:
+        base = os.path.dirname(os.path.abspath(__file__))
+        try:
+            with open(os.path.join(base, "normalize", "fish_area_notes.json"), encoding="utf-8") as f:
+                _FA_NOTES_CACHE = json.load(f).get("notes", {}) or {}
+        except Exception:
+            _FA_NOTES_CACHE = {}
+    return _FA_NOTES_CACHE
+
+
+def _build_fish_area_notes_section(fish, area):
+    """fish_area『この海域の{fish}釣り』編集メモ。fish_area_notes.json 経由・無ければ空。
+    便レベル共起（主対象か外道か・どの乗合で交じるか）と旬から導いた非count の固有文で、
+    count 分析が原理的に立たないページ（外道主体/ソース数値なし）の近重複を脱するためのもの。
+    数の断定はせず、末尾に必ず注記を併記（不変条件 #54）。"""
+    d = _load_fa_notes().get(f"{fish}|{area}")
+    if not d:
+        return ""
+    body = (d.get("html") or "").strip()
+    if not body:
+        return ""
+    rel_links = []
+    for pair in d.get("related", []) or []:
+        try:
+            rf, ra = pair[0], pair[1]
+        except Exception:
+            continue
+        rel_links.append(
+            f'<a href="{fish_slug(rf)}-{area_slug(ra)}.html">{ra}の{rf}釣果</a>')
+    rel_html = ('<p class="fa-note-rel">あわせて読みたい: ' + '・'.join(rel_links) + '</p>') if rel_links else ""
+    return (
+        f'<h2 class="st">この海域の{fish}釣り <span class="tag free">無料</span></h2>'
+        f'<div class="fa-note">{body}{rel_html}'
+        '<p class="section-note">当サイトの過去のクロール記録から、この海域での釣られ方の傾向をまとめた編集メモです。'
+        '釣果を保証するものではなく、実際の釣行は船宿の最新情報と当日の海況を優先してください。</p></div>'
+    )
+
+
 def _build_ship_analysis_section(ship_name):
     """ship『魚種別・海況と釣期の傾向（データ分析）』セクション。C層蒸留から魚種横断で。"""
     data = _load_ship_analysis().get(ship_name)
@@ -11152,6 +11194,9 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                 fa_summary.setdefault((f, c["area"]), []).append(c)
 
     fa_extra_css = """\
+.fa-note{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;font-size:13px;line-height:1.85;color:var(--text)}
+.fa-note p{margin:0 0 6px}
+.fa-note-rel{font-size:12px;color:var(--sub)}
 .combo-comment{background:var(--card);border-left:3px solid var(--cta);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;color:var(--text)}
 .stat-card.trend-up{border-color:var(--pos)}.stat-card.trend-down{border-color:var(--neg)}
 .sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
@@ -11478,6 +11523,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         fa_related_html = f'<div class="fa-related">{"".join(_related_blocks)}</div>' if _related_blocks else '<div class="fa-related"></div>'
         # C層蒸留「海況と釣期の傾向（データ分析）」（fish_area_analysis.json 経由・無ければ空）
         fa_analysis_html = _build_fish_area_analysis_section(fish, area)
+        # 編集部の非count定性ノート（fish_area_notes.json 経由・無ければ空・T-Tier2）
+        fa_notes_html = _build_fish_area_notes_section(fish, area)
         # 直近7日間の釣果推移チャート（fish/* と同じ関数を流用）
         chart7_html_fa = build_fish_7day_chart_html(fish, catches)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
@@ -11561,6 +11608,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   )}
   <h1 class="st"><img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" class="fa-h2-emoji" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none'">{area}の{fish}釣果情報</h1>
   {fa_intro_html}
+  {fa_notes_html}
   {stat_cards_fa}
   {chart7_html_fa}
   <h2 class="st">{area}の{fish}旬カレンダー <span class="tag free">無料</span></h2>

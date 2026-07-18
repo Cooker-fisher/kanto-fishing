@@ -1869,6 +1869,87 @@ def validate_fish_area_analysis_sections():
         ok("[50] 禁止表現なし")
 
 
+def validate_fish_area_notes():
+    """54: fish_area 編集部ノート（非count 固有文）の整合（Tier2・2026-07-18）
+
+    背景: count 分析が原理的に立たない fish_area（外道主体/ソースに釣果数値なし）は、
+    データ充実（hist>=80）でも近重複テンプレとして GSC に品質拒否される。normalize/
+    fish_area_notes.json に便レベル共起（主対象か外道か）と旬から導いた honest な固有文を
+    置き、crawler.py `_build_fish_area_notes_section` が『この海域の{fish}釣り』を描画する。
+    検証（過大表現・断定ガード＝AdSense/信頼リスク防止）:
+      - notes JSON が存在し 1件以上（無ければ skip）
+      - 各ノート: html 非空・キーが "魚種|エリア" 形式・禁止表現/匹数断定が html に無い
+      - 描画済み docs（class="fa-note" を含む fish_area ページ）は免責注記を必ず含み、
+        禁止表現が無い（docs 未再生成時は vacuous pass・日次 crawl 後に実効）
+    """
+    print("\n[54] fish_area 編集部ノート（非count 固有文）の整合（Tier2）")
+    notes_json = os.path.join(ROOT, "normalize", "fish_area_notes.json")
+    if not os.path.isfile(notes_json):
+        ok("[54] fish_area_notes.json なし → skip（未導入）")
+        return
+    try:
+        with open(notes_json, encoding="utf-8") as f:
+            notes = (json.load(f) or {}).get("notes", {}) or {}
+    except Exception as e:
+        fail(f"[54] fish_area_notes.json 読み込み失敗: {e}")
+        return
+    if not notes:
+        ok("[54] fish_area_notes.json 収載 0 件 → skip")
+        return
+
+    FORBIDDEN = ["必ず釣れ", "確実に釣れ", "絶対に釣れ", "保証します"]
+    bad_key = []
+    empty_html = []
+    forbidden_json = []
+    for key, d in notes.items():
+        if "|" not in key or len(key.split("|")) != 2 or not all(key.split("|")):
+            bad_key.append(key)
+        body = (d.get("html") or "").strip() if isinstance(d, dict) else ""
+        if not body:
+            empty_html.append(key)
+        if any(fb in body for fb in FORBIDDEN):
+            forbidden_json.append(key)
+    if bad_key:
+        fail(f"[54] ノートキーが「魚種|エリア」形式でない: {bad_key[:5]}")
+    else:
+        ok(f"[54] ノート {len(notes)} 件・キー形式OK")
+    if empty_html:
+        fail(f"[54] html 空のノート: {empty_html[:5]}")
+    else:
+        ok("[54] 全ノートに本文あり")
+    if forbidden_json:
+        fail(f"[54] ノート本文に禁止表現（断定的な釣果保証）: {forbidden_json[:5]}")
+    else:
+        ok("[54] ノート本文に禁止表現なし")
+
+    MARK = 'class="fa-note"'
+    DISC = "釣果を保証するものではなく"
+    fa_dir = os.path.join(DOCS, "fish_area")
+    rendered = 0
+    missing_disc = []
+    forbidden_doc = []
+    if os.path.isdir(fa_dir):
+        for fn in os.listdir(fa_dir):
+            if not fn.endswith(".html"):
+                continue
+            c = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
+            if MARK not in c:
+                continue
+            rendered += 1
+            if DISC not in c:
+                missing_disc.append(fn)
+            if any(fb in c for fb in FORBIDDEN):
+                forbidden_doc.append(fn)
+    if missing_disc:
+        fail(f"[54] ノートセクションに免責注記が欠落: {missing_disc[:5]}")
+    elif rendered:
+        ok(f"[54] ノートセクション {rendered} 件レンダ・全件免責注記あり")
+    else:
+        ok("[54] docs 未再生成（ノート未描画）→ 日次 crawl で反映（vacuous pass）")
+    if forbidden_doc:
+        fail(f"[54] ノート描画ページに禁止表現: {forbidden_doc[:5]}")
+
+
 def validate_fish_value_release():
     """51: 釣果価値チェッカー（/fish-value/）のリリース整合（2026-07-05）
 
@@ -2156,6 +2237,7 @@ def main():
     validate_brand_not_h1()
     validate_chowari_monthly_coverage()
     validate_fish_area_analysis_sections()
+    validate_fish_area_notes()
     validate_fish_value_release()
     validate_no_paywall_signal_and_operator_info()
     validate_verified_predictions_tier()
