@@ -879,44 +879,101 @@ header {
   box-shadow: 0 1px 4px rgba(232,93,4,.28);
 }
 
-/* レシート表示（紙のレシート風） */
+/* ============================================
+   レシート表示（サーマル紙風・カード全体を1枚のレシートに）
+   ============================================ */
+
+/* 結果カードは枠を消してレシート1枚を主役に（二重枠回避） */
+.result-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 4px 0 0;
+}
+
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
 .receipt {
-  background: #fffdf9;
-  border: 1px solid var(--border-2);
-  border-radius: 6px;
-  padding: 18px 18px 16px;
-  margin-bottom: 12px;
+  --paper: #fffdf6;
+  --ink:   #2a2a24;
+  --rc-dim:#6b6b60;
+  --rc-line:#9a968a;
+  max-width: 360px;
+  margin: 4px auto 6px;
+  background: var(--paper);
+  color: var(--ink);
   font-family: "SFMono-Regular", Menlo, Consolas, "Courier New", "Osaka-Mono", "MS Gothic", monospace;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  padding: 22px 20px 18px;
+  position: relative;
+  border-radius: 3px;
+  box-shadow: 0 6px 20px rgba(20,30,50,.16), 0 1px 3px rgba(0,0,0,.10);
 }
-.rc-title { font-size: 15px; font-weight: 700; color: var(--text); text-align: center; letter-spacing: .04em; }
-.rc-date { font-size: 11px; color: var(--muted); text-align: center; margin-top: 3px; letter-spacing: .05em; }
-.rc-lines {
-  border-top: 1px dashed var(--muted);
-  border-bottom: 1px dashed var(--muted);
-  padding: 8px 0;
-  margin: 12px 0 10px;
+/* かすかな紙の横スジ */
+.receipt::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.014) 0 1px, transparent 1px 3px);
 }
-.rc-sp { font-size: 12.5px; font-weight: 800; color: var(--cta-2); margin: 6px 0 1px; }
-.rc-row { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; }
-.rc-item { flex: 1; font-size: 13px; color: var(--sub); }
-.rc-qty { font-size: 12px; color: var(--muted); min-width: 42px; text-align: right; }
-.rc-sub-amt { font-size: 13px; font-weight: 700; color: var(--text); min-width: 74px; text-align: right; }
-.rc-total {
-  display: flex; justify-content: space-between; align-items: baseline;
-  font-size: 15px; font-weight: 800; color: var(--text); margin-top: 6px;
+.receipt > * { position: relative; }
+
+.rc-dash { border: 0; border-top: 1px dashed var(--rc-line); margin: 11px 0; }
+.rc-dash.thick { border-top: 1px solid #7a766a; }
+
+.rc-head { text-align: center; }
+.rc-shop { font-size: 15.5px; font-weight: 800; letter-spacing: .12em; }
+.rc-tag  { font-size: 10px; color: var(--rc-dim); letter-spacing: .06em; margin-top: 3px; }
+.rc-meta { font-size: 10.5px; color: var(--rc-dim); margin-top: 7px; letter-spacing: .03em; }
+
+/* 集計（魚アイコンのチップ） */
+.rc-tally {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 6px 12px; padding: 2px 0;
 }
-.rc-total-amt { font-size: 22px; color: var(--cta); }
-.rc-total.ws {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--sub);
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--border);
+.rc-tchip { display: inline-flex; align-items: center; gap: 5px; }
+.rc-tico { width: 26px; height: 26px; object-fit: contain; flex-shrink: 0; }
+.rc-tico-fb { font-size: 20px; line-height: 26px; }
+.rc-tcnt { font-size: 14px; font-weight: 800; color: var(--ink); letter-spacing: .02em; }
+.rc-tsum { text-align: center; font-size: 11px; color: var(--rc-dim); margin-top: 8px; letter-spacing: .04em; }
+
+/* 明細 */
+.rc-lines { margin: 2px 0; }
+.rc-sp { font-size: 12px; font-weight: 800; margin: 9px 0 1px; letter-spacing: .03em; }
+.rc-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.rc-item {
+  flex: 1; font-size: 12.5px; color: #55524a; overflow: hidden; white-space: nowrap;
 }
-.rc-note { font-size: 10.5px; color: var(--muted); text-align: center; margin-top: 10px; line-height: 1.5; }
+.rc-item::after {
+  content: " ....................................................";
+  color: #c6c0b0; letter-spacing: 1px;
+}
+.rc-amt { font-size: 13px; font-weight: 800; color: var(--ink); min-width: 66px; text-align: right; }
+.rc-qtyline { font-size: 11px; color: var(--rc-dim); margin: 1px 0 3px; }
+
+.rc-line { display: flex; justify-content: space-between; align-items: baseline; font-size: 11.5px; color: #55524a; padding: 2px 0; }
+.rc-line .v { color: var(--ink); font-weight: 800; }
+.rc-line.dim { color: var(--rc-dim); }
+
+.rc-total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px; }
+.rc-total .lbl { font-size: 13px; font-weight: 800; letter-spacing: .06em; }
+.rc-total .amt { font-size: 26px; font-weight: 800; color: var(--cta-2); line-height: 1.05; }
+.rc-total .amt small { font-size: 13px; font-weight: 700; }
+
+.rc-note { font-size: 10px; color: var(--rc-dim); text-align: center; margin-top: 10px; line-height: 1.55; }
+
+.rc-thanks { text-align: center; font-size: 11.5px; letter-spacing: .14em; margin-top: 11px; color: #4a473f; }
+.rc-hash { text-align: center; font-size: 10.5px; color: var(--rc-dim); margin-top: 4px; letter-spacing: .03em; }
+
+.rc-barcode {
+  height: 32px; margin: 12px auto 2px; width: 74%;
+  background: repeating-linear-gradient(90deg,
+    var(--ink) 0 2px, transparent 2px 4px,
+    var(--ink) 4px 5px, transparent 5px 9px,
+    var(--ink) 9px 12px, transparent 12px 13px);
+}
+.rc-barnum { text-align: center; font-size: 9.5px; letter-spacing: .35em; color: var(--rc-dim); margin-top: 2px; }
 
 /* 卸売＝控えめな一行 */
 .wholesale-row {
