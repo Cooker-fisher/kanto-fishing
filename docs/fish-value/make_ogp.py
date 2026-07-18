@@ -105,12 +105,9 @@ for sp, label, price in items:
 dashed(il, ir, y + 4)
 y += 16
 
-# 小計 / お会計
-d.text((il, y), '小計', font=fr17, fill=(85, 82, 74))
-sw = d.textlength('¥8,900', font=fb18)
-d.text((ir - sw, y), '¥8,900', font=fb18, fill=INK)
-y += 34
-d.text((il, y + 8), 'お会計', font=f(FB, 20), fill=INK)
+# 合計
+y += 18
+d.text((il, y + 8), '合計', font=f(FB, 20), fill=INK)
 amt = '¥8,900'
 aw = d.textlength(amt, font=f(FB, 40))
 sfw = d.textlength(' 相当', font=f(FB, 18))

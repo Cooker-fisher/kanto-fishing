@@ -1277,7 +1277,7 @@ function _sizeSuffix(e) {
 const SHARE_CTA = '\n\n🎣 あなたの釣果はいくら？ 下で計算👇';
 
 // レシート風の共有文（1パターン）。明細＝魚種ごとに 数量+助数詞＋小売小計、
-// 末尾に お会計。端数は最終行で吸収して明細の和＝お会計に一致させる（全魚種表示時のみ）。
+// 末尾に 合計。端数は最終行で吸収して明細の和＝合計に一致させる（全魚種表示時のみ）。
 function buildSharePost(r) {
   const LINE = '━━━━━━━━━━';
   const MAX_ITEMS = 5;
@@ -1302,7 +1302,7 @@ function buildSharePost(r) {
     LINE + '\n' +
     itemLines + more + '\n' +
     LINE + '\n' +
-    'お会計　¥' + fmtYen(target) + ' 相当\n' +
+    '合計　¥' + fmtYen(target) + ' 相当\n' +
     '（豊洲の実勢価格で概算・無料）';
 
   return body + SHARE_CTA;
@@ -1316,7 +1316,7 @@ function refreshSharePreview() {
 function onShareClick() {
   if (!_lastResult) return;
   const text = buildSharePost(_lastResult);
-  const url = 'https://funatsuri-yoso.com/fish-value/?v=2';  // ?v=2: X等のOGPカード再取得（レシート版画像に更新）
+  const url = 'https://funatsuri-yoso.com/fish-value/?v=3';  // ?v=3: X等のOGPカード再取得（画像更新のたびに上げる）
   // このツールは船釣りに限らず、おかっぱり・川釣りの釣果でも使える。
   // よって #船釣り のような限定タグは避け、全釣り種を包む #釣り に。ブランド名は URL で伝わる。
   const hashtags = '釣り,釣果,釣った魚の値段';
@@ -1369,7 +1369,7 @@ async function onSaveImage() {
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file = new File([blob], 'tsurika-value.png', { type: 'image/png' });
     const text = buildSharePost(_lastResult);
-    const url = 'https://funatsuri-yoso.com/fish-value/?v=2';  // ?v=2: X等のOGPカード再取得（レシート版画像に更新）
+    const url = 'https://funatsuri-yoso.com/fish-value/?v=3';  // ?v=3: X等のOGPカード再取得（画像更新のたびに上げる）
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], text: text + '\n\n' + url });
     } else {
@@ -1519,14 +1519,13 @@ function buildReceipt(r) {
   html += '<hr class="rc-dash">';
 
   // ── 合計 ──
-  html += '<div class="rc-line"><span>小計</span><span class="v">¥' + fmtYen(target) + '</span></div>';
-  html += '<div class="rc-total"><span class="lbl">お会計</span>' +
+  html += '<div class="rc-total"><span class="lbl">合計</span>' +
           '<span class="amt">¥' + fmtYen(target) + '<small> 相当</small></span></div>';
   html += '<hr class="rc-dash">';
 
   // ── 参考・卸値 ──
   html += '<div class="rc-line"><span>参考・市場の卸値</span><span class="v">¥' + fmtYen(Math.round(r.wholesaleMid)) + '</span></div>';
-  html += '<div class="rc-line dim"><span>お会計レンジ</span><span>¥' +
+  html += '<div class="rc-line dim"><span>合計レンジ</span><span>¥' +
           fmtYen(Math.round(r.retailLow)) + '〜¥' + fmtYen(Math.round(r.retailHigh)) + '</span></div>';
 
   html += '<div class="rc-note">' +
