@@ -1,6 +1,28 @@
 現行バージョン: combo_deep_dive.py（Phase C composite_hit_rate 採用確定 / ALL_FISH 59種）
-最終更新: 2026/07/17
-最新コミット: a2bfcdfe2（fish-value リリース 3コミット・push済み）
+最終更新: 2026/07/18
+最新コミット: 231c1cead（fish_area Tier2・**未push**・下記）
+
+---
+
+## ✅ T-Tier2 パイロット（2026/07/18・main agent・未push 2コミット）— fish_area 近重複脱却
+
+**詳細: design/V2/90_決定ログ.md「2026-07-18 Tier2」。パイロット5・要 push→日次 crawl で反映**
+
+- 発端: GSC 実査で index 許可 fish_area 283中135(47%)が純テンプレ＝近重複拒否。hist>=80 の充実34ページが標的。
+- **安い切り分けで「全再分析は不要かつ無効」と確定**（重い run_full_deepdive は起動せず）:
+  ① analysis.sqlite 最新→再蒸留だけで fish_area 315→**361ペア(+46・0削除)**（コミット b230bc5b6）。
+     ただし+46は薄ページで狙った34は0件。② 34ページは CSV 実測で count セクション不可＝
+     **外道主体**（ハナダイ×鹿島港 便のほぼ100%マダイ外道・メイン4/232）or **静岡ソース数値なし**
+     （アジ×福田港 メイン372便でも cnt_avg>0 が0件）。load_records の main_sub=メイン&cnt>0 フィルタが根因で
+     全再実行しても同結果。
+- **対策（ユーザー選択=再蒸留+46出荷+34は非count充実）**: `normalize/fish_area_notes.json` 新設。
+  便レベル共起（主対象か外道か）と旬から導いた honest な固有文をパイロット5に収載
+  （ハナダイ×鹿島港・ハタ×御前崎港・カサゴ×大原港・アジ×福田港・マハタ×鹿島港）。
+  crawler.py `_build_fish_area_notes_section`（intro直後に『この海域の{魚種}釣り』描画）+ **不変条件#54** +
+  domain レビュー済（3/5異議なし・2件修正）。validate #54 全OK。
+- **⚠ 未push**: commit 231c1cead / b230bc5b6。push→日次 crawl.yml フルクロールが JSON 読んで反映
+  （ローカル crawler.py フル実行は HERO 巻き戻し回避）。既存 #53(forecast stale docs)errors=1 は無関係・自己解決。
+- **次**: パイロット5の GSC 反応観察→良ければ残り約29ページへ同方式で拡大。count不可 fish_area は今後 notes 経路で差別化。
 
 ---
 
