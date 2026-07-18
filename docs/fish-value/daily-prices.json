@@ -2,14 +2,9 @@
   "version": "v1",
   "source": "東京都中央卸売市場 日報（豊洲水産・中値）",
   "source_url": "https://www.shijou-nippo.metro.tokyo.lg.jp/SN/YYYYMM/YYYYMMDD/Sui/Sui_K1.csv",
-  "asof": "20260711",
+  "asof": "20260718",
   "window_business_days": 20,
   "days_fetched": [
-    "20260615",
-    "20260616",
-    "20260618",
-    "20260619",
-    "20260620",
     "20260622",
     "20260623",
     "20260625",
@@ -24,23 +19,28 @@
     "20260707",
     "20260709",
     "20260710",
-    "20260711"
+    "20260711",
+    "20260713",
+    "20260714",
+    "20260716",
+    "20260717",
+    "20260718"
   ],
   "by_pfid": {
     "buri": {
       "n_days": 20,
       "n_mid": 40,
-      "mid_median_yen_per_kg": 432
+      "mid_median_yen_per_kg": 486
     },
     "inada": {
-      "n_days": 18,
-      "n_mid": 18,
-      "mid_median_yen_per_kg": 594
+      "n_days": 17,
+      "n_mid": 17,
+      "mid_median_yen_per_kg": 616
     },
     "karei": {
       "n_days": 17,
-      "n_mid": 62,
-      "mid_median_yen_per_kg": 594
+      "n_mid": 60,
+      "mid_median_yen_per_kg": 621
     },
     "katsuo": {
       "n_days": 20,
@@ -48,13 +48,13 @@
       "mid_median_yen_per_kg": 756
     },
     "kihada": {
-      "n_days": 19,
+      "n_days": 20,
       "n_mid": 25,
-      "mid_median_yen_per_kg": 1512
+      "mid_median_yen_per_kg": 1458
     },
     "kinmedai": {
-      "n_days": 19,
-      "n_mid": 19,
+      "n_days": 20,
+      "n_mid": 20,
       "mid_median_yen_per_kg": 2160
     },
     "maaji": {
@@ -62,25 +62,25 @@
       "n_mid": 55,
       "mid_median_yen_per_kg": 594
     },
+    "mebaru": {
+      "n_days": 1,
+      "n_mid": 1,
+      "mid_median_yen_per_kg": 1296
+    },
     "saba": {
       "n_days": 20,
       "n_mid": 20,
       "mid_median_yen_per_kg": 540
     },
     "surumeika": {
-      "n_days": 19,
-      "n_mid": 19,
+      "n_days": 18,
+      "n_mid": 18,
       "mid_median_yen_per_kg": 1512
     },
     "tachiuo": {
       "n_days": 1,
       "n_mid": 1,
       "mid_median_yen_per_kg": 4320
-    },
-    "takabe": {
-      "n_days": 1,
-      "n_mid": 1,
-      "mid_median_yen_per_kg": 2700
     },
     "yariika": {
       "n_days": 2,
