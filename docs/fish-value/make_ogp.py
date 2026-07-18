@@ -130,7 +130,7 @@ d.rounded_rectangle([tx, 452, tx + 470, 452 + 64], radius=14, fill=ORANGE)
 d.text((tx + 22, 466), 'この釣果なら  ¥8,900 相当', font=f(FB, 30), fill=(255, 255, 255))
 
 # 補足＋URL
-d.text((tx, 540), '豊洲市場の実勢価格 × 季節補正で概算・無料',
+d.text((tx, 540), '豊洲市場の実勢価格 × 季節補正で概算',
        font=f(FR, 26), fill=GRAY)
 d.text((tx, 578), 'funatsuri-yoso.com/fish-value',
        font=f(FR, 24), fill=MUTED)
