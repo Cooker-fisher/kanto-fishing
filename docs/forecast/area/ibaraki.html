@@ -53,21 +53,45 @@
 .dc-analysis{font-size:13px;color:var(--sub);line-height:1.7;margin:10px 0;padding:10px;background:#f8f9fb;border-radius:6px}
 .dc-uncertainty{font-size:12px;color:var(--warn);margin:8px 0;padding:8px;background:#fff8e6;border-left:3px solid var(--warn);border-radius:0 6px 6px 0}
 .dc-ships{font-size:12px;color:var(--muted)}
-.paywall{text-align:center;padding:30px;background:linear-gradient(transparent,var(--bg) 40%);margin-top:10px}
-.paywall-btn{display:inline-block;background:var(--cta);color:#fff;padding:12px 32px;border-radius:24px;font-size:14px;font-weight:bold;text-decoration:none}
-.paywall-btn:hover{background:var(--cta2)}
-.paywall-sub{font-size:12px;color:var(--muted);margin-top:8px}
-.blur-text{filter:blur(6px);user-select:none}
 .section-note{font-size:12px;color:var(--muted);margin-bottom:12px}
+.vp-section{margin:20px 0}
+.vp-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.vp-title{font-size:16px;font-weight:bold;color:var(--accent)}
+.vp-badge{font-size:10px;background:var(--pos);color:#fff;padding:3px 8px;border-radius:10px;font-weight:bold}
+.vp-meta{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.7}
+.vp-cards{display:grid;gap:10px;margin-bottom:14px}
+.vp-card{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--pos);border-radius:var(--r);padding:14px}
+.vp-card-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.vp-fish{font-size:15px;font-weight:bold;color:var(--accent)}
+.vp-ship{font-size:12px;color:var(--sub)}
+.vp-ship a{color:var(--accent)}
+.vp-stars{color:var(--warn);font-size:13px;letter-spacing:1px;white-space:nowrap}
+.vp-range{font-size:20px;font-weight:bold;color:var(--cta);margin:6px 0 2px}
+.vp-range small{font-size:12px;color:var(--muted);font-weight:normal}
+.vp-point{font-size:11px;color:var(--muted)}
+.vp-scroll{overflow-x:auto;margin-bottom:10px}
+.vp-table{width:100%;border-collapse:collapse;background:var(--card);min-width:520px}
+.vp-table th{background:var(--accent);color:#fff;padding:7px 8px;font-size:11px;text-align:left;white-space:nowrap}
+.vp-table td{padding:8px;border-bottom:1px solid var(--border);font-size:13px}
+.vp-table td small{color:var(--muted);font-size:10px}
+.vp-table td.rg{font-weight:bold;color:var(--cta);white-space:nowrap}
+.vp-table a{color:var(--accent)}
+.vp-details{margin-bottom:12px}
+.vp-details summary{cursor:pointer;font-size:12px;color:var(--sub);padding:6px 0}
+.vp-kaiyu{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px}
+.vp-kaiyu-t{font-size:13px;font-weight:bold;color:var(--accent);margin-bottom:8px}
+.vp-chip{display:inline-block;font-size:12px;background:#fff8e6;border:1px solid #e8d898;color:#7a5c00;border-radius:14px;padding:5px 10px;margin:0 6px 6px 0}
+.vp-note{font-size:11px;color:var(--muted);line-height:1.7;background:#f0f3f7;border-radius:6px;padding:8px 12px}
+.vp-empty{font-size:13px;color:var(--sub);background:var(--card);border:1px dashed var(--border);border-radius:var(--r);padding:16px;text-align:center}
 @media(max-width:640px){.wx-dash{grid-template-columns:repeat(2,1fr)}.pred-table{font-size:12px}}
 </style>
 </head><body>
 <div id="stale-banner" role="alert" hidden style="background:#b3261e;color:#fff;padding:9px 14px;text-align:center;font-size:13px;line-height:1.5;font-weight:600">
-  ⚠️ このページは更新が遅延している可能性があります（生成日: 2026-07-17）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
+  ⚠️ このページは更新が遅延している可能性があります（生成日: 2026-07-18）。<a href="/" style="color:#fff;text-decoration:underline">トップで最新の釣果を確認</a>
 </div>
 <script>
 (function(){
-  var b="2026-07-17";var bt=1784280870799;
+  var b="2026-07-18";var bt=1784355957930;
   if((Date.now()-bt)>129600000){var e=document.getElementById("stale-banner");if(e)e.hidden=false;}
 })();
 </script>
@@ -92,7 +116,7 @@
 </nav>
 <div class="c">
 <p class="bread"><a href="/">トップ</a> &rsaquo; <a href="/forecast/">釣果予測</a> &rsaquo; 茨城 釣果予測</p>
-<h1 class="page-h1">茨城 釣果予測</h1><div class="date-nav"><a href="../2026-07-17.html" class="">7/17(金)</a><a href="../2026-07-18.html" class="weekend">7/18(土)</a><a href="../2026-07-19.html" class="weekend">7/19(日)</a><a href="../2026-07-20.html" class="">7/20(月)</a><a href="../2026-07-21.html" class="">7/21(火)</a><a href="../2026-07-22.html" class="">7/22(水)</a><a href="../2026-07-23.html" class="">7/23(木)</a><a href="../2026-W31.html" class="">2週後</a><a href="../2026-W32.html" class="">3週後</a><a href="../2026-W33.html" class="">4週後</a></div><h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2><p class="risk-note">判定（外海基準）: △注意: 波2.0〜3.0m・風10.0〜13.0m/s / ✕欠航警戒: 波3.0m超・風13.0m/s超</p><div class="risk-grid"><div class="risk-day good"><div class="rd-dow">金</div><div class="rd-date">7/17</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div><div class="risk-day good"><div class="rd-dow">土</div><div class="rd-date">7/18</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div><div class="risk-day good"><div class="rd-dow">日</div><div class="rd-date">7/19</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div><div class="risk-day good"><div class="rd-dow">月</div><div class="rd-date">7/20</div><div class="rd-icon">◎</div><div class="rd-label">出船日和</div></div><div class="risk-day good"><div class="rd-dow">火</div><div class="rd-date">7/21</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div><div class="risk-day good"><div class="rd-dow">水</div><div class="rd-date">7/22</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div><div class="risk-day good"><div class="rd-dow">木</div><div class="rd-date">7/23</div><div class="rd-icon">◎</div><div class="rd-label">出船日和</div></div></div><h2>茨城 予測</h2><div class="date-nav"><a href="../2026-07-17.html#area-ibaraki" class="">7/17(金) ○ 出船可</a><a href="../2026-07-18.html#area-ibaraki" class="weekend">7/18(土) ○ 出船可</a><a href="../2026-07-19.html#area-ibaraki" class="weekend">7/19(日) ○ 出船可</a><a href="../2026-07-20.html#area-ibaraki" class="">7/20(月) ◎ 出船日和</a><a href="../2026-07-21.html#area-ibaraki" class="">7/21(火) ○ 出船可</a><a href="../2026-07-22.html#area-ibaraki" class="">7/22(水) ○ 出船可</a><a href="../2026-07-23.html#area-ibaraki" class="">7/23(木) ◎ 出船日和</a></div>
+<h1 class="page-h1">茨城 釣果予測</h1><div class="date-nav"><a href="../2026-07-18.html" class="weekend">7/18(土)</a><a href="../2026-07-19.html" class="weekend">7/19(日)</a><a href="../2026-07-20.html" class="">7/20(月)</a><a href="../2026-07-21.html" class="">7/21(火)</a><a href="../2026-07-22.html" class="">7/22(水)</a><a href="../2026-07-23.html" class="">7/23(木)</a><a href="../2026-07-24.html" class="">7/24(金)</a><a href="../2026-W31.html" class="">2週後</a><a href="../2026-W32.html" class="">3週後</a><a href="../2026-W33.html" class="">4週後</a></div><h2 class="st">出船リスク予報 <span class="tag free">無料</span></h2><p class="risk-note">判定（外海基準）: △注意: 波2.0〜3.0m・風10.0〜13.0m/s / ✕欠航警戒: 波3.0m超・風13.0m/s超</p><div class="risk-grid"><div class="risk-day good"><div class="rd-dow">土</div><div class="rd-date">7/18</div><div class="rd-icon">◎</div><div class="rd-label">出船日和</div></div><div class="risk-day good"><div class="rd-dow">日</div><div class="rd-date">7/19</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div><div class="risk-day good"><div class="rd-dow">月</div><div class="rd-date">7/20</div><div class="rd-icon">◎</div><div class="rd-label">出船日和</div></div><div class="risk-day good"><div class="rd-dow">火</div><div class="rd-date">7/21</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div><div class="risk-day good"><div class="rd-dow">水</div><div class="rd-date">7/22</div><div class="rd-icon">◎</div><div class="rd-label">出船日和</div></div><div class="risk-day good"><div class="rd-dow">木</div><div class="rd-date">7/23</div><div class="rd-icon">◎</div><div class="rd-label">出船日和</div></div><div class="risk-day good"><div class="rd-dow">金</div><div class="rd-date">7/24</div><div class="rd-icon">○</div><div class="rd-label">出船可</div></div></div><h2>茨城 予測</h2><div class="date-nav"><a href="../2026-07-18.html#area-ibaraki" class="weekend">7/18(土) ◎ 出船日和</a><a href="../2026-07-19.html#area-ibaraki" class="weekend">7/19(日) ○ 出船可</a><a href="../2026-07-20.html#area-ibaraki" class="">7/20(月) ◎ 出船日和</a><a href="../2026-07-21.html#area-ibaraki" class="">7/21(火) ○ 出船可</a><a href="../2026-07-22.html#area-ibaraki" class="">7/22(水) ◎ 出船日和</a><a href="../2026-07-23.html#area-ibaraki" class="">7/23(木) ◎ 出船日和</a><a href="../2026-07-24.html#area-ibaraki" class="">7/24(金) ○ 出船可</a></div>
 <div style="background:linear-gradient(135deg,#f8f4ff,#f0eafa);border:2px solid #7c3aed;border-radius:10px;padding:32px 16px;margin:24px 0;text-align:center">
 <h2 style="font-size:18px;color:#7c3aed;margin-bottom:12px;border:none;padding:0">エリア別釣果予測（準備中）</h2>
 <p style="font-size:13px;color:#5a6a7a;line-height:1.8;margin-bottom:18px">
