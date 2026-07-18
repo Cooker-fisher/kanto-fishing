@@ -394,32 +394,9 @@ function bindGlobalEvents() {
     if (e.key === 'Escape' && !$('fish-picker-modal').hidden) closeFishPicker();
   });
 
-  // Xシェア: スタイル切替
-  document.querySelectorAll('.share-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.share-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const style = tab.dataset.style;
-      $('share-preview').dataset.style = style;
-      try { localStorage.setItem('fv_share_style', style); } catch (_) {}
-      refreshSharePreview();
-    });
-  });
-
   // Xシェア: 投稿ボタン
   $('share-btn').addEventListener('click', onShareClick);
   $('imgshare-btn').addEventListener('click', onSaveImage);
-
-  // 保存済みスタイル復元
-  try {
-    const saved = localStorage.getItem('fv_share_style');
-    if (saved === 'A' || saved === 'B' || saved === 'C') {
-      $('share-preview').dataset.style = saved;
-      document.querySelectorAll('.share-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.style === saved);
-      });
-    }
-  } catch (_) {}
 }
 
 // ============================================
@@ -1299,54 +1276,46 @@ function _sizeSuffix(e) {
 // 末尾の誘導文（読んだ人が自分でも試したくなる導線・直下にURLが付く）
 const SHARE_CTA = '\n\n🎣 あなたの釣果はいくら？ 下で計算👇';
 
-function buildSharePost(r, style) {
-  const totalYen = fmtYen(r.retailMid);
-  let body;
+// レシート風の共有文（1パターン）。明細＝魚種ごとに 数量+助数詞＋小売小計、
+// 末尾に お会計。端数は最終行で吸収して明細の和＝お会計に一致させる（全魚種表示時のみ）。
+function buildSharePost(r) {
+  const LINE = '━━━━━━━━━━';
+  const MAX_ITEMS = 5;
+  const target = Math.round(r.retailMid / 100) * 100;
 
-  if (style === 'B') {
-    // 案B: ゲームスコア型 — 大物順（重量でランキング・表示は魚種の自然単位）
-    const sorted = [...r.perEntry].sort((a, b) => _maxKgOfEntry(b) - _maxKgOfEntry(a));
-    const medals = ['🥇', '🥈', '🥉'];
-    const medalLines = sorted.slice(0, 3).map((e, i) => {
-      const size = fmtSizeForShare(e);
-      const sizeStr = size ? (e.count > 1 ? '（最大 ' + size + '）' : '（' + size + '）') : '';
-      return medals[i] + ' ' + e.name + ' ' + e.count + '匹' + sizeStr;
-    }).join('\n');
-    body = '🏆 今日の釣果スコア\n\n' +
-           '🛒 スーパーで買えば ¥' + totalYen + '相当\n' +
-           '🐟 釣果 ' + r.totalCount + '匹（' + r.speciesCount + '魚種）\n\n' +
-           medalLines;
-  } else if (style === 'C') {
-    // 案C: シンプル換算型（最大は一番大きい魚をその魚の自然単位で）
-    const names = r.perEntry.map(e => e.name).join('・');
-    const biggest = r.perEntry.reduce((a, b) => _maxKgOfEntry(b) > _maxKgOfEntry(a) ? b : a, r.perEntry[0]);
-    const bigSize = biggest ? fmtSizeForShare(biggest) : '';
-    const maxLine = bigSize ? '・最大 ' + bigSize : '';
-    body = '今日の釣果、スーパーで買ったら ¥' + totalYen + '相当だった 🎣\n' +
-           '（' + names + ' 計' + r.totalCount + '匹' + maxLine + '）';
-  } else {
-    // 案A: 数字ドカン型（デフォルト）
-    const itemLines = r.perEntry.map(e => {
-      return '🐟 ' + e.name + ' ' + e.count + '匹' + _sizeSuffix(e);
-    }).join('\n');
-    body = '本日の釣果、スーパーで買えば ¥' + totalYen + '相当 🎣\n\n' +
-           itemLines + '\n\n' +
-           '計 ' + r.totalCount + '匹 / ' + r.speciesCount + '魚種';
+  const subs = r.perEntry.map(e => Math.round(e.retailMid / 100) * 100);
+  if (r.perEntry.length <= MAX_ITEMS && subs.length) {
+    const sum = subs.reduce((a, b) => a + b, 0);
+    subs[subs.length - 1] += (target - sum);   // 端数吸収
   }
+
+  const shown = r.perEntry.slice(0, MAX_ITEMS);
+  const itemLines = shown.map((e, i) =>
+    e.name + ' ' + e.count + e.counter + '　¥' + fmtYen(subs[i])
+  ).join('\n');
+  const more = r.perEntry.length > MAX_ITEMS
+    ? '\nほか ' + (r.perEntry.length - MAX_ITEMS) + '魚種'
+    : '';
+
+  const body =
+    '🧾 船釣り予想 鮮魚店\n' +
+    LINE + '\n' +
+    itemLines + more + '\n' +
+    LINE + '\n' +
+    'お会計　¥' + fmtYen(target) + ' 相当\n' +
+    '（豊洲の実勢価格で概算・無料）';
 
   return body + SHARE_CTA;
 }
 
 function refreshSharePreview() {
   if (!_lastResult) return;
-  const style = $('share-preview').dataset.style || 'A';
-  $('share-preview').textContent = buildSharePost(_lastResult, style);
+  $('share-preview').textContent = buildSharePost(_lastResult);
 }
 
 function onShareClick() {
   if (!_lastResult) return;
-  const style = $('share-preview').dataset.style || 'A';
-  const text = buildSharePost(_lastResult, style);
+  const text = buildSharePost(_lastResult);
   const url = 'https://funatsuri-yoso.com/fish-value/?v=2';  // ?v=2: X等のOGPカード再取得（レシート版画像に更新）
   // このツールは船釣りに限らず、おかっぱり・川釣りの釣果でも使える。
   // よって #船釣り のような限定タグは避け、全釣り種を包む #釣り に。ブランド名は URL で伝わる。
@@ -1399,7 +1368,7 @@ async function onSaveImage() {
     restore();
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file = new File([blob], 'tsurika-value.png', { type: 'image/png' });
-    const text = buildSharePost(_lastResult, $('share-preview').dataset.style || 'A');
+    const text = buildSharePost(_lastResult);
     const url = 'https://funatsuri-yoso.com/fish-value/?v=2';  // ?v=2: X等のOGPカード再取得（レシート版画像に更新）
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], text: text + '\n\n' + url });
