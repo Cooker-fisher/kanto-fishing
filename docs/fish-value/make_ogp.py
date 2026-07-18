@@ -72,41 +72,44 @@ def center(text, y, font, fill):
 
 
 # ヘッダ
-center('船釣り予想 鮮魚店', ry0 + 22, f(FB, 25), INK)
-center('FUNATSURI-YOSO FISH MARKET', ry0 + 56, f(FR, 15), RC_DIM)
-center('2026/07/18(土)  伝票 No.618', ry0 + 82, f(FR, 16), RC_DIM)
-dashed(il, ir, ry0 + 116)
+center('船釣り予想 鮮魚店', ry0 + 20, f(FB, 25), INK)
+center('FUNATSURI-YOSO FISH MARKET', ry0 + 52, f(FR, 15), RC_DIM)
+center('2026/07/18(土)  伝票 No.618', ry0 + 76, f(FR, 16), RC_DIM)
+dashed(il, ir, ry0 + 108)
 
 # 集計（テキストで代替）
-center('マゴチ 4尾  ・  アジ 6尾', ry0 + 130, f(FB, 19), INK)
-center('2魚種 ・ 合計 4.6kg', ry0 + 158, f(FR, 15), RC_DIM)
-dashed(il, ir, ry0 + 188)
+center('マゴチ 4尾  ・  アジ 6尾', ry0 + 120, f(FB, 19), INK)
+center('2魚種 ・ 合計 4.6kg', ry0 + 147, f(FR, 15), RC_DIM)
+dashed(il, ir, ry0 + 174)
 
-# 明細
-y = ry0 + 200
-items = [('マゴチ', None, None),
-         (None, '標準', '¥5,200'),
-         ('アジ', None, None),
-         (None, '小', '¥1,900'),
-         (None, '標準', '¥1,800')]
+# 明細（魚種 → サイズ帯ごとに 小計 ＋ 数量×単価）
 fb18 = f(FB, 18)
 fr17 = f(FR, 17)
-for sp, label, price in items:
-    if sp:
-        d.text((il, y), sp, font=fb18, fill=INK)
-        y += 28
-    else:
+fr13 = f(FR, 13)
+# (魚種, [(サイズ帯, 尾数, 小計)])
+items = [
+    ('マゴチ', [('標準', 4, 5200)]),
+    ('アジ',   [('小', 4, 1900), ('標準', 2, 1800)]),
+]
+y = ry0 + 186
+for sp, bands in items:
+    d.text((il, y), sp, font=fb18, fill=INK)
+    y += 26
+    for label, cnt, sub in bands:
+        price = f'¥{sub:,}'
         d.text((il, y), label, font=fr17, fill=(85, 82, 74))
         pw = d.textlength(price, font=fb18)
         d.text((ir - pw, y), price, font=fb18, fill=INK)
         lx0 = il + d.textlength(label, font=fr17) + 8
         leader(lx0, ir - pw - 8, y + 12)
-        y += 30
-dashed(il, ir, y + 4)
-y += 16
+        y += 23
+        unit = max(10, round(sub / cnt / 10) * 10)
+        d.text((il, y), f'{cnt}尾 × 約¥{unit:,}', font=fr13, fill=RC_DIM)
+        y += 22
+dashed(il, ir, y + 2)
 
 # 合計
-y += 18
+y += 20
 d.text((il, y + 8), '合計', font=f(FB, 20), fill=INK)
 amt = '¥8,900'
 aw = d.textlength(amt, font=f(FB, 40))

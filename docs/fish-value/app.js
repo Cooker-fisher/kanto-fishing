@@ -1316,7 +1316,7 @@ function refreshSharePreview() {
 function onShareClick() {
   if (!_lastResult) return;
   const text = buildSharePost(_lastResult);
-  const url = 'https://funatsuri-yoso.com/fish-value/?v=4';  // ?v=N: X等のOGPカード再取得（画像更新のたびに上げる）
+  const url = 'https://funatsuri-yoso.com/fish-value/?v=5';  // ?v=N: X等のOGPカード再取得（画像更新のたびに上げる）
   // このツールは船釣りに限らず、おかっぱり・川釣りの釣果でも使える。
   // よって #船釣り のような限定タグは避け、全釣り種を包む #釣り に。ブランド名は URL で伝わる。
   const hashtags = '釣り,釣果,釣った魚の値段';
@@ -1369,7 +1369,7 @@ async function onSaveImage() {
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file = new File([blob], 'tsurika-value.png', { type: 'image/png' });
     const text = buildSharePost(_lastResult);
-    const url = 'https://funatsuri-yoso.com/fish-value/?v=4';  // ?v=N: X等のOGPカード再取得（画像更新のたびに上げる）
+    const url = 'https://funatsuri-yoso.com/fish-value/?v=5';  // ?v=N: X等のOGPカード再取得（画像更新のたびに上げる）
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], text: text + '\n\n' + url });
     } else {
