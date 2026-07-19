@@ -627,8 +627,8 @@ F_TEMPLATES = [
             ("madai_kg_max", ">=", 2.5),
         ],
         "text": (
-            "<b>マダイ</b>は{madai_top_areas}で{madai_cnt_range}レンジ。"
-            "{madai_kg_max:.1f}kgの大型は<span class=\"highlight\">サイズが明確に上向き</span>な印象。"
+            "<b>マダイ</b>は{madai_top_areas}で{madai_cnt_seg}最大{madai_kg_max:.1f}kgの大型が出て、"
+            "<span class=\"highlight\">サイズが明確に上向き</span>な印象。"
         ),
     },
     {
@@ -653,7 +653,7 @@ F_TEMPLATES = [
         ],
         "text": (
             "<b>カワハギ</b>は{kawahagi_top_areas}で"
-            "{kawahagi_cnt_range}・{kawahagi_cm_range}。"
+            "{kawahagi_cnt_seg}{kawahagi_cm_range}。"
             "底物の繊細な釣りが好きな常連で常に予約が埋まる人気ジャンルで、"
             "本日も複数船宿で安定した釣果が記録されました。"
         ),
@@ -666,7 +666,7 @@ F_TEMPLATES = [
             ("tachiuo_cm_max", ">=", 90),
         ],
         "text": (
-            "<b>タチウオ</b>は{tachiuo_top_areas}方面で{tachiuo_cnt_range}、"
+            "<b>タチウオ</b>は{tachiuo_top_areas}方面で{tachiuo_cnt_seg}"
             "サイズは<b>{tachiuo_cm_range}</b>と大型揃い。"
             "ドラゴン級の良型が出ているパターンで、サイズ狙い派には好機です。"
         ),
@@ -679,7 +679,7 @@ F_TEMPLATES = [
             ("kanpachi_kg_max", ">=", 5.0),
         ],
         "text": (
-            "<b>カンパチ</b>は{kanpachi_top_areas}で{kanpachi_cnt_range}・"
+            "<b>カンパチ</b>は{kanpachi_top_areas}で{kanpachi_cnt_seg}"
             "<b>{kanpachi_kg_min:.1f}〜{kanpachi_kg_max:.2f}kg</b>。"
             "{kanpachi_top_ship}が大物記録を出した遠征便で、近海では狙えないサイズ帯です。"
         ),
@@ -716,8 +716,8 @@ F_TEMPLATES = [
             ("fugu_cnt_max", "<", 15),
         ],
         "text": (
-            "<b>フグ</b>は{fugu_top_areas}方面で{fugu_cnt_range}。"
-            "少数ながらコンスタントに記録があり、シーズン後半の手堅い狙い目です。"
+            "<b>フグ</b>は{fugu_top_areas}方面で{fugu_cnt_seg}少数ながら"
+            "コンスタントに記録があり、シーズン後半の手堅い狙い目です。"
         ),
     },
     {

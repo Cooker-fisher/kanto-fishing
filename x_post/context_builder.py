@@ -675,8 +675,15 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
             fish_ctx[f"{key}_top_ship"] = d["top_ship"]
             fish_ctx[f"{key}_top_count"] = d["cnt_max"]
             # min==max のとき単一表記の事前整形フィールド
+            # 匹数が未記録（0/None）でも型があれば釣果はあった→「0匹」を出さず空にする。
+            # _cnt_seg は「型と併記する」テンプレ用の安全セグメント（非空なら「…匹・」）。
             _cmin, _cmax = d["cnt_min"], d["cnt_max"]
-            fish_ctx[f"{key}_cnt_range"] = f"{_cmax}匹" if _cmin == _cmax else f"{_cmin}〜{_cmax}匹"
+            if _cmax:
+                _cnt_range = f"{_cmax}匹" if _cmin == _cmax else f"{_cmin}〜{_cmax}匹"
+            else:
+                _cnt_range = ""
+            fish_ctx[f"{key}_cnt_range"] = _cnt_range
+            fish_ctx[f"{key}_cnt_seg"] = f"{_cnt_range}・" if _cnt_range else ""
             _smin, _smax = d["cm_min"], d["cm_max"]
             if _smax and _smax > 0:
                 fish_ctx[f"{key}_cm_range"] = f"{_smax}cm" if _smin == _smax else f"{_smin}〜{_smax}cm"
@@ -687,6 +694,7 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
                            "top_areas", "top_ship", "top_count"]:
                 fish_ctx[f"{key}_{suffix}"] = 0 if "max" in suffix or "min" in suffix else ""
             fish_ctx[f"{key}_cnt_range"] = ""
+            fish_ctx[f"{key}_cnt_seg"] = ""
             fish_ctx[f"{key}_cm_range"] = ""
 
     # fish_rows: B案 PNG / テーブル用（全魚種を含める。HTML テーブル側は全件表示・PNG 側は build_daily_page で制限）

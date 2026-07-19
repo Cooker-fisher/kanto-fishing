@@ -1950,6 +1950,38 @@ def validate_fish_area_notes():
         fail(f"[54] ノート描画ページに禁止表現: {forbidden_doc[:5]}")
 
 
+def validate_xpost_no_zero_catch():
+    """55: x_post 日次まとめに「0匹」矛盾表示が無いこと（2026-07-19）
+
+    背景: 釣果があった魚（型=cm/kg が記録されている＝釣れている）でも匹数が未抽出だと
+    cnt_max=0 になり、テーブル/散文が「0匹」と矛盾表示していた（例: シイラ 0匹 113〜122cm）。
+    build_daily_page / context_builder は cnt_max 未記録時に「—」/空セグメントへ切替済み。
+    検証: docs/x_post/*.html に禁止パターンが無いこと。
+      - `<div class="catch">0匹</div>`（テーブル匹数セル）
+      - `<span class="xc">0匹</span>`（画像プレビュー表）
+      - `で0匹`（散文の「…で0匹・kg」「方面で0匹。」等）
+      - `0匹台`（seasonal_max=0 の破綻文）
+    """
+    print("\n[55] x_post 「0匹」矛盾表示の排除（2026-07-19）")
+    xp_dir = os.path.join(DOCS, "x_post")
+    if not os.path.isdir(xp_dir):
+        ok("[55] docs/x_post なし → skip")
+        return
+    pats = ['<div class="catch">0匹</div>', '<span class="xc">0匹</span>', "で0匹", "0匹台"]
+    hit = []
+    for fn in os.listdir(xp_dir):
+        if not (fn.endswith(".html") and fn[:4].isdigit()):
+            continue
+        c = open(os.path.join(xp_dir, fn), encoding="utf-8").read()
+        found = [p for p in pats if p in c]
+        if found:
+            hit.append((fn, found))
+    if hit:
+        fail(f"[55] x_post に「0匹」矛盾表示: {hit[:5]}（計{len(hit)}ページ）")
+    else:
+        ok("[55] x_post に「0匹」矛盾表示なし")
+
+
 def validate_fish_value_release():
     """51: 釣果価値チェッカー（/fish-value/）のリリース整合（2026-07-05）
 
@@ -2238,6 +2270,7 @@ def main():
     validate_chowari_monthly_coverage()
     validate_fish_area_analysis_sections()
     validate_fish_area_notes()
+    validate_xpost_no_zero_catch()
     validate_fish_value_release()
     validate_no_paywall_signal_and_operator_info()
     validate_verified_predictions_tier()

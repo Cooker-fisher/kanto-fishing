@@ -524,8 +524,12 @@ def _fish_table_rows_html(fish_rows, depth="../"):
 
         fish_link = _fish_link_html(fish_name, depth)
         port_links = _port_links_html(top_port, depth)
+        # 匹数が未記録（0/None）でも型(cm/kg)があれば釣果はあった→「0匹」矛盾表示を避け「—」
         # min==max のとき単一表記化（「1〜1匹」のような重複を排除）
-        catch_text = f"{cnt_max}匹" if cnt_min == cnt_max else f"{cnt_min}〜{cnt_max}匹"
+        if not cnt_max:
+            catch_text = "—"
+        else:
+            catch_text = f"{cnt_max}匹" if cnt_min == cnt_max else f"{cnt_min}〜{cnt_max}匹"
         rows.append(f"""      <div class="fish-row">
         {icon_html}
         <div class="name">{fish_link}<span class="badge">{n_trips}便</span></div>
@@ -560,12 +564,17 @@ def _x_card_table_rows_html(fish_rows):
             size_html = f'<span class="xs">{cm_max}cm</span>'
         else:
             size_html = "—"
+        # 匹数未記録（0/None）でも型があれば釣果あり→「0匹」を避け「—」
+        if not cnt_max:
+            catch_text = "—"
+        else:
+            catch_text = f"{cnt_max}匹" if cnt_min == cnt_max else f"{cnt_min}〜{cnt_max}匹"
         rows.append(
             f'<tr><td><div class="xfc">'
             f'<img src="{icon_path}" alt="{fish_name}" onerror="this.style.display=\'none\'">'
             f'<span class="n">{fish_name}</span>'
             f'<span class="b">{n_trips}便</span></div></td>'
-            f'<td><span class="xc">{cnt_max}匹</span></td>' if cnt_min == cnt_max else f'<td><span class="xc">{cnt_min}〜{cnt_max}匹</span></td>'
+            f'<td><span class="xc">{catch_text}</span></td>'
             f'<td>{size_html}</td>'
             f'<td class="xp">{top_port}</td></tr>'
         )
