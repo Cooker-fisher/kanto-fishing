@@ -264,3 +264,102 @@ def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2))
                          "pb": (e.get("range_quality") or {}).get("promise_break")})
     rows.sort(key=lambda r: (r["date_label"], -(r["hi"] or 0)))
     return rows
+
+# ── 環境条件の平年値（weather/*.csv・2026-07-22 追加）──────────────────
+# 「この日の水温は高かったのか低かったのか」を言うための基準値。
+# weather/YYYY-MM.csv は 153地点×時刻の実測（Open-Meteo Archive 由来）。
+# 当年の同月ファイルが未生成でも、過去3年の同じ時期の行があれば基準は作れる。
+# 内海/外海の判定は context_builder の集合を単一ソースとして再利用する
+# （weather CSV の point 名と一致するようメンテされている集合）。
+def _pt_sets():
+    from .context_builder import _INNER_POINTS, _OUTER_POINTS
+    return _INNER_POINTS, _OUTER_POINTS
+
+
+def _wx_rows(root, cols=("sst", "wave_height", "wind_speed")):
+    """weather/*.csv を (date, point, {col: val}) で読む。プロセス内キャッシュ。"""
+    key = ("wx", root)
+    if key in _cache:
+        return _cache[key]
+    wdir = os.path.join(root, "weather")
+    out = []
+    if os.path.isdir(wdir):
+        for fn in sorted(os.listdir(wdir)):
+            if not fn.endswith(".csv"):
+                continue
+            try:
+                with open(os.path.join(wdir, fn), encoding="utf-8", newline="") as f:
+                    for r in csv.DictReader(f):
+                        vals = {}
+                        for c in cols:
+                            v = _fnum(r.get(c))
+                            if v is not None:
+                                vals[c] = v
+                        if vals:
+                            out.append((r.get("date", ""), r.get("point", ""), vals))
+            except Exception:
+                continue
+    _cache[key] = out
+    return out
+
+
+def wx_baseline(date_iso, root=None):
+    """対象日と同じ旬（過去のみ）の海況の目安値を内海/外海別に返す。
+    戻り値: {"inner": {"sst": 中央値, "wave_height": .., "wind_speed": ..,  "n": 件数}, "outer": {...}}
+    データが無ければ空 dict。
+    """
+    root = root or _ROOT
+    try:
+        dt = _dt.datetime.strptime(date_iso, "%Y-%m-%d")
+    except ValueError:
+        return {}
+    target_dec = _decade_no(dt)
+    _in_pts, _out_pts = _pt_sets()
+    acc = {"inner": {}, "outer": {}}
+    for d, point, vals in _wx_rows(root):
+        if not d or d >= date_iso:
+            continue
+        try:
+            hd = _dt.datetime.strptime(d, "%Y-%m-%d")
+        except ValueError:
+            continue
+        if _decade_no(hd) != target_dec:
+            continue
+        side = "inner" if point in _in_pts else ("outer" if point in _out_pts else None)
+        if side is None:
+            continue
+        for c, v in vals.items():
+            acc[side].setdefault(c, []).append(v)
+    out = {}
+    for side, cols in acc.items():
+        if not cols:
+            continue
+        o = {c: _median(v) for c, v in cols.items() if v}
+        o["n"] = max((len(v) for v in cols.values()), default=0)
+        out[side] = o
+    return out
+
+
+# ── 船宿×魚種の既知の傾向（normalize/ship_analysis.json）──────────────────
+# C層 combo_wx_params からドメインレビューを経て蒸留済み（#50 の経路と同じ）。
+# surface=false の危険因子は蒸留時点で除外されている。
+def ship_fish_factors(ship, fish, root=None):
+    """指定の船宿×魚種で採用されている海況因子のリストを返す（無ければ []）。"""
+    root = root or _ROOT
+    import json
+    key = ("ship_analysis", root)
+    if key not in _cache:
+        try:
+            with open(os.path.join(root, "normalize", "ship_analysis.json"), encoding="utf-8") as f:
+                _cache[key] = json.load(f)
+        except Exception:
+            _cache[key] = {}
+    data = _cache[key]
+    entry = data.get(ship) or {}
+    for fe in entry.get("fish", []):
+        if fe.get("fish") == fish:
+            return {"factors": fe.get("factors") or [],
+                    "n_records": fe.get("n_records") or 0,
+                    "peaks": fe.get("peaks") or []}
+    return {}
+

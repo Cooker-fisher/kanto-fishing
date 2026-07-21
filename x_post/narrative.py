@@ -64,7 +64,7 @@ def _has_norm(ins):
 
 
 def times_label(ratio):
-    """倍率の平易表現。'例年の1.8倍' / '例年並み' / '例年の4割ほど'"""
+    """倍率の平易表現。'例年の1.8倍' / '例年並み' / '例年の4割程度'"""
     if ratio is None:
         return ""
     if _is_flat(ratio):
@@ -72,7 +72,7 @@ def times_label(ratio):
     if ratio >= 1.0:
         return f"例年の{ratio:.1f}倍"
     wari = int(round(ratio * 10))
-    return f"例年の{wari}割ほど" if wari >= 1 else "例年を大きく下回る数"
+    return f"例年の{wari}割程度" if wari >= 1 else "例年を大きく下回る数"
 
 
 def times_short(ratio):
@@ -102,7 +102,7 @@ def build_hl_cards(ctx):
         if (ins.get("kg_ratio") and (ins.get("norm_n") or 0) >= _MIN_NORM_N
                 and not _is_flat(ins["kg_ratio"])):
             meta += f"<br>型は<span class=\"up\">{times_short(ins['kg_ratio'])}</span>"
-        cards.append(("きょう一番の大物", kg_fish, val, meta))
+        cards.append(("本日の最大魚", kg_fish, val, meta))
         used.add(kg_fish)
 
     # 2. 数の好調
@@ -113,7 +113,7 @@ def build_hl_cards(ctx):
         meta = f"{ctx.get('top_cnt_port','')}｜{ctx.get('top_cnt_ship','')}"
         if _has_norm(ins):
             meta += f"<br>{season}としては<span class=\"up\">{times_short(ins['ratio'])}</span>"
-        cards.append(("数がいちばん出た魚", cnt_fish, val, meta))
+        cards.append(("最も数が出た魚", cnt_fish, val, meta))
         used.add(cnt_fish)
 
     # 3. 例年より好調
@@ -124,8 +124,8 @@ def build_hl_cards(ctx):
     if cand:
         f, i = max(cand, key=lambda x: x[1]["ratio"])
         top = (i.get("top_trips") or [{}])[0]
-        cards.append(("例年よりよく釣れた魚", f, times_short(i["ratio"]),
-                      f"{season}のふだんは{_fmt_num(i['norm_cnt'])}匹前後 → きょうは{_fmt_num(i['today_cnt'])}匹前後"
+        cards.append(("例年を上回った魚", f, times_short(i["ratio"]),
+                      f"{season}の平年は{_fmt_num(i['norm_cnt'])}匹前後 → 本日は{_fmt_num(i['today_cnt'])}匹前後"
                       f"<br>{top.get('area','')}｜{top.get('ship','')}"))
         used.add(f)
 
@@ -138,14 +138,14 @@ def build_hl_cards(ctx):
         if best:
             f, i = max(best, key=lambda x: (x[1].get("n_days60") or 0))
             top = (i.get("top_trips") or [{}])[0]
-            cards.append(("この2か月で最多", f, f"{_fmt_num(top.get('cnt'))}匹",
-                          f"2か月で釣果の出た{i['n_days60']}日のどれよりも多い"
+            cards.append(("過去2か月で最多", f, f"{_fmt_num(top.get('cnt'))}匹",
+                          f"過去2か月で釣果の出た{i['n_days60']}日のどれよりも多い"
                           f"<br>{top.get('area','')}｜{top.get('ship','')}"))
         elif gap:
             f, i = max(gap, key=lambda x: x[1]["days_since_last"])
             top = (i.get("top_trips") or [{}])[0]
             val = f"{_fmt_num(top.get('cnt'))}匹" if top.get("cnt") else "記録あり"
-            cards.append((f"{i['days_since_last']}日ぶりに顔を出した魚", f, val,
+            cards.append((f"{i['days_since_last']}日ぶりの記録", f, val,
                           f"{top.get('area','')}｜{top.get('ship','')}"))
 
     if not cards:
@@ -174,27 +174,27 @@ def build_highlight_prose(ctx, root=None):
     cnt_fish = ctx.get("top_cnt_fish", "")
     if cnt_fish and ctx.get("top_cnt_max", 0) > 0:
         ins = ins_all.get(cnt_fish) or {}
-        s = (f"きょういちばんの数字は<b>{cnt_fish} {ctx.get('top_cnt_max')}匹</b>。"
-             f"{ctx.get('top_cnt_port','')}の<b>{ctx.get('top_cnt_ship','')}</b>から出た記録です。")
+        s = (f"本日の最多は<b>{cnt_fish} {ctx.get('top_cnt_max')}匹</b>。"
+             f"{ctx.get('top_cnt_port','')}の<b>{ctx.get('top_cnt_ship','')}</b>での記録です。")
         if _has_norm(ins) and not _is_flat(ins["ratio"]):
-            s += (f"この日の{cnt_fish}は{ins['n_trips']}便で{_fmt_num(ins['today_cnt'])}匹前後。"
-                  f"{season}のふだんは{_fmt_num(ins['norm_cnt'])}匹前後なので、"
+            s += (f"本日の{cnt_fish}は{ins['n_trips']}便で{_fmt_num(ins['today_cnt'])}匹前後。"
+                  f"{season}の平年は{_fmt_num(ins['norm_cnt'])}匹前後なので、"
                   f"<b>{times_label(ins['ratio'])}</b>のペースでした。")
         elif _has_norm(ins):
             s += f"{season}としては{times_label(ins['ratio'])}のペースです。"
         if ins.get("rank60") == 1 and (ins.get("n_days60") or 0) >= 10:
-            s += f"この2か月で釣果の出た{ins['n_days60']}日の中でも最多です。"
+            s += f"この過去2か月で釣果の出た{ins['n_days60']}日の中でも最多です。"
         paras.append(s)
 
     # 大物
     kg_fish = ctx.get("top_kg_fish", "")
     if kg_fish and ctx.get("top_kg_max", 0) > 0:
         ins = ins_all.get(kg_fish) or {}
-        s = (f"重さでは<b>{kg_fish} {ctx.get('top_kg_max'):.1f}kg</b>。"
-             f"{ctx.get('top_kg_port','')}の<b>{ctx.get('top_kg_ship','')}</b>で上がりました。")
+        s = (f"重量では<b>{kg_fish} {ctx.get('top_kg_max'):.1f}kg</b>。"
+             f"{ctx.get('top_kg_port','')}の<b>{ctx.get('top_kg_ship','')}</b>で記録されました。")
         if (ins.get("kg_ratio") and (ins.get("norm_n") or 0) >= _MIN_NORM_N
                 and not _is_flat(ins["kg_ratio"])):
-            s += (f"{season}のふだんの型は{_fmt_num(ins['norm_kg'])}kg前後なので、"
+            s += (f"{season}の平年の型は{_fmt_num(ins['norm_kg'])}kg前後なので、"
                   f"{times_label(ins['kg_ratio'])}の型です。")
         paras.append(s)
 
@@ -211,10 +211,10 @@ def build_highlight_prose(ctx, root=None):
         if downs:
             f, i = downs[0]
             s += (f"逆に<b>{f}</b>は{times_label(i['ratio'])}で、"
-                  f"ふだんの{_fmt_num(i['norm_cnt'])}匹前後には届きませんでした。")
+                  f"平年の{_fmt_num(i['norm_cnt'])}匹前後には届きませんでした。")
         paras.append(s)
 
-    # あすの予想（内部用語を出さない）
+    # 明日の予想（内部用語を出さない）
     fish_names = {r["fish"] for r in rows}
     fc = load_verified_forecast(ctx.get("date_iso", ""), fish_names, root=root)
     if fc:
@@ -225,7 +225,7 @@ def build_highlight_prose(ctx, root=None):
         if isinstance(pb, (int, float)):
             s += f"過去の実績では{(1 - pb) * 100:.0f}%の便がこの範囲に収まっていました。"
         s += (f"予想を出すのは、過去の実績と照らして精度を確かめられた船宿・魚種の組み合わせだけです"
-              f"（きょう時点で{len(fc)}件）。<a href=\"/forecast/\">あすの予想を見る</a>")
+              f"（本日時点で{len(fc)}件）。<a href=\"/forecast/\">明日の予想を見る</a>")
         paras.append(s)
 
     if not paras:
@@ -258,11 +258,11 @@ def _fish_sentence(fish, row, ins, single, season):
         t = tops[0]
         area = f"（{t.get('area','')}）" if t.get("area") else ""
         if single:
-            parts.append(f"<b>{fish}</b> — <b>{t['ship']}</b>{area}の{_fmt_num(t['cnt'])}匹、この1便のみ。")
+            parts.append(f"<b>{fish}</b> — <b>{t['ship']}</b>{area}の{_fmt_num(t['cnt'])}匹、の1便のみ。")
         else:
-            head = f"<b>{fish}</b>（{n}便）— トップは<b>{t['ship']}</b>{area}の{_fmt_num(t['cnt'])}匹"
+            head = f"<b>{fish}</b>（{n}便）— 最多は<b>{t['ship']}</b>{area}の{_fmt_num(t['cnt'])}匹"
             if len(tops) > 1:
-                head += f"、次いで{tops[1]['ship']}の{_fmt_num(tops[1]['cnt'])}匹"
+                head += f"、次点は{tops[1]['ship']}の{_fmt_num(tops[1]['cnt'])}匹"
             parts.append(head + "。")
     else:
         size = _size_str(row)
@@ -277,11 +277,11 @@ def _fish_sentence(fish, row, ins, single, season):
             parts.append(f"全体では{_fmt_num(ins['today_cnt'])}匹前後で、{season}としては例年並み。")
         else:
             parts.append(f"全体では{_fmt_num(ins['today_cnt'])}匹前後。"
-                         f"{season}のふだんは{_fmt_num(ins['norm_cnt'])}匹前後なので"
+                         f"{season}の平年は{_fmt_num(ins['norm_cnt'])}匹前後なので"
                          f"<b>{times_label(ins['ratio'])}</b>です。")
 
     if ins.get("rank60") == 1 and (ins.get("n_days60") or 0) >= 10 and tops:
-        parts.append("この2か月では最多の記録。")
+        parts.append("過去2か月では最多の記録です。")
     elif (ins.get("days_since_last") or 0) >= _GAP_DAYS:
         parts.append(f"記録が出るのは{ins['days_since_last']}日ぶりです。")
 
@@ -356,10 +356,24 @@ def build_ocean_prose(ctx):
     if tail:
         sents.append("、".join(tail) + "。")
 
+    # 出船可否の判定（crawler._sail_judge / _sea_grid_html と同じ閾値ベルト）
+    wv, wd = inner.get("wave"), inner.get("wind_spd")
+    if wv is not None and wd is not None:
+        try:
+            wv, wd = float(wv), float(wd)
+            sev = max(0 if wd < 6 else 1 if wd < 8 else 2 if wd < 10 else 3,
+                      0 if wv < 0.5 else 1 if wv < 1.0 else 2 if wv < 1.5 else 3)
+            sents.append(["内海は出船に支障のない穏やかな海況でした。",
+                          "内海はそよ風程度で、釣りに支障のない範囲でした。",
+                          "内海は強風・高波で出船には注意が必要な水準でした。",
+                          "内海は荒天で欠航が出やすい水準でした。"][sev])
+        except (TypeError, ValueError):
+            pass
+
     n_ships = ctx.get("n_ships", 0)
     n_cancel = ctx.get("n_cancellations", 0)
     if n_ships:
-        sents.append(f"この日は<b>{n_ships}軒</b>の船宿から釣果の報告があり、欠航の記録は{n_cancel}件でした。")
+        sents.append(f"本日は<b>{n_ships}軒</b>の船宿から釣果の報告があり、欠航の記録は{n_cancel}件でした。")
 
     if not sents:
         return ""
@@ -384,3 +398,158 @@ def build_intro(ctx):
         head = "・".join(sorted(up, key=lambda f: -ins_all[f]["ratio"])[:3])
         s += f'このうち<b>{len(up)}魚種</b>が{season}の例年を上回りました（{head} ほか）。'
     return f'<p class="lead">{s}</p>'
+
+# ── 環境条件と傾向の照合（考察）────────────────────────────────────────
+# ユーザー指摘（2026-07-22）「ただ数字を書いているだけ。環境要因や考察はしないのか」への対応。
+# 使えるのは (1) 当日の実測海況（weather CSV / Forecast API）
+#            (2) 過去3年の同じ時期の海況の目安（insights.wx_baseline）
+#            (3) 船宿×魚種で採用済みの海況因子（normalize/ship_analysis.json＝C層からの蒸留・
+#                ドメインレビュー済み・危険因子は surface=false で除外済み）
+# 3つを突き合わせて「本日の条件は、その船宿・魚種が数を伸ばしてきた向きか」を述べる。
+# **相関であって因果ではない**ことを必ず明記する（#50 と同じ原則）。
+
+# 当日の実測値と対応づけられる因子だけを扱う（黒潮 SLA や CHL は当日値を持っていないため除外）
+_FACTOR_MEASURABLE = {
+    "sst": "sst", "sst_avg": "sst", "temp_avg": "sst",
+    "wave_height_avg": "wave_height", "wave_height_max": "wave_height",
+    "wind_speed_avg": "wind_speed", "wind_speed_max": "wind_speed",
+}
+_TIDE_FACTOR = {
+    "tide_grp_oshio": "大潮", "tide_grp_chusho": "中潮", "tide_grp_chowaka": ("長潮", "若潮"),
+}
+_METRIC_JP = {"sst": "水温", "wave_height": "波の高さ", "wind_speed": "風速"}
+_METRIC_UNIT = {"sst": "℃", "wave_height": "m", "wind_speed": "m/s"}
+
+
+def _side_of(area, ctx):
+    """港名から内海/外海を判定（context_builder の集合を再利用）。"""
+    try:
+        from .context_builder import _INNER_PORTS
+    except Exception:
+        return "inner"
+    return "inner" if area in _INNER_PORTS else "outer"
+
+
+def build_conditions_note(ctx, root=None):
+    """セクション2の末尾に置く『本日の条件と、これまでの傾向』。
+    材料が無ければ空文字（無理に書かない）。"""
+    root = root or _ROOT
+    from .insights import wx_baseline, ship_fish_factors
+
+    ins_all = (ctx.get("insights") or {}).get("fish") or {}
+    season = ctx.get("season_label", "この時期")
+    base = wx_baseline(ctx.get("date_iso", ""), root=root)
+    if not base:
+        return ""
+    today = {"inner": ctx.get("inner_sea_data") or {}, "outer": ctx.get("outer_sea_data") or {}}
+    # sea_data のキー名 → baseline のキー名
+    _K = {"sst": "sst", "wave": "wave_height", "wind_spd": "wind_speed"}
+
+    def _dev(side, metric):
+        """(当日値, 平年値, 差) を返す。片方でも欠ければ None。"""
+        b = (base.get(side) or {}).get(metric)
+        tkey = next((k for k, v in _K.items() if v == metric), None)
+        t = (today.get(side) or {}).get(tkey)
+        if b is None or t is None:
+            return None
+        try:
+            return float(t), float(b), float(t) - float(b)
+        except (TypeError, ValueError):
+            return None
+
+    paras = []
+
+    # (1) 本日の海況は、この時期として高いか低いか
+    bits = []
+    for side, label in (("inner", "東京湾・相模湾"), ("outer", "外房〜銚子・伊豆方面")):
+        d = _dev(side, "sst")
+        if not d:
+            continue
+        t, b, diff = d
+        if abs(diff) < 0.5:
+            bits.append(f"{label}の水温{t:.1f}℃は{season}の平年（{b:.1f}℃前後）とほぼ同じ")
+        else:
+            updown = "高め" if diff > 0 else "低め"
+            bits.append(f"{label}の水温{t:.1f}℃は{season}の平年（{b:.1f}℃前後）より{abs(diff):.1f}℃{updown}")
+    dwave = _dev("inner", "wave_height")
+    if dwave and abs(dwave[2]) >= 0.3:
+        t, b, diff = dwave
+        bits.append(f"内海の波{t:.1f}mも平年（{b:.1f}m前後）より{'高め' if diff > 0 else '低め'}")
+    if bits:
+        paras.append("、".join(bits) + "。")
+
+    # (2) 注目魚種について、これまでの傾向と本日の条件を突き合わせる
+    focus = []
+    cnt_fish = ctx.get("top_cnt_fish", "")
+    if cnt_fish:
+        focus.append(cnt_fish)
+    for f, i in sorted(ins_all.items(), key=lambda x: -(x[1].get("ratio") or 0)):
+        if f not in focus and _has_norm(i) and (i.get("n_trips") or 0) >= 2 and not _is_flat(i["ratio"]):
+            focus.append(f)
+        if len(focus) >= 3:
+            break
+
+    notes = []
+    for fish in focus[:3]:
+        ins = ins_all.get(fish) or {}
+        tops = [t for t in (ins.get("top_trips") or []) if t.get("cnt")]
+        if not tops:
+            continue
+        ship, area = tops[0]["ship"], tops[0].get("area", "")
+        info = ship_fish_factors(ship, fish, root=root) or {}
+        factors = info.get("factors") or []
+        if not factors:
+            continue
+        side = _side_of(area, ctx)
+        for fac in factors:
+            base_name = fac.get("base", "")
+            direction = fac.get("direction", "")  # 「多い」「少ない」
+            label = fac.get("label", "")
+            metric = _FACTOR_MEASURABLE.get(base_name)
+            if metric:
+                d = _dev(side, metric)
+                if not d:
+                    continue
+                t, b, diff = d
+                if abs(diff) < (0.5 if metric == "sst" else 0.3):
+                    state = f"平年並み（{t:.1f}{_METRIC_UNIT[metric]}）"
+                    match = None
+                else:
+                    state = (f"平年より{abs(diff):.1f}{_METRIC_UNIT[metric]}"
+                             f"{'高め' if diff > 0 else '低め'}（{t:.1f}{_METRIC_UNIT[metric]}）")
+                    high = diff > 0
+                    match = (high and direction == "多い") or ((not high) and direction == "少ない")
+                s = (f"<b>{ship}</b>の{fish}は、過去{info.get('n_records', 0)}件の記録では"
+                     f"{label}が高い日に釣果が<b>{direction}</b>傾向がありました。"
+                     f"本日の{_METRIC_JP[metric]}は{state}")
+                if match is True:
+                    s += "で、数が伸びてきた向きと一致します。"
+                elif match is False:
+                    s += "で、数が伸びてきた向きとは逆でした。"
+                else:
+                    s += "でした。"
+                notes.append(s)
+                break
+            tide_want = _TIDE_FACTOR.get(base_name)
+            if tide_want:
+                tide_now = ctx.get("tide_type", "")
+                want = tide_want if isinstance(tide_want, tuple) else (tide_want,)
+                s = (f"<b>{ship}</b>の{fish}は、過去{info.get('n_records', 0)}件の記録では"
+                     f"{label}に釣果が<b>{direction}</b>傾向がありました。"
+                     f"本日の潮は{tide_now}")
+                s += "で、その条件に当たります。" if tide_now in want else "でした。"
+                notes.append(s)
+                break
+        if len(notes) >= 2:
+            break
+
+    if notes:
+        paras.extend(notes)
+        paras.append("いずれも過去データ上の相関で、釣果の原因を特定したものではありません。"
+                     "海況以外の要因（船長の判断・ポイント選択・仕掛け）も結果を左右します。")
+
+    if not paras:
+        return ""
+    return ('<div class="commentary evidence"><h3 class="note-h">本日の条件と、これまでの傾向</h3>'
+            + "".join(f"<p>{p}</p>" for p in paras) + "</div>")
+

@@ -315,6 +315,7 @@ nav.gnav a.prem::before {
 .fish-row .nr.up { color: var(--good); }
 .fish-row .nr.down { color: var(--sub); }
 .fish-row .nr.flat { color: var(--sub); font-weight: 600; }
+.note-h { font-size: 14px; font-weight: 800; color: var(--accent); margin: 14px 0 6px; }
 .note-inline { display: block; font-size: 12px; color: var(--sub); font-weight: 400; margin-top: 4px; }
 .fish-row .nr.none { color: transparent; }
 /* day-nav 基本（旧 2列レイアウト・後方互換として残す） */
@@ -634,7 +635,7 @@ def _fmt_sea_cards(sea):
     )
 
 
-def _sea_grid_html(ctx, hide_ship_rate=False):
+def _sea_grid_html(ctx, hide_ship_rate=False, hide_summary=False):
     """内海・外海 2 セット × 6 カード海況グリッド + サマリ + 出船率バー。
     hide_ship_rate=True のとき出船率バーは省略する（0件日用）。"""
     inner = ctx.get("inner_sea_data") or {}
@@ -692,7 +693,7 @@ def _sea_grid_html(ctx, hide_ship_rate=False):
         else:
             summary_parts.append(f"波{wave_i:.1f}m・風{wspd_i:.0f}m/sの暴風で欠航警戒")
     summary_html = ""
-    if summary_parts:
+    if summary_parts and not hide_summary:
         summary_html = f'<p class="sea-summary">{"。".join(summary_parts)}。</p>\n'
 
     # 出船率バー 撤去（2026-05-24）
@@ -930,7 +931,8 @@ def build(ctx, commentary, output_path, png_url=None):
     if not no_data and (ctx.get("insights") or {}).get("fish"):
         try:
             from x_post.narrative import (build_highlight_prose, build_fish_prose,
-                                          build_ocean_prose, build_intro)
+                                          build_ocean_prose, build_intro,
+                                          build_conditions_note)
             from x_post.text_generator import _linkify_ship_names as _linkify
             _intro_new = build_intro(ctx)
             if _intro_new:
@@ -944,10 +946,16 @@ def build(ctx, commentary, output_path, png_url=None):
                 fish_commentary = _linkify(_fish_new)
             if _oc_new:
                 ocean_commentary = _linkify(_oc_new)
+            # 考察（本日の条件 × これまでの傾向）を海況セクション末尾に追加
+            _cond = build_conditions_note(ctx)
+            if _cond:
+                ocean_commentary = (ocean_commentary or "") + _linkify(_cond)
         except Exception:
             pass
     # 海況グリッド（0件日は出船率バーを隠す。「0船宿中・0欠航」表示の誤解防止）
-    sea_grid = _sea_grid_html(ctx, hide_ship_rate=no_data)
+    # narrative 版の海況散文がある日は、同じ数値を繰り返す sea-summary を出さない
+    _has_ins = bool((ctx.get('insights') or {}).get('fish'))
+    sea_grid = _sea_grid_html(ctx, hide_ship_rate=no_data, hide_summary=(_has_ins and not no_data))
     # 魚種テーブル
     fish_rows_html = _fish_table_rows_html(fish_rows, depth="../")
     # X カードテーブル
