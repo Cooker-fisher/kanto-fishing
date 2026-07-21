@@ -277,7 +277,7 @@ nav.gnav a.prem::before {
 .fish-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .fish-row {
   display: grid;
-  grid-template-columns: 50px 110px 100px 100px 84px 1fr;
+  grid-template-columns: 50px 110px 96px 96px 92px 1fr;
   gap: 10px;
   align-items: center;
   padding: 10px 14px;
@@ -310,11 +310,12 @@ nav.gnav a.prem::before {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
-/* 平年比 chip（過去3年の同旬中央値との比・母数8便以上のみ表示） */
+/* 例年との比較 chip（過去3年の同じ時期の記録との倍率・過去8便以上あるときだけ表示） */
 .fish-row .nr { font-size: 11px; font-weight: 700; white-space: nowrap; }
 .fish-row .nr.up { color: var(--good); }
 .fish-row .nr.down { color: var(--sub); }
 .fish-row .nr.flat { color: var(--sub); font-weight: 600; }
+.note-inline { display: block; font-size: 12px; color: var(--sub); font-weight: 400; margin-top: 4px; }
 .fish-row .nr.none { color: transparent; }
 /* day-nav 基本（旧 2列レイアウト・後方互換として残す） */
 .day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
@@ -419,7 +420,7 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 .empty-day-notice .ed-stat { color: var(--sub); font-size: 13px; margin-left: 4px; }
 @media (max-width: 600px) {
   .hl-grid, .umi-grid { grid-template-columns: 1fr; }
-  .fish-row { grid-template-columns: 36px 1fr 74px 74px 62px; gap: 6px; padding: 10px; }
+  .fish-row { grid-template-columns: 34px 1fr 70px 70px 72px; gap: 6px; padding: 10px; }
   .fish-row .nr { font-size: 10px; }
   .fish-row .port { display: none; }
   .share-bar a { padding: 7px 12px; font-size: 12px; }
@@ -535,13 +536,14 @@ def _fish_table_rows_html(fish_rows, depth="../"):
         _ratio = row.get("norm_ratio")
         _norm_n = row.get("norm_n") or 0
         if _ratio and _norm_n >= 8:
-            _title = f"過去3年の同じ旬（{_norm_n}便）の中央値 {row.get('norm_cnt'):.0f}匹 との比"
+            from x_post.narrative import times_short as _times_short
+            _title = (f"過去3年の同じ時期（{_norm_n}便）の記録は{row.get('norm_cnt'):.0f}匹前後。"
+                      f"それと比べた倍率です")
             if abs(_ratio - 1.0) <= 0.10:
-                # ±10% 以内は「+0%」の羅列になるだけなので平年並みと表示する
-                norm_html = f'<span class="nr flat" title="{_title}">平年並み</span>'
+                norm_html = f'<span class="nr flat" title="{_title}">例年並み</span>'
             else:
                 _cls = "nr up" if _ratio > 1.0 else "nr down"
-                norm_html = f'<span class="{_cls}" title="{_title}">平年比 {row.get("norm_ratio_str","")}</span>'
+                norm_html = f'<span class="{_cls}" title="{_title}">{_times_short(_ratio)}</span>'
         else:
             norm_html = '<span class="nr none"></span>'
         # 匹数が未記録（0/None）でも型(cm/kg)があれば釣果はあった→「0匹」矛盾表示を避け「—」
@@ -664,13 +666,10 @@ def _sea_grid_html(ctx, hide_ship_rate=False):
     wspd_i = inner.get("wind_spd")
     summary_parts = []
     if sst_i is not None:
-        diff = sst_i - sst_norm.get(_m, 17)
-        if diff >= 1.5:
-            summary_parts.append(f"水温は平年比+{diff:.1f}℃と高め（{sst_i:.1f}℃）")
-        elif diff <= -1.5:
-            summary_parts.append(f"水温は平年比{diff:.1f}℃と低め（{sst_i:.1f}℃）")
-        else:
-            summary_parts.append(f"水温は平年並み（{sst_i:.1f}℃）")
+        # 2026-07-22: 旧実装は sst_norm（月ごとの固定値・出典なしの概算）との差を
+        # 「水温は平年比+5.1℃」と断定していた。実測は 27.1℃ で 7月下旬としては普通の値であり、
+        # 概算表との差を平年比として出すのは誤解を招くため実測値のみを述べる。
+        summary_parts.append(f"東京湾の水温は{sst_i:.1f}℃")
     if wave_i is not None and wspd_i is not None:
         # 船釣り基準の内海ベルト（crawler.py:_sea_label と整合）
         # 内海: 風 <6=穏 / 6-8=やや / 8-10=強 / ≥10=暴
@@ -931,8 +930,11 @@ def build(ctx, commentary, output_path, png_url=None):
     if not no_data and (ctx.get("insights") or {}).get("fish"):
         try:
             from x_post.narrative import (build_highlight_prose, build_fish_prose,
-                                          build_ocean_prose)
+                                          build_ocean_prose, build_intro)
             from x_post.text_generator import _linkify_ship_names as _linkify
+            _intro_new = build_intro(ctx)
+            if _intro_new:
+                intro_block = _intro_new
             _hl_new = build_highlight_prose(ctx)
             _fish_new = build_fish_prose(ctx)
             _oc_new = build_ocean_prose(ctx)
@@ -965,10 +967,15 @@ def build(ctx, commentary, output_path, png_url=None):
     if no_data:
         section3_html = ""
     else:
+        # 「例年」の定義はここで一度だけ説明する（各文で毎回注記すると読みにくいため）
+        _norm_note = ""
+        if (ctx.get("insights") or {}).get("fish"):
+            _norm_note = (f'<span class="note-inline">「例年」は、過去3年の同じ時期'
+                          f'（{ctx.get("season_label","この時期")}）に記録された釣果と比べた値です。</span>')
         section3_html = f"""  <section class="sec">
     <h2><span class="num">3</span>魚種別 釣果報告</h2>
     <p class="lead">
-      本日の全{n_fish_species}魚種のうち、件数上位を便数・釣果レンジ・型・主な港とともにまとめました。
+      この日に釣果の報告があった{n_fish_species}魚種を、便数・釣った数・型・主な港でまとめました。{_norm_note}
     </p>
     <div class="fish-list">
 {fish_rows_html}

@@ -2018,6 +2018,7 @@ def validate_xpost_evidence_prose():
         warn(f"[56] {latest} は旧文型で生成済み（次回 crawl 再生成で有効化）→ skip")
         return
 
+    # (a) 根拠なしフィラー
     banned = ["と推察されます", "好海況が観測されています", "再現性が高い",
               "組み込みやすい魚種です", "好スコア", "予定通り運航しました"]
     hit = [b for b in banned if b in c]
@@ -2026,18 +2027,28 @@ def validate_xpost_evidence_prose():
     else:
         ok(f"[56] {latest} に禁止フィラー表現なし")
 
-    if "平年比" in c:
-        if "同じ旬（" in c or "同旬" in c:
-            ok("[56] 平年比の記述に母数（同旬N便）が併記されている")
-        else:
-            fail("[56] 平年比の記述に母数（同旬N便）が無い")
+    # (b) 読者に通じない内部用語（ユーザー指摘 2026-07-22 第2ラウンド）
+    jargon = ["tier A", "tier a", "同旬", "母数", "平年比", "promise_break", "wMAPE", "open_tier"]
+    jhit = [j for j in jargon if j in c]
+    if jhit:
+        fail(f"[56] {latest} に内部用語が露出: {jhit}")
     else:
-        warn(f"[56] {latest} に平年比の記述なし（データ不足日ならフォールバック仕様）")
+        ok("[56] 内部用語（tier A・同旬・母数・平年比 等）の露出なし")
 
-    if "最多は" in c:
-        ok("[56] 魚種別報告に船宿別の最多記述あり")
+    # (c) 「例年」を使うなら、その定義を1か所で説明していること
+    if "例年" in c:
+        if "過去3年の同じ時期" in c:
+            ok("[56] 「例年」の定義（過去3年の同じ時期）を明示している")
+        else:
+            fail("[56] 「例年」を使っているのに定義の説明が無い")
     else:
-        warn(f"[56] {latest} に「最多は…」の船宿別記述なし（0件日/フォールバック時は正常）")
+        warn(f"[56] {latest} に例年比較の記述なし（データ不足日ならフォールバック仕様）")
+
+    # (d) テーブルの反復ではなく船宿別の内訳が書かれていること
+    if "トップは" in c:
+        ok("[56] 魚種別報告に船宿別のトップ記述あり")
+    else:
+        warn(f"[56] {latest} に「トップは…」の船宿別記述なし（0件日/フォールバック時は正常）")
 
 
 def validate_fish_value_release():
