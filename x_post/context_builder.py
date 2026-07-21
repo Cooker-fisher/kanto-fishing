@@ -714,6 +714,42 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
                 "n_trips": d["n"],
             })
 
+    # ── insights（2026-07-22 追加）─────────────────────────────────────────
+    # data/V2/*.csv（コミット済み・CI で読める）から平年比・記録性・船宿別内訳を算出し、
+    # ハイライト／魚種別報告を「推測フィラー」から「数値根拠つき」に置き換える土台にする。
+    # 当日値は day_catches から渡し、insights 側は当日より前だけを集計する（二重計上防止）。
+    today_fish_trips = {}
+    for c in day_catches:
+        if c.get("is_cancellation"):
+            continue
+        cr = c.get("count_range") or {}
+        _personal = _cnt_personal(cr)
+        _sc = c.get("size_cm") if isinstance(c.get("size_cm"), dict) else {}
+        _wk = c.get("weight_kg") if isinstance(c.get("weight_kg"), dict) else {}
+        for f in c.get("fish", []):
+            if not f or f in ("不明", "NULL"):
+                continue
+            today_fish_trips.setdefault(f, []).append({
+                "ship": c.get("ship", ""),
+                "area": c.get("area", ""),
+                "cnt_max": (cr.get("max") or 0) if _personal else 0,
+                "cm_max": _sc.get("max") or 0,
+                "kg_max": _wk.get("max") or 0,
+            })
+    try:
+        from x_post.insights import build_insights as _build_insights
+        insights = _build_insights(date_str, today_fish_trips, root=_root_dir)
+    except Exception:
+        insights = {"fish": {}, "asof": date_str}
+
+    # fish_rows に平年比を添付（テーブル chip 用）
+    for row in fish_rows:
+        _ins = (insights.get("fish") or {}).get(row["fish"]) or {}
+        row["norm_ratio"] = _ins.get("ratio")
+        row["norm_ratio_str"] = _ins.get("ratio_str", "")
+        row["norm_cnt"] = _ins.get("norm_cnt")
+        row["norm_n"] = _ins.get("norm_n", 0)
+
     # C4修正: top_cnt_min を全便 min に統一（hl-card と fish-list で同一値）
     # top_cnt_data["cnt_min"] は最多便のみの min なので、全便 min を再集計
     _top_cnt_all_data = _fish_data(top_cnt_fish) if top_cnt_fish else None
@@ -866,6 +902,8 @@ def build_context(valid_catches, history, analysis_db, date_str, weather_dir=Non
     kg_threshold = f"{int(best_kg_max // 5) * 5}kg" if best_kg_max >= 5 else "5kg"
 
     ctx = {
+        # insights（平年比・記録性・船宿別内訳。narrative.py が消費）
+        "insights": insights,
         # 日付
         "date_label": date_label,
         "date_iso": date_str,

@@ -277,7 +277,7 @@ nav.gnav a.prem::before {
 .fish-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .fish-row {
   display: grid;
-  grid-template-columns: 50px 110px 110px 110px 1fr;
+  grid-template-columns: 50px 110px 100px 100px 84px 1fr;
   gap: 10px;
   align-items: center;
   padding: 10px 14px;
@@ -310,6 +310,12 @@ nav.gnav a.prem::before {
 .fish-row .size { color: var(--accent); font-weight: 600; }
 .fish-row .size.kg { background: #ffd166; color: #6a4400; padding: 1px 6px; border-radius: 4px; display: inline-block; }
 .fish-row .port { color: var(--port); font-size: 12px; }
+/* 平年比 chip（過去3年の同旬中央値との比・母数8便以上のみ表示） */
+.fish-row .nr { font-size: 11px; font-weight: 700; white-space: nowrap; }
+.fish-row .nr.up { color: var(--good); }
+.fish-row .nr.down { color: var(--sub); }
+.fish-row .nr.flat { color: var(--sub); font-weight: 600; }
+.fish-row .nr.none { color: transparent; }
 /* day-nav 基本（旧 2列レイアウト・後方互換として残す） */
 .day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 16px; }
 .day-nav a, .day-nav span { display: block; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); text-decoration: none; font-size: 13px; min-height: 44px; box-sizing: border-box; }
@@ -413,7 +419,8 @@ footer { background: var(--accent); color: rgba(255,255,255,0.8); font-size: 11p
 .empty-day-notice .ed-stat { color: var(--sub); font-size: 13px; margin-left: 4px; }
 @media (max-width: 600px) {
   .hl-grid, .umi-grid { grid-template-columns: 1fr; }
-  .fish-row { grid-template-columns: 40px 90px 90px 1fr; }
+  .fish-row { grid-template-columns: 36px 1fr 74px 74px 62px; gap: 6px; padding: 10px; }
+  .fish-row .nr { font-size: 10px; }
   .fish-row .port { display: none; }
   .share-bar a { padding: 7px 12px; font-size: 12px; }
 }
@@ -524,6 +531,19 @@ def _fish_table_rows_html(fish_rows, depth="../"):
 
         fish_link = _fish_link_html(fish_name, depth)
         port_links = _port_links_html(top_port, depth)
+        # 平年比 chip（2026-07-22）: 過去3年の同旬中央値との比。母数が薄い魚種は出さない。
+        _ratio = row.get("norm_ratio")
+        _norm_n = row.get("norm_n") or 0
+        if _ratio and _norm_n >= 8:
+            _title = f"過去3年の同じ旬（{_norm_n}便）の中央値 {row.get('norm_cnt'):.0f}匹 との比"
+            if abs(_ratio - 1.0) <= 0.10:
+                # ±10% 以内は「+0%」の羅列になるだけなので平年並みと表示する
+                norm_html = f'<span class="nr flat" title="{_title}">平年並み</span>'
+            else:
+                _cls = "nr up" if _ratio > 1.0 else "nr down"
+                norm_html = f'<span class="{_cls}" title="{_title}">平年比 {row.get("norm_ratio_str","")}</span>'
+        else:
+            norm_html = '<span class="nr none"></span>'
         # 匹数が未記録（0/None）でも型(cm/kg)があれば釣果はあった→「0匹」矛盾表示を避け「—」
         # min==max のとき単一表記化（「1〜1匹」のような重複を排除）
         if not cnt_max:
@@ -535,6 +555,7 @@ def _fish_table_rows_html(fish_rows, depth="../"):
         <div class="name">{fish_link}<span class="badge">{n_trips}便</span></div>
         <div class="catch">{catch_text}</div>
         {size_html}
+        {norm_html}
         <div class="port">{port_links}</div>
       </div>""")
     return "\n".join(rows)
@@ -894,7 +915,35 @@ def build(ctx, commentary, output_path, png_url=None):
                f'{prev7_html}{prev_html}{archive_html}{next_html}{next7_html}</nav>')
 
     # ハイライトカード（0件日は ctx の top_kg_max/top_cnt_max が 0 のため空文字が返る）
-    hl_cards = _hl_cards_html(ctx)
+    # 2026-07-22: insights がある日は narrative 版（最大4枚・平年比つき）を優先。
+    hl_cards = ""
+    if not no_data and (ctx.get("insights") or {}).get("fish"):
+        try:
+            from x_post.narrative import build_hl_cards as _nar_cards
+            hl_cards = _nar_cards(ctx)
+        except Exception:
+            hl_cards = ""
+    if not hl_cards:
+        hl_cards = _hl_cards_html(ctx)
+
+    # 散文（2026-07-22）: insights がある日は「数値根拠つき」narrative で
+    # H/F 文型（推測フィラー）を置き換える。insights が空なら従来文型にフォールバック。
+    if not no_data and (ctx.get("insights") or {}).get("fish"):
+        try:
+            from x_post.narrative import (build_highlight_prose, build_fish_prose,
+                                          build_ocean_prose)
+            from x_post.text_generator import _linkify_ship_names as _linkify
+            _hl_new = build_highlight_prose(ctx)
+            _fish_new = build_fish_prose(ctx)
+            _oc_new = build_ocean_prose(ctx)
+            if _hl_new:
+                hl_commentary = _linkify(_hl_new)
+            if _fish_new:
+                fish_commentary = _linkify(_fish_new)
+            if _oc_new:
+                ocean_commentary = _linkify(_oc_new)
+        except Exception:
+            pass
     # 海況グリッド（0件日は出船率バーを隠す。「0船宿中・0欠航」表示の誤解防止）
     sea_grid = _sea_grid_html(ctx, hide_ship_rate=no_data)
     # 魚種テーブル

@@ -1982,6 +1982,64 @@ def validate_xpost_no_zero_catch():
         ok("[55] x_post に「0匹」矛盾表示なし")
 
 
+def validate_xpost_evidence_prose():
+    """56: x_post 日次まとめの散文が「数値根拠つき」であること（2026-07-22）
+
+    背景: ハイライト／魚種別報告が templates.py の H/F 文型に依存し、
+    「今期は好海況が観測されています」「再現性が高いと推察されます」
+    「ローテーション釣行に組み込みやすい魚種です」といった**根拠のない断定風フィラー**が
+    本文の大半だった（ユーザー指摘 2026-07-22「ハイライトが薄っぺらい・魚種別報告も薄っぺらい」）。
+    裁定 = フィラー全廃・数値根拠のみ。x_post/narrative.py が data/V2 CSV 由来の
+    平年比（過去3年の同旬中央値比）・船宿別内訳・記録性・検証済み予測（tier A）で散文を生成する。
+
+    検証（**最新の x_post ページ1枚のみ**。過去ページは旧文型のまま残るため対象外）:
+      (a) 禁止フィラー表現が無い
+      (b) 平年比の記述には必ず母数「同じ旬（N便）」が併記されている
+      (c) 魚種別セクションに船宿名つきの「最多は…」記述がある（テーブルの反復でない）
+    narrative が動かない日（insights 空・0件日）はフォールバックするので (b)(c) は warn 止まり。
+    """
+    print("\n[56] x_post 散文の数値根拠（2026-07-22）")
+    xp_dir = os.path.join(DOCS, "x_post")
+    if not os.path.isdir(xp_dir):
+        ok("[56] docs/x_post なし → skip")
+        return
+    dates = sorted(fn for fn in os.listdir(xp_dir)
+                   if fn.endswith(".html") and fn[:4].isdigit())
+    if not dates:
+        ok("[56] x_post 日次ページなし → skip")
+        return
+    latest = dates[-1]
+    c = open(os.path.join(xp_dir, latest), encoding="utf-8").read()
+
+    # narrative.py 製の散文は class="commentary evidence" を持つ。
+    # 2026-07-22 以前に生成された既存ページは旧 H/F 文型のままなので対象外
+    # （過去ページの遡及再生成は CSV 由来データで数値が変わるため行わない）。
+    if 'class="commentary evidence"' not in c:
+        warn(f"[56] {latest} は旧文型で生成済み（次回 crawl 再生成で有効化）→ skip")
+        return
+
+    banned = ["と推察されます", "好海況が観測されています", "再現性が高い",
+              "組み込みやすい魚種です", "好スコア", "予定通り運航しました"]
+    hit = [b for b in banned if b in c]
+    if hit:
+        fail(f"[56] {latest} に根拠なしフィラー表現: {hit}")
+    else:
+        ok(f"[56] {latest} に禁止フィラー表現なし")
+
+    if "平年比" in c:
+        if "同じ旬（" in c or "同旬" in c:
+            ok("[56] 平年比の記述に母数（同旬N便）が併記されている")
+        else:
+            fail("[56] 平年比の記述に母数（同旬N便）が無い")
+    else:
+        warn(f"[56] {latest} に平年比の記述なし（データ不足日ならフォールバック仕様）")
+
+    if "最多は" in c:
+        ok("[56] 魚種別報告に船宿別の最多記述あり")
+    else:
+        warn(f"[56] {latest} に「最多は…」の船宿別記述なし（0件日/フォールバック時は正常）")
+
+
 def validate_fish_value_release():
     """51: 釣果価値チェッカー（/fish-value/）のリリース整合（2026-07-05）
 
@@ -2271,6 +2329,7 @@ def main():
     validate_fish_area_analysis_sections()
     validate_fish_area_notes()
     validate_xpost_no_zero_catch()
+    validate_xpost_evidence_prose()
     validate_fish_value_release()
     validate_no_paywall_signal_and_operator_info()
     validate_verified_predictions_tier()
