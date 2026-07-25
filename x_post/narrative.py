@@ -545,11 +545,17 @@ def build_conditions_note(ctx, root=None):
 
     if notes:
         paras.extend(notes)
-        paras.append("いずれも過去データ上の相関で、釣果の原因を特定したものではありません。"
-                     "海況以外の要因（船長の判断・ポイント選択・仕掛け）も結果を左右します。")
 
     if not paras:
         return ""
+    # 注記はセクションを出す限り必ず添える（不変条件 #56(e)）。
+    # 船宿×魚種の傾向が無く海況の比較だけの日でも、断定と読まれないようにする。
+    if notes:
+        paras.append("いずれも過去データ上の相関で、釣果の原因を特定したものではありません。"
+                     "海況以外の要因（船長の判断・ポイント選択・仕掛け）も結果を左右します。")
+    else:
+        paras.append("ここで挙げた数値は過去3年の同じ時期との比較で、"
+                     "釣果の原因を特定したものではありません。")
     return ('<div class="commentary evidence"><h3 class="note-h">本日の条件と、これまでの傾向</h3>'
             + "".join(f"<p>{p}</p>" for p in paras) + "</div>")
 
