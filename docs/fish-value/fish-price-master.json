@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated_at": "2026-07-21",
+  "updated_at": "2026-07-25",
   "source": {
     "wholesale": "s202605meisai_20260615.xlsx (202605)",
     "retail_multiplier": "業界一般値（甲案・大衆魚2.0-3.0/中級1.8-2.5/高級1.6-2.2/青物1.7-2.4/イカタコ1.8-2.6）",
@@ -6522,7 +6522,7 @@
     }
   },
   "daily_correction": {
-    "asof": "20260721",
+    "asof": "20260725",
     "window_business_days": 20,
     "data_month": "202605",
     "min_mid_obs": 8,
@@ -6533,11 +6533,11 @@
     "method": "df = clamp(日報中値 median / 月報avg, 0.5, 2.0)。中値≥8観測の魚のみ。当月実勢を直接測るため季節補正を置換（app.js effectiveFactor）。中値の取れない魚（相対取引）は季節補正へフォールバック",
     "by_pfid": {
       "buri": {
-        "factor": 0.668,
-        "raw_ratio": 0.668,
+        "factor": 0.742,
+        "raw_ratio": 0.742,
         "n_mid": 40,
         "n_days": 20,
-        "daily_mid": 486,
+        "daily_mid": 540,
         "monthly_avg": 728
       },
       "inada": {
@@ -6549,11 +6549,11 @@
         "monthly_avg": 622
       },
       "karei": {
-        "factor": 1.208,
-        "raw_ratio": 1.208,
-        "n_mid": 60,
+        "factor": 1.261,
+        "raw_ratio": 1.261,
+        "n_mid": 59,
         "n_days": 17,
-        "daily_mid": 621,
+        "daily_mid": 648,
         "monthly_avg": 514
       },
       "katsuo": {
@@ -6565,11 +6565,11 @@
         "monthly_avg": 881
       },
       "kihada": {
-        "factor": 1.136,
-        "raw_ratio": 1.136,
-        "n_mid": 25,
+        "factor": 1.178,
+        "raw_ratio": 1.178,
+        "n_mid": 23,
         "n_days": 20,
-        "daily_mid": 1458,
+        "daily_mid": 1512,
         "monthly_avg": 1283
       },
       "kinmedai": {
@@ -6581,11 +6581,11 @@
         "monthly_avg": 2245
       },
       "maaji": {
-        "factor": 0.877,
-        "raw_ratio": 0.877,
-        "n_mid": 55,
+        "factor": 0.917,
+        "raw_ratio": 0.917,
+        "n_mid": 56,
         "n_days": 20,
-        "daily_mid": 594,
+        "daily_mid": 621,
         "monthly_avg": 677
       },
       "saba": {
@@ -6599,8 +6599,8 @@
       "surumeika": {
         "factor": 1.267,
         "raw_ratio": 1.267,
-        "n_mid": 18,
-        "n_days": 18,
+        "n_mid": 19,
+        "n_days": 19,
         "daily_mid": 1512,
         "monthly_avg": 1193
       }
