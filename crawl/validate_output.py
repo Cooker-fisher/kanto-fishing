@@ -1928,12 +1928,24 @@ def validate_fish_area_analysis_sections():
             fail(f"[58] field_reports.json 読み込み失敗: {e}")
     missing_src = []
     n_reports = 0
+    # 日本語本文に混ざってはいけない文字体系（キリル・ギリシャ・ハングル）。
+    # 執筆支援中に「замена」「как」等が実際に紛れ込んだため機械検知する。
+    FOREIGN = re.compile(r"[Ѐ-ӿͰ-Ͽ가-힯]")
+    foreign_hit = []
     for k, entries in reports.items():
         for e in (entries if isinstance(entries, list) else [entries]):
             n_reports += 1
             if not (e.get("author") or "").strip() or not (e.get("date") or "").strip() \
                     or not (e.get("html") or "").strip():
                 missing_src.append(k)
+            blob = (e.get("html") or "") + " ".join(e.get("takeaways") or []) + (e.get("title") or "")
+            m = FOREIGN.search(blob)
+            if m:
+                foreign_hit.append(f"{k}:{blob[max(0, m.start()-8):m.start()+10]!r}")
+    if foreign_hit:
+        fail(f"[58] 本文に日本語以外の文字体系が混入: {foreign_hit[:5]}")
+    else:
+        ok("[58] 本文の文字体系チェック OK（キリル/ギリシャ/ハングル混入なし）")
     if missing_src:
         fail(f"[58] 一次体験レポートに執筆者/日付/本文の欠落: {sorted(set(missing_src))[:5]}")
     elif n_reports == 0:
