@@ -8903,6 +8903,8 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
                 f'<p class="fish-content-text">{fc["season"]}{_ml_html}</p></div>'
             )
         guide_html = build_fish_guide_html(fish, tackle_data, content=fc)
+        # 運営者本人の一次体験（field_reports.json・魚種レベルのキー）
+        field_report_html = _build_field_report_section(fish)
         auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL, hist_rows=_hist_rows_for_fish, content_sections=fc)
         # M1 (T22): 共通 FAQ 9 問を faq.html に切り出し。固有 FAQ + リンクのみ出力
         fixed_faq_html, fixed_faq_pairs = build_fish_fixed_faq_html(fish, fixed_faq_data)
@@ -9046,6 +9048,7 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
   {season_map_html}
   {season_note_html}
   {('<h2 class="st">魚種ガイド <span class="tag free">無料</span></h2>' + guide_html) if guide_html else ''}
+  {field_report_html}
   {'<div class="related-sim">🎣 <a href="/komase-sim/">マダイコマセシミュレーターで仕掛けを試す →</a></div>' if fish == 'マダイ' else ''}
   <p class="faq-common-link">船釣り全般の Q&amp;A（服装・船酔い・予約・ライフジャケット等）は<a href="/pages/faq.html"><strong>よくある質問ページ</strong></a>にまとめています。</p>
   <!-- 広告② -->
@@ -11045,16 +11048,26 @@ def _load_field_reports():
     return _FIELD_REPORTS_CACHE
 
 
-_FR_TYPE_LABEL = {"実釣": "実釣レポート", "取材": "船宿取材", "現地調査": "現地調査"}
+_FR_TYPE_LABEL = {
+    "実釣": "実釣レポート", "取材": "船宿取材", "現地調査": "現地調査",
+    "経験メモ": "運営者の経験メモ",
+}
+# 特定日の釣行ではなく積み重ねた経験（種別=経験メモ）は見出しを変える。
+# 「実際に行った記録」と書くと単発釣行を装うことになるため。
+_FR_TRIP_TYPES = {"実釣", "取材", "現地調査"}
 
 
-def _build_field_report_section(fish, area):
-    """fish_area『運営者の実釣・取材メモ』セクション。field_reports.json 経由・無ければ空。
+def _build_field_report_section(fish, area=None):
+    """『運営者の実釣・取材メモ』セクション。field_reports.json 経由・無ければ空。
 
-    自動集計データと明確に区別するため、執筆者・実施日・種別（実釣/取材/現地調査）を必ず出す。
-    ここに出るのは運営者が実際に行った一次体験だけで、推測や一般論は載せない（不変条件 #57）。
+    キーは area 指定時 '魚種|エリア'（fish_area ページ）、未指定時 '魚種'（魚種ページ）。
+    エリアを伴わない経験は魚種ページ側に置く（特定の港に置くと、そこで釣ったという
+    location claim になってしまうため）。
+
+    自動集計データと明確に区別するため、執筆者・日付・種別を必ず出す。
+    ここに出るのは運営者本人の一次体験だけで、推測や一般論は載せない（不変条件 #58）。
     """
-    entries = _load_field_reports().get(f"{fish}|{area}")
+    entries = _load_field_reports().get(f"{fish}|{area}" if area else fish)
     if not entries:
         return ""
     if isinstance(entries, dict):
@@ -11069,7 +11082,9 @@ def _build_field_report_section(fish, area):
         kind = _FR_TYPE_LABEL.get((e.get("type") or "").strip(), "現地メモ")
         title = (e.get("title") or "").strip()
         ship = (e.get("ship") or "").strip()
-        meta = date + (f'・{ship}' if ship else "")  # 種別は fr-kind バッジ側で出す
+        # 種別は fr-kind バッジ側で出す。経験メモは釣行日ではないので「時点」と明示する
+        is_trip = (e.get("type") or "").strip() in _FR_TRIP_TYPES
+        meta = (date if is_trip else f"{date} 時点") + (f'・{ship}' if ship else "")
         tk = [t for t in (e.get("takeaways") or []) if str(t).strip()][:3]
         tk_html = ""
         if tk:
@@ -11084,10 +11099,19 @@ def _build_field_report_section(fish, area):
         )
     if not cards:
         return ""
+    has_trip = any((e.get("type") or "").strip() in _FR_TRIP_TYPES
+                   for e in entries if isinstance(e, dict))
+    if has_trip:
+        head = "運営者が実際に行った記録"
+        note = ('以下は自動集計データではなく、運営者本人が現地で釣行・取材した一次記録です。'
+                'うまくいかなかった回も含めてそのまま残しています。')
+    else:
+        head = f"運営者が釣って感じた{fish}のこと"
+        note = ('以下は自動集計データではなく、運営者本人が実際に竿を出して得た経験のメモです。'
+                '特定の一日の記録ではなく、通ってきた中で分かったことをまとめています。')
     return (
-        f'<h2 class="st">運営者が実際に行った記録 <span class="tag free">無料</span></h2>'
-        f'<p class="section-note">以下は自動集計データではなく、運営者本人が現地で釣行・取材した'
-        f'一次記録です。うまくいかなかった回も含めてそのまま残しています。</p>'
+        f'<h2 class="st">{head} <span class="tag free">無料</span></h2>'
+        f'<p class="section-note">{note}</p>'
         + "".join(cards)
     )
 
