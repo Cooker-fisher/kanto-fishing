@@ -258,9 +258,28 @@ python -m http.server 8000 # ローカルサーバー起動
 
 ---
 
+## 破壊防止（要点だけ・詳細は下記ドキュメント）
+
+過去にデータ消失・レイアウト破壊の regression が複数回発生している。
+
+- **push 前に `python crawl/validate_output.py`（errors=0）**。
+  **閾値を緩めて gatekeeper を黙らせる修正は禁止。** 不変条件の SoT は `crawl/validate_output.py` のコード自身
+- **ローカル `crawler.py` フル実行の前に必ず `git pull`**（古い catches.json だと HERO 日付が巻き戻る）
+- `data/V2/*.csv` は append-only。`catches.json` はスナップショットで HTML 生成元にするな
+- 新しい regression を見つけたら「修正 + 不変条件追加 + 決定ログ追記」を必ずセットで
+- `<a>` の中に `<a>` を入れない / fish ページ HERO は1形式のみ
+
+## 必要になった時だけ読むドキュメント（常時ロードしない）
+
+| ファイル | 読むタイミング |
+|---|---|
+| `PIPELINE.md` | A〜E層のデータフローを変える時。**変更インパクトマトリクス**を必ず確認 |
+| `design/V2/REGRESSION_PREVENTION.md` | HTML/CSV 生成系を触る時（不変条件 #1〜#56 の全文） |
+| `design/V2/90_決定ログ.md` | 過去の判断理由を知りたい時（履歴の SoT・322KB あるので grep して部分読み） |
+| `.claude/memory/archive/` | 2026/07/27 以前の旧 project_status 全文 |
+
+---
+
 @.claude/memory/project_status.md
 @.claude/memory/feedback_crawler_editing.md
 @.claude/memory/feedback_regression_prevention.md
-
-@PIPELINE.md
-@design/V2/REGRESSION_PREVENTION.md
