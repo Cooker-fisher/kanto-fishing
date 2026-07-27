@@ -82,13 +82,21 @@ Actions タブ →「analytics」→「Run workflow」で手動実行。
 
 ## ローカル実行（任意）
 
+鍵の実体はリポジトリ外のローカル秘密フォルダ（ホーム直下の `.secrets/`）に置く。
+そのフルパスをユーザー環境変数 `GOOGLE_SA_KEY_FILE` に設定済みなので、通常は export 不要。
+
 ```bash
 pip install -r analytics/requirements.txt
-export GOOGLE_SA_KEY_FILE=/path/to/key.json   # ローカルはファイルパスで可
+# GOOGLE_SA_KEY_FILE はユーザー環境変数に設定済み（未設定の環境でのみ以下を実行）
+#   PowerShell: [Environment]::SetEnvironmentVariable('GOOGLE_SA_KEY_FILE','<鍵のフルパス>','User')
 export GA4_PROPERTY_ID=123456789
 python analytics/fetch_gsc.py --days 30
 python analytics/fetch_ga4.py --days 30
 ```
+
+> ⚠️ 鍵は Downloads 等の消えやすい場所に置かない（2026-07-27 に Downloads → `.secrets/` へ移設）。
+> `.secrets/` には別サイト用のサービスアカウント鍵も入っている。**当サイト用の鍵だけを指すこと**
+> （どれがどれかは README に書かない。ファイル名は環境変数の実値で確認する）。
 
 ## 仕様メモ
 - GSC/GA4 とも直近データは数日かけて確定するため、毎回直近 30 日を再取得し

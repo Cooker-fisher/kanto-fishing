@@ -35,6 +35,19 @@ analysis/V2/results/analysis.sqlite
 x_post/x_post_log.jsonl
 .env
 
+# サービスアカウント鍵・認証情報
+# 実体はリポジトリ外のローカル秘密フォルダ（ホーム直下の .secrets/）に置く。絶対にコミットしない
+.secrets/
+secrets/
+*service-account*.json
+*serviceaccount*.json
+*-sa-key*.json
+*sa-key*.json
+*client_secret*.json
+*.iam.gserviceaccount.com.json
+# GCP がダウンロードする既定名 <project>-<12桁hex>.json
+*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].json
+
 # バックアップ・一時ファイル全般（2026-06-02 整理）
 *.bak
 tmp_*
