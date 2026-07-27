@@ -1868,6 +1868,95 @@ def validate_fish_area_analysis_sections():
     else:
         ok("[50] 禁止表現なし")
 
+    # ── 57: 旬ピークの母数・定義（2026-07-27）──────────────────────────
+    # 旬ピークに母数下限が無く、278便中10便の旬が「釣果が伸びやすい時期」として採用され、
+    # 同一ページ FAQ の月別ピーク（件数ベース）と食い違って見えていた。
+    # 蒸留側に母数下限を入れ、表示側で母数と定義の違いを必ず出す。
+    MIN_ABS, FRAC = 12, 0.05
+    bad_n, peak_pairs = [], 0
+    for k, v in fa_data.items():
+        peaks = v.get("peaks") or []
+        if not peaks:
+            continue
+        peak_pairs += 1
+        total = sum(b.get("n") or 0 for b in (v.get("busy_months") or [])) or v.get("n_records") or 0
+        floor = max(MIN_ABS, int(total * FRAC)) if total else MIN_ABS
+        for p in peaks:
+            if not isinstance(p, dict):
+                bad_n.append(f"{k}(旧スキーマ)")
+                break
+            if (p.get("n") or 0) < MIN_ABS:
+                bad_n.append(f'{k}:{p.get("label")}(n={p.get("n")}<{MIN_ABS})')
+                break
+    if bad_n:
+        fail(f"[57] 旬ピークが母数下限({MIN_ABS}便)未満 or 母数なし: {bad_n[:5]}（計{len(bad_n)}）")
+    else:
+        ok(f"[57] 旬ピーク {peak_pairs} ペアすべて母数下限を満たし母数付き")
+
+    # 表示側: ピークを出しているページは「別の指標である」旨と母数を必ず併記
+    PEAK_MARK = "1便あたりの釣果が多かった旬"
+    DEF_MARK = "この2つは別の指標です"
+    no_def = []
+    peak_pages = 0
+    if os.path.isdir(fa_dir):
+        for fn in os.listdir(fa_dir):
+            if not fn.endswith(".html"):
+                continue
+            c = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
+            if PEAK_MARK not in c:
+                continue
+            peak_pages += 1
+            if DEF_MARK not in c or "便・平均" not in c:
+                no_def.append(fn)
+    if peak_pages == 0:
+        ok("[57] 旬ピーク描画ページなし（docs 未再生成）→ skip")
+    elif no_def:
+        fail(f"[57] 旬ピークに定義説明/母数が欠落: {no_def[:5]}（計{len(no_def)}）")
+    else:
+        ok(f"[57] 旬ピーク描画 {peak_pages} 件すべてに定義説明+母数あり")
+
+    # ── 58: 一次体験レポートの出典（2026-07-27）────────────────────────
+    # AdSense 診断で Experience=NG。運営者本人の一次記録を載せる器（field_reports.json）。
+    # 出典（執筆者・実施日）が無い体験談は「体験を装った文章」になるので描画させない。
+    fr_path = os.path.join(ROOT, "normalize", "field_reports.json")
+    reports = {}
+    if os.path.exists(fr_path):
+        try:
+            with open(fr_path, encoding="utf-8") as f:
+                reports = json.load(f).get("reports", {}) or {}
+        except Exception as e:
+            fail(f"[58] field_reports.json 読み込み失敗: {e}")
+    missing_src = []
+    n_reports = 0
+    for k, entries in reports.items():
+        for e in (entries if isinstance(entries, list) else [entries]):
+            n_reports += 1
+            if not (e.get("author") or "").strip() or not (e.get("date") or "").strip() \
+                    or not (e.get("html") or "").strip():
+                missing_src.append(k)
+    if missing_src:
+        fail(f"[58] 一次体験レポートに執筆者/日付/本文の欠落: {sorted(set(missing_src))[:5]}")
+    elif n_reports == 0:
+        ok("[58] 一次体験レポート 0 件（器のみ・Experience は未充足）")
+    else:
+        ok(f"[58] 一次体験レポート {n_reports} 件すべてに執筆者・実施日あり")
+
+    # 描画済みページは必ず「自動集計ではない」旨を明示していること
+    FR_MARK = 'class="field-report"'
+    FR_DISC = "自動集計データではなく"
+    fr_bad = []
+    if os.path.isdir(fa_dir):
+        for fn in os.listdir(fa_dir):
+            if not fn.endswith(".html"):
+                continue
+            c = open(os.path.join(fa_dir, fn), encoding="utf-8").read()
+            if FR_MARK in c and FR_DISC not in c:
+                fr_bad.append(fn)
+    if fr_bad:
+        fail(f"[58] 体験レポート描画ページに一次情報の明示が欠落: {fr_bad[:5]}")
+    else:
+        ok("[58] 体験レポート描画ページの出典表示 OK")
+
 
 def validate_fish_area_notes():
     """54: fish_area 編集部ノート（非count 固有文）の整合（Tier2・2026-07-18）

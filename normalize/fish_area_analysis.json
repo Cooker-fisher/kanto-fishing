@@ -4,10 +4,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 1432,
-  "peaks": [
-   "8月上旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 163
+   },
+   {
+    "month": 12,
+    "n": 156
+   },
+   {
+    "month": 5,
+    "n": 151
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -30,9 +42,47 @@
   "n_ships": 1,
   "n_records": 657,
   "peaks": [
-   "8月中旬",
-   "8月上旬"
+   {
+    "label": "5月上旬",
+    "n": 34,
+    "avg_cnt": 12.8
+   },
+   {
+    "label": "5月中旬",
+    "n": 40,
+    "avg_cnt": 11.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 111
+   },
+   {
+    "month": 4,
+    "n": 65
+   },
+   {
+    "month": 6,
+    "n": 64
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.3,
+    "lo": 17.3,
+    "hi": 19.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.3
+   }
+  },
   "factors": [
    {
     "base": "chl_monthly",
@@ -74,10 +124,22 @@
   "area": "飯岡港",
   "n_ships": 5,
   "n_records": 2436,
-  "peaks": [
-   "12月上旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 318
+   },
+   {
+    "month": 4,
+    "n": 300
+   },
+   {
+    "month": 9,
+    "n": 269
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -120,9 +182,47 @@
   "n_ships": 1,
   "n_records": 269,
   "peaks": [
-   "9月上旬",
-   "4月中旬"
+   {
+    "label": "12月中旬",
+    "n": 15,
+    "avg_cnt": 15.2
+   },
+   {
+    "label": "12月下旬",
+    "n": 19,
+    "avg_cnt": 14.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 48
+   },
+   {
+    "month": 1,
+    "n": 44
+   },
+   {
+    "month": 2,
+    "n": 33
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.9,
+    "lo": 18.4,
+    "hi": 19.8
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.5,
+    "hi": 1.7
+   }
+  },
   "factors": [],
   "wmape_median": 50.8,
   "model_beats_baseline": 1,
@@ -134,9 +234,47 @@
   "n_ships": 8,
   "n_records": 1665,
   "peaks": [
-   "1月上旬",
-   "10月上旬"
+   {
+    "label": "7月上旬",
+    "n": 83,
+    "avg_cnt": 3.0
+   },
+   {
+    "label": "6月中旬",
+    "n": 104,
+    "avg_cnt": 2.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 311
+   },
+   {
+    "month": 7,
+    "n": 241
+   },
+   {
+    "month": 12,
+    "n": 193
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 23.8,
+    "lo": 21.0,
+    "hi": 25.5
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.6,
+    "hi": 1.3
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -178,10 +316,22 @@
   "area": "久比里港",
   "n_ships": 3,
   "n_records": 1944,
-  "peaks": [
-   "11月中旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 189
+   },
+   {
+    "month": 12,
+    "n": 189
+   },
+   {
+    "month": 10,
+    "n": 185
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -224,9 +374,42 @@
   "n_ships": 3,
   "n_records": 927,
   "peaks": [
-   "3月下旬",
-   "4月上旬"
+   {
+    "label": "6月上旬",
+    "n": 46,
+    "avg_cnt": 29.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 124
+   },
+   {
+    "month": 6,
+    "n": 116
+   },
+   {
+    "month": 4,
+    "n": 110
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.4,
+    "lo": 19.1,
+    "hi": 21.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.3,
+    "hi": 0.8
+   }
+  },
   "factors": [
    {
     "base": "sst_gradient",
@@ -248,10 +431,22 @@
   "area": "横浜本牧港",
   "n_ships": 1,
   "n_records": 789,
-  "peaks": [
-   "12月中旬",
-   "1月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 104
+   },
+   {
+    "month": 4,
+    "n": 75
+   },
+   {
+    "month": 7,
+    "n": 74
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -293,10 +488,22 @@
   "area": "浦安",
   "n_ships": 2,
   "n_records": 1406,
-  "peaks": [
-   "8月上旬",
-   "9月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 157
+   },
+   {
+    "month": 9,
+    "n": 135
+   },
+   {
+    "month": 5,
+    "n": 130
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "spawn_season_n",
@@ -338,10 +545,22 @@
   "area": "大原港",
   "n_ships": 3,
   "n_records": 1022,
-  "peaks": [
-   "10月中旬",
-   "11月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 120
+   },
+   {
+    "month": 7,
+    "n": 116
+   },
+   {
+    "month": 4,
+    "n": 96
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -383,10 +602,22 @@
   "area": "金谷港",
   "n_ships": 3,
   "n_records": 1614,
-  "peaks": [
-   "9月中旬",
-   "9月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 221
+   },
+   {
+    "month": 5,
+    "n": 214
+   },
+   {
+    "month": 7,
+    "n": 166
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -429,9 +660,47 @@
   "n_ships": 8,
   "n_records": 1214,
   "peaks": [
-   "1月上旬",
-   "3月上旬"
+   {
+    "label": "3月下旬",
+    "n": 88,
+    "avg_cnt": 2.5
+   },
+   {
+    "label": "4月下旬",
+    "n": 129,
+    "avg_cnt": 2.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 327
+   },
+   {
+    "month": 5,
+    "n": 288
+   },
+   {
+    "month": 3,
+    "n": 123
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 16.0,
+    "lo": 15.1,
+    "hi": 16.5
+   },
+   "n": 992,
+   "wave_height": {
+    "med": 1.0,
+    "lo": 0.6,
+    "hi": 2.0
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -474,9 +743,47 @@
   "n_ships": 2,
   "n_records": 711,
   "peaks": [
-   "9月上旬",
-   "8月下旬"
+   {
+    "label": "9月中旬",
+    "n": 37,
+    "avg_cnt": 12.6
+   },
+   {
+    "label": "7月上旬",
+    "n": 35,
+    "avg_cnt": 9.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 113
+   },
+   {
+    "month": 7,
+    "n": 95
+   },
+   {
+    "month": 9,
+    "n": 95
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 28.5,
+    "lo": 28.0,
+    "hi": 29.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.7
+   }
+  },
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -518,10 +825,22 @@
   "area": "平和島",
   "n_ships": 1,
   "n_records": 628,
-  "peaks": [
-   "12月中旬",
-   "11月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 68
+   },
+   {
+    "month": 6,
+    "n": 67
+   },
+   {
+    "month": 7,
+    "n": 63
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_gradient",
@@ -564,9 +883,42 @@
   "n_ships": 2,
   "n_records": 1005,
   "peaks": [
-   "12月下旬",
-   "1月中旬"
+   {
+    "label": "7月上旬",
+    "n": 51,
+    "avg_cnt": 7.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 134
+   },
+   {
+    "month": 8,
+    "n": 114
+   },
+   {
+    "month": 9,
+    "n": 113
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.6,
+    "lo": 22.7,
+    "hi": 27.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "sla_monthly",
@@ -609,9 +961,47 @@
   "n_ships": 1,
   "n_records": 609,
   "peaks": [
-   "8月上旬",
-   "6月下旬"
+   {
+    "label": "6月下旬",
+    "n": 41,
+    "avg_cnt": 6.4
+   },
+   {
+    "label": "7月下旬",
+    "n": 38,
+    "avg_cnt": 6.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 143
+   },
+   {
+    "month": 7,
+    "n": 125
+   },
+   {
+    "month": 8,
+    "n": 83
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 23.2,
+    "lo": 22.2,
+    "hi": 25.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "sst_gradient",
@@ -653,10 +1043,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 40,
-  "peaks": [
-   "6月中旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 19
+   },
+   {
+    "month": 12,
+    "n": 12
+   },
+   {
+    "month": 2,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 17.5,
   "model_beats_baseline": 0,
@@ -667,10 +1069,22 @@
   "area": "日立久慈港",
   "n_ships": 4,
   "n_records": 1400,
-  "peaks": [
-   "10月下旬",
-   "11月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 145
+   },
+   {
+    "month": 6,
+    "n": 135
+   },
+   {
+    "month": 4,
+    "n": 134
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -712,10 +1126,22 @@
   "area": "茅ヶ崎港",
   "n_ships": 1,
   "n_records": 55,
-  "peaks": [
-   "11月中旬",
-   "10月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 11
+   },
+   {
+    "month": 6,
+    "n": 8
+   },
+   {
+    "month": 3,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 33.0,
   "model_beats_baseline": 1,
@@ -727,9 +1153,42 @@
   "n_ships": 1,
   "n_records": 528,
   "peaks": [
-   "1月上旬",
-   "12月下旬"
+   {
+    "label": "5月上旬",
+    "n": 28,
+    "avg_cnt": 42.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 70
+   },
+   {
+    "month": 6,
+    "n": 59
+   },
+   {
+    "month": 4,
+    "n": 56
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.4,
+    "lo": 16.6,
+    "hi": 18.5
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.2,
+    "hi": 0.9
+   }
+  },
   "factors": [],
   "wmape_median": 30.0,
   "model_beats_baseline": 1,
@@ -741,9 +1200,47 @@
   "n_ships": 1,
   "n_records": 438,
   "peaks": [
-   "5月上旬",
-   "3月下旬"
+   {
+    "label": "11月上旬",
+    "n": 61,
+    "avg_cnt": 2.2
+   },
+   {
+    "label": "9月中旬",
+    "n": 39,
+    "avg_cnt": 2.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 169
+   },
+   {
+    "month": 11,
+    "n": 111
+   },
+   {
+    "month": 9,
+    "n": 90
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.8,
+    "lo": 17.5,
+    "hi": 20.3
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.5
+   }
+  },
   "factors": [],
   "wmape_median": 55.3,
   "model_beats_baseline": 0,
@@ -755,9 +1252,47 @@
   "n_ships": 1,
   "n_records": 348,
   "peaks": [
-   "12月上旬",
-   "12月中旬"
+   {
+    "label": "12月上旬",
+    "n": 21,
+    "avg_cnt": 2.4
+   },
+   {
+    "label": "12月中旬",
+    "n": 21,
+    "avg_cnt": 2.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 62
+   },
+   {
+    "month": 11,
+    "n": 58
+   },
+   {
+    "month": 10,
+    "n": 54
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.4,
+    "lo": 19.8,
+    "hi": 21.7
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.3,
+    "lo": 1.0,
+    "hi": 2.0
+   }
+  },
   "factors": [],
   "wmape_median": 42.0,
   "model_beats_baseline": 0,
@@ -769,9 +1304,47 @@
   "n_ships": 1,
   "n_records": 526,
   "peaks": [
-   "11月上旬",
-   "2月下旬"
+   {
+    "label": "4月中旬",
+    "n": 27,
+    "avg_cnt": 7.3
+   },
+   {
+    "label": "6月中旬",
+    "n": 31,
+    "avg_cnt": 7.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 92
+   },
+   {
+    "month": 5,
+    "n": 75
+   },
+   {
+    "month": 7,
+    "n": 73
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 14.6,
+    "lo": 13.6,
+    "hi": 15.6
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.8
+   }
+  },
   "factors": [],
   "wmape_median": 61.7,
   "model_beats_baseline": 1,
@@ -783,9 +1356,27 @@
   "n_ships": 1,
   "n_records": 445,
   "peaks": [
-   "8月上旬",
-   "9月中旬"
+   {
+    "label": "7月上旬",
+    "n": 25,
+    "avg_cnt": 12.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 63
+   },
+   {
+    "month": 6,
+    "n": 60
+   },
+   {
+    "month": 5,
+    "n": 54
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -828,9 +1419,42 @@
   "n_ships": 1,
   "n_records": 465,
   "peaks": [
-   "12月中旬",
-   "12月下旬"
+   {
+    "label": "3月下旬",
+    "n": 25,
+    "avg_cnt": 51.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 53
+   },
+   {
+    "month": 5,
+    "n": 51
+   },
+   {
+    "month": 3,
+    "n": 49
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 12.2,
+    "lo": 10.7,
+    "hi": 13.1
+   },
+   "n": 1128,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.6
+   }
+  },
   "factors": [
    {
     "base": "sst",
@@ -863,9 +1487,47 @@
   "n_ships": 1,
   "n_records": 397,
   "peaks": [
-   "5月下旬",
-   "4月中旬"
+   {
+    "label": "1月中旬",
+    "n": 22,
+    "avg_cnt": 4.1
+   },
+   {
+    "label": "12月下旬",
+    "n": 21,
+    "avg_cnt": 3.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 65
+   },
+   {
+    "month": 1,
+    "n": 62
+   },
+   {
+    "month": 12,
+    "n": 61
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 16.4,
+    "lo": 15.2,
+    "hi": 17.1
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.3
+   }
+  },
   "factors": [],
   "wmape_median": 38.1,
   "model_beats_baseline": 1,
@@ -877,9 +1539,47 @@
   "n_ships": 1,
   "n_records": 516,
   "peaks": [
-   "12月下旬",
-   "1月上旬"
+   {
+    "label": "7月上旬",
+    "n": 28,
+    "avg_cnt": 36.8
+   },
+   {
+    "label": "5月中旬",
+    "n": 28,
+    "avg_cnt": 30.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 69
+   },
+   {
+    "month": 7,
+    "n": 68
+   },
+   {
+    "month": 3,
+    "n": 54
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.9,
+    "lo": 22.8,
+    "hi": 27.4
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [],
   "wmape_median": 33.0,
   "model_beats_baseline": 0,
@@ -891,9 +1591,47 @@
   "n_ships": 2,
   "n_records": 271,
   "peaks": [
-   "9月上旬",
-   "11月下旬"
+   {
+    "label": "12月上旬",
+    "n": 22,
+    "avg_cnt": 10.8
+   },
+   {
+    "label": "12月中旬",
+    "n": 17,
+    "avg_cnt": 9.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 66
+   },
+   {
+    "month": 1,
+    "n": 57
+   },
+   {
+    "month": 11,
+    "n": 35
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.9,
+    "lo": 19.0,
+    "hi": 20.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.3,
+    "hi": 0.8
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -936,9 +1674,47 @@
   "n_ships": 1,
   "n_records": 453,
   "peaks": [
-   "12月中旬",
-   "8月中旬"
+   {
+    "label": "7月中旬",
+    "n": 25,
+    "avg_cnt": 48.7
+   },
+   {
+    "label": "7月上旬",
+    "n": 22,
+    "avg_cnt": 37.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 61
+   },
+   {
+    "month": 7,
+    "n": 61
+   },
+   {
+    "month": 5,
+    "n": 56
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.0,
+    "lo": 25.1,
+    "hi": 26.9
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.2,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "sla_monthly",
@@ -981,9 +1757,42 @@
   "n_ships": 1,
   "n_records": 425,
   "peaks": [
-   "12月中旬",
-   "12月下旬"
+   {
+    "label": "5月上旬",
+    "n": 21,
+    "avg_cnt": 51.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 56
+   },
+   {
+    "month": 4,
+    "n": 49
+   },
+   {
+    "month": 8,
+    "n": 46
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.9,
+    "lo": 17.0,
+    "hi": 19.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.2,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -1026,9 +1835,47 @@
   "n_ships": 1,
   "n_records": 398,
   "peaks": [
-   "7月下旬",
-   "8月下旬"
+   {
+    "label": "7月下旬",
+    "n": 20,
+    "avg_cnt": 19.1
+   },
+   {
+    "label": "8月下旬",
+    "n": 22,
+    "avg_cnt": 18.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 58
+   },
+   {
+    "month": 7,
+    "n": 57
+   },
+   {
+    "month": 6,
+    "n": 50
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 28.6,
+    "lo": 27.6,
+    "hi": 29.4
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.2,
+    "hi": 0.7
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -1071,9 +1918,47 @@
   "n_ships": 1,
   "n_records": 381,
   "peaks": [
-   "1月中旬",
-   "11月下旬"
+   {
+    "label": "4月上旬",
+    "n": 20,
+    "avg_cnt": 80.3
+   },
+   {
+    "label": "4月中旬",
+    "n": 23,
+    "avg_cnt": 60.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 75
+   },
+   {
+    "month": 4,
+    "n": 66
+   },
+   {
+    "month": 3,
+    "n": 52
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 14.1,
+    "lo": 13.6,
+    "hi": 14.9
+   },
+   "n": 888,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "spawn_season_n",
@@ -1116,9 +2001,47 @@
   "n_ships": 1,
   "n_records": 355,
   "peaks": [
-   "12月下旬",
-   "12月上旬"
+   {
+    "label": "12月下旬",
+    "n": 22,
+    "avg_cnt": 31.6
+   },
+   {
+    "label": "5月上旬",
+    "n": 18,
+    "avg_cnt": 17.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 60
+   },
+   {
+    "month": 4,
+    "n": 53
+   },
+   {
+    "month": 1,
+    "n": 52
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.3,
+    "lo": 17.0,
+    "hi": 20.8
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 1.2,
+    "lo": 0.9,
+    "hi": 2.1
+   }
+  },
   "factors": [],
   "wmape_median": 75.1,
   "model_beats_baseline": 1,
@@ -1130,9 +2053,47 @@
   "n_ships": 2,
   "n_records": 366,
   "peaks": [
-   "9月上旬",
-   "11月上旬"
+   {
+    "label": "8月下旬",
+    "n": 18,
+    "avg_cnt": 3.5
+   },
+   {
+    "label": "9月下旬",
+    "n": 21,
+    "avg_cnt": 3.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 61
+   },
+   {
+    "month": 10,
+    "n": 47
+   },
+   {
+    "month": 7,
+    "n": 43
+   }
+  ],
+  "wx_peak": {
+   "years": 2,
+   "year_from": "2024",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.9,
+    "lo": 25.6,
+    "hi": 28.3
+   },
+   "n": 1056,
+   "wave_height": {
+    "med": 1.0,
+    "lo": 0.6,
+    "hi": 1.8
+   }
+  },
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -1175,9 +2136,32 @@
   "n_ships": 2,
   "n_records": 181,
   "peaks": [
-   "4月下旬",
-   "5月中旬"
+   {
+    "label": "4月上旬",
+    "n": 12,
+    "avg_cnt": 14.3
+   },
+   {
+    "label": "3月下旬",
+    "n": 12,
+    "avg_cnt": 10.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 61
+   },
+   {
+    "month": 3,
+    "n": 34
+   },
+   {
+    "month": 1,
+    "n": 32
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "chl_monthly",
@@ -1220,9 +2204,47 @@
   "n_ships": 5,
   "n_records": 505,
   "peaks": [
-   "10月中旬",
-   "12月中旬"
+   {
+    "label": "11月下旬",
+    "n": 29,
+    "avg_cnt": 3.0
+   },
+   {
+    "label": "1月中旬",
+    "n": 25,
+    "avg_cnt": 2.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 131
+   },
+   {
+    "month": 3,
+    "n": 73
+   },
+   {
+    "month": 12,
+    "n": 64
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.2,
+    "lo": 20.0,
+    "hi": 22.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.4,
+    "lo": 0.9,
+    "hi": 2.0
+   }
+  },
   "factors": [
    {
     "base": "spawn_season_n",
@@ -1265,9 +2287,47 @@
   "n_ships": 1,
   "n_records": 317,
   "peaks": [
-   "12月下旬",
-   "1月中旬"
+   {
+    "label": "12月中旬",
+    "n": 18,
+    "avg_cnt": 9.2
+   },
+   {
+    "label": "3月下旬",
+    "n": 28,
+    "avg_cnt": 8.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 49
+   },
+   {
+    "month": 3,
+    "n": 47
+   },
+   {
+    "month": 4,
+    "n": 39
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 12.9,
+    "lo": 11.6,
+    "hi": 14.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.4
+   }
+  },
   "factors": [
    {
     "base": "sst",
@@ -1290,9 +2350,47 @@
   "n_ships": 2,
   "n_records": 1000,
   "peaks": [
-   "12月上旬",
-   "5月下旬"
+   {
+    "label": "5月下旬",
+    "n": 54,
+    "avg_cnt": 61.8
+   },
+   {
+    "label": "6月上旬",
+    "n": 54,
+    "avg_cnt": 60.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 158
+   },
+   {
+    "month": 5,
+    "n": 156
+   },
+   {
+    "month": 7,
+    "n": 138
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.6,
+    "lo": 18.3,
+    "hi": 20.2
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.3
+   }
+  },
   "factors": [],
   "wmape_median": 33.7,
   "model_beats_baseline": 2,
@@ -1303,10 +2401,22 @@
   "area": "東葛西",
   "n_ships": 1,
   "n_records": 628,
-  "peaks": [
-   "12月中旬",
-   "1月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 73
+   },
+   {
+    "month": 5,
+    "n": 70
+   },
+   {
+    "month": 7,
+    "n": 66
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -1349,9 +2459,42 @@
   "n_ships": 1,
   "n_records": 74,
   "peaks": [
-   "3月下旬",
-   "3月上旬"
+   {
+    "label": "11月下旬",
+    "n": 14,
+    "avg_cnt": 1.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 28
+   },
+   {
+    "month": 9,
+    "n": 14
+   },
+   {
+    "month": 10,
+    "n": 13
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 15.9,
+    "lo": 14.8,
+    "hi": 17.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.1,
+    "lo": 0.1,
+    "hi": 0.6
+   }
+  },
   "factors": [
    {
     "base": "spawn_season_n",
@@ -1394,9 +2537,32 @@
   "n_ships": 2,
   "n_records": 477,
   "peaks": [
-   "12月中旬",
-   "1月中旬"
+   {
+    "label": "6月下旬",
+    "n": 28,
+    "avg_cnt": 25.9
+   },
+   {
+    "label": "4月下旬",
+    "n": 30,
+    "avg_cnt": 25.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 69
+   },
+   {
+    "month": 6,
+    "n": 64
+   },
+   {
+    "month": 7,
+    "n": 52
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 43.4,
   "model_beats_baseline": 2,
@@ -1408,9 +2574,47 @@
   "n_ships": 2,
   "n_records": 587,
   "peaks": [
-   "7月中旬",
-   "6月下旬"
+   {
+    "label": "7月中旬",
+    "n": 53,
+    "avg_cnt": 7.0
+   },
+   {
+    "label": "6月下旬",
+    "n": 56,
+    "avg_cnt": 6.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 165
+   },
+   {
+    "month": 7,
+    "n": 157
+   },
+   {
+    "month": 8,
+    "n": 117
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.7,
+    "lo": 25.8,
+    "hi": 27.6
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.8
+   }
+  },
   "factors": [
    {
     "base": "sst_gradient",
@@ -1453,9 +2657,47 @@
   "n_ships": 1,
   "n_records": 321,
   "peaks": [
-   "11月上旬",
-   "11月中旬"
+   {
+    "label": "11月上旬",
+    "n": 24,
+    "avg_cnt": 17.7
+   },
+   {
+    "label": "11月中旬",
+    "n": 23,
+    "avg_cnt": 17.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 68
+   },
+   {
+    "month": 11,
+    "n": 62
+   },
+   {
+    "month": 9,
+    "n": 60
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.9,
+    "lo": 20.2,
+    "hi": 24.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.4
+   }
+  },
   "factors": [],
   "wmape_median": 34.1,
   "model_beats_baseline": 1,
@@ -1467,9 +2709,47 @@
   "n_ships": 1,
   "n_records": 261,
   "peaks": [
-   "11月中旬",
-   "11月下旬"
+   {
+    "label": "11月中旬",
+    "n": 33,
+    "avg_cnt": 13.5
+   },
+   {
+    "label": "11月下旬",
+    "n": 33,
+    "avg_cnt": 12.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 90
+   },
+   {
+    "month": 12,
+    "n": 83
+   },
+   {
+    "month": 10,
+    "n": 47
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.1,
+    "lo": 18.5,
+    "hi": 20.4
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.3,
+    "hi": 0.8
+   }
+  },
   "factors": [],
   "wmape_median": 37.1,
   "model_beats_baseline": 1,
@@ -1481,9 +2761,47 @@
   "n_ships": 1,
   "n_records": 241,
   "peaks": [
-   "2月上旬",
-   "1月下旬"
+   {
+    "label": "3月上旬",
+    "n": 14,
+    "avg_cnt": 17.2
+   },
+   {
+    "label": "11月上旬",
+    "n": 13,
+    "avg_cnt": 15.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 49
+   },
+   {
+    "month": 12,
+    "n": 45
+   },
+   {
+    "month": 4,
+    "n": 43
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 15.2,
+    "lo": 14.9,
+    "hi": 15.8
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 0.9
+   }
+  },
   "factors": [],
   "wmape_median": 57.8,
   "model_beats_baseline": 1,
@@ -1495,9 +2813,32 @@
   "n_ships": 1,
   "n_records": 253,
   "peaks": [
-   "7月上旬",
-   "12月中旬"
+   {
+    "label": "12月下旬",
+    "n": 15,
+    "avg_cnt": 27.7
+   },
+   {
+    "label": "9月中旬",
+    "n": 18,
+    "avg_cnt": 21.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 55
+   },
+   {
+    "month": 9,
+    "n": 51
+   },
+   {
+    "month": 10,
+    "n": 51
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -1540,9 +2881,47 @@
   "n_ships": 1,
   "n_records": 205,
   "peaks": [
-   "11月下旬",
-   "3月下旬"
+   {
+    "label": "11月下旬",
+    "n": 20,
+    "avg_cnt": 5.8
+   },
+   {
+    "label": "12月上旬",
+    "n": 15,
+    "avg_cnt": 5.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 89
+   },
+   {
+    "month": 11,
+    "n": 62
+   },
+   {
+    "month": 12,
+    "n": 20
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 16.6,
+    "lo": 15.4,
+    "hi": 17.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "chl_monthly",
@@ -1585,9 +2964,47 @@
   "n_ships": 1,
   "n_records": 277,
   "peaks": [
-   "7月中旬",
-   "8月上旬"
+   {
+    "label": "7月下旬",
+    "n": 19,
+    "avg_cnt": 39.5
+   },
+   {
+    "label": "7月上旬",
+    "n": 21,
+    "avg_cnt": 38.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 78
+   },
+   {
+    "month": 5,
+    "n": 65
+   },
+   {
+    "month": 7,
+    "n": 51
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.0,
+    "lo": 25.8,
+    "hi": 28.5
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 1.2,
+    "lo": 0.8,
+    "hi": 1.8
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -1620,9 +3037,47 @@
   "n_ships": 1,
   "n_records": 220,
   "peaks": [
-   "3月上旬",
-   "10月中旬"
+   {
+    "label": "2月中旬",
+    "n": 13,
+    "avg_cnt": 37.5
+   },
+   {
+    "label": "6月上旬",
+    "n": 14,
+    "avg_cnt": 22.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 35
+   },
+   {
+    "month": 5,
+    "n": 31
+   },
+   {
+    "month": 4,
+    "n": 28
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 15.6,
+    "lo": 14.6,
+    "hi": 15.9
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.2,
+    "hi": 0.9
+   }
+  },
   "factors": [],
   "wmape_median": 43.9,
   "model_beats_baseline": 0,
@@ -1633,10 +3088,22 @@
   "area": "小田原早川港",
   "n_ships": 1,
   "n_records": 45,
-  "peaks": [
-   "10月上旬",
-   "9月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 14
+   },
+   {
+    "month": 8,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 61.5,
   "model_beats_baseline": 0,
@@ -1647,10 +3114,22 @@
   "area": "富士市田子の浦漁港",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "10月下旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 6
+   },
+   {
+    "month": 11,
+    "n": 6
+   },
+   {
+    "month": 4,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_oshio",
@@ -1673,9 +3152,47 @@
   "n_ships": 2,
   "n_records": 304,
   "peaks": [
-   "7月上旬",
-   "6月中旬"
+   {
+    "label": "7月上旬",
+    "n": 26,
+    "avg_cnt": 44.0
+   },
+   {
+    "label": "6月中旬",
+    "n": 31,
+    "avg_cnt": 44.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 77
+   },
+   {
+    "month": 6,
+    "n": 73
+   },
+   {
+    "month": 7,
+    "n": 62
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.0,
+    "lo": 22.5,
+    "hi": 27.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.5
+   }
+  },
   "factors": [
    {
     "base": "spawn_season_n",
@@ -1718,9 +3235,47 @@
   "n_ships": 1,
   "n_records": 219,
   "peaks": [
-   "2月中旬",
-   "11月中旬"
+   {
+    "label": "3月下旬",
+    "n": 16,
+    "avg_cnt": 2.9
+   },
+   {
+    "label": "4月中旬",
+    "n": 17,
+    "avg_cnt": 2.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 50
+   },
+   {
+    "month": 5,
+    "n": 36
+   },
+   {
+    "month": 3,
+    "n": 27
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 16.5,
+    "lo": 15.2,
+    "hi": 17.8
+   },
+   "n": 992,
+   "wave_height": {
+    "med": 1.4,
+    "lo": 0.9,
+    "hi": 2.5
+   }
+  },
   "factors": [
    {
     "base": "temp_50m",
@@ -1743,9 +3298,47 @@
   "n_ships": 1,
   "n_records": 253,
   "peaks": [
-   "8月上旬",
-   "9月上旬"
+   {
+    "label": "6月上旬",
+    "n": 13,
+    "avg_cnt": 23.6
+   },
+   {
+    "label": "7月上旬",
+    "n": 13,
+    "avg_cnt": 22.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 36
+   },
+   {
+    "month": 7,
+    "n": 32
+   },
+   {
+    "month": 6,
+    "n": 31
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.3,
+    "lo": 19.1,
+    "hi": 21.8
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.3,
+    "hi": 0.8
+   }
+  },
   "factors": [
    {
     "base": "temp_50m",
@@ -1788,9 +3381,47 @@
   "n_ships": 1,
   "n_records": 170,
   "peaks": [
-   "9月中旬",
-   "9月上旬"
+   {
+    "label": "9月中旬",
+    "n": 19,
+    "avg_cnt": 7.6
+   },
+   {
+    "label": "9月上旬",
+    "n": 13,
+    "avg_cnt": 7.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 56
+   },
+   {
+    "month": 10,
+    "n": 52
+   },
+   {
+    "month": 9,
+    "n": 49
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.2,
+    "lo": 26.5,
+    "hi": 28.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -1833,9 +3464,42 @@
   "n_ships": 1,
   "n_records": 48,
   "peaks": [
-   "9月中旬",
-   "9月下旬"
+   {
+    "label": "10月上旬",
+    "n": 12,
+    "avg_cnt": 1.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 28
+   },
+   {
+    "month": 11,
+    "n": 11
+   },
+   {
+    "month": 12,
+    "n": 6
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 24.8,
+    "lo": 24.5,
+    "hi": 25.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.1
+   }
+  },
   "factors": [],
   "wmape_median": 47.3,
   "model_beats_baseline": 0,
@@ -1846,10 +3510,22 @@
   "area": "沼津内港",
   "n_ships": 1,
   "n_records": 977,
-  "peaks": [
-   "5月下旬",
-   "12月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 121
+   },
+   {
+    "month": 12,
+    "n": 112
+   },
+   {
+    "month": 1,
+    "n": 106
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 71.6,
   "model_beats_baseline": 0,
@@ -1861,9 +3537,47 @@
   "n_ships": 1,
   "n_records": 129,
   "peaks": [
-   "12月下旬",
-   "9月下旬"
+   {
+    "label": "10月上旬",
+    "n": 19,
+    "avg_cnt": 1.8
+   },
+   {
+    "label": "10月下旬",
+    "n": 19,
+    "avg_cnt": 1.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 58
+   },
+   {
+    "month": 11,
+    "n": 24
+   },
+   {
+    "month": 9,
+    "n": 22
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.2,
+    "lo": 24.5,
+    "hi": 26.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.0,
+    "lo": 0.6,
+    "hi": 1.5
+   }
+  },
   "factors": [],
   "wmape_median": 47.4,
   "model_beats_baseline": 1,
@@ -1875,9 +3589,47 @@
   "n_ships": 1,
   "n_records": 126,
   "peaks": [
-   "6月中旬",
-   "6月下旬"
+   {
+    "label": "2月中旬",
+    "n": 15,
+    "avg_cnt": 1.7
+   },
+   {
+    "label": "2月上旬",
+    "n": 15,
+    "avg_cnt": 1.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 38
+   },
+   {
+    "month": 1,
+    "n": 36
+   },
+   {
+    "month": 12,
+    "n": 15
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 15.6,
+    "lo": 14.9,
+    "hi": 16.1
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "temp_50m",
@@ -1909,10 +3661,22 @@
   "area": "小田原早川港",
   "n_ships": 1,
   "n_records": 98,
-  "peaks": [
-   "1月下旬",
-   "3月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 22
+   },
+   {
+    "month": 6,
+    "n": 17
+   },
+   {
+    "month": 7,
+    "n": 16
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -1955,9 +3719,47 @@
   "n_ships": 1,
   "n_records": 237,
   "peaks": [
-   "6月上旬",
-   "7月上旬"
+   {
+    "label": "6月上旬",
+    "n": 23,
+    "avg_cnt": 32.5
+   },
+   {
+    "label": "7月上旬",
+    "n": 27,
+    "avg_cnt": 29.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 78
+   },
+   {
+    "month": 7,
+    "n": 65
+   },
+   {
+    "month": 5,
+    "n": 51
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.9,
+    "lo": 19.9,
+    "hi": 21.9
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.4,
+    "hi": 0.8
+   }
+  },
   "factors": [],
   "wmape_median": 34.3,
   "model_beats_baseline": 1,
@@ -1968,10 +3770,22 @@
   "area": "茅ヶ崎港",
   "n_ships": 1,
   "n_records": 68,
-  "peaks": [
-   "8月下旬",
-   "10月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 1,
+    "n": 10
+   },
+   {
+    "month": 9,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -2014,9 +3828,47 @@
   "n_ships": 1,
   "n_records": 161,
   "peaks": [
-   "3月中旬",
-   "3月下旬"
+   {
+    "label": "3月中旬",
+    "n": 14,
+    "avg_cnt": 18.5
+   },
+   {
+    "label": "3月下旬",
+    "n": 23,
+    "avg_cnt": 17.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 55
+   },
+   {
+    "month": 1,
+    "n": 38
+   },
+   {
+    "month": 2,
+    "n": 38
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 13.1,
+    "lo": 12.6,
+    "hi": 13.5
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.2,
+    "hi": 1.0
+   }
+  },
   "factors": [],
   "wmape_median": 64.7,
   "model_beats_baseline": 1,
@@ -2028,9 +3880,47 @@
   "n_ships": 5,
   "n_records": 424,
   "peaks": [
-   "2月下旬",
-   "12月上旬"
+   {
+    "label": "12月上旬",
+    "n": 126,
+    "avg_cnt": 2.8
+   },
+   {
+    "label": "12月中旬",
+    "n": 53,
+    "avg_cnt": 2.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 237
+   },
+   {
+    "month": 1,
+    "n": 106
+   },
+   {
+    "month": 2,
+    "n": 40
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.8,
+    "lo": 16.9,
+    "hi": 18.9
+   },
+   "n": 400,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.7,
+    "hi": 1.5
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -2073,9 +3963,47 @@
   "n_ships": 1,
   "n_records": 121,
   "peaks": [
-   "8月中旬",
-   "9月上旬"
+   {
+    "label": "8月下旬",
+    "n": 12,
+    "avg_cnt": 15.9
+   },
+   {
+    "label": "9月下旬",
+    "n": 12,
+    "avg_cnt": 7.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 35
+   },
+   {
+    "month": 10,
+    "n": 35
+   },
+   {
+    "month": 11,
+    "n": 28
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.5,
+    "lo": 27.0,
+    "hi": 28.2
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -2118,9 +4046,47 @@
   "n_ships": 1,
   "n_records": 80,
   "peaks": [
-   "9月下旬",
-   "10月上旬"
+   {
+    "label": "9月下旬",
+    "n": 13,
+    "avg_cnt": 2.9
+   },
+   {
+    "label": "10月上旬",
+    "n": 14,
+    "avg_cnt": 2.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 39
+   },
+   {
+    "month": 9,
+    "n": 24
+   },
+   {
+    "month": 8,
+    "n": 9
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.5,
+    "lo": 24.6,
+    "hi": 26.3
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -2153,9 +4119,47 @@
   "n_ships": 2,
   "n_records": 243,
   "peaks": [
-   "10月中旬",
-   "1月下旬"
+   {
+    "label": "6月中旬",
+    "n": 16,
+    "avg_cnt": 26.8
+   },
+   {
+    "label": "6月上旬",
+    "n": 14,
+    "avg_cnt": 26.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 58
+   },
+   {
+    "month": 6,
+    "n": 48
+   },
+   {
+    "month": 7,
+    "n": 25
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.1,
+    "lo": 20.9,
+    "hi": 23.3
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "temp_200m",
@@ -2187,10 +4191,22 @@
   "area": "横浜市金沢八景平潟",
   "n_ships": 1,
   "n_records": 160,
-  "peaks": [
-   "12月中旬",
-   "12月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 22
+   },
+   {
+    "month": 5,
+    "n": 18
+   },
+   {
+    "month": 6,
+    "n": 17
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 40.1,
   "model_beats_baseline": 1,
@@ -2201,10 +4217,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "6月下旬",
-   "10月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 18
+   },
+   {
+    "month": 8,
+    "n": 5
+   },
+   {
+    "month": 9,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -2227,9 +4255,47 @@
   "n_ships": 7,
   "n_records": 463,
   "peaks": [
-   "4月下旬",
-   "6月上旬"
+   {
+    "label": "6月上旬",
+    "n": 28,
+    "avg_cnt": 32.8
+   },
+   {
+    "label": "5月下旬",
+    "n": 88,
+    "avg_cnt": 30.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 190
+   },
+   {
+    "month": 6,
+    "n": 155
+   },
+   {
+    "month": 7,
+    "n": 85
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.1,
+    "lo": 19.0,
+    "hi": 21.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.8,
+    "hi": 1.6
+   }
+  },
   "factors": [
    {
     "base": "temp_avg",
@@ -2272,9 +4338,47 @@
   "n_ships": 2,
   "n_records": 326,
   "peaks": [
-   "8月上旬",
-   "7月上旬"
+   {
+    "label": "5月上旬",
+    "n": 18,
+    "avg_cnt": 29.1
+   },
+   {
+    "label": "6月上旬",
+    "n": 16,
+    "avg_cnt": 27.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 43
+   },
+   {
+    "month": 6,
+    "n": 41
+   },
+   {
+    "month": 11,
+    "n": 34
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.5,
+    "lo": 17.3,
+    "hi": 19.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.2
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -2307,9 +4411,47 @@
   "n_ships": 1,
   "n_records": 83,
   "peaks": [
-   "6月下旬",
-   "6月上旬"
+   {
+    "label": "6月下旬",
+    "n": 14,
+    "avg_cnt": 9.0
+   },
+   {
+    "label": "6月上旬",
+    "n": 14,
+    "avg_cnt": 8.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 45
+   },
+   {
+    "month": 7,
+    "n": 29
+   },
+   {
+    "month": 8,
+    "n": 9
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 24.2,
+    "lo": 23.0,
+    "hi": 25.8
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.7
+   }
+  },
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -2352,9 +4494,47 @@
   "n_ships": 1,
   "n_records": 133,
   "peaks": [
-   "8月中旬",
-   "12月上旬"
+   {
+    "label": "12月上旬",
+    "n": 12,
+    "avg_cnt": 10.1
+   },
+   {
+    "label": "11月下旬",
+    "n": 14,
+    "avg_cnt": 8.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 45
+   },
+   {
+    "month": 12,
+    "n": 30
+   },
+   {
+    "month": 1,
+    "n": 19
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.1,
+    "lo": 19.2,
+    "hi": 21.3
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.6
+   }
+  },
   "factors": [],
   "wmape_median": 40.9,
   "model_beats_baseline": 1,
@@ -2366,9 +4546,47 @@
   "n_ships": 1,
   "n_records": 213,
   "peaks": [
-   "9月下旬",
-   "10月上旬"
+   {
+    "label": "11月上旬",
+    "n": 20,
+    "avg_cnt": 9.5
+   },
+   {
+    "label": "12月上旬",
+    "n": 17,
+    "avg_cnt": 8.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 57
+   },
+   {
+    "month": 12,
+    "n": 55
+   },
+   {
+    "month": 1,
+    "n": 49
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.8,
+    "lo": 17.5,
+    "hi": 20.3
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.5
+   }
+  },
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -2411,9 +4629,42 @@
   "n_ships": 1,
   "n_records": 126,
   "peaks": [
-   "1月中旬",
-   "9月中旬"
+   {
+    "label": "8月中旬",
+    "n": 13,
+    "avg_cnt": 10.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 23
+   },
+   {
+    "month": 10,
+    "n": 23
+   },
+   {
+    "month": 8,
+    "n": 22
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.9,
+    "lo": 26.6,
+    "hi": 28.9
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.2,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -2456,9 +4707,47 @@
   "n_ships": 1,
   "n_records": 145,
   "peaks": [
-   "9月中旬",
-   "7月下旬"
+   {
+    "label": "7月下旬",
+    "n": 12,
+    "avg_cnt": 3.0
+   },
+   {
+    "label": "8月上旬",
+    "n": 19,
+    "avg_cnt": 2.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 44
+   },
+   {
+    "month": 8,
+    "n": 38
+   },
+   {
+    "month": 7,
+    "n": 35
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 28.7,
+    "lo": 27.8,
+    "hi": 29.9
+   },
+   "n": 1144,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.5
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -2481,9 +4770,47 @@
   "n_ships": 1,
   "n_records": 320,
   "peaks": [
-   "9月上旬",
-   "8月中旬"
+   {
+    "label": "8月中旬",
+    "n": 22,
+    "avg_cnt": 62.8
+   },
+   {
+    "label": "7月下旬",
+    "n": 18,
+    "avg_cnt": 62.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 58
+   },
+   {
+    "month": 8,
+    "n": 58
+   },
+   {
+    "month": 5,
+    "n": 53
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 29.0,
+    "lo": 28.0,
+    "hi": 29.5
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -2526,9 +4853,42 @@
   "n_ships": 2,
   "n_records": 1070,
   "peaks": [
-   "12月上旬",
-   "11月下旬"
+   {
+    "label": "5月中旬",
+    "n": 57,
+    "avg_cnt": 38.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 153
+   },
+   {
+    "month": 6,
+    "n": 104
+   },
+   {
+    "month": 7,
+    "n": 93
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.0,
+    "lo": 18.0,
+    "hi": 19.5
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "sst",
@@ -2571,9 +4931,47 @@
   "n_ships": 7,
   "n_records": 452,
   "peaks": [
-   "7月上旬",
-   "6月下旬"
+   {
+    "label": "7月上旬",
+    "n": 85,
+    "avg_cnt": 59.4
+   },
+   {
+    "label": "6月下旬",
+    "n": 113,
+    "avg_cnt": 54.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 298
+   },
+   {
+    "month": 7,
+    "n": 149
+   },
+   {
+    "month": 5,
+    "n": 2
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.0,
+    "lo": 22.9,
+    "hi": 27.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.6,
+    "hi": 1.7
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -2616,9 +5014,32 @@
   "n_ships": 2,
   "n_records": 134,
   "peaks": [
-   "6月上旬",
-   "5月下旬"
+   {
+    "label": "6月中旬",
+    "n": 13,
+    "avg_cnt": 16.3
+   },
+   {
+    "label": "6月下旬",
+    "n": 17,
+    "avg_cnt": 15.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 42
+   },
+   {
+    "month": 6,
+    "n": 36
+   },
+   {
+    "month": 7,
+    "n": 29
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -2661,9 +5082,47 @@
   "n_ships": 1,
   "n_records": 98,
   "peaks": [
-   "8月下旬",
-   "4月中旬"
+   {
+    "label": "4月中旬",
+    "n": 17,
+    "avg_cnt": 2.8
+   },
+   {
+    "label": "4月下旬",
+    "n": 22,
+    "avg_cnt": 2.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 50
+   },
+   {
+    "month": 5,
+    "n": 36
+   },
+   {
+    "month": 3,
+    "n": 9
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.0,
+    "lo": 16.5,
+    "hi": 17.9
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.0,
+    "lo": 0.7,
+    "hi": 1.9
+   }
+  },
   "factors": [
    {
     "base": "temp_200m",
@@ -2685,10 +5144,22 @@
   "area": "大洗港",
   "n_ships": 1,
   "n_records": 108,
-  "peaks": [
-   "3月下旬",
-   "11月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 19
+   },
+   {
+    "month": 9,
+    "n": 17
+   },
+   {
+    "month": 10,
+    "n": 17
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -2711,9 +5182,32 @@
   "n_ships": 1,
   "n_records": 95,
   "peaks": [
-   "12月中旬",
-   "10月下旬"
+   {
+    "label": "10月中旬",
+    "n": 17,
+    "avg_cnt": 26.6
+   },
+   {
+    "label": "10月上旬",
+    "n": 22,
+    "avg_cnt": 22.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 48
+   },
+   {
+    "month": 11,
+    "n": 19
+   },
+   {
+    "month": 9,
+    "n": 13
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 79.6,
   "model_beats_baseline": 0,
@@ -2725,9 +5219,47 @@
   "n_ships": 1,
   "n_records": 90,
   "peaks": [
-   "1月中旬",
-   "2月上旬"
+   {
+    "label": "2月上旬",
+    "n": 15,
+    "avg_cnt": 2.7
+   },
+   {
+    "label": "1月下旬",
+    "n": 14,
+    "avg_cnt": 2.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 46
+   },
+   {
+    "month": 3,
+    "n": 29
+   },
+   {
+    "month": 1,
+    "n": 15
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 15.9,
+    "lo": 14.2,
+    "hi": 16.4
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.2
+   }
+  },
   "factors": [],
   "wmape_median": 47.3,
   "model_beats_baseline": 1,
@@ -2739,9 +5271,47 @@
   "n_ships": 3,
   "n_records": 223,
   "peaks": [
-   "11月上旬",
-   "10月中旬"
+   {
+    "label": "11月上旬",
+    "n": 18,
+    "avg_cnt": 21.2
+   },
+   {
+    "label": "10月中旬",
+    "n": 25,
+    "avg_cnt": 17.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 64
+   },
+   {
+    "month": 11,
+    "n": 58
+   },
+   {
+    "month": 12,
+    "n": 57
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.1,
+    "lo": 20.9,
+    "hi": 23.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.2
+   }
+  },
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -2783,10 +5353,22 @@
   "area": "松輪間口港",
   "n_ships": 1,
   "n_records": 56,
-  "peaks": [
-   "9月下旬",
-   "10月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 26
+   },
+   {
+    "month": 9,
+    "n": 18
+   },
+   {
+    "month": 8,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wind_speed_max",
@@ -2829,9 +5411,27 @@
   "n_ships": 1,
   "n_records": 82,
   "peaks": [
-   "1月下旬",
-   "2月上旬"
+   {
+    "label": "7月中旬",
+    "n": 13,
+    "avg_cnt": 11.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 24
+   },
+   {
+    "month": 7,
+    "n": 24
+   },
+   {
+    "month": 3,
+    "n": 17
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -2873,10 +5473,22 @@
   "area": "大磯港",
   "n_ships": 1,
   "n_records": 36,
-  "peaks": [
-   "11月下旬",
-   "9月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 7
+   },
+   {
+    "month": 11,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -2899,9 +5511,47 @@
   "n_ships": 2,
   "n_records": 100,
   "peaks": [
-   "3月中旬",
-   "1月上旬"
+   {
+    "label": "12月上旬",
+    "n": 23,
+    "avg_cnt": 4.3
+   },
+   {
+    "label": "11月上旬",
+    "n": 24,
+    "avg_cnt": 2.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 46
+   },
+   {
+    "month": 11,
+    "n": 37
+   },
+   {
+    "month": 1,
+    "n": 6
+   }
+  ],
+  "wx_peak": {
+   "years": 2,
+   "year_from": "2024",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.4,
+    "lo": 16.5,
+    "hi": 18.9
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.9,
+    "hi": 1.4
+   }
+  },
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -2944,9 +5594,47 @@
   "n_ships": 1,
   "n_records": 75,
   "peaks": [
-   "4月上旬",
-   "4月下旬"
+   {
+    "label": "4月中旬",
+    "n": 12,
+    "avg_cnt": 21.5
+   },
+   {
+    "label": "2月上旬",
+    "n": 16,
+    "avg_cnt": 12.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 35
+   },
+   {
+    "month": 4,
+    "n": 17
+   },
+   {
+    "month": 3,
+    "n": 12
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 15.6,
+    "lo": 15.2,
+    "hi": 16.6
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 1.2,
+    "lo": 0.9,
+    "hi": 1.8
+   }
+  },
   "factors": [
    {
     "base": "temp_min",
@@ -2988,10 +5676,22 @@
   "area": "由比",
   "n_ships": 1,
   "n_records": 63,
-  "peaks": [
-   "9月下旬",
-   "1月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 16
+   },
+   {
+    "month": 4,
+    "n": 16
+   },
+   {
+    "month": 5,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -3033,10 +5733,22 @@
   "area": "沼津静浦",
   "n_ships": 1,
   "n_records": 34,
-  "peaks": [
-   "4月下旬",
-   "11月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 14
+   },
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 1,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wave_height_avg",
@@ -3079,9 +5791,47 @@
   "n_ships": 1,
   "n_records": 67,
   "peaks": [
-   "1月上旬",
-   "1月中旬"
+   {
+    "label": "1月中旬",
+    "n": 16,
+    "avg_cnt": 3.5
+   },
+   {
+    "label": "1月下旬",
+    "n": 13,
+    "avg_cnt": 2.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 35
+   },
+   {
+    "month": 2,
+    "n": 25
+   },
+   {
+    "month": 3,
+    "n": 7
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 9.1,
+    "lo": 8.8,
+    "hi": 9.5
+   },
+   "n": 1120,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.7
+   }
+  },
   "factors": [
    {
     "base": "spawn_season_n",
@@ -3114,9 +5864,32 @@
   "n_ships": 1,
   "n_records": 72,
   "peaks": [
-   "12月上旬",
-   "12月中旬"
+   {
+    "label": "12月上旬",
+    "n": 19,
+    "avg_cnt": 6.0
+   },
+   {
+    "label": "12月中旬",
+    "n": 12,
+    "avg_cnt": 5.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 49
+   },
+   {
+    "month": 1,
+    "n": 19
+   },
+   {
+    "month": 2,
+    "n": 4
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -3158,10 +5931,22 @@
   "area": "江戸川放水路･原木中山",
   "n_ships": 1,
   "n_records": 75,
-  "peaks": [
-   "7月下旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 23
+   },
+   {
+    "month": 7,
+    "n": 19
+   },
+   {
+    "month": 6,
+    "n": 11
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -3204,9 +5989,47 @@
   "n_ships": 3,
   "n_records": 276,
   "peaks": [
-   "2月下旬",
-   "7月上旬"
+   {
+    "label": "7月上旬",
+    "n": 22,
+    "avg_cnt": 50.6
+   },
+   {
+    "label": "5月中旬",
+    "n": 30,
+    "avg_cnt": 44.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 84
+   },
+   {
+    "month": 4,
+    "n": 55
+   },
+   {
+    "month": 7,
+    "n": 42
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.0,
+    "lo": 22.9,
+    "hi": 27.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.6,
+    "hi": 1.7
+   }
+  },
   "factors": [
    {
     "base": "sst_delta_3d",
@@ -3239,9 +6062,47 @@
   "n_ships": 1,
   "n_records": 85,
   "peaks": [
-   "7月中旬",
-   "7月上旬"
+   {
+    "label": "7月中旬",
+    "n": 15,
+    "avg_cnt": 9.9
+   },
+   {
+    "label": "7月上旬",
+    "n": 15,
+    "avg_cnt": 9.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 42
+   },
+   {
+    "month": 7,
+    "n": 41
+   },
+   {
+    "month": 8,
+    "n": 2
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.8,
+    "lo": 26.1,
+    "hi": 27.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.2,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -3283,10 +6144,22 @@
   "area": "沼津静浦",
   "n_ships": 1,
   "n_records": 47,
-  "peaks": [
-   "6月中旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 10
+   },
+   {
+    "month": 4,
+    "n": 9
+   },
+   {
+    "month": 11,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 21.5,
   "model_beats_baseline": 1,
@@ -3298,9 +6171,42 @@
   "n_ships": 1,
   "n_records": 63,
   "peaks": [
-   "3月上旬",
-   "3月下旬"
+   {
+    "label": "3月中旬",
+    "n": 16,
+    "avg_cnt": 19.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 33
+   },
+   {
+    "month": 4,
+    "n": 23
+   },
+   {
+    "month": 2,
+    "n": 3
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 15.6,
+    "lo": 15.4,
+    "hi": 16.0
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.3
+   }
+  },
   "factors": [
    {
     "base": "temp_max",
@@ -3342,10 +6248,22 @@
   "area": "波崎港",
   "n_ships": 1,
   "n_records": 58,
-  "peaks": [
-   "7月下旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 15
+   },
+   {
+    "month": 5,
+    "n": 15
+   },
+   {
+    "month": 3,
+    "n": 13
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -3387,10 +6305,22 @@
   "area": "富士市田子の浦漁港",
   "n_ships": 1,
   "n_records": 62,
-  "peaks": [
-   "8月下旬",
-   "10月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 13
+   },
+   {
+    "month": 7,
+    "n": 11
+   },
+   {
+    "month": 10,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -3423,9 +6353,47 @@
   "n_ships": 2,
   "n_records": 99,
   "peaks": [
-   "1月下旬",
-   "1月上旬"
+   {
+    "label": "1月下旬",
+    "n": 13,
+    "avg_cnt": 33.2
+   },
+   {
+    "label": "4月中旬",
+    "n": 23,
+    "avg_cnt": 16.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 49
+   },
+   {
+    "month": 1,
+    "n": 24
+   },
+   {
+    "month": 2,
+    "n": 20
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 14.1,
+    "lo": 12.6,
+    "hi": 14.9
+   },
+   "n": 528,
+   "wave_height": {
+    "med": 1.2,
+    "lo": 0.8,
+    "hi": 2.2
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -3468,9 +6436,27 @@
   "n_ships": 1,
   "n_records": 67,
   "peaks": [
-   "9月中旬",
-   "6月下旬"
+   {
+    "label": "8月中旬",
+    "n": 12,
+    "avg_cnt": 4.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 28
+   },
+   {
+    "month": 8,
+    "n": 20
+   },
+   {
+    "month": 6,
+    "n": 10
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -3512,10 +6498,22 @@
   "area": "沼津静浦",
   "n_ships": 1,
   "n_records": 48,
-  "peaks": [
-   "9月中旬",
-   "10月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 18
+   },
+   {
+    "month": 11,
+    "n": 13
+   },
+   {
+    "month": 10,
+    "n": 11
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -3557,10 +6555,22 @@
   "area": "大洗港",
   "n_ships": 1,
   "n_records": 68,
-  "peaks": [
-   "4月下旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 13
+   },
+   {
+    "month": 4,
+    "n": 13
+   },
+   {
+    "month": 5,
+    "n": 13
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -3602,10 +6612,22 @@
   "area": "富士市田子の浦漁港",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "6月中旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 6
+   },
+   {
+    "month": 6,
+    "n": 5
+   },
+   {
+    "month": 7,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -3648,9 +6670,42 @@
   "n_ships": 1,
   "n_records": 49,
   "peaks": [
-   "8月中旬",
-   "8月下旬"
+   {
+    "label": "5月上旬",
+    "n": 13,
+    "avg_cnt": 12.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 22
+   },
+   {
+    "month": 6,
+    "n": 11
+   },
+   {
+    "month": 8,
+    "n": 7
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.3,
+    "lo": 17.2,
+    "hi": 19.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.3
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -3692,10 +6747,22 @@
   "area": "沼津内港",
   "n_ships": 1,
   "n_records": 43,
-  "peaks": [
-   "3月中旬",
-   "10月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 10
+   },
+   {
+    "month": 4,
+    "n": 10
+   },
+   {
+    "month": 11,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -3737,10 +6804,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 46,
-  "peaks": [
-   "9月上旬",
-   "9月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 14
+   },
+   {
+    "month": 9,
+    "n": 13
+   },
+   {
+    "month": 10,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -3782,10 +6861,22 @@
   "area": "久比里港",
   "n_ships": 1,
   "n_records": 45,
-  "peaks": [
-   "8月上旬",
-   "9月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 14
+   },
+   {
+    "month": 8,
+    "n": 11
+   },
+   {
+    "month": 7,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -3828,9 +6919,38 @@
   "n_ships": 1,
   "n_records": 37,
   "peaks": [
-   "4月中旬",
-   "4月下旬"
+   {
+    "label": "4月上旬",
+    "n": 15,
+    "avg_cnt": 1.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 24
+   },
+   {
+    "month": 3,
+    "n": 13
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 15.6,
+    "lo": 15.1,
+    "hi": 16.5
+   },
+   "n": 888,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.3
+   }
+  },
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -3852,10 +6972,22 @@
   "area": "茅ヶ崎港",
   "n_ships": 1,
   "n_records": 37,
-  "peaks": [
-   "12月中旬",
-   "1月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 17
+   },
+   {
+    "month": 1,
+    "n": 14
+   },
+   {
+    "month": 2,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "swell_height_max",
@@ -3887,10 +7019,22 @@
   "area": "御前崎港",
   "n_ships": 1,
   "n_records": 48,
-  "peaks": [
-   "5月下旬",
-   "6月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 16
+   },
+   {
+    "month": 7,
+    "n": 13
+   },
+   {
+    "month": 5,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "chl_monthly",
@@ -3932,10 +7076,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 41,
-  "peaks": [
-   "6月上旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 20
+   },
+   {
+    "month": 6,
+    "n": 17
+   },
+   {
+    "month": 5,
+    "n": 3
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 48.5,
   "model_beats_baseline": 0,
@@ -3946,10 +7102,22 @@
   "area": "由比",
   "n_ships": 1,
   "n_records": 34,
-  "peaks": [
-   "5月中旬",
-   "9月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 6,
+    "n": 9
+   },
+   {
+    "month": 7,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -3991,10 +7159,22 @@
   "area": "茅ヶ崎港",
   "n_ships": 1,
   "n_records": 31,
-  "peaks": [
-   "3月下旬",
-   "3月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 17
+   },
+   {
+    "month": 4,
+    "n": 11
+   },
+   {
+    "month": 11,
+    "n": 2
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -4036,10 +7216,22 @@
   "area": "日立久慈港",
   "n_ships": 1,
   "n_records": 31,
-  "peaks": [
-   "7月中旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 15
+   },
+   {
+    "month": 7,
+    "n": 7
+   },
+   {
+    "month": 10,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 43.2,
   "model_beats_baseline": 1,
@@ -4051,9 +7243,47 @@
   "n_ships": 1,
   "n_records": 260,
   "peaks": [
-   "6月上旬",
-   "6月中旬"
+   {
+    "label": "6月中旬",
+    "n": 19,
+    "avg_cnt": 28.3
+   },
+   {
+    "label": "5月下旬",
+    "n": 17,
+    "avg_cnt": 25.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 58
+   },
+   {
+    "month": 6,
+    "n": 47
+   },
+   {
+    "month": 2,
+    "n": 36
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.0,
+    "lo": 21.0,
+    "hi": 23.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 0.8
+   }
+  },
   "factors": [],
   "wmape_median": 63.1,
   "model_beats_baseline": 0,
@@ -4065,9 +7295,32 @@
   "n_ships": 2,
   "n_records": 305,
   "peaks": [
-   "4月中旬",
-   "9月中旬"
+   {
+    "label": "8月中旬",
+    "n": 17,
+    "avg_cnt": 5.4
+   },
+   {
+    "label": "5月下旬",
+    "n": 20,
+    "avg_cnt": 5.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 66
+   },
+   {
+    "month": 5,
+    "n": 56
+   },
+   {
+    "month": 7,
+    "n": 56
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wind_speed_max",
@@ -4090,9 +7343,47 @@
   "n_ships": 3,
   "n_records": 514,
   "peaks": [
-   "6月中旬",
-   "6月上旬"
+   {
+    "label": "6月中旬",
+    "n": 37,
+    "avg_cnt": 36.9
+   },
+   {
+    "label": "6月上旬",
+    "n": 39,
+    "avg_cnt": 30.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 116
+   },
+   {
+    "month": 5,
+    "n": 99
+   },
+   {
+    "month": 7,
+    "n": 86
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.0,
+    "lo": 20.8,
+    "hi": 23.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -4135,9 +7426,47 @@
   "n_ships": 1,
   "n_records": 441,
   "peaks": [
-   "5月下旬",
-   "6月上旬"
+   {
+    "label": "5月下旬",
+    "n": 26,
+    "avg_cnt": 33.9
+   },
+   {
+    "label": "6月上旬",
+    "n": 27,
+    "avg_cnt": 33.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 86
+   },
+   {
+    "month": 5,
+    "n": 75
+   },
+   {
+    "month": 7,
+    "n": 75
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.9,
+    "lo": 18.4,
+    "hi": 20.7
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.9,
+    "lo": 0.6,
+    "hi": 1.6
+   }
+  },
   "factors": [
    {
     "base": "kd490_surface",
@@ -4160,9 +7489,47 @@
   "n_ships": 1,
   "n_records": 266,
   "peaks": [
-   "6月上旬",
-   "1月下旬"
+   {
+    "label": "6月上旬",
+    "n": 20,
+    "avg_cnt": 25.1
+   },
+   {
+    "label": "5月下旬",
+    "n": 19,
+    "avg_cnt": 24.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 57
+   },
+   {
+    "month": 5,
+    "n": 54
+   },
+   {
+    "month": 7,
+    "n": 47
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.8,
+    "lo": 20.2,
+    "hi": 22.3
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.0
+   }
+  },
   "factors": [],
   "wmape_median": 40.9,
   "model_beats_baseline": 1,
@@ -4173,10 +7540,22 @@
   "area": "小田原早川港",
   "n_ships": 1,
   "n_records": 38,
-  "peaks": [
-   "3月下旬",
-   "1月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 14
+   },
+   {
+    "month": 1,
+    "n": 7
+   },
+   {
+    "month": 3,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 77.1,
   "model_beats_baseline": 0,
@@ -4188,9 +7567,47 @@
   "n_ships": 1,
   "n_records": 123,
   "peaks": [
-   "6月上旬",
-   "2月上旬"
+   {
+    "label": "6月中旬",
+    "n": 15,
+    "avg_cnt": 30.0
+   },
+   {
+    "label": "7月上旬",
+    "n": 12,
+    "avg_cnt": 27.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 36
+   },
+   {
+    "month": 7,
+    "n": 25
+   },
+   {
+    "month": 4,
+    "n": 18
+   }
+  ],
+  "wx_peak": {
+   "years": 2,
+   "year_from": "2024",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.6,
+    "lo": 19.1,
+    "hi": 22.1
+   },
+   "n": 800,
+   "wave_height": {
+    "med": 0.9,
+    "lo": 0.6,
+    "hi": 1.5
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -4212,10 +7629,22 @@
   "area": "松輪江奈港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "2月中旬",
-   "2月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 12
+   },
+   {
+    "month": 2,
+    "n": 10
+   },
+   {
+    "month": 12,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_max",
@@ -4258,9 +7687,47 @@
   "n_ships": 1,
   "n_records": 390,
   "peaks": [
-   "8月下旬",
-   "9月上旬"
+   {
+    "label": "11月上旬",
+    "n": 21,
+    "avg_cnt": 5.5
+   },
+   {
+    "label": "10月上旬",
+    "n": 20,
+    "avg_cnt": 5.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 59
+   },
+   {
+    "month": 10,
+    "n": 58
+   },
+   {
+    "month": 11,
+    "n": 55
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.5,
+    "lo": 21.1,
+    "hi": 23.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -4292,10 +7759,22 @@
   "area": "波崎港",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "7月中旬",
-   "9月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 16
+   },
+   {
+    "month": 7,
+    "n": 11
+   },
+   {
+    "month": 6,
+    "n": 2
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 35.0,
   "model_beats_baseline": 1,
@@ -4306,10 +7785,22 @@
   "area": "久比里港",
   "n_ships": 3,
   "n_records": 1050,
-  "peaks": [
-   "8月中旬",
-   "8月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 134
+   },
+   {
+    "month": 1,
+    "n": 128
+   },
+   {
+    "month": 10,
+    "n": 127
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -4332,9 +7823,47 @@
   "n_ships": 1,
   "n_records": 436,
   "peaks": [
-   "11月下旬",
-   "1月中旬"
+   {
+    "label": "1月中旬",
+    "n": 23,
+    "avg_cnt": 4.6
+   },
+   {
+    "label": "12月下旬",
+    "n": 22,
+    "avg_cnt": 4.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 72
+   },
+   {
+    "month": 11,
+    "n": 68
+   },
+   {
+    "month": 1,
+    "n": 66
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 16.2,
+    "lo": 15.1,
+    "hi": 16.8
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.2,
+    "hi": 0.8
+   }
+  },
   "factors": [],
   "wmape_median": 38.5,
   "model_beats_baseline": 0,
@@ -4346,9 +7875,47 @@
   "n_ships": 2,
   "n_records": 144,
   "peaks": [
-   "10月上旬",
-   "11月上旬"
+   {
+    "label": "10月上旬",
+    "n": 12,
+    "avg_cnt": 6.1
+   },
+   {
+    "label": "11月上旬",
+    "n": 12,
+    "avg_cnt": 5.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 33
+   },
+   {
+    "month": 11,
+    "n": 32
+   },
+   {
+    "month": 3,
+    "n": 27
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 23.5,
+    "lo": 22.8,
+    "hi": 24.5
+   },
+   "n": 400,
+   "wave_height": {
+    "med": 1.4,
+    "lo": 1.0,
+    "hi": 2.2
+   }
+  },
   "factors": [
    {
     "base": "spawn_season_n",
@@ -4390,10 +7957,22 @@
   "area": "金谷港",
   "n_ships": 1,
   "n_records": 52,
-  "peaks": [
-   "9月下旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 11
+   },
+   {
+    "month": 11,
+    "n": 11
+   },
+   {
+    "month": 7,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 51.8,
   "model_beats_baseline": 0,
@@ -4404,10 +7983,22 @@
   "area": "洲崎港",
   "n_ships": 1,
   "n_records": 41,
-  "peaks": [
-   "12月中旬",
-   "12月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 16
+   },
+   {
+    "month": 12,
+    "n": 9
+   },
+   {
+    "month": 1,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -4449,10 +8040,22 @@
   "area": "富浦港",
   "n_ships": 1,
   "n_records": 59,
-  "peaks": [
-   "12月下旬",
-   "10月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 24
+   },
+   {
+    "month": 12,
+    "n": 14
+   },
+   {
+    "month": 11,
+    "n": 12
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -4495,9 +8098,47 @@
   "n_ships": 1,
   "n_records": 443,
   "peaks": [
-   "9月下旬",
-   "10月下旬"
+   {
+    "label": "9月下旬",
+    "n": 26,
+    "avg_cnt": 6.0
+   },
+   {
+    "label": "10月下旬",
+    "n": 41,
+    "avg_cnt": 5.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 118
+   },
+   {
+    "month": 11,
+    "n": 106
+   },
+   {
+    "month": 12,
+    "n": 105
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.7,
+    "lo": 24.8,
+    "hi": 26.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.7,
+    "hi": 1.5
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -4539,10 +8180,22 @@
   "area": "横浜市金沢八景平潟",
   "n_ships": 1,
   "n_records": 78,
-  "peaks": [
-   "12月中旬",
-   "2月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 17
+   },
+   {
+    "month": 1,
+    "n": 15
+   },
+   {
+    "month": 11,
+    "n": 15
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -4575,9 +8228,32 @@
   "n_ships": 1,
   "n_records": 251,
   "peaks": [
-   "10月下旬",
-   "12月上旬"
+   {
+    "label": "10月下旬",
+    "n": 20,
+    "avg_cnt": 19.9
+   },
+   {
+    "label": "12月上旬",
+    "n": 18,
+    "avg_cnt": 19.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 48
+   },
+   {
+    "month": 10,
+    "n": 44
+   },
+   {
+    "month": 11,
+    "n": 43
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 38.9,
   "model_beats_baseline": 1,
@@ -4589,9 +8265,47 @@
   "n_ships": 3,
   "n_records": 148,
   "peaks": [
-   "10月中旬",
-   "2月上旬"
+   {
+    "label": "1月下旬",
+    "n": 16,
+    "avg_cnt": 4.2
+   },
+   {
+    "label": "12月下旬",
+    "n": 20,
+    "avg_cnt": 2.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 33
+   },
+   {
+    "month": 12,
+    "n": 33
+   },
+   {
+    "month": 1,
+    "n": 25
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 17.4,
+    "lo": 15.8,
+    "hi": 18.4
+   },
+   "n": 1056,
+   "wave_height": {
+    "med": 1.3,
+    "lo": 0.9,
+    "hi": 2.0
+   }
+  },
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -4634,9 +8348,47 @@
   "n_ships": 1,
   "n_records": 86,
   "peaks": [
-   "1月下旬",
-   "2月中旬"
+   {
+    "label": "12月上旬",
+    "n": 16,
+    "avg_cnt": 2.4
+   },
+   {
+    "label": "12月下旬",
+    "n": 14,
+    "avg_cnt": 1.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 41
+   },
+   {
+    "month": 11,
+    "n": 24
+   },
+   {
+    "month": 1,
+    "n": 7
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.2,
+    "lo": 15.9,
+    "hi": 17.9
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.9,
+    "lo": 0.7,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -4669,9 +8421,47 @@
   "n_ships": 1,
   "n_records": 227,
   "peaks": [
-   "4月中旬",
-   "6月中旬"
+   {
+    "label": "6月中旬",
+    "n": 15,
+    "avg_cnt": 23.1
+   },
+   {
+    "label": "6月下旬",
+    "n": 20,
+    "avg_cnt": 22.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 55
+   },
+   {
+    "month": 7,
+    "n": 53
+   },
+   {
+    "month": 6,
+    "n": 43
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.1,
+    "lo": 20.5,
+    "hi": 23.7
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.5,
+    "hi": 1.4
+   }
+  },
   "factors": [],
   "wmape_median": 52.5,
   "model_beats_baseline": 1,
@@ -4682,10 +8472,22 @@
   "area": "御宿岩和田港",
   "n_ships": 1,
   "n_records": 72,
-  "peaks": [
-   "9月下旬",
-   "4月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 25
+   },
+   {
+    "month": 6,
+    "n": 18
+   },
+   {
+    "month": 4,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_oshio",
@@ -4708,9 +8510,47 @@
   "n_ships": 2,
   "n_records": 253,
   "peaks": [
-   "6月中旬",
-   "5月下旬"
+   {
+    "label": "6月中旬",
+    "n": 25,
+    "avg_cnt": 20.1
+   },
+   {
+    "label": "6月下旬",
+    "n": 31,
+    "avg_cnt": 17.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 91
+   },
+   {
+    "month": 6,
+    "n": 76
+   },
+   {
+    "month": 8,
+    "n": 40
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.9,
+    "lo": 21.0,
+    "hi": 23.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "temp_200m",
@@ -4752,10 +8592,22 @@
   "area": "茅ヶ崎港",
   "n_ships": 1,
   "n_records": 58,
-  "peaks": [
-   "12月中旬",
-   "8月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 26
+   },
+   {
+    "month": 8,
+    "n": 19
+   },
+   {
+    "month": 10,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -4798,9 +8650,42 @@
   "n_ships": 1,
   "n_records": 52,
   "peaks": [
-   "6月下旬",
-   "7月上旬"
+   {
+    "label": "7月下旬",
+    "n": 13,
+    "avg_cnt": 16.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 18
+   },
+   {
+    "month": 8,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 16
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.7,
+    "lo": 22.1,
+    "hi": 27.6
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 1.2,
+    "lo": 0.9,
+    "hi": 2.1
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -4823,9 +8708,32 @@
   "n_ships": 2,
   "n_records": 77,
   "peaks": [
-   "10月下旬",
-   "7月中旬"
+   {
+    "label": "8月下旬",
+    "n": 16,
+    "avg_cnt": 4.3
+   },
+   {
+    "label": "9月中旬",
+    "n": 21,
+    "avg_cnt": 3.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 31
+   },
+   {
+    "month": 8,
+    "n": 29
+   },
+   {
+    "month": 7,
+    "n": 8
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wind_speed_avg",
@@ -4857,10 +8765,22 @@
   "area": "小田原早川港",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "12月中旬",
-   "8月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 18
+   },
+   {
+    "month": 9,
+    "n": 7
+   },
+   {
+    "month": 10,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_max",
@@ -4902,10 +8822,22 @@
   "area": "天津港",
   "n_ships": 1,
   "n_records": 90,
-  "peaks": [
-   "12月上旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 17
+   },
+   {
+    "month": 7,
+    "n": 15
+   },
+   {
+    "month": 12,
+    "n": 15
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "swell_height_max",
@@ -4947,10 +8879,22 @@
   "area": "下田港",
   "n_ships": 1,
   "n_records": 41,
-  "peaks": [
-   "7月上旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 20
+   },
+   {
+    "month": 8,
+    "n": 12
+   },
+   {
+    "month": 9,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "chl_monthly",
@@ -4992,10 +8936,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 41,
-  "peaks": [
-   "9月下旬",
-   "10月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 17
+   },
+   {
+    "month": 10,
+    "n": 13
+   },
+   {
+    "month": 9,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_delta",
@@ -5018,9 +8974,47 @@
   "n_ships": 1,
   "n_records": 64,
   "peaks": [
-   "4月上旬",
-   "5月中旬"
+   {
+    "label": "5月中旬",
+    "n": 24,
+    "avg_cnt": 17.5
+   },
+   {
+    "label": "5月下旬",
+    "n": 18,
+    "avg_cnt": 14.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 53
+   },
+   {
+    "month": 6,
+    "n": 6
+   },
+   {
+    "month": 4,
+    "n": 5
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.5,
+    "lo": 17.7,
+    "hi": 19.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.4
+   }
+  },
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -5062,10 +9056,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 43,
-  "peaks": [
-   "5月中旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 17
+   },
+   {
+    "month": 5,
+    "n": 16
+   },
+   {
+    "month": 4,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -5108,9 +9114,32 @@
   "n_ships": 1,
   "n_records": 243,
   "peaks": [
-   "5月下旬",
-   "5月中旬"
+   {
+    "label": "5月下旬",
+    "n": 34,
+    "avg_cnt": 53.8
+   },
+   {
+    "label": "5月中旬",
+    "n": 44,
+    "avg_cnt": 49.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 134
+   },
+   {
+    "month": 4,
+    "n": 71
+   },
+   {
+    "month": 6,
+    "n": 34
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -5153,9 +9182,47 @@
   "n_ships": 1,
   "n_records": 96,
   "peaks": [
-   "6月上旬",
-   "7月中旬"
+   {
+    "label": "9月中旬",
+    "n": 17,
+    "avg_cnt": 7.4
+   },
+   {
+    "label": "8月下旬",
+    "n": 19,
+    "avg_cnt": 7.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 38
+   },
+   {
+    "month": 8,
+    "n": 30
+   },
+   {
+    "month": 7,
+    "n": 16
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.4,
+    "lo": 25.6,
+    "hi": 27.8
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.0,
+    "lo": 0.8,
+    "hi": 1.4
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -5198,9 +9265,47 @@
   "n_ships": 1,
   "n_records": 398,
   "peaks": [
-   "11月中旬",
-   "10月下旬"
+   {
+    "label": "12月上旬",
+    "n": 24,
+    "avg_cnt": 7.3
+   },
+   {
+    "label": "2月上旬",
+    "n": 23,
+    "avg_cnt": 6.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 67
+   },
+   {
+    "month": 1,
+    "n": 66
+   },
+   {
+    "month": 12,
+    "n": 66
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.9,
+    "lo": 19.0,
+    "hi": 20.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.3,
+    "hi": 0.8
+   }
+  },
   "factors": [],
   "wmape_median": 62.3,
   "model_beats_baseline": 0,
@@ -5211,10 +9316,22 @@
   "area": "洲崎港",
   "n_ships": 1,
   "n_records": 31,
-  "peaks": [
-   "11月上旬",
-   "10月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 14
+   },
+   {
+    "month": 9,
+    "n": 13
+   },
+   {
+    "month": 11,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "pressure_avg",
@@ -5257,9 +9374,32 @@
   "n_ships": 1,
   "n_records": 126,
   "peaks": [
-   "6月上旬",
-   "5月下旬"
+   {
+    "label": "6月上旬",
+    "n": 17,
+    "avg_cnt": 62.9
+   },
+   {
+    "label": "5月下旬",
+    "n": 27,
+    "avg_cnt": 50.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 66
+   },
+   {
+    "month": 4,
+    "n": 30
+   },
+   {
+    "month": 6,
+    "n": 29
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kd490_surface",
@@ -5292,9 +9432,42 @@
   "n_ships": 1,
   "n_records": 41,
   "peaks": [
-   "9月上旬",
-   "8月下旬"
+   {
+    "label": "7月下旬",
+    "n": 15,
+    "avg_cnt": 12.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 21
+   },
+   {
+    "month": 8,
+    "n": 18
+   },
+   {
+    "month": 9,
+    "n": 2
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.0,
+    "lo": 25.6,
+    "hi": 28.4
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 1.2,
+    "lo": 0.8,
+    "hi": 1.8
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -5336,10 +9509,22 @@
   "area": "下田港",
   "n_ships": 1,
   "n_records": 61,
-  "peaks": [
-   "6月中旬",
-   "12月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 22
+   },
+   {
+    "month": 2,
+    "n": 12
+   },
+   {
+    "month": 12,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chowaka",
@@ -5382,9 +9567,47 @@
   "n_ships": 2,
   "n_records": 273,
   "peaks": [
-   "2月下旬",
-   "2月上旬"
+   {
+    "label": "2月下旬",
+    "n": 20,
+    "avg_cnt": 2.6
+   },
+   {
+    "label": "2月上旬",
+    "n": 22,
+    "avg_cnt": 2.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 89
+   },
+   {
+    "month": 3,
+    "n": 86
+   },
+   {
+    "month": 2,
+    "n": 61
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 9.0,
+    "lo": 8.6,
+    "hi": 10.2
+   },
+   "n": 904,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.7
+   }
+  },
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -5427,9 +9650,47 @@
   "n_ships": 1,
   "n_records": 169,
   "peaks": [
-   "9月中旬",
-   "9月上旬"
+   {
+    "label": "6月上旬",
+    "n": 20,
+    "avg_cnt": 26.4
+   },
+   {
+    "label": "5月下旬",
+    "n": 22,
+    "avg_cnt": 24.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 55
+   },
+   {
+    "month": 5,
+    "n": 50
+   },
+   {
+    "month": 7,
+    "n": 39
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.8,
+    "lo": 20.2,
+    "hi": 22.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -5472,9 +9733,47 @@
   "n_ships": 1,
   "n_records": 253,
   "peaks": [
-   "8月下旬",
-   "9月上旬"
+   {
+    "label": "8月下旬",
+    "n": 23,
+    "avg_cnt": 68.9
+   },
+   {
+    "label": "9月上旬",
+    "n": 20,
+    "avg_cnt": 60.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 68
+   },
+   {
+    "month": 8,
+    "n": 62
+   },
+   {
+    "month": 6,
+    "n": 58
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.5,
+    "lo": 27.0,
+    "hi": 28.2
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -5516,10 +9815,22 @@
   "area": "茅ヶ崎港",
   "n_ships": 1,
   "n_records": 72,
-  "peaks": [
-   "5月上旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 14
+   },
+   {
+    "month": 4,
+    "n": 12
+   },
+   {
+    "month": 5,
+    "n": 12
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -5562,9 +9873,32 @@
   "n_ships": 1,
   "n_records": 115,
   "peaks": [
-   "12月中旬",
-   "12月下旬"
+   {
+    "label": "4月中旬",
+    "n": 17,
+    "avg_cnt": 1.8
+   },
+   {
+    "label": "4月上旬",
+    "n": 15,
+    "avg_cnt": 1.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 41
+   },
+   {
+    "month": 3,
+    "n": 26
+   },
+   {
+    "month": 1,
+    "n": 20
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "spawn_season_n",
@@ -5606,10 +9940,22 @@
   "area": "小田原早川港",
   "n_ships": 1,
   "n_records": 123,
-  "peaks": [
-   "6月中旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 27
+   },
+   {
+    "month": 5,
+    "n": 23
+   },
+   {
+    "month": 3,
+    "n": 16
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 33.7,
   "model_beats_baseline": 1,
@@ -5621,9 +9967,47 @@
   "n_ships": 1,
   "n_records": 135,
   "peaks": [
-   "4月中旬",
-   "3月下旬"
+   {
+    "label": "7月上旬",
+    "n": 13,
+    "avg_cnt": 8.1
+   },
+   {
+    "label": "4月下旬",
+    "n": 14,
+    "avg_cnt": 6.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 54
+   },
+   {
+    "month": 6,
+    "n": 26
+   },
+   {
+    "month": 7,
+    "n": 23
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.6,
+    "lo": 24.5,
+    "hi": 28.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.7
+   }
+  },
   "factors": [],
   "wmape_median": 45.8,
   "model_beats_baseline": 0,
@@ -5635,9 +10019,47 @@
   "n_ships": 2,
   "n_records": 277,
   "peaks": [
-   "11月下旬",
-   "1月下旬"
+   {
+    "label": "11月下旬",
+    "n": 20,
+    "avg_cnt": 5.6
+   },
+   {
+    "label": "12月上旬",
+    "n": 24,
+    "avg_cnt": 4.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 84
+   },
+   {
+    "month": 11,
+    "n": 75
+   },
+   {
+    "month": 1,
+    "n": 57
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 15.9,
+    "lo": 14.8,
+    "hi": 17.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.1,
+    "lo": 0.1,
+    "hi": 0.6
+   }
+  },
   "factors": [],
   "wmape_median": 36.7,
   "model_beats_baseline": 1,
@@ -5648,10 +10070,22 @@
   "area": "平塚港",
   "n_ships": 1,
   "n_records": 78,
-  "peaks": [
-   "12月下旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 27
+   },
+   {
+    "month": 6,
+    "n": 19
+   },
+   {
+    "month": 4,
+    "n": 15
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -5694,9 +10128,42 @@
   "n_ships": 1,
   "n_records": 41,
   "peaks": [
-   "7月中旬",
-   "7月下旬"
+   {
+    "label": "7月下旬",
+    "n": 19,
+    "avg_cnt": 23.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 29
+   },
+   {
+    "month": 8,
+    "n": 11
+   },
+   {
+    "month": 6,
+    "n": 1
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.2,
+    "lo": 21.8,
+    "hi": 26.2
+   },
+   "n": 440,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.6,
+    "hi": 1.4
+   }
+  },
   "factors": [
    {
     "base": "current_speed_avg",
@@ -5738,10 +10205,22 @@
   "area": "天津港",
   "n_ships": 1,
   "n_records": 67,
-  "peaks": [
-   "9月下旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 4,
+    "n": 8
+   },
+   {
+    "month": 12,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -5773,10 +10252,22 @@
   "area": "浦安",
   "n_ships": 1,
   "n_records": 30,
-  "peaks": [
-   "3月上旬",
-   "2月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 19
+   },
+   {
+    "month": 2,
+    "n": 7
+   },
+   {
+    "month": 3,
+    "n": 3
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_max",
@@ -5819,9 +10310,47 @@
   "n_ships": 1,
   "n_records": 130,
   "peaks": [
-   "3月上旬",
-   "5月上旬"
+   {
+    "label": "5月上旬",
+    "n": 16,
+    "avg_cnt": 7.2
+   },
+   {
+    "label": "5月下旬",
+    "n": 19,
+    "avg_cnt": 6.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 52
+   },
+   {
+    "month": 6,
+    "n": 25
+   },
+   {
+    "month": 4,
+    "n": 21
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 16.5,
+    "lo": 15.8,
+    "hi": 18.8
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.8,
+    "hi": 2.0
+   }
+  },
   "factors": [],
   "wmape_median": 76.6,
   "model_beats_baseline": 0,
@@ -5833,9 +10362,47 @@
   "n_ships": 1,
   "n_records": 278,
   "peaks": [
-   "10月下旬",
-   "10月上旬"
+   {
+    "label": "10月中旬",
+    "n": 14,
+    "avg_cnt": 15.7
+   },
+   {
+    "label": "6月下旬",
+    "n": 27,
+    "avg_cnt": 13.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 81
+   },
+   {
+    "month": 5,
+    "n": 47
+   },
+   {
+    "month": 7,
+    "n": 34
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.3,
+    "lo": 22.0,
+    "hi": 23.1
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 1.6,
+    "lo": 1.1,
+    "hi": 2.5
+   }
+  },
   "factors": [],
   "wmape_median": 73.9,
   "model_beats_baseline": 0,
@@ -5847,9 +10414,47 @@
   "n_ships": 1,
   "n_records": 268,
   "peaks": [
-   "5月下旬",
-   "6月上旬"
+   {
+    "label": "11月中旬",
+    "n": 20,
+    "avg_cnt": 6.2
+   },
+   {
+    "label": "11月下旬",
+    "n": 24,
+    "avg_cnt": 4.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 59
+   },
+   {
+    "month": 11,
+    "n": 54
+   },
+   {
+    "month": 1,
+    "n": 44
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.6,
+    "lo": 18.1,
+    "hi": 19.6
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.7,
+    "hi": 1.7
+   }
+  },
   "factors": [
    {
     "base": "sst_gradient",
@@ -5892,9 +10497,47 @@
   "n_ships": 1,
   "n_records": 99,
   "peaks": [
-   "4月上旬",
-   "4月中旬"
+   {
+    "label": "2月上旬",
+    "n": 15,
+    "avg_cnt": 11.7
+   },
+   {
+    "label": "2月中旬",
+    "n": 15,
+    "avg_cnt": 8.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 41
+   },
+   {
+    "month": 3,
+    "n": 21
+   },
+   {
+    "month": 4,
+    "n": 18
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 13.2,
+    "lo": 12.1,
+    "hi": 14.2
+   },
+   "n": 1120,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.7,
+    "hi": 1.5
+   }
+  },
   "factors": [
    {
     "base": "sst_gradient",
@@ -5917,9 +10560,47 @@
   "n_ships": 1,
   "n_records": 74,
   "peaks": [
-   "7月下旬",
-   "8月中旬"
+   {
+    "label": "8月中旬",
+    "n": 14,
+    "avg_cnt": 41.3
+   },
+   {
+    "label": "8月上旬",
+    "n": 14,
+    "avg_cnt": 29.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 42
+   },
+   {
+    "month": 7,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 16
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.2,
+    "lo": 23.9,
+    "hi": 29.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 1.0,
+    "lo": 0.6,
+    "hi": 2.1
+   }
+  },
   "factors": [
    {
     "base": "sst_delta",
@@ -5961,10 +10642,22 @@
   "area": "鹿島港",
   "n_ships": 1,
   "n_records": 38,
-  "peaks": [
-   "3月下旬",
-   "1月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 14
+   },
+   {
+    "month": 2,
+    "n": 13
+   },
+   {
+    "month": 3,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 42.0,
   "model_beats_baseline": 0,
@@ -5976,9 +10669,47 @@
   "n_ships": 1,
   "n_records": 88,
   "peaks": [
-   "6月下旬",
-   "9月上旬"
+   {
+    "label": "7月中旬",
+    "n": 12,
+    "avg_cnt": 81.9
+   },
+   {
+    "label": "7月下旬",
+    "n": 13,
+    "avg_cnt": 70.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 30
+   },
+   {
+    "month": 8,
+    "n": 21
+   },
+   {
+    "month": 9,
+    "n": 20
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 23.1,
+    "lo": 22.0,
+    "hi": 25.1
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.9,
+    "lo": 0.6,
+    "hi": 1.7
+   }
+  },
   "factors": [],
   "wmape_median": 69.5,
   "model_beats_baseline": 1,
@@ -5990,9 +10721,47 @@
   "n_ships": 2,
   "n_records": 479,
   "peaks": [
-   "10月上旬",
-   "11月中旬"
+   {
+    "label": "11月中旬",
+    "n": 30,
+    "avg_cnt": 4.1
+   },
+   {
+    "label": "12月上旬",
+    "n": 45,
+    "avg_cnt": 4.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 121
+   },
+   {
+    "month": 11,
+    "n": 115
+   },
+   {
+    "month": 1,
+    "n": 86
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.6,
+    "lo": 18.1,
+    "hi": 19.6
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.7,
+    "hi": 1.7
+   }
+  },
   "factors": [],
   "wmape_median": 39.7,
   "model_beats_baseline": 2,
@@ -6003,10 +10772,22 @@
   "area": "鹿島港",
   "n_ships": 1,
   "n_records": 52,
-  "peaks": [
-   "3月上旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 26
+   },
+   {
+    "month": 3,
+    "n": 15
+   },
+   {
+    "month": 2,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wind_speed_avg",
@@ -6039,9 +10820,47 @@
   "n_ships": 2,
   "n_records": 914,
   "peaks": [
-   "10月上旬",
-   "10月中旬"
+   {
+    "label": "6月中旬",
+    "n": 59,
+    "avg_cnt": 2.9
+   },
+   {
+    "label": "6月上旬",
+    "n": 49,
+    "avg_cnt": 2.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 156
+   },
+   {
+    "month": 5,
+    "n": 137
+   },
+   {
+    "month": 7,
+    "n": 125
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.0,
+    "lo": 18.9,
+    "hi": 22.3
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "sla_monthly",
@@ -6064,9 +10883,47 @@
   "n_ships": 1,
   "n_records": 597,
   "peaks": [
-   "12月中旬",
-   "12月上旬"
+   {
+    "label": "6月中旬",
+    "n": 35,
+    "avg_cnt": 38.6
+   },
+   {
+    "label": "5月下旬",
+    "n": 41,
+    "avg_cnt": 33.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 113
+   },
+   {
+    "month": 6,
+    "n": 95
+   },
+   {
+    "month": 7,
+    "n": 75
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 23.0,
+    "lo": 21.5,
+    "hi": 24.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.5
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -6109,9 +10966,47 @@
   "n_ships": 1,
   "n_records": 337,
   "peaks": [
-   "9月下旬",
-   "10月上旬"
+   {
+    "label": "9月下旬",
+    "n": 20,
+    "avg_cnt": 20.1
+   },
+   {
+    "label": "10月上旬",
+    "n": 19,
+    "avg_cnt": 17.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 64
+   },
+   {
+    "month": 11,
+    "n": 60
+   },
+   {
+    "month": 12,
+    "n": 58
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.0,
+    "lo": 25.4,
+    "hi": 28.0
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.7
+   }
+  },
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -6154,9 +11049,47 @@
   "n_ships": 1,
   "n_records": 124,
   "peaks": [
-   "4月下旬",
-   "3月下旬"
+   {
+    "label": "5月上旬",
+    "n": 12,
+    "avg_cnt": 23.0
+   },
+   {
+    "label": "3月中旬",
+    "n": 13,
+    "avg_cnt": 19.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 37
+   },
+   {
+    "month": 3,
+    "n": 35
+   },
+   {
+    "month": 5,
+    "n": 29
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.6,
+    "lo": 16.9,
+    "hi": 18.9
+   },
+   "n": 1040,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "swell_height_avg",
@@ -6199,9 +11132,42 @@
   "n_ships": 1,
   "n_records": 74,
   "peaks": [
-   "3月下旬",
-   "2月中旬"
+   {
+    "label": "1月上旬",
+    "n": 16,
+    "avg_cnt": 1.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 32
+   },
+   {
+    "month": 2,
+    "n": 21
+   },
+   {
+    "month": 3,
+    "n": 16
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 9.9,
+    "lo": 9.1,
+    "hi": 10.8
+   },
+   "n": 1120,
+   "wave_height": {
+    "med": 0.2,
+    "lo": 0.1,
+    "hi": 0.5
+   }
+  },
   "factors": [],
   "wmape_median": 36.3,
   "model_beats_baseline": 1,
@@ -6212,10 +11178,22 @@
   "area": "浦安",
   "n_ships": 1,
   "n_records": 31,
-  "peaks": [
-   "12月中旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 7
+   },
+   {
+    "month": 1,
+    "n": 6
+   },
+   {
+    "month": 12,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -6258,9 +11236,47 @@
   "n_ships": 2,
   "n_records": 521,
   "peaks": [
-   "9月上旬",
-   "1月下旬"
+   {
+    "label": "12月中旬",
+    "n": 26,
+    "avg_cnt": 12.7
+   },
+   {
+    "label": "11月下旬",
+    "n": 27,
+    "avg_cnt": 11.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 83
+   },
+   {
+    "month": 11,
+    "n": 79
+   },
+   {
+    "month": 10,
+    "n": 76
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.7,
+    "lo": 17.8,
+    "hi": 19.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.3
+   }
+  },
   "factors": [
    {
     "base": "temp_200m",
@@ -6282,10 +11298,22 @@
   "area": "長井港",
   "n_ships": 1,
   "n_records": 95,
-  "peaks": [
-   "6月上旬",
-   "7月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 20
+   },
+   {
+    "month": 3,
+    "n": 17
+   },
+   {
+    "month": 4,
+    "n": 17
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_avg",
@@ -6328,9 +11356,47 @@
   "n_ships": 2,
   "n_records": 545,
   "peaks": [
-   "12月下旬",
-   "6月上旬"
+   {
+    "label": "6月上旬",
+    "n": 41,
+    "avg_cnt": 25.5
+   },
+   {
+    "label": "6月中旬",
+    "n": 45,
+    "avg_cnt": 23.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 117
+   },
+   {
+    "month": 5,
+    "n": 108
+   },
+   {
+    "month": 7,
+    "n": 100
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.0,
+    "lo": 20.2,
+    "hi": 22.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.5,
+    "hi": 1.2
+   }
+  },
   "factors": [],
   "wmape_median": 47.5,
   "model_beats_baseline": 2,
@@ -6341,10 +11407,22 @@
   "area": "東葛西",
   "n_ships": 1,
   "n_records": 37,
-  "peaks": [
-   "1月上旬",
-   "12月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 9
+   },
+   {
+    "month": 3,
+    "n": 9
+   },
+   {
+    "month": 1,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wave_height_max",
@@ -6386,10 +11464,22 @@
   "area": "小網代港",
   "n_ships": 1,
   "n_records": 41,
-  "peaks": [
-   "10月上旬",
-   "11月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 19
+   },
+   {
+    "month": 11,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -6401,9 +11491,47 @@
   "n_ships": 1,
   "n_records": 104,
   "peaks": [
-   "12月上旬",
-   "12月中旬"
+   {
+    "label": "12月上旬",
+    "n": 21,
+    "avg_cnt": 14.1
+   },
+   {
+    "label": "12月中旬",
+    "n": 20,
+    "avg_cnt": 11.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 55
+   },
+   {
+    "month": 1,
+    "n": 41
+   },
+   {
+    "month": 11,
+    "n": 6
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.1,
+    "lo": 19.2,
+    "hi": 21.3
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.6
+   }
+  },
   "factors": [
    {
     "base": "temp_min",
@@ -6446,9 +11574,47 @@
   "n_ships": 2,
   "n_records": 509,
   "peaks": [
-   "5月下旬",
-   "10月下旬"
+   {
+    "label": "6月下旬",
+    "n": 34,
+    "avg_cnt": 14.8
+   },
+   {
+    "label": "6月中旬",
+    "n": 30,
+    "avg_cnt": 13.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 114
+   },
+   {
+    "month": 6,
+    "n": 82
+   },
+   {
+    "month": 8,
+    "n": 67
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.9,
+    "lo": 21.5,
+    "hi": 24.8
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.4,
+    "hi": 1.4
+   }
+  },
   "factors": [
    {
     "base": "sla_monthly",
@@ -6470,10 +11636,22 @@
   "area": "長井港",
   "n_ships": 1,
   "n_records": 48,
-  "peaks": [
-   "10月中旬",
-   "11月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 25
+   },
+   {
+    "month": 11,
+    "n": 15
+   },
+   {
+    "month": 9,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -6516,9 +11694,47 @@
   "n_ships": 1,
   "n_records": 57,
   "peaks": [
-   "10月中旬",
-   "11月下旬"
+   {
+    "label": "10月中旬",
+    "n": 14,
+    "avg_cnt": 3.8
+   },
+   {
+    "label": "10月上旬",
+    "n": 13,
+    "avg_cnt": 2.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 39
+   },
+   {
+    "month": 11,
+    "n": 14
+   },
+   {
+    "month": 9,
+    "n": 4
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.0,
+    "lo": 24.3,
+    "hi": 26.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.9,
+    "lo": 0.6,
+    "hi": 1.4
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -6561,9 +11777,42 @@
   "n_ships": 1,
   "n_records": 63,
   "peaks": [
-   "11月下旬",
-   "9月下旬"
+   {
+    "label": "8月上旬",
+    "n": 14,
+    "avg_cnt": 2.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 21
+   },
+   {
+    "month": 10,
+    "n": 12
+   },
+   {
+    "month": 9,
+    "n": 11
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.0,
+    "lo": 26.3,
+    "hi": 28.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.4,
+    "hi": 1.5
+   }
+  },
   "factors": [],
   "wmape_median": 69.3,
   "model_beats_baseline": 0,
@@ -6575,9 +11824,47 @@
   "n_ships": 1,
   "n_records": 56,
   "peaks": [
-   "6月上旬",
-   "5月中旬"
+   {
+    "label": "6月上旬",
+    "n": 15,
+    "avg_cnt": 21.3
+   },
+   {
+    "label": "6月中旬",
+    "n": 19,
+    "avg_cnt": 15.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 41
+   },
+   {
+    "month": 5,
+    "n": 12
+   },
+   {
+    "month": 7,
+    "n": 3
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.0,
+    "lo": 20.1,
+    "hi": 22.4
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.0
+   }
+  },
   "factors": [],
   "wmape_median": 60.4,
   "model_beats_baseline": 0,
@@ -6588,10 +11875,22 @@
   "area": "飯岡港",
   "n_ships": 1,
   "n_records": 92,
-  "peaks": [
-   "9月上旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 15
+   },
+   {
+    "month": 12,
+    "n": 15
+   },
+   {
+    "month": 1,
+    "n": 12
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 24.1,
   "model_beats_baseline": 1,
@@ -6602,10 +11901,22 @@
   "area": "飯岡港",
   "n_ships": 1,
   "n_records": 59,
-  "peaks": [
-   "9月中旬",
-   "9月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 13
+   },
+   {
+    "month": 8,
+    "n": 9
+   },
+   {
+    "month": 9,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 12.2,
   "model_beats_baseline": 1,
@@ -6617,9 +11928,47 @@
   "n_ships": 3,
   "n_records": 619,
   "peaks": [
-   "1月中旬",
-   "4月中旬"
+   {
+    "label": "1月中旬",
+    "n": 34,
+    "avg_cnt": 4.2
+   },
+   {
+    "label": "1月上旬",
+    "n": 32,
+    "avg_cnt": 3.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 102
+   },
+   {
+    "month": 1,
+    "n": 98
+   },
+   {
+    "month": 11,
+    "n": 96
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 16.4,
+    "lo": 15.2,
+    "hi": 17.1
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.3
+   }
+  },
   "factors": [],
   "wmape_median": 41.8,
   "model_beats_baseline": 1,
@@ -6630,10 +11979,22 @@
   "area": "富士市田子の浦漁港",
   "n_ships": 1,
   "n_records": 38,
-  "peaks": [
-   "2月下旬",
-   "7月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 8
+   },
+   {
+    "month": 10,
+    "n": 6
+   },
+   {
+    "month": 4,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "spawn_season_n",
@@ -6676,9 +12037,42 @@
   "n_ships": 1,
   "n_records": 45,
   "peaks": [
-   "8月上旬",
-   "6月下旬"
+   {
+    "label": "6月中旬",
+    "n": 12,
+    "avg_cnt": 3.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 21
+   },
+   {
+    "month": 7,
+    "n": 14
+   },
+   {
+    "month": 5,
+    "n": 6
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.2,
+    "lo": 18.4,
+    "hi": 22.1
+   },
+   "n": 400,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.5,
+    "hi": 1.2
+   }
+  },
   "factors": [
    {
     "base": "temp_200m",
@@ -6710,10 +12104,22 @@
   "area": "富士市田子の浦漁港",
   "n_ships": 1,
   "n_records": 86,
-  "peaks": [
-   "1月中旬",
-   "11月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 22
+   },
+   {
+    "month": 10,
+    "n": 17
+   },
+   {
+    "month": 11,
+    "n": 17
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -6756,9 +12162,43 @@
   "n_ships": 1,
   "n_records": 58,
   "peaks": [
-   "5月中旬",
-   "4月中旬"
+   {
+    "label": "5月中旬",
+    "n": 20,
+    "avg_cnt": 10.6
+   },
+   {
+    "label": "5月上旬",
+    "n": 18,
+    "avg_cnt": 8.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 44
+   },
+   {
+    "month": 4,
+    "n": 14
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.9,
+    "lo": 17.7,
+    "hi": 19.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.3,
+    "hi": 1.8
+   }
+  },
   "factors": [],
   "wmape_median": 42.1,
   "model_beats_baseline": 1,
@@ -6769,10 +12209,22 @@
   "area": "佐島",
   "n_ships": 1,
   "n_records": 125,
-  "peaks": [
-   "9月中旬",
-   "9月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 19
+   },
+   {
+    "month": 10,
+    "n": 17
+   },
+   {
+    "month": 1,
+    "n": 16
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 23.4,
   "model_beats_baseline": 1,
@@ -6784,9 +12236,32 @@
   "n_ships": 4,
   "n_records": 177,
   "peaks": [
-   "11月上旬",
-   "10月上旬"
+   {
+    "label": "8月下旬",
+    "n": 13,
+    "avg_cnt": 2.8
+   },
+   {
+    "label": "10月下旬",
+    "n": 13,
+    "avg_cnt": 2.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 52
+   },
+   {
+    "month": 9,
+    "n": 29
+   },
+   {
+    "month": 11,
+    "n": 26
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_gradient",
@@ -6828,10 +12303,22 @@
   "area": "小柴港",
   "n_ships": 1,
   "n_records": 748,
-  "peaks": [
-   "1月上旬",
-   "12月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 92
+   },
+   {
+    "month": 6,
+    "n": 80
+   },
+   {
+    "month": 9,
+    "n": 66
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -6874,9 +12361,47 @@
   "n_ships": 2,
   "n_records": 145,
   "peaks": [
-   "8月下旬",
-   "5月下旬"
+   {
+    "label": "3月下旬",
+    "n": 15,
+    "avg_cnt": 3.0
+   },
+   {
+    "label": "4月上旬",
+    "n": 20,
+    "avg_cnt": 2.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 51
+   },
+   {
+    "month": 3,
+    "n": 27
+   },
+   {
+    "month": 5,
+    "n": 21
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 16.0,
+    "lo": 14.8,
+    "hi": 16.7
+   },
+   "n": 992,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.6
+   }
+  },
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -6918,10 +12443,22 @@
   "area": "小柴港",
   "n_ships": 1,
   "n_records": 466,
-  "peaks": [
-   "8月中旬",
-   "10月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 60
+   },
+   {
+    "month": 9,
+    "n": 52
+   },
+   {
+    "month": 8,
+    "n": 50
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -6964,9 +12501,47 @@
   "n_ships": 2,
   "n_records": 365,
   "peaks": [
-   "3月中旬",
-   "3月上旬"
+   {
+    "label": "10月上旬",
+    "n": 20,
+    "avg_cnt": 2.3
+   },
+   {
+    "label": "10月中旬",
+    "n": 19,
+    "avg_cnt": 2.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 56
+   },
+   {
+    "month": 12,
+    "n": 48
+   },
+   {
+    "month": 1,
+    "n": 43
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 24.4,
+    "lo": 23.6,
+    "hi": 24.8
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -7009,9 +12584,47 @@
   "n_ships": 1,
   "n_records": 124,
   "peaks": [
-   "6月上旬",
-   "5月下旬"
+   {
+    "label": "5月中旬",
+    "n": 12,
+    "avg_cnt": 20.2
+   },
+   {
+    "label": "4月中旬",
+    "n": 13,
+    "avg_cnt": 10.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 30
+   },
+   {
+    "month": 5,
+    "n": 30
+   },
+   {
+    "month": 6,
+    "n": 22
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.6,
+    "lo": 17.6,
+    "hi": 19.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.4,
+    "hi": 1.9
+   }
+  },
   "factors": [],
   "wmape_median": 53.1,
   "model_beats_baseline": 0,
@@ -7022,10 +12635,22 @@
   "area": "長井新宿港",
   "n_ships": 1,
   "n_records": 51,
-  "peaks": [
-   "6月上旬",
-   "5月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 19
+   },
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 3,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -7068,9 +12693,47 @@
   "n_ships": 3,
   "n_records": 639,
   "peaks": [
-   "1月上旬",
-   "12月下旬"
+   {
+    "label": "9月上旬",
+    "n": 32,
+    "avg_cnt": 15.2
+   },
+   {
+    "label": "7月下旬",
+    "n": 38,
+    "avg_cnt": 13.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 115
+   },
+   {
+    "month": 9,
+    "n": 93
+   },
+   {
+    "month": 6,
+    "n": 78
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 26.8,
+    "lo": 25.9,
+    "hi": 27.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.2
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -7112,10 +12775,22 @@
   "area": "小柴港",
   "n_ships": 1,
   "n_records": 36,
-  "peaks": [
-   "10月下旬",
-   "12月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 14
+   },
+   {
+    "month": 12,
+    "n": 14
+   },
+   {
+    "month": 1,
+    "n": 3
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wave_height_avg",
@@ -7138,9 +12813,42 @@
   "n_ships": 3,
   "n_records": 1356,
   "peaks": [
-   "12月下旬",
-   "1月上旬"
+   {
+    "label": "9月中旬",
+    "n": 84,
+    "avg_cnt": 12.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 195
+   },
+   {
+    "month": 10,
+    "n": 169
+   },
+   {
+    "month": 7,
+    "n": 152
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 27.5,
+    "lo": 26.9,
+    "hi": 28.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "sla_monthly",
@@ -7182,10 +12890,22 @@
   "area": "長井港",
   "n_ships": 1,
   "n_records": 781,
-  "peaks": [
-   "12月上旬",
-   "12月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 96
+   },
+   {
+    "month": 11,
+    "n": 86
+   },
+   {
+    "month": 10,
+    "n": 85
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 46.9,
   "model_beats_baseline": 0,
@@ -7197,9 +12917,32 @@
   "n_ships": 1,
   "n_records": 265,
   "peaks": [
-   "12月中旬",
-   "8月下旬"
+   {
+    "label": "7月下旬",
+    "n": 13,
+    "avg_cnt": 16.8
+   },
+   {
+    "label": "7月中旬",
+    "n": 13,
+    "avg_cnt": 16.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 37
+   },
+   {
+    "month": 10,
+    "n": 32
+   },
+   {
+    "month": 1,
+    "n": 29
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -7241,10 +12984,22 @@
   "area": "金沢八景",
   "n_ships": 3,
   "n_records": 2805,
-  "peaks": [
-   "1月上旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 308
+   },
+   {
+    "month": 12,
+    "n": 283
+   },
+   {
+    "month": 6,
+    "n": 270
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_monthly",
@@ -7267,9 +13022,47 @@
   "n_ships": 1,
   "n_records": 464,
   "peaks": [
-   "2月中旬",
-   "5月下旬"
+   {
+    "label": "5月下旬",
+    "n": 26,
+    "avg_cnt": 35.2
+   },
+   {
+    "label": "5月中旬",
+    "n": 25,
+    "avg_cnt": 34.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 74
+   },
+   {
+    "month": 6,
+    "n": 74
+   },
+   {
+    "month": 7,
+    "n": 58
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.4,
+    "lo": 18.4,
+    "hi": 20.3
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.1
+   }
+  },
   "factors": [],
   "wmape_median": 24.5,
   "model_beats_baseline": 1,
@@ -7281,9 +13074,47 @@
   "n_ships": 1,
   "n_records": 94,
   "peaks": [
-   "7月下旬",
-   "7月中旬"
+   {
+    "label": "7月上旬",
+    "n": 25,
+    "avg_cnt": 4.0
+   },
+   {
+    "label": "6月上旬",
+    "n": 26,
+    "avg_cnt": 3.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 42
+   },
+   {
+    "month": 7,
+    "n": 33
+   },
+   {
+    "month": 8,
+    "n": 15
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.6,
+    "lo": 22.7,
+    "hi": 27.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -7326,9 +13157,47 @@
   "n_ships": 3,
   "n_records": 376,
   "peaks": [
-   "8月上旬",
-   "8月中旬"
+   {
+    "label": "8月上旬",
+    "n": 33,
+    "avg_cnt": 5.1
+   },
+   {
+    "label": "8月中旬",
+    "n": 39,
+    "avg_cnt": 4.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 147
+   },
+   {
+    "month": 8,
+    "n": 95
+   },
+   {
+    "month": 6,
+    "n": 39
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 28.1,
+    "lo": 26.7,
+    "hi": 28.9
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -7371,9 +13240,47 @@
   "n_ships": 2,
   "n_records": 500,
   "peaks": [
-   "11月下旬",
-   "11月上旬"
+   {
+    "label": "11月下旬",
+    "n": 34,
+    "avg_cnt": 11.2
+   },
+   {
+    "label": "11月上旬",
+    "n": 34,
+    "avg_cnt": 10.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 114
+   },
+   {
+    "month": 11,
+    "n": 104
+   },
+   {
+    "month": 10,
+    "n": 95
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.4,
+    "lo": 16.6,
+    "hi": 20.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.2,
+    "hi": 1.4
+   }
+  },
   "factors": [],
   "wmape_median": 47.9,
   "model_beats_baseline": 1,
@@ -7385,9 +13292,42 @@
   "n_ships": 2,
   "n_records": 1058,
   "peaks": [
-   "12月中旬",
-   "1月下旬"
+   {
+    "label": "5月上旬",
+    "n": 56,
+    "avg_cnt": 18.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 125
+   },
+   {
+    "month": 8,
+    "n": 125
+   },
+   {
+    "month": 6,
+    "n": 119
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.7,
+    "lo": 16.8,
+    "hi": 18.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.2
+   }
+  },
   "factors": [
    {
     "base": "sla_monthly",
@@ -7430,9 +13370,32 @@
   "n_ships": 4,
   "n_records": 224,
   "peaks": [
-   "5月中旬",
-   "4月下旬"
+   {
+    "label": "5月中旬",
+    "n": 31,
+    "avg_cnt": 25.0
+   },
+   {
+    "label": "4月下旬",
+    "n": 26,
+    "avg_cnt": 24.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 95
+   },
+   {
+    "month": 6,
+    "n": 65
+   },
+   {
+    "month": 4,
+    "n": 56
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -7475,9 +13438,47 @@
   "n_ships": 2,
   "n_records": 237,
   "peaks": [
-   "5月下旬",
-   "7月上旬"
+   {
+    "label": "7月上旬",
+    "n": 20,
+    "avg_cnt": 49.4
+   },
+   {
+    "label": "6月上旬",
+    "n": 29,
+    "avg_cnt": 39.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 81
+   },
+   {
+    "month": 7,
+    "n": 39
+   },
+   {
+    "month": 11,
+    "n": 29
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.0,
+    "lo": 22.5,
+    "hi": 27.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.5
+   }
+  },
   "factors": [
    {
     "base": "chl_monthly",
@@ -7520,9 +13521,47 @@
   "n_ships": 1,
   "n_records": 119,
   "peaks": [
-   "7月上旬",
-   "8月下旬"
+   {
+    "label": "7月上旬",
+    "n": 20,
+    "avg_cnt": 56.6
+   },
+   {
+    "label": "6月下旬",
+    "n": 24,
+    "avg_cnt": 40.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 70
+   },
+   {
+    "month": 7,
+    "n": 43
+   },
+   {
+    "month": 8,
+    "n": 6
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 25.6,
+    "lo": 22.7,
+    "hi": 27.2
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [],
   "wmape_median": 40.0,
   "model_beats_baseline": 1,
@@ -7534,9 +13573,42 @@
   "n_ships": 1,
   "n_records": 34,
   "peaks": [
-   "1月中旬",
-   "2月上旬"
+   {
+    "label": "1月下旬",
+    "n": 12,
+    "avg_cnt": 9.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 18
+   },
+   {
+    "month": 1,
+    "n": 14
+   },
+   {
+    "month": 3,
+    "n": 2
+   }
+  ],
+  "wx_peak": {
+   "years": 2,
+   "year_from": "2025",
+   "year_to": "2026",
+   "sst": {
+    "med": 14.1,
+    "lo": 12.9,
+    "hi": 15.3
+   },
+   "n": 1056,
+   "wave_height": {
+    "med": 1.4,
+    "lo": 1.0,
+    "hi": 2.1
+   }
+  },
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -7547,10 +13619,22 @@
   "area": "富津港",
   "n_ships": 1,
   "n_records": 75,
-  "peaks": [
-   "2月中旬",
-   "9月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 9,
+    "n": 12
+   },
+   {
+    "month": 10,
+    "n": 11
+   },
+   {
+    "month": 11,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 51.5,
   "model_beats_baseline": 0,
@@ -7561,10 +13645,22 @@
   "area": "小網代港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "9月上旬",
-   "4月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 18
+   },
+   {
+    "month": 10,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 3
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -7576,9 +13672,47 @@
   "n_ships": 1,
   "n_records": 221,
   "peaks": [
-   "9月上旬",
-   "4月下旬"
+   {
+    "label": "10月上旬",
+    "n": 13,
+    "avg_cnt": 13.6
+   },
+   {
+    "label": "10月下旬",
+    "n": 21,
+    "avg_cnt": 12.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 52
+   },
+   {
+    "month": 11,
+    "n": 42
+   },
+   {
+    "month": 12,
+    "n": 32
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 24.9,
+    "lo": 24.0,
+    "hi": 25.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.8,
+    "lo": 0.4,
+    "hi": 1.2
+   }
+  },
   "factors": [],
   "wmape_median": 41.5,
   "model_beats_baseline": 1,
@@ -7590,9 +13724,47 @@
   "n_ships": 1,
   "n_records": 274,
   "peaks": [
-   "9月上旬",
-   "9月下旬"
+   {
+    "label": "11月下旬",
+    "n": 16,
+    "avg_cnt": 11.3
+   },
+   {
+    "label": "4月下旬",
+    "n": 15,
+    "avg_cnt": 10.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 44
+   },
+   {
+    "month": 11,
+    "n": 44
+   },
+   {
+    "month": 10,
+    "n": 40
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.8,
+    "lo": 18.8,
+    "hi": 22.4
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.9
+   }
+  },
   "factors": [],
   "wmape_median": 59.7,
   "model_beats_baseline": 1,
@@ -7604,9 +13776,47 @@
   "n_ships": 1,
   "n_records": 69,
   "peaks": [
-   "10月上旬",
-   "9月上旬"
+   {
+    "label": "10月上旬",
+    "n": 15,
+    "avg_cnt": 4.1
+   },
+   {
+    "label": "10月下旬",
+    "n": 16,
+    "avg_cnt": 2.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 40
+   },
+   {
+    "month": 11,
+    "n": 15
+   },
+   {
+    "month": 9,
+    "n": 8
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 24.8,
+    "lo": 23.9,
+    "hi": 25.0
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "wind_speed_max",
@@ -7648,10 +13858,22 @@
   "area": "波崎港",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "9月下旬",
-   "10月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 20
+   },
+   {
+    "month": 11,
+    "n": 12
+   },
+   {
+    "month": 9,
+    "n": 1
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -7663,9 +13885,47 @@
   "n_ships": 1,
   "n_records": 259,
   "peaks": [
-   "5月下旬",
-   "6月上旬"
+   {
+    "label": "5月下旬",
+    "n": 16,
+    "avg_cnt": 21.1
+   },
+   {
+    "label": "6月上旬",
+    "n": 16,
+    "avg_cnt": 20.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 57
+   },
+   {
+    "month": 7,
+    "n": 45
+   },
+   {
+    "month": 8,
+    "n": 35
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.6,
+    "lo": 18.3,
+    "hi": 20.3
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.5,
+    "hi": 1.3
+   }
+  },
   "factors": [],
   "wmape_median": 47.3,
   "model_beats_baseline": 0,
@@ -7677,9 +13937,47 @@
   "n_ships": 2,
   "n_records": 163,
   "peaks": [
-   "10月上旬",
-   "6月中旬"
+   {
+    "label": "10月中旬",
+    "n": 20,
+    "avg_cnt": 3.5
+   },
+   {
+    "label": "8月上旬",
+    "n": 27,
+    "avg_cnt": 2.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 73
+   },
+   {
+    "month": 9,
+    "n": 46
+   },
+   {
+    "month": 10,
+    "n": 32
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 24.6,
+    "lo": 23.4,
+    "hi": 24.9
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "sla_approach_idx",
@@ -7722,9 +14020,47 @@
   "n_ships": 1,
   "n_records": 445,
   "peaks": [
-   "5月下旬",
-   "6月上旬"
+   {
+    "label": "6月中旬",
+    "n": 26,
+    "avg_cnt": 15.5
+   },
+   {
+    "label": "6月下旬",
+    "n": 33,
+    "avg_cnt": 14.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 99
+   },
+   {
+    "month": 6,
+    "n": 79
+   },
+   {
+    "month": 8,
+    "n": 66
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 22.0,
+    "lo": 20.3,
+    "hi": 23.3
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.4,
+    "hi": 1.2
+   }
+  },
   "factors": [],
   "wmape_median": 54.4,
   "model_beats_baseline": 1,
@@ -7735,10 +14071,22 @@
   "area": "富津港",
   "n_ships": 1,
   "n_records": 79,
-  "peaks": [
-   "3月上旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 23
+   },
+   {
+    "month": 5,
+    "n": 23
+   },
+   {
+    "month": 4,
+    "n": 14
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_min",
@@ -7781,9 +14129,27 @@
   "n_ships": 2,
   "n_records": 87,
   "peaks": [
-   "9月上旬",
-   "8月中旬"
+   {
+    "label": "3月下旬",
+    "n": 12,
+    "avg_cnt": 13.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 18
+   },
+   {
+    "month": 3,
+    "n": 17
+   },
+   {
+    "month": 2,
+    "n": 16
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -7825,10 +14191,22 @@
   "area": "金沢八景",
   "n_ships": 1,
   "n_records": 521,
-  "peaks": [
-   "12月下旬",
-   "5月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 66
+   },
+   {
+    "month": 5,
+    "n": 62
+   },
+   {
+    "month": 4,
+    "n": 50
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 32.5,
   "model_beats_baseline": 1,
@@ -7840,9 +14218,47 @@
   "n_ships": 1,
   "n_records": 250,
   "peaks": [
-   "4月上旬",
-   "3月上旬"
+   {
+    "label": "2月上旬",
+    "n": 14,
+    "avg_cnt": 5.7
+   },
+   {
+    "label": "2月下旬",
+    "n": 19,
+    "avg_cnt": 5.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 49
+   },
+   {
+    "month": 2,
+    "n": 43
+   },
+   {
+    "month": 5,
+    "n": 41
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 15.7,
+    "lo": 15.4,
+    "hi": 16.1
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 0.9
+   }
+  },
   "factors": [],
   "wmape_median": 63.4,
   "model_beats_baseline": 0,
@@ -7853,10 +14269,22 @@
   "area": "金沢八景",
   "n_ships": 1,
   "n_records": 34,
-  "peaks": [
-   "6月上旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 14
+   },
+   {
+    "month": 4,
+    "n": 10
+   },
+   {
+    "month": 6,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 19.8,
   "model_beats_baseline": 1,
@@ -7867,10 +14295,22 @@
   "area": "小坪港",
   "n_ships": 1,
   "n_records": 48,
-  "peaks": [
-   "6月上旬",
-   "12月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 9
+   },
+   {
+    "month": 1,
+    "n": 8
+   },
+   {
+    "month": 3,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_max",
@@ -7913,9 +14353,47 @@
   "n_ships": 1,
   "n_records": 112,
   "peaks": [
-   "4月下旬",
-   "6月中旬"
+   {
+    "label": "6月中旬",
+    "n": 12,
+    "avg_cnt": 3.4
+   },
+   {
+    "label": "5月上旬",
+    "n": 15,
+    "avg_cnt": 2.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 35
+   },
+   {
+    "month": 6,
+    "n": 27
+   },
+   {
+    "month": 4,
+    "n": 18
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 21.9,
+    "lo": 20.5,
+    "hi": 23.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 0.9
+   }
+  },
   "factors": [
    {
     "base": "current_speed_max",
@@ -7957,10 +14435,22 @@
   "area": "金沢八景",
   "n_ships": 1,
   "n_records": 32,
-  "peaks": [
-   "11月中旬",
-   "4月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 11
+   },
+   {
+    "month": 4,
+    "n": 11
+   },
+   {
+    "month": 5,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -8003,9 +14493,47 @@
   "n_ships": 1,
   "n_records": 133,
   "peaks": [
-   "11月下旬",
-   "11月中旬"
+   {
+    "label": "12月中旬",
+    "n": 16,
+    "avg_cnt": 3.5
+   },
+   {
+    "label": "12月上旬",
+    "n": 15,
+    "avg_cnt": 3.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 49
+   },
+   {
+    "month": 1,
+    "n": 33
+   },
+   {
+    "month": 3,
+    "n": 22
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 16.1,
+    "lo": 14.9,
+    "hi": 17.5
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.4,
+    "lo": 0.2,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "temp_200m",
@@ -8048,9 +14576,47 @@
   "n_ships": 1,
   "n_records": 76,
   "peaks": [
-   "12月下旬",
-   "1月上旬"
+   {
+    "label": "1月上旬",
+    "n": 12,
+    "avg_cnt": 2.3
+   },
+   {
+    "label": "12月中旬",
+    "n": 14,
+    "avg_cnt": 2.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 35
+   },
+   {
+    "month": 12,
+    "n": 31
+   },
+   {
+    "month": 2,
+    "n": 4
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 16.3,
+    "lo": 15.2,
+    "hi": 17.4
+   },
+   "n": 960,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.3,
+    "hi": 1.8
+   }
+  },
   "factors": [],
   "wmape_median": 60.0,
   "model_beats_baseline": 0,
@@ -8061,10 +14627,22 @@
   "area": "天津港",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "4月中旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 4,
+    "n": 8
+   },
+   {
+    "month": 2,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kd490_surface",
@@ -8107,9 +14685,47 @@
   "n_ships": 1,
   "n_records": 84,
   "peaks": [
-   "6月下旬",
-   "6月上旬"
+   {
+    "label": "5月下旬",
+    "n": 15,
+    "avg_cnt": 9.7
+   },
+   {
+    "label": "5月中旬",
+    "n": 15,
+    "avg_cnt": 9.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 48
+   },
+   {
+    "month": 6,
+    "n": 18
+   },
+   {
+    "month": 4,
+    "n": 11
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.1,
+    "lo": 19.4,
+    "hi": 20.7
+   },
+   "n": 1144,
+   "wave_height": {
+    "med": 0.3,
+    "lo": 0.1,
+    "hi": 0.7
+   }
+  },
   "factors": [
    {
     "base": "temp_100m",
@@ -8151,10 +14767,22 @@
   "area": "片貝港",
   "n_ships": 2,
   "n_records": 80,
-  "peaks": [
-   "10月上旬",
-   "12月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 19
+   },
+   {
+    "month": 3,
+    "n": 12
+   },
+   {
+    "month": 1,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -8196,10 +14824,22 @@
   "area": "大原港",
   "n_ships": 1,
   "n_records": 87,
-  "peaks": [
-   "7月下旬",
-   "5月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 28
+   },
+   {
+    "month": 6,
+    "n": 24
+   },
+   {
+    "month": 8,
+    "n": 16
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 58.9,
   "model_beats_baseline": 1,
@@ -8211,9 +14851,47 @@
   "n_ships": 1,
   "n_records": 425,
   "peaks": [
-   "1月上旬",
-   "1月下旬"
+   {
+    "label": "11月上旬",
+    "n": 25,
+    "avg_cnt": 19.8
+   },
+   {
+    "label": "3月下旬",
+    "n": 23,
+    "avg_cnt": 18.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 74
+   },
+   {
+    "month": 11,
+    "n": 63
+   },
+   {
+    "month": 3,
+    "n": 55
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 20.9,
+    "lo": 19.5,
+    "hi": 21.9
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.2,
+    "hi": 1.0
+   }
+  },
   "factors": [
    {
     "base": "temp_200m",
@@ -8256,9 +14934,42 @@
   "n_ships": 2,
   "n_records": 95,
   "peaks": [
-   "4月下旬",
-   "3月上旬"
+   {
+    "label": "5月下旬",
+    "n": 13,
+    "avg_cnt": 2.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 23
+   },
+   {
+    "month": 5,
+    "n": 18
+   },
+   {
+    "month": 2,
+    "n": 15
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.4,
+    "lo": 18.4,
+    "hi": 20.3
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.6,
+    "lo": 0.4,
+    "hi": 1.1
+   }
+  },
   "factors": [
    {
     "base": "tide_grp_oshio",
@@ -8301,9 +15012,47 @@
   "n_ships": 2,
   "n_records": 225,
   "peaks": [
-   "3月下旬",
-   "9月上旬"
+   {
+    "label": "5月中旬",
+    "n": 19,
+    "avg_cnt": 50.1
+   },
+   {
+    "label": "4月中旬",
+    "n": 14,
+    "avg_cnt": 45.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 48
+   },
+   {
+    "month": 4,
+    "n": 41
+   },
+   {
+    "month": 6,
+    "n": 33
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.9,
+    "lo": 17.7,
+    "hi": 19.6
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 0.7,
+    "lo": 0.3,
+    "hi": 1.8
+   }
+  },
   "factors": [
    {
     "base": "chl_monthly",
@@ -8336,9 +15085,32 @@
   "n_ships": 1,
   "n_records": 83,
   "peaks": [
-   "11月上旬",
-   "12月上旬"
+   {
+    "label": "11月上旬",
+    "n": 14,
+    "avg_cnt": 4.3
+   },
+   {
+    "label": "12月上旬",
+    "n": 13,
+    "avg_cnt": 3.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 37
+   },
+   {
+    "month": 11,
+    "n": 34
+   },
+   {
+    "month": 1,
+    "n": 8
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -8381,9 +15153,32 @@
   "n_ships": 1,
   "n_records": 198,
   "peaks": [
-   "5月中旬",
-   "6月中旬"
+   {
+    "label": "6月中旬",
+    "n": 18,
+    "avg_cnt": 31.8
+   },
+   {
+    "label": "6月上旬",
+    "n": 21,
+    "avg_cnt": 30.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 56
+   },
+   {
+    "month": 5,
+    "n": 41
+   },
+   {
+    "month": 7,
+    "n": 30
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -8405,10 +15200,22 @@
   "area": "横浜港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "7月下旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 19
+   },
+   {
+    "month": 8,
+    "n": 7
+   },
+   {
+    "month": 7,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -8450,10 +15257,22 @@
   "area": "鹿嶋旧港",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "4月中旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 17
+   },
+   {
+    "month": 4,
+    "n": 15
+   },
+   {
+    "month": 6,
+    "n": 1
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -8475,10 +15294,22 @@
   "area": "横浜港",
   "n_ships": 1,
   "n_records": 957,
-  "peaks": [
-   "1月下旬",
-   "1月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 100
+   },
+   {
+    "month": 7,
+    "n": 100
+   },
+   {
+    "month": 9,
+    "n": 100
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kd490_surface",
@@ -8520,10 +15351,22 @@
   "area": "福田港",
   "n_ships": 1,
   "n_records": 48,
-  "peaks": [
-   "10月上旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 10
+   },
+   {
+    "month": 10,
+    "n": 8
+   },
+   {
+    "month": 1,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -8565,10 +15408,22 @@
   "area": "佐島港",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "6月下旬",
-   "7月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 8
+   },
+   {
+    "month": 5,
+    "n": 7
+   },
+   {
+    "month": 8,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_50m",
@@ -8610,10 +15465,22 @@
   "area": "葉山町葉山鐙摺港",
   "n_ships": 1,
   "n_records": 74,
-  "peaks": [
-   "3月中旬",
-   "3月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 14
+   },
+   {
+    "month": 2,
+    "n": 13
+   },
+   {
+    "month": 3,
+    "n": 12
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 52.7,
   "model_beats_baseline": 0,
@@ -8625,9 +15492,32 @@
   "n_ships": 1,
   "n_records": 66,
   "peaks": [
-   "11月上旬",
-   "11月中旬"
+   {
+    "label": "12月上旬",
+    "n": 13,
+    "avg_cnt": 4.2
+   },
+   {
+    "label": "12月下旬",
+    "n": 21,
+    "avg_cnt": 3.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 45
+   },
+   {
+    "month": 11,
+    "n": 13
+   },
+   {
+    "month": 1,
+    "n": 8
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_avg",
@@ -8669,10 +15559,22 @@
   "area": "佐島港",
   "n_ships": 1,
   "n_records": 80,
-  "peaks": [
-   "9月下旬",
-   "11月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 20
+   },
+   {
+    "month": 10,
+    "n": 16
+   },
+   {
+    "month": 12,
+    "n": 15
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -8715,9 +15617,32 @@
   "n_ships": 1,
   "n_records": 89,
   "peaks": [
-   "10月上旬",
-   "10月中旬"
+   {
+    "label": "11月上旬",
+    "n": 12,
+    "avg_cnt": 16.8
+   },
+   {
+    "label": "12月上旬",
+    "n": 12,
+    "avg_cnt": 12.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 31
+   },
+   {
+    "month": 11,
+    "n": 30
+   },
+   {
+    "month": 10,
+    "n": 15
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wave_height_avg",
@@ -8760,9 +15685,32 @@
   "n_ships": 1,
   "n_records": 240,
   "peaks": [
-   "2月上旬",
-   "1月中旬"
+   {
+    "label": "8月中旬",
+    "n": 17,
+    "avg_cnt": 35.6
+   },
+   {
+    "label": "7月下旬",
+    "n": 13,
+    "avg_cnt": 28.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 36
+   },
+   {
+    "month": 9,
+    "n": 33
+   },
+   {
+    "month": 7,
+    "n": 30
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 36.2,
   "model_beats_baseline": 1,
@@ -8773,10 +15721,22 @@
   "area": "平塚漁港",
   "n_ships": 1,
   "n_records": 45,
-  "peaks": [
-   "8月中旬",
-   "8月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 12
+   },
+   {
+    "month": 7,
+    "n": 11
+   },
+   {
+    "month": 6,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "chl_monthly",
@@ -8818,10 +15778,22 @@
   "area": "鹿嶋旧港",
   "n_ships": 1,
   "n_records": 47,
-  "peaks": [
-   "7月上旬",
-   "5月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 21
+   },
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 3,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -8843,10 +15815,22 @@
   "area": "葉山あぶずり港",
   "n_ships": 1,
   "n_records": 56,
-  "peaks": [
-   "10月下旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 19
+   },
+   {
+    "month": 11,
+    "n": 15
+   },
+   {
+    "month": 10,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -8858,9 +15842,32 @@
   "n_ships": 1,
   "n_records": 184,
   "peaks": [
-   "10月上旬",
-   "10月中旬"
+   {
+    "label": "11月下旬",
+    "n": 12,
+    "avg_cnt": 15.9
+   },
+   {
+    "label": "12月下旬",
+    "n": 14,
+    "avg_cnt": 12.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 30
+   },
+   {
+    "month": 12,
+    "n": 29
+   },
+   {
+    "month": 2,
+    "n": 27
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -8902,10 +15909,22 @@
   "area": "葉山町葉山鐙摺港",
   "n_ships": 1,
   "n_records": 56,
-  "peaks": [
-   "6月下旬",
-   "7月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 13
+   },
+   {
+    "month": 8,
+    "n": 11
+   },
+   {
+    "month": 6,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -8937,10 +15956,22 @@
   "area": "御前崎港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "4月下旬",
-   "7月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 13
+   },
+   {
+    "month": 8,
+    "n": 7
+   },
+   {
+    "month": 9,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 68.3,
   "model_beats_baseline": 1,
@@ -8951,10 +15982,22 @@
   "area": "葉山あぶずり港",
   "n_ships": 1,
   "n_records": 38,
-  "peaks": [
-   "6月中旬",
-   "8月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 9
+   },
+   {
+    "month": 6,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_50m",
@@ -8997,9 +16040,27 @@
   "n_ships": 1,
   "n_records": 46,
   "peaks": [
-   "10月上旬",
-   "6月中旬"
+   {
+    "label": "8月上旬",
+    "n": 13,
+    "avg_cnt": 3.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 23
+   },
+   {
+    "month": 9,
+    "n": 10
+   },
+   {
+    "month": 10,
+    "n": 5
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "chl_monthly",
@@ -9041,10 +16102,22 @@
   "area": "葉山町葉山鐙摺港",
   "n_ships": 1,
   "n_records": 98,
-  "peaks": [
-   "5月下旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 25
+   },
+   {
+    "month": 7,
+    "n": 25
+   },
+   {
+    "month": 8,
+    "n": 17
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -9066,10 +16139,22 @@
   "area": "葉山町葉山鐙摺港",
   "n_ships": 1,
   "n_records": 36,
-  "peaks": [
-   "5月中旬",
-   "5月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 19
+   },
+   {
+    "month": 6,
+    "n": 11
+   },
+   {
+    "month": 7,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -9111,10 +16196,22 @@
   "area": "久里浜港",
   "n_ships": 1,
   "n_records": 69,
-  "peaks": [
-   "2月中旬",
-   "2月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 11
+   },
+   {
+    "month": 9,
+    "n": 10
+   },
+   {
+    "month": 5,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -9156,10 +16253,22 @@
   "area": "久里浜港",
   "n_ships": 1,
   "n_records": 37,
-  "peaks": [
-   "9月下旬",
-   "9月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 10,
+    "n": 9
+   },
+   {
+    "month": 6,
+    "n": 7
+   },
+   {
+    "month": 5,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -9201,10 +16310,22 @@
   "area": "御前崎港",
   "n_ships": 1,
   "n_records": 56,
-  "peaks": [
-   "11月下旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 14
+   },
+   {
+    "month": 5,
+    "n": 14
+   },
+   {
+    "month": 3,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 48.8,
   "model_beats_baseline": 0,
@@ -9216,9 +16337,32 @@
   "n_ships": 4,
   "n_records": 383,
   "peaks": [
-   "8月中旬",
-   "6月上旬"
+   {
+    "label": "4月下旬",
+    "n": 43,
+    "avg_cnt": 2.2
+   },
+   {
+    "label": "5月上旬",
+    "n": 29,
+    "avg_cnt": 2.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 92
+   },
+   {
+    "month": 4,
+    "n": 86
+   },
+   {
+    "month": 6,
+    "n": 49
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9230,9 +16374,32 @@
   "n_ships": 1,
   "n_records": 140,
   "peaks": [
-   "4月中旬",
-   "6月上旬"
+   {
+    "label": "4月下旬",
+    "n": 24,
+    "avg_cnt": 2.6
+   },
+   {
+    "label": "5月下旬",
+    "n": 15,
+    "avg_cnt": 2.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 45
+   },
+   {
+    "month": 4,
+    "n": 40
+   },
+   {
+    "month": 6,
+    "n": 16
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9244,9 +16411,27 @@
   "n_ships": 1,
   "n_records": 100,
   "peaks": [
-   "2月下旬",
-   "2月上旬"
+   {
+    "label": "4月下旬",
+    "n": 16,
+    "avg_cnt": 3.0
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 29
+   },
+   {
+    "month": 5,
+    "n": 24
+   },
+   {
+    "month": 3,
+    "n": 10
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -9269,9 +16454,32 @@
   "n_ships": 1,
   "n_records": 144,
   "peaks": [
-   "8月下旬",
-   "4月上旬"
+   {
+    "label": "7月上旬",
+    "n": 14,
+    "avg_cnt": 40.2
+   },
+   {
+    "label": "5月中旬",
+    "n": 14,
+    "avg_cnt": 38.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 41
+   },
+   {
+    "month": 6,
+    "n": 34
+   },
+   {
+    "month": 4,
+    "n": 28
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9283,9 +16491,32 @@
   "n_ships": 1,
   "n_records": 111,
   "peaks": [
-   "4月中旬",
-   "4月上旬"
+   {
+    "label": "5月下旬",
+    "n": 15,
+    "avg_cnt": 33.9
+   },
+   {
+    "label": "4月下旬",
+    "n": 13,
+    "avg_cnt": 28.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 31
+   },
+   {
+    "month": 5,
+    "n": 30
+   },
+   {
+    "month": 6,
+    "n": 25
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9297,9 +16528,32 @@
   "n_ships": 1,
   "n_records": 74,
   "peaks": [
-   "7月下旬",
-   "4月中旬"
+   {
+    "label": "5月下旬",
+    "n": 12,
+    "avg_cnt": 3.2
+   },
+   {
+    "label": "5月上旬",
+    "n": 12,
+    "avg_cnt": 2.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 34
+   },
+   {
+    "month": 4,
+    "n": 28
+   },
+   {
+    "month": 3,
+    "n": 6
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wind_speed_avg",
@@ -9342,9 +16596,32 @@
   "n_ships": 2,
   "n_records": 268,
   "peaks": [
-   "8月中旬",
-   "9月中旬"
+   {
+    "label": "8月下旬",
+    "n": 14,
+    "avg_cnt": 5.9
+   },
+   {
+    "label": "7月下旬",
+    "n": 16,
+    "avg_cnt": 4.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 51
+   },
+   {
+    "month": 4,
+    "n": 39
+   },
+   {
+    "month": 7,
+    "n": 36
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9356,9 +16633,27 @@
   "n_ships": 1,
   "n_records": 118,
   "peaks": [
-   "5月中旬",
-   "3月下旬"
+   {
+    "label": "5月下旬",
+    "n": 16,
+    "avg_cnt": 3.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 28
+   },
+   {
+    "month": 4,
+    "n": 16
+   },
+   {
+    "month": 6,
+    "n": 12
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_monthly",
@@ -9401,9 +16696,32 @@
   "n_ships": 1,
   "n_records": 133,
   "peaks": [
-   "6月上旬",
-   "7月上旬"
+   {
+    "label": "6月下旬",
+    "n": 13,
+    "avg_cnt": 32.6
+   },
+   {
+    "label": "5月下旬",
+    "n": 12,
+    "avg_cnt": 30.2
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 24
+   },
+   {
+    "month": 5,
+    "n": 21
+   },
+   {
+    "month": 4,
+    "n": 20
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9415,9 +16733,32 @@
   "n_ships": 2,
   "n_records": 188,
   "peaks": [
-   "5月中旬",
-   "5月上旬"
+   {
+    "label": "5月中旬",
+    "n": 12,
+    "avg_cnt": 3.0
+   },
+   {
+    "label": "4月上旬",
+    "n": 12,
+    "avg_cnt": 1.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 40
+   },
+   {
+    "month": 5,
+    "n": 38
+   },
+   {
+    "month": 6,
+    "n": 20
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9429,9 +16770,47 @@
   "n_ships": 3,
   "n_records": 302,
   "peaks": [
-   "4月上旬",
-   "12月下旬"
+   {
+    "label": "3月下旬",
+    "n": 24,
+    "avg_cnt": 34.3
+   },
+   {
+    "label": "4月中旬",
+    "n": 16,
+    "avg_cnt": 33.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 85
+   },
+   {
+    "month": 4,
+    "n": 53
+   },
+   {
+    "month": 6,
+    "n": 32
+   }
+  ],
+  "wx_peak": {
+   "years": 4,
+   "year_from": "2023",
+   "year_to": "2026",
+   "sst": {
+    "med": 13.6,
+    "lo": 12.9,
+    "hi": 14.3
+   },
+   "n": 992,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.2
+   }
+  },
   "factors": [
    {
     "base": "sst_avg",
@@ -9474,9 +16853,42 @@
   "n_ships": 1,
   "n_records": 77,
   "peaks": [
-   "3月中旬",
-   "12月下旬"
+   {
+    "label": "5月下旬",
+    "n": 15,
+    "avg_cnt": 12.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 37
+   },
+   {
+    "month": 4,
+    "n": 12
+   },
+   {
+    "month": 3,
+    "n": 5
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 19.1,
+    "lo": 18.7,
+    "hi": 20.1
+   },
+   "n": 968,
+   "wave_height": {
+    "med": 0.5,
+    "lo": 0.3,
+    "hi": 1.0
+   }
+  },
   "factors": [],
   "wmape_median": 48.4,
   "model_beats_baseline": 0,
@@ -9488,9 +16900,32 @@
   "n_ships": 1,
   "n_records": 65,
   "peaks": [
-   "7月下旬",
-   "5月中旬"
+   {
+    "label": "4月下旬",
+    "n": 13,
+    "avg_cnt": 3.3
+   },
+   {
+    "label": "5月下旬",
+    "n": 13,
+    "avg_cnt": 3.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 30
+   },
+   {
+    "month": 4,
+    "n": 21
+   },
+   {
+    "month": 9,
+    "n": 5
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 55.1,
   "model_beats_baseline": 0,
@@ -9502,9 +16937,32 @@
   "n_ships": 1,
   "n_records": 123,
   "peaks": [
-   "7月中旬",
-   "8月下旬"
+   {
+    "label": "7月上旬",
+    "n": 15,
+    "avg_cnt": 22.7
+   },
+   {
+    "label": "6月中旬",
+    "n": 12,
+    "avg_cnt": 18.9
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 34
+   },
+   {
+    "month": 5,
+    "n": 28
+   },
+   {
+    "month": 7,
+    "n": 23
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -9547,9 +17005,32 @@
   "n_ships": 2,
   "n_records": 164,
   "peaks": [
-   "10月下旬",
-   "5月下旬"
+   {
+    "label": "10月下旬",
+    "n": 16,
+    "avg_cnt": 10.2
+   },
+   {
+    "label": "5月下旬",
+    "n": 18,
+    "avg_cnt": 9.3
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 27
+   },
+   {
+    "month": 6,
+    "n": 24
+   },
+   {
+    "month": 7,
+    "n": 17
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9561,9 +17042,32 @@
   "n_ships": 3,
   "n_records": 127,
   "peaks": [
-   "10月下旬",
-   "6月下旬"
+   {
+    "label": "2月下旬",
+    "n": 12,
+    "avg_cnt": 4.2
+   },
+   {
+    "label": "12月下旬",
+    "n": 12,
+    "avg_cnt": 3.5
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 32
+   },
+   {
+    "month": 3,
+    "n": 18
+   },
+   {
+    "month": 2,
+    "n": 12
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chowaka",
@@ -9605,10 +17109,22 @@
   "area": "腰越港",
   "n_ships": 1,
   "n_records": 77,
-  "peaks": [
-   "11月下旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 17
+   },
+   {
+    "month": 6,
+    "n": 14
+   },
+   {
+    "month": 4,
+    "n": 12
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_min",
@@ -9650,10 +17166,22 @@
   "area": "江戸川区鹿本橋",
   "n_ships": 1,
   "n_records": 36,
-  "peaks": [
-   "12月下旬",
-   "7月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 7
+   },
+   {
+    "month": 1,
+    "n": 5
+   },
+   {
+    "month": 10,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chowaka",
@@ -9696,9 +17224,27 @@
   "n_ships": 1,
   "n_records": 64,
   "peaks": [
-   "6月下旬",
-   "7月下旬"
+   {
+    "label": "6月下旬",
+    "n": 16,
+    "avg_cnt": 7.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 30
+   },
+   {
+    "month": 7,
+    "n": 20
+   },
+   {
+    "month": 8,
+    "n": 8
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -9740,10 +17286,22 @@
   "area": "鴨居大室港",
   "n_ships": 1,
   "n_records": 81,
-  "peaks": [
-   "10月下旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 19
+   },
+   {
+    "month": 5,
+    "n": 15
+   },
+   {
+    "month": 6,
+    "n": 14
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -9785,10 +17343,22 @@
   "area": "波崎港",
   "n_ships": 1,
   "n_records": 32,
-  "peaks": [
-   "4月中旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 15
+   },
+   {
+    "month": 4,
+    "n": 12
+   },
+   {
+    "month": 6,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9799,10 +17369,22 @@
   "area": "横浜",
   "n_ships": 1,
   "n_records": 90,
-  "peaks": [
-   "1月中旬",
-   "1月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 22
+   },
+   {
+    "month": 4,
+    "n": 17
+   },
+   {
+    "month": 3,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_avg",
@@ -9844,10 +17426,22 @@
   "area": "横浜",
   "n_ships": 1,
   "n_records": 81,
-  "peaks": [
-   "7月下旬",
-   "12月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 17
+   },
+   {
+    "month": 4,
+    "n": 16
+   },
+   {
+    "month": 7,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -9889,10 +17483,22 @@
   "area": "洲崎",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "12月下旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 11,
+    "n": 8
+   },
+   {
+    "month": 12,
+    "n": 6
+   },
+   {
+    "month": 2,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9904,9 +17510,27 @@
   "n_ships": 1,
   "n_records": 113,
   "peaks": [
-   "9月下旬",
-   "6月中旬"
+   {
+    "label": "4月中旬",
+    "n": 13,
+    "avg_cnt": 1.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 24
+   },
+   {
+    "month": 5,
+    "n": 21
+   },
+   {
+    "month": 3,
+    "n": 10
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_delta",
@@ -9938,10 +17562,22 @@
   "area": "宇佐美港",
   "n_ships": 1,
   "n_records": 47,
-  "peaks": [
-   "2月中旬",
-   "9月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 12
+   },
+   {
+    "month": 10,
+    "n": 8
+   },
+   {
+    "month": 11,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9952,10 +17588,22 @@
   "area": "小田原新港",
   "n_ships": 1,
   "n_records": 54,
-  "peaks": [
-   "11月上旬",
-   "10月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 8
+   },
+   {
+    "month": 10,
+    "n": 8
+   },
+   {
+    "month": 11,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -9966,10 +17614,22 @@
   "area": "江東区木場",
   "n_ships": 1,
   "n_records": 89,
-  "peaks": [
-   "10月下旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 19
+   },
+   {
+    "month": 5,
+    "n": 17
+   },
+   {
+    "month": 6,
+    "n": 13
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_50m",
@@ -9991,10 +17651,22 @@
   "area": "勝浦",
   "n_ships": 1,
   "n_records": 56,
-  "peaks": [
-   "6月下旬",
-   "7月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 12
+   },
+   {
+    "month": 6,
+    "n": 9
+   },
+   {
+    "month": 9,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_avg",
@@ -10016,10 +17688,22 @@
   "area": "御前崎港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "8月中旬",
-   "8月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 19
+   },
+   {
+    "month": 7,
+    "n": 13
+   },
+   {
+    "month": 9,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10030,10 +17714,22 @@
   "area": "洲崎",
   "n_ships": 1,
   "n_records": 44,
-  "peaks": [
-   "1月中旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 12
+   },
+   {
+    "month": 3,
+    "n": 7
+   },
+   {
+    "month": 11,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10044,10 +17740,22 @@
   "area": "御前崎港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "1月中旬",
-   "12月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 1,
+    "n": 9
+   },
+   {
+    "month": 10,
+    "n": 7
+   },
+   {
+    "month": 11,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -10090,9 +17798,27 @@
   "n_ships": 1,
   "n_records": 97,
   "peaks": [
-   "7月下旬",
-   "7月中旬"
+   {
+    "label": "5月下旬",
+    "n": 14,
+    "avg_cnt": 1.1
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 27
+   },
+   {
+    "month": 6,
+    "n": 22
+   },
+   {
+    "month": 7,
+    "n": 15
+   }
+  ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10104,9 +17830,42 @@
   "n_ships": 1,
   "n_records": 66,
   "peaks": [
-   "12月下旬",
-   "9月下旬"
+   {
+    "label": "4月下旬",
+    "n": 13,
+    "avg_cnt": 8.4
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 16
+   },
+   {
+    "month": 9,
+    "n": 8
+   },
+   {
+    "month": 10,
+    "n": 8
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 17.4,
+    "lo": 15.8,
+    "hi": 20.1
+   },
+   "n": 880,
+   "wave_height": {
+    "med": 1.3,
+    "lo": 0.9,
+    "hi": 1.7
+   }
+  },
   "factors": [
    {
     "base": "tide_grp_oshio",
@@ -10138,10 +17897,22 @@
   "area": "片瀬漁港",
   "n_ships": 1,
   "n_records": 77,
-  "peaks": [
-   "2月下旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 21
+   },
+   {
+    "month": 5,
+    "n": 16
+   },
+   {
+    "month": 7,
+    "n": 11
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "pressure_avg",
@@ -10163,10 +17934,22 @@
   "area": "横浜市八幡橋",
   "n_ships": 1,
   "n_records": 70,
-  "peaks": [
-   "7月中旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 19
+   },
+   {
+    "month": 7,
+    "n": 9
+   },
+   {
+    "month": 4,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -10198,10 +17981,22 @@
   "area": "須崎港",
   "n_ships": 1,
   "n_records": 93,
-  "peaks": [
-   "7月上旬",
-   "4月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 16
+   },
+   {
+    "month": 5,
+    "n": 16
+   },
+   {
+    "month": 7,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -10243,10 +18038,22 @@
   "area": "外川港",
   "n_ships": 1,
   "n_records": 72,
-  "peaks": [
-   "7月上旬",
-   "7月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 19
+   },
+   {
+    "month": 6,
+    "n": 15
+   },
+   {
+    "month": 7,
+    "n": 11
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -10279,9 +18086,27 @@
   "n_ships": 2,
   "n_records": 88,
   "peaks": [
-   "8月中旬",
-   "12月下旬"
+   {
+    "label": "4月下旬",
+    "n": 15,
+    "avg_cnt": 38.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 29
+   },
+   {
+    "month": 5,
+    "n": 25
+   },
+   {
+    "month": 6,
+    "n": 10
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chowaka",
@@ -10323,10 +18148,22 @@
   "area": "金谷港",
   "n_ships": 1,
   "n_records": 30,
-  "peaks": [
-   "5月中旬",
-   "6月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 15
+   },
+   {
+    "month": 6,
+    "n": 11
+   },
+   {
+    "month": 7,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10337,10 +18174,22 @@
   "area": "片瀬漁港",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "6月下旬",
-   "4月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 10
+   },
+   {
+    "month": 4,
+    "n": 9
+   },
+   {
+    "month": 3,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -10382,10 +18231,22 @@
   "area": "片瀬漁港",
   "n_ships": 1,
   "n_records": 43,
-  "peaks": [
-   "5月中旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 14
+   },
+   {
+    "month": 5,
+    "n": 10
+   },
+   {
+    "month": 6,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wind_speed_max",
@@ -10427,10 +18288,22 @@
   "area": "品川区品川堀",
   "n_ships": 1,
   "n_records": 40,
-  "peaks": [
-   "11月下旬",
-   "10月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 11
+   },
+   {
+    "month": 5,
+    "n": 8
+   },
+   {
+    "month": 6,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_max",
@@ -10473,9 +18346,32 @@
   "n_ships": 2,
   "n_records": 120,
   "peaks": [
-   "3月下旬",
-   "4月上旬"
+   {
+    "label": "5月中旬",
+    "n": 12,
+    "avg_cnt": 21.4
+   },
+   {
+    "label": "4月下旬",
+    "n": 14,
+    "avg_cnt": 18.8
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 49
+   },
+   {
+    "month": 6,
+    "n": 27
+   },
+   {
+    "month": 4,
+    "n": 23
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chusho",
@@ -10497,10 +18393,22 @@
   "area": "大田区六郷水門",
   "n_ships": 1,
   "n_records": 38,
-  "peaks": [
-   "11月下旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 10
+   },
+   {
+    "month": 5,
+    "n": 9
+   },
+   {
+    "month": 4,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "wave_height_avg",
@@ -10542,10 +18450,22 @@
   "area": "港区京浜運河",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "5月下旬",
-   "7月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 5
+   },
+   {
+    "month": 3,
+    "n": 4
+   },
+   {
+    "month": 5,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10556,10 +18476,22 @@
   "area": "戸田港",
   "n_ships": 1,
   "n_records": 30,
-  "peaks": [
-   "6月下旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 9
+   },
+   {
+    "month": 7,
+    "n": 7
+   },
+   {
+    "month": 1,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10570,10 +18502,22 @@
   "area": "佐島",
   "n_ships": 1,
   "n_records": 45,
-  "peaks": [
-   "7月下旬",
-   "6月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 17
+   },
+   {
+    "month": 6,
+    "n": 12
+   },
+   {
+    "month": 7,
+    "n": 10
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10584,10 +18528,22 @@
   "area": "腰越港",
   "n_ships": 2,
   "n_records": 72,
-  "peaks": [
-   "5月上旬",
-   "5月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 23
+   },
+   {
+    "month": 5,
+    "n": 19
+   },
+   {
+    "month": 6,
+    "n": 14
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_chowaka",
@@ -10629,10 +18585,22 @@
   "area": "洲崎",
   "n_ships": 1,
   "n_records": 44,
-  "peaks": [
-   "7月上旬",
-   "9月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 16
+   },
+   {
+    "month": 6,
+    "n": 11
+   },
+   {
+    "month": 10,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10643,10 +18611,22 @@
   "area": "江戸川区新今井橋",
   "n_ships": 1,
   "n_records": 44,
-  "peaks": [
-   "11月下旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 12
+   },
+   {
+    "month": 5,
+    "n": 10
+   },
+   {
+    "month": 3,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10657,10 +18637,22 @@
   "area": "網代港",
   "n_ships": 1,
   "n_records": 52,
-  "peaks": [
-   "4月下旬",
-   "7月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 24
+   },
+   {
+    "month": 4,
+    "n": 6
+   },
+   {
+    "month": 3,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -10671,10 +18663,22 @@
   "area": "片瀬漁港",
   "n_ships": 1,
   "n_records": 55,
-  "peaks": [
-   "7月上旬",
-   "6月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 29
+   },
+   {
+    "month": 6,
+    "n": 15
+   },
+   {
+    "month": 4,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -10717,9 +18721,32 @@
   "n_ships": 1,
   "n_records": 61,
   "peaks": [
-   "7月下旬",
-   "6月下旬"
+   {
+    "label": "6月下旬",
+    "n": 12,
+    "avg_cnt": 4.4
+   },
+   {
+    "label": "6月中旬",
+    "n": 12,
+    "avg_cnt": 2.7
+   }
   ],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 32
+   },
+   {
+    "month": 7,
+    "n": 22
+   },
+   {
+    "month": 8,
+    "n": 4
+   }
+  ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_gradient",
@@ -10761,10 +18788,22 @@
   "area": "横浜市金沢八景乙舳",
   "n_ships": 1,
   "n_records": 31,
-  "peaks": [
-   "7月下旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 16
+   },
+   {
+    "month": 7,
+    "n": 13
+   },
+   {
+    "month": 8,
+    "n": 2
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "water_color_pred_n",
@@ -10806,10 +18845,22 @@
   "area": "清水港",
   "n_ships": 1,
   "n_records": 30,
-  "peaks": [
-   "12月下旬",
-   "1月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 8
+   },
+   {
+    "month": 3,
+    "n": 8
+   },
+   {
+    "month": 1,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "spawn_season_n",
@@ -10851,10 +18902,22 @@
   "area": "江戸川区鹿本橋",
   "n_ships": 1,
   "n_records": 44,
-  "peaks": [
-   "6月下旬",
-   "6月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 22
+   },
+   {
+    "month": 7,
+    "n": 18
+   },
+   {
+    "month": 8,
+    "n": 2
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_gradient",
@@ -10896,10 +18959,22 @@
   "area": "江戸川区鹿本橋",
   "n_ships": 1,
   "n_records": 46,
-  "peaks": [
-   "11月下旬",
-   "6月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 18
+   },
+   {
+    "month": 4,
+    "n": 13
+   },
+   {
+    "month": 3,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_50m",
@@ -10941,10 +19016,22 @@
   "area": "大洗港",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "9月中旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 12
+   },
+   {
+    "month": 4,
+    "n": 5
+   },
+   {
+    "month": 12,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst",
@@ -10986,10 +19073,22 @@
   "area": "佐島",
   "n_ships": 1,
   "n_records": 90,
-  "peaks": [
-   "8月下旬",
-   "4月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 21
+   },
+   {
+    "month": 7,
+    "n": 17
+   },
+   {
+    "month": 4,
+    "n": 16
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": 48.6,
   "model_beats_baseline": 1,
@@ -11000,10 +19099,22 @@
   "area": "品川区立会川勝島運河",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "9月下旬",
-   "8月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 7
+   },
+   {
+    "month": 6,
+    "n": 6
+   },
+   {
+    "month": 3,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11014,10 +19125,22 @@
   "area": "清水港",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "6月中旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 17
+   },
+   {
+    "month": 7,
+    "n": 12
+   },
+   {
+    "month": 5,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -11059,10 +19182,22 @@
   "area": "片瀬漁港",
   "n_ships": 1,
   "n_records": 45,
-  "peaks": [
-   "5月中旬",
-   "8月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 18
+   },
+   {
+    "month": 7,
+    "n": 17
+   },
+   {
+    "month": 5,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11073,10 +19208,22 @@
   "area": "網代港",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "6月下旬",
-   "5月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 12
+   },
+   {
+    "month": 4,
+    "n": 8
+   },
+   {
+    "month": 6,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11087,10 +19234,22 @@
   "area": "江東区釣船橋",
   "n_ships": 1,
   "n_records": 48,
-  "peaks": [
-   "8月下旬",
-   "2月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 13
+   },
+   {
+    "month": 4,
+    "n": 7
+   },
+   {
+    "month": 6,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11101,10 +19260,22 @@
   "area": "熱海港",
   "n_ships": 1,
   "n_records": 44,
-  "peaks": [
-   "8月中旬",
-   "4月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 13
+   },
+   {
+    "month": 5,
+    "n": 13
+   },
+   {
+    "month": 6,
+    "n": 8
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11115,10 +19286,22 @@
   "area": "勝浦",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "5月上旬",
-   "4月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 17
+   },
+   {
+    "month": 4,
+    "n": 13
+   },
+   {
+    "month": 1,
+    "n": 3
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_oshio",
@@ -11150,10 +19333,22 @@
   "area": "長井港",
   "n_ships": 1,
   "n_records": 50,
-  "peaks": [
-   "6月上旬",
-   "5月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 16
+   },
+   {
+    "month": 4,
+    "n": 13
+   },
+   {
+    "month": 6,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -11195,10 +19390,22 @@
   "area": "江東区小名木川",
   "n_ships": 1,
   "n_records": 38,
-  "peaks": [
-   "4月上旬",
-   "9月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 6
+   },
+   {
+    "month": 9,
+    "n": 5
+   },
+   {
+    "month": 10,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11209,10 +19416,22 @@
   "area": "大洗港",
   "n_ships": 1,
   "n_records": 31,
-  "peaks": [
-   "2月下旬",
-   "7月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 5
+   },
+   {
+    "month": 10,
+    "n": 4
+   },
+   {
+    "month": 2,
+    "n": 3
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_100m",
@@ -11244,10 +19463,22 @@
   "area": "小田原新港",
   "n_ships": 1,
   "n_records": 36,
-  "peaks": [
-   "5月下旬",
-   "6月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 17
+   },
+   {
+    "month": 7,
+    "n": 12
+   },
+   {
+    "month": 8,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11258,10 +19489,22 @@
   "area": "片瀬漁港",
   "n_ships": 1,
   "n_records": 52,
-  "peaks": [
-   "5月上旬",
-   "6月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 18
+   },
+   {
+    "month": 6,
+    "n": 14
+   },
+   {
+    "month": 7,
+    "n": 12
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11272,10 +19515,22 @@
   "area": "洲崎",
   "n_ships": 1,
   "n_records": 39,
-  "peaks": [
-   "6月中旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 10
+   },
+   {
+    "month": 5,
+    "n": 8
+   },
+   {
+    "month": 7,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11286,10 +19541,22 @@
   "area": "南伊豆町手石港",
   "n_ships": 1,
   "n_records": 43,
-  "peaks": [
-   "7月中旬",
-   "4月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 16
+   },
+   {
+    "month": 4,
+    "n": 7
+   },
+   {
+    "month": 7,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_oshio",
@@ -11311,10 +19578,22 @@
   "area": "鹿島",
   "n_ships": 1,
   "n_records": 49,
-  "peaks": [
-   "9月下旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 14
+   },
+   {
+    "month": 6,
+    "n": 13
+   },
+   {
+    "month": 7,
+    "n": 11
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11325,10 +19604,22 @@
   "area": "大田区六郷水門",
   "n_ships": 1,
   "n_records": 37,
-  "peaks": [
-   "3月下旬",
-   "4月中旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 19
+   },
+   {
+    "month": 4,
+    "n": 11
+   },
+   {
+    "month": 6,
+    "n": 3
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sla_pelagic_monthly",
@@ -11370,10 +19661,22 @@
   "area": "片瀬漁港",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "2月下旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 15
+   },
+   {
+    "month": 3,
+    "n": 8
+   },
+   {
+    "month": 5,
+    "n": 7
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "current_speed_avg",
@@ -11416,9 +19719,42 @@
   "n_ships": 1,
   "n_records": 41,
   "peaks": [
-   "5月中旬",
-   "4月下旬"
+   {
+    "label": "5月下旬",
+    "n": 12,
+    "avg_cnt": 7.6
+   }
   ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 22
+   },
+   {
+    "month": 6,
+    "n": 9
+   },
+   {
+    "month": 4,
+    "n": 8
+   }
+  ],
+  "wx_peak": {
+   "years": 3,
+   "year_from": "2023",
+   "year_to": "2025",
+   "sst": {
+    "med": 18.3,
+    "lo": 17.8,
+    "hi": 19.4
+   },
+   "n": 1144,
+   "wave_height": {
+    "med": 1.1,
+    "lo": 0.8,
+    "hi": 1.7
+   }
+  },
   "factors": [
    {
     "base": "wave_height_avg",
@@ -11460,10 +19796,22 @@
   "area": "江見",
   "n_ships": 1,
   "n_records": 31,
-  "peaks": [
-   "8月下旬",
-   "6月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 6,
+    "n": 5
+   },
+   {
+    "month": 4,
+    "n": 4
+   },
+   {
+    "month": 5,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11474,10 +19822,22 @@
   "area": "大田区海老取川",
   "n_ships": 1,
   "n_records": 35,
-  "peaks": [
-   "7月上旬",
-   "11月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 6
+   },
+   {
+    "month": 5,
+    "n": 6
+   },
+   {
+    "month": 7,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "tide_grp_oshio",
@@ -11519,10 +19879,22 @@
   "area": "宇佐美港",
   "n_ships": 1,
   "n_records": 32,
-  "peaks": [
-   "1月中旬",
-   "7月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 7,
+    "n": 6
+   },
+   {
+    "month": 1,
+    "n": 5
+   },
+   {
+    "month": 2,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [],
   "wmape_median": null,
   "model_beats_baseline": 0,
@@ -11533,10 +19905,22 @@
   "area": "大田区六郷水門",
   "n_ships": 1,
   "n_records": 42,
-  "peaks": [
-   "5月上旬",
-   "4月上旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 14
+   },
+   {
+    "month": 6,
+    "n": 11
+   },
+   {
+    "month": 7,
+    "n": 9
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "temp_200m",
@@ -11568,10 +19952,22 @@
   "area": "腰越港",
   "n_ships": 1,
   "n_records": 33,
-  "peaks": [
-   "10月下旬",
-   "9月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 8
+   },
+   {
+    "month": 11,
+    "n": 5
+   },
+   {
+    "month": 9,
+    "n": 4
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_delta",
@@ -11613,10 +20009,22 @@
   "area": "横浜市八幡橋",
   "n_ships": 1,
   "n_records": 37,
-  "peaks": [
-   "5月上旬",
-   "4月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 16
+   },
+   {
+    "month": 6,
+    "n": 12
+   },
+   {
+    "month": 7,
+    "n": 5
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "kuroshio_sla_delta_1m",
@@ -11648,10 +20056,22 @@
   "area": "飯岡港",
   "n_ships": 1,
   "n_records": 36,
-  "peaks": [
-   "2月下旬",
-   "12月下旬"
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 3,
+    "n": 8
+   },
+   {
+    "month": 5,
+    "n": 8
+   },
+   {
+    "month": 4,
+    "n": 6
+   }
   ],
+  "wx_peak": {},
   "factors": [
    {
     "base": "sst_gradient",

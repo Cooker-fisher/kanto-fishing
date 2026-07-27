@@ -43,6 +43,8 @@ OUT_SHIP = os.path.join(ROOT, "normalize", "ship_analysis.json")
 MIN_N_COMBO = 30      # コンボの母数下限
 R_MIN = 0.30          # |r| 下限（弱すぎる相関は出さない）
 MAX_FACTORS = 3       # ページに出す因子数上限
+MIN_N_DECADE_ABS = 12   # 旬ピーク採用の絶対下限（便数）
+DECADE_N_FRAC = 0.05    # 同 相対下限（コンボ総便数に対する割合）
 SEASON_SUFFIX = re.compile(r"_(spring|summer|autumn|winter)$")
 
 
@@ -122,37 +124,172 @@ def _collect_factors(rows, labels):
     return out[:MAX_FACTORS]
 
 
-def _peaks(decadal_rows):
-    """decadal_rows=[(decade_no, n, avg_cnt), ...] → 旬ピーク上位2ラベル。"""
+def _decade_min_n(total_n):
+    """旬ピーク採用の母数下限。母数の 5% か MIN_N_DECADE_ABS の大きい方。
+
+    2026-07-27: 下限なしで平均だけ見ていたため、278便中10便（3.6%）しかない旬が
+    『釣果が伸びやすい時期』として採用され、同ページ FAQ の月別ピークと食い違っていた
+    （フグ×鹿島港: 分析セクション 10月下旬 vs FAQ 4〜6月）。少数便の平均は不安定なので弾く。
+    """
+    return max(MIN_N_DECADE_ABS, int(total_n * DECADE_N_FRAC))
+
+
+def _peaks_detailed(decadal_rows):
+    """decadal_rows=[(decade_no, n, avg_cnt), ...] → 旬ピーク上位2（母数付き）。
+
+    戻り: [{"label": "6月下旬", "n": 27, "avg_cnt": 13.7}, ...]
+    「1便あたりの平均釣果が高い旬」であって「よく出船する時期」ではない点に注意
+    （後者は _busy_months が返す）。
+    """
     agg = defaultdict(lambda: [0.0, 0])  # decade -> [weighted_sum, n]
     for dno, n, avg_cnt in decadal_rows:
         if avg_cnt is None or n is None or n <= 0:
             continue
         agg[dno][0] += avg_cnt * n
         agg[dno][1] += n
+
+    total_n = sum(ntot for _, ntot in agg.values())
+    if total_n <= 0:
+        return []
+    min_n = _decade_min_n(total_n)
+
     scored = []
     for dno, (ws, ntot) in agg.items():
-        if ntot <= 0:
+        if ntot < min_n:
             continue
         lbl = _decade_label(dno)
         if lbl:
-            scored.append((ws / ntot, lbl))
+            scored.append((ws / ntot, ntot, lbl))
     scored.sort(reverse=True)
-    # ラベル重複除去（同月上中下旬が並ぶことがある）
+
     seen, peaks = set(), []
-    for _, lbl in scored:
+    for avg, ntot, lbl in scored:
         if lbl in seen:
             continue
         seen.add(lbl)
-        peaks.append(lbl)
+        peaks.append({"label": lbl, "n": ntot, "avg_cnt": round(avg, 1)})
         if len(peaks) >= 2:
             break
     return peaks
 
 
+def _peaks(decadal_rows):
+    """旬ピークのラベルのみ（ship_analysis.json の既存スキーマ互換）。"""
+    return [p["label"] for p in _peaks_detailed(decadal_rows)]
+
+
+_WX_INDEX = None
+
+
+def _wx_index():
+    """weather/*.csv → {(point, decade_no): {"sst": [...], "wave_height": [...]}}。
+
+    実測（Open-Meteo Archive 由来）の観測値のみ。読者が「なぜその時期か」を判断する材料として
+    ピーク旬の水温・波高の実勢レンジを出すために使う。因果の主張はしない（不変条件 #50）。
+    """
+    global _WX_INDEX
+    if _WX_INDEX is not None:
+        return _WX_INDEX
+    import csv as _csv
+    import glob as _glob
+    idx = defaultdict(lambda: {"sst": [], "wave_height": [], "years": set()})
+    for path in _glob.glob(os.path.join(ROOT, "weather", "*.csv")):
+        try:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                for row in _csv.DictReader(f):
+                    d = (row.get("date") or "").strip()
+                    pt = (row.get("point") or "").strip()
+                    if not pt or len(d) < 10:
+                        continue
+                    try:
+                        month, day = int(d[5:7]), int(d[8:10])
+                    except ValueError:
+                        continue
+                    dno = (month - 1) * 3 + (1 if day <= 10 else (2 if day <= 20 else 3))
+                    slot = idx[(pt, dno)]
+                    slot["years"].add(d[:4])
+                    for col in ("sst", "wave_height"):
+                        v = (row.get(col) or "").strip()
+                        if not v:
+                            continue
+                        try:
+                            slot[col].append(float(v))
+                        except ValueError:
+                            pass
+        except Exception:
+            continue
+    _WX_INDEX = idx
+    return idx
+
+
+def _median(xs):
+    if not xs:
+        return None
+    s = sorted(xs)
+    m = len(s) // 2
+    return s[m] if len(s) % 2 else (s[m - 1] + s[m]) / 2
+
+
+def _wx_for_decade(area_point, decade_label_no):
+    """ピーク旬における当該地点の水温・波高の実勢（中央値と 10-90% レンジ）。
+
+    戻り: {"sst": {"med":.., "lo":.., "hi":..}, "wave_height": {...}, "n": 観測数} or {}
+    """
+    if not area_point or not decade_label_no:
+        return {}
+    slot = _wx_index().get((area_point, decade_label_no))
+    if not slot:
+        return {}
+    # 単年しか観測が無い旬を「実勢レンジ」と呼ぶのは誇大なので出さない
+    years = sorted(slot.get("years") or [])
+    if len(years) < 2:
+        return {}
+    out = {"years": len(years), "year_from": years[0], "year_to": years[-1]}
+    for col in ("sst", "wave_height"):
+        xs = slot[col]
+        if len(xs) < 30:  # 観測が薄い旬は出さない
+            continue
+        s = sorted(xs)
+        out[col] = {
+            "med": round(_median(s), 1),
+            "lo": round(s[int(len(s) * 0.10)], 1),
+            "hi": round(s[int(len(s) * 0.90)], 1),
+        }
+        out["n"] = max(out.get("n", 0), len(xs))
+    return out
+
+
+def _busy_months(decadal_rows):
+    """釣果報告が多い月 上位3。=「狙う人が多い時期」で、平均釣果のピークとは別物。
+
+    分析セクションと FAQ が別定義の『ピーク』を出して矛盾に見えていたので、
+    両方を並べて定義ごと読者に見せるために追加（2026-07-27）。
+    戻り: [{"month": 6, "n": 129}, ...]
+    """
+    by_month = defaultdict(int)
+    for dno, n, _avg in decadal_rows:
+        if n is None or n <= 0:
+            continue
+        try:
+            d = int(dno)
+        except (TypeError, ValueError):
+            continue
+        if not (1 <= d <= 36):
+            continue
+        by_month[(d - 1) // 3 + 1] += n
+    ranked = sorted(by_month.items(), key=lambda x: (-x[1], x[0]))
+    return [{"month": m, "n": n} for m, n in ranked[:3]]
+
+
 def build(dry_run=False):
     ships = json.load(open(SHIPS, encoding="utf-8"))
     name2area = {s["name"]: s.get("area") for s in ships if s.get("name")}
+    # エリア → 海況の代表地点（weather/*.csv の point 名）
+    try:
+        with open(os.path.join(ROOT, "normalize", "area_coords.json"), encoding="utf-8") as f:
+            area_point = {k: (v or {}).get("point") for k, v in json.load(f).items()}
+    except Exception:
+        area_point = {}
     labels = _load_labels()
     c = sqlite3.connect(DB)
 
@@ -180,7 +317,15 @@ def build(dry_run=False):
         dec = c.execute(
             f"""SELECT decade_no, n, avg_cnt FROM combo_decadal
                 WHERE fish=? AND ship IN {qs}""", [fish, *shiplist]).fetchall()
-        peaks = _peaks(dec)
+        peaks = _peaks_detailed(dec)
+        busy = _busy_months(dec)
+        # ピーク旬の海況実勢（当該エリアの代表地点で観測された水温・波高）
+        wx_obs = {}
+        if peaks:
+            m = re.match(r"(\d+)月(上|中|下)旬", peaks[0]["label"])
+            if m:
+                dno = (int(m.group(1)) - 1) * 3 + {"上": 1, "中": 2, "下": 3}[m.group(2)]
+                wx_obs = _wx_for_decade(area_point.get(area), dno)
         bt = c.execute(
             f"""SELECT wmape, bl2_wmape FROM combo_backtest
                 WHERE fish=? AND metric='cnt_avg' AND horizon=0 AND ship IN {qs}""",
@@ -192,13 +337,16 @@ def build(dry_run=False):
                       (fish, ship)).fetchone()[0] or 0 for ship in shiplist)
         wmape_med = round(wmapes[len(wmapes) // 2], 1) if wmapes else None
 
-        # 何も語れない（因子ゼロ かつ ピークゼロ）なら出さない
-        if not factors and not peaks:
+        # 何も語れない（因子・ピーク・繁忙月がすべてゼロ）なら出さない。
+        # ピークが母数下限で落ちても busy_months は母数そのものなので残せる。
+        if not factors and not peaks and not busy:
             continue
         fa_out[f"{fish}|{area}"] = {
             "fish": fish, "area": area,
             "n_ships": len(shiplist), "n_records": n_records,
             "peaks": peaks,
+            "busy_months": busy,
+            "wx_peak": wx_obs,
             "factors": factors,
             "wmape_median": wmape_med,
             "model_beats_baseline": beat,
@@ -225,12 +373,18 @@ def build(dry_run=False):
             dec = c.execute(
                 "SELECT decade_no, n, avg_cnt FROM combo_decadal WHERE fish=? AND ship=?",
                 (fish, ship)).fetchall()
-            peaks = _peaks(dec)
-            if not factors and not peaks:
+            peaks = _peaks_detailed(dec)
+            busy = _busy_months(dec)
+            # ピークが母数下限で落ちても busy_months（母数そのもの）は残せるので
+            # 船宿ページの分析セクションが丸ごと消えないようにする。
+            if not factors and not peaks and not busy:
                 continue
             per_fish.append({
                 "fish": fish, "n_records": n,
-                "peaks": peaks, "factors": factors,
+                "peaks": [p["label"] for p in peaks],   # 既存スキーマ互換（ラベルのみ）
+                "peaks_detail": peaks,
+                "busy_months": busy,
+                "factors": factors,
             })
         if not per_fish:
             continue

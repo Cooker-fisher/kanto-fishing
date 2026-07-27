@@ -10951,6 +10951,9 @@ def _analysis_factor_li(fa):
     return f'<li><strong>{label}</strong>が高い日ほど釣果が{direction}傾向がみられます（相関の強さ: {s}）。</li>'
 
 
+_FA_ACCURACY_WMAPE_MAX = 50.0  # これより誤差が大きいコンボでは精度の主張を出さない
+
+
 def _build_fish_area_analysis_section(fish, area):
     """fish_area『海況と釣期の傾向（データ分析）』セクション。C層蒸留から honest に相関記述。
     因果は断定せず「この海域の過去データでは」とコンボ限定を明示、注記を必ず併記。"""
@@ -10959,17 +10962,58 @@ def _build_fish_area_analysis_section(fish, area):
         return ""
     peaks = data.get("peaks") or []
     factors = data.get("factors") or []
-    if not peaks and not factors:
+    if not peaks and not factors and not data.get("busy_months"):
         return ""
     lis = []
-    if peaks:
-        lis.append(f'<li>釣果が伸びやすい時期の目安: <strong>{"・".join(peaks[:2])}</strong></li>')
+    # 旬ピーク＝「1便あたりの平均釣果が高い旬」。母数を必ず併記する。
+    # （2026-07-27: 母数下限が無く 278便中10便の旬が採用され、同ページ FAQ の月別ピークと
+    #   食い違って見えていた。定義と母数を出して読者が判断できる形に変更）
+    peak_txt = []
+    for p in peaks[:2]:
+        if isinstance(p, dict):
+            lbl, pn, pa = p.get("label"), p.get("n"), p.get("avg_cnt")
+            if not lbl:
+                continue
+            detail = []
+            if pn:
+                detail.append(f"{pn}便")
+            if pa is not None:
+                detail.append(f"平均{pa}匹")
+            peak_txt.append(f'{lbl}（{"・".join(detail)}）' if detail else lbl)
+        elif p:
+            peak_txt.append(str(p))  # 旧スキーマ（ラベルのみ）互換
+    if peak_txt:
+        lis.append('<li><strong>1便あたりの釣果が多かった旬</strong>: '
+                   f'{"・".join(peak_txt)}</li>')
+    busy = data.get("busy_months") or []
+    if busy:
+        bt = "・".join(f'{b.get("month")}月（{b.get("n")}便）'
+                      for b in busy[:3] if b.get("month"))
+        if bt:
+            lis.append(f'<li><strong>出船・釣果報告が多かった時期</strong>: {bt}</li>')
+    if peak_txt and busy:
+        lis.append('<li class="fa-def-note">この2つは別の指標です。前者は'
+                   '<em>1便あたりの平均が高い</em>旬、後者は<em>狙う人が多く報告数が多い</em>月で、'
+                   '一致しないことがあります（便数が少ない時期ほど平均は振れやすい点にご注意ください）。</li>')
+    wx = data.get("wx_peak") or {}
+    if peak_txt and wx.get("sst"):
+        first_peak = peak_txt[0].split("（")[0]
+        sst, wv = wx.get("sst") or {}, wx.get("wave_height") or {}
+        seg = (f'水温は約{sst.get("lo")}〜{sst.get("hi")}℃（中央値{sst.get("med")}℃）')
+        if wv:
+            seg += f'、波高は約{wv.get("lo")}〜{wv.get("hi")}m（中央値{wv.get("med")}m）'
+        yf, yt = wx.get("year_from"), wx.get("year_to")
+        span = f'{yf}〜{yt}年' if yf and yt else "過去数年"
+        lis.append(f'<li><strong>{first_peak}ごろの{area}周辺の海況</strong>（{span}の実測）: '
+                   f'{seg}。この時期に釣行する際の目安になります。</li>')
     for fa in factors[:3]:
         lis.append(_analysis_factor_li(fa))
     nb = data.get("n_backtested") or 0
     beat = data.get("model_beats_baseline") or 0
     wm = data.get("wmape_median")
-    if nb and beat and wm is not None:
+    # 誤差が大きいコンボで「精度が上回る」と書くと数字と文が噛み合わず信用を落とすため、
+    # 実測 wMAPE が公表 KPI 水準（P50 47.1%）を超えて悪いものは精度の主張自体を出さない。
+    if nb and beat and wm is not None and wm <= _FA_ACCURACY_WMAPE_MAX:
         lis.append(f'<li>当サイトの数の予測は、この海域の {beat}/{nb} 船宿で平年ベースラインを上回る精度でした'
                    f'（数の予測誤差の中央値 wMAPE {wm}%）。</li>')
     lis = [x for x in lis if x]
@@ -10984,6 +11028,67 @@ def _build_fish_area_analysis_section(fish, area):
         'この傾向はこの海域のデータに基づくもので、魚種共通の法則ではありません。実際の釣行判断は'
         '船宿の最新情報と当日の海況を優先してください。</p>'
         f'<ul style="margin:8px 0 4px 18px;line-height:1.9;font-size:13px;color:var(--text-secondary)">{"".join(lis)}</ul>'
+    )
+
+
+_FIELD_REPORTS_CACHE = None
+def _load_field_reports():
+    """normalize/field_reports.json（運営者本人の一次体験記録）を読む。"""
+    global _FIELD_REPORTS_CACHE
+    if _FIELD_REPORTS_CACHE is None:
+        base = os.path.dirname(os.path.abspath(__file__))
+        try:
+            with open(os.path.join(base, "normalize", "field_reports.json"), encoding="utf-8") as f:
+                _FIELD_REPORTS_CACHE = json.load(f).get("reports", {}) or {}
+        except Exception:
+            _FIELD_REPORTS_CACHE = {}
+    return _FIELD_REPORTS_CACHE
+
+
+_FR_TYPE_LABEL = {"実釣": "実釣レポート", "取材": "船宿取材", "現地調査": "現地調査"}
+
+
+def _build_field_report_section(fish, area):
+    """fish_area『運営者の実釣・取材メモ』セクション。field_reports.json 経由・無ければ空。
+
+    自動集計データと明確に区別するため、執筆者・実施日・種別（実釣/取材/現地調査）を必ず出す。
+    ここに出るのは運営者が実際に行った一次体験だけで、推測や一般論は載せない（不変条件 #57）。
+    """
+    entries = _load_field_reports().get(f"{fish}|{area}")
+    if not entries:
+        return ""
+    if isinstance(entries, dict):
+        entries = [entries]
+    cards = []
+    for e in entries:
+        body = (e.get("html") or "").strip()
+        author = (e.get("author") or "").strip()
+        date = (e.get("date") or "").strip()
+        if not body or not author or not date:
+            continue  # 出典が示せないものは出さない
+        kind = _FR_TYPE_LABEL.get((e.get("type") or "").strip(), "現地メモ")
+        title = (e.get("title") or "").strip()
+        ship = (e.get("ship") or "").strip()
+        meta = date + (f'・{ship}' if ship else "")  # 種別は fr-kind バッジ側で出す
+        tk = [t for t in (e.get("takeaways") or []) if str(t).strip()][:3]
+        tk_html = ""
+        if tk:
+            tk_html = ('<div class="fr-take"><strong>この釣行から言えること</strong><ul>'
+                       + "".join(f"<li>{t}</li>" for t in tk) + "</ul></div>")
+        cards.append(
+            '<article class="field-report">'
+            + (f'<h3 class="fr-title">{title}</h3>' if title else "")
+            + f'<p class="fr-meta"><span class="fr-kind">{kind}</span>'
+              f'<span class="fr-by">執筆: {author}</span><span class="fr-date">{meta}</span></p>'
+            + f'<div class="fr-body">{body}</div>{tk_html}</article>'
+        )
+    if not cards:
+        return ""
+    return (
+        f'<h2 class="st">運営者が実際に行った記録 <span class="tag free">無料</span></h2>'
+        f'<p class="section-note">以下は自動集計データではなく、運営者本人が現地で釣行・取材した'
+        f'一次記録です。うまくいかなかった回も含めてそのまま残しています。</p>'
+        + "".join(cards)
     )
 
 
@@ -11041,8 +11146,22 @@ def _build_ship_analysis_section(ship_name):
         peaks = pf.get("peaks") or []
         factors = pf.get("factors") or []
         lis = []
-        if peaks:
+        # 母数付き（peaks_detail）があればそちらを優先。無ければ旧スキーマのラベルのみ。
+        pd_ = pf.get("peaks_detail") or []
+        if pd_:
+            seg = "・".join(
+                f'{p.get("label")}（{p.get("n")}便・平均{p.get("avg_cnt")}匹）'
+                for p in pd_[:2] if p.get("label"))
+            if seg:
+                lis.append(f'<li><strong>1便あたりの釣果が多かった旬</strong>: {seg}</li>')
+        elif peaks:
             lis.append(f'<li>伸びやすい時期の目安: <strong>{"・".join(peaks[:2])}</strong></li>')
+        busy = pf.get("busy_months") or []
+        if busy:
+            bt = "・".join(f'{b.get("month")}月（{b.get("n")}便）'
+                          for b in busy[:3] if b.get("month"))
+            if bt:
+                lis.append(f'<li><strong>出船・報告が多かった時期</strong>: {bt}</li>')
         for fa in factors[:2]:
             lis.append(_analysis_factor_li(fa))
         lis = [x for x in lis if x]
@@ -11525,6 +11644,8 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
         fa_analysis_html = _build_fish_area_analysis_section(fish, area)
         # 編集部の非count定性ノート（fish_area_notes.json 経由・無ければ空・T-Tier2）
         fa_notes_html = _build_fish_area_notes_section(fish, area)
+        # 運営者本人の一次体験（field_reports.json 経由・無ければ空・E-E-A-T Experience）
+        fa_field_html = _build_field_report_section(fish, area)
         # 直近7日間の釣果推移チャート（fish/* と同じ関数を流用）
         chart7_html_fa = build_fish_7day_chart_html(fish, catches)
         page_url = f"{SITE_URL}/fish_area/{fish_slug(fish)}-{area_slug(area)}.html"
@@ -11619,6 +11740,7 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
   <h2 class="st">最近の釣果 <span class="tag free">無料</span></h2>
   {recent_cards_fa}
   {fa_analysis_html}
+  {fa_field_html}
   {fa_related_html}
   <h2 class="st">よくある質問</h2>
   {fa_faq_html}

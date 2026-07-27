@@ -788,3 +788,34 @@ ins.adsbygoogle[data-ad-status="unfilled"] { display: none !important; }
 @media (max-width: 480px) {
   .share-bar a { padding: 7px 12px; font-size: 12px; }
 }
+
+/* ── 運営者の一次体験レポート（field_reports.json / E-E-A-T Experience）── */
+.field-report {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent, #2b7a9b);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 10px 0 14px;
+  background: var(--bg-card, transparent);
+}
+.field-report .fr-title { font-size: 15px; margin: 0 0 6px; line-height: 1.5; }
+.field-report .fr-meta {
+  display: flex; flex-wrap: wrap; gap: 6px 10px;
+  font-size: 12px; color: var(--text-secondary); margin: 0 0 8px;
+}
+.field-report .fr-kind {
+  background: var(--accent, #2b7a9b); color: #fff;
+  border-radius: 3px; padding: 1px 7px; font-weight: 600;
+}
+.field-report .fr-body { font-size: 13.5px; line-height: 1.85; }
+.field-report .fr-body p { margin: 0 0 8px; }
+.field-report .fr-take {
+  margin-top: 10px; padding: 8px 10px;
+  background: var(--bg, rgba(0,0,0,.03)); border-radius: 4px; font-size: 13px;
+}
+.field-report .fr-take ul { margin: 5px 0 0 18px; line-height: 1.8; }
+.fa-def-note { color: var(--text-secondary); font-size: 12.5px; }
+@media (max-width: 480px) {
+  .field-report { padding: 10px 11px; }
+  .field-report .fr-body { font-size: 13px; }
+}
