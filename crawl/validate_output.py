@@ -1946,6 +1946,23 @@ def validate_fish_area_analysis_sections():
         fail(f"[58] 本文に日本語以外の文字体系が混入: {foreign_hit[:5]}")
     else:
         ok("[58] 本文の文字体系チェック OK（キリル/ギリシャ/ハングル混入なし）")
+
+    # 日本語の地の文に英単語が紛れる事故も起きたため（"一緒に record されていた"）、
+    # 許可語以外の ASCII 語は warn で洗い出す。単位や固有名詞は許可。
+    ASCII_OK = {"LT", "YouTube", "cm", "kg", "m", "PE", "SNS", "GPS", "IC", "JR"}
+    ascii_hit = set()
+    for k, entries in reports.items():
+        for e in (entries if isinstance(entries, list) else [entries]):
+            blob = re.sub(r"<[^>]+>", " ",
+                          (e.get("html") or "") + (e.get("title") or "")
+                          + " ".join(e.get("takeaways") or []))
+            for w in re.findall(r"[A-Za-z]{2,}", blob):
+                if w not in ASCII_OK:
+                    ascii_hit.add(f"{k}:{w}")
+    if ascii_hit:
+        warn(f"[58] 本文に未登録の英単語（誤混入の可能性・許可語なら ASCII_OK に追加）: {sorted(ascii_hit)[:8]}")
+    else:
+        ok("[58] 本文の英単語チェック OK")
     if missing_src:
         fail(f"[58] 一次体験レポートに執筆者/日付/本文の欠落: {sorted(set(missing_src))[:5]}")
     elif n_reports == 0:
