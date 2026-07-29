@@ -29,6 +29,9 @@ _MIN_NORM_N = 8
 _GAP_DAYS = 21
 # 例年比が ±10% 以内は「例年並み」
 _FLAT = 0.10
+# 予想段落に並べる件数の上限（2026-07-30: 1件固定だとレンジ上限の大きいシロギスに
+# 毎日固定されるため、魚種重複なしで複数掲載に変更）
+_FC_MAX = 3
 
 
 def _fmt_num(v):
@@ -161,6 +164,38 @@ def build_hl_cards(ctx):
     return '    <div class="hl-grid">\n' + "\n".join(html) + "\n    </div>"
 
 
+def _forecast_lineup(fc, priority, limit=_FC_MAX):
+    """予想段落に並べる行を選ぶ。
+
+    ルール:
+      1. **同じ日**のものだけを並べる（翌日と翌々日を1文に混ぜると読み手が取り違える）
+      2. 下限が0匹に丸まる組み合わせは出さない。「0〜2匹」はレンジとして情報量がなく、
+         予想として読者に示す意味がない（魚種は落とさない ── 同じ魚種の別船宿で
+         下限1匹以上のものがあればそれを代表にする）
+      3. 1魚種につき1件まで。同じ魚種内は 2. を満たす中でレンジ上限が大きい船宿を代表に
+         （fc は date_key, -hi 順なので先着で足りる）
+      4. 並び順は「本日の本文で触れた魚」を先に、残りはレンジ上限の大きい順
+         → 本文の流れと繋がり、かつ日によって先頭の魚が変わる
+
+    fc の全行が tier A（＝検証済みの関門を通ったもの）なので、ここでの選別は
+    精度ではなく**掲載順と重複排除**だけを担う。
+    """
+    if not fc:
+        return []
+    day = fc[0].get("date_key")
+    picked, seen = [], set()
+    for r in fc:
+        if r.get("date_key") != day or r["fish"] in seen:
+            continue
+        if round(r["lo"] or 0) < 1:
+            continue
+        seen.add(r["fish"])
+        picked.append(r)
+    order = {f: i for i, f in enumerate(dict.fromkeys(f for f in priority if f))}
+    picked.sort(key=lambda r: (order.get(r["fish"], len(order)), -(r["hi"] or 0)))
+    return picked[:limit]
+
+
 # ── ハイライト散文 ──────────────────────────────────────────────────────
 def build_highlight_prose(ctx, root=None):
     """セクション1の散文。短い段落を積み重ね、驚きのある数字を先頭に置く。"""
@@ -217,15 +252,25 @@ def build_highlight_prose(ctx, root=None):
     # 明日の予想（内部用語を出さない）
     fish_names = {r["fish"] for r in rows}
     fc = load_verified_forecast(ctx.get("date_iso", ""), fish_names, root=root)
-    if fc:
-        f0 = fc[0]
-        pb = f0.get("pb")
-        s = (f"<b>{f0['date_label']}の予想</b>は、{f0['ship']}の{f0['fish']}が"
-             f"<b>{round(f0['lo'])}〜{round(f0['hi'])}匹</b>。")
-        if isinstance(pb, (int, float)):
-            s += f"過去の実績では{(1 - pb) * 100:.0f}%の便がこの範囲に収まっていました。"
+    prio = [ctx.get("top_cnt_fish"), ctx.get("top_kg_fish")] + [f for f, _ in ups]
+    picks = _forecast_lineup(fc, prio)
+    if picks:
+        parts = [f"{p['ship']}の{p['fish']}が<b>{round(p['lo'])}〜{round(p['hi'])}匹</b>"
+                 for p in picks]
+        s = f"<b>{picks[0]['date_label']}の予想</b>は、" + "、".join(parts) + "。"
+        pbs = [p["pb"] for p in picks if isinstance(p.get("pb"), (int, float))]
+        if len(pbs) == len(picks):
+            if len(picks) == 1:
+                s += f"過去の実績では{(1 - pbs[0]) * 100:.0f}%の便がこの範囲に収まっていました。"
+            else:
+                # 複数並べたときは最も外した組み合わせを基準に「◯%以上」。
+                # 切り捨てなので、並べた全件についてこの文は真になる。
+                s += (f"過去の実績ではいずれも{int((1 - max(pbs)) * 100)}%以上の便が"
+                      f"この範囲に収まっていました。")
+        # 「件数」は日付をまたいだ行数ではなく船宿×魚種の組み合わせ数を数える
+        n_combo = len({(r["fish"], r["ship"]) for r in fc})
         s += (f"予想を出すのは、過去の実績と照らして精度を確かめられた船宿・魚種の組み合わせだけです"
-              f"（本日時点で{len(fc)}件）。<a href=\"/forecast/\">明日の予想を見る</a>")
+              f"（本日時点で{n_combo}件）。<a href=\"/forecast/\">明日の予想を見る</a>")
         paras.append(s)
 
     if not paras:

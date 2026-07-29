@@ -223,7 +223,9 @@ def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2))
           "combos": [{"fish","ship","cnt_lo","cnt_hi","tier","stars","range_quality":{...}}]}]}
     tier は combos 各行に入っているので open_tier.json の再読込は不要（同じ蒸留元）。
 
-    戻り値: [{"date_label","fish","ship","lo","hi","pb"}]
+    戻り値: [{"date_key","date_label","fish","ship","lo","hi","pb"}]
+      date_key は "YYYY/MM/DD"。並び替えは date_label（"9/30(水)"）ではなく必ずこちらを使う
+      （label は文字列比較すると月跨ぎで 10/1 < 9/30 と評価され、翌日と翌々日が入れ替わる）。
     """
     root = root or _ROOT
     import json
@@ -259,10 +261,11 @@ def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2))
                 continue
             if fish_names and e.get("fish") not in fish_names:
                 continue
-            rows.append({"date_label": label, "fish": e.get("fish"), "ship": e.get("ship"),
+            rows.append({"date_key": day.get("target_date"), "date_label": label,
+                         "fish": e.get("fish"), "ship": e.get("ship"),
                          "lo": lo, "hi": hi,
                          "pb": (e.get("range_quality") or {}).get("promise_break")})
-    rows.sort(key=lambda r: (r["date_label"], -(r["hi"] or 0)))
+    rows.sort(key=lambda r: (r["date_key"], -(r["hi"] or 0)))
     return rows
 
 # ── 環境条件の平年値（weather/*.csv・2026-07-22 追加）──────────────────
