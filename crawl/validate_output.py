@@ -274,22 +274,36 @@ _NESTED_A_TAG_RE = re.compile(r"<a\b[^>]*>|</a\s*>", re.IGNORECASE)
 _NESTED_A_SKIP_RE = re.compile(r"<script\b.*?</script>|<!--.*?-->", re.DOTALL | re.IGNORECASE)
 
 
-def _nested_anchor_snippet(content):
-    """ネスト <a> を検出したら (前後スニペット) を返す。無ければ None。
+def _nested_anchor_scan(text, source):
+    """depth を数えて最初のネスト位置のスニペットを返す。無ければ None。
 
-    <script> 内の文字列と HTML コメントは走査対象外（誤検知防止）。
-    depth を数える方式なので、`<a>`（属性なし）や `<b>` を跨ぐ交差ケースも捕まえる。
+    depth 方式なので `<a>`（属性なし）や `<b>` を跨ぐ交差ケースも捕まえる。
+    オフセットは text と source で一致している前提（scrub は等長スペース置換）。
     """
-    scrubbed = _NESTED_A_SKIP_RE.sub(lambda m: " " * len(m.group(0)), content)
     depth = 0
-    for m in _NESTED_A_TAG_RE.finditer(scrubbed):
+    for m in _NESTED_A_TAG_RE.finditer(text):
         if m.group(0).startswith("</"):
             depth = max(0, depth - 1)
             continue
         depth += 1
         if depth > 1:
-            return content[max(0, m.start() - 60):m.start() + 60].replace("\n", " ")
+            return source[max(0, m.start() - 60):m.start() + 60].replace("\n", " ")
     return None
+
+
+def _nested_anchor_snippet(content):
+    """ネスト <a> を検出したら 前後スニペット を返す。無ければ None。
+
+    <script> 内の文字列と HTML コメントは走査対象外（誤検知防止）。ただし
+    `<!--.*?-->` の DOTALL 走査は 1,900 ファイルで 80 秒級に効くため、
+    **まず生の content を走査し、ヒットした場合のみ** scrub して再判定する
+    （正常時はゼロコスト・違反時のみ精査）。scrub は等長スペース置換なので
+    オフセットは content と一致する。
+    """
+    if _nested_anchor_scan(content, content) is None:
+        return None
+    scrubbed = _NESTED_A_SKIP_RE.sub(lambda m: " " * len(m.group(0)), content)
+    return _nested_anchor_scan(scrubbed, content)
 
 
 def validate_no_nested_anchors():
