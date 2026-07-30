@@ -270,40 +270,67 @@ def validate_area_sea_section():
         ok(f"area 海況セクション: {len(sample)} 件サンプル正常（潮汐・月相が名称・コメントあり）")
 
 
+_NESTED_A_TAG_RE = re.compile(r"<a\b[^>]*>|</a\s*>", re.IGNORECASE)
+_NESTED_A_SKIP_RE = re.compile(r"<script\b.*?</script>|<!--.*?-->", re.DOTALL | re.IGNORECASE)
+
+
+def _nested_anchor_snippet(content):
+    """ネスト <a> を検出したら (前後スニペット) を返す。無ければ None。
+
+    <script> 内の文字列と HTML コメントは走査対象外（誤検知防止）。
+    depth を数える方式なので、`<a>`（属性なし）や `<b>` を跨ぐ交差ケースも捕まえる。
+    """
+    scrubbed = _NESTED_A_SKIP_RE.sub(lambda m: " " * len(m.group(0)), content)
+    depth = 0
+    for m in _NESTED_A_TAG_RE.finditer(scrubbed):
+        if m.group(0).startswith("</"):
+            depth = max(0, depth - 1)
+            continue
+        depth += 1
+        if depth > 1:
+            return content[max(0, m.start() - 60):m.start() + 60].replace("\n", " ")
+    return None
+
+
 def validate_no_nested_anchors():
-    """ネストした <a> タグ（HTML5 invalid）が無いか検証。
+    """11: ネストした <a> タグ（HTML5 invalid）が無いか検証。docs 配下の全 HTML が対象。
+
     過去 area ページの fia カード内部に <a class="fia">...<div class="fb">◎<a>船宿</a></div></a>
     という構造があり、ブラウザが自動的に anchor を分離して「◎船宿名」が
     独立カードとして表示される事故が発生した。
+
+    2026-07-30 拡張: 対象を area/fish/fish_area/ship の**先頭30ファイルのみ**から
+    **docs 全体・全ファイル**へ広げ、正規表現の1発マッチから depth カウント方式に変更した。
+    旧実装では x_post が対象外・かつ30件で打ち切りだったため、
+    x_post 日次まとめの船宿名リンク化が作っていた
+    <a href="…taiko-maru…">太<a href="…ko-maru…">幸丸</a></a>（部分文字列「幸丸」の再リンク）を
+    4か月間検知できなかった。生成側は x_post/text_generator._linkify_ship_names で修復済み。
     """
-    print("\n[11] ネストした <a> タグ検出")
+    print("\n[11] ネストした <a> タグ検出（docs 全体）")
     targets = []
-    for sub in ("area", "fish", "fish_area", "ship"):
-        d = os.path.join(DOCS, sub)
-        if os.path.isdir(d):
-            for fn in os.listdir(d):
-                if fn.endswith(".html"):
-                    targets.append(os.path.join(d, fn))
+    for root, _dirs, files in os.walk(DOCS):
+        for fn in files:
+            if fn.endswith(".html"):
+                targets.append(os.path.join(root, fn))
     if not targets:
         warn("検証対象 HTML が無い")
         return
     bad = []
-    # 簡易検出: <a で始まり </a> で閉じるまでの間にもう1つ <a が出現
-    pattern = re.compile(r'<a\s[^>]*>(?:(?!</a>).)*?<a\s', re.DOTALL)
-    for path in targets[:30]:  # 先頭30ファイルのみサンプル（速度のため）
+    for path in sorted(targets):
         try:
             content = open(path, encoding="utf-8").read()
         except Exception:
             continue
-        if pattern.search(content):
-            bad.append(os.path.relpath(path, DOCS))
+        snippet = _nested_anchor_snippet(content)
+        if snippet:
+            bad.append((os.path.relpath(path, DOCS), snippet))
     if bad:
-        for p in bad[:5]:
-            fail(f"{p}: ネストした <a> タグを検出")
+        for p, snippet in bad[:5]:
+            fail(f"[11] {p}: ネストした <a> タグを検出 … {snippet}")
         if len(bad) > 5:
-            fail(f"... 他 {len(bad)-5} ファイルも同問題")
+            fail(f"[11] ... 他 {len(bad)-5} ファイルも同問題")
     else:
-        ok(f"ネストアンカー: {len(targets[:30])} 件サンプル全てクリア")
+        ok(f"[11] ネストアンカー: docs 配下 {len(targets)} ファイル全てクリア")
 
 
 def validate_fish_hero_uniformity():

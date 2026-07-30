@@ -20,6 +20,7 @@
 | fish ページ 7日チャート 今日1本のみ | `build_fish_pages` が当日 sparse data のみ使用 | c8921178 |
 | マダイとワラサで HERO レイアウト分岐 | placeholder が `<div class="c">` wrapper / `fh-sub` で別構造 | f53abba9 |
 | 「◎弁天屋」が phantom card 化 | fia (`<a>`) 内に `_ship_link()` (`<a>`) ネスト → 自動分離 | 1f79de90 |
+| x_post 魚種別報告の「太幸丸」が `<a>太<a>幸丸</a></a>` にネスト（2026-07-30 発見・4か月潜伏） | `text_generator._linkify_ship_names` が長さ降順で置換していても、生成済み `<a …>太幸丸</a>` の**テキスト部分に残る部分文字列「幸丸」**を後続ループが再リンク。#11 が x_post 未対象＆30件サンプルで検知できず | 本コミット |
 
 ---
 
@@ -39,7 +40,7 @@
 | 8 | `area/*.html` fia-grid | card あり・匹数 or サイズ含む |
 | 9 | `fish/*.html` 直近7日チャート | 7本中 6本以上 height≤8% でない |
 | 10 | `fish/*.html` HERO 統一 | fish-hero 直下が `<h2>`・古い `fh-sub` / `<div class="c">` 無し |
-| 11 | 全 `docs/*/*.html` | ネストアンカー (`<a>...<a>`) 無し |
+| 11 | **`docs/**/*.html` 全ファイル**（2026-07-30 拡張） | ネストアンカー (`<a>...<a>`) 無し。depth カウント方式（`<script>`・HTML コメントは除外）。旧実装は area/fish/fish_area/ship の**先頭30ファイルのみ**サンプルしており x_post が対象外だったため、`_linkify_ship_names` 由来の `<a …taiko-maru…>太<a …ko-maru…>幸丸</a></a>` を4か月検知できなかった |
 | 12 | `area/*.html` 海況セクション | 潮汐が名称（大潮/中潮等）・月相が名称（満月/新月等）・1行コメント有り |
 | 13 | `forecast/index.html` + 日付ページ（T23 / 2026-07-03 反転） | ハブ `forecast/index.html` に noindex が **無い**（index 解除済み）+ 日付/週の個別ページ（サンプル最大5件）は noindex **維持**。D層予測が distilled_full（439コンボ）化しハブが「今週の海況＋魚種別予測」の実コンテンツになったため。個別ページは変動が激しく薄いので noindex 継続 |
 | 14 | `ship/*.html` | noindex 付与ページが 1 件以上（T22-H2 が動作している証拠） |

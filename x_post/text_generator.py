@@ -26,6 +26,40 @@ def _load_ship_romaji() -> dict:
     return _SHIP_ROMAJI
 
 
+# 既存 <a>...</a>（開始タグ〜閉じタグまで丸ごと）。リンク化の対象外領域を切り出す
+_EXISTING_ANCHOR_RE = re.compile(r"<a\b[^>]*>.*?</a>", re.DOTALL | re.IGNORECASE)
+
+
+def _linkify_plain_segment(segment: str, sorted_ships: list) -> str:
+    """<a> を含まないテキスト断片に対して船宿名リンクを張る（_linkify_ship_names の内側）。
+
+    置換で生成した <a ...>船宿名</a> は即プレースホルダへ退避し、全船宿の処理が
+    終わってから実 HTML へ戻す。これにより「置換済みテキストが後続の船宿名で
+    再走査される」経路が消え、ネスト <a> が構造的に発生しなくなる。
+    """
+    # プレースホルダ: 船宿名・タグ記号を一切含まない（後続の in / replace に掛からない）
+    placeholders: list = []
+    # HTML タグと非タグ部分に分割して処理（タグ内は変換しない＝属性値への混入防止）
+    parts = re.split(r"(<[^>]+>)", segment)
+    result = []
+    for part in parts:
+        if part.startswith("<"):
+            result.append(part)  # タグ部分はそのまま
+            continue
+        for ship_name, romaji in sorted_ships:
+            if ship_name not in part:
+                continue
+            token = f"\x00SHIPLINK{len(placeholders)}\x00"
+            placeholders.append(f'<a href="/ship/{romaji}.html">{ship_name}</a>')
+            part = part.replace(ship_name, token)
+        result.append(part)
+
+    out = "".join(result)
+    for i, html in enumerate(placeholders):
+        out = out.replace(f"\x00SHIPLINK{i}\x00", html)
+    return out
+
+
 def _linkify_ship_names(text: str) -> str:
     """
     散文 HTML 内の船宿名を <a href="/ship/{romaji}.html"> に変換する（M5）。
@@ -33,29 +67,30 @@ def _linkify_ship_names(text: str) -> str:
     - 未登録船宿はプレーンテキストのまま（404 防止）
     - HTML タグ内は変換しない（属性値への混入防止）
     - 長い名前を先に処理（部分一致による誤変換防止）
+    - 既存 <a>...</a> の内側は再リンク化しない（冪等）
+    - 置換済み範囲はプレースホルダに退避 → ネスト <a> を構造的に防止（不変条件 #11）
+
+    ⚠ 長さ降順ソートだけでは不十分だった（2026-07-30 修正）。
+    「太幸丸」を先にリンク化しても、生成された <a ...>太幸丸</a> の**テキスト部分**に
+    「幸丸」が残るため、後続ループがそれを再リンクして
+    <a href="…taiko-maru…">太<a href="…ko-maru…">幸丸</a></a> というネスト <a> を生んでいた。
     """
     romaji_map = _load_ship_romaji()
     if not romaji_map:
         return text
 
-    # 長さ降順でソート（部分一致誤変換防止）
+    # 長さ降順でソート（部分一致誤変換防止・長い名前が短い名前を先に消費する）
     sorted_ships = sorted(romaji_map.items(), key=lambda x: len(x[0]), reverse=True)
 
-    # HTML タグと非タグ部分に分割して処理（タグ内は変換しない）
-    parts = re.split(r"(<[^>]+>)", text)
-    result = []
-    for part in parts:
-        if part.startswith("<"):
-            result.append(part)  # タグ部分はそのまま
-        else:
-            for ship_name, romaji in sorted_ships:
-                if ship_name in part:
-                    part = part.replace(
-                        ship_name,
-                        f'<a href="/ship/{romaji}.html">{ship_name}</a>'
-                    )
-            result.append(part)
-    return "".join(result)
+    # 既存リンクはそのまま通し、その外側のテキストのみリンク化（二重適用でも壊れない）
+    out = []
+    pos = 0
+    for m in _EXISTING_ANCHOR_RE.finditer(text):
+        out.append(_linkify_plain_segment(text[pos:m.start()], sorted_ships))
+        out.append(m.group(0))
+        pos = m.end()
+    out.append(_linkify_plain_segment(text[pos:], sorted_ships))
+    return "".join(out)
 
 
 def _safe_format(template_text, ctx):
