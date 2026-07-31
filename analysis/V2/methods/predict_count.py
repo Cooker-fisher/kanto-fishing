@@ -52,8 +52,20 @@ LOG_PATH = os.path.join(RESULTS_DIR, "predict_log.jsonl")
 _FORECAST_CACHE: dict = {}
 # 範囲取得済み座標: (lat3, lon3) -> 取得済み end_date_iso（同一座標の再取得を防ぐ）
 _FORECAST_RANGE_DONE: dict = {}
-# Open-Meteo Forecast/Marine API の予報上限（当日 + 15日 = 16日分）
-_FORECAST_MAX_DAYS = 16
+# Open-Meteo Forecast/Marine API の予報上限（当日 + 14日 = 15日分）。
+#
+# ⚠ 2026-08-01 修正: 16（= 当日+15日）だと API が
+#   {"error":true,"reason":"Parameter 'end_date' is out of allowed range from … to <当日+14>"}
+#   を返すため、10ade4d0f（2026-07-21 の範囲取得リファクタ）以降**全座標で予報取得が
+#   HTTP 400 で失敗し続けていた**。実測: 16 → 12.7秒かけて気象キー0件 /
+#   15 → 3.1秒で15日分24キー取得。
+#   影響は速度だけでなく品質: 取得0件なので H=1〜14 の予測が全て「予報なしの部分補正」に
+#   落ちていた（_fetch_forecast_wx が空 dict を返す経路）。
+_FORECAST_MAX_DAYS = 15
+
+# 予報取得の成否カウンタ（座標単位）。同種の無言故障を再発させないため、
+# predict_daily が実行末にサマリを出し forecast_daily.json にも記録する。
+_FORECAST_STATS: dict = {"ok": 0, "fail": 0, "failed_coords": []}
 
 
 # ── 旬番号 ───────────────────────────────────────────────────────────────────
@@ -315,6 +327,19 @@ def _get_json_retry(url: str, timeout: int = 15, attempts: int = 3) -> dict:
         try:
             with urllib.request.urlopen(url, timeout=timeout) as resp:
                 return json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            # 4xx は恒久エラー（429 の混雑だけ例外）。リトライしても同じ結果なので
+            # 即座に諦める。2026-08-01 まで end_date 範囲外の 400 を 3 回試行 +
+            # 1s/2s バックオフしており、座標あたり 6.6秒/endpoint を捨てていた。
+            if e.code != 429 and 400 <= e.code < 500:
+                try:
+                    detail = e.read().decode("utf-8", "replace")[:200]
+                except Exception:
+                    detail = ""
+                raise RuntimeError(f"HTTP {e.code} (恒久エラー・リトライせず): {detail}") from e
+            last = e
+            if i < attempts - 1:
+                time.sleep(2 ** i)
         except Exception as e:
             last = e
             if i < attempts - 1:
@@ -373,6 +398,20 @@ def _fetch_forecast_range(lat: float, lon: float, start_iso: str, end_iso: str) 
     for d, res in per_date.items():
         _FORECAST_CACHE[(ckey[0], ckey[1], d)] = dict(res, **errs)
     _FORECAST_RANGE_DONE[ckey] = end_iso
+
+    # 無言故障の可視化（2026-08-01）。日別エントリを1件も作れなかった座標は
+    # 「予報ゼロで部分補正に落ちる」ことを意味するので必ず記録する。
+    # これが 0件のまま 11 日間気付かなかったのが _FORECAST_MAX_DAYS=16 の事故。
+    if per_date:
+        _FORECAST_STATS["ok"] += 1
+    else:
+        _FORECAST_STATS["fail"] += 1
+        if len(_FORECAST_STATS["failed_coords"]) < 5:
+            _FORECAST_STATS["failed_coords"].append(
+                {"lat": ckey[0], "lon": ckey[1],
+                 "reason": "; ".join(f"{k}={v}" for k, v in errs.items())[:200]})
+        print(f"WARNING: [forecast] 座標 ({ckey[0]}, {ckey[1]}) の予報取得が0件 "
+              f"({start_iso}〜{end_iso}): {list(errs.values())[:1]}")
 
 
 def _fetch_forecast_wx(lat: float, lon: float, date_iso: str,
@@ -438,22 +477,51 @@ def _get_tide(date_iso: str) -> dict:
     }
 
 
+_BL2_INDEX: dict | None = None
+
+
+def _load_bl2_index() -> dict:
+    """全 CSV を1回だけスキャンして (fish, ship) → [(date, cnt_avg)] （CSV読み込み順）を作る。
+
+    ⚠ _PREV_CNT_INDEX とはフィルタが違うので流用できない（別用途）。
+      こちらは is_cancellation / main_sub / cnt_avg>0 のいずれも見ない ＝ 旧 _get_bl2 と同一条件。
+
+    2026-08-01 追加。旧実装は呼び出しのたびに data/V2/*.csv を全スキャンしており、
+    predict_all 1ホライズンのプロファイルで **_get_bl2 が 201秒中 172.5秒（86%）**、
+    CSV 行読み 3,440万回・ファイルオープン 15,386回 を占めていた。
+    """
+    global _BL2_INDEX
+    if _BL2_INDEX is not None:
+        return _BL2_INDEX
+    import csv as _csv, glob as _glob
+    idx: dict = {}
+    # 走査順・行順は旧実装（sorted(glob) → DictReader 順）と一致させる。
+    # 同一日が複数ある場合の上位n件の選ばれ方が並び順に依存するため。
+    for path in sorted(_glob.glob(os.path.join(DATA_DIR, "*.csv"))):
+        with open(path, encoding="utf-8") as f:
+            for row in _csv.DictReader(f):
+                d = row.get("date", "")
+                v = row.get("cnt_avg", "")
+                if not d or not v:
+                    continue
+                try:
+                    fv = float(v)
+                except ValueError:
+                    continue
+                idx.setdefault((row.get("tsuri_mono"), row.get("ship")), []).append((d, fv))
+    _BL2_INDEX = idx
+    return idx
+
+
 def _get_bl2(fish: str, ship: str, before_date: str, n: int = 7) -> float | None:
     """直近n件のcnt_avg平均（BL-2）をCSVから取得。before_date未満のレコードを対象。
-    use_fallback=True のコンボで旬別ベースラインの代わりに使う。"""
-    import csv, glob
-    records = []
-    for path in sorted(glob.glob(os.path.join(DATA_DIR, "*.csv"))):
-        with open(path, encoding="utf-8") as f:
-            for row in csv.DictReader(f):
-                if row.get("tsuri_mono") == fish and row.get("ship") == ship:
-                    d = row.get("date", "")
-                    v = row.get("cnt_avg", "")
-                    if d and v and d < before_date:
-                        try:
-                            records.append((d, float(v)))
-                        except ValueError:
-                            pass
+    use_fallback=True のコンボで旬別ベースラインの代わりに使う。
+
+    索引経由に変更（2026-08-01）。抽出条件・並び・平均の取り方は旧実装と完全に同一。"""
+    rows = _load_bl2_index().get((fish, ship))
+    if not rows:
+        return None
+    records = [(d, v) for d, v in rows if d < before_date]
     if not records:
         return None
     recent = sorted(records, key=lambda x: x[0], reverse=True)[:n]

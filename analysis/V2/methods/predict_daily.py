@@ -226,11 +226,18 @@ def main():
         })
         print(f"[predict_daily] H={h:>2} {target}: {len(combos_out)} コンボ")
 
+    # 予報取得カバレッジ（2026-08-01）。_FORECAST_MAX_DAYS=16 の事故では
+    # 全座標が 400 で失敗しているのに JSON からは判別できず 11 日間気付けなかった。
+    _fs = predict_count._FORECAST_STATS
+    forecast_wx = {"coords_ok": _fs["ok"], "coords_failed": _fs["fail"],
+                   "failed_samples": _fs["failed_coords"]}
+
     payload = {
         "generated_at": generated_at,
         "mode": mode,
         "params_exported_at": exported_at,
         "open_tier": "active" if open_tier is not None else "missing",
+        "forecast_wx": forecast_wx,
         "days": days_out,
     }
     with open(OUT_JSON, "w", encoding="utf-8") as f:
@@ -244,6 +251,14 @@ def main():
             f.write("\n".join(log_lines) + "\n")
 
     total = sum(d["n_combos"] for d in days_out)
+    _n_wx = forecast_wx["coords_ok"] + forecast_wx["coords_failed"]
+    if forecast_wx["coords_failed"]:
+        print(f"WARNING: [predict_daily] 予報取得に失敗した座標が "
+              f"{forecast_wx['coords_failed']}/{_n_wx} 件"
+              f"（該当コンボは予報なしの部分補正に落ちている）: "
+              f"{forecast_wx['failed_samples'][:2]}")
+    else:
+        print(f"[predict_daily] 予報取得: {forecast_wx['coords_ok']}/{_n_wx} 座標 OK")
     print(f"[predict_daily] 完了: {len(days_out)} 日付 × 計{total} 予測 → {OUT_JSON}")
     print(f"[predict_daily] predict_log: 追記{len(log_lines)}行 / 保持{kept}行 / プルーニング{dropped}行（{LOG_RETENTION_DAYS}日超）")
 
