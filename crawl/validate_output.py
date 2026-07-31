@@ -86,7 +86,7 @@ crawler.py 実行後に CI で実行し、不変条件違反があれば非0終�
 
 CI 組込: crawler.py の直後に呼び、非0終了時は git push をスキップ。
 """
-import sys, os, json, re, argparse
+import sys, os, json, re, argparse, subprocess, collections
 from datetime import datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -1703,6 +1703,69 @@ def validate_no_dead_internal_links():
         ok(f"[44] {checked} ページの fish/fish_area/ship リンクすべて実在")
 
 
+def validate_no_mass_page_deletion():
+    """59: 公開済み HTML が一度に大量削除されていないこと（T49・2026-07-31）
+
+    背景: GSC「見つかりませんでした(404)」287件を調査したところ、fish_area は
+    2,141本中 573本(26.8%) が削除→再追加を繰り返していた（2026-05 だけで 1,268本削除）。
+    URL が 404 と 200 を往復すると Google はその URL 空間のクロール優先度を落とし、
+    実在ページ 118本が「検出 - インデックス未登録」のまま一度もクロールされない状態を招いた。
+
+    crawler.py 側は孤児を削除せず noindex 墓標にする方式へ変更済み（T49）だが、
+    hist_rows の部分ロード（data/V2 CSV の truncate・CI 途中失敗）で大量削除が
+    再発しうるため、push 前に HEAD と比較して検知する。
+
+    保証すること: HEAD からの HTML 削除数が、各ディレクトリの現存数の 5%
+    （最低 30 本）を超えないこと。意図的な大量削除時は --allow-mass-deletion で解除。
+    """
+    print("\n[59] 公開 HTML の大量削除ガード（T49・2026-07-31）")
+
+    if "--allow-mass-deletion" in sys.argv:
+        ok("[59] --allow-mass-deletion 指定のため skip（意図的な大量削除）")
+        return
+
+    try:
+        out = subprocess.run(
+            ["git", "diff", "--diff-filter=D", "--name-only", "HEAD", "--", "docs"],
+            cwd=ROOT, capture_output=True, text=True, timeout=60,
+        )
+    except Exception as e:
+        warn(f"[59] git 実行失敗のため skip: {e}")
+        return
+    if out.returncode != 0:
+        warn(f"[59] git diff 失敗のため skip: {(out.stderr or '').strip()[:200]}")
+        return
+
+    deleted = collections.Counter()
+    for line in out.stdout.splitlines():
+        line = line.strip()
+        if not line.endswith(".html"):
+            continue
+        parts = line.split("/")
+        # docs/<sub>/<name>.html → <sub>、docs/<name>.html → "(root)"
+        deleted[parts[1] if len(parts) >= 3 else "(root)"] += 1
+
+    if not deleted:
+        ok("[59] HEAD からの HTML 削除なし")
+        return
+
+    RATIO, ABS_MIN = 0.05, 30
+    flagged = False
+    for sub, n in sorted(deleted.items(), key=lambda x: -x[1]):
+        d = DOCS if sub == "(root)" else os.path.join(DOCS, sub)
+        alive = len([f for f in os.listdir(d) if f.endswith(".html")]) if os.path.isdir(d) else 0
+        cap = max(ABS_MIN, int(alive * RATIO))
+        if n > cap:
+            flagged = True
+            fail(f"[59] docs/{sub}: {n} 本削除（現存 {alive} 本・上限 {cap} 本）。"
+                 f"data/V2 CSV の欠損や hist_rows 部分ロードを疑うこと。"
+                 f"意図的なら --allow-mass-deletion")
+        else:
+            ok(f"[59] docs/{sub}: {n} 本削除（上限 {cap} 本以内）")
+    if not flagged:
+        ok(f"[59] 削除 {sum(deleted.values())} 本すべて上限内")
+
+
 def validate_fish_content_sections():
     """45: fish_content.json 収載魚種の固定文セクションが描画されていること（2026-06-11）
 
@@ -2462,6 +2525,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
                     help="エラーでも非0終了しない（rollout 用）")
+    ap.add_argument("--allow-mass-deletion", action="store_true",
+                    help="不変条件 [59] の大量削除ガードを解除（意図的な一括削除時のみ）")
     args = ap.parse_args()
 
     print("=" * 60)
@@ -2512,6 +2577,7 @@ def main():
     validate_ship_slug_uniqueness()
     validate_tel_links()
     validate_no_dead_internal_links()
+    validate_no_mass_page_deletion()
     validate_fish_content_sections()
     validate_xpost_no_operator_drafts()
     validate_no_ads_on_noindex()

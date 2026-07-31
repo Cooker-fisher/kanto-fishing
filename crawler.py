@@ -11272,10 +11272,29 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
     # validate_output.py の不変条件 [19] OGP メタタグ / [20] share-bar で永続 fail する。
     # 新フォーマットでない HTML は責任を持って削除し、当日条件を満たすコンボのみ
     # 新フォーマットで再生成する設計に揃える。
-    _orphan_purge_count = 0
-    for _fn in os.listdir(fa_out_dir):
-        if not _fn.endswith(".html") or _fn == "index.html":
-            continue
+    #
+    # T49 (2026/07/31) 孤児の「削除」を「noindex 墓標」に変更 + 大量削除ガード。
+    #   背景: GSC「見つかりませんでした(404)」287件を調査した結果、fish_area の
+    #   2,141本中 573本(26.8%) が削除→再追加を繰り返していた（2026-05 に 1,268本削除）。
+    #   URL が 404 になったり 200 に戻ったりすると Google はその URL 空間全体の
+    #   クロール優先度を落とすため、fish_area の未クロール滞留を招いていた。
+    #   対策1: 孤児は削除せず noindex を注入して 200 のまま残す（sitemap は
+    #          build_sitemap 側がディスク上の noindex を読んで自動除外する）。
+    #          内部リンクも生き残るので不変条件 #44 を壊さない。
+    #   対策2: hist_rows が部分ロード（CSV truncate・CI 途中失敗）した回に
+    #          大量削除が走る事故を防ぐガード。閾値超えならパージ自体を中止する。
+    #   ※ 旧フォーマット HTML の削除は維持する（不変条件 #19/#20 を満たせないため
+    #     墓標化できない）。ただし同じガードの対象に含める。
+    _FA_PURGE_MAX_RATIO = 0.05   # 全体の 5% を超える削除は異常とみなす
+    _FA_PURGE_MAX_ABS = 30       # 小規模時の下駄
+    _fa_all_html = [_fn for _fn in os.listdir(fa_out_dir)
+                    if _fn.endswith(".html") and _fn != "index.html"]
+    _fa_purge_cap = max(_FA_PURGE_MAX_ABS, int(len(_fa_all_html) * _FA_PURGE_MAX_RATIO))
+
+    # --- 1st pass: 削除候補（旧フォーマット）と墓標候補（孤児）を分類のみ行う ---
+    _fa_stale_format: list = []   # 旧フォーマット → 削除
+    _fa_orphans: list = []        # 孤児 → noindex 墓標
+    for _fn in _fa_all_html:
         _p = os.path.join(fa_out_dir, _fn)
         try:
             with open(_p, encoding="utf-8") as _f:
@@ -11286,22 +11305,55 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
             is_old_faq_v1 = ('直近データ（' in _h or 'データ蓄積中（' in _h or
                             'を集計中です。このページの年間シーズンバー' in _h)
             if is_old_ogp or is_old_faq_v1:
-                os.remove(_p)
+                _fa_stale_format.append(_fn)
                 continue
-            # T38 孤児削除: hist_rows・当日 catches・fish_area_summary のいずれにも
-            # 存在しない (fish, area) ペアの HTML を削除する。
-            # 逆引き不可 / 曖昧なファイル名は安全側に倒してパージ対象外。
+            # T38 孤児判定: hist_rows・当日 catches・fish_area_summary のいずれにも
+            # 存在しない (fish, area) ペア。
+            # 逆引き不可 / 曖昧なファイル名は安全側に倒して対象外。
             _stem = _fn[:-5]  # ".html" を除いたstem
             _fj, _aj = _parse_fa_filename(_stem)
-            if _fj is not None and _aj is not None:
-                if (_fj, _aj) not in _valid_fa_set:
-                    print(f"[orphan-purge] {_fn}: hist=0 today=0 -> delete")
-                    os.remove(_p)
-                    _orphan_purge_count += 1
+            if _fj is not None and _aj is not None and (_fj, _aj) not in _valid_fa_set:
+                if 'name="robots"' in _h and "noindex" in _h:
+                    continue  # 既に墓標化済み。何もしない（再書き込みで差分を出さない）
+                _fa_orphans.append((_fn, _h))
         except Exception:
             pass
+
+    # --- ガード: 一度に大量が対象になる回は hist_rows の部分ロードを疑い中止 ---
+    _fa_purge_total = len(_fa_stale_format) + len(_fa_orphans)
+    if _fa_purge_total > _fa_purge_cap:
+        print(f"WARNING: [fa-purge] 対象 {_fa_purge_total} 本が上限 {_fa_purge_cap} 本"
+              f"（全 {len(_fa_all_html)} 本の {_FA_PURGE_MAX_RATIO:.0%} または {_FA_PURGE_MAX_ABS} 本）"
+              f"を超えたためパージを中止しました。"
+              f"hist_rows={len(_hist_rows_for_fa)} 行・data/V2 CSV の欠損を疑ってください")
+        _fa_stale_format = []
+        _fa_orphans = []
+
+    # --- 2nd pass: 実行 ---
+    for _fn in _fa_stale_format:
+        try:
+            os.remove(os.path.join(fa_out_dir, _fn))
+        except Exception:
+            pass
+    _orphan_purge_count = 0
+    for _fn, _h in _fa_orphans:
+        # 墓標化: </title> 直後に noindex を注入。ページ本体はそのまま残すので
+        # OGP / share-bar 等の不変条件は維持される。
+        _h2 = _h.replace("</title>",
+                         '</title>\n  <meta name="robots" content="noindex, follow">', 1)
+        if _h2 == _h:
+            continue  # <title> が無い想定外の HTML は触らない
+        try:
+            with open(os.path.join(fa_out_dir, _fn), "w", encoding="utf-8") as _f:
+                _f.write(_h2)
+            print(f"[orphan-tombstone] {_fn}: hist=0 today=0 -> noindex 化（404 にしない）")
+            _orphan_purge_count += 1
+        except Exception:
+            pass
+    if _fa_stale_format:
+        print(f"[fa-purge] 旧フォーマット HTML {len(_fa_stale_format)} 本削除完了")
     if _orphan_purge_count > 0:
-        print(f"[orphan-purge] 孤児 HTML {_orphan_purge_count} 本削除完了")
+        print(f"[orphan-tombstone] 孤児 HTML {_orphan_purge_count} 本を noindex 墓標化完了")
 
     if decadal_calendar is None:
         decadal_calendar = load_decadal_calendar()
