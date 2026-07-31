@@ -109,6 +109,26 @@ def ok(msg):
     print(f"  [OK] {msg}")
 
 
+# --static-only（validate.yml = push 時の軽量チェック）で True になる。
+# 「docs が今日再生成されているか」という**壁時計依存**の判定だけを warn に落とす。
+#
+# ⚠ これは gatekeeper の緩和ではない。crawl.yml は従来どおりフラグ無しで実行するので、
+#   「生成した docs を push する直前」という鮮度が本当に意味を持つ文脈では
+#   ブロッキングのまま。push 時の検証は docs が前回の日次生成のままなのが正常であり、
+#   そこで鮮度を fail にすると「日次 run 前に push すると必ず落ちる」ノイズになり、
+#   結果として閾値を緩める圧力になる（＝禁止事項に抵触する）ため分離した。
+#   構造チェック（ネスト <a>・デッドリンク・欠損ファイル等）は静的モードでも全て fail。
+STALENESS_IS_WARNING = False
+
+
+def fail_staleness(msg):
+    """壁時計依存の鮮度違反。静的モードでは warn に落ちる。構造違反には使わないこと。"""
+    if STALENESS_IS_WARNING:
+        warn(f"{msg} ※--static-only のため warn（鮮度は crawl.yml が判定）")
+    else:
+        fail(msg)
+
+
 def validate_index_html():
     print("\n[1] docs/index.html")
     path = os.path.join(DOCS, "index.html")
@@ -530,7 +550,7 @@ def validate_csv_freshness():
         ok(f"{ym}.csv 最新日付: {latest}（当月初日〜3日目のため緩和）")
         return
     if latest < cutoff:
-        fail(f"{ym}.csv 最新日付 {latest} が古すぎる（cutoff: {cutoff}）")
+        fail_staleness(f"{ym}.csv 最新日付 {latest} が古すぎる（cutoff: {cutoff}）")
     else:
         ok(f"{ym}.csv 最新日付: {latest}")
 
@@ -1474,7 +1494,7 @@ def validate_page_freshness():
         else:
             d = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
             if d < cutoff:
-                fail(f"[39] index.html 最終更新 {d.date()} が古い（cutoff {cutoff.date()}）= トップの更新遅延")
+                fail_staleness(f"[39] index.html 最終更新 {d.date()} が古い（cutoff {cutoff.date()}）= トップの更新遅延")
             else:
                 ok(f"[39] index.html 最終更新: {d.date()}")
     else:
@@ -1505,7 +1525,7 @@ def validate_page_freshness():
             stale.append(f"{rel}: 生成日 {d.date()}")
     if stale:
         for s in stale:
-            fail(f"[39] ページ更新分裂（生成日が古い）: {s}")
+            fail_staleness(f"[39] ページ更新分裂（生成日が古い）: {s}")
     elif checked:
         ok(f"[39] ビルド日付バナー {checked} ページすべて today-2 以内")
     else:
@@ -2527,7 +2547,14 @@ def main():
                     help="エラーでも非0終了しない（rollout 用）")
     ap.add_argument("--allow-mass-deletion", action="store_true",
                     help="不変条件 [59] の大量削除ガードを解除（意図的な一括削除時のみ）")
+    ap.add_argument("--static-only", action="store_true",
+                    help="壁時計依存の鮮度違反のみ warn 化（push 時の validate.yml 用）。"
+                         "構造チェックは全て fail のまま。crawl.yml では使わないこと")
     args = ap.parse_args()
+
+    if args.static_only:
+        global STALENESS_IS_WARNING
+        STALENESS_IS_WARNING = True
 
     print("=" * 60)
     print("HTML / CSV 出力 整合性検証")

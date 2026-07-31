@@ -1,0 +1,77 @@
+name: validate
+# push 時の軽量 gatekeeper（2026-07-31 追加）。
+#
+# 背景: crawl.yml の gatekeeper は 7 ステップ中 6 番目にあり、実測で
+#   run（crawler.py）37分22秒 + D層 日次予測 43分56秒 = 約81分 待った末に
+#   **5秒** で判定される。2026-07-30 のネスト <a> 混入は
+#   docs/x_post/2026-07-30.html という**既にコミット済みのファイル**が原因で、
+#   81分クロールしなくても push 時点で検出できた内容だった。
+#
+# 役割分担:
+#   validate.yml (これ) … コミット済み docs の**構造**を push 直後に検証（1分弱）
+#   crawl.yml    … 生成直後の docs を**鮮度込み**でフル検証してから push（従来どおり）
+#
+# --static-only は壁時計依存の鮮度違反だけを warn に落とす。構造チェック
+# （ネスト <a>・デッドリンク・欠損ファイル・noindex 整合 等）は全て fail のまま。
+# push 時点の docs は「前回の日次生成のまま」が正常なので、ここで鮮度を fail に
+# すると日次 run 前の push が必ず落ちてノイズ化し、閾値を緩める圧力になる。
+# 鮮度が本当に意味を持つのは crawl.yml の「生成した docs を push する直前」だけ。
+
+on:
+  # push は main のみ。作業ブランチは pull_request 側で拾う。
+  # 同一 repo のブランチを PR にすると push と pull_request の両方が発火して
+  # 同じ検証が2回走るため、トリガを分離している。
+  #
+  # crawl.yml の日次コミットではここは発火しない（GITHUB_TOKEN による push は
+  # 他ワークフローを起動しない GitHub の仕様）。crawl.yml は push 前にフル検証を
+  # 通しているので二重チェックは不要＝この仕様は都合が良い。
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "crawler.py"
+      - "crawl/**"
+      - "x_post/**"
+      - "normalize/**"
+      - "data/**"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "crawler.py"
+      - "crawl/**"
+      - "x_post/**"
+      - "normalize/**"
+      - "data/**"
+      - ".github/workflows/validate.yml"
+  workflow_dispatch:
+
+# 同一 ref への連続 push では最新だけ残す（古い検証は捨ててよい）。
+# crawl.yml の crawl-push-main とは別グループ＝日次クロールを待たせない。
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # validate_output.py は標準ライブラリのみ（pip install 不要）。
+      # requirements.txt の Pillow 等は crawler.py 側の依存であり検証には要らない。
+      #
+      # 検出できること   : コミット済み docs の構造違反（ネスト <a>・デッドリンク・
+      #                    欠損ファイル・noindex/sitemap 整合 等）
+      # 検出できないこと : crawler.py の生成ロジックを変えた影響。docs は再生成
+      #                    されないため、そこは日次 crawl.yml が初めて判定する。
+      # 不変条件 [59]（大量削除ガード）は working tree == HEAD の CI では常に
+      # 「削除なし」になる no-op。あれは push 前のローカル実行で効く条件。
+      - name: validate output (static)
+        run: python3 crawl/validate_output.py --static-only
