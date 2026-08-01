@@ -782,6 +782,58 @@ def load_weather_data():
     else:
         print(f"海況予報: marine {_mo}/{_n_groups}・wind {_wo}/{_n_groups} 全て OK")
 
+    # ── エリア別予報（2026-08-01・CTR診断の残タスク2）──────────────────
+    # 従来はグループ代表1点のみ（千葉・外房→大原沖）で、天津港（鴨川）と飯岡港（旭）が
+    # 100km 離れているのに area ページの海況が同一値だった。area_coords.json の
+    # エリア座標ごとに取得し、(area, day) キーで別建て保持。取得失敗エリアは
+    # build_area_pages 側でグループ代表にフォールバックする（劣化耐性は従来どおり）。
+    result["forecast_area"] = {}
+    _ac_path = os.path.join(os.path.dirname(__file__) or ".", "normalize", "area_coords.json")
+    try:
+        with open(_ac_path, encoding="utf-8") as f:
+            _area_coords_fc = json.load(f)
+    except Exception as e:
+        print(f"WARNING: area_coords.json が読めない（エリア別海況はグループ代表のみ）: {e}")
+        _area_coords_fc = {}
+    # 同一座標のエリアをまとめて1回で取得（例: 松輪江奈港/松輪間口港）
+    _coord_to_areas = {}
+    for _fc_area, _fc_c in _area_coords_fc.items():
+        if _fc_c and _fc_c.get("lat") is not None and _fc_c.get("lon") is not None:
+            _coord_to_areas.setdefault((_fc_c["lat"], _fc_c["lon"]), []).append(_fc_area)
+    _fa_ok = _fa_fail = 0
+    print(f"エリア別海況予報取得: {len(_coord_to_areas)}座標 / {len(_area_coords_fc)}エリア")
+    for (_fc_lat, _fc_lon), _fc_areas in sorted(_coord_to_areas.items()):
+        marine = _fetch_marine_forecast(_fc_lat, _fc_lon, date_from, date_to)
+        wind   = _fetch_wind_forecast(_fc_lat, _fc_lon, date_from, date_to)
+        time.sleep(0.3)
+        if not marine:
+            _fa_fail += 1
+            continue
+        _fa_ok += 1
+        for day in sorted(marine.keys()):
+            m = marine.get(day, {})
+            w = (wind or {}).get(day, {})
+            entry = {
+                "wave_height":  m.get("wave_height"),
+                "wave_period":  m.get("wave_period"),
+                "swell":        m.get("swell"),
+                "sst":          m.get("sst"),
+                "wind_speed":   w.get("wind_speed"),
+                "wind_dir":     w.get("wind_dir"),
+                "weather_code": w.get("weather_code"),
+                "weather_text": _weather_code_text(w.get("weather_code")),
+                "pressure":     w.get("pressure"),
+                "tide_range":   _calc_tide_range(day),
+                "moon_age":     _calc_moon_age(day),
+                "moon_title":   _moon_title(_calc_moon_age(day)),
+            }
+            for _fc_area in _fc_areas:
+                result["forecast_area"][(_fc_area, day)] = entry
+    if _fa_fail and _fa_ok == 0:
+        print(f"WARNING: エリア別海況予報が全{len(_coord_to_areas)}座標で取得失敗 → 全エリアがグループ代表値にフォールバック")
+    else:
+        print(f"エリア別海況予報: {_fa_ok}/{len(_coord_to_areas)}座標 OK（失敗{_fa_fail}はグループ代表にフォールバック）")
+
     # weather_data/{area}.csv から潮汐情報
     base = os.path.dirname(__file__)
     for area_code in _TIDE_AREA_MAP:
@@ -9836,10 +9888,12 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                 + '</a>'
             )
 
-        # 海況データ
+        # 海況データ（2026-08-01: エリア別予報を優先。取得失敗時はグループ代表に
+        # フォールバック＝天津と飯岡が同一値になる従来動作）
         sea_fc = {}
         if weather_data:
-            sea_fc = weather_data.get("forecast", {}).get((group, today_iso), {})
+            sea_fc = (weather_data.get("forecast_area", {}).get((area, today_iso))
+                      or weather_data.get("forecast", {}).get((group, today_iso), {}))
         sst = sea_fc.get("sst")
         wave = sea_fc.get("wave_height")
         wind_spd = sea_fc.get("wind_speed")

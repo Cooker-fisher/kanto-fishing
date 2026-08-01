@@ -289,6 +289,25 @@ def validate_area_sea_section():
     else:
         ok(f"area 海況セクション: {len(sample)} 件サンプル正常（潮汐・月相が名称・コメントあり）")
 
+    # エリア別海況の多様性チェック（2026-08-01・エリア別予報導入）。
+    # 全 area ページの水温が同一値 = エリア別取得が全滅しグループ代表に
+    # フォールバックしている兆候。設計上の許容劣化なので warn 止まり。
+    _sst_vals = set()
+    _sst_pages = 0
+    for fn in [f for f in os.listdir(area_dir) if f.endswith(".html") and f != "index.html"][:40]:
+        c = open(os.path.join(area_dir, fn), encoding="utf-8").read()
+        m2 = re.search(r'<div class="sv">([\d.]+)℃</div><div class="sl2">水温</div>', c)
+        if m2:
+            _sst_pages += 1
+            _sst_vals.add(m2.group(1))
+    # グループは8つなので、フォールバック時の水温は最大8種類。10種類以上あれば
+    # エリア別が生きている。8以下は全面フォールバック（warn・設計上の許容劣化）。
+    if _sst_pages >= 15 and len(_sst_vals) <= 8:
+        warn(f"[12] area 海況の水温が {_sst_pages} ページ中 {len(_sst_vals)} 種類"
+             "（エリア別予報が全滅しグループ代表にフォールバックしている疑い）")
+    elif _sst_pages >= 15:
+        ok(f"[12] area 海況の多様性: {_sst_pages} ページ・水温 {len(_sst_vals)} 種類（エリア別が有効）")
+
 
 _NESTED_A_TAG_RE = re.compile(r"<a\b[^>]*>|</a\s*>", re.IGNORECASE)
 _NESTED_A_SKIP_RE = re.compile(r"<script\b.*?</script>|<!--.*?-->", re.DOTALL | re.IGNORECASE)
