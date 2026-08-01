@@ -8832,16 +8832,16 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         # 数値は全て実測/3年累計=事実（無料=事実の方針）。
         _hist_cnt_fish = len([r for r in _hist_rows_for_fish if r.get("tsuri_mono") == fish])
         _kanto_note = "神奈川・東京・千葉・茨城・静岡の5県を横断集計。"
-        # 2026/07/12 SEO(CTR): GSC で fish ページ pos8-10 CTR0%（hirame 47imp 等）。
-        # description 冒頭に更新日を出し「毎日更新の速報」であることを SERP で伝える。
-        _fp_upd = _display_today_str(datetime.now(JST).replace(tzinfo=None))
-        _fp_upd_md = f"{int(_fp_upd[5:7])}/{int(_fp_upd[8:10])}"
+        # 2026/07/12 SEO(CTR): description 冒頭に更新日を出す実験 → 2026/08/01 撤回。
+        # SERP に出るのは Google 最終クロール時点のスナップショットのため、クロール頻度の
+        # 低いページでは古い日付が残り「止まったサイト」シグナルに反転する（area title で実測・
+        # 決定ログ 2026-08-01 参照）。鮮度訴求は文末の「毎日更新」（陳腐化しない）に一本化。
         if len(catches) >= 1 and max_cnt > 0:
             fish_title_body = f"{fish}釣果 関東【今週{len(catches)}便・最高{int(max_cnt)}匹】"
-            fish_desc = f"【{_fp_upd_md}更新】関東の{fish}釣果を横断集計。今週{len(catches)}便・最高{int(max_cnt)}匹。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
+            fish_desc = f"関東の{fish}釣果を横断集計。今週{len(catches)}便・最高{int(max_cnt)}匹。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
         elif len(catches) >= 1:
             fish_title_body = f"{fish}釣果 関東【今週{len(catches)}便出船】"
-            fish_desc = f"【{_fp_upd_md}更新】関東の{fish}釣果情報。今週{len(catches)}便出船中。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
+            fish_desc = f"関東の{fish}釣果情報。今週{len(catches)}便出船中。{_kanto_note}船宿別ランキング・旬カレンダーを毎日更新。"
         elif _hist_cnt_fish > 0:
             fish_title_body = f"{fish}釣果 関東【過去{_hist_cnt_fish}件の実績】"
             fish_desc = f"関東の{fish}釣果情報。過去{_hist_cnt_fish}件の実績から旬カレンダーを掲載。{_kanto_note}例年の最盛期と船宿別傾向を確認できます。"
@@ -10085,11 +10085,21 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             if _area_aliases else ""
         )
         # SERP で「{別称} 釣果」検索時にタイトル内別称が太字一致しCTRが上がる（最重要別称1件のみ）
-        _area_title_name = f"{area}（{_area_aliases[0]}）" if _area_aliases else area
-        # 2026/07/12 SEO(CTR): GSC で area ページは pos6-8 でも CTR≈0%（天津港 215imp/0click・
-        # 飯岡 716imp/11click）。毎日再生成の強みを SERP に見せる: title に更新日、description
-        # 冒頭に最新日の実釣果（魚種×匹数×船宿）を差し込み「釣果」クエリの意図に正面から答える。
-        _upd_md = f"{int(today_str[5:7])}/{int(today_str[8:10])}"
+        # 2026/08/01 SEO(CTR): 別称の隣に県名を併記。同名港の曖昧性排除
+        # （久慈漁港=岩手県久慈市にも実在・天津港=中国天津と誤解釈される）＋地域クエリとの一致。
+        _area_pref = (group or "").split("・")[0]
+        if _area_aliases:
+            _area_title_name = f"{area}（{_area_aliases[0]}・{_area_pref}）" if _area_pref else f"{area}（{_area_aliases[0]}）"
+        else:
+            _area_title_name = f"{area}（{_area_pref}）" if _area_pref else area
+        # 2026/07/12 SEO(CTR): title に更新日を入れる実験を導入したが、
+        # 2026/08/01 SERP 実査で撤回（決定ログ参照）。SERP に出る title は Google の
+        # 最終クロール時点のスナップショットのため、クロール頻度の低いページでは
+        # 【7/20更新】のまま11日間表示され続け（天津港で実測）、「毎日更新」の訴求が
+        # 「止まったサイト」シグナルに反転していた。日付は陳腐化しない【毎日更新】に変更。
+        # あわせて「の釣果」→「の船釣り釣果」: 岸釣りインテントの検索者（天津・富津の
+        # SERP は堤防釣りサイトが上位独占）に船釣り専門であることを title で明示し、
+        # クリック意図の合う検索者だけを確実に取る（H1 は従来から「船釣り釣果」）。
         _latest_line = ""
         if today_catches and _latest_label != "—":
             _lt_bits = []
@@ -10123,10 +10133,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             if _lt_bits:
                 _latest_line = f"最新{_latest_label}は{'・'.join(_lt_bits)}など。"
         if _top_fish_str:
-            area_title_body = f"{_area_title_name}の釣果【{_upd_md}更新】{_top_fish_str}／{_week_ships}船宿"
+            area_title_body = f"{_area_title_name}の船釣り釣果【毎日更新】{_top_fish_str}／{_week_ships}船宿"
             area_desc = f"{area}（{group}）の船釣り釣果。{_latest_line}{_alias_meta}{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
         else:
-            area_title_body = f"{_area_title_name}の船釣り釣果情報【{_upd_md}更新】"
+            area_title_body = f"{_area_title_name}の船釣り釣果情報【毎日更新】"
             area_desc = f"{area}（{group}）の船釣り釣果情報。{_alias_meta}{_area_hist_lead}旬カレンダー・船宿情報・最寄りアクセス・海況データを掲載。"
         area_title_str = f"{area_title_body} | 船釣り予想"
 
@@ -17922,8 +17932,11 @@ def build_sitemap(data):
                     continue
             except Exception:
                 pass
-            # 日付付きアーカイブは公開後に変化しないため changefreq=monthly
-            urls.append((f"{SITE_URL}/x_post/{fname}", "0.7", "monthly"))
+            # 日付付きアーカイブは公開後に変化しないため changefreq=monthly。
+            # lastmod もファイル名の日付（=真の最終更新）を使う（2026/08/01・下の lastmod 註参照）
+            _xp_stem = fname[:-5]
+            _xp_lastmod = _xp_stem if re.match(r"^\d{4}-\d{2}-\d{2}$", _xp_stem) else None
+            urls.append((f"{SITE_URL}/x_post/{fname}", "0.7", "monthly", _xp_lastmod))
     # pages/*.html（静的ページ・2026/06/05 追加）
     # フッターリンク済みだが sitemap 未収録だった。AdSense はプライバシーポリシーを
     # 確実に発見したいため明示収録する。
@@ -17956,10 +17969,19 @@ def build_sitemap(data):
                         continue
                 except Exception:
                     pass
-                urls.append((f"{SITE_URL}/monthly/{_ym}/{_mfname}", "0.8", "monthly"))
+                # 月報は月末で内容確定 → lastmod は翌月1日（公開日近似）に固定（2026/08/01）
+                _m_y, _m_m = int(_ym[:4]), int(_ym[5:7])
+                _m_next = f"{_m_y + 1}-01-01" if _m_m == 12 else f"{_m_y}-{_m_m + 1:02d}-01"
+                urls.append((f"{SITE_URL}/monthly/{_ym}/{_mfname}", "0.8", "monthly", min(_m_next, now)))
+    # lastmod の正直化（2026/08/01・決定ログ参照）:
+    # 旧実装は全 URL に lastmod=now を毎日書いていた（約1,700本が毎日「更新された」と主張）。
+    # Google は lastmod が実際の更新と一致しないサイトの lastmod を無視するため
+    # （=クロールスケジューリングのヒントを自ら捨てていた）、公開後に変化しない
+    # x_post 日次・monthly 月報は真の日付を入れる。日次再生成される fish/area 等は now のまま。
     entries = "\n".join(
-        f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
-        for loc, pri, freq in urls
+        f"  <url><loc>{u[0]}</loc><lastmod>{(u[3] if len(u) > 3 and u[3] else now)}</lastmod>"
+        f"<changefreq>{u[2]}</changefreq><priority>{u[1]}</priority></url>"
+        for u in urls
     )
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
