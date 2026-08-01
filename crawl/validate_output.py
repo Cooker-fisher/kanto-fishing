@@ -2603,6 +2603,79 @@ def validate_weather_csv_freshness():
         ok(f"[60] weather/ 最新日付: {max_d}（{os.path.basename(latest_file)}）")
 
 
+def validate_area_description_quality():
+    """61: normalize/area_description.json の文章品質（2026-08-01）
+
+    背景: area ページ「このエリアについて」の元データ（AI生成・113港）に
+    (a) 尻切れ（文末が句点でない・7件） (b) 季節語と括弧内の月の矛盾
+    （「秋から冬（7月・8月・12月）」等・19件） (c) 修復時の重ね置換による
+    「夏と夏と冬」型の重複連結、が存在した。一括修復済み（決定ログ 2026-08-01）。
+    このファイルは再生成・追記されうるため、静的品質チェックとして固定する。
+    判定は「括弧内の月の過半が季節語の範囲外」のみ fail（軽微な1か月ズレは
+    自然な文章表現として許容）。季節範囲は冬跨ぎ循環（冬=12〜2月）で判定する。
+    """
+    print("\n[61] normalize/area_description.json 文章品質")
+    path = os.path.join(ROOT, "normalize", "area_description.json")
+    if not os.path.isfile(path):
+        warn("[61] area_description.json が無い")
+        return
+    try:
+        ad = json.load(open(path, encoding="utf-8"))
+    except Exception as e:
+        fail(f"[61] area_description.json が読めない: {e}")
+        return
+    season = {"春先": (2, 4), "春": (3, 5), "初夏": (5, 7), "初秋": (9, 10), "秋初頭": (9, 10),
+              "夏": (6, 8), "晩夏": (8, 8), "秋": (9, 11), "晩秋": (10, 11), "初冬": (11, 12), "冬": (12, 2)}
+    sw = "春先|初夏|初秋|秋初頭|晩夏|晩秋|初冬|[春夏秋冬]"
+
+    def _circ(a, b):
+        return set(range(a, b + 1)) if b >= a else set(range(a, 13)) | set(range(1, b + 1))
+
+    def _rng(phrase):
+        parts = re.split("と", phrase)
+        if len(parts) >= 2 and all(re.fullmatch(sw, x) for x in parts):
+            s = set()
+            for x in parts:
+                s |= _circ(*season[x])
+            return s
+        m = re.match(rf"({sw})(?:から|〜)({sw})へ?$", phrase)
+        if m:
+            return _circ(season[m.group(1)][0], season[m.group(2)][1])
+        m = re.match(rf"({sw})$", phrase)
+        if m:
+            return _circ(*season[m.group(1)])
+        return None
+
+    pat = re.compile(rf"((?:{sw})(?:と(?:{sw}))*(?:(?:から|〜)(?:{sw})へ?)?)（([0-9月〜・]+)）")
+    bad = []
+    for area, v in ad.items():
+        d = (v or {}).get("description") or ""
+        if not d:
+            continue
+        if not re.search(r"[。．！？」]$", d.strip()):
+            bad.append(f"{area}: 尻切れ（文末: …{d.strip()[-15:]}）")
+        if re.search(rf"(?:{sw})と(?:{sw})と", d) and re.search(r"([春夏秋冬])と\1", d):
+            bad.append(f"{area}: 季節語の重複連結")
+        for m in pat.finditer(d):
+            r = _rng(m.group(1))
+            if not r:
+                continue
+            months = set()
+            for mm in re.finditer(r"(\d+)月(?:〜(\d+)月)?", m.group(2)):
+                a2 = int(mm.group(1))
+                b2 = int(mm.group(2)) if mm.group(2) else a2
+                if 1 <= a2 <= 12 and 1 <= b2 <= 12:
+                    months |= _circ(a2, b2)
+            outside = months - r
+            if outside and len(outside) * 2 >= len(months):
+                bad.append(f"{area}: 「{m.group(0)}」の月の過半が季節範囲外 {sorted(outside)}")
+    if bad:
+        for b in bad[:8]:
+            fail(f"[61] {b}")
+    else:
+        ok(f"[61] area_description {len(ad)}港: 尻切れ・季節×月矛盾・重複連結なし")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2680,6 +2753,7 @@ def main():
     validate_no_paywall_signal_and_operator_info()
     validate_verified_predictions_tier()
     validate_weather_csv_freshness()
+    validate_area_description_quality()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
