@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated_at": "2026-07-25",
+  "updated_at": "2026-08-01",
   "source": {
     "wholesale": "s202605meisai_20260615.xlsx (202605)",
     "retail_multiplier": "業界一般値（甲案・大衆魚2.0-3.0/中級1.8-2.5/高級1.6-2.2/青物1.7-2.4/イカタコ1.8-2.6）",
@@ -6522,7 +6522,7 @@
     }
   },
   "daily_correction": {
-    "asof": "20260725",
+    "asof": "20260801",
     "window_business_days": 20,
     "data_month": "202605",
     "min_mid_obs": 8,
@@ -6541,19 +6541,19 @@
         "monthly_avg": 728
       },
       "inada": {
-        "factor": 0.99,
-        "raw_ratio": 0.99,
-        "n_mid": 17,
-        "n_days": 17,
-        "daily_mid": 616,
+        "factor": 1.111,
+        "raw_ratio": 1.111,
+        "n_mid": 16,
+        "n_days": 16,
+        "daily_mid": 691,
         "monthly_avg": 622
       },
       "karei": {
-        "factor": 1.261,
-        "raw_ratio": 1.261,
-        "n_mid": 59,
+        "factor": 1.366,
+        "raw_ratio": 1.366,
+        "n_mid": 60,
         "n_days": 17,
-        "daily_mid": 648,
+        "daily_mid": 702,
         "monthly_avg": 514
       },
       "katsuo": {
@@ -6565,11 +6565,11 @@
         "monthly_avg": 881
       },
       "kihada": {
-        "factor": 1.178,
-        "raw_ratio": 1.178,
+        "factor": 1.136,
+        "raw_ratio": 1.136,
         "n_mid": 23,
-        "n_days": 20,
-        "daily_mid": 1512,
+        "n_days": 18,
+        "daily_mid": 1458,
         "monthly_avg": 1283
       },
       "kinmedai": {
@@ -6581,11 +6581,11 @@
         "monthly_avg": 2245
       },
       "maaji": {
-        "factor": 0.917,
-        "raw_ratio": 0.917,
-        "n_mid": 56,
+        "factor": 0.957,
+        "raw_ratio": 0.957,
+        "n_mid": 53,
         "n_days": 20,
-        "daily_mid": 621,
+        "daily_mid": 648,
         "monthly_avg": 677
       },
       "saba": {
@@ -6597,11 +6597,11 @@
         "monthly_avg": 624
       },
       "surumeika": {
-        "factor": 1.267,
-        "raw_ratio": 1.267,
+        "factor": 1.177,
+        "raw_ratio": 1.177,
         "n_mid": 19,
         "n_days": 19,
-        "daily_mid": 1512,
+        "daily_mid": 1404,
         "monthly_avg": 1193
       }
     }
