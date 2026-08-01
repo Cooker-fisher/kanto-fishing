@@ -805,6 +805,7 @@ AREA_PORT = {
     "松崎港":           "shizuoka",
     "沼津内港":         "shizuoka",
     "沼津静浦":         "shizuoka",
+    "静浦漁港":         "shizuoka",
     "清水港(巴川)":     "shizuoka",
     "田子の浦港":       "shizuoka",
     "由比":             "shizuoka",

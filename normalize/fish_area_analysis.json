@@ -2807,74 +2807,6 @@
   "model_beats_baseline": 1,
   "n_backtested": 1
  },
- "タチウオ|沼津静浦": {
-  "fish": "タチウオ",
-  "area": "沼津静浦",
-  "n_ships": 1,
-  "n_records": 253,
-  "peaks": [
-   {
-    "label": "12月下旬",
-    "n": 15,
-    "avg_cnt": 27.7
-   },
-   {
-    "label": "9月中旬",
-    "n": 18,
-    "avg_cnt": 21.8
-   }
-  ],
-  "busy_months": [
-   {
-    "month": 8,
-    "n": 55
-   },
-   {
-    "month": 9,
-    "n": 51
-   },
-   {
-    "month": 10,
-    "n": 51
-   }
-  ],
-  "wx_peak": {},
-  "factors": [
-   {
-    "base": "temp_100m",
-    "label": "水深100m層の水温",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "強く",
-    "n_ships": 2,
-    "avg_absr": 0.649
-   },
-   {
-    "base": "sst",
-    "label": "海面水温",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "多い",
-    "strength": "ゆるやかに",
-    "n_ships": 1,
-    "avg_absr": 0.367
-   },
-   {
-    "base": "temp_min",
-    "label": "水温の下限",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "ゆるやかに",
-    "n_ships": 1,
-    "avg_absr": 0.327
-   }
-  ],
-  "wmape_median": 42.1,
-  "model_beats_baseline": 1,
-  "n_backtested": 1
- },
  "サワラ|長浦": {
   "fish": "サワラ",
   "area": "長浦",
@@ -5405,69 +5337,6 @@
   "model_beats_baseline": 1,
   "n_backtested": 1
  },
- "マルイカ|沼津静浦": {
-  "fish": "マルイカ",
-  "area": "沼津静浦",
-  "n_ships": 1,
-  "n_records": 82,
-  "peaks": [
-   {
-    "label": "7月中旬",
-    "n": 13,
-    "avg_cnt": 11.8
-   }
-  ],
-  "busy_months": [
-   {
-    "month": 2,
-    "n": 24
-   },
-   {
-    "month": 7,
-    "n": 24
-   },
-   {
-    "month": 3,
-    "n": 17
-   }
-  ],
-  "wx_peak": {},
-  "factors": [
-   {
-    "base": "kuroshio_sla_delta_1m",
-    "label": "黒潮勢力の1か月変化",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "強く",
-    "n_ships": 1,
-    "avg_absr": 0.628
-   },
-   {
-    "base": "temp_max",
-    "label": "水温の上限",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "強く",
-    "n_ships": 1,
-    "avg_absr": 0.571
-   },
-   {
-    "base": "temp_avg",
-    "label": "表層水温",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "強く",
-    "n_ships": 1,
-    "avg_absr": 0.552
-   }
-  ],
-  "wmape_median": 58.6,
-  "model_beats_baseline": 1,
-  "n_backtested": 1
- },
  "キハダマグロ|大磯港": {
   "fish": "キハダマグロ",
   "area": "大磯港",
@@ -5725,63 +5594,6 @@
    }
   ],
   "wmape_median": 47.8,
-  "model_beats_baseline": 1,
-  "n_backtested": 1
- },
- "マダイ|沼津静浦": {
-  "fish": "マダイ",
-  "area": "沼津静浦",
-  "n_ships": 1,
-  "n_records": 34,
-  "peaks": [],
-  "busy_months": [
-   {
-    "month": 4,
-    "n": 14
-   },
-   {
-    "month": 5,
-    "n": 11
-   },
-   {
-    "month": 1,
-    "n": 4
-   }
-  ],
-  "wx_peak": {},
-  "factors": [
-   {
-    "base": "wave_height_avg",
-    "label": "波の高さ",
-    "kind": "wave",
-    "flag": false,
-    "direction": "多い",
-    "strength": "ゆるやかに",
-    "n_ships": 1,
-    "avg_absr": 0.386
-   },
-   {
-    "base": "tide_grp_chusho",
-    "label": "中潮周り",
-    "kind": "tide",
-    "flag": true,
-    "direction": "多い",
-    "strength": "ゆるやかに",
-    "n_ships": 1,
-    "avg_absr": 0.385
-   },
-   {
-    "base": "pressure_avg",
-    "label": "気圧",
-    "kind": "other",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "ゆるやかに",
-    "n_ships": 1,
-    "avg_absr": 0.351
-   }
-  ],
-  "wmape_median": 56.4,
   "model_beats_baseline": 1,
   "n_backtested": 1
  },
@@ -6139,32 +5951,6 @@
   "model_beats_baseline": 0,
   "n_backtested": 1
  },
- "ヒラメ|沼津静浦": {
-  "fish": "ヒラメ",
-  "area": "沼津静浦",
-  "n_ships": 1,
-  "n_records": 47,
-  "peaks": [],
-  "busy_months": [
-   {
-    "month": 2,
-    "n": 10
-   },
-   {
-    "month": 4,
-    "n": 9
-   },
-   {
-    "month": 11,
-    "n": 8
-   }
-  ],
-  "wx_peak": {},
-  "factors": [],
-  "wmape_median": 21.5,
-  "model_beats_baseline": 1,
-  "n_backtested": 1
- },
  "タチウオ|小田原早川港": {
   "fish": "タチウオ",
   "area": "小田原早川港",
@@ -6491,63 +6277,6 @@
   ],
   "wmape_median": 64.0,
   "model_beats_baseline": 0,
-  "n_backtested": 1
- },
- "アジ|沼津静浦": {
-  "fish": "アジ",
-  "area": "沼津静浦",
-  "n_ships": 1,
-  "n_records": 48,
-  "peaks": [],
-  "busy_months": [
-   {
-    "month": 12,
-    "n": 18
-   },
-   {
-    "month": 11,
-    "n": 13
-   },
-   {
-    "month": 10,
-    "n": 11
-   }
-  ],
-  "wx_peak": {},
-  "factors": [
-   {
-    "base": "sst_avg",
-    "label": "海面水温",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "多い",
-    "strength": "やや強く",
-    "n_ships": 1,
-    "avg_absr": 0.522
-   },
-   {
-    "base": "temp_min",
-    "label": "水温の下限",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "多い",
-    "strength": "やや強く",
-    "n_ships": 1,
-    "avg_absr": 0.5
-   },
-   {
-    "base": "temp_avg",
-    "label": "表層水温",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "多い",
-    "strength": "やや強く",
-    "n_ships": 1,
-    "avg_absr": 0.485
-   }
-  ],
-  "wmape_median": 50.3,
-  "model_beats_baseline": 1,
   "n_backtested": 1
  },
  "タイ五目|大洗港": {
@@ -9365,64 +9094,6 @@
    }
   ],
   "wmape_median": 60.0,
-  "model_beats_baseline": 1,
-  "n_backtested": 1
- },
- "ムギイカ|沼津静浦": {
-  "fish": "ムギイカ",
-  "area": "沼津静浦",
-  "n_ships": 1,
-  "n_records": 126,
-  "peaks": [
-   {
-    "label": "6月上旬",
-    "n": 17,
-    "avg_cnt": 62.9
-   },
-   {
-    "label": "5月下旬",
-    "n": 27,
-    "avg_cnt": 50.6
-   }
-  ],
-  "busy_months": [
-   {
-    "month": 5,
-    "n": 66
-   },
-   {
-    "month": 4,
-    "n": 30
-   },
-   {
-    "month": 6,
-    "n": 29
-   }
-  ],
-  "wx_peak": {},
-  "factors": [
-   {
-    "base": "kd490_surface",
-    "label": "海水の濁り具合（数値が高いほど濁り）",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "強く",
-    "n_ships": 1,
-    "avg_absr": 0.65
-   },
-   {
-    "base": "water_color_pred_n",
-    "label": "水色の予測値（澄み・濁り）",
-    "kind": "ocean",
-    "flag": false,
-    "direction": "少ない",
-    "strength": "ゆるやかに",
-    "n_ships": 1,
-    "avg_absr": 0.323
-   }
-  ],
-  "wmape_median": 59.4,
   "model_beats_baseline": 1,
   "n_backtested": 1
  },
@@ -20105,6 +19776,335 @@
    }
   ],
   "wmape_median": 35.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "タチウオ|静浦漁港": {
+  "fish": "タチウオ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 253,
+  "peaks": [
+   {
+    "label": "12月下旬",
+    "n": 15,
+    "avg_cnt": 27.7
+   },
+   {
+    "label": "9月中旬",
+    "n": 18,
+    "avg_cnt": 21.8
+   }
+  ],
+  "busy_months": [
+   {
+    "month": 8,
+    "n": 55
+   },
+   {
+    "month": 9,
+    "n": 51
+   },
+   {
+    "month": 10,
+    "n": 51
+   }
+  ],
+  "wx_peak": {},
+  "factors": [
+   {
+    "base": "temp_100m",
+    "label": "水深100m層の水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 2,
+    "avg_absr": 0.649
+   },
+   {
+    "base": "sst",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.367
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.327
+   }
+  ],
+  "wmape_median": 42.1,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マルイカ|静浦漁港": {
+  "fish": "マルイカ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 82,
+  "peaks": [
+   {
+    "label": "7月中旬",
+    "n": 13,
+    "avg_cnt": 11.8
+   }
+  ],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 24
+   },
+   {
+    "month": 7,
+    "n": 24
+   },
+   {
+    "month": 3,
+    "n": 17
+   }
+  ],
+  "wx_peak": {},
+  "factors": [
+   {
+    "base": "kuroshio_sla_delta_1m",
+    "label": "黒潮勢力の1か月変化",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.628
+   },
+   {
+    "base": "temp_max",
+    "label": "水温の上限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.571
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.552
+   }
+  ],
+  "wmape_median": 58.6,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "マダイ|静浦漁港": {
+  "fish": "マダイ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 34,
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 4,
+    "n": 14
+   },
+   {
+    "month": 5,
+    "n": 11
+   },
+   {
+    "month": 1,
+    "n": 4
+   }
+  ],
+  "wx_peak": {},
+  "factors": [
+   {
+    "base": "wave_height_avg",
+    "label": "波の高さ",
+    "kind": "wave",
+    "flag": false,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.386
+   },
+   {
+    "base": "tide_grp_chusho",
+    "label": "中潮周り",
+    "kind": "tide",
+    "flag": true,
+    "direction": "多い",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.385
+   },
+   {
+    "base": "pressure_avg",
+    "label": "気圧",
+    "kind": "other",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.351
+   }
+  ],
+  "wmape_median": 56.4,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ヒラメ|静浦漁港": {
+  "fish": "ヒラメ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 47,
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 2,
+    "n": 10
+   },
+   {
+    "month": 4,
+    "n": 9
+   },
+   {
+    "month": 11,
+    "n": 8
+   }
+  ],
+  "wx_peak": {},
+  "factors": [],
+  "wmape_median": 21.5,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "アジ|静浦漁港": {
+  "fish": "アジ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 48,
+  "peaks": [],
+  "busy_months": [
+   {
+    "month": 12,
+    "n": 18
+   },
+   {
+    "month": 11,
+    "n": 13
+   },
+   {
+    "month": 10,
+    "n": 11
+   }
+  ],
+  "wx_peak": {},
+  "factors": [
+   {
+    "base": "sst_avg",
+    "label": "海面水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.522
+   },
+   {
+    "base": "temp_min",
+    "label": "水温の下限",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.5
+   },
+   {
+    "base": "temp_avg",
+    "label": "表層水温",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "多い",
+    "strength": "やや強く",
+    "n_ships": 1,
+    "avg_absr": 0.485
+   }
+  ],
+  "wmape_median": 50.3,
+  "model_beats_baseline": 1,
+  "n_backtested": 1
+ },
+ "ムギイカ|静浦漁港": {
+  "fish": "ムギイカ",
+  "area": "沼津静浦",
+  "n_ships": 1,
+  "n_records": 126,
+  "peaks": [
+   {
+    "label": "6月上旬",
+    "n": 17,
+    "avg_cnt": 62.9
+   },
+   {
+    "label": "5月下旬",
+    "n": 27,
+    "avg_cnt": 50.6
+   }
+  ],
+  "busy_months": [
+   {
+    "month": 5,
+    "n": 66
+   },
+   {
+    "month": 4,
+    "n": 30
+   },
+   {
+    "month": 6,
+    "n": 29
+   }
+  ],
+  "wx_peak": {},
+  "factors": [
+   {
+    "base": "kd490_surface",
+    "label": "海水の濁り具合（数値が高いほど濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "強く",
+    "n_ships": 1,
+    "avg_absr": 0.65
+   },
+   {
+    "base": "water_color_pred_n",
+    "label": "水色の予測値（澄み・濁り）",
+    "kind": "ocean",
+    "flag": false,
+    "direction": "少ない",
+    "strength": "ゆるやかに",
+    "n_ships": 1,
+    "avg_absr": 0.323
+   }
+  ],
+  "wmape_median": 59.4,
   "model_beats_baseline": 1,
   "n_backtested": 1
  }

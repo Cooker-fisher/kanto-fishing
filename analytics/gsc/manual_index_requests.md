@@ -104,7 +104,8 @@
 - [ ] `mugiika-numazu-naiko`（41行）
 - [ ] `hirame-katakai`（38行）
 - [ ] `saba-omaezaki`（37行）
-- [ ] `mugiika-numazu-shizuura`（35行）
+- ~~`mugiika-numazu-shizuura`~~ **投入しない**: 静浦エリア統合（2026-08-01）で
+  `mugiika-shizuura` に置き換わり、旧URLは noindex 墓標化される
 - [ ] `kurodai-matsuwa-ena`（25行）
 - [ ] `madako-nakaminato`（24行）
 - [ ] `kasago-katakai`（24行）

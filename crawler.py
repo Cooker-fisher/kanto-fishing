@@ -902,22 +902,11 @@ def build_weather_section(weather_data):
 # 別名を正規港名へ統合する（表示層のみ。ソースCSVは原表記を保持する＝B案）。
 # 重複の根拠: 船宿重複 or 同一市の「X市Y港」フル表記 or 旧港/新港の分裂。
 # 誤統合回避のため曖昧なもの（横浜/勝浦/日立/金沢漁港/小網代/茨城平潟）は対象外。
-_AREA_CANONICAL = {
-    "鹿島": "鹿島港", "鹿島市新浜": "鹿島港", "鹿嶋旧港": "鹿島港", "鹿嶋新港": "鹿島港",
-    "久慈": "日立久慈港",
-    "洲崎": "洲崎港",
-    "網代": "網代港",
-    "佐島港": "佐島",
-    "横浜市金沢八景乙舳": "金沢八景", "横浜市金沢八景平潟": "金沢八景",
-    "横浜港": "横浜港･新山下",
-    "葉山町葉山鐙摺港": "葉山あぶずり港",
-    "平塚漁港": "平塚港",
-    "富士市田子の浦漁港": "田子の浦港",
-    "江見漁港": "江見",
-    "大洗町大洗港": "大洗港",
-    "松崎町松崎港": "松崎港",
-    "大田区羽田": "羽田",
-}
+# 2026/08/01: マップ本体を normalize/area_canonical.json に外出し（SoT）。
+# crawl/build_fish_area_analysis.py（ships.json 由来の area を使う）と共用するため。
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "normalize", "area_canonical.json"),
+          encoding="utf-8") as _ac_f:
+    _AREA_CANONICAL = {k: v for k, v in json.load(_ac_f).items() if not k.startswith("_")}
 
 def _canonicalize_area(a):
     """area 名を正規港名へ統合（未登録はそのまま）。"""
@@ -1450,6 +1439,7 @@ _AREA_TO_PORT_SHORT = {
     "平和島": "平和島",
     "沼津内港": "沼津",
     "沼津静浦": "沼津",
+    "静浦漁港": "沼津",
     "田子の浦港": "田子の浦",
     "福田港": "福田",
     "松崎港": "松崎",
@@ -3858,7 +3848,14 @@ def load_area_decadal():
         cur = con.cursor()
         cur.execute("SELECT area, fish, decade_no, cnt_index FROM area_decadal")
         for row in cur.fetchall():
-            result.setdefault(row["area"], {}).setdefault(row["fish"], {})[row["decade_no"]] = row["cnt_index"] or 0
+            # C層は生CSVを読むため area は原表記のまま（沼津静浦 等）。正規名に寄せて
+            # マージし、旧名で記録された履歴も統合後ページの旬カレンダーに反映する
+            # （2026/08/01・衝突時は cnt_index の大きい方＝より強い実績を採用）。
+            _ad_area = _canonicalize_area(row["area"])
+            _ad_fish_d = result.setdefault(_ad_area, {}).setdefault(row["fish"], {})
+            _ad_v = row["cnt_index"] or 0
+            if _ad_v > _ad_fish_d.get(row["decade_no"], -1):
+                _ad_fish_d[row["decade_no"]] = _ad_v
         con.close()
     except Exception as e:
         print(f"load_area_decadal: {e}")

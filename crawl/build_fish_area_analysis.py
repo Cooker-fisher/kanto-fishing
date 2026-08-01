@@ -283,7 +283,18 @@ def _busy_months(decadal_rows):
 
 def build(dry_run=False):
     ships = json.load(open(SHIPS, encoding="utf-8"))
-    name2area = {s["name"]: s.get("area") for s in ships if s.get("name")}
+    # エリア正規化（normalize/area_canonical.json = SoT・crawler._AREA_CANONICAL と共用）。
+    # ships.json の area は discover_ships が fishing-v の原表記で毎月上書きするため
+    # （例: 第八幸松丸=沼津静浦）、ここで正規名（静浦漁港）に寄せないと出力 JSON の
+    # キーが crawler の fish_area ページ（正規名）と食い違い、分析セクションが
+    # 無言で消える（2026/08/01 静浦統合）。
+    try:
+        with open(os.path.join(ROOT, "normalize", "area_canonical.json"), encoding="utf-8") as _f:
+            _area_canon = {k: v for k, v in json.load(_f).items() if not k.startswith("_")}
+    except Exception:
+        _area_canon = {}
+    name2area = {s["name"]: _area_canon.get(s.get("area"), s.get("area"))
+                 for s in ships if s.get("name")}
     # エリア → 海況の代表地点（weather/*.csv の point 名）
     try:
         with open(os.path.join(ROOT, "normalize", "area_coords.json"), encoding="utf-8") as f:
