@@ -60,7 +60,7 @@
 import re, json, time, os, csv, math
 from datetime import datetime, timedelta, timezone
 from urllib.request import urlopen, Request
-from urllib.error import URLError
+from urllib.error import URLError, HTTPError
 from urllib.parse import quote
 from html.parser import HTMLParser
 
@@ -597,6 +597,46 @@ def _calc_tide_range(date_str):
     tide_range = 85 + 35 * amplitude
     return round(tide_range, 1)
 
+# Open-Meteo 予報取得の成否カウンタ（座標グループ単位・load_weather_data がサマリを出す）。
+# 2026-08-01 追加。analysis 側 predict_count._FORECAST_STATS と同じ思想で、
+# 「取れていない」ことに気付けるようにする。
+_WX_FORECAST_STATS = {"marine_ok": 0, "marine_fail": 0,
+                      "wind_ok": 0, "wind_fail": 0, "errors": []}
+
+
+def _openmeteo_get(url, label, attempts=3, timeout=15):
+    """Open-Meteo を叩いて JSON を返す。全試行が失敗したら None。
+
+    2026-08-01 追加。従来は1回きりの試行で、SSL ハンドシェイクのタイムアウト等の
+    一時障害でも即座に諦め、そのグループの海況が丸ごと欠けていた
+    （実測: 2026-08-01 の run で [35.1,139.4] が handshake timeout → SKIP）。
+
+    4xx（429 除く）は恒久エラーなのでリトライしない。analysis 側
+    predict_count._get_json_retry と同じ方針で、予報上限外の 400 を3回叩いて
+    バックオフまで待つ（＝2026-07-21〜08-01 の事故）ことを防ぐ。
+    """
+    last = ""
+    for i in range(attempts):
+        try:
+            req = Request(url, headers={"User-Agent": USER_AGENT})
+            with urlopen(req, timeout=timeout) as r:
+                return json.loads(r.read())
+        except HTTPError as e:
+            if e.code != 429 and 400 <= e.code < 500:
+                msg = f"HTTP {e.code}（恒久エラー・リトライせず）"
+                print(f"  {label}: {msg}")
+                _WX_FORECAST_STATS["errors"].append(f"{label}: {msg}")
+                return None
+            last = f"HTTP {e.code}"
+        except Exception as e:
+            last = str(e)
+        if i < attempts - 1:
+            time.sleep(2 ** i)
+    print(f"  {label}: {attempts}回失敗 ({last})")
+    _WX_FORECAST_STATS["errors"].append(f"{label}: {last}")
+    return None
+
+
 def _fetch_marine_forecast(lat, lon, date_from, date_to):
     """Open-Meteo Marine APIから予報を取得。釣りの時間帯(6-15時)の平均を返す。"""
     url = (
@@ -606,17 +646,17 @@ def _fetch_marine_forecast(lat, lon, date_from, date_to):
         f"&start_date={date_from}&end_date={date_to}"
         f"&timezone=Asia/Tokyo"
     )
-    try:
-        req = Request(url, headers={"User-Agent": USER_AGENT})
-        with urlopen(req, timeout=15) as r:
-            data = json.loads(r.read())
-    except Exception as e:
-        print(f"  Marine forecast error [{lat},{lon}]: {e}")
+    data = _openmeteo_get(url, f"Marine forecast [{lat},{lon}]")
+    if data is None:
+        _WX_FORECAST_STATS["marine_fail"] += 1
         return None
     hourly = data.get("hourly", {})
     times = hourly.get("time", [])
     if not times:
+        _WX_FORECAST_STATS["marine_fail"] += 1
+        _WX_FORECAST_STATS["errors"].append(f"Marine forecast [{lat},{lon}]: hourly.time が空")
         return None
+    _WX_FORECAST_STATS["marine_ok"] += 1
     # 釣りの時間帯(6-15時)だけ抽出して日別に集約
     day_data = {}
     for i, t in enumerate(times):
@@ -648,15 +688,17 @@ def _fetch_wind_forecast(lat, lon, date_from, date_to):
         f"&start_date={date_from}&end_date={date_to}"
         f"&timezone=Asia/Tokyo&wind_speed_unit=ms"
     )
-    try:
-        req = Request(url, headers={"User-Agent": USER_AGENT})
-        with urlopen(req, timeout=15) as r:
-            data = json.loads(r.read())
-    except Exception as e:
-        print(f"  Wind forecast error [{lat},{lon}]: {e}")
+    data = _openmeteo_get(url, f"Wind forecast [{lat},{lon}]")
+    if data is None:
+        _WX_FORECAST_STATS["wind_fail"] += 1
         return None
     hourly = data.get("hourly", {})
     times = hourly.get("time", [])
+    if not times:
+        _WX_FORECAST_STATS["wind_fail"] += 1
+        _WX_FORECAST_STATS["errors"].append(f"Wind forecast [{lat},{lon}]: hourly.time が空")
+        return None
+    _WX_FORECAST_STATS["wind_ok"] += 1
     day_data = {}
     for i, t in enumerate(times):
         dt_part, hr_part = t.split("T")
@@ -724,6 +766,21 @@ def load_weather_data():
             print("OK")
         else:
             print("SKIP")
+
+    # 取得サマリ（2026-08-01）。全滅しても index.html の海況カードが静かに消えるだけで
+    # 気付けなかったため、成否を必ず1行で出す。既存の不変条件 [12] は area ページの
+    # 潮汐/月相の表記（ローカルの天文計算由来）を見ており、ここの API 取得失敗は捉えない。
+    _n_groups = len(AREA_FORECAST_COORDS)
+    _mo = _WX_FORECAST_STATS["marine_ok"]
+    _wo = _WX_FORECAST_STATS["wind_ok"]
+    if _mo == 0:
+        print(f"ERROR: 海況予報が全{_n_groups}グループで取得失敗 "
+              f"= index.html の海況カードが空になる: {_WX_FORECAST_STATS['errors'][:3]}")
+    elif _mo < _n_groups or _wo < _n_groups:
+        print(f"WARNING: 海況予報の取得欠け marine {_mo}/{_n_groups}・wind {_wo}/{_n_groups}: "
+              f"{_WX_FORECAST_STATS['errors'][:3]}")
+    else:
+        print(f"海況予報: marine {_mo}/{_n_groups}・wind {_wo}/{_n_groups} 全て OK")
 
     # weather_data/{area}.csv から潮汐情報
     base = os.path.dirname(__file__)
