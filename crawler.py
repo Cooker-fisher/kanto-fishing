@@ -964,6 +964,20 @@ def _canonicalize_area(a):
     """area 名を正規港名へ統合（未登録はそのまま）。"""
     return _AREA_CANONICAL.get(a, a) if a else a
 
+# 住所型ポイントの除去（2026/08/01）: chowari 系の point_place には
+# 「千葉県 旭市 飯岡漁港」のような母港住所（釣り場ではない）が 85種・42,324行
+# 混入しており、area/ship ページの「主要ポイント（TOP3）」や船宿一覧に
+# ポイント名として露出していた。県名+空白 で始まる値は釣り場ポイントではない。
+# ソースCSVは書き換えず（append-only）、読み込み時に空へ落とす（NULL 正規化と同じ流儀）。
+_ADDRESS_POINT_RE = re.compile(r"^\S{2,4}[都道府県][\s　]")
+
+def _strip_address_points(row):
+    """row(dict) の point_place1..3 から住所型の値を除去する（in-place）。"""
+    for _pcol in ("point_place1", "point_place2", "point_place3"):
+        _pv = row.get(_pcol)
+        if _pv and _ADDRESS_POINT_RE.match(_pv):
+            row[_pcol] = ""
+
 def _load_historical_catches():
     """data/V2/*.csv から全釣果を読み込み（V2正規化済み、約100,000行）
     修正 2026/04/16: data/*.csv (V1スタブ・数行のみ) ではなく
@@ -1001,6 +1015,8 @@ def _load_historical_catches():
                     for _pcol in ("point_place1", "point_place2", "point_place3"):
                         if row.get(_pcol) == "NULL":
                             row[_pcol] = ""
+                    # 住所型ポイント（母港住所）の除去（2026/08/01）
+                    _strip_address_points(row)
                     # エリア正規化（表示層・同一物理港の別名を統合）
                     row["area"] = _canonicalize_area(row.get("area", ""))
                     rows.append(row)
@@ -1182,6 +1198,7 @@ def _load_recent_catches_for_index(now, days=7):
                         weight_kg = None
                         if kgmin is not None and kgmax is not None:
                             weight_kg = {"min": kgmin, "max": kgmax}
+                        _strip_address_points(row)  # 住所型ポイント除去（2026/08/01）
                         rows_out.append({
                             "ship":        row.get("ship", ""),
                             "area":        _canonicalize_area(row.get("area", "")),
@@ -9534,7 +9551,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 .point-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .point-box h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
 .point-list{display:flex;flex-wrap:wrap;gap:6px}
-.point-list a{font-size:12px;padding:5px 12px;background:var(--bg);border:1px solid var(--border);border-radius:14px;color:var(--sub);font-weight:600;text-decoration:none}
+.point-list a,.point-list .point-name{font-size:12px;padding:5px 12px;background:var(--bg);border:1px solid var(--border);border-radius:14px;color:var(--sub);font-weight:600;text-decoration:none}
 .point-list a:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
 .point-hidden{display:inline-block;font-size:11px;padding:5px 12px;background:#f8f4ff;border:1px dashed var(--prem);border-radius:14px;color:var(--prem);font-weight:700}
 .related{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
@@ -10052,7 +10069,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         total_pts = len(set(all_pts))
         point_box_html = ""
         if top_pts:
-            pt_links = "".join(f'<a href="#">{p}</a>' for p in top_pts)
+            # 2026/08/01: 旧実装は <a href="#"> の死にリンクだった（遷移先なし・SEO/UXに悪い）。
+            # ポイント個別ページは T40 で noindex 薄ページ化しており、リンクせず名称表示のみ。
+            pt_links = "".join(f'<span class="point-name">{p}</span>' for p in top_pts)
             more = total_pts - len(top_pts)
             # SHOW_PAID_TEASER=False の間は「有料プランで公開」の未完成ペイウォール文言を出さず、
             # 中立に「ほかNポイント」とだけ示す。
@@ -19170,6 +19189,7 @@ def main():
     # エリア正規化（表示層）: 当日クロール分も正規港名に統合（ソース all_catches/CSV は原表記保持）
     for _c in valid_catches:
         _c["area"] = _canonicalize_area(_c.get("area", ""))
+        _strip_address_points(_c)  # 住所型ポイント除去（2026/08/01）
 
     history = load_history()
     history = update_history(valid_catches, history)

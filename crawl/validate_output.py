@@ -2676,6 +2676,51 @@ def validate_area_description_quality():
         ok(f"[61] area_description {len(ad)}港: 尻切れ・季節×月矛盾・重複連結なし")
 
 
+def validate_no_address_points():
+    """62: 主要ポイント表示に住所型の値が出ていないこと（2026-08-01）
+
+    背景: chowari 系の point_place に「千葉県 旭市 飯岡漁港」のような母港住所
+    （釣り場ではない）が 85種・42,324行混入し、area/ship ページの
+    「主要ポイント（TOP3）」・船宿一覧の sl-detail にポイント名として露出していた。
+    crawler.py は読み込み時に _strip_address_points() で除去する（CSV は append-only
+    のため書き換えない）。あわせて TOP3 の死にリンク <a href="#"> を span 化。
+    判定は #54 と同じ「再生成前は vacuous pass」方式: ビルドバナー日付が today-2
+    以内のページのみ検査（旧 docs に対する誤検知で push を塞がない）。
+    """
+    print("\n[62] area/ship 主要ポイントの住所型混入")
+    addr_re = re.compile(r'>\S{2,4}[都道府県][\s　]\S+?[市町村郡]')
+    banner_re = re.compile(r'var b="(\d{4}-\d{2}-\d{2})"')
+    cutoff = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
+    bad, checked = [], 0
+    for sub in ("area", "ship"):
+        d = os.path.join(DOCS, sub)
+        if not os.path.isdir(d):
+            continue
+        for fn in sorted(os.listdir(d)):
+            if not fn.endswith(".html") or fn == "index.html":
+                continue
+            c = open(os.path.join(d, fn), encoding="utf-8", errors="replace").read()
+            bm = banner_re.search(c)
+            if not bm or bm.group(1) < cutoff:
+                continue  # 再生成前の旧ページは対象外（vacuous pass）
+            checked += 1
+            # 主要ポイント・船宿詳細行の周辺のみ検査（本文のアクセス住所等は正当）
+            for seg_pat in (r'<div class="point-list">.*?</div>',
+                            r'<div class="sl-detail">.*?</div>'):
+                for seg in re.findall(seg_pat, c, re.DOTALL):
+                    if addr_re.search(seg):
+                        bad.append(f"{sub}/{fn}")
+                        break
+                if bad and bad[-1] == f"{sub}/{fn}":
+                    break
+    if bad:
+        fail(f"[62] 住所型ポイントが露出 {len(bad)}件: {bad[:5]}")
+    elif checked:
+        ok(f"[62] 主要ポイントに住所型なし（検査 {checked} ページ）")
+    else:
+        ok("[62] 対象ページ未再生成（vacuous pass・日次 crawl 後に実効）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2754,6 +2799,7 @@ def main():
     validate_verified_predictions_tier()
     validate_weather_csv_freshness()
     validate_area_description_quality()
+    validate_no_address_points()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
