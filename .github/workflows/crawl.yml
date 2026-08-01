@@ -43,6 +43,13 @@ jobs:
       - name: discover ships (月1日のみ)
         if: github.event.schedule == '0 7 1 * *'
         run: python3 crawl/discover_ships.py
+      - name: "update weather csv (海況CSV 日次追記)"
+        # weather/YYYY-MM.csv に昨日分を Open-Meteo から追記（約5分）。
+        # 2026-04 に旧 weather_fetch.py 削除で4か月無言停止した事故の恒久対策。
+        # 失敗しても当日のクロール/HTML生成は止めない（continue-on-error）が、
+        # 7日以上止まると validate_output.py 不変条件 [60] が push をブロックする。
+        continue-on-error: true
+        run: python3 ocean/update_weather_csv.py
       - name: run
         run: python3 crawler.py
       - name: direct-crawl shojiro (庄治郎丸 point_raw 補完)

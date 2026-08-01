@@ -16,6 +16,7 @@ from datetime import datetime
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "ocean", "weather_cache.sqlite")
 PC_PATH = os.path.join(BASE_DIR, "normalize", "point_coords.json")
+PIN_PATH = os.path.join(BASE_DIR, "normalize", "weather_point_map.json")
 WX_DIR  = os.path.join(BASE_DIR, "weather")
 
 HEADERS = ["point", "date", "hour", "wave_height", "wave_period",
@@ -24,9 +25,24 @@ HEADERS = ["point", "date", "hour", "wave_height", "wave_period",
 
 def build_coord_to_name():
     """point_coords.json → (lat,lon) → 代表ポイント名マップを構築。
-    代表名は data/V2/*.csv のpoint_place1出現回数で決定（weather_fetch.py と同じロジック）。"""
+
+    代表名は normalize/weather_point_map.json（ピン留め・コミット済み）を最優先し、
+    未収載の座標のみ data/V2/*.csv の point_place1 出現回数で決定（旧 weather_fetch.py ロジック）。
+
+    ピン留めの理由（2026-08-01・決定ログ参照）: 出現回数の「選挙」は data/V2 の
+    蓄積とともに勝者が入れ替わる（例: 浦安沖→江戸川店前・江の島沖→江ノ島沖）。
+    weather/*.csv は point 名で年をまたいで JOIN される時系列
+    （x_post 平年値・crawler エリア代表）なので、代表名が月によって変わると
+    同一座標の履歴が無言で分断される。"""
     with open(PC_PATH, encoding="utf-8") as f:
         pc = json.load(f)
+
+    pinned = {}
+    if os.path.exists(PIN_PATH):
+        with open(PIN_PATH, encoding="utf-8") as f:
+            for k, name in json.load(f).items():
+                lat, lon = k.split(",")
+                pinned[(float(lat), float(lon))] = name
 
     # CSV件数でポイント代表名を決める
     point_count = defaultdict(int)
@@ -48,10 +64,10 @@ def build_coord_to_name():
             key = (float(coord["lat"]), float(coord["lon"]))
             coord_groups[key].append(name)
 
-    # 代表名 = グループ内で最もCSV出現回数が多い名前
+    # 代表名 = ピン留め優先、無ければグループ内で最もCSV出現回数が多い名前
     coord_rep = {}
     for key, names in coord_groups.items():
-        coord_rep[key] = max(names, key=lambda n: point_count.get(n, 0))
+        coord_rep[key] = pinned.get(key) or max(names, key=lambda n: point_count.get(n, 0))
 
     return coord_rep
 

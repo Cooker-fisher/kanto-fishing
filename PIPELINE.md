@@ -69,7 +69,7 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | A2 気象データ | ocean/rebuild_weather_cache.py | ocean/weather_cache.sqlite | 手動（約30分）|
 | A3 台風データ | ocean/build_typhoon.py | ocean/typhoon.sqlite | 手動（年次更新）|
 | A4 潮汐・月齢 | ocean/build_tide_moon.py | ocean/tide_moon.sqlite | 手動（5秒）|
-| A5 海況CSV | crawler.py (fetch_weather_csv) | weather/YYYY-MM.csv（153座標＝weather_cache と同一） | 毎日自動（A1後）|
+| A5 海況CSV | ocean/update_weather_csv.py | weather/YYYY-MM.csv（153座標＝weather_cache と同一） | 毎日自動（crawler.py の直前・不変条件 #60 が鮮度監視）|
 | A6 CMEMSデータ | ocean/build_cmems.py | ocean/cmems_data.sqlite | 手動（随時）|
 | A7 海況マップJSON | ocean/build_ocean_map.py | ocean_map_data.json | 手動（随時）|
 | A8 分析可視化 | ocean/build_analysis_map.py | PNG（ローカル専用） | 手動（分析時）|

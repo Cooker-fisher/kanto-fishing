@@ -56,7 +56,7 @@ kanto-fishing/
 │   ├── weather_cache.sqlite      # 気象・海況（153座標×145万行）※gitignore
 │   ├── tide_moon.sqlite          # 月齢・潮汐（1,190日分）
 │   └── typhoon.sqlite            # 台風トラック（70台風）
-├── weather/                    # A5: E層向け海況CSV（crawler.py が毎日追記）
+├── weather/                    # A5: E層向け海況CSV（ocean/update_weather_csv.py が毎日追記）
 │   └── YYYY-MM.csv             # 153地点×月別。HTML生成時の海況表示に使用
 │
 ├── # ── B層: 正規化マスターデータ ──

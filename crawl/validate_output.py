@@ -2541,6 +2541,49 @@ def validate_verified_predictions_tier():
         warn("[53] 全日付ページが予測更新待ち表示（forecast_daily.json の鮮度切れ/未生成の疑い）")
 
 
+def validate_weather_csv_freshness():
+    """60: weather/*.csv の鮮度（海況CSV 日次追記の無言停止検知・2026-08-01）
+
+    背景: 2026-04-04/08 の大掃除で旧 weather_fetch.py（日次追記）が「不要」と
+    誤判定されて削除され、weather/*.csv が 2026-04-13 で無言停止。消費側3系統
+    （crawler.py 海況表示 / x_post/insights.py 平年値比較 /
+    crawl/build_fish_area_analysis.py）は生きていたため、4か月間
+    古いCSVを読み続けた。日次追記は ocean/update_weather_csv.py（crawl.yml）。
+    保証すること:
+      (a) weather/YYYY-MM.csv が1つ以上存在する
+      (b) 最新月CSVの最大日付が7日以上古くない（Open-Meteo 障害等の数日は許容。
+          鮮度なので --static-only では warn）
+    """
+    import glob as _glob
+    print("\n[60] weather/*.csv 鮮度（海況CSV 日次追記）")
+    files = sorted(_glob.glob(os.path.join(ROOT, "weather", "[0-9]" * 4 + "-" + "[0-9]" * 2 + ".csv")))
+    if not files:
+        fail("[60] weather/YYYY-MM.csv が1つも無い")
+        return
+    latest_file = files[-1]
+    max_d = ""
+    try:
+        import csv as _csv
+        with open(latest_file, encoding="utf-8", newline="") as f:
+            for row in _csv.DictReader(f):
+                d = row.get("date") or ""
+                if d > max_d:
+                    max_d = d
+    except Exception as e:
+        fail(f"[60] {os.path.basename(latest_file)} が読めない: {e}")
+        return
+    if not max_d:
+        fail(f"[60] {os.path.basename(latest_file)} に date 行が無い（空ファイル）")
+        return
+    cutoff = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+    if max_d < cutoff:
+        fail_staleness(
+            f"[60] weather/ 最新日付 {max_d} が7日以上古い（cutoff: {cutoff}）"
+            "— ocean/update_weather_csv.py の日次追記が止まっている")
+    else:
+        ok(f"[60] weather/ 最新日付: {max_d}（{os.path.basename(latest_file)}）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2617,6 +2660,7 @@ def main():
     validate_fish_value_release()
     validate_no_paywall_signal_and_operator_info()
     validate_verified_predictions_tier()
+    validate_weather_csv_freshness()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
