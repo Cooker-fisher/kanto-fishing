@@ -11480,6 +11480,13 @@ def build_fish_area_pages(data, crawled_at="", history=None, decadal_calendar=No
                          '</title>\n  <meta name="robots" content="noindex, follow">', 1)
         if _h2 == _h:
             continue  # <title> が無い想定外の HTML は触らない
+        # 広告コードも除去（2026-08-01）: 墓標化前が indexable だったページは AdSense
+        # loader / <ins> ユニットを持っており、noindex 化だけだと不変条件 [47]
+        # 「noindex ページに広告禁止」に抵触する（静浦統合の孤児3本で CI が実際に停止）。
+        # T49 の初回墓標化は対象が元々 noindex 薄ページ（広告なし）だったため潜伏していた。
+        _h2 = re.sub(r'<script[^>]*pagead2\.googlesyndication\.com[^>]*>\s*</script>\s*', "", _h2)
+        _h2 = re.sub(r'<ins class="adsbygoogle"[^>]*>.*?</ins>\s*'
+                     r'(?:<script>[^<]*adsbygoogle[^<]*</script>\s*)?', "", _h2, flags=re.DOTALL)
         try:
             with open(os.path.join(fa_out_dir, _fn), "w", encoding="utf-8") as _f:
                 _f.write(_h2)
