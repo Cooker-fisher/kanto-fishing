@@ -4,6 +4,7 @@ name: direct-crawl
 # 書き込み先（crawl.yml と競合しないファイル）:
 #   - direct-crawl/catches_raw_chowari_*.json （150隻分）
 #   - data/V2/chowari_YYYY-MM.csv             （月別統合）
+#   - direct-crawl/catches_raw_direct.json    （gyo.ne.jp = 一之瀬丸）
 #
 # 旧 catches_raw_hirono.json / data/V2/hirono_*.csv は 2026/05/17 で chowari 汎用化に統合
 # （hirono は 150隻の一部として chowari_crawler.py で取得される）
@@ -37,13 +38,22 @@ jobs:
         run: python3 direct-crawl/chowari_crawler.py --from-ships-json --days 7
       - name: chowari CSV化 (data/V2/chowari_YYYY-MM.csv 月別統合)
         run: python3 direct-crawl/chowari_to_csv.py
+      - name: gyo crawler (一之瀬丸・最新ページ1本)
+        # 2026-08-02 復旧: gyo_crawler.py はどの workflow からも呼ばれておらず、
+        # direct-crawl/catches_raw_direct.json が 2026-04-25 で停止していた。
+        # 対象は一之瀬丸のみ（忠彦丸=chowari / 米元・勇幸丸=釣りビジョン でカバー済み）。
+        # 出力は JSON のみ。data/V2/*.csv への反映は手動 --export-csv 実行時
+        # （shojiro / koueimaru と同じ運用。crawl.yml から --export-csv を外した経緯は
+        #  同ファイル内のコメント参照）。
+        run: python3 direct-crawl/gyo_crawler.py
       - name: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # 書き込み先は crawl.yml が触らないファイル/ディレクトリに限定
-          git add direct-crawl/catches_raw_chowari_*.json data/V2/chowari_*.csv
-          git commit -m "chore(direct-crawl): chowari 直近7日更新 $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
+          git add direct-crawl/catches_raw_chowari_*.json data/V2/chowari_*.csv \
+                  direct-crawl/catches_raw_direct.json
+          git commit -m "chore(direct-crawl): chowari 直近7日 + gyo 一之瀬丸 更新 $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
           # crawl.yml と同時刻 16:30 に並列起動するため push 競合が常態。単発 push だと
           # silent fail し得るので crawl.yml と同じ 5回リトライ + rebase -X theirs で堅牢化。
           # 書き込み先が chowari_*.json / chowari_*.csv に限定されるため theirs 優先で安全。

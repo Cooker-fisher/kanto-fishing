@@ -63,7 +63,7 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 | レイヤ | スクリプト | 出力ファイル | 実行タイミング |
 |--------|-----------|------------|--------------|
 | A1 釣果クロール | crawler.py | crawl/catches_raw.json | 毎日16:30 JST（GitHub Actions） |
-| A1b 直接クロール（釣りビジョン外） | direct-crawl/gyo_crawler.py | direct-crawl/catches_raw_direct.json | 毎日（A1後・crawl.yml） |
+| A1b 直接クロール（gyo.ne.jp＝一之瀬丸） | direct-crawl/gyo_crawler.py | direct-crawl/catches_raw_direct.json | 毎日（**direct-crawl.yml**・2026-08-02 復旧） |
 | A1b 直接クロール（庄治郎丸） | direct-crawl/shojiro_crawler.py | catches_raw.json の point_raw 補完 | **手動**（⚠ crawl.yml 未組込） |
 | A1b 直接クロール（幸栄丸） | direct-crawl/koueimaru_crawler.py | catches_raw.json の point_raw 補完 | **手動**（⚠ crawl.yml 未組込・③気象推定はローカル専用） |
 | A2 気象データ | ocean/rebuild_weather_cache.py | ocean/weather_cache.sqlite | 手動（約30分）|
@@ -77,9 +77,16 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 
 ### A1b 直接クロール詳細
 
-**gyo_crawler.py**（既存・crawl.yml 組込済み）
-- 対象: 忠彦丸・一之瀬丸・米元
-- 出力: direct-crawl/catches_raw_direct.json → crawler.py が CSV に統合
+**gyo_crawler.py**（2026-08-02 に対象を縮小・**direct-crawl.yml** 組込）
+- 対象: **一之瀬丸のみ**。忠彦丸=chowari / 米元・勇幸丸=釣りビジョン でカバー済みのため
+  gyo から取ると二重計上になる。一之瀬丸だけが ships.json に無く gyo が唯一の経路
+- 取得: 最新ページ1本のみ（`rep_tsuri_view|CID-ichinose.htm`）。
+  history URL は「指定日以降の最新レポート」を返す仕様で、遡っても同じ内容が返るため使わない。
+  各便の釣行日は本文の「N日の釣果」から確定する
+- 出力: direct-crawl/catches_raw_direct.json（1魚種=1レコード・釣りビジョンと同一形式）
+- **CSV への反映は手動 `--export-csv` 時**（shojiro / koueimaru と同じ運用。
+  crawl.yml から --export-csv を外した経緯は crawl.yml 内コメント参照）
+- 鮮度・水増しは不変条件 #63 が監視。経緯は決定ログ「2026-08-02」
 
 **shojiro_crawler.py**（2026/04/22 追加・手動実行のみ）
 - ソース: shojiromaru.net → chowari.jp API（jsonget.php POST）
@@ -93,7 +100,7 @@ PIPELINE.md 変更インパクトマトリクスで確認すること。
 - 出力: catches_raw.json の幸栄丸レコード point_raw を補完（2,052件、カバー率 5%→81%）
 - 実行: `python direct-crawl/koueimaru_crawler.py [--dry-run]`
 - ⚠️ ③気象推定は weather_cache.sqlite が必要なためローカル専用。GitHub Actions には組み込み不可。
-- ⚠️ crawl.yml には gyo_crawler.py も shojiro_crawler.py も koueimaru_crawler.py も現在未組込。自動化する場合は weather_cache.sqlite の扱い（キャッシュ戦略）を先に検討すること。
+- ⚠️ crawl.yml には shojiro_crawler.py も koueimaru_crawler.py も現在未組込（手動）。自動化する場合は weather_cache.sqlite の扱い（キャッシュ戦略）を先に検討すること。gyo_crawler.py は 2026-08-02 から direct-crawl.yml に組込済み（weather_cache 非依存）。
 
 ### A2 weather_cache.sqlite 詳細
 - **ソース**: Open-Meteo Archive API + Marine API

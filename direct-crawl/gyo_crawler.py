@@ -30,14 +30,18 @@ GYO_HISTORY_URL = "https://www.gyo.ne.jp/rep_tsuri_history_view%7CCID-{cid}%7Chd
 USER_AGENT      = "Mozilla/5.0 (compatible; kanto-fishing-bot/1.0)"
 
 GYO_SHIPS = [
-    # parser="table"  : 忠彦丸スタイル（<th>=日付縦書き / <td>=釣果の1行2セルテーブル）
-    # parser="freetext": 一之瀬丸スタイル（≪船名≫→X日の釣果→釣果テキスト の自由記述）
-    # parser="yukou"  : 勇幸丸スタイル（<div style="color:green;"> に日付+釣果+コメントが一体）
-    {"cid": "tadahiko",  "ship": "忠彦丸",    "area": "金沢八景", "parser": "table"},
-    {"cid": "ichinose",  "ship": "一之瀬丸",  "area": "金沢八景", "parser": "freetext"},
-    {"cid": "yonemoto",  "ship": "米元釣船店", "area": "横浜",     "parser": "freetext"},
-    {"cid": "yukou",     "ship": "勇幸丸",    "area": "片貝",     "parser": "yukou"},
+    # parser="ichinose": ≪便名≫ → 「N日の釣果」→ 魚種行 の自由記述（1魚種=1レコード）
+    {"cid": "ichinose",  "ship": "一之瀬丸",  "area": "金沢八景", "parser": "ichinose"},
 ]
+
+# 2026-08-02: 対象を一之瀬丸1船宿に縮小した。
+# 他3船宿は別経路でカバー済みで、gyo から取ると二重計上になるため除外する:
+#   忠彦丸       … chowari（chowari_id=00703 / data/V2/chowari_*.csv に 2024-04 から継続）
+#   米元釣船店   … 釣りビジョン sid=188（+ chowari 00836）
+#   勇幸丸       … 釣りビジョン sid=58
+# 一之瀬丸は ships.json に存在せず、gyo.ne.jp が唯一のデータ経路。
+# 除外した3船宿用のパーサー（parse_gyo_sections / parse_gyo_freetext /
+# parse_gyo_yukou）は書式リファレンスとしてファイル下部に残してあるが、呼ばれない。
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "catches_raw_direct.json")
 
@@ -111,6 +115,196 @@ def normalize_text(s):
     s = re.sub(r"[\u3000\xa0\ufffd]", " ", s)
     s = re.sub(r"\s+", " ", s).strip()
     return s
+
+# ============================================================
+# 一之瀬丸パーサー（2026-08-02〜 唯一の対象船宿）
+# ============================================================
+#
+# ページ構造（rep_tsuri_view|CID-ichinose.htm）:
+#
+#   【釣果速報】８月２日（日）晴れ      ← ページ発行日 = アンカー日
+#   ≪イサキ船≫                        ← 便（セクション）
+#   １日の釣果                          ← その便の釣行日（日のみ。月はアンカーから確定）
+#   イサキ ２０～３４ｃｍ ４～３１匹    ← 魚種行（複数可 = リレー船）
+#   他タカベ、ウマヅラ                  ← 外道
+#   ＜集合６：３０ 出船７：００ …＞     ← タックル情報
+#   久里浜～剣崎沖２０～３０ｍ！！      ← 実況コメント（ポイントを含む）
+#   ３日（月）出船確定！！…             ← 予約案内（捨てる）
+#
+# 重要: ページは「各便の最新釣果」を並べたもので、便ごとに日付が違う。
+# 旧実装は history URL を7日ぶん叩いて同じ内容に URL の日付を貼っていたため、
+# 373件中237件(63%)が水増しになっていた（2026-08-02 に発見）。
+# 現実装は最新ページ1本だけを取得し、日付は必ず本文の「N日の釣果」から確定する。
+
+_Z2H_NUM = str.maketrans("０１２３４５６７８９．", "0123456789.")
+
+# 「８月２日（日）晴れ」→ アンカー日
+_RE_PAGE_DATE = re.compile(r"(\d{1,2})月\s*(\d{1,2})日")
+
+# 「１日の釣果」「２日乗合２隻の釣果」「１９日の釣果」
+_RE_TRIP_DATE = re.compile(r"^(\d{1,2})日.{0,14}釣果")
+
+# 「イサキ 20～34cm 4～31匹」「マダコ 0.3～1.5kg 0～10杯」「カサゴ主体 15～26cm 30～63匹」
+# サイズ・数はレンジでない単一値も許容する。
+_RE_FISH_LINE = re.compile(
+    r"^([^\d\s]{1,12}?)(?:主体)?\s*"
+    r"([\d.]+)(?:\s*[~〜～]\s*([\d.]+))?\s*(cm|㎝|ｃｍ|kg|㎏|ｋｇ)\s*"
+    r"([\d.]+)(?:\s*[~〜～]\s*([\d.]+))?\s*([匹尾杯本枚])",
+    re.I,
+)
+
+# 予約案内・注意書き（kanso_raw から除外する）
+_RE_RESERVATION = re.compile(
+    r"^\d{1,2}日\s*[（(]|ご予約|予約受付|お休みします|出船確定|^※|募集|お知らせ"
+)
+
+# セクション見出しでない ≪…≫ 行（タックル・内部ラベル）
+_RE_NOT_HEADER = re.compile(r"集合|出船|納竿|料金|オモリ|道糸|ハリス|釣果|コメント")
+
+
+def _fish_line_to_record(line):
+    """魚種行を (fish, size_raw, weight_raw, count_raw) に分解する。非該当は None。"""
+    m = _RE_FISH_LINE.match(line)
+    if not m:
+        return None
+    fish = m.group(1).strip("・、 ")
+    if len(fish) < 2:
+        return None
+
+    v1, v2, unit  = m.group(2), m.group(3) or m.group(2), m.group(4)
+    c1, c2, cunit = m.group(5), m.group(6) or m.group(5), m.group(7)
+
+    is_kg = unit.lower() in ("kg", "㎏", "ｋｇ")
+    size_raw   = "" if is_kg else f"{v1}～{v2} cm"
+    weight_raw = f"{v1}～{v2} kg" if is_kg else ""
+    count_raw  = f"{c1}～{c2} {cunit}"
+    return fish, size_raw, weight_raw, count_raw
+
+
+def parse_ichinose(html, ship, area):
+    """一之瀬丸ページから釣果レコードのリストを返す（1魚種 = 1レコード）。
+
+    日付は必ず本文の「N日の釣果」から確定する。N がアンカー日より大きい場合は前月。
+    釣行日が確定できないセクションは捨てる（URL 日付での代替はしない）。
+    """
+    idx = html.find("釣果速報")
+    if idx < 0:
+        print("    WARN: 【釣果速報】が見つからない → スキップ")
+        return []
+
+    lines = html_to_lines(html[idx:])
+    if not lines:
+        return []
+
+    # ── アンカー日（ページ発行日）─────────────────────────────
+    now = datetime.now()
+    m   = _RE_PAGE_DATE.search(lines[0].translate(_Z2H_NUM))
+    if not m:
+        print(f"    WARN: ページ日付をパースできない: {lines[0][:40]}")
+        return []
+    a_month, a_day = int(m.group(1)), int(m.group(2))
+    a_year = now.year
+    # 年跨ぎ: 1月に 12月のアンカーが出た場合は前年
+    if a_month > now.month + 1:
+        a_year -= 1
+    try:
+        anchor = datetime(a_year, a_month, a_day)
+    except ValueError:
+        print(f"    WARN: 不正なページ日付 {a_year}/{a_month}/{a_day}")
+        return []
+
+    # ── セクション分割 ─────────────────────────────────────────
+    sections       = []   # [(便名, [body lines]), ...]
+    current_header = None
+    current_body   = []
+
+    for line in lines[1:]:
+        if re.fullmatch(r"[≪《].+[≫》]", line) and not _RE_NOT_HEADER.search(line):
+            if current_header is not None:
+                sections.append((current_header, current_body))
+            current_header = line.strip("≪≫《》")
+            current_body   = []
+        elif current_header is not None:
+            current_body.append(line)
+    if current_header is not None:
+        sections.append((current_header, current_body))
+
+    # ── レコード化 ─────────────────────────────────────────────
+    records    = []
+    trip_count = {}   # date -> その日の便番号カウンタ
+
+    for trip_name, body in sections:
+        # 釣行日
+        rec_date = None
+        for line in body:
+            dm = _RE_TRIP_DATE.match(line.translate(_Z2H_NUM))
+            if dm:
+                day         = int(dm.group(1))
+                month, year = anchor.month, anchor.year
+                if day > anchor.day:          # 未来日 = 前月の釣果
+                    month -= 1
+                    if month == 0:
+                        month, year = 12, year - 1
+                try:
+                    rec_date = datetime(year, month, day).strftime("%Y/%m/%d")
+                except ValueError:
+                    rec_date = None
+                break
+        if rec_date is None:
+            continue
+
+        # 魚種行・外道・タックル・コメントに仕分け
+        fishes, by_catch, tackle, comments = [], [], "", []
+        in_comment = False
+        for line in body:
+            norm = line.translate(_Z2H_NUM)
+            if _RE_TRIP_DATE.match(norm):
+                continue
+            if not in_comment and re.match(r"[＜<]", line):
+                tackle     = normalize_text(line)
+                in_comment = True
+                continue
+            if in_comment:
+                if not _RE_RESERVATION.search(line):
+                    comments.append(line)
+                continue
+            parsed = _fish_line_to_record(norm)
+            if parsed:
+                fishes.append(parsed)
+            elif line.startswith("他"):
+                by_catch.append(line)
+
+        if not fishes:
+            continue
+
+        trip_count[rec_date] = trip_count.get(rec_date, 0) + 1
+        trip_no = trip_count[rec_date]
+
+        # 便名を先頭に置く（crawler.py の time_slot 抽出が午前/午後/夜を拾えるように）
+        kanso = normalize_text(f"≪{trip_name}≫ " + " ".join(comments + by_catch))
+
+        for fish, size_raw, weight_raw, count_raw in fishes:
+            records.append({
+                "ship":            ship,
+                "area":            area,
+                "date":            rec_date,
+                "trip_no":         trip_no,
+                "is_cancellation": False,
+                "reason_text":     "",
+                "fish_raw":        fish,
+                "count_raw":       count_raw,
+                "size_raw":        size_raw,
+                "weight_raw":      weight_raw,
+                "tokki_raw":       tackle,
+                "point_raw":       "",
+                "kanso_raw":       kanso,
+                "suion_raw":       None,
+                "suishoku_raw":    None,
+                "source":          "直サイト/gyo",
+            })
+
+    return records
+
 
 # ============================================================
 # テーブル分類
@@ -649,8 +843,28 @@ def fetch_gyo(url):
 # 出力
 # ============================================================
 
+_CONTENT_DUP_DAYS = 120   # 同一内容を別日付で再登録しない期間
+
+
+def _content_key(r):
+    """内容シグネチャ（日付を含まない）。同じ釣果が別日で二重登録されるのを防ぐ。"""
+    return (r.get("ship", ""), r.get("fish_raw", ""),
+            r.get("count_raw", ""), r.get("size_raw", ""), r.get("weight_raw", ""))
+
+
 def append_raw_direct_json(new_records):
-    """catches_raw_direct.json に差分追記する。dedup キー = (ship, date, fish_raw)。"""
+    """catches_raw_direct.json に差分追記する。
+
+    dedup は2段構え:
+      1. キー (ship, date, trip_no, fish_raw) の完全一致 → スキップ（再実行の冪等性）
+      2. 内容シグネチャが一致し、既存の日付が {_CONTENT_DUP_DAYS} 日以内 → スキップ
+         （ページに残り続ける古い便を、毎日ちがう日付で登録してしまうのを防ぐ。
+           2026-08-02 に 63% 水増しが見つかった原因への対策）
+
+    trip_no はパーサーが便単位で採番済みのため、ここでは振り直さない
+    （旧実装はレコード単位で連番を振り直しており、crawler.py 側の
+      (ship, date, trip_no) による便グルーピングを壊していた）。
+    """
     existing = []
     if os.path.exists(OUTPUT_PATH):
         with open(OUTPUT_PATH, encoding="utf-8") as f:
@@ -659,29 +873,37 @@ def append_raw_direct_json(new_records):
             except json.JSONDecodeError:
                 existing = []
 
-    keys = {
-        (r["ship"], r["date"], r.get("fish_raw", ""))
-        for r in existing
-    }
-
-    added = []
-    for rec in new_records:
-        key = (rec["ship"], rec["date"], rec.get("fish_raw", ""))
-        if key not in keys:
-            existing.append(rec)
-            keys.add(key)
-            added.append(rec)
-
-    # trip_no を (ship, date) 内で再採番（保存のたびに全件振り直し）
-    _counter = {}
+    keys     = {(r["ship"], r["date"], r.get("trip_no"), r.get("fish_raw", ""))
+                for r in existing}
+    contents = {}
     for r in existing:
-        k = (r["ship"], r["date"])
-        _counter[k] = _counter.get(k, 0) + 1
-        r["trip_no"] = _counter[k]
+        contents.setdefault(_content_key(r), []).append(r["date"])
+
+    added, skipped_dup = [], 0
+    for rec in new_records:
+        key = (rec["ship"], rec["date"], rec.get("trip_no"), rec.get("fish_raw", ""))
+        if key in keys:
+            continue
+
+        ck = _content_key(rec)
+        if any(
+            abs((datetime.strptime(rec["date"], "%Y/%m/%d")
+                 - datetime.strptime(d, "%Y/%m/%d")).days) <= _CONTENT_DUP_DAYS
+            for d in contents.get(ck, [])
+        ):
+            skipped_dup += 1
+            continue
+
+        existing.append(rec)
+        keys.add(key)
+        contents.setdefault(ck, []).append(rec["date"])
+        added.append(rec)
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(existing, f, ensure_ascii=False, indent=2)
 
+    if skipped_dup:
+        print(f"  内容重複スキップ: {skipped_dup} 件")
     return added
 
 # ============================================================
@@ -689,11 +911,7 @@ def append_raw_direct_json(new_records):
 # ============================================================
 
 def main():
-    from datetime import timedelta
-
-    today     = datetime.now()
-    today_str = today.strftime("%Y/%m/%d")
-    dt_param  = today.strftime("%Y/%m/%d")  # URL の dt= パラメータ（今日）
+    today_str = datetime.now().strftime("%Y/%m/%d")
 
     print(f"=== gyo_crawler.py 開始: {today_str} ===")
     print(f"対象: {len(GYO_SHIPS)} 船宿  出力: {OUTPUT_PATH}\n")
@@ -701,73 +919,27 @@ def main():
     all_new = []
 
     for s in GYO_SHIPS:
-        parser_type = s.get("parser", "table")
-        print(f"  [{s['area']}] {s['ship']} ({parser_type})")
+        print(f"  [{s['area']}] {s['ship']} ({s['parser']})")
 
-        if parser_type == "freetext":
-            # history URL で過去7日分をループ取得
-            # 日付は URL から確定するためコンテンツ内の日付パース不要
-            ship_records = []
-            for days_ago in range(7):
-                hdt    = today - timedelta(days=days_ago)
-                hdt_str = hdt.strftime("%Y/%m/%d")
-                url    = GYO_HISTORY_URL.format(cid=s["cid"], hdt=hdt_str, dt=dt_param)
-                html   = fetch_gyo(url)
-                if not html:
-                    print(f"    {hdt_str}: fetch error")
-                    continue
-                recs = parse_gyo_freetext(html, s["ship"], s["area"], date_str=hdt_str)
-                print(f"    {hdt_str}: {len(recs)} 件")
-                ship_records.extend(recs)
-                time.sleep(1.0)
-            all_new.extend(ship_records)
+        # 最新ページ1本のみ取得する。history URL は「指定日以降の最新レポート」を
+        # 返す仕様で、遡っても同じ内容が返ってくるため使わない（2026-08-02 に水増しの
+        # 原因と判明）。各便の釣行日はページ本文の「N日の釣果」から確定する。
+        url  = GYO_BASE_URL.format(cid=s["cid"])
+        html = fetch_gyo(url)
+        if not html:
+            print("    SKIP (fetch error)")
+            continue
 
-        elif parser_type == "yukou":
-            # 勇幸丸スタイル:
-            #   gyo history は「最新更新日以降の hdt を指定すると最終レポートを返す」仕様。
-            #   そのためhdt=今日から-1日ずつ試すのでなく、
-            #   「最新のparsed_dateを取得し、その前日を次のhdt起点にする」方式で遡る。
-            ship_records = []
-            seen_dates   = set()
-            hdt          = today
-            for _ in range(50):  # 最大50エントリ（週3〜5出漁で約10〜17週分）
-                hdt_str = hdt.strftime("%Y/%m/%d")
-                url     = GYO_HISTORY_URL.format(cid=s["cid"], hdt=hdt_str, dt=dt_param)
-                html    = fetch_gyo(url)
-                if not html:
-                    print(f"    {hdt_str}: fetch error")
-                    break
-                # date_str=None: stale data を許容して日付はHTML内から取得
-                recs = parse_gyo_yukou(html, s["ship"], s["area"], date_str=None)
-                if not recs:
-                    print(f"    {hdt_str}: データなし → 終了")
-                    break
-                got_date = recs[0]["date"]
-                if got_date in seen_dates:
-                    # 同日データが返ってきた → これ以上遡れない（ループ終端）
-                    print(f"    {hdt_str}: {got_date} 既取得 → 終了")
-                    break
-                seen_dates.add(got_date)
-                print(f"    {hdt_str}→{got_date}: {len(recs)} 件 pt={recs[0]['point_raw']}")
-                ship_records.extend(recs)
-                # 次の探索起点: 今回取得した日付の前日
-                hdt = datetime.strptime(got_date, "%Y/%m/%d") - timedelta(days=1)
-                time.sleep(1.5)
-            all_new.extend(ship_records)
-
-        else:
-            # 忠彦丸スタイル: 最新ページ1本を取得
-            url  = GYO_BASE_URL.format(cid=s["cid"])
-            html = fetch_gyo(url)
-            if not html:
-                print("    SKIP (fetch error)")
-                continue
-            records = parse_gyo_sections(html, s["ship"], s["area"])
-            print(f"    最新: {len(records)} 件")
-            if records:
-                print(f"    先頭3: {[r['fish_raw'] + ' / ' + r['date'] for r in records[:3]]}")
-            all_new.extend(records)
-            time.sleep(1.0)
+        records = parse_ichinose(html, s["ship"], s["area"])
+        print(f"    パース: {len(records)} 件")
+        if records:
+            _dates = sorted({r["date"] for r in records})
+            print(f"    日付: {_dates[0]} 〜 {_dates[-1]} ({len(_dates)}日分)")
+            for r in records[:3]:
+                print(f"      {r['date']} 便{r['trip_no']} {r['fish_raw']} "
+                      f"{r['size_raw'] or r['weight_raw']} {r['count_raw']}")
+        all_new.extend(records)
+        time.sleep(1.0)
 
     added = append_raw_direct_json(all_new)
     total = _existing_count()

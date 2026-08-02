@@ -2721,6 +2721,59 @@ def validate_no_address_points():
         ok("[62] 対象ページ未再生成（vacuous pass・日次 crawl 後に実効）")
 
 
+def validate_direct_crawl_json():
+    """63: direct-crawl/catches_raw_direct.json の鮮度と内容水増し（2026-08-02）
+
+    背景: gyo_crawler.py はどの workflow からも呼ばれておらず 2026-04-25 で無言停止。
+    さらに旧実装は history URL を7日ぶん叩いて「同じ内容に URL の日付を貼る」設計で、
+    373件中237件(63%)が同一内容の別日付コピーだった。CSV マージ側のパスも
+    crawl/direct-crawl/... という存在しない場所を見ていて一度も効いていなかったため、
+    3つの不具合が互いを隠していた。
+    保証すること:
+      (a) ファイルが存在し、レコードが1件以上ある
+      (b) 最新日付が14日以上古くない（direct-crawl.yml の gyo ステップ停止検知。
+          一之瀬丸は週数回の出船があるので14日で十分。鮮度なので --static-only では warn）
+      (c) 同一内容（ship/fish_raw/count_raw/size_raw/weight_raw）が
+          複数の日付に散らばっていない（= 日付の貼り直しによる水増し）
+    """
+    print("\n[63] direct-crawl/catches_raw_direct.json 鮮度・水増し")
+    path = os.path.join(ROOT, "direct-crawl", "catches_raw_direct.json")
+    if not os.path.exists(path):
+        fail("[63] catches_raw_direct.json が無い")
+        return
+    try:
+        with open(path, encoding="utf-8") as f:
+            recs = json.load(f)
+    except Exception as e:
+        fail(f"[63] catches_raw_direct.json が読めない: {e}")
+        return
+    if not recs:
+        fail("[63] catches_raw_direct.json が空")
+        return
+
+    max_d = max((r.get("date") or "") for r in recs)
+    cutoff = (datetime.now() - timedelta(days=14)).strftime("%Y/%m/%d")
+    if max_d < cutoff:
+        fail_staleness(
+            f"[63] catches_raw_direct.json 最新日付 {max_d} が14日以上古い"
+            f"（cutoff: {cutoff}）— direct-crawl.yml の gyo ステップが止まっている")
+    else:
+        ok(f"[63] 最新日付: {max_d}（{len(recs)}件）")
+
+    dates_by_content = {}
+    for r in recs:
+        key = (r.get("ship", ""), r.get("fish_raw", ""), r.get("count_raw", ""),
+               r.get("size_raw", ""), r.get("weight_raw", ""))
+        dates_by_content.setdefault(key, set()).add(r.get("date", ""))
+    dup = {k: v for k, v in dates_by_content.items() if len(v) > 1}
+    if dup:
+        sample = list(dup.items())[:3]
+        fail(f"[63] 同一内容が複数日付に存在 {len(dup)}種 "
+             f"（水増し）: {[(k[0], k[1], sorted(v)[:3]) for k, v in sample]}")
+    else:
+        ok(f"[63] 内容重複なし（ユニーク内容 {len(dates_by_content)}種）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2800,6 +2853,7 @@ def main():
     validate_weather_csv_freshness()
     validate_area_description_quality()
     validate_no_address_points()
+    validate_direct_crawl_json()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

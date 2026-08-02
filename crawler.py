@@ -12804,6 +12804,11 @@ def _classify_cancel_type(reason: str) -> str:
     return "不明"
 
 
+# trip_no が「便の時系列」を表さない船宿（掲載順で採番している直クロール系）。
+# trip_no を根拠にした推定ルールから除外する。
+_TRIP_NO_UNORDERED_SHIPS = {"一之瀬丸"}
+
+
 def _extract_time_slot(fish_raw: str, kanso_raw: str = "", trip_no: int = 1, ship: str = "") -> str:
     """fish_raw/kanso_raw/trip_no から時間帯を抽出。例: '午前ライトアジ'→'午前', '夜イカ'→'夜'
     ship 引数を指定すると、fish_raw/kanso_raw で確定できない場合に
@@ -12841,8 +12846,13 @@ def _extract_time_slot(fish_raw: str, kanso_raw: str = "", trip_no: int = 1, shi
         if pattern in combined:
             return slot
     # イカ系でtrip_no>=2かつtime_slot未判定の場合は夜便と推定
+    # 2026-08-02: 一之瀬丸を除外。gyo 直クロールの trip_no はページ掲載順で
+    # 時間帯と無関係なため、朝出船のスルメイカ船が「夜」と誤判定されていた。
+    # 一之瀬丸は便名（≪夜アジカサゴリレー船≫ 等）に時間帯が明記されるので
+    # 上のキーワード判定で拾える。
     _ika_words = ("ムギイカ", "マルイカ", "ヤリイカ", "スルメイカ", "コウイカ", "スミイカ")
-    if trip_no >= 2 and any(w in combined for w in _ika_words):
+    if trip_no >= 2 and ship not in _TRIP_NO_UNORDERED_SHIPS and \
+       any(w in combined for w in _ika_words):
         return "夜"
     # ship_trip_slot_map フォールバック: キーワードで確定できなかった場合のみ適用
     if ship:
@@ -12979,8 +12989,12 @@ def export_csv_from_raw(raw_path=None, output_dir=None, ships_filter=None):
         records = [r for r in records if r.get("ship") not in _exclude_ships]
         print(f"export_csv_from_raw: exclude {before - len(records)}件 ({', '.join(sorted(_exclude_ships))})")
 
-    # catches_raw_direct.json をマージ（忠彦丸・一之瀬丸・米元等の直接クロール分）
-    _direct_path = os.path.join(os.path.dirname(os.path.abspath(raw_path)),
+    # catches_raw_direct.json をマージ（gyo.ne.jp 直接クロール分 = 一之瀬丸）
+    # 2026-08-02 修正: 旧コードは raw_path のディレクトリ（= crawl/）を基準にしていたため
+    # crawl/direct-crawl/... という存在しないパスを見ており、マージが一度も
+    # 実行されていなかった（catches_raw.json が repo 直下から crawl/ に移動した際の取り残し）。
+    # direct-crawl/ は repo ルート直下なので crawler.py 自身の位置を基準にする。
+    _direct_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 "direct-crawl", "catches_raw_direct.json")
     if os.path.exists(_direct_path):
         with open(_direct_path, encoding="utf-8") as _df:

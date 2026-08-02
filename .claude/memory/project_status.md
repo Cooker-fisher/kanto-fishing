@@ -89,11 +89,16 @@ T44/T44b（因子供給率 33.6→79.6%）/ T45（リーク解消・正直化）
    2026-04〜07 を再生成、日次追記を `ocean/update_weather_csv.py` として crawl.yml に復活、
    不変条件 #60（鮮度7日）で監視。代表名は `normalize/weather_point_map.json` にピン留め
    （選挙ドリフトで浦安沖→江戸川店前に化けて履歴分断していた）。決定ログ 2026-08-01
-2. **`direct-crawl` が空振り**（2026/07/27 発見・未対応）。direct-crawl.yml は毎日 success を報告するが
-   `catches_raw_direct.json` の最新は 2026-04-25。さらに **一之瀬丸166件が data/V2 CSV に0行**
-   （米元1,503行・忠彦丸681行は入っている）
-   ※ chowari 系は別系統で正常稼働中（148船宿・chowari_2026-07.csv 5,700行・7/31 まで更新）。
-   空振りは gyo_crawler 系（忠彦丸・一之瀬丸・米元）のみ
+2. ~~**`direct-crawl` が空振り**（2026/07/27 発見）~~ → **✅ 2026/08/02 復旧完了**。
+   真因は3つ重なっていた: ①gyo_crawler.py がどの workflow にも書かれていない
+   ②crawler.py の CSV マージが `crawl/direct-crawl/...`（存在しないパス）を見ていて一度も
+   実行されていなかった ③パーサーが history URL の日付を貼るせいで 63% が水増し。
+   対象を**一之瀬丸のみ**に縮小（忠彦丸=chowari / 米元・勇幸丸=釣りビジョンでカバー済み）、
+   parse_ichinose() 新設、direct-crawl.yml に組込、不変条件 #63 で監視。決定ログ 2026-08-02
+   - **CSV 反映は手動 `--export-csv` 時**（shojiro / koueimaru と同じ運用）
+   - 一之瀬丸は ships.json に無く ship ページが生成されない。登録すると fish_area/ship の
+     母集団が変わる（T49 と同じ領域）ので影響を見てから別途判断
+   - 過去分 2026-04-26〜07-16 は復旧不可（gyo は各便の最新釣果しか出さない）
 
 ---
 
