@@ -823,21 +823,34 @@ def parse_gyo_yukou(html, ship, area, date_str=None):
 # fetch
 # ============================================================
 
+FETCH_TIMEOUT = 45   # 秒。CI(GitHub Actions)からは応答が遅い/届かないことがある
+FETCH_RETRIES = 3    # 失敗時のリトライ回数（指数バックオフ）
+
+
 def fetch_gyo(url):
-    """gyo.ne.jp 専用 fetch: cp932 優先でデコード（stdlib のみ）。"""
-    try:
-        req = Request(url, headers={"User-Agent": USER_AGENT})
-        with urlopen(req, timeout=20) as r:
-            raw = r.read()
-        for enc in ("cp932", "shift_jis", "euc-jp", "utf-8"):
-            try:
-                return raw.decode(enc)
-            except (UnicodeDecodeError, LookupError):
-                pass
-        return raw.decode("utf-8", errors="replace")
-    except (URLError, TimeoutError, OSError) as e:
-        print(f"  ERROR fetch: {e}")
-        return None
+    """gyo.ne.jp 専用 fetch: cp932 優先でデコード（stdlib のみ）。
+
+    2026-08-03: CI から `<urlopen error timed out>` で落ちていたためリトライを追加。
+    ローカルからは 0.5秒/115KB で取得できるので、遅延ではなく GitHub Actions の
+    IP レンジが弾かれている疑いがある。全リトライ失敗なら None を返し、
+    呼び出し側（main）が非0終了する ＝ 黙って success を報告しない。
+    """
+    for attempt in range(1, FETCH_RETRIES + 1):
+        try:
+            req = Request(url, headers={"User-Agent": USER_AGENT})
+            with urlopen(req, timeout=FETCH_TIMEOUT) as r:
+                raw = r.read()
+            for enc in ("cp932", "shift_jis", "euc-jp", "utf-8"):
+                try:
+                    return raw.decode(enc)
+                except (UnicodeDecodeError, LookupError):
+                    pass
+            return raw.decode("utf-8", errors="replace")
+        except (URLError, TimeoutError, OSError) as e:
+            print(f"  ERROR fetch (attempt {attempt}/{FETCH_RETRIES}): {e}")
+            if attempt < FETCH_RETRIES:
+                time.sleep(attempt * 10)
+    return None
 
 # ============================================================
 # 出力
@@ -916,7 +929,8 @@ def main():
     print(f"=== gyo_crawler.py 開始: {today_str} ===")
     print(f"対象: {len(GYO_SHIPS)} 船宿  出力: {OUTPUT_PATH}\n")
 
-    all_new = []
+    all_new  = []
+    failures = []
 
     for s in GYO_SHIPS:
         print(f"  [{s['area']}] {s['ship']} ({s['parser']})")
@@ -928,6 +942,7 @@ def main():
         html = fetch_gyo(url)
         if not html:
             print("    SKIP (fetch error)")
+            failures.append(s["ship"])
             continue
 
         records = parse_ichinose(html, s["ship"], s["area"])
@@ -944,6 +959,14 @@ def main():
     added = append_raw_direct_json(all_new)
     total = _existing_count()
     print(f"\n追記: {len(added)} 件新規  JSON合計: {total} 件")
+
+    # 取得できなかった船宿があれば非0終了する。
+    # 旧実装は fetch 失敗を握りつぶして exit 0 していたため、CI が success を
+    # 報告し続けた（2026-08-02 の初回 CI 実行が実際には timeout で空振り）。
+    if failures:
+        print(f"\n❌ 取得失敗: {', '.join(failures)}")
+        sys.exit(1)
+
     print("完了")
 
 
