@@ -86,7 +86,7 @@ crawler.py 実行後に CI で実行し、不変条件違反があれば非0終�
 
 CI 組込: crawler.py の直後に呼び、非0終了時は git push をスキップ。
 """
-import sys, os, json, re, argparse, subprocess, collections
+import sys, os, json, re, csv, argparse, subprocess, collections
 from datetime import datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -2774,6 +2774,75 @@ def validate_direct_crawl_json():
         ok(f"[63] 内容重複なし（ユニーク内容 {len(dates_by_content)}種）")
 
 
+def validate_xpost_forecast_sail_rate():
+    """64: x_post の予想段落に載せる船宿は「ほぼ必ず出船する」ものだけ（2026-08-03）
+
+    背景: 8/2 の投稿は tier A（レンジ精度は検証済み）からレンジ上限の大きい順に
+    3件選んでおり、出船頻度を見ていなかった。結果ちがさき丸のカツオ（直近30日で
+    出船1日）を名指しし、翌日は出船せず読者が答え合わせできない予想になった。
+    広島屋のシロギス（16日/30）も同様。
+    保証すること: 予想段落で名指しした (船宿, 魚種) が、投稿日を末端とする直近30日で
+    24日以上（8割）出船していること。
+    対象は新ルール適用後（_SINCE 以降）に生成された投稿のみ。それ以前は旧ルールで
+    生成済みなので遡って fail させない。
+    """
+    import glob as _glob
+    _SINCE   = "2026-08-04"   # 新ルールで生成される最初の投稿日
+    _WINDOW  = 30
+    _MIN_DAY = 24
+    print("\n[64] x_post 予想段落の出船頻度")
+
+    posts = [p for p in sorted(_glob.glob(os.path.join(ROOT, "docs", "x_post", "20*.html")))
+             if os.path.basename(p)[:10] >= _SINCE]
+    if not posts:
+        ok(f"[64] 対象投稿なし（{_SINCE} 以降が未生成・vacuous pass）")
+        return
+
+    # data/V2/*.csv から (魚種, 船宿) -> 出船日集合
+    sail = {}
+    data_dir = os.path.join(ROOT, "data", "V2")
+    for fn in sorted(os.listdir(data_dir)) if os.path.isdir(data_dir) else []:
+        if not fn.endswith(".csv") or fn == "cancellations.csv":
+            continue
+        try:
+            with open(os.path.join(data_dir, fn), encoding="utf-8", newline="") as f:
+                for r in csv.DictReader(f):
+                    if r.get("is_cancellation") == "1":
+                        continue
+                    fish, ship = (r.get("tsuri_mono") or "").strip(), (r.get("ship") or "").strip()
+                    d = (r.get("date") or "").replace("/", "-")
+                    if fish and ship and len(d) == 10:
+                        sail.setdefault((fish, ship), set()).add(d)
+        except Exception as e:
+            fail(f"[64] {fn} が読めない: {e}")
+            return
+
+    pat = re.compile(r'([^、。<>]+?)の([^、。<>]+?)が<b>\d+〜\d+匹</b>')
+    bad, checked = [], 0
+    for p in posts:
+        post_date = os.path.basename(p)[:10]
+        try:
+            html = open(p, encoding="utf-8").read()
+        except Exception:
+            continue
+        seg = re.search(r'の予想</b>は、(.{0,600}?)。', html, re.S)
+        if not seg:
+            continue
+        body = re.sub(r'</?a[^>]*>', '', seg.group(1))   # 船宿リンクのタグを外す
+        start = (datetime.strptime(post_date, "%Y-%m-%d")
+                 - timedelta(days=_WINDOW - 1)).strftime("%Y-%m-%d")
+        for ship, fish in pat.findall(body):
+            checked += 1
+            n = sum(1 for d in sail.get((fish, ship.strip()), ()) if start <= d <= post_date)
+            if n < _MIN_DAY:
+                bad.append(f"{post_date} {ship}×{fish} 出船{n}日/{_WINDOW}")
+
+    if bad:
+        fail(f"[64] 出船頻度が {_MIN_DAY}日未満の予想を掲載 {len(bad)}件: {bad[:5]}")
+    else:
+        ok(f"[64] 予想段落 {checked}件すべて出船{_MIN_DAY}日以上（{len(posts)}投稿を検査）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2854,6 +2923,7 @@ def main():
     validate_area_description_quality()
     validate_no_address_points()
     validate_direct_crawl_json()
+    validate_xpost_forecast_sail_rate()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

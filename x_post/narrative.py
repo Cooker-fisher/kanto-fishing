@@ -17,6 +17,7 @@
 #   3. 因果は断定しない（「〜が要因」「〜と推察されます」は書かない）
 #   4. 予測は T47b の関門（検証済みモデル × tier A）を通ったものだけ引用する（表記は平易化）
 #   5. avg は出さない（補遺3）
+import datetime as _dt
 import os
 
 from .insights import load_verified_forecast
@@ -174,26 +175,55 @@ def _forecast_lineup(fc, priority, limit=_FC_MAX):
          下限1匹以上のものがあればそれを代表にする）
       3. 1魚種につき1件まで。同じ魚種内は 2. を満たす中でレンジ上限が大きい船宿を代表に
          （fc は date_key, -hi 順なので先着で足りる）
-      4. 並び順は「本日の本文で触れた魚」を先に、残りはレンジ上限の大きい順
-         → 本文の流れと繋がり、かつ日によって先頭の魚が変わる
+      4. **どの魚種を載せるか**は日替わりで回す（2026-08-03）。候補プールを
+         レンジ上限順に固定してから、対象日の通し番号を起点に limit 件を巡回で取る。
+         上限順の先頭固定だと同じ魚種が毎日並ぶため（シロギス偏りと同じ構造）。
+         状態ファイルを持たずに日替わりにできるので CI で再現性がある
+      5. 並び順（選んだ後の文中の順序）は「本日の本文で触れた魚」を先に
+         → 本文の流れと繋がる
 
-    fc の全行が tier A（＝検証済みの関門を通ったもの）なので、ここでの選別は
-    精度ではなく**掲載順と重複排除**だけを担う。
+    fc は tier A かつ出船頻度フィルタ（直近30日で24日以上出船）を通った行のみ。
+    ここでの選別は精度ではなく**掲載魚種の分散と重複排除**を担う。
     """
     if not fc:
         return []
     day = fc[0].get("date_key")
-    picked, seen = [], set()
+    pool, seen = [], set()
     for r in fc:
         if r.get("date_key") != day or r["fish"] in seen:
             continue
         if round(r["lo"] or 0) < 1:
             continue
         seen.add(r["fish"])
-        picked.append(r)
+        pool.append(r)
+
+    # 同じ船宿を2件並べない（「幸丸のマダイが…、幸丸のヒラメが…」を避ける）。
+    # ただしこれで limit を割るなら重複を許す（件数を減らす方が損）
+    pool.sort(key=lambda r: -(r["hi"] or 0))
+    uniq_ship, ships = [], set()
+    for r in pool:
+        if r["ship"] in ships:
+            continue
+        ships.add(r["ship"])
+        uniq_ship.append(r)
+    if len(uniq_ship) >= limit:
+        pool = uniq_ship
+
+    # 日替わりローテーション: 候補が limit より多い時だけ起点をずらす
+    if len(pool) > limit:
+        try:
+            ordinal = _dt.datetime.strptime(day, "%Y/%m/%d").date().toordinal()
+        except (ValueError, TypeError):
+            ordinal = 0
+        # limit 刻みでずらす: 連日で同じ魚種が並ばない（1刻みだと3件中2件が前日と重なる）
+        start = (ordinal * limit) % len(pool)
+        picked = [pool[(start + i) % len(pool)] for i in range(limit)]
+    else:
+        picked = pool[:limit]
+
     order = {f: i for i, f in enumerate(dict.fromkeys(f for f in priority if f))}
     picked.sort(key=lambda r: (order.get(r["fish"], len(order)), -(r["hi"] or 0)))
-    return picked[:limit]
+    return picked
 
 
 # ── ハイライト散文 ──────────────────────────────────────────────────────

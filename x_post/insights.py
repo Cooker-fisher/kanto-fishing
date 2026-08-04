@@ -214,7 +214,53 @@ def _pct_str(ratio):
 # ── 検証済み予測（forecast_daily.json × open_tier.json tier A）──────────────
 # T47a/T47b で「サイトに出す予測は検証済みモデル × tier A のみ」と確定済み（不変条件 #53）。
 # 日次まとめでも同じ関門を通したものだけを引用する。
-def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2)):
+# ── 出船頻度（2026-08-03 追加）────────────────────────────────────────
+# X投稿の予想に載せるのは「ほぼ必ず出船する」船宿×魚種だけにする。
+# 背景: 8/2 の投稿は tier A（レンジ精度は検証済み）から上限の大きい順に選んでおり、
+# 出船頻度を一切見ていなかった。結果 ちがさき丸のカツオ（直近30日で出船1日）を
+# 名指ししてしまい、読者が答え合わせできない予想になった。
+# 広島屋のシロギス（16日/30）も翌日は出船せず判定不能だった。
+_SAIL_WINDOW_DAYS = 30
+_SAIL_MIN_DAYS    = 24   # 30日中24日 = 8割
+
+
+def _sail_days(root, since_iso, until_iso):
+    """data/V2/*.csv から (魚種, 船宿) ごとの出船日集合を返す。
+
+    「出船した」の判定は釣果行の存在。欠航行（is_cancellation=1）は数えない。
+    """
+    key = ("sail", root, since_iso, until_iso)
+    if key in _cache:
+        return _cache[key]
+    data_dir = os.path.join(root, "data", "V2")
+    out = {}
+    if not os.path.isdir(data_dir):
+        _cache[key] = out
+        return out
+    for fn in sorted(os.listdir(data_dir)):
+        if not fn.endswith(".csv") or fn == "cancellations.csv":
+            continue
+        try:
+            with open(os.path.join(data_dir, fn), encoding="utf-8", newline="") as f:
+                for r in csv.DictReader(f):
+                    if r.get("is_cancellation") == "1":
+                        continue
+                    fish = (r.get("tsuri_mono") or "").strip()
+                    ship = (r.get("ship") or "").strip()
+                    if not fish or not ship or fish in ("NULL", "不明"):
+                        continue
+                    d = (r.get("date") or "").replace("/", "-")
+                    if len(d) != 10 or d < since_iso or d > until_iso:
+                        continue
+                    out.setdefault((fish, ship), set()).add(d)
+        except Exception:
+            continue
+    _cache[key] = out
+    return out
+
+
+def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2),
+                           min_sail_days=_SAIL_MIN_DAYS):
     """翌日以降の検証済み予測レンジを返す（tier A かつレンジ有りのみ）。
 
     forecast_daily.json のスキーマ（実測・2026-07-22 確認）:
@@ -223,7 +269,10 @@ def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2))
           "combos": [{"fish","ship","cnt_lo","cnt_hi","tier","stars","range_quality":{...}}]}]}
     tier は combos 各行に入っているので open_tier.json の再読込は不要（同じ蒸留元）。
 
-    戻り値: [{"date_key","date_label","fish","ship","lo","hi","pb"}]
+    min_sail_days: 直近30日の出船日数がこれ未満の組み合わせは除外する（0 で無効化）。
+      「予想として正しくても、その船が出ないなら読者は答え合わせできない」ため。
+
+    戻り値: [{"date_key","date_label","fish","ship","lo","hi","n_sail","pb"}]
       date_key は "YYYY/MM/DD"。並び替えは date_label（"9/30(水)"）ではなく必ずこちらを使う
       （label は文字列比較すると月跨ぎで 10/1 < 9/30 と評価され、翌日と翌々日が入れ替わる）。
     """
@@ -248,6 +297,12 @@ def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2))
         d = base + _dt.timedelta(days=h)
         want[d.strftime("%Y/%m/%d")] = f"{d.month}/{d.day}({wd[d.weekday()]})"
 
+    # 出船頻度: date_iso を末端とする直近 _SAIL_WINDOW_DAYS 日で数える
+    sail = {}
+    if min_sail_days:
+        since = (base - _dt.timedelta(days=_SAIL_WINDOW_DAYS - 1)).strftime("%Y-%m-%d")
+        sail = _sail_days(root, since, date_iso)
+
     rows = []
     for day in (fc.get("days") or []):
         label = want.get(day.get("target_date"))
@@ -261,9 +316,12 @@ def load_verified_forecast(date_iso, fish_names, root=None, horizon_days=(1, 2))
                 continue
             if fish_names and e.get("fish") not in fish_names:
                 continue
+            n_sail = len(sail.get((e.get("fish"), e.get("ship")), ()))
+            if min_sail_days and n_sail < min_sail_days:
+                continue
             rows.append({"date_key": day.get("target_date"), "date_label": label,
                          "fish": e.get("fish"), "ship": e.get("ship"),
-                         "lo": lo, "hi": hi,
+                         "lo": lo, "hi": hi, "n_sail": n_sail,
                          "pb": (e.get("range_quality") or {}).get("promise_break")})
     rows.sort(key=lambda r: (r["date_key"], -(r["hi"] or 0)))
     return rows
