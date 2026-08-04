@@ -289,24 +289,62 @@ def validate_area_sea_section():
     else:
         ok(f"area 海況セクション: {len(sample)} 件サンプル正常（潮汐・月相が名称・コメントあり）")
 
-    # エリア別海況の多様性チェック（2026-08-01・エリア別予報導入）。
-    # 全 area ページの水温が同一値 = エリア別取得が全滅しグループ代表に
-    # フォールバックしている兆候。設計上の許容劣化なので warn 止まり。
-    _sst_vals = set()
-    _sst_pages = 0
-    for fn in [f for f in os.listdir(area_dir) if f.endswith(".html") and f != "index.html"][:40]:
+    # エリア別海況の多様性チェック（2026-08-01・エリア別予報導入 / 2026-08-05 改訂）。
+    #
+    # 検出したい事故: crawler.py の forecast_area 取得が全滅し、全 area ページが
+    # グループ代表値（8グループ）にフォールバックすること。
+    #
+    # 旧実装は「先頭40ファイルの水温が8種類以下なら warn」だったが、2026-08-04 に
+    # 誤検知した。理由は2つ:
+    #   1. 先頭40ファイル（a〜h）は area_coords.json に載っていない＝そもそも
+    #      グループ代表にフォールバックする設計のページが多数を占める
+    #   2. 台風8/3の攪拌で沿岸水温が実際に均質化し 8種類まで縮んだ
+    #      （同 run のログは「エリア別海況予報: 46/46座標 OK」＝取得は正常）
+    # → 検査対象を area_coords.json に座標があるページに限定し、判定を水温単独から
+    #   (水温, 波高, 風) の組に変える。水温が自然に均質化しても波・風まで
+    #   一致することはない。全滅時は組の種類が最大8（グループ数）に落ちる。
+    _ac_path = os.path.join(ROOT, "normalize", "area_coords.json")
+    _rm_path = os.path.join(ROOT, "normalize", "area_romaji_map.json")
+    try:
+        with open(_ac_path, encoding="utf-8") as f:
+            _area_coords = json.load(f)
+        with open(_rm_path, encoding="utf-8") as f:
+            _slug_to_area = {v: k for k, v in json.load(f).items()}
+    except Exception as e:
+        warn(f"[12] area_coords.json / area_romaji_map.json が読めず多様性チェック不可: {e}")
+        return
+    _sea_tuples = set()
+    _sea_coords = set()
+    _sea_ssts = set()
+    _sea_pages = 0
+    for fn in [f for f in os.listdir(area_dir) if f.endswith(".html") and f != "index.html"]:
+        _area_name = _slug_to_area.get(fn[:-5])
+        _coord = _area_coords.get(_area_name) if _area_name else None
+        if not _coord or _coord.get("lat") is None or _coord.get("lon") is None:
+            continue   # 座標が無い＝設計上グループ代表にフォールバックするページ
         c = open(os.path.join(area_dir, fn), encoding="utf-8").read()
-        m2 = re.search(r'<div class="sv">([\d.]+)℃</div><div class="sl2">水温</div>', c)
-        if m2:
-            _sst_pages += 1
-            _sst_vals.add(m2.group(1))
-    # グループは8つなので、フォールバック時の水温は最大8種類。10種類以上あれば
-    # エリア別が生きている。8以下は全面フォールバック（warn・設計上の許容劣化）。
-    if _sst_pages >= 15 and len(_sst_vals) <= 8:
-        warn(f"[12] area 海況の水温が {_sst_pages} ページ中 {len(_sst_vals)} 種類"
-             "（エリア別予報が全滅しグループ代表にフォールバックしている疑い）")
-    elif _sst_pages >= 15:
-        ok(f"[12] area 海況の多様性: {_sst_pages} ページ・水温 {len(_sst_vals)} 種類（エリア別が有効）")
+        m_sst = re.search(r'<div class="sv">([\d.]+)℃</div><div class="sl2">水温</div>', c)
+        if not m_sst:
+            continue
+        m_wave = re.search(r'<div class="sv">([\d.]+)m</div><div class="sl2">波高</div>', c)
+        m_wind = re.search(r'<div class="sv">([^<]+)</div><div class="sl2">風</div>', c)
+        _sea_pages += 1
+        _sea_ssts.add(m_sst.group(1))
+        _sea_tuples.add((m_sst.group(1),
+                         m_wave.group(1) if m_wave else None,
+                         m_wind.group(1) if m_wind else None))
+        _sea_coords.add((_coord["lat"], _coord["lon"]))
+    # 健全時は「組の種類 ≒ 座標の種類」（同一座標を共有するエリアは同値で正常）。
+    # 全滅時は 8 以下に落ちる。座標数の 60% を下回ったら疑う。
+    _min_tuples = max(9, int(len(_sea_coords) * 0.6))
+    if _sea_pages >= 15 and len(_sea_tuples) < _min_tuples:
+        warn(f"[12] area 海況（座標ありエリア {_sea_pages} ページ・座標 {len(_sea_coords)}種）の"
+             f"(水温,波高,風) が {len(_sea_tuples)} 種類（下限 {_min_tuples}）"
+             "＝エリア別予報が全滅しグループ代表にフォールバックしている疑い")
+    elif _sea_pages >= 15:
+        ok(f"[12] area 海況の多様性: 座標ありエリア {_sea_pages} ページ・"
+           f"(水温,波高,風) {len(_sea_tuples)} 種類 / 座標 {len(_sea_coords)}種・"
+           f"水温 {len(_sea_ssts)} 種類（エリア別が有効）")
 
 
 _NESTED_A_TAG_RE = re.compile(r"<a\b[^>]*>|</a\s*>", re.IGNORECASE)
