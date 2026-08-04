@@ -824,7 +824,12 @@ def parse_gyo_yukou(html, ship, area, date_str=None):
 # ============================================================
 
 FETCH_TIMEOUT = 45   # 秒。CI(GitHub Actions)からは応答が遅い/届かないことがある
-FETCH_RETRIES = 3    # 失敗時のリトライ回数（指数バックオフ）
+# 失敗時のバックオフ（秒）。要素数+1 が試行回数。
+# 2026-08-05: 3回×10/20秒（＝約2.5分の窓）では 8/4 の障害を吸収できなかったので
+# 窓を約8分に広げた。gyo は「各便の最新釣果」しか出さない＝取りこぼした日は
+# 二度と取れないため、job を数分延ばしてでも粘る方が得。
+FETCH_BACKOFF = (30, 60, 120, 240)
+FETCH_RETRIES = len(FETCH_BACKOFF) + 1
 
 
 def fetch_gyo(url):
@@ -834,6 +839,10 @@ def fetch_gyo(url):
     ローカルからは 0.5秒/115KB で取得できるので、遅延ではなく GitHub Actions の
     IP レンジが弾かれている疑いがある。全リトライ失敗なら None を返し、
     呼び出し側（main）が非0終了する ＝ 黙って success を報告しない。
+
+    2026-08-05: 実績は CI 3回中 成功1（8/3）・timeout 2（8/2 は当時リトライ無しで
+    無言の空振り / 8/4 は3連続 timeout で赤）。ローカルからは常に 0.4秒で
+    取得できるので恒久ブロックではなく断続的な不達と判断し、リトライ窓を拡大。
     """
     for attempt in range(1, FETCH_RETRIES + 1):
         try:
@@ -849,7 +858,9 @@ def fetch_gyo(url):
         except (URLError, TimeoutError, OSError) as e:
             print(f"  ERROR fetch (attempt {attempt}/{FETCH_RETRIES}): {e}")
             if attempt < FETCH_RETRIES:
-                time.sleep(attempt * 10)
+                wait = FETCH_BACKOFF[attempt - 1]
+                print(f"    retry in {wait}s")
+                time.sleep(wait)
     return None
 
 # ============================================================
