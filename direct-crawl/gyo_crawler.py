@@ -14,7 +14,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from urllib.request import Request, urlopen
 from urllib.error import URLError
@@ -825,10 +825,18 @@ def parse_gyo_yukou(html, ship, area, date_str=None):
 
 FETCH_TIMEOUT = 45   # 秒。CI(GitHub Actions)からは応答が遅い/届かないことがある
 # 失敗時のバックオフ（秒）。要素数+1 が試行回数。
-# 2026-08-05: 3回×10/20秒（＝約2.5分の窓）では 8/4 の障害を吸収できなかったので
-# 窓を約8分に広げた。gyo は「各便の最新釣果」しか出さない＝取りこぼした日は
-# 二度と取れないため、job を数分延ばしてでも粘る方が得。
-FETCH_BACKOFF = (30, 60, 120, 240)
+#
+# 2026-08-06: 窓の拡大（8/5 に 2.5分 → 8分）は無効と実測で確定したので短く戻した。
+# CI 実績を所要時間つきで並べると、成否は二値でしか出ない:
+#   8/02 timeout / 8/03 成功 / 8/04 3回とも45秒 timeout / 8/05 成功（fetch 2秒）/
+#   8/06 5回とも45秒 timeout
+# 成功する日は1回目が数秒で通り、失敗する日は全試行が満了 timeout ＝ 遅延ではなく
+# SYN が黙って捨てられている（IP レベルの遮断）。gyo.ne.jp に AAAA は無いので
+# IPv6 起因でもない。同一 job 内のリトライは全部同じランナー IP から出るため、
+# 弾かれた日は何分粘っても弾かれ続ける（8/6 は11分を空回りしただけ）。
+# 有効なのは「別 IP でやり直す」＝別 run で、これは gyo-crawl.yml の複数 cron が担う。
+# ここでは瞬断だけを吸収する短い窓に留める。
+FETCH_BACKOFF = (10, 20)
 FETCH_RETRIES = len(FETCH_BACKOFF) + 1
 
 
@@ -840,9 +848,9 @@ def fetch_gyo(url):
     IP レンジが弾かれている疑いがある。全リトライ失敗なら None を返し、
     呼び出し側（main）が非0終了する ＝ 黙って success を報告しない。
 
-    2026-08-05: 実績は CI 3回中 成功1（8/3）・timeout 2（8/2 は当時リトライ無しで
-    無言の空振り / 8/4 は3連続 timeout で赤）。ローカルからは常に 0.4秒で
-    取得できるので恒久ブロックではなく断続的な不達と判断し、リトライ窓を拡大。
+    2026-08-06: リトライ窓の拡大は無効と確定（FETCH_BACKOFF のコメント参照）。
+    同一ランナー IP から出る限り結果は変わらないので、窓は短く戻し、
+    やり直しは別 run（= 別 IP）に任せる。
     """
     for attempt in range(1, FETCH_RETRIES + 1):
         try:
@@ -934,8 +942,37 @@ def append_raw_direct_json(new_records):
 # メイン
 # ============================================================
 
+JST = timezone(timedelta(hours=9))
+
+
+def _jst_today():
+    """JST の当日。CI ランナーは UTC なので、日付判定は必ずこちらを使う。"""
+    return datetime.now(JST).strftime("%Y/%m/%d")
+
+
+def _has_record_since(days_back):
+    """JST の (today - days_back) 以降のレコードが既に JSON にあるか。
+
+    最終ウィンドウ（翌朝 07:07 JST）が回収しに行くのは「前日」の釣果なので、
+    当日ではなく days_back=1 で見る。既に確保済みの日を赤にしないための判定。
+    """
+    if not os.path.exists(OUTPUT_PATH):
+        return False
+    since = (datetime.now(JST) - timedelta(days=days_back)).strftime("%Y/%m/%d")
+    try:
+        with open(OUTPUT_PATH, encoding="utf-8") as f:
+            return any((r.get("date") or "") >= since for r in json.load(f))
+    except Exception:
+        return False
+
+
 def main():
-    today_str = datetime.now().strftime("%Y/%m/%d")
+    # --soft-fail: fetch 全滅でも exit 0（::warning のみ）で終える。
+    # gyo-crawl.yml の「その日まだ後続ウィンドウが残っている」cron 用。
+    # 最終ウィンドウと手動実行は付けない ＝ その日を丸ごと落としたら赤で出る。
+    soft_fail = "--soft-fail" in sys.argv
+
+    today_str = _jst_today()
 
     print(f"=== gyo_crawler.py 開始: {today_str} ===")
     print(f"対象: {len(GYO_SHIPS)} 船宿  出力: {OUTPUT_PATH}\n")
@@ -971,11 +1008,29 @@ def main():
     total = _existing_count()
     print(f"\n追記: {len(added)} 件新規  JSON合計: {total} 件")
 
-    # 取得できなかった船宿があれば非0終了する。
+    # 取得できなかった船宿があれば原則 非0終了する。
     # 旧実装は fetch 失敗を握りつぶして exit 0 していたため、CI が success を
     # 報告し続けた（2026-08-02 の初回 CI 実行が実際には timeout で空振り）。
+    #
+    # 2026-08-06: gyo.ne.jp は日によってランナー IP ごと遮断される（成功日は即時／
+    # 失敗日は全試行が満了 timeout）。1ウィンドウの失敗をそのまま赤にすると
+    # 「別 IP でやり直せば取れる状態」まで赤になり、赤が信号として鈍る。
+    # 赤にするのは次の2つだけ:
+    #   - 最終ウィンドウ／手動実行（--soft-fail なし）で落ちた ＝ その日を丸ごと落とした
+    #   - ただし回収対象（前日以降）が既に手元にあるなら warning 止まり
+    # 中間ウィンドウは ::warning で run 一覧に残す（無言の success にはしない）。
+    # 恒久停止の検知は validate_output.py 不変条件 #63（最新日付14日）が担う。
     if failures:
-        print(f"\n❌ 取得失敗: {', '.join(failures)}")
+        names = ", ".join(failures)
+        if soft_fail:
+            print(f"\n::warning::gyo fetch 失敗（後続ウィンドウで再試行）: {names}")
+            print("完了（fetch 失敗・soft-fail）")
+            return
+        if _has_record_since(1):
+            print(f"\n::warning::gyo fetch 失敗だが前日以降の釣果は取得済み: {names}")
+            print("完了（fetch 失敗・回収対象は確保済み）")
+            return
+        print(f"\n❌ 取得失敗: {names}")
         sys.exit(1)
 
     print("完了")

@@ -1,0 +1,75 @@
+name: gyo-crawl
+# gyo.ne.jp（一之瀬丸）専用クローラ。2026-08-06 に direct-crawl.yml から独立させた。
+#
+# なぜ独立させたか:
+#   gyo.ne.jp は日によって GitHub Actions ランナーの IP ごと遮断される。
+#   実測（所要時間つき）— 8/03 成功 / 8/04 3回とも45秒 timeout / 8/05 成功(fetch 2秒) /
+#   8/06 5回とも45秒 timeout。成功日は1回目が数秒、失敗日は全試行が満了 timeout ＝
+#   遅延ではなく SYN が捨てられている。同一 job 内のリトライは同じ IP から出るので
+#   何分粘っても無効（8/06 は11分空回り）。**別 run = 別ランナー = 別 IP** だけが効く。
+#   direct-crawl.yml のまま cron を増やすと 50分かかる chowari job も道連れになるため、
+#   gyo だけ切り出して1日3ウィンドウ回す。
+#
+# ウィンドウ（JST）:
+#   16:07 → 21:07 → 翌 07:07。どれか1本通れば当日分を確保できる。
+#   翌朝は「出船前ならページに前日の釣果がまだ載っている」ため回収枠として有効
+#   （2026-08-05 に手動で実証済み。決定ログ 2026-08-05 / 2026-08-06 参照）。
+#
+# 赤の出し方:
+#   中間ウィンドウ（16:07 / 21:07）は --soft-fail ＝ 失敗しても ::warning 止まり。
+#   最終ウィンドウ（翌 07:07）と手動実行はフラグ無し ＝ その日を丸ごと落としたら赤。
+#   ただし前日以降の釣果が既に手元にあれば warning 止まり（回収済みを赤にしない）。
+#   恒久停止の検知は validate_output.py 不変条件 #63（最新日付14日）が担う。
+#
+# 出力: direct-crawl/catches_raw_direct.json のみ。
+#   data/V2/*.csv への反映は手動 --export-csv 実行時（shojiro / koueimaru と同じ運用）。
+on:
+  schedule:
+    - cron: '7 7 * * *'    # 16:07 JST
+    - cron: '7 12 * * *'   # 21:07 JST
+    - cron: '7 22 * * *'   # 翌 07:07 JST（最終ウィンドウ＝前日分の回収枠）
+  workflow_dispatch:
+
+# 同時刻に複数 run が重なった場合の push 競合を避ける
+concurrency:
+  group: gyo-crawl
+  cancel-in-progress: false
+
+jobs:
+  gyo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: gyo crawler (一之瀬丸・最新ページ1本)
+        # 標準ライブラリのみ。--soft-fail は「まだ後続ウィンドウが残っている」枠だけ。
+        # 最終ウィンドウ（cron '7 22 * * *'）と手動実行はフラグ無し＝失敗すれば赤。
+        run: |
+          if [ "${{ github.event.schedule }}" = "7 22 * * *" ] || [ -z "${{ github.event.schedule }}" ]; then
+            echo "最終ウィンドウ/手動実行 → fetch 失敗は赤"
+            python3 direct-crawl/gyo_crawler.py
+          else
+            echo "中間ウィンドウ → fetch 失敗は warning（後続で再試行）"
+            python3 direct-crawl/gyo_crawler.py --soft-fail
+          fi
+      - name: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # 書き込み先は direct-crawl.yml / crawl.yml が触らないファイルに限定
+          git add direct-crawl/catches_raw_direct.json
+          git commit -m "chore(gyo): 一之瀬丸 更新 $(date +'%Y/%m/%d')" || { echo "nothing to commit"; exit 0; }
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main || { sleep $((attempt*5)); continue; }
+            if git rebase -X theirs origin/main; then
+              if git push origin main; then
+                echo "push 成功 (attempt $attempt)"; exit 0
+              fi
+            else
+              git rebase --abort || true
+            fi
+            echo "push 競合/失敗 → リトライ $attempt"; sleep $((attempt*5))
+          done
+          echo "::error::push が 5 回失敗"; exit 1

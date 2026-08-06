@@ -47,7 +47,7 @@ kanto-fishing/
 │   ├── discover_ships.py       # 船宿SID自動収集（月1実行）
 │   └── ships.json              # 収集済み船宿一覧（有効75件）
 ├── direct-crawl/               # A1b: 直接クロール（船宿サイト個別対応）
-│   ├── gyo_crawler.py          # 一之瀬丸のみ（direct-crawl.yml・2026-08-02 復旧）
+│   ├── gyo_crawler.py          # 一之瀬丸のみ（gyo-crawl.yml・1日3回・2026-08-06 分離）
 │   └── catches_raw_direct.json # 直接クロール生データ（crawler.py に CSV 統合済み）
 ├── ocean/                      # A2〜A4: 気象・台風・潮汐（SQLite）
 │   ├── rebuild_weather_cache.py  # Open-Meteo から気象・海況取得（手動・約30分）
@@ -130,7 +130,9 @@ kanto-fishing/
 ├── 大掃除/                     # フォルダ整理プロジェクト管理（ロール定義・Phase記録）
 │
 ├── .github/workflows/
-│   └── crawl.yml               # GitHub Actions定義（毎日16:30 JST + 月1日）
+│   ├── crawl.yml               # GitHub Actions定義（毎日16:30 JST + 月1日）
+│   ├── direct-crawl.yml        # chowari 直クロール（毎日16:30 JST）
+│   └── gyo-crawl.yml           # 一之瀬丸 直クロール（16:07 / 21:07 / 翌07:07 JST）
 └── .claude/
     └── memory/                 # Claude Codeの記憶（会話をまたいで保持）
 ```

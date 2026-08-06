@@ -2769,7 +2769,7 @@ def validate_direct_crawl_json():
     3つの不具合が互いを隠していた。
     保証すること:
       (a) ファイルが存在し、レコードが1件以上ある
-      (b) 最新日付が14日以上古くない（direct-crawl.yml の gyo ステップ停止検知。
+      (b) 最新日付が14日以上古くない（gyo-crawl.yml の停止検知。
           一之瀬丸は週数回の出船があるので14日で十分。鮮度なので --static-only では warn）
       (c) 同一内容（ship/fish_raw/count_raw/size_raw/weight_raw）が
           複数の日付に散らばっていない（= 日付の貼り直しによる水増し）
@@ -2794,7 +2794,7 @@ def validate_direct_crawl_json():
     if max_d < cutoff:
         fail_staleness(
             f"[63] catches_raw_direct.json 最新日付 {max_d} が14日以上古い"
-            f"（cutoff: {cutoff}）— direct-crawl.yml の gyo ステップが止まっている")
+            f"（cutoff: {cutoff}）— gyo-crawl.yml が止まっている")
     else:
         ok(f"[63] 最新日付: {max_d}（{len(recs)}件）")
 
