@@ -3853,6 +3853,28 @@ def load_area_seo_alias():
             return json.load(f)
     except: return {}
 
+
+# title に載せる別称の上限。2026/08/06 に 1 → 2 へ拡大。
+# 日立久慈港は別称が「久慈港」「久慈漁港」の2つあるのに title は先頭1件だけで、
+# 「久慈漁港 釣果」（43impr・順位5.3）が **0クリック** だった。勝浦も同様に
+# 「勝浦港」「勝浦漁港」の2表記に需要がある。3件以上入れると title が長くなりすぎて
+# SERP で切れるので2件で止める（3件目以降は description の「〜とも呼ばれます」に載る）。
+_AREA_TITLE_ALIAS_MAX = 2
+
+
+def area_title_name(area, aliases, group):
+    """title 用の「エリア名（別称・別称・県名）」を組み立てる。
+
+    別称は GSC の実クエリで需要が確認できたものだけ（推測で足さない）。
+    県名を併記するのは同名港の曖昧性排除（久慈漁港=岩手県にも実在・
+    天津港=中国天津と誤解釈される）＋地域クエリとの一致。2026/08/01 導入。
+    別称なし・県名なしの場合はエリア名そのままを返す。
+    """
+    pref = (group or "").split("・")[0]
+    al = [a for a in (aliases or []) if a and a != area][:_AREA_TITLE_ALIAS_MAX]
+    parts = al + ([pref] if pref else [])
+    return f"{area}（{'・'.join(parts)}）" if parts else area
+
 def load_decadal_calendar():
     """analysis.sqlite の decadal_calendar を {fish: {decade_no: {cnt_index, size_index}}} で返す"""
     if not os.path.exists(ANALYSIS_DB): return {}
@@ -9720,9 +9742,22 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             place_jsonld = _json.dumps(_place_obj, ensure_ascii=False)
 
             past_summary_short = "・".join(top_fish_names[:3]) if top_fish_names else "（過去データ集計中）"
-            title_min = f"{area}（{group}）の船釣り情報・過去実績 | 船釣り予想"
-            desc_meta_min = (f"{area}（{group}）の船釣り情報。本日の釣果報告は集計待ちです。"
-                             f"過去1年{past_total}件の実績データから、{past_summary_short}など主要魚種の旬・代表ポイント・船宿実績をご確認いただけます。")
+            # 2026/08/06 SEO(CTR): thin テンプレの title/desc を作り直した。
+            # 旧: title「{area}（{group}）の船釣り情報・過去実績」/ desc 冒頭「本日の釣果報告は集計待ちです。」
+            # 「{港名} 釣果」で検索した人に、title で「釣果」と言わず desc の1行目で
+            # 「今日はありません」と宣言していた。GSC 実測で thin 23本は
+            # 564impr / 2click（CTR 0.35%）、full テンプレ83本は 3769impr / 87click（2.31%）と
+            # 同じ順位帯で 6.6倍の差。天津港は「天津漁港 釣果」順位4.7で 0クリック。
+            # 対応: ①title に「釣果」と別称+県名を入れる（full と同じ area_title_name）
+            #       ②desc の冒頭を過去実績の実数に変え、「集計待ち」は末尾に残す
+            #         （嘘はつかない・ただし最初に見せる情報ではない）
+            _thin_aliases = [a for a in area_seo_alias.get(area, []) if a and a != area]
+            _thin_title_name = area_title_name(area, _thin_aliases, group)
+            _thin_alias_meta = f"「{'」「'.join(_thin_aliases)}」とも呼ばれます。" if _thin_aliases else ""
+            title_min = f"{_thin_title_name}の船釣り釣果・過去実績 | 船釣り予想"
+            desc_meta_min = (f"{area}（{group}）の船釣り釣果。{_thin_alias_meta}"
+                             f"過去1年{past_total}件の実績データから、{past_summary_short}など主要魚種の旬・"
+                             f"代表ポイント・船宿実績をご確認いただけます。本日の釣果報告は集計待ちです。")
 
             # thin パスでも area_description.json の解説文を表示（full パスと同じ build 関数）
             area_desc_html_thin = build_area_description_html(area, area_desc_data)
@@ -10154,14 +10189,9 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             f'<p class="area-alias-lead">{area}（{"・".join(_area_aliases)}）周辺で出船する船宿の最新釣果と出船状況をまとめています。</p>'
             if _area_aliases else ""
         )
-        # SERP で「{別称} 釣果」検索時にタイトル内別称が太字一致しCTRが上がる（最重要別称1件のみ）
-        # 2026/08/01 SEO(CTR): 別称の隣に県名を併記。同名港の曖昧性排除
-        # （久慈漁港=岩手県久慈市にも実在・天津港=中国天津と誤解釈される）＋地域クエリとの一致。
-        _area_pref = (group or "").split("・")[0]
-        if _area_aliases:
-            _area_title_name = f"{area}（{_area_aliases[0]}・{_area_pref}）" if _area_pref else f"{area}（{_area_aliases[0]}）"
-        else:
-            _area_title_name = f"{area}（{_area_pref}）" if _area_pref else area
+        # SERP で「{別称} 釣果」検索時にタイトル内別称が太字一致しCTRが上がる。
+        # 2026/08/01 別称+県名を併記 / 2026/08/06 別称を最大2件に拡大（area_title_name）。
+        _area_title_name = area_title_name(area, _area_aliases, group)
         # 2026/07/12 SEO(CTR): title に更新日を入れる実験を導入したが、
         # 2026/08/01 SERP 実査で撤回（決定ログ参照）。SERP に出る title は Google の
         # 最終クロール時点のスナップショットのため、クロール頻度の低いページでは
