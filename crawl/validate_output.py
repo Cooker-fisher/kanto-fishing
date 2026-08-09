@@ -86,7 +86,7 @@ crawler.py 実行後に CI で実行し、不変条件違反があれば非0終�
 
 CI 組込: crawler.py の直後に呼び、非0終了時は git push をスキップ。
 """
-import sys, os, json, re, csv, argparse, subprocess, collections
+import sys, os, json, re, csv, argparse, subprocess, collections, unicodedata
 from datetime import datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -2641,6 +2641,107 @@ def validate_weather_csv_freshness():
         ok(f"[60] weather/ 最新日付: {max_d}（{os.path.basename(latest_file)}）")
 
 
+def validate_area_title_serp_width():
+    """66: area title は SERP 幅に入らない `／N船宿` を載せない（2026-08-09）
+
+    背景: GSC 実測（analytics/gsc/*.csv・直近28日）で 3〜6位帯の CTR が 2.05%
+    （順位カーブの目安 8%）と大きく下振れしていた。原因調査で area の title 154本中
+    **54本(35%)** が SERP 表示幅 600px を超過し、超過分は表示されない＝CTR に
+    寄与していないことが判明。特に魚種名が途中で切れる（勝浦「スル…メイカ」・
+    江戸川放水路「シ…ーバス」）と壊れた表示になる。
+
+    `／N船宿` は「{港名} 釣果」型クエリの検索意図に無く（GSC 実クエリに船宿数を
+    含むものは 0 件）、常に 5〜6字を消費して魚種名を truncate 側へ押し出していた。
+    → crawler.py `build_area_title_body` で**幅が余っている時だけ**付ける方式に変更。
+
+    ここで固定するのは「入らないのに載せない」という契約そのもの。
+    幅の上限（600px）を緩めれば通る類のチェックではない（緩めると載る本数が増える＝
+    契約違反が増える方向に働くため、閾値いじりでは黙らせられない）。
+
+    ⚠ 魚種の件数は**チェックしない**。モバイルの SERP は2行折り返しで desktop より
+    広く、GSC/GA4 とも device 次元を取っていないためモバイル比率が不明
+    （analytics/fetch_gsc.py DIMENSIONS）。「削る」方向の最適化は device 別データを
+    取ってから判断する。
+
+    ⚠ 判定対象は **docs/ ではなく crawler.py の生成関数**。2026-08-06 の教訓と同じで、
+    docs は CI のフル実行でしか正しく再生成できない（`--area-only` は全履歴を
+    valid_catches に渡すため full/thin 判定が本番と変わり、出力を commit できない）。
+    docs 側を fail 条件にすると新 title で再生成される前に CI が赤くなるため、
+    ここでは**関数の契約**を実データ（現行 docs の title から復元した入力）で固定し、
+    docs 側の件数は warn で可視化するに留める。docs 側の fail 化は、保留中の
+    不変条件 #65（別称露出）と合わせて CI 再生成後に投入する。
+    """
+    print("\n[66] area title の SERP 表示幅と ／N船宿")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        warn("[66] docs/area が無い")
+        return
+    try:
+        import importlib.util
+        _spec = importlib.util.spec_from_file_location(
+            "_crawler_for_v66", os.path.join(ROOT, "crawler.py"))
+        _cr = importlib.util.module_from_spec(_spec)
+        _spec.loader.exec_module(_cr)
+        build_body = _cr.build_area_title_body
+        _px = _cr.serp_title_px
+        brand = _cr._AREA_TITLE_BRAND
+        limit = _cr._SERP_TITLE_PX
+    except Exception as e:
+        fail(f"[66] crawler.py から title 生成関数を読めない: {e}")
+        return
+
+    # 現行 docs の title を「エリア名 / 魚種 / 船宿数」に分解し、生成関数の入力に戻す。
+    # 新旧どちらの形式でも分解できる（船宿数は任意）。
+    pat = re.compile(r"^(?P<name>.+?)の船釣り釣果【毎日更新】"
+                     r"(?P<fish>[^／|]*?)(?:／(?P<n>\d+)船宿)?"
+                     + re.escape(brand) + r"$")
+    checked = bad_tail = bad_fish = 0
+    samples = []
+    docs_over = 0
+    for fn in sorted(os.listdir(area_dir)):
+        if not fn.endswith(".html") or fn == "index.html":
+            continue
+        try:
+            html = open(os.path.join(area_dir, fn), encoding="utf-8").read()
+        except Exception:
+            continue
+        m = re.search(r"<title>(.*?)</title>", html, re.S)
+        if not m:
+            continue
+        title = m.group(1).strip()
+        if _px(title) > limit:
+            docs_over += 1
+        g = pat.match(title)
+        if not g:
+            continue  # thin テンプレ・魚種なし版は対象外
+        checked += 1
+        fish = [f for f in g["fish"].split("・") if f]
+        out = build_body(g["name"], fish, int(g["n"] or 0)) + brand
+        # 契約1: ／N船宿 が載るのは幅に収まる時だけ
+        if re.search(r"／\d+船宿", out) and _px(out) > limit:
+            bad_tail += 1
+            if len(samples) < 5:
+                samples.append(f"{fn}({_px(out)}px)")
+        # 契約2: 入力の魚種は1件も落とさない
+        if any(f not in out for f in fish):
+            bad_fish += 1
+            if len(samples) < 5:
+                samples.append(f"{fn}(魚種欠落)")
+    if not checked:
+        warn("[66] 分解できた area title が0本（title 形式が変わった可能性）")
+        return
+    if bad_tail or bad_fish:
+        fail(f"[66] title 生成契約違反 {bad_tail + bad_fish}本"
+             f"（幅超過なのに ／N船宿: {bad_tail} / 魚種欠落: {bad_fish}）: "
+             + ", ".join(samples))
+    else:
+        ok(f"[66] title 生成関数の契約OK（{checked}本の実入力で検証・魚種欠落0）")
+    if docs_over:
+        warn(f"[66] 配信中の docs/area title で {limit}px 超過が {docs_over}本 "
+             f"（CI フル実行で新 title に再生成されると減る見込み。"
+             f"docs 側の fail 化は #65 と同時に投入）")
+
+
 def validate_area_description_quality():
     """61: normalize/area_description.json の文章品質（2026-08-01）
 
@@ -2964,6 +3065,7 @@ def main():
     validate_no_paywall_signal_and_operator_info()
     validate_verified_predictions_tier()
     validate_weather_csv_freshness()
+    validate_area_title_serp_width()
     validate_area_description_quality()
     validate_no_address_points()
     validate_direct_crawl_json()

@@ -57,7 +57,7 @@
   → choka_box 単位で li.date から正しい出船日を取得
   → 全釣果に「今日の日付」が入る問題を修正
 """
-import re, json, time, os, csv, math
+import re, json, time, os, csv, math, unicodedata
 from datetime import datetime, timedelta, timezone
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
@@ -3874,6 +3874,43 @@ def area_title_name(area, aliases, group):
     al = [a for a in (aliases or []) if a and a != area][:_AREA_TITLE_ALIAS_MAX]
     parts = al + ([pref] if pref else [])
     return f"{area}（{'・'.join(parts)}）" if parts else area
+
+
+# SERP に表示される title の幅上限（desktop ≈600px 相当）。Google は文字数ではなく
+# 描画幅で打ち切るため、字数ではなく px で測る。全角16px/半角8px の概算。
+_SERP_TITLE_PX = 600
+_AREA_TITLE_BRAND = " | 船釣り予想"
+
+
+def serp_title_px(s):
+    """title の SERP 概算表示幅（px）。全角・全角相当は 16px、半角は 8px。"""
+    return sum(16 if unicodedata.east_asian_width(c) in "WFA" else 8 for c in s)
+
+
+def build_area_title_body(title_name, fish_list, n_ships):
+    """area title の本体（ブランド接尾辞を除く部分）を組み立てる。
+
+    `／N船宿` は**幅が余っている時だけ**付ける。2026/08/09 導入。
+
+    背景: GSC 実測で area 154本中 **54本(35%)** が SERP 幅 600px を超過し、超過分は
+    表示されない＝CTR に寄与していなかった。`／N船宿` は「{港名} 釣果」型クエリの
+    検索意図に無く（GSC の実クエリに船宿数を含むものは無い）、一方で常に 5〜6字を
+    消費して魚種名を truncate 側へ押し出していた。条件付きにすると超過は 54→26本。
+
+    **魚種は削らない**: SERP の表示幅はモバイルでは2行折り返しで desktop より広く、
+    GSC/GA4 とも device 次元を取っていないため（`fetch_gsc.py` DIMENSIONS）
+    モバイル比率が不明。desktop 600px に合わせて魚種を落とすと、モバイル側では
+    不要に情報を削ることになる。**幅が足りない時に足さない**方向（＝どの device でも
+    損しない）だけを実装し、削る方向の最適化は device 別データを取ってから判断する。
+
+    エリア名の別称+県名（2026/08/01・08/06 の決定）と【毎日更新】（2026/08/01 の決定）は
+    ここでは変更しない。
+    """
+    body = f"{title_name}の船釣り釣果【毎日更新】" + "・".join((fish_list or [])[:3])
+    tail = f"／{n_ships}船宿"
+    if serp_title_px(body + tail + _AREA_TITLE_BRAND) <= _SERP_TITLE_PX:
+        body += tail
+    return body
 
 def load_decadal_calendar():
     """analysis.sqlite の decadal_calendar を {fish: {decade_no: {cnt_index, size_index}}} で返す"""
@@ -10233,12 +10270,16 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             if _lt_bits:
                 _latest_line = f"最新{_latest_label}は{'・'.join(_lt_bits)}など。"
         if _top_fish_str:
-            area_title_body = f"{_area_title_name}の船釣り釣果【毎日更新】{_top_fish_str}／{_week_ships}船宿"
+            # 2026/08/09: 固定3魚種＋船宿数の直結をやめ、SERP 表示幅で組み立てる
+            # （build_area_title_body・不変条件 #66）。旧実装は 154本中54本が 600px 超過し、
+            # 魚種名が途中で切れていた。
+            area_title_body = build_area_title_body(
+                _area_title_name, [f for f, _ in top_fish_items[:3]], _week_ships)
             area_desc = f"{area}（{group}）の船釣り釣果。{_latest_line}{_alias_meta}{_area_hist_lead}直近7日{_week_cnt}件・{_week_ships}船宿が出船し{_area_desc_fish}釣れています。旬の魚種・船宿・最寄りアクセスを毎日更新。"
         else:
             area_title_body = f"{_area_title_name}の船釣り釣果情報【毎日更新】"
             area_desc = f"{area}（{group}）の船釣り釣果情報。{_alias_meta}{_area_hist_lead}旬カレンダー・船宿情報・最寄りアクセス・海況データを掲載。"
-        area_title_str = f"{area_title_body} | 船釣り予想"
+        area_title_str = f"{area_title_body}{_AREA_TITLE_BRAND}"
 
         # 有料ティザー
         area_teaser_html = "" if not SHOW_PAID_TEASER else (
