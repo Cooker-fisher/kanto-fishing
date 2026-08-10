@@ -15,6 +15,11 @@ analytics/
 ├── analytics_common.py   # 認証・CSV upsert 共通処理
 ├── requirements.txt      # google-api-python-client / google-auth
 ├── gsc/YYYY-MM.csv       # date,query,page,clicks,impressions,ctr,position
+├── gsc_device/YYYY-MM.csv # date,device,page,clicks,impressions,ctr,position（2026-08-09〜）
+│                          #   SERP の title 表示幅は desktop と mobile で違う（mobile は
+│                          #   2行折り返しで広い）ため、title の情報量をどこに合わせるかの
+│                          #   判断材料。⚠ gsc/ に列を足すと蓄積4か月分と seo_report.py に
+│                          #   波及するので、あえて別ディレクトリに分けている
 ├── ga4/YYYY-MM.csv       # date,channel,pagePath,activeUsers,screenPageViews,sessions,engagementRate
 └── report/
     ├── latest.md         # 最新レポート（上書き）

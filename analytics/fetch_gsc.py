@@ -35,16 +35,33 @@ ROW_LIMIT = 25000  # 1 リクエスト上限。超える日は startRow ペー�
 FIELDNAMES = ["date", "query", "page", "clicks", "impressions", "ctr", "position"]
 KEY_FIELDS = ["date", "query", "page"]
 
+# device 別（2026-08-09 追加）。
+# 目的: SERP の title 表示幅は desktop と mobile で違う（mobile は2行折り返しで広い）。
+# 2026-08-09 の area title 改善で「魚種を何件まで載せるか」を決めようとしたが、
+# 既存の DIMENSIONS が device を持たずモバイル比率が不明だったため、
+# 「幅が足りない時に足さない」安全側の実装しかできなかった（決定ログ 2026-08-09）。
+#
+# ⚠ 既存 gsc/YYYY-MM.csv のスキーマは**変えない**。列を足すと 2026-05 以降の
+# 蓄積4か月分と seo_report.py の読み取りに波及するため、別ディレクトリに分ける。
+DEVICE_DIMENSIONS = ["date", "device", "page"]
+DEVICE_FIELDNAMES = ["date", "device", "page", "clicks", "impressions", "ctr", "position"]
+DEVICE_KEY_FIELDS = ["date", "device", "page"]
 
-def fetch_range(service, site_url, start_date, end_date):
-    """指定期間の検索パフォーマンス行を全件取得して dict のリストで返す。"""
+
+def fetch_range(service, site_url, start_date, end_date, dimensions=None):
+    """指定期間の検索パフォーマンス行を全件取得して dict のリストで返す。
+
+    dimensions は GSC の次元名リスト。返す dict は次元名をそのままキーにする
+    （例 ["date","device","page"] → {"date":..,"device":..,"page":..,+指標}）。
+    """
+    dims = dimensions or DIMENSIONS
     rows = []
     start_row = 0
     while True:
         body = {
             "startDate": start_date,
             "endDate": end_date,
-            "dimensions": DIMENSIONS,
+            "dimensions": dims,
             "rowLimit": ROW_LIMIT,
             "startRow": start_row,
             "dataState": "all",  # 未確定（fresh）データも含める
@@ -53,15 +70,14 @@ def fetch_range(service, site_url, start_date, end_date):
         batch = resp.get("rows", [])
         for r in batch:
             keys = r.get("keys", [])
-            rows.append({
-                "date": keys[0] if len(keys) > 0 else "",
-                "query": keys[1] if len(keys) > 1 else "",
-                "page": keys[2] if len(keys) > 2 else "",
+            row = {d: (keys[i] if i < len(keys) else "") for i, d in enumerate(dims)}
+            row.update({
                 "clicks": r.get("clicks", 0),
                 "impressions": r.get("impressions", 0),
                 "ctr": round(r.get("ctr", 0.0), 6),
                 "position": round(r.get("position", 0.0), 2),
             })
+            rows.append(row)
         if len(batch) < ROW_LIMIT:
             break
         start_row += ROW_LIMIT
@@ -103,6 +119,22 @@ def main():
         total_upd += u
         print(f"  {ym}: +{a} 追加 / {u} 更新 → {os.path.relpath(out, ac.ANALYTICS_DIR)}")
     print(f"[fetch_gsc] 完了 追加{total_add} / 更新{total_upd}")
+
+    # device 別は付加情報。ここが落ちても本体（query×page）の収集は成立させる。
+    try:
+        drows = fetch_range(service, site_url, start.isoformat(), end.isoformat(),
+                            dimensions=DEVICE_DIMENSIONS)
+        print(f"[fetch_gsc] device 別 取得 {len(drows)} 行")
+        d_add = d_upd = 0
+        for ym, grp in ac.group_rows_by_month(drows).items():
+            out = os.path.join(ac.ANALYTICS_DIR, "gsc_device", f"{ym}.csv")
+            a, u = ac.upsert_csv(out, DEVICE_FIELDNAMES, DEVICE_KEY_FIELDS, grp)
+            d_add += a
+            d_upd += u
+            print(f"  {ym}: +{a} 追加 / {u} 更新 → {os.path.relpath(out, ac.ANALYTICS_DIR)}")
+        print(f"[fetch_gsc] device 別 完了 追加{d_add} / 更新{d_upd}")
+    except Exception as e:
+        print(f"[fetch_gsc] device 別の取得に失敗（本体は成功済み・スキップ）: {e}")
     return 0
 
 

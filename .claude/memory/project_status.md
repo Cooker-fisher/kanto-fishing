@@ -118,9 +118,13 @@ T44/T44b（因子供給率 33.6→79.6%）/ T45（リーク解消・正直化）
 
 ## 未マージブランチ
 
-- `claude/unregistered-status-issue-149a5d`（3 commits・7/18）— GSC 診断ドキュメント中心。
-  コード差分は fish_area noindex 閾値 80→50 の段階開放。**取り込むか破棄か判断が要る**
-- 3月〜5月の残骸5本（confident-bose / sleepy-goldstine / pr-38 / pr-39 / redesign-update）は掃除対象
+**2026-08-09 に origin を実測して棚卸し済み。**
+
+- ~~`claude/unregistered-status-issue-149a5d`~~ — **origin にもう存在しない＝破棄済み**。
+  コード差分だった fish_area noindex 閾値 80→50 も main に入っていない
+  （`crawler.py _FA_NOINDEX_HIST_THRESHOLD = 80` のまま）。判断は不要になった
+- 残骸は5本ではなく**2本だけ残存**: `sleepy-goldstine` / `redesign-update`。
+  `confident-bose` / `pr-38` / `pr-39` は削除済み
 
 ---
 

@@ -9933,7 +9933,19 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         _week_fish_names = [f for f, _ in top_fish_items]
         _week_ships = len(set(c["ship"] for c in catches))
         if _week_fish_names:
-            _desc1 = f"{area}では今週{_week_n}件・{_week_ships}船宿から釣果報告があります。"
+            # 2026/08/09 SEO(スニペット): 別称を先頭の実データ文に織り込む。
+            # 2026/08/01 の SERP 実査で「Google は meta description をほぼ無視して本文を
+            # 抜粋」「飯岡は intro 文が採用されていた」と確定していた。その intro
+            # （_alias_intro_html）は「〜周辺で出船する船宿の最新釣果と出船状況をまとめて
+            # います」という**情報ゼロの定型文**で、しかも別称ありのページだけ
+            # この段落が要約より上に入るため、サイト最大ページ（飯岡=impressions の54%）の
+            # スニペットを定型文が占有していた。別称なしの御前崎は
+            # 「今週4件・3船宿から釣果報告があります…」が先頭＝具体的だった。
+            # → 別称は括弧でこの文に入れ（本文に別称を出す SEO 目的は維持）、
+            #   定型段落は要約が無い時のフォールバックに降格（下の _alias_intro_html）。
+            _al_body = [a for a in area_seo_alias.get(area, []) if a and a != area]
+            _alias_paren_body = f"（{'・'.join(_al_body)}）" if _al_body else ""
+            _desc1 = f"{area}{_alias_paren_body}では今週{_week_n}件・{_week_ships}船宿から釣果報告があります。"
             _fish_join = "・".join(_week_fish_names[:4])
             _desc2 = f"{_fish_join}など{len(_week_fish_names)}種の釣果が確認されています。"
             _best_fish, _best_fd = top_fish_items[0]
@@ -10222,9 +10234,12 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         # 呼称ゆれ（飯岡港⇔飯岡漁港 等）。検索需要があるのに表記不一致で取りこぼす分を補う
         _area_aliases = [a for a in area_seo_alias.get(area, []) if a and a != area]
         _alias_meta = f"「{'」「'.join(_area_aliases)}」とも呼ばれます。" if _area_aliases else ""
+        # 2026/08/09: 定型文はフォールバック専用に降格。今週の実データ要約（fia_desc_html）が
+        # 出るページでは、別称は _desc1 の括弧に入っており本文露出は確保されている。
+        # 要約が無い（今週の釣果ゼロ）ページでだけ、別称を本文に出すためにこの段落を残す。
         _alias_intro_html = (
             f'<p class="area-alias-lead">{area}（{"・".join(_area_aliases)}）周辺で出船する船宿の最新釣果と出船状況をまとめています。</p>'
-            if _area_aliases else ""
+            if (_area_aliases and not fia_desc_html) else ""
         )
         # SERP で「{別称} 釣果」検索時にタイトル内別称が太字一致しCTRが上がる。
         # 2026/08/01 別称+県名を併記 / 2026/08/06 別称を最大2件に拡大（area_title_name）。
