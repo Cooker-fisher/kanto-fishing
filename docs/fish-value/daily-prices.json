@@ -2,12 +2,9 @@
   "version": "v1",
   "source": "東京都中央卸売市場 日報（豊洲水産・中値）",
   "source_url": "https://www.shijou-nippo.metro.tokyo.lg.jp/SN/YYYYMM/YYYYMMDD/Sui/Sui_K1.csv",
-  "asof": "20260808",
+  "asof": "20260815",
   "window_business_days": 20,
   "days_fetched": [
-    "20260711",
-    "20260713",
-    "20260714",
     "20260716",
     "20260717",
     "20260718",
@@ -24,7 +21,10 @@
     "20260804",
     "20260806",
     "20260807",
-    "20260808"
+    "20260808",
+    "20260810",
+    "20260812",
+    "20260813"
   ],
   "by_pfid": {
     "amadai": {
@@ -35,26 +35,26 @@
     "buri": {
       "n_days": 20,
       "n_mid": 40,
-      "mid_median_yen_per_kg": 648
+      "mid_median_yen_per_kg": 702
     },
     "inada": {
       "n_days": 16,
       "n_mid": 16,
-      "mid_median_yen_per_kg": 702
+      "mid_median_yen_per_kg": 783
     },
     "karei": {
-      "n_days": 19,
-      "n_mid": 70,
+      "n_days": 18,
+      "n_mid": 63,
       "mid_median_yen_per_kg": 756
     },
     "katsuo": {
       "n_days": 20,
-      "n_mid": 21,
+      "n_mid": 22,
       "mid_median_yen_per_kg": 756
     },
     "kihada": {
-      "n_days": 16,
-      "n_mid": 23,
+      "n_days": 14,
+      "n_mid": 21,
       "mid_median_yen_per_kg": 1404
     },
     "kinmedai": {
@@ -64,7 +64,7 @@
     },
     "maaji": {
       "n_days": 20,
-      "n_mid": 49,
+      "n_mid": 48,
       "mid_median_yen_per_kg": 648
     },
     "mebaru": {
@@ -78,19 +78,19 @@
       "mid_median_yen_per_kg": 540
     },
     "surumeika": {
-      "n_days": 19,
-      "n_mid": 19,
-      "mid_median_yen_per_kg": 1145
+      "n_days": 18,
+      "n_mid": 18,
+      "mid_median_yen_per_kg": 1080
     },
     "tachiuo": {
-      "n_days": 2,
-      "n_mid": 2,
-      "mid_median_yen_per_kg": 3402
+      "n_days": 3,
+      "n_mid": 3,
+      "mid_median_yen_per_kg": 3240
     },
     "takabe": {
-      "n_days": 1,
-      "n_mid": 1,
-      "mid_median_yen_per_kg": 2160
+      "n_days": 2,
+      "n_mid": 2,
+      "mid_median_yen_per_kg": 3240
     }
   }
 }
