@@ -58,7 +58,9 @@
 | `area/matsuwa-ena.html` | 2026-08-03 | 08-02 | 2 | 0 |
 | `fish/kinmedai.html` | 2026-07-31 | 07-31 | 1 | 0 |
 
-**結論: 手動投入は効いている。残り約102本の投入を継続する価値がある。**
+**結論: 手動投入は効いている。残りの投入を継続する価値がある**
+（残数は下記「投入プラン」で機械検証して **70本** に確定した。旧見積り約102本には
+noindex 化した ship 9本・既にインデックス済み1本・見送る x_post 旧日次18本が含まれていた）。
 
 表示ゼロの8本（`x_post/` `forecast/` `column/` `monthly/` `pages/privacy.html`
 `pages/faq.html` `monthly/2026-06/tachiuo.html` `x_post/2026-07-23.html`）は
@@ -80,6 +82,147 @@ GSC 管理画面の「ページ」レポート／URL 検査でしか確認でき
 
 表示は伸び続けている（日割 +52%）。クリックも日割 +27%。CTR は微減。
 カテゴリ構成は 8月も `area/` が表示の 66%・クリックの 75% で、area 最優先の並べ替えは正しかった。
+
+---
+
+## 投入プラン（2026-08-17 検証済み・70本）
+
+未投入の全 URL を **ディスク実在 / robots noindex / sitemap 掲載 / GSC 表示実績** の4点で
+機械検証した結果。**上から順に消化すればよい**（優先度は下記「未投入」節の並びを踏襲）。
+
+- 1日の枠は 10本を上限に置いているが、2026-08-02 は3本目で
+  「割り当て量を超えています」に当たった。**弾かれた時点で中断し、翌日その URL から再開**する
+- 1URL=1回送信を厳守（重複送信もクォータを消費する疑いがある・2026-08-02 の教訓）
+
+**Day 1**（10本）
+```
+https://funatsuri-yoso.com/area/urayasu.html
+https://funatsuri-yoso.com/area/kurihama.html
+https://funatsuri-yoso.com/area/edogawa.html
+https://funatsuri-yoso.com/area/nagai.html
+https://funatsuri-yoso.com/area/kotsubo.html
+https://funatsuri-yoso.com/area/yokohama-shinyamashita.html
+https://funatsuri-yoso.com/area/matsuwa-maguchi.html
+https://funatsuri-yoso.com/area/koshiba.html
+https://funatsuri-yoso.com/area/oiso.html
+https://funatsuri-yoso.com/area/otsu.html
+```
+
+**Day 2**（10本）
+```
+https://funatsuri-yoso.com/area/onjuku-iwawada.html
+https://funatsuri-yoso.com/area/katsuura-kawazu.html
+https://funatsuri-yoso.com/area/tomiura.html
+https://funatsuri-yoso.com/fish/surumeika.html
+https://funatsuri-yoso.com/fish/mejina.html
+https://funatsuri-yoso.com/fish/mebaru.html
+https://funatsuri-yoso.com/fish/fugu.html
+https://funatsuri-yoso.com/fish/umazurahagi.html
+https://funatsuri-yoso.com/fish/medai.html
+https://funatsuri-yoso.com/fish/mahata.html
+```
+
+**Day 3**（10本）
+```
+https://funatsuri-yoso.com/fish/itoyori.html
+https://funatsuri-yoso.com/fish/soi.html
+https://funatsuri-yoso.com/fish/kaiwari.html
+https://funatsuri-yoso.com/fish/kanko.html
+https://funatsuri-yoso.com/fish/sawara.html
+https://funatsuri-yoso.com/fish/umeiro.html
+https://funatsuri-yoso.com/fish/takabe.html
+https://funatsuri-yoso.com/fish_area/madai-matsuwa-ena.html
+https://funatsuri-yoso.com/fish_area/maruika-koajiro.html
+https://funatsuri-yoso.com/fish_area/madako-rokugo-suimon.html
+```
+
+**Day 4**（10本）
+```
+https://funatsuri-yoso.com/fish_area/madako-hachimanbashi.html
+https://funatsuri-yoso.com/fish_area/mahata-ohara.html
+https://funatsuri-yoso.com/fish_area/anago-urayasu.html
+https://funatsuri-yoso.com/fish_area/saba-sajima.html
+https://funatsuri-yoso.com/fish_area/madako-yokohama-honmoku.html
+https://funatsuri-yoso.com/fish_area/madai-sajima.html
+https://funatsuri-yoso.com/fish_area/mugiika-numazu-naiko.html
+https://funatsuri-yoso.com/fish_area/hirame-katakai.html
+https://funatsuri-yoso.com/fish_area/saba-omaezaki.html
+https://funatsuri-yoso.com/fish_area/kurodai-matsuwa-ena.html
+```
+
+**Day 5**（10本）
+```
+https://funatsuri-yoso.com/fish_area/madako-nakaminato.html
+https://funatsuri-yoso.com/fish_area/kasago-katakai.html
+https://funatsuri-yoso.com/fish_area/hirame-hitachi-kuji.html
+https://funatsuri-yoso.com/fish_area/warasa-hitachi-kuji.html
+https://funatsuri-yoso.com/fish_area/soi-kashima.html
+https://funatsuri-yoso.com/fish_area/hata-kashima.html
+https://funatsuri-yoso.com/fish_area/aji-kashima.html
+https://funatsuri-yoso.com/ship/yasuda-maru-aihama.html
+https://funatsuri-yoso.com/ship/shinei-maru-emi.html
+https://funatsuri-yoso.com/ship/yoshinoya.html
+```
+
+**Day 6**（10本）
+```
+https://funatsuri-yoso.com/ship/haruhisa-maru.html
+https://funatsuri-yoso.com/ship/koei-maru.html
+https://funatsuri-yoso.com/ship/watanabe-tsuribuneten.html
+https://funatsuri-yoso.com/ship/yoshikyu.html
+https://funatsuri-yoso.com/ship/saemu-maru.html
+https://funatsuri-yoso.com/ship/arakawaya.html
+https://funatsuri-yoso.com/ship/seto-maru.html
+https://funatsuri-yoso.com/ship/kiheiji-maru.html
+https://funatsuri-yoso.com/ship/yosei-maru.html
+https://funatsuri-yoso.com/ship/tomihachi-maru.html
+```
+
+**Day 7**（10本）
+```
+https://funatsuri-yoso.com/ship/hiiragi-maru.html
+https://funatsuri-yoso.com/ship/hide-maru.html
+https://funatsuri-yoso.com/ship/shinei-maru.html
+https://funatsuri-yoso.com/ship/daihachi-koumatsu-maru.html
+https://funatsuri-yoso.com/ship/kuroichi-maru.html
+https://funatsuri-yoso.com/ship/konaya-maru.html
+https://funatsuri-yoso.com/ship/kuni-maru-oiso.html
+https://funatsuri-yoso.com/ship/hara-maru.html
+https://funatsuri-yoso.com/ship/sakuei-maru.html
+https://funatsuri-yoso.com/ship/hamashin-maru.html
+```
+
+### 投入対象から除外した10本（2026-08-17 検証）
+
+| URL | 理由 |
+|---|---|
+| `fish_area/shousaifugu-ohara.html` | GSC に表示実績あり ＝ **既にインデックス済み**。枠を使わない |
+| `ship/muramasa-maru.html` | noindex |
+| `ship/ryusho-maru-iioka.html` | noindex |
+| `ship/tsuru-maru.html` | noindex |
+| `ship/eisho-maru.html` | noindex |
+| `ship/yamasen-maru.html` | noindex |
+| `ship/dairoku-ryuei-maru.html` | noindex |
+| `ship/miyoshi-maru-2.html` | noindex |
+| `ship/sensho-maru.html` | noindex |
+| `ship/gunji-maru.html` | noindex |
+
+⚠ ship の noindex は **直近7日にデータが無い船宿を空ページ判定するもの（動的）**。
+出船が再開すれば index に戻るので「恒久除外」ではない。**投入直前に再検証すること**。
+この9本は旧リストでは投入対象として並んでいた（釣果行数は多いが直近7日が無い）。
+
+### x_post/ 日次18本 → 投入しない（2026-08-17 判断）
+
+ハブ `x_post/` を 7/31 に投入した後の実績を見ると:
+
+- **旧18本（2026-05〜07）は表示ゼロのまま** ＝ ハブ経由では拾われていない
+- 一方 `x_post/2026-08-01`（2表示）`08-07`（1表示）`08-08`（4表示）は自然に拾われている
+  ＝ ハブの新着リストに載っている間だけクロールされる
+
+つまり「ハブを入れれば下流が自然に拾われる」は**新着分にだけ当てはまり、
+ページネーション奥の旧日次には効かない**。ただし旧日次の1本あたり期待表示は
+新着分ですら 1〜4表示で、クォータの機会費用（area 1本 = 最大73表示）に見合わない。
+**旧18本は自然クロール待ちで放置**する。
 
 ---
 
