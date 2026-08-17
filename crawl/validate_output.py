@@ -2887,6 +2887,91 @@ def validate_xpost_forecast_sail_rate():
         ok(f"[64] 予想段落 {checked}件すべて出船{_MIN_DAY}日以上（{len(posts)}投稿を検査）")
 
 
+def validate_area_alias_exposure():
+    """65: normalize/area_seo_alias.json の別称が area ページに露出しているか（2026-08-17）
+
+    背景: GSC 実測で「1ページ目に出ているのに0クリック」の主因が表記ゆれだった
+    （「久慈漁港 釣果」が順位5.3で0クリック等・決定ログ 2026-08-06）。対策として
+    area_seo_alias.json に GSC 実クエリ根拠の別称を登録し、title には先頭
+    _AREA_TITLE_ALIAS_MAX(=2) 件＋県名、description には全件を載せる実装を入れた。
+
+    この不変条件が守るもの:
+      (a) 登録した別称が title/description から**黙って落ちない**こと。
+          過去に「thin テンプレだけ alias 注入を通っていなかった」（天津港が title にも
+          description にも別称ゼロ）という取りこぼしが実際に起きている。
+          full/thin どちらのテンプレでも露出することを保証する。
+      (b) area_seo_alias.json のキーが**実在するエリア名と一致**していること。
+          静浦のエリアキー統合のようにキー名が変わると、alias が誰にも適用されないまま
+          設定だけ残る（無言劣化）。
+
+    照合はエリア名の**完全一致**で行う（title 冒頭の「（」より前）。前方一致にすると
+    「勝浦」の別称が「勝浦川津港」に誤ってヒットするため。
+    """
+    import glob as _glob
+    print("\n[65] area 別称（area_seo_alias.json）の title/description 露出")
+    path = os.path.join(ROOT, "normalize", "area_seo_alias.json")
+    if not os.path.isfile(path):
+        warn("[65] area_seo_alias.json が無い")
+        return
+    try:
+        alias_map = {k: v for k, v in json.load(open(path, encoding="utf-8")).items()
+                     if not k.startswith("_")}
+    except Exception as e:
+        fail(f"[65] area_seo_alias.json が読めない: {e}")
+        return
+    if not alias_map:
+        ok("[65] 別称の登録なし（vacuous pass）")
+        return
+
+    area_dir = os.path.join(ROOT, "docs", "area")
+    pages = sorted(_glob.glob(os.path.join(area_dir, "*.html"))) if os.path.isdir(area_dir) else []
+    if not pages:
+        ok("[65] area ページ未生成（vacuous pass）")
+        return
+
+    # title 冒頭（「（」より前）を正規のエリア名として逆引きする
+    by_area = {}
+    for p in pages:
+        try:
+            html = open(p, encoding="utf-8").read()
+        except Exception:
+            continue
+        m = re.search(r"<title>(.*?)</title>", html, re.S)
+        if not m:
+            continue
+        title = m.group(1)
+        name = title.split("（")[0].split("(")[0].strip()
+        d = re.search(r'<meta name="description" content="(.*?)"', html, re.S)
+        by_area.setdefault(name, []).append(
+            (os.path.basename(p), title, d.group(1) if d else "")
+        )
+
+    # crawler.py の _AREA_TITLE_ALIAS_MAX と一致させること（title に載る先頭 N 件）
+    TITLE_ALIAS_MAX = 2
+    bad, checked = [], 0
+    for area, aliases in alias_map.items():
+        al = [a for a in aliases if a and a != area]
+        if not al:
+            continue
+        hits = by_area.get(area)
+        if not hits:
+            bad.append(f"{area}: 対応する area ページが無い（キー名がエリア名と不一致の疑い）")
+            continue
+        for fn, title, desc in hits:
+            checked += 1
+            miss_t = [a for a in al[:TITLE_ALIAS_MAX] if a not in title]
+            miss_d = [a for a in al if a not in desc]
+            if miss_t:
+                bad.append(f"{fn}: title に別称 {miss_t} が無い")
+            if miss_d:
+                bad.append(f"{fn}: description に別称 {miss_d} が無い")
+
+    if bad:
+        fail(f"[65] 別称の露出漏れ {len(bad)}件: {bad[:5]}")
+    else:
+        ok(f"[65] 別称 {len(alias_map)}港ぶんが title/description に露出（{checked} ページを検査）")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -2968,6 +3053,7 @@ def main():
     validate_no_address_points()
     validate_direct_crawl_json()
     validate_xpost_forecast_sail_rate()
+    validate_area_alias_exposure()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

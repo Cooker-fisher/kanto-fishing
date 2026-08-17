@@ -85,6 +85,7 @@
 | 62 | `docs/area/*.html`・`docs/ship/*.html`（2026-08-01） | **主要ポイントの住所型混入**。chowari 系 point_place に母港住所（「千葉県 旭市 飯岡漁港」等・85種42,324行）が混入し TOP3・船宿一覧 sl-detail に露出。crawler.py `_strip_address_points()`（`^\S{2,4}[都道府県]\s` 判定）を読み込み3箇所に適用し、TOP3 の死にリンク `<a href="#">` を span 化。既存 docs は遡及スイープ（61ファイル177要素）。検証: ビルドバナー today-2 以内のページの point-list / sl-detail に住所型が出たら fail（#54 と同じ再生成前 vacuous pass 方式）。決定ログ「2026-08-01」参照 |
 | 63 | `direct-crawl/catches_raw_direct.json`（2026-08-02） | **gyo 直クロールの無言停止と日付水増し**。3つの不具合が互いを隠していた: (a) `gyo_crawler.py` がどの workflow からも呼ばれておらず 2026-04-25 で停止（direct-crawl.yml は chowari のみ。success 報告は chowari のもの） (b) `crawler.py` の CSV マージが `crawl/direct-crawl/...` という存在しないパスを見ており**一度も実行されていなかった**（`catches_raw.json` を repo 直下から `crawl/` へ移した際の取り残し。「一之瀬丸が CSV に0行」の真因はここで、魚種正規化の問題ではなかった） (c) freetext パーサーが history URL を7日ぶん叩いて**同じ内容に URL の日付を貼っていた**ため 373件中237件(63%)が水増し。**(b) のおかげで (c) の汚染が CSV に流れ込んでいなかった**＝CI 配線だけ直すと汚染を毎日 append することになっていた。**対策**: 対象を一之瀬丸1船宿に縮小（忠彦丸=chowari / 米元・勇幸丸=釣りビジョンでカバー済み・二重計上防止）、`parse_ichinose()` で最新ページ1本のみ取得し日付は本文「N日の釣果」から確定、`append_raw_direct_json` の trip_no 再採番を廃止（便グルーピングを壊していた）、内容シグネチャ120日 dedup。**検証**: (a) 存在・非空 (b) 最新日付 today-14 以内（`fail_staleness`） (c) 同一内容（ship/fish_raw/count_raw/size_raw/weight_raw）が複数日付に散らばっていたら fail。退避した旧ファイルで 42種を検知＝negative test 済み。決定ログ「2026-08-02」参照 |
 | 64 | `docs/x_post/*.html` 予想段落（2026-08-03） | **出船しない船宿を予想で名指ししていた**。選定が `tier A かつレンジ上限の大きい順` だけで出船頻度を見ておらず、8/2 投稿の「ちがさき丸のカツオ」は直近30日で**出船1日**、「広島屋のシロギス」は16日（翌日は出船せず判定不能）。8/1 投稿の「こなや丸のアジ」は2日。レンジ精度は検証済みでも、その船が出ないなら読者は答え合わせできない。**対策**: `load_verified_forecast(min_sail_days=24)` で直近30日の `(魚種, 船宿)` 出船日数24日（8割）未満を除外。閾値根拠: 18日→41組 / 20日→32組 / **24日→13組8魚種** / 26日→8組6魚種（26日だと3件埋まらない日が出る）。併せて `_forecast_lineup` に 1船宿1件 と **魚種の日替わりローテーション**（`toordinal()*limit % len(pool)` 起点・状態ファイル不要で CI 再現性あり）を追加。**検証**: 投稿本文の予想文を再パースし (船宿, 魚種) の出船日数が24日以上か確認。対象は **2026-08-05 以降**の投稿（旧ルール分は遡及しない。8/4 の crawl run は実装コミットより前でチェックアウトされ旧ロジックで生成されたため、検査開始日を新コードが実際に効く 8/5 に合わせた）。negative test: `_SINCE` を 8/4 に下げると当日の3件（こなや丸のアジ=出船1日・長崎屋のマダコ=23日・広島屋のシロギス=14日）を検知。`forecast/` ページ（84組の一覧）には適用しない（網羅が目的）。決定ログ「2026-08-03」参照 |
+| 65 | `normalize/area_seo_alias.json` → area title/description（2026-08-17） | **登録した別称が黙って落ちる / キーがエリア名と不一致になる**。GSC 実測で「1ページ目なのに0クリック」の主因が表記ゆれだった（「久慈漁港 釣果」が順位5.3で0クリック等・決定ログ 2026-08-06）。対策として別称をtitle 先頭2件＋県名、description に全件載せる実装を入れたが、過去に **thin テンプレだけ alias 注入を通っておらず天津港が title にも description にも別称ゼロ**という取りこぼしが実際に起きている。また静浦のエリアキー統合のようにキー名が変われば alias が誰にも適用されないまま設定だけ残る（無言劣化）。**検証**: 登録6港について (a) title に先頭2件 (b) description に全件 が露出しているか、(c) キーに対応する area ページが実在するか。照合はエリア名の**完全一致**（title 冒頭の「（」より前）— 前方一致だと「勝浦」の別称が「勝浦川津港」に誤ヒットする。negative test: 実在しないキー `沼津静浦` と 未露出の別称 `飯岡沖堤` を仕込んで両方検知を確認。決定ログ「2026-08-17」参照 |
 
 ### T22 関連の設計契約（H1 noindex 解除手順）→ ✅ T23 完了（2026-07-03）
 
@@ -168,7 +169,7 @@
 
 | ファイル | 役割 |
 |---|---|
-| `crawl/validate_output.py` | 11 不変条件の検証 gatekeeper |
+| `crawl/validate_output.py` | 不変条件（#1〜#65）の検証 gatekeeper |
 | `.github/workflows/crawl.yml` | CI に validate_output 組込・`--export-csv` を含めない |
 | `crawler.py` `_load_recent_catches_for_index` | 過去7日 records を CSV から復元（dict 形式・count_range/size_cm 含む） |
 | `crawler.py` `build_html` / `build_fish_pages` | sparse 検知 + 7日窓フォールバック |
