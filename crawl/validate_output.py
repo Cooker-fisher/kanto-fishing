@@ -2972,6 +2972,104 @@ def validate_area_alias_exposure():
         ok(f"[65] 別称 {len(alias_map)}港ぶんが title/description に露出（{checked} ページを検査）")
 
 
+def validate_area_thin_template():
+    """66: area thin テンプレ（当日釣果<2件）の本文契約（2026-08-17）
+
+    背景: GSC 実測で、同じ順位帯なのに thin 0.78%（515表示/4クリック）vs
+    full 2.28%（3,425表示/78クリック）＝ **2.9倍**の CTR 差があった。
+    2026-08-06 に title/description は full と揃えたが**本文は手つかず**で、
+    決定ログ 2026-08-01 の SERP 実査どおり Google は meta description をほぼ無視して
+    本文を抜粋するため、スニペットが
+      「本日の釣果報告は集計待ち」→「出船報告はまだ届いていません」
+    という否定文2連発になっていた。「{港名} 釣果」で来た人には押す理由が無い。
+
+    保証すること（thin ページ = title に「の船釣り釣果・過去実績」を含むもの）:
+      (a) 実績リード文（「…では過去1年で N 件…」）が `.notice`（集計待ち）より**前**にある
+          ＝ 本文が否定文で始まらない。事実は消さず順序だけ変える方針
+      (b) ヒーローの `.ah-m` が「本日の釣果報告は集計待ち」ではない
+      (c) fish_area ページが1本でも存在するエリアなら `area-all-fish` セクションを持つ
+          （fish_area への内部リンクを張る唯一の場所。thin だけ欠けていた）
+      (d) **海況セクションの有無が full と揃っている**。海況は出船報告と独立に毎日
+          更新される唯一のデータで、出船が途切れている港ほど載せる価値が高い。
+          weather 取得に失敗した日は full 側も出ないので、その日は vacuous pass になる
+    """
+    import glob as _glob
+    print("\n[66] area thin テンプレの本文契約")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        warn("[66] docs/area/ が無い")
+        return
+    fa_dir = os.path.join(DOCS, "fish_area")
+    fa_slugs = set()
+    if os.path.isdir(fa_dir):
+        for p in os.listdir(fa_dir):
+            if p.endswith(".html"):
+                fa_slugs.add(p[:-5])
+
+    thin, full_with_sea, thin_pages = [], 0, 0
+    full_total = 0
+    bad = []
+    for p in sorted(_glob.glob(os.path.join(area_dir, "*.html"))):
+        fn = os.path.basename(p)
+        if fn == "index.html":
+            continue
+        html = open(p, encoding="utf-8").read()
+        m = re.search(r"<title>(.*?)</title>", html, re.S)
+        if not m:
+            continue
+        # noindex は対象外。ポイントページ（T40）と、エリアキー統合で残る
+        # 「移動しました」リダイレクト墓標（kuji / numazu-shizuura 等）の両方を弾く
+        if re.search(r'<meta name="robots"[^>]*noindex', html):
+            continue
+        if "の船釣り釣果・過去実績" not in m.group(1):
+            full_total += 1
+            if "海況データ" in html:
+                full_with_sea += 1
+            continue
+        thin_pages += 1
+        thin.append((fn, html))
+
+    if not thin:
+        ok("[66] thin テンプレの area ページなし（vacuous pass）")
+        return
+
+    # 新テンプレは crawler.py の**次の日次フル実行**で初めて docs に載る。
+    # コミット済み docs を見る validate.yml（push 時）が、その1回ぶんのラグで
+    # 必ず赤くなるのを避ける。1本でも新テンプレが出ていれば以降は全件を厳格に見る
+    # （[62] と同じ「未再生成なら vacuous pass」パターン）。
+    if not any("では過去1年で" in html for _, html in thin):
+        ok(f"[66] thin {thin_pages}本が旧テンプレ（未再生成・vacuous pass・日次 crawl 後に実効）")
+        return
+
+    slug_of = lambda fn: fn[:-5]
+    for fn, html in thin:
+        # (a) 実績リードが notice より前
+        i_lead = html.find("では過去1年で")
+        i_notice = html.find('<div class="notice">')
+        if i_lead < 0:
+            bad.append(f"{fn}: 実績リード文が無い")
+        elif 0 <= i_notice < i_lead:
+            bad.append(f"{fn}: notice(集計待ち)が実績リードより前にある")
+        # (b) ヒーローが否定文でない
+        if '<div class="ah-m">本日の釣果報告は集計待ち</div>' in html:
+            bad.append(f"{fn}: ヒーローが「本日の釣果報告は集計待ち」のまま")
+        # (c) fish_area があるなら area-all-fish
+        s = slug_of(fn)
+        if any(x.endswith(f"-{s}") for x in fa_slugs) and 'class="area-all-fish"' not in html:
+            bad.append(f"{fn}: fish_area ページがあるのに area-all-fish セクションが無い")
+
+    # (d) 海況の有無が full と揃っているか（full 側が全滅の日は判定しない）
+    if full_total and full_with_sea >= max(1, full_total // 2):
+        no_sea = [fn for fn, html in thin if "海況データ" not in html]
+        if no_sea:
+            bad.append(f"full の {full_with_sea}/{full_total} に海況があるのに thin {len(no_sea)}本に無い: {no_sea[:3]}")
+
+    if bad:
+        fail(f"[66] thin テンプレ違反 {len(bad)}件: {bad[:5]}")
+    else:
+        ok(f"[66] thin {thin_pages}本すべて実績リード先行・海況/魚種セクションあり")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--warn-only", action="store_true",
@@ -3054,6 +3152,7 @@ def main():
     validate_direct_crawl_json()
     validate_xpost_forecast_sail_rate()
     validate_area_alias_exposure()
+    validate_area_thin_template()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

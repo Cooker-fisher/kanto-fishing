@@ -9475,6 +9475,124 @@ def build_area_redirects():
     return n
 
 
+def build_area_sea_section_html(area, group, weather_data, today_iso, now):
+    """area ページの海況ブロックを (ヒーロー1行, 海況セクション) で返す。full/thin 共用。
+
+    2026-08-17: thin テンプレ（当日釣果<2件）には海況セクションが無かった。海況は
+    「今日この港が出せるのか」の判断材料で、**出船報告の有無と独立に毎日更新される
+    唯一のデータ**。出船が途切れている港ほど載せる価値が高いのに、そこだけ落ちていた。
+    full 側の重複実装を無くすため、マークアップの SoT をこの関数1つに寄せる。
+
+    エリア別予報を優先し、取得失敗時はグループ代表にフォールバック
+    （＝天津と飯岡が同一値になる従来動作・2026-08-01）。データが無ければ両方 "" を返す。
+    """
+    sea_fc = {}
+    if weather_data:
+        sea_fc = (weather_data.get("forecast_area", {}).get((area, today_iso))
+                  or weather_data.get("forecast", {}).get((group, today_iso), {}))
+    if not sea_fc:
+        return "", ""
+    sst = sea_fc.get("sst")
+    wave = sea_fc.get("wave_height")
+    wind_spd = sea_fc.get("wind_speed")
+    wind_dir = sea_fc.get("wind_dir")
+    pressure = sea_fc.get("pressure")
+    moon_age = sea_fc.get("moon_age")
+    sst_str = f"{sst:.1f}℃" if sst else "—"
+    wave_str = f"{wave:.1f}m" if wave else "—"
+    wind_txt = (_wind_dir_text(wind_dir) if wind_dir else "") + (f"{wind_spd:.1f}m/s" if wind_spd else "")
+    wind_str = wind_txt if wind_txt else "—"
+    # 潮汐: 数字（潮差cm）ではなく 大潮/中潮/小潮 等の名称で表示（不変条件 [12]）
+    tide_label = _moon_title(moon_age) if moon_age is not None else ""
+    tide_str = tide_label if tide_label else "—"
+    # 月齢: 数字ではなく 満月/新月/半月 等の名称で表示（不変条件 [12]）
+    moon_label = _moon_phase_name(moon_age) if moon_age is not None else ""
+    moon_str = moon_label if moon_label else "—"
+    pressure_str = f"{int(pressure)}hPa" if pressure else "—"
+
+    sea_parts = []
+    if sst: sea_parts.append(f"水温{sst_str}")
+    if wave: sea_parts.append(f"波{wave_str}")
+    if wind_txt: sea_parts.append(wind_str)
+    if tide_label: sea_parts.append(tide_label)
+    ah_sea_html = f'<div class="ah-sea">{" / ".join(sea_parts)}</div>' if sea_parts else ""
+
+    # 海況1行コメント: 平年比SST・波高/風による欠航リスク（不変条件 [12] が存在を要求）
+    cm_parts = []
+    # 関東沿岸の月別 SST 平年値（5月=17℃ 基準で簡易テーブル）
+    _sst_norm = {1: 14, 2: 13, 3: 14, 4: 16, 5: 18, 6: 21, 7: 24, 8: 26, 9: 25, 10: 22, 11: 19, 12: 16}
+    if sst is not None:
+        norm = _sst_norm.get(now.month, 18)
+        diff = sst - norm
+        if diff >= 1.5:
+            cm_parts.append(f"水温は平年比+{diff:.1f}℃と高め")
+        elif diff <= -1.5:
+            cm_parts.append(f"水温は平年比{diff:.1f}℃と低め")
+        else:
+            cm_parts.append(f"水温は平年並み（{sst:.1f}℃）")
+    # 波・風 欠航リスク（内部的に外海/内海の閾値で切替するが、文言には出さない）
+    sea_type = "内海" if group in _UCHIUMI_AREAS else "外海"
+    if wave is not None or wind_spd is not None:
+        _, _label = _sea_label(wave or 0, wind_spd or 0, sea_type)
+        cm_parts.append(_label)
+    sea_comment = (f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">'
+                   f'{"。".join(cm_parts)}。</p>') if cm_parts else ""
+
+    sea_section_html = (
+        f'<h2 class="st">海況データ <span class="tag free">無料</span></h2>'
+        f'{sea_comment}'
+        f'<div class="sea-grid">'
+        f'<div class="sea-item"><div class="sv">{sst_str}</div><div class="sl2">水温</div></div>'
+        f'<div class="sea-item"><div class="sv">{wave_str}</div><div class="sl2">波高</div></div>'
+        f'<div class="sea-item"><div class="sv">{wind_str}</div><div class="sl2">風</div></div>'
+        f'<div class="sea-item"><div class="sv">{tide_str}</div><div class="sl2">潮汐</div></div>'
+        f'<div class="sea-item"><div class="sv">{moon_str}</div><div class="sl2">月相</div></div>'
+        f'<div class="sea-item"><div class="sv">{pressure_str}</div><div class="sl2">気圧</div></div>'
+        f'</div>'
+    )
+    return ah_sea_html, sea_section_html
+
+
+def build_area_all_fish_section_html(area, all_area_fishes, week_fish_set):
+    """area ページの「{area}エリアで釣れる魚種」セクション（area-all-fish）。full/thin 共用。
+
+    2026-08-17: thin テンプレにはこのセクションが無く、不変条件 [26] は固定サンプル
+    （full）しか見ていないため無言で欠けていた。fish_area ページへの内部リンクを
+    まとめて張る唯一の場所なので、出船が途切れている港ほど落としてはいけない。
+
+    week_fish_set が空（＝thin。今週実績という概念が無い）のときは <details> で
+    畳まず全件を展開する。畳むと thin ページの可視テキストがほぼ空になるため。
+    """
+    active_chips, fold_chips = [], []
+    for fish, n in all_area_fishes:
+        if not os.path.exists(os.path.join(WEB_DIR, f"fish_area/{fish_slug(fish)}-{area_slug(area)}.html")):
+            continue
+        chip = (
+            f'<a href="../fish_area/{fish_slug(fish)}-{area_slug(area)}.html" class="chip-link">'
+            f'<img src="../assets/fish/{fish_img_slug(fish)}/{fish_img_slug(fish)}_emoji.webp" alt="{fish}" '
+            f'class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" '
+            f'onerror="this.style.display=\'none\'">{fish}（{n}便）</a>'
+        )
+        (active_chips if fish in week_fish_set else fold_chips).append(chip)
+    if not (active_chips or fold_chips):
+        return ""
+    parts = []
+    if active_chips:
+        parts.append(f'<p class="tier-label">★ 今週実績あり（{len(active_chips)}魚種）</p>')
+        parts.append(f'<div class="chip-wrap">{"".join(active_chips)}</div>')
+    if fold_chips:
+        if week_fish_set:
+            parts.append(
+                f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(fold_chips)}魚種）を表示</summary>'
+                f'<div class="chip-wrap">{"".join(fold_chips)}</div></details>'
+            )
+        else:
+            parts.append(f'<p class="tier-label">過去実績（{len(fold_chips)}魚種）</p>')
+            parts.append(f'<div class="chip-wrap">{"".join(fold_chips)}</div>')
+    return ('<section class="area-all-fish">'
+            f'<h2 class="st">{area}エリアで釣れる魚種</h2>' + "".join(parts) + '</section>')
+
+
 def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=None, fish_area_summary=None, area_top_fishes=None):
     os.makedirs(os.path.join(WEB_DIR, "area"), exist_ok=True)
     now = datetime.now(JST).replace(tzinfo=None)
@@ -9762,6 +9880,41 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             # thin パスでも area_description.json の解説文を表示（full パスと同じ build 関数）
             area_desc_html_thin = build_area_description_html(area, area_desc_data)
 
+            # 2026/08/17 SEO(CTR): thin テンプレの本文を作り直した。
+            # 8/6 に title/description は full と揃えたが、**本文は手つかず**だった。
+            # 決定ログ 2026-08-01 の SERP 実査で「Google は meta description をほぼ無視して
+            # 本文を抜粋」している事が判っており、thin の本文は
+            #   ヒーロー「本日の釣果報告は集計待ち」→ notice「出船報告はまだ届いていません」
+            # と**否定文2連発で始まっていた**。「{港名} 釣果」で来た人に見えるスニペットが
+            # これでは押されない。GSC 実測でも同順位帯で thin 0.78%（515表示/4クリック）
+            # vs full 2.28%（3,425表示/78クリック）＝ 2.9倍差（決定ログ 2026-08-17）。
+            #
+            # 方針は description と同じ「嘘はつかない・ただし最初に見せない」:
+            #   ①冒頭に過去実績の実数リード文を置く
+            #   ②「集計待ち」は notice として残すが実績の後ろに送る
+            #   ③full にしか無かった 海況データ / エリアで釣れる魚種 を thin にも出す
+            #     （海況は出船報告の有無と独立に毎日更新される唯一のデータで、
+            #      出船が途切れている港ほど「今日は出せるのか」の判断材料になる）
+            _thin_ah_sea_html, _thin_sea_section = build_area_sea_section_html(
+                area, group, weather_data, today_iso, now)
+            # thin は「今週実績」という概念が無いので week_fish_set は空 = 折り畳まず全件展開
+            _thin_all_fish_section = build_area_all_fish_section_html(
+                area, _area_top_fishes.get(area, []), set())
+
+            _lead_bits = [f"{area}（{group}）では過去1年で{past_total:,}件の釣果記録があります"]
+            if top_fish_names:
+                _lead_bits.append(f"主に釣れているのは{'・'.join(top_fish_names)}です")
+            if past_30_days:
+                _lead_bits.append(f"直近30日は{past_30_days}日出船し、{past_30_ships}船宿が釣果を報告しています")
+            thin_lead_html = (
+                f'<p style="font-size:14px;line-height:1.8;color:var(--sub);margin:0 0 14px">'
+                f'{"。".join(_lead_bits)}。</p>'
+            )
+            # ヒーロー中央の一言。従来は「本日の釣果報告は集計待ち」だけだったので、
+            # 実績側の数字に差し替える（集計待ちの事実は下の notice に残る）。
+            _thin_ah_m = (f"過去1年{past_total:,}件"
+                          + (f' <small>{"・".join(top_fish_names[:2])}</small>' if top_fish_names else ""))
+
             html_min = f"""<!DOCTYPE html>
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9801,12 +9954,13 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
   <div class="c">
     <h1>{area}の船釣り釣果</h1>
     <div class="ah-sub">{group}</div>
-    <div class="ah-m">本日の釣果報告は集計待ち</div>
+    <div class="ah-m">{_thin_ah_m}</div>
     <div class="ah-stats">
       <div class="ah-st"><div class="v">{past_total:,}</div><div class="l">過去1年の釣果記録</div></div>
       <div class="ah-st"><div class="v">{past_30_days}</div><div class="l">直近30日 出船日</div></div>
       <div class="ah-st"><div class="v">{past_30_ships}</div><div class="l">直近30日 出船船宿</div></div>
     </div>
+    {_thin_ah_sea_html}
   </div>
 </div>
 <div class="c">
@@ -9815,6 +9969,8 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
       share_text=f"{area}の船釣り釣果情報 | 船釣り予想",
       share_url=f"{SITE_URL}/area/{area_slug(area)}.html",
   )}
+  {thin_lead_html}
+  {_thin_sea_section}
   <div class="notice">
     <strong>本日の{area}からの出船報告はまだ届いていません。</strong>
     出船情報は各船宿のWebサイト・電話で直接ご確認ください。
@@ -9828,6 +9984,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
   </div>
   <h2 class="st">このエリアで釣れる魚（過去1年） <span class="tag free">無料</span></h2>
   {fish_grid_html if fish_grid_html else '<p style="color:var(--muted);font-size:13px">過去データを集計中です。</p>'}
+  {_thin_all_fish_section}
   <h2 class="st">出船する船宿（過去1年） <span class="tag free">無料</span></h2>
   {ship_card_html if ship_card_html else '<p style="color:var(--muted);font-size:13px">船宿データを集計中です。</p>'}
   <!-- 広告① -->
@@ -9940,115 +10097,17 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
                 + '</a>'
             )
 
-        # 海況データ（2026-08-01: エリア別予報を優先。取得失敗時はグループ代表に
-        # フォールバック＝天津と飯岡が同一値になる従来動作）
-        sea_fc = {}
-        if weather_data:
-            sea_fc = (weather_data.get("forecast_area", {}).get((area, today_iso))
-                      or weather_data.get("forecast", {}).get((group, today_iso), {}))
-        sst = sea_fc.get("sst")
-        wave = sea_fc.get("wave_height")
-        wind_spd = sea_fc.get("wind_speed")
-        wind_dir = sea_fc.get("wind_dir")
-        pressure = sea_fc.get("pressure")
-        moon_age = sea_fc.get("moon_age")
-        sst_str = f"{sst:.1f}℃" if sst else "—"
-        wave_str = f"{wave:.1f}m" if wave else "—"
-        wind_txt = (_wind_dir_text(wind_dir) if wind_dir else "") + (f"{wind_spd:.1f}m/s" if wind_spd else "")
-        wind_str = wind_txt if wind_txt else "—"
-        # 潮汐: 数字（潮差cm）ではなく 大潮/中潮/小潮 等の名称で表示
-        tide_label = _moon_title(moon_age) if moon_age is not None else ""
-        tide_str = tide_label if tide_label else "—"
-        # 月齢: 数字ではなく 満月/新月/半月 等の名称で表示
-        moon_label = _moon_phase_name(moon_age) if moon_age is not None else ""
-        moon_str = moon_label if moon_label else "—"
-        pressure_str = f"{int(pressure)}hPa" if pressure else "—"
-        # ヒーローの海況テキスト
-        sea_parts = []
-        if sst: sea_parts.append(f"水温{sst_str}")
-        if wave: sea_parts.append(f"波{wave_str}")
-        if wind_txt: sea_parts.append(wind_str)
-        if tide_label: sea_parts.append(tide_label)
-        ah_sea_html = f'<div class="ah-sea">{" / ".join(sea_parts)}</div>' if sea_parts else ""
-
-        # 海況1行コメント: 平年比SST・波高/風による欠航リスク
-        sea_comment = ""
-        if sea_fc:
-            cm_parts = []
-            # SST 平年比（簡易: 月別の平均SST 想定値との差）
-            # 関東沿岸の月別 SST 平年値（5月=17℃ 基準で簡易テーブル）
-            _sst_norm = {1:14, 2:13, 3:14, 4:16, 5:18, 6:21, 7:24, 8:26, 9:25, 10:22, 11:19, 12:16}
-            if sst is not None:
-                norm = _sst_norm.get(now.month, 18)
-                diff = sst - norm
-                if diff >= 1.5:
-                    cm_parts.append(f"水温は平年比+{diff:.1f}℃と高め")
-                elif diff <= -1.5:
-                    cm_parts.append(f"水温は平年比{diff:.1f}℃と低め")
-                else:
-                    cm_parts.append(f"水温は平年並み（{sst:.1f}℃）")
-            # 波・風 欠航リスク（内部的に外海/内海の閾値で切替するが、文言には出さない）
-            sea_type = "内海" if group in _UCHIUMI_AREAS else "外海"
-            if wave is not None or wind_spd is not None:
-                _w = wave or 0
-                _wd = wind_spd or 0
-                _, _label = _sea_label(_w, _wd, sea_type)
-                cm_parts.append(_label)
-            if cm_parts:
-                sea_comment = f'<p style="font-size:13px;line-height:1.7;color:var(--sub);margin:0 0 12px">{"。".join(cm_parts)}。</p>'
+        # 海況データ（マークアップの SoT は build_area_sea_section_html・thin と共用）
+        ah_sea_html, sea_section_html = build_area_sea_section_html(
+            area, group, weather_data, today_iso, now)
 
         # T38-A5: area-all-fish セクション（Layer 1 固定・全履歴魚種・折り畳み付き）
         # T29 past_fish_section_html を廃止し、全履歴魚種を常時表示
-        _week_fish_set = {f for f, _ in top_fish_items}  # 直近7日に実績あり
-        _all_area_fishes = _area_top_fishes.get(area, [])  # [(fish, cnt), ...]
-        _aaf_active_chips = []
-        _aaf_fold_chips = []
-        for _f_hist, _n_hist in _all_area_fishes:
-            _fa_file = os.path.join(WEB_DIR, f"fish_area/{fish_slug(_f_hist)}-{area_slug(area)}.html")
-            if not os.path.exists(_fa_file):
-                continue
-            _chip = (
-                f'<a href="../fish_area/{fish_slug(_f_hist)}-{area_slug(area)}.html" class="chip-link">'
-                f'<img src="../assets/fish/{fish_img_slug(_f_hist)}/{fish_img_slug(_f_hist)}_emoji.webp" alt="{_f_hist}" class="chip-emoji" width="16" height="16" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
-                f'{_f_hist}（{_n_hist}便）</a>'
-            )
-            if _f_hist in _week_fish_set:
-                _aaf_active_chips.append(_chip)
-            else:
-                _aaf_fold_chips.append(_chip)
-        if _aaf_active_chips or _aaf_fold_chips:
-            _aaf_parts = []
-            if _aaf_active_chips:
-                _aaf_parts.append(f'<p class="tier-label">★ 今週実績あり（{len(_aaf_active_chips)}魚種）</p>')
-                _aaf_parts.append(f'<div class="chip-wrap">{"".join(_aaf_active_chips)}</div>')
-            if _aaf_fold_chips:
-                _aaf_parts.append(
-                    f'<details class="fold-chips"><summary>過去実績あり（今週ゼロ・{len(_aaf_fold_chips)}魚種）を表示</summary>'
-                    f'<div class="chip-wrap">{"".join(_aaf_fold_chips)}</div></details>'
-                )
-            past_fish_section_html = (
-                '<section class="area-all-fish">'
-                f'<h2 class="st">{area}エリアで釣れる魚種</h2>'
-                + "".join(_aaf_parts)
-                + '</section>'
-            )
-        else:
-            past_fish_section_html = ""
-
-        sea_section_html = ""
-        if sea_fc:
-            sea_section_html = (
-                f'<h2 class="st">海況データ <span class="tag free">無料</span></h2>'
-                f'{sea_comment}'
-                f'<div class="sea-grid">'
-                f'<div class="sea-item"><div class="sv">{sst_str}</div><div class="sl2">水温</div></div>'
-                f'<div class="sea-item"><div class="sv">{wave_str}</div><div class="sl2">波高</div></div>'
-                f'<div class="sea-item"><div class="sv">{wind_str}</div><div class="sl2">風</div></div>'
-                f'<div class="sea-item"><div class="sv">{tide_str}</div><div class="sl2">潮汐</div></div>'
-                f'<div class="sea-item"><div class="sv">{moon_str}</div><div class="sl2">月相</div></div>'
-                f'<div class="sea-item"><div class="sv">{pressure_str}</div><div class="sl2">気圧</div></div>'
-                f'</div>'
-            )
+        past_fish_section_html = build_area_all_fish_section_html(
+            area,
+            _area_top_fishes.get(area, []),
+            {f for f, _ in top_fish_items},   # 直近7日に実績あり
+        )
 
         # 船宿リスト（sl-card）
         ship_week_fish = {}
