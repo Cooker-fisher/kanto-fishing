@@ -2812,6 +2812,81 @@ def validate_direct_crawl_json():
         ok(f"[63] 内容重複なし（ユニーク内容 {len(dates_by_content)}種）")
 
 
+def validate_area_seo_alias_exposure():
+    """65: 登録した別称が area ページの title / description に露出していること（2026-08-06 決定・2026-08-19 投入）
+
+    背景: `area_seo_alias.json` は「GSC で実際に表示が出た呼称ゆれ」だけを載せる
+    SEO 資産（推測で足さない方針）。ところが過去に
+    (a) title へ注入するのが `aliases[0]` の1件固定で、別称2件のうち片方が
+        落ちていた（日立久慈港「久慈漁港」= 順位5.3 で 0クリック）
+    (b) 当日釣果2件未満で thin テンプレに分岐すると別称の注入経路ごと外れ、
+        天津港は title にも description にも別称が1文字も無かった
+    という取りこぼしが起きた。どちらも「ページは生成されているので既存の
+    不変条件では全部 PASS する」型の無言デグレで、GSC を手で集計するまで
+    3か月気付けなかった。決定ログ 2026-08-06 / 2026-08-19。
+
+    契約（crawler.py `area_title_name()` と meta description 生成の仕様）:
+      - title には先頭2件（`aliases[:2]`）＋県名が入る。3件目以降は title が
+        長くなりすぎるので入れない ＝ ここは「先頭2件だけ」を検査する
+      - description には**全件**が入る（「〜とも呼ばれます」）
+      - full / thin どちらのテンプレでも上記が成立すること（(b) の再発防止）
+    """
+    print("\n[65] area 別称（area_seo_alias.json）の title/description 露出")
+    apath = os.path.join(ROOT, "normalize", "area_seo_alias.json")
+    if not os.path.isfile(apath):
+        warn("[65] area_seo_alias.json が無い")
+        return
+    try:
+        alias_raw = json.load(open(apath, encoding="utf-8"))
+    except Exception as e:
+        fail(f"[65] area_seo_alias.json が読めない: {e}")
+        return
+    alias_map = {k: [a for a in (v or []) if a and a != k]
+                 for k, v in alias_raw.items() if not k.startswith("_")}
+    alias_map = {k: v for k, v in alias_map.items() if v}
+    if not alias_map:
+        warn("[65] 別称が1件も登録されていない")
+        return
+
+    area_dir = os.path.join(ROOT, "docs", "area")
+    pages = []
+    for fn in sorted(os.listdir(area_dir)) if os.path.isdir(area_dir) else []:
+        if not fn.endswith(".html") or fn == "index.html":
+            continue
+        head = open(os.path.join(area_dir, fn), encoding="utf-8", errors="ignore").read(8000)
+        mt = re.search(r"<title>(.*?)</title>", head, re.S)
+        md = re.search(r'<meta name="description" content="(.*?)"', head, re.S)
+        pages.append((fn, (mt.group(1) if mt else ""), (md.group(1) if md else "")))
+
+    bad = []
+    checked = 0
+    for area, aliases in sorted(alias_map.items()):
+        # title は必ず「{エリア名}（…」または「{エリア名}の…」で始まる（full/thin 共通）
+        hits = [p for p in pages if p[1].startswith(area + "（") or p[1].startswith(area + "の")]
+        if not hits:
+            bad.append(f"{area}: 別称を登録しているのに area ページが見つからない（エリア名の改称・統合を疑う）")
+            continue
+        if len(hits) > 1:
+            bad.append(f"{area}: title 先頭が一致するページが複数 {[h[0] for h in hits]}")
+            continue
+        fn, title, desc = hits[0]
+        checked += 1
+        thin = "・過去実績" in title
+        miss_t = [a for a in aliases[:2] if a not in title]
+        miss_d = [a for a in aliases if a not in desc]
+        if miss_t:
+            bad.append(f"{fn}: title に別称 {miss_t} が無い（{'thin' if thin else 'full'} テンプレ / title: {title[:60]}）")
+        if miss_d:
+            bad.append(f"{fn}: description に別称 {miss_d} が無い（{'thin' if thin else 'full'} テンプレ）")
+
+    if bad:
+        for b in bad[:8]:
+            fail(f"[65] {b}")
+    else:
+        ok(f"[65] 別称登録 {len(alias_map)}エリア {sum(len(v) for v in alias_map.values())}件: "
+           f"title(先頭2件)/description(全件) に露出（検査 {checked}ページ）")
+
+
 def validate_xpost_forecast_sail_rate():
     """64: x_post の予想段落に載せる船宿は「ほぼ必ず出船する」ものだけ（2026-08-03）
 
@@ -2968,6 +3043,7 @@ def main():
     validate_no_address_points()
     validate_direct_crawl_json()
     validate_xpost_forecast_sail_rate()
+    validate_area_seo_alias_exposure()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
