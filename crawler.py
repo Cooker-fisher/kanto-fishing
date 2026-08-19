@@ -17929,9 +17929,70 @@ def build_404_page():
 # ============================================================
 # sitemap.xml 自動生成
 # ============================================================
-def build_sitemap(data):
+def _build_sitemap_lastmod_index(hist_rows=None):
+    """data/V2/*.csv から「そのページの実データが最後に動いた日」を slug 別に集計する。
+
+    2026/08/19 追加（決定ログ参照）。2026/08/01 の「lastmod の正直化」は x_post 日次と
+    monthly 月報だけを対象にして打ち切っていたため、残る fish / area / fish_area / ship
+    の 651本が**毎日ビルド日を lastmod に書き続けていた**（sitemap 768本中 85%）。
+    Google は lastmod が実態と合わないサイトの lastmod を無視するので、
+    「どのページを優先して取りに行くか」のヒントを自分で潰していた。
+
+    返すのは {種別: {slug: "YYYY-MM-DD"}}。ページの実体は CSV から生成されるので、
+    その entity の最大 date ＝ ページ内容が変わりうる最後の日。欠航行も
+    「その日ページが変わった」ことに変わりはないので除外しない。
+    slug が引けないページは呼び出し側で now にフォールバックする（嘘の古い日付を
+    書くほうが有害なので、不明なら従来どおり今日と言う）。
+    """
+    if hist_rows is None:
+        hist_rows = _load_historical_catches()
+    _skip_fish = {"不明", "欠航"}
+    # CSV の ship 名 → romaji_slug。sitemap の ship URL は ships.json の romaji_slug を
+    # 使うのでそちらを主、normalize/ship_romaji_map.json を副にする。
+    _ship_slug_by_name = {}
+    for _s in SHIPS:
+        if _s.get("name") and _s.get("romaji_slug"):
+            _ship_slug_by_name.setdefault(_s["name"], _s["romaji_slug"])
+    for _n, _sl in (_SHIP_ROMAJI or {}).items():
+        if _sl:
+            _ship_slug_by_name.setdefault(_n, _sl)
+
+    fish_lm, area_lm, fa_lm, ship_lm = {}, {}, {}, {}
+
+    def _bump(d_map, key, day):
+        if key and (key not in d_map or day > d_map[key]):
+            d_map[key] = day
+
+    for r in hist_rows:
+        day = (r.get("date") or "").replace("/", "-")[:10]
+        if len(day) != 10:
+            continue
+        fish = (r.get("tsuri_mono") or "").strip()
+        area = (r.get("area") or "").strip()
+        ship = (r.get("ship") or "").strip()
+        if fish and fish not in _skip_fish:
+            _bump(fish_lm, fish_slug(fish), day)
+            if area:
+                _bump(fa_lm, f"{fish_slug(fish)}-{area_slug(area)}", day)
+        if area:
+            _bump(area_lm, area_slug(area), day)
+        if ship:
+            _bump(ship_lm, _ship_slug_by_name.get(ship), day)
+    return {"fish": fish_lm, "area": area_lm, "fish_area": fa_lm, "ship": ship_lm}
+
+
+def build_sitemap(data, hist_rows=None):
     from urllib.parse import quote as _quote
     now = datetime.now(JST).replace(tzinfo=None).strftime("%Y-%m-%d")
+    # 2026/08/19: fish/area/fish_area/ship の lastmod を実データ由来にする（下の lastmod 註）
+    _lm = _build_sitemap_lastmod_index(hist_rows)
+
+    def _lastmod_of(kind, slug):
+        """実データ由来の最終更新日。引けなければ None（呼び出し側で now にフォールバック）。
+        未来日は書かない（CSV に先付け日付が混ざっても sitemap を壊さない）。"""
+        d = (_lm.get(kind) or {}).get(slug)
+        return min(d, now) if d else None
+
     urls = [
         (f"{SITE_URL}/", "1.0", "daily"),
         (f"{SITE_URL}/calendar.html", "0.6", "weekly"),
@@ -17955,7 +18016,8 @@ def build_sitemap(data):
     if os.path.isdir(fish_dir):
         for fname in sorted(os.listdir(fish_dir)):
             if fname.endswith(".html") and fname != "index.html":
-                urls.append((f"{SITE_URL}/fish/{fname}", "0.8", "daily"))
+                urls.append((f"{SITE_URL}/fish/{fname}", "0.8", "daily",
+                             _lastmod_of("fish", fname[:-5])))
     # fish/index.html (魚種一覧ハブ)
     if os.path.isfile(os.path.join(fish_dir, "index.html")):
         urls.append((f"{SITE_URL}/fish/", "0.8", "daily"))
@@ -17977,7 +18039,8 @@ def build_sitemap(data):
                     continue
             except Exception:
                 pass
-            urls.append((f"{SITE_URL}/area/{fname}", "0.7", "daily"))
+            urls.append((f"{SITE_URL}/area/{fname}", "0.7", "daily",
+                         _lastmod_of("area", _area_stem)))
     # area/index.html (エリア一覧ハブ)
     if os.path.isfile(os.path.join(area_dir, "index.html")):
         urls.append((f"{SITE_URL}/area/", "0.7", "daily"))
@@ -18005,7 +18068,8 @@ def build_sitemap(data):
                     continue
             except Exception:
                 pass
-            urls.append((f"{SITE_URL}/fish_area/{fname}", "0.8", "daily"))
+            urls.append((f"{SITE_URL}/fish_area/{fname}", "0.8", "daily",
+                         _lastmod_of("fish_area", _stem)))
     # forecast/（T23・2026-07-03）: ハブ index.html のみ index 解除済み。
     # 日付/週/エリアの個別ページは noindex 維持のため、HTML head の noindex 検出で自動除外。
     # （area/fish_area/x_post と同じディスク走査＋noindex判定パターン）
@@ -18033,7 +18097,8 @@ def build_sitemap(data):
                 continue
         slug_s = s.get("romaji_slug")
         if slug_s and slug_s not in _SHIP_NOINDEX_SLUGS:
-            urls.append((f"{SITE_URL}/ship/{slug_s}.html", "0.6", "weekly"))
+            urls.append((f"{SITE_URL}/ship/{slug_s}.html", "0.6", "weekly",
+                         _lastmod_of("ship", slug_s)))
     # x_post/*.html（日次釣果まとめ＝独自編集コンテンツ・2026/06/05 追加）
     # 当サイト唯一の純オリジナルコンテンツ。indexable（noindex なし）だが従来
     # sitemap 未収録でクローラーから見えにくかった。AdSense「有用性の低いコンテンツ」
@@ -18094,17 +18159,27 @@ def build_sitemap(data):
                 _m_y, _m_m = int(_ym[:4]), int(_ym[5:7])
                 _m_next = f"{_m_y + 1}-01-01" if _m_m == 12 else f"{_m_y}-{_m_m + 1:02d}-01"
                 urls.append((f"{SITE_URL}/monthly/{_ym}/{_mfname}", "0.8", "monthly", min(_m_next, now)))
-    # lastmod の正直化（2026/08/01・決定ログ参照）:
+    # lastmod の正直化（2026/08/01 開始・2026/08/19 完了・決定ログ参照）:
     # 旧実装は全 URL に lastmod=now を毎日書いていた（約1,700本が毎日「更新された」と主張）。
     # Google は lastmod が実際の更新と一致しないサイトの lastmod を無視するため
-    # （=クロールスケジューリングのヒントを自ら捨てていた）、公開後に変化しない
-    # x_post 日次・monthly 月報は真の日付を入れる。日次再生成される fish/area 等は now のまま。
+    # （=クロールスケジューリングのヒントを自ら捨てていた）。
+    #   2026/08/01: 公開後に変化しない x_post 日次・monthly 月報に真の日付を入れた。
+    #               fish/area/fish_area/ship は「日次再生成されるから」と now のまま残した。
+    #   2026/08/19: 残した 651本（sitemap 768本の85%）が横並びで今日を主張し続けており、
+    #               クロール優先度のヒントとしては 0 と同じだった。**再生成される ≠ 中身が
+    #               変わる**ので、_build_sitemap_lastmod_index() で実データの最終日に変更。
+    #               引けないページ（ポイントページ・履歴のない船宿など）は now のまま。
+    # ハブ（/ ・/fish/ ・/area/ ・/x_post/ ・/forecast/ 等）は本当に毎日変わるので now。
     entries = "\n".join(
         f"  <url><loc>{u[0]}</loc><lastmod>{(u[3] if len(u) > 3 and u[3] else now)}</lastmod>"
         f"<changefreq>{u[2]}</changefreq><priority>{u[1]}</priority></url>"
         for u in urls
     )
+    # lastmod の出所マーカー（2026/08/19）。不変条件 #66 は、このマーカーが無い
+    # sitemap を「旧コードが吐いた未再生成のもの」と判定して warn で素通しする。
+    # 閾値を緩めるのではなく「まだ新コードで生成されていない」を明示的に区別するための印。
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<!-- lastmod-source: data (crawler._build_sitemap_lastmod_index) -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {entries}
 </urlset>"""
@@ -19383,7 +19458,7 @@ def main():
         build_monthly_index(crawled_at)
     except Exception as _e_monthly:
         print(f"[WARN] build_monthly_pages/index 失敗（スキップ）: {_e_monthly}")
-    build_sitemap(valid_catches)
+    build_sitemap(valid_catches, hist_rows=_shared_hist_rows)
     build_premium_plan_page()
     build_404_page()
     # 全ページ生成完了後の最終パス: 孤児パージ等で消えた fish/fish_area への

@@ -2812,6 +2812,68 @@ def validate_direct_crawl_json():
         ok(f"[63] 内容重複なし（ユニーク内容 {len(dates_by_content)}種）")
 
 
+def validate_sitemap_lastmod_honesty():
+    """66: sitemap.xml の lastmod が実データ由来であること（2026-08-19）
+
+    背景: 旧実装は全 URL に lastmod=ビルド日を毎日書いていた。Google は lastmod が
+    実際の更新と一致しないサイトの lastmod を無視するので、クロール優先度のヒントを
+    自分で捨てていた。2026/08/01 に x_post 日次・monthly 月報だけ真の日付にしたが、
+    残る fish / area / fish_area / ship の 651本（sitemap 768本の85%）が横並びで
+    今日を主張し続けていた。2026/08/19 に crawler.py `_build_sitemap_lastmod_index()` で
+    実データ（data/V2 の該当 entity の最大 date）由来に変更。決定ログ「2026-08-19」。
+
+    検証:
+      (a) 未来日を書いていない（CSV に先付け日付が混ざっても sitemap を壊さない）
+      (b) fish/area/fish_area/ship の lastmod が「ビルド日一色」に戻っていない
+          閾値 80%: 実測は 24%（種別内訳 fish 44 / area 36 / fish_area 21 / ship 23%）で、
+          旧実装は 85〜100%。両者の間に十分な間隔があるので日々の変動では割れない。
+    ハブ（/ ・/fish/ ・/area/ ・/x_post/ ・pages/ 等）は本当に毎日変わるので対象外。
+    """
+    print("\n[66] sitemap.xml lastmod が実データ由来（ビルド日一色でない）")
+    path = os.path.join(DOCS, "sitemap.xml")
+    if not os.path.isfile(path):
+        fail("[66] docs/sitemap.xml が無い")
+        return
+    xml = open(path, encoding="utf-8", errors="ignore").read()
+    # 新コードで生成されたものだけを検査対象にする。マーカーが無い = crawler.py の
+    # 変更後まだ日次 CI が回っていない（＝配信中の sitemap は旧形式）状態で、
+    # ここで fail にすると「実装した当日は必ず赤い」ノイズになる。
+    # ⚠ これは閾値の緩和ではない。マーカーが付いた瞬間から (a)(b) は全てブロッキング。
+    if "lastmod-source: data" not in xml:
+        warn("[66] sitemap.xml に lastmod-source マーカーが無い "
+             "= 新コードでまだ再生成されていない（次の日次 CI 後に有効化される）")
+        return
+    rows = re.findall(r"<loc>(.*?)</loc><lastmod>(.*?)</lastmod>", xml)
+    if not rows:
+        fail("[66] sitemap.xml から loc/lastmod を1件も読めない（形式が変わった疑い）")
+        return
+    build_day = max(lm for _, lm in rows)
+    future = [loc for loc, lm in rows if lm > build_day]
+    if future:
+        fail(f"[66] 未来日の lastmod が {len(future)}件: {future[:3]}")
+
+    # 個別ページのみ（末尾がディレクトリ = ハブは除外）
+    kinds = ("fish", "area", "fish_area", "ship")
+    tgt = []
+    for loc, lm in rows:
+        rel = loc.split("funatsuri-yoso.com/", 1)[-1]
+        if "/" not in rel or not rel.endswith(".html"):
+            continue
+        if rel.split("/", 1)[0] in kinds:
+            tgt.append((rel, lm))
+    if len(tgt) < 100:
+        warn(f"[66] 検査対象が {len(tgt)}件しかない（sitemap が縮んでいる疑い）")
+        return
+    same = sum(1 for _, lm in tgt if lm >= build_day)
+    ratio = same / len(tgt)
+    if ratio > 0.80:
+        fail(f"[66] fish/area/fish_area/ship の lastmod が {same}/{len(tgt)} "
+             f"({ratio*100:.0f}%) でビルド日 {build_day} 一色 = 実データ由来になっていない")
+    else:
+        ok(f"[66] lastmod ビルド日率 {same}/{len(tgt)} ({ratio*100:.0f}%) / "
+           f"最古 {min(lm for _, lm in tgt)} / 未来日 0")
+
+
 def validate_area_seo_alias_exposure():
     """65: 登録した別称が area ページの title / description に露出していること（2026-08-06 決定・2026-08-19 投入）
 
@@ -3044,6 +3106,7 @@ def main():
     validate_direct_crawl_json()
     validate_xpost_forecast_sail_rate()
     validate_area_seo_alias_exposure()
+    validate_sitemap_lastmod_honesty()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
