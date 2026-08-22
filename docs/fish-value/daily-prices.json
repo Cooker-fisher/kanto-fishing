@@ -2,14 +2,9 @@
   "version": "v1",
   "source": "東京都中央卸売市場 日報（豊洲水産・中値）",
   "source_url": "https://www.shijou-nippo.metro.tokyo.lg.jp/SN/YYYYMM/YYYYMMDD/Sui/Sui_K1.csv",
-  "asof": "20260815",
+  "asof": "20260822",
   "window_business_days": 20,
   "days_fetched": [
-    "20260716",
-    "20260717",
-    "20260718",
-    "20260721",
-    "20260723",
     "20260724",
     "20260725",
     "20260727",
@@ -24,7 +19,12 @@
     "20260808",
     "20260810",
     "20260812",
-    "20260813"
+    "20260813",
+    "20260817",
+    "20260818",
+    "20260820",
+    "20260821",
+    "20260822"
   ],
   "by_pfid": {
     "amadai": {
@@ -34,18 +34,18 @@
     },
     "buri": {
       "n_days": 20,
-      "n_mid": 40,
-      "mid_median_yen_per_kg": 702
+      "n_mid": 39,
+      "mid_median_yen_per_kg": 756
     },
     "inada": {
-      "n_days": 16,
-      "n_mid": 16,
-      "mid_median_yen_per_kg": 783
+      "n_days": 15,
+      "n_mid": 15,
+      "mid_median_yen_per_kg": 918
     },
     "karei": {
       "n_days": 18,
-      "n_mid": 63,
-      "mid_median_yen_per_kg": 756
+      "n_mid": 61,
+      "mid_median_yen_per_kg": 810
     },
     "katsuo": {
       "n_days": 20,
@@ -53,33 +53,33 @@
       "mid_median_yen_per_kg": 756
     },
     "kihada": {
-      "n_days": 14,
-      "n_mid": 21,
-      "mid_median_yen_per_kg": 1404
+      "n_days": 11,
+      "n_mid": 16,
+      "mid_median_yen_per_kg": 1512
     },
     "kinmedai": {
-      "n_days": 20,
-      "n_mid": 20,
-      "mid_median_yen_per_kg": 1998
+      "n_days": 19,
+      "n_mid": 19,
+      "mid_median_yen_per_kg": 1944
     },
     "maaji": {
       "n_days": 20,
-      "n_mid": 48,
+      "n_mid": 45,
       "mid_median_yen_per_kg": 648
     },
     "mebaru": {
-      "n_days": 5,
-      "n_mid": 5,
-      "mid_median_yen_per_kg": 1296
+      "n_days": 4,
+      "n_mid": 4,
+      "mid_median_yen_per_kg": 1944
     },
     "saba": {
       "n_days": 20,
       "n_mid": 20,
-      "mid_median_yen_per_kg": 540
+      "mid_median_yen_per_kg": 567
     },
     "surumeika": {
-      "n_days": 18,
-      "n_mid": 18,
+      "n_days": 19,
+      "n_mid": 19,
       "mid_median_yen_per_kg": 1080
     },
     "tachiuo": {
