@@ -3875,6 +3875,43 @@ def area_title_name(area, aliases, group):
     parts = al + ([pref] if pref else [])
     return f"{area}（{'・'.join(parts)}）" if parts else area
 
+
+# H1 の全角換算上限。SERP に出る title の表示幅（実測で約32文字＋省略記号）に合わせる。
+_AREA_H1_MAX = 30
+
+
+def area_h1_text(area, aliases, group):
+    """area ページの H1 テキストを組み立てる（2026-08-29 導入）。
+
+    背景: SERP 実査で **Google が title を捨てて H1 に差し替える**ケースを確認した
+    （勝浦・飯岡・天津 = 0.5〜2% / 金谷・静浦は title 維持 = 5%台）。差し替えが
+    起きると title に入れた別称・県名・魚種・船宿数（不変条件 #65）が SERP から
+    まるごと消え、「勝浦湾 釣果」は3位・87impr・0クリックだった。
+    どちらが採用されても情報量が落ちないよう、H1 にも別称と県名を持たせる。
+
+    優先順位（30文字に収まらない場合は下から落とす）:
+      エリア名 > 別称（全件・title の2件上限より広い） > 県名 > 【毎日更新】
+
+    別称を全件入れるのは title と役割を分けるため。title は先頭2件（#65）だが、
+    3件目以降（例: 勝浦湾）にも実クエリの需要がある。
+    """
+    pref = (group or "").split("・")[0]
+    cur = [a for a in (aliases or []) if a and a != area]
+    while True:
+        parts = cur + ([pref] if pref else [])
+        name = f"{area}（{'・'.join(parts)}）" if parts else area
+        # 別称を優先し、余った幅にだけ【毎日更新】を載せる
+        for suffix in ("の船釣り釣果【毎日更新】", "の船釣り釣果"):
+            if len(name + suffix) <= _AREA_H1_MAX:
+                return name + suffix
+        if not cur:
+            break
+        cur = cur[:-1]
+    # 別称も【毎日更新】も落として収まらない = エリア名が長い。そのまま返す（切らない）
+    pref_part = f"（{pref}）" if pref else ""
+    return f"{area}{pref_part}の船釣り釣果"
+
+
 def load_decadal_calendar():
     """analysis.sqlite の decadal_calendar を {fish: {decade_no: {cnt_index, size_index}}} で返す"""
     if not os.path.exists(ANALYSIS_DB): return {}
@@ -9543,7 +9580,10 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 
     area_extra_css = """\
 .area-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:22px 14px 18px;text-align:center}
-.area-hero h1{font-size:26px;font-weight:800;margin:0}
+.area-hero h1{font-size:26px;font-weight:800;margin:0;line-height:1.35}
+/* 2026-08-29: H1 に別称+県名を入れて最長30文字になったため、狭幅では縮める */
+@media(max-width:600px){.area-hero h1{font-size:21px}}
+@media(max-width:400px){.area-hero h1{font-size:19px}}
 .area-hero .ah-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
 .area-hero .ah-m{font-size:20px;font-weight:800;color:var(--cta);margin-top:8px}
 .area-hero .ah-m small{font-size:12px;color:rgba(255,255,255,.6);font-weight:400}
@@ -9754,6 +9794,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             #         （嘘はつかない・ただし最初に見せる情報ではない）
             _thin_aliases = [a for a in area_seo_alias.get(area, []) if a and a != area]
             _thin_title_name = area_title_name(area, _thin_aliases, group)
+            _thin_h1 = area_h1_text(area, _thin_aliases, group)
             _thin_alias_meta = f"「{'」「'.join(_thin_aliases)}」とも呼ばれます。" if _thin_aliases else ""
             title_min = f"{_thin_title_name}の船釣り釣果・過去実績 | 船釣り予想"
             desc_meta_min = (f"{area}（{group}）の船釣り釣果。{_thin_alias_meta}"
@@ -9800,7 +9841,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 {_v2_header_nav('area')}
 <div class="area-hero">
   <div class="c">
-    <h1>{area}の船釣り釣果</h1>
+    <h1>{_thin_h1}</h1>
     <div class="ah-sub">{group}</div>
     <div class="ah-m">本日の釣果報告は集計待ち</div>
     <div class="ah-stats">
@@ -10193,6 +10234,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
         # SERP で「{別称} 釣果」検索時にタイトル内別称が太字一致しCTRが上がる。
         # 2026/08/01 別称+県名を併記 / 2026/08/06 別称を最大2件に拡大（area_title_name）。
         _area_title_name = area_title_name(area, _area_aliases, group)
+        _area_h1 = area_h1_text(area, _area_aliases, group)
         # 2026/07/12 SEO(CTR): title に更新日を入れる実験を導入したが、
         # 2026/08/01 SERP 実査で撤回（決定ログ参照）。SERP に出る title は Google の
         # 最終クロール時点のスナップショットのため、クロール頻度の低いページでは
@@ -10284,7 +10326,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
 {_v2_header_nav('area')}
 <div class="area-hero">
   <div class="c">
-    <h1>{area}の船釣り釣果</h1>
+    <h1>{_area_h1}</h1>
     <div class="ah-sub">{group}</div>
     <div class="ah-m">直近7日: {_week_cnt}件・{_week_ships}船宿 <small>(最新: {_latest_label})</small></div>
     {ah_sea_html}

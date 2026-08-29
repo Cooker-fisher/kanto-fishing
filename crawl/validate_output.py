@@ -2949,6 +2949,101 @@ def validate_area_seo_alias_exposure():
            f"title(先頭2件)/description(全件) に露出（検査 {checked}ページ）")
 
 
+_AREA_H1_MAX_CHARS = 30
+
+
+def validate_area_h1_richness():
+    """[68] docs/area/*.html の H1 に別称と県名が入っていること（2026-08-29）
+
+    背景: SERP 実査（Yahoo!検索=Google供給）で **Google が title を捨てて H1 に
+    差し替える**ケースを確認した。title 維持だった金谷 5.24% / 静浦 5.01% に対し、
+    H1 に差し替えられた飯岡 2.03% / 勝浦 1.11% / 天津 0.49%（順位帯はどれも 6.8〜8.2）。
+    差し替えが起きると不変条件 #65 で title に入れた別称・県名が SERP から丸ごと消え、
+    「勝浦湾 釣果」は3位・87impr・**0クリック**だった。
+    H1 が素の「{エリア}の船釣り釣果」に戻ると #65 の効果が半分死ぬので監視する。
+
+    契約:
+      - H1 は {エリア}（別称…・県名）の船釣り釣果[【毎日更新】] 形式
+      - 別称は area_seo_alias.json の**全件**。落ちてよいのは 30文字上限に
+        当たった場合のみ（末尾から落とす。1件戻すと必ず 30 を超えることを検証）
+      - 県名（ah-sub の先頭要素）は落とさない
+    """
+    print("\n[68] area H1 の別称・県名（title 差し替え対策）")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        fail("docs/area/ が存在しない")
+        return
+    alias_path = os.path.join(ROOT, "normalize", "area_seo_alias.json")
+    try:
+        alias_map = json.load(open(alias_path, encoding="utf-8"))
+    except Exception as e:
+        fail(f"area_seo_alias.json 読み込み失敗: {e}")
+        return
+    alias_map = {k: v for k, v in alias_map.items() if not k.startswith("_")}
+
+    pat = re.compile(r'<h1>([^<]+)</h1>\s*\n\s*<div class="ah-sub">([^<]*)</div>')
+    checked = 0
+    too_long = []
+    bare = []
+    missing_pref = []
+    missing_alias = []
+    alias_pages = {}
+    for fn in sorted(os.listdir(area_dir)):
+        if not fn.endswith(".html") or fn == "index.html":
+            continue
+        content = open(os.path.join(area_dir, fn), encoding="utf-8").read()
+        m = pat.search(content)
+        if not m:
+            continue  # build_point_pages 由来など H1/ah-sub 構造でないページ
+        checked += 1
+        h1, group = m.group(1), m.group(2).strip()
+        pref = group.split("・")[0] if group else ""
+        if len(h1) > _AREA_H1_MAX_CHARS:
+            too_long.append((fn, len(h1), h1))
+        if pref and pref not in h1:
+            missing_pref.append((fn, h1, pref))
+        # 別称登録エリアの判定: H1 冒頭のエリア名で引く
+        area_nm = h1.split("（")[0].replace("の船釣り釣果", "")
+        aliases = [a for a in alias_map.get(area_nm, []) if a and a != area_nm]
+        if aliases:
+            alias_pages[fn] = (h1, area_nm, aliases, pref)
+            miss = [a for a in aliases if a not in h1]
+            if miss:
+                # 30文字上限で落ちたぶんだけは許容。1件戻して 30 を超えるか検証する
+                kept = [a for a in aliases if a in h1]
+                trial_parts = kept + [miss[0]] + ([pref] if pref else [])
+                trial = (f"{area_nm}（{'・'.join(trial_parts)}）の船釣り釣果"
+                         if trial_parts else f"{area_nm}の船釣り釣果")
+                if len(trial) <= _AREA_H1_MAX_CHARS:
+                    missing_alias.append((fn, h1, miss, len(trial)))
+        if h1 in (f"{area_nm}の船釣り釣果",) and (aliases or pref):
+            bare.append((fn, h1))
+
+    if not checked:
+        fail("[68] H1/ah-sub 構造の area ページが 1 件も無い")
+        return
+    if too_long:
+        for fn, n, h in too_long[:5]:
+            fail(f"area H1 が {n} 文字（上限 {_AREA_H1_MAX_CHARS}）: {fn} → {h}")
+    else:
+        ok(f"area H1 の長さ: 全 {checked} ページで {_AREA_H1_MAX_CHARS} 文字以下")
+    if bare:
+        for fn, h in bare[:5]:
+            fail(f"area H1 が素の形に戻っている（別称/県名の注入が外れた）: {fn} → {h}")
+    if missing_pref:
+        for fn, h, p in missing_pref[:5]:
+            fail(f"area H1 に県名「{p}」が無い: {fn} → {h}")
+    if not bare and not missing_pref:
+        ok(f"area H1 に県名が入っている: {checked} ページ")
+    if not alias_pages:
+        fail("別称登録エリアの area ページが 1 件も見つからない（エリア名の改称・統合の疑い）")
+    elif missing_alias:
+        for fn, h, miss, n in missing_alias[:5]:
+            fail(f"area H1 に別称 {miss} が無い（{n}文字で収まるのに落ちている）: {fn} → {h}")
+    else:
+        ok(f"別称登録 {len(alias_pages)} ページ: H1 に別称が入っている")
+
+
 def validate_ship_index_hub():
     """[67] 船宿ハブ docs/ship/index.html の存在と導線（2026-08-29）
 
@@ -3162,6 +3257,7 @@ def main():
     validate_area_seo_alias_exposure()
     validate_sitemap_lastmod_honesty()
     validate_ship_index_hub()
+    validate_area_h1_richness()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
