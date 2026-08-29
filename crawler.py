@@ -4851,6 +4851,7 @@ def _v2_header_nav(active_page=""):
   <a href="/x_post/"{' class="on"' if active_page == 'xpost' else ''}>釣果速報</a>
   <a href="/fish/"{' class="on"' if active_page == 'fish' else ''}>魚種</a>
   <a href="/area/"{' class="on"' if active_page == 'area' else ''}>エリア</a>
+  <a href="/ship/"{' class="on"' if active_page == 'ship' else ''}>船宿</a>
   <a href="/calendar.html"{' class="on"' if active_page == 'calendar' else ''}>カレンダー</a>
   <a href="/monthly/"{' class="on"' if active_page == 'monthly' else ''}>月報</a>
   <a href="/column/"{' class="on"' if active_page == 'column' else ''}>📖 コラム</a>
@@ -16201,31 +16202,12 @@ def _ship_build_page_html(ship, info, catches, area_coords, today_dt, crawled_at
             '電話番号は船宿の公式サイトまたは予約サイトでご確認ください。</p>'
         )
 
-    # ヘッダ・ナビ・ボトムナビ（fish/area ページと同じ構成・5項目）
-    header_html = (
-        _stale_banner_html() +
-        '<header><div class="inner">'
-        '<a href="/" class="site-logo"><span class="brand">船釣り<span>予想</span></span></a>'
-        '<span style="font-size:11px;opacity:.5">funatsuri-yoso.com</span>'
-        '</div></header>'
-        '<nav class="gnav">'
-        '<a href="/">今日の釣果</a>'
-        '<a href="/fish/">魚種</a>'
-        '<a href="/area/">エリア</a>'
-        '<a href="/calendar.html">カレンダー</a>'
-        '<a href="/komase-sim/">🎣 コマセsim<span class="nav-new">NEW</span></a>'
-        + ('<a href="/forecast/" class="prem">有料プラン</a>' if SHOW_PAID_TEASER else '')
-        + '</nav>'
-    )
-    bottom_nav = (
-        '<div class="bn">'
-        '<a href="/"><span class="i">🎣</span>釣果</a>'
-        '<a href="/fish/"><span class="i">🐟</span>魚種</a>'
-        '<a href="/area/"><span class="i">📍</span>エリア</a>'
-        '<a href="/calendar.html"><span class="i">📅</span>カレンダー</a>'
-        + ('<a href="/forecast/" class="prem"><span class="i">⭐</span>有料</a>' if SHOW_PAID_TEASER else '')
-        + '</div>'
-    )
+    # ヘッダ・ナビ・ボトムナビ
+    # 2026-08-29: 独自の5項目ナビ（x_post / monthly / column / fish-value / ship への
+    # リンクを持たない旧構成）を廃止し、他ページと同じ _v2_header_nav / _v2_bottom_nav に
+    # 統一。ship ページがサイト内リンクグラフから半ば孤立していた原因のひとつ。
+    header_html = _v2_header_nav('ship')
+    bottom_nav = _v2_bottom_nav('ship')
 
     # メタ (F3: F1/F2 データを反映して指名検索 CTR を底上げ)
     # 今月実績 = _ma_months の先頭 (= 今月のはず・データなしなら fallback)
@@ -16527,6 +16509,220 @@ def build_ship_redirects():
         generated += 1
     print(f"船宿redirect生成: {generated} 件 → docs/ship/chowari-*.html (→ 新slug)")
     return generated
+
+
+def build_ship_index_html(now, recent7, hist_rows, crawled_at=""):
+    """ship/index.html（船宿ハブ）を生成する。
+
+    背景（2026-08-29 GSC 分析）:
+      docs/ship/ は indexable 163本あるのに area/index.html・fish/index.html に
+      相当するハブが存在せず、内部リンクが個別 area/fish_area からの流入のみ
+      だった（庄治郎丸 55本 vs 金谷 137本）。結果 ship/*.html は指名検索
+      （「庄治郎丸 釣果」249imp 等）で pos 8〜15 = page2 圏に張り付き、
+      2026-08 実績 768imp / 1click（CTR 0.13%・area は 2.3%）まで沈んでいた。
+
+    呼出タイミング: build_ship_pages / build_ship_redirects の後。
+      _SHIP_NOINDEX_SLUGS は build_ship_pages 内で確定するため順序必須。
+
+    Args:
+        now        : datetime（JST・tz naive）
+        recent7    : _load_recent_catches_for_index(now, days=7) の結果
+        hist_rows  : _load_historical_catches() の結果（過去実績件数用）
+        crawled_at : 更新日時文字列
+    """
+    out_dir = os.path.join(WEB_DIR, "ship")
+    os.makedirs(out_dir, exist_ok=True)
+    _SKIP_FISH = {"不明", "欠航", "NULL"}
+    _group_order = ["茨城", "千葉・外房", "千葉・内房", "千葉・東京湾奥", "東京",
+                    "神奈川・東京湾", "神奈川・相模湾", "静岡"]
+
+    # ── 掲載対象船宿（sitemap と同一条件 + 実ファイル存在）──
+    def _has_alt_source(s):
+        sp = s.get("source_priority") or []
+        return any(src != "fishing_v" for src in sp)
+
+    target_ships = []
+    for s in SHIPS:
+        if s.get("exclude"):
+            continue
+        if s.get("fishing_v_zero") and not _has_alt_source(s):
+            continue
+        slug = s.get("romaji_slug")
+        if not slug or slug in _SHIP_NOINDEX_SLUGS:
+            continue
+        _sp = os.path.join(out_dir, f"{slug}.html")
+        if not os.path.isfile(_sp):
+            continue
+        # 生成済み HTML 側も見る（_SHIP_NOINDEX_SLUGS は同一プロセスでの
+        # build_ship_pages 実行が前提。単体再生成でも noindex を取りこぼさない）
+        try:
+            _sh = open(_sp, encoding="utf-8").read()
+        except Exception:
+            continue
+        if 'name="robots"' in _sh and "noindex" in _sh:
+            continue
+        target_ships.append(s)
+
+    # ── 今週集計（recent7 から・船宿別）──
+    ship_week_days: dict[str, set] = {}
+    ship_week_fish: dict[str, dict] = {}
+    for c in recent7:
+        sn = c.get("ship", "")
+        if not sn:
+            continue
+        ship_week_days.setdefault(sn, set()).add(c.get("date", ""))
+        for f in c.get("fish", []):
+            if f in _SKIP_FISH or f.isdigit():
+                continue
+            ship_week_fish.setdefault(sn, {})
+            ship_week_fish[sn][f] = ship_week_fish[sn].get(f, 0) + 1
+
+    # ── 過去実績件数（hist_rows から・船宿別）──
+    ship_hist_cnt: dict[str, int] = {}
+    for r in hist_rows or []:
+        sn = (r.get("ship") or "").strip()
+        if sn:
+            ship_hist_cnt[sn] = ship_hist_cnt.get(sn, 0) + 1
+
+    # ── リンク先の実在チェック（デッドリンク不変条件対策）──
+    def _fish_page_exists(f):
+        sl = fish_slug(f)
+        return bool(sl) and os.path.isfile(os.path.join(WEB_DIR, "fish", f"{sl}.html"))
+
+    def _area_page_exists(a):
+        sl = area_slug(a)
+        return bool(sl) and os.path.isfile(os.path.join(WEB_DIR, "area", f"{sl}.html"))
+
+    # ── エリア → 船宿 に整理 ──
+    area_ships: dict[str, list] = {}
+    for s in target_ships:
+        area_ships.setdefault(s.get("area") or "その他", []).append(s)
+
+    def _area_group_idx(a):
+        for i, grp in enumerate(_group_order):
+            if a in AREA_GROUPS.get(grp, []):
+                return i
+        return len(_group_order)
+
+    def _area_week_total(a):
+        return sum(len(ship_week_days.get(s["name"], set())) for s in area_ships.get(a, []))
+
+    sections_html = ""
+    week_active_ships = 0
+    for grp in _group_order + ["その他"]:
+        if grp == "その他":
+            grp_areas = [a for a in area_ships if _area_group_idx(a) == len(_group_order)]
+        else:
+            grp_areas = [a for a in area_ships if a in AREA_GROUPS.get(grp, [])]
+        if not grp_areas:
+            continue
+        grp_areas.sort(key=lambda a: (-_area_week_total(a), a))
+        blocks = ""
+        for area_nm in grp_areas:
+            ships_in = area_ships[area_nm]
+            ships_in.sort(key=lambda s: (-len(ship_week_days.get(s["name"], set())),
+                                         -ship_hist_cnt.get(s["name"], 0),
+                                         s["name"]))
+            cards = ""
+            for s in ships_in:
+                nm = s["name"]
+                slug = s["romaji_slug"]
+                wd = len(ship_week_days.get(nm, set()))
+                if wd:
+                    week_active_ships += 1
+                hist_c = ship_hist_cnt.get(nm, 0)
+                fish_sorted = sorted(ship_week_fish.get(nm, {}).items(), key=lambda x: -x[1])[:3]
+                fish_links = []
+                for f, _cnt in fish_sorted:
+                    if _fish_page_exists(f):
+                        fish_links.append(f'<a href="../fish/{fish_slug(f)}.html">{f}</a>')
+                    else:
+                        fish_links.append(f)
+                fish_html = '<span class="si-sep">・</span>'.join(fish_links) if fish_links else "—"
+                meta_bits = []
+                if wd:
+                    meta_bits.append(f"今週{wd}日出船")
+                if hist_c:
+                    meta_bits.append(f"釣果記録{hist_c:,}件")
+                meta_txt = "・".join(meta_bits) if meta_bits else "釣果記録あり"
+                cards += (
+                    f'<div class="si-card">'
+                    f'<a class="si-name" href="{slug}.html">{nm}</a>'
+                    f'<div class="si-fish">{fish_html}</div>'
+                    f'<div class="si-meta">{meta_txt}</div>'
+                    f'</div>'
+                )
+            if _area_page_exists(area_nm):
+                area_head = (f'<div class="si-area-h">'
+                             f'<a href="../area/{area_slug(area_nm)}.html">{area_nm}</a>'
+                             f'<span class="si-area-cnt">{len(ships_in)}船宿</span></div>')
+            else:
+                area_head = (f'<div class="si-area-h"><span>{area_nm}</span>'
+                             f'<span class="si-area-cnt">{len(ships_in)}船宿</span></div>')
+            blocks += f'<div class="si-area">{area_head}<div class="si-grid">{cards}</div></div>'
+        sections_html += f'<h2 class="st">{grp}</h2>{blocks}'
+
+    total_ships = len(target_ships)
+    total_areas = len(area_ships)
+
+    ship_index_css = """.si-area{margin:0 0 18px}
+.si-area-h{font-size:14px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.si-area-h a{color:var(--accent);text-decoration:none}
+.si-area-h a:hover{text-decoration:underline}
+.si-area-cnt{font-size:11px;color:var(--muted);font-weight:400;margin-left:auto}
+.si-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:10px 0 0}
+.si-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.si-card:hover{border-color:var(--cta)}
+.si-name{display:block;font-size:14px;font-weight:700;color:var(--accent);text-decoration:none}
+.si-name:hover{text-decoration:underline}
+.si-fish{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.9}
+.si-fish a{color:#1a4a72;text-decoration:none;white-space:nowrap;padding:2px 5px;border-radius:3px;display:inline-block}
+.si-fish a:hover{background:#eaf2fa;text-decoration:underline}
+.si-sep{color:#aaa}
+.si-meta{font-size:11px;color:var(--muted);margin-top:4px}
+.si-note{font-size:13px;color:var(--sub);margin:0 0 14px}"""
+
+    _title = "船宿別 釣果一覧 | 船釣り予想"
+    _desc = (f"関東・静岡の船宿{total_ships}軒の釣果ページ一覧。"
+             f"港・エリア別に、今週出船した船宿と釣れている魚種を確認できます。毎日更新。")
+    ship_index_html = f"""<!DOCTYPE html>
+<html lang="ja"><head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <title>{_title}</title>
+  <meta name="description" content="{_desc}">
+  <link rel="canonical" href="{SITE_URL}/ship/">
+  {_build_share_meta(title=_title, desc=_desc, url=f"{SITE_URL}/ship/")}
+  {GA_TAG}{ADSENSE_TAG}
+  <link rel="stylesheet" href="../style.css">
+  <style>{ship_index_css}</style>
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"トップ","item":"{SITE_URL}/"}},{{"@type":"ListItem","position":2,"name":"船宿一覧","item":"{SITE_URL}/ship/"}}]}}</script>
+</head>
+<body>
+{_v2_header_nav('ship')}
+<div style="background:var(--accent);color:#fff;padding:18px 14px 20px;margin-bottom:0">
+  <div class="c"><h1 style="font-size:26px;font-weight:800;margin:0">船宿別 釣果一覧</h1>
+  <div style="font-size:12px;opacity:.7;margin-top:4px">掲載 {total_ships}船宿 / {total_areas}港・今週出船 {week_active_ships}船宿</div></div>
+</div>
+<div class="c">
+  <p class="bread"><a href="../">トップ</a> &rsaquo; 船宿一覧</p>
+  <p class="si-note">
+    釣りビジョン等で公開された釣果報告を船宿ごとに集計したページの一覧です。
+    「今週◯日出船」は直近7日に釣果報告があった日数、「釣果記録◯件」は
+    当サイトが保持する過去の釣果レコード数（便数ではありません）。
+    直近7日に釣果報告がない船宿は一覧に掲載していません。
+  </p>
+  {sections_html}
+</div>
+{DATA_NOTE_HTML}
+{_v2_footer(crawled_at)}
+{_v2_bottom_nav('ship')}
+</body></html>"""
+    with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
+        f.write(ship_index_html)
+    print(f"船宿ハブ生成: {total_ships} 船宿 / {total_areas} 港 → docs/ship/index.html")
+    return total_ships
+
 
 
 # ============================================================
@@ -18099,6 +18295,9 @@ def build_sitemap(data, hist_rows=None):
         if slug_s and slug_s not in _SHIP_NOINDEX_SLUGS:
             urls.append((f"{SITE_URL}/ship/{slug_s}.html", "0.6", "weekly",
                          _lastmod_of("ship", slug_s)))
+    # 船宿ハブ（2026-08-29）: ship/index.html が生成済みのときだけ掲載
+    if os.path.isfile(os.path.join(WEB_DIR, "ship", "index.html")):
+        urls.append((f"{SITE_URL}/ship/", "0.7", "daily"))
     # x_post/*.html（日次釣果まとめ＝独自編集コンテンツ・2026/06/05 追加）
     # 当サイト唯一の純オリジナルコンテンツ。indexable（noindex なし）だが従来
     # sitemap 未収録でクローラーから見えにくかった。AdSense「有用性の低いコンテンツ」
@@ -19089,6 +19288,13 @@ def main():
         print(f"釣果レコード変換: {len(valid_catches)}件")
         build_ship_pages(valid_catches, crawled_at)
         build_ship_redirects()
+        _so_now = datetime.now(JST).replace(tzinfo=None)
+        build_ship_index_html(
+            now=_so_now,
+            recent7=_load_recent_catches_for_index(_so_now, days=7),
+            hist_rows=raw_rows,
+            crawled_at=crawled_at,
+        )
         build_sitemap(valid_catches)
         print("=== 船宿ページ再生成完了 ===")
         return
@@ -19450,6 +19656,13 @@ def main():
     build_area_redirects()
     build_ship_pages(valid_catches, crawled_at)
     build_ship_redirects()
+    # 船宿ハブ（2026-08-29）: _SHIP_NOINDEX_SLUGS 確定後に呼ぶ
+    build_ship_index_html(
+        now=now,
+        recent7=_shared_recent7,
+        hist_rows=_shared_hist_rows,
+        crawled_at=crawled_at,
+    )
     with open(os.path.join(WEB_DIR, "calendar.html"), "w", encoding="utf-8") as f:
         f.write(build_calendar_page(crawled_at))
     # 月報生成（フルクロール経路のみ・--html-only はこのコードパスに到達しない）

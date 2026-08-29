@@ -2949,6 +2949,60 @@ def validate_area_seo_alias_exposure():
            f"title(先頭2件)/description(全件) に露出（検査 {checked}ページ）")
 
 
+def validate_ship_index_hub():
+    """[67] 船宿ハブ docs/ship/index.html の存在と導線（2026-08-29）
+
+    背景: docs/ship/ は indexable 163本あるのに area/index.html・fish/index.html に
+    相当するハブが無く、ship ページが内部リンクグラフから半ば孤立していた。
+    GSC 2026-08 実績で ship/ は 768imp / 1click（CTR 0.13%・area は 2.3%）、
+    全ページ pos 8〜15 = page2 圏。指名検索（「庄治郎丸 釣果」249imp）を丸ごと
+    取りこぼしていた。ハブと gnav 導線が消えると同じ状態に戻るため監視する。
+    """
+    print("\n[67] 船宿ハブ docs/ship/index.html と gnav 導線")
+    path = os.path.join(DOCS, "ship", "index.html")
+    if not os.path.isfile(path):
+        fail("docs/ship/index.html が存在しない（船宿ハブ消失）")
+        return
+    content = open(path, encoding="utf-8").read()
+
+    n_ships = content.count('class="si-name"')
+    if n_ships < 100:
+        fail(f"船宿ハブの船宿リンクが {n_ships} 本（100 以上必要）")
+    else:
+        ok(f"船宿ハブの船宿リンク: {n_ships} 本")
+
+    if 'rel="canonical" href="https://funatsuri-yoso.com/ship/"' not in content:
+        fail("船宿ハブに canonical /ship/ が無い")
+    else:
+        ok("船宿ハブ canonical OK")
+
+    # gnav 導線: 主要ハブ + ship 個別ページから /ship/ へ辿れること
+    nav_targets = [("index", "index.html"),
+                   ("fish/index", os.path.join("fish", "index.html")),
+                   ("area/index", os.path.join("area", "index.html"))]
+    ship_dir = os.path.join(DOCS, "ship")
+    ship_files = sorted(f for f in os.listdir(ship_dir)
+                        if f.endswith(".html") and f != "index.html")
+    if ship_files:
+        nav_targets.append((f"ship/{ship_files[0]}", os.path.join("ship", ship_files[0])))
+    missing = []
+    checked = 0
+    for label, rel in nav_targets:
+        p = os.path.join(DOCS, rel)
+        if not os.path.isfile(p):
+            continue
+        checked += 1
+        html = open(p, encoding="utf-8", errors="ignore").read()
+        if 'href="/ship/"' not in html:
+            missing.append(label)
+    if not checked:
+        fail("[67] gnav 導線の検証対象ページが 1 件も無い")
+    elif missing:
+        fail(f"gnav に /ship/ リンクが無いページ: {', '.join(missing)}")
+    else:
+        ok(f"gnav /ship/ 導線: {checked} ページで確認")
+
+
 def validate_xpost_forecast_sail_rate():
     """64: x_post の予想段落に載せる船宿は「ほぼ必ず出船する」ものだけ（2026-08-03）
 
@@ -3107,6 +3161,7 @@ def main():
     validate_xpost_forecast_sail_rate()
     validate_area_seo_alias_exposure()
     validate_sitemap_lastmod_honesty()
+    validate_ship_index_hub()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")
