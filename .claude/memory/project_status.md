@@ -64,7 +64,8 @@
 
 **判定方法は `analytics/gsc/trend.py` の INTERVENTIONS に固定済み**:
 - #67 … ship の imp 加重 pos が 10 を切るか（投入前は10週連続で 10.6〜17.8）
-- #68 … `analytics/serp/report.py --diff` で title_source が h1→title に変わるか
+- #68 … `analytics/serp/report.py --diff` で title_source が h1→title に変わるか。
+  **主指標は katsuura**（iioka と amatsu は 08-10 週の原因不明 -70% で判定に使えない）
 
 ⚠ **どちらも因果は未証明**。効かなければクロール頻度（SERP 表示日付の鮮度）側に戻る。
 
@@ -100,8 +101,10 @@ Yahoo の AI回答で funatsuri-yoso.com が引用されている（「金谷漁
    `claude/unregistered-status-issue-149a5d` は **2026-08-30 に「取り込まない」と判断済み**
    （fish_area noindex 閾値 80→50 は、律速がクロールバジェットである以上、未登録の山を
    高くするだけ。決定ログ 2026-08-30 参照）。**削除は未実行＝要ユーザー判断**
-2. **GSC 推奨事項の警告**: `area/iioka.html` のインプレッション **-58%**。
-   8月 1,134impr で最大の流入源。#68 の効果判定と切り分けが要る（警告は改修前から出ている）
+2. ~~GSC 推奨事項の警告 area/iioka.html -58%~~ → **2026-08-30 に切り分け済み**。
+   iioka と amatsu だけが 08-10 週に -70%（順位・CTR は不変・別称固有でもない・
+   サイト全体は横ばい）。需要減とマッチ喪失は GSC だけでは分離できないので、
+   **#68 の主指標を katsuura に変更**した。9月に iioka が戻らなければ SERP 実査へ
 3. **Tier2 拡大** — パイロット5 の GSC 反応を見て残り約29ページへ展開
 4. **fish_area 薄ページの物理削除/統合** — 現在 noindex 止まり（676本）。
    noindex は巡回される。母集団を変えるなら削除が要る。※AdSense 判定は外から検証不可＝仮説

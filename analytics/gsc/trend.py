@@ -14,7 +14,7 @@
     毎回その場で集計コードを書き直すことになる。判定基準（下の INTERVENTIONS）ごと
     残しておかないと、数週間後の自分が何と比べればいいのか分からなくなる。
 """
-import sys, os, csv, glob, argparse
+import sys, os, csv, glob, argparse, collections
 from collections import defaultdict
 from datetime import date, timedelta
 
@@ -45,7 +45,9 @@ INTERVENTIONS = [
         "baseline": "2026-08: katsuura 1.11% / iioka 2.03% / amatsu 0.49%"
                     "（対 金谷 5.24% / 静浦 5.01%・pos はどれも 6.6〜8.2）",
         "criterion": "SERP 実査（analytics/serp/report.py --diff）で title_source が"
-                     " h1 → title に変わり、上記3ページの CTR が上がる",
+                     " h1 → title に変わり、CTR が上がる。"
+                     "⚠ 主指標は katsuura。iioka と amatsu は 2026-08-10 週に"
+                     " imp が約70%落ちており（順位は不変・原因未特定）判定に使えない",
     },
 ]
 
@@ -184,9 +186,50 @@ def cmd_section_detail(rows, section, weeks, monthly):
     print_interventions(section)
 
 
+def cmd_page_detail(rows, page, weeks, monthly):
+    """1ページの週次推移 + クエリ別週次。急落の切り分け用。
+
+    順位が変わらないのに imp だけ落ちている場合、順位・スニペットの問題ではなく
+    「マッチするクエリが減った」か「検索需要が減った」。この2つは GSC だけでは
+    切り分けられないので、ユニーククエリ数も併記する。
+    """
+    url = page if page.startswith("http") else SITE + page.lstrip("/")
+    sub = [r for r in rows if r["page"] == url]
+    if not sub:
+        print(f"{page} のデータが無い")
+        return
+    keyfn = (lambda r: r["date"][:7]) if monthly else (lambda r: week_of(r["date"]))
+    periods = sorted({keyfn(r) for r in sub})[-weeks:]
+    b = bucket_rows(sub, keyfn)
+    print("=" * 78)
+    print(f'{url.replace(SITE, "")}（{"月次" if monthly else "週次"}）')
+    print("=" * 78)
+    for p in periods:
+        if p not in b:
+            continue
+        clk, imp, ctr, pos = agg(b[p])
+        qn = len({r["query"] for r in sub if keyfn(r) == p})
+        print(fmt_row(p, clk, imp, ctr, pos, mark=f"クエリ{qn:3d}種"))
+
+    top = collections.Counter()
+    for r in sub:
+        top[r["query"]] += r["impressions"]
+    print(chr(10) + "-" * 78)
+    print("クエリ別 imp（全期間 imp 上位8）")
+    print("-" * 78)
+    print("query".ljust(24) + "".join(p[5:].rjust(8) for p in periods))
+    for q, _ in top.most_common(8):
+        line = q.ljust(24)
+        for p in periods:
+            line += str(sum(r["impressions"] for r in sub
+                            if r["query"] == q and keyfn(r) == p)).rjust(8)
+        print(line)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--section", help="内訳を出すページ種別（area/fish/ship/fish_area/x_post）")
+    ap.add_argument("--page", help="1ページの週次 + クエリ別内訳（例 area/iioka.html）")
     ap.add_argument("--monthly", action="store_true", help="週次でなく月次で集計")
     ap.add_argument("--weeks", type=int, default=12, help="表示する期間数（既定 12）")
     args = ap.parse_args()
@@ -194,7 +237,9 @@ def main():
     if not rows:
         print("analytics/gsc/*.csv にデータが無い")
         return
-    if args.section:
+    if args.page:
+        cmd_page_detail(rows, args.page, args.weeks, args.monthly)
+    elif args.section:
         cmd_section_detail(rows, args.section, args.weeks, args.monthly)
     else:
         cmd_sections(rows, args.weeks, args.monthly)
