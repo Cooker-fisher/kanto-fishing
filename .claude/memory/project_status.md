@@ -96,10 +96,10 @@ Yahoo の AI回答で funatsuri-yoso.com が引用されている（「金谷漁
 
 ## 次の候補（未着手・優先度順）
 
-1. **未マージブランチの判断** — `claude/unregistered-status-issue-149a5d`（3 commits・7/18）。
-   コード差分は fish_area noindex 閾値 80→50 の段階開放。**取り込むか破棄か要判断**。
-   3月〜5月の残骸5本（confident-bose / sleepy-goldstine / pr-38 / pr-39 /
-   redesign-update）は掃除対象
+1. **ブランチ掃除** — ローカル **44本** / リモート **72本**（main 未マージ 28本）。
+   `claude/unregistered-status-issue-149a5d` は **2026-08-30 に「取り込まない」と判断済み**
+   （fish_area noindex 閾値 80→50 は、律速がクロールバジェットである以上、未登録の山を
+   高くするだけ。決定ログ 2026-08-30 参照）。**削除は未実行＝要ユーザー判断**
 2. **GSC 推奨事項の警告**: `area/iioka.html` のインプレッション **-58%**。
    8月 1,134impr で最大の流入源。#68 の効果判定と切り分けが要る（警告は改修前から出ている）
 3. **Tier2 拡大** — パイロット5 の GSC 反応を見て残り約29ページへ展開
