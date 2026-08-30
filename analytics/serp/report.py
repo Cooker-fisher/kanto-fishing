@@ -88,28 +88,43 @@ def cmd_report(obs, gsc):
 
     print()
     print("-" * 96)
-    print("title_source 別（ページ月次実績・観測クエリ単位ではなくページ全体で集計）")
+    print("title_source 別（ページ種別ごと・ページ月次実績で集計）")
     print("-" * 96)
+    print("※ 種別をまたいで足さない。ship の指名検索は公式サイトが上位、fish は横断集計サイトが")
+    print("   競合と、SERP の構造がまるで違う。混ぜると title 維持/差し替えの比較が意味を失う")
+    sections = []
     for src in ("title", "h1"):
-        items = by_src.get(src, [])
-        if not items:
-            continue
-        pages = {}
-        for o, _clk, _imp, _pos in items:
-            ym = month_of(o["date"])
-            key = (o["page"], ym)
-            if key in pages:
+        for o, _c, _i, _p in by_src.get(src, []):
+            sec = (o.get("page") or "").split("/")[0]
+            if sec not in sections:
+                sections.append(sec)
+    for sec in sections:
+        print("")
+        print(f"[{sec}]")
+        for src in ("title", "h1"):
+            items = [x for x in by_src.get(src, [])
+                     if (x[0].get("page") or "").split("/")[0] == sec]
+            if not items:
                 continue
-            rows = [r for r in gsc if r["date"][:7] == ym and r["page"] == SITE + o["page"]]
-            pages[key] = agg(rows)
-        tot_c = sum(v[0] for v in pages.values())
-        tot_i = sum(v[1] for v in pages.values())
-        label = "title 維持" if src == "title" else "h1 に差し替え"
-        print(f'\n{label}（{len(pages)} ページ）: 計 {tot_i}impr / {tot_c}click / '
-              f'CTR {tot_c/tot_i*100:.2f}%' if tot_i else f'\n{label}: 実績なし')
-        for (page, ym), (c, i, ctr, pos) in sorted(pages.items(), key=lambda x: -x[1][1]):
-            print(f'    {ym} {page:26s} {i:6d}impr {c:4d}click '
-                  f'{ctr:6.2f}%  pos={pos:5.1f}')
+            pages = {}
+            for o, _clk, _imp, _pos in items:
+                ym = month_of(o["date"])
+                key = (o["page"], ym)
+                if key in pages:
+                    continue
+                rows = [r for r in gsc if r["date"][:7] == ym and r["page"] == SITE + o["page"]]
+                pages[key] = agg(rows)
+            tot_c = sum(v[0] for v in pages.values())
+            tot_i = sum(v[1] for v in pages.values())
+            label = "title 維持" if src == "title" else "h1 に差し替え"
+            if tot_i:
+                print(f'  {label}（{len(pages)} ページ）: 計 {tot_i}impr / {tot_c}click / '
+                      f'CTR {tot_c/tot_i*100:.2f}%')
+            else:
+                print(f'  {label}: 実績なし')
+            for (page, ym), (c, i, ctr, pos) in sorted(pages.items(), key=lambda x: -x[1][1]):
+                print(f'      {ym} {page:30s} {i:6d}impr {c:4d}click '
+                      f'{ctr:6.2f}%  pos={pos:5.1f}')
 
     print()
     print("-" * 96)
