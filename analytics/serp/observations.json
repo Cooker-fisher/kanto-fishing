@@ -1,0 +1,120 @@
+{
+  "_comment": "SERP 実査の観測ログ。1レコード = (観測日, クエリ, 自サイトURL) の 1 実測。自動取得は禁止（analytics/serp/README.md 参照）。人がブラウザで開いて見た内容だけを、見たまま記録する。分からなかった項目は null にして推測で埋めない。",
+  "_fields": {
+    "date": "観測日 YYYY-MM-DD",
+    "engine": "検索エンジン。yahoo = Yahoo!検索（Google のインデックス供給）",
+    "query": "検索語（打ったまま）",
+    "page": "自サイトの該当ページ（docs 相対）。1ページ目に居ない場合も分かる範囲で書く",
+    "organic_rank": "1ページ目での自サイトの順位。不在なら null",
+    "serp_title": "SERP に実際に出ていたタイトル（末尾の省略記号も含めて見たまま）",
+    "title_source": "title = <title> がそのまま出た / h1 = <h1> に差し替えられた / other = どちらとも一致しない / absent = 1ページ目に不在",
+    "serp_date_label": "スニペット先頭に出た日付表記（例: 2026/8/18, 21時間前, 6日前）。無ければ null",
+    "snippet_source": "スニペットの抜粋元。faq = FAQ セクション / weekly = 今週の釣果セクション / meta = meta description / other / null(未確認)",
+    "ai_answer_cited": "AI回答ブロック内で自ドメインが引用されていたか true/false/null(未確認)",
+    "ai_answer_quotes": "引用されていた文（見たまま・複数可）",
+    "note": "補足"
+  },
+  "observations": [
+    {
+      "date": "2026-08-29",
+      "engine": "yahoo",
+      "query": "金谷漁港 釣り",
+      "page": "area/kanaya.html",
+      "organic_rank": null,
+      "serp_title": "金谷港（金谷漁港・千葉）の船釣り釣果【毎日更新】アジ・カマス ...",
+      "title_source": "title",
+      "serp_date_label": null,
+      "snippet_source": null,
+      "ai_answer_cited": true,
+      "ai_answer_quotes": [
+        "金谷港発の遊漁船では、アジ・ヒラメ・カマスなどの沖釣りが好調で、複数の船宿から連日釣果が更新されています。(funatsuri-yoso.com)",
+        "沖釣りをする場合は、金谷港発の遊漁船・渡船の公式サイトや予約ページで出船内容と料金を確認する。(funatsuri-yoso.com)"
+      ],
+      "note": "2026-08 GSC: area/kanaya.html は 477impr / 25click / CTR 5.24% / pos 8.0。organic 順位とスニペットは未確認（AI回答と title のみ確認）"
+    },
+    {
+      "date": "2026-08-29",
+      "engine": "yahoo",
+      "query": "静浦漁港 釣果",
+      "page": "area/shizuura.html",
+      "organic_rank": null,
+      "serp_title": "静浦漁港（静岡）の船釣り釣果【毎日更新】タチウオ・シイラ ...",
+      "title_source": "title",
+      "serp_date_label": null,
+      "snippet_source": "faq",
+      "ai_answer_cited": false,
+      "ai_answer_quotes": [],
+      "note": "AI回答は「静浦漁港は事実上全面釣り禁止」で岸釣り前提。当サイトは船釣りなので引用対象外。2026-08 GSC: 399impr / 20click / 5.01% / pos 8.2"
+    },
+    {
+      "date": "2026-08-29",
+      "engine": "yahoo",
+      "query": "飯岡漁港 釣果",
+      "page": "area/iioka.html",
+      "organic_rank": null,
+      "serp_title": "飯岡港の船釣り釣果",
+      "title_source": "h1",
+      "serp_date_label": "21時間前",
+      "snippet_source": "weekly",
+      "ai_answer_cited": null,
+      "ai_answer_quotes": [],
+      "note": "2026-08 GSC: 1134impr / 23click / 2.03% / pos 6.6"
+    },
+    {
+      "date": "2026-08-29",
+      "engine": "yahoo",
+      "query": "勝浦漁港 釣果",
+      "page": "area/katsuura.html",
+      "organic_rank": null,
+      "serp_title": "勝浦の船釣り釣果",
+      "title_source": "h1",
+      "serp_date_label": "2026/8/18",
+      "snippet_source": "faq",
+      "ai_answer_cited": false,
+      "ai_answer_quotes": [],
+      "note": "AI回答は「勝浦でおすすめの釣り堤防はどこですか？」で岸釣り前提。2026-08 GSC: area/katsuura.html 全体で 988impr / 11click / 1.11% / pos 8.2"
+    },
+    {
+      "date": "2026-08-29",
+      "engine": "yahoo",
+      "query": "勝浦湾 釣果",
+      "page": "area/katsuura.html",
+      "organic_rank": 3,
+      "serp_title": "勝浦の船釣り釣果",
+      "title_source": "h1",
+      "serp_date_label": "2026/8/18",
+      "snippet_source": "weekly",
+      "ai_answer_cited": null,
+      "ai_answer_quotes": [],
+      "note": "GSC 2026-08 で 87impr / 0click / pos 3.7。実査でも3位。クエリ語「勝浦湾」が SERP タイトルに一切出ていない（当時 title は aliases[:2] のみ、H1 は素の「勝浦の船釣り釣果」）。1位は「勝浦湾の釣果・釣り場情報【2026年最新】- アングラーズ」。不変条件 #68 の直接の動機"
+    },
+    {
+      "date": "2026-08-29",
+      "engine": "yahoo",
+      "query": "天津港 釣果",
+      "page": "area/amatsu.html",
+      "organic_rank": null,
+      "serp_title": "天津港の船釣り釣果",
+      "title_source": "h1",
+      "serp_date_label": "6日前",
+      "snippet_source": "weekly",
+      "ai_answer_cited": null,
+      "ai_answer_quotes": [],
+      "note": "2026-08 GSC: 203impr / 1click / 0.49% / pos 8.2。2026-08-01 の実査で「岸釣りインテント」と診断済みのページ"
+    },
+    {
+      "date": "2026-08-29",
+      "engine": "yahoo",
+      "query": "大洗港 釣果",
+      "page": "area/oarai.html",
+      "organic_rank": null,
+      "serp_title": null,
+      "title_source": "absent",
+      "serp_date_label": null,
+      "snippet_source": null,
+      "ai_answer_cited": false,
+      "ai_answer_quotes": [],
+      "note": "1ページ目に自サイトなし。GSC 2026-08 の oarai は 69impr / 2click / pos 13.0 なので整合"
+    }
+  ]
+}
