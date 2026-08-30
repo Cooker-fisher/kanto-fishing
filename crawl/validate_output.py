@@ -2952,6 +2952,68 @@ def validate_area_seo_alias_exposure():
 _AREA_H1_MAX_CHARS = 30
 
 
+def validate_fish_faq_recent_lead():
+    """[69] fish FAQ Q3 が直近7日の実績で始まること（2026-08-30）
+
+    背景: SERP 実査で「カツオ 釣果」のスニペットが FAQ Q3 から抜かれており、
+    「関東カツオ船釣りの一日の釣果は1〜5匹が標準的なレンジです。中央値は3匹」＝
+    分布の説明で始まっていた。「釣果」で調べる人が見たいのは直近に何が釣れたかで、
+    意図とズレるうえ数が小さく見える（GSC 2026-08: 120impr / 0click）。
+    title は「カツオ釣果 関東【今週42便・最高8匹】」で維持されていた（差し替えではない）ので、
+    問題はスニペット側だけ。Q3 の先頭に title・HERO と同じ数値を置いた。
+
+    契約: HERO に匹数レンジ（fh-r が「〜匹」）と「今週N便」がある魚種は、
+    Q3 の答えが「直近7日はN便の報告があり、個人釣果は{レンジ}でした。」で始まる。
+    数値は HERO・title と一致すること（別々に集計して食い違うと信用を落とす）。
+    HERO が「釣果N便」「過去1年N件」等でレンジが出ない魚種は対象外。
+    """
+    print("\n[69] fish FAQ Q3 の直近7日リード（スニペット意図合わせ）")
+    fish_dir = os.path.join(DOCS, "fish")
+    if not os.path.isdir(fish_dir):
+        fail("docs/fish/ が存在しない")
+        return
+    hero_r = re.compile(r'<div class="fh-r">(.*?)</div>')
+    hero_m = re.compile(r'<div class="fh-m">(.*?)</div>')
+    q3_re = re.compile(r'の一日の釣果はどのくらいですか？</summary><p class="faq-ans">([^<]{1,120})')
+    target = 0
+    missing = []
+    mismatch = []
+    for fn in sorted(os.listdir(fish_dir)):
+        if not fn.endswith(".html") or fn == "index.html":
+            continue
+        content = open(os.path.join(fish_dir, fn), encoding="utf-8").read()
+        r = hero_r.findall(content)
+        m = hero_m.findall(content)
+        if not r or not m:
+            continue
+        rng = r[0].strip()
+        wk = re.match(r"今週\s*(\d+)便", m[0].strip())
+        if not rng.endswith("匹") or not wk:
+            continue  # レンジが出ない魚種は対象外
+        target += 1
+        expected = f"直近7日は{wk.group(1)}便の報告があり、個人釣果は{rng}でした。"
+        ans = q3_re.search(content)
+        if not ans:
+            missing.append(f"{fn}(Q3 本文なし)")
+        elif not ans.group(1).startswith("直近7日は"):
+            missing.append(f"{fn} → 「{ans.group(1)[:34]}…」")
+        elif not ans.group(1).startswith(expected):
+            mismatch.append(f"{fn}: HERO=「{expected}」 FAQ=「{ans.group(1)[:40]}…」")
+    if not target:
+        fail("[69] 直近7日レンジを持つ fish ページが 1 件も無い（HERO 生成の異常）")
+        return
+    if missing:
+        for x in missing[:5]:
+            fail(f"fish FAQ Q3 が直近7日実績で始まっていない: {x}")
+        if len(missing) > 5:
+            fail(f"ほか {len(missing)-5} 件")
+    if mismatch:
+        for x in mismatch[:5]:
+            fail(f"fish FAQ Q3 の数値が HERO と食い違う: {x}")
+    if not missing and not mismatch:
+        ok(f"fish FAQ Q3: 対象 {target} 魚種すべて直近7日実績で始まり、HERO と数値一致")
+
+
 def validate_area_h1_richness():
     """[68] docs/area/*.html の H1 に別称と県名が入っていること（2026-08-29）
 
@@ -3258,6 +3320,7 @@ def main():
     validate_sitemap_lastmod_honesty()
     validate_ship_index_hub()
     validate_area_h1_richness()
+    validate_fish_faq_recent_lead()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

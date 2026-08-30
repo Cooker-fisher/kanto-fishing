@@ -6217,8 +6217,14 @@ def _is_plausible_cnt(fish, v):
         return False
 
 
-def _build_fish_count_q3_text(fish, hist_rows):
+def _build_fish_count_q3_text(fish, hist_rows, recent_lead=""):
     """FAQ Q3「{魚}の一日の釣果はどのくらいですか？」を hist_rows ベースで固定文章化。
+
+    2026-08-30: 先頭に直近7日の実績（recent_lead）を置くようにした。
+    SERP 実査で「カツオ 釣果」のスニペットがこの Q3 から抜かれており、
+    「1〜5匹が標準的なレンジです。中央値は3匹」＝分布の説明で始まっていた。
+    「釣果」で調べる人が見たいのは直近に何が釣れたかで、意図とズレるうえ
+    数が小さく見える（120impr / 0click）。title・HERO と同じ数値を先頭に置いて揃える。
 
     catches（当日スナップショット）参照だとオフシーズン魚種でフォールバック汎用文に落ちる問題への対策。
     hist_rows（全期間 CSV）から tsuri_mono=fish かつ is_boat≠1 のレコードの cnt_max を集計し、
@@ -6267,11 +6273,12 @@ def _build_fish_count_q3_text(fish, hist_rows):
         p90 = sorted_maxes[min(int(n * 0.9), n - 1)]
         extra = f"中央値は{med}匹・上位10%の好日は{p90}匹以上です。"
     if p25 == p75:
-        return f"関東{fish}船釣りの一日の釣果は{p25}匹前後が標準的です。{extra}最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
-    return f"関東{fish}船釣りの一日の釣果は{p25}〜{p75}匹が標準的なレンジです。{extra}最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
+        return f"{recent_lead}関東{fish}船釣りの一日の釣果は{p25}匹前後が標準的です。{extra}最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
+    return f"{recent_lead}関東{fish}船釣りの一日の釣果は{p25}〜{p75}匹が標準的なレンジです。{extra}最高実績は{max_max}匹です（いずれも個人釣果ベース・船全体の合計数は除く）。"
 
 
-def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=None, content_sections=None):
+def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=None,
+                        content_sections=None, recent_lead=""):
     """魚種別FAQ（データ駆動型）＋ FAQPage JSON-LD を返す (html, faq_pairs) のタプル
 
     content_sections（load_fish_content() の魚種別固定文 dict）がある場合、
@@ -6285,7 +6292,7 @@ def build_fish_faq_html(fish, catches, decadal_calendar, site_url="", hist_rows=
     q2_ans = _build_fish_area_q2_text(fish, hist_rows)
 
     # Q3: 一日の釣果 → hist_rows（全期間 CSV）ベースで固定文章化（オフシーズンでも値が出る）
-    q3_ans = _build_fish_count_q3_text(fish, hist_rows)
+    q3_ans = _build_fish_count_q3_text(fish, hist_rows, recent_lead=recent_lead)
 
     # Q4: 初心者向け → _FISH_BEGINNER_MAP + hist_rows のユニーク船宿数で固定文章化
     q4_ans = _build_fish_beginner_q4_text(fish, hist_rows)
@@ -9088,7 +9095,15 @@ def build_fish_pages(data, history, crawled_at="", hist_rows=None, fish_area_sum
         guide_html = build_fish_guide_html(fish, tackle_data, content=fc)
         # 運営者本人の一次体験（field_reports.json・魚種レベルのキー）
         field_report_html = _build_field_report_section(fish)
-        auto_faq_html, auto_faq_pairs = build_fish_faq_html(fish, catches, decadal_calendar, SITE_URL, hist_rows=_hist_rows_for_fish, content_sections=fc)
+        # FAQ Q3 の先頭に置く直近7日の実績（title・HERO と同じ数値を使う）。
+        # cnt_range_str が「N匹」形式のときだけ付ける（「釣果N便」等のフォールバック時は付けない）。
+        _faq_recent_lead = ""
+        if catches and cnt_range_str.endswith("匹"):
+            _faq_recent_lead = f"直近7日は{len(catches)}便の報告があり、個人釣果は{cnt_range_str}でした。"
+        auto_faq_html, auto_faq_pairs = build_fish_faq_html(
+            fish, catches, decadal_calendar, SITE_URL,
+            hist_rows=_hist_rows_for_fish, content_sections=fc,
+            recent_lead=_faq_recent_lead)
         # M1 (T22): 共通 FAQ 9 問を faq.html に切り出し。固有 FAQ + リンクのみ出力
         fixed_faq_html, fixed_faq_pairs = build_fish_fixed_faq_html(fish, fixed_faq_data)
         faq_html = auto_faq_html + fixed_faq_html
