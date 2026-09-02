@@ -1,6 +1,6 @@
 # プロジェクト現在地
 
-**最終更新: 2026/08/30**（このファイルは「現在地」のみ。履歴は書かない）
+**最終更新: 2026/09/02**（このファイルは「現在地」のみ。履歴は書かない）
 
 > 履歴・意思決定の経緯 → `design/V2/90_決定ログ.md`（SoT）
 > 2026/07/27 以前の旧 project_status 全文 → `.claude/memory/archive/project_status_full_2026-07-27.md`
@@ -62,12 +62,39 @@
    robots.txt が `/search?` の自動取得を禁止しているのでスクレイパは書かない。
    手動実査を構造化して蓄積する。`report.py` / `--suggest` / `--diff`。
 
+**判定はまだできない**（2026-09-02 時点で GSC は 09-01 まで・08-31 週は 2日ぶん）。
+効果判定は 9月中旬。`python analytics/gsc/trend.py` の行末に「※n/N日ぶんのみ」が
+出ている期間は他の行と同じ土俵ではない。
+
 **判定方法は `analytics/gsc/trend.py` の INTERVENTIONS に固定済み**:
 - #67 … ship の imp 加重 pos が 10 を切るか（投入前は10週連続で 10.6〜17.8）
 - #68 … `analytics/serp/report.py --diff` で title_source が h1→title に変わるか。
   **主指標は katsuura**（iioka と amatsu は 08-10 週の原因不明 -70% で判定に使えない）
 
 ⚠ **どちらも因果は未証明**。効かなければクロール頻度（SERP 表示日付の鮮度）側に戻る。
+
+### ⚠ #68 の判定は交絡している（2026-09-02 に判明）
+
+投入前 n=6 の area 実査で、**title_source と SERP日付表記が完全に一致して動いていた**:
+
+|  | 日付なし | 日付あり |
+|---|---|---|
+| title 維持 | 2ページ 993impr **4.83%** | — |
+| h1 に差し替え | — | 3ページ 2,584impr **1.51%** |
+
+対角2セルしか無い＝CTR 差をどちらにも帰属できない。再実査で両方が同時に動いたら
+「#68 が効いた」とは言えない。`python analytics/serp/report.py` の「交絡チェック」が
+毎回この警告を出す。分離には「h1 × 日付なし」か「title × 日付あり」の実査が要る。
+
+**再実査の手順**: `python analytics/serp/report.py --recheck`（実査済みクエリの一覧・
+前回の title_source と日付表記つき）→ ブラウザで開いて `observations.json` に追記 →
+`--diff` で変化を見る。`--suggest` は未実査クエリ専用なので判定には使えない。
+
+### area の CTR はページ単位で固定（位置では説明できない）
+
+2026-07〜08: katsuura 1.07%（pos 8.0）に対し kanaya 5.10%（pos 8.0）。**同じ順位で 4.8倍**。
+iioka + katsuura + amatsu = 5,262impr（area の 70%）が kanaya/shizuura 並みになれば
+**+170click / 2か月** ＝ サイト全体（8月 120click）が倍増する規模。ここが最大の一点。
 
 ### 未計測の露出
 

@@ -3880,7 +3880,7 @@ def area_title_name(area, aliases, group):
 _AREA_H1_MAX = 30
 
 
-def area_h1_text(area, aliases, group):
+def area_h1_text(area, aliases, group, daily=True):
     """area ページの H1 テキストを組み立てる（2026-08-29 導入）。
 
     背景: SERP 実査で **Google が title を捨てて H1 に差し替える**ケースを確認した
@@ -3894,14 +3894,23 @@ def area_h1_text(area, aliases, group):
 
     別称を全件入れるのは title と役割を分けるため。title は先頭2件（#65）だが、
     3件目以降（例: 勝浦湾）にも実クエリの需要がある。
+
+    daily=False は thin テンプレ（当日釣果なし・title は「〜の船釣り釣果・過去実績」）用
+    （2026-09-02・不変条件 #70）。#68 で thin パスにも本関数を通した結果、title が
+    「過去実績」と言い body が「本日の釣果報告は集計待ち」と言っているページの H1 だけが
+    【毎日更新】を名乗る状態になっていた。#68 の前提（Google が title を捨てて H1 を
+    SERP タイトルに使う）が成り立つと、SERP で「毎日更新」と読ませてクリックさせた先が
+    「集計待ち」になる。これは 2026-08-06 に thin の title/desc を作り直したときの
+    判断（嘘はつかない・ただし最初に見せる情報ではない）と正面から矛盾する。
     """
     pref = (group or "").split("・")[0]
     cur = [a for a in (aliases or []) if a and a != area]
+    _tail = "の船釣り釣果【毎日更新】" if daily else "の船釣り釣果・過去実績"
     while True:
         parts = cur + ([pref] if pref else [])
         name = f"{area}（{'・'.join(parts)}）" if parts else area
-        # 別称を優先し、余った幅にだけ【毎日更新】を載せる
-        for suffix in ("の船釣り釣果【毎日更新】", "の船釣り釣果"):
+        # 別称を優先し、余った幅にだけ【毎日更新】（thin は「・過去実績」）を載せる
+        for suffix in (_tail, "の船釣り釣果"):
             if len(name + suffix) <= _AREA_H1_MAX:
                 return name + suffix
         if not cur:
@@ -9809,7 +9818,7 @@ def build_area_pages(data, history, crawled_at="", weather_data=None, hist_rows=
             #         （嘘はつかない・ただし最初に見せる情報ではない）
             _thin_aliases = [a for a in area_seo_alias.get(area, []) if a and a != area]
             _thin_title_name = area_title_name(area, _thin_aliases, group)
-            _thin_h1 = area_h1_text(area, _thin_aliases, group)
+            _thin_h1 = area_h1_text(area, _thin_aliases, group, daily=False)
             _thin_alias_meta = f"「{'」「'.join(_thin_aliases)}」とも呼ばれます。" if _thin_aliases else ""
             title_min = f"{_thin_title_name}の船釣り釣果・過去実績 | 船釣り予想"
             desc_meta_min = (f"{area}（{group}）の船釣り釣果。{_thin_alias_meta}"

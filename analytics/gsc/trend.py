@@ -49,10 +49,15 @@ INTERVENTIONS = [
         "section": "area",
         "baseline": "2026-08: katsuura 1.11% / iioka 2.03% / amatsu 0.49%"
                     "（対 金谷 5.24% / 静浦 5.01%・pos はどれも 6.6〜8.2）",
-        "criterion": "SERP 実査（analytics/serp/report.py --diff）で title_source が"
-                     " h1 → title に変わり、CTR が上がる。"
+        "criterion": "SERP 実査（analytics/serp/report.py --recheck → --diff）で"
+                     " title_source が h1 → title に変わり、CTR が上がる。"
                      "⚠ 主指標は katsuura。iioka と amatsu は 2026-08-10 週に"
-                     " imp が約70%落ちており（順位は不変・原因未特定）判定に使えない",
+                     " imp が約70%落ちており（順位は不変・原因未特定）判定に使えない。"
+                     "⚠⚠ 2026-09-02 追記: 投入前 n=6 の area 観測では title_source と"
+                     " SERP日付表記が**完全交絡**していた（title維持=日付なし=CTR4.8% /"
+                     " h1差し替え=日付あり=CTR1.5%。report.py の「交絡チェック」を見よ）。"
+                     " 再実査で両方が同時に動いたら CTR が上がっても #68 の効果とは言えない。"
+                     " 片方だけ動いたケースを見つけるまでは因果を主張しない",
     },
 ]
 
@@ -114,6 +119,33 @@ def bucket_rows(rows, keyfn, filt=None):
     return b
 
 
+def partial_periods(rows, monthly):
+    """日数が揃っていない期間（=未確定）を返す（2026-09-02 追加）。
+
+    GSC は直近 2〜3 日ぶんが未確定で、fetch_gsc.py も直近30日を毎回上書きする。
+    そのため最新の週/月はほぼ必ず日数が欠ける。印を付けずに並べると
+    「2026-08-31 週 100imp（前週 954imp）」が暴落に見える。実際は 1日ぶんしかない。
+    施策の判定を月初に回すとここで必ず読み違えるので、行に日数を出す。
+    最古の期間が欠けるのは GSC 計測開始前で、こちらは後から埋まらない。
+    どちらも「この行は他の行と同じ土俵ではない」という意味では同じ。
+    """
+    days = defaultdict(set)
+    for r in rows:
+        k = r["date"][:7] if monthly else week_of(r["date"])
+        days[k].add(r["date"])
+    out = {}
+    for k, ds in days.items():
+        if monthly:
+            y, m = int(k[:4]), int(k[5:7])
+            nm = date(y + (m == 12), (m % 12) + 1, 1)
+            full = (nm - date(y, m, 1)).days
+        else:
+            full = 7
+        if len(ds) < full:
+            out[k] = (len(ds), full)
+    return out
+
+
 def print_interventions(section=None):
     rel = [i for i in INTERVENTIONS if section is None or i["section"] == section]
     if not rel:
@@ -130,6 +162,7 @@ def print_interventions(section=None):
 def cmd_sections(rows, weeks, monthly):
     keyfn = (lambda r: r["date"][:7]) if monthly else (lambda r: week_of(r["date"]))
     periods = sorted({keyfn(r) for r in rows})[-weeks:]
+    partial = partial_periods(rows, monthly)
     marks = {}
     for i in INTERVENTIONS:
         k = i["date"][:7] if monthly else week_of(i["date"])
@@ -148,6 +181,9 @@ def cmd_sections(rows, weeks, monthly):
                 continue
             clk, imp, ctr, pos = agg(b[p])
             mark = "  ← " + " / ".join(marks[p]) + " 投入" if p in marks else ""
+            if p in partial:
+                n, full = partial[p]
+                mark = f"  ※{n}/{full}日ぶんのみ" + mark
             print(fmt_row(p, clk, imp, ctr, pos, mark))
     print_interventions()
 

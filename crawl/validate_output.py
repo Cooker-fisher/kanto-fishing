@@ -3047,6 +3047,7 @@ def validate_area_h1_richness():
     checked = 0
     too_long = []
     bare = []
+    thin_daily = []
     missing_pref = []
     missing_alias = []
     alias_pages = {}
@@ -3080,6 +3081,14 @@ def validate_area_h1_richness():
                     missing_alias.append((fn, h1, miss, len(trial)))
         if h1 in (f"{area_nm}の船釣り釣果",) and (aliases or pref):
             bare.append((fn, h1))
+        # [70] thin テンプレ（title が「〜の船釣り釣果・過去実績」）の H1 が
+        # 【毎日更新】を名乗っていないこと。#68 で thin パスにも area_h1_text() を
+        # 通した結果、title「過去実績」/ body「本日の釣果報告は集計待ち」と
+        # H1「毎日更新」が矛盾していた（2026-09-02 に 20本を修正）。
+        # #68 の前提（Google が H1 を SERP タイトルに使う）が成り立つと、
+        # 「毎日更新」で釣って「集計待ち」を見せることになる。
+        if "・過去実績 |" in content[:2000] and "【毎日更新】" in h1:
+            thin_daily.append((fn, h1))
 
     if not checked:
         fail("[68] H1/ah-sub 構造の area ページが 1 件も無い")
@@ -3104,6 +3113,12 @@ def validate_area_h1_richness():
             fail(f"area H1 に別称 {miss} が無い（{n}文字で収まるのに落ちている）: {fn} → {h}")
     else:
         ok(f"別称登録 {len(alias_pages)} ページ: H1 に別称が入っている")
+    if thin_daily:
+        for fn, h in thin_daily[:5]:
+            fail(f"[70] thin テンプレの H1 が【毎日更新】を名乗っている"
+                 f"（title は「・過去実績」・body は「集計待ち」）: {fn} → {h}")
+    else:
+        ok("[70] thin テンプレの H1 に【毎日更新】は無い")
 
 
 def validate_ship_index_hub():
