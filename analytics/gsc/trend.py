@@ -25,7 +25,12 @@ if hasattr(sys.stdout, "reconfigure"):
         pass
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-GSC_GLOB = os.path.join(ROOT, "analytics", "gsc", "*.csv")
+# ページ次元 CSV（date+page）を使う。クエリ次元 CSV（gsc/*.csv）は GSC の匿名化で
+# **click の約 1/3 しか含まず、しかも欠測率がページごとに 9〜71% とばらつく**
+# （2026-09-02 に API の次元なし合計と突き合わせて実測）。種別×週次の比較を
+# クエリ次元でやると、母数も CTR も種別ごとに違う倍率で歪む。詳細は fetch_gsc.py。
+GSC_GLOB = os.path.join(ROOT, "analytics", "gsc", "pages", "*.csv")
+GSC_QUERY_GLOB = os.path.join(ROOT, "analytics", "gsc", "*.csv")
 SITE = "https://funatsuri-yoso.com/"
 
 # 施策の投入日と判定基準。効果判定はここを見て行う。
@@ -35,7 +40,8 @@ INTERVENTIONS = [
         "date": "2026-08-29",
         "name": "#67 船宿ハブ新設 + ship ナビ統一",
         "section": "ship",
-        "baseline": "投入直前10週: imp 65〜225 / click 0〜1 / pos 10.6〜17.8（page2 圏で固定）",
+        "baseline": "投入直前（ページ次元・真値）: 2026-07〜08 で 4,156impr / 28click"
+                    " / CTR 0.67% / pos 11.7。全ページ page2 圏で固定",
         "criterion": "imp 加重平均 pos が 10 を切る。切らなければ内部リンク以外が律速。"
                      "⚠ 2026-08-30 の SERP 実査で、ship の指名検索（庄治郎丸 釣果 等）は"
                      " 1位2位が船宿の公式サイトだと判明した。title は差し替えられておらず"
@@ -47,8 +53,11 @@ INTERVENTIONS = [
         "date": "2026-08-29",
         "name": "#68 area H1 に別称+県名",
         "section": "area",
-        "baseline": "2026-08: katsuura 1.11% / iioka 2.03% / amatsu 0.49%"
-                    "（対 金谷 5.24% / 静浦 5.01%・pos はどれも 6.6〜8.2）",
+        "baseline": "2026-07〜08（ページ次元・真値）: katsuura 1.28%(pos8.3) /"
+                    " iioka 2.22%(6.7) / amatsu 0.53%(7.5) 対 金谷 4.21%(7.6) /"
+                    " 静浦 4.05%(8.5)。⚠ 旧ベースラインはクエリ次元 CSV 由来で"
+                    " katsuura 1.11% / 金谷 5.24% としていた（click 欠測 48%）。"
+                    " 差は 4.8倍→3.3倍に縮んだがギャップ自体は健在",
         "criterion": "SERP 実査（analytics/serp/report.py --recheck → --diff）で"
                      " title_source が h1 → title に変わり、CTR が上がる。"
                      "⚠ 主指標は katsuura。iioka と amatsu は 2026-08-10 週に"
@@ -81,7 +90,15 @@ def week_of(d):
 
 def load():
     rows = []
-    for p in sorted(glob.glob(GSC_GLOB)):
+    files = sorted(glob.glob(GSC_GLOB))
+    if not files:
+        # 黙って空を返すと「実績ゼロ」と読める。取り違えの再発を防ぐため落とす。
+        sys.exit(
+            f"[trend] ページ次元 CSV が無い: {GSC_GLOB}" + chr(10)
+            + "        python analytics/fetch_gsc.py --days 130 でバックフィルする。" + chr(10)
+            + "        クエリ次元 CSV（gsc/*.csv）で代用しないこと"
+              "（匿名化で click の約1/3・欠測はページごとに 9〜71%）")
+    for p in files:
         with open(p, encoding="utf-8", newline="") as f:
             rdr = csv.DictReader(f)
             if not rdr.fieldnames or "impressions" not in rdr.fieldnames:

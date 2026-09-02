@@ -14,12 +14,34 @@ analytics/
 ├── seo_report.py         # GSC+GA4 → SEO・集客レポート（標準ライブラリのみ）
 ├── analytics_common.py   # 認証・CSV upsert 共通処理
 ├── requirements.txt      # google-api-python-client / google-auth
-├── gsc/YYYY-MM.csv       # date,query,page,clicks,impressions,ctr,position
+├── gsc/YYYY-MM.csv       # date,query,page,clicks,impressions,ctr,position（クエリ次元）
+├── gsc/pages/YYYY-MM.csv # date,page,clicks,impressions,ctr,position（ページ次元）
 ├── ga4/YYYY-MM.csv       # date,channel,pagePath,activeUsers,screenPageViews,sessions,engagementRate
 └── report/
     ├── latest.md         # 最新レポート（上書き）
     └── YYYY-MM-DD.md     # 日付スナップショット
 ```
+
+## ⚠ gsc/*.csv と gsc/pages/*.csv の使い分け（2026-09-02）
+
+**GSC は `query` 次元を付けると低頻度クエリの行を匿名化して落とす。**
+API の次元なし合計と突き合わせた実測:
+
+| 期間 | 真値（次元なし） | date+query+page | date+page |
+|---|---|---|---|
+| 2026-07 | 292click / 11,933impr | 94 / 4,597（**click 32%**） | 294 / 12,013（100%） |
+| 2026-08 | 424click / 21,970impr | 132 / 7,002（**click 31%**） | 425 / 22,077（100%） |
+
+しかも欠測率はページごとに **9%〜71%** とばらつく（低頻度クエリ比率の高いページほど落ちる）。
+クエリ次元だけでページ別 CTR を比べると順位が入れ替わる
+（`area/futtsu.html` は真値 1.99% なのにクエリ次元では 0.41% に見えた）。
+
+| ファイル | 用途 | 使ってよい |
+|---|---|---|
+| `gsc/YYYY-MM.csv` | **何で来たか**（クエリ・惜しいクエリ・順位変動） | クエリ単位の相対比較 |
+| `gsc/pages/YYYY-MM.csv` | **どれだけ来たか**（サイト KPI・ページ別 CTR・種別集計） | 合計値・CTR 比較 |
+
+**クエリ次元 CSV の合計をサイト KPI に使わないこと。** 3倍過小になる。
 
 ## レポート（seo_report.py）
 

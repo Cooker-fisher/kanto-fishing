@@ -25,7 +25,13 @@ from urllib.parse import unquote
 
 ANALYTICS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(ANALYTICS_DIR)
-GSC_GLOB = os.path.join(ANALYTICS_DIR, "gsc", "*.csv")
+GSC_GLOB = os.path.join(ANALYTICS_DIR, "gsc", "*.csv")            # クエリ次元
+# ページ次元（date+page）。クエリ次元は GSC の匿名化で click の約 1/3 しか含まず、
+# 欠測率がページごとに 9〜71% とばらつく（2026-09-02 実測・fetch_gsc.py 参照）。
+# サイト合計・ページ別の数字は必ずこちらから出す。
+GSC_PAGES_GLOB = os.path.join(ANALYTICS_DIR, "gsc", "pages", "*.csv")
+# GSC が確定するまでの日数。週次の増減はこの日数ぶん遡った窓で比べる（下の ② 参照）
+GSC_FRESH_LAG_DAYS = 3
 GA4_GLOB = os.path.join(ANALYTICS_DIR, "ga4", "*.csv")
 REPORT_DIR = os.path.join(ANALYTICS_DIR, "report")
 DATA_GLOB = os.path.join(REPO_ROOT, "data", "V2", "*.csv")
@@ -340,7 +346,10 @@ def rank_trend(gsc, end_date):
     return rows
 
 
-def build_markdown(gsc, ga4, window):
+def build_markdown(gsc, ga4, window, gsc_pages=None):
+    # gsc      = クエリ次元（惜しいクエリ・順位変動など「何で来たか」用）
+    # gsc_pages = ページ次元（週次サマリーの合計・ページ別 CTR など「どれだけ来たか」用）
+    gsc_pages = gsc if gsc_pages is None else gsc_pages
     dates = [r.get("date", "") for r in gsc] + [r.get("date", "") for r in ga4]
     dates = [d for d in dates if d]
     if not dates:
@@ -354,13 +363,21 @@ def build_markdown(gsc, ga4, window):
     L.append(f"\n_生成: {dt.date.today().isoformat()} / データ最新日: {end}_\n")
 
     # ② 週次
-    w = weekly_summary(gsc, ga4, end_date)
+    # GSC は直近 2〜3 日が未確定（dataState=all で fresh も取っているので行はあるが値が小さい）。
+    # 「直近7日」に未確定日を含めると、比較相手の「前7日」は確定済みなので
+    # **毎日かならず減少に見える**（2026-09-02 に実測: 69 vs 105 = -34%）。
+    # 閾値の話ではなく比較の土俵が違うので、週次の窓だけ確定済みの日まで戻す。
+    week_end = end_date - dt.timedelta(days=GSC_FRESH_LAG_DAYS)
+    w = weekly_summary(gsc_pages, ga4, week_end)
     cc, ci = w["gsc_cur"]; pc, pi = w["gsc_prev"]
     cu, cpv = w["ga4_cur"]; pu, ppv = w["ga4_prev"]
     L.append("## 📊 週次サマリー（直近7日 vs 前7日）")
+    L.append(f"- ⚠ GSC の直近 {GSC_FRESH_LAG_DAYS} 日（〜{end}）は未確定なので週次の窓から外している")
     L.append(f"- 期間: {w['cur_range'][0]}〜{w['cur_range'][1]}（前: {w['prev_range'][0]}〜{w['prev_range'][1]}）")
     L.append(f"- 検索クリック: {_delta(cc, pc)}")
     L.append(f"- 検索表示回数: {_delta(ci, pi)}")
+    L.append("  （GSC ページ次元＝真値。下の各クエリ表はクエリ次元で、"
+             "GSC の匿名化により合計は真値の 1/3 程度にしかならない）")
     L.append(f"- UU（ユーザー）: {_delta(cu, pu)}")
     L.append(f"- PV: {_delta(cpv, ppv)}")
 
@@ -419,7 +436,9 @@ def build_markdown(gsc, ga4, window):
         L.append("_該当なし_")
 
     # ② CTR異常ページ
-    an = ctr_anomaly_pages(gsc, start, end)
+    # ページ別 CTR の異常検知はページ次元で。クエリ次元だと欠測率の高いページが
+    # 一律「CTR が低い」に見えて誤検知する（area/futtsu.html は 0.41% に見えて真値 1.99%）。
+    an = ctr_anomaly_pages(gsc_pages, start, end)
     L.append("\n## 🔧 CTR不足ページ（表示は多いのにクリックされない＝title/説明文が弱い疑い）")
     if an:
         L.append("| ページ | 表示 | 順位 | 実CTR | 期待CTR | 取りこぼし |")
@@ -472,10 +491,11 @@ def main():
     args = parser.parse_args()
 
     gsc = load_rows(GSC_GLOB)
+    gsc_pages = load_rows(GSC_PAGES_GLOB)
     ga4 = load_rows(GA4_GLOB)
     print(f"[seo_report] GSC {len(gsc)} 行 / GA4 {len(ga4)} 行")
 
-    md, end = build_markdown(gsc, ga4, args.window)
+    md, end = build_markdown(gsc, ga4, args.window, gsc_pages)
     os.makedirs(REPORT_DIR, exist_ok=True)
     latest = os.path.join(REPORT_DIR, "latest.md")
     with open(latest, "w", encoding="utf-8") as f:

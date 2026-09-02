@@ -23,7 +23,8 @@ if hasattr(sys.stdout, "reconfigure"):
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OBS_PATH = os.path.join(ROOT, "analytics", "serp", "observations.json")
-GSC_GLOB = os.path.join(ROOT, "analytics", "gsc", "*.csv")
+GSC_GLOB = os.path.join(ROOT, "analytics", "gsc", "*.csv")                 # クエリ次元
+GSC_PAGES_GLOB = os.path.join(ROOT, "analytics", "gsc", "pages", "*.csv")  # ページ次元
 SITE = "https://funatsuri-yoso.com/"
 
 
@@ -32,9 +33,16 @@ def load_obs():
         return json.load(f).get("observations", [])
 
 
-def load_gsc():
+def load_gsc(pattern=None):
+    """GSC CSV を読む。既定はクエリ次元（gsc/*.csv）。
+
+    **ページ別の実績にクエリ次元を使ってはいけない**: GSC は query 次元を付けると
+    低頻度クエリの行を匿名化して落とすため、合計が真値の約 1/3 になり、
+    欠測率はページごとに 9〜71% とばらつく（2026-09-02 実測・fetch_gsc.py 参照）。
+    ページ別 CTR の比較は必ず load_gsc(GSC_PAGES_GLOB) を使う。
+    """
     rows = []
-    for p in sorted(glob.glob(GSC_GLOB)):
+    for p in sorted(glob.glob(pattern or GSC_GLOB)):
         with open(p, encoding="utf-8", newline="") as f:
             for r in csv.DictReader(f):
                 try:
@@ -61,18 +69,27 @@ def month_of(date_str):
     return date_str[:7]
 
 
-def cmd_report(obs, gsc):
+def cmd_report(obs, gsc, gsc_q=None):
+    """obs を GSC と突き合わせて表示する。
+
+    gsc   = ページ次元（date+page）。ページ別の impr/click/CTR はこちらが真値。
+    gsc_q = クエリ次元（date+query+page）。一覧行の「そのクエリでの実績」用。
+            匿名化で欠測するので、そう明記して出す。
+    """
+    gsc_q = gsc if gsc_q is None else gsc_q
     by_src = defaultdict(list)
     print("=" * 96)
     print("SERP 実査 × GSC 実績")
     print("=" * 96)
+    print("※ クエリ別 impr/clk はクエリ次元（匿名化で欠測あり）。"
+          "ページ別集計は下段のページ次元＝真値")
     print(f'{"観測日":11s} {"title元":9s} {"日付表記":10s} {"抜粋元":7s} {"AI引用":6s} '
           f'{"imp":>6s} {"clk":>4s} {"CTR":>7s} {"pos":>5s}  クエリ / ページ')
     for o in obs:
         ym = month_of(o["date"])
         page_url = SITE + o["page"] if o.get("page") else None
         # 同月・同クエリ・同ページの GSC 実績
-        rows = [r for r in gsc
+        rows = [r for r in gsc_q
                 if r["date"][:7] == ym and r["query"] == o["query"]
                 and (page_url is None or r["page"] == page_url)]
         clk, imp, ctr, pos = agg(rows)
@@ -347,13 +364,20 @@ def main():
     if args.diff:
         cmd_diff(obs)
         return
-    gsc = load_gsc()
     if args.recheck:
-        cmd_recheck(obs, gsc, days=args.days)
+        cmd_recheck(obs, load_gsc(), days=args.days)
     elif args.suggest:
-        cmd_suggest(obs, gsc, days=args.days)
+        cmd_suggest(obs, load_gsc(), days=args.days)
     else:
-        cmd_report(obs, gsc)
+        # ページ別の実績はページ次元から。クエリ次元は匿名化欠測で比較に使えない。
+        # 一覧行のクエリ別 impr/click はクエリ次元にしか無いので両方渡す。
+        pages = load_gsc(GSC_PAGES_GLOB)
+        if not pages:
+            sys.exit(
+                f"[serp] ページ次元 CSV が無い: {GSC_PAGES_GLOB}" + chr(10)
+                + "       python analytics/fetch_gsc.py --days 130 でバックフィルする。" + chr(10)
+                + "       クエリ次元で代用するとページ別 CTR の順位が入れ替わる")
+        cmd_report(obs, pages, load_gsc())
 
 
 if __name__ == "__main__":
