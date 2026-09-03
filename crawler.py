@@ -11311,14 +11311,21 @@ def _build_field_report_section(fish, area=None):
         body = (e.get("html") or "").strip()
         author = (e.get("author") or "").strip()
         date = (e.get("date") or "").strip()
-        if not body or not author or not date:
+        # date_note: 実際に行ったのは確かだが正確な日付が特定できない釣行用（2026-09-03）。
+        # 古い釣行メモには月日しか残っていないことがある。年を推測して date に書くのは
+        # 「書いていないことを書かない」に反するし、かといって種別を「経験メモ」にすると
+        # 「特定の一日の記録ではなく」という定型文が出て単発釣行を誤って説明してしまう。
+        # 見たまま（例「10月18日・年は記録に残っていない」）を出す逃げ道を用意する。
+        date_note = (e.get("date_note") or "").strip()
+        if not body or not author or not (date or date_note):
             continue  # 出典が示せないものは出さない
         kind = _FR_TYPE_LABEL.get((e.get("type") or "").strip(), "現地メモ")
         title = (e.get("title") or "").strip()
         ship = (e.get("ship") or "").strip()
         # 種別は fr-kind バッジ側で出す。経験メモは釣行日ではないので「時点」と明示する
         is_trip = (e.get("type") or "").strip() in _FR_TRIP_TYPES
-        meta = (date if is_trip else f"{date} 時点") + (f'・{ship}' if ship else "")
+        when = date_note or (date if is_trip else f"{date} 時点")
+        meta = when + (f'・{ship}' if ship else "")
         tk = [t for t in (e.get("takeaways") or []) if str(t).strip()][:3]
         tk_html = ""
         if tk:

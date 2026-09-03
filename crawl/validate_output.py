@@ -2116,7 +2116,11 @@ def validate_fish_area_analysis_sections():
     for k, entries in reports.items():
         for e in (entries if isinstance(entries, list) else [entries]):
             n_reports += 1
-            if not (e.get("author") or "").strip() or not (e.get("date") or "").strip() \
+            # date_note = 正確な日付が特定できない釣行（2026-09-03 追加）。
+            # 年を推測して書くよりは「月日だけ・年は記録なし」と出すほうが正しい。
+            _src_date = ((e.get("date") or "").strip()
+                         or (e.get("date_note") or "").strip())
+            if not (e.get("author") or "").strip() or not _src_date \
                     or not (e.get("html") or "").strip():
                 missing_src.append(k)
             blob = (e.get("html") or "") + " ".join(e.get("takeaways") or []) + (e.get("title") or "")
@@ -2149,7 +2153,7 @@ def validate_fish_area_analysis_sections():
     elif n_reports == 0:
         ok("[58] 一次体験レポート 0 件（器のみ・Experience は未充足）")
     else:
-        ok(f"[58] 一次体験レポート {n_reports} 件すべてに執筆者・実施日あり")
+        ok(f"[58] 一次体験レポート {n_reports} 件すべてに執筆者・実施日（または date_note）あり")
 
     # 描画済みページは必ず「自動集計ではない」旨を明示していること
     FR_MARK = 'class="field-report"'
