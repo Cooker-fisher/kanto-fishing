@@ -27,7 +27,7 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # ページ次元 CSV（date+page）を使う。クエリ次元 CSV（gsc/*.csv）は GSC の匿名化で
 # **click の約 1/3 しか含まず、しかも欠測率がページごとに 9〜71% とばらつく**
-# （2026-09-02 に API の次元なし合計と突き合わせて実測）。種別×週次の比較を
+# （2026-09-03 に API の次元なし合計と突き合わせて実測）。種別×週次の比較を
 # クエリ次元でやると、母数も CTR も種別ごとに違う倍率で歪む。詳細は fetch_gsc.py。
 GSC_GLOB = os.path.join(ROOT, "analytics", "gsc", "pages", "*.csv")
 GSC_QUERY_GLOB = os.path.join(ROOT, "analytics", "gsc", "*.csv")
@@ -62,11 +62,16 @@ INTERVENTIONS = [
                      " title_source が h1 → title に変わり、CTR が上がる。"
                      "⚠ 主指標は katsuura。iioka と amatsu は 2026-08-10 週に"
                      " imp が約70%落ちており（順位は不変・原因未特定）判定に使えない。"
-                     "⚠⚠ 2026-09-02 追記: 投入前 n=6 の area 観測では title_source と"
+                     "⚠⚠ 2026-09-03 追記: 投入前 n=6 の area 観測では title_source と"
                      " SERP日付表記が**完全交絡**していた（title維持=日付なし=CTR4.8% /"
                      " h1差し替え=日付あり=CTR1.5%。report.py の「交絡チェック」を見よ）。"
                      " 再実査で両方が同時に動いたら CTR が上がっても #68 の効果とは言えない。"
-                     " 片方だけ動いたケースを見つけるまでは因果を主張しない",
+                     " 片方だけ動いたケースを見つけるまでは因果を主張しない。"
+                     "✅ 2026-09-03: 交絡のうち「クロール鮮度」側は棄却した。"
+                     " URL Inspection の lastCrawlTime で shizuura が最古（08-17）"
+                     " なのに CTR 4.05% で2位、katsuura は 08-31 と新しいのに 1.28%。"
+                     " クロール頻度は CTR を説明しないので、残るのは"
+                     "「Google が日付つき扱いする理由」= SERP 再実査に一本化する",
     },
 ]
 
@@ -137,7 +142,7 @@ def bucket_rows(rows, keyfn, filt=None):
 
 
 def partial_periods(rows, monthly):
-    """日数が揃っていない期間（=未確定）を返す（2026-09-02 追加）。
+    """日数が揃っていない期間（=未確定）を返す（2026-09-03 追加）。
 
     GSC は直近 2〜3 日ぶんが未確定で、fetch_gsc.py も直近30日を毎回上書きする。
     そのため最新の週/月はほぼ必ず日数が欠ける。印を付けずに並べると

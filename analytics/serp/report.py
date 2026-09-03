@@ -38,7 +38,7 @@ def load_gsc(pattern=None):
 
     **ページ別の実績にクエリ次元を使ってはいけない**: GSC は query 次元を付けると
     低頻度クエリの行を匿名化して落とすため、合計が真値の約 1/3 になり、
-    欠測率はページごとに 9〜71% とばらつく（2026-09-02 実測・fetch_gsc.py 参照）。
+    欠測率はページごとに 9〜71% とばらつく（2026-09-03 実測・fetch_gsc.py 参照）。
     ページ別 CTR の比較は必ず load_gsc(GSC_PAGES_GLOB) を使う。
     """
     rows = []
@@ -165,7 +165,7 @@ def cmd_report(obs, gsc, gsc_q=None):
 
 
 def print_confound(obs, gsc):
-    """title_source × SERP日付表記 のクロス集計（2026-09-02 追加）。
+    """title_source × SERP日付表記 のクロス集計（2026-09-03 追加）。
 
     なぜ必要か: 2026-08-29 の area 6観測では、この2つが完全に一致して動いていた。
       title 維持 = 日付表記なし = CTR 4.8%（kanaya / shizuura）
@@ -242,7 +242,7 @@ def _window_rows(gsc, days):
     """GSC 最新日から遡って days 日ぶんの行を返す。
 
     以前は「最新の暦月」で切っていたが、月初は数日ぶんしか無く（GSC は 2〜3日遅延）
-    impr>=20 のクエリが 0 件になって --suggest が空を返した（2026-09-02 に実測）。
+    impr>=20 のクエリが 0 件になって --suggest が空を返した（2026-09-03 に実測）。
     施策の判定は月初にこそ回すので、暦月ではなく移動窓で切る。
     """
     if not gsc:
@@ -285,7 +285,7 @@ def cmd_recheck(obs, gsc, days=28):
 
     --suggest は未実査クエリしか出さないので、施策の効果判定（同じクエリを
     投入前後で比べる）には使えない。#68 の判定は katsuura の再実査そのものなので、
-    再実査すべき対象を明示的に並べる用途を分ける（2026-09-02 追加）。
+    再実査すべき対象を明示的に並べる用途を分ける（2026-09-03 追加）。
     """
     rows, first, last = _window_rows(gsc, days)
     seen = defaultdict(list)
@@ -326,7 +326,7 @@ def cmd_diff(obs):
             continue
         a, b = lst[-2], lst[-1]
         rec = (k, a, b)
-        # title_source だけでなく SERP日付表記の変化も追う（2026-09-02）。
+        # title_source だけでなく SERP日付表記の変化も追う（2026-09-03）。
         # 両者は 2026-08-29 時点で完全交絡していた（print_confound 参照）ので、
         # どちらが動いたのかを毎回並べて見ないと #68 の効果を誤帰属する。
         moved = (a.get("title_source") != b.get("title_source")

@@ -22,7 +22,7 @@ analytics/
     └── YYYY-MM-DD.md     # 日付スナップショット
 ```
 
-## ⚠ gsc/*.csv と gsc/pages/*.csv の使い分け（2026-09-02）
+## ⚠ gsc/*.csv と gsc/pages/*.csv の使い分け（2026-09-03）
 
 **GSC は `query` 次元を付けると低頻度クエリの行を匿名化して落とす。**
 API の次元なし合計と突き合わせた実測:
