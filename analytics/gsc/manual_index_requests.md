@@ -228,6 +228,47 @@ PASS しているので、これは #34 以前の履歴。**対応不要。**
 
 ---
 
+## 2026-09-05 追加投入（fish_area 1本で枠切れ）
+
+fish 10本のあと fish_area へ移り、**1本目で「割り当て量を超えています」**。
+本日の投入は合計11本で打ち止め。
+
+- [x] `fish_area/sawara-edogawa.html`（過去403便・今週2便）
+      検査時: 検出 - インデックス未登録 / 前回のクロール 該当なし /
+      **参照元ページ「検出されませんでした」**
+- 2本目 `fish_area/kasago-katakai.html` で枠切れ。**次回はここから。**
+
+### 次に投入する順（fish_area・31本から便数順に抽出）
+
+| # | URL | 今週 | 過去 | 状態 |
+|---|---|---:|---:|---|
+| 1 | `fish_area/kasago-katakai.html` | 4 | 116 | 検出・未クロール |
+| 2 | `fish_area/saba-kuryo.html` | 4 | 81 | 検出・未クロール |
+| 3 | `fish_area/mejina-emi.html` | 3 | 95 | 検出・未クロール |
+| 4 | `fish_area/madako-kanazawa-gyoko.html` | 3 | 94 | **未発見** |
+| 5 | `fish_area/umazurahagi-sajima.html` | 3 | 93 | 検出・未クロール |
+| 6 | `fish_area/saba-sajima.html` | 2 | 105 | 検出・未クロール |
+| 7 | `fish_area/saba-omaezaki.html` | 1 | 97 | 検出・未クロール |
+| 8 | `fish_area/hata-kashima.html` | 1 | 91 | 検出・未クロール |
+| 9 | `fish_area/soi-kashima.html` | 1 | 87 | 検出・未クロール |
+| 10 | `fish_area/mahata-ohara.html` | 0 | 0 | 検出・未クロール（11船宿） |
+
+残りは `python analytics/gsc/inspect_urls.py --zero-impression --report` で出る。
+
+### ⚠ 作業時の注意（2026-09-05 に事故りかけた）
+
+**この Google アカウントは funatsuri-yoso.com のほかに fishing-threads.com と
+shikaku-log.com を持っている。** 作業中に検索ボックスへのフォーカスが外れると
+入力がプロパティ切替ボックスに入り、**別サイトに切り替わる**。
+実際に shikaku-log → fishing-threads と2回飛んだ（送信はしていない）。
+
+- `?resource_id=` を URL に付けても**無視されて直前に選んだプロパティに戻る**ことがある
+- 確実なのは左上のプロパティ切替を開いて `https://funatsuri-yoso.com/` の行を選ぶこと
+- **投入ボタンを押す前に必ずヘッダーの「『https://funatsuri-yoso.com/』内のすべての
+  URL を検査」表記を目視確認する**
+
+---
+
 ## 2026-09-05 投入済み（10本・全部成功）
 
 上の実査で決めた順に GSC 画面から投入。**10本すべて「インデックス登録をリクエスト済み /
