@@ -2117,7 +2117,7 @@ def validate_fish_area_analysis_sections():
     for k, entries in reports.items():
         for e in (entries if isinstance(entries, list) else [entries]):
             n_reports += 1
-            # date_note = 正確な日付が特定できない釣行（2026-09-03 追加）。
+            # date_note = 正確な日付が特定できない釣行（2026-09-05 追加）。
             # 年を推測して書くよりは「月日だけ・年は記録なし」と出すほうが正しい。
             _src_date = ((e.get("date") or "").strip()
                          or (e.get("date_note") or "").strip())
@@ -2133,8 +2133,8 @@ def validate_fish_area_analysis_sections():
     else:
         ok("[58] 本文の文字体系チェック OK（キリル/ギリシャ/ハングル混入なし）")
 
-    # [58b] 人が書く他の本文 JSON も同じ検知にかける（2026-09-03 追加）。
-    # 検知対象が field_reports.json だけだったため、2026-09-03 に
+    # [58b] 人が書く他の本文 JSON も同じ検知にかける（2026-09-05 追加）。
+    # 検知対象が field_reports.json だけだったため、2026-09-05 に
     # fish_content.json の編集でハングル1文字が混入したのを機械検知できなかった
     # （自前スキャンで発見）。執筆支援中の混入は fish_content でも同じ確率で起きる。
     other_hit = []
@@ -3112,7 +3112,7 @@ def validate_area_h1_richness():
         # [70] thin テンプレ（title が「〜の船釣り釣果・過去実績」）の H1 が
         # 【毎日更新】を名乗っていないこと。#68 で thin パスにも area_h1_text() を
         # 通した結果、title「過去実績」/ body「本日の釣果報告は集計待ち」と
-        # H1「毎日更新」が矛盾していた（2026-09-03 に 20本を修正）。
+        # H1「毎日更新」が矛盾していた（2026-09-05 に 20本を修正）。
         # #68 の前提（Google が H1 を SERP タイトルに使う）が成り立つと、
         # 「毎日更新」で釣って「集計待ち」を見せることになる。
         if "・過去実績 |" in content[:2000] and "【毎日更新】" in h1:
@@ -3150,14 +3150,14 @@ def validate_area_h1_richness():
 
 
 def validate_fish_index_covers_all():
-    """[71] docs/fish/index.html が fish 配下の全ページにリンクしていること（2026-09-03）
+    """[71] docs/fish/index.html が fish 配下の全ページにリンクしていること（2026-09-05）
 
     背景: ハブの魚種一覧は ①_FISH_ROMAJI 登録済み ②fish_area ページが1件以上ある
     の両方を満たす魚種しか載せない。両方から漏れると、ページは実在して sitemap にも
     載るのに**内部リンクが1本も無い**状態になる。実際に 73本中3本が漏れていた
     （sujiika = fish_area ページ無し / アカアマダイ・ハゼ = _FISH_ROMAJI 未登録）。
 
-    2026-09-03 の URL Inspection 実査で、fish は「検出 - インデックス未登録」6本と
+    2026-09-05 の URL Inspection 実査で、fish は「検出 - インデックス未登録」6本と
     「URL が認識されていません」3本を抱えており、クロール到達性が律速と判明した。
     内部リンクの穴はその真因ではないが、塞げる穴を開けておく理由が無い。
     crawler.py 側は _fish_index_orphan_sweep() が最終保険として拾う。

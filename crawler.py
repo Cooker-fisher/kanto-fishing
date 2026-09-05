@@ -3896,7 +3896,7 @@ def area_h1_text(area, aliases, group, daily=True):
     3件目以降（例: 勝浦湾）にも実クエリの需要がある。
 
     daily=False は thin テンプレ（当日釣果なし・title は「〜の船釣り釣果・過去実績」）用
-    （2026-09-03・不変条件 #70）。#68 で thin パスにも本関数を通した結果、title が
+    （2026-09-05・不変条件 #70）。#68 で thin パスにも本関数を通した結果、title が
     「過去実績」と言い body が「本日の釣果報告は集計待ち」と言っているページの H1 だけが
     【毎日更新】を名乗る状態になっていた。#68 の前提（Google が title を捨てて H1 を
     SERP タイトルに使う）が成り立つと、SERP で「毎日更新」と読ませてクリックさせた先が
@@ -9507,7 +9507,7 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
 def _fish_index_orphan_sweep(html):
     """docs/fish/*.html のうち fish/index.html から1本もリンクされていないページを拾う。
 
-    背景（2026-09-03・不変条件 #71）: ハブの魚種一覧は
+    背景（2026-09-05・不変条件 #71）: ハブの魚種一覧は
       ① _FISH_ROMAJI に登録済み  ② fish_area ページが1件以上ある
     の両方を満たす魚種しか載せない。この2条件から漏れると、ページは実在して
     sitemap にも載るのに**ハブから1本も内部リンクが張られない**。
@@ -11370,7 +11370,7 @@ def _build_field_report_section(fish, area=None):
         body = (e.get("html") or "").strip()
         author = (e.get("author") or "").strip()
         date = (e.get("date") or "").strip()
-        # date_note: 実際に行ったのは確かだが正確な日付が特定できない釣行用（2026-09-03）。
+        # date_note: 実際に行ったのは確かだが正確な日付が特定できない釣行用（2026-09-05）。
         # 古い釣行メモには月日しか残っていないことがある。年を推測して date に書くのは
         # 「書いていないことを書かない」に反するし、かといって種別を「経験メモ」にすると
         # 「特定の一日の記録ではなく」という定型文が出て単発釣行を誤って説明してしまう。

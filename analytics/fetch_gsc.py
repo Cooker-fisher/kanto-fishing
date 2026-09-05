@@ -7,7 +7,7 @@ A: Search Console データ取得（検索クエリ・表示回数・クリッ�
 出力     : analytics/gsc/YYYY-MM.csv       （date+query+page キー・クエリ分析用）
            analytics/gsc/pages/YYYY-MM.csv （date+page キー・ページ/サイト実績用）
            ⚠ query 次元を入れると GSC は低頻度クエリを匿名化して落とすため、
-             gsc/*.csv の合計は真値の約 1/3 にしかならない（2026-09-03 実測）。
+             gsc/*.csv の合計は真値の約 1/3 にしかならない（2026-09-05 実測）。
              ページ別 CTR・サイト KPI は必ず gsc/pages/*.csv から出すこと。
 実行     : python analytics/fetch_gsc.py [--days 30]
 
@@ -35,7 +35,7 @@ SCOPES = ["https://www.googleapis.com/auth/webmasters.readonly"]
 DEFAULT_SITE = "https://funatsuri-yoso.com/"
 ROW_LIMIT = 25000  # 1 リクエスト上限。超える日は startRow ページングで取り切る
 
-# ── 2つの次元セットを別ファイルに蓄積する（2026-09-03） ──
+# ── 2つの次元セットを別ファイルに蓄積する（2026-09-05） ──
 # query 次元を入れると GSC は**低頻度クエリの行を匿名化して落とす**。
 # 実測（API で次元なしの合計と突き合わせ）:
 #     2026-07  真値 292click / 11,933impr  →  date+query+page は  94click /  4,597impr（click 捕捉 32%）

@@ -27,7 +27,7 @@ ANALYTICS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(ANALYTICS_DIR)
 GSC_GLOB = os.path.join(ANALYTICS_DIR, "gsc", "*.csv")            # クエリ次元
 # ページ次元（date+page）。クエリ次元は GSC の匿名化で click の約 1/3 しか含まず、
-# 欠測率がページごとに 9〜71% とばらつく（2026-09-03 実測・fetch_gsc.py 参照）。
+# 欠測率がページごとに 9〜71% とばらつく（2026-09-05 実測・fetch_gsc.py 参照）。
 # サイト合計・ページ別の数字は必ずこちらから出す。
 GSC_PAGES_GLOB = os.path.join(ANALYTICS_DIR, "gsc", "pages", "*.csv")
 # GSC が確定するまでの日数。週次の増減はこの日数ぶん遡った窓で比べる（下の ② 参照）
@@ -365,7 +365,7 @@ def build_markdown(gsc, ga4, window, gsc_pages=None):
     # ② 週次
     # GSC は直近 2〜3 日が未確定（dataState=all で fresh も取っているので行はあるが値が小さい）。
     # 「直近7日」に未確定日を含めると、比較相手の「前7日」は確定済みなので
-    # **毎日かならず減少に見える**（2026-09-03 に実測: 69 vs 105 = -34%）。
+    # **毎日かならず減少に見える**（2026-09-05 に実測: 69 vs 105 = -34%）。
     # 閾値の話ではなく比較の土俵が違うので、週次の窓だけ確定済みの日まで戻す。
     week_end = end_date - dt.timedelta(days=GSC_FRESH_LAG_DAYS)
     w = weekly_summary(gsc_pages, ga4, week_end)
