@@ -88,6 +88,7 @@ CI 組込: crawler.py の直後に呼び、非0終了時は git push をスキ�
 """
 import sys, os, json, re, csv, argparse, subprocess, collections
 from datetime import datetime, timedelta
+from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = os.path.join(ROOT, "docs")
@@ -3125,6 +3126,43 @@ def validate_area_h1_richness():
         ok("[70] thin テンプレの H1 に【毎日更新】は無い")
 
 
+def validate_fish_index_covers_all():
+    """[71] docs/fish/index.html が fish 配下の全ページにリンクしていること（2026-09-03）
+
+    背景: ハブの魚種一覧は ①_FISH_ROMAJI 登録済み ②fish_area ページが1件以上ある
+    の両方を満たす魚種しか載せない。両方から漏れると、ページは実在して sitemap にも
+    載るのに**内部リンクが1本も無い**状態になる。実際に 73本中3本が漏れていた
+    （sujiika = fish_area ページ無し / アカアマダイ・ハゼ = _FISH_ROMAJI 未登録）。
+
+    2026-09-03 の URL Inspection 実査で、fish は「検出 - インデックス未登録」6本と
+    「URL が認識されていません」3本を抱えており、クロール到達性が律速と判明した。
+    内部リンクの穴はその真因ではないが、塞げる穴を開けておく理由が無い。
+    crawler.py 側は _fish_index_orphan_sweep() が最終保険として拾う。
+    """
+    print("\n[71] fish ハブが全魚種ページを網羅")
+    fish_dir = os.path.join(DOCS, "fish")
+    idx = os.path.join(fish_dir, "index.html")
+    if not os.path.isfile(idx):
+        fail("[71] docs/fish/index.html が無い")
+        return
+    html = open(idx, encoding="utf-8").read()
+    files = sorted(fn for fn in os.listdir(fish_dir)
+                   if fn.endswith(".html") and fn != "index.html")
+    if not files:
+        fail("[71] docs/fish/*.html が 1 件も無い")
+        return
+    missing = []
+    for fn in files:
+        if f'href="{fn}"' in html or quote(fn) in html:
+            continue
+        missing.append(fn)
+    if missing:
+        for fn in missing[:8]:
+            fail(f"[71] fish ハブからリンクされていない魚種ページ: {fn}")
+    else:
+        ok(f"[71] fish ハブ: 全 {len(files)} 本にリンクあり")
+
+
 def validate_ship_index_hub():
     """[67] 船宿ハブ docs/ship/index.html の存在と導線（2026-08-29）
 
@@ -3340,6 +3378,7 @@ def main():
     validate_ship_index_hub()
     validate_area_h1_richness()
     validate_fish_faq_recent_lead()
+    validate_fish_index_covers_all()
 
     print("\n" + "=" * 60)
     print(f"結果: errors={len(errors)} / warnings={len(warnings)}")

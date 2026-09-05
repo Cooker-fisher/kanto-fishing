@@ -9499,8 +9499,67 @@ def build_fish_index_html(now, hist_rows, fish_area_summary, recent7, fish_summa
 {_v2_footer(crawled_at)}
 {_v2_bottom_nav('fish')}
 </body></html>"""
+    fish_index_html = _fish_index_orphan_sweep(fish_index_html)
     with open(os.path.join(WEB_DIR, "fish/index.html"), "w", encoding="utf-8") as f:
         f.write(fish_index_html)
+
+
+def _fish_index_orphan_sweep(html):
+    """docs/fish/*.html のうち fish/index.html から1本もリンクされていないページを拾う。
+
+    背景（2026-09-03・不変条件 #71）: ハブの魚種一覧は
+      ① _FISH_ROMAJI に登録済み  ② fish_area ページが1件以上ある
+    の両方を満たす魚種しか載せない。この2条件から漏れると、ページは実在して
+    sitemap にも載るのに**ハブから1本も内部リンクが張られない**。
+    実際に 73本中3本が漏れていた:
+      sujiika.html      … romaji 登録済みだが fish_area ページが無い
+      アカアマダイ.html / ハゼ.html … _FISH_ROMAJI 未登録で URL が日本語のまま
+
+    GSC の URL Inspection で「検出 - インデックス未登録」「URL が認識されていません」が
+    fish に集中していたため、内部リンクの穴は塞いでおく。ここは最終保険なので
+    体裁より網羅性を優先し、漏れた本数だけ末尾に足す（0本なら何も足さない）。
+    _sweep_dead_internal_links() と同じ「最後に現物を見て直す」思想。
+    """
+    fish_dir = os.path.join(WEB_DIR, "fish")
+    try:
+        files = sorted(fn for fn in os.listdir(fish_dir)
+                       if fn.endswith(".html") and fn != "index.html")
+    except OSError:
+        return html
+    missing = []
+    for fn in files:
+        # href="{slug}.html" 形式でも URL エンコード済みでも拾えるよう素の文字列で見る
+        if f'href="{fn}"' in html or f"href='{fn}'" in html:
+            continue
+        if quote(fn) in html:
+            continue
+        missing.append(fn)
+    if not missing:
+        return html
+    items = "".join(
+        f'<a href="{quote(fn)}" class="chip-link">{html_unescape_name(fn)}</a>'
+        for fn in missing
+    )
+    block = (
+        '<div class="c"><h2 class="st">その他の魚種 <span class="tag free">無料</span></h2>'
+        '<p class="section-note">釣果の記録はあるが、エリア別ページがまだ無い魚種です。</p>'
+        f'<div class="chip-wrap">{items}</div></div>'
+    )
+    print(f"[fish-index] ハブ未リンクの魚種ページ {len(missing)} 本を末尾に追加: {missing}")
+    return html.replace(f"{_v2_bottom_nav('fish')}", block + _v2_bottom_nav('fish'), 1)
+
+
+def html_unescape_name(fn):
+    """fish/{slug}.html のファイル名から表示名を作る。
+
+    日本語ファイル名（_FISH_ROMAJI 未登録）はそのまま魚種名になる。
+    romaji slug の場合は逆引きし、引けなければ slug をそのまま出す。
+    """
+    stem = fn[:-5]
+    for jp, slug in _FISH_ROMAJI.items():
+        if slug == stem:
+            return jp
+    return stem
 
 
 # ============================================================
