@@ -2133,6 +2133,29 @@ def validate_fish_area_analysis_sections():
     else:
         ok("[58] 本文の文字体系チェック OK（キリル/ギリシャ/ハングル混入なし）")
 
+    # [58b] 人が書く他の本文 JSON も同じ検知にかける（2026-09-03 追加）。
+    # 検知対象が field_reports.json だけだったため、2026-09-03 に
+    # fish_content.json の編集でハングル1文字が混入したのを機械検知できなかった
+    # （自前スキャンで発見）。執筆支援中の混入は fish_content でも同じ確率で起きる。
+    other_hit = []
+    for rel in ("normalize/fish_content.json", "normalize/fish_area_notes.json",
+                "normalize/area_description.json"):
+        fp = os.path.join(ROOT, rel)
+        if not os.path.isfile(fp):
+            continue
+        try:
+            raw = open(fp, encoding="utf-8").read()
+        except Exception as e:
+            fail(f"[58b] {rel} 読み込み失敗: {e}")
+            continue
+        for m in FOREIGN.finditer(raw):
+            other_hit.append(f"{rel}:{raw[max(0, m.start()-12):m.start()+12]!r}")
+    if other_hit:
+        for h in other_hit[:5]:
+            fail(f"[58b] 本文 JSON に日本語以外の文字体系が混入: {h}")
+    else:
+        ok("[58b] fish_content / fish_area_notes / area_description の文字体系 OK")
+
     # 日本語の地の文に英単語が紛れる事故も起きたため（"一緒に record されていた"）、
     # 許可語以外の ASCII 語は warn で洗い出す。単位や固有名詞は許可。
     ASCII_OK = {"LT", "YouTube", "cm", "kg", "m", "PE", "SNS", "GPS", "IC", "JR"}
