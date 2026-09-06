@@ -9545,8 +9545,14 @@ def _fish_index_orphan_sweep(html):
         '<p class="section-note">釣果の記録はあるが、エリア別ページがまだ無い魚種です。</p>'
         f'<div class="chip-wrap">{items}</div></div>'
     )
-    print(f"[fish-index] ハブ未リンクの魚種ページ {len(missing)} 本を末尾に追加: {missing}")
-    return html.replace(f"{_v2_bottom_nav('fish')}", block + _v2_bottom_nav('fish'), 1)
+    print(f"[fish-index] ハブ未リンクの魚種ページ {len(missing)} 本を追加: {missing}")
+    # 本文の最後（データについて → footer → 下部ナビ の順）に差し込む。
+    # 2026-09-06 修正: 以前は下部ナビの直前に入れていたので footer の**下**に
+    # 出ていた（リンクとしては機能するが、体裁として本文の外に落ちる）。
+    for anchor in ('<div class="data-note">', "<footer", _v2_bottom_nav("fish")):
+        if anchor in html:
+            return html.replace(anchor, block + anchor, 1)
+    return html + block
 
 
 def html_unescape_name(fn):
