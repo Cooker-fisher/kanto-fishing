@@ -238,20 +238,64 @@ fish 10本のあと fish_area へ移り、**1本目で「割り当て量を超�
       **参照元ページ「検出されませんでした」**
 - 2本目 `fish_area/kasago-katakai.html` で枠切れ。**次回はここから。**
 
+## 2026-09-06 投入済み（fish_area 9本・10本目で枠切れ）
+
+前日の続きから消化。**9本成功・10本目 `mahata-ohara` で「割り当て量を超えています」**。
+実質の枠は10リクエスト（下記の誤操作1回ぶんを含む）。
+
+| # | URL | 投入前の状態 | 参照元ページ |
+|---|---|---|---|
+| 1 | `fish_area/kasago-katakai.html` | 検出 - インデックス未登録 | 検出されませんでした |
+| 2 | `fish_area/saba-kuryo.html` | 検出 - インデックス未登録 | 検出されませんでした |
+| 3 | `fish_area/mejina-emi.html` | 検出 - インデックス未登録 | 検出されませんでした |
+| 4 | `fish_area/madako-kanazawa-gyoko.html` | 検出 - インデックス未登録 | 検出されませんでした |
+| 5 | `fish_area/umazurahagi-sajima.html` | 検出 - インデックス未登録 | 検出されませんでした |
+| 6 | `fish_area/saba-sajima.html` | 検出 - インデックス未登録 | 検出されませんでした |
+| 7 | `fish_area/saba-omaezaki.html` | **URL が認識されていません** | 検出されませんでした |
+| 8 | `fish_area/hata-kashima.html` | 検出 - インデックス未登録 | `area/kashima-port.html` |
+| 9 | `fish_area/soi-kashima.html` | 検出 - インデックス未登録 | `area/kashima-port.html` |
+| — | `fish_area/mahata-ohara.html` | 検出 - インデックス未登録 | `/`（**枠切れで未送信・次回はここから**） |
+
+### 分かったこと
+
+- **`saba-omaezaki` は「参照元サイトマップが検出されませんでした」**。ローカルで確認すると
+  10本すべて sitemap.xml に載っており noindex も無い（`grep -c` で実測）。
+  2026-08-19 の `kotsubo` / `yokohama-shinyamashita` と同じで、
+  **sitemap に書いてあっても Google 側で全件処理されるわけではない**という事実の追加事例
+- **`hata-kashima` / `soi-kashima` の参照元ページに `area/kashima-port.html` が出た。**
+  他の7本が「検出されませんでした」なのと対照的で、**エリアページからの内部リンクは
+  実際に参照元として認識されている**。#67（船宿ハブ）や #71（fish ハブ）の
+  「内部リンクを増やす」方針を裏づける
+- API の `--zero-impression` は `madako-kanazawa-gyoko` を「未発見」と返していたが、
+  画面では「検出 - インデックス未登録」。**API と画面のずれは今回も再現**（判定は画面が正）
+
+### ⚠ 操作手順（今回1回ミスして枠を1つ無駄にした）
+
+**投入成功のトーストが出ている間、検索ボックスへの1回目のクリックは吸われる。**
+そのまま type しても文字はどこにも入らず、**Enter が直前のフォーカス（＝再リクエスト）を
+叩いて同じ URL を2回送ってしまう**（実際 `saba-kuryo` で発生。GSC 上は
+「複数回送信してもキューの順番は変わりません」だが**枠は消費する**）。
+
+確実な手順:
+
+1. 検索ボックスを**2回**クリックする（1回目はトーストの消化に使われる）
+2. URL を type する
+3. **Enter の前に検索ボックスを拡大して文字が入っているか目視する**
+4. 入っていなければ 1 に戻る。入っていたら Enter
+
+`?url=` パラメータで URL 検査に直接飛ぶことはできない（サマリーにリダイレクトされる）。
+`form_input` で値を入れる方法も、クリックすると値がリセットされるので使えない。
+
+---
+
 ### 次に投入する順（fish_area・31本から便数順に抽出）
+
+**2026-09-06 に 1〜9 を投入済み。残りは 10 から。**
 
 | # | URL | 今週 | 過去 | 状態 |
 |---|---|---:|---:|---|
-| 1 | `fish_area/kasago-katakai.html` | 4 | 116 | 検出・未クロール |
-| 2 | `fish_area/saba-kuryo.html` | 4 | 81 | 検出・未クロール |
-| 3 | `fish_area/mejina-emi.html` | 3 | 95 | 検出・未クロール |
-| 4 | `fish_area/madako-kanazawa-gyoko.html` | 3 | 94 | **未発見** |
-| 5 | `fish_area/umazurahagi-sajima.html` | 3 | 93 | 検出・未クロール |
-| 6 | `fish_area/saba-sajima.html` | 2 | 105 | 検出・未クロール |
-| 7 | `fish_area/saba-omaezaki.html` | 1 | 97 | 検出・未クロール |
-| 8 | `fish_area/hata-kashima.html` | 1 | 91 | 検出・未クロール |
-| 9 | `fish_area/soi-kashima.html` | 1 | 87 | 検出・未クロール |
-| 10 | `fish_area/mahata-ohara.html` | 0 | 0 | 検出・未クロール（11船宿） |
+| ~~1〜9~~ | ~~kasago-katakai / saba-kuryo / mejina-emi / madako-kanazawa-gyoko / umazurahagi-sajima / saba-sajima / saba-omaezaki / hata-kashima / soi-kashima~~ | | | ✅ 2026-09-06 投入 |
+| 10 | `fish_area/mahata-ohara.html` | 0 | 0 | 検出・未クロール（11船宿）← **次回の1本目** |
 
 残りは `python analytics/gsc/inspect_urls.py --zero-impression --report` で出る。
 
