@@ -47,7 +47,7 @@ INTERVENTIONS = [
                      " 1位2位が船宿の公式サイトだと判明した。title は差し替えられておらず"
                      " 説明文もそのまま採用されているのに 0click ＝ 構造的に勝てない。"
                      "#67 の価値は「指名検索でクリックを取る」ではなく"
-                     "「内部リンクグラフの修復とクロール到達性」。click 増は期待値に入れない",
+                     "「内部リンクグラフの修復とクロール到達性」。click 増は期待値に入れない。⛔ 2026-09-12: 判定不能。08-31 のサイト全体下落（SITE_EVENTS）で ship は pos 9.6 → 24.6 に飛んだ。内部リンクの効果は分離できない",
     },
     {
         "date": "2026-08-29",
@@ -71,7 +71,35 @@ INTERVENTIONS = [
                      " URL Inspection の lastCrawlTime で shizuura が最古（08-17）"
                      " なのに CTR 4.05% で2位、katsuura は 08-31 と新しいのに 1.28%。"
                      " クロール頻度は CTR を説明しないので、残るのは"
-                     "「Google が日付つき扱いする理由」= SERP 再実査に一本化する",
+                     "「Google が日付つき扱いする理由」= SERP 再実査に一本化する。⛔ 2026-09-12: 判定不能。08-31 のサイト全体下落（SITE_EVENTS）で area は 9日で -54%、主指標に据えた katsuura も 514impr pos6.9 → 128impr pos9.9。CTR 差を H1 に帰属できない。判定し直すには全体が落ち着いてから取り直す",
+    },
+]
+
+# サイト全体に効いた外部イベント。施策の効果判定はこれを跨いだ瞬間に無効になる。
+# 「投入したら下がった」を自分の施策のせいだと誤認しないため、また逆に
+# 外部要因を言い訳にして自分の劣化を見逃さないために、根拠つきで残す。
+SITE_EVENTS = [
+    {
+        "date": "2026-08-31",
+        "name": "サイト全体の順位下落（原因未確定）",
+        "evidence": [
+            "日次 impr が 08-30 511 → 08-31 286 で階段状に落ち、以後 200〜290 で定着",
+            "imp 加重 pos が 9.3 → 11.3、09-06 には 15.6 まで悪化してから 11.8 へ部分回復",
+            "セクション別 9日 vs 9日: area -54% / fish -65% / ship -81% / fish_area -83%"
+            " / (root) -98% に対し **(top) だけ +29%**",
+            "calendar.html は 08-30 と 09-11 で生成日スタンプ以外**バイト一致**なのに"
+            " 506impr pos8.2 → 8impr pos49.8。当方の変更では説明できない",
+            "URL Inspection 12本（下落組8 + 対照4）は全て 送信して登録されました /"
+            " fetch SUCCESSFUL / robots ALLOWED / canonical 自己。**索引ではなく順位の問題**",
+            "「9月 船釣り 関東」（9月に需要が増えるはずのクエリ）が 8月 17impr pos8.2 →"
+            " 9月 0impr。需要減では説明できない",
+            "外部: Google の August 2026 spam update は 08-18〜08-21（確定）。"
+            " その後も未告知の変動が続いたと複数のトラッカーが報告。ただし当サイトの"
+            " 断点は 08-31 で 10日ずれており、**因果は未証明**",
+        ],
+        "impact": "2026-08-29 に投入した #67 / #68 / #69 / #70 の効果判定は"
+                  " この事象と交絡して**不能**。投入2日後に全体が動いたので、"
+                  " 上がっても下がっても施策のせいにできない",
     },
 ]
 
@@ -168,6 +196,60 @@ def partial_periods(rows, monthly):
     return out
 
 
+def detect_break(rows, win=7, drop=0.30):
+    """日次サイト合計を前後 win 日で比べ、階段状の落ち込みを機械的に拾う。
+
+    2026-08-31 の全体下落は、施策の効果判定をしようとして週次表を眺めていて
+    たまたま気づいた。次に同じことが起きたとき「見ていなかったから遅れた」に
+    ならないよう、レポートの先頭で必ず警告を出す。
+    """
+    day = defaultdict(lambda: [0, 0.0])
+    for r in rows:
+        d = day[r["date"]]
+        d[0] += r["impressions"]
+        d[1] += r["position"] * r["impressions"]
+    days = sorted(day)
+    if len(days) < win * 2:
+        return []
+    hits = []
+    for k in range(win, len(days) - win + 1):
+        before = days[k - win:k]
+        after = days[k:k + win]
+        bi = sum(day[d][0] for d in before)
+        ai = sum(day[d][0] for d in after)
+        if bi < win * 20 or ai >= bi * (1 - drop):
+            continue
+        bp = sum(day[d][1] for d in before) / bi
+        ap = sum(day[d][1] for d in after) / ai if ai else 0
+        hits.append((days[k], bi, ai, bp, ap))
+    # 連日ヒットするので、落差が最大の1点だけ残す
+    if not hits:
+        return []
+    hits.sort(key=lambda h: h[2] / h[1])
+    return hits[:1]
+
+
+def print_site_events(rows):
+    for e in SITE_EVENTS:
+        print("=" * 78)
+        print(f'⚠ サイト全体イベント [{e["date"]}] {e["name"]}')
+        print("=" * 78)
+        for line in e["evidence"]:
+            print(f"   ・{line}")
+        print(f'   → {e["impact"]}')
+        print()
+    known = {e["date"] for e in SITE_EVENTS}
+    for d, bi, ai, bp, ap in detect_break(rows):
+        if d in known:
+            continue
+        print("=" * 78)
+        print(f"⚠ 未記録の断点を検出: {d} を境に impr が {bi} → {ai}"
+              f"（{(ai/bi-1)*100:+.0f}%）/ pos {bp:.1f} → {ap:.1f}")
+        print("   施策の効果判定より先に原因を切り分けること。"
+              "切り分けたら SITE_EVENTS に根拠つきで追記する。")
+        print("=" * 78 + chr(10))
+
+
 def print_interventions(section=None):
     rel = [i for i in INTERVENTIONS if section is None or i["section"] == section]
     if not rel:
@@ -190,6 +272,7 @@ def cmd_sections(rows, weeks, monthly):
         k = i["date"][:7] if monthly else week_of(i["date"])
         marks.setdefault(k, []).append(i["name"].split()[0])
     unit = "月次" if monthly else "週次"
+    print_site_events(rows)
     for sec in ["area", "fish", "ship", "fish_area", "(top)"]:
         sub = [r for r in rows if section_of(r["page"]) == sec]
         if not sub:
