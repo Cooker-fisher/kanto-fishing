@@ -2,14 +2,9 @@
   "version": "v1",
   "source": "東京都中央卸売市場 日報（豊洲水産・中値）",
   "source_url": "https://www.shijou-nippo.metro.tokyo.lg.jp/SN/YYYYMM/YYYYMMDD/Sui/Sui_K1.csv",
-  "asof": "20260912",
+  "asof": "20260919",
   "window_business_days": 20,
   "days_fetched": [
-    "20260817",
-    "20260818",
-    "20260820",
-    "20260821",
-    "20260822",
     "20260824",
     "20260825",
     "20260827",
@@ -24,17 +19,22 @@
     "20260908",
     "20260910",
     "20260911",
-    "20260912"
+    "20260912",
+    "20260914",
+    "20260915",
+    "20260917",
+    "20260918",
+    "20260919"
   ],
   "by_pfid": {
     "buri": {
       "n_days": 20,
-      "n_mid": 39,
-      "mid_median_yen_per_kg": 648
+      "n_mid": 40,
+      "mid_median_yen_per_kg": 729
     },
     "inada": {
-      "n_days": 17,
-      "n_mid": 17,
+      "n_days": 19,
+      "n_mid": 19,
       "mid_median_yen_per_kg": 702
     },
     "kamasu": {
@@ -44,8 +44,8 @@
     },
     "karei": {
       "n_days": 19,
-      "n_mid": 70,
-      "mid_median_yen_per_kg": 756
+      "n_mid": 77,
+      "mid_median_yen_per_kg": 702
     },
     "katsuo": {
       "n_days": 20,
@@ -53,9 +53,9 @@
       "mid_median_yen_per_kg": 972
     },
     "kihada": {
-      "n_days": 11,
-      "n_mid": 16,
-      "mid_median_yen_per_kg": 1620
+      "n_days": 14,
+      "n_mid": 19,
+      "mid_median_yen_per_kg": 1836
     },
     "kinmedai": {
       "n_days": 19,
@@ -67,11 +67,6 @@
       "n_mid": 45,
       "mid_median_yen_per_kg": 540
     },
-    "mebaru": {
-      "n_days": 1,
-      "n_mid": 1,
-      "mid_median_yen_per_kg": 2700
-    },
     "saba": {
       "n_days": 20,
       "n_mid": 20,
@@ -80,12 +75,17 @@
     "surumeika": {
       "n_days": 20,
       "n_mid": 20,
-      "mid_median_yen_per_kg": 1134
+      "mid_median_yen_per_kg": 1080
     },
     "tachiuo": {
       "n_days": 1,
       "n_mid": 1,
       "mid_median_yen_per_kg": 2700
+    },
+    "yariika": {
+      "n_days": 1,
+      "n_mid": 1,
+      "mid_median_yen_per_kg": 1620
     }
   }
 }
