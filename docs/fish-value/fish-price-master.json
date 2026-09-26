@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated_at": "2026-09-19",
+  "updated_at": "2026-09-26",
   "source": {
     "wholesale": "s202607meisai_20260812.xlsx (202607)",
     "retail_multiplier": "業界一般値（甲案・大衆魚2.0-3.0/中級1.8-2.5/高級1.6-2.2/青物1.7-2.4/イカタコ1.8-2.6）",
@@ -6522,7 +6522,7 @@
     }
   },
   "daily_correction": {
-    "asof": "20260919",
+    "asof": "20260926",
     "window_business_days": 20,
     "data_month": "202607",
     "min_mid_obs": 8,
@@ -6533,11 +6533,11 @@
     "method": "df = clamp(日報中値 median / 月報avg, 0.5, 2.0)。中値≥8観測の魚のみ。当月実勢を直接測るため季節補正を置換（app.js effectiveFactor）。中値の取れない魚（相対取引）は季節補正へフォールバック",
     "by_pfid": {
       "buri": {
-        "factor": 1.101,
-        "raw_ratio": 1.101,
-        "n_mid": 40,
-        "n_days": 20,
-        "daily_mid": 729,
+        "factor": 1.264,
+        "raw_ratio": 1.264,
+        "n_mid": 38,
+        "n_days": 19,
+        "daily_mid": 837,
         "monthly_avg": 662
       },
       "inada": {
@@ -6551,7 +6551,7 @@
       "karei": {
         "factor": 0.744,
         "raw_ratio": 0.744,
-        "n_mid": 77,
+        "n_mid": 74,
         "n_days": 19,
         "daily_mid": 702,
         "monthly_avg": 944
@@ -6565,11 +6565,11 @@
         "monthly_avg": 661
       },
       "kihada": {
-        "factor": 1.271,
-        "raw_ratio": 1.271,
-        "n_mid": 19,
-        "n_days": 14,
-        "daily_mid": 1836,
+        "factor": 1.457,
+        "raw_ratio": 1.457,
+        "n_mid": 16,
+        "n_days": 13,
+        "daily_mid": 2106,
         "monthly_avg": 1445
       },
       "kinmedai": {
@@ -6581,11 +6581,11 @@
         "monthly_avg": 2297
       },
       "maaji": {
-        "factor": 0.573,
-        "raw_ratio": 0.573,
-        "n_mid": 45,
+        "factor": 0.63,
+        "raw_ratio": 0.63,
+        "n_mid": 49,
         "n_days": 20,
-        "daily_mid": 540,
+        "daily_mid": 594,
         "monthly_avg": 943
       },
       "saba": {
@@ -6597,11 +6597,11 @@
         "monthly_avg": 636
       },
       "surumeika": {
-        "factor": 0.958,
-        "raw_ratio": 0.958,
+        "factor": 1.006,
+        "raw_ratio": 1.006,
         "n_mid": 20,
         "n_days": 20,
-        "daily_mid": 1080,
+        "daily_mid": 1134,
         "monthly_avg": 1127
       }
     }
