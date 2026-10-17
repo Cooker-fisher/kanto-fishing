@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated_at": "2026-10-10",
+  "updated_at": "2026-10-17",
   "source": {
     "wholesale": "s202607meisai_20260812.xlsx (202607)",
     "retail_multiplier": "業界一般値（甲案・大衆魚2.0-3.0/中級1.8-2.5/高級1.6-2.2/青物1.7-2.4/イカタコ1.8-2.6）",
@@ -6522,7 +6522,7 @@
     }
   },
   "daily_correction": {
-    "asof": "20261010",
+    "asof": "20261017",
     "window_business_days": 20,
     "data_month": "202607",
     "min_mid_obs": 8,
@@ -6543,17 +6543,17 @@
       "inada": {
         "factor": 1.005,
         "raw_ratio": 1.005,
-        "n_mid": 18,
-        "n_days": 18,
+        "n_mid": 17,
+        "n_days": 17,
         "daily_mid": 594,
         "monthly_avg": 591
       },
       "karei": {
-        "factor": 0.715,
-        "raw_ratio": 0.715,
-        "n_mid": 62,
+        "factor": 0.744,
+        "raw_ratio": 0.744,
+        "n_mid": 64,
         "n_days": 19,
-        "daily_mid": 675,
+        "daily_mid": 702,
         "monthly_avg": 944
       },
       "katsuo": {
@@ -6565,11 +6565,11 @@
         "monthly_avg": 661
       },
       "kihada": {
-        "factor": 1.345,
-        "raw_ratio": 1.345,
-        "n_mid": 16,
-        "n_days": 14,
-        "daily_mid": 1944,
+        "factor": 1.271,
+        "raw_ratio": 1.271,
+        "n_mid": 13,
+        "n_days": 12,
+        "daily_mid": 1836,
         "monthly_avg": 1445
       },
       "kinmedai": {
@@ -6589,11 +6589,11 @@
         "monthly_avg": 943
       },
       "saba": {
-        "factor": 1.019,
-        "raw_ratio": 1.019,
+        "factor": 1.104,
+        "raw_ratio": 1.104,
         "n_mid": 20,
         "n_days": 20,
-        "daily_mid": 648,
+        "daily_mid": 702,
         "monthly_avg": 636
       },
       "surumeika": {

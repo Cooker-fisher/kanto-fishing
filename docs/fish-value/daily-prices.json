@@ -2,13 +2,9 @@
   "version": "v1",
   "source": "東京都中央卸売市場 日報（豊洲水産・中値）",
   "source_url": "https://www.shijou-nippo.metro.tokyo.lg.jp/SN/YYYYMM/YYYYMMDD/Sui/Sui_K1.csv",
-  "asof": "20261010",
+  "asof": "20261017",
   "window_business_days": 20,
   "days_fetched": [
-    "20260912",
-    "20260914",
-    "20260915",
-    "20260917",
     "20260918",
     "20260919",
     "20260923",
@@ -24,7 +20,11 @@
     "20261006",
     "20261008",
     "20261009",
-    "20261010"
+    "20261010",
+    "20261013",
+    "20261014",
+    "20261015",
+    "20261016"
   ],
   "by_pfid": {
     "amadai": {
@@ -38,14 +38,14 @@
       "mid_median_yen_per_kg": 837
     },
     "inada": {
-      "n_days": 18,
-      "n_mid": 18,
+      "n_days": 17,
+      "n_mid": 17,
       "mid_median_yen_per_kg": 594
     },
     "karei": {
       "n_days": 19,
-      "n_mid": 62,
-      "mid_median_yen_per_kg": 675
+      "n_mid": 64,
+      "mid_median_yen_per_kg": 702
     },
     "katsuo": {
       "n_days": 20,
@@ -53,9 +53,9 @@
       "mid_median_yen_per_kg": 972
     },
     "kihada": {
-      "n_days": 14,
-      "n_mid": 16,
-      "mid_median_yen_per_kg": 1944
+      "n_days": 12,
+      "n_mid": 13,
+      "mid_median_yen_per_kg": 1836
     },
     "kinmedai": {
       "n_days": 20,
@@ -67,10 +67,15 @@
       "n_mid": 50,
       "mid_median_yen_per_kg": 594
     },
+    "mebaru": {
+      "n_days": 1,
+      "n_mid": 1,
+      "mid_median_yen_per_kg": 1620
+    },
     "saba": {
       "n_days": 20,
       "n_mid": 20,
-      "mid_median_yen_per_kg": 648
+      "mid_median_yen_per_kg": 702
     },
     "surumeika": {
       "n_days": 20,
@@ -78,19 +83,14 @@
       "mid_median_yen_per_kg": 1080
     },
     "tachiuo": {
-      "n_days": 1,
-      "n_mid": 1,
-      "mid_median_yen_per_kg": 3780
+      "n_days": 2,
+      "n_mid": 2,
+      "mid_median_yen_per_kg": 2538
     },
     "takabe": {
       "n_days": 1,
       "n_mid": 1,
       "mid_median_yen_per_kg": 1080
-    },
-    "yariika": {
-      "n_days": 1,
-      "n_mid": 1,
-      "mid_median_yen_per_kg": 1620
     }
   }
 }
