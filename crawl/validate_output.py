@@ -3020,6 +3020,10 @@ def validate_area_seo_alias_exposure():
 
 _AREA_H1_MAX_CHARS = 30
 
+# AREA_GROUPS のグループ名から取れる県名。クロール対象5県しか出てはいけない
+# （"関東" は未登録エリアのフォールバック値。不変条件 [72] を見よ）
+_VALID_PREFS = {"茨城", "千葉", "東京", "神奈川", "静岡"}
+
 
 def validate_fish_faq_recent_lead():
     """[69] fish FAQ Q3 が直近7日の実績で始まること（2026-08-30）
@@ -3188,6 +3192,61 @@ def validate_area_h1_richness():
                  f"（title は「・過去実績」・body は「集計待ち」）: {fn} → {h}")
     else:
         ok("[70] thin テンプレの H1 に【毎日更新】は無い")
+
+
+def validate_area_pref_is_real():
+    """[72] area ページの県名が実在の都道府県であること（2026-10-31）
+
+    背景: crawler.py の
+        group = next((g for g, areas in AREA_GROUPS.items() if area in areas), "関東")
+    は AREA_GROUPS 未登録エリアで "関東" を返す。H1 は ah-sub 由来の県名を使うので
+    「大津港（関東）」のような県名不明の見出しが出る。#68 で実証したとおり Google は
+    area の title を捨てて H1 を SERP タイトルに採用するため、この文字列がそのまま
+    検索結果に出る。
+
+    2026-10-31 の実測: 未登録は 大津港 / 走水港 / 太東港 / 吉田港 の4本。うち
+    otsu.html は 3,944impr/月（サイト全表示の22%）・pos 6.9 で CTR 0.66%。
+    同じテンプレ・同じ順位帯の kanaya 4.08% / shizuura 5.49% の 1/6〜1/8 だった。
+    大津港は神奈川県横須賀市と茨城県北茨城市に同名港があり、「（関東）」では
+    どちらか判別できない。
+
+    #68 の missing_pref チェックは pref を ah-sub から取るので、ah-sub 自体が
+    "関東" だと「H1 に県名がある」と判定されて素通りする。実在県名かどうかは
+    別に見る必要がある。
+
+    契約: ah-sub の先頭要素（= H1 括弧内の県名）が _VALID_PREFS のいずれか。
+    """
+    print("\n[72] area ページの県名が実在の都道府県か")
+    area_dir = os.path.join(DOCS, "area")
+    if not os.path.isdir(area_dir):
+        fail("docs/area/ が存在しない")
+        return
+
+    pat = re.compile(r'<h1>([^<]+)</h1>\s*\n\s*<div class="ah-sub">([^<]*)</div>')
+    checked = 0
+    bad = []
+    for fn in sorted(os.listdir(area_dir)):
+        if not fn.endswith(".html") or fn == "index.html":
+            continue
+        content = open(os.path.join(area_dir, fn), encoding="utf-8").read()
+        m = pat.search(content)
+        if not m:
+            continue  # build_point_pages 由来など H1/ah-sub 構造でないページ
+        checked += 1
+        h1, group = m.group(1), m.group(2).strip()
+        pref = group.split("・")[0] if group else ""
+        if pref not in _VALID_PREFS:
+            bad.append((fn, pref or "(空)", h1))
+
+    if not checked:
+        fail("[72] H1/ah-sub 構造の area ページが 1 件も無い")
+        return
+    if bad:
+        for fn, p, h in bad[:8]:
+            fail(f"area の県名が実在の都道府県でない「{p}」"
+                 f"（AREA_GROUPS 未登録エリアの疑い）: {fn} → {h}")
+    else:
+        ok(f"area の県名: 全 {checked} ページが実在の都道府県")
 
 
 def validate_fish_index_covers_all():
@@ -3441,6 +3500,7 @@ def main():
     validate_sitemap_lastmod_honesty()
     validate_ship_index_hub()
     validate_area_h1_richness()
+    validate_area_pref_is_real()
     validate_fish_faq_recent_lead()
     validate_fish_index_covers_all()
 
