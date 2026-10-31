@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '0 21 * * *'   # 毎日 06:00 JST（GSC/GA4 取得）。crawl(07:30 UTC) と時間帯を分離
   workflow_dispatch:
+    inputs:
+      discover_days:
+        description: "Discover の遡り日数（初回の存在確認は 480＝16か月・GSC の保持上限）。空欄なら 30 日"
+        required: false
+        default: ""
 
 # main への push を直列化（crawl 等と main を取り合う rebase 競合を防ぐ）
 concurrency:
@@ -26,6 +31,7 @@ jobs:
         env:
           GOOGLE_SA_KEY: ${{ secrets.GOOGLE_SA_KEY }}
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          GSC_DISCOVER_DAYS: ${{ github.event.inputs.discover_days }}
         run: python3 analytics/fetch_gsc.py
 
       - name: fetch GA4

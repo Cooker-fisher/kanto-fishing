@@ -1526,6 +1526,33 @@ def validate_implausible_catch_count():
 _UPDATED_DATE_RE = re.compile(r"最終更新:\s*(\d{4})/(\d{2})/(\d{2})")
 _BANNER_BUILD_RE = re.compile(r'id="stale-banner".*?var b="(\d{4})-(\d{2})-(\d{2})"', re.DOTALL)
 
+# [39] 鮮度を見るページ種別。(ラベル, docs 配下のサブディレクトリ / None=index.html 単体)
+_FRESHNESS_SECTIONS = [
+    ("index", None),
+    ("fish", "fish"),
+    ("fish_area", "fish_area"),
+    ("area", "area"),
+    ("ship", "ship"),
+]
+# バナーは <body> 冒頭付近（実測 offset 約 7.7KB）。全文を読まずに済ませる。
+_BANNER_HEAD_BYTES = 32768
+
+
+def _banner_build_date(path):
+    """ページのビルド日付バナー var b="YYYY-MM-DD" を datetime で返す（無ければ None）。"""
+    try:
+        with open(path, encoding="utf-8") as f:
+            head = f.read(_BANNER_HEAD_BYTES)
+            m = _BANNER_BUILD_RE.search(head)
+            if not m:
+                # 想定外に後方へ動いた場合のフォールバック（残りも読む）
+                m = _BANNER_BUILD_RE.search(head + f.read())
+    except OSError:
+        return None
+    if not m:
+        return None
+    return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+
 
 def validate_page_freshness():
     """39: 生成ページの鮮度（更新遅延・ページ種別ごとの更新分裂を検知）（2026-06-07）
@@ -1538,6 +1565,8 @@ def validate_page_freshness():
       該当行が無いため skip（次回再生成後に有効化）。
     TZ ずれ・cron 遅延を考慮し許容は today-2 日。
     """
+    import glob as _glob
+
     print("\n[39] 生成ページの鮮度（更新遅延・ページ種別の更新分裂）")
     today = datetime.now()
     cutoff = today - timedelta(days=2)
@@ -1558,35 +1587,47 @@ def validate_page_freshness():
     else:
         fail("[39] index.html が存在しない")
 
-    # (2) ページ種別ごとのビルド日付バナー（更新分裂の検知）
-    samples = [
-        ("index", "index.html"),
-        ("fish", "madai.html"), ("fish", "aji.html"), ("fish", "hirame.html"),
-        ("fish_area", "aji-yokohama-honmoku.html"),
-        ("area", "kanazawa-hakkei.html"),
-        ("ship", "riki-maru.html"),
-    ]
-    stale = []
+    # (2) ページ種別ごとの「最新生成日」（更新分裂＝種別丸ごとの再生成漏れの検知）
+    #
+    # ⚠ 2026-10-03 に設計を変更した。以前はファイル名ハードコードの 7 本サンプルを
+    #   見ていたが、これは不変条件として成立していなかった:
+    #     - fish_area は毎回 520/1544 件しか再生成しない（URL を 404 にしないため
+    #       過去の生成物をディスクに残す設計）。どのページが生成対象になるかは
+    #       その日の釣果データ次第で、固定ファイルの生成日は不変条件にできない。
+    #     - サンプルに選んでいた fish_area/aji-yokohama-honmoku.html が 2026-09-29 を
+    #       境にその 520 件から外れ、生成日が永久に古いまま＝自然回復しない FAIL に
+    #       なった。crawl CI が 10/01〜10/02 と push をブロックし、釣果 3 日分と
+    #       HTML 更新が丸ごと欠損した（クロール自体は毎回完走していた）。
+    #     - 逆に、サンプル 1 本さえ新しければ同種別の残り 1000 本が全部古くても
+    #       PASS してしまう＝検知したかった事故に対して鈍感でもあった。
+    #
+    #   種別ごとの **最新** 生成日なら、その種別の生成が止まった時だけ古くなるので、
+    #   意図（ページ種別単位の再生成漏れ）をそのまま表せる。壁時計基準の cutoff で
+    #   見るため、種別間で生成日がばらつく「更新分裂」も同じ判定で検知できる。
     checked = 0
-    for sub, fn in samples:
-        p = idx if sub == "index" else os.path.join(DOCS, sub, fn)
-        if not os.path.isfile(p):
+    for label, sub in _FRESHNESS_SECTIONS:
+        if sub is None:
+            paths = [idx] if os.path.isfile(idx) else []
+        else:
+            paths = sorted(_glob.glob(os.path.join(DOCS, sub, "*.html")))
+        if not paths:
             continue
-        content = open(p, encoding="utf-8").read()
-        bm = _BANNER_BUILD_RE.search(content)
-        if not bm:
+        dates = [(p, _banner_build_date(p)) for p in paths]
+        dated = [(p, d) for p, d in dates if d is not None]
+        if not dated:
             continue  # バナー未導入の旧 docs は skip（次回再生成後に有効化）
         checked += 1
-        d = datetime(int(bm.group(1)), int(bm.group(2)), int(bm.group(3)))
-        if d < cutoff:
-            rel = "index.html" if sub == "index" else f"{sub}/{fn}"
-            stale.append(f"{rel}: 生成日 {d.date()}")
-    if stale:
-        for s in stale:
-            fail_staleness(f"[39] ページ更新分裂（生成日が古い）: {s}")
-    elif checked:
-        ok(f"[39] ビルド日付バナー {checked} ページすべて today-2 以内")
-    else:
+        newest_path, newest = max(dated, key=lambda x: x[1])
+        fresh = sum(1 for _, d in dated if d >= cutoff)
+        if newest < cutoff:
+            fail_staleness(
+                f"[39] {label} の最新生成日 {newest.date()} が古い（cutoff {cutoff.date()}）"
+                f"= この種別が丸ごと再生成されていない（{len(dated)} 本・最新 "
+                f"{os.path.relpath(newest_path, DOCS)}）")
+        else:
+            ok(f"[39] {label}: 最新生成日 {newest.date()}"
+               f"（バナー検出 {len(dated)} 本 / うち cutoff 以内 {fresh} 本）")
+    if not checked:
         warn("[39] ビルド日付バナー未検出（旧 docs・次回再生成で有効化）")
 
 

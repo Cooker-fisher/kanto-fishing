@@ -16,6 +16,7 @@ analytics/
 ├── requirements.txt      # google-api-python-client / google-auth
 ├── gsc/YYYY-MM.csv       # date,query,page,clicks,impressions,ctr,position（クエリ次元）
 ├── gsc/pages/YYYY-MM.csv # date,page,clicks,impressions,ctr,position（ページ次元）
+├── gsc/discover/YYYY-MM.csv # date,page,clicks,impressions,ctr（Discover・順位なし）
 ├── ga4/YYYY-MM.csv       # date,channel,pagePath,activeUsers,screenPageViews,sessions,engagementRate
 └── report/
     ├── latest.md         # 最新レポート（上書き）
@@ -40,6 +41,27 @@ API の次元なし合計と突き合わせた実測:
 |---|---|---|
 | `gsc/YYYY-MM.csv` | **何で来たか**（クエリ・惜しいクエリ・順位変動） | クエリ単位の相対比較 |
 | `gsc/pages/YYYY-MM.csv` | **どれだけ来たか**（サイト KPI・ページ別 CTR・種別集計） | 合計値・CTR 比較 |
+| `gsc/discover/YYYY-MM.csv` | **Discover 経由**（検索とは別の面） | Discover 単独の評価 |
+
+## Discover（2026-10-03 追加）
+
+GSC API は `type` を指定しないと **web のみ**を返す。2026-10-03 までの蓄積は
+全部 web で、**Discover に乗っているかどうかを一度も見ていなかった**。
+GA4 側では Discover 流入が Organic Search や Unassigned に混ざるので切り分け不能
+（直近28日で Unassigned が 269UU＝全体の26%、Cross-network が 7月83→9月133UU と増加）。
+
+Discover は検索結果ではないので **query 次元も掲載順位も存在しない**
+（API に query を渡すと 400）。次元は `date+page` 固定、CSV に position 列を作らない。
+Discover 対象外のサイトは 0 行が返る（エラーではない）。
+
+```bash
+# 初回の存在確認（16か月＝GSC の保持上限まで遡る）
+python analytics/fetch_gsc.py --discover-days 480
+```
+
+GitHub Actions からは **analytics ワークフローを手動実行（Run workflow）して
+`discover_days` に 480 を入れる**。スケジュール実行では空欄＝30日分のみ取得する
+（毎日16か月を再取得すると CSV 全体が毎回書き換わるため）。
 
 **クエリ次元 CSV の合計をサイト KPI に使わないこと。** 3倍過小になる。
 
