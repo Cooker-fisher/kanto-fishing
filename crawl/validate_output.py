@@ -2518,7 +2518,10 @@ def validate_fish_value_release():
                 age = (_date2.today() - a).days
                 n = len(dc["by_pfid"])
                 if age > 14:
-                    warn(f"日報補正が {age} 日前で古い（週次 fish-value-daily 停止の疑い・asof {asof}）")
+                    warn(f"日報補正が {age} 日前で古い（asof {asof}）。"
+                         f"週次のローカル実行が止まっている疑い: "
+                         f"python docs/fish-value/crawl_daily.py --days 20 → "
+                         f"python docs/fish-value/generate_price_master.py（データ.md §1.9）")
                 else:
                     ok(f"日報補正 鮮度OK（asof {asof}・{age}日前・{n}魚種）")
             else:

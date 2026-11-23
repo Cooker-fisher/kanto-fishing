@@ -16,7 +16,7 @@
 | weather/*.csv | ✅ 日次追記。2026/08/01 復旧・不変条件 #60（鮮度7日）で監視 |
 | C層分析 | combo_deep_dive.py / Phase C composite_hit_rate / ALL_FISH 59種 |
 | D層予測 | forecast ページは検証済みモデル（前日CI の forecast_daily.json × open_tier tier A） |
-| 釣果価値チェッカー | ⚠ 月報は復旧（2026-11-23・data_month 202609）。**日報 fish-value-daily は Actions から取得先に到達できず 10-24 から空振り**。検知は修正済み（0件で exit 1）＝次の土曜は赤くなる。取得経路の判断は未。決定ログ 2026-11-23 |
+| 釣果価値チェッカー | ✅ 月報・日報とも鮮度復旧（2026-11-23・data_month 202609 / asof 20261123）。**日報は Actions から到達不能なので週1のローカル実行＋commit が正式運用**（`fish-value-daily` の cron は停止・dispatch のみ）。手順 データ.md §1.9・決定ログ 2026-11-23 |
 | x_post 日次まとめ | ✅ 数値根拠のみの本文。予想は出船24日/30以上に限定（不変条件 #64） |
 
 ## 正直なKPI（BL-1リーク解消後・T45 で確定）
@@ -282,5 +282,8 @@ Yahoo の AI回答で funatsuri-yoso.com が引用されている（「金谷漁
   データ再生成は CI のフル実行に任せる
 - 全再実行後は `build_predict_params.py` と `build_open_tier.py` の**両方**をローカル実行してコミット
 - 分析実行はメイン repo（worktree 不可）
+- **fish-value の手動運用2点**（どちらも #51 が鮮度 warn する）:
+  日報は**週1**で `python docs/fish-value/crawl_daily.py --days 20` → `python docs/fish-value/generate_price_master.py` → commit（23秒。Actions からは到達不能）。
+  月報は**毎月20日頃**に `docs/fish-value/urls_manifest.json` へ新月URLを1行追記。手順 データ.md §1.9
 - **検索エンジンの SERP は自動取得しない**（robots.txt で `/search?` が Disallow）。
   実査は人がブラウザで開いて `analytics/serp/observations.json` に手で記録する

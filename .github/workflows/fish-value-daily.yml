@@ -1,9 +1,18 @@
 name: fish-value-daily
 # 日報ハイブリッド: 直近営業日の豊洲日報から「当月実勢レベル」を測り価格マスタを補正する。
 # 月報クロール（wholesale.yml・毎月21日）とは独立。釣果クロール（crawl.yml）にも触れない。
+#
+# ⚠ 2026-11-23: 週次 cron を停止し、**ローカル実行＋commit** を正式運用にした。
+#   理由: Actions runner から shijou-nippo.metro.tokyo.lg.jp へ到達できない（全リクエストが
+#   接続タイムアウト・HTTP応答ゼロ）。ローカルからは同じコードで 20営業日を 23秒で取得できる。
+#   同じ 東京都市場サイト（www.shijou.metro.tokyo.lg.jp）でも 2026/05 に Actions だけ別HTMLが
+#   返る事象があり、そのときも固定マニフェスト＝手動運用に寄せて解決している（データ.md §1.7）。
+#   cron を残すと毎週失敗通知だけが積む（取得0件は exit 1 で正しく赤くなる）ので止める。
+#   手順は docs/fish-value/データ.md §1.9・経緯は design/V2/90_決定ログ.md 2026-11-23。
+#   疎通が戻ったか試すときは workflow_dispatch で手動実行する（成功すれば cron を戻す）。
 on:
-  schedule:
-    - cron: '30 7 * * 6'   # 毎週土曜 16:30 JST（週の営業日分をまとめて取得）
+  # schedule:
+  #   - cron: '30 7 * * 6'   # 毎週土曜 16:30 JST（2026-11-23 停止・上のコメント参照）
   workflow_dispatch:
     inputs:
       days:
