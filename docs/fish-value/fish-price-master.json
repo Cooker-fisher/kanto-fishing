@@ -6522,7 +6522,7 @@
     }
   },
   "daily_correction": {
-    "asof": "20261017",
+    "asof": "20261123",
     "window_business_days": 20,
     "data_month": "202609",
     "min_mid_obs": 8,
@@ -6533,75 +6533,75 @@
     "method": "df = clamp(日報中値 median / 月報avg, 0.5, 2.0)。中値≥8観測の魚のみ。当月実勢を直接測るため季節補正を置換（app.js effectiveFactor）。中値の取れない魚（相対取引）は季節補正へフォールバック",
     "by_pfid": {
       "buri": {
-        "factor": 0.795,
-        "raw_ratio": 0.795,
+        "factor": 0.923,
+        "raw_ratio": 0.923,
         "n_mid": 38,
-        "n_days": 19,
-        "daily_mid": 837,
+        "n_days": 20,
+        "daily_mid": 972,
         "monthly_avg": 1053
       },
       "inada": {
-        "factor": 0.963,
-        "raw_ratio": 0.963,
-        "n_mid": 17,
-        "n_days": 17,
-        "daily_mid": 594,
+        "factor": 1.05,
+        "raw_ratio": 1.05,
+        "n_mid": 19,
+        "n_days": 19,
+        "daily_mid": 648,
         "monthly_avg": 617
       },
       "karei": {
-        "factor": 0.974,
-        "raw_ratio": 0.974,
-        "n_mid": 64,
-        "n_days": 19,
-        "daily_mid": 702,
+        "factor": 1.123,
+        "raw_ratio": 1.123,
+        "n_mid": 69,
+        "n_days": 18,
+        "daily_mid": 810,
         "monthly_avg": 721
       },
       "katsuo": {
-        "factor": 1.093,
-        "raw_ratio": 1.093,
+        "factor": 1.822,
+        "raw_ratio": 1.822,
         "n_mid": 21,
         "n_days": 20,
-        "daily_mid": 972,
+        "daily_mid": 1620,
         "monthly_avg": 889
       },
       "kihada": {
-        "factor": 1.916,
-        "raw_ratio": 1.916,
-        "n_mid": 13,
-        "n_days": 12,
-        "daily_mid": 1836,
+        "factor": 1.766,
+        "raw_ratio": 1.766,
+        "n_mid": 23,
+        "n_days": 17,
+        "daily_mid": 1692,
         "monthly_avg": 958
       },
       "kinmedai": {
-        "factor": 0.771,
-        "raw_ratio": 0.771,
+        "factor": 0.809,
+        "raw_ratio": 0.809,
         "n_mid": 20,
         "n_days": 20,
-        "daily_mid": 2160,
+        "daily_mid": 2268,
         "monthly_avg": 2802
       },
       "maaji": {
         "factor": 0.704,
         "raw_ratio": 0.704,
-        "n_mid": 50,
+        "n_mid": 52,
         "n_days": 20,
         "daily_mid": 594,
         "monthly_avg": 844
       },
       "saba": {
-        "factor": 0.956,
-        "raw_ratio": 0.956,
+        "factor": 1.03,
+        "raw_ratio": 1.03,
         "n_mid": 20,
         "n_days": 20,
-        "daily_mid": 702,
+        "daily_mid": 756,
         "monthly_avg": 734
       },
       "surumeika": {
-        "factor": 1.108,
-        "raw_ratio": 1.108,
-        "n_mid": 20,
-        "n_days": 20,
-        "daily_mid": 1080,
+        "factor": 1.218,
+        "raw_ratio": 1.218,
+        "n_mid": 19,
+        "n_days": 19,
+        "daily_mid": 1188,
         "monthly_avg": 975
       }
     }
